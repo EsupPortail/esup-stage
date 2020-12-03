@@ -1,19 +1,31 @@
 ---
 spring:
-  profiles:    active:    - dev
-  jpa:    open-in-view: false
+  profiles:
+    active:
+    - dev
+  jpa:
+    open-in-view: false
+  joinfaces:
+    jsf:
+      PROJECT_STAGE: Development
+    primefaces:
+      theme: overcast
 logging:
   level:
     root: WARN
     org.springframework: WARN     
     org.springframework.boot: INFO
     org.hibernate.SQL: ERROR      
-    fr.esupportail.esupstage: INFO  file:    path: /home/xxx/logs/esupstage    name: esupstage.log
+    fr.esupportail.esupstage: INFO
+  file:
+    path: /home/xxx/logs/esupstage
+    name: esupstage.log
     max-history: 365
 application:
   title: esupstage
   redirect-url: http://localhost:8080/swagger-ui/
-  security:    ldap-user-dn-patterns: uid={0},ou=people,dc=uphf,dc=fr
+  security:
+    ldap-user-dn-patterns: uid={0},ou=people,dc=uphf,dc=fr
 ...
 ---
 spring:
@@ -44,3 +56,4 @@ cas:
   server-login-url: https://cas.uphf.fr/cas/login
   client-host-url: http://pc-dsi-dubus.adm.univ-valenciennes.fr:8080
 ...
+
