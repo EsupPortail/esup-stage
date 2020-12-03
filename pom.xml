@@ -35,6 +35,7 @@
 		<springfox-swagger>3.0.0</springfox-swagger>
 		<commons-text>1.9</commons-text>
 		<java.cas.client.version>3.6.1</java.cas.client.version>
+		<joinfaces.version>4.4.0-rc1</joinfaces.version>
 	</properties>
 
 	<repositories>
@@ -45,6 +46,18 @@
 			<layout>default</layout>
 		</repository>
 	</repositories>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.joinfaces</groupId>
+				<artifactId>joinfaces-dependencies</artifactId>
+				<version>${joinfaces.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<dependencies>
 		<dependency>
@@ -179,5 +192,20 @@
 			<artifactId>primefaces</artifactId>
 			<version>8.0</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.joinfaces</groupId>
+			<artifactId>jsf-spring-boot-starter</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.joinfaces</groupId>
+			<artifactId>security-spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.enterprise</groupId>
+			<artifactId>cdi-api</artifactId>
+		</dependency>
+
 	</dependencies>
 </project>
