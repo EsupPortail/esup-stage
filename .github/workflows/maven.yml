@@ -4,11 +4,9 @@
 name: Build
 on:
   push:
-    branches:
-      - master
-      - dev
+    branches: [ '*' ]
   pull_request:
-    types: [opened, synchronize, reopened]
+    branches: [ '*' ]
 jobs:
   build:
     name: Build
