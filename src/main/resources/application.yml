@@ -5,6 +5,11 @@ spring:
     - dev
   jpa:
     open-in-view: false
+  joinfaces:
+    jsf:
+      PROJECT_STAGE: Development
+    primefaces:
+      theme: overcast
 logging:
   level:
     root: WARN
