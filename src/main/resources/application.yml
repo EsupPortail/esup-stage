@@ -5,6 +5,8 @@ spring:
     - dev
   jpa:
     open-in-view: false
+    hibernate:
+      ddl-auto: create-drop
 joinfaces:
     jsf:
       PROJECT_STAGE: Development
