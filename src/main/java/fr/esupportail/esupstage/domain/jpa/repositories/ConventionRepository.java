@@ -4,10 +4,12 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import fr.esupportail.esupstage.domain.jpa.entities.Convention;
 import fr.esupportail.esupstage.domain.jpa.entities.Enseignant;
 
+@Repository
 public interface ConventionRepository extends JpaRepository<Convention, Integer> {
 
 	@Query("FROM Convention c LEFT JOIN FETCH c.centreGestion cg WHERE cg.codeUniversite=?1")
