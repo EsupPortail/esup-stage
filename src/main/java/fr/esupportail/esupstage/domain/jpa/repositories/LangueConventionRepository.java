@@ -1,7 +1,8 @@
 package fr.esupportail.esupstage.domain.jpa.repositories;
 
-import fr.esupportail.esupstage.domain.jpa.entities.LangueConvention;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface LangueConventionRepository extends CrudRepository<LangueConvention, String> {
+import fr.esupportail.esupstage.domain.jpa.entities.LangueConvention;
+
+public interface LangueConventionRepository extends JpaRepository<LangueConvention, String> {
 }

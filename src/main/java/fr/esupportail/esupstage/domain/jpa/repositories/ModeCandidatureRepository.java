@@ -1,7 +1,8 @@
 package fr.esupportail.esupstage.domain.jpa.repositories;
 
-import fr.esupportail.esupstage.domain.jpa.entities.ModeCandidature;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ModeCandidatureRepository extends CrudRepository<ModeCandidature, Integer> {
+import fr.esupportail.esupstage.domain.jpa.entities.ModeCandidature;
+
+public interface ModeCandidatureRepository extends JpaRepository<ModeCandidature, Integer> {
 }

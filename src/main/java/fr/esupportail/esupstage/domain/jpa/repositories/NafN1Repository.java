@@ -1,7 +1,8 @@
 package fr.esupportail.esupstage.domain.jpa.repositories;
 
-import fr.esupportail.esupstage.domain.jpa.entities.NafN1;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface NafN1Repository extends CrudRepository<NafN1, String> {
+import fr.esupportail.esupstage.domain.jpa.entities.NafN1;
+
+public interface NafN1Repository extends JpaRepository<NafN1, String> {
 }

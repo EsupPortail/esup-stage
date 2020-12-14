@@ -1,7 +1,8 @@
 package fr.esupportail.esupstage.domain.jpa.repositories;
 
-import fr.esupportail.esupstage.domain.jpa.entities.NafN5;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface NafN5Repository extends CrudRepository<NafN5, String> {
+import fr.esupportail.esupstage.domain.jpa.entities.NafN5;
+
+public interface NafN5Repository extends JpaRepository<NafN5, String> {
 }

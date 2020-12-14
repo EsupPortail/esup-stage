@@ -1,7 +1,8 @@
 package fr.esupportail.esupstage.domain.jpa.repositories;
 
-import fr.esupportail.esupstage.domain.jpa.entities.PstagedataUser;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface PstagedataUserRepository extends CrudRepository<PstagedataUser, String> {
+import fr.esupportail.esupstage.domain.jpa.entities.PstagedataUser;
+
+public interface PstagedataUserRepository extends JpaRepository<PstagedataUser, String> {
 }

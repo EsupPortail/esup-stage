@@ -1,7 +1,8 @@
 package fr.esupportail.esupstage.domain.jpa.repositories;
 
-import fr.esupportail.esupstage.domain.jpa.entities.TypeStructure;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface TypeStructureRepository extends CrudRepository<TypeStructure, Integer> {
+import fr.esupportail.esupstage.domain.jpa.entities.TypeStructure;
+
+public interface TypeStructureRepository extends JpaRepository<TypeStructure, Integer> {
 }

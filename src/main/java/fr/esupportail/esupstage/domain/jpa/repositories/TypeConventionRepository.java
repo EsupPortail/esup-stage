@@ -1,7 +1,8 @@
 package fr.esupportail.esupstage.domain.jpa.repositories;
 
-import fr.esupportail.esupstage.domain.jpa.entities.TypeConvention;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface TypeConventionRepository extends CrudRepository<TypeConvention, Integer> {
+import fr.esupportail.esupstage.domain.jpa.entities.TypeConvention;
+
+public interface TypeConventionRepository extends JpaRepository<TypeConvention, Integer> {
 }

@@ -1,9 +1,9 @@
 package fr.esupportail.esupstage.domain.jpa.repositories;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import fr.esupportail.esupstage.domain.jpa.entities.Etape;
 import fr.esupportail.esupstage.domain.jpa.entities.EtapePK;
-import org.springframework.data.repository.CrudRepository;
 
-public interface EtapeRepository extends CrudRepository<Etape, EtapePK> {
+public interface EtapeRepository extends JpaRepository<Etape, EtapePK> {
 }

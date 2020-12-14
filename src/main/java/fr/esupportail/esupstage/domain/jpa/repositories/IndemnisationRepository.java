@@ -1,7 +1,8 @@
 package fr.esupportail.esupstage.domain.jpa.repositories;
 
-import fr.esupportail.esupstage.domain.jpa.entities.Indemnisation;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface IndemnisationRepository extends CrudRepository<Indemnisation, Integer> {
+import fr.esupportail.esupstage.domain.jpa.entities.Indemnisation;
+
+public interface IndemnisationRepository extends JpaRepository<Indemnisation, Integer> {
 }

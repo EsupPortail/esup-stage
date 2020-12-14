@@ -1,7 +1,8 @@
 package fr.esupportail.esupstage.domain.jpa.repositories;
 
-import fr.esupportail.esupstage.domain.jpa.entities.PersonnelCentreGestion;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface PersonnelCentreGestionRepository extends CrudRepository<PersonnelCentreGestion, Integer> {
+import fr.esupportail.esupstage.domain.jpa.entities.PersonnelCentreGestion;
+
+public interface PersonnelCentreGestionRepository extends JpaRepository<PersonnelCentreGestion, Integer> {
 }

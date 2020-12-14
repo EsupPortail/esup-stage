@@ -1,7 +1,8 @@
 package fr.esupportail.esupstage.domain.jpa.repositories;
 
-import fr.esupportail.esupstage.domain.jpa.entities.Enseignant;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface EnseignantRepository extends CrudRepository<Enseignant, Integer> {
+import fr.esupportail.esupstage.domain.jpa.entities.Enseignant;
+
+public interface EnseignantRepository extends JpaRepository<Enseignant, Integer> {
 }

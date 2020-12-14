@@ -1,7 +1,8 @@
 package fr.esupportail.esupstage.domain.jpa.repositories;
 
-import fr.esupportail.esupstage.domain.jpa.entities.CentreGestionSuperViseur;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface CentreGestionSuperViseurRepository extends CrudRepository<CentreGestionSuperViseur, Integer> {
+import fr.esupportail.esupstage.domain.jpa.entities.CentreGestionSuperViseur;
+
+public interface CentreGestionSuperViseurRepository extends JpaRepository<CentreGestionSuperViseur, Integer> {
 }

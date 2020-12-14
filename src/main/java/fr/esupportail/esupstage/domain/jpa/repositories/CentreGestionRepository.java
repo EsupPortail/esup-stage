@@ -1,7 +1,8 @@
 package fr.esupportail.esupstage.domain.jpa.repositories;
 
-import fr.esupportail.esupstage.domain.jpa.entities.CentreGestion;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface CentreGestionRepository extends CrudRepository<CentreGestion, Integer> {
+import fr.esupportail.esupstage.domain.jpa.entities.CentreGestion;
+
+public interface CentreGestionRepository extends JpaRepository<CentreGestion, Integer> {
 }

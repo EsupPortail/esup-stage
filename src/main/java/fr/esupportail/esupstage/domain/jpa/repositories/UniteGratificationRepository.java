@@ -1,7 +1,8 @@
 package fr.esupportail.esupstage.domain.jpa.repositories;
 
-import fr.esupportail.esupstage.domain.jpa.entities.UniteGratification;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UniteGratificationRepository extends CrudRepository<UniteGratification, Integer> {
+import fr.esupportail.esupstage.domain.jpa.entities.UniteGratification;
+
+public interface UniteGratificationRepository extends JpaRepository<UniteGratification, Integer> {
 }

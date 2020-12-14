@@ -1,7 +1,8 @@
 package fr.esupportail.esupstage.domain.jpa.repositories;
 
-import fr.esupportail.esupstage.domain.jpa.entities.Fichier;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface FichierRepository extends CrudRepository<Fichier, Integer> {
+import fr.esupportail.esupstage.domain.jpa.entities.Fichier;
+
+public interface FichierRepository extends JpaRepository<Fichier, Integer> {
 }

@@ -1,7 +1,8 @@
 package fr.esupportail.esupstage.domain.jpa.repositories;
 
-import fr.esupportail.esupstage.domain.jpa.entities.ModeValidationStage;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ModeValidationStageRepository extends CrudRepository<ModeValidationStage, Integer> {
+import fr.esupportail.esupstage.domain.jpa.entities.ModeValidationStage;
+
+public interface ModeValidationStageRepository extends JpaRepository<ModeValidationStage, Integer> {
 }

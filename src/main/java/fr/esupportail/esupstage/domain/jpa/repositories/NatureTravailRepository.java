@@ -1,7 +1,8 @@
 package fr.esupportail.esupstage.domain.jpa.repositories;
 
-import fr.esupportail.esupstage.domain.jpa.entities.NatureTravail;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface NatureTravailRepository extends CrudRepository<NatureTravail, Integer> {
+import fr.esupportail.esupstage.domain.jpa.entities.NatureTravail;
+
+public interface NatureTravailRepository extends JpaRepository<NatureTravail, Integer> {
 }

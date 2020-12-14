@@ -1,7 +1,8 @@
 package fr.esupportail.esupstage.domain.jpa.repositories;
 
-import fr.esupportail.esupstage.domain.jpa.entities.NiveauFormation;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface NiveauFormationRepository extends CrudRepository<NiveauFormation, Integer> {
+import fr.esupportail.esupstage.domain.jpa.entities.NiveauFormation;
+
+public interface NiveauFormationRepository extends JpaRepository<NiveauFormation, Integer> {
 }

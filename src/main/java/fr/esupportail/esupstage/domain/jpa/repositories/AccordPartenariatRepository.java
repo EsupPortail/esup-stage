@@ -1,8 +1,9 @@
 package fr.esupportail.esupstage.domain.jpa.repositories;
 
 
-import fr.esupportail.esupstage.domain.jpa.entities.AccordPartenariat;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface AccordPartenariatRepository extends CrudRepository<AccordPartenariat, Integer> {
+import fr.esupportail.esupstage.domain.jpa.entities.AccordPartenariat;
+
+public interface AccordPartenariatRepository extends JpaRepository<AccordPartenariat, Integer> {
 }

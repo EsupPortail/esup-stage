@@ -1,7 +1,8 @@
 package fr.esupportail.esupstage.domain.jpa.repositories;
 
-import fr.esupportail.esupstage.domain.jpa.entities.StatutJuridique;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface StatutJuridiqueRepository extends CrudRepository<StatutJuridique, Integer> {
+import fr.esupportail.esupstage.domain.jpa.entities.StatutJuridique;
+
+public interface StatutJuridiqueRepository extends JpaRepository<StatutJuridique, Integer> {
 }

@@ -1,7 +1,8 @@
 package fr.esupportail.esupstage.domain.jpa.repositories;
 
-import fr.esupportail.esupstage.domain.jpa.entities.Theme;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ThemeRepository extends CrudRepository<Theme, Integer> {
+import fr.esupportail.esupstage.domain.jpa.entities.Theme;
+
+public interface ThemeRepository extends JpaRepository<Theme, Integer> {
 }

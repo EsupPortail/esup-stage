@@ -1,7 +1,8 @@
 package fr.esupportail.esupstage.domain.jpa.repositories;
 
-import fr.esupportail.esupstage.domain.jpa.entities.FapN2;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface FapN2Repository extends CrudRepository<FapN2, String> {
+import fr.esupportail.esupstage.domain.jpa.entities.FapN2;
+
+public interface FapN2Repository extends JpaRepository<FapN2, String> {
 }

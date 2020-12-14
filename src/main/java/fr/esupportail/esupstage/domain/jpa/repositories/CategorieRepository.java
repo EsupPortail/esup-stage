@@ -1,7 +1,8 @@
 package fr.esupportail.esupstage.domain.jpa.repositories;
 
-import fr.esupportail.esupstage.domain.jpa.entities.Categorie;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface CategorieRepository extends CrudRepository<Categorie, Integer> {
+import fr.esupportail.esupstage.domain.jpa.entities.Categorie;
+
+public interface CategorieRepository extends JpaRepository<Categorie, Integer> {
 }

@@ -1,7 +1,8 @@
 package fr.esupportail.esupstage.domain.jpa.repositories;
 
-import fr.esupportail.esupstage.domain.jpa.entities.FicheEvaluation;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface FicheEvaluationRepository extends CrudRepository<FicheEvaluation, Integer> {
+import fr.esupportail.esupstage.domain.jpa.entities.FicheEvaluation;
+
+public interface FicheEvaluationRepository extends JpaRepository<FicheEvaluation, Integer> {
 }

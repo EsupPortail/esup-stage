@@ -1,7 +1,8 @@
-package org.esupportail.pstage.dao.domain.repositories;
+package fr.esupportail.esupstage.domain.jpa.repositories;
 
-import org.esupportail.pstage.dao.domain.bean.FAP_QualificationSimplifiee;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface FAP_QualificationSimplifieeRepository extends CrudRepository<FAP_QualificationSimplifiee, Integer> {
+import fr.esupportail.esupstage.domain.jpa.entities.FAP_QualificationSimplifiee;
+
+public interface FAP_QualificationSimplifieeRepository extends JpaRepository<FAP_QualificationSimplifiee, Integer> {
 }

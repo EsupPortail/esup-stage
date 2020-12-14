@@ -2,13 +2,13 @@ package fr.esupportail.esupstage.domain.jpa.repositories;
 
 import java.util.List;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import fr.esupportail.esupstage.domain.jpa.entities.Convention;
 import fr.esupportail.esupstage.domain.jpa.entities.Enseignant;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 
-public interface ConventionRepository extends CrudRepository<Convention, Integer> {
+public interface ConventionRepository extends JpaRepository<Convention, Integer> {
 
 	@Query("FROM Convention c LEFT JOIN FETCH c.centreGestion cg WHERE cg.codeUniversite=?1")
 	public List<Convention> findConventionBycodeUniversite(String codeUniversite);
@@ -30,7 +30,7 @@ public interface ConventionRepository extends CrudRepository<Convention, Integer
 
 	@Query("SELECT c FROM Convention c WHERE c.etape.id.codeEtape=?1 and c.etape.id.codeUniversite =?2 ")
 	public List<Convention> getCodeUFRFromCodeEtape(String codeEtape, String codeUniversite);
-	
+
 	
 	//public List<Convention> findConventionsByEtapeAndCodeUniversite(Etape etape, String codeUniversite);
 	//public List<Convention> findConventionsByCodeEtapeAndCodeVersionEtape(String codeEtape,String codeVersionEtape);

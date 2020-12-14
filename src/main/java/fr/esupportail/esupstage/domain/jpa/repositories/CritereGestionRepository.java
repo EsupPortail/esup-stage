@@ -1,9 +1,9 @@
 package fr.esupportail.esupstage.domain.jpa.repositories;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import fr.esupportail.esupstage.domain.jpa.entities.CritereGestion;
 import fr.esupportail.esupstage.domain.jpa.entities.CritereGestionPK;
-import org.springframework.data.repository.CrudRepository;
 
-public interface CritereGestionRepository extends CrudRepository<CritereGestion, CritereGestionPK> {
+public interface CritereGestionRepository extends JpaRepository<CritereGestion, CritereGestionPK> {
 }

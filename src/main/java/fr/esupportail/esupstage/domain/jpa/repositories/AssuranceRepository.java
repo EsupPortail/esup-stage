@@ -1,7 +1,8 @@
 package fr.esupportail.esupstage.domain.jpa.repositories;
 
-import fr.esupportail.esupstage.domain.jpa.entities.Assurance;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface AssuranceRepository extends CrudRepository<Assurance, Integer> {
+import fr.esupportail.esupstage.domain.jpa.entities.Assurance;
+
+public interface AssuranceRepository extends JpaRepository<Assurance, Integer> {
 }

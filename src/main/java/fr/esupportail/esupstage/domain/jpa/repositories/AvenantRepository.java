@@ -1,7 +1,8 @@
 package fr.esupportail.esupstage.domain.jpa.repositories;
 
-import fr.esupportail.esupstage.domain.jpa.entities.Avenant;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface AvenantRepository extends CrudRepository<Avenant, Integer> {
+import fr.esupportail.esupstage.domain.jpa.entities.Avenant;
+
+public interface AvenantRepository extends JpaRepository<Avenant, Integer> {
 }

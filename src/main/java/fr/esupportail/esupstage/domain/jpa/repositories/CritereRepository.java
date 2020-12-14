@@ -1,8 +1,8 @@
 package fr.esupportail.esupstage.domain.jpa.repositories;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import fr.esupportail.esupstage.domain.jpa.entities.Critere;
-import org.springframework.data.repository.CrudRepository;
 
-public interface CritereRepository extends CrudRepository<Critere, Integer> {
+public interface CritereRepository extends JpaRepository<Critere, Integer> {
 }

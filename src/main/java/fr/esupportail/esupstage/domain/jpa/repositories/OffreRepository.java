@@ -1,7 +1,8 @@
 package fr.esupportail.esupstage.domain.jpa.repositories;
 
-import fr.esupportail.esupstage.domain.jpa.entities.Offre;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface OffreRepository extends CrudRepository<Offre, Integer> {
+import fr.esupportail.esupstage.domain.jpa.entities.Offre;
+
+public interface OffreRepository extends JpaRepository<Offre, Integer> {
 }

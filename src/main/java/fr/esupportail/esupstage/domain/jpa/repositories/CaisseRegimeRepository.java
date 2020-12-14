@@ -1,7 +1,8 @@
 package fr.esupportail.esupstage.domain.jpa.repositories;
 
-import fr.esupportail.esupstage.domain.jpa.entities.CaisseRegime;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface CaisseRegimeRepository extends CrudRepository<CaisseRegime, String> {
+import fr.esupportail.esupstage.domain.jpa.entities.CaisseRegime;
+
+public interface CaisseRegimeRepository extends JpaRepository<CaisseRegime, String> {
 }

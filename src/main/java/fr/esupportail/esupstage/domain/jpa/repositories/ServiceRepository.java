@@ -1,7 +1,8 @@
 package fr.esupportail.esupstage.domain.jpa.repositories;
 
-import fr.esupportail.esupstage.domain.jpa.entities.Service;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ServiceRepository extends CrudRepository<Service, Integer> {
+import fr.esupportail.esupstage.domain.jpa.entities.Service;
+
+public interface ServiceRepository extends JpaRepository<Service, Integer> {
 }

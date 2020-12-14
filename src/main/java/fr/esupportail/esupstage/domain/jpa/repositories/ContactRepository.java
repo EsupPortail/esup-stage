@@ -1,7 +1,8 @@
 package fr.esupportail.esupstage.domain.jpa.repositories;
 
-import fr.esupportail.esupstage.domain.jpa.entities.Contact;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ContactRepository extends CrudRepository<Contact, Integer> {
+import fr.esupportail.esupstage.domain.jpa.entities.Contact;
+
+public interface ContactRepository extends JpaRepository<Contact, Integer> {
 }

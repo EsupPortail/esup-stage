@@ -1,7 +1,8 @@
 package fr.esupportail.esupstage.domain.jpa.repositories;
 
-import fr.esupportail.esupstage.domain.jpa.entities.UniteDuree;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UniteDureeRepository extends CrudRepository<UniteDuree, Integer> {
+import fr.esupportail.esupstage.domain.jpa.entities.UniteDuree;
+
+public interface UniteDureeRepository extends JpaRepository<UniteDuree, Integer> {
 }
