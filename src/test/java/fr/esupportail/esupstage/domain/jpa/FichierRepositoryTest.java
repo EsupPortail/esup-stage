@@ -20,27 +20,31 @@ import fr.esupportail.esupstage.AbstractTest;
 import fr.esupportail.esupstage.domain.jpa.entities.CentreGestion;
 import fr.esupportail.esupstage.domain.jpa.entities.Confidentialite;
 import fr.esupportail.esupstage.domain.jpa.entities.FicheEvaluation;
+import fr.esupportail.esupstage.domain.jpa.entities.Fichier;
 import fr.esupportail.esupstage.domain.jpa.entities.NiveauCentre;
 import fr.esupportail.esupstage.domain.jpa.repositories.FicheEvaluationRepository;
+import fr.esupportail.esupstage.domain.jpa.repositories.FichierRepository;
 
 @Rollback
 @Transactional
-class FicheEvaluationRepositoryTest extends AbstractTest {
+class FichierRepositoryTest extends AbstractTest {
 
 	private final EntityManager entityManager;
 
-	private final FicheEvaluationRepository ficheEvaluationRepository;
+	private final FichierRepository fichierRepository;
 
 	@Autowired
-	FicheEvaluationRepositoryTest(final EntityManager entityManager, final FicheEvaluationRepository ficheEvaluationRepository) {
+	FichierRepositoryTest(final EntityManager entityManager, final FichierRepository fichierRepository) {
 		super();
 		this.entityManager = entityManager;
-		this.ficheEvaluationRepository = ficheEvaluationRepository;
+		this.fichierRepository = fichierRepository;
 	}
 
 	@BeforeEach
 	void prepare() {
-		final FicheEvaluation ficheEvaluation = new FicheEvaluation();
+		final Fichier fichier = new Fichier();
+		fichier.setNomFichier("nomFichier");
+		fichier.setNomReel("nomReel");
 
 		final NiveauCentre niveauCentre = new NiveauCentre();
 		niveauCentre.setLibelleNiveauCentre("libel");
@@ -63,17 +67,18 @@ class FicheEvaluationRepositoryTest extends AbstractTest {
 		centreGestion.setNiveauCentre(niveauCentre);
 		entityManager.persist(centreGestion);
 
-		ficheEvaluation.setCentreGestion(centreGestion);
+		fichier.addCentreGestion(centreGestion);
 
-		this.entityManager.persist(ficheEvaluation);
+		this.entityManager.persist(fichier);
 		this.entityManager.flush();
 	}
 
-	private void testFicheEvaluationFields(int indice, FicheEvaluation ficheEvaluation) {
+	private void testFicheEvaluationFields(int indice, Fichier fichier) {
 		switch (indice) {
 		case 0:
-			assertEquals(1, ficheEvaluation.getIdFicheEvaluation(), "FicheEvaluation id match");
-			assertEquals("codeuniv", ficheEvaluation.getCentreGestion().getCodeUniversite(), "FicheEvaluation.CentreGestion codeUniversite match");
+			assertEquals("nomFichier", fichier.getNomFichier(), "Fichier name match");
+			assertEquals("nomReel", fichier.getNomReel(), "Fichier real name match");
+			assertEquals("codeuniv", fichier.getCentreGestions().get(0).getCodeUniversite(), "Fichier.CentreGestion codeUniversite match");
 			break;
 		}
 	}
@@ -81,22 +86,22 @@ class FicheEvaluationRepositoryTest extends AbstractTest {
 	@Test
 	@DisplayName("findById – Nominal test case")
 	void findById() {
-		final Optional<FicheEvaluation> result = this.ficheEvaluationRepository.findById(1);
-		assertTrue(result.isPresent(), "We should have found our FicherEvaluation");
+		final Optional<Fichier> result = this.fichierRepository.findById(1);
+		assertTrue(result.isPresent(), "We should have found our Fichier");
 
-		final FicheEvaluation fapQualification = result.get();
-		this.testFicheEvaluationFields(0, fapQualification);
+		final Fichier fichier = result.get();
+		this.testFicheEvaluationFields(0, fichier);
 	}
 
 	@Test
 	@DisplayName("findAll – Nominal test case")
 	void findAll() {
-		final List<FicheEvaluation> result = this.ficheEvaluationRepository.findAll();
-		assertTrue(result.size() == 1, "We should have found our FicherEvaluation");
+		final List<Fichier> result = this.fichierRepository.findAll();
+		assertTrue(result.size() == 1, "We should have found our Fichier");
 
-		final FicheEvaluation fapQualification = result.get(0);
-		assertTrue(fapQualification != null, "FicherEvaluation exist");
-		this.testFicheEvaluationFields(0, fapQualification);
+		final Fichier fichier = result.get(0);
+		assertTrue(fichier != null, "Fichier exist");
+		this.testFicheEvaluationFields(0, fichier);
 	}
 
 }
