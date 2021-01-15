@@ -1,6 +1,5 @@
 package fr.esupportail.esupstage.domain.jpa.entities;
 
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -102,7 +101,6 @@ public class FicheEvaluation implements Serializable {
     @OneToMany(mappedBy = "ficheEvaluation")
     private List<ReponseEvaluation> reponseEvaluations;
 
-
     public QuestionSupplementaire addQuestionSupplementaire(QuestionSupplementaire questionSupplementaire) {
         getQuestionSupplementaires().add(questionSupplementaire);
         questionSupplementaire.setFicheEvaluation(this);
@@ -114,7 +112,6 @@ public class FicheEvaluation implements Serializable {
         questionSupplementaire.setFicheEvaluation(null);
         return questionSupplementaire;
     }
-
 
     public ReponseEvaluation addReponseEvaluation(ReponseEvaluation reponseEvaluation) {
         getReponseEvaluations().add(reponseEvaluation);
