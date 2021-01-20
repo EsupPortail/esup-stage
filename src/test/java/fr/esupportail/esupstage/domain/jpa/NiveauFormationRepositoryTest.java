@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,40 +21,37 @@ import fr.esupportail.esupstage.AbstractTest;
 import fr.esupportail.esupstage.domain.jpa.entities.CentreGestion;
 import fr.esupportail.esupstage.domain.jpa.entities.Confidentialite;
 import fr.esupportail.esupstage.domain.jpa.entities.Effectif;
-import fr.esupportail.esupstage.domain.jpa.entities.FAP_Qualification;
-import fr.esupportail.esupstage.domain.jpa.entities.FAP_QualificationSimplifiee;
 import fr.esupportail.esupstage.domain.jpa.entities.NiveauCentre;
+import fr.esupportail.esupstage.domain.jpa.entities.NiveauFormation;
 import fr.esupportail.esupstage.domain.jpa.entities.Offre;
 import fr.esupportail.esupstage.domain.jpa.entities.Structure;
 import fr.esupportail.esupstage.domain.jpa.entities.TypeOffre;
 import fr.esupportail.esupstage.domain.jpa.entities.TypeStructure;
-import fr.esupportail.esupstage.domain.jpa.repositories.FAP_QualificationSimplifieeRepository;
+import fr.esupportail.esupstage.domain.jpa.repositories.NiveauFormationRepository;
 
 @Rollback
 @Transactional
-class FAP_QualificationSimplifieeRepositoryTest extends AbstractTest {
+class NiveauFormationRepositoryTest extends AbstractTest {
 
 	private final EntityManager entityManager;
 
-	private final FAP_QualificationSimplifieeRepository fapQualificationSimplifieeRepository;
+	private final NiveauFormationRepository niveauFormationRepository;
+
+	private Integer lastInsertedId;
 
 	@Autowired
-	FAP_QualificationSimplifieeRepositoryTest(final EntityManager entityManager, final FAP_QualificationSimplifieeRepository fapQualificationSimplifieeRepository) {
+	NiveauFormationRepositoryTest(final EntityManager entityManager, final NiveauFormationRepository niveauFormationRepository) {
 		super();
 		this.entityManager = entityManager;
-		this.fapQualificationSimplifieeRepository = fapQualificationSimplifieeRepository;
+		this.niveauFormationRepository = niveauFormationRepository;
 	}
 
 	@BeforeEach
 	void prepare() {
-		final FAP_Qualification fapQualification = new FAP_Qualification();
-
-		fapQualification.setNumFAP_Qualification(1);
-		fapQualification.setLibelleQualification("fapQual1");
-
-		final FAP_QualificationSimplifiee fapQualificationSimplifiee = new FAP_QualificationSimplifiee();
-		fapQualificationSimplifiee.setIdQualificationSimplifiee(1);
-		fapQualificationSimplifiee.setLibelleQualification("fapQualSimple1");
+		final NiveauFormation niveauFormation = new NiveauFormation();
+		niveauFormation.setLibelleNiveauFormation("libelleNiveauFormation");
+		niveauFormation.setModifiable(true);
+		niveauFormation.setTemEnServNiveauForm("A");
 
 		final Offre offre = new Offre();
 		offre.setAnneeUniversitaire("2020-2021");
@@ -132,22 +128,25 @@ class FAP_QualificationSimplifieeRepositoryTest extends AbstractTest {
 		entityManager.persist(typeOffre);
 
 		offre.setTypeOffre(typeOffre);
-
-		fapQualificationSimplifiee.setOffres(Arrays.asList(offre));
 		entityManager.persist(offre);
 
-		fapQualification.setFapQualificationSimplifiee(fapQualificationSimplifiee);
-		entityManager.persist(fapQualificationSimplifiee);
+		niveauFormation.setOffres(Arrays.asList(offre));
 
-		this.entityManager.persist(fapQualification);
+		this.entityManager.persist(niveauFormation);
 		this.entityManager.flush();
+
+		this.entityManager.refresh(niveauFormation);
+		this.lastInsertedId = niveauFormation.getId();
 	}
 
-	private void testfapQualSimplFields(int indice, FAP_QualificationSimplifiee fapQualification) {
+	private void testNiveauFormationFields(int indice, NiveauFormation niveauFormation) {
 		switch (indice) {
 		case 0:
-			assertEquals("fapQualSimple1", fapQualification.getLibelleQualification(), "FAP_Qualification.QualificationSimplifiee libelle match");
-			assertEquals("Offre1", fapQualification.getOffres().get(0).getIntitule(), "FAP_Qualification.QualificationSimplifiee.Offre libelle match");
+			assertEquals(this.lastInsertedId, niveauFormation.getId(), "NiveauFormation libelle match");
+			assertEquals("libelleNiveauFormation", niveauFormation.getLibelleNiveauFormation(), "NiveauFormation libelle match");
+			assertEquals("A", niveauFormation.getTemEnServNiveauForm(), "NiveauFormation TemEnServ match");
+			assertEquals(1, niveauFormation.getOffres().size(), "NiveauFormation.Offre size match");
+			assertEquals("Offre1", niveauFormation.getOffres().get(0).getIntitule(), "NiveauFormation.Offre codeuniv match");
 			break;
 		}
 	}
@@ -155,22 +154,22 @@ class FAP_QualificationSimplifieeRepositoryTest extends AbstractTest {
 	@Test
 	@DisplayName("findById – Nominal test case")
 	void findById() {
-		final Optional<FAP_QualificationSimplifiee> result = this.fapQualificationSimplifieeRepository.findById(1);
-		assertTrue(result.isPresent(), "We should have found our FAP_QualificationSimplifiee");
+		final Optional<NiveauFormation> result = this.niveauFormationRepository.findById(this.lastInsertedId);
+		assertTrue(result.isPresent(), "We should have found our NiveauFormation");
 
-		final FAP_QualificationSimplifiee fapQualification = result.get();
-		this.testfapQualSimplFields(0, fapQualification);
+		final NiveauFormation niveauFormation = result.get();
+		this.testNiveauFormationFields(0, niveauFormation);
 	}
 
 	@Test
 	@DisplayName("findAll – Nominal test case")
 	void findAll() {
-		final List<FAP_QualificationSimplifiee> result = this.fapQualificationSimplifieeRepository.findAll();
-		assertTrue(result.size() == 1, "We should have found our FAP_QualificationSimplifiee");
+		final List<NiveauFormation> result = this.niveauFormationRepository.findAll();
+		assertTrue(result.size() == 1, "We should have found our NiveauFormation");
 
-		final FAP_QualificationSimplifiee fapQualification = result.get(0);
-		assertTrue(fapQualification != null, "FAP_QualificationSimplifiee exist");
-		this.testfapQualSimplFields(0, fapQualification);
+		final NiveauFormation niveauFormation = result.get(0);
+		assertTrue(niveauFormation != null, "NiveauFormation exist");
+		this.testNiveauFormationFields(0, niveauFormation);
 	}
 
 }

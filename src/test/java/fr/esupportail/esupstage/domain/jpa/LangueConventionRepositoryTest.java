@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,7 +21,6 @@ import fr.esupportail.esupstage.domain.jpa.entities.CentreGestion;
 import fr.esupportail.esupstage.domain.jpa.entities.Confidentialite;
 import fr.esupportail.esupstage.domain.jpa.entities.Convention;
 import fr.esupportail.esupstage.domain.jpa.entities.Etudiant;
-import fr.esupportail.esupstage.domain.jpa.entities.Fichier;
 import fr.esupportail.esupstage.domain.jpa.entities.Indemnisation;
 import fr.esupportail.esupstage.domain.jpa.entities.LangueConvention;
 import fr.esupportail.esupstage.domain.jpa.entities.ModeValidationStage;
@@ -31,7 +29,6 @@ import fr.esupportail.esupstage.domain.jpa.entities.NiveauCentre;
 import fr.esupportail.esupstage.domain.jpa.entities.TempsTravail;
 import fr.esupportail.esupstage.domain.jpa.entities.Theme;
 import fr.esupportail.esupstage.domain.jpa.entities.TypeConvention;
-import fr.esupportail.esupstage.domain.jpa.repositories.IndemnisationRepository;
 import fr.esupportail.esupstage.domain.jpa.repositories.LangueConventionRepository;
 
 @Rollback
@@ -115,7 +112,7 @@ class LangueConventionRepositoryTest extends AbstractTest {
 
 		final Indemnisation indemnisation = new Indemnisation();
 		indemnisation.setLibelleIndemnisation("libelleIndemnisation");
-		indemnisation.setTemEnServIndem("temEnServIndem");
+		indemnisation.setTemEnServIndem("A");
 		entityManager.persist(indemnisation);
 
 		Convention convention = new Convention();
@@ -145,7 +142,7 @@ class LangueConventionRepositoryTest extends AbstractTest {
 		this.entityManager.flush();
 	}
 
-	private void testFicheEvaluationFields(int indice, LangueConvention langueConvention) {
+	private void testLangueConventionFields(int indice, LangueConvention langueConvention) {
 		switch (indice) {
 		case 0:
 			assertEquals("CD", langueConvention.getCodeLangueConvention(), "LangueConvention code match");
@@ -160,21 +157,21 @@ class LangueConventionRepositoryTest extends AbstractTest {
 	@DisplayName("findById – Nominal test case")
 	void findById() {
 		final Optional<LangueConvention> result = this.langueConventionRepository.findById("CD");
-		assertTrue(result.isPresent(), "We should have found our Fichier");
+		assertTrue(result.isPresent(), "We should have found our LangueConvention");
 
 		final LangueConvention indemnisation = result.get();
-		this.testFicheEvaluationFields(0, indemnisation);
+		this.testLangueConventionFields(0, indemnisation);
 	}
 
 	@Test
 	@DisplayName("findAll – Nominal test case")
 	void findAll() {
 		final List<LangueConvention> result = this.langueConventionRepository.findAll();
-		assertTrue(result.size() == 1, "We should have found our Fichier");
+		assertTrue(result.size() == 1, "We should have found our LangueConvention");
 
 		final LangueConvention indemnisation = result.get(0);
 		assertTrue(indemnisation != null, "Fichier exist");
-		this.testFicheEvaluationFields(0, indemnisation);
+		this.testLangueConventionFields(0, indemnisation);
 	}
 
 }
