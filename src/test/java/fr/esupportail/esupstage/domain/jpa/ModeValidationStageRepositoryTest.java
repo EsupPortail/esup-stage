@@ -3,10 +3,10 @@ package fr.esupportail.esupstage.domain.jpa;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
-import java.util.Arrays;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
@@ -30,25 +30,31 @@ import fr.esupportail.esupstage.domain.jpa.entities.NiveauCentre;
 import fr.esupportail.esupstage.domain.jpa.entities.TempsTravail;
 import fr.esupportail.esupstage.domain.jpa.entities.Theme;
 import fr.esupportail.esupstage.domain.jpa.entities.TypeConvention;
-import fr.esupportail.esupstage.domain.jpa.repositories.IndemnisationRepository;
+import fr.esupportail.esupstage.domain.jpa.repositories.ModeValidationStageRepository;
 
 @Rollback
 @Transactional
-class IndemnisationRepositoryTest extends AbstractTest {
+class ModeValidationStageRepositoryTest extends AbstractTest {
 
 	private final EntityManager entityManager;
 
-	private final IndemnisationRepository indemnisationRepository;
+	private final ModeValidationStageRepository modeValidationStageRepository;
+
+	private int lastInsertedId;
 
 	@Autowired
-	IndemnisationRepositoryTest(final EntityManager entityManager, final IndemnisationRepository indemnisationRepository) {
+	ModeValidationStageRepositoryTest(final EntityManager entityManager, final ModeValidationStageRepository modeValidationStageRepository) {
 		super();
 		this.entityManager = entityManager;
-		this.indemnisationRepository = indemnisationRepository;
+		this.modeValidationStageRepository = modeValidationStageRepository;
 	}
 
 	@BeforeEach
 	void prepare() {
+		ModeValidationStage modeValidationStage = new ModeValidationStage();
+		modeValidationStage.setLibelleModeValidationStage("libelleModeValidationStage");
+		modeValidationStage.setModifiable(true);
+		modeValidationStage.setTemEnServModeValid("A");
 		final Indemnisation indemnisation = new Indemnisation();
 		indemnisation.setLibelleIndemnisation("libelleIndemnisation");
 		indemnisation.setTemEnServIndem("A");
@@ -96,11 +102,6 @@ class IndemnisationRepositoryTest extends AbstractTest {
 		natureTravail.setTemEnServNatTrav("F");
 		entityManager.persist(natureTravail);
 
-		ModeValidationStage modeValidationStage = new ModeValidationStage();
-		modeValidationStage.setLibelleModeValidationStage("libel");
-		modeValidationStage.setTemEnServModeValid("F");
-		entityManager.persist(modeValidationStage);
-
 		LangueConvention langueConvention = new LangueConvention();
 		langueConvention.setCodeLangueConvention("CD");
 		langueConvention.setLibelleLangueConvention("libel");
@@ -138,17 +139,22 @@ class IndemnisationRepositoryTest extends AbstractTest {
 		convention.setCentreGestion(centreGestion);
 		entityManager.persist(convention);
 
-		indemnisation.setConventions(Arrays.asList(convention));
-		this.entityManager.persist(indemnisation);
+		modeValidationStage.setConventions(Arrays.asList(convention));
+		entityManager.persist(modeValidationStage);
+
 		this.entityManager.flush();
+
+		this.entityManager.refresh(modeValidationStage);
+		this.lastInsertedId = modeValidationStage.getIdModeValidationStage();
 	}
 
-	private void testFicheEvaluationFields(int indice, Indemnisation indemnisation) {
+	private void testModeCandidatureFields(int indice, ModeValidationStage modeValidationStage) {
 		switch (indice) {
 		case 0:
-			assertEquals("libelleIndemnisation", indemnisation.getLibelleIndemnisation(), "Indemnisation libelle match");
-			assertEquals("A", indemnisation.getTemEnServIndem(), "Indemnisation temEnServIndem match");
-			assertEquals("subject", indemnisation.getConventions().get(0).getSujetStage(), "Indemnisation.Conventions subject match");
+			assertEquals(this.lastInsertedId, modeValidationStage.getIdModeValidationStage(), "ModeValidationStage id match");
+			assertEquals("libelleModeCandidature", modeValidationStage.getLibelleModeValidationStage(), "ModeValidationStage libelle match");
+			assertEquals("A", modeValidationStage.getTemEnServModeValid(), "ModeValidationStage temEnServ match");
+			assertEquals("subject", modeValidationStage.getConventions().get(0).getSujetStage(), "ModeValidationStage temEnServ match");
 			break;
 		}
 	}
@@ -156,22 +162,22 @@ class IndemnisationRepositoryTest extends AbstractTest {
 	@Test
 	@DisplayName("findById – Nominal test case")
 	void findById() {
-		final Optional<Indemnisation> result = this.indemnisationRepository.findById(1);
-		assertTrue(result.isPresent(), "We should have found our Fichier");
+		final Optional<ModeValidationStage> result = this.modeValidationStageRepository.findById(1);
+		assertTrue(result.isPresent(), "We should have found our ModeCandidature");
 
-		final Indemnisation indemnisation = result.get();
-		this.testFicheEvaluationFields(0, indemnisation);
+		final ModeValidationStage modeCandidature = result.get();
+		this.testModeCandidatureFields(0, modeCandidature);
 	}
 
 	@Test
 	@DisplayName("findAll – Nominal test case")
 	void findAll() {
-		final List<Indemnisation> result = this.indemnisationRepository.findAll();
+		final List<ModeValidationStage> result = this.modeValidationStageRepository.findAll();
 		assertTrue(result.size() == 1, "We should have found our Fichier");
 
-		final Indemnisation indemnisation = result.get(0);
-		assertTrue(indemnisation != null, "Fichier exist");
-		this.testFicheEvaluationFields(0, indemnisation);
+		final ModeValidationStage modeCandidature = result.get(0);
+		assertTrue(modeCandidature != null, "ModeCandidature exist");
+		this.testModeCandidatureFields(0, modeCandidature);
 	}
 
 }

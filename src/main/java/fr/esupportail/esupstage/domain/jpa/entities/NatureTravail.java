@@ -23,8 +23,8 @@ public class NatureTravail implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(unique = true, nullable = false)
-    private Integer idNatureTravail;
+    @Column(name = "id_nature_travail", unique = true, nullable = false)
+    private Integer id;
     @Column(nullable = false, length = 150)
     private String libelleNatureTravail;
     @Column(nullable = false, length = 1)

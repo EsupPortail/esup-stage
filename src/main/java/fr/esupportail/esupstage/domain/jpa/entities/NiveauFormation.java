@@ -23,8 +23,8 @@ public class NiveauFormation implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(unique = true, nullable = false)
-    private Integer idNiveauFormation;
+    @Column(name = "id_niveau_formation", unique = true, nullable = false)
+    private Integer id;
     @Column(nullable = false, length = 45)
     private String libelleNiveauFormation;
     private boolean modifiable;

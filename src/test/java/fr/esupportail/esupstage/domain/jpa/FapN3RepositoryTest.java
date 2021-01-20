@@ -3,6 +3,7 @@ package fr.esupportail.esupstage.domain.jpa;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,14 +45,15 @@ class FapN3RepositoryTest extends AbstractTest {
 		final FapN2 fapN2 = new FapN2();
 		fapN2.setCodeFAP_N2("codeFAP_N2");
 		fapN2.setLibelle("libelleFAP_N2");
-		fapN1.addFapN2(fapN2);
+		fapN1.setFapN2s(Arrays.asList(fapN2));
 		final FapN3 fapN3 = new FapN3();
 		fapN3.setCodeFAP_N3("codeFAP_N3");
 		fapN3.setLibelle("libelleFAP_N3");
-		fapN2.addFapN3(fapN3);
-		this.entityManager.persist(fapN1);
-		this.entityManager.persist(fapN2);
+		fapN2.setFapN3s(Arrays.asList(fapN3));
+
 		this.entityManager.persist(fapN3);
+		this.entityManager.persist(fapN2);
+		this.entityManager.persist(fapN1);
 		this.entityManager.flush();
 	}
 

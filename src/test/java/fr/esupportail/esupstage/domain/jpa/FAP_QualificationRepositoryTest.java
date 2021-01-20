@@ -3,6 +3,7 @@ package fr.esupportail.esupstage.domain.jpa;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -127,12 +128,12 @@ class FAP_QualificationRepositoryTest extends AbstractTest {
 		final TypeOffre typeOffre = new TypeOffre();
 		typeOffre.setCodeCtrl("codeCtrl");
 		typeOffre.setLibelleType("libelleType");
-		typeOffre.setTemEnServTypeOffre("temEnServTypeOffre");
+		typeOffre.setTemEnServTypeOffre("A");
 		entityManager.persist(typeOffre);
 
 		offre.setTypeOffre(typeOffre);
 
-		fapQualificationSimplifiee.addOffre(offre);
+		fapQualificationSimplifiee.setOffres(Arrays.asList(offre));
 		entityManager.persist(offre);
 
 		fapQualification.setFapQualificationSimplifiee(fapQualificationSimplifiee);
