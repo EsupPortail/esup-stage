@@ -40,6 +40,8 @@ class IndemnisationRepositoryTest extends AbstractTest {
 
 	private final IndemnisationRepository indemnisationRepository;
 
+	private int lastInsertedId;
+
 	@Autowired
 	IndemnisationRepositoryTest(final EntityManager entityManager, final IndemnisationRepository indemnisationRepository) {
 		super();
@@ -52,6 +54,7 @@ class IndemnisationRepositoryTest extends AbstractTest {
 		final Indemnisation indemnisation = new Indemnisation();
 		indemnisation.setLibelleIndemnisation("libelleIndemnisation");
 		indemnisation.setTemEnServIndem("A");
+		entityManager.persist(indemnisation);
 
 		final NiveauCentre niveauCentre = new NiveauCentre();
 		niveauCentre.setLibelleNiveauCentre("libel");
@@ -141,11 +144,14 @@ class IndemnisationRepositoryTest extends AbstractTest {
 		indemnisation.setConventions(Arrays.asList(convention));
 		this.entityManager.persist(indemnisation);
 		this.entityManager.flush();
+		this.entityManager.refresh(indemnisation);
+		this.lastInsertedId = indemnisation.getId();
 	}
 
-	private void testFicheEvaluationFields(int indice, Indemnisation indemnisation) {
+	private void testIndemnisationFields(int indice, Indemnisation indemnisation) {
 		switch (indice) {
 		case 0:
+			assertEquals(this.lastInsertedId, indemnisation.getId(), "Indemnisation id match");
 			assertEquals("libelleIndemnisation", indemnisation.getLibelleIndemnisation(), "Indemnisation libelle match");
 			assertEquals("A", indemnisation.getTemEnServIndem(), "Indemnisation temEnServIndem match");
 			assertEquals("subject", indemnisation.getConventions().get(0).getSujetStage(), "Indemnisation.Conventions subject match");
@@ -156,22 +162,22 @@ class IndemnisationRepositoryTest extends AbstractTest {
 	@Test
 	@DisplayName("findById – Nominal test case")
 	void findById() {
-		final Optional<Indemnisation> result = this.indemnisationRepository.findById(1);
-		assertTrue(result.isPresent(), "We should have found our Fichier");
+		final Optional<Indemnisation> result = this.indemnisationRepository.findById(this.lastInsertedId);
+		assertTrue(result.isPresent(), "We should have found our Indemnisation");
 
 		final Indemnisation indemnisation = result.get();
-		this.testFicheEvaluationFields(0, indemnisation);
+		this.testIndemnisationFields(0, indemnisation);
 	}
 
 	@Test
 	@DisplayName("findAll – Nominal test case")
 	void findAll() {
 		final List<Indemnisation> result = this.indemnisationRepository.findAll();
-		assertTrue(result.size() == 1, "We should have found our Fichier");
+		assertTrue(result.size() == 1, "We should have found our Indemnisation");
 
 		final Indemnisation indemnisation = result.get(0);
-		assertTrue(indemnisation != null, "Fichier exist");
-		this.testFicheEvaluationFields(0, indemnisation);
+		assertTrue(indemnisation != null, "Indemnisation exist");
+		this.testIndemnisationFields(0, indemnisation);
 	}
 
 }

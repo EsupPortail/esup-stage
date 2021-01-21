@@ -37,7 +37,7 @@ class FapN1RepositoryTest extends AbstractTest {
 	@BeforeEach
 	void prepare() {
 		final FapN1 fapN1 = new FapN1();
-		fapN1.setCodeFAP_N1("codeFAP_N1");
+		fapN1.setCodeFAP_N1("1");
 		fapN1.setLibelle("libelleFAP_N1");
 		this.entityManager.persist(fapN1);
 		this.entityManager.flush();
@@ -46,7 +46,7 @@ class FapN1RepositoryTest extends AbstractTest {
 	private void testFapFields(int indice, FapN1 fap) {
 		switch (indice) {
 		case 0:
-			assertEquals("codeFAP_N1", fap.getCodeFAP_N1(), "FapN1 code match");
+			assertEquals("1", fap.getCodeFAP_N1(), "FapN1 code match");
 			assertEquals("libelleFAP_N1", fap.getLibelle(), "FapN1 libelle match");
 			break;
 		}
@@ -55,7 +55,7 @@ class FapN1RepositoryTest extends AbstractTest {
 	@Test
 	@DisplayName("findById – Nominal test case")
 	void findById() {
-		final Optional<FapN1> result = this.fapN1Repository.findById("codeFAP_N1");
+		final Optional<FapN1> result = this.fapN1Repository.findById("code1");
 		assertTrue(result.isPresent(), "We should have found our FapN1");
 
 		final FapN1 fapQualification = result.get();

@@ -39,21 +39,23 @@ class FapN2RepositoryTest extends AbstractTest {
 	@BeforeEach
 	void prepare() {
 		final FapN1 fapN1 = new FapN1();
-		fapN1.setCodeFAP_N1("codeFAP_N1");
+		fapN1.setCodeFAP_N1("1");
 		fapN1.setLibelle("libelleFAP_N1");
-		final FapN2 fapN2 = new FapN2();
-		fapN2.setCodeFAP_N2("codeFAP_N2");
-		fapN2.setLibelle("libelleFAP_N2");
-		fapN1.setFapN2s(Arrays.asList(fapN2));
 		this.entityManager.persist(fapN1);
+
+		final FapN2 fapN2 = new FapN2();
+		fapN2.setCodeFAP_N2("co2");
+		fapN2.setLibelle("libelleFAP_N2");
+		fapN2.setFapN1(fapN1);
 		this.entityManager.persist(fapN2);
+
 		this.entityManager.flush();
 	}
 
 	private void testFapFields(int indice, FapN2 fap) {
 		switch (indice) {
 		case 0:
-			assertEquals("codeFAP_N2", fap.getCodeFAP_N2(), "FapN2 code match");
+			assertEquals("co2", fap.getCodeFAP_N2(), "FapN2 code match");
 			assertEquals("libelleFAP_N2", fap.getLibelle(), "FapN2 libelle match");
 			break;
 		}
@@ -62,7 +64,7 @@ class FapN2RepositoryTest extends AbstractTest {
 	@Test
 	@DisplayName("findById – Nominal test case")
 	void findById() {
-		final Optional<FapN2> result = this.fapN2Repository.findById("codeFAP_N2");
+		final Optional<FapN2> result = this.fapN2Repository.findById("code2");
 		assertTrue(result.isPresent(), "We should have found our FapN2");
 
 		final FapN2 fapQualification = result.get();

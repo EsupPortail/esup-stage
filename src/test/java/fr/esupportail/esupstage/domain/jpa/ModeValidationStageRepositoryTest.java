@@ -55,9 +55,13 @@ class ModeValidationStageRepositoryTest extends AbstractTest {
 		modeValidationStage.setLibelleModeValidationStage("libelleModeValidationStage");
 		modeValidationStage.setModifiable(true);
 		modeValidationStage.setTemEnServModeValid("A");
+		entityManager.persist(modeValidationStage);
+
 		final Indemnisation indemnisation = new Indemnisation();
 		indemnisation.setLibelleIndemnisation("libelleIndemnisation");
 		indemnisation.setTemEnServIndem("A");
+		
+		entityManager.persist(indemnisation);
 
 		final NiveauCentre niveauCentre = new NiveauCentre();
 		niveauCentre.setLibelleNiveauCentre("libel");
@@ -138,9 +142,6 @@ class ModeValidationStageRepositoryTest extends AbstractTest {
 		convention.setTypeConvention(typeConvention);
 		convention.setCentreGestion(centreGestion);
 		entityManager.persist(convention);
-
-		modeValidationStage.setConventions(Arrays.asList(convention));
-		entityManager.persist(modeValidationStage);
 
 		this.entityManager.flush();
 

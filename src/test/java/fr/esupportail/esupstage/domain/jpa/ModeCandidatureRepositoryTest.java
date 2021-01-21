@@ -47,13 +47,13 @@ class ModeCandidatureRepositoryTest extends AbstractTest {
 		this.entityManager.flush();
 
 		this.entityManager.refresh(modeCandidature);
-		this.lastInsertedId = modeCandidature.getIdModeCandidature();
+		this.lastInsertedId = modeCandidature.getId();
 	}
 
 	private void testModeCandidatureFields(int indice, ModeCandidature modeCandidature) {
 		switch (indice) {
 		case 0:
-			assertEquals(this.lastInsertedId, modeCandidature.getIdModeCandidature(), "ModeCandidature id match");
+			assertEquals(this.lastInsertedId, modeCandidature.getId(), "ModeCandidature id match");
 			assertEquals("codeCtrl", modeCandidature.getCodeCtrl(), "ModeCandidature code match");
 			assertEquals("libelleModeCandidature", modeCandidature.getLibelleModeCandidature(), "ModeCandidature libelle match");
 			assertEquals("A", modeCandidature.getTemEnServModeCandidature(), "ModeCandidature temEnServ match");

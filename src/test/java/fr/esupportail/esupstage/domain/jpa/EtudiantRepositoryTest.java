@@ -50,6 +50,7 @@ class EtudiantRepositoryTest extends AbstractTest {
 		student.setPrenom("Ogier");
 		student.setNom("Ducharme");
 		student.setDateNais(new GregorianCalendar(1978, 03, 28).getTime());
+		student.setDateCreation(Calendar.getInstance().getTime());
 		student.setMail("ogier.ducharme@univ.fr");
 		student.setIdentEtudiant("oducha01");
 		student.setNumEtudiant("65299292");

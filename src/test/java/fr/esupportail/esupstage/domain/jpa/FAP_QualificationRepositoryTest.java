@@ -50,11 +50,9 @@ class FAP_QualificationRepositoryTest extends AbstractTest {
 	void prepare() {
 		final FAP_Qualification fapQualification = new FAP_Qualification();
 
-		fapQualification.setNumFAP_Qualification(1);
 		fapQualification.setLibelleQualification("fapQual1");
 
 		final FAP_QualificationSimplifiee fapQualificationSimplifiee = new FAP_QualificationSimplifiee();
-		fapQualificationSimplifiee.setIdQualificationSimplifiee(1);
 		fapQualificationSimplifiee.setLibelleQualification("fapQualSimple1");
 
 		final Offre offre = new Offre();
@@ -114,6 +112,7 @@ class FAP_QualificationRepositoryTest extends AbstractTest {
 
 		final Effectif effectifStructure = new Effectif();
 		effectifStructure.setLibelleEffectif("effectif");
+		effectifStructure.setTemEnServEffectif("A");
 		entityManager.persist(effectifStructure);
 
 		structure.setEffectif(effectifStructure);

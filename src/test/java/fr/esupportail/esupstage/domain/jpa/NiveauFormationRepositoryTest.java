@@ -24,6 +24,7 @@ import fr.esupportail.esupstage.domain.jpa.entities.Effectif;
 import fr.esupportail.esupstage.domain.jpa.entities.NiveauCentre;
 import fr.esupportail.esupstage.domain.jpa.entities.NiveauFormation;
 import fr.esupportail.esupstage.domain.jpa.entities.Offre;
+import fr.esupportail.esupstage.domain.jpa.entities.Pays;
 import fr.esupportail.esupstage.domain.jpa.entities.Structure;
 import fr.esupportail.esupstage.domain.jpa.entities.TypeOffre;
 import fr.esupportail.esupstage.domain.jpa.entities.TypeStructure;
@@ -82,6 +83,7 @@ class NiveauFormationRepositoryTest extends AbstractTest {
 		offre.setPermis(true);
 		offre.setRemuneration(true);
 		offre.setVoiture(true);
+		offre.setLoginCreation("root");
 
 		final NiveauCentre niveauCentre = new NiveauCentre();
 		niveauCentre.setLibelleNiveauCentre("libel");
@@ -107,14 +109,30 @@ class NiveauFormationRepositoryTest extends AbstractTest {
 		offre.setCentreGestion(centreGestion);
 
 		final Structure structure = new Structure();
+		structure.setDateCreation(Calendar.getInstance().getTime());
+		structure.setEstValidee(1);
+		structure.setLoginCreation("root");
+		structure.setRaisonSociale("raisonSociale");
+		structure.setVoie("voie");
 
+		final Pays pays = new Pays();
+		pays.setActual(1);
+		pays.setLib("lib");
+		pays.setCog(1);
+		pays.setSiretObligatoire(true);
+		pays.setTemEnServPays("A");
+		entityManager.persist(pays);
+
+		structure.setPay(pays);
 		final Effectif effectifStructure = new Effectif();
 		effectifStructure.setLibelleEffectif("effectif");
+		effectifStructure.setTemEnServEffectif("A");
 		entityManager.persist(effectifStructure);
 
 		structure.setEffectif(effectifStructure);
 		final TypeStructure typeStructure = new TypeStructure();
 		typeStructure.setLibelleTypeStructure("type1");
+		typeStructure.setTemEnServTypeStructure("A");
 		entityManager.persist(typeStructure);
 
 		structure.setTypeStructure(typeStructure);

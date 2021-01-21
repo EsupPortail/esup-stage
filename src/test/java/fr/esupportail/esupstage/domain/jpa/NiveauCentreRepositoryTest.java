@@ -61,11 +61,13 @@ class NiveauCentreRepositoryTest extends AbstractTest {
 		centreGestion.setLoginCreation("login");
 		centreGestion.setConfidentialite(confidentialite);
 		centreGestion.setNiveauCentre(niveauCentre);
+		this.entityManager.persist(niveauCentre);
+
 		entityManager.persist(centreGestion);
 
 		niveauCentre.setCentreGestions(Arrays.asList(centreGestion));
-
 		this.entityManager.persist(niveauCentre);
+
 		this.entityManager.flush();
 
 		this.entityManager.refresh(niveauCentre);
