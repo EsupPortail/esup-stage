@@ -22,8 +22,8 @@ public class ModeCandidature implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(unique = true, nullable = false)
-    private Integer idModeCandidature;
+    @Column(name = "id_mode_candidature", unique = true, nullable = false)
+    private Integer id;
     @Column(nullable = false, length = 20)
     private String codeCtrl;
     @Column(nullable = false, length = 50)

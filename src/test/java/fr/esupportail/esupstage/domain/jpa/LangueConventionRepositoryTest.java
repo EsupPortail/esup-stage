@@ -51,6 +51,7 @@ class LangueConventionRepositoryTest extends AbstractTest {
 		LangueConvention langueConvention = new LangueConvention();
 		langueConvention.setCodeLangueConvention("CD");
 		langueConvention.setLibelleLangueConvention("libel");
+		langueConvention.setTemEnServLangue("A");
 
 		final NiveauCentre niveauCentre = new NiveauCentre();
 		niveauCentre.setLibelleNiveauCentre("libel");
@@ -115,6 +116,8 @@ class LangueConventionRepositoryTest extends AbstractTest {
 		indemnisation.setTemEnServIndem("A");
 		entityManager.persist(indemnisation);
 
+		entityManager.persist(langueConvention);
+
 		Convention convention = new Convention();
 		convention.setDateCreation(Calendar.getInstance().getTime());
 		convention.setDateDebutStage(Calendar.getInstance().getTime());
@@ -137,9 +140,9 @@ class LangueConventionRepositoryTest extends AbstractTest {
 		convention.setCentreGestion(centreGestion);
 		entityManager.persist(convention);
 
-		entityManager.persist(langueConvention);
-
 		this.entityManager.flush();
+
+		this.entityManager.refresh(langueConvention);
 	}
 
 	private void testLangueConventionFields(int indice, LangueConvention langueConvention) {

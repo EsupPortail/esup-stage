@@ -3,7 +3,6 @@ package fr.esupportail.esupstage.domain.jpa;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 
 import fr.esupportail.esupstage.AbstractTest;
+import fr.esupportail.esupstage.domain.jpa.entities.FAP_Qualification;
+import fr.esupportail.esupstage.domain.jpa.entities.FAP_QualificationSimplifiee;
 import fr.esupportail.esupstage.domain.jpa.entities.FapN1;
 import fr.esupportail.esupstage.domain.jpa.entities.FapN2;
 import fr.esupportail.esupstage.domain.jpa.entities.FapN3;
@@ -40,27 +41,44 @@ class FapN3RepositoryTest extends AbstractTest {
 	@BeforeEach
 	void prepare() {
 		final FapN1 fapN1 = new FapN1();
-		fapN1.setCodeFAP_N1("codeFAP_N1");
+		fapN1.setCodeFAP_N1("1");
 		fapN1.setLibelle("libelleFAP_N1");
-		final FapN2 fapN2 = new FapN2();
-		fapN2.setCodeFAP_N2("codeFAP_N2");
-		fapN2.setLibelle("libelleFAP_N2");
-		fapN1.setFapN2s(Arrays.asList(fapN2));
-		final FapN3 fapN3 = new FapN3();
-		fapN3.setCodeFAP_N3("codeFAP_N3");
-		fapN3.setLibelle("libelleFAP_N3");
-		fapN2.setFapN3s(Arrays.asList(fapN3));
-
-		this.entityManager.persist(fapN3);
-		this.entityManager.persist(fapN2);
 		this.entityManager.persist(fapN1);
+
+		final FapN2 fapN2 = new FapN2();
+		fapN2.setCodeFAP_N2("co2");
+		fapN2.setLibelle("libelleFAP_N2");
+		fapN2.setFapN1(fapN1);
+
+		this.entityManager.persist(fapN2);
+
+		final FapN3 fapN3 = new FapN3();
+		fapN3.setCodeFAP_N3("code3");
+		fapN3.setLibelle("libelleFAP_N3");
+		fapN3.setFapN2(fapN2);
+
+		final FAP_Qualification fapQualification = new FAP_Qualification();
+		fapQualification.setLibelleQualification("fapQual1");
+
+		final FAP_QualificationSimplifiee fapQualificationSimplifiee = new FAP_QualificationSimplifiee();
+		fapQualificationSimplifiee.setLibelleQualification("fapQualSimple1");
+
+		entityManager.persist(fapQualificationSimplifiee);
+
+		fapQualification.setFapQualificationSimplifiee(fapQualificationSimplifiee);
+
+		this.entityManager.persist(fapQualification);
+
+		fapN3.setFapQualification(fapQualification);
+		this.entityManager.persist(fapN3);
+
 		this.entityManager.flush();
 	}
 
 	private void testFapFields(int indice, FapN3 fap) {
 		switch (indice) {
 		case 0:
-			assertEquals("codeFAP_N3", fap.getCodeFAP_N3(), "FapN3 code match");
+			assertEquals("code3", fap.getCodeFAP_N3(), "FapN3 code match");
 			assertEquals("libelleFAP_N3", fap.getLibelle(), "FapN3 libelle match");
 			break;
 		}
@@ -69,7 +87,7 @@ class FapN3RepositoryTest extends AbstractTest {
 	@Test
 	@DisplayName("findById – Nominal test case")
 	void findById() {
-		final Optional<FapN3> result = this.FapN3Repository.findById("codeFAP_N3");
+		final Optional<FapN3> result = this.FapN3Repository.findById("code3");
 		assertTrue(result.isPresent(), "We should have found our FapN3");
 
 		final FapN3 fap = result.get();

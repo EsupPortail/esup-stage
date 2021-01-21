@@ -23,8 +23,8 @@ public class Indemnisation implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(unique = true, nullable = false)
-    private Integer idIndemnisation;
+    @Column(name = "id_indemnisation", unique = true, nullable = false)
+    private Integer id;
     @Column(nullable = false, length = 50)
     private String libelleIndemnisation;
     @Column(nullable = false, length = 1)
