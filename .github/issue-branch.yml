@@ -1,0 +1,19 @@
+gitSafeReplacementChar: '-'
+autoCloseIssue: true
+
+branches:
+  - label: 'type | bug'
+    prefix: bug/
+    name: latest
+  - label: 'type | bugfix'
+    prefix: bugfix/
+    name: latest
+  - label: 'type | documentation'
+    prefix: documentation/
+    name: latest
+  - label: 'type | feature'
+    prefix: feature/
+    name: latest
+  - label: 'type | maintenance'
+    prefix:  maintenance/
+    name: latest
