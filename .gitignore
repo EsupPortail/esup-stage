@@ -8,6 +8,7 @@
 /src/main/resources/application-test.properties
 /src/main/resources/application-prod.properties
 /.vscode/
+/.devcontainer/
 
 # Created by https://www.toptal.com/developers/gitignore/api/intellij+all,gradle,vscode,java,eclipse
 # Edit at https://www.toptal.com/developers/gitignore?templates=intellij+all,gradle,vscode,java,eclipse
