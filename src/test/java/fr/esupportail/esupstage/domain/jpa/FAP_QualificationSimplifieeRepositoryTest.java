@@ -26,6 +26,7 @@ import fr.esupportail.esupstage.domain.jpa.entities.FAP_Qualification;
 import fr.esupportail.esupstage.domain.jpa.entities.FAP_QualificationSimplifiee;
 import fr.esupportail.esupstage.domain.jpa.entities.NiveauCentre;
 import fr.esupportail.esupstage.domain.jpa.entities.Offre;
+import fr.esupportail.esupstage.domain.jpa.entities.Pays;
 import fr.esupportail.esupstage.domain.jpa.entities.Structure;
 import fr.esupportail.esupstage.domain.jpa.entities.TypeOffre;
 import fr.esupportail.esupstage.domain.jpa.entities.TypeStructure;
@@ -38,6 +39,8 @@ class FAP_QualificationSimplifieeRepositoryTest extends AbstractTest {
 	private final EntityManager entityManager;
 
 	private final FAP_QualificationSimplifieeRepository fapQualificationSimplifieeRepository;
+
+	private Integer lastInsertedId;
 
 	@Autowired
 	FAP_QualificationSimplifieeRepositoryTest(final EntityManager entityManager, final FAP_QualificationSimplifieeRepository fapQualificationSimplifieeRepository) {
@@ -109,21 +112,39 @@ class FAP_QualificationSimplifieeRepositoryTest extends AbstractTest {
 
 		offre.setCentreGestion(centreGestion);
 
-		final Structure structure = new Structure();
+		final Pays pays = new Pays();
+		pays.setActual(1);
+		pays.setLib("lib");
+		pays.setTemEnServPays("A");
+		pays.setCog(1);
+		entityManager.persist(pays);
+
 
 		final Effectif effectifStructure = new Effectif();
 		effectifStructure.setLibelleEffectif("effectif");
+		effectifStructure.setTemEnServEffectif("A");
 		entityManager.persist(effectifStructure);
 
-		structure.setEffectif(effectifStructure);
 		final TypeStructure typeStructure = new TypeStructure();
 		typeStructure.setLibelleTypeStructure("type1");
+		typeStructure.setTemEnServTypeStructure("A");
 		entityManager.persist(typeStructure);
 
+		final Structure structure = new Structure();
+		structure.setDateCreation(new Date());
+		structure.setEstValidee(1);
+		structure.setLoginCreation("login");
+		structure.setRaisonSociale("raison");
+		structure.setVoie("voie");
+		structure.setEffectif(effectifStructure);
+		structure.setPay(pays);
+		structure.setTypeStructure(typeStructure);
+		entityManager.persist(structure);
 		structure.setTypeStructure(typeStructure);
 		entityManager.persist(structure);
 
 		offre.setStructure(structure);
+
 		final TypeOffre typeOffre = new TypeOffre();
 		typeOffre.setCodeCtrl("codeCtrl");
 		typeOffre.setLibelleType("libelleType");
@@ -140,13 +161,17 @@ class FAP_QualificationSimplifieeRepositoryTest extends AbstractTest {
 
 		this.entityManager.persist(fapQualification);
 		this.entityManager.flush();
+
+		this.entityManager.refresh(fapQualificationSimplifiee);
+		this.lastInsertedId = fapQualificationSimplifiee.getId();
 	}
 
-	private void testfapQualSimplFields(int indice, FAP_QualificationSimplifiee fapQualification) {
+	private void testfapQualSimplFields(int indice, FAP_QualificationSimplifiee fapQualificationSimplifiee) {
 		switch (indice) {
 		case 0:
-			assertEquals("fapQualSimple1", fapQualification.getLibelleQualification(), "FAP_Qualification.QualificationSimplifiee libelle match");
-			assertEquals("Offre1", fapQualification.getOffres().get(0).getIntitule(), "FAP_Qualification.QualificationSimplifiee.Offre libelle match");
+			assertEquals(this.lastInsertedId, fapQualificationSimplifiee.getId(), "QualificationSimplifiee id match");
+			assertEquals("fapQualSimple1", fapQualificationSimplifiee.getLibelleQualification(), "QualificationSimplifiee libelle match");
+			assertEquals("Offre1", fapQualificationSimplifiee.getOffres().get(0).getIntitule(), "QualificationSimplifiee.Offre libelle match");
 			break;
 		}
 	}
@@ -154,11 +179,11 @@ class FAP_QualificationSimplifieeRepositoryTest extends AbstractTest {
 	@Test
 	@DisplayName("findById – Nominal test case")
 	void findById() {
-		final Optional<FAP_QualificationSimplifiee> result = this.fapQualificationSimplifieeRepository.findById(1);
+		final Optional<FAP_QualificationSimplifiee> result = this.fapQualificationSimplifieeRepository.findById(this.lastInsertedId);
 		assertTrue(result.isPresent(), "We should have found our FAP_QualificationSimplifiee");
 
-		final FAP_QualificationSimplifiee fapQualification = result.get();
-		this.testfapQualSimplFields(0, fapQualification);
+		final FAP_QualificationSimplifiee fapQualificationSimplifiee = result.get();
+		this.testfapQualSimplFields(0, fapQualificationSimplifiee);
 	}
 
 	@Test
@@ -167,9 +192,9 @@ class FAP_QualificationSimplifieeRepositoryTest extends AbstractTest {
 		final List<FAP_QualificationSimplifiee> result = this.fapQualificationSimplifieeRepository.findAll();
 		assertTrue(result.size() == 1, "We should have found our FAP_QualificationSimplifiee");
 
-		final FAP_QualificationSimplifiee fapQualification = result.get(0);
-		assertTrue(fapQualification != null, "FAP_QualificationSimplifiee exist");
-		this.testfapQualSimplFields(0, fapQualification);
+		final FAP_QualificationSimplifiee fapQualificationSimplifiee = result.get(0);
+		assertTrue(fapQualificationSimplifiee != null, "FAP_QualificationSimplifiee exist");
+		this.testfapQualSimplFields(0, fapQualificationSimplifiee);
 	}
 
 }

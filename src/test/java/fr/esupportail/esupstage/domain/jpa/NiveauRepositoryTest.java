@@ -3,8 +3,6 @@ package fr.esupportail.esupstage.domain.jpa;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,19 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 
 import fr.esupportail.esupstage.AbstractTest;
-import fr.esupportail.esupstage.domain.jpa.entities.Categorie;
-import fr.esupportail.esupstage.domain.jpa.entities.CentreGestion;
-import fr.esupportail.esupstage.domain.jpa.entities.Confidentialite;
-import fr.esupportail.esupstage.domain.jpa.entities.Critere;
-import fr.esupportail.esupstage.domain.jpa.entities.Effectif;
 import fr.esupportail.esupstage.domain.jpa.entities.Niveau;
-import fr.esupportail.esupstage.domain.jpa.entities.NiveauCentre;
-import fr.esupportail.esupstage.domain.jpa.entities.NiveauFormation;
-import fr.esupportail.esupstage.domain.jpa.entities.Offre;
-import fr.esupportail.esupstage.domain.jpa.entities.Structure;
-import fr.esupportail.esupstage.domain.jpa.entities.TypeOffre;
-import fr.esupportail.esupstage.domain.jpa.entities.TypeStructure;
-import fr.esupportail.esupstage.domain.jpa.repositories.NiveauFormationRepository;
 import fr.esupportail.esupstage.domain.jpa.repositories.NiveauRepository;
 
 @Rollback

@@ -3,7 +3,6 @@ package fr.esupportail.esupstage.domain.jpa;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
@@ -149,11 +148,11 @@ class ModeValidationStageRepositoryTest extends AbstractTest {
 		this.lastInsertedId = modeValidationStage.getIdModeValidationStage();
 	}
 
-	private void testModeCandidatureFields(int indice, ModeValidationStage modeValidationStage) {
+	private void testModeValidationStageFields(int indice, ModeValidationStage modeValidationStage) {
 		switch (indice) {
 		case 0:
 			assertEquals(this.lastInsertedId, modeValidationStage.getIdModeValidationStage(), "ModeValidationStage id match");
-			assertEquals("libelleModeCandidature", modeValidationStage.getLibelleModeValidationStage(), "ModeValidationStage libelle match");
+			assertEquals("libelleModeValidationStage", modeValidationStage.getLibelleModeValidationStage(), "ModeValidationStage libelle match");
 			assertEquals("A", modeValidationStage.getTemEnServModeValid(), "ModeValidationStage temEnServ match");
 			assertEquals("subject", modeValidationStage.getConventions().get(0).getSujetStage(), "ModeValidationStage temEnServ match");
 			break;
@@ -163,22 +162,22 @@ class ModeValidationStageRepositoryTest extends AbstractTest {
 	@Test
 	@DisplayName("findById – Nominal test case")
 	void findById() {
-		final Optional<ModeValidationStage> result = this.modeValidationStageRepository.findById(1);
-		assertTrue(result.isPresent(), "We should have found our ModeCandidature");
+		final Optional<ModeValidationStage> result = this.modeValidationStageRepository.findById(this.lastInsertedId);
+		assertTrue(result.isPresent(), "We should have found our ModeValidationStage");
 
 		final ModeValidationStage modeCandidature = result.get();
-		this.testModeCandidatureFields(0, modeCandidature);
+		this.testModeValidationStageFields(0, modeCandidature);
 	}
 
 	@Test
 	@DisplayName("findAll – Nominal test case")
 	void findAll() {
 		final List<ModeValidationStage> result = this.modeValidationStageRepository.findAll();
-		assertTrue(result.size() == 1, "We should have found our Fichier");
+		assertTrue(result.size() == 1, "We should have found our ModeValidationStage");
 
 		final ModeValidationStage modeCandidature = result.get(0);
-		assertTrue(modeCandidature != null, "ModeCandidature exist");
-		this.testModeCandidatureFields(0, modeCandidature);
+		assertTrue(modeCandidature != null, "ModeValidationStage exist");
+		this.testModeValidationStageFields(0, modeCandidature);
 	}
 
 }

@@ -43,14 +43,11 @@ class FapN3RepositoryTest extends AbstractTest {
 		final FapN1 fapN1 = new FapN1();
 		fapN1.setCodeFAP_N1("1");
 		fapN1.setLibelle("libelleFAP_N1");
-		this.entityManager.persist(fapN1);
 
 		final FapN2 fapN2 = new FapN2();
 		fapN2.setCodeFAP_N2("co2");
 		fapN2.setLibelle("libelleFAP_N2");
 		fapN2.setFapN1(fapN1);
-
-		this.entityManager.persist(fapN2);
 
 		final FapN3 fapN3 = new FapN3();
 		fapN3.setCodeFAP_N3("code3");
@@ -70,6 +67,9 @@ class FapN3RepositoryTest extends AbstractTest {
 		this.entityManager.persist(fapQualification);
 
 		fapN3.setFapQualification(fapQualification);
+
+		this.entityManager.persist(fapN1);
+		this.entityManager.persist(fapN2);
 		this.entityManager.persist(fapN3);
 
 		this.entityManager.flush();
