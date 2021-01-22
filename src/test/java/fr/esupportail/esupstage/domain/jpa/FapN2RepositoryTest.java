@@ -41,12 +41,13 @@ class FapN2RepositoryTest extends AbstractTest {
 		final FapN1 fapN1 = new FapN1();
 		fapN1.setCodeFAP_N1("1");
 		fapN1.setLibelle("libelleFAP_N1");
-		this.entityManager.persist(fapN1);
 
 		final FapN2 fapN2 = new FapN2();
 		fapN2.setCodeFAP_N2("co2");
 		fapN2.setLibelle("libelleFAP_N2");
 		fapN2.setFapN1(fapN1);
+
+		this.entityManager.persist(fapN1);
 		this.entityManager.persist(fapN2);
 
 		this.entityManager.flush();
@@ -64,7 +65,7 @@ class FapN2RepositoryTest extends AbstractTest {
 	@Test
 	@DisplayName("findById – Nominal test case")
 	void findById() {
-		final Optional<FapN2> result = this.fapN2Repository.findById("code2");
+		final Optional<FapN2> result = this.fapN2Repository.findById("co2");
 		assertTrue(result.isPresent(), "We should have found our FapN2");
 
 		final FapN2 fapQualification = result.get();

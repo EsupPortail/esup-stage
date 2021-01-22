@@ -27,6 +27,8 @@ class ModeVersGratificationRepositoryTest extends AbstractTest {
 
 	private final ModeVersGratificationRepository modeVersGratificationRepository;
 
+	private Integer lastInsertedId;
+
 	@Autowired
 	ModeVersGratificationRepositoryTest(final EntityManager entityManager, final ModeVersGratificationRepository modeVersGratificationRepository) {
 		super();
@@ -42,11 +44,14 @@ class ModeVersGratificationRepositoryTest extends AbstractTest {
 		entityManager.persist(modeVersGratification);
 
 		this.entityManager.flush();
+		this.entityManager.refresh(modeVersGratification);
+		this.lastInsertedId = modeVersGratification.getId();
 	}
 
 	private void testModeVersGratificationFields(int indice, ModeVersGratification modeVersGratification) {
 		switch (indice) {
 		case 0:
+			assertEquals(this.lastInsertedId, modeVersGratification.getId(), "ModeVersGratification id match");
 			assertEquals("libelleModeVersGratification", modeVersGratification.getLibelleModeVersGratification(), "ModeVersGratification libelle match");
 			assertEquals("A", modeVersGratification.getTemEnServModeVersGrat(), "ModeVersGratification temEnServ match");
 			break;
@@ -56,8 +61,8 @@ class ModeVersGratificationRepositoryTest extends AbstractTest {
 	@Test
 	@DisplayName("findById – Nominal test case")
 	void findById() {
-		final Optional<ModeVersGratification> result = this.modeVersGratificationRepository.findById(1);
-		assertTrue(result.isPresent(), "We should have found our ModeCandidature");
+		final Optional<ModeVersGratification> result = this.modeVersGratificationRepository.findById(this.lastInsertedId);
+		assertTrue(result.isPresent(), "We should have found our ModeVersGratification");
 
 		final ModeVersGratification modeCandidature = result.get();
 		this.testModeVersGratificationFields(0, modeCandidature);
@@ -67,10 +72,10 @@ class ModeVersGratificationRepositoryTest extends AbstractTest {
 	@DisplayName("findAll – Nominal test case")
 	void findAll() {
 		final List<ModeVersGratification> result = this.modeVersGratificationRepository.findAll();
-		assertTrue(result.size() == 1, "We should have found our Fichier");
+		assertTrue(result.size() == 1, "We should have found our ModeVersGratification");
 
 		final ModeVersGratification modeCandidature = result.get(0);
-		assertTrue(modeCandidature != null, "ModeCandidature exist");
+		assertTrue(modeCandidature != null, "ModeVersGratification exist");
 		this.testModeVersGratificationFields(0, modeCandidature);
 	}
 

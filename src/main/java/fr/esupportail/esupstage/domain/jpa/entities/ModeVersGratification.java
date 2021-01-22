@@ -21,8 +21,8 @@ public class ModeVersGratification implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(unique = true, nullable = false)
-    private Integer idModeVersGratification;
+    @Column(name = "id_mode_vers_gratification", unique = true, nullable = false)
+    private Integer id;
     @Column(nullable = false, length = 50)
     private String libelleModeVersGratification;
     @Column(nullable = false, length = 1)

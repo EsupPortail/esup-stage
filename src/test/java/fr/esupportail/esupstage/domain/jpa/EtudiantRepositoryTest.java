@@ -55,6 +55,7 @@ class EtudiantRepositoryTest extends AbstractTest {
 		student.setIdentEtudiant("oducha01");
 		student.setNumEtudiant("65299292");
 		student.setNumSS("178033684913953");
+		student.setLoginCreation("root");
 
 		this.entityManager.persist(student);
 		this.entityManager.flush();
@@ -73,6 +74,7 @@ class EtudiantRepositoryTest extends AbstractTest {
 			assertEquals("oducha01", student.getIdentEtudiant(), "Student login match");
 			assertEquals("65299292", student.getNumEtudiant(), "Student number match");
 			assertEquals("178033684913953", student.getNumSS(), "Student Social Security Number match");
+			assertEquals("root", student.getLoginCreation(), "Student Login creation match");
 			break;
 		}
 	}

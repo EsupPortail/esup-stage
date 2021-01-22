@@ -26,6 +26,7 @@ import fr.esupportail.esupstage.domain.jpa.entities.FAP_Qualification;
 import fr.esupportail.esupstage.domain.jpa.entities.FAP_QualificationSimplifiee;
 import fr.esupportail.esupstage.domain.jpa.entities.NiveauCentre;
 import fr.esupportail.esupstage.domain.jpa.entities.Offre;
+import fr.esupportail.esupstage.domain.jpa.entities.Pays;
 import fr.esupportail.esupstage.domain.jpa.entities.Structure;
 import fr.esupportail.esupstage.domain.jpa.entities.TypeOffre;
 import fr.esupportail.esupstage.domain.jpa.entities.TypeStructure;
@@ -38,6 +39,8 @@ class FAP_QualificationRepositoryTest extends AbstractTest {
 	private final EntityManager entityManager;
 
 	private final FAP_QualificationRepository fapQualificationRepository;
+
+	private Integer lastInsertedId;
 
 	@Autowired
 	FAP_QualificationRepositoryTest(final EntityManager entityManager, final FAP_QualificationRepository fapQualificationRepository) {
@@ -84,6 +87,7 @@ class FAP_QualificationRepositoryTest extends AbstractTest {
 		offre.setPermis(true);
 		offre.setRemuneration(true);
 		offre.setVoiture(true);
+		offre.setLoginCreation("root");
 
 		final NiveauCentre niveauCentre = new NiveauCentre();
 		niveauCentre.setLibelleNiveauCentre("libel");
@@ -108,18 +112,33 @@ class FAP_QualificationRepositoryTest extends AbstractTest {
 
 		offre.setCentreGestion(centreGestion);
 
-		final Structure structure = new Structure();
+		final Pays pays = new Pays();
+		pays.setActual(1);
+		pays.setLib("lib");
+		pays.setTemEnServPays("A");
+		pays.setCog(1);
+		entityManager.persist(pays);
 
 		final Effectif effectifStructure = new Effectif();
 		effectifStructure.setLibelleEffectif("effectif");
 		effectifStructure.setTemEnServEffectif("A");
 		entityManager.persist(effectifStructure);
 
-		structure.setEffectif(effectifStructure);
 		final TypeStructure typeStructure = new TypeStructure();
 		typeStructure.setLibelleTypeStructure("type1");
+		typeStructure.setTemEnServTypeStructure("A");
 		entityManager.persist(typeStructure);
 
+		final Structure structure = new Structure();
+		structure.setDateCreation(new Date());
+		structure.setEstValidee(1);
+		structure.setLoginCreation("login");
+		structure.setRaisonSociale("raison");
+		structure.setVoie("voie");
+		structure.setEffectif(effectifStructure);
+		structure.setPay(pays);
+		structure.setTypeStructure(typeStructure);
+		entityManager.persist(structure);
 		structure.setTypeStructure(typeStructure);
 		entityManager.persist(structure);
 
@@ -140,13 +159,16 @@ class FAP_QualificationRepositoryTest extends AbstractTest {
 
 		this.entityManager.persist(fapQualification);
 		this.entityManager.flush();
+
+		this.entityManager.refresh(fapQualification);
+		this.lastInsertedId = fapQualification.getNumFAP_Qualification();
 	}
 
 	private void testfapQualFields(int indice, FAP_Qualification fapQualification) {
 		switch (indice) {
 		case 0:
 			assertEquals("fapQual1", fapQualification.getLibelleQualification(), "FAP_Qualification libelle match");
-			assertEquals(1, fapQualification.getNumFAP_Qualification(), "FAP_Qualification number match");
+			assertEquals(this.lastInsertedId, fapQualification.getNumFAP_Qualification(), "FAP_Qualification number match");
 			assertEquals("fapQualSimple1", fapQualification.getFapQualificationSimplifiee().getLibelleQualification(), "FAP_Qualification.QualificationSimplifiee libelle match");
 			break;
 		}
@@ -155,7 +177,7 @@ class FAP_QualificationRepositoryTest extends AbstractTest {
 	@Test
 	@DisplayName("findById – Nominal test case")
 	void findById() {
-		final Optional<FAP_Qualification> result = this.fapQualificationRepository.findById(1);
+		final Optional<FAP_Qualification> result = this.fapQualificationRepository.findById(this.lastInsertedId);
 		assertTrue(result.isPresent(), "We should have found our FAP_Qualification");
 
 		final FAP_Qualification fapQualification = result.get();

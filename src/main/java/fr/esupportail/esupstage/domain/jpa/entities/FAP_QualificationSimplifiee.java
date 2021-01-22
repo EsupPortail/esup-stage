@@ -23,8 +23,8 @@ public class FAP_QualificationSimplifiee implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(unique = true, nullable = false)
-    private Integer idQualificationSimplifiee;
+    @Column(name = "id_qualification_simplifiee", unique = true, nullable = false)
+    private Integer id;
     @Column(length = 100)
     private String libelleQualification;
     // bi-directional many-to-one association to FAP_Qualification
