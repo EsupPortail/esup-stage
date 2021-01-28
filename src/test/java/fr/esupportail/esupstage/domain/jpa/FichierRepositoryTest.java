@@ -67,6 +67,7 @@ class FichierRepositoryTest extends AbstractTest {
 		centreGestion.setLoginCreation("login");
 		centreGestion.setConfidentialite(confidentialite);
 		centreGestion.setNiveauCentre(niveauCentre);
+		entityManager.persist(centreGestion);
 
 		fichier.setCentreGestions(Arrays.asList(centreGestion));
 		entityManager.persist(centreGestion);

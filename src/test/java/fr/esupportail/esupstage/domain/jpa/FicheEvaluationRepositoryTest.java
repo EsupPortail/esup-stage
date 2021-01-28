@@ -66,6 +66,7 @@ class FicheEvaluationRepositoryTest extends AbstractTest {
 		entityManager.persist(centreGestion);
 
 		ficheEvaluation.setCentreGestion(centreGestion);
+		entityManager.persist(centreGestion);
 
 		this.entityManager.persist(ficheEvaluation);
 		this.entityManager.flush();
