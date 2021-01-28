@@ -33,6 +33,8 @@ class EtudiantRepositoryTest extends AbstractTest {
 
 	private Date startTime;
 
+	private Integer lastInsertedId;
+
 	@Autowired
 	EtudiantRepositoryTest(final EntityManager entityManager, final EtudiantRepository studentRepository) {
 		super();
@@ -59,16 +61,20 @@ class EtudiantRepositoryTest extends AbstractTest {
 
 		this.entityManager.persist(student);
 		this.entityManager.flush();
+
+		this.entityManager.refresh(student);
+		this.lastInsertedId = student.getId();
 	}
 
 	private void testStudentFields(int indice, Etudiant student) {
 		switch (indice) {
 		case 0:
+			assertEquals(this.lastInsertedId, student.getId(), "Student id match");
 			assertEquals("ogier.ducharme@univ.fr", student.getMail(), "Student mail match");
 			assertEquals("Ogier", student.getPrenom(), "Student firstname match");
 			assertEquals("Ducharme", student.getNom(), "Student lastname match");
 			assertEquals("M", student.getCodeSexe(), "Student sexe match");
-			assertEquals("ULR", student.getCodeUniversite(), "Student University match");
+			assertEquals("FU", student.getCodeUniversite(), "Student University match");
 			assertTrue(student.getDateCreation().before(Calendar.getInstance().getTime()) && student.getDateCreation().after(this.startTime), "Student creation date is possible");
 			assertEquals(new GregorianCalendar(1978, 03, 28).getTime(), student.getDateNais(), "Student birth date match");
 			assertEquals("oducha01", student.getIdentEtudiant(), "Student login match");
@@ -82,7 +88,7 @@ class EtudiantRepositoryTest extends AbstractTest {
 	@Test
 	@DisplayName("findEtudiantByIdentEtudiantAndCodeUniversite – Nominal test case")
 	void findById() {
-		final Optional<Etudiant> result = this.studentRepository.findEtudiantByIdentEtudiantAndCodeUniversite("jdoe@uphf.fr", "ULR");
+		final Optional<Etudiant> result = this.studentRepository.findById(this.lastInsertedId);
 		assertTrue(result.isPresent(), "We should have found our Student");
 
 		final Etudiant student = result.get();
@@ -92,7 +98,7 @@ class EtudiantRepositoryTest extends AbstractTest {
 	@Test
 	@DisplayName("findEtudiantsByNomContainsOrPrenomContains – Nominal test case")
 	void findEtudiantsByNomContainsOrPrenomContains() {
-		final List<Etudiant> result = this.studentRepository.findEtudiantsByNomContainsOrPrenomContains("doe", "j");
+		final List<Etudiant> result = this.studentRepository.findEtudiantsByNomContainsOrPrenomContains("Ducharme", "O");
 		assertTrue(result.size() == 1, "We should have found our Student");
 
 		final Etudiant student = result.get(0);
@@ -102,7 +108,7 @@ class EtudiantRepositoryTest extends AbstractTest {
 	@Test
 	@DisplayName("findEtudiantByIdentEtudiantAndCodeUniversite – Nominal test case")
 	void findEtudiantByIdentEtudiantAndCodeUniversite() {
-		final Optional<Etudiant> result = this.studentRepository.findEtudiantByIdentEtudiantAndCodeUniversite("jdoe@uphf.fr", "ULR");
+		final Optional<Etudiant> result = this.studentRepository.findEtudiantByIdentEtudiantAndCodeUniversite("oducha01", "FU");
 		assertTrue(result.isPresent(), "We should have found our Student");
 
 		final Etudiant student = result.get();

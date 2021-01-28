@@ -57,6 +57,7 @@ class FAP_QualificationSimplifieeRepositoryTest extends AbstractTest {
 
 		final FAP_QualificationSimplifiee fapQualificationSimplifiee = new FAP_QualificationSimplifiee();
 		fapQualificationSimplifiee.setLibelleQualification("fapQualSimple1");
+		entityManager.persist(fapQualificationSimplifiee);
 
 		final Offre offre = new Offre();
 		offre.setAnneeUniversitaire("2020-2021");
@@ -154,6 +155,7 @@ class FAP_QualificationSimplifieeRepositoryTest extends AbstractTest {
 		offre.setTypeOffre(typeOffre);
 
 		fapQualificationSimplifiee.setOffres(Arrays.asList(offre));
+		entityManager.persist(fapQualificationSimplifiee);
 		entityManager.persist(offre);
 
 		fapQualification.setFapQualificationSimplifiee(fapQualificationSimplifiee);
