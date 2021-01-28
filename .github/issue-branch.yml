@@ -5,9 +5,6 @@ branches:
   - label: 'type | bug'
     prefix: bug/
     name: latest
-  - label: 'type | bugfix'
-    prefix: bugfix/
-    name: latest
   - label: 'type | documentation'
     prefix: documentation/
     name: latest
