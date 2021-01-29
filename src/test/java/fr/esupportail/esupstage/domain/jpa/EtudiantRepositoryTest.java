@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -31,7 +32,6 @@ class EtudiantRepositoryTest extends AbstractTest {
 
 	private final EtudiantRepository studentRepository;
 
-	private Date startTime;
 
 	private Integer lastInsertedId;
 
@@ -44,20 +44,18 @@ class EtudiantRepositoryTest extends AbstractTest {
 
 	@BeforeEach
 	void prepare() {
-		this.startTime = Calendar.getInstance().getTime();
-
 		final Etudiant student = new Etudiant();
 		student.setCodeSexe("M");
 		student.setCodeUniversite("FU");
 		student.setPrenom("Ogier");
 		student.setNom("Ducharme");
 		student.setDateNais(new GregorianCalendar(1978, 03, 28).getTime());
-		student.setDateCreation(Calendar.getInstance().getTime());
+		student.setCreatedDate(LocalDateTime.now());
+		student.setCreatedBy("login");
 		student.setMail("ogier.ducharme@univ.fr");
 		student.setIdentEtudiant("oducha01");
 		student.setNumEtudiant("65299292");
 		student.setNumSS("178033684913953");
-		student.setLoginCreation("root");
 
 		this.entityManager.persist(student);
 		this.entityManager.flush();
@@ -75,12 +73,10 @@ class EtudiantRepositoryTest extends AbstractTest {
 			assertEquals("Ducharme", student.getNom(), "Student lastname match");
 			assertEquals("M", student.getCodeSexe(), "Student sexe match");
 			assertEquals("FU", student.getCodeUniversite(), "Student University match");
-			assertTrue(student.getDateCreation().before(Calendar.getInstance().getTime()) && student.getDateCreation().after(this.startTime), "Student creation date is possible");
 			assertEquals(new GregorianCalendar(1978, 03, 28).getTime(), student.getDateNais(), "Student birth date match");
 			assertEquals("oducha01", student.getIdentEtudiant(), "Student login match");
 			assertEquals("65299292", student.getNumEtudiant(), "Student number match");
 			assertEquals("178033684913953", student.getNumSS(), "Student Social Security Number match");
-			assertEquals("root", student.getLoginCreation(), "Student Login creation match");
 			break;
 		}
 	}

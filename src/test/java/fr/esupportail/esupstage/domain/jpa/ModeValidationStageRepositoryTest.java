@@ -3,6 +3,7 @@ package fr.esupportail.esupstage.domain.jpa;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
@@ -112,9 +113,9 @@ class ModeValidationStageRepositoryTest extends AbstractTest {
 
 		Etudiant etudiant = new Etudiant();
 		etudiant.setCodeUniversite("code");
-		etudiant.setDateCreation(Calendar.getInstance().getTime());
+		etudiant.setCreatedDate(LocalDateTime.now());
 		etudiant.setIdentEtudiant("ident");
-		etudiant.setLoginCreation("login");
+		etudiant.setCreatedBy("login");
 		etudiant.setNom("Name");
 		etudiant.setNumEtudiant("125458");
 		etudiant.setPrenom("Firstname");
