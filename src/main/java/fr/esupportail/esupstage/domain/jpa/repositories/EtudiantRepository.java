@@ -1,6 +1,7 @@
 package fr.esupportail.esupstage.domain.jpa.repositories;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -12,8 +13,7 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Integer> {
 
 	public List<Etudiant> findEtudiantsByNomContainsOrPrenomContains(String nom, String prenom);
 
-	public Etudiant findEtudiantByIdAndCodeUniversite(Integer idEtudiant, String codeUniveriste);
+	public Optional<Etudiant> findEtudiantByIdAndCodeUniversite(Integer idEtudiant, String codeUniveriste);
 
-	public Etudiant findEtudiantByIdentEtudiantAndCodeUniversite(String identEtudiant, String codeUniveriste);
-
+	public Optional<Etudiant> findEtudiantByIdentEtudiantAndCodeUniversite(String identEtudiant, String codeUniveriste);
 }
