@@ -130,9 +130,7 @@ class FAP_QualificationRepositoryTest extends AbstractTest {
 		entityManager.persist(typeStructure);
 
 		final Structure structure = new Structure();
-		structure.setDateCreation(new Date());
 		structure.setEstValidee(1);
-		structure.setLoginCreation("login");
 		structure.setRaisonSociale("raison");
 		structure.setVoie("voie");
 		structure.setEffectif(effectifStructure);
