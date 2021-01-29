@@ -76,3 +76,28 @@ spring:
 <1> Configure the list of profiles to be used.
 <2> Overwrite the profiles which need to be configured for your specific use case.
 <3> Overwrite here specific values which we don't want to push on the Git repository.
+
+== Liquibase initialization
+
+We used the following https://docs.liquibase.com/workflows/liquibase-community/existing-project.html[guide] to generate the first Liquibase script and ensure that the application could run.
+
+.Generate the base Liquibase script
+----
+liquibase --changeLogFile=db.changelog-base.yaml  --url=jdbc:mariadb://localhost:3306/<databaseName> --username=<userName> --password=<password> --classpath="<pathToMavenRepo>\org\mariadb\jdbc\mariadb-java-client\2.7.0\mariadb-java-client-2.7.0.jar" generateChangeLog
+----
+
+.Generate the Liquibase's specific tables
+----
+liquibase --changeLogFile=db.changelog-base.yaml  --url=jdbc:mariadb://localhost:3306/<databaseName> --username=<userName> --password=<password> --classpath="<pathToMavenRepo>\org\mariadb\jdbc\mariadb-java-client\2.7.0\mariadb-java-client-2.7.0.jar" changelogSyncSQL
+----
+
+.Fill these Liquibase's specific tables
+----
+liquibase --changeLogFile=db.changelog-base.yaml  --url=jdbc:mariadb://localhost:3306/<databaseName> --username=<userName> --password=<password> --classpath="<pathToMavenRepo>\org\mariadb\jdbc\mariadb-java-client\2.7.0\mariadb-java-client-2.7.0.jar" changelogSync
+----
+
+.Update the `filename` column to match the expected value from running the application.
+[source,sql]
+----
+update `databasechangelog` d set d.`filename` = 'classpath:/db/changelog/db.changelog-base.yaml' where d.`filename` = 'db.changelog-base.yaml'̦;
+----
