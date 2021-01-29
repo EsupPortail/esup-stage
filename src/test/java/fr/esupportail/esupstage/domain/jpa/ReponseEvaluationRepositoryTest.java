@@ -3,6 +3,7 @@ package fr.esupportail.esupstage.domain.jpa;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Optional;
 
@@ -115,9 +116,9 @@ public class ReponseEvaluationRepositoryTest extends AbstractTest {
 
 		final Etudiant etudiant = new Etudiant();
 		etudiant.setCodeUniversite("code");
-		etudiant.setDateCreation(Calendar.getInstance().getTime());
+		etudiant.setCreatedDate(LocalDateTime.now());
 		etudiant.setIdentEtudiant("ident");
-		etudiant.setLoginCreation("jdoe");
+		etudiant.setCreatedBy("jdoe");
 		etudiant.setNom("Name");
 		etudiant.setNumEtudiant("125458");
 		etudiant.setPrenom("Firstname");
