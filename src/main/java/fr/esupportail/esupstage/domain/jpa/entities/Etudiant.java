@@ -6,6 +6,9 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import javax.persistence.*;
+
+import org.springframework.beans.factory.annotation.Value;
+
 import java.util.Date;
 import java.util.List;
 
@@ -23,13 +26,14 @@ public class Etudiant implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(unique = true, nullable = false)
-    private Integer idEtudiant;
+    @Column(name = "id_etudiant", unique = true, nullable = false)
+    private Integer id;
     @Column(length = 1)
     private String codeSexe;
     @Column(nullable = false, length = 50)
     private String codeUniversite;
     @Column(nullable = false)
+    @Value("#{Calendar.getInstance().getTime()}")
     private Date dateCreation;
     private Date dateModif;
     private Date dateNais;

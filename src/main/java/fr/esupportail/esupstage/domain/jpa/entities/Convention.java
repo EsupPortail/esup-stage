@@ -192,7 +192,7 @@ public class Convention implements Serializable {
     private Etape etape;
     // bi-directional many-to-one association to Etudiant
     @ManyToOne
-    @JoinColumn(name = "idEtudiant", nullable = false)
+    @JoinColumn(name = "id", nullable = false)
     private Etudiant etudiant;
     // bi-directional many-to-one association to Indemnisation
     @ManyToOne

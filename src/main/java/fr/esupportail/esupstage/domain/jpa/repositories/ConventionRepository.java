@@ -19,8 +19,8 @@ public interface ConventionRepository extends JpaRepository<Convention, Integer>
 	public List<String> getAnneesConvention(String codeUniversite);
 
 	@Query("SELECT c FROM Convention c INNER JOIN FETCH c.etudiant etu "
-			+ "WHERE etu.idEtudiant=?1 and (?2 is null or etu.codeUniversite=?2) ORDER BY c.dateCreation DESC")
-	public List<Convention> findConventionsByIdEtudiantAndCodeUniversite(Integer identEtudiant, String codeUniversite);
+			+ "WHERE etu.id=?1 and (?2 is null or etu.codeUniversite=?2) ORDER BY c.dateCreation DESC")
+	public List<Convention> findConventionsByIdAndCodeUniversite(Integer identEtudiant, String codeUniversite);
 
 	public List<Convention> findConventionsByEnseignant(Enseignant enseignant);
 

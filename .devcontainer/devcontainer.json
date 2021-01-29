@@ -1,0 +1,40 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.154.2/containers/java
+{
+	"name": "Java",
+	// Update the 'dockerComposeFile' list if you have more compose files or use different names.
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "app",
+	"workspaceFolder": "/workspace",
+	"shutdownAction": "stopCompose",
+	// Set *default* container specific settings.json values on container create.
+	"settings": {
+		"terminal.integrated.shell.linux": "/bin/bash",
+		"java.home": "/docker-java-home"
+	},
+	// Add the IDs of extensions you want installed when the container is created.
+	"extensions": [
+		"vscjava.vscode-java-pack",
+		"gabrielbb.vscode-lombok",
+		"vscjava.vscode-maven",
+		"vscjava.vscode-java-dependency",
+		"spmeesseman.vscode-taskexplorer",
+		"visualstudioexptteam.vscodeintellicode",
+		"redhat.vscode-yaml",
+		"shardulm94.trailing-spaces",
+		"aaron-bond.better-comments",
+		"coenraads.bracket-pair-colorizer",
+		"usernamehw.errorlens",
+		"ms-vsliveshare.vsliveshare-pack",
+		"redhat.java",
+		"pflannery.vscode-versionlens"
+	],
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	"forwardPorts": [
+		8080
+	],
+	// Use 'postCreateCommand' to run commands after the container is created.
+	// "postCreateCommand": "java -version",
+	// Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
+	"remoteUser": "vscode"
+}
