@@ -110,9 +110,9 @@ class ConventionRepositoryTest extends AbstractTest {
 
 		final Etudiant etudiant = new Etudiant();
 		etudiant.setCodeUniversite("code");
-		etudiant.setDateCreation(new Date(0));
+		etudiant.setCreatedDate(LocalDateTime.now());
 		etudiant.setIdentEtudiant("ident");
-		etudiant.setLoginCreation("login");
+		etudiant.setCreatedBy("login");
 		etudiant.setNom("Name");
 		etudiant.setNumEtudiant("125458");
 		etudiant.setPrenom("Firstname");

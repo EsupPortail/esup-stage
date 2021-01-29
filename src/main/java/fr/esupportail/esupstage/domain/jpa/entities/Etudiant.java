@@ -22,7 +22,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @NamedQuery(name = "Etudiant.findAll", query = "SELECT e FROM Etudiant e")
-public class Etudiant implements Serializable {
+public class Etudiant extends Auditable<String> implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -32,17 +32,9 @@ public class Etudiant implements Serializable {
     private String codeSexe;
     @Column(nullable = false, length = 50)
     private String codeUniversite;
-    @Column(nullable = false)
-    @Value("#{Calendar.getInstance().getTime()}")
-    private Date dateCreation;
-    private Date dateModif;
     private Date dateNais;
     @Column(nullable = false, length = 50)
     private String identEtudiant;
-    @Column(nullable = false, length = 50)
-    private String loginCreation;
-    @Column(length = 50)
-    private String loginModif;
     @Column(length = 100)
     private String mail;
     @Column(nullable = false, length = 50)
