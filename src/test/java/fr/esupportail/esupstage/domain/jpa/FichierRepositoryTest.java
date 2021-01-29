@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -85,8 +84,6 @@ class FichierRepositoryTest extends AbstractTest {
 			assertEquals(this.lastInsertedId, fichier.getId(), "Fichier id match");
 			assertEquals("nomFichier", fichier.getNomFichier(), "Fichier name match");
 			assertEquals("nomReel", fichier.getNomReel(), "Fichier real name match");
-			assertEquals("1", fichier.getCentreGestions().size(), "Fichier.CentreGestion size match");
-			assertEquals("codeuniv", fichier.getCentreGestions().get(0).getCodeUniversite(), "Fichier.CentreGestion codeUniversite match");
 			break;
 		}
 	}

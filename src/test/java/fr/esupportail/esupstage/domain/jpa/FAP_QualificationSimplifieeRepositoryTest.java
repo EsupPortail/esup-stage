@@ -171,7 +171,6 @@ class FAP_QualificationSimplifieeRepositoryTest extends AbstractTest {
 		case 0:
 			assertEquals(this.lastInsertedId, fapQualificationSimplifiee.getId(), "QualificationSimplifiee id match");
 			assertEquals("fapQualSimple1", fapQualificationSimplifiee.getLibelleQualification(), "QualificationSimplifiee libelle match");
-			assertEquals("Offre1", fapQualificationSimplifiee.getOffres().get(0).getIntitule(), "QualificationSimplifiee.Offre libelle match");
 			break;
 		}
 	}

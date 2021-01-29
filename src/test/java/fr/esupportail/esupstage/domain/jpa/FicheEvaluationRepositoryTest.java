@@ -78,7 +78,6 @@ class FicheEvaluationRepositoryTest extends AbstractTest {
 		switch (indice) {
 		case 0:
 			assertEquals(this.lastInsertedId, ficheEvaluation.getIdFicheEvaluation(), "FicheEvaluation id match");
-			assertEquals("codeuniv", ficheEvaluation.getCentreGestion().getCodeUniversite(), "FicheEvaluation.CentreGestion codeUniversite match");
 			break;
 		}
 	}
