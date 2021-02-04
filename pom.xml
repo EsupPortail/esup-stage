@@ -183,11 +183,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.joinfaces</groupId>
-			<artifactId>jsf-spring-boot-starter</artifactId>
+			<artifactId>security-spring-boot-starter</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.joinfaces</groupId>
-			<artifactId>security-spring-boot-starter</artifactId>
+			<artifactId>adminfaces-spring-boot-starter</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>javax.enterprise</groupId>

@@ -10,10 +10,10 @@ spring:
       naming:
         physical-strategy: fr.esupportail.esupstage.configuration.jpa.ESUPPhysicalNamingStrategy
 joinfaces:
-  jsf:
-    project-stage: Development
-  primefaces:
-    theme: overcast
+    jsf:
+      PROJECT_STAGE: Development
+    primefaces:
+      theme: admin
 logging:
   level:
     root: WARN

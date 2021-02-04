@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/admin.xhtml"> (1)
+
+    <ui:define name="head">
+        <title>Esup Stage</title>
+    </ui:define>
+
+    <ui:define name="logo-lg">
+        Esup Stage
+    </ui:define>
+
+    <ui:define name="logo-mini">
+        Admin
+    </ui:define>
+
+    <ui:define name="menu">
+        <ul class="sidebar-menu">
+            <li>
+                <p:link href="/index.xhtml" onclick="clearBreadCrumbs()">
+                    <i class="fa fa-home"></i>
+                    <span>Home</span>
+                </p:link>
+            </li>
+            <li class="header">
+                General
+            </li>
+            <li>
+                <p:link href="/car-list.xhtml">
+                    <i class="fa fa-car"></i>
+                    <span>Cars</span>
+                </p:link>
+            </li>
+        </ul>
+    </ui:define>
+
+    <ui:define name="top-menu">
+        <ui:include src="/includes/top-bar.xhtml"/>
+    </ui:define>
+
+    <ui:define name="title">
+        <h2 class="align-center">
+            Welcome to the <span class="text-aqua"> <i><a href="https://github.com/adminfaces/admin-starter" target="_blank"
+                                                          style="text-transform: none;text-decoration: none"> AdminFaces Starter</a></i></span> Project!
+            <br/>
+            <small>Integrating <p:link value="Primefaces" href="http://primefaces.org"/>, <p:link value="Bootstrap"
+                                                                                                  href="http://getbootstrap.com/"/> and
+                <p:link value="Admin LTE" href="https://almsaeedstudio.com/themes/AdminLTE/index2.html/"/> into your
+                <p:link value="JSF" href="https://javaserverfaces.java.net/"/> application.
+            </small>
+        </h2>
+    </ui:define>
+
+    <ui:define name="description">
+        A page description
+    </ui:define>
+
+    <ui:define name="body">
+        <h2>Page body</h2>
+    </ui:define>
+
+
+    <ui:define name="footer">
+        <a target="_blank"
+           href="https://github.com/adminfaces/">
+            Copyright (C) 2017 - AdminFaces
+        </a>
+
+        <div class="pull-right hidden-xs" style="color: gray">
+            <i>1.0.0</i>
+        </div>
+    </ui:define>
+
+
+</ui:composition>

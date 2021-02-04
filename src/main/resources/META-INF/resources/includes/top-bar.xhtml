@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions">
+
+    <style type="text/css">
+        #layout-menu_menu {
+            z-index: 9997!important;
+        }
+        #layout-menu_menu span.ui-menuitem-text {
+            margin-left: 2px;
+        }
+
+    </style>
+    <ul class="nav navbar-nav">
+        <li>
+        </li>
+        <li class="dropdown user user-menu">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                <span class="hidden-xs">#{logonMB.currentUser}</span>
+            </a>
+            <ul class="dropdown-menu">
+                <li class="user-header">
+                    <div class="hidden-xs">
+                    </div>
+                    <p>
+                        #{logonMB.currentUser}
+                        <small>Subtitle</small>
+                    </p>
+                </li>
+                <li class="user-footer">
+                    <h:form prependId="false">
+                        <div class="pull-left">
+                            <p:commandLink styleClass="btn btn-danger" value="Change password"/>
+                        </div>
+                        <div class="pull-right">
+                            <p:commandLink id="logout" action="#{logoutMB.doLogout}" title="Logoff">
+                                <i class="fa fa-sign-out fa-2x"></i>
+                            </p:commandLink>
+                        </div>
+                    </h:form>
+                </li>
+            </ul>
+        </li>
+        <li>
+            <a id="layout-setup" href="#" class="ui-link ui-widget hidden-sm hidden-xs" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
+        </li>
+
+    </ul>
+
+</ui:composition>
