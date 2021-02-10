@@ -26,7 +26,9 @@ public class ConventionService {
     }
 
     public List<Convention> getConventions(int size) {
-        return this.conventionRepository.findAll().subList(0, size);
+        List<Convention> convList = this.conventionRepository.findAll();
+
+        return convList.size()<10?convList:convList.subList(0, size);
     }
 
 	public List<Convention> getClonedProducts(int size) throws CloneNotSupportedException {
