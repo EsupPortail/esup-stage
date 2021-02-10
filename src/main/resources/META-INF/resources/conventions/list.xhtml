@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="title">
+        Conventions
+    </ui:define>
+
+    <ui:define name="description">
+        Visualiser une convention
+    </ui:define>
+
+    <ui:define name="body">
+        <div class="card">
+            <p:dataTable var="convention" value="#{conventionListView.conventions}">
+                <p:column headerText="No.">
+                    <h:outputText value="#{convension.id}"/>
+                </p:column>
+                <p:column headerText="Étudiant">
+                    <h:outputText value="#{convension.etudiant}"/>
+                </p:column>
+                <p:column headerText="Établissement">
+                    <h:outputText value="#{convension.etablissement}"/>
+                </p:column>
+                <p:column headerText="Période">
+                    <h:outputText value="#{convension.etudiant.getLocalPeriode()}"/>
+                </p:column>
+                <p:column headerText="UFR">
+                    <h:outputText value="#{convension.etudiant.ufr}"/>
+                </p:column>
+                <p:column headerText="Étape d'étude">
+                    <h:outputText value="#{convension.etudiant.etape}"/>
+                </p:column>
+                <p:column headerText="Validation">
+                    <h:outputText value="#{convension.etudiant.isValidated()}"/>
+                </p:column>
+                <p:column headerText="Avenant">
+                    <h:outputText value="#{convension.etudiant.isAvenant()}"/>
+                </p:column>
+                <p:column headerText="Année Univ.">
+                    <h:outputText value="#{convension.etudiant.anneeUniv}"/>
+                </p:column>
+            </p:dataTable>
+        </div>
+    </ui:define>
+
+</ui:composition>
+
