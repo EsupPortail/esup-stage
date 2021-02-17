@@ -2,3 +2,6 @@ databaseChangeLog:
 - include:
     file: db.changelog-base.yaml
     relativeToChangelogFile: true
+- include:
+    file: db.changelog-init-hibernate.yaml
+    relativeToChangelogFile: true

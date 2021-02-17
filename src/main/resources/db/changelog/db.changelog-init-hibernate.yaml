@@ -1,0 +1,13 @@
+databaseChangeLog:
+- changeSet:
+    id: hibernate-specific
+    author: vdubus
+    comment: Add hibernate specific table to manage auto-increment ID
+    changes:
+    - createTable:
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: next_val
+            type: BIGINT
+        tableName: hibernate_sequence

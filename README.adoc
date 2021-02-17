@@ -101,3 +101,40 @@ liquibase --changeLogFile=db.changelog-base.yaml  --url=jdbc:mariadb://localhost
 ----
 update `databasechangelog` d set d.`filename` = 'classpath:/db/changelog/db.changelog-base.yaml' where d.`filename` = 'db.changelog-base.yaml'̦;
 ----
+
+== Fisrt deployment on an already existing database
+
+[source,sql]
+----
+-- Update column type to work with JPA
+ALTER TABLE `convention` CHANGE `nbJoursHebdo` `nbJoursHebdo` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '5';
+
+-- Add Liquibase specific tables
+CREATE TABLE IF NOT EXISTS `databasechangelog` (
+  `ID` varchar(255) COLLATE utf8mb4_unicode_520_ci NOT NULL,
+  `AUTHOR` varchar(255) COLLATE utf8mb4_unicode_520_ci NOT NULL,
+  `FILENAME` varchar(255) COLLATE utf8mb4_unicode_520_ci NOT NULL,
+  `DATEEXECUTED` datetime NOT NULL,
+  `ORDEREXECUTED` int(11) NOT NULL,
+  `EXECTYPE` varchar(10) COLLATE utf8mb4_unicode_520_ci NOT NULL,
+  `MD5SUM` varchar(35) COLLATE utf8mb4_unicode_520_ci DEFAULT NULL,
+  `DESCRIPTION` varchar(255) COLLATE utf8mb4_unicode_520_ci DEFAULT NULL,
+  `COMMENTS` varchar(255) COLLATE utf8mb4_unicode_520_ci DEFAULT NULL,
+  `TAG` varchar(255) COLLATE utf8mb4_unicode_520_ci DEFAULT NULL,
+  `LIQUIBASE` varchar(20) COLLATE utf8mb4_unicode_520_ci DEFAULT NULL,
+  `CONTEXTS` varchar(255) COLLATE utf8mb4_unicode_520_ci DEFAULT NULL,
+  `LABELS` varchar(255) COLLATE utf8mb4_unicode_520_ci DEFAULT NULL,
+  `DEPLOYMENT_ID` varchar(10) COLLATE utf8mb4_unicode_520_ci DEFAULT NULL
+);
+
+CREATE TABLE IF NOT EXISTS `databasechangeloglock` (
+  `ID` int(11) NOT NULL,
+  `LOCKED` bit(1) NOT NULL,
+  `LOCKGRANTED` datetime DEFAULT NULL,
+  `LOCKEDBY` varchar(255) COLLATE utf8mb4_unicode_520_ci DEFAULT NULL,
+  PRIMARY KEY (`ID`)
+);
+
+-- Add first Liquibase script
+INSERT INTO `databasechangelog` VALUES('generated-initialization', 'vdubus', 'classpath:/db/changelog/db.changelog-base.yaml', '2021-02-17 15:46:10', 1, 'EXECUTED', null, 'createTable tableName=accordpartenariat; createTable tableName=adminstructure; createTable tableName=affectation; createTable tableName=assurance; createTable tableName=avenant; createTable tableName=caisseregime; createTable tableName=categorie; ...', 'Base model generated form existing database', NULL, '3.8.9', NULL, NULL, '3573164620');
+----

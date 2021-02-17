@@ -1,7 +1,8 @@
 databaseChangeLog:
 - changeSet:
-    id: 1611930833053-1
-    author: vdubus (generated)
+    id: generated-initialization
+    author: vdubus
+    comment: Base model generated form existing database
     changes:
     - createTable:
         columns:
@@ -62,10 +63,6 @@ databaseChangeLog:
             name: loginSuppressionComptes
             type: VARCHAR(50)
         tableName: accordpartenariat
-- changeSet:
-    id: 1611930833053-2
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -124,10 +121,6 @@ databaseChangeLog:
             name: loginModif
             type: VARCHAR(50)
         tableName: adminstructure
-- changeSet:
-    id: 1611930833053-3
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -147,10 +140,6 @@ databaseChangeLog:
             name: codeUniversite
             type: VARCHAR(50)
         tableName: affectation
-- changeSet:
-    id: 1611930833053-4
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -176,10 +165,6 @@ databaseChangeLog:
             name: codeCtrl
             type: VARCHAR(20)
         tableName: assurance
-- changeSet:
-    id: 1611930833053-5
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -323,10 +308,6 @@ databaseChangeLog:
             name: monnaieGratification
             type: VARCHAR(50)
         tableName: avenant
-- changeSet:
-    id: 1611930833053-6
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -356,10 +337,6 @@ databaseChangeLog:
             name: modifiable
             type: BIT
         tableName: caisseregime
-- changeSet:
-    id: 1611930833053-7
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -375,10 +352,6 @@ databaseChangeLog:
             name: typeCategorie
             type: INT
         tableName: categorie
-- changeSet:
-    id: 1611930833053-8
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -529,10 +502,6 @@ databaseChangeLog:
             name: dureeRecupInscriptionAnterieure
             type: INT
         tableName: centregestion
-- changeSet:
-    id: 1611930833053-9
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -548,10 +517,6 @@ databaseChangeLog:
             name: nomCentreSuperViseur
             type: VARCHAR(100)
         tableName: centregestionsuperviseur
-- changeSet:
-    id: 1611930833053-10
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -567,10 +532,6 @@ databaseChangeLog:
             name: libelleCivilite
             type: VARCHAR(50)
         tableName: civilite
-- changeSet:
-    id: 1611930833053-11
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -591,10 +552,6 @@ databaseChangeLog:
             name: temEnServConfid
             type: VARCHAR(1)
         tableName: confidentialite
-- changeSet:
-    id: 1611930833053-12
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -684,10 +641,6 @@ databaseChangeLog:
             name: avantDerniereConnexion
             type: datetime
         tableName: contact
-- changeSet:
-    id: 1611930833053-13
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -723,10 +676,6 @@ databaseChangeLog:
             name: modifiable
             type: BIT
         tableName: contratoffre
-- changeSet:
-    id: 1611930833053-14
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -827,8 +776,7 @@ databaseChangeLog:
               nullable: false
             defaultValue: '5'
             name: nbJoursHebdo
-            type: ENUM('0.5', '1', '1.5', '2', '2.5', '3', '3.5', '4', '4.5', '5',
-              '5.5', '6')
+            type: VARCHAR(3)
         - column:
             constraints:
               nullable: false
@@ -1094,10 +1042,6 @@ databaseChangeLog:
             name: typePresence
             type: VARCHAR(30)
         tableName: convention
-- changeSet:
-    id: 1611930833053-15
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -1128,10 +1072,6 @@ databaseChangeLog:
             name: typeCategorie
             type: INT
         tableName: critere
-- changeSet:
-    id: 1611930833053-16
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -1157,10 +1097,6 @@ databaseChangeLog:
             name: idCentreGestion
             type: INT
         tableName: criteregestion
-- changeSet:
-    id: 1611930833053-17
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -1182,10 +1118,6 @@ databaseChangeLog:
             name: temEnServDroitAdmin
             type: VARCHAR(1)
         tableName: droitadministration
-- changeSet:
-    id: 1611930833053-18
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -1206,10 +1138,6 @@ databaseChangeLog:
             name: libelleDureeDiffusion
             type: VARCHAR(20)
         tableName: dureediffusion
-- changeSet:
-    id: 1611930833053-19
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -1235,10 +1163,6 @@ databaseChangeLog:
             name: modifiable
             type: BIT
         tableName: effectif
-- changeSet:
-    id: 1611930833053-20
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -1315,10 +1239,6 @@ databaseChangeLog:
             name: codeUniversiteAffectation
             type: VARCHAR(50)
         tableName: enseignant
-- changeSet:
-    id: 1611930833053-21
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -1346,10 +1266,6 @@ databaseChangeLog:
             name: codeUniversite
             type: VARCHAR(50)
         tableName: etape
-- changeSet:
-    id: 1611930833053-22
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -1422,10 +1338,6 @@ databaseChangeLog:
             name: dateModif
             type: datetime
         tableName: etudiant
-- changeSet:
-    id: 1611930833053-23
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -1440,10 +1352,6 @@ databaseChangeLog:
             name: libelle
             type: VARCHAR(200)
         tableName: fap_n1
-- changeSet:
-    id: 1611930833053-24
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -1463,10 +1371,6 @@ databaseChangeLog:
             name: codeFAP_N1
             type: VARCHAR(1)
         tableName: fap_n2
-- changeSet:
-    id: 1611930833053-25
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -1491,10 +1395,6 @@ databaseChangeLog:
             name: numFAP_Qualification
             type: INT
         tableName: fap_n3
-- changeSet:
-    id: 1611930833053-26
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -1514,10 +1414,6 @@ databaseChangeLog:
             name: idQualificationSimplifiee
             type: INT
         tableName: fap_qualification
-- changeSet:
-    id: 1611930833053-27
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -1530,10 +1426,6 @@ databaseChangeLog:
             name: libelleQualification
             type: VARCHAR(100)
         tableName: fap_qualificationsimplifiee
-- changeSet:
-    id: 1611930833053-28
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -1813,10 +1705,6 @@ databaseChangeLog:
             name: questionEnsII11
             type: BIT
         tableName: ficheevaluation
-- changeSet:
-    id: 1611930833053-29
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -1835,10 +1723,6 @@ databaseChangeLog:
             name: nomReel
             type: VARCHAR(255)
         tableName: fichiers
-- changeSet:
-    id: 1611930833053-30
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -1860,10 +1744,6 @@ databaseChangeLog:
             name: temEnServIndem
             type: VARCHAR(1)
         tableName: indemnisation
-- changeSet:
-    id: 1611930833053-31
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -1882,10 +1762,6 @@ databaseChangeLog:
             name: temEnServLangue
             type: VARCHAR(1)
         tableName: langueconvention
-- changeSet:
-    id: 1611930833053-32
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -1913,10 +1789,6 @@ databaseChangeLog:
             type: VARCHAR(20)
         remarks: Mode de candidature privil�gi�
         tableName: modecandidature
-- changeSet:
-    id: 1611930833053-33
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -1942,10 +1814,6 @@ databaseChangeLog:
             name: modifiable
             type: BIT
         tableName: modevalidationstage
-- changeSet:
-    id: 1611930833053-34
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -1967,10 +1835,6 @@ databaseChangeLog:
             name: temEnServModeVersGrat
             type: VARCHAR(1)
         tableName: modeversgratification
-- changeSet:
-    id: 1611930833053-35
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -1991,10 +1855,6 @@ databaseChangeLog:
             name: temEnServNAF_N1
             type: VARCHAR(1)
         tableName: naf_n1
-- changeSet:
-    id: 1611930833053-36
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -2018,10 +1878,6 @@ databaseChangeLog:
             name: temEnServNAF_N5
             type: VARCHAR(1)
         tableName: naf_n5
-- changeSet:
-    id: 1611930833053-37
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -2043,10 +1899,6 @@ databaseChangeLog:
             name: temEnServNatTrav
             type: VARCHAR(1)
         tableName: naturetravail
-- changeSet:
-    id: 1611930833053-38
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -2062,10 +1914,6 @@ databaseChangeLog:
             name: valeur
             type: INT
         tableName: niveau
-- changeSet:
-    id: 1611930833053-39
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -2088,10 +1936,6 @@ databaseChangeLog:
             name: temEnServNiveauCentre
             type: VARCHAR(1)
         tableName: niveaucentre
-- changeSet:
-    id: 1611930833053-40
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -2117,10 +1961,6 @@ databaseChangeLog:
             name: modifiable
             type: BIT
         tableName: niveauformation
-- changeSet:
-    id: 1611930833053-41
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -2461,10 +2301,6 @@ databaseChangeLog:
             name: anneeUniversitaire
             type: VARCHAR(50)
         tableName: offre
-- changeSet:
-    id: 1611930833053-42
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -2484,10 +2320,6 @@ databaseChangeLog:
             name: estMiseEnAvant
             type: BIT
         tableName: offrediffusion
-- changeSet:
-    id: 1611930833053-43
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -2503,10 +2335,6 @@ databaseChangeLog:
             name: idModeCandidature
             type: INT
         tableName: offremodecandidature
-- changeSet:
-    id: 1611930833053-44
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -2532,10 +2360,6 @@ databaseChangeLog:
             name: modifiable
             type: BIT
         tableName: originestage
-- changeSet:
-    id: 1611930833053-45
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -2580,10 +2404,6 @@ databaseChangeLog:
             name: temEnServPays
             type: VARCHAR(1)
         tableName: pays
-- changeSet:
-    id: 1611930833053-46
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -2699,10 +2519,6 @@ databaseChangeLog:
             name: droitEvaluationEntreprise
             type: BIT
         tableName: personnelcentregestion
-- changeSet:
-    id: 1611930833053-47
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -2723,10 +2539,6 @@ databaseChangeLog:
             name: lang
             type: VARCHAR(255)
         tableName: pstagedata_user
-- changeSet:
-    id: 1611930833053-48
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -2739,10 +2551,6 @@ databaseChangeLog:
             name: vers
             type: VARCHAR(255)
         tableName: pstagedata_vers_mana
-- changeSet:
-    id: 1611930833053-49
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -2773,10 +2581,6 @@ databaseChangeLog:
             name: typeQuestion
             type: VARCHAR(5)
         tableName: questionsupplementaire
-- changeSet:
-    id: 1611930833053-50
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -3217,10 +3021,6 @@ databaseChangeLog:
             name: reponseEnsII11
             type: TEXT
         tableName: reponseevaluation
-- changeSet:
-    id: 1611930833053-51
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -3247,10 +3047,6 @@ databaseChangeLog:
             name: reponseBool
             type: BIT
         tableName: reponsesupplementaire
-- changeSet:
-    id: 1611930833053-52
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -3322,10 +3118,6 @@ databaseChangeLog:
             name: telephone
             type: VARCHAR(20)
         tableName: service
-- changeSet:
-    id: 1611930833053-53
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -3354,10 +3146,6 @@ databaseChangeLog:
             name: modifiable
             type: BIT
         tableName: statutjuridique
-- changeSet:
-    id: 1611930833053-54
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -3502,10 +3290,6 @@ databaseChangeLog:
             name: temEnServStructure
             type: VARCHAR(1)
         tableName: structure
-- changeSet:
-    id: 1611930833053-55
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -3525,10 +3309,6 @@ databaseChangeLog:
             name: birth_date
             type: date
         tableName: teacher
-- changeSet:
-    id: 1611930833053-56
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -3559,10 +3339,6 @@ databaseChangeLog:
             name: modifiable
             type: BIT
         tableName: tempstravail
-- changeSet:
-    id: 1611930833053-57
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -3582,10 +3358,6 @@ databaseChangeLog:
             name: temEnServTheme
             type: VARCHAR(1)
         tableName: theme
-- changeSet:
-    id: 1611930833053-58
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -3600,10 +3372,6 @@ databaseChangeLog:
             name: idStructure
             type: INT
         tableName: ticketstructure
-- changeSet:
-    id: 1611930833053-59
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -3634,10 +3402,6 @@ databaseChangeLog:
             name: modifiable
             type: BIT
         tableName: typeconvention
-- changeSet:
-    id: 1611930833053-60
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -3668,10 +3432,6 @@ databaseChangeLog:
             name: modifiable
             type: BIT
         tableName: typeoffre
-- changeSet:
-    id: 1611930833053-61
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -3703,10 +3463,6 @@ databaseChangeLog:
             name: modifiable
             type: BIT
         tableName: typestructure
-- changeSet:
-    id: 1611930833053-62
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -3728,10 +3484,6 @@ databaseChangeLog:
             name: codeUniversite
             type: VARCHAR(50)
         tableName: ufr
-- changeSet:
-    id: 1611930833053-63
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -3753,10 +3505,6 @@ databaseChangeLog:
             name: temEnServUniteDuree
             type: VARCHAR(1)
         tableName: uniteduree
-- changeSet:
-    id: 1611930833053-64
-    author: vdubus (generated)
-    changes:
     - createTable:
         columns:
         - column:
@@ -3778,80 +3526,28 @@ databaseChangeLog:
             name: temEnServGrat
             type: VARCHAR(1)
         tableName: unitegratification
-- changeSet:
-    id: 1611930833053-65
-    author: vdubus (generated)
-    changes:
     - addPrimaryKey:
         columnNames: idOffre, idCentreGestion
         constraintName: PRIMARY
         tableName: offrediffusion
-- changeSet:
-    id: 1611930833053-66
-    author: vdubus (generated)
-    changes:
-    - addUniqueConstraint:
-        columnNames: codeEtape, codeVersionEtape, codeUniversite
-        constraintName: index_codeEtape_codeUniversite
-        tableName: etape
-- changeSet:
-    id: 1611930833053-67
-    author: vdubus (generated)
-    changes:
-    - addUniqueConstraint:
-        columnNames: codeUFR, codeUniversite
-        constraintName: index_codeUfr_codeUniversite
-        tableName: ufr
-- changeSet:
-    id: 1611930833053-68
-    author: vdubus (generated)
-    changes:
-    - addUniqueConstraint:
-        columnNames: identEtudiant, codeUniversite
-        constraintName: index_ident_etudiant_code_universite
-        tableName: etudiant
-- changeSet:
-    id: 1611930833053-69
-    author: vdubus (generated)
-    changes:
-    - addUniqueConstraint:
-        columnNames: uidEnseignant, codeUniversite
-        constraintName: index_uidEnseignant_codeUniversite
-        tableName: enseignant
-- changeSet:
-    id: 1611930833053-70
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: niveau
         indexName: FK_Niveau
         tableName: critere
-- changeSet:
-    id: 1611930833053-71
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idContact
         indexName: fk_AccordPartenariat_Contact1
         tableName: accordpartenariat
-- changeSet:
-    id: 1611930833053-72
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idStructure
         indexName: fk_AccordPartenariat_Structure1
         tableName: accordpartenariat
-- changeSet:
-    id: 1611930833053-73
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
@@ -3859,10 +3555,6 @@ databaseChangeLog:
             name: idCivilite
         indexName: fk_AdminStructure_Civilite1
         tableName: adminstructure
-- changeSet:
-    id: 1611930833053-74
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
@@ -3870,20 +3562,12 @@ databaseChangeLog:
             name: idContact
         indexName: fk_Avenant_Contact1
         tableName: avenant
-- changeSet:
-    id: 1611930833053-75
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idConvention
         indexName: fk_Avenant_Convention1
         tableName: avenant
-- changeSet:
-    id: 1611930833053-76
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
@@ -3891,10 +3575,6 @@ databaseChangeLog:
             name: idService
         indexName: fk_Avenant_Service1
         tableName: avenant
-- changeSet:
-    id: 1611930833053-77
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
@@ -3902,20 +3582,12 @@ databaseChangeLog:
             name: idCentreGestionSuperViseur
         indexName: fk_CentreGestion_CentreGestionSuperViseur1
         tableName: centregestion
-- changeSet:
-    id: 1611930833053-78
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: codeConfidentialite
         indexName: fk_CentreGestion_Confidentialite1
         tableName: centregestion
-- changeSet:
-    id: 1611930833053-79
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
@@ -3923,30 +3595,18 @@ databaseChangeLog:
             name: idFichier
         indexName: fk_CentreGestion_Fichiers1
         tableName: centregestion
-- changeSet:
-    id: 1611930833053-80
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idNiveauCentre
         indexName: fk_CentreGestion_NiveauCentre1
         tableName: centregestion
-- changeSet:
-    id: 1611930833053-81
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idCentreGestion
         indexName: fk_Contact_CentreGestion1
         tableName: contact
-- changeSet:
-    id: 1611930833053-82
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
@@ -3954,40 +3614,24 @@ databaseChangeLog:
             name: idCivilite
         indexName: fk_Contact_Civilite1
         tableName: contact
-- changeSet:
-    id: 1611930833053-83
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idService
         indexName: fk_Contact_Service1
         tableName: contact
-- changeSet:
-    id: 1611930833053-84
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idTypeOffre
         indexName: fk_ContratOffre_TypeOffre1
         tableName: contratoffre
-- changeSet:
-    id: 1611930833053-85
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idCentreGestion
         indexName: fk_Convention_CentreGestion1
         tableName: convention
-- changeSet:
-    id: 1611930833053-86
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
@@ -3995,10 +3639,6 @@ databaseChangeLog:
             name: idContact
         indexName: fk_Convention_Contact1
         tableName: convention
-- changeSet:
-    id: 1611930833053-87
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
@@ -4006,10 +3646,6 @@ databaseChangeLog:
             name: idEnseignant
         indexName: fk_Convention_Enseignant1
         tableName: convention
-- changeSet:
-    id: 1611930833053-88
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
@@ -4020,60 +3656,36 @@ databaseChangeLog:
             name: codeUniversiteEtape
         indexName: fk_Convention_Etape1
         tableName: convention
-- changeSet:
-    id: 1611930833053-89
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idEtudiant
         indexName: fk_Convention_Etudiant1
         tableName: convention
-- changeSet:
-    id: 1611930833053-90
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idIndemnisation
         indexName: fk_Convention_Indemnisation1
         tableName: convention
-- changeSet:
-    id: 1611930833053-91
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: codeLangueConvention
         indexName: fk_Convention_LangueConvention1
         tableName: convention
-- changeSet:
-    id: 1611930833053-92
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idModeValidationStage
         indexName: fk_Convention_ModeValidationStage1
         tableName: convention
-- changeSet:
-    id: 1611930833053-93
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idNatureTravail
         indexName: fk_Convention_NatureTravail1
         tableName: convention
-- changeSet:
-    id: 1611930833053-94
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
@@ -4081,10 +3693,6 @@ databaseChangeLog:
             name: idOffre
         indexName: fk_Convention_Offre1
         tableName: convention
-- changeSet:
-    id: 1611930833053-95
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
@@ -4092,10 +3700,6 @@ databaseChangeLog:
             name: idOrigineStage
         indexName: fk_Convention_OrigineStage1
         tableName: convention
-- changeSet:
-    id: 1611930833053-96
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
@@ -4103,10 +3707,6 @@ databaseChangeLog:
             name: idService
         indexName: fk_Convention_Service1
         tableName: convention
-- changeSet:
-    id: 1611930833053-97
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
@@ -4114,10 +3714,6 @@ databaseChangeLog:
             name: idSignataire
         indexName: fk_Convention_Signataire
         tableName: convention
-- changeSet:
-    id: 1611930833053-98
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
@@ -4125,40 +3721,24 @@ databaseChangeLog:
             name: idStructure
         indexName: fk_Convention_Structure1
         tableName: convention
-- changeSet:
-    id: 1611930833053-99
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idTempsTravail
         indexName: fk_Convention_TempsTravail1
         tableName: convention
-- changeSet:
-    id: 1611930833053-100
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idTheme
         indexName: fk_Convention_Theme1
         tableName: convention
-- changeSet:
-    id: 1611930833053-101
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idTypeConvention
         indexName: fk_Convention_TypeConvention1
         tableName: convention
-- changeSet:
-    id: 1611930833053-102
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
@@ -4167,10 +3747,6 @@ databaseChangeLog:
             name: codeUniversiteUFR
         indexName: fk_Convention_Ufr1
         tableName: convention
-- changeSet:
-    id: 1611930833053-103
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
@@ -4178,10 +3754,6 @@ databaseChangeLog:
             name: idUniteDureeExceptionnelle
         indexName: fk_Convention_UniteDuree1
         tableName: convention
-- changeSet:
-    id: 1611930833053-104
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
@@ -4189,20 +3761,12 @@ databaseChangeLog:
             name: idUniteGratification
         indexName: fk_Convention_UniteGratification1
         tableName: convention
-- changeSet:
-    id: 1611930833053-105
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idCentreGestion
         indexName: fk_CritereGestion_CentreGestion1
         tableName: criteregestion
-- changeSet:
-    id: 1611930833053-106
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
@@ -4211,100 +3775,60 @@ databaseChangeLog:
             name: codeUniversiteAffectation
         indexName: fk_Enseignant_Affectation1
         tableName: enseignant
-- changeSet:
-    id: 1611930833053-107
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: codeFAP_N1
         indexName: fk_FAP_N2_FAP_N11
         tableName: fap_n2
-- changeSet:
-    id: 1611930833053-108
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: codeFAP_N2
         indexName: fk_FAP_N3_FAP_N21
         tableName: fap_n3
-- changeSet:
-    id: 1611930833053-109
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: numFAP_Qualification
         indexName: fk_FAP_N3_FAP_Qualification1
         tableName: fap_n3
-- changeSet:
-    id: 1611930833053-110
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idQualificationSimplifiee
         indexName: fk_FAP_Qualification_QualificationSimplifiee1
         tableName: fap_qualification
-- changeSet:
-    id: 1611930833053-111
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idCentreGestion
         indexName: fk_FicheEvaluation_CentreGestion1
         tableName: ficheevaluation
-- changeSet:
-    id: 1611930833053-112
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: codeNAF_N1
         indexName: fk_NAF_N5_NAF_N11
         tableName: naf_n5
-- changeSet:
-    id: 1611930833053-113
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idModeCandidature
         indexName: fk_OffreModeCandidature_ModeCandidature1
         tableName: offremodecandidature
-- changeSet:
-    id: 1611930833053-114
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idOffre
         indexName: fk_OffreModeCandidature_Offre1
         tableName: offremodecandidature
-- changeSet:
-    id: 1611930833053-115
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idCentreGestion
         indexName: fk_Offre_CentreGestion1
         tableName: offre
-- changeSet:
-    id: 1611930833053-116
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
@@ -4312,10 +3836,6 @@ databaseChangeLog:
             name: idContactCand
         indexName: fk_Offre_Contact1
         tableName: offre
-- changeSet:
-    id: 1611930833053-117
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
@@ -4323,10 +3843,6 @@ databaseChangeLog:
             name: idContactInfo
         indexName: fk_Offre_Contact2
         tableName: offre
-- changeSet:
-    id: 1611930833053-118
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
@@ -4334,10 +3850,6 @@ databaseChangeLog:
             name: idContactProprio
         indexName: fk_Offre_Contact3
         tableName: offre
-- changeSet:
-    id: 1611930833053-119
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
@@ -4345,20 +3857,12 @@ databaseChangeLog:
             name: idContratOffre
         indexName: fk_Offre_ContratOffre1
         tableName: offre
-- changeSet:
-    id: 1611930833053-120
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: codeFAP_N3
         indexName: fk_Offre_FAP_N11
         tableName: offre
-- changeSet:
-    id: 1611930833053-121
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
@@ -4366,10 +3870,6 @@ databaseChangeLog:
             name: idFichier
         indexName: fk_Offre_Fichiers1
         tableName: offre
-- changeSet:
-    id: 1611930833053-122
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
@@ -4377,10 +3877,6 @@ databaseChangeLog:
             name: idNiveauFormation
         indexName: fk_Offre_NiveauFormation1
         tableName: offre
-- changeSet:
-    id: 1611930833053-123
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
@@ -4388,10 +3884,6 @@ databaseChangeLog:
             name: idLieuPays
         indexName: fk_Offre_Pays1
         tableName: offre
-- changeSet:
-    id: 1611930833053-124
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
@@ -4399,10 +3891,6 @@ databaseChangeLog:
             name: idReferent
         indexName: fk_Offre_PersonnelCentreGestion1
         tableName: offre
-- changeSet:
-    id: 1611930833053-125
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
@@ -4410,20 +3898,12 @@ databaseChangeLog:
             name: idQualificationSimplifiee
         indexName: fk_Offre_QualificationSimplifiee1
         tableName: offre
-- changeSet:
-    id: 1611930833053-126
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idStructure
         indexName: fk_Offre_Structure1
         tableName: offre
-- changeSet:
-    id: 1611930833053-127
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
@@ -4431,20 +3911,12 @@ databaseChangeLog:
             name: idTempsTravail
         indexName: fk_Offre_TempsTravail1
         tableName: offre
-- changeSet:
-    id: 1611930833053-128
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idTypeOffre
         indexName: fk_Offre_TypeOffre1
         tableName: offre
-- changeSet:
-    id: 1611930833053-129
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
@@ -4452,40 +3924,24 @@ databaseChangeLog:
             name: idUniteDuree
         indexName: fk_Offre_UniteDuree1
         tableName: offre
-- changeSet:
-    id: 1611930833053-130
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idCentreGestion
         indexName: fk_Offre_has_CentreGestion_CentreGestion1
         tableName: offrediffusion
-- changeSet:
-    id: 1611930833053-131
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idOffre
         indexName: fk_Offre_has_CentreGestion_Offre1
         tableName: offrediffusion
-- changeSet:
-    id: 1611930833053-132
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idCentreGestion
         indexName: fk_PersonnelCentreGestion_CentreGestion1
         tableName: personnelcentregestion
-- changeSet:
-    id: 1611930833053-133
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
@@ -4493,120 +3949,72 @@ databaseChangeLog:
             name: idCivilite
         indexName: fk_PersonnelCentreGestion_Civilite1
         tableName: personnelcentregestion
-- changeSet:
-    id: 1611930833053-134
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idDroitAdministration
         indexName: fk_PersonnelCentreGestion_DroitAdministration1
         tableName: personnelcentregestion
-- changeSet:
-    id: 1611930833053-135
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idFicheEvaluation
         indexName: fk_QuestionSupplementaire_FicheEvaluation1
         tableName: questionsupplementaire
-- changeSet:
-    id: 1611930833053-136
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idConvention
         indexName: fk_ReponseEvaluation_Convention
         tableName: reponseevaluation
-- changeSet:
-    id: 1611930833053-137
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idConvention
         indexName: fk_ReponseSupplementaire_Convention1
         tableName: reponsesupplementaire
-- changeSet:
-    id: 1611930833053-138
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idQuestionSupplementaire
         indexName: fk_ReponseSupplementaire_QuestionSupplementaire1
         tableName: reponsesupplementaire
-- changeSet:
-    id: 1611930833053-139
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idPays
         indexName: fk_Service_Pays1
         tableName: service
-- changeSet:
-    id: 1611930833053-140
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idStructure
         indexName: fk_Service_Structure1
         tableName: service
-- changeSet:
-    id: 1611930833053-141
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idTypeStructure
         indexName: fk_StatutJuridique_TypeStructure1
         tableName: statutjuridique
-- changeSet:
-    id: 1611930833053-142
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idEffectif
         indexName: fk_Structure_Effectif1
         tableName: structure
-- changeSet:
-    id: 1611930833053-143
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: codeNAF_N5
         indexName: fk_Structure_NAF_N51
         tableName: structure
-- changeSet:
-    id: 1611930833053-144
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idPays
         indexName: fk_Structure_Pays1
         tableName: structure
-- changeSet:
-    id: 1611930833053-145
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
@@ -4614,30 +4022,18 @@ databaseChangeLog:
             name: idStatutJuridique
         indexName: fk_Structure_StatutJuridique1
         tableName: structure
-- changeSet:
-    id: 1611930833053-146
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: idTypeStructure
         indexName: fk_Structure_TypeStructure1
         tableName: structure
-- changeSet:
-    id: 1611930833053-147
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
             name: typeCategorie
         indexName: index_categorie
         tableName: critere
-- changeSet:
-    id: 1611930833053-148
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
@@ -4646,10 +4042,6 @@ databaseChangeLog:
             name: prenom
         indexName: index_nom_enseignant
         tableName: enseignant
-- changeSet:
-    id: 1611930833053-149
-    author: vdubus (generated)
-    changes:
     - createIndex:
         columns:
         - column:
@@ -4658,10 +4050,6 @@ databaseChangeLog:
             name: prenom
         indexName: index_nom_etudiant
         tableName: etudiant
-- changeSet:
-    id: 1611930833053-150
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: typeCategorie
         baseTableName: critere
@@ -4673,10 +4061,6 @@ databaseChangeLog:
         referencedColumnNames: idCategorie
         referencedTableName: categorie
         validate: true
-- changeSet:
-    id: 1611930833053-151
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: niveau
         baseTableName: critere
@@ -4688,10 +4072,6 @@ databaseChangeLog:
         referencedColumnNames: idNiveau
         referencedTableName: niveau
         validate: true
-- changeSet:
-    id: 1611930833053-152
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idContact
         baseTableName: accordpartenariat
@@ -4703,10 +4083,6 @@ databaseChangeLog:
         referencedColumnNames: idContact
         referencedTableName: contact
         validate: true
-- changeSet:
-    id: 1611930833053-153
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idStructure
         baseTableName: accordpartenariat
@@ -4718,10 +4094,6 @@ databaseChangeLog:
         referencedColumnNames: idStructure
         referencedTableName: structure
         validate: true
-- changeSet:
-    id: 1611930833053-154
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idCivilite
         baseTableName: adminstructure
@@ -4733,10 +4105,6 @@ databaseChangeLog:
         referencedColumnNames: idCivilite
         referencedTableName: civilite
         validate: true
-- changeSet:
-    id: 1611930833053-155
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idContact
         baseTableName: avenant
@@ -4748,10 +4116,6 @@ databaseChangeLog:
         referencedColumnNames: idContact
         referencedTableName: contact
         validate: true
-- changeSet:
-    id: 1611930833053-156
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idConvention
         baseTableName: avenant
@@ -4763,10 +4127,6 @@ databaseChangeLog:
         referencedColumnNames: idConvention
         referencedTableName: convention
         validate: true
-- changeSet:
-    id: 1611930833053-157
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idService
         baseTableName: avenant
@@ -4778,10 +4138,6 @@ databaseChangeLog:
         referencedColumnNames: idService
         referencedTableName: service
         validate: true
-- changeSet:
-    id: 1611930833053-158
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idCentreGestionSuperViseur
         baseTableName: centregestion
@@ -4793,10 +4149,6 @@ databaseChangeLog:
         referencedColumnNames: idCentreGestionSuperViseur
         referencedTableName: centregestionsuperviseur
         validate: true
-- changeSet:
-    id: 1611930833053-159
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: codeConfidentialite
         baseTableName: centregestion
@@ -4808,10 +4160,6 @@ databaseChangeLog:
         referencedColumnNames: codeConfidentialite
         referencedTableName: confidentialite
         validate: true
-- changeSet:
-    id: 1611930833053-160
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idFichier
         baseTableName: centregestion
@@ -4823,10 +4171,6 @@ databaseChangeLog:
         referencedColumnNames: idFichier
         referencedTableName: fichiers
         validate: true
-- changeSet:
-    id: 1611930833053-161
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idNiveauCentre
         baseTableName: centregestion
@@ -4838,10 +4182,6 @@ databaseChangeLog:
         referencedColumnNames: idNiveauCentre
         referencedTableName: niveaucentre
         validate: true
-- changeSet:
-    id: 1611930833053-162
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idCentreGestion
         baseTableName: contact
@@ -4853,10 +4193,6 @@ databaseChangeLog:
         referencedColumnNames: idCentreGestion
         referencedTableName: centregestion
         validate: true
-- changeSet:
-    id: 1611930833053-163
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idCivilite
         baseTableName: contact
@@ -4868,10 +4204,6 @@ databaseChangeLog:
         referencedColumnNames: idCivilite
         referencedTableName: civilite
         validate: true
-- changeSet:
-    id: 1611930833053-164
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idService
         baseTableName: contact
@@ -4883,10 +4215,6 @@ databaseChangeLog:
         referencedColumnNames: idService
         referencedTableName: service
         validate: true
-- changeSet:
-    id: 1611930833053-165
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idTypeOffre
         baseTableName: contratoffre
@@ -4898,10 +4226,6 @@ databaseChangeLog:
         referencedColumnNames: idTypeOffre
         referencedTableName: typeoffre
         validate: true
-- changeSet:
-    id: 1611930833053-166
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idCentreGestion
         baseTableName: convention
@@ -4913,10 +4237,6 @@ databaseChangeLog:
         referencedColumnNames: idCentreGestion
         referencedTableName: centregestion
         validate: true
-- changeSet:
-    id: 1611930833053-167
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idContact
         baseTableName: convention
@@ -4928,10 +4248,6 @@ databaseChangeLog:
         referencedColumnNames: idContact
         referencedTableName: contact
         validate: true
-- changeSet:
-    id: 1611930833053-168
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idEnseignant
         baseTableName: convention
@@ -4943,10 +4259,6 @@ databaseChangeLog:
         referencedColumnNames: idEnseignant
         referencedTableName: enseignant
         validate: true
-- changeSet:
-    id: 1611930833053-169
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: codeEtape,codeVersionEtape,codeUniversiteEtape
         baseTableName: convention
@@ -4958,10 +4270,6 @@ databaseChangeLog:
         referencedColumnNames: codeEtape,codeVersionEtape,codeUniversite
         referencedTableName: etape
         validate: true
-- changeSet:
-    id: 1611930833053-170
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idEtudiant
         baseTableName: convention
@@ -4973,10 +4281,6 @@ databaseChangeLog:
         referencedColumnNames: idEtudiant
         referencedTableName: etudiant
         validate: true
-- changeSet:
-    id: 1611930833053-171
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idIndemnisation
         baseTableName: convention
@@ -4988,10 +4292,6 @@ databaseChangeLog:
         referencedColumnNames: idIndemnisation
         referencedTableName: indemnisation
         validate: true
-- changeSet:
-    id: 1611930833053-172
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: codeLangueConvention
         baseTableName: convention
@@ -5003,10 +4303,6 @@ databaseChangeLog:
         referencedColumnNames: codeLangueConvention
         referencedTableName: langueconvention
         validate: true
-- changeSet:
-    id: 1611930833053-173
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idModeValidationStage
         baseTableName: convention
@@ -5018,10 +4314,6 @@ databaseChangeLog:
         referencedColumnNames: idModeValidationStage
         referencedTableName: modevalidationstage
         validate: true
-- changeSet:
-    id: 1611930833053-174
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idNatureTravail
         baseTableName: convention
@@ -5033,10 +4325,6 @@ databaseChangeLog:
         referencedColumnNames: idNatureTravail
         referencedTableName: naturetravail
         validate: true
-- changeSet:
-    id: 1611930833053-175
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idOffre
         baseTableName: convention
@@ -5048,10 +4336,6 @@ databaseChangeLog:
         referencedColumnNames: idOffre
         referencedTableName: offre
         validate: true
-- changeSet:
-    id: 1611930833053-176
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idOrigineStage
         baseTableName: convention
@@ -5063,10 +4347,6 @@ databaseChangeLog:
         referencedColumnNames: idOrigineStage
         referencedTableName: originestage
         validate: true
-- changeSet:
-    id: 1611930833053-177
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idService
         baseTableName: convention
@@ -5078,10 +4358,6 @@ databaseChangeLog:
         referencedColumnNames: idService
         referencedTableName: service
         validate: true
-- changeSet:
-    id: 1611930833053-178
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idSignataire
         baseTableName: convention
@@ -5093,10 +4369,6 @@ databaseChangeLog:
         referencedColumnNames: idContact
         referencedTableName: contact
         validate: true
-- changeSet:
-    id: 1611930833053-179
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idStructure
         baseTableName: convention
@@ -5108,10 +4380,6 @@ databaseChangeLog:
         referencedColumnNames: idStructure
         referencedTableName: structure
         validate: true
-- changeSet:
-    id: 1611930833053-180
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idTempsTravail
         baseTableName: convention
@@ -5123,10 +4391,6 @@ databaseChangeLog:
         referencedColumnNames: idTempsTravail
         referencedTableName: tempstravail
         validate: true
-- changeSet:
-    id: 1611930833053-181
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idTheme
         baseTableName: convention
@@ -5138,10 +4402,6 @@ databaseChangeLog:
         referencedColumnNames: idTheme
         referencedTableName: theme
         validate: true
-- changeSet:
-    id: 1611930833053-182
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idTypeConvention
         baseTableName: convention
@@ -5153,10 +4413,6 @@ databaseChangeLog:
         referencedColumnNames: idTypeConvention
         referencedTableName: typeconvention
         validate: true
-- changeSet:
-    id: 1611930833053-183
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: codeUFR,codeUniversiteUFR
         baseTableName: convention
@@ -5168,10 +4424,6 @@ databaseChangeLog:
         referencedColumnNames: codeUFR,codeUniversite
         referencedTableName: ufr
         validate: true
-- changeSet:
-    id: 1611930833053-184
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idUniteDureeExceptionnelle
         baseTableName: convention
@@ -5183,10 +4435,6 @@ databaseChangeLog:
         referencedColumnNames: idUniteDuree
         referencedTableName: uniteduree
         validate: true
-- changeSet:
-    id: 1611930833053-185
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idUniteGratification
         baseTableName: convention
@@ -5198,10 +4446,6 @@ databaseChangeLog:
         referencedColumnNames: idUniteGratification
         referencedTableName: unitegratification
         validate: true
-- changeSet:
-    id: 1611930833053-186
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idCentreGestion
         baseTableName: criteregestion
@@ -5213,10 +4457,6 @@ databaseChangeLog:
         referencedColumnNames: idCentreGestion
         referencedTableName: centregestion
         validate: true
-- changeSet:
-    id: 1611930833053-187
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: codeAffectation,codeUniversiteAffectation
         baseTableName: enseignant
@@ -5228,10 +4468,6 @@ databaseChangeLog:
         referencedColumnNames: codeAffectation,codeUniversite
         referencedTableName: affectation
         validate: true
-- changeSet:
-    id: 1611930833053-188
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: codeFAP_N1
         baseTableName: fap_n2
@@ -5243,10 +4479,6 @@ databaseChangeLog:
         referencedColumnNames: codeFAP_N1
         referencedTableName: fap_n1
         validate: true
-- changeSet:
-    id: 1611930833053-189
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: codeFAP_N2
         baseTableName: fap_n3
@@ -5258,10 +4490,6 @@ databaseChangeLog:
         referencedColumnNames: codeFAP_N2
         referencedTableName: fap_n2
         validate: true
-- changeSet:
-    id: 1611930833053-190
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: numFAP_Qualification
         baseTableName: fap_n3
@@ -5273,10 +4501,6 @@ databaseChangeLog:
         referencedColumnNames: numFAP_Qualification
         referencedTableName: fap_qualification
         validate: true
-- changeSet:
-    id: 1611930833053-191
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idQualificationSimplifiee
         baseTableName: fap_qualification
@@ -5288,10 +4512,6 @@ databaseChangeLog:
         referencedColumnNames: idQualificationSimplifiee
         referencedTableName: fap_qualificationsimplifiee
         validate: true
-- changeSet:
-    id: 1611930833053-192
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idCentreGestion
         baseTableName: ficheevaluation
@@ -5303,10 +4523,6 @@ databaseChangeLog:
         referencedColumnNames: idCentreGestion
         referencedTableName: centregestion
         validate: true
-- changeSet:
-    id: 1611930833053-193
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: codeNAF_N1
         baseTableName: naf_n5
@@ -5318,10 +4534,6 @@ databaseChangeLog:
         referencedColumnNames: codeNAF_N1
         referencedTableName: naf_n1
         validate: true
-- changeSet:
-    id: 1611930833053-194
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idModeCandidature
         baseTableName: offremodecandidature
@@ -5333,10 +4545,6 @@ databaseChangeLog:
         referencedColumnNames: idModeCandidature
         referencedTableName: modecandidature
         validate: true
-- changeSet:
-    id: 1611930833053-195
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idOffre
         baseTableName: offremodecandidature
@@ -5348,10 +4556,6 @@ databaseChangeLog:
         referencedColumnNames: idOffre
         referencedTableName: offre
         validate: true
-- changeSet:
-    id: 1611930833053-196
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idCentreGestion
         baseTableName: offre
@@ -5363,10 +4567,6 @@ databaseChangeLog:
         referencedColumnNames: idCentreGestion
         referencedTableName: centregestion
         validate: true
-- changeSet:
-    id: 1611930833053-197
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idContactCand
         baseTableName: offre
@@ -5378,10 +4578,6 @@ databaseChangeLog:
         referencedColumnNames: idContact
         referencedTableName: contact
         validate: true
-- changeSet:
-    id: 1611930833053-198
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idContactInfo
         baseTableName: offre
@@ -5393,10 +4589,6 @@ databaseChangeLog:
         referencedColumnNames: idContact
         referencedTableName: contact
         validate: true
-- changeSet:
-    id: 1611930833053-199
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idContactProprio
         baseTableName: offre
@@ -5408,10 +4600,6 @@ databaseChangeLog:
         referencedColumnNames: idContact
         referencedTableName: contact
         validate: true
-- changeSet:
-    id: 1611930833053-200
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idContratOffre
         baseTableName: offre
@@ -5423,10 +4611,6 @@ databaseChangeLog:
         referencedColumnNames: idContratOffre
         referencedTableName: contratoffre
         validate: true
-- changeSet:
-    id: 1611930833053-201
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: codeFAP_N3
         baseTableName: offre
@@ -5438,10 +4622,6 @@ databaseChangeLog:
         referencedColumnNames: codeFAP_N1
         referencedTableName: fap_n1
         validate: true
-- changeSet:
-    id: 1611930833053-202
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idFichier
         baseTableName: offre
@@ -5453,10 +4633,6 @@ databaseChangeLog:
         referencedColumnNames: idFichier
         referencedTableName: fichiers
         validate: true
-- changeSet:
-    id: 1611930833053-203
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idNiveauFormation
         baseTableName: offre
@@ -5468,10 +4644,6 @@ databaseChangeLog:
         referencedColumnNames: idNiveauFormation
         referencedTableName: niveauformation
         validate: true
-- changeSet:
-    id: 1611930833053-204
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idLieuPays
         baseTableName: offre
@@ -5483,10 +4655,6 @@ databaseChangeLog:
         referencedColumnNames: idPays
         referencedTableName: pays
         validate: true
-- changeSet:
-    id: 1611930833053-205
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idReferent
         baseTableName: offre
@@ -5498,10 +4666,6 @@ databaseChangeLog:
         referencedColumnNames: idPersonnelCentreGestion
         referencedTableName: personnelcentregestion
         validate: true
-- changeSet:
-    id: 1611930833053-206
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idQualificationSimplifiee
         baseTableName: offre
@@ -5513,10 +4677,6 @@ databaseChangeLog:
         referencedColumnNames: idQualificationSimplifiee
         referencedTableName: fap_qualificationsimplifiee
         validate: true
-- changeSet:
-    id: 1611930833053-207
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idStructure
         baseTableName: offre
@@ -5528,10 +4688,6 @@ databaseChangeLog:
         referencedColumnNames: idStructure
         referencedTableName: structure
         validate: true
-- changeSet:
-    id: 1611930833053-208
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idTempsTravail
         baseTableName: offre
@@ -5543,10 +4699,6 @@ databaseChangeLog:
         referencedColumnNames: idTempsTravail
         referencedTableName: tempstravail
         validate: true
-- changeSet:
-    id: 1611930833053-209
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idTypeOffre
         baseTableName: offre
@@ -5558,10 +4710,6 @@ databaseChangeLog:
         referencedColumnNames: idTypeOffre
         referencedTableName: typeoffre
         validate: true
-- changeSet:
-    id: 1611930833053-210
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idUniteDuree
         baseTableName: offre
@@ -5573,10 +4721,6 @@ databaseChangeLog:
         referencedColumnNames: idUniteDuree
         referencedTableName: uniteduree
         validate: true
-- changeSet:
-    id: 1611930833053-211
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idCentreGestion
         baseTableName: offrediffusion
@@ -5588,10 +4732,6 @@ databaseChangeLog:
         referencedColumnNames: idCentreGestion
         referencedTableName: centregestion
         validate: true
-- changeSet:
-    id: 1611930833053-212
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idOffre
         baseTableName: offrediffusion
@@ -5603,10 +4743,6 @@ databaseChangeLog:
         referencedColumnNames: idOffre
         referencedTableName: offre
         validate: true
-- changeSet:
-    id: 1611930833053-213
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idCentreGestion
         baseTableName: personnelcentregestion
@@ -5618,10 +4754,6 @@ databaseChangeLog:
         referencedColumnNames: idCentreGestion
         referencedTableName: centregestion
         validate: true
-- changeSet:
-    id: 1611930833053-214
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idCivilite
         baseTableName: personnelcentregestion
@@ -5633,10 +4765,6 @@ databaseChangeLog:
         referencedColumnNames: idCivilite
         referencedTableName: civilite
         validate: true
-- changeSet:
-    id: 1611930833053-215
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idDroitAdministration
         baseTableName: personnelcentregestion
@@ -5648,10 +4776,6 @@ databaseChangeLog:
         referencedColumnNames: idDroitAdministration
         referencedTableName: droitadministration
         validate: true
-- changeSet:
-    id: 1611930833053-216
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idFicheEvaluation
         baseTableName: questionsupplementaire
@@ -5663,10 +4787,6 @@ databaseChangeLog:
         referencedColumnNames: idFicheEvaluation
         referencedTableName: ficheevaluation
         validate: true
-- changeSet:
-    id: 1611930833053-217
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idConvention
         baseTableName: reponseevaluation
@@ -5678,10 +4798,6 @@ databaseChangeLog:
         referencedColumnNames: idConvention
         referencedTableName: convention
         validate: true
-- changeSet:
-    id: 1611930833053-218
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idFicheEvaluation
         baseTableName: reponseevaluation
@@ -5693,10 +4809,6 @@ databaseChangeLog:
         referencedColumnNames: idFicheEvaluation
         referencedTableName: ficheevaluation
         validate: true
-- changeSet:
-    id: 1611930833053-219
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idConvention
         baseTableName: reponsesupplementaire
@@ -5708,10 +4820,6 @@ databaseChangeLog:
         referencedColumnNames: idConvention
         referencedTableName: convention
         validate: true
-- changeSet:
-    id: 1611930833053-220
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idQuestionSupplementaire
         baseTableName: reponsesupplementaire
@@ -5723,10 +4831,6 @@ databaseChangeLog:
         referencedColumnNames: idQuestionSupplementaire
         referencedTableName: questionsupplementaire
         validate: true
-- changeSet:
-    id: 1611930833053-221
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idPays
         baseTableName: service
@@ -5738,10 +4842,6 @@ databaseChangeLog:
         referencedColumnNames: idPays
         referencedTableName: pays
         validate: true
-- changeSet:
-    id: 1611930833053-222
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idStructure
         baseTableName: service
@@ -5753,10 +4853,6 @@ databaseChangeLog:
         referencedColumnNames: idStructure
         referencedTableName: structure
         validate: true
-- changeSet:
-    id: 1611930833053-223
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idTypeStructure
         baseTableName: statutjuridique
@@ -5768,10 +4864,6 @@ databaseChangeLog:
         referencedColumnNames: idTypeStructure
         referencedTableName: typestructure
         validate: true
-- changeSet:
-    id: 1611930833053-224
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idEffectif
         baseTableName: structure
@@ -5783,10 +4875,6 @@ databaseChangeLog:
         referencedColumnNames: idEffectif
         referencedTableName: effectif
         validate: true
-- changeSet:
-    id: 1611930833053-225
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: codeNAF_N5
         baseTableName: structure
@@ -5798,10 +4886,6 @@ databaseChangeLog:
         referencedColumnNames: codeNAF_N5
         referencedTableName: naf_n5
         validate: true
-- changeSet:
-    id: 1611930833053-226
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idPays
         baseTableName: structure
@@ -5813,10 +4897,6 @@ databaseChangeLog:
         referencedColumnNames: idPays
         referencedTableName: pays
         validate: true
-- changeSet:
-    id: 1611930833053-227
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idStatutJuridique
         baseTableName: structure
@@ -5828,10 +4908,6 @@ databaseChangeLog:
         referencedColumnNames: idStatutJuridique
         referencedTableName: statutjuridique
         validate: true
-- changeSet:
-    id: 1611930833053-228
-    author: vdubus (generated)
-    changes:
     - addForeignKeyConstraint:
         baseColumnNames: idTypeStructure
         baseTableName: structure
