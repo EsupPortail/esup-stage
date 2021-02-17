@@ -25,6 +25,7 @@ import fr.esupportail.esupstage.domain.jpa.entities.Indemnisation;
 import fr.esupportail.esupstage.domain.jpa.entities.LangueConvention;
 import fr.esupportail.esupstage.domain.jpa.entities.ModeValidationStage;
 import fr.esupportail.esupstage.domain.jpa.entities.NatureTravail;
+import fr.esupportail.esupstage.domain.jpa.entities.NbJourHebdo;
 import fr.esupportail.esupstage.domain.jpa.entities.NiveauCentre;
 import fr.esupportail.esupstage.domain.jpa.entities.QuestionSupplementaire;
 import fr.esupportail.esupstage.domain.jpa.entities.ReponseSupplementaire;
@@ -132,7 +133,7 @@ public class ReponseSupplementaireRepositoryTest extends AbstractTest {
 		convention.setIdAssurance(1);
 		convention.setIdModeVersGratification(1);
 		convention.setLoginCreation("jdoe");
-		convention.setNbJoursHebdo("1");
+		convention.setNbJoursHebdo(NbJourHebdo.NB_JOURS_1_0);
 		convention.setSujetStage("subject");
 		convention.setTemConfSujetTeme("s");
 		convention.setEtudiant(etudiant);

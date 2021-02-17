@@ -24,6 +24,7 @@ import fr.esupportail.esupstage.domain.jpa.entities.Indemnisation;
 import fr.esupportail.esupstage.domain.jpa.entities.LangueConvention;
 import fr.esupportail.esupstage.domain.jpa.entities.ModeValidationStage;
 import fr.esupportail.esupstage.domain.jpa.entities.NatureTravail;
+import fr.esupportail.esupstage.domain.jpa.entities.NbJourHebdo;
 import fr.esupportail.esupstage.domain.jpa.entities.NiveauCentre;
 import fr.esupportail.esupstage.domain.jpa.entities.TempsTravail;
 import fr.esupportail.esupstage.domain.jpa.entities.Theme;
@@ -126,7 +127,7 @@ class ConventionRepositoryTest extends AbstractTest {
 		convention.setIdAssurance(1);
 		convention.setIdModeVersGratification(1);
 		convention.setLoginCreation("login");
-		convention.setNbJoursHebdo("1");
+		convention.setNbJoursHebdo(NbJourHebdo.NB_JOURS_1_0);
 		convention.setSujetStage("subject");
 		convention.setTemConfSujetTeme("s");
 		convention.setEtudiant(etudiant);
@@ -158,7 +159,7 @@ class ConventionRepositoryTest extends AbstractTest {
 		assertEquals(1, convention.getIdModeVersGratification());
 		assertEquals(1, convention.getIdAssurance());
 		assertEquals("login", convention.getLoginCreation());
-		assertEquals("1", convention.getNbJoursHebdo());
+		assertEquals(NbJourHebdo.NB_JOURS_1_0, convention.getNbJoursHebdo());
 		assertEquals("subject", convention.getSujetStage());
 		assertEquals("s", convention.getTemConfSujetTeme());
 		assertEquals("125458", convention.getEtudiant().getNumEtudiant());

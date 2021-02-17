@@ -141,8 +141,10 @@ public class Convention implements Serializable {
     private String nbConges;
     @Column(length = 5)
     private String nbHeuresHebdo;
-    @Column(nullable = false, length = 1)
-    private String nbJoursHebdo;
+    
+    @Column(nullable = false)
+    private NbJourHebdo nbJoursHebdo;
+    
     @Column(length = 100)
     private String nomEtabRef;
     @Column(length = 30)
