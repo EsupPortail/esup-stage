@@ -1,5 +1,6 @@
 package fr.esupportail.esupstage.domain.jpa;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.Rollback;
 
 import fr.esupportail.esupstage.AbstractTest;
@@ -35,6 +37,7 @@ import fr.esupportail.esupstage.domain.jpa.repositories.AvenantRepository;
 
 @Rollback
 @Transactional
+@WithMockUser(username = "jdoe", password = "jdoe")
 class AvenantRepositoryTest extends AbstractTest {
 
 	private final EntityManager entityManager;
@@ -144,9 +147,7 @@ class AvenantRepositoryTest extends AbstractTest {
 		entityManager.persist(convention);
 
 		final Avenant avenant = new Avenant();
-		avenant.setDateCreation(new Date(0));
 		avenant.setInterruptionStage(false);
-		avenant.setLoginCreation("login");
 		avenant.setModificationEnseignant(false);
 		avenant.setModificationMontantGratification(false);
 		avenant.setModificationPeriode(false);
@@ -169,10 +170,11 @@ class AvenantRepositoryTest extends AbstractTest {
 
 		final Avenant avenant = result.get();
 		assertEquals("title", avenant.getTitreAvenant());
-		assertEquals(new Date(0), avenant.getDateCreation());
+		assertNotNull(avenant.getCreatedDate());
 		assertFalse(avenant.isInterruptionStage());
 		assertFalse(avenant.isModificationEnseignant());
 		assertTrue(avenant.isRupture());
+		assertEquals("jdoe", avenant.getCreatedBy());
 		assertEquals("login", avenant.getConvention().getLoginCreation());
 		assertEquals("125458", avenant.getConvention().getEtudiant().getNumEtudiant());
 		assertEquals("indem", avenant.getConvention().getIndemnisation().getLibelleIndemnisation());

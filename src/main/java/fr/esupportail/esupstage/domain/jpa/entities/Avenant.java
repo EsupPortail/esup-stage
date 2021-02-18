@@ -1,13 +1,22 @@
 package fr.esupportail.esupstage.domain.jpa.entities;
 
 
+import java.time.LocalDate;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.io.Serializable;
-import javax.persistence.*;
-import java.util.Date;
 
 /**
  * The persistent class for the Avenant database table.
@@ -19,7 +28,7 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @NamedQuery(name = "Avenant.findAll", query = "SELECT a FROM Avenant a")
-public class Avenant implements Serializable {
+public class Avenant extends Auditable<String> {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -27,23 +36,16 @@ public class Avenant implements Serializable {
     private Integer idAvenant;
     @Lob
     private String commentaireRupture;
-    @Column(nullable = false)
-    private Date dateCreation;
-    private Date dateDebutInterruption;
-    private Date dateDebutStage;
-    private Date dateFinInterruption;
-    private Date dateFinStage;
-    private Date dateModif;
-    private Date dateRupture;
+    private LocalDate dateDebutInterruption;
+    private LocalDate dateDebutStage;
+    private LocalDate dateFinInterruption;
+    private LocalDate dateFinStage;
+    private LocalDate dateRupture;
     private Integer idEnseignant;
     private Integer idUniteDureeGratification;
     private Integer idUniteGratification;
     @Column(nullable = false)
     private boolean interruptionStage;
-    @Column(nullable = false, length = 50)
-    private String loginCreation;
-    @Column(length = 50)
-    private String loginModif;
     @Column(nullable = false)
     private boolean modificationEnseignant;
     private boolean modificationLieu;
