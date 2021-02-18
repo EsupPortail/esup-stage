@@ -1,15 +1,26 @@
 package fr.esupportail.esupstage.domain.jpa.entities;
 
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.io.Serializable;
-import javax.persistence.*;
-import java.util.Date;
-import java.util.List;
 
 /**
  * The persistent class for the Offre database table.
@@ -21,7 +32,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @NamedQuery(name = "Offre.findAll", query = "SELECT o FROM Offre o")
-public class Offre implements Serializable {
+public class Offre extends Auditable<String> {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -61,11 +72,8 @@ public class Offre implements Serializable {
     private String commentaireTempsTravail;
     @Lob
     private String competences;
-    @Column(nullable = false)
-    private Date dateCreation;
     private Date dateDiffusion;
     private Date dateFinDiffusion;
-    private Date dateModif;
     private Date dateStopDiffusion;
     private Date dateStopValidation;
     private Date dateValidation;
@@ -97,12 +105,8 @@ public class Offre implements Serializable {
     private String lieuCodePostal;
     @Column(length = 200)
     private String lieuCommune;
-    @Column(nullable = false, length = 50)
-    private String loginCreation;
     @Column(length = 50)
     private String loginDiffusion;
-    @Column(length = 50)
-    private String loginModif;
     @Column(length = 50)
     private String loginRejetValidation;
     @Column(length = 50)

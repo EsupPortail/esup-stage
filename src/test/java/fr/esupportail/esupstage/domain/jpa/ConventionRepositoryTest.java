@@ -1,5 +1,6 @@
 package fr.esupportail.esupstage.domain.jpa;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.Rollback;
 
 import fr.esupportail.esupstage.AbstractTest;
@@ -33,6 +35,7 @@ import fr.esupportail.esupstage.domain.jpa.repositories.ConventionRepository;
 
 @Rollback
 @Transactional
+@WithMockUser(username = "jdoe", password = "jdoe")
 class ConventionRepositoryTest extends AbstractTest {
 
 	private final EntityManager entityManager;
@@ -66,9 +69,7 @@ class ConventionRepositoryTest extends AbstractTest {
 		final CentreGestion centreGestion = new CentreGestion();
 		centreGestion.setAutorisationEtudiantCreationConvention(true);
 		centreGestion.setCodeUniversite("codeuniv");
-		centreGestion.setDateCreation(new Date());
 		centreGestion.setIdModeValidationStage(1);
-		centreGestion.setLoginCreation("login");
 		centreGestion.setConfidentialite(confidentialite);
 		centreGestion.setNiveauCentre(niveauCentre);
 		entityManager.persist(centreGestion);
@@ -111,22 +112,18 @@ class ConventionRepositoryTest extends AbstractTest {
 
 		final Etudiant etudiant = new Etudiant();
 		etudiant.setCodeUniversite("code");
-		etudiant.setDateCreation(new Date(0));
 		etudiant.setIdentEtudiant("ident");
-		etudiant.setLoginCreation("login");
 		etudiant.setNom("Name");
 		etudiant.setNumEtudiant("125458");
 		etudiant.setPrenom("Firstname");
 		entityManager.persist(etudiant);
 
 		final Convention convention = new Convention();
-		convention.setDateCreation(new Date(0));
 		convention.setDateDebutStage(new Date(0));
 		convention.setDateFinStage(new Date(0));
 		convention.setDureeStage(100);
 		convention.setIdAssurance(1);
 		convention.setIdModeVersGratification(1);
-		convention.setLoginCreation("login");
 		convention.setNbJoursHebdo(NbJourHebdo.NB_JOURS_1_0);
 		convention.setSujetStage("subject");
 		convention.setTemConfSujetTeme("s");
@@ -152,13 +149,13 @@ class ConventionRepositoryTest extends AbstractTest {
 		assertTrue(result.isPresent(), "We should have found our Convention");
 
 		final Convention convention = result.get();
-		assertEquals(new Date(0), convention.getDateCreation());
+		assertNotNull(convention.getCreatedDate());
 		assertEquals(new Date(0), convention.getDateDebutStage());
 		assertEquals(new Date(0), convention.getDateFinStage());
 		assertEquals(100, convention.getDureeStage());
 		assertEquals(1, convention.getIdModeVersGratification());
 		assertEquals(1, convention.getIdAssurance());
-		assertEquals("login", convention.getLoginCreation());
+		assertEquals("jdoe", convention.getCreatedBy());
 		assertEquals(NbJourHebdo.NB_JOURS_1_0, convention.getNbJoursHebdo());
 		assertEquals("subject", convention.getSujetStage());
 		assertEquals("s", convention.getTemConfSujetTeme());
@@ -170,7 +167,7 @@ class ConventionRepositoryTest extends AbstractTest {
 		assertEquals("libel", convention.getTempsTravail().getLibelleTempsTravail());
 		assertEquals("libel", convention.getTheme().getLibelleTheme());
 		assertEquals("libel", convention.getTypeConvention().getLibelleTypeConvention());
-		assertEquals("login", convention.getCentreGestion().getLoginCreation());
+		assertEquals("jdoe", convention.getCentreGestion().getCreatedBy());
 	}
 
 }

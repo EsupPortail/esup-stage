@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -19,25 +21,18 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @NamedQuery(name = "AdminStructure.findAll", query = "SELECT a FROM AdminStructure a")
-public class AdminStructure implements Serializable {
+public class AdminStructure extends Auditable<String> {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(unique = true, nullable = false)
     private Integer idAdminStructure;
-    private Date avantDerniereConnexion;
-    @Column(nullable = false)
-    private Date dateCreation;
-    private Date dateModif;
-    private Date derniereConnexion;
+    private LocalDateTime avantDerniereConnexion;
+    private LocalDateTime derniereConnexion;
     @Column(length = 50)
     private String eppn;
     @Column(length = 50)
     private String login;
-    @Column(nullable = false, length = 50)
-    private String loginCreation;
-    @Column(length = 50)
-    private String loginModif;
     @Column(length = 50)
     private String mail;
     @Column(length = 200)

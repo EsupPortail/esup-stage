@@ -3,7 +3,6 @@ package fr.esupportail.esupstage.domain.jpa;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Calendar;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
@@ -13,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.Rollback;
 
 import fr.esupportail.esupstage.AbstractTest;
@@ -25,6 +25,7 @@ import fr.esupportail.esupstage.domain.jpa.repositories.QuestionSupplementaireRe
 
 @Rollback
 @Transactional
+@WithMockUser(username = "jdoe", password = "jdoe")
 public class QuestionSupplementaireRepositoryTest extends AbstractTest {
 
 	private final EntityManager entityManager;
@@ -56,9 +57,7 @@ public class QuestionSupplementaireRepositoryTest extends AbstractTest {
 		final CentreGestion centreGestion = new CentreGestion();
 		centreGestion.setAutorisationEtudiantCreationConvention(true);
 		centreGestion.setCodeUniversite("CodeUniv");
-		centreGestion.setDateCreation(Calendar.getInstance().getTime());
 		centreGestion.setIdModeValidationStage(1);
-		centreGestion.setLoginCreation("jdoe");
 		centreGestion.setConfidentialite(confidentialite);
 		centreGestion.setNiveauCentre(niveauCentre);
 		entityManager.persist(centreGestion);

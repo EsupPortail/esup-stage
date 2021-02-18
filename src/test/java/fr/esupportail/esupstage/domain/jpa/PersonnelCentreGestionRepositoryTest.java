@@ -3,7 +3,6 @@ package fr.esupportail.esupstage.domain.jpa;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Calendar;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
@@ -69,9 +68,7 @@ public class PersonnelCentreGestionRepositoryTest extends AbstractTest {
 		final CentreGestion centreGestion = new CentreGestion();
 		centreGestion.setAutorisationEtudiantCreationConvention(true);
 		centreGestion.setCodeUniversite("CodeUniv");
-		centreGestion.setDateCreation(Calendar.getInstance().getTime());
 		centreGestion.setIdModeValidationStage(1);
-		centreGestion.setLoginCreation("jdoe");
 		centreGestion.setConfidentialite(confidentialite);
 		centreGestion.setNiveauCentre(niveauCentre);
 		entityManager.persist(centreGestion);

@@ -1,13 +1,22 @@
 package fr.esupportail.esupstage.domain.jpa.entities;
 
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.io.Serializable;
-import javax.persistence.*;
-import java.util.Date;
-import java.util.List;
 
 /**
  * The persistent class for the CentreGestion database table.
@@ -19,7 +28,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @NamedQuery(name = "CentreGestion.findAll", query = "SELECT c FROM CentreGestion c")
-public class CentreGestion implements Serializable {
+public class CentreGestion extends Auditable<String> {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -42,18 +51,11 @@ public class CentreGestion implements Serializable {
     @Column(length = 200)
     private String commune;
     @Column(nullable = false)
-    private Date dateCreation;
-    private Date dateModif;
-    @Column(nullable = false)
     private boolean depotAnonyme;
     @Column(length = 20)
     private String fax;
     @Column(nullable = false)
     private Integer idModeValidationStage;
-    @Column(nullable = false, length = 50)
-    private String loginCreation;
-    @Column(length = 50)
-    private String loginModif;
     @Column(length = 50)
     private String mail;
     @Column(length = 100)

@@ -1,13 +1,23 @@
 package fr.esupportail.esupstage.domain.jpa.entities;
 
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.io.Serializable;
-import javax.persistence.*;
-import java.util.Date;
-import java.util.List;
 
 /**
  * The persistent class for the Contact database table.
@@ -19,7 +29,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @NamedQuery(name = "Contact.findAll", query = "SELECT c FROM Contact c")
-public class Contact implements Serializable {
+public class Contact extends Auditable<String> {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -28,9 +38,6 @@ public class Contact implements Serializable {
     private Date avantDerniereConnexion;
     @Lob
     private String commentaire;
-    @Column(nullable = false)
-    private Date dateCreation;
-    private Date dateModif;
     private Date derniereConnexion;
     @Column(length = 50)
     private String fax;
@@ -39,12 +46,8 @@ public class Contact implements Serializable {
     private Date infosAJour;
     @Column(length = 12)
     private String login;
-    @Column(nullable = false, length = 50)
-    private String loginCreation;
     @Column(length = 50)
     private String loginInfosAJour;
-    @Column(length = 50)
-    private String loginModif;
     @Column(length = 50)
     private String mail;
     @Column(length = 200)

@@ -5,3 +5,6 @@ databaseChangeLog:
 - include:
     file: db.changelog-init-hibernate.yaml
     relativeToChangelogFile: true
+- include:
+    file: db.changelog-update-auditable-and-dates.yaml
+    relativeToChangelogFile: true

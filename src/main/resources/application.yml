@@ -6,7 +6,7 @@ spring:
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: none
+      ddl-auto: validate
       naming:
         physical-strategy: fr.esupportail.esupstage.configuration.jpa.ESUPPhysicalNamingStrategy
 joinfaces:

@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.Rollback;
 
 import fr.esupportail.esupstage.AbstractTest;
@@ -36,6 +37,7 @@ import fr.esupportail.esupstage.domain.jpa.repositories.ReponseEvaluationReposit
 
 @Rollback
 @Transactional
+@WithMockUser(username = "jdoe", password = "jdoe")
 public class ReponseEvaluationRepositoryTest extends AbstractTest {
 
 	private final EntityManager entityManager;
@@ -67,9 +69,7 @@ public class ReponseEvaluationRepositoryTest extends AbstractTest {
 		final CentreGestion centreGestion = new CentreGestion();
 		centreGestion.setAutorisationEtudiantCreationConvention(true);
 		centreGestion.setCodeUniversite("CodeUniv");
-		centreGestion.setDateCreation(Calendar.getInstance().getTime());
 		centreGestion.setIdModeValidationStage(1);
-		centreGestion.setLoginCreation("jdoe");
 		centreGestion.setConfidentialite(confidentialite);
 		centreGestion.setNiveauCentre(niveauCentre);
 		entityManager.persist(centreGestion);
@@ -116,22 +116,18 @@ public class ReponseEvaluationRepositoryTest extends AbstractTest {
 
 		final Etudiant etudiant = new Etudiant();
 		etudiant.setCodeUniversite("code");
-		etudiant.setDateCreation(Calendar.getInstance().getTime());
 		etudiant.setIdentEtudiant("ident");
-		etudiant.setLoginCreation("jdoe");
 		etudiant.setNom("Name");
 		etudiant.setNumEtudiant("125458");
 		etudiant.setPrenom("Firstname");
 		entityManager.persist(etudiant);
 
 		final Convention convention = new Convention();
-		convention.setDateCreation(Calendar.getInstance().getTime());
 		convention.setDateDebutStage(Calendar.getInstance().getTime());
 		convention.setDateFinStage(Calendar.getInstance().getTime());
 		convention.setDureeStage(100);
 		convention.setIdAssurance(1);
 		convention.setIdModeVersGratification(1);
-		convention.setLoginCreation("jdoe");
 		convention.setNbJoursHebdo(NbJourHebdo.NB_JOURS_1_0);
 		convention.setSujetStage("subject");
 		convention.setTemConfSujetTeme("s");

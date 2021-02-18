@@ -1,13 +1,20 @@
 package fr.esupportail.esupstage.domain.jpa.entities;
 
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.io.Serializable;
-import javax.persistence.*;
-import java.util.Date;
-import java.util.List;
 
 /**
  * The persistent class for the Etudiant database table.
@@ -19,7 +26,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @NamedQuery(name = "Etudiant.findAll", query = "SELECT e FROM Etudiant e")
-public class Etudiant implements Serializable {
+public class Etudiant extends Auditable<String> {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -29,16 +36,9 @@ public class Etudiant implements Serializable {
     private String codeSexe;
     @Column(nullable = false, length = 50)
     private String codeUniversite;
-    @Column(nullable = false)
-    private Date dateCreation;
-    private Date dateModif;
     private Date dateNais;
     @Column(nullable = false, length = 50)
     private String identEtudiant;
-    @Column(nullable = false, length = 50)
-    private String loginCreation;
-    @Column(length = 50)
-    private String loginModif;
     @Column(length = 100)
     private String mail;
     @Column(nullable = false, length = 50)

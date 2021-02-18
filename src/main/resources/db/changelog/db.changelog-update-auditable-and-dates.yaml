@@ -1,0 +1,15 @@
+databaseChangeLog:
+- changeSet:
+    id: update-auditable-and-dates
+    author: vdubus
+    comment: Update tables to use the Auditable and LocalDate(Time)
+    changes:
+    - addColumn:
+        tableName: accordpartenariat
+        columns:
+        - column:
+            name: loginModif
+            type: VARCHAR(50)
+        - column:
+            name: dateModif
+            type: datetime

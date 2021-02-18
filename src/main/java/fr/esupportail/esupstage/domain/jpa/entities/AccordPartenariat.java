@@ -1,13 +1,22 @@
 package fr.esupportail.esupstage.domain.jpa.entities;
 
 
+import java.time.LocalDateTime;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.io.Serializable;
-import javax.persistence.*;
-import java.util.Date;
 
 /**
  * The persistent class for the AccordPartenariat database table.
@@ -19,7 +28,7 @@ import java.util.Date;
 @Getter
 @Setter
 @NoArgsConstructor
-public class AccordPartenariat implements Serializable {
+public class AccordPartenariat extends Auditable<String> {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -27,14 +36,10 @@ public class AccordPartenariat implements Serializable {
     private Integer idAccordPartenariat;
     @Column(nullable = false)
     private boolean comptesSupprimes;
-    @Column(nullable = false)
-    private Date dateCreation;
-    private Date dateSuppressionComptes;
-    private Date dateValidation;
+    private LocalDateTime dateSuppressionComptes;
+    private LocalDateTime dateValidation;
     @Column(nullable = false)
     private boolean estValide;
-    @Column(nullable = false, length = 50)
-    private String loginCreation;
     @Column(length = 50)
     private String loginSuppressionComptes;
     @Column(length = 50)

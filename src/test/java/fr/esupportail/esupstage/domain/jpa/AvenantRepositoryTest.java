@@ -71,9 +71,7 @@ class AvenantRepositoryTest extends AbstractTest {
 		final CentreGestion centreGestion = new CentreGestion();
 		centreGestion.setAutorisationEtudiantCreationConvention(true);
 		centreGestion.setCodeUniversite("codeuniv");
-		centreGestion.setDateCreation(new Date());
 		centreGestion.setIdModeValidationStage(1);
-		centreGestion.setLoginCreation("login");
 		centreGestion.setConfidentialite(confidentialite);
 		centreGestion.setNiveauCentre(niveauCentre);
 		entityManager.persist(centreGestion);
@@ -116,22 +114,18 @@ class AvenantRepositoryTest extends AbstractTest {
 
 		final Etudiant etudiant = new Etudiant();
 		etudiant.setCodeUniversite("code");
-		etudiant.setDateCreation(new Date(0));
 		etudiant.setIdentEtudiant("ident");
-		etudiant.setLoginCreation("login");
 		etudiant.setNom("Name");
 		etudiant.setNumEtudiant("125458");
 		etudiant.setPrenom("Firstname");
 		entityManager.persist(etudiant);
 
 		final Convention convention = new Convention();
-		convention.setDateCreation(new Date(0));
 		convention.setDateDebutStage(new Date(0));
 		convention.setDateFinStage(new Date(0));
 		convention.setDureeStage(100);
 		convention.setIdAssurance(1);
 		convention.setIdModeVersGratification(1);
-		convention.setLoginCreation("login");
 		convention.setNbJoursHebdo(NbJourHebdo.NB_JOURS_1_0);
 		convention.setSujetStage("subject");
 		convention.setTemConfSujetTeme("s");
@@ -175,7 +169,7 @@ class AvenantRepositoryTest extends AbstractTest {
 		assertFalse(avenant.isModificationEnseignant());
 		assertTrue(avenant.isRupture());
 		assertEquals("jdoe", avenant.getCreatedBy());
-		assertEquals("login", avenant.getConvention().getLoginCreation());
+		assertEquals("jdoe", avenant.getConvention().getCreatedBy());
 		assertEquals("125458", avenant.getConvention().getEtudiant().getNumEtudiant());
 		assertEquals("indem", avenant.getConvention().getIndemnisation().getLibelleIndemnisation());
 		assertEquals("CD", avenant.getConvention().getLangueConvention().getCodeLangueConvention());

@@ -1,9 +1,9 @@
 package fr.esupportail.esupstage.domain.jpa;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Date;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.Rollback;
 
 import fr.esupportail.esupstage.AbstractTest;
@@ -29,6 +30,7 @@ import fr.esupportail.esupstage.domain.jpa.repositories.ContactRepository;
 
 @Rollback
 @Transactional
+@WithMockUser(username = "jdoe", password = "jdoe")
 class ContactRepositoryTest extends AbstractTest {
 
 	private final EntityManager entityManager;
@@ -62,9 +64,7 @@ class ContactRepositoryTest extends AbstractTest {
 		final CentreGestion centreGestion = new CentreGestion();
 		centreGestion.setAutorisationEtudiantCreationConvention(true);
 		centreGestion.setCodeUniversite("codeuniv");
-		centreGestion.setDateCreation(new Date(0));
 		centreGestion.setIdModeValidationStage(1);
-		centreGestion.setLoginCreation("login");
 		centreGestion.setConfidentialite(confidentialite);
 		centreGestion.setNiveauCentre(niveauCentre);
 		entityManager.persist(centreGestion);
@@ -105,9 +105,7 @@ class ContactRepositoryTest extends AbstractTest {
 		entityManager.persist(service);
 
 		final Contact contact = new Contact();
-		contact.setDateCreation(new Date(0));
 		contact.setFonction("function");
-		contact.setLoginCreation("login");
 		contact.setNom("name");
 		contact.setPrenom("firstname");
 		contact.setCentreGestion(centreGestion);
@@ -125,9 +123,9 @@ class ContactRepositoryTest extends AbstractTest {
 		assertTrue(result.isPresent(), "We should have found our Contact");
 
 		final Contact contact = result.get();
-		assertEquals(new Date(0), contact.getDateCreation());
+		assertNotNull(contact.getCreatedDate());
 		assertEquals("function", contact.getFonction());
-		assertEquals("login", contact.getLoginCreation());
+		assertEquals("jdoe", contact.getCreatedBy());
 		assertEquals("name", contact.getNom());
 		assertEquals("firstname", contact.getPrenom());
 		assertEquals("codeuniv", contact.getCentreGestion().getCodeUniversite());

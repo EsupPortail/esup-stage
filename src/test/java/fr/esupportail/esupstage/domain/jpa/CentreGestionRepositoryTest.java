@@ -1,9 +1,9 @@
 package fr.esupportail.esupstage.domain.jpa;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Date;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.Rollback;
 
 import fr.esupportail.esupstage.AbstractTest;
@@ -23,6 +24,7 @@ import fr.esupportail.esupstage.domain.jpa.repositories.CentreGestionRepository;
 
 @Rollback
 @Transactional
+@WithMockUser(username = "jdoe", password = "jdoe")
 class CentreGestionRepositoryTest extends AbstractTest {
 
 	private final EntityManager entityManager;
@@ -56,9 +58,7 @@ class CentreGestionRepositoryTest extends AbstractTest {
 		final CentreGestion centreGestion = new CentreGestion();
 		centreGestion.setAutorisationEtudiantCreationConvention(true);
 		centreGestion.setCodeUniversite("codeuniv");
-		centreGestion.setDateCreation(new Date(0));
 		centreGestion.setIdModeValidationStage(1);
-		centreGestion.setLoginCreation("login");
 		centreGestion.setConfidentialite(confidentialite);
 		centreGestion.setNiveauCentre(niveauCentre);
 		entityManager.persist(centreGestion);
@@ -77,9 +77,9 @@ class CentreGestionRepositoryTest extends AbstractTest {
 		final CentreGestion centreGestion = result.get();
 		assertTrue(centreGestion.isAutorisationEtudiantCreationConvention());
 		assertEquals("codeuniv", centreGestion.getCodeUniversite());
-		assertEquals(new Date(0), centreGestion.getDateCreation());
+		assertNotNull(centreGestion.getCreatedDate());
 		assertEquals(1, centreGestion.getIdModeValidationStage());
-		assertEquals("login", centreGestion.getLoginCreation());
+		assertEquals("jdoe", centreGestion.getCreatedBy());
 		assertEquals("libel", centreGestion.getConfidentialite().getLibelleConfidentialite());
 		assertEquals("libel", centreGestion.getNiveauCentre().getLibelleNiveauCentre());
 	}

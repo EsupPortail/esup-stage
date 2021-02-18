@@ -1,15 +1,26 @@
 package fr.esupportail.esupstage.domain.jpa.entities;
 
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.io.Serializable;
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * The persistent class for the Convention database table.
@@ -21,7 +32,7 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "Convention")
 @NamedQuery(name = "Convention.findAll", query = "SELECT c FROM Convention c")
-public class Convention implements Serializable {
+public class Convention extends Auditable<String> {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -82,9 +93,6 @@ public class Convention implements Serializable {
 
     @Column(precision = 10, scale = 2)
     private BigDecimal creditECTS;
-
-    @Column(nullable = false)
-    private Date dateCreation;
     private Date dateDebutInterruption;
     @Column(nullable = false)
     private Date dateDebutStage;
@@ -94,7 +102,6 @@ public class Convention implements Serializable {
     private Date dateFinInterruption;
     @Column(nullable = false)
     private Date dateFinStage;
-    private Date dateModif;
     private Date dateSignature;
     private Date dateValidation;
     @Lob
@@ -123,10 +130,6 @@ public class Convention implements Serializable {
     private String libelleELP;
     @Column(length = 60)
     private String libelleFinalite;
-    @Column(nullable = false, length = 50)
-    private String loginCreation;
-    @Column(length = 50)
-    private String loginModif;
     @Column(length = 50)
     private String loginSignature;
     @Column(length = 50)
