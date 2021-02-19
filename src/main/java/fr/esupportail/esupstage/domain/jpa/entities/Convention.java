@@ -2,7 +2,8 @@ package fr.esupportail.esupstage.domain.jpa.entities;
 
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -93,17 +94,17 @@ public class Convention extends Auditable<String> {
 
     @Column(precision = 10, scale = 2)
     private BigDecimal creditECTS;
-    private Date dateDebutInterruption;
+    private LocalDate dateDebutInterruption;
     @Column(nullable = false)
-    private Date dateDebutStage;
-    private Date dateEnvoiMailEtudiant;
-    private Date dateEnvoiMailTuteurPedago;
-    private Date dateEnvoiMailTuteurPro;
-    private Date dateFinInterruption;
+    private LocalDate dateDebutStage;
+    private LocalDateTime dateEnvoiMailEtudiant;
+    private LocalDateTime dateEnvoiMailTuteurPedago;
+    private LocalDateTime dateEnvoiMailTuteurPro;
+    private LocalDate dateFinInterruption;
     @Column(nullable = false)
-    private Date dateFinStage;
-    private Date dateSignature;
-    private Date dateValidation;
+    private LocalDate dateFinStage;
+    private LocalDateTime dateSignature;
+    private LocalDateTime dateValidation;
     @Lob
     private String details;
     @Column(length = 4)

@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
@@ -121,8 +121,8 @@ class AvenantRepositoryTest extends AbstractTest {
 		entityManager.persist(etudiant);
 
 		final Convention convention = new Convention();
-		convention.setDateDebutStage(new Date(0));
-		convention.setDateFinStage(new Date(0));
+		convention.setDateDebutStage(LocalDate.now());
+		convention.setDateFinStage(LocalDate.now());
 		convention.setDureeStage(100);
 		convention.setIdAssurance(1);
 		convention.setIdModeVersGratification(1);

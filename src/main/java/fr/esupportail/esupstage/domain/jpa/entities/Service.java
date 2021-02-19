@@ -1,6 +1,6 @@
 package fr.esupportail.esupstage.domain.jpa.entities;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -48,7 +48,7 @@ public class Service extends Auditable<String> {
 	@Column(length = 200)
 	private String commune;
 
-	private Date infosAJour;
+	private LocalDate infosAJour;
 
 	@Column(length = 50)
 	private String loginInfosAJour;

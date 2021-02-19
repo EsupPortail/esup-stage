@@ -1,6 +1,6 @@
 package fr.esupportail.esupstage.domain.jpa.entities;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -36,7 +36,7 @@ public class Etudiant extends Auditable<String> {
     private String codeSexe;
     @Column(nullable = false, length = 50)
     private String codeUniversite;
-    private Date dateNais;
+    private LocalDate dateNais;
     @Column(nullable = false, length = 50)
     private String identEtudiant;
     @Column(length = 100)

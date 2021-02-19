@@ -1,7 +1,8 @@
 package fr.esupportail.esupstage.domain.jpa.entities;
 
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -72,11 +73,11 @@ public class Offre extends Auditable<String> {
     private String commentaireTempsTravail;
     @Lob
     private String competences;
-    private Date dateDiffusion;
-    private Date dateFinDiffusion;
-    private Date dateStopDiffusion;
-    private Date dateStopValidation;
-    private Date dateValidation;
+    private LocalDate dateDiffusion;
+    private LocalDate dateFinDiffusion;
+    private LocalDateTime dateStopDiffusion;
+    private LocalDateTime dateStopValidation;
+    private LocalDateTime dateValidation;
     @Column(nullable = false)
     private boolean deplacement;
     @Lob

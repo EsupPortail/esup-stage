@@ -1,6 +1,7 @@
 package fr.esupportail.esupstage.domain.jpa.entities;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -56,9 +57,9 @@ public class Structure extends Auditable<String> {
 	@Column(length = 200)
 	private String commune;
 
-	private Date dateStopValidation;
+	private LocalDateTime dateStopValidation;
 
-	private Date dateValidation;
+	private LocalDateTime dateValidation;
 
 	@Column(nullable = false)
 	private Integer estValidee;
@@ -69,7 +70,7 @@ public class Structure extends Auditable<String> {
 	@Column(length = 50)
 	private String groupe;
 
-	private Date infosAJour;
+	private LocalDate infosAJour;
 
 	@Column(length = 28)
 	private String libCedex;

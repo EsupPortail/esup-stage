@@ -1,6 +1,7 @@
 package fr.esupportail.esupstage.domain.jpa.entities;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -35,15 +36,15 @@ public class Contact extends Auditable<String> {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(unique = true, nullable = false)
     private Integer idContact;
-    private Date avantDerniereConnexion;
+    private LocalDateTime avantDerniereConnexion;
     @Lob
     private String commentaire;
-    private Date derniereConnexion;
+    private LocalDateTime derniereConnexion;
     @Column(length = 50)
     private String fax;
     @Column(nullable = false, length = 100)
     private String fonction;
-    private Date infosAJour;
+    private LocalDate infosAJour;
     @Column(length = 12)
     private String login;
     @Column(length = 50)

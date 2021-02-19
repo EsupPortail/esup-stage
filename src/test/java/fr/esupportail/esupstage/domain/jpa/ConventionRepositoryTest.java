@@ -4,7 +4,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
@@ -119,8 +119,8 @@ class ConventionRepositoryTest extends AbstractTest {
 		entityManager.persist(etudiant);
 
 		final Convention convention = new Convention();
-		convention.setDateDebutStage(new Date(0));
-		convention.setDateFinStage(new Date(0));
+		convention.setDateDebutStage(LocalDate.of(2020,1, 1));
+		convention.setDateFinStage(LocalDate.of(2020,1, 20));
 		convention.setDureeStage(100);
 		convention.setIdAssurance(1);
 		convention.setIdModeVersGratification(1);
@@ -150,8 +150,8 @@ class ConventionRepositoryTest extends AbstractTest {
 
 		final Convention convention = result.get();
 		assertNotNull(convention.getCreatedDate());
-		assertEquals(new Date(0), convention.getDateDebutStage());
-		assertEquals(new Date(0), convention.getDateFinStage());
+		assertEquals(LocalDate.of(2020,1, 1), convention.getDateDebutStage());
+		assertEquals(LocalDate.of(2020,1, 20), convention.getDateFinStage());
 		assertEquals(100, convention.getDureeStage());
 		assertEquals(1, convention.getIdModeVersGratification());
 		assertEquals(1, convention.getIdAssurance());
