@@ -1,6 +1,5 @@
 package fr.esupportail.esupstage.domain.jpa.entities;
 
-
 import java.io.Serializable;
 import java.util.List;
 
@@ -9,7 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -24,32 +22,36 @@ import lombok.Setter;
  *
  */
 @Entity
-@Table(name = "Effectif")
 @Getter
 @Setter
 @NoArgsConstructor
-@NamedQuery(name = "Effectif.findAll", query = "SELECT e FROM Effectif e")
+@Table(name = "Effectif")
 public class Effectif implements Serializable {
-    private static final long serialVersionUID = 1L;
-    @Id
-    @Column(name = "idEffectif")
-    @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-    private Integer id;
-    @Column(name = "libelleEffectif", nullable = false, length = 100)
-    private String label;
-    private boolean modifiable;
-    @Column(name = "temEnServEffectif", nullable = false, length = 1)
-    private String temEnServ;
-    // bi-directional many-to-one association to Structure
-    @OneToMany(mappedBy = "effectif")
-    private List<Structure> structures;
 
-    public Structure addStructure(Structure structure) {
-        getStructures().add(structure);
-        structure.setEffectif(this);
-        return structure;
-    }
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@Column(name = "idEffectif")
+	@GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
+	private Integer id;
+
+	@Column(name = "libelleEffectif", nullable = false, length = 100)
+	private String label;
+
+	private boolean modifiable;
+
+	@Column(name = "temEnServEffectif", nullable = false, length = 1)
+	private String temEnServ;
+
+	@OneToMany(mappedBy = "effectif")
+	private List<Structure> structures;
+
+	public Structure addStructure(Structure structure) {
+		getStructures().add(structure);
+		structure.setEffectif(this);
+		return structure;
+	}
 
     public Structure removeStructure(Structure structure) {
         getStructures().remove(structure);
