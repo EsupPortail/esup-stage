@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,7 +41,9 @@ public class CentreGestion extends Auditable<String> {
     private boolean autorisationEtudiantCreationConvention;
     @Column(nullable = false)
     private boolean autoriserImpressionConvention;
+    @Transient
     private boolean choixAnneeApresDebutAnnee;
+    @Transient
     private boolean choixAnneeAvantDebutAnnee;
     @Column(length = 10)
     private String codePostal;
