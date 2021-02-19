@@ -8,3 +8,6 @@ databaseChangeLog:
 - include:
     file: db.changelog-update-auditable-and-dates.yaml
     relativeToChangelogFile: true
+- include:
+    file: /db.changelog-convert-to-boolean.yaml
+    relativeToChangelogFile: true
