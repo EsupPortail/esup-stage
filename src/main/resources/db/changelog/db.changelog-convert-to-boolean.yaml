@@ -3,6 +3,11 @@ databaseChangeLog:
     id: convert-to-boolean
     author: vdubus
     comment: Update tables use the correct datatype for booleans
+    preConditions:
+      changeSetExecuted:
+        id: generated-initialization
+        author: vdubus
+        changeLogFile: classpath:/db/changelog/db.changelog-base.yaml
     changes:
     - modifyDataType:
         tableName: avenant

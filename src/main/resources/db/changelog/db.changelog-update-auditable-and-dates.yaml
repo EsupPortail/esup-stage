@@ -3,6 +3,11 @@ databaseChangeLog:
     id: update-auditable-and-dates
     author: vdubus
     comment: Update tables to use the Auditable and LocalDate(Time)
+    preConditions:
+      changeSetExecuted:
+        id: generated-initialization
+        author: vdubus
+        changeLogFile: classpath:/db/changelog/db.changelog-base.yaml
     changes:
     - addColumn:
         tableName: accordpartenariat
