@@ -36,7 +36,7 @@ public class PstagedataVersManaRepositoryTest extends AbstractTest {
 	@BeforeEach
 	void prepare() {
 		final PstagedataVersMana entity = new PstagedataVersMana();
-		entity.setId("ID");
+		entity.setId(1L);
 		entity.setVers("1");
 
 		entityManager.persist(entity);
@@ -46,7 +46,7 @@ public class PstagedataVersManaRepositoryTest extends AbstractTest {
 	@Test
 	@DisplayName("findById – Nominal test case")
 	void findById() {
-		final Optional<PstagedataVersMana> result = repository.findById("ID");
+		final Optional<PstagedataVersMana> result = repository.findById(1L);
 		assertTrue(result.isPresent(), "We should have found our entity");
 
 		final PstagedataVersMana tmp = result.get();

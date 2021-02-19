@@ -28,7 +28,7 @@ public class PstagedataVersMana implements Serializable {
 
 	@Id
 	@Column(unique = true, nullable = false)
-	private String id;
+	private Long id;
 
 	@Column(length = 255)
 	private String vers;
