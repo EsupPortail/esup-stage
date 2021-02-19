@@ -76,4 +76,7 @@ public class TypeStructure implements Serializable {
 		return structure;
 	}
 
+		@Override public String toString() {
+				return this.libelleTypeStructure;
+		}
 }

@@ -64,4 +64,7 @@ public class StatutJuridique implements Serializable {
 		return structure;
 	}
 
+		@Override public String toString() {
+				return this.libelleStatutJuridique;
+		}
 }
