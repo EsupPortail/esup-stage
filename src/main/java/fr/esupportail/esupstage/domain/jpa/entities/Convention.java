@@ -92,7 +92,7 @@ public class Convention extends Auditable<String> {
     @Column(length = 100)
     private String courrielPersoEtudiant;
 
-    @Column(precision = 10, scale = 2)
+    @Column(columnDefinition = "decimal", precision = 7, scale = 2)
     private BigDecimal creditECTS;
     private LocalDate dateDebutInterruption;
     @Column(nullable = false)
