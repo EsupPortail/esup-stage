@@ -1,6 +1,7 @@
 databaseChangeLog:
 - changeSet:
     id: hibernate-specific
+    dbms: mariadb
     author: vdubus
     comment: Add hibernate specific table to manage auto-increment ID
     changes:
@@ -11,3 +12,11 @@ databaseChangeLog:
             name: next_val
             type: BIGINT
         tableName: hibernate_sequence
+- changeSet:
+    id: hibernate-specific
+    dbms: hsqldb
+    author: vdubus
+    comment: Add hibernate specific table to manage auto-increment ID
+    changes:
+    - createSequence:
+        sequenceName: hibernate_sequence
