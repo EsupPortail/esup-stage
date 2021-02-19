@@ -66,5 +66,5 @@ databaseChangeLog:
         newDataType: boolean
     - modifyDataType:
         tableName: dureediffusion
-        columnName: libelleDureeDiffusion
+        columnName: adminseulement
         newDataType: boolean
