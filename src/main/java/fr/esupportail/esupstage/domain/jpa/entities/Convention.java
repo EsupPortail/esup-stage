@@ -146,7 +146,7 @@ public class Convention extends Auditable<String> {
     @Column(length = 5)
     private String nbHeuresHebdo;
     
-    @Column(nullable = false)
+    @Column(nullable = false, length = 3)
     private NbJourHebdo nbJoursHebdo;
     
     @Column(length = 100)

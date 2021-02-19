@@ -107,7 +107,7 @@ update `databasechangelog` d set d.`filename` = 'classpath:/db/changelog/db.chan
 [source,sql]
 ----
 -- Update column type to work with JPA
-ALTER TABLE `convention` CHANGE `nbJoursHebdo` `nbJoursHebdo` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '5';
+ALTER TABLE `convention` CHANGE `nbJoursHebdo` `nbJoursHebdo` VARCHAR(3) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '5';
 
 -- Add Liquibase specific tables
 CREATE TABLE IF NOT EXISTS `databasechangelog` (
