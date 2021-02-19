@@ -1,12 +1,17 @@
 package fr.esupportail.esupstage.domain.jpa.entities;
 
 
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.io.Serializable;
-import javax.persistence.*;
 
 /**
  * The persistent class for the CaisseRegime database table.

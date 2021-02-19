@@ -1,12 +1,14 @@
 package fr.esupportail.esupstage.domain.jpa.entities;
 
 
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.io.Serializable;
-import javax.persistence.*;
 
 /**
  * The primary key class for the CritereGestion database table.
