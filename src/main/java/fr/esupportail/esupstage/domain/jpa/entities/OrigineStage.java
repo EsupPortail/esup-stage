@@ -13,6 +13,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,7 +33,8 @@ public class OrigineStage implements Serializable {
 
 	@Id
 	@Column(name = "idOrigineStage")
-	@GeneratedValue(strategy = GenerationType.AUTO)
+    @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
 	private Integer id;
 
 	@Column(name = "libelleOrigineStage", nullable = false, length = 45)
