@@ -1,0 +1,19 @@
+databaseChangeLog:
+- changeSet:
+    id: fix-missing-auto-increment
+    author: vdubus
+    comment: Fix missing auto-increment on a few tables
+    preConditions:
+      changeSetExecuted:
+        id: generated-initialization
+        author: vdubus
+        changeLogFile: classpath:/db/changelog/db.changelog-base.yaml
+    changes:
+    - addAutoIncrement:
+        tableName: Assurance
+        columnName: idAssurance
+        columnDataType: INT
+    - addAutoIncrement:
+        tableName: DureeDiffusion
+        columnName: idDureeDiffusion
+        columnDataType: INT

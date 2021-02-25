@@ -14,3 +14,6 @@ databaseChangeLog:
 - include:
     file: db.changelog-convert-to-clob.yaml
     relativeToChangelogFile: true
+- include:
+    file: db.changelog-fix-missing-auto-increment.yml
+    relativeToChangelogFile: true
