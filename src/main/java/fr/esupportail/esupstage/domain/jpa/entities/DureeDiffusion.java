@@ -7,7 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -21,21 +20,24 @@ import lombok.Setter;
  *
  */
 @Entity
-@Table(name = "DureeDiffusion")
 @Getter
 @Setter
 @NoArgsConstructor
-@NamedQuery(name = "DureeDiffusion.findAll", query = "SELECT d FROM DureeDiffusion d")
+@Table(name = "DureeDiffusion")
 public class DureeDiffusion implements Serializable {
-    private static final long serialVersionUID = 1L;
-    @Id
-    @Column(name = "idDureeDiffusion")
-    @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-    private Integer id;
-    @Column(nullable = false)
-    private boolean adminSeulement;
-    @Column(name = "libelleDureeDiffusion", nullable = false, length = 20)
-    private String label;
+
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@Column(name = "idDureeDiffusion")
+	@GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
+	private Integer id;
+
+	@Column(nullable = false)
+	private boolean adminSeulement;
+
+	@Column(name = "libelleDureeDiffusion", nullable = false, length = 20)
+	private String label;
 
 }

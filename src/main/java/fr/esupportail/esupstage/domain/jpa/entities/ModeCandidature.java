@@ -9,7 +9,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -23,26 +22,30 @@ import lombok.Setter;
  *
  */
 @Entity
-@Table(name = "ModeCandidature")
 @Getter
 @Setter
 @NoArgsConstructor
-@NamedQuery(name = "ModeCandidature.findAll", query = "SELECT m FROM ModeCandidature m")
+@Table(name = "ModeCandidature")
 public class ModeCandidature implements Serializable {
-    private static final long serialVersionUID = 1L;
-    @Id
-    @Column(name = "idModeCandidature")
-    @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-    private Integer id;
-    @Column(nullable = false, length = 20)
-    private String codeCtrl;
-    @Column(name = "libelleModeCandidature", nullable = false, length = 50)
-    private String label;
-    @Column(name = "temEnServModeCandidature", nullable = false, length = 1)
-    private String temEnServ;
-    // bi-directional many-to-many association to Offre
-    @ManyToMany(mappedBy = "modeCandidatures")
-    private List<Offre> offres;
+
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@Column(name = "idModeCandidature")
+	@GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
+	private Integer id;
+
+	@Column(nullable = false, length = 20)
+	private String codeCtrl;
+
+	@Column(name = "libelleModeCandidature", nullable = false, length = 50)
+	private String label;
+
+	@Column(name = "temEnServModeCandidature", nullable = false, length = 1)
+	private String temEnServ;
+
+	@ManyToMany(mappedBy = "modeCandidatures")
+	private List<Offre> offres;
 
 }

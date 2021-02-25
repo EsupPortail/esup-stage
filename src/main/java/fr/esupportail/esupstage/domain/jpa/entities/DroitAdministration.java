@@ -1,6 +1,5 @@
 package fr.esupportail.esupstage.domain.jpa.entities;
 
-
 import java.io.Serializable;
 import java.util.List;
 
@@ -9,7 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -24,35 +22,39 @@ import lombok.Setter;
  *
  */
 @Entity
-@Table(name = "DroitAdministration")
 @Getter
 @Setter
 @NoArgsConstructor
-@NamedQuery(name = "DroitAdministration.findAll", query = "SELECT d FROM DroitAdministration d")
+@Table(name = "DroitAdministration")
 public class DroitAdministration implements Serializable {
-    private static final long serialVersionUID = 1L;
-    @Id
-    @Column(name = "idDroitAdministration")
-    @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-    private Integer id;
-    @Column(name = "libelleDroitAdministration", nullable = false, length = 50)
-    private String label;
-    @Column(name = "temEnServDroitAdmin", nullable = false, length = 1)
-    private String temEnServ;
-    // bi-directional many-to-one association to PersonnelCentreGestion
-    @OneToMany(mappedBy = "droitAdministration")
-    private List<PersonnelCentreGestion> personnelCentreGestions;
 
-    public PersonnelCentreGestion addPersonnelCentreGestion(PersonnelCentreGestion personnelCentreGestion) {
-        getPersonnelCentreGestions().add(personnelCentreGestion);
-        personnelCentreGestion.setDroitAdministration(this);
-        return personnelCentreGestion;
-    }
+	private static final long serialVersionUID = 1L;
 
-    public PersonnelCentreGestion removePersonnelCentreGestion(PersonnelCentreGestion personnelCentreGestion) {
-        getPersonnelCentreGestions().remove(personnelCentreGestion);
-        personnelCentreGestion.setDroitAdministration(null);
-        return personnelCentreGestion;
-    }
+	@Id
+	@Column(name = "idDroitAdministration")
+	@GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
+	private Integer id;
+
+	@Column(name = "libelleDroitAdministration", nullable = false, length = 50)
+	private String label;
+
+	@Column(name = "temEnServDroitAdmin", nullable = false, length = 1)
+	private String temEnServ;
+
+	@OneToMany(mappedBy = "droitAdministration")
+	private List<PersonnelCentreGestion> personnelCentreGestions;
+
+	public PersonnelCentreGestion addPersonnelCentreGestion(PersonnelCentreGestion personnelCentreGestion) {
+		getPersonnelCentreGestions().add(personnelCentreGestion);
+		personnelCentreGestion.setDroitAdministration(this);
+		return personnelCentreGestion;
+	}
+
+	public PersonnelCentreGestion removePersonnelCentreGestion(PersonnelCentreGestion personnelCentreGestion) {
+		getPersonnelCentreGestions().remove(personnelCentreGestion);
+		personnelCentreGestion.setDroitAdministration(null);
+		return personnelCentreGestion;
+	}
+
 }

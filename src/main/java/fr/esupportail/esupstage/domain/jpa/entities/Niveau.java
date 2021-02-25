@@ -8,7 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -23,33 +22,36 @@ import lombok.Setter;
  *
  */
 @Entity
-@Table(name = "Niveau")
 @Getter
 @Setter
 @NoArgsConstructor
-@NamedQuery(name = "Niveau.findAll", query = "SELECT n FROM Niveau n")
+@Table(name = "Niveau")
 public class Niveau implements Serializable {
-    private static final long serialVersionUID = 1L;
-    @Id
-    @Column(name = "idNiveau")
-    @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-    private Integer id;
-    @Column(name = "valeur", nullable = false)
-    private Integer value;
-    // bi-directional many-to-one association to Critere
-    @OneToMany(mappedBy = "niveauBean")
-    private List<Critere> criteres;
 
-    public Critere addCritere(Critere critere) {
-        getCriteres().add(critere);
-        critere.setNiveauBean(this);
-        return critere;
-    }
+	private static final long serialVersionUID = 1L;
 
-    public Critere removeCritere(Critere critere) {
-        getCriteres().remove(critere);
-        critere.setNiveauBean(null);
-        return critere;
-    }
+	@Id
+	@Column(name = "idNiveau")
+	@GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
+	private Integer id;
+
+	@Column(name = "valeur", nullable = false)
+	private Integer value;
+
+	@OneToMany(mappedBy = "niveauBean")
+	private List<Critere> criteres;
+
+	public Critere addCritere(Critere critere) {
+		getCriteres().add(critere);
+		critere.setNiveauBean(this);
+		return critere;
+	}
+
+	public Critere removeCritere(Critere critere) {
+		getCriteres().remove(critere);
+		critere.setNiveauBean(null);
+		return critere;
+	}
+
 }

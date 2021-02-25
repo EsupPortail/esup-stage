@@ -44,7 +44,7 @@ public class ESUPPhysicalNamingStrategy implements PhysicalNamingStrategy {
 	/**
 	 * Get an identifier for the specified details. By default this method will return an identifier with the name adapted based on the result of
 	 * {@link #isCaseInsensitive(JdbcEnvironment)}
-	 * 
+	 *
 	 * @param name            the name of the identifier
 	 * @param quoted          if the identifier is quoted
 	 * @param jdbcEnvironment the JDBC environment

@@ -56,8 +56,7 @@ public class Effectif implements Serializable {
         structure.setEffectif(null);
         return structure;
     }
-
     @Override public String toString() {
-        return this.libelleEffectif;
+        return this.label;
     }
 }

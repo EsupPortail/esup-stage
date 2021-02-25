@@ -6,7 +6,6 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -23,7 +22,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Table(name = "Ufr")
-@NamedQuery(name = "Ufr.findAll", query = "SELECT u FROM Ufr u")
 public class Ufr implements Serializable {
 
 	private static final long serialVersionUID = 1L;

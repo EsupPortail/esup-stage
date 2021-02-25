@@ -29,4 +29,5 @@ public class CustomLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator 
 		authorities.add(new SimpleGrantedAuthority(USER.toString()));
 		return authorities;
 	}
+
 }

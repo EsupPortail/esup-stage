@@ -7,7 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 import lombok.Getter;
@@ -23,7 +22,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Table(name = "ReponseEvaluation")
-@NamedQuery(name = "ReponseEvaluation.findAll", query = "SELECT r FROM ReponseEvaluation r")
 public class ReponseEvaluation implements Serializable {
 
 	private static final long serialVersionUID = 1L;

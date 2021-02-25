@@ -9,7 +9,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -26,15 +25,14 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name = "OrigineStage")
-@NamedQuery(name = "OrigineStage.findAll", query = "SELECT o FROM OrigineStage o")
 public class OrigineStage implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name = "idOrigineStage")
-    @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
+	@GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
 	private Integer id;
 
 	@Column(name = "libelleOrigineStage", nullable = false, length = 45)
@@ -45,7 +43,6 @@ public class OrigineStage implements Serializable {
 	@Column(name = "temEnServOrigineStage", nullable = false, length = 1)
 	private String temEnServ;
 
-	// bi-directional many-to-one association to Convention
 	@OneToMany(mappedBy = "origineStage")
 	private List<Convention> conventions;
 

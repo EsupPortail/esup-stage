@@ -9,7 +9,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -23,69 +22,71 @@ import lombok.Setter;
  *
  */
 @Entity
-@Table(name = "Civilite")
-@NamedQuery(name = "Civilite.findAll", query = "SELECT c FROM Civilite c")
 @Getter
 @Setter
+@Table(name = "Civilite")
 public class Civilite implements Serializable {
 
-    public Civilite() {
-        this.adminStructures = new ArrayList<>();
-        this.contacts = new ArrayList<>();
-        this.personnelCentreGestions = new ArrayList<>();
-    }
+	public Civilite() {
+		this.adminStructures = new ArrayList<>();
+		this.contacts = new ArrayList<>();
+		this.personnelCentreGestions = new ArrayList<>();
+	}
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @Column(name = "idCivilite")
-    @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-    private Integer id;
-    @Column(name = "libelleCivilite", nullable = false, length = 50)
-    private String label;
-    // bi-directional many-to-one association to AdminStructure
-    @OneToMany(mappedBy = "civilite")
-    private List<AdminStructure> adminStructures;
-    // bi-directional many-to-one association to Contact
-    @OneToMany(mappedBy = "civilite")
-    private List<Contact> contacts;
-    // bi-directional many-to-one association to PersonnelCentreGestion
-    @OneToMany(mappedBy = "civilite")
-    private List<PersonnelCentreGestion> personnelCentreGestions;
+	private static final long serialVersionUID = 1L;
 
-    public AdminStructure addAdminStructure(AdminStructure adminStructure) {
-        getAdminStructures().add(adminStructure);
-        adminStructure.setCivilite(this);
-        return adminStructure;
-    }
+	@Id
+	@Column(name = "idCivilite")
+	@GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
+	private Integer id;
 
-    public AdminStructure removeAdminStructure(AdminStructure adminStructure) {
-        getAdminStructures().remove(adminStructure);
-        adminStructure.setCivilite(null);
-        return adminStructure;
-    }
+	@Column(name = "libelleCivilite", nullable = false, length = 50)
+	private String label;
 
-    public Contact addContact(Contact contact) {
-        getContacts().add(contact);
-        contact.setCivilite(this);
-        return contact;
-    }
+	@OneToMany(mappedBy = "civilite")
+	private List<AdminStructure> adminStructures;
 
-    public Contact removeContact(Contact contact) {
-        getContacts().remove(contact);
-        contact.setCivilite(null);
-        return contact;
-    }
+	@OneToMany(mappedBy = "civilite")
+	private List<Contact> contacts;
 
-    public PersonnelCentreGestion addPersonnelCentreGestion(PersonnelCentreGestion personnelCentreGestion) {
-        getPersonnelCentreGestions().add(personnelCentreGestion);
-        personnelCentreGestion.setCivilite(this);
-        return personnelCentreGestion;
-    }
+	@OneToMany(mappedBy = "civilite")
+	private List<PersonnelCentreGestion> personnelCentreGestions;
 
-    public PersonnelCentreGestion removePersonnelCentreGestion(PersonnelCentreGestion personnelCentreGestion) {
-        getPersonnelCentreGestions().remove(personnelCentreGestion);
-        personnelCentreGestion.setCivilite(null);
-        return personnelCentreGestion;
-    }
+	public AdminStructure addAdminStructure(AdminStructure adminStructure) {
+		getAdminStructures().add(adminStructure);
+		adminStructure.setCivilite(this);
+		return adminStructure;
+	}
+
+	public AdminStructure removeAdminStructure(AdminStructure adminStructure) {
+		getAdminStructures().remove(adminStructure);
+		adminStructure.setCivilite(null);
+		return adminStructure;
+	}
+
+	public Contact addContact(Contact contact) {
+		getContacts().add(contact);
+		contact.setCivilite(this);
+		return contact;
+	}
+
+	public Contact removeContact(Contact contact) {
+		getContacts().remove(contact);
+		contact.setCivilite(null);
+		return contact;
+	}
+
+	public PersonnelCentreGestion addPersonnelCentreGestion(PersonnelCentreGestion personnelCentreGestion) {
+		getPersonnelCentreGestions().add(personnelCentreGestion);
+		personnelCentreGestion.setCivilite(this);
+		return personnelCentreGestion;
+	}
+
+	public PersonnelCentreGestion removePersonnelCentreGestion(PersonnelCentreGestion personnelCentreGestion) {
+		getPersonnelCentreGestions().remove(personnelCentreGestion);
+		personnelCentreGestion.setCivilite(null);
+		return personnelCentreGestion;
+	}
+
 }

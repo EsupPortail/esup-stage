@@ -36,4 +36,5 @@ public class CommonSecurityConfiguration {
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
 	}
+
 }

@@ -9,7 +9,7 @@ import lombok.Setter;
 
 /**
  * Properties link to the application security.
- * 
+ *
  * @author vdubus
  */
 @Getter

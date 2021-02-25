@@ -1,6 +1,5 @@
 package fr.esupportail.esupstage.domain.jpa.entities;
 
-
 import java.io.Serializable;
 import java.util.List;
 
@@ -11,7 +10,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -26,46 +24,52 @@ import lombok.Setter;
  *
  */
 @Entity
-@Table(name = "ContratOffre")
 @Getter
 @Setter
 @NoArgsConstructor
-@NamedQuery(name = "ContratOffre.findAll", query = "SELECT c FROM ContratOffre c")
+@Table(name = "ContratOffre")
 public class ContratOffre implements Serializable {
-    private static final long serialVersionUID = 1L;
-    @Id
-    @Column(name = "idContratOffre")
-    @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-    private Integer id;
-    @Column(nullable = false, length = 20)
-    private String codeCtrl;
-    @Column(name = "libelleContratOffre", nullable = false, length = 50)
-    private String label;
-    private boolean modifiable;
-    @Column(name = "temEnServContratOffre", nullable = false, length = 1)
-    private String temEnServ;
-    // bi-directional many-to-one association to TypeOffre
-    @ManyToOne
-    @JoinColumn(name = "idTypeOffre", nullable = false)
-    private TypeOffre typeOffre;
-    // bi-directional many-to-one association to Offre
-    @OneToMany(mappedBy = "contratOffre")
-    private List<Offre> offres;
 
-    public Integer getIdContratOffre() {
-        return this.id;
-    }
+	private static final long serialVersionUID = 1L;
 
-    public Offre addOffre(Offre offre) {
-        getOffres().add(offre);
-        offre.setContratOffre(this);
-        return offre;
-    }
+	@Id
+	@Column(name = "idContratOffre")
+	@GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
+	private Integer id;
 
-    public Offre removeOffre(Offre offre) {
-        getOffres().remove(offre);
-        offre.setContratOffre(null);
-        return offre;
-    }
+	@Column(nullable = false, length = 20)
+	private String codeCtrl;
+
+	@Column(name = "libelleContratOffre", nullable = false, length = 50)
+	private String label;
+
+	private boolean modifiable;
+
+	@Column(name = "temEnServContratOffre", nullable = false, length = 1)
+	private String temEnServ;
+
+	@ManyToOne
+	@JoinColumn(name = "idTypeOffre", nullable = false)
+	private TypeOffre typeOffre;
+
+	@OneToMany(mappedBy = "contratOffre")
+	private List<Offre> offres;
+
+	public Integer getIdContratOffre() {
+		return this.id;
+	}
+
+	public Offre addOffre(Offre offre) {
+		getOffres().add(offre);
+		offre.setContratOffre(this);
+		return offre;
+	}
+
+	public Offre removeOffre(Offre offre) {
+		getOffres().remove(offre);
+		offre.setContratOffre(null);
+		return offre;
+	}
+
 }

@@ -44,7 +44,7 @@ class AssuranceRepositoryTest extends AbstractTest {
 
 		entityManager.persist(assurance);
 		entityManager.flush();
-		
+
 		entityManager.refresh(assurance);
 		assuranceId = assurance.getId();
 	}

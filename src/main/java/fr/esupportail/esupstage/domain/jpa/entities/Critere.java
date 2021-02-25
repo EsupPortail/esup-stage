@@ -9,7 +9,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -23,30 +22,32 @@ import lombok.Setter;
  *
  */
 @Entity
-@Table(name = "Critere")
 @Setter
 @Getter
 @NoArgsConstructor
-@NamedQuery(name = "Critere.findAll", query = "SELECT c FROM Critere c")
+@Table(name = "Critere")
 public class Critere implements Serializable {
-    private static final long serialVersionUID = 1L;
-    @Id
-    @Column(name = "idCritere")
-    @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-    private Integer id;
-    @Column(nullable = false, length = 15)
-    private String clef;
-    @Column(nullable = false, length = 100)
-    private String valeur;
-    // bi-directional many-to-one association to Categorie
-    @ManyToOne
-    @JoinColumn(name = "typeCategorie", nullable = false)
-    private Categorie categorie;
-    // bi-directional many-to-one association to Niveau
-    @ManyToOne
-    @JoinColumn(name = "niveau", nullable = false)
-    private Niveau niveauBean;
 
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@Column(name = "idCritere")
+	@GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
+	private Integer id;
+
+	@Column(nullable = false, length = 15)
+	private String clef;
+
+	@Column(nullable = false, length = 100)
+	private String valeur;
+
+	@ManyToOne
+	@JoinColumn(name = "typeCategorie", nullable = false)
+	private Categorie categorie;
+
+	@ManyToOne
+	@JoinColumn(name = "niveau", nullable = false)
+	private Niveau niveauBean;
 
 }

@@ -28,9 +28,8 @@ public class LdapAuthenticationSecurityConfiguration extends WebSecurityConfigur
 
 	private final LdapAuthoritiesPopulator ldapAuthoritiesPopulator;
 
-	public LdapAuthenticationSecurityConfiguration(
-		final ApplicationProperties applicationProperties, final ContextSource contextSource, final LdapAuthoritiesPopulator ldapAuthoritiesPopulator
-	) {
+	public LdapAuthenticationSecurityConfiguration(final ApplicationProperties applicationProperties, final ContextSource contextSource,
+			final LdapAuthoritiesPopulator ldapAuthoritiesPopulator) {
 		this.applicationProperties = applicationProperties;
 		this.contextSource = contextSource;
 		this.ldapAuthoritiesPopulator = ldapAuthoritiesPopulator;

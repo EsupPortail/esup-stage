@@ -12,7 +12,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -31,15 +30,14 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Table(name = "Structure")
-@NamedQuery(name = "Structure.findAll", query = "SELECT s FROM Structure s")
 public class Structure extends Auditable<String> {
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name = "idStructure")
-    @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
+	@GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
 	private Integer id;
 
 	@Lob

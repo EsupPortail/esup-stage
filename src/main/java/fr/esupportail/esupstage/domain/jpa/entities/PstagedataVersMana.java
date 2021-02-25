@@ -5,7 +5,6 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 import lombok.Getter;
@@ -21,7 +20,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Table(name = "pstagedata_vers_mana")
-@NamedQuery(name = "PstagedataVersMana.findAll", query = "SELECT p FROM PstagedataVersMana p")
 public class PstagedataVersMana implements Serializable {
 
 	private static final long serialVersionUID = 1L;

@@ -11,4 +11,5 @@ import fr.esupportail.esupstage.domain.jpa.entities.Pays;
 public interface PaysRepository extends JpaRepository<Pays, Integer> {
 
 	public List<Pays> findByIso2ContainingIgnoreCase(String iso2);
+
 }

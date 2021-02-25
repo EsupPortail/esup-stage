@@ -15,4 +15,5 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Integer> {
 	public Etudiant findEtudiantByIdAndCodeUniversite(Integer idEtudiant, String codeUniveriste);
 
 	public Etudiant findEtudiantByIdentEtudiantAndCodeUniversite(String identEtudiant, String codeUniveriste);
+
 }

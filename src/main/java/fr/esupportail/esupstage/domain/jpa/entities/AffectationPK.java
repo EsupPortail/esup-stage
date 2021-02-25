@@ -1,49 +1,30 @@
 package fr.esupportail.esupstage.domain.jpa.entities;
 
-
 import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
-import lombok.Getter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 /**
  * The primary key class for the Affectation database table.
  *
  */
+@Data
 @Embeddable
-@Getter
-@Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class AffectationPK implements Serializable {
-    // default serial version id, required for serializable classes.
-    private static final long serialVersionUID = 1L;
-    @Column(unique = true, nullable = false, length = 10)
-    private String codeAffectation;
-    @Column(unique = true, nullable = false, length = 50)
-    private String codeUniversite;
 
+	private static final long serialVersionUID = 1L;
 
-    public boolean equals(Object other) {
-        if (this == other) {
-            return true;
-        }
-        if (!(other instanceof AffectationPK)) {
-            return false;
-        }
-        AffectationPK castOther = (AffectationPK) other;
-        return this.codeAffectation.equals(castOther.codeAffectation)
-                && this.codeUniversite.equals(castOther.codeUniversite);
-    }
+	@Column(unique = true, nullable = false, length = 10)
+	private String codeAffectation;
 
-    public int hashCode() {
-        final Integer prime = 31;
-        Integer hash = 17;
-        hash = hash * prime + this.codeAffectation.hashCode();
-        hash = hash * prime + this.codeUniversite.hashCode();
-        return hash;
-    }
+	@Column(unique = true, nullable = false, length = 50)
+	private String codeUniversite;
+
 }

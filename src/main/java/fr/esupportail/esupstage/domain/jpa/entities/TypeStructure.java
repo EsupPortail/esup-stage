@@ -8,7 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -27,15 +26,14 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Table(name = "TypeStructure")
-@NamedQuery(name = "TypeStructure.findAll", query = "SELECT t FROM TypeStructure t")
 public class TypeStructure implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name = "idTypeStructure")
-    @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
+	@GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
 	private Integer id;
 
 	@Column(name = "libelleTypeStructure", nullable = false, length = 100)

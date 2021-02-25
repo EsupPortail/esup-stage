@@ -9,7 +9,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -26,15 +25,14 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name = "Pays")
-@NamedQuery(name = "Pay.findAll", query = "SELECT p FROM Pays p")
 public class Pays implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name = "idPays")
-    @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
+	@GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
 	private Integer id;
 
 	@Column(nullable = false)
@@ -58,15 +56,12 @@ public class Pays implements Serializable {
 	@Column(name = "temEnServPays", nullable = false, length = 1)
 	private String temEnServ;
 
-	// bi-directional many-to-one association to Offre
 	@OneToMany(mappedBy = "pay")
 	private List<Offre> offres;
 
-	// bi-directional many-to-one association to Service
 	@OneToMany(mappedBy = "pay")
 	private List<Service> services;
 
-	// bi-directional many-to-one association to Structure
 	@OneToMany(mappedBy = "pay")
 	private List<Structure> structures;
 

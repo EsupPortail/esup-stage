@@ -11,7 +11,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -28,15 +27,14 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name = "Service")
-@NamedQuery(name = "Service.findAll", query = "SELECT s FROM Service s")
 public class Service extends Auditable<String> {
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name = "idService")
-    @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
+	@GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
 	private Integer id;
 
 	@Column(length = 200)
@@ -65,24 +63,19 @@ public class Service extends Auditable<String> {
 	@Column(nullable = false, length = 200)
 	private String voie;
 
-	// bi-directional many-to-one association to Avenant
 	@OneToMany(mappedBy = "service")
 	private List<Avenant> avenants;
 
-	// bi-directional many-to-one association to Contact
 	@OneToMany(mappedBy = "service")
 	private List<Contact> contacts;
 
-	// bi-directional many-to-one association to Convention
 	@OneToMany(mappedBy = "service")
 	private List<Convention> conventions;
 
-	// bi-directional many-to-one association to Pay
 	@ManyToOne
 	@JoinColumn(name = "idPays", nullable = false)
 	private Pays pay;
 
-	// bi-directional many-to-one association to Structure
 	@ManyToOne
 	@JoinColumn(name = "idStructure", nullable = false)
 	private Structure structure;

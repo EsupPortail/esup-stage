@@ -20,4 +20,5 @@ public class LdapConfiguration {
 		ldapTemplate.setDefaultTimeLimit(1000);
 		return ldapTemplate;
 	}
+
 }

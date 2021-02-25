@@ -43,4 +43,5 @@ public class LdapUser implements Serializable {
 
 	@Attribute(name = "memberOf")
 	private List<String> groupes;
+
 }

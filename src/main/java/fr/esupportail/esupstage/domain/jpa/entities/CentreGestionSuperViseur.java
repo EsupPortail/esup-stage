@@ -9,7 +9,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -23,37 +22,39 @@ import lombok.Setter;
  *
  */
 @Entity
-@Table(name = "CentreGestionSuperViseur")
 @Getter
 @Setter
-@NamedQuery(name = "CentreGestionSuperViseur.findAll", query = "SELECT c FROM CentreGestionSuperViseur c")
+@Table(name = "CentreGestionSuperViseur")
 public class CentreGestionSuperViseur implements Serializable {
 
-    public CentreGestionSuperViseur() {
-        this.centreGestions = new ArrayList<>();
-    }
+	public CentreGestionSuperViseur() {
+		this.centreGestions = new ArrayList<>();
+	}
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @Column(name = "idCentreGestionSuperViseur")
-    @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-    private Integer id;
-    @Column(name = "nomCentreSuperViseur", nullable = false, length = 100)
-    private String name;
-    // bi-directional many-to-one association to CentreGestion
-    @OneToMany(mappedBy = "centreGestionSuperViseur")
-    private List<CentreGestion> centreGestions;
+	private static final long serialVersionUID = 1L;
 
-    public CentreGestion addCentreGestion(CentreGestion centreGestion) {
-        getCentreGestions().add(centreGestion);
-        centreGestion.setCentreGestionSuperViseur(this);
-        return centreGestion;
-    }
+	@Id
+	@Column(name = "idCentreGestionSuperViseur")
+	@GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
+	private Integer id;
 
-    public CentreGestion removeCentreGestion(CentreGestion centreGestion) {
-        getCentreGestions().remove(centreGestion);
-        centreGestion.setCentreGestionSuperViseur(null);
-        return centreGestion;
-    }
+	@Column(name = "nomCentreSuperViseur", nullable = false, length = 100)
+	private String name;
+
+	@OneToMany(mappedBy = "centreGestionSuperViseur")
+	private List<CentreGestion> centreGestions;
+
+	public CentreGestion addCentreGestion(CentreGestion centreGestion) {
+		getCentreGestions().add(centreGestion);
+		centreGestion.setCentreGestionSuperViseur(this);
+		return centreGestion;
+	}
+
+	public CentreGestion removeCentreGestion(CentreGestion centreGestion) {
+		getCentreGestions().remove(centreGestion);
+		centreGestion.setCentreGestionSuperViseur(null);
+		return centreGestion;
+	}
+
 }

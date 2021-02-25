@@ -1,6 +1,5 @@
 package fr.esupportail.esupstage.domain.jpa.entities;
 
-
 import java.io.Serializable;
 import java.util.List;
 
@@ -11,7 +10,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -26,26 +24,28 @@ import lombok.Setter;
  *
  */
 @Entity
-@Table(name = "FAP_Qualification")
 @Getter
 @Setter
 @NoArgsConstructor
-@NamedQuery(name = "FAP_Qualification.findAll", query = "SELECT f FROM FAP_Qualification f")
+@Table(name = "FAP_Qualification")
 public class FAP_Qualification implements Serializable {
-    private static final long serialVersionUID = 1L;
-    @Id
-    @Column(name = "numFAP_Qualification")
-    @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-    private Integer id;
-    @Column(name = "libelleQualification", nullable = false, length = 100)
-    private String label;
-    // bi-directional many-to-one association to FapN3
-    @OneToMany(mappedBy = "fapQualification")
-    private List<FapN3> fapN3s;
-    // bi-directional many-to-one association to FAP_QualificationSimplifiee
-    @ManyToOne
-    @JoinColumn(name = "idQualificationSimplifiee", nullable = false)
-    private FAP_QualificationSimplifiee fapQualificationSimplifiee;
+
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@Column(name = "numFAP_Qualification")
+	@GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
+	private Integer id;
+
+	@Column(name = "libelleQualification", nullable = false, length = 100)
+	private String label;
+
+	@OneToMany(mappedBy = "fapQualification")
+	private List<FapN3> fapN3s;
+
+	@ManyToOne
+	@JoinColumn(name = "idQualificationSimplifiee", nullable = false)
+	private FAP_QualificationSimplifiee fapQualificationSimplifiee;
 
 }

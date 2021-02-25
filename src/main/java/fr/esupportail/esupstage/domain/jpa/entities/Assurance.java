@@ -7,7 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -21,22 +20,27 @@ import lombok.Setter;
  *
  */
 @Entity
-@Table(name = "Assurance")
 @Getter
 @Setter
 @NoArgsConstructor
-@NamedQuery(name = "Assurance.findAll", query = "SELECT a FROM Assurance a")
+@Table(name = "Assurance")
 public class Assurance implements Serializable {
-    private static final long serialVersionUID = 1L;
-    @Id
-    @Column(name = "idAssurance")
-    @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-    private Integer id;
-    @Column(nullable = false, length = 20)
-    private String codeCtrl;
-    @Column(name = "libelleAssurance", nullable = false, length = 100)
-    private String label;
-    @Column(name = "temEnServAss", nullable = false, length = 1)
-    private String temEnServ;
+
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@Column(name = "idAssurance")
+	@GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
+	private Integer id;
+
+	@Column(nullable = false, length = 20)
+	private String codeCtrl;
+
+	@Column(name = "libelleAssurance", nullable = false, length = 100)
+	private String label;
+
+	@Column(name = "temEnServAss", nullable = false, length = 1)
+	private String temEnServ;
+
 }

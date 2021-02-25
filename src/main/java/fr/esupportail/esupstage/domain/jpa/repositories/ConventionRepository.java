@@ -18,30 +18,27 @@ public interface ConventionRepository extends JpaRepository<Convention, Integer>
 	@Query("SELECT DISTINCT c.annee FROM Convention c LEFT JOIN  c.centreGestion cg WHERE cg.codeUniversite=?1 ORDER BY c.annee DESC")
 	public List<String> getAnneesConvention(String codeUniversite);
 
-	@Query("SELECT c FROM Convention c INNER JOIN FETCH c.etudiant etu "
-			+ "WHERE etu.id=?1 and (?2 is null or etu.codeUniversite=?2) ORDER BY c.createdDate DESC")
+	@Query("SELECT c FROM Convention c INNER JOIN FETCH c.etudiant etu " + "WHERE etu.id=?1 and (?2 is null or etu.codeUniversite=?2) ORDER BY c.createdDate DESC")
 	public List<Convention> findConventionsByEtudiantIdAndCodeUniversite(Integer identEtudiant, String codeUniversite);
 
 	public List<Convention> findConventionsByEnseignant(Enseignant enseignant);
 
 	public List<Convention> findConventionsByEnseignantAndAnnee(Enseignant enseignant, String annee);
 
-	@Query("SELECT COUNT(c) FROM Convention c INNER JOIN c.etape et INNER JOIN c.centreGestion cg WHERE"
-			+ " cg.id=?1 and et.id.codeUniversite=?2 ")
+	@Query("SELECT COUNT(c) FROM Convention c INNER JOIN c.etape et INNER JOIN c.centreGestion cg WHERE" + " cg.id=?1 and et.id.codeUniversite=?2 ")
 	public int getNombreConventionByCentreGestion(int idCentreGestion, String codeUniversite);
 
 	@Query("SELECT c FROM Convention c WHERE c.etape.id.codeEtape=?1 and c.etape.id.codeUniversite =?2 ")
 	public List<Convention> getCodeUFRFromCodeEtape(String codeEtape, String codeUniversite);
 
-	
-	//public List<Convention> findConventionsByEtapeAndCodeUniversite(Etape etape, String codeUniversite);
-	//public List<Convention> findConventionsByCodeEtapeAndCodeVersionEtape(String codeEtape,String codeVersionEtape);
+	// public List<Convention> findConventionsByEtapeAndCodeUniversite(Etape etape, String codeUniversite);
+	// public List<Convention> findConventionsByCodeEtapeAndCodeVersionEtape(String codeEtape,String codeVersionEtape);
 	/**
 	 * @param codeEtape
 	 * @param codeVersionEtape
 	 */
-	//@Query("UPDATE" )
-	//public void updateConventionSetCodeVersionEtape(String codeEtape, String codeVersionEtape);
+	// @Query("UPDATE" )
+	// public void updateConventionSetCodeVersionEtape(String codeEtape, String codeVersionEtape);
 
 	//
 	// @Query("SELECT c FROM Convention c INNER JOIN FETCH c.enseignant ens

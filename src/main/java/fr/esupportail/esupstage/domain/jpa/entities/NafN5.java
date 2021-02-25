@@ -8,7 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -21,37 +20,41 @@ import lombok.Setter;
  *
  */
 @Entity
-@Table(name = "NAF_N5")
 @Getter
 @Setter
 @NoArgsConstructor
-@NamedQuery(name = "NafN5.findAll", query = "SELECT n FROM NafN5 n")
+@Table(name = "NAF_N5")
 public class NafN5 implements Serializable {
-    private static final long serialVersionUID = 1L;
-    @Id
-    @Column(name = "codeNAF_N5", unique = true, nullable = false, length = 6)
-    private String code;
-    @Column(name = "libelleNAF_N5", length = 150)
-    private String label;
-    @Column(name = "temEnServNAF_N5", nullable = false, length = 1)
-    private String temEnServ;
-    // bi-directional many-to-one association to NafN1
-    @ManyToOne
-    @JoinColumn(name = "codeNAF_N1", nullable = false)
-    private NafN1 nafN1;
-    // bi-directional many-to-one association to Structure
-    @OneToMany(mappedBy = "nafN5")
-    private List<Structure> structures;
 
-    public Structure addStructure(Structure structure) {
-        getStructures().add(structure);
-        structure.setNafN5(this);
-        return structure;
-    }
+	private static final long serialVersionUID = 1L;
 
-    public Structure removeStructure(Structure structure) {
-        getStructures().remove(structure);
-        structure.setNafN5(null);
-        return structure;
-    }
+	@Id
+	@Column(name = "codeNAF_N5", unique = true, nullable = false, length = 6)
+	private String code;
+
+	@Column(name = "libelleNAF_N5", length = 150)
+	private String label;
+
+	@Column(name = "temEnServNAF_N5", nullable = false, length = 1)
+	private String temEnServ;
+
+	@ManyToOne
+	@JoinColumn(name = "codeNAF_N1", nullable = false)
+	private NafN1 nafN1;
+
+	@OneToMany(mappedBy = "nafN5")
+	private List<Structure> structures;
+
+	public Structure addStructure(Structure structure) {
+		getStructures().add(structure);
+		structure.setNafN5(this);
+		return structure;
+	}
+
+	public Structure removeStructure(Structure structure) {
+		getStructures().remove(structure);
+		structure.setNafN5(null);
+		return structure;
+	}
+
 }

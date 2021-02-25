@@ -7,7 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 import lombok.Getter;
@@ -19,25 +18,27 @@ import lombok.Setter;
  *
  */
 @Entity
-@Table(name = "FAP_N3")
 @Getter
 @Setter
 @NoArgsConstructor
-@NamedQuery(name = "FapN3.findAll", query = "SELECT f FROM FapN3 f")
+@Table(name = "FAP_N3")
 public class FapN3 implements Serializable {
-    private static final long serialVersionUID = 1L;
-    @Id
-    @Column(name = "codeFAP_N3", unique = true, nullable = false, length = 5)
-    private String code;
-    @Column(name = "libelle", nullable = false, length = 200)
-    private String label;
-    // bi-directional many-to-one association to FapN2
-    @ManyToOne
-    @JoinColumn(name = "codeFAP_N2", nullable = false)
-    private FapN2 fapN2;
-    // bi-directional many-to-one association to FAP_Qualification
-    @ManyToOne
-    @JoinColumn(name = "numFAP_Qualification", nullable = false)
-    private FAP_Qualification fapQualification;
+
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@Column(name = "codeFAP_N3", unique = true, nullable = false, length = 5)
+	private String code;
+
+	@Column(name = "libelle", nullable = false, length = 200)
+	private String label;
+
+	@ManyToOne
+	@JoinColumn(name = "codeFAP_N2", nullable = false)
+	private FapN2 fapN2;
+
+	@ManyToOne
+	@JoinColumn(name = "numFAP_Qualification", nullable = false)
+	private FAP_Qualification fapQualification;
 
 }

@@ -20,14 +20,15 @@ import fr.esupportail.esupstage.AbstractTest;
 import fr.esupportail.esupstage.domain.jpa.entities.AdminStructure;
 import fr.esupportail.esupstage.domain.jpa.repositories.AdminStructureRepository;
 
-
 @Rollback
 @Transactional
 @WithMockUser(username = "jdoe", password = "jdoe")
 class AdminStructureRepositoryTest extends AbstractTest {
 
 	private final EntityManager entityManager;
+
 	private final AdminStructureRepository adminStructureRepository;
+
 	private int adminStructureId;
 
 	@Autowired
@@ -55,7 +56,7 @@ class AdminStructureRepositoryTest extends AbstractTest {
 
 		final AdminStructure adminStructure = result.get();
 		assertNotNull(adminStructure.getCreatedDate());
-		assertEquals("jdoe",adminStructure.getCreatedBy());
+		assertEquals("jdoe", adminStructure.getCreatedBy());
 	}
 
 }
