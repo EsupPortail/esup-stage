@@ -51,15 +51,15 @@ class AccordPartenariatRepositoryTest extends AbstractTest {
 
 		final AccordPartenariat accordPartenariat = new AccordPartenariat();
 		final NiveauCentre niveauCentre = new NiveauCentre();
-		niveauCentre.setLibelleNiveauCentre("libel");
-		niveauCentre.setTemEnServNiveauCentre("A");
+		niveauCentre.setLabel("libel");
+		niveauCentre.setTemEnServ("A");
 
 		entityManager.persist(niveauCentre);
 
 		final Confidentialite confidentialite = new Confidentialite();
-		confidentialite.setCodeConfidentialite("A");
-		confidentialite.setLibelleConfidentialite("libel");
-		confidentialite.setTemEnServConfid("A");
+		confidentialite.setCode("A");
+		confidentialite.setLabel("libel");
+		confidentialite.setTemEnServ("A");
 		entityManager.persist(confidentialite);
 
 		final CentreGestion centreGestion = new CentreGestion();
@@ -73,18 +73,18 @@ class AccordPartenariatRepositoryTest extends AbstractTest {
 		final Pays pays = new Pays();
 		pays.setActual(1);
 		pays.setLib("lib");
-		pays.setTemEnServPays("A");
+		pays.setTemEnServ("A");
 		pays.setCog(1);
 		entityManager.persist(pays);
 
 		final Effectif effectif = new Effectif();
-		effectif.setLibelleEffectif("libel");
-		effectif.setTemEnServEffectif("A");
+		effectif.setLabel("libel");
+		effectif.setTemEnServ("A");
 		entityManager.persist(effectif);
 
 		final TypeStructure typeStructure = new TypeStructure();
-		typeStructure.setLibelleTypeStructure("libel");
-		typeStructure.setTemEnServTypeStructure("A");
+		typeStructure.setLabel("libel");
+		typeStructure.setTemEnServ("A");
 		entityManager.persist(typeStructure);
 
 		final Structure structure = new Structure();
@@ -117,7 +117,7 @@ class AccordPartenariatRepositoryTest extends AbstractTest {
 		accordPartenariat.setStructure(structure);
 
 		entityManager.persist(accordPartenariat);
-		accordPartenariatId = accordPartenariat.getIdAccordPartenariat();
+		accordPartenariatId = accordPartenariat.getId();
 		entityManager.flush();
 	}
 
@@ -129,15 +129,15 @@ class AccordPartenariatRepositoryTest extends AbstractTest {
 
 		final AccordPartenariat accordPartenariat = result.get();
 		assertEquals("jdoe", accordPartenariat.getCreatedBy());
-		assertEquals(accordPartenariatId, accordPartenariat.getIdAccordPartenariat());
+		assertEquals(accordPartenariatId, accordPartenariat.getId());
 		assertEquals("Doe", accordPartenariat.getContact().getNom());
 		assertEquals("nom service", accordPartenariat.getContact().getService().getNom());
 		assertEquals("voie", accordPartenariat.getContact().getService().getStructure().getVoie());
-		assertEquals("libel", accordPartenariat.getContact().getService().getStructure().getTypeStructure().getLibelleTypeStructure());
-		assertEquals("libel", accordPartenariat.getContact().getService().getStructure().getEffectif().getLibelleEffectif());
+		assertEquals("libel", accordPartenariat.getContact().getService().getStructure().getTypeStructure().getLabel());
+		assertEquals("libel", accordPartenariat.getContact().getService().getStructure().getEffectif().getLabel());
 		assertEquals("lib", accordPartenariat.getContact().getService().getStructure().getPay().getLib());
 		assertEquals("codeuniv", accordPartenariat.getContact().getCentreGestion().getCodeUniversite());
-		assertEquals("libel", accordPartenariat.getContact().getCentreGestion().getConfidentialite().getLibelleConfidentialite());
+		assertEquals("libel", accordPartenariat.getContact().getCentreGestion().getConfidentialite().getLabel());
 	}
 
 }

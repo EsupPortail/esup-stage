@@ -32,13 +32,14 @@ import lombok.Setter;
 public class Fichier implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
+    @Column(name = "idFichier")
     @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-    private Integer idFichier;
-    @Column(nullable = false, length = 255)
-    private String nomFichier;
-    @Column(length = 255)
-    private String nomReel;
+    private Integer id;
+    @Column(name = "nomFichier", nullable = false, length = 255)
+    private String localFileName;
+    @Column(name = "nomReel", length = 255)
+    private String originalFileName;
     // bi-directional many-to-one association to CentreGestion
     @OneToMany(mappedBy = "fichier")
     private List<CentreGestion> centreGestions;

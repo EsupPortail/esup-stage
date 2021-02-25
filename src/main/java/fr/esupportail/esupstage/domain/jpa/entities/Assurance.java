@@ -29,13 +29,14 @@ import lombok.Setter;
 public class Assurance implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
+    @Column(name = "idAssurance")
     @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-    private Integer idAssurance;
+    private Integer id;
     @Column(nullable = false, length = 20)
     private String codeCtrl;
-    @Column(nullable = false, length = 100)
-    private String libelleAssurance;
-    @Column(nullable = false, length = 1)
-    private String temEnServAss;
+    @Column(name = "libelleAssurance", nullable = false, length = 100)
+    private String label;
+    @Column(name = "temEnServAss", nullable = false, length = 1)
+    private String temEnServ;
 }

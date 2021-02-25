@@ -48,18 +48,18 @@ public class StructureRepositoryTest extends AbstractTest {
 		pays.setCog(1);
 		pays.setLib("Label");
 		pays.setSiretObligatoire(true);
-		pays.setTemEnServPays("A");
+		pays.setTemEnServ("A");
 		entityManager.persist(pays);
 
 		final Effectif effectif = new Effectif();
-		effectif.setLibelleEffectif("Label");
-		effectif.setTemEnServEffectif("A");
+		effectif.setLabel("Label");
+		effectif.setTemEnServ("A");
 		entityManager.persist(effectif);
 
 		final TypeStructure typeStructure = new TypeStructure();
-		typeStructure.setTemEnServTypeStructure("A");
+		typeStructure.setTemEnServ("A");
 		typeStructure.setSiretObligatoire(true);
-		typeStructure.setLibelleTypeStructure("Label");
+		typeStructure.setLabel("Label");
 		entityManager.persist(typeStructure);
 
 		final Structure structure = new Structure();
@@ -73,7 +73,7 @@ public class StructureRepositoryTest extends AbstractTest {
 
 		entityManager.flush();
 		entityManager.refresh(structure);
-		id = structure.getIdStructure();
+		id = structure.getId();
 	}
 
 	@Test

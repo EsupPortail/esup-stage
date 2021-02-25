@@ -48,17 +48,17 @@ public class ServiceRepositoryTest extends AbstractTest {
 		pays.setCog(1);
 		pays.setLib("Label");
 		pays.setSiretObligatoire(true);
-		pays.setTemEnServPays("A");
+		pays.setTemEnServ("A");
 		entityManager.persist(pays);
 
 		final Effectif effectif = new Effectif();
-		effectif.setLibelleEffectif("Label");
-		effectif.setTemEnServEffectif("A");
+		effectif.setLabel("Label");
+		effectif.setTemEnServ("A");
 		entityManager.persist(effectif);
 
 		final TypeStructure typeStructure = new TypeStructure();
-		typeStructure.setTemEnServTypeStructure("A");
-		typeStructure.setLibelleTypeStructure("Label");
+		typeStructure.setTemEnServ("A");
+		typeStructure.setLabel("Label");
 		typeStructure.setSiretObligatoire(true);
 		entityManager.persist(typeStructure);
 
@@ -81,7 +81,7 @@ public class ServiceRepositoryTest extends AbstractTest {
 		entityManager.flush();
 
 		entityManager.refresh(service);
-		id = service.getIdService();
+		id = service.getId();
 	}
 
 	@Test

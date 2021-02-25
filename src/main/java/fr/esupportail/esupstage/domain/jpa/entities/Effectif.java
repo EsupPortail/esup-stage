@@ -32,14 +32,15 @@ import lombok.Setter;
 public class Effectif implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
+    @Column(name = "idEffectif")
     @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-    private Integer idEffectif;
-    @Column(nullable = false, length = 100)
-    private String libelleEffectif;
+    private Integer id;
+    @Column(name = "libelleEffectif", nullable = false, length = 100)
+    private String label;
     private boolean modifiable;
-    @Column(nullable = false, length = 1)
-    private String temEnServEffectif;
+    @Column(name = "temEnServEffectif", nullable = false, length = 1)
+    private String temEnServ;
     // bi-directional many-to-one association to Structure
     @OneToMany(mappedBy = "effectif")
     private List<Structure> structures;

@@ -44,11 +44,11 @@ class CiviliteRepositoryTest extends AbstractTest {
 		entityManager.persist(adminStructure);
 
 		final Civilite civilite = new Civilite();
-		civilite.setLibelleCivilite("libel");
+		civilite.setLabel("libel");
 		civilite.addAdminStructure(adminStructure);
 		entityManager.persist(civilite);
 
-		civiliteId = civilite.getIdCivilite();
+		civiliteId = civilite.getId();
 		entityManager.flush();
 	}
 
@@ -60,7 +60,7 @@ class CiviliteRepositoryTest extends AbstractTest {
 
 		final Civilite civilite = result.get();
 		assertEquals("jdoe", civilite.getAdminStructures().get(0).getCreatedBy());
-		assertEquals("libel", civilite.getLibelleCivilite());
+		assertEquals("libel", civilite.getLabel());
 	}
 
 }

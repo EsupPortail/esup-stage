@@ -44,7 +44,7 @@ class AdminStructureRepositoryTest extends AbstractTest {
 
 		entityManager.persist(adminStructure);
 		entityManager.flush();
-		this.adminStructureId = adminStructure.getIdAdminStructure();
+		this.adminStructureId = adminStructure.getId();
 	}
 
 	@Test

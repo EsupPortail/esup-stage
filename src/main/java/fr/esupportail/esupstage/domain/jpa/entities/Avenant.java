@@ -33,9 +33,10 @@ import lombok.Setter;
 public class Avenant extends Auditable<String> {
     private static final long serialVersionUID = 1L;
     @Id
+    @Column(name = "idAvenant")
     @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-    private Integer idAvenant;
+    private Integer id;
     @Lob
     private String commentaireRupture;
     private LocalDate dateDebutInterruption;

@@ -55,8 +55,8 @@ public class Pays implements Serializable {
 	@Column(nullable = false)
 	private boolean siretObligatoire;
 
-	@Column(nullable = false, length = 1)
-	private String temEnServPays;
+	@Column(name = "temEnServPays", nullable = false, length = 1)
+	private String temEnServ;
 
 	// bi-directional many-to-one association to Offre
 	@OneToMany(mappedBy = "pay")

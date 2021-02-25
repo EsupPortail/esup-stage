@@ -39,20 +39,20 @@ public class StatutJuridiqueRepositoryTest extends AbstractTest {
 	@BeforeEach
 	void prepare() {
 		final TypeStructure typeStructure = new TypeStructure();
-		typeStructure.setTemEnServTypeStructure("A");
+		typeStructure.setTemEnServ("A");
 		typeStructure.setSiretObligatoire(true);
-		typeStructure.setLibelleTypeStructure("Label");
+		typeStructure.setLabel("Label");
 		entityManager.persist(typeStructure);
 
 		final StatutJuridique statutJuridique = new StatutJuridique();
-		statutJuridique.setLibelleStatutJuridique("Label");
-		statutJuridique.setTemEnServStatut("A");
+		statutJuridique.setLabel("Label");
+		statutJuridique.setTemEnServ("A");
 		statutJuridique.setTypeStructure(typeStructure);
 		entityManager.persist(statutJuridique);
 
 		entityManager.flush();
 		entityManager.refresh(statutJuridique);
-		id = statutJuridique.getIdStatutJuridique();
+		id = statutJuridique.getId();
 	}
 
 	@Test
@@ -62,8 +62,8 @@ public class StatutJuridiqueRepositoryTest extends AbstractTest {
 		assertTrue(result.isPresent(), "We should have found our entity");
 
 		final StatutJuridique tmp = result.get();
-		assertEquals("A", tmp.getTemEnServStatut());
-		assertEquals("Label", tmp.getLibelleStatutJuridique());
+		assertEquals("A", tmp.getTemEnServ());
+		assertEquals("Label", tmp.getLabel());
 	}
 
 }

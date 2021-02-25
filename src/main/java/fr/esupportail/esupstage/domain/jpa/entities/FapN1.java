@@ -28,10 +28,10 @@ import lombok.Setter;
 public class FapN1 implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
-    @Column(unique = true, nullable = false, length = 1)
-    private String codeFAP_N1;
-    @Column(nullable = false, length = 200)
-    private String libelle;
+    @Column(name = "codeFAP_N1", unique = true, nullable = false, length = 1)
+    private String code;
+    @Column(name = "libelle", nullable = false, length = 200)
+    private String label;
     // bi-directional many-to-one association to FapN2
     @OneToMany(mappedBy = "fapN1")
     private List<FapN2> fapN2s;

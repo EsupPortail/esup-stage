@@ -33,15 +33,16 @@ public class UniteGratification implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@Column(name = "idUniteGratification")
     @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-	private Integer idUniteGratification;
+	private Integer id;
 
-	@Column(nullable = false, length = 50)
-	private String libelleUniteGratification;
+	@Column(name = "libelleUniteGratification", nullable = false, length = 50)
+	private String label;
 
-	@Column(nullable = false, length = 1)
-	private String temEnServGrat;
+	@Column(name = "temEnServGrat", nullable = false, length = 1)
+	private String temEnServ;
 
 	@OneToMany(mappedBy = "uniteGratification")
 	private List<Convention> conventions;

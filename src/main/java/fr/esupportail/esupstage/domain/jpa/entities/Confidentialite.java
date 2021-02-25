@@ -28,12 +28,12 @@ import lombok.Setter;
 public class Confidentialite implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
-    @Column(unique = true, nullable = false, length = 1)
-    private String codeConfidentialite;
-    @Column(nullable = false, length = 50)
-    private String libelleConfidentialite;
-    @Column(nullable = false, length = 1)
-    private String temEnServConfid;
+    @Column(name = "codeConfidentialite", unique = true, nullable = false, length = 1)
+    private String code;
+    @Column(name = "libelleConfidentialite", nullable = false, length = 50)
+    private String label;
+    @Column(name = "temEnServConfid", nullable = false, length = 1)
+    private String temEnServ;
     // bi-directional many-to-one association to CentreGestion
     @OneToMany(mappedBy = "confidentialite")
     private List<CentreGestion> centreGestions;

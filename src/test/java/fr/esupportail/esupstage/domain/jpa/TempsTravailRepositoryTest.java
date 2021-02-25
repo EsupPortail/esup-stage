@@ -39,13 +39,13 @@ public class TempsTravailRepositoryTest extends AbstractTest {
 	void prepare() {
 		final TempsTravail tempsTravail = new TempsTravail();
 		tempsTravail.setCodeCtrl("Code");
-		tempsTravail.setLibelleTempsTravail("Label");
-		tempsTravail.setTemEnServTempsTravail("A");
+		tempsTravail.setLabel("Label");
+		tempsTravail.setTemEnServ("A");
 		entityManager.persist(tempsTravail);
 
 		entityManager.flush();
 		entityManager.refresh(tempsTravail);
-		id = tempsTravail.getIdTempsTravail();
+		id = tempsTravail.getId();
 	}
 
 	@Test
@@ -56,8 +56,8 @@ public class TempsTravailRepositoryTest extends AbstractTest {
 
 		final TempsTravail tmp = result.get();
 		assertEquals("Code", tmp.getCodeCtrl());
-		assertEquals("Label", tmp.getLibelleTempsTravail());
-		assertEquals("A", tmp.getTemEnServTempsTravail());
+		assertEquals("Label", tmp.getLabel());
+		assertEquals("A", tmp.getTemEnServ());
 	}
 
 }

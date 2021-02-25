@@ -34,9 +34,10 @@ import lombok.Setter;
 public class CentreGestion extends Auditable<String> {
     private static final long serialVersionUID = 1L;
     @Id
+    @Column(name = "idCentreGestion")
     @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-    private Integer idCentreGestion;
+    private Integer id;
     @Column(length = 200)
     private String adresse;
     @Column(nullable = false)

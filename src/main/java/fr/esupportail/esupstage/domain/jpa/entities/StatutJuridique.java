@@ -35,17 +35,18 @@ public class StatutJuridique implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@Column(name = "idStatutJuridique")
     @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-	private Integer idStatutJuridique;
+	private Integer id;
 
-	@Column(nullable = false, length = 100)
-	private String libelleStatutJuridique;
+	@Column(name = "libelleStatutJuridique", nullable = false, length = 100)
+	private String label;
 
 	private boolean modifiable;
 
-	@Column(nullable = false, length = 1)
-	private String temEnServStatut;
+	@Column(name = "temEnServStatut", nullable = false, length = 1)
+	private String temEnServ;
 
 	@ManyToOne
 	@JoinColumn(name = "idTypeStructure", nullable = false)

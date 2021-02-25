@@ -32,9 +32,10 @@ import lombok.Setter;
 public class AdminStructure extends Auditable<String> {
     private static final long serialVersionUID = 1L;
     @Id
+    @Column(name = "idAdminStructure")
     @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-    private Integer idAdminStructure;
+    private Integer id;
     private LocalDateTime avantDerniereConnexion;
     private LocalDateTime derniereConnexion;
     @Column(length = 50)

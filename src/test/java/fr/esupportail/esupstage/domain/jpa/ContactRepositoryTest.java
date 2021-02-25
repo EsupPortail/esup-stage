@@ -50,15 +50,15 @@ class ContactRepositoryTest extends AbstractTest {
 	void prepare() {
 
 		final NiveauCentre niveauCentre = new NiveauCentre();
-		niveauCentre.setLibelleNiveauCentre("libel");
-		niveauCentre.setTemEnServNiveauCentre("A");
+		niveauCentre.setLabel("libel");
+		niveauCentre.setTemEnServ("A");
 
 		entityManager.persist(niveauCentre);
 
 		final Confidentialite confidentialite = new Confidentialite();
-		confidentialite.setCodeConfidentialite("A");
-		confidentialite.setLibelleConfidentialite("libel");
-		confidentialite.setTemEnServConfid("A");
+		confidentialite.setCode("A");
+		confidentialite.setLabel("libel");
+		confidentialite.setTemEnServ("A");
 		entityManager.persist(confidentialite);
 
 		final CentreGestion centreGestion = new CentreGestion();
@@ -72,18 +72,18 @@ class ContactRepositoryTest extends AbstractTest {
 		final Pays pays = new Pays();
 		pays.setActual(1);
 		pays.setLib("lib");
-		pays.setTemEnServPays("A");
+		pays.setTemEnServ("A");
 		pays.setCog(1);
 		entityManager.persist(pays);
 
 		final Effectif effectif = new Effectif();
-		effectif.setLibelleEffectif("libel");
-		effectif.setTemEnServEffectif("A");
+		effectif.setLabel("libel");
+		effectif.setTemEnServ("A");
 		entityManager.persist(effectif);
 
 		final TypeStructure typeStructure = new TypeStructure();
-		typeStructure.setLibelleTypeStructure("libel");
-		typeStructure.setTemEnServTypeStructure("A");
+		typeStructure.setLabel("libel");
+		typeStructure.setTemEnServ("A");
 		entityManager.persist(typeStructure);
 
 		final Structure structure = new Structure();
@@ -112,7 +112,7 @@ class ContactRepositoryTest extends AbstractTest {
 		contact.setService(service);
 		entityManager.persist(contact);
 
-		contactId = contact.getIdContact();
+		contactId = contact.getId();
 		entityManager.flush();
 	}
 

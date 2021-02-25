@@ -32,11 +32,12 @@ import lombok.Setter;
 public class Categorie implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
+    @Column(name = "idCategorie")
     @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-    private Integer idCategorie;
-    @Column(nullable = false)
-    private Integer typeCategorie;
+    private Integer id;
+    @Column(name = "typeCategorie" ,nullable = false)
+    private Integer type;
     // bi-directional many-to-one association to Critere
     @OneToMany(mappedBy = "categorie")
     private List<Critere> criteres;

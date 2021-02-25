@@ -38,9 +38,10 @@ import lombok.Setter;
 public class Convention extends Auditable<String> {
     private static final long serialVersionUID = 1L;
     @Id
+    @Column(name = "idConvention")
     @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-    private Integer idConvention;
+    private Integer id;
 
     @Column(length = 250)
     private String adresseEtabRef;

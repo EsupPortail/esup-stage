@@ -42,8 +42,8 @@ public class OrigineStage implements Serializable {
 
 	private boolean modifiable;
 
-	@Column(nullable = false, length = 1)
-	private String temEnServOrigineStage;
+	@Column(name = "temEnServOrigineStage", nullable = false, length = 1)
+	private String temEnServ;
 
 	// bi-directional many-to-one association to Convention
 	@OneToMany(mappedBy = "origineStage")

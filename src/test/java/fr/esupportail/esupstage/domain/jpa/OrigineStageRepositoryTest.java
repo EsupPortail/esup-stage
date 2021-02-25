@@ -39,7 +39,7 @@ public class OrigineStageRepositoryTest extends AbstractTest {
 	void prepare() {
 		final OrigineStage origineStage = new OrigineStage();
 		origineStage.setLabel("Label");
-		origineStage.setTemEnServOrigineStage("A");
+		origineStage.setTemEnServ("A");
 		origineStage.setModifiable(true);
 
 		entityManager.persist(origineStage);
@@ -57,7 +57,7 @@ public class OrigineStageRepositoryTest extends AbstractTest {
 
 		final OrigineStage tmp = result.get();
 		assertEquals("Label", tmp.getLabel());
-		assertEquals("A", tmp.getTemEnServOrigineStage());
+		assertEquals("A", tmp.getTemEnServ());
 		assertTrue(tmp.isModifiable());
 	}
 

@@ -43,7 +43,7 @@ public class PaysRepositoryTest extends AbstractTest {
 		pays.setCog(1);
 		pays.setLib("Label");
 		pays.setSiretObligatoire(true);
-		pays.setTemEnServPays("A");
+		pays.setTemEnServ("A");
 		pays.setIso2("FR");
 
 		entityManager.persist(pays);
@@ -63,7 +63,7 @@ public class PaysRepositoryTest extends AbstractTest {
 		assertEquals("Label", tmp.getLib());
 		assertEquals(1, tmp.getActual());
 		assertEquals(1, tmp.getCog());
-		assertEquals("A", tmp.getTemEnServPays());
+		assertEquals("A", tmp.getTemEnServ());
 		assertEquals("FR", tmp.getIso2());
 		assertTrue(tmp.isSiretObligatoire());
 	}
@@ -78,7 +78,7 @@ public class PaysRepositoryTest extends AbstractTest {
 		assertEquals("Label", tmp.getLib());
 		assertEquals(1, tmp.getActual());
 		assertEquals(1, tmp.getCog());
-		assertEquals("A", tmp.getTemEnServPays());
+		assertEquals("A", tmp.getTemEnServ());
 		assertEquals("FR", tmp.getIso2());
 		assertTrue(tmp.isSiretObligatoire());
 	}

@@ -33,9 +33,10 @@ import lombok.Setter;
 public class AccordPartenariat extends Auditable<String> {
     private static final long serialVersionUID = 1L;
     @Id
+    @Column(name = "idAccordPartenariat")
     @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-    private Integer idAccordPartenariat;
+    private Integer id;
     @Column(nullable = false)
     private boolean comptesSupprimes;
     private LocalDateTime dateSuppressionComptes;

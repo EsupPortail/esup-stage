@@ -33,20 +33,21 @@ public class TypeOffre implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@Column(name = "idTypeOffre")
     @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-	private Integer idTypeOffre;
+	private Integer id;
 
 	@Column(nullable = false, length = 20)
 	private String codeCtrl;
 
-	@Column(nullable = false, length = 50)
-	private String libelleType;
+	@Column(name = "libelleType", nullable = false, length = 50)
+	private String label;
 
 	private boolean modifiable;
 
-	@Column(nullable = false, length = 1)
-	private String temEnServTypeOffre;
+	@Column(name = "temEnServTypeOffre", nullable = false, length = 1)
+	private String temEnServ;
 
 	@OneToMany(mappedBy = "typeOffre")
 	private List<ContratOffre> contratOffres;

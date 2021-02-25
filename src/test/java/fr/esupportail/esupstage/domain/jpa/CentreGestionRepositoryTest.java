@@ -44,15 +44,15 @@ class CentreGestionRepositoryTest extends AbstractTest {
 	void prepare() {
 
 		final NiveauCentre niveauCentre = new NiveauCentre();
-		niveauCentre.setLibelleNiveauCentre("libel");
-		niveauCentre.setTemEnServNiveauCentre("A");
+		niveauCentre.setLabel("libel");
+		niveauCentre.setTemEnServ("A");
 
 		entityManager.persist(niveauCentre);
 
 		final Confidentialite confidentialite = new Confidentialite();
-		confidentialite.setCodeConfidentialite("A");
-		confidentialite.setLibelleConfidentialite("libel");
-		confidentialite.setTemEnServConfid("A");
+		confidentialite.setCode("A");
+		confidentialite.setLabel("libel");
+		confidentialite.setTemEnServ("A");
 		entityManager.persist(confidentialite);
 
 		final CentreGestion centreGestion = new CentreGestion();
@@ -64,7 +64,7 @@ class CentreGestionRepositoryTest extends AbstractTest {
 		entityManager.persist(centreGestion);
 
 		entityManager.persist(centreGestion);
-		centreGestionId = centreGestion.getIdCentreGestion();
+		centreGestionId = centreGestion.getId();
 		entityManager.flush();
 	}
 
@@ -80,8 +80,8 @@ class CentreGestionRepositoryTest extends AbstractTest {
 		assertNotNull(centreGestion.getCreatedDate());
 		assertEquals(1, centreGestion.getIdModeValidationStage());
 		assertEquals("jdoe", centreGestion.getCreatedBy());
-		assertEquals("libel", centreGestion.getConfidentialite().getLibelleConfidentialite());
-		assertEquals("libel", centreGestion.getNiveauCentre().getLibelleNiveauCentre());
+		assertEquals("libel", centreGestion.getConfidentialite().getLabel());
+		assertEquals("libel", centreGestion.getNiveauCentre().getLabel());
 	}
 
 }

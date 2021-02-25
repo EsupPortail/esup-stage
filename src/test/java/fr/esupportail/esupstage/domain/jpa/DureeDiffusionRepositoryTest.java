@@ -39,11 +39,12 @@ class DureeDiffusionRepositoryTest extends AbstractTest {
 	void prepare() {
 
 		final DureeDiffusion dureeDiffusion = new DureeDiffusion();
-		dureeDiffusion.setLibelleDureeDiffusion("libel");
+		dureeDiffusion.setLabel("libel");
 		entityManager.persist(dureeDiffusion);
-
-		dureeDiffusionId = dureeDiffusion.getIdDureeDiffusion();
 		entityManager.flush();
+
+		entityManager.refresh(dureeDiffusion);
+		dureeDiffusionId = dureeDiffusion.getId();
 	}
 
 	@Test
@@ -53,7 +54,7 @@ class DureeDiffusionRepositoryTest extends AbstractTest {
 		assertTrue(result.isPresent(), "We should have found our DureeDiffusion");
 
 		final DureeDiffusion dureeDiffusion = result.get();
-		assertEquals("libel", dureeDiffusion.getLibelleDureeDiffusion());
+		assertEquals("libel", dureeDiffusion.getLabel());
 	}
 
 }

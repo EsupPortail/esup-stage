@@ -55,15 +55,15 @@ class ConventionRepositoryTest extends AbstractTest {
 	void prepare() {
 
 		final NiveauCentre niveauCentre = new NiveauCentre();
-		niveauCentre.setLibelleNiveauCentre("libel");
-		niveauCentre.setTemEnServNiveauCentre("A");
+		niveauCentre.setLabel("libel");
+		niveauCentre.setTemEnServ("A");
 
 		entityManager.persist(niveauCentre);
 
 		final Confidentialite confidentialite = new Confidentialite();
-		confidentialite.setCodeConfidentialite("A");
-		confidentialite.setLibelleConfidentialite("libel");
-		confidentialite.setTemEnServConfid("A");
+		confidentialite.setCode("A");
+		confidentialite.setLabel("libel");
+		confidentialite.setTemEnServ("A");
 		entityManager.persist(confidentialite);
 
 		final CentreGestion centreGestion = new CentreGestion();
@@ -76,38 +76,38 @@ class ConventionRepositoryTest extends AbstractTest {
 
 		final TypeConvention typeConvention = new TypeConvention();
 		typeConvention.setCodeCtrl("code");
-		typeConvention.setLibelleTypeConvention("libel");
-		typeConvention.setTemEnServTypeConvention("F");
+		typeConvention.setLabel("libel");
+		typeConvention.setTemEnServ("F");
 		entityManager.persist(typeConvention);
 
 		final Theme theme = new Theme();
-		theme.setLibelleTheme("libel");
+		theme.setLabel("libel");
 		entityManager.persist(theme);
 
 		final TempsTravail tempsTravail = new TempsTravail();
 		tempsTravail.setCodeCtrl("code");
-		tempsTravail.setLibelleTempsTravail("libel");
-		tempsTravail.setTemEnServTempsTravail("F");
+		tempsTravail.setLabel("libel");
+		tempsTravail.setTemEnServ("F");
 		entityManager.persist(tempsTravail);
 
 		final NatureTravail natureTravail = new NatureTravail();
-		natureTravail.setLibelleNatureTravail("libel");
-		natureTravail.setTemEnServNatTrav("F");
+		natureTravail.setLabel("libel");
+		natureTravail.setTemEnServ("F");
 		entityManager.persist(natureTravail);
 
 		final ModeValidationStage modeValidationStage = new ModeValidationStage();
-		modeValidationStage.setLibelleModeValidationStage("libel");
-		modeValidationStage.setTemEnServModeValid("F");
+		modeValidationStage.setLabel("libel");
+		modeValidationStage.setTemEnServ("F");
 		entityManager.persist(modeValidationStage);
 
 		final LangueConvention langueConvention = new LangueConvention();
-		langueConvention.setCodeLangueConvention("CD");
-		langueConvention.setLibelleLangueConvention("libel");
+		langueConvention.setCode("CD");
+		langueConvention.setLabel("libel");
 		entityManager.persist(langueConvention);
 
 		final Indemnisation indemnisation = new Indemnisation();
-		indemnisation.setLibelleIndemnisation("indem");
-		indemnisation.setTemEnServIndem("F");
+		indemnisation.setLabel("indem");
+		indemnisation.setTemEnServ("F");
 		entityManager.persist(indemnisation);
 
 		final Etudiant etudiant = new Etudiant();
@@ -138,7 +138,7 @@ class ConventionRepositoryTest extends AbstractTest {
 		convention.setCentreGestion(centreGestion);
 		entityManager.persist(convention);
 
-		conventionId = convention.getIdConvention();
+		conventionId = convention.getId();
 		entityManager.flush();
 	}
 
@@ -160,13 +160,13 @@ class ConventionRepositoryTest extends AbstractTest {
 		assertEquals("subject", convention.getSujetStage());
 		assertEquals("s", convention.getTemConfSujetTeme());
 		assertEquals("125458", convention.getEtudiant().getNumEtudiant());
-		assertEquals("indem", convention.getIndemnisation().getLibelleIndemnisation());
-		assertEquals("CD", convention.getLangueConvention().getCodeLangueConvention());
-		assertEquals("libel", convention.getModeValidationStage().getLibelleModeValidationStage());
-		assertEquals("libel", convention.getNatureTravail().getLibelleNatureTravail());
-		assertEquals("libel", convention.getTempsTravail().getLibelleTempsTravail());
-		assertEquals("libel", convention.getTheme().getLibelleTheme());
-		assertEquals("libel", convention.getTypeConvention().getLibelleTypeConvention());
+		assertEquals("indem", convention.getIndemnisation().getLabel());
+		assertEquals("CD", convention.getLangueConvention().getCode());
+		assertEquals("libel", convention.getModeValidationStage().getLabel());
+		assertEquals("libel", convention.getNatureTravail().getLabel());
+		assertEquals("libel", convention.getTempsTravail().getLabel());
+		assertEquals("libel", convention.getTheme().getLabel());
+		assertEquals("libel", convention.getTypeConvention().getLabel());
 		assertEquals("jdoe", convention.getCentreGestion().getCreatedBy());
 	}
 

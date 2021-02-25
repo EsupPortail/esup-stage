@@ -33,20 +33,21 @@ public class TypeConvention implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@Column(name = "idTypeConvention")
     @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-	private Integer idTypeConvention;
+	private Integer id;
 
 	@Column(nullable = false, length = 20)
 	private String codeCtrl;
 
-	@Column(nullable = false, length = 50)
-	private String libelleTypeConvention;
+	@Column(name = "libelleTypeConvention", nullable = false, length = 50)
+	private String label;
 
 	private boolean modifiable;
 
-	@Column(nullable = false, length = 1)
-	private String temEnServTypeConvention;
+	@Column(name = "temEnServTypeConvention", nullable = false, length = 1)
+	private String temEnServ;
 
 	@OneToMany(mappedBy = "typeConvention")
 	private List<Convention> conventions;

@@ -35,9 +35,10 @@ import lombok.Setter;
 public class Contact extends Auditable<String> {
     private static final long serialVersionUID = 1L;
     @Id
+    @Column(name = "idContact")
     @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-    private Integer idContact;
+    private Integer id;
     private LocalDateTime avantDerniereConnexion;
     @Lob
     private String commentaire;

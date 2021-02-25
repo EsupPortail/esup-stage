@@ -39,10 +39,10 @@ class CategorieRepositoryTest extends AbstractTest {
 	void prepare() {
 
 		final Categorie categorie = new Categorie();
-		categorie.setTypeCategorie(1);
+		categorie.setType(1);
 
 		entityManager.persist(categorie);
-		categorieId = categorie.getIdCategorie();
+		categorieId = categorie.getId();
 		entityManager.flush();
 	}
 
@@ -53,7 +53,7 @@ class CategorieRepositoryTest extends AbstractTest {
 		assertTrue(result.isPresent(), "We should have found our Categorie");
 
 		final Categorie categorie = result.get();
-		assertEquals(1, categorie.getTypeCategorie());
+		assertEquals(1, categorie.getType());
 
 	}
 

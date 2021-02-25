@@ -29,12 +29,13 @@ import lombok.Setter;
 public class DureeDiffusion implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
+    @Column(name = "idDureeDiffusion")
     @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-    private Integer idDureeDiffusion;
+    private Integer id;
     @Column(nullable = false)
     private boolean adminSeulement;
-    @Column(nullable = false, length = 20)
-    private String libelleDureeDiffusion;
+    @Column(name = "libelleDureeDiffusion", nullable = false, length = 20)
+    private String label;
 
 }

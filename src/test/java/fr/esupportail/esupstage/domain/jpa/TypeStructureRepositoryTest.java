@@ -38,14 +38,14 @@ public class TypeStructureRepositoryTest extends AbstractTest {
 	@BeforeEach
 	void prepare() {
 		final TypeStructure typeStructure = new TypeStructure();
-		typeStructure.setLibelleTypeStructure("Label");
+		typeStructure.setLabel("Label");
 		typeStructure.setSiretObligatoire(true);
-		typeStructure.setTemEnServTypeStructure("A");
+		typeStructure.setTemEnServ("A");
 		entityManager.persist(typeStructure);
 
 		entityManager.flush();
 		entityManager.refresh(typeStructure);
-		id = typeStructure.getIdTypeStructure();
+		id = typeStructure.getId();
 	}
 
 	@Test
@@ -56,8 +56,8 @@ public class TypeStructureRepositoryTest extends AbstractTest {
 
 		final TypeStructure tmp = result.get();
 		assertTrue(tmp.isSiretObligatoire());
-		assertEquals("Label", tmp.getLibelleTypeStructure());
-		assertEquals("A", tmp.getTemEnServTypeStructure());
+		assertEquals("Label", tmp.getLabel());
+		assertEquals("A", tmp.getTemEnServ());
 	}
 
 }

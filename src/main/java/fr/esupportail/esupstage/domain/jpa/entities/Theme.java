@@ -33,15 +33,16 @@ public class Theme implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@Column(name = "idTheme")
     @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-	private Integer idTheme;
+	private Integer id;
 
-	@Column(nullable = false, length = 50)
-	private String libelleTheme;
+	@Column(name = "libelleTheme", nullable = false, length = 50)
+	private String label;
 
-	@Column(length = 1)
-	private String temEnServTheme;
+	@Column(name = "temEnServTheme", length = 1)
+	private String temEnServ;
 
 	@OneToMany(mappedBy = "theme")
 	private List<Convention> conventions;

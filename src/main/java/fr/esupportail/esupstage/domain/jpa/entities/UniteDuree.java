@@ -33,15 +33,16 @@ public class UniteDuree implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@Column(name = "idUniteDuree")
     @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-	private Integer idUniteDuree;
+	private Integer id;
 
-	@Column(nullable = false, length = 100)
-	private String libelleUniteDuree;
+	@Column(name = "libelleUniteDuree", nullable = false, length = 100)
+	private String label;
 
-	@Column(nullable = false, length = 1)
-	private String temEnServUniteDuree;
+	@Column(name = "temEnServUniteDuree", nullable = false, length = 1)
+	private String temEnServ;
 
 	@OneToMany(mappedBy = "uniteDuree")
 	private List<Convention> conventions;

@@ -34,9 +34,10 @@ public class Service extends Auditable<String> {
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@Column(name = "idService")
     @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-	private Integer idService;
+	private Integer id;
 
 	@Column(length = 200)
 	private String batimentResidence;

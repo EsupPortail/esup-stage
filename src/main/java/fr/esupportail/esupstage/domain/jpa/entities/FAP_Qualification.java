@@ -34,11 +34,12 @@ import lombok.Setter;
 public class FAP_Qualification implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
+    @Column(name = "numFAP_Qualification")
     @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-    private Integer numFAP_Qualification;
-    @Column(nullable = false, length = 100)
-    private String libelleQualification;
+    private Integer id;
+    @Column(name = "libelleQualification", nullable = false, length = 100)
+    private String label;
     // bi-directional many-to-one association to FapN3
     @OneToMany(mappedBy = "fapQualification")
     private List<FapN3> fapN3s;

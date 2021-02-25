@@ -39,11 +39,11 @@ class DroitAdministrationRepositoryTest extends AbstractTest {
 	void prepare() {
 
 		final DroitAdministration droitAdministration = new DroitAdministration();
-		droitAdministration.setLibelleDroitAdministration("libel");
-		droitAdministration.setTemEnServDroitAdmin("F");
+		droitAdministration.setLabel("libel");
+		droitAdministration.setTemEnServ("F");
 		entityManager.persist(droitAdministration);
 
-		droitAdministrationId = droitAdministration.getIdDroitAdministration();
+		droitAdministrationId = droitAdministration.getId();
 		entityManager.flush();
 	}
 
@@ -54,8 +54,8 @@ class DroitAdministrationRepositoryTest extends AbstractTest {
 		assertTrue(result.isPresent(), "We should have found our DroitAdministration");
 
 		final DroitAdministration droitAdministration = result.get();
-		assertEquals("libel", droitAdministration.getLibelleDroitAdministration());
-		assertEquals("F", droitAdministration.getTemEnServDroitAdmin());
+		assertEquals("libel", droitAdministration.getLabel());
+		assertEquals("F", droitAdministration.getTemEnServ());
 	}
 
 }

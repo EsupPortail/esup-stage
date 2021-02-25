@@ -41,11 +41,11 @@ class CritereRepositoryTest extends AbstractTest {
 	void prepare() {
 
 		final Niveau niveau = new Niveau();
-		niveau.setValeur(1);
+		niveau.setValue(1);
 		entityManager.persist(niveau);
 
 		final Categorie categorie = new Categorie();
-		categorie.setTypeCategorie(1);
+		categorie.setType(1);
 		entityManager.persist(categorie);
 
 		final Critere critere = new Critere();
@@ -55,7 +55,7 @@ class CritereRepositoryTest extends AbstractTest {
 		critere.setNiveauBean(niveau);
 		entityManager.persist(critere);
 
-		critereId = critere.getIdCritere();
+		critereId = critere.getId();
 		entityManager.flush();
 	}
 
@@ -68,8 +68,8 @@ class CritereRepositoryTest extends AbstractTest {
 		final Critere critere = result.get();
 		assertEquals("key", critere.getClef());
 		assertEquals("value", critere.getValeur());
-		assertEquals(1, critere.getCategorie().getTypeCategorie());
-		assertEquals(1, critere.getNiveauBean().getValeur());
+		assertEquals(1, critere.getCategorie().getType());
+		assertEquals(1, critere.getNiveauBean().getValue());
 	}
 
 }

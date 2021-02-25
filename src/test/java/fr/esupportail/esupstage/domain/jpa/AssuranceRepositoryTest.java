@@ -26,7 +26,7 @@ class AssuranceRepositoryTest extends AbstractTest {
 
 	private final AssuranceRepository assuranceRepository;
 
-	private int assuranceId;
+	private Integer assuranceId;
 
 	@Autowired
 	AssuranceRepositoryTest(final EntityManager entityManager, final AssuranceRepository assuranceRepository) {
@@ -37,15 +37,16 @@ class AssuranceRepositoryTest extends AbstractTest {
 
 	@BeforeEach
 	void prepare() {
-
 		final Assurance assurance = new Assurance();
-		assurance.setLibelleAssurance("libel");
+		assurance.setLabel("libel");
 		assurance.setCodeCtrl("code");
-		assurance.setTemEnServAss("F");
+		assurance.setTemEnServ("F");
 
 		entityManager.persist(assurance);
-		assuranceId = assurance.getIdAssurance();
 		entityManager.flush();
+		
+		entityManager.refresh(assurance);
+		assuranceId = assurance.getId();
 	}
 
 	@Test
@@ -55,9 +56,9 @@ class AssuranceRepositoryTest extends AbstractTest {
 		assertTrue(result.isPresent(), "We should have found our Assurance");
 
 		final Assurance assurance = result.get();
-		assertEquals("libel", assurance.getLibelleAssurance());
+		assertEquals("libel", assurance.getLabel());
 		assertEquals("code", assurance.getCodeCtrl());
-		assertEquals("F", assurance.getTemEnServAss());
+		assertEquals("F", assurance.getTemEnServ());
 	}
 
 }

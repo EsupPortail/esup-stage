@@ -32,13 +32,14 @@ import lombok.Setter;
 public class NiveauCentre implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
+    @Column(name = "idNiveauCentre")
     @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-    private Integer idNiveauCentre;
-    @Column(nullable = false, length = 50)
-    private String libelleNiveauCentre;
-    @Column(nullable = false, length = 1)
-    private String temEnServNiveauCentre;
+    private Integer id;
+    @Column(name = "libelleNiveauCentre", nullable = false, length = 50)
+    private String label;
+    @Column(name = "temEnServNiveauCentre", nullable = false, length = 1)
+    private String temEnServ;
     // bi-directional many-to-one association to CentreGestion
     @OneToMany(mappedBy = "niveauCentre")
     private List<CentreGestion> centreGestions;

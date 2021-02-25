@@ -33,20 +33,21 @@ public class TempsTravail implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@Column(name = "idTempsTravail")
     @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-	private Integer idTempsTravail;
+	private Integer id;
 
 	@Column(nullable = false, length = 20)
 	private String codeCtrl;
 
-	@Column(nullable = false, length = 200)
-	private String libelleTempsTravail;
+	@Column(name = "libelleTempsTravail", nullable = false, length = 200)
+	private String label;
 
 	private boolean modifiable;
 
-	@Column(nullable = false, length = 1)
-	private String temEnServTempsTravail;
+	@Column(name = "temEnServTempsTravail", nullable = false, length = 1)
+	private String temEnServ;
 
 	@OneToMany(mappedBy = "tempsTravail")
 	private List<Convention> conventions;

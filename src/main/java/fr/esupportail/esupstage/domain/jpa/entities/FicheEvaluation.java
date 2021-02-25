@@ -4,6 +4,7 @@ package fr.esupportail.esupstage.domain.jpa.entities;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -33,9 +34,10 @@ import lombok.Setter;
 public class FicheEvaluation implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
+    @Column(name = "idFicheEvaluation")
     @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-    private Integer idFicheEvaluation;
+    private Integer id;
     private boolean questionEnsI1;
     private boolean questionEnsI2;
     private boolean questionEnsI3;

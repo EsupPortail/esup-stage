@@ -39,11 +39,11 @@ class EffectifRepositoryTest extends AbstractTest {
 	void prepare() {
 
 		final Effectif effectif = new Effectif();
-		effectif.setLibelleEffectif("libel");
-		effectif.setTemEnServEffectif("L");
+		effectif.setLabel("libel");
+		effectif.setTemEnServ("L");
 		entityManager.persist(effectif);
 
-		effectId = effectif.getIdEffectif();
+		effectId = effectif.getId();
 		entityManager.flush();
 	}
 
@@ -54,8 +54,8 @@ class EffectifRepositoryTest extends AbstractTest {
 		assertTrue(result.isPresent(), "We should have found our Effectif");
 
 		final Effectif effectif = result.get();
-		assertEquals("libel", effectif.getLibelleEffectif());
-		assertEquals("L", effectif.getTemEnServEffectif());
+		assertEquals("libel", effectif.getLabel());
+		assertEquals("L", effectif.getTemEnServ());
 	}
 
 }

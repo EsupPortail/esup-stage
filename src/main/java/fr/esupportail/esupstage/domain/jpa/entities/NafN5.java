@@ -29,12 +29,12 @@ import lombok.Setter;
 public class NafN5 implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
-    @Column(unique = true, nullable = false, length = 6)
-    private String codeNAF_N5;
-    @Column(length = 150)
-    private String libelleNAF_N5;
-    @Column(nullable = false, length = 1)
-    private String temEnServNAF_N5;
+    @Column(name = "codeNAF_N5", unique = true, nullable = false, length = 6)
+    private String code;
+    @Column(name = "libelleNAF_N5", length = 150)
+    private String label;
+    @Column(name = "temEnServNAF_N5", nullable = false, length = 1)
+    private String temEnServ;
     // bi-directional many-to-one association to NafN1
     @ManyToOne
     @JoinColumn(name = "codeNAF_N1", nullable = false)

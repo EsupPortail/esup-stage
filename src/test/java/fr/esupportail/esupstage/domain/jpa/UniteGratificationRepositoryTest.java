@@ -38,13 +38,13 @@ public class UniteGratificationRepositoryTest extends AbstractTest {
 	@BeforeEach
 	void prepare() {
 		final UniteGratification uniteDuree = new UniteGratification();
-		uniteDuree.setLibelleUniteGratification("Label");
-		uniteDuree.setTemEnServGrat("A");
+		uniteDuree.setLabel("Label");
+		uniteDuree.setTemEnServ("A");
 		entityManager.persist(uniteDuree);
 
 		entityManager.flush();
 		entityManager.refresh(uniteDuree);
-		id = uniteDuree.getIdUniteGratification();
+		id = uniteDuree.getId();
 	}
 
 	@Test
@@ -54,8 +54,8 @@ public class UniteGratificationRepositoryTest extends AbstractTest {
 		assertTrue(result.isPresent(), "We should have found our entity");
 
 		final UniteGratification tmp = result.get();
-		assertEquals("Label", tmp.getLibelleUniteGratification());
-		assertEquals("A", tmp.getTemEnServGrat());
+		assertEquals("Label", tmp.getLabel());
+		assertEquals("A", tmp.getTemEnServ());
 	}
 
 }

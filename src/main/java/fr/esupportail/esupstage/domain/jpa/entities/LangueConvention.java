@@ -28,12 +28,12 @@ import lombok.Setter;
 public class LangueConvention implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
-    @Column(unique = true, nullable = false, length = 2)
-    private String codeLangueConvention;
-    @Column(nullable = false, length = 100)
-    private String libelleLangueConvention;
-    @Column(length = 1)
-    private String temEnServLangue;
+    @Column(name = "codeLangueConvention", unique = true, nullable = false, length = 2)
+    private String code;
+    @Column(name = "libelleLangueConvention", nullable = false, length = 100)
+    private String label;
+    @Column(name = "temEnServLangue", length = 1)
+    private String temEnServ;
     // bi-directional many-to-one association to Convention
     @OneToMany(mappedBy = "langueConvention")
     private List<Convention> conventions;

@@ -37,11 +37,12 @@ public class Civilite implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @Column(name = "idCivilite")
     @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-    private Integer idCivilite;
-    @Column(nullable = false, length = 50)
-    private String libelleCivilite;
+    private Integer id;
+    @Column(name = "libelleCivilite", nullable = false, length = 50)
+    private String label;
     // bi-directional many-to-one association to AdminStructure
     @OneToMany(mappedBy = "civilite")
     private List<AdminStructure> adminStructures;

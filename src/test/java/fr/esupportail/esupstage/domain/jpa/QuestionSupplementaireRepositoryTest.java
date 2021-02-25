@@ -44,14 +44,14 @@ public class QuestionSupplementaireRepositoryTest extends AbstractTest {
 	@BeforeEach
 	void prepare() {
 		final NiveauCentre niveauCentre = new NiveauCentre();
-		niveauCentre.setLibelleNiveauCentre("Label");
-		niveauCentre.setTemEnServNiveauCentre("A");
+		niveauCentre.setLabel("Label");
+		niveauCentre.setTemEnServ("A");
 		entityManager.persist(niveauCentre);
 
 		final Confidentialite confidentialite = new Confidentialite();
-		confidentialite.setCodeConfidentialite("A");
-		confidentialite.setLibelleConfidentialite("Label");
-		confidentialite.setTemEnServConfid("A");
+		confidentialite.setCode("A");
+		confidentialite.setLabel("Label");
+		confidentialite.setTemEnServ("A");
 		entityManager.persist(confidentialite);
 
 		final CentreGestion centreGestion = new CentreGestion();

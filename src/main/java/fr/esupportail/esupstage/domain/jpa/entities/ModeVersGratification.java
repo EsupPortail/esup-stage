@@ -29,11 +29,12 @@ import lombok.Setter;
 public class ModeVersGratification implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
+    @Column(name = "idModeVersGratification")
     @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-    private Integer idModeVersGratification;
-    @Column(nullable = false, length = 50)
-    private String libelleModeVersGratification;
-    @Column(nullable = false, length = 1)
-    private String temEnServModeVersGrat;
+    private Integer id;
+    @Column(name = "libelleModeVersGratification", nullable = false, length = 50)
+    private String label;
+    @Column(name = "temEnServModeVersGrat", nullable = false, length = 1)
+    private String temEnServ;
 }

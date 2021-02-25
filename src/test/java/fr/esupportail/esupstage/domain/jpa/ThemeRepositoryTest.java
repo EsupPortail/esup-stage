@@ -38,13 +38,13 @@ public class ThemeRepositoryTest extends AbstractTest {
 	@BeforeEach
 	void prepare() {
 		final Theme theme = new Theme();
-		theme.setLibelleTheme("Label");
-		theme.setTemEnServTheme("A");
+		theme.setLabel("Label");
+		theme.setTemEnServ("A");
 		entityManager.persist(theme);
 
 		entityManager.flush();
 		entityManager.refresh(theme);
-		id = theme.getIdTheme();
+		id = theme.getId();
 	}
 
 	@Test
@@ -54,8 +54,8 @@ public class ThemeRepositoryTest extends AbstractTest {
 		assertTrue(result.isPresent(), "We should have found our entity");
 
 		final Theme tmp = result.get();
-		assertEquals("Label", tmp.getLibelleTheme());
-		assertEquals("A", tmp.getTemEnServTheme());
+		assertEquals("Label", tmp.getLabel());
+		assertEquals("A", tmp.getTemEnServ());
 	}
 
 }

@@ -31,11 +31,12 @@ import lombok.Setter;
 public class Niveau implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
+    @Column(name = "idNiveau")
     @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-    private Integer idNiveau;
-    @Column(nullable = false)
-    private Integer valeur;
+    private Integer id;
+    @Column(name = "valeur", nullable = false)
+    private Integer value;
     // bi-directional many-to-one association to Critere
     @OneToMany(mappedBy = "niveauBean")
     private List<Critere> criteres;

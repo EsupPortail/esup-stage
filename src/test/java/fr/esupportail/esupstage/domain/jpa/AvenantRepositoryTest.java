@@ -57,15 +57,15 @@ class AvenantRepositoryTest extends AbstractTest {
 	void prepare() {
 
 		final NiveauCentre niveauCentre = new NiveauCentre();
-		niveauCentre.setLibelleNiveauCentre("libel");
-		niveauCentre.setTemEnServNiveauCentre("A");
+		niveauCentre.setLabel("libel");
+		niveauCentre.setTemEnServ("A");
 
 		entityManager.persist(niveauCentre);
 
 		final Confidentialite confidentialite = new Confidentialite();
-		confidentialite.setCodeConfidentialite("A");
-		confidentialite.setLibelleConfidentialite("libel");
-		confidentialite.setTemEnServConfid("A");
+		confidentialite.setCode("A");
+		confidentialite.setLabel("libel");
+		confidentialite.setTemEnServ("A");
 		entityManager.persist(confidentialite);
 
 		final CentreGestion centreGestion = new CentreGestion();
@@ -78,38 +78,38 @@ class AvenantRepositoryTest extends AbstractTest {
 
 		final TypeConvention typeConvention = new TypeConvention();
 		typeConvention.setCodeCtrl("code");
-		typeConvention.setLibelleTypeConvention("libel");
-		typeConvention.setTemEnServTypeConvention("F");
+		typeConvention.setLabel("libel");
+		typeConvention.setTemEnServ("F");
 		entityManager.persist(typeConvention);
 
 		final Theme theme = new Theme();
-		theme.setLibelleTheme("libel");
+		theme.setLabel("libel");
 		entityManager.persist(theme);
 
 		final TempsTravail tempsTravail = new TempsTravail();
 		tempsTravail.setCodeCtrl("code");
-		tempsTravail.setLibelleTempsTravail("libel");
-		tempsTravail.setTemEnServTempsTravail("F");
+		tempsTravail.setLabel("libel");
+		tempsTravail.setTemEnServ("F");
 		entityManager.persist(tempsTravail);
 
 		final NatureTravail natureTravail = new NatureTravail();
-		natureTravail.setLibelleNatureTravail("libel");
-		natureTravail.setTemEnServNatTrav("F");
+		natureTravail.setLabel("libel");
+		natureTravail.setTemEnServ("F");
 		entityManager.persist(natureTravail);
 
 		final ModeValidationStage modeValidationStage = new ModeValidationStage();
-		modeValidationStage.setLibelleModeValidationStage("libel");
-		modeValidationStage.setTemEnServModeValid("F");
+		modeValidationStage.setLabel("libel");
+		modeValidationStage.setTemEnServ("F");
 		entityManager.persist(modeValidationStage);
 
 		final LangueConvention langueConvention = new LangueConvention();
-		langueConvention.setCodeLangueConvention("CD");
-		langueConvention.setLibelleLangueConvention("libel");
+		langueConvention.setCode("CD");
+		langueConvention.setLabel("libel");
 		entityManager.persist(langueConvention);
 
 		final Indemnisation indemnisation = new Indemnisation();
-		indemnisation.setLibelleIndemnisation("indem");
-		indemnisation.setTemEnServIndem("F");
+		indemnisation.setLabel("indem");
+		indemnisation.setTemEnServ("F");
 		entityManager.persist(indemnisation);
 
 		final Etudiant etudiant = new Etudiant();
@@ -152,7 +152,7 @@ class AvenantRepositoryTest extends AbstractTest {
 		avenant.setConvention(convention);
 
 		entityManager.persist(avenant);
-		avenantId = avenant.getIdAvenant();
+		avenantId = avenant.getId();
 		entityManager.flush();
 	}
 
@@ -171,16 +171,16 @@ class AvenantRepositoryTest extends AbstractTest {
 		assertEquals("jdoe", avenant.getCreatedBy());
 		assertEquals("jdoe", avenant.getConvention().getCreatedBy());
 		assertEquals("125458", avenant.getConvention().getEtudiant().getNumEtudiant());
-		assertEquals("indem", avenant.getConvention().getIndemnisation().getLibelleIndemnisation());
-		assertEquals("CD", avenant.getConvention().getLangueConvention().getCodeLangueConvention());
-		assertEquals("libel", avenant.getConvention().getModeValidationStage().getLibelleModeValidationStage());
-		assertEquals("libel", avenant.getConvention().getNatureTravail().getLibelleNatureTravail());
-		assertEquals("libel", avenant.getConvention().getTempsTravail().getLibelleTempsTravail());
-		assertEquals("libel", avenant.getConvention().getTheme().getLibelleTheme());
+		assertEquals("indem", avenant.getConvention().getIndemnisation().getLabel());
+		assertEquals("CD", avenant.getConvention().getLangueConvention().getCode());
+		assertEquals("libel", avenant.getConvention().getModeValidationStage().getLabel());
+		assertEquals("libel", avenant.getConvention().getNatureTravail().getLabel());
+		assertEquals("libel", avenant.getConvention().getTempsTravail().getLabel());
+		assertEquals("libel", avenant.getConvention().getTheme().getLabel());
 		assertEquals("code", avenant.getConvention().getTypeConvention().getCodeCtrl());
 		assertEquals("codeuniv", avenant.getConvention().getCentreGestion().getCodeUniversite());
-		assertEquals("libel", avenant.getConvention().getCentreGestion().getConfidentialite().getLibelleConfidentialite());
-		assertEquals("libel", avenant.getConvention().getCentreGestion().getNiveauCentre().getLibelleNiveauCentre());
+		assertEquals("libel", avenant.getConvention().getCentreGestion().getConfidentialite().getLabel());
+		assertEquals("libel", avenant.getConvention().getCentreGestion().getNiveauCentre().getLabel());
 	}
 
 }

@@ -35,11 +35,12 @@ public class CentreGestionSuperViseur implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @Column(name = "idCentreGestionSuperViseur")
     @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-    private Integer idCentreGestionSuperViseur;
-    @Column(nullable = false, length = 100)
-    private String nomCentreSuperViseur;
+    private Integer id;
+    @Column(name = "nomCentreSuperViseur", nullable = false, length = 100)
+    private String name;
     // bi-directional many-to-one association to CentreGestion
     @OneToMany(mappedBy = "centreGestionSuperViseur")
     private List<CentreGestion> centreGestions;

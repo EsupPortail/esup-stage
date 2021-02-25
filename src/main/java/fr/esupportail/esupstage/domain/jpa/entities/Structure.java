@@ -37,9 +37,10 @@ public class Structure extends Auditable<String> {
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@Column(name = "idStructure")
     @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-	private Integer idStructure;
+	private Integer id;
 
 	@Lob
 	private String activitePrincipale;
@@ -110,8 +111,8 @@ public class Structure extends Auditable<String> {
 	@Column(length = 20)
 	private String telephone;
 
-	@Column(length = 1)
-	private String temEnServStructure;
+	@Column(name = "temEnServStructure", length = 1)
+	private String temEnServ;
 
 	@Column(nullable = false, length = 200)
 	private String voie;

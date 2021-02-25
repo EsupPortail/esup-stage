@@ -38,13 +38,13 @@ public class UniteDureeRepositoryTest extends AbstractTest {
 	@BeforeEach
 	void prepare() {
 		final UniteDuree uniteDuree = new UniteDuree();
-		uniteDuree.setLibelleUniteDuree("Label");
-		uniteDuree.setTemEnServUniteDuree("A");
+		uniteDuree.setLabel("Label");
+		uniteDuree.setTemEnServ("A");
 		entityManager.persist(uniteDuree);
 
 		entityManager.flush();
 		entityManager.refresh(uniteDuree);
-		id = uniteDuree.getIdUniteDuree();
+		id = uniteDuree.getId();
 	}
 
 	@Test
@@ -54,8 +54,8 @@ public class UniteDureeRepositoryTest extends AbstractTest {
 		assertTrue(result.isPresent(), "We should have found our entity");
 
 		final UniteDuree tmp = result.get();
-		assertEquals("Label", tmp.getLibelleUniteDuree());
-		assertEquals("A", tmp.getTemEnServUniteDuree());
+		assertEquals("Label", tmp.getLabel());
+		assertEquals("A", tmp.getTemEnServ());
 	}
 
 }

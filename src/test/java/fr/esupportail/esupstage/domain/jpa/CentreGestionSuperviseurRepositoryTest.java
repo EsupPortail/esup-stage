@@ -44,15 +44,15 @@ class CentreGestionSuperviseurRepositoryTest extends AbstractTest {
 	void prepare() {
 
 		final NiveauCentre niveauCentre = new NiveauCentre();
-		niveauCentre.setLibelleNiveauCentre("libel");
-		niveauCentre.setTemEnServNiveauCentre("A");
+		niveauCentre.setLabel("libel");
+		niveauCentre.setTemEnServ("A");
 
 		entityManager.persist(niveauCentre);
 
 		final Confidentialite confidentialite = new Confidentialite();
-		confidentialite.setCodeConfidentialite("A");
-		confidentialite.setLibelleConfidentialite("libel");
-		confidentialite.setTemEnServConfid("A");
+		confidentialite.setCode("A");
+		confidentialite.setLabel("libel");
+		confidentialite.setTemEnServ("A");
 		entityManager.persist(confidentialite);
 
 		final CentreGestion centreGestion = new CentreGestion();
@@ -64,11 +64,11 @@ class CentreGestionSuperviseurRepositoryTest extends AbstractTest {
 		entityManager.persist(centreGestion);
 
 		final CentreGestionSuperViseur centreGestionSuperViseur = new CentreGestionSuperViseur();
-		centreGestionSuperViseur.setNomCentreSuperViseur("name");
+		centreGestionSuperViseur.setName("name");
 		centreGestionSuperViseur.addCentreGestion(centreGestion);
 		entityManager.persist(centreGestionSuperViseur);
 
-		centreGestionSuperviseurId = centreGestionSuperViseur.getIdCentreGestionSuperViseur();
+		centreGestionSuperviseurId = centreGestionSuperViseur.getId();
 		entityManager.flush();
 	}
 
@@ -80,7 +80,7 @@ class CentreGestionSuperviseurRepositoryTest extends AbstractTest {
 
 		final CentreGestionSuperViseur centreGestionSuperViseur = result.get();
 		assertEquals("codeuniv", centreGestionSuperViseur.getCentreGestions().get(0).getCodeUniversite());
-		assertEquals("name", centreGestionSuperViseur.getNomCentreSuperViseur());
+		assertEquals("name", centreGestionSuperViseur.getName());
 	}
 
 }

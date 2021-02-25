@@ -39,13 +39,13 @@ public class TypeConventionRepositoryTest extends AbstractTest {
 	void prepare() {
 		final TypeConvention typeConvention = new TypeConvention();
 		typeConvention.setCodeCtrl("Code");
-		typeConvention.setLibelleTypeConvention("Label");
-		typeConvention.setTemEnServTypeConvention("A");
+		typeConvention.setLabel("Label");
+		typeConvention.setTemEnServ("A");
 		entityManager.persist(typeConvention);
 
 		entityManager.flush();
 		entityManager.refresh(typeConvention);
-		id = typeConvention.getIdTypeConvention();
+		id = typeConvention.getId();
 	}
 
 	@Test
@@ -56,8 +56,8 @@ public class TypeConventionRepositoryTest extends AbstractTest {
 
 		final TypeConvention tmp = result.get();
 		assertEquals("Code", tmp.getCodeCtrl());
-		assertEquals("A", tmp.getTemEnServTypeConvention());
-		assertEquals("Label", tmp.getLibelleTypeConvention());
+		assertEquals("A", tmp.getTemEnServ());
+		assertEquals("Label", tmp.getLabel());
 	}
 
 }

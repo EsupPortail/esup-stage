@@ -31,9 +31,10 @@ import lombok.Setter;
 public class Critere implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
+    @Column(name = "idCritere")
     @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-    private Integer idCritere;
+    private Integer id;
     @Column(nullable = false, length = 15)
     private String clef;
     @Column(nullable = false, length = 100)

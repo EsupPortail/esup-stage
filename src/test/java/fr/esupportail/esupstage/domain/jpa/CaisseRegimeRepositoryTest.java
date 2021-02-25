@@ -41,8 +41,8 @@ class CaisseRegimeRepositoryTest extends AbstractTest {
 		final CaisseRegime caisseRegime = new CaisseRegime();
 		caisseRegime.setCodeCaisse("code");
 		caisseRegime.setInfoCaisse("info");
-		caisseRegime.setLibelleCaisse("libel");
-		caisseRegime.setTemEnServCaisse("F");
+		caisseRegime.setLabel("libel");
+		caisseRegime.setTemEnServ("F");
 
 		entityManager.persist(caisseRegime);
 		caisseRegimeId = caisseRegime.getCodeCaisse();
@@ -58,8 +58,8 @@ class CaisseRegimeRepositoryTest extends AbstractTest {
 		final CaisseRegime caisseRegime = result.get();
 		assertEquals("code", caisseRegime.getCodeCaisse());
 		assertEquals("info", caisseRegime.getInfoCaisse());
-		assertEquals("libel", caisseRegime.getLibelleCaisse());
-		assertEquals("F", caisseRegime.getTemEnServCaisse());
+		assertEquals("libel", caisseRegime.getLabel());
+		assertEquals("F", caisseRegime.getTemEnServ());
 
 	}
 

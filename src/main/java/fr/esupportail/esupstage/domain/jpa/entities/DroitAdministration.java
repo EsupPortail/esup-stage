@@ -32,13 +32,14 @@ import lombok.Setter;
 public class DroitAdministration implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
+    @Column(name = "idDroitAdministration")
     @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-    private Integer idDroitAdministration;
-    @Column(nullable = false, length = 50)
-    private String libelleDroitAdministration;
-    @Column(nullable = false, length = 1)
-    private String temEnServDroitAdmin;
+    private Integer id;
+    @Column(name = "libelleDroitAdministration", nullable = false, length = 50)
+    private String label;
+    @Column(name = "temEnServDroitAdmin", nullable = false, length = 1)
+    private String temEnServ;
     // bi-directional many-to-one association to PersonnelCentreGestion
     @OneToMany(mappedBy = "droitAdministration")
     private List<PersonnelCentreGestion> personnelCentreGestions;

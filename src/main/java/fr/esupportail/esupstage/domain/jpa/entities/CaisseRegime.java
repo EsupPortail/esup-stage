@@ -30,10 +30,10 @@ public class CaisseRegime implements Serializable {
     private String codeCaisse;
     @Column(nullable = false, length = 100)
     private String infoCaisse;
-    @Column(nullable = false, length = 100)
-    private String libelleCaisse;
+    @Column(name = "libelleCaisse", nullable = false, length = 100)
+    private String label;
     private boolean modifiable;
-    @Column(nullable = false, length = 1)
-    private String temEnServCaisse;
+    @Column(name = "temEnServCaisse", nullable = false, length = 1)
+    private String temEnServ;
 
 }

@@ -19,15 +19,15 @@ public interface ConventionRepository extends JpaRepository<Convention, Integer>
 	public List<String> getAnneesConvention(String codeUniversite);
 
 	@Query("SELECT c FROM Convention c INNER JOIN FETCH c.etudiant etu "
-			+ "WHERE etu.idEtudiant=?1 and (?2 is null or etu.codeUniversite=?2) ORDER BY c.createdDate DESC")
-	public List<Convention> findConventionsByIdEtudiantAndCodeUniversite(Integer identEtudiant, String codeUniversite);
+			+ "WHERE etu.id=?1 and (?2 is null or etu.codeUniversite=?2) ORDER BY c.createdDate DESC")
+	public List<Convention> findConventionsByEtudiantIdAndCodeUniversite(Integer identEtudiant, String codeUniversite);
 
 	public List<Convention> findConventionsByEnseignant(Enseignant enseignant);
 
 	public List<Convention> findConventionsByEnseignantAndAnnee(Enseignant enseignant, String annee);
 
 	@Query("SELECT COUNT(c) FROM Convention c INNER JOIN c.etape et INNER JOIN c.centreGestion cg WHERE"
-			+ " cg.idCentreGestion=?1 and et.id.codeUniversite=?2 ")
+			+ " cg.id=?1 and et.id.codeUniversite=?2 ")
 	public int getNombreConventionByCentreGestion(int idCentreGestion, String codeUniversite);
 
 	@Query("SELECT c FROM Convention c WHERE c.etape.id.codeEtape=?1 and c.etape.id.codeUniversite =?2 ")

@@ -33,20 +33,21 @@ public class TypeStructure implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@Column(name = "idTypeStructure")
     @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-	private Integer idTypeStructure;
+	private Integer id;
 
-	@Column(nullable = false, length = 100)
-	private String libelleTypeStructure;
+	@Column(name = "libelleTypeStructure", nullable = false, length = 100)
+	private String label;
 
 	private boolean modifiable;
 
 	@Column(nullable = false)
 	private boolean siretObligatoire;
 
-	@Column(nullable = false, length = 1)
-	private String temEnServTypeStructure;
+	@Column(name = "temEnServTypeStructure", nullable = false, length = 1)
+	private String temEnServ;
 
 	@OneToMany(mappedBy = "typeStructure")
 	private List<StatutJuridique> statutJuridiques;

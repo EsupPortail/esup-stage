@@ -12,7 +12,7 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Integer> {
 
 	public List<Etudiant> findEtudiantsByNomContainsOrPrenomContains(String nom, String prenom);
 
-	public Etudiant findEtudiantByIdEtudiantAndCodeUniversite(Integer idEtudiant, String codeUniveriste);
+	public Etudiant findEtudiantByIdAndCodeUniversite(Integer idEtudiant, String codeUniveriste);
 
 	public Etudiant findEtudiantByIdentEtudiantAndCodeUniversite(String identEtudiant, String codeUniveriste);
 }

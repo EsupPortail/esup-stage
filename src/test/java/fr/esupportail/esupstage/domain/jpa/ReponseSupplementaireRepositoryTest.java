@@ -57,14 +57,14 @@ public class ReponseSupplementaireRepositoryTest extends AbstractTest {
 	@BeforeEach
 	void prepare() {
 		final NiveauCentre niveauCentre = new NiveauCentre();
-		niveauCentre.setLibelleNiveauCentre("Label");
-		niveauCentre.setTemEnServNiveauCentre("A");
+		niveauCentre.setLabel("Label");
+		niveauCentre.setTemEnServ("A");
 		entityManager.persist(niveauCentre);
 
 		final Confidentialite confidentialite = new Confidentialite();
-		confidentialite.setCodeConfidentialite("A");
-		confidentialite.setLibelleConfidentialite("Label");
-		confidentialite.setTemEnServConfid("A");
+		confidentialite.setCode("A");
+		confidentialite.setLabel("Label");
+		confidentialite.setTemEnServ("A");
 		entityManager.persist(confidentialite);
 
 		final CentreGestion centreGestion = new CentreGestion();
@@ -77,38 +77,38 @@ public class ReponseSupplementaireRepositoryTest extends AbstractTest {
 
 		final TypeConvention typeConvention = new TypeConvention();
 		typeConvention.setCodeCtrl("code");
-		typeConvention.setLibelleTypeConvention("Label");
-		typeConvention.setTemEnServTypeConvention("F");
+		typeConvention.setLabel("Label");
+		typeConvention.setTemEnServ("F");
 		entityManager.persist(typeConvention);
 
 		final Theme theme = new Theme();
-		theme.setLibelleTheme("Label");
+		theme.setLabel("Label");
 		entityManager.persist(theme);
 
 		final TempsTravail tempsTravail = new TempsTravail();
 		tempsTravail.setCodeCtrl("code");
-		tempsTravail.setLibelleTempsTravail("Label");
-		tempsTravail.setTemEnServTempsTravail("F");
+		tempsTravail.setLabel("Label");
+		tempsTravail.setTemEnServ("F");
 		entityManager.persist(tempsTravail);
 
 		final NatureTravail natureTravail = new NatureTravail();
-		natureTravail.setLibelleNatureTravail("Label");
-		natureTravail.setTemEnServNatTrav("F");
+		natureTravail.setLabel("Label");
+		natureTravail.setTemEnServ("F");
 		entityManager.persist(natureTravail);
 
 		final ModeValidationStage modeValidationStage = new ModeValidationStage();
-		modeValidationStage.setLibelleModeValidationStage("Label");
-		modeValidationStage.setTemEnServModeValid("F");
+		modeValidationStage.setLabel("Label");
+		modeValidationStage.setTemEnServ("F");
 		entityManager.persist(modeValidationStage);
 
 		final LangueConvention langueConvention = new LangueConvention();
-		langueConvention.setCodeLangueConvention("CD");
-		langueConvention.setLibelleLangueConvention("Label");
+		langueConvention.setCode("CD");
+		langueConvention.setLabel("Label");
 		entityManager.persist(langueConvention);
 
 		final Indemnisation indemnisation = new Indemnisation();
-		indemnisation.setLibelleIndemnisation("indem");
-		indemnisation.setTemEnServIndem("F");
+		indemnisation.setLabel("indem");
+		indemnisation.setTemEnServ("F");
 		entityManager.persist(indemnisation);
 
 		final Etudiant etudiant = new Etudiant();
@@ -155,7 +155,7 @@ public class ReponseSupplementaireRepositoryTest extends AbstractTest {
 		entityManager.refresh(convention);
 		entityManager.refresh(questionSupplementaire);
 
-		id = new ReponseSupplementairePK(questionSupplementaire.getId(), convention.getIdConvention());
+		id = new ReponseSupplementairePK(questionSupplementaire.getId(), convention.getId());
 		final ReponseSupplementaire reponseSupplementaire = new ReponseSupplementaire();
 		reponseSupplementaire.setId(id);
 		reponseSupplementaire.setReponseTxt("Txt");

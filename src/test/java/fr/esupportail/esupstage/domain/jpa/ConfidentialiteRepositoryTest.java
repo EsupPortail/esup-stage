@@ -38,13 +38,13 @@ class ConfidentialiteRepositoryTest extends AbstractTest {
 	@BeforeEach
 	void prepare() {
 		final Confidentialite confidentialite = new Confidentialite();
-		confidentialite.setCodeConfidentialite("C");
-		confidentialite.setLibelleConfidentialite("libel");
-		confidentialite.setTemEnServConfid("C");
+		confidentialite.setCode("C");
+		confidentialite.setLabel("libel");
+		confidentialite.setTemEnServ("C");
 
 		entityManager.persist(confidentialite);
 
-		confidentialiteId = confidentialite.getCodeConfidentialite();
+		confidentialiteId = confidentialite.getCode();
 		entityManager.flush();
 	}
 
@@ -55,9 +55,9 @@ class ConfidentialiteRepositoryTest extends AbstractTest {
 		assertTrue(result.isPresent(), "We should have found our Confidentialite");
 
 		final Confidentialite confidentialite = result.get();
-		assertEquals("C", confidentialite.getCodeConfidentialite());
-		assertEquals("libel", confidentialite.getLibelleConfidentialite());
-		assertEquals("C", confidentialite.getTemEnServConfid());
+		assertEquals("C", confidentialite.getCode());
+		assertEquals("libel", confidentialite.getLabel());
+		assertEquals("C", confidentialite.getTemEnServ());
 	}
 
 }

@@ -33,9 +33,10 @@ import lombok.Setter;
 public class Enseignant extends Auditable<String> {
     private static final long serialVersionUID = 1L;
     @Id
+    @Column(name = "idEnseignant")
     @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-    private Integer idEnseignant;
+    private Integer id;
     @Column(length = 45)
     private String batiment;
     @Column(length = 20)

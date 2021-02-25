@@ -39,13 +39,13 @@ public class TypeOffreRepositoryTest extends AbstractTest {
 	void prepare() {
 		final TypeOffre typeOffre = new TypeOffre();
 		typeOffre.setCodeCtrl("Code");
-		typeOffre.setLibelleType("Label");
-		typeOffre.setTemEnServTypeOffre("A");
+		typeOffre.setLabel("Label");
+		typeOffre.setTemEnServ("A");
 		entityManager.persist(typeOffre);
 
 		entityManager.flush();
 		entityManager.refresh(typeOffre);
-		id = typeOffre.getIdTypeOffre();
+		id = typeOffre.getId();
 	}
 
 	@Test
@@ -56,8 +56,8 @@ public class TypeOffreRepositoryTest extends AbstractTest {
 
 		final TypeOffre tmp = result.get();
 		assertEquals("Code", tmp.getCodeCtrl());
-		assertEquals("Label", tmp.getLibelleType());
-		assertEquals("A", tmp.getTemEnServTypeOffre());
+		assertEquals("Label", tmp.getLabel());
+		assertEquals("A", tmp.getTemEnServ());
 	}
 
 }
