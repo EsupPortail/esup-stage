@@ -24,13 +24,10 @@
             <span class="ui-input-icon-left">
             <i class="pi pi-search" />
             <p:inputText placeholder="SIRET" value="#{searchCompagnyView.inputSiret}">
-                <p:ajax process="@this" update="@none" ignoreAutoUpdate="true"/>
             </p:inputText>
             <p:inputText placeholder="Raison sociale" value="#{searchCompagnyView.inputRaisonSociale}">
-                <p:ajax process="@this" update="@none" ignoreAutoUpdate="true"/>
             </p:inputText>
              <p:inputText placeholder="Département" value="#{searchCompagnyView.inputDepartement}">
-                <p:ajax process="@this" update="@none" ignoreAutoUpdate="true"/>
             </p:inputText>
             </span>
             <p:commandButton value="Rechercher" actionListener="#{searchCompagnyView.searchCompagny}" id="id" update="radioDT"></p:commandButton>
