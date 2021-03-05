@@ -11,7 +11,6 @@ import fr.esupportail.esupstage.property.ApplicationProperties;
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
 @EnableConfigurationProperties(value = ApplicationProperties.class)
 public class Application extends SpringBootServletInitializer {
-
 	public static void main(final String[] args) {
 		SpringApplication.run(Application.class, args);
 	}

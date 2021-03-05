@@ -2,6 +2,7 @@ package fr.esupportail.esupstage.services.conventions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
@@ -10,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import fr.esupportail.esupstage.domain.jpa.entities.Convention;
 import fr.esupportail.esupstage.domain.jpa.repositories.ConventionRepository;
+import fr.esupportail.esupstage.domain.jpa.repositories.EtudiantRepository;
+import fr.esupportail.esupstage.services.beans.EtudiantBean;
 
 @Named
 @ApplicationScoped
@@ -19,16 +22,15 @@ public class ConventionService {
 
     @Autowired
     private ConventionRepository conventionRepository;
-
+    @Autowired
+    private EtudiantRepository studentRepository;
 
     public List<Convention> getConventions() {
         return this.conventionRepository.findAll();
     }
 
     public List<Convention> getConventions(int size) {
-        List<Convention> convList = this.conventionRepository.findAll();
-
-        return convList.size()<10?convList:convList.subList(0, size);
+        return this.conventionRepository.findTopN(size);
     }
 
 	public List<Convention> getClonedProducts(int size) throws CloneNotSupportedException {
@@ -38,5 +40,13 @@ public class ConventionService {
 			results.add((Convention) original.clone());
 		}
 		return results;
+	}
+
+	public EtudiantBean getStudentByIdAndCodeUniv(int id, String codeUniv) throws NoSuchElementException {
+        return EtudiantBean.fromEtudiant(this.studentRepository.findEtudiantByIdAndCodeUniversite(id, codeUniv).orElseThrow());
+	}
+
+	public EtudiantBean getStudentByIdentAndCodeUniv(String username, String codeUniv) throws NoSuchElementException {
+        return EtudiantBean.fromEtudiant(this.studentRepository.findEtudiantByIdentEtudiantAndCodeUniversite(username, codeUniv).orElseThrow());
 	}
 }
