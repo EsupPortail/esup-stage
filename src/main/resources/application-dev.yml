@@ -2,7 +2,7 @@ spring:
   profiles:
     include:
     - embedded-ldap
-    - mariadb
+    - mysql
   mail:
     host: localhost
     port: 25

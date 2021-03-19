@@ -203,6 +203,10 @@
 			<artifactId>json</artifactId>
 			<version>20201115</version>
 		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+		</dependency>
 	</dependencies>
 	
 	<build>
