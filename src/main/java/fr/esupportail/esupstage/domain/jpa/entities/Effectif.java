@@ -53,7 +53,7 @@ public class Effectif implements Serializable {
 		return structure;
 	}
 
-    public Structure removeStructure(Structure structure) {
+   public Structure removeStructure(Structure structure) {
         getStructures().remove(structure);
         structure.setEffectif(null);
         return structure;
@@ -61,4 +61,5 @@ public class Effectif implements Serializable {
     @Override public String toString() {
         return this.label;
     }
+
 }
