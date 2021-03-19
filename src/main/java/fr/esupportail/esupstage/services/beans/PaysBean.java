@@ -17,42 +17,16 @@ public class PaysBean implements Serializable {
 
 		private static final long serialVersionUID = 1L;
 
-		@Id
-		@Column(name = "idPays")
-		@GeneratedValue(strategy = GenerationType.AUTO)
 		private Integer id;
-
-		@Column(nullable = false)
 		private Integer actual;
-
-		@Column(name = "COG", nullable = false)
 		private Integer cog;
-
-		@Column(name = "CRPAY")
 		private Integer crpay;
-
-		@Column(name = "ISO2", length = 2)
 		private String iso2;
-
-		@Column(nullable = false, length = 70)
 		private String lib;
-
-		@Column(nullable = false)
 		private boolean siretObligatoire;
-
-		@Column(nullable = false, length = 1)
 		private String temEnServPays;
-
-		// bi-directional many-to-one association to Offre
-		@OneToMany(mappedBy = "pay")
 		private List<Offre> offres;
-
-		// bi-directional many-to-one association to Service
-		@OneToMany(mappedBy = "pay")
 		private List<Service> services;
-
-		// bi-directional many-to-one association to Structure
-		@OneToMany(mappedBy = "pay")
 		private List<Structure> structures;
 
 		public PaysBean() {
