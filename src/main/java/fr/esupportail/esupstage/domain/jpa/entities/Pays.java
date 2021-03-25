@@ -108,4 +108,8 @@ public class Pays implements Serializable {
 		return structure;
 	}
 
+		@Override public String toString() {
+				return lib;
+		}
+
 }

@@ -29,84 +29,84 @@ import lombok.Setter;
 @Table(name = "Avenant")
 public class Avenant extends Auditable<String> {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Id
-	@Column(name = "idAvenant")
-	@GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
-	@GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
-	private Integer id;
+    @Id
+    @Column(name = "idAvenant")
+    @GenericGenerator(name = "HIBERNATE_SEQUENCE", strategy = "native")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "HIBERNATE_SEQUENCE")
+    private Integer id;
 
-	@Lob
-	private String commentaireRupture;
+    @Lob
+    private String commentaireRupture;
 
-	private LocalDate dateDebutInterruption;
+    private LocalDate dateDebutInterruption;
 
-	private LocalDate dateDebutStage;
+    private LocalDate dateDebutStage;
 
-	private LocalDate dateFinInterruption;
+    private LocalDate dateFinInterruption;
 
-	private LocalDate dateFinStage;
+    private LocalDate dateFinStage;
 
-	private LocalDate dateRupture;
+    private LocalDate dateRupture;
 
-	private Integer idEnseignant;
+    private Integer idEnseignant;
 
-	private Integer idUniteDureeGratification;
+    private Integer idUniteDureeGratification;
 
-	private Integer idUniteGratification;
+    private Integer idUniteGratification;
 
-	@Column(nullable = false)
-	private boolean interruptionStage;
+    @Column(nullable = false)
+    private boolean interruptionStage;
 
-	@Column(nullable = false)
-	private boolean modificationEnseignant;
+    @Column(nullable = false)
+    private boolean modificationEnseignant;
 
-	private boolean modificationLieu;
+    private boolean modificationLieu;
 
-	@Column(nullable = false)
-	private boolean modificationMontantGratification;
+    @Column(nullable = false)
+    private boolean modificationMontantGratification;
 
-	@Column(nullable = false)
-	private boolean modificationPeriode;
+    @Column(nullable = false)
+    private boolean modificationPeriode;
 
-	@Column(nullable = false)
-	private boolean modificationSalarie;
+    @Column(nullable = false)
+    private boolean modificationSalarie;
 
-	@Column(nullable = false)
-	private boolean modificationSujet;
+    @Column(nullable = false)
+    private boolean modificationSujet;
 
-	@Column(length = 50)
-	private String monnaieGratification;
+    @Column(length = 50)
+    private String monnaieGratification;
 
-	@Column(length = 7)
-	private String montantGratification;
+    @Column(length = 7)
+    private String montantGratification;
 
-	@Lob
-	private String motifAvenant;
+    @Lob
+    private String motifAvenant;
 
-	@Column(nullable = false)
-	private boolean rupture;
+    @Column(nullable = false)
+    private boolean rupture;
 
-	@Lob
-	private String sujetStage;
+    @Lob
+    private String sujetStage;
 
-	@Lob
-	private String titreAvenant;
+    @Lob
+    private String titreAvenant;
 
-	@Column(nullable = false)
-	private boolean validationAvenant;
+    @Column(nullable = false)
+    private boolean validationAvenant;
 
-	@ManyToOne
-	@JoinColumn(name = "idContact")
-	private Contact contact;
+    @ManyToOne
+    @JoinColumn(name = "idContact")
+    private Contact contact;
 
-	@ManyToOne
-	@JoinColumn(name = "idConvention", nullable = false)
-	private Convention convention;
+    @ManyToOne
+    @JoinColumn(name = "idConvention", nullable = false)
+    private Convention convention;
 
-	@ManyToOne
-	@JoinColumn(name = "idService")
-	private Service service;
+    @ManyToOne
+    @JoinColumn(name = "idService")
+    private Service service;
 
 }

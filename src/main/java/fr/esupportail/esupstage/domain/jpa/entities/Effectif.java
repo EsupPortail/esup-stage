@@ -59,4 +59,8 @@ public class Effectif implements Serializable {
 		return structure;
 	}
 
+		@Override public String toString() {
+				return this.label;
+		}
+
 }

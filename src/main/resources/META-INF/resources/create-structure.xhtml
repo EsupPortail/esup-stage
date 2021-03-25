@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://primefaces.org/html"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="title">
+        Convention étudiant
+    </ui:define>
+
+    <ui:define name="description">
+        Création/Édition de Convention étudiante
+    </ui:define>
+
+    <ui:define name="body">
+
+        <div class="ui-fluid">
+            <p:tabView id="tabs" dynamic="true">
+                <p:tab title="Indications" disabled="false">
+                    <h:form>
+                        <h:panelGrid columns="2" cellpadding="7" styleClass="p-mb-3">
+                            <h:outputText value="test"/>
+                        </h:panelGrid>
+                        <p:commandButton value="Submit" update="tabs" action="updateStructure" icon="pi pi-check"/>
+                    </h:form>
+                </p:tab>
+                <p:tab title="Etudiant" disabled="false">
+                </p:tab>
+                <p:tab title="Etablissement d'accueil" disabled="false">
+                    <h:form>
+                        <h2>Général</h2>
+                        <h:panelGrid columns="2" cellpadding="7" styleClass="p-mb-3">
+
+                            <div class="p-field p-grid">
+                                <label for="raisonSociale" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Raison sociale</label>
+                                <div class="p-col-12 p-md-10">
+                                    <p:inputText id="raisonSociale" type="text" value="#{structureCreationView.raisonSociale}" />
+                                </div>
+                            </div>
+                            <div class="p-field p-grid">
+                                <label for="numeroSiret" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Numéro Siret</label>
+                                <div class="p-col-12 p-md-10">
+                                    <p:inputText id="numeroSiret" type="text" value="#{structureCreationView.numeroSiret}"/>
+                                </div>
+                            </div>
+                            <div class="p-field p-grid">
+                                <label for="effectif" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Effectif</label>
+                                <div class="p-col-12 p-md-10">
+                                    <p:selectOneMenu id="effectif" value="#{structureCreationView.effectif}" style="width:12rem">
+                                        <f:selectItem itemLabel="Selectionner un effectif" itemValue="" noSelectionOption="true"/>
+                                        <f:selectItems value="#{structureCreationView.effectifs}"/>
+                                    </p:selectOneMenu>
+                                </div>
+                            </div>
+                            <div class="p-field p-grid">
+                                <label for="typeEtab" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Type d'établissement</label>
+                                <div class="p-col-12 p-md-10">
+                                    <p:selectOneMenu id="typeEtab" value="#{structureCreationView.typeStructure}" style="width:12rem">
+                                        <f:selectItem itemLabel="Selectionner un type de structure" itemValue="" noSelectionOption="true"/>
+                                        <f:selectItems value="#{structureCreationView.typesStructure}"/>
+                                    </p:selectOneMenu>
+                                </div>
+                            </div>
+                            <h2>Activité</h2>
+                            <div class="p-field p-grid">
+                                <label for="codeAPE" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Code APE</label>
+                                <div class="p-col-12 p-md-10">
+                                    <p:inputText id="codeAPE" type="text" value="#{structureCreationView.codeAPE}"/>
+                                </div>
+                            </div>
+                            <div class="p-field p-grid">
+                                <label for="activite" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Activité principale</label>
+                                <div class="p-col-12 p-md-10">
+                                    <p:inputText id="activite" type="text" value="#{structureCreationView.activite}"/>
+                                </div>
+                            </div>
+
+                            <h2>Coordonnées</h2>
+                            <div class="p-field p-grid">
+                                <label for="voie" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Voie</label>
+                                <div class="p-col-12 p-md-10">
+                                    <p:inputText id="voie" type="text" value="#{structureCreationView.voie}"/>
+                                </div>
+                            </div>
+                            <div class="p-field p-grid">
+                                <label for="codePostal" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Code postal</label>
+                                <div class="p-col-12 p-md-10">
+                                    <p:inputText id="codePostal" type="text" value="#{structureCreationView.codePostal}"/>
+                                </div>
+                            </div>
+                            <div class="p-field p-grid">
+                                <label for="batiment" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Bâtiment / Résidence / Z.I.</label>
+                                <div class="p-col-12 p-md-10">
+                                    <p:inputText id="batiment" type="text" value="#{structureCreationView.batiment}"/>
+                                </div>
+                            </div>
+                            <div class="p-field p-grid">
+                                <label for="commune" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Commune</label>
+                                <div class="p-col-12 p-md-10">
+                                    <p:inputText id="commune" type="text" value="#{structureCreationView.commune}"/>
+                                </div>
+                            </div>
+                            <div class="p-field p-grid">
+                                <label for="cedex" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Libellé Cedex ou Localité de destination</label>
+                                <div class="p-col-12 p-md-10">
+                                    <p:inputText id="cedex" type="text" value="#{structureCreationView.cedex}"/>
+                                </div>
+                            </div>
+                            <div class="p-field p-grid">
+                                <label for="pays" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Pays</label>
+                                <div class="p-col-12 p-md-10">
+                                    <p:selectOneMenu id="pays" value="#{structureCreationView.pays}" style="width:12rem">
+                                        <f:selectItem itemLabel="Selectionner un pays" itemValue="" noSelectionOption="true"/>
+                                        <f:selectItems value="#{structureCreationView.paysList}"/>
+                                    </p:selectOneMenu>
+                                </div>
+                            </div>
+                            <p:separator/>
+                            <div class="p-field p-grid">
+                                <label for="email" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Adresse mail</label>
+                                <div class="p-col-12 p-md-10">
+                                    <p:inputText id="email" type="text" value="#{structureCreationView.email}"/>
+                                </div>
+                            </div>
+                            <div class="p-field p-grid">
+                                <label for="phone" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Téléphone</label>
+                                <div class="p-col-12 p-md-10">
+                                    <p:inputText id="phone" type="text" value="#{structureCreationView.phone}"/>
+                                </div>
+                            </div>
+                            <div class="p-field p-grid">
+                                <label for="website" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Site Internet</label>
+                                <div class="p-col-12 p-md-10">
+                                    <p:inputText id="website" type="text" value="#{structureCreationView.website}"/>
+                                </div>
+                            </div>
+                            <div class="p-field p-grid">
+                                <label for="fax" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Fax</label>
+                                <div class="p-col-12 p-md-10">
+                                    <p:inputText id="fax" type="text" value="#{structureCreationView.fax}"/>
+                                </div>
+                            </div>
+                        </h:panelGrid>
+                        <p:commandButton value="Créer" update="tabs" action="#{structureCreationView.submitForm}" icon="pi pi-check">
+                            <f:ajax render="tab3"/>
+                        </p:commandButton>
+                    </h:form>
+                </p:tab>
+                <p:tab title="Service d'accueil" disabled="false">
+                </p:tab>
+                <p:tab title="Tuteur Professionel" disabled="false">
+                </p:tab>
+                <p:tab title="Stage" disabled="false">
+                </p:tab>
+                <p:tab title="Enseignant Référent" disabled="false">
+                </p:tab>
+                <p:tab title="Signataire" disabled="false">
+                </p:tab>
+
+            </p:tabView>
+        </div>
+
+    </ui:define>
+
+</ui:composition>
