@@ -11,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -44,7 +45,7 @@ public class SearchStructureView implements Serializable {
 		private String inputDepartement;
 		private OkHttpClient client;
 
-		@Inject
+		@Autowired
 		private StructureService service;
 
 		@PostConstruct

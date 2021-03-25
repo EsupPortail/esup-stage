@@ -9,6 +9,9 @@ import fr.esupportail.esupstage.services.TypeStructureService;
 import fr.esupportail.esupstage.services.beans.EffectifBean;
 import fr.esupportail.esupstage.services.beans.PaysBean;
 import fr.esupportail.esupstage.services.beans.TypeStructureBean;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -24,6 +27,8 @@ import java.util.Map;
 
 @Named("structureCreationView")
 @ViewScoped
+@Getter
+@Setter
 public class StructureCreationView implements Serializable {
 		private String raisonSociale;
 		private String numeroSiret;
@@ -41,15 +46,16 @@ public class StructureCreationView implements Serializable {
 		private String phone;
 		private String website;
 		private String fax;
+		private Structure structure;
 
 
-		@Inject
+		@Autowired
 		private EffectifService effectifService;
-		@Inject
+		@Autowired
 		private TypeStructureService typeStructureService;
-		@Inject
+		@Autowired
 		private PaysService paysService;
-		@Inject
+		@Autowired
 		private StructureRepository structureRepository;
 
 		private Map<String,Effectif> effectifs;
@@ -59,7 +65,6 @@ public class StructureCreationView implements Serializable {
 		@PostConstruct
 		public void init() {
 				//TEMPO
-
 
 				effectifs  = new HashMap<>();
 				for(EffectifBean effectifBean : effectifService.findAll(PageRequest.of(0, Integer.MAX_VALUE))){
@@ -77,155 +82,8 @@ public class StructureCreationView implements Serializable {
 				}
 		}
 
-		public Effectif getEffectif() {
-				return effectif;
-		}
-
-		public void setEffectif(Effectif effectif) {
-				this.effectif = effectif;
-		}
-
-		public String getRaisonSociale() {
-				return raisonSociale;
-		}
-
-		public void setRaisonSociale(String raisonSociale) {
-				this.raisonSociale = raisonSociale;
-		}
-
-		public String getNumeroSiret() {
-				return numeroSiret;
-		}
-
-		public void setNumeroSiret(String numeroSiret) {
-				this.numeroSiret = numeroSiret;
-		}
-
-		public void setStructure(Structure structure) {
-				this.structure = structure;
-		}
-
-		public Map<String, Effectif> getEffectifs() {
-				return effectifs;
-		}
-
-		public void setEffectifs(Map<String, Effectif> effectifs) {
-				this.effectifs = effectifs;
-		}
-
-		public TypeStructure getTypeStructure() {
-				return typeStructure;
-		}
-
-		public void setTypeStructure(TypeStructure typeStructure) {
-				this.typeStructure = typeStructure;
-		}
-
-		public Map<String, TypeStructure> getTypesStructure() {
-				return typesStructure;
-		}
-
-		public void setTypesStructure(Map<String, TypeStructure> typesStructure) {
-				this.typesStructure = typesStructure;
-		}
-
-		public String getCodeAPE() {
-				return codeAPE;
-		}
-
-		public void setCodeAPE(String codeAPE) {
-				this.codeAPE = codeAPE;
-		}
-
-		public String getActivite() {
-				return activite;
-		}
-
-		public void setActivite(String activite) {
-				this.activite = activite;
-		}
-
-		public String getVoie() {
-				return voie;
-		}
-
-		public void setVoie(String voie) {
-				this.voie = voie;
-		}
-
-		public String getCodePostal() {
-				return codePostal;
-		}
-
-		public void setCodePostal(String codePostal) {
-				this.codePostal = codePostal;
-		}
-
-		public String getBatiment() {
-				return batiment;
-		}
-
-		public void setBatiment(String batiment) {
-				this.batiment = batiment;
-		}
-
-		public String getCommune() {
-				return commune;
-		}
-
-		public void setCommune(String commune) {
-				this.commune = commune;
-		}
-
-		public String getCedex() {
-				return cedex;
-		}
-
-		public void setCedex(String cedex) {
-				this.cedex = cedex;
-		}
-
-		public Pays getPays() {
-				return pays;
-		}
-
-		public void setPays(Pays pays) {
-				this.pays = pays;
-		}
-
-		public String getEmail() {
-				return email;
-		}
-
-		public void setEmail(String email) {
-				this.email = email;
-		}
-
-		public String getPhone() {
-				return phone;
-		}
-
-		public void setPhone(String phone) {
-				this.phone = phone;
-		}
-
-		public String getWebsite() {
-				return website;
-		}
-
-		public void setWebsite(String website) {
-				this.website = website;
-		}
-
-		public String getFax() {
-				return fax;
-		}
-
-		public void setFax(String fax) {
-				this.fax = fax;
-		}
-
 		public void submitForm(){
+
 				Structure structure = new Structure();
 				structure.setRaisonSociale(this.raisonSociale);
 				structure.setNumeroSiret(this.numeroSiret);
@@ -243,24 +101,8 @@ public class StructureCreationView implements Serializable {
 				structure.setSiteWeb(this.website);
 				structure.setFax(this.fax);
 
-
 				structureRepository.save(structure);
 
-
 				System.out.println(structure);
-
-		}
-
-		private Structure structure;
-		public Structure getStructure() {
-				return this.structure;
-		}
-
-		public Map<String, Pays> getPaysList() {
-				return paysList;
-		}
-
-		public void setPaysList(Map<String, Pays> paysList) {
-				this.paysList = paysList;
 		}
 }

@@ -39,7 +39,6 @@ import fr.esupportail.esupstage.domain.jpa.repositories.AvenantRepository;
 @Transactional
 @WithMockUser(username = "jdoe", password = "jdoe")
 class AvenantRepositoryTest extends AbstractTest {
-
 		private final EntityManager entityManager;
 
 		private final AvenantRepository avenantRepository;

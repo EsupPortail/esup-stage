@@ -16,27 +16,12 @@ import java.util.List;
 public class TypeStructureBean implements Serializable {
 
 		private static final long serialVersionUID = 1L;
-
-		@Id
-		@GeneratedValue(strategy = GenerationType.AUTO)
-		@Column(unique = true, nullable = false)
 		private Integer idTypeStructure;
-
-		@Column(nullable = false, length = 100)
 		private String libelleTypeStructure;
-
 		private boolean modifiable;
-
-		@Column(nullable = false)
 		private boolean siretObligatoire;
-
-		@Column(nullable = false, length = 1)
 		private String temEnServTypeStructure;
-
-		@OneToMany(mappedBy = "typeStructure")
 		private List<StatutJuridique> statutJuridiques;
-
-		@OneToMany(mappedBy = "typeStructure")
 		private List<Structure> structures;
 
 		public StatutJuridique addStatutJuridique(StatutJuridique statutJuridique) {

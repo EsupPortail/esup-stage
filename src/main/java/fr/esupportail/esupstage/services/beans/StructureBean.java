@@ -17,116 +17,41 @@ public class StructureBean implements Serializable {
 
 		private static final long serialVersionUID = 1L;
 
-		@Id
-		@GeneratedValue(strategy = GenerationType.AUTO)
-		@Column(unique = true, nullable = false)
 		private Integer idStructure;
-
-		@Lob
 		private String activitePrincipale;
-
-		@Column(length = 200)
 		private String batimentResidence;
-
-		@Column(length = 10)
 		private String codeCommune;
-
-		@Column(length = 20)
 		private String codeEtab;
-
-		@Column(length = 10)
 		private String codePostal;
-
-		@Column(length = 200)
 		private String commune;
-
 		private Date dateStopValidation;
-
 		private Date dateValidation;
-
-		@Column(nullable = false)
 		private Integer estValidee;
-
-		@Column(length = 20)
 		private String fax;
-
-		@Column(length = 50)
 		private String groupe;
-
 		private Date infosAJour;
-
-		@Column(length = 28)
 		private String libCedex;
-
-		@Column(length = 50)
 		private String loginInfosAJour;
-
-		@Column(length = 50)
 		private String loginStopValidation;
-
-		@Column(length = 50)
 		private String loginValidation;
-
-		@Column(length = 200)
 		private String logo;
-
-		@Column(length = 50)
 		private String mail;
-
-		@Column(length = 50)
 		private String nomDirigeant;
-
-		@Column(length = 14)
 		private String numeroSiret;
-
-		@Column(length = 50)
 		private String prenomDirigeant;
-
-		@Column(nullable = false, length = 150)
 		private String raisonSociale;
-
-		@Column(length = 200)
 		private String siteWeb;
-
-		@Column(length = 20)
 		private String telephone;
-
-		@Column(length = 1)
 		private String temEnServStructure;
-
-		@Column(nullable = false, length = 200)
 		private String voie;
-
-		@OneToMany(mappedBy = "structure")
 		private List<AccordPartenariat> accordPartenariats;
-
-		@OneToMany(mappedBy = "structure")
 		private List<Convention> conventions;
-
-		@OneToMany(mappedBy = "structure")
 		private List<Offre> offres;
-
-		@OneToMany(mappedBy = "structure")
 		private List<Service> services;
-
-		@ManyToOne
-		@JoinColumn(name = "idEffectif", nullable = false)
 		private Effectif effectif;
-
-		@ManyToOne
-		@JoinColumn(name = "codeNAF_N5")
 		private NafN5 nafN5;
-
-		@ManyToOne
-		@JoinColumn(name = "idPays", nullable = false)
 		private Pays pay;
-
-		@ManyToOne
-		@JoinColumn(name = "idStatutJuridique")
 		private StatutJuridique statutJuridique;
-
-		@ManyToOne
-		@JoinColumn(name = "idTypeStructure", nullable = false)
 		private TypeStructure typeStructure;
 
 		public AccordPartenariat addAccordPartenariat(AccordPartenariat accordPartenariat) {
