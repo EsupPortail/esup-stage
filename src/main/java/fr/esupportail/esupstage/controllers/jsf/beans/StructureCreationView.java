@@ -11,6 +11,7 @@ import fr.esupportail.esupstage.services.beans.PaysBean;
 import fr.esupportail.esupstage.services.beans.TypeStructureBean;
 import lombok.Getter;
 import lombok.Setter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,6 +20,7 @@ import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,79 +32,101 @@ import java.util.Map;
 @Getter
 @Setter
 public class StructureCreationView implements Serializable {
-		private String raisonSociale;
-		private String numeroSiret;
-		private Effectif effectif;
-		private TypeStructure typeStructure;
-		private String codeAPE;
-		private String activite;
-		private String voie;
-		private String codePostal;
-		private String batiment;
-		private String commune;
-		private String cedex;
-		private Pays pays;
-		private String email;
-		private String phone;
-		private String website;
-		private String fax;
-		private Structure structure;
 
+	private String raisonSociale;
 
-		@Autowired
-		private EffectifService effectifService;
-		@Autowired
-		private TypeStructureService typeStructureService;
-		@Autowired
-		private PaysService paysService;
-		@Autowired
-		private StructureRepository structureRepository;
+	private String numeroSiret;
 
-		private Map<String,Effectif> effectifs;
-		private Map<String,TypeStructure> typesStructure;
-		private Map<String,Pays> paysList;
+	private Effectif effectif;
 
-		@PostConstruct
-		public void init() {
-				//TEMPO
+	private TypeStructure typeStructure;
 
-				effectifs  = new HashMap<>();
-				for(EffectifBean effectifBean : effectifService.findAll(PageRequest.of(0, Integer.MAX_VALUE))){
-						effectifs.put(effectifBean.getLibelleEffectif(),EffectifService.convert(effectifBean));
-				}
+	private String codeAPE;
 
-				typesStructure = new HashMap<>();
-				for(TypeStructureBean typeStructureBean : typeStructureService.findAll(PageRequest.of(0, Integer.MAX_VALUE))){
-						typesStructure.put(typeStructureBean.getLibelleTypeStructure(),TypeStructureService.convert(typeStructureBean));
-				}
+	private String activite;
 
-				paysList = new HashMap<>();
-				for(PaysBean paysBean : paysService.findAll(PageRequest.of(0, Integer.MAX_VALUE))){
-						paysList.put(paysBean.getLib(),PaysService.convert(paysBean));
-				}
+	private String voie;
+
+	private String codePostal;
+
+	private String batiment;
+
+	private String commune;
+
+	private String cedex;
+
+	private Pays pays;
+
+	private String email;
+
+	private String phone;
+
+	private String website;
+
+	private String fax;
+
+	private Structure structure;
+
+	@Autowired
+	private EffectifService effectifService;
+
+	@Autowired
+	private TypeStructureService typeStructureService;
+
+	@Autowired
+	private PaysService paysService;
+
+	@Autowired
+	private StructureRepository structureRepository;
+
+	private Map<String, Effectif> effectifs;
+
+	private Map<String, TypeStructure> typesStructure;
+
+	private Map<String, Pays> paysList;
+
+	@PostConstruct
+	public void init() {
+		//TEMPO
+
+		effectifs = new HashMap<>();
+		for (EffectifBean effectifBean : effectifService.findAll(PageRequest.of(0, Integer.MAX_VALUE))) {
+			effectifs.put(effectifBean.getLibelleEffectif(), EffectifService.convert(effectifBean));
 		}
 
-		public void submitForm(){
-
-				Structure structure = new Structure();
-				structure.setRaisonSociale(this.raisonSociale);
-				structure.setNumeroSiret(this.numeroSiret);
-				structure.setEffectif(this.effectif);
-				structure.setTypeStructure(this.typeStructure);
-				structure.setActivitePrincipale(this.activite);
-				structure.setVoie(this.voie);
-				structure.setCodePostal(this.codePostal);
-				structure.setBatimentResidence(this.batiment);
-				structure.setLibCedex(this.cedex);
-				structure.setCommune(this.commune);
-				structure.setPay(this.pays);
-				structure.setMail(this.email);
-				structure.setTelephone(this.phone);
-				structure.setSiteWeb(this.website);
-				structure.setFax(this.fax);
-
-				structureRepository.save(structure);
-
-				System.out.println(structure);
+		typesStructure = new HashMap<>();
+		for (TypeStructureBean typeStructureBean : typeStructureService.findAll(PageRequest.of(0, Integer.MAX_VALUE))) {
+			typesStructure.put(typeStructureBean.getLibelleTypeStructure(), TypeStructureService.convert(typeStructureBean));
 		}
+
+		paysList = new HashMap<>();
+		for (PaysBean paysBean : paysService.findAll(PageRequest.of(0, Integer.MAX_VALUE))) {
+			paysList.put(paysBean.getLib(), PaysService.convert(paysBean));
+		}
+	}
+
+	public void submitForm() {
+
+		Structure structure = new Structure();
+		structure.setRaisonSociale(this.raisonSociale);
+		structure.setNumeroSiret(this.numeroSiret);
+		structure.setEffectif(this.effectif);
+		structure.setTypeStructure(this.typeStructure);
+		structure.setActivitePrincipale(this.activite);
+		structure.setVoie(this.voie);
+		structure.setCodePostal(this.codePostal);
+		structure.setBatimentResidence(this.batiment);
+		structure.setLibCedex(this.cedex);
+		structure.setCommune(this.commune);
+		structure.setPay(this.pays);
+		structure.setMail(this.email);
+		structure.setTelephone(this.phone);
+		structure.setSiteWeb(this.website);
+		structure.setFax(this.fax);
+
+		structureRepository.save(structure);
+
+		System.out.println(structure);
+	}
+
 }

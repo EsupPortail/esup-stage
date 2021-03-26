@@ -19,7 +19,6 @@ import lombok.Setter;
 
 /**
  * The persistent class for the TypeStructure database table.
- *
  */
 @Entity
 @Getter
@@ -77,8 +76,9 @@ public class TypeStructure implements Serializable {
 		return structure;
 	}
 
-	@Override public String toString() {
-			return this.label;
+	@Override
+	public String toString() {
+		return this.label;
 	}
 
 }

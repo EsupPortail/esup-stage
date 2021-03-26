@@ -19,7 +19,6 @@ import lombok.Setter;
 
 /**
  * The persistent class for the Pays database table.
- *
  */
 @Entity
 @Getter
@@ -108,8 +107,9 @@ public class Pays implements Serializable {
 		return structure;
 	}
 
-		@Override public String toString() {
-				return lib;
-		}
+	@Override
+	public String toString() {
+		return lib;
+	}
 
 }

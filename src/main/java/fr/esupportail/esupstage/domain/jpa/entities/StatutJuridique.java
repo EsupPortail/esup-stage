@@ -21,7 +21,6 @@ import lombok.Setter;
 
 /**
  * The persistent class for the StatutJuridique database table.
- *
  */
 @Entity
 @Getter
@@ -65,8 +64,9 @@ public class StatutJuridique implements Serializable {
 		return structure;
 	}
 
-	@Override public String toString() {
-			return this.label;
+	@Override
+	public String toString() {
+		return this.label;
 	}
 
 }
