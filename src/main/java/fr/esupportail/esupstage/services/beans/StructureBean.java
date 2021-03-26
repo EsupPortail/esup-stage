@@ -1,15 +1,21 @@
 package fr.esupportail.esupstage.services.beans;
 
-import fr.esupportail.esupstage.domain.jpa.entities.*;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-
-import javax.persistence.*;
-
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+
+import fr.esupportail.esupstage.domain.jpa.entities.AccordPartenariat;
+import fr.esupportail.esupstage.domain.jpa.entities.Convention;
+import fr.esupportail.esupstage.domain.jpa.entities.Effectif;
+import fr.esupportail.esupstage.domain.jpa.entities.NafN5;
+import fr.esupportail.esupstage.domain.jpa.entities.Offre;
+import fr.esupportail.esupstage.domain.jpa.entities.Pays;
+import fr.esupportail.esupstage.domain.jpa.entities.Service;
+import fr.esupportail.esupstage.domain.jpa.entities.StatutJuridique;
+import fr.esupportail.esupstage.domain.jpa.entities.TypeStructure;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter

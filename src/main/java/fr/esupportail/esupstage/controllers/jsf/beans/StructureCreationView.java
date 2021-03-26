@@ -1,31 +1,29 @@
 package fr.esupportail.esupstage.controllers.jsf.beans;
 
-import fr.esupportail.esupstage.domain.jpa.entities.*;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+
+import fr.esupportail.esupstage.domain.jpa.entities.Effectif;
+import fr.esupportail.esupstage.domain.jpa.entities.Pays;
+import fr.esupportail.esupstage.domain.jpa.entities.Structure;
+import fr.esupportail.esupstage.domain.jpa.entities.TypeStructure;
 import fr.esupportail.esupstage.domain.jpa.repositories.StructureRepository;
 import fr.esupportail.esupstage.services.EffectifService;
 import fr.esupportail.esupstage.services.PaysService;
-import fr.esupportail.esupstage.services.StructureService;
 import fr.esupportail.esupstage.services.TypeStructureService;
 import fr.esupportail.esupstage.services.beans.EffectifBean;
 import fr.esupportail.esupstage.services.beans.PaysBean;
 import fr.esupportail.esupstage.services.beans.TypeStructureBean;
 import lombok.Getter;
 import lombok.Setter;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Named("structureCreationView")
 @ViewScoped

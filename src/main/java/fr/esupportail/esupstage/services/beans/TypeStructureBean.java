@@ -1,15 +1,13 @@
 package fr.esupportail.esupstage.services.beans;
 
+import java.io.Serializable;
+import java.util.List;
+
 import fr.esupportail.esupstage.domain.jpa.entities.StatutJuridique;
 import fr.esupportail.esupstage.domain.jpa.entities.Structure;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import javax.persistence.*;
-
-import java.io.Serializable;
-import java.util.List;
 
 @Getter
 @Setter

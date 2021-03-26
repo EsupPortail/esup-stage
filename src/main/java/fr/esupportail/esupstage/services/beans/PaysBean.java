@@ -1,16 +1,14 @@
 package fr.esupportail.esupstage.services.beans;
 
+import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
+
 import fr.esupportail.esupstage.domain.jpa.entities.Offre;
 import fr.esupportail.esupstage.domain.jpa.entities.Service;
 import fr.esupportail.esupstage.domain.jpa.entities.Structure;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.persistence.*;
-
-import java.io.Serializable;
-import java.util.LinkedList;
-import java.util.List;
 
 @Getter
 @Setter

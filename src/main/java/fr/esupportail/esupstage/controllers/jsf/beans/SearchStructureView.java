@@ -1,13 +1,21 @@
 package fr.esupportail.esupstage.controllers.jsf.beans;
 
-import com.sun.faces.util.Json;
+import java.io.IOException;
+import java.io.Serializable;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.util.ArrayList;
+import java.util.List;
 
-import fr.esupportail.esupstage.domain.jpa.entities.*;
-import fr.esupportail.esupstage.domain.jpa.repositories.StructureRepository;
-import fr.esupportail.esupstage.services.StructureService;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -15,26 +23,15 @@ import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.PostConstruct;
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
-import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.net.ssl.*;
-
-import java.io.IOException;
-import java.io.Serializable;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.security.SecureRandom;
-import java.security.cert.CertificateException;
-import java.sql.Struct;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import fr.esupportail.esupstage.domain.jpa.entities.Effectif;
+import fr.esupportail.esupstage.domain.jpa.entities.Pays;
+import fr.esupportail.esupstage.domain.jpa.entities.StatutJuridique;
+import fr.esupportail.esupstage.domain.jpa.entities.Structure;
+import fr.esupportail.esupstage.domain.jpa.entities.TypeStructure;
+import fr.esupportail.esupstage.services.StructureService;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 @Named("searchStructureView")
 @ViewScoped

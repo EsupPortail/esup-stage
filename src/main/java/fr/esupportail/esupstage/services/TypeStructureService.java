@@ -1,18 +1,15 @@
 package fr.esupportail.esupstage.services;
 
-import fr.esupportail.esupstage.domain.jpa.entities.Effectif;
-import fr.esupportail.esupstage.domain.jpa.entities.TypeStructure;
-import fr.esupportail.esupstage.domain.jpa.repositories.EffectifRepository;
-import fr.esupportail.esupstage.domain.jpa.repositories.TypeStructureRepository;
-import fr.esupportail.esupstage.exception.NotFoundException;
-import fr.esupportail.esupstage.services.beans.EffectifBean;
-import fr.esupportail.esupstage.services.beans.TypeStructureBean;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import fr.esupportail.esupstage.domain.jpa.entities.TypeStructure;
+import fr.esupportail.esupstage.domain.jpa.repositories.TypeStructureRepository;
+import fr.esupportail.esupstage.exception.NotFoundException;
+import fr.esupportail.esupstage.services.beans.TypeStructureBean;
 
 @Service
 public class TypeStructureService {
