@@ -9,10 +9,10 @@ import javax.inject.Named;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import fr.esupportail.esupstage.controllers.jsf.beans.conventions.StudentBean;
 import fr.esupportail.esupstage.domain.jpa.entities.Convention;
 import fr.esupportail.esupstage.domain.jpa.repositories.ConventionRepository;
 import fr.esupportail.esupstage.domain.jpa.repositories.EtudiantRepository;
-import fr.esupportail.esupstage.services.beans.EtudiantBean;
 
 @Named
 @ApplicationScoped
@@ -42,11 +42,11 @@ public class ConventionService {
 		return results;
 	}
 
-	public EtudiantBean getStudentByIdAndCodeUniv(int id, String codeUniv) throws NoSuchElementException {
-        return EtudiantBean.fromEtudiant(this.studentRepository.findEtudiantByIdAndCodeUniversite(id, codeUniv).orElseThrow());
+	public StudentBean getStudentByIdAndCodeUniv(int id, String codeUniv) throws NoSuchElementException {
+        return StudentBean.fromEtudiant(this.studentRepository.findEtudiantByIdAndCodeUniversite(id, codeUniv).orElseThrow());
 	}
 
-	public EtudiantBean getStudentByIdentAndCodeUniv(String username, String codeUniv) throws NoSuchElementException {
-        return EtudiantBean.fromEtudiant(this.studentRepository.findEtudiantByIdentEtudiantAndCodeUniversite(username, codeUniv).orElseThrow());
+	public StudentBean getStudentByIdentAndCodeUniv(String username, String codeUniv) throws NoSuchElementException {
+        return StudentBean.fromEtudiant(this.studentRepository.findEtudiantByIdentEtudiantAndCodeUniversite(username, codeUniv).orElseThrow());
 	}
 }

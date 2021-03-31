@@ -30,9 +30,6 @@ import lombok.Getter;
 @ViewScoped
 public class ConventionListView implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 7987062852304528092L;
 
     @Getter private List<Convention> conventions = new ArrayList<Convention>(){
@@ -121,11 +118,6 @@ public class ConventionListView implements Serializable {
 
     @Inject
     private ConventionService service;
-
-    @PostConstruct
-    public void init() {
-        
-    }
 
     public List<Convention> getConventions() {
         return conventions;
