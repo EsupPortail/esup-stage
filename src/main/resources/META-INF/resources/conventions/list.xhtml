@@ -26,7 +26,7 @@
                     <h:outputText value="#{convension.etablissement}"/>
                 </p:column>
                 <p:column headerText="Période">
-                    <h:outputText value="#{convension.etudiant.getLocalPeriode()}"/>
+                    <h:outputText value="#{convension.etudiant.localPeriode}"/>
                 </p:column>
                 <p:column headerText="UFR">
                     <h:outputText value="#{convension.etudiant.ufr}"/>
@@ -35,10 +35,10 @@
                     <h:outputText value="#{convension.etudiant.etape}"/>
                 </p:column>
                 <p:column headerText="Validation">
-                    <h:outputText value="#{convension.etudiant.isValidated()}"/>
+                    <h:outputText value="#{convension.etudiant.isValidated}"/>
                 </p:column>
                 <p:column headerText="Avenant">
-                    <h:outputText value="#{convension.etudiant.isAvenant()}"/>
+                    <h:outputText value="#{convension.etudiant.isAvenant}"/>
                 </p:column>
                 <p:column headerText="Année Univ.">
                     <h:outputText value="#{convension.etudiant.anneeUniv}"/>

@@ -39,7 +39,7 @@ public class StudentBean implements Serializable{
     private String numSS;
     private List<Convention> conventions;
 
-	public static StudentBean fromEtudiant(Etudiant instance) {
+	public static StudentBean map(Etudiant instance) {
 
 		StudentBean student = new StudentBean();
 		student.setId(instance.getId());
