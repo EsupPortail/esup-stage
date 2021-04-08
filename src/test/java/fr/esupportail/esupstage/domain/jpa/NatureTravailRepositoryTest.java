@@ -1,6 +1,7 @@
 package fr.esupportail.esupstage.domain.jpa;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -40,8 +41,8 @@ class NatureTravailRepositoryTest extends AbstractTest {
 	void prepare() {
 		final NatureTravail natureTravail = new NatureTravail();
 
-		natureTravail.setLibelleNatureTravail("libelleNatureTravail");
-		natureTravail.setTemEnServNatTrav("A");
+		natureTravail.setLabel("libelleNatureTravail");
+		natureTravail.setTemEnServ("A");
 
 		this.entityManager.persist(natureTravail);
 		this.entityManager.flush();
@@ -55,8 +56,8 @@ class NatureTravailRepositoryTest extends AbstractTest {
 		switch (indice) {
 		case 0:
 			assertEquals(this.lastInsertedId, natureTravail.getId(), "NatureTravail id match");
-			assertEquals("libelleNatureTravail", natureTravail.getLibelleNatureTravail(), "NatureTravail libelle match");
-			assertEquals("A", natureTravail.getTemEnServNatTrav(), "NatureTravail TemEnServ match");
+			assertEquals("libelleNatureTravail", natureTravail.getLabel(), "NatureTravail libelle match");
+			assertEquals("A", natureTravail.getTemEnServ(), "NatureTravail TemEnServ match");
 			break;
 		}
 	}
@@ -75,10 +76,10 @@ class NatureTravailRepositoryTest extends AbstractTest {
 	@DisplayName("findAll – Nominal test case")
 	void findAll() {
 		final List<NatureTravail> result = this.natureTravailRepository.findAll();
-		assertTrue(result.size() == 1, "We should have found our NatureTravail");
+		assertEquals(1, result.size(), "We should have found our NatureTravail");
 
 		final NatureTravail natureTravail = result.get(0);
-		assertTrue(natureTravail != null, "NatureTravail exist");
+		assertNotNull(natureTravail, "NatureTravail exist");
 		this.testNatureTravailFields(0, natureTravail);
 	}
 

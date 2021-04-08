@@ -1,11 +1,11 @@
 package fr.esupportail.esupstage.domain.jpa;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +27,7 @@ import fr.esupportail.esupstage.domain.jpa.entities.Indemnisation;
 import fr.esupportail.esupstage.domain.jpa.entities.LangueConvention;
 import fr.esupportail.esupstage.domain.jpa.entities.ModeValidationStage;
 import fr.esupportail.esupstage.domain.jpa.entities.NatureTravail;
+import fr.esupportail.esupstage.domain.jpa.entities.NbJourHebdo;
 import fr.esupportail.esupstage.domain.jpa.entities.NiveauCentre;
 import fr.esupportail.esupstage.domain.jpa.entities.TempsTravail;
 import fr.esupportail.esupstage.domain.jpa.entities.Theme;
@@ -51,56 +52,55 @@ class LangueConventionRepositoryTest extends AbstractTest {
 	@BeforeEach
 	void prepare() {
 		LangueConvention langueConvention = new LangueConvention();
-		langueConvention.setCodeLangueConvention("CD");
-		langueConvention.setLibelleLangueConvention("libel");
-		langueConvention.setTemEnServLangue("A");
+		langueConvention.setCode("CD");
+		langueConvention.setLabel("libel");
+		langueConvention.setTemEnServ("A");
 
 		final NiveauCentre niveauCentre = new NiveauCentre();
-		niveauCentre.setLibelleNiveauCentre("libel");
-		niveauCentre.setTemEnServNiveauCentre("A");
+		niveauCentre.setLabel("libel");
+		niveauCentre.setTemEnServ("A");
 
 		entityManager.persist(niveauCentre);
 
 		final Confidentialite confidentialite = new Confidentialite();
-		confidentialite.setCodeConfidentialite("A");
-		confidentialite.setLibelleConfidentialite("libel");
-		confidentialite.setTemEnServConfid("A");
+		confidentialite.setCode("A");
+		confidentialite.setLabel("libel");
+		confidentialite.setTemEnServ("A");
 		entityManager.persist(confidentialite);
 
 		final CentreGestion centreGestion = new CentreGestion();
 		centreGestion.setAutorisationEtudiantCreationConvention(true);
 		centreGestion.setCodeUniversite("codeuniv");
-		centreGestion.setDateCreation(Calendar.getInstance().getTime());
 		centreGestion.setIdModeValidationStage(1);
-		centreGestion.setLoginCreation("login");
+		centreGestion.setCreatedBy("login");
 		centreGestion.setConfidentialite(confidentialite);
 		centreGestion.setNiveauCentre(niveauCentre);
 		entityManager.persist(centreGestion);
 
 		TypeConvention typeConvention = new TypeConvention();
 		typeConvention.setCodeCtrl("code");
-		typeConvention.setLibelleTypeConvention("libel");
-		typeConvention.setTemEnServTypeConvention("F");
+		typeConvention.setLabel("libel");
+		typeConvention.setTemEnServ("F");
 		entityManager.persist(typeConvention);
 
 		Theme theme = new Theme();
-		theme.setLibelleTheme("libel");
+		theme.setLabel("libel");
 		entityManager.persist(theme);
 
 		TempsTravail tempsTravail = new TempsTravail();
 		tempsTravail.setCodeCtrl("code");
-		tempsTravail.setLibelleTempsTravail("libel");
-		tempsTravail.setTemEnServTempsTravail("F");
+		tempsTravail.setLabel("libel");
+		tempsTravail.setTemEnServ("F");
 		entityManager.persist(tempsTravail);
 
 		NatureTravail natureTravail = new NatureTravail();
-		natureTravail.setLibelleNatureTravail("libel");
-		natureTravail.setTemEnServNatTrav("F");
+		natureTravail.setLabel("libel");
+		natureTravail.setTemEnServ("F");
 		entityManager.persist(natureTravail);
 
 		ModeValidationStage modeValidationStage = new ModeValidationStage();
-		modeValidationStage.setLibelleModeValidationStage("libel");
-		modeValidationStage.setTemEnServModeValid("F");
+		modeValidationStage.setLabel("libel");
+		modeValidationStage.setTemEnServ("F");
 		entityManager.persist(modeValidationStage);
 
 		Etudiant etudiant = new Etudiant();
@@ -114,21 +114,20 @@ class LangueConventionRepositoryTest extends AbstractTest {
 		entityManager.persist(etudiant);
 
 		final Indemnisation indemnisation = new Indemnisation();
-		indemnisation.setLibelleIndemnisation("libelleIndemnisation");
-		indemnisation.setTemEnServIndem("A");
+		indemnisation.setLabel("libelleIndemnisation");
+		indemnisation.setTemEnServ("A");
 		entityManager.persist(indemnisation);
 
 		entityManager.persist(langueConvention);
 
 		Convention convention = new Convention();
-		convention.setDateCreation(Calendar.getInstance().getTime());
-		convention.setDateDebutStage(Calendar.getInstance().getTime());
-		convention.setDateFinStage(Calendar.getInstance().getTime());
+		convention.setDateDebutStage(LocalDate.now());
+		convention.setDateFinStage(LocalDate.now());
 		convention.setDureeStage(100);
 		convention.setIdAssurance(1);
 		convention.setIdModeVersGratification(1);
-		convention.setLoginCreation("login");
-		convention.setNbJoursHebdo("1");
+		convention.setNbJoursHebdo(NbJourHebdo.NB_JOURS_1_0);
+		convention.setCreatedBy("root");
 		convention.setSujetStage("subject");
 		convention.setTemConfSujetTeme("s");
 		convention.setEtudiant(etudiant);
@@ -150,9 +149,9 @@ class LangueConventionRepositoryTest extends AbstractTest {
 	private void testLangueConventionFields(int indice, LangueConvention langueConvention) {
 		switch (indice) {
 		case 0:
-			assertEquals("CD", langueConvention.getCodeLangueConvention(), "LangueConvention code match");
-			assertEquals("libel", langueConvention.getLibelleLangueConvention(), "LangueConvention libelle match");
-			assertEquals("A", langueConvention.getTemEnServLangue(), "LangueConvention temEnServLangue match");
+			assertEquals("CD", langueConvention.getCode(), "LangueConvention code match");
+			assertEquals("libel", langueConvention.getLabel(), "LangueConvention libelle match");
+			assertEquals("A", langueConvention.getTemEnServ(), "LangueConvention temEnServLangue match");
 			assertEquals("subject", langueConvention.getConventions().get(0).getSujetStage(), "LangueConvention.Conventions subject match");
 			break;
 		}
@@ -172,10 +171,10 @@ class LangueConventionRepositoryTest extends AbstractTest {
 	@DisplayName("findAll – Nominal test case")
 	void findAll() {
 		final List<LangueConvention> result = this.langueConventionRepository.findAll();
-		assertTrue(result.size() == 1, "We should have found our LangueConvention");
+		assertEquals(1, result.size(), "We should have found our LangueConvention");
 
 		final LangueConvention indemnisation = result.get(0);
-		assertTrue(indemnisation != null, "Fichier exist");
+		assertNotNull(indemnisation, "Fichier exist");
 		this.testLangueConventionFields(0, indemnisation);
 	}
 

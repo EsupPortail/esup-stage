@@ -1,17 +1,16 @@
 package fr.esupportail.esupstage.domain.jpa;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
-import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,21 +43,20 @@ class NiveauCentreRepositoryTest extends AbstractTest {
 	@BeforeEach
 	void prepare() {
 		final NiveauCentre niveauCentre = new NiveauCentre();
-		niveauCentre.setLibelleNiveauCentre("libelleNiveauCentre");
-		niveauCentre.setTemEnServNiveauCentre("A");
+		niveauCentre.setLabel("libelleNiveauCentre");
+		niveauCentre.setTemEnServ("A");
 
 		final Confidentialite confidentialite = new Confidentialite();
-		confidentialite.setCodeConfidentialite("A");
-		confidentialite.setLibelleConfidentialite("libel");
-		confidentialite.setTemEnServConfid("A");
+		confidentialite.setCode("A");
+		confidentialite.setLabel("libel");
+		confidentialite.setTemEnServ("A");
 		entityManager.persist(confidentialite);
 
 		final CentreGestion centreGestion = new CentreGestion();
 		centreGestion.setAutorisationEtudiantCreationConvention(true);
 		centreGestion.setCodeUniversite("codeuniv");
-		centreGestion.setDateCreation(Calendar.getInstance().getTime());
 		centreGestion.setIdModeValidationStage(1);
-		centreGestion.setLoginCreation("login");
+		centreGestion.setCreatedBy("login");
 		centreGestion.setConfidentialite(confidentialite);
 		centreGestion.setNiveauCentre(niveauCentre);
 		this.entityManager.persist(niveauCentre);
@@ -78,8 +76,8 @@ class NiveauCentreRepositoryTest extends AbstractTest {
 		switch (indice) {
 		case 0:
 			assertEquals(this.lastInsertedId, niveauCentre.getId(), "NiveauCentre libelle match");
-			assertEquals("libelleNiveauCentre", niveauCentre.getLibelleNiveauCentre(), "NiveauCentre libelle match");
-			assertEquals("A", niveauCentre.getTemEnServNiveauCentre(), "NiveauCentre TemEnServ match");
+			assertEquals("libelleNiveauCentre", niveauCentre.getLabel(), "NiveauCentre libelle match");
+			assertEquals("A", niveauCentre.getTemEnServ(), "NiveauCentre TemEnServ match");
 			assertEquals(1, niveauCentre.getCentreGestions().size(), "NiveauCentre.CentreGestions size match");
 			assertEquals("codeuniv", niveauCentre.getCentreGestions().get(0).getCodeUniversite(), "NiveauCentre.CentreGestion codeuniv match");
 			break;
@@ -100,10 +98,10 @@ class NiveauCentreRepositoryTest extends AbstractTest {
 	@DisplayName("findAll – Nominal test case")
 	void findAll() {
 		final List<NiveauCentre> result = this.niveauCentreRepository.findAll();
-		assertTrue(result.size() == 1, "We should have found our NiveauCentre");
+		assertEquals(1, result.size(), "We should have found our NiveauCentre");
 
 		final NiveauCentre niveauCentre = result.get(0);
-		assertTrue(niveauCentre != null, "NiveauCentre exist");
+		assertNotNull(niveauCentre, "NiveauCentre exist");
 		this.testNiveauCentreFields(0, niveauCentre);
 	}
 

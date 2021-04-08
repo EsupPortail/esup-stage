@@ -2,7 +2,6 @@ package fr.esupportail.esupstage.domain.jpa;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
@@ -169,34 +168,6 @@ class ConventionRepositoryTest extends AbstractTest {
 		assertEquals("libel", convention.getTheme().getLabel());
 		assertEquals("libel", convention.getTypeConvention().getLabel());
 		assertEquals("jdoe", convention.getCentreGestion().getCreatedBy());
-	}
-
-	@Test
-	@DisplayName("findById – Nominal test case")
-	void findTopN() {
-		final List<Convention> result = conventionRepository.findTopN(1);
-		assertNotEquals(result.size(), 0, "We should have found our Convention");
-
-		final Convention convention = result.get(0);
-		assertEquals(new Date(0), convention.getDateCreation());
-		assertEquals(new Date(0), convention.getDateDebutStage());
-		assertEquals(new Date(0), convention.getDateFinStage());
-		assertEquals(100, convention.getDureeStage());
-		assertEquals(1, convention.getIdModeVersGratification());
-		assertEquals(1, convention.getIdAssurance());
-		assertEquals("login", convention.getLoginCreation());
-		assertEquals("1", convention.getNbJoursHebdo());
-		assertEquals("subject", convention.getSujetStage());
-		assertEquals("s", convention.getTemConfSujetTeme());
-		assertEquals("125458", convention.getEtudiant().getNumEtudiant());
-		assertEquals("indem", convention.getIndemnisation().getLibelleIndemnisation());
-		assertEquals("CD", convention.getLangueConvention().getCodeLangueConvention());
-		assertEquals("libel", convention.getModeValidationStage().getLibelleModeValidationStage());
-		assertEquals("libel", convention.getNatureTravail().getLibelleNatureTravail());
-		assertEquals("libel", convention.getTempsTravail().getLibelleTempsTravail());
-		assertEquals("libel", convention.getTheme().getLibelleTheme());
-		assertEquals("libel", convention.getTypeConvention().getLibelleTypeConvention());
-		assertEquals("login", convention.getCentreGestion().getLoginCreation());
 	}
 
 }

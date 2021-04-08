@@ -1,10 +1,10 @@
 package fr.esupportail.esupstage.domain.jpa;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,26 +44,25 @@ class FichierRepositoryTest extends AbstractTest {
 	@BeforeEach
 	void prepare() {
 		final Fichier fichier = new Fichier();
-		fichier.setNomFichier("nomFichier");
-		fichier.setNomReel("nomReel");
+		fichier.setOriginalFileName("nomFichier");
+		fichier.setLocalFileName("nomReel");
 
 		final NiveauCentre niveauCentre = new NiveauCentre();
-		niveauCentre.setLibelleNiveauCentre("libel");
-		niveauCentre.setTemEnServNiveauCentre("A");
+		niveauCentre.setLabel("libel");
+		niveauCentre.setTemEnServ("A");
 		entityManager.persist(niveauCentre);
 
 		final Confidentialite confidentialite = new Confidentialite();
-		confidentialite.setCodeConfidentialite("A");
-		confidentialite.setLibelleConfidentialite("libel");
-		confidentialite.setTemEnServConfid("A");
+		confidentialite.setCode("A");
+		confidentialite.setLabel("libel");
+		confidentialite.setTemEnServ("A");
 		entityManager.persist(confidentialite);
 
 		final CentreGestion centreGestion = new CentreGestion();
 		centreGestion.setAutorisationEtudiantCreationConvention(true);
 		centreGestion.setCodeUniversite("codeuniv");
-		centreGestion.setDateCreation(Calendar.getInstance().getTime());
 		centreGestion.setIdModeValidationStage(1);
-		centreGestion.setLoginCreation("login");
+		centreGestion.setCreatedBy("login");
 		centreGestion.setConfidentialite(confidentialite);
 		centreGestion.setNiveauCentre(niveauCentre);
 		entityManager.persist(centreGestion);
@@ -82,8 +81,8 @@ class FichierRepositoryTest extends AbstractTest {
 		switch (indice) {
 		case 0:
 			assertEquals(this.lastInsertedId, fichier.getId(), "Fichier id match");
-			assertEquals("nomFichier", fichier.getNomFichier(), "Fichier name match");
-			assertEquals("nomReel", fichier.getNomReel(), "Fichier real name match");
+			assertEquals("nomFichier", fichier.getOriginalFileName(), "Fichier name match");
+			assertEquals("nomReel", fichier.getLocalFileName(), "Fichier real name match");
 			break;
 		}
 	}
@@ -102,10 +101,10 @@ class FichierRepositoryTest extends AbstractTest {
 	@DisplayName("findAll – Nominal test case")
 	void findAll() {
 		final List<Fichier> result = this.fichierRepository.findAll();
-		assertTrue(result.size() == 1, "We should have found our Fichier");
+		assertEquals(1, result.size(), "We should have found our Fichier");
 
 		final Fichier fichier = result.get(0);
-		assertTrue(fichier != null, "Fichier exist");
+		assertNotNull(fichier, "Fichier exist");
 		this.testFicheEvaluationFields(0, fichier);
 	}
 

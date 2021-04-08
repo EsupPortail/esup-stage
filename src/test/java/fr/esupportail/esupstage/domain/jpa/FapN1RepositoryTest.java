@@ -1,6 +1,7 @@
 package fr.esupportail.esupstage.domain.jpa;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -37,8 +38,8 @@ class FapN1RepositoryTest extends AbstractTest {
 	@BeforeEach
 	void prepare() {
 		final FapN1 fapN1 = new FapN1();
-		fapN1.setCodeFAP_N1("1");
-		fapN1.setLibelle("libelleFAP_N1");
+		fapN1.setCode("1");
+		fapN1.setLabel("libelleFAP_N1");
 
 		this.entityManager.persist(fapN1);
 		this.entityManager.flush();
@@ -47,8 +48,8 @@ class FapN1RepositoryTest extends AbstractTest {
 	private void testFapFields(int indice, FapN1 fap) {
 		switch (indice) {
 		case 0:
-			assertEquals("1", fap.getCodeFAP_N1(), "FapN1 code match");
-			assertEquals("libelleFAP_N1", fap.getLibelle(), "FapN1 libelle match");
+			assertEquals("1", fap.getCode(), "FapN1 code match");
+			assertEquals("libelleFAP_N1", fap.getLabel(), "FapN1 libelle match");
 			break;
 		}
 	}
@@ -67,10 +68,10 @@ class FapN1RepositoryTest extends AbstractTest {
 	@DisplayName("findAll – Nominal test case")
 	void findAll() {
 		final List<FapN1> result = this.fapN1Repository.findAll();
-		assertTrue(result.size() == 1, "We should have found our FapN1");
+		assertEquals(1, result.size(), "We should have found our FapN1");
 
 		final FapN1 fapQualification = result.get(0);
-		assertTrue(fapQualification != null, "FapN1 exist");
+		assertNotNull(fapQualification, "FapN1 exist");
 		this.testFapFields(0, fapQualification);
 	}
 

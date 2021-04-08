@@ -1,11 +1,10 @@
 package fr.esupportail.esupstage.domain.jpa;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,10 +52,10 @@ class FAP_QualificationSimplifieeRepositoryTest extends AbstractTest {
 	void prepare() {
 		final FAP_Qualification fapQualification = new FAP_Qualification();
 
-		fapQualification.setLibelleQualification("fapQual1");
+		fapQualification.setLabel("fapQual1");
 
 		final FAP_QualificationSimplifiee fapQualificationSimplifiee = new FAP_QualificationSimplifiee();
-		fapQualificationSimplifiee.setLibelleQualification("fapQualSimple1");
+		fapQualificationSimplifiee.setLabel("fapQualSimple1");
 		entityManager.persist(fapQualificationSimplifiee);
 
 		final Offre offre = new Offre();
@@ -73,7 +72,6 @@ class FAP_QualificationSimplifieeRepositoryTest extends AbstractTest {
 		offre.setCacherNomContactInfo(false);
 		offre.setCacherTelContactCand(false);
 		offre.setCacherTelContactInfo(false);
-		offre.setDateCreation(Calendar.getInstance().getTime());
 		offre.setDeplacement(true);
 		offre.setDescription("desc");
 		offre.setEstAccessERQTH(true);
@@ -88,25 +86,24 @@ class FAP_QualificationSimplifieeRepositoryTest extends AbstractTest {
 		offre.setPermis(true);
 		offre.setRemuneration(true);
 		offre.setVoiture(true);
-		offre.setLoginCreation("root");
+		offre.setCreatedBy("root");
 
 		final NiveauCentre niveauCentre = new NiveauCentre();
-		niveauCentre.setLibelleNiveauCentre("libel");
-		niveauCentre.setTemEnServNiveauCentre("A");
+		niveauCentre.setLabel("libel");
+		niveauCentre.setTemEnServ("A");
 		entityManager.persist(niveauCentre);
 
 		final Confidentialite confidentialite = new Confidentialite();
-		confidentialite.setCodeConfidentialite("A");
-		confidentialite.setLibelleConfidentialite("libel");
-		confidentialite.setTemEnServConfid("A");
+		confidentialite.setCode("A");
+		confidentialite.setLabel("libel");
+		confidentialite.setTemEnServ("A");
 		entityManager.persist(confidentialite);
 
 		final CentreGestion centreGestion = new CentreGestion();
 		centreGestion.setAutorisationEtudiantCreationConvention(true);
 		centreGestion.setCodeUniversite("codeuniv");
-		centreGestion.setDateCreation(Calendar.getInstance().getTime());
 		centreGestion.setIdModeValidationStage(1);
-		centreGestion.setLoginCreation("login");
+		centreGestion.setCreatedBy("login");
 		centreGestion.setConfidentialite(confidentialite);
 		centreGestion.setNiveauCentre(niveauCentre);
 		entityManager.persist(centreGestion);
@@ -116,22 +113,23 @@ class FAP_QualificationSimplifieeRepositoryTest extends AbstractTest {
 		final Pays pays = new Pays();
 		pays.setActual(1);
 		pays.setLib("lib");
-		pays.setTemEnServPays("A");
+		pays.setTemEnServ("A");
 		pays.setCog(1);
 		entityManager.persist(pays);
 
 
 		final Effectif effectifStructure = new Effectif();
-		effectifStructure.setLibelleEffectif("effectif");
-		effectifStructure.setTemEnServEffectif("A");
+		effectifStructure.setLabel("effectif");
+		effectifStructure.setTemEnServ("A");
 		entityManager.persist(effectifStructure);
 
 		final TypeStructure typeStructure = new TypeStructure();
-		typeStructure.setLibelleTypeStructure("type1");
-		typeStructure.setTemEnServTypeStructure("A");
+		typeStructure.setLabel("type1");
+		typeStructure.setTemEnServ("A");
 		entityManager.persist(typeStructure);
 
 		final Structure structure = new Structure();
+		structure.setCreatedBy("root");
 		structure.setEstValidee(1);
 		structure.setRaisonSociale("raison");
 		structure.setVoie("voie");
@@ -139,15 +137,13 @@ class FAP_QualificationSimplifieeRepositoryTest extends AbstractTest {
 		structure.setPay(pays);
 		structure.setTypeStructure(typeStructure);
 		entityManager.persist(structure);
-		structure.setTypeStructure(typeStructure);
-		entityManager.persist(structure);
 
 		offre.setStructure(structure);
 
 		final TypeOffre typeOffre = new TypeOffre();
 		typeOffre.setCodeCtrl("codeCtrl");
-		typeOffre.setLibelleType("libelleType");
-		typeOffre.setTemEnServTypeOffre("A");
+		typeOffre.setLabel("libelleType");
+		typeOffre.setTemEnServ("A");
 		entityManager.persist(typeOffre);
 
 		offre.setTypeOffre(typeOffre);
@@ -170,7 +166,7 @@ class FAP_QualificationSimplifieeRepositoryTest extends AbstractTest {
 		switch (indice) {
 		case 0:
 			assertEquals(this.lastInsertedId, fapQualificationSimplifiee.getId(), "QualificationSimplifiee id match");
-			assertEquals("fapQualSimple1", fapQualificationSimplifiee.getLibelleQualification(), "QualificationSimplifiee libelle match");
+			assertEquals("fapQualSimple1", fapQualificationSimplifiee.getLabel(), "QualificationSimplifiee libelle match");
 			break;
 		}
 	}
@@ -189,10 +185,10 @@ class FAP_QualificationSimplifieeRepositoryTest extends AbstractTest {
 	@DisplayName("findAll – Nominal test case")
 	void findAll() {
 		final List<FAP_QualificationSimplifiee> result = this.fapQualificationSimplifieeRepository.findAll();
-		assertTrue(result.size() == 1, "We should have found our FAP_QualificationSimplifiee");
+		assertEquals(1, result.size(), "We should have found our FAP_QualificationSimplifiee");
 
 		final FAP_QualificationSimplifiee fapQualificationSimplifiee = result.get(0);
-		assertTrue(fapQualificationSimplifiee != null, "FAP_QualificationSimplifiee exist");
+		assertNotNull(fapQualificationSimplifiee, "FAP_QualificationSimplifiee exist");
 		this.testfapQualSimplFields(0, fapQualificationSimplifiee);
 	}
 

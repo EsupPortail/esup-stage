@@ -1,9 +1,9 @@
 package fr.esupportail.esupstage.domain.jpa;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,22 +45,21 @@ class FicheEvaluationRepositoryTest extends AbstractTest {
 		final FicheEvaluation ficheEvaluation = new FicheEvaluation();
 
 		final NiveauCentre niveauCentre = new NiveauCentre();
-		niveauCentre.setLibelleNiveauCentre("libel");
-		niveauCentre.setTemEnServNiveauCentre("A");
+		niveauCentre.setLabel("libel");
+		niveauCentre.setTemEnServ("A");
 		entityManager.persist(niveauCentre);
 
 		final Confidentialite confidentialite = new Confidentialite();
-		confidentialite.setCodeConfidentialite("A");
-		confidentialite.setLibelleConfidentialite("libel");
-		confidentialite.setTemEnServConfid("A");
+		confidentialite.setCode("A");
+		confidentialite.setLabel("libel");
+		confidentialite.setTemEnServ("A");
 		entityManager.persist(confidentialite);
 
 		final CentreGestion centreGestion = new CentreGestion();
 		centreGestion.setAutorisationEtudiantCreationConvention(true);
 		centreGestion.setCodeUniversite("codeuniv");
-		centreGestion.setDateCreation(Calendar.getInstance().getTime());
 		centreGestion.setIdModeValidationStage(1);
-		centreGestion.setLoginCreation("login");
+		centreGestion.setCreatedBy("login");
 		centreGestion.setConfidentialite(confidentialite);
 		centreGestion.setNiveauCentre(niveauCentre);
 		entityManager.persist(centreGestion);
@@ -71,13 +70,13 @@ class FicheEvaluationRepositoryTest extends AbstractTest {
 		this.entityManager.persist(ficheEvaluation);
 		this.entityManager.flush();
 		this.entityManager.refresh(ficheEvaluation);
-		this.lastInsertedId = ficheEvaluation.getIdFicheEvaluation();
+		this.lastInsertedId = ficheEvaluation.getId();
 	}
 
 	private void testFicheEvaluationFields(int indice, FicheEvaluation ficheEvaluation) {
 		switch (indice) {
 		case 0:
-			assertEquals(this.lastInsertedId, ficheEvaluation.getIdFicheEvaluation(), "FicheEvaluation id match");
+			assertEquals(this.lastInsertedId, ficheEvaluation.getId(), "FicheEvaluation id match");
 			break;
 		}
 	}
@@ -96,10 +95,10 @@ class FicheEvaluationRepositoryTest extends AbstractTest {
 	@DisplayName("findAll – Nominal test case")
 	void findAll() {
 		final List<FicheEvaluation> result = this.ficheEvaluationRepository.findAll();
-		assertTrue(result.size() == 1, "We should have found our FicherEvaluation");
+		assertEquals(1, result.size(), "We should have found our FicherEvaluation");
 
 		final FicheEvaluation fapQualification = result.get(0);
-		assertTrue(fapQualification != null, "FicherEvaluation exist");
+		assertNotNull(fapQualification, "FicherEvaluation exist");
 		this.testFicheEvaluationFields(0, fapQualification);
 	}
 

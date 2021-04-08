@@ -1,6 +1,7 @@
 package fr.esupportail.esupstage.domain.jpa;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -41,24 +42,24 @@ class FapN3RepositoryTest extends AbstractTest {
 	@BeforeEach
 	void prepare() {
 		final FapN1 fapN1 = new FapN1();
-		fapN1.setCodeFAP_N1("1");
-		fapN1.setLibelle("libelleFAP_N1");
+		fapN1.setCode("1");
+		fapN1.setLabel("libelleFAP_N1");
 
 		final FapN2 fapN2 = new FapN2();
-		fapN2.setCodeFAP_N2("co2");
-		fapN2.setLibelle("libelleFAP_N2");
+		fapN2.setCode("co2");
+		fapN2.setLabel("libelleFAP_N2");
 		fapN2.setFapN1(fapN1);
 
 		final FapN3 fapN3 = new FapN3();
-		fapN3.setCodeFAP_N3("code3");
-		fapN3.setLibelle("libelleFAP_N3");
+		fapN3.setCode("code3");
+		fapN3.setLabel("libelleFAP_N3");
 		fapN3.setFapN2(fapN2);
 
 		final FAP_Qualification fapQualification = new FAP_Qualification();
-		fapQualification.setLibelleQualification("fapQual1");
+		fapQualification.setLabel("fapQual1");
 
 		final FAP_QualificationSimplifiee fapQualificationSimplifiee = new FAP_QualificationSimplifiee();
-		fapQualificationSimplifiee.setLibelleQualification("fapQualSimple1");
+		fapQualificationSimplifiee.setLabel("fapQualSimple1");
 
 		entityManager.persist(fapQualificationSimplifiee);
 
@@ -78,8 +79,8 @@ class FapN3RepositoryTest extends AbstractTest {
 	private void testFapFields(int indice, FapN3 fap) {
 		switch (indice) {
 		case 0:
-			assertEquals("code3", fap.getCodeFAP_N3(), "FapN3 code match");
-			assertEquals("libelleFAP_N3", fap.getLibelle(), "FapN3 libelle match");
+			assertEquals("code3", fap.getCode(), "FapN3 code match");
+			assertEquals("libelleFAP_N3", fap.getLabel(), "FapN3 libelle match");
 			break;
 		}
 	}
@@ -98,10 +99,10 @@ class FapN3RepositoryTest extends AbstractTest {
 	@DisplayName("findAll – Nominal test case")
 	void findAll() {
 		final List<FapN3> result = this.FapN3Repository.findAll();
-		assertTrue(result.size() == 1, "We should have found our FapN3");
+		assertEquals(1, result.size(), "We should have found our FapN3");
 
 		final FapN3 fapQualification = result.get(0);
-		assertTrue(fapQualification != null, "FapN3 exist");
+		assertNotNull(fapQualification, "FapN3 exist");
 		this.testFapFields(0, fapQualification);
 	}
 

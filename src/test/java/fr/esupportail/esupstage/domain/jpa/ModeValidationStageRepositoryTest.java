@@ -1,10 +1,11 @@
 package fr.esupportail.esupstage.domain.jpa;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +27,7 @@ import fr.esupportail.esupstage.domain.jpa.entities.Indemnisation;
 import fr.esupportail.esupstage.domain.jpa.entities.LangueConvention;
 import fr.esupportail.esupstage.domain.jpa.entities.ModeValidationStage;
 import fr.esupportail.esupstage.domain.jpa.entities.NatureTravail;
+import fr.esupportail.esupstage.domain.jpa.entities.NbJourHebdo;
 import fr.esupportail.esupstage.domain.jpa.entities.NiveauCentre;
 import fr.esupportail.esupstage.domain.jpa.entities.TempsTravail;
 import fr.esupportail.esupstage.domain.jpa.entities.Theme;
@@ -52,63 +54,62 @@ class ModeValidationStageRepositoryTest extends AbstractTest {
 	@BeforeEach
 	void prepare() {
 		ModeValidationStage modeValidationStage = new ModeValidationStage();
-		modeValidationStage.setLibelleModeValidationStage("libelleModeValidationStage");
+		modeValidationStage.setLabel("libelleModeValidationStage");
 		modeValidationStage.setModifiable(true);
-		modeValidationStage.setTemEnServModeValid("A");
+		modeValidationStage.setTemEnServ("A");
 		entityManager.persist(modeValidationStage);
 
 		final Indemnisation indemnisation = new Indemnisation();
-		indemnisation.setLibelleIndemnisation("libelleIndemnisation");
-		indemnisation.setTemEnServIndem("A");
-		
+		indemnisation.setLabel("libelleIndemnisation");
+		indemnisation.setTemEnServ("A");
+
 		entityManager.persist(indemnisation);
 
 		final NiveauCentre niveauCentre = new NiveauCentre();
-		niveauCentre.setLibelleNiveauCentre("libel");
-		niveauCentre.setTemEnServNiveauCentre("A");
+		niveauCentre.setLabel("libel");
+		niveauCentre.setTemEnServ("A");
 
 		entityManager.persist(niveauCentre);
 
 		final Confidentialite confidentialite = new Confidentialite();
-		confidentialite.setCodeConfidentialite("A");
-		confidentialite.setLibelleConfidentialite("libel");
-		confidentialite.setTemEnServConfid("A");
+		confidentialite.setCode("A");
+		confidentialite.setLabel("libel");
+		confidentialite.setTemEnServ("A");
 		entityManager.persist(confidentialite);
 
 		final CentreGestion centreGestion = new CentreGestion();
 		centreGestion.setAutorisationEtudiantCreationConvention(true);
 		centreGestion.setCodeUniversite("codeuniv");
-		centreGestion.setDateCreation(Calendar.getInstance().getTime());
 		centreGestion.setIdModeValidationStage(1);
-		centreGestion.setLoginCreation("login");
+		centreGestion.setCreatedBy("login");
 		centreGestion.setConfidentialite(confidentialite);
 		centreGestion.setNiveauCentre(niveauCentre);
 		entityManager.persist(centreGestion);
 
 		TypeConvention typeConvention = new TypeConvention();
 		typeConvention.setCodeCtrl("code");
-		typeConvention.setLibelleTypeConvention("libel");
-		typeConvention.setTemEnServTypeConvention("F");
+		typeConvention.setLabel("libel");
+		typeConvention.setTemEnServ("F");
 		entityManager.persist(typeConvention);
 
 		Theme theme = new Theme();
-		theme.setLibelleTheme("libel");
+		theme.setLabel("libel");
 		entityManager.persist(theme);
 
 		TempsTravail tempsTravail = new TempsTravail();
 		tempsTravail.setCodeCtrl("code");
-		tempsTravail.setLibelleTempsTravail("libel");
-		tempsTravail.setTemEnServTempsTravail("F");
+		tempsTravail.setLabel("libel");
+		tempsTravail.setTemEnServ("F");
 		entityManager.persist(tempsTravail);
 
 		NatureTravail natureTravail = new NatureTravail();
-		natureTravail.setLibelleNatureTravail("libel");
-		natureTravail.setTemEnServNatTrav("F");
+		natureTravail.setLabel("libel");
+		natureTravail.setTemEnServ("F");
 		entityManager.persist(natureTravail);
 
 		LangueConvention langueConvention = new LangueConvention();
-		langueConvention.setCodeLangueConvention("CD");
-		langueConvention.setLibelleLangueConvention("libel");
+		langueConvention.setCode("CD");
+		langueConvention.setLabel("libel");
 		entityManager.persist(langueConvention);
 
 		Etudiant etudiant = new Etudiant();
@@ -122,14 +123,13 @@ class ModeValidationStageRepositoryTest extends AbstractTest {
 		entityManager.persist(etudiant);
 
 		Convention convention = new Convention();
-		convention.setDateCreation(Calendar.getInstance().getTime());
-		convention.setDateDebutStage(Calendar.getInstance().getTime());
-		convention.setDateFinStage(Calendar.getInstance().getTime());
+		convention.setDateDebutStage(LocalDate.now());
+		convention.setDateFinStage(LocalDate.now());
 		convention.setDureeStage(100);
 		convention.setIdAssurance(1);
 		convention.setIdModeVersGratification(1);
-		convention.setLoginCreation("login");
-		convention.setNbJoursHebdo("1");
+		convention.setCreatedBy("login");
+		convention.setNbJoursHebdo(NbJourHebdo.NB_JOURS_1_0);
 		convention.setSujetStage("subject");
 		convention.setTemConfSujetTeme("s");
 		convention.setEtudiant(etudiant);
@@ -146,15 +146,15 @@ class ModeValidationStageRepositoryTest extends AbstractTest {
 		this.entityManager.flush();
 
 		this.entityManager.refresh(modeValidationStage);
-		this.lastInsertedId = modeValidationStage.getIdModeValidationStage();
+		this.lastInsertedId = modeValidationStage.getId();
 	}
 
 	private void testModeValidationStageFields(int indice, ModeValidationStage modeValidationStage) {
 		switch (indice) {
 		case 0:
-			assertEquals(this.lastInsertedId, modeValidationStage.getIdModeValidationStage(), "ModeValidationStage id match");
-			assertEquals("libelleModeValidationStage", modeValidationStage.getLibelleModeValidationStage(), "ModeValidationStage libelle match");
-			assertEquals("A", modeValidationStage.getTemEnServModeValid(), "ModeValidationStage temEnServ match");
+			assertEquals(this.lastInsertedId, modeValidationStage.getId(), "ModeValidationStage id match");
+			assertEquals("libelleModeValidationStage", modeValidationStage.getLabel(), "ModeValidationStage libelle match");
+			assertEquals("A", modeValidationStage.getTemEnServ(), "ModeValidationStage temEnServ match");
 			assertEquals("subject", modeValidationStage.getConventions().get(0).getSujetStage(), "ModeValidationStage temEnServ match");
 			break;
 		}
@@ -174,10 +174,10 @@ class ModeValidationStageRepositoryTest extends AbstractTest {
 	@DisplayName("findAll – Nominal test case")
 	void findAll() {
 		final List<ModeValidationStage> result = this.modeValidationStageRepository.findAll();
-		assertTrue(result.size() == 1, "We should have found our ModeValidationStage");
+		assertEquals(1, result.size(), "We should have found our ModeValidationStage");
 
 		final ModeValidationStage modeCandidature = result.get(0);
-		assertTrue(modeCandidature != null, "ModeValidationStage exist");
+		assertNotNull(modeCandidature, "ModeValidationStage exist");
 		this.testModeValidationStageFields(0, modeCandidature);
 	}
 

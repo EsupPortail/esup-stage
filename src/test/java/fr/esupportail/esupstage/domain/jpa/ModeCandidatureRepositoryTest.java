@@ -1,6 +1,7 @@
 package fr.esupportail.esupstage.domain.jpa;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -40,8 +41,8 @@ class ModeCandidatureRepositoryTest extends AbstractTest {
 	void prepare() {
 		ModeCandidature modeCandidature = new ModeCandidature();
 		modeCandidature.setCodeCtrl("codeCtrl");
-		modeCandidature.setLibelleModeCandidature("libelleModeCandidature");
-		modeCandidature.setTemEnServModeCandidature("A");
+		modeCandidature.setLabel("libelleModeCandidature");
+		modeCandidature.setTemEnServ("A");
 		entityManager.persist(modeCandidature);
 
 		this.entityManager.flush();
@@ -55,8 +56,8 @@ class ModeCandidatureRepositoryTest extends AbstractTest {
 		case 0:
 			assertEquals(this.lastInsertedId, modeCandidature.getId(), "ModeCandidature id match");
 			assertEquals("codeCtrl", modeCandidature.getCodeCtrl(), "ModeCandidature code match");
-			assertEquals("libelleModeCandidature", modeCandidature.getLibelleModeCandidature(), "ModeCandidature libelle match");
-			assertEquals("A", modeCandidature.getTemEnServModeCandidature(), "ModeCandidature temEnServ match");
+			assertEquals("libelleModeCandidature", modeCandidature.getLabel(), "ModeCandidature libelle match");
+			assertEquals("A", modeCandidature.getTemEnServ(), "ModeCandidature temEnServ match");
 			break;
 		}
 	}
@@ -75,10 +76,10 @@ class ModeCandidatureRepositoryTest extends AbstractTest {
 	@DisplayName("findAll – Nominal test case")
 	void findAll() {
 		final List<ModeCandidature> result = this.modeCandidatureRepository.findAll();
-		assertTrue(result.size() == 1, "We should have found our Fichier");
+		assertEquals(1, result.size(), "We should have found our Fichier");
 
 		final ModeCandidature modeCandidature = result.get(0);
-		assertTrue(modeCandidature != null, "ModeCandidature exist");
+		assertNotNull(modeCandidature, "ModeCandidature exist");
 		this.testModeCandidatureFields(0, modeCandidature);
 	}
 

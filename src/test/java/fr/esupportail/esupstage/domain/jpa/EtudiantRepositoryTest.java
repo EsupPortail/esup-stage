@@ -1,13 +1,11 @@
 package fr.esupportail.esupstage.domain.jpa;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,7 +47,7 @@ class EtudiantRepositoryTest extends AbstractTest {
 		student.setCodeUniversite("FU");
 		student.setPrenom("Ogier");
 		student.setNom("Ducharme");
-		student.setDateNais(new GregorianCalendar(1978, 03, 28).getTime());
+		student.setDateNais(LocalDate.of(1978, 03, 28));
 		student.setCreatedDate(LocalDateTime.now());
 		student.setCreatedBy("login");
 		student.setMail("ogier.ducharme@univ.fr");
@@ -73,7 +71,7 @@ class EtudiantRepositoryTest extends AbstractTest {
 			assertEquals("Ducharme", student.getNom(), "Student lastname match");
 			assertEquals("M", student.getCodeSexe(), "Student sexe match");
 			assertEquals("FU", student.getCodeUniversite(), "Student University match");
-			assertEquals(new GregorianCalendar(1978, 03, 28).getTime(), student.getDateNais(), "Student birth date match");
+			assertEquals(LocalDate.of(1978, 03, 28), student.getDateNais(), "Student birth date match");
 			assertEquals("oducha01", student.getIdentEtudiant(), "Student login match");
 			assertEquals("65299292", student.getNumEtudiant(), "Student number match");
 			assertEquals("178033684913953", student.getNumSS(), "Student Social Security Number match");
@@ -95,7 +93,7 @@ class EtudiantRepositoryTest extends AbstractTest {
 	@DisplayName("findEtudiantsByNomContainsOrPrenomContains – Nominal test case")
 	void findEtudiantsByNomContainsOrPrenomContains() {
 		final List<Etudiant> result = this.studentRepository.findEtudiantsByNomContainsOrPrenomContains("Ducharme", "O");
-		assertTrue(result.size() == 1, "We should have found our Student");
+		assertEquals(1, result.size(), "We should have found our Student");
 
 		final Etudiant student = result.get(0);
 		this.testStudentFields(0, student);
@@ -108,7 +106,7 @@ class EtudiantRepositoryTest extends AbstractTest {
 		assertTrue(result.isPresent(), "We should have found our Student");
 
 		final Etudiant student = result.get();
-		assertTrue(student != null, "Student exist");
+		assertNotNull(student, "Student exist");
 		this.testStudentFields(0, student);
 	}
 

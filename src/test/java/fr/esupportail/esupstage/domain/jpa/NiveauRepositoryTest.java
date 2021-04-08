@@ -1,6 +1,7 @@
 package fr.esupportail.esupstage.domain.jpa;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -39,7 +40,7 @@ class NiveauRepositoryTest extends AbstractTest {
 	@BeforeEach
 	void prepare() {
 		final Niveau niveau = new Niveau();
-		niveau.setValeur(1);
+		niveau.setValue(1);
 
 		this.entityManager.persist(niveau);
 		this.entityManager.flush();
@@ -52,7 +53,7 @@ class NiveauRepositoryTest extends AbstractTest {
 		switch (indice) {
 		case 0:
 			assertEquals(this.lastInsertedId, niveau.getId(), "Niveau id match");
-			assertEquals(1, niveau.getValeur(), "Niveau valeur match");
+			assertEquals(1, niveau.getValue(), "Niveau valeur match");
 			break;
 		}
 	}
@@ -71,10 +72,10 @@ class NiveauRepositoryTest extends AbstractTest {
 	@DisplayName("findAll – Nominal test case")
 	void findAll() {
 		final List<Niveau> result = this.niveauRepository.findAll();
-		assertTrue(result.size() == 1, "We should have found our Niveau");
+		assertEquals(1, result.size(), "We should have found our Niveau");
 
 		final Niveau niveau = result.get(0);
-		assertTrue(niveau != null, "Niveau exist");
+		assertNotNull(niveau, "Niveau exist");
 		this.testNiveauFields(0, niveau);
 	}
 

@@ -1,6 +1,7 @@
 package fr.esupportail.esupstage.domain.jpa;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -38,14 +39,14 @@ class NafN5RepositoryTest extends AbstractTest {
 	@BeforeEach
 	void prepare() {
 		final NafN5 nafN5 = new NafN5();
-		nafN5.setCodeNAF_N5("A");
-		nafN5.setLibelleNAF_N5("libelleNAF_N5");
-		nafN5.setTemEnServNAF_N5("B");
+		nafN5.setCode("A");
+		nafN5.setLabel("libelleNAF_N5");
+		nafN5.setTemEnServ("B");
 
 		final NafN1 nafN1 = new NafN1();
-		nafN1.setCodeNAF_N1("C");
-		nafN1.setLibelleNAF_N1("libelleNAF_N1");
-		nafN1.setTemEnServNAF_N1("D");
+		nafN1.setCode("C");
+		nafN1.setLabel("libelleNAF_N1");
+		nafN1.setTemEnServ("D");
 
 		this.entityManager.persist(nafN1);
 
@@ -57,10 +58,10 @@ class NafN5RepositoryTest extends AbstractTest {
 	private void testNafN5Fields(int indice, NafN5 nafN5) {
 		switch (indice) {
 		case 0:
-			assertEquals("A", nafN5.getCodeNAF_N5(), "NafN5 code match");
-			assertEquals("libelleNAF_N5", nafN5.getLibelleNAF_N5(), "NafN5 libelle match");
-			assertEquals("B", nafN5.getTemEnServNAF_N5(), "NafN5 TemEnServ match");
-			assertEquals("C", nafN5.getNafN1().getCodeNAF_N1(), "NafN5.NafN1 code match");
+			assertEquals("A", nafN5.getCode(), "NafN5 code match");
+			assertEquals("libelleNAF_N5", nafN5.getLabel(), "NafN5 libelle match");
+			assertEquals("B", nafN5.getTemEnServ(), "NafN5 TemEnServ match");
+			assertEquals("C", nafN5.getNafN1().getCode(), "NafN5.NafN1 code match");
 			break;
 		}
 	}
@@ -79,10 +80,10 @@ class NafN5RepositoryTest extends AbstractTest {
 	@DisplayName("findAll – Nominal test case")
 	void findAll() {
 		final List<NafN5> result = this.nafN5Repository.findAll();
-		assertTrue(result.size() == 1, "We should have found our NafN5");
+		assertEquals(1, result.size(), "We should have found our NafN5");
 
 		final NafN5 nafN5 = result.get(0);
-		assertTrue(nafN5 != null, "NafN5 exist");
+		assertNotNull(nafN5, "NafN5 exist");
 		this.testNafN5Fields(0, nafN5);
 	}
 

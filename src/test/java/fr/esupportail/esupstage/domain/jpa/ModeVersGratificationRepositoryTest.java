@@ -1,6 +1,7 @@
 package fr.esupportail.esupstage.domain.jpa;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -39,8 +40,8 @@ class ModeVersGratificationRepositoryTest extends AbstractTest {
 	@BeforeEach
 	void prepare() {
 		ModeVersGratification modeVersGratification = new ModeVersGratification();
-		modeVersGratification.setLibelleModeVersGratification("libelleModeVersGratification");
-		modeVersGratification.setTemEnServModeVersGrat("A");
+		modeVersGratification.setLabel("libelleModeVersGratification");
+		modeVersGratification.setTemEnServ("A");
 		entityManager.persist(modeVersGratification);
 
 		this.entityManager.flush();
@@ -52,8 +53,8 @@ class ModeVersGratificationRepositoryTest extends AbstractTest {
 		switch (indice) {
 		case 0:
 			assertEquals(this.lastInsertedId, modeVersGratification.getId(), "ModeVersGratification id match");
-			assertEquals("libelleModeVersGratification", modeVersGratification.getLibelleModeVersGratification(), "ModeVersGratification libelle match");
-			assertEquals("A", modeVersGratification.getTemEnServModeVersGrat(), "ModeVersGratification temEnServ match");
+			assertEquals("libelleModeVersGratification", modeVersGratification.getLabel(), "ModeVersGratification libelle match");
+			assertEquals("A", modeVersGratification.getTemEnServ(), "ModeVersGratification temEnServ match");
 			break;
 		}
 	}
@@ -72,10 +73,10 @@ class ModeVersGratificationRepositoryTest extends AbstractTest {
 	@DisplayName("findAll – Nominal test case")
 	void findAll() {
 		final List<ModeVersGratification> result = this.modeVersGratificationRepository.findAll();
-		assertTrue(result.size() == 1, "We should have found our ModeVersGratification");
+		assertEquals(1, result.size(), "We should have found our ModeVersGratification");
 
 		final ModeVersGratification modeCandidature = result.get(0);
-		assertTrue(modeCandidature != null, "ModeVersGratification exist");
+		assertNotNull(modeCandidature, "ModeVersGratification exist");
 		this.testModeVersGratificationFields(0, modeCandidature);
 	}
 

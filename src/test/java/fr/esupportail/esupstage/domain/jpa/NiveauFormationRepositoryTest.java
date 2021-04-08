@@ -1,10 +1,9 @@
 package fr.esupportail.esupstage.domain.jpa;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,16 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 
 import fr.esupportail.esupstage.AbstractTest;
-import fr.esupportail.esupstage.domain.jpa.entities.CentreGestion;
-import fr.esupportail.esupstage.domain.jpa.entities.Confidentialite;
-import fr.esupportail.esupstage.domain.jpa.entities.Effectif;
-import fr.esupportail.esupstage.domain.jpa.entities.NiveauCentre;
 import fr.esupportail.esupstage.domain.jpa.entities.NiveauFormation;
-import fr.esupportail.esupstage.domain.jpa.entities.Offre;
-import fr.esupportail.esupstage.domain.jpa.entities.Pays;
-import fr.esupportail.esupstage.domain.jpa.entities.Structure;
-import fr.esupportail.esupstage.domain.jpa.entities.TypeOffre;
-import fr.esupportail.esupstage.domain.jpa.entities.TypeStructure;
 import fr.esupportail.esupstage.domain.jpa.repositories.NiveauFormationRepository;
 
 @Rollback
@@ -50,9 +40,9 @@ class NiveauFormationRepositoryTest extends AbstractTest {
 	@BeforeEach
 	void prepare() {
 		final NiveauFormation niveauFormation = new NiveauFormation();
-		niveauFormation.setLibelleNiveauFormation("libelleNiveauFormation");
+		niveauFormation.setLabel("libelleNiveauFormation");
 		niveauFormation.setModifiable(true);
-		niveauFormation.setTemEnServNiveauForm("A");
+		niveauFormation.setTemEnServ("A");
 
 		this.entityManager.persist(niveauFormation);
 		this.entityManager.flush();
@@ -65,8 +55,8 @@ class NiveauFormationRepositoryTest extends AbstractTest {
 		switch (indice) {
 		case 0:
 			assertEquals(this.lastInsertedId, niveauFormation.getId(), "NiveauFormation libelle match");
-			assertEquals("libelleNiveauFormation", niveauFormation.getLibelleNiveauFormation(), "NiveauFormation libelle match");
-			assertEquals("A", niveauFormation.getTemEnServNiveauForm(), "NiveauFormation TemEnServ match");
+			assertEquals("libelleNiveauFormation", niveauFormation.getLabel(), "NiveauFormation libelle match");
+			assertEquals("A", niveauFormation.getTemEnServ(), "NiveauFormation TemEnServ match");
 			break;
 		}
 	}
@@ -85,10 +75,10 @@ class NiveauFormationRepositoryTest extends AbstractTest {
 	@DisplayName("findAll – Nominal test case")
 	void findAll() {
 		final List<NiveauFormation> result = this.niveauFormationRepository.findAll();
-		assertTrue(result.size() == 1, "We should have found our NiveauFormation");
+		assertEquals(1, result.size(), "We should have found our NiveauFormation");
 
 		final NiveauFormation niveauFormation = result.get(0);
-		assertTrue(niveauFormation != null, "NiveauFormation exist");
+		assertNotNull(niveauFormation, "NiveauFormation exist");
 		this.testNiveauFormationFields(0, niveauFormation);
 	}
 
