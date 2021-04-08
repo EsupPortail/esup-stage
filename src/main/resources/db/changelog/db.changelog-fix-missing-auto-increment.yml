@@ -17,3 +17,11 @@ databaseChangeLog:
         tableName: DureeDiffusion
         columnName: idDureeDiffusion
         columnDataType: INT
+    - addAutoIncrement:
+        tableName: FAP_Qualification
+        columnName: numFAP_Qualification
+        columnDataType: INT
+    - addAutoIncrement:
+        tableName: FAP_QualificationSimplifiee
+        columnName: idQualificationSimplifiee
+        columnDataType: INT
