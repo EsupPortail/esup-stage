@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://primefaces.org/html">
+
+    <h:form action="#{conventionCreationView.saveStudent()}">
+        <h2>Étudiant</h2>
+        <h:panelGrid columns="2" cellpadding="7" styleClass="p-mb-3">
+
+            <div class="p-field p-grid">
+                <label for="num-etudiant" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">No. Étudiant</label>
+                <div class="p-col-12 p-md-10">
+                    <p:inputText id="num-etudiant" type="text" value="#{conventionCreationView.student.numEtudiant}" />
+                </div>
+            </div>
+            <div class="p-field p-grid">
+                <label for="lastname" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Nom</label>
+                <div class="p-col-12 p-md-10">
+                    <p:inputText id="lastname" type="text" value="#{conventionCreationView.student.lastname}" />
+                </div>
+            </div>
+            <div class="p-field p-grid">
+                <label for="firstname" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Prénom</label>
+                <div class="p-col-12 p-md-10">
+                    <p:inputText id="firstname" type="text" value="#{conventionCreationView.student.firstname}" />
+                </div>
+            </div>
+            <h2>Vérifier vos coordonnées</h2>
+            <div class="p-field p-grid">
+                <label for="address" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Adresse</label>
+                <div class="p-col-12 p-md-10">
+                    <p:inputText id="address" type="text" value="#{conventionCreationView.student.address}" />
+                </div>
+            </div>
+            <div class="p-field p-grid">
+                <label for="postcode" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Code postal</label>
+                <div class="p-col-12 p-md-10">
+                    <p:inputText id="postcode" type="text" value="#{conventionCreationView.student.postcode}" />
+                </div>
+            </div>
+            <div class="p-field p-grid">
+                <label for="commune" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Commune</label>
+                <div class="p-col-12 p-md-10">
+                    <p:inputText id="commune" type="text" value="#{conventionCreationView.student.city}" />
+                </div>
+            </div>
+            <div class="p-field p-grid">
+                <label for="pays" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Pays</label>
+                <div class="p-col-12 p-md-10">
+                    <p:inputText id="pays" type="text" value="#{conventionCreationView.student.pays}" />
+                </div>
+            </div>
+            <div class="p-field p-grid">
+                <label for="tel" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Téléphone</label>
+                <div class="p-col-12 p-md-10">
+                    <p:inputText id="tel" type="text" value="#{conventionCreationView.student.tel}" />
+                </div>
+            </div>
+            <div class="p-field p-grid">
+                <label for="tel_portable" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Téléphone Portable</label>
+                <div class="p-col-12 p-md-10">
+                    <p:inputText id="tel_portable" type="text" value="#{conventionCreationView.student.telPortable}" />
+                </div>
+            </div>
+            <div class="p-field p-grid">
+                <label for="mail" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Mail personnel</label>
+                <div class="p-col-12 p-md-10">
+                    <p:inputText id="mail" type="text" value="#{conventionCreationView.student.mail}" />
+                </div>
+            </div>
+            <div class="p-field p-grid">
+                <label for="mail_pro" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Mail institutionnel</label>
+                <div class="p-col-12 p-md-10">
+                    <p:inputText id="mail_pro" type="text" value="#{conventionCreationView.student.mailPro}"
+                        disabled="true" />
+                </div>
+            </div>
+        </h:panelGrid>
+        <p:commandButton value="Valider" update="tabs" icon="pi pi-check" />
+    </h:form>
+
+</ui:composition>

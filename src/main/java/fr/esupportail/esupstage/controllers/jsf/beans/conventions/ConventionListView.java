@@ -4,11 +4,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import fr.esupportail.esupstage.domain.jpa.entities.Convention;
+import fr.esupportail.esupstage.services.conventions.ConventionBean;
 import fr.esupportail.esupstage.services.conventions.ConventionService;
 import lombok.Getter;
 
@@ -16,15 +17,21 @@ import lombok.Getter;
 @ViewScoped
 public class ConventionListView implements Serializable {
 
-    private static final long serialVersionUID = 7987062852304528092L;
+    private static final long serialVersionUID = 1L;
 
-    @Getter private List<Convention> conventions = new ArrayList<>();
+    @Getter
+    private List<ConventionBean> conventions;
 
     @Inject
     private ConventionService service;
 
-    public List<Convention> getConventions() {
-        return conventions;
+    @PostConstruct
+    private void init() {
+        this.conventions = this.service.getConventions();
+    }
+
+    public List<ConventionBean> getConventions() {
+        return this.conventions;
     }
 
     public void setService(ConventionService service) {

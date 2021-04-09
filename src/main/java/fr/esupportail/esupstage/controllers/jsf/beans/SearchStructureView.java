@@ -55,30 +55,30 @@ public class SearchStructureView implements Serializable {
 	@PostConstruct
 	public void init() {
 		structures = new ArrayList<>();
-		//TODO : Correctly handle https
+		// TODO : Correctly handle https
 		client = getUnsafeOkHttpClient();
 	}
 
 	private static OkHttpClient getUnsafeOkHttpClient() {
 		try {
 			// Create a trust manager that does not validate certificate chains
-			final TrustManager[] trustAllCerts = new TrustManager[]{
-					new X509TrustManager() {
+			final TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
 
-						@Override
-						public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
-						}
+				@Override
+				public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType)
+						throws CertificateException {
+				}
 
-						@Override
-						public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
-						}
+				@Override
+				public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType)
+						throws CertificateException {
+				}
 
-						@Override
-						public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-							return new java.security.cert.X509Certificate[]{};
-						}
-					}
-			};
+				@Override
+				public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+					return new java.security.cert.X509Certificate[] {};
+				}
+			} };
 
 			// Install the all-trusting trust manager
 			final SSLContext sslContext = SSLContext.getInstance("SSL");
@@ -136,9 +136,7 @@ public class SearchStructureView implements Serializable {
 		}
 		System.out.println(sb.toString());
 
-		Request request = new Request.Builder()
-				.url(sb.toString())
-				.build();
+		Request request = new Request.Builder().url(sb.toString()).build();
 
 		Response response = client.newCall(request).execute();
 
@@ -155,7 +153,7 @@ public class SearchStructureView implements Serializable {
 
 		for (Object obj : etabs) {
 			JSONObject etab = (JSONObject) obj;
-			//JSONObject unite = (JSONObject) etab.get("unite_legale");
+			// JSONObject unite = (JSONObject) etab.get("unite_legale");
 
 			final Pays pays = new Pays();
 			pays.setActual(1);
@@ -177,7 +175,8 @@ public class SearchStructureView implements Serializable {
 			structure.setEstValidee(1);
 			structure.setNumeroSiret(etab.getString("siret"));
 			structure.setRaisonSociale(etab.optString("l1_normalisee") + " " + etab.optString("l2_normalisee"));
-			//structure.setVoie(etab.optString("numero_voie","") + " " +etab.getString("type_voie") + " " + etab.getString("libelle_voie"));
+			// structure.setVoie(etab.optString("numero_voie","") + " "
+			// +etab.getString("type_voie") + " " + etab.getString("libelle_voie"));
 			structure.setVoie(etab.optString("l4_normalisee"));
 			structure.setCodePostal(etab.getString("code_postal"));
 			structure.setCommune(etab.getString("libelle_commune"));
@@ -221,4 +220,3 @@ public class SearchStructureView implements Serializable {
 	}
 
 }
-

@@ -85,7 +85,7 @@ public class StructureCreationView implements Serializable {
 
 	@PostConstruct
 	public void init() {
-		//TEMPO
+		// TEMPO
 
 		effectifs = new HashMap<>();
 		for (EffectifBean effectifBean : effectifService.findAll(PageRequest.of(0, Integer.MAX_VALUE))) {
@@ -94,7 +94,8 @@ public class StructureCreationView implements Serializable {
 
 		typesStructure = new HashMap<>();
 		for (TypeStructureBean typeStructureBean : typeStructureService.findAll(PageRequest.of(0, Integer.MAX_VALUE))) {
-			typesStructure.put(typeStructureBean.getLibelleTypeStructure(), TypeStructureService.convert(typeStructureBean));
+			typesStructure.put(typeStructureBean.getLibelleTypeStructure(),
+					TypeStructureService.convert(typeStructureBean));
 		}
 
 		paysList = new HashMap<>();

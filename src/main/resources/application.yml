@@ -66,6 +66,17 @@ spring:
 ...
 ---
 spring:
+  profiles: postgres
+  datasource:
+    url: jdbc:postgresql://localhost:5432/esupstage
+    username: ""
+    password: ""
+  jpa:
+    properties:
+      "[hibernate.dialect]": org.hibernate.dialect.PostgreSQLDialect
+...
+---
+spring:
   profiles: cas
 application:
   cas:

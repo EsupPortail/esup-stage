@@ -17,119 +17,48 @@
     <ui:define name="body">
 
         <div class="ui-fluid">
-            <p:tabView id="tabs" dynamic="true">
-                <p:tab title="#{conventionCreationView.guidelineTitle}" disabled="#{conventionCreationView.showGuidelineTab}">
-                    <h:form>
-                        <h:panelGrid columns="2" cellpadding="7" styleClass="p-mb-3">
-                            <h:outputText value="#{conventionCreationView.guidelines}"/>
-                        </h:panelGrid>
-                        <p:commandButton value="Valider" update="tabs" action="#{conventionCreationView.nextTab()}" icon="pi pi-check"/>
-                    </h:form>
-                </p:tab>
-                <p:tab title="#{conventionCreationView.studentTitle}" disabled="#{conventionCreationView.student == null}">
-                    <h:form>
-                        <h2>Étudiant</h2>
-                        <h:panelGrid columns="2" cellpadding="7" styleClass="p-mb-3">
+            <h:panelGroup>
+                <p:tabView id="tabs" dynamic="true">
+                    <p:tab title="#{conventionCreationView.guidelineTitle}" disabled="#{conventionCreationView.showGuidelineTab}">
+                        <h:form action="#{conventionCreationView.acceptGuidelines()}">
+                            <h:panelGrid columns="2" cellpadding="7" styleClass="p-mb-3">
+                                <h:outputText value="#{conventionCreationView.guidelines}"/>
+                            </h:panelGrid>
+                            <p:commandButton value="Valider" update="tabs" icon="pi pi-check"/>
+                        </h:form>
+                    </p:tab>
+                    <p:tab title="#{conventionCreationView.studentTitle}" disabled="#{conventionCreationView.student == null}">
+                        <ui:include src="edit/student.xhtml" />
+                    </p:tab>
+                    <p:tab title="#{conventionCreationView.structureTitle}" disabled="#{conventionCreationView.structure == null}">
+                        <!-- //TODO: Include The Joshua Company search view -->
+                        <ui:include src="/search-structure.xhtml" />
+                        <p:commandButton value="Valider" update="tabs" action="#{conventionCreationView.saveStructure()}" icon="pi pi-check" />
+                    </p:tab>
+                    <p:tab title="#{conventionCreationView.serviceTitle}" disabled="#{conventionCreationView.showServiceTab}">
+                        <!-- //TODO: Include The Joshua Company service view -->
+                        <p:commandButton value="Valider" update="tabs" action="#{conventionCreationView.saveStudent()}" icon="pi pi-check"/>
 
-                            <div class="p-field p-grid">
-                                <label for="num-etudiant" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">No. Étudiant</label>
-                                <div class="p-col-12 p-md-10">
-                                    <p:inputText id="num-etudiant" type="text" value="#{conventionCreationView.etudiant.id}" />
-                                </div>
-                            </div>
-                            <div class="p-field p-grid">
-                                <label for="lastname" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Nom</label>
-                                <div class="p-col-12 p-md-10">
-                                    <p:inputText id="lastname" type="text" value="#{conventionCreationView.etudiant.lastname}"/>
-                                </div>
-                            </div>
-                            <div class="p-field p-grid">
-                                <label for="firstname" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Prénom</label>
-                                <div class="p-col-12 p-md-10">
-                                    <p:inputText id="firstname" type="text" value="#{conventionCreationView.etudiant.firstname}"/>
-                                </div>
-                            </div>
-                            <h2>Vérifier vos coordonnées</h2>
-                            <div class="p-field p-grid">
-                                <label for="address" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Adresse</label>
-                                <div class="p-col-12 p-md-10">
-                                    <p:inputText id="address" type="text" value="#{conventionCreationView.etudiant.address}"/>
-                                </div>
-                            </div>
-                            <div class="p-field p-grid">
-                                <label for="postcode" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Code postal</label>
-                                <div class="p-col-12 p-md-10">
-                                    <p:inputText id="postcode" type="text" value="#{conventionCreationView.etudiant.postcode}"/>
-                                </div>
-                            </div>
-                            <div class="p-field p-grid">
-                                <label for="commune" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Commune</label>
-                                <div class="p-col-12 p-md-10">
-                                    <p:inputText id="commune" type="text" value="#{conventionCreationView.etudiant.city}"/>
-                                </div>
-                            </div>
-                            <div class="p-field p-grid">
-                                <label for="pays" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Pays</label>
-                                <div class="p-col-12 p-md-10">
-                                    <p:inputText id="pays" type="text" value="#{conventionCreationView.etudiant.pays}"/>
-                                </div>
-                            </div>
-                            <div class="p-field p-grid">
-                                <label for="tel" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Téléphone</label>
-                                <div class="p-col-12 p-md-10">
-                                    <p:inputText id="tel" type="text" value="#{conventionCreationView.etudiant.tel}"/>
-                                </div>
-                            </div>
-                            <div class="p-field p-grid">
-                                <label for="tel_portable" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Téléphone Portable</label>
-                                <div class="p-col-12 p-md-10">
-                                    <p:inputText id="tel_portable" type="text" value="#{conventionCreationView.etudiant.telPortable}"/>
-                                </div>
-                            </div>
-                            <div class="p-field p-grid">
-                                <label for="mail" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Mail personnel</label>
-                                <div class="p-col-12 p-md-10">
-                                    <p:inputText id="mail" type="text" value="#{conventionCreationView.etudiant.mail}"/>
-                                </div>
-                            </div>
-                            <div class="p-field p-grid">
-                                <label for="mail_pro" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Mail institutionnel</label>
-                                <div class="p-col-12 p-md-10">
-                                    <p:inputText id="mail_pro" type="text" value="#{conventionCreationView.etudiant.mailPro}" disabled="true"/>
-                                </div>
-                            </div>
-                        </h:panelGrid>
-                        <p:commandButton value="Valider" update="tabs" action="#{conventionCreationView.nextTab()}" icon="pi pi-check"/>
-                    </h:form>
-                </p:tab>
-                <p:tab title="#{conventionCreationView.institutionTitle}" disabled="#{conventionCreationView.showInstitutionTab}">
-                    <!-- //TODO: Include The Joshua Company search view -->
-                    <p:commandButton value="Valider" update="tabs" action="#{conventionCreationView.nextTab()}" icon="pi pi-check"/>
+                    </p:tab>
+                    <p:tab title="#{conventionCreationView.tutorTitle}" disabled="#{conventionCreationView.showTutorTab}">
+                        <p:commandButton value="Valider" update="tabs" action="#{conventionCreationView.saveStudent()}" icon="pi pi-check"/>
 
-                </p:tab>
-                <p:tab title="#{conventionCreationView.serviceTitle}" disabled="#{conventionCreationView.showServiceTab}">
-                    <!-- //TODO: Include The Joshua Company service view -->
-                    <p:commandButton value="Valider" update="tabs" action="#{conventionCreationView.nextTab()}" icon="pi pi-check"/>
+                    </p:tab>
+                    <p:tab title="#{conventionCreationView.internshipTitle}" disabled="#{conventionCreationView.showInternshipTab}">
+                        <p:commandButton value="Valider" update="tabs" action="#{conventionCreationView.saveStudent()}" icon="pi pi-check"/>
 
-                </p:tab>
-                <p:tab title="#{conventionCreationView.tutorTitle}" disabled="#{conventionCreationView.showTutorTab}">
-                    <p:commandButton value="Valider" update="tabs" action="#{conventionCreationView.nextTab()}" icon="pi pi-check"/>
+                    </p:tab>
+                    <p:tab title="#{conventionCreationView.teacherTitle}" disabled="#{conventionCreationView.showTeacherTab}">
+                        <p:commandButton value="Valider" update="tabs" action="#{conventionCreationView.saveStudent()}" icon="pi pi-check"/>
 
-                </p:tab>
-                <p:tab title="#{conventionCreationView.internshipTitle}" disabled="#{conventionCreationView.showInternshipTab}">
-                    <p:commandButton value="Valider" update="tabs" action="#{conventionCreationView.nextTab()}" icon="pi pi-check"/>
+                    </p:tab>
+                    <p:tab title="#{conventionCreationView.signerTitle}" disabled="#{conventionCreationView.showSignerTab}">
+                        <p:commandButton value="Valider" update="tabs" action="#{conventionCreationView.saveStudent()}" icon="pi pi-check"/>
 
-                </p:tab>
-                <p:tab title="#{conventionCreationView.teacherTitle}" disabled="#{conventionCreationView.showTeacherTab}">
-                    <p:commandButton value="Valider" update="tabs" action="#{conventionCreationView.nextTab()}" icon="pi pi-check"/>
+                    </p:tab>
 
-                </p:tab>
-                <p:tab title="#{conventionCreationView.signerTitle}" disabled="#{conventionCreationView.showSignerTab}">
-                    <p:commandButton value="Valider" update="tabs" action="#{conventionCreationView.nextTab()}" icon="pi pi-check"/>
-
-                </p:tab>
-
-            </p:tabView>
+                </p:tabView>
+            </h:panelGroup>
         </div>
 
     </ui:define>

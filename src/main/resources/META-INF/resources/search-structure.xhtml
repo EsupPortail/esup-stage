@@ -3,139 +3,120 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:h="http://java.sun.com/jsf/html"
-                template="/WEB-INF/template.xhtml"
                 xmlns:f = "http://java.sun.com/jsf/core">
 
-    <ui:define name="title">
-        Rechercher une entreprise
-    </ui:define>
 
-    <ui:define name="description">
-        Recherchez une entreprise à partir de son numéro de SIRET
-    </ui:define>
+    <h:form id="form">
+        <span class="ui-input-icon-left">
+        <em class="pi pi-search" />
+        <p:inputText placeholder="SIRET" value="#{searchStructureView.inputSiret}">
+        </p:inputText>
+        <p:inputText placeholder="Raison sociale" value="#{searchStructureView.inputRaisonSociale}">
+        </p:inputText>
+            <p:inputText placeholder="Département" value="#{searchStructureView.inputDepartement}">
+        </p:inputText>
+        </span>
+        <p:commandButton value="Rechercher" actionListener="#{searchStructureView.searchCompagny}" id="id" update="radioDT"></p:commandButton>
+        <p:growl id="msgs" showDetail="true" skipDetailIfEqualsSummary="true"/>
 
-    <ui:define name="body">
+        <div class="card">
+            <p:dataTable id="radioDT" var="structure" value="#{searchStructureView.structures}"
+                            selection="#{searchStructureView.selectedStructure}" rowKey="#{structure.id}">
+                <p:column selectionMode="single" style="text-align:center"/>
+                <p:column headerText="Raison sociale">
+                    <h:outputText value="#{structure.raisonSociale}" />
+                </p:column>
 
+                <p:column headerText="Numéro SIRET">
+                    <h:outputText value="#{structure.numeroSiret}" />
+                </p:column>
 
+                <p:column headerText="Voie">
+                    <h:outputText value="#{structure.voie}" />
+                </p:column>
 
+                <p:column headerText="Code postal">
+                    <h:outputText value="#{structure.codePostal}" />
+                </p:column>
+                <p:column headerText="Commune">
+                    <h:outputText value="#{structure.commune}" />
+                </p:column>
+                <p:column headerText="Pays">
+                    <h:outputText value="#{structure.pay}" />
+                </p:column>
+                <f:facet name="footer">
+                    <p:commandButton process="radioDT" update="@(#structureDetail)" icon="pi pi-search" value="Sélectionner"
+                                        oncomplete="PF('structureDialog').show()"/>
+                    <br/>
+                    L'établissement n'existe pas encore ?
 
+                    <p:linkButton outcome="/create-structure" value="Créez le !" style="margin-right:20px;"></p:linkButton>
 
-        <h:form id="form">
-            <span class="ui-input-icon-left">
-            <em class="pi pi-search" />
-            <p:inputText placeholder="SIRET" value="#{searchStructureView.inputSiret}">
-            </p:inputText>
-            <p:inputText placeholder="Raison sociale" value="#{searchStructureView.inputRaisonSociale}">
-            </p:inputText>
-             <p:inputText placeholder="Département" value="#{searchStructureView.inputDepartement}">
-            </p:inputText>
-            </span>
-            <p:commandButton value="Rechercher" actionListener="#{searchStructureView.searchCompagny}" id="id" update="radioDT"></p:commandButton>
-            <p:growl id="msgs" showDetail="true" skipDetailIfEqualsSummary="true"/>
+                </f:facet>
+            </p:dataTable>
+        </div>
 
-            <div class="card">
-                <p:dataTable id="radioDT" var="structure" value="#{searchStructureView.structures}"
-                             selection="#{searchStructureView.selectedStructure}" rowKey="#{structure.id}">
-                    <p:column selectionMode="single" style="text-align:center"/>
-                    <p:column headerText="Raison sociale">
-                        <h:outputText value="#{structure.raisonSociale}" />
-                    </p:column>
+        <p:dialog header="Information sur l'entreprise" widgetVar="structureDialog" modal="true" showEffect="fade"
+                    hideEffect="fade" resizable="false">
+            <p:outputPanel id="structureDetail" style="text-align:center;">
+                <p:column rendered="#{not empty searchStructureView.selectedStructure}">
+                    <div class="product">
+                        <div class="product-grid-item card" style="margin-bottom: 0">
+                            <div class="product-grid-item-content">
+                                <p:panelGrid columns="2" style="width: 100%">
 
-                    <p:column headerText="Numéro SIRET">
-                        <h:outputText value="#{structure.numeroSiret}" />
-                    </p:column>
+                                    <h:outputText value="Raison sociale"/>
+                                    <h:outputText value="#{searchStructureView.selectedStructure.raisonSociale}"/>
 
-                    <p:column headerText="Voie">
-                        <h:outputText value="#{structure.voie}" />
-                    </p:column>
+                                    <h:outputText value="Type d'établissement"/>
+                                    <h:outputText value="--"/>
 
-                    <p:column headerText="Code postal">
-                        <h:outputText value="#{structure.codePostal}" />
-                    </p:column>
-                    <p:column headerText="Commune">
-                        <h:outputText value="#{structure.commune}" />
-                    </p:column>
-                    <p:column headerText="Pays">
-                        <h:outputText value="#{structure.pay}" />
-                    </p:column>
-                    <f:facet name="footer">
-                        <p:commandButton process="radioDT" update=":form:structureDetail" icon="pi pi-search" value="Sélectionner"
-                                         oncomplete="PF('structureDialog').show()"/>
-                        <br/>
-                        L'établissement n'existe pas encore ?
+                                    <h:outputText value="Statut juridique"/>
+                                    <h:outputText value="#{searchStructureView.selectedStructure.statutJuridique}"/>
 
-                        <p:linkButton outcome="create-structure" value="Créez le !" style="margin-right:20px;"></p:linkButton>
+                                    <h:outputText value="Effectif"/>
+                                    <h:outputText value="#--"/>
 
-                    </f:facet>
-                </p:dataTable>
-            </div>
+                                    <h:outputText value="Numéro SIRET"/>
+                                    <h:outputText value="#{searchStructureView.selectedStructure.numeroSiret}"/>
 
-            <p:dialog header="Information sur l'entreprise" widgetVar="structureDialog" modal="true" showEffect="fade"
-                      hideEffect="fade" resizable="false">
-                <p:outputPanel id="structureDetail" style="text-align:center;">
-                    <p:column rendered="#{not empty searchStructureView.selectedStructure}">
-                        <div class="product">
-                            <div class="product-grid-item card" style="margin-bottom: 0">
-                                <div class="product-grid-item-content">
-                                    <p:panelGrid columns="2" style="width: 100%">
+                                    <h:outputText value="Voie"/>
+                                    <h:outputText value="#{searchStructureView.selectedStructure.voie}"/>
 
-                                        <h:outputText value="Raison sociale"/>
-                                        <h:outputText value="#{searchStructureView.selectedStructure.raisonSociale}"/>
+                                    <h:outputText value="Code postal"/>
+                                    <h:outputText value="#{searchStructureView.selectedStructure.codePostal}"/>
 
-                                        <h:outputText value="Type d'établissement"/>
-                                        <h:outputText value="--"/>
+                                    <h:outputText value="Commune"/>
+                                    <h:outputText value="#{searchStructureView.selectedStructure.commune}"/>
 
-                                        <h:outputText value="Statut juridique"/>
-                                        <h:outputText value="#{searchStructureView.selectedStructure.statutJuridique}"/>
+                                    <h:outputText value="Libellé Cedex ou Localité de destination"/>
+                                    <h:outputText value="#{searchStructureView.selectedStructure.libCedex}"/>
 
-                                        <h:outputText value="Effectif"/>
-                                        <h:outputText value="#--"/>
+                                    <h:outputText value="Pays"/>
+                                    <h:outputText value="#{searchStructureView.selectedStructure.pay}"/>
 
-                                        <h:outputText value="Numéro SIRET"/>
-                                        <h:outputText value="#{searchStructureView.selectedStructure.numeroSiret}"/>
+                                    <h:outputText value="Téléphone"/>
+                                    <h:outputText value="#{searchStructureView.selectedStructure.telephone}"/>
 
-                                        <h:outputText value="Voie"/>
-                                        <h:outputText value="#{searchStructureView.selectedStructure.voie}"/>
+                                    <h:outputText value="Code APE"/>
+                                    <h:outputText value="#{searchStructureView.selectedStructure.telephone}"/>
 
-                                        <h:outputText value="Code postal"/>
-                                        <h:outputText value="#{searchStructureView.selectedStructure.codePostal}"/>
+                                    <h:outputText value="Activité principale"/>
+                                    <h:outputText value="#{searchStructureView.selectedStructure.activitePrincipale}"/>
+                                </p:panelGrid>
+                            </div>
+                            <div class="product-grid-item-bottom">
+                                <p:commandButton value="Valider" icon="pi pi-shopping-cart" style="margin-top: 20px">
+                                    <f:setPropertyActionListener value="#{searchStructureView.selectedStructure}"
+                                                                    target="#{searchStructureView.selectedStructure}"/>
+                                </p:commandButton>
 
-                                        <h:outputText value="Commune"/>
-                                        <h:outputText value="#{searchStructureView.selectedStructure.commune}"/>
-
-                                        <h:outputText value="Libellé Cedex ou Localité de destination"/>
-                                        <h:outputText value="#{searchStructureView.selectedStructure.libCedex}"/>
-
-                                        <h:outputText value="Pays"/>
-                                        <h:outputText value="#{searchStructureView.selectedStructure.pay}"/>
-
-                                        <h:outputText value="Téléphone"/>
-                                        <h:outputText value="#{searchStructureView.selectedStructure.telephone}"/>
-
-                                        <h:outputText value="Code APE"/>
-                                        <h:outputText value="#{searchStructureView.selectedStructure.telephone}"/>
-
-                                        <h:outputText value="Activité principale"/>
-                                        <h:outputText value="#{searchStructureView.selectedStructure.activitePrincipale}"/>
-                                    </p:panelGrid>
-                                </div>
-                                <div class="product-grid-item-bottom">
-                                    <p:commandButton value="Valider" icon="pi pi-shopping-cart" style="margin-top: 20px">
-                                        <f:setPropertyActionListener value="#{searchStructureView.selectedStructure}"
-                                                                     target="#{searchStructureView.selectedStructure}"/>
-                                    </p:commandButton>
-
-                                </div>
                             </div>
                         </div>
-                    </p:column>
-                </p:outputPanel>
-            </p:dialog>
-        </h:form>
-
-
-
-
-    </ui:define>
+                    </div>
+                </p:column>
+            </p:outputPanel>
+        </p:dialog>
+    </h:form>
 
 </ui:composition>

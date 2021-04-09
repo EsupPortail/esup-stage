@@ -1,6 +1,7 @@
 package fr.esupportail.esupstage.controllers.jsf.beans.conventions;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -12,44 +13,54 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Named(value = "etudiantBean")
-@Getter @Setter
-public class StudentBean implements Serializable{
+@Getter
+@Setter
+public class StudentBean implements Serializable {
 
 	private static final long serialVersionUID = 6785241519374702787L;
 
 	private Etudiant student;
 
 	// This is automaticaly got by the logged user
-	// (Probably set a id to the form and put the generated id in an hidden field of the form)
-    private Integer id;
-    private String codeUniversite;
+	// (Probably set a id to the form and put the generated id in an hidden field of
+	// the form)
+	private Integer id;
+	private String codeUniversite;
 
 	// This is the form fields for Student
 
-    private String lastname;
-    private String firstname;
-    private String nomMarital;
-    private String address;
-    private String postcode;
-    private String city;
-    private String mail;
-    private String mailPro;
+	private String lastname;
+	private String firstname;
+	private String nomMarital;
+	private String address;
+	private String postcode;
+	private String city;
+	private String pays;
+	private String tel;
+	private String telPortable;
+	private String mail;
+	private String mailPro;
 
-    private String numEtudiant;
-    private String numSS;
-    private List<Convention> conventions;
+	private String numEtudiant;
+	private String numSS;
+	private List<Convention> conventions;
+
+	@Override
+	public String toString() {
+		return new StringBuilder(this.firstname).append(" ").append(this.lastname).toString();
+	}
 
 	public static StudentBean map(Etudiant instance) {
-
 		StudentBean student = new StudentBean();
 		student.setId(instance.getId());
-		student.setMail(instance.getMail());
+		student.setMailPro(instance.getMail());
 		student.setLastname(instance.getNom());
 		student.setNomMarital(instance.getNomMarital());
 		student.setNumEtudiant(instance.getNumEtudiant());
 		student.setNumSS(instance.getNumSS());
 		student.setFirstname(instance.getPrenom());
 		student.setConventions(instance.getConventions());
+		student.setCodeUniversite(instance.getCodeUniversite());
 
 		return student;
 	}

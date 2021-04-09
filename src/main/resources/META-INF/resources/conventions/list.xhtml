@@ -3,6 +3,7 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
                 template="/WEB-INF/template.xhtml">
 
     <ui:define name="title">
@@ -17,35 +18,40 @@
         <div class="card">
             <p:dataTable var="convention" value="#{conventionListView.conventions}">
                 <p:column headerText="No.">
-                    <h:outputText value="#{convension.id}"/>
+                    <h:outputText value="#{convention.id}"/>
                 </p:column>
                 <p:column headerText="Étudiant">
-                    <h:outputText value="#{convension.etudiant}"/>
+                    <h:outputText value="#{convention.student}"/>
                 </p:column>
                 <p:column headerText="Établissement">
-                    <h:outputText value="#{convension.etablissement}"/>
+                    <h:outputText value="#{convention.institution}"/>
                 </p:column>
                 <p:column headerText="Période">
-                    <h:outputText value="#{convension.etudiant.localPeriode}"/>
+                    <h:outputText value="#{convention.localPeriode[0]}">
+                        <f:convertDateTime pattern="MM/dd/yyyy" type="localDate"/>
+                    </h:outputText>
+                    -
+                    <h:outputText value="#{convention.localPeriode[1]}">
+                        <f:convertDateTime pattern="MM/dd/yyyy" type="localDate" />
+                    </h:outputText>
                 </p:column>
                 <p:column headerText="UFR">
-                    <h:outputText value="#{convension.etudiant.ufr}"/>
+                    <h:outputText value="#{convention.student.codeUniversite}"/>
                 </p:column>
                 <p:column headerText="Étape d'étude">
-                    <h:outputText value="#{convension.etudiant.etape}"/>
+                    <h:outputText value="#{convention.etape}"/>
                 </p:column>
                 <p:column headerText="Validation">
-                    <h:outputText value="#{convension.etudiant.isValidated}"/>
+                    <h:outputText value="#{convention.validated}"/>
                 </p:column>
                 <p:column headerText="Avenant">
-                    <h:outputText value="#{convension.etudiant.isAvenant}"/>
+                    <h:outputText value="#{convention.avenant}"/>
                 </p:column>
                 <p:column headerText="Année Univ.">
-                    <h:outputText value="#{convension.etudiant.anneeUniv}"/>
+                    <h:outputText value="#{convention.anneeUniv}"/>
                 </p:column>
             </p:dataTable>
         </div>
     </ui:define>
 
 </ui:composition>
-
