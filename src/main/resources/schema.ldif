@@ -50,19 +50,14 @@ structuralObjectClass: organizationalUnit
 subschemaSubentry: cn=Subschema
 
 dn: uid=jdoe,ou=people,dc=uphf,dc=fr
-objectClass: sambaSamAccount
 objectClass: shadowAccount
 objectClass: posixAccount
-objectClass: radiusprofile
-objectClass: uvhcPerson
 objectClass: eduPerson
 objectClass: supannPerson
 objectClass: inetOrgPerson
 objectClass: top
 cn: Doe John
 gidNumber: 513
-homeDirectory: /home/v/jdoe
-sambaSID: S-1-5-21-4005389593-33730136-839789604-154366
 sn: Doe
 uid: jdoe
 uidNumber: 76683
@@ -76,39 +71,44 @@ eduPersonPrimaryAffiliation: employee
 eduPersonPrincipalName: jdoe
 givenName: John
 loginShell: /bin/bash
-mail: John.Doe@uphf.fr
+mail: John.Doe@test.esup.fr
 mailForwardingAddress: jdoe
 preferredLanguage: fr
-radiusServiceType: Framed-User
-radiusSessionTimeout: 1200
-radiusSimultaneousUse: 2
-radiusTunnelMediumType: 6
-radiusTunnelPrivateGroupId: 19
-radiusTunnelType: 13
-sambaAcctFlags: [UX]
-sambaHomeDrive: P:
-sambaHomePath: \\burtok-2\jdoe
-sambaKickoffTime: 2147483647
-sambaLogoffTime: 2147483647
-sambaLogonScript: samba.cmd
-sambaLogonTime: 0
-sambaPrimaryGroupSID: S-1-5-21-4005389593-33730136-839789604-513
-sambaPwdCanChange: 2147483647
-sambaPwdMustChange: 1107529756
 supannAffectation: DIRECTION DES SYSTEMES D'INFORMATION
 supannCivilite: M.
 supannEmpId: 19480
 supannEtablissement: {UAI}0593279U
 supannListeRouge: FALSE
 supannOrganisme: {EES}0593279U
-uvhcAliasMail: jdoe@uphf.fr
-uvhcAliasMail: John.Doe@uphf.fr
-uvhcOpenVPN: FALSE
-uvhcPersCategorie: AITOSS
-uvhcPersContrat: contractuel
-uvhcPersEDT: FALSE
-uvhcPersType: CHS
-uvhcPersTypeLong: Hors statut s/ressources propres
-uvhcsync: noSyncForward
-uvhczcs: zcs
-uvhcZimbra: TRUE
+
+dn: uid=ajensen,ou=people,dc=uphf,dc=fr
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: eduPerson
+objectClass: supannPerson
+objectClass: inetOrgPerson
+objectClass: top
+cn: Jensen Adam
+gidNumber: 12
+sn: Jensen
+uid: ajensen
+uidNumber: 12
+userPassword: ajensen
+uvhcClasseType: personnel
+description: INGENIEUR D'ETUDES DE RECH.ET FORMATION
+displayName: Adam Jensen
+eduPersonAffiliation: employee
+eduPersonAffiliation: member
+eduPersonPrimaryAffiliation: employee
+eduPersonPrincipalName: ajensen
+givenName: Adam
+loginShell: /bin/bash
+mail: Adam.Jensen@test.esup.fr
+mailForwardingAddress: ajensen
+preferredLanguage: fr
+supannAffectation: LAMIH
+supannCivilite: M.
+supannEmpId: 12
+supannEtablissement: {UAI}1293279U
+supannListeRouge: FALSE
+supannOrganisme: {EES}1293279U

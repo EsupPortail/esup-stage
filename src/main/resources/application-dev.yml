@@ -1,10 +1,12 @@
 spring:
   profiles:
     include:
-      - embedded-ldap
+    - embedded-ldap
   mail:
     host: localhost
     port: 25
 application:
   csrf:
     enable: false
+  administrators:
+  - ajensen

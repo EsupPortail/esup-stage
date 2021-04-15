@@ -7,7 +7,19 @@ package fr.esupportail.esupstage.configuration.security;
  */
 public enum UserRole {
 
-	USER;
+	STUDENT,
+
+	REFERENT_TEACHER,
+
+	MANAGER,
+
+	CHEF_MANAGER,
+
+	ADMINISTRATOR,
+
+	COMPANY,
+
+	OBSERVER;
 
 	private static final String ROLE_PREFIX = "ROLE_";
 

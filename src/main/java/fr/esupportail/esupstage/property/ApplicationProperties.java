@@ -1,6 +1,8 @@
 package fr.esupportail.esupstage.property;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
@@ -26,7 +28,12 @@ public class ApplicationProperties implements Serializable {
 	 * Where to redirect the application on login.
 	 */
 	private String redirectUrl;
-	
+
+	/**
+	 * List of all the administrators of the application.
+	 */
+	private List<String> administrators = new ArrayList<>();
+
 	/**
 	 * Configuration for the CAS authentication.
 	 */

@@ -15,7 +15,8 @@
  *******************************************************************************/
 package fr.esupportail.esupstage.configuration.security;
 
-import static fr.esupportail.esupstage.configuration.security.UserRole.USER;
+import static fr.esupportail.esupstage.configuration.security.UserRole.ADMINISTRATOR;
+import static fr.esupportail.esupstage.configuration.security.UserRole.STUDENT;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,22 +31,35 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
+import fr.esupportail.esupstage.property.ApplicationProperties;
+
 /**
  * @author vdubus
  */
 @Component
 public class CustomUserDetailsService implements AuthenticationUserDetailsService<CasAssertionAuthenticationToken> {
 
+	private final ApplicationProperties applicationProperties;
+
 	@Autowired
-	public CustomUserDetailsService() {
+	public CustomUserDetailsService(final ApplicationProperties applicationProperties) {
 		super();
+		this.applicationProperties = applicationProperties;
 	}
 
 	@Override
 	public UserDetails loadUserDetails(final CasAssertionAuthenticationToken token) throws UsernameNotFoundException {
 		final String login = token.getPrincipal().toString();
 		final Collection<GrantedAuthority> authorities = new ArrayList<>();
-		authorities.add(new SimpleGrantedAuthority(USER.toString()));
+
+		// TODO – When does a user should get the "STUDENT" role?
+		authorities.add(new SimpleGrantedAuthority(STUDENT.toString()));
+
+		if (applicationProperties.getAdministrators().contains(login)) {
+			// TODO – The "ADMINISTRATOR" role should only be given to a specific user if no administrator is registered.
+			authorities.add(new SimpleGrantedAuthority(ADMINISTRATOR.toString()));
+		}
+
 		return new User(login, "", authorities);
 	}
 
