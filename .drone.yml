@@ -7,3 +7,6 @@ steps:
   commands:
   - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
   - mvn test -B
+trigger:
+  branch:
+  - dev
