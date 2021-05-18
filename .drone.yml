@@ -7,6 +7,17 @@ steps:
   commands:
   - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
   - mvn test -B
+
+- name: Publish
+  image: plugins/docker
+  settings:
+    username: admin
+    password: esupstage
+    repo: esupstage-registry.parisnanterre.fr/drone/esupstage
+    registry: esupstage-registry.parisnanterre.fr
+    dockerfile: ./Dockerfile
+    auto_tag: true
+      
 trigger:
   branch:
   - dev
