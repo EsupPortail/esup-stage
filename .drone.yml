@@ -19,6 +19,7 @@ steps:
     registry: esupstage-registry.parisnanterre.fr
     dockerfile: ./Dockerfile
     auto_tag: true
+    
 trigger:
   branch:
   - dev
