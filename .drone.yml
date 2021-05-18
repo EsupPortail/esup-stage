@@ -15,7 +15,7 @@ steps:
       from_secret: docker_username
     password:
       from_secret: docker_password
-    repo: esupstage-registry.parisnanterre.fr/drone/esupstage
+    repo: esupstage-registry.parisnanterre.fr/esupstage
     registry: esupstage-registry.parisnanterre.fr
     dockerfile: ./Dockerfile
     auto_tag: true
