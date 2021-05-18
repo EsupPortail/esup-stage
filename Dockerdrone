@@ -1,0 +1,10 @@
+FROM openjdk:11-jre-slim
+
+COPY target/ .
+
+RUN mkdir /app
+RUN cp -r ./esupstage-*/* /app
+
+WORKDIR /app
+
+CMD java -classpath "/app/classes:/app/lib/*" fr.esupportail.esupstage.Application
