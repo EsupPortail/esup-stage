@@ -19,7 +19,9 @@ steps:
     repo: esupstage-registry.parisnanterre.fr/drone/esupstage
     registry: esupstage-registry.parisnanterre.fr
     dockerfile: ./Dockerdrone
-    auto_tag: true
+    tags:
+      - ${DRONE_COMMIT_BRANCH}
+      - latest
     
 ---
 kind: pipeline
