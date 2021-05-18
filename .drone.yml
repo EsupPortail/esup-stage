@@ -18,7 +18,7 @@ steps:
     password: esupstage
     repo: esupstage-registry.parisnanterre.fr/drone/esupstage
     registry: esupstage-registry.parisnanterre.fr
-    dockerfile: ./Dockerfile
+    dockerfile: ./Dockerdrone
     auto_tag: true
     
 ---
