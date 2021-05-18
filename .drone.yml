@@ -20,6 +20,28 @@ steps:
     registry: esupstage-registry.parisnanterre.fr
     dockerfile: ./Dockerfile
     auto_tag: true
+    
+---
+kind: pipeline
+type: exec
+name: CICD
+depends_on:
+  - CI
+trigger:
+  status:
+    - success
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+  - name: compose
+    commands:
+      - cd /opt/docker-compose-projects/drone/esup-stage
+      - docker-compose pull
+      - docker-compose  up -d --remove-orphans
+      
 trigger:
   branch:
   - dev
