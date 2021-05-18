@@ -19,6 +19,6 @@ ENV GID=${UID:-1000}
 
 USER $UID:$GIG
 
-COPY --chown="${UID}:${GID}" --from=builder /app/* /app
+COPY --chown="${UID}:${GID}" --from=builder /app/* /app/
 
 CMD java -classpath "/app/classes:/app/lib/*" fr.esupportail.esupstage.Application
