@@ -35,6 +35,8 @@ public class PersonnelCentreGestionRepositoryTest extends AbstractTest {
 	private final PersonnelCentreGestionRepository repository;
 
 	private Integer id;
+	
+	private Integer idDroitAdministration;
 
 	@Autowired
 	PersonnelCentreGestionRepositoryTest(final EntityManager entityManager, final PersonnelCentreGestionRepository personnelCentreGestionRepository) {
@@ -91,7 +93,9 @@ public class PersonnelCentreGestionRepositoryTest extends AbstractTest {
 		entityManager.flush();
 
 		entityManager.refresh(entity);
+		entityManager.refresh(droitAdministration);
 		id = entity.getId();
+		idDroitAdministration = droitAdministration.getId();
 	}
 
 	@Test
@@ -106,6 +110,20 @@ public class PersonnelCentreGestionRepositoryTest extends AbstractTest {
 		assertEquals("Doe", tmp.getNom());
 		assertEquals("jdoe", tmp.getUidPersonnel());
 		assertEquals("jdoe", tmp.getCreatedBy());
+	}
+
+	@Test
+	@DisplayName("existsOneByUidPersonnel – Nominal Test Case")
+	void existsOneByUidPersonnel01() {
+		final boolean result = repository.existsOneByUidPersonnel("jdoe");
+		assertTrue(result, "We should have got 'true'");
+	}
+	
+	@Test
+	@DisplayName("existsOneByUidPersonnelAndDroitAdministrationId – Nominal Test Case")
+	void existsOneByUidPersonnelAndDroitAdministrationId01() {
+		final boolean result = repository.existsOneByUidPersonnelAndDroitAdministrationId("jdoe", this.idDroitAdministration);
+		assertTrue(result, "We should have got 'true'");
 	}
 
 }

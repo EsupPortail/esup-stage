@@ -7,4 +7,9 @@ import fr.esupportail.esupstage.domain.jpa.entities.PersonnelCentreGestion;
 
 @Repository
 public interface PersonnelCentreGestionRepository extends JpaRepository<PersonnelCentreGestion, Integer> {
+
+	boolean existsOneByUidPersonnel(String uidPersonnel);
+
+	boolean existsOneByUidPersonnelAndDroitAdministrationId(String uidPersonnel, Integer idDroitAdministration);
+
 }

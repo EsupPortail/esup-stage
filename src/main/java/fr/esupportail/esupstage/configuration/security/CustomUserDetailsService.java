@@ -15,22 +15,15 @@
  *******************************************************************************/
 package fr.esupportail.esupstage.configuration.security;
 
-import static fr.esupportail.esupstage.configuration.security.UserRole.ADMINISTRATOR;
-import static fr.esupportail.esupstage.configuration.security.UserRole.STUDENT;
-
-import java.util.ArrayList;
-import java.util.Collection;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.cas.authentication.CasAssertionAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
+import fr.esupportail.esupstage.domain.jpa.repositories.PersonnelCentreGestionRepository;
 import fr.esupportail.esupstage.property.ApplicationProperties;
 
 /**
@@ -41,26 +34,19 @@ public class CustomUserDetailsService implements AuthenticationUserDetailsServic
 
 	private final ApplicationProperties applicationProperties;
 
+	private final PersonnelCentreGestionRepository personnelCentreGestionRepository;
+
 	@Autowired
-	public CustomUserDetailsService(final ApplicationProperties applicationProperties) {
+	public CustomUserDetailsService(final ApplicationProperties applicationProperties, final PersonnelCentreGestionRepository personnelCentreGestionRepository) {
 		super();
 		this.applicationProperties = applicationProperties;
+		this.personnelCentreGestionRepository = personnelCentreGestionRepository;
 	}
 
 	@Override
 	public UserDetails loadUserDetails(final CasAssertionAuthenticationToken token) throws UsernameNotFoundException {
 		final String login = token.getPrincipal().toString();
-		final Collection<GrantedAuthority> authorities = new ArrayList<>();
-
-		// TODO – When does a user should get the "STUDENT" role?
-		authorities.add(new SimpleGrantedAuthority(STUDENT.toString()));
-
-		if (applicationProperties.getAdministrators().contains(login)) {
-			// TODO – The "ADMINISTRATOR" role should only be given to a specific user if no administrator is registered.
-			authorities.add(new SimpleGrantedAuthority(ADMINISTRATOR.toString()));
-		}
-
-		return new User(login, "", authorities);
+		return new User(login, "", AuthoritiesUtils.getAuthorities(applicationProperties, personnelCentreGestionRepository, login));
 	}
 
 }
