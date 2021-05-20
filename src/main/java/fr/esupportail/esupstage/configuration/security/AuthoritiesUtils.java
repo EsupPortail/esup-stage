@@ -3,6 +3,7 @@ package fr.esupportail.esupstage.configuration.security;
 import static fr.esupportail.esupstage.configuration.security.UserRole.ADMINISTRATOR;
 import static fr.esupportail.esupstage.configuration.security.UserRole.CHEF_MANAGER;
 import static fr.esupportail.esupstage.configuration.security.UserRole.MANAGER;
+import static fr.esupportail.esupstage.configuration.security.UserRole.STUDENT;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,19 +11,24 @@ import java.util.Collection;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import fr.esupportail.esupstage.domain.jpa.repositories.EtudiantRepository;
 import fr.esupportail.esupstage.domain.jpa.repositories.PersonnelCentreGestionRepository;
 import fr.esupportail.esupstage.property.ApplicationProperties;
 
 public class AuthoritiesUtils {
 
-	public static final Collection<GrantedAuthority> getAuthorities(final ApplicationProperties applicationProperties, final PersonnelCentreGestionRepository personnelCentreGestionRepository,
-			final String login) {
+	private static final Integer ADMIN_RIGHT_ID = 3;
+
+	public static final Collection<GrantedAuthority> getAuthorities(final ApplicationProperties applicationProperties,
+			final PersonnelCentreGestionRepository personnelCentreGestionRepository, final EtudiantRepository etudiantRepository, final String login) {
 		final Collection<GrantedAuthority> authorities = new ArrayList<>();
-		// TODO – When does a user should get the "STUDENT" role?
-		// authorities.add(new SimpleGrantedAuthority(STUDENT.toString()));
+		if (etudiantRepository.existsOneByIdentEtudiant(login)) {
+			authorities.add(new SimpleGrantedAuthority(STUDENT.toString()));
+		}
+
 		if (personnelCentreGestionRepository.existsOneByUidPersonnel(login)) {
 			authorities.add(new SimpleGrantedAuthority(MANAGER.toString()));
-			if (personnelCentreGestionRepository.existsOneByUidPersonnelAndDroitAdministrationId(login, 3)) {
+			if (personnelCentreGestionRepository.existsOneByUidPersonnelAndDroitAdministrationId(login, ADMIN_RIGHT_ID)) {
 				authorities.add(new SimpleGrantedAuthority(CHEF_MANAGER.toString()));
 			}
 		}

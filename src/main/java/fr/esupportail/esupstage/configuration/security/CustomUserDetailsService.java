@@ -23,6 +23,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
+import fr.esupportail.esupstage.domain.jpa.repositories.EtudiantRepository;
 import fr.esupportail.esupstage.domain.jpa.repositories.PersonnelCentreGestionRepository;
 import fr.esupportail.esupstage.property.ApplicationProperties;
 
@@ -36,17 +37,21 @@ public class CustomUserDetailsService implements AuthenticationUserDetailsServic
 
 	private final PersonnelCentreGestionRepository personnelCentreGestionRepository;
 
+	private final EtudiantRepository etudiantRepository;
+
 	@Autowired
-	public CustomUserDetailsService(final ApplicationProperties applicationProperties, final PersonnelCentreGestionRepository personnelCentreGestionRepository) {
+	public CustomUserDetailsService(final ApplicationProperties applicationProperties, final PersonnelCentreGestionRepository personnelCentreGestionRepository,
+			final EtudiantRepository etudiantRepository) {
 		super();
 		this.applicationProperties = applicationProperties;
 		this.personnelCentreGestionRepository = personnelCentreGestionRepository;
+		this.etudiantRepository = etudiantRepository;
 	}
 
 	@Override
 	public UserDetails loadUserDetails(final CasAssertionAuthenticationToken token) throws UsernameNotFoundException {
 		final String login = token.getPrincipal().toString();
-		return new User(login, "", AuthoritiesUtils.getAuthorities(applicationProperties, personnelCentreGestionRepository, login));
+		return new User(login, "", AuthoritiesUtils.getAuthorities(applicationProperties, personnelCentreGestionRepository, etudiantRepository, login));
 	}
 
 }

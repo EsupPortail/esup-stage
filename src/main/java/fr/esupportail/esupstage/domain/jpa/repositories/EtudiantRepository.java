@@ -11,9 +11,12 @@ import fr.esupportail.esupstage.domain.jpa.entities.Etudiant;
 @Repository
 public interface EtudiantRepository extends JpaRepository<Etudiant, Integer> {
 
-	public List<Etudiant> findEtudiantsByNomContainsOrPrenomContains(String nom, String prenom);
+	List<Etudiant> findEtudiantsByNomContainsOrPrenomContains(String nom, String prenom);
 
-	public Optional<Etudiant> findEtudiantByIdAndCodeUniversite(Integer idEtudiant, String codeUniveriste);
+	Optional<Etudiant> findEtudiantByIdAndCodeUniversite(Integer idEtudiant, String codeUniveriste);
 
-	public Optional<Etudiant> findEtudiantByIdentEtudiantAndCodeUniversite(String identEtudiant, String codeUniveriste);
+	Optional<Etudiant> findEtudiantByIdentEtudiantAndCodeUniversite(String identEtudiant, String codeUniveriste);
+
+	boolean existsOneByIdentEtudiant(String identEtudiant);
+
 }

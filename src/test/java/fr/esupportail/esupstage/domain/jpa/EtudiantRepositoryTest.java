@@ -30,7 +30,6 @@ class EtudiantRepositoryTest extends AbstractTest {
 
 	private final EtudiantRepository studentRepository;
 
-
 	private Integer lastInsertedId;
 
 	@Autowired
@@ -108,6 +107,13 @@ class EtudiantRepositoryTest extends AbstractTest {
 		final Etudiant student = result.get();
 		assertNotNull(student, "Student exist");
 		this.testStudentFields(0, student);
+	}
+
+	@Test
+	@DisplayName("existsOneByIdentEtudiant – Nominal test case")
+	void existsOneByIdentEtudiant() {
+		final boolean result = this.studentRepository.existsOneByIdentEtudiant("oducha01");
+		assertTrue(result, "We should have found our student");
 	}
 
 }
