@@ -7,4 +7,7 @@ import fr.esupportail.esupstage.domain.jpa.entities.Enseignant;
 
 @Repository
 public interface EnseignantRepository extends JpaRepository<Enseignant, Integer> {
+
+	boolean existsOneByUidEnseignant(String uidEnseignant);
+
 }
