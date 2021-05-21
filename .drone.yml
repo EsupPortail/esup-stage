@@ -29,9 +29,6 @@ type: exec
 name: CICD
 depends_on:
   - CI
-trigger:
-  status:
-    - success
 
 steps:
   - name: compose
