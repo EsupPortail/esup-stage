@@ -1,16 +1,14 @@
-
 ---
 kind: pipeline
 type: docker
 name: CI
-
 steps:
 - name: build-test
+  user: root
   image: maven:3-openjdk-11-slim
   commands:
   - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
   - mvn test -B
-
 - name: Publish
   image: plugins/docker
   settings:
@@ -22,23 +20,29 @@ steps:
     tags:
       - ${DRONE_COMMIT_BRANCH}
       - latest
-
+    
 ---
 kind: pipeline
 type: exec
-name: CD
+name: CICD
+depends_on:
+  - CI
+trigger:
+  status:
+    - success
 
 platform:
   os: linux
   arch: amd64
-  
+
+steps:
   - name: compose
     commands:
       - cd /opt/docker-compose-projects/drone/esup-stage
       - touch compose.txt
-depends_on:
-  - CI
-      
+      - docker-compose pull
+      - docker-compose  up -d --remove-orphans
+
 trigger:
   branch:
   - dev
