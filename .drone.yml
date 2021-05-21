@@ -33,14 +33,11 @@ trigger:
   status:
     - success
 
-platform:
-  os: linux
-  arch: amd64
-
 steps:
   - name: compose
     commands:
       - cd /opt/docker-compose-projects/drone/esup-stage
+      - touch compose.txt
       - docker-compose pull
       - docker-compose  up -d --remove-orphans
       
