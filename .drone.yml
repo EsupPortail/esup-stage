@@ -1,7 +1,7 @@
 ---
 kind: pipeline
 type: docker
-name: CI
+name: CICD
 
 steps:
 - name: build-test
@@ -23,14 +23,6 @@ steps:
       - ${DRONE_COMMIT_BRANCH}
       - latest
     
----
-kind: pipeline
-type: exec
-name: CICD
-depends_on:
-  - CI
-
-steps:
   - name: compose
     commands:
       - cd /opt/docker-compose-projects/drone/esup-stage
