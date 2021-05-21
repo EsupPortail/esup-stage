@@ -5,7 +5,6 @@ name: CI
 
 steps:
 - name: build-test
-  user: root
   image: maven:3-openjdk-11-slim
   commands:
   - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
