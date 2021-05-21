@@ -23,21 +23,6 @@ steps:
       - ${DRONE_COMMIT_BRANCH}
       - latest
 
----
-kind: pipeline
-type: exec
-name: CD
-
-platform:
-  os: linux
-  arch: amd64
-  
-  - name: compose
-    commands:
-      - cd /opt/docker-compose-projects/drone/esup-stage
-      - touch compose.txt
-      - docker-compose pull
-      - docker-compose  up -d --remove-orphans
       
 trigger:
   branch:
