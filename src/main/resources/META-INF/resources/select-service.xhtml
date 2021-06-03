@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://primefaces.org/html"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="title">
+        Convention étudiant
+    </ui:define>
+
+    <ui:define name="description">
+        Choix du service dans lequel le stage sera effectué :
+    </ui:define>
+
+    <ui:define name="body">
+
+        <div class="ui-fluid">
+            <p:tabView id="tabs" dynamic="true">
+                <p:tab title="Indications" disabled="false">
+                    <h:form>
+                        <h:panelGrid columns="2" cellpadding="7" styleClass="p-mb-3">
+                            <h:outputText value="test"/>
+                        </h:panelGrid>
+                        <p:commandButton value="Submit" update="tabs" action="updateStructure" icon="pi pi-check"/>
+                    </h:form>
+                </p:tab>
+                <p:tab title="Etudiant" disabled="false">
+                </p:tab>
+                <p:tab title="Etablissement d'accueil" disabled="false">
+
+                </p:tab>
+                <p:tab title="Service d'accueil" disabled="false">
+
+
+                    <h:form>
+                        <h2>Choix du service dans lequel le stage sera effectué :</h2>
+                        <h:panelGrid columns="2" cellpadding="7" styleClass="p-mb-3">
+
+                            <div class="p-field p-grid">
+                                <label for="service" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Sélectionnez un service :</label>
+                                <div class="p-col-12 p-md-10">
+                                    <p:selectOneMenu id="service" value="#{structureSelectView.service}" style="width:12rem" >
+                                        <p:ajax listener="#{structureSelectView.handleServiceChange}" />
+                                        <f:selectItem itemLabel="Sélectionnez un service" itemValue="" noSelectionOption="true"/>
+                                        <f:selectItems value="#{structureSelectView.services}"/>
+                                    </p:selectOneMenu>
+                                </div>
+                            </div>
+                            <br/>
+                            Le service n'existe pas encore ?
+
+                            <p:commandButton value="Créez-le" action="#{structureSelectView.confirm}" update="message" styleClass="p-mr-2" icon="pi pi-check">
+                                <p:confirm header="Ajout d'un service" message="Vous allez ajouter un service à l'établissement, confirmer ?" icon="pi pi-exclamation-triangle"/>
+                            </p:commandButton>
+
+
+
+                        </h:panelGrid>
+
+                    </h:form>
+                </p:tab>
+                <p:tab title="Tuteur Professionel" disabled="false">
+                </p:tab>
+                <p:tab title="Stage" disabled="false">
+                </p:tab>
+                <p:tab title="Enseignant Référent" disabled="false">
+                </p:tab>
+                <p:tab title="Signataire" disabled="false">
+                </p:tab>
+
+            </p:tabView>
+        </div>
+
+        <div class="card">
+            <h:form>
+               <p:growl id="message" showDetail="true"/>
+                <p:confirmDialog id="confirmService" global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                    <p:commandButton value="Non" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                    <p:commandButton value="Oui" type="button" styleClass="ui-confirmdialog-yes" oncomplete="PF('confirmService').hide();" onclick="#{structureSelectView.openForm()}"/>
+                </p:confirmDialog>
+            </h:form>
+        </div>
+
+
+        <div class="card2">
+            <h5>DialogReturn with a Menu</h5>
+
+        </div>
+
+    </ui:define>
+
+</ui:composition>

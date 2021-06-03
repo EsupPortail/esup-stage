@@ -43,6 +43,7 @@ databaseChangeLog:
         newDataType: boolean
     - modifyDataType:
         tableName: avenant
+
         columnName: modificationMontantGratification
         newDataType: boolean
     - modifyDataType:

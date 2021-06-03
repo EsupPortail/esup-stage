@@ -36,13 +36,23 @@
                             <div class="p-field p-grid">
                                 <label for="raisonSociale" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Raison sociale</label>
                                 <div class="p-col-12 p-md-10">
-                                    <p:inputText id="raisonSociale" type="text" value="#{structureCreationView.raisonSociale}" />
+                                    <p:inputText id="raisonSociale" type="text" value="#{structureCreationView.raisonSociale}">
+                                           <f:validateLength minimum="10"/>
+                                           <p:ajax update="msgRaisonSociale" event="keyup" global="false"/>
+                                    </p:inputText>
+                                    <p:message for="raisonSociale" id="msgRaisonSociale" display="icon"/>
+
                                 </div>
                             </div>
                             <div class="p-field p-grid">
                                 <label for="numeroSiret" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Numéro Siret</label>
                                 <div class="p-col-12 p-md-10">
-                                    <p:inputText id="numeroSiret" type="text" value="#{structureCreationView.numeroSiret}"/>
+                                    <p:inputText id="numeroSiret" type="text" value="#{structureCreationView.numeroSiret}">
+                                        <f:validateLength minimum="10" maximum="20"/>
+                                        <p:clientValidator/>
+                                    </p:inputText>
+                                    <p:message for="numeroSiret" display="icon"/>
+
                                 </div>
                             </div>
                             <div class="p-field p-grid">
