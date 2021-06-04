@@ -23,7 +23,7 @@
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 		<tomcat.version>9.0.27</tomcat.version>
-		<start-class>fr.esupportail.esupstage.WebApplication</start-class>
+		<start-class>fr.esupportail.esupstage.Application</start-class>
 		<main.basedir>${basedir}/../..</main.basedir>
 		<m2eclipse.wtp.contextRoot>/</m2eclipse.wtp.contextRoot>
 		<sonar.projectKey>EsupPortail_esup-stage</sonar.projectKey>
