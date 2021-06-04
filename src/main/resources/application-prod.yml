@@ -1,6 +1,6 @@
 spring:
-  profiles:
-    include:
+  profiles:
+    include:
     - ldap
   mail:
     host: smtp.uphf.fr
