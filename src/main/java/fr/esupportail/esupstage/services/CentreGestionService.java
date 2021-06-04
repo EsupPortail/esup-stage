@@ -1,5 +1,7 @@
 package fr.esupportail.esupstage.services;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +24,10 @@ public class CentreGestionService {
 
 	public Page<CentreGestionBean> findAll(Pageable pageable) {
 		return this.centreGestionRepository.findAll(pageable).map(CentreGestionMapper.INSTANCE::convert);
+	}
+
+	public List<CentreGestionBean> findAll() {
+		return findAll(Pageable.unpaged()).toList();
 	}
 
 }

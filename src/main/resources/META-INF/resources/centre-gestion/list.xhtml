@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" template="/WEB-INF/template.xhtml">
+	<ui:define name="title">Liste des Centre de Gestion</ui:define>
+	<ui:define name="description">Liste les Centre de Gestion disponible</ui:define>
+	<ui:define name="body">
+		<div class="card">
+			<p:dataTable var="centreGestion" value="#{listCentreGestionView.centreGestions}">
+				<p:column headerText="N°">
+					<h:outputText value="#{centreGestion.id}" />
+				</p:column>
+				<p:column headerText="Nom du Centre de Gestion">
+					<h:outputText value="#{centreGestion.nomCentre}" />
+				</p:column>
+			</p:dataTable>
+		</div>
+	</ui:define>
+</ui:composition>
