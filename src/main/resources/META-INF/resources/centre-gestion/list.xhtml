@@ -12,6 +12,12 @@
 				<p:column headerText="Nom du Centre de Gestion">
 					<h:outputText value="#{centreGestion.nomCentre}" />
 				</p:column>
+				<p:column headerText="Type">
+					<h:outputText value="#{centreGestion.niveauCentre.label}" />
+				</p:column>
+				<p:column headerText="Validation pédagogique des convensions ?">
+					<h:outputText value="#{centreGestion.validationPedagogique}" />
+				</p:column>
 			</p:dataTable>
 		</div>
 	</ui:define>

@@ -64,4 +64,6 @@ public class CentreGestionBean implements Serializable {
 
 	private String voie;
 
+	private NiveauCentreBean niveauCentre;
+
 }

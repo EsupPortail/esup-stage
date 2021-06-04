@@ -5,7 +5,7 @@ import org.mapstruct.factory.Mappers;
 
 import fr.esupportail.esupstage.domain.jpa.entities.CentreGestion;
 
-@Mapper
+@Mapper(uses = { NiveauCentreMapper.class })
 public interface CentreGestionMapper {
 
 	CentreGestionMapper INSTANCE = Mappers.getMapper(CentreGestionMapper.class);
