@@ -16,7 +16,9 @@
 					<h:outputText value="#{centreGestion.niveauCentre.label}" />
 				</p:column>
 				<p:column headerText="Validation pédagogique des convensions ?">
-					<h:outputText value="#{centreGestion.validationPedagogique}" />
+					<h:outputText value="#{centreGestion.validationPedagogique}">
+						<f:converter converterId="YesNoConverter" />
+					</h:outputText>
 				</p:column>
 			</p:dataTable>
 		</div>
