@@ -66,4 +66,6 @@ public class CentreGestionBean implements Serializable {
 
 	private NiveauCentreBean niveauCentre;
 
+	private ConfidentialiteBean confidentialite;
+
 }
