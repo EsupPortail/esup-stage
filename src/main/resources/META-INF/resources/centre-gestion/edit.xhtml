@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" template="/WEB-INF/template.xhtml">
+	<ui:define name="title">Ajout/Édition d’un centre de Gestion</ui:define>
+	<ui:define name="body">
+		<div class="card">
+			<h:form id="editCentreGestion" action="#{editCentreGestionView.save()}">
+				<fieldset>
+					<legend>Centre de gestion</legend>
+					<p>
+						<p:outputLabel for="@next" value="Nom du centre" />
+						<p:inputText id="nomCentre" type="text" value="#{editCentreGestionView.centreGestion.nomCentre}" required="true" />
+					</p>
+					<p>
+						<p:outputLabel for="@next" value="Type du centre de gestion" />
+						<p:selectOneMenu id="niveauCentre" value="#{editCentreGestionView.centreGestion.niveauCentre}">
+							<f:selectItems value="#{editCentreGestionView.niveauCentreList}" />
+						</p:selectOneMenu>
+					</p>
+					<p>
+						<p:outputLabel for="@next" value="Confidentialité" />
+						<p:selectOneMenu id="confidentialite" value="#{editCentreGestionView.centreGestion.confidentialite}">
+							<f:selectItems value="#{editCentreGestionView.confidentialiteList}" />
+						</p:selectOneMenu>
+					</p>
+				</fieldset>
+				<fieldset>
+					<legend>Coordonnées</legend>
+					<p>
+						<p:outputLabel for="@next" value="Voie" />
+						<p:inputText id="voie" type="text" value="#{editCentreGestionView.centreGestion.voie}" />
+					</p>
+					<p>
+						<p:outputLabel for="@next" value="Code Postal" />
+						<p:inputText id="codePostal" type="text" value="#{editCentreGestionView.centreGestion.codePostal}" />
+					</p>
+					<p>
+						<p:outputLabel for="@next" value="Bâtiment / Résidence / Z.I." />
+						<p:inputText id="adresse" type="text" value="#{editCentreGestionView.centreGestion.adresse}" />
+					</p>
+					<p>
+						<p:outputLabel for="@next" value="Commune" />
+						<p:inputText id="commune" type="text" value="#{editCentreGestionView.centreGestion.commune}" />
+					</p>
+					<p>
+						<p:outputLabel for="@next" value="Courriel" />
+						<p:inputText id="mail" type="text" value="#{editCentreGestionView.centreGestion.mail}" />
+					</p>
+					<p>
+						<p:outputLabel for="@next" value="Téléphone" />
+						<p:inputText id="telephone" type="text" value="#{editCentreGestionView.centreGestion.telephone}" />
+					</p>
+					<p>
+						<p:outputLabel for="@next" value="Site Web" />
+						<p:inputText id="siteWeb" type="text" value="#{editCentreGestionView.centreGestion.siteWeb}" />
+					</p>
+					<p>
+						<p:outputLabel for="@next" value="Fax" />
+						<p:inputText id="fax" type="text" value="#{editCentreGestionView.centreGestion.fax}" />
+					</p>
+				</fieldset>
+				<p:commandButton value="Enregistrer" update="editCentreGestion" icon="pi pi-check" />
+			</h:form>
+		</div>
+	</ui:define>
+</ui:composition>

@@ -12,4 +12,6 @@ public interface NiveauCentreMapper {
 
 	NiveauCentreBean convert(NiveauCentre niveauCentre);
 
+	NiveauCentre convert(NiveauCentreBean niveauCentre);
+
 }

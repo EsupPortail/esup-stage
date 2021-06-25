@@ -30,4 +30,9 @@ public class CentreGestionService {
 		return findAll(Pageable.unpaged()).toList();
 	}
 
+	public CentreGestionBean save(final CentreGestionBean toSave) {
+		final CentreGestionMapper mapper = CentreGestionMapper.INSTANCE;
+		return mapper.convert(this.centreGestionRepository.save(mapper.convert(toSave)));
+	}
+
 }
