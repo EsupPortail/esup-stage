@@ -7,11 +7,11 @@
                 template="/WEB-INF/template.xhtml">
 
     <ui:define name="title">
-        Convention étudiant
+        #{msg['convention.title']}
     </ui:define>
 
     <ui:define name="description">
-        Création/Édition de Convention étudiante
+        #{msg['convention.description']}
     </ui:define>
 
     <ui:define name="body">
@@ -30,11 +30,11 @@
                 </p:tab>
                 <p:tab title="Etablissement d'accueil" disabled="false">
                     <h:form>
-                        <h2>Général</h2>
+                        <h2>#{msg['convention.general']}</h2>
                         <h:panelGrid columns="2" cellpadding="7" styleClass="p-mb-3">
 
                             <div class="p-field p-grid">
-                                <label for="raisonSociale" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Raison sociale</label>
+                                <label for="raisonSociale" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">#{msg['convention.social_reason']}</label>
                                 <div class="p-col-12 p-md-10">
                                     <p:inputText id="raisonSociale" type="text" value="#{structureCreationView.raisonSociale}">
                                            <f:validateLength minimum="10"/>
@@ -45,7 +45,7 @@
                                 </div>
                             </div>
                             <div class="p-field p-grid">
-                                <label for="numeroSiret" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Numéro Siret</label>
+                                <label for="numeroSiret" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">#{msg['convention.siret_number']}</label>
                                 <div class="p-col-12 p-md-10">
                                     <p:inputText id="numeroSiret" type="text" value="#{structureCreationView.numeroSiret}">
                                         <f:validateLength minimum="10" maximum="20"/>
@@ -56,26 +56,27 @@
                                 </div>
                             </div>
                             <div class="p-field p-grid">
-                                <label for="effectif" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Effectif</label>
+                                <label for="effectif" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">#{msg['convention.effective']}</label>
                                 <div class="p-col-12 p-md-10">
                                     <p:selectOneMenu id="effectif" value="#{structureCreationView.effectif}" style="width:12rem">
-                                        <f:selectItem itemLabel="Selectionner un effectif" itemValue="" noSelectionOption="true"/>
+                                        <f:selectItem itemLabel=" #{msg['convention.structure.select_effective']}" itemValue="" noSelectionOption="true"/>
                                         <f:selectItems value="#{structureCreationView.effectifs}"/>
                                     </p:selectOneMenu>
                                 </div>
                             </div>
                             <div class="p-field p-grid">
-                                <label for="typeEtab" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Type d'établissement</label>
+                                <label for="typeEtab" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">#{msg['convention.establishment_type']}</label>
                                 <div class="p-col-12 p-md-10">
                                     <p:selectOneMenu id="typeEtab" value="#{structureCreationView.typeStructure}" style="width:12rem">
-                                        <f:selectItem itemLabel="Selectionner un type de structure" itemValue="" noSelectionOption="true"/>
+                                        <f:selectItem itemLabel="#{msg['convention.select_structure_type']}" itemValue="" noSelectionOption="true"/>
                                         <f:selectItems value="#{structureCreationView.typesStructure}"/>
                                     </p:selectOneMenu>
                                 </div>
                             </div>
-                            <h2>Activité</h2>
+
+                            <h2>#{msg['convention.activity']}</h2>
                             <div class="p-field p-grid">
-                                <label for="codeAPE" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Code APE</label>
+                                <label for="codeAPE" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">#{msg['convention.ape_code']}</label>
                                 <div class="p-col-12 p-md-10">
                                     <p:inputText id="codeAPE" type="text" value="#{structureCreationView.codeAPE}"/>
                                 </div>
@@ -87,67 +88,67 @@
                                 </div>
                             </div>
 
-                            <h2>Coordonnées</h2>
+                            <h2>#{msg['convention.contact_information']}</h2>
                             <div class="p-field p-grid">
-                                <label for="voie" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Voie</label>
+                                <label for="voie" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">#{msg['convention.way']}</label>
                                 <div class="p-col-12 p-md-10">
                                     <p:inputText id="voie" type="text" value="#{structureCreationView.voie}"/>
                                 </div>
                             </div>
                             <div class="p-field p-grid">
-                                <label for="codePostal" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Code postal</label>
+                                <label for="codePostal" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">#{msg['convention.postal_code']}</label>
                                 <div class="p-col-12 p-md-10">
                                     <p:inputText id="codePostal" type="text" value="#{structureCreationView.codePostal}"/>
                                 </div>
                             </div>
                             <div class="p-field p-grid">
-                                <label for="batiment" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Bâtiment / Résidence / Z.I.</label>
+                                <label for="batiment" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">#{msg['convention.building']}</label>
                                 <div class="p-col-12 p-md-10">
                                     <p:inputText id="batiment" type="text" value="#{structureCreationView.batiment}"/>
                                 </div>
                             </div>
                             <div class="p-field p-grid">
-                                <label for="commune" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Commune</label>
+                                <label for="commune" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">#{msg['convention.commune']}</label>
                                 <div class="p-col-12 p-md-10">
                                     <p:inputText id="commune" type="text" value="#{structureCreationView.commune}"/>
                                 </div>
                             </div>
                             <div class="p-field p-grid">
-                                <label for="cedex" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Libellé Cedex ou Localité de destination</label>
+                                <label for="cedex" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">#{msg['convention.cedex']}</label>
                                 <div class="p-col-12 p-md-10">
                                     <p:inputText id="cedex" type="text" value="#{structureCreationView.cedex}"/>
                                 </div>
                             </div>
                             <div class="p-field p-grid">
-                                <label for="pays" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Pays</label>
+                                <label for="pays" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">#{msg['convention.country']}</label>
                                 <div class="p-col-12 p-md-10">
                                     <p:selectOneMenu id="pays" value="#{structureCreationView.pays}" style="width:12rem">
-                                        <f:selectItem itemLabel="Selectionner un pays" itemValue="" noSelectionOption="true"/>
+                                        <f:selectItem itemLabel="#{msg['convention.select_a_country']}" itemValue="" noSelectionOption="true"/>
                                         <f:selectItems value="#{structureCreationView.paysList}"/>
                                     </p:selectOneMenu>
                                 </div>
                             </div>
                             <p:separator/>
                             <div class="p-field p-grid">
-                                <label for="email" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Adresse mail</label>
+                                <label for="email" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">#{msg['convention.mail']}</label>
                                 <div class="p-col-12 p-md-10">
                                     <p:inputText id="email" type="text" value="#{structureCreationView.email}"/>
                                 </div>
                             </div>
                             <div class="p-field p-grid">
-                                <label for="phone" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Téléphone</label>
+                                <label for="phone" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">#{msg['convention.phone']}</label>
                                 <div class="p-col-12 p-md-10">
                                     <p:inputText id="phone" type="text" value="#{structureCreationView.phone}"/>
                                 </div>
                             </div>
                             <div class="p-field p-grid">
-                                <label for="website" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Site Internet</label>
+                                <label for="website" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">#{msg['convention.website']}</label>
                                 <div class="p-col-12 p-md-10">
                                     <p:inputText id="website" type="text" value="#{structureCreationView.website}"/>
                                 </div>
                             </div>
                             <div class="p-field p-grid">
-                                <label for="fax" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">Fax</label>
+                                <label for="fax" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">#{msg['convention.fax']}</label>
                                 <div class="p-col-12 p-md-10">
                                     <p:inputText id="fax" type="text" value="#{structureCreationView.fax}"/>
                                 </div>
@@ -158,15 +159,15 @@
                         </p:commandButton>
                     </h:form>
                 </p:tab>
-                <p:tab title="Service d'accueil" disabled="false">
+                <p:tab title="#{msg['convention.nav.service']}" disabled="false">
                 </p:tab>
-                <p:tab title="Tuteur Professionel" disabled="false">
+                <p:tab title="#{msg['convention.nav.tutor']}" disabled="false">
                 </p:tab>
-                <p:tab title="Stage" disabled="false">
+                <p:tab title="#{msg['convention.nav.stage']}" disabled="false">
                 </p:tab>
-                <p:tab title="Enseignant Référent" disabled="false">
+                <p:tab title="#{msg['convention.nav.teacher']}" disabled="false">
                 </p:tab>
-                <p:tab title="Signataire" disabled="false">
+                <p:tab title="#{msg['convention.nav.signator']}" disabled="false">
                 </p:tab>
 
             </p:tabView>

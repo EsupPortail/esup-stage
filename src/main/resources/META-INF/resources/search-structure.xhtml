@@ -9,39 +9,39 @@
     <h:form id="form">
         <span class="ui-input-icon-left">
         <em class="pi pi-search" />
-        <p:inputText placeholder="SIRET" value="#{searchStructureView.inputSiret}">
+        <p:inputText placeholder="#{msg['convention.siret_number']}" value="#{searchStructureView.inputSiret}">
         </p:inputText>
-        <p:inputText placeholder="Raison sociale" value="#{searchStructureView.inputRaisonSociale}">
+        <p:inputText placeholder="#{msg['convention.social_reason']}" value="#{searchStructureView.inputRaisonSociale}">
         </p:inputText>
-            <p:inputText placeholder="Département" value="#{searchStructureView.inputDepartement}">
+            <p:inputText placeholder="#{msg['convention.department']}" value="#{searchStructureView.inputDepartement}">
         </p:inputText>
         </span>
-        <p:commandButton value="Rechercher" actionListener="#{searchStructureView.searchCompagny}" id="id" update="radioDT"></p:commandButton>
+        <p:commandButton value="#{msg['convention.search']}" actionListener="#{searchStructureView.searchCompagny}" id="id" update="radioDT"></p:commandButton>
         <p:growl id="msgs" showDetail="true" skipDetailIfEqualsSummary="true"/>
 
         <div class="card">
             <p:dataTable id="radioDT" var="structure" value="#{searchStructureView.structures}"
                             selection="#{searchStructureView.selectedStructure}" rowKey="#{structure.id}">
                 <p:column selectionMode="single" style="text-align:center"/>
-                <p:column headerText="Raison sociale">
+                <p:column headerText="#{msg['convention.social_reason']}">
                     <h:outputText value="#{structure.raisonSociale}" />
                 </p:column>
 
-                <p:column headerText="Numéro SIRET">
+                <p:column headerText="#{msg['convention.siret_number']}">
                     <h:outputText value="#{structure.numeroSiret}" />
                 </p:column>
 
-                <p:column headerText="Voie">
+                <p:column headerText="#{msg['convention.way']}">
                     <h:outputText value="#{structure.voie}" />
                 </p:column>
 
-                <p:column headerText="Code postal">
+                <p:column headerText="#{msg['convention.postal_code']}">
                     <h:outputText value="#{structure.codePostal}" />
                 </p:column>
-                <p:column headerText="Commune">
+                <p:column headerText="#{msg['convention.commune']}">
                     <h:outputText value="#{structure.commune}" />
                 </p:column>
-                <p:column headerText="Pays">
+                <p:column headerText="#{msg['convention.country']}">
                     <h:outputText value="#{structure.pay}" />
                 </p:column>
                 <f:facet name="footer">
@@ -50,7 +50,7 @@
                     <br/>
                     L'établissement n'existe pas encore ?
 
-                    <p:linkButton outcome="/create-structure" value="Créez le !" style="margin-right:20px;"></p:linkButton>
+                    <p:linkButton outcome="/create-structure" value="#{msg['convention.create_it']}" style="margin-right:20px;"></p:linkButton>
 
                 </f:facet>
             </p:dataTable>
@@ -65,43 +65,43 @@
                             <div class="product-grid-item-content">
                                 <p:panelGrid columns="2" style="width: 100%">
 
-                                    <h:outputText value="Raison sociale"/>
+                                    <h:outputText value="#{msg['convention.social_reason']}"/>
                                     <h:outputText value="#{searchStructureView.selectedStructure.raisonSociale}"/>
 
-                                    <h:outputText value="Type d'établissement"/>
+                                    <h:outputText value="#{msg['convention.establishment_type']}"/>
                                     <h:outputText value="--"/>
 
-                                    <h:outputText value="Statut juridique"/>
+                                    <h:outputText value="#{msg['convention.juridical_status']}"/>
                                     <h:outputText value="#{searchStructureView.selectedStructure.statutJuridique}"/>
 
-                                    <h:outputText value="Effectif"/>
+                                    <h:outputText value="#{msg['convention.effective']}"/>
                                     <h:outputText value="#--"/>
 
-                                    <h:outputText value="Numéro SIRET"/>
+                                    <h:outputText value="#{msg['convention.siret_number']}"/>
                                     <h:outputText value="#{searchStructureView.selectedStructure.numeroSiret}"/>
 
-                                    <h:outputText value="Voie"/>
+                                    <h:outputText value="#{msg['convention.way']}"/>
                                     <h:outputText value="#{searchStructureView.selectedStructure.voie}"/>
 
-                                    <h:outputText value="Code postal"/>
+                                    <h:outputText value="#{msg['convention.postal_code']}"/>
                                     <h:outputText value="#{searchStructureView.selectedStructure.codePostal}"/>
 
-                                    <h:outputText value="Commune"/>
+                                    <h:outputText value="#{msg['convention.commune']}"/>
                                     <h:outputText value="#{searchStructureView.selectedStructure.commune}"/>
 
-                                    <h:outputText value="Libellé Cedex ou Localité de destination"/>
+                                    <h:outputText value="#{msg['convention.cedex']}"/>
                                     <h:outputText value="#{searchStructureView.selectedStructure.libCedex}"/>
 
-                                    <h:outputText value="Pays"/>
+                                    <h:outputText value="#{msg['convention.country']}"/>
                                     <h:outputText value="#{searchStructureView.selectedStructure.pay}"/>
 
-                                    <h:outputText value="Téléphone"/>
+                                    <h:outputText value="#{msg['convention.phone']}"/>
                                     <h:outputText value="#{searchStructureView.selectedStructure.telephone}"/>
 
-                                    <h:outputText value="Code APE"/>
+                                    <h:outputText value="#{msg['convention.ape_code']}"/>
                                     <h:outputText value="#{searchStructureView.selectedStructure.telephone}"/>
 
-                                    <h:outputText value="Activité principale"/>
+                                    <h:outputText value="#{msg['convention.activity']}"/>
                                     <h:outputText value="#{searchStructureView.selectedStructure.activitePrincipale}"/>
                                 </p:panelGrid>
                             </div>
