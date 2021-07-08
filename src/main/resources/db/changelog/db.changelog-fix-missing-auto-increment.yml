@@ -9,19 +9,13 @@ databaseChangeLog:
         author: vdubus
         changeLogFile: classpath:/db/changelog/db.changelog-base.yaml
     changes:
-    - addAutoIncrement:
-        tableName: Assurance
-        columnName: idAssurance
-        columnDataType: INT
-    - addAutoIncrement:
-        tableName: DureeDiffusion
-        columnName: idDureeDiffusion
-        columnDataType: INT
-    - addAutoIncrement:
-        tableName: FAP_Qualification
-        columnName: numFAP_Qualification
-        columnDataType: INT
-    - addAutoIncrement:
-        tableName: FAP_QualificationSimplifiee
-        columnName: idQualificationSimplifiee
-        columnDataType: INT
+    - sql:
+        comment: Disable foreign check to update auto-increments
+        dbms: mariadb
+        sql: |
+          SET FOREIGN_KEY_CHECKS=0;
+          ALTER TABLE `Assurance` MODIFY `idAssurance` INT AUTO_INCREMENT, AUTO_INCREMENT = 5;
+          ALTER TABLE `DureeDiffusion` MODIFY `idDureeDiffusion` INT AUTO_INCREMENT, AUTO_INCREMENT = 19;
+          ALTER TABLE `FAP_Qualification` MODIFY `numFAP_Qualification` INT AUTO_INCREMENT, AUTO_INCREMENT = 10;
+          ALTER TABLE `FAP_QualificationSimplifiee` MODIFY `idQualificationSimplifiee` INT AUTO_INCREMENT, AUTO_INCREMENT = 4;
+          SET FOREIGN_KEY_CHECKS=1;
