@@ -1,5 +1,5 @@
 spring:
-  profiles:
+  profiles:
     include:
     - ldap
   mail:
