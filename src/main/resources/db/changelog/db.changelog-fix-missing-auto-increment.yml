@@ -1,8 +1,9 @@
 databaseChangeLog:
 - changeSet:
-    id: fix-missing-auto-increment
+    id: fix-missing-auto-increment-mariadb
     author: vdubus
     comment: Fix missing auto-increment on a few tables
+    dbms: mariadb
     preConditions:
       changeSetExecuted:
         id: generated-initialization
@@ -10,8 +11,7 @@ databaseChangeLog:
         changeLogFile: classpath:/db/changelog/db.changelog-base.yaml
     changes:
     - sql:
-        comment: Disable foreign check to update auto-increments
-        dbms: mariadb
+        comment: Fix mission auto-increment on a few elements.
         sql: |
           SET FOREIGN_KEY_CHECKS=0;
           ALTER TABLE `Assurance` MODIFY `idAssurance` INT AUTO_INCREMENT, AUTO_INCREMENT = 5;
@@ -19,3 +19,30 @@ databaseChangeLog:
           ALTER TABLE `FAP_Qualification` MODIFY `numFAP_Qualification` INT AUTO_INCREMENT, AUTO_INCREMENT = 10;
           ALTER TABLE `FAP_QualificationSimplifiee` MODIFY `idQualificationSimplifiee` INT AUTO_INCREMENT, AUTO_INCREMENT = 4;
           SET FOREIGN_KEY_CHECKS=1;
+- changeSet:
+    id: fix-missing-auto-increment-hsqldb
+    author: vdubus
+    comment: Fix missing auto-increment on a few tables
+    dbms: hsqldb
+    preConditions:
+      changeSetExecuted:
+        id: generated-initialization
+        author: vdubus
+        changeLogFile: classpath:/db/changelog/db.changelog-base.yaml
+    changes:
+    - addAutoIncrement:
+        tableName: Assurance
+        columnName: idAssurance
+        columnDataType: INT
+    - addAutoIncrement:
+        tableName: DureeDiffusion
+        columnName: idDureeDiffusion
+        columnDataType: INT
+    - addAutoIncrement:
+        tableName: FAP_Qualification
+        columnName: numFAP_Qualification
+        columnDataType: INT
+    - addAutoIncrement:
+        tableName: FAP_QualificationSimplifiee
+        columnName: idQualificationSimplifiee
+        columnDataType: INT
