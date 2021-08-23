@@ -32,4 +32,7 @@ build/
 ### VS Code ###
 .vscode/
 
+### App config ###
 src/main/resources/application.properties
+**/src/main/resources/frontend/**
+**/src/frontend/node/**
