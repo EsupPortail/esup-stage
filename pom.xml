@@ -14,9 +14,14 @@
 	<packaging>war</packaging>
 	<name>estage</name>
 	<description>Application ESUP-Stage</description>
+
 	<properties>
+		<buildname>ROOT</buildname>
 		<java.version>11</java.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
+
 	<dependencies>
 <!--		<dependency>-->
 <!--			<groupId>org.springframework.boot</groupId>-->
@@ -44,6 +49,9 @@
 	</dependencies>
 
 	<build>
+		<finalName>${buildname}</finalName>
+		<sourceDirectory>src/main/java</sourceDirectory>
+
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
