@@ -22,11 +22,37 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
 
+        <!-- environnement local(dev: config interne) et default(config externe) -->
+        <profiles>
+                <profile>
+                        <id>dev</id>
+                        <properties>
+                                <application.configfilepath>classpath:application.properties</application.configfilepath>
+                        </properties>
+                </profile>
+                <profile>
+                        <id>default</id>
+                        <activation><activeByDefault>true</activeByDefault></activation>
+                        <properties>
+                                <application.configfilepath>file:///etc/${project.name}/application.properties</application.configfilepath>
+                        </properties>
+                </profile>
+        </profiles>
+
+
+
+
 	<dependencies>
 <!--		<dependency>-->
 <!--			<groupId>org.springframework.boot</groupId>-->
 <!--			<artifactId>spring-boot-starter-data-jpa</artifactId>-->
 <!--		</dependency>-->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>4.0.0</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -95,6 +121,29 @@
 					</execution>
 				</executions>
 			</plugin>
+
+			<!-- run tomcat : 'mvn package cargo:run' -->
+			<plugin>
+				<groupId>org.codehaus.cargo</groupId>
+				<artifactId>cargo-maven2-plugin</artifactId>
+				<version>1.8.3</version>
+				<configuration>
+					<container>
+						<containerId>tomcat9x</containerId>
+						<type>embedded</type>
+					</container>
+					<deployables>
+						<deployable>
+							<type>war</type>
+							<location>${project.build.directory}/${project.build.finalName}.war</location>
+							<properties>
+								<context>/</context>
+							</properties>
+						</deployable>
+					</deployables>
+				</configuration>
+			</plugin>
+
 		</plugins>
 	</build>
 
