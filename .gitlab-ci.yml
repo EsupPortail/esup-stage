@@ -394,7 +394,7 @@ deploy_auto_tower_frontoffice:
     - '[ "${JOB_LAUNCH_STATUS}" != "successful" ] && (echo "TOWER >> echec"; false)'
     - echo ""
   dependencies: ["app_publish"]
-  except: ["master"]
+  except: ["main"]
   tags: ["Docker"]
 
 # ==============================================
