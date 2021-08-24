@@ -23,21 +23,23 @@
 	</properties>
 
         <!-- environnement local(dev: config interne) et default(config externe) -->
-        <profiles>
-                <profile>
-                        <id>dev</id>
-                        <properties>
-                                <application.configfilepath>classpath:estage.properties</application.configfilepath>
-                        </properties>
-                </profile>
-                <profile>
-                        <id>default</id>
-                        <activation><activeByDefault>true</activeByDefault></activation>
-                        <properties>
-                                <application.configfilepath>file:///etc/${project.name}/estage.properties</application.configfilepath>
-                        </properties>
-                </profile>
-        </profiles>
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<properties>
+				<application.configfilepath>classpath:estage.properties</application.configfilepath>
+			</properties>
+		</profile>
+		<profile>
+			<id>default</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<application.configfilepath>file:///etc/${project.name}/estage.properties</application.configfilepath>
+			</properties>
+		</profile>
+	</profiles>
 
 
 
@@ -95,6 +97,16 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<configuration>
+					<delimiters>
+						<delimiter>${*}</delimiter>
+						<delimiter>@</delimiter>
+					</delimiters>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>com.github.eirslett</groupId>
