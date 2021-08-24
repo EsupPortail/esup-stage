@@ -134,6 +134,33 @@ appbuild:
     # projet properties
     - echo "PROJECT properties >> name='${APP_NAME}' + version='${APP_VERSION}' + release='${APP_RELEASE}'   (jobID=${CI_JOB_ID})"
     - echo ""
+    # pre-requis
+    - yum install -y gcc-c++ make
+    #   >> install nodejs v14
+    - yum remove -y nodejs
+    - 'curl -sL https://rpm.nodesource.com/setup_14.x | bash -'
+    - yum install -y nodejs
+    #   >> install yarn (derniere version)
+    - yum remove -y yarn
+    - 'curl -sL https://dl.yarnpkg.com/rpm/yarn.repo | tee /etc/yum.repos.d/yarn.repo'
+    - yum install -y yarn
+    # Installation de env-cmd pour la gestion des envs
+    - npm install -g env-cmd
+    # build npm (UGGLY METHOD, rm -f package-lock.json)
+    - echo "NPM 'react script' build ..."
+    - echo "-- versions ------------------"
+    - echo "NodeJS > $(node --version)"
+    - echo "Yarn   > $(yarn -version )"
+    - echo "------------------------------"
+    # pre-requis java-11
+    #    >> install openjdk-11 et definir par defaut
+    - yum install -y java-11-openjdk java-11-openjdk-devel
+    - alternatives --set javac java-11-openjdk.x86_64
+    - alternatives --set java java-11-openjdk.x86_64
+    # pre-requis maven 3.1.0
+    #    >> install maven
+    - 'curl -O http://mirrors.ibiblio.org/apache/maven/maven-3/3.2.5/binaries/apache-maven-3.2.5-bin.tar.gz'
+    - tar xzf apache-maven-3.2.5-bin.tar.gz -C /usr/local
     # build npm
     - echo "MAVEN build ..."
     - ( cd ${CI_PROJECT_DIR} ; mvn clean package )
