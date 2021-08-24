@@ -22,7 +22,9 @@ target/ROOT.war
 
 * Execution devel
 
+Cette execution passe par le fichier de configuration "src/main/resources-filtered/application.properties"
+
 ~~~shell
-[user@pc ~/git/eStage]$ mvn spring-boot:run
+[user@pc ~/git/eStage]$ mvn -Pdev clean package cargo:run
 ...
 ~~~
