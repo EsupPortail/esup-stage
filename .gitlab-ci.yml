@@ -248,7 +248,7 @@ app_publish:
     #- '[[ $(echo "${APP_VERSION}" | grep -v "0\.0\.0" | grep -cE "^[0-9]+(\.[0-9]+)*$") -eq 1 ]] && curl -s -w "HTTP_CODE > %{http_code}" -X GET "http://repository.dsi.dauphine.fr/gitlabci/?name=${CI_PROJECT_NAMESPACE}.${APP_NAME}&from=sources.dauphine.psl.eu&project_id=${CI_PROJECT_ID}&job_id=${ARTIFACT_JOB_ID}&stages=unstable,testing,stable" 1>/dev/null'
     - echo ""
   dependencies: ["make_artifact"]
-  except: ["master"]
+  except: ["main"]
   tags: ["Docker"]
 
 
@@ -479,7 +479,7 @@ deploy_auto_tower_backoffice:
     - '[ "${JOB_LAUNCH_STATUS}" != "successful" ] && (echo "TOWER >> echec"; false)'
     - echo ""
   dependencies: ["app_publish"]
-  except: ["master"]
+  except: ["main"]
   tags: ["Docker"]
 
 
