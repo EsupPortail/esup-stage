@@ -83,6 +83,20 @@
 		<finalName>${buildname}</finalName>
 		<sourceDirectory>src/main/java</sourceDirectory>
 
+		<resources>
+			<!-- resources classic -->
+                        <resource>
+                                <directory>src/main/resources</directory>
+                                <filtering>false</filtering>
+                        </resource>
+                        <!-- interpreter le fichier 'application.properties' -->
+                        <resource>
+                                <!-- interprete les valeurs en ${xxx} en fonction des attributs maven -->
+                                <directory>src/main/resources-filtered</directory>
+                                <filtering>true</filtering>
+                        </resource>
+                </resources>
+
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
