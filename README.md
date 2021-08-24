@@ -26,3 +26,10 @@ target/ROOT.war
 [user@pc ~/git/eStage]$ mvn spring-boot:run
 ...
 ~~~
+
+OU
+
+~~~shell
+$ mvn -Pdev clean package cargo:run
+...
+~~~
