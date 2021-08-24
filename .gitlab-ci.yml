@@ -140,6 +140,7 @@ appbuild:
     - yum remove -y nodejs
     - 'curl -sL https://rpm.nodesource.com/setup_14.x | bash -'
     - ls /etc/yum.repos.d/
+    - cat /etc/yum.repos.d/nodesource-el7.repo
     - yum install -y nodejs
     #   >> install yarn (derniere version)
     - yum remove -y yarn
