@@ -27,14 +27,14 @@
                 <profile>
                         <id>dev</id>
                         <properties>
-                                <application.configfilepath>classpath:application.properties</application.configfilepath>
+                                <application.configfilepath>classpath:estage.properties</application.configfilepath>
                         </properties>
                 </profile>
                 <profile>
                         <id>default</id>
                         <activation><activeByDefault>true</activeByDefault></activation>
                         <properties>
-                                <application.configfilepath>file:///etc/${project.name}/application.properties</application.configfilepath>
+                                <application.configfilepath>file:///etc/${project.name}/estage.properties</application.configfilepath>
                         </properties>
                 </profile>
         </profiles>
