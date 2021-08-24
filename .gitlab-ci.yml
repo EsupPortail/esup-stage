@@ -161,15 +161,11 @@ appbuild:
     - yum install -y java-11-openjdk java-11-openjdk-devel
     - alternatives --set javac java-11-openjdk.x86_64
     - alternatives --set java java-11-openjdk.x86_64
-    # pre-requis maven 3.1.0
+    # pre-requis maven > 3.1.0
     #    >> install maven
     - 'curl -O http://mirrors.ibiblio.org/apache/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz'
     - tar xzf apache-maven-3.6.3-bin.tar.gz -C /usr/local
-    - ls /usr/local
-    - which mvn
-    - ls -l /usr/bin/mvn
     - ln -s /usr/local/apache-maven-3.6.3/bin/mvn /usr/local/bin/mvn
-    - which mvn
     # build npm
     - echo "MAVEN build ..."
     - mvn --version
