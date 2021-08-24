@@ -16,6 +16,7 @@ Produit de remplacant "pstage" mais je ne sais pas ce que ça fait exactement
 [user@pc ~/git/eStage]$ mvn clean package
 ...
 [user@pc ~/git/eStage]$ ls target/*.war
+target/ROOT.war
 [user@pc ~/git/eStage]$ 
 ~~~
 
