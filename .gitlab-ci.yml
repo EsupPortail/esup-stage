@@ -168,6 +168,8 @@ appbuild:
     - ls /usr/local
     - which mvn
     - ls -l /usr/bin/mvn
+    - ln -s /usr/local/apache-maven-3.6.3 /usr/local/mvn
+    - which mvn
     # build npm
     - echo "MAVEN build ..."
     - mvn --version
