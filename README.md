@@ -28,10 +28,3 @@ Cette execution passe par le fichier de configuration "src/main/resources-filter
 [user@pc ~/git/eStage]$ mvn -Pdev clean package cargo:run
 ...
 ~~~
-
-OU
-
-~~~shell
-$ mvn -Pdev clean package cargo:run
-...
-~~~
