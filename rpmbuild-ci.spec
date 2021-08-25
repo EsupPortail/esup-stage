@@ -71,9 +71,12 @@ cp -r ./etc/%{name}/*      %{buildroot}/etc/%{name}/
 # ~~ scripts locaux (supervision)
 install -d -m 755                %{buildroot}/usr/local/%{name}
 # ++ copy du binaire precedement builder par "gitlab pipeline"
-cp -r ./ROOT.war                 %{buildroot}/usr/local/%{name}/ROOT.war
+[ ! -d /usr/local/catalina-war-repo ] && mkdir -p %{buildroot}/usr/local/catalina-war-repo/
+cp    ./ROOT.war                 %{buildroot}/usr/local/catalina-war-repo/ROOT.war
 # ++ copy des scripts resources
-cp    ./scripts/*                %{buildroot}/usr/local/%{name}/
+if [ -d ./scripts ]; then
+    cp    ./scripts/*                %{buildroot}/usr/local/%{name}/
+fi
 
 # ~~ dossier web
 #mkdir -p                         %{buildroot}/var/www/html
