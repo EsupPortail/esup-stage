@@ -71,7 +71,7 @@ cp -r ./etc/%{name}/*      %{buildroot}/etc/%{name}/
 # ~~ scripts locaux (supervision)
 install -d -m 755                %{buildroot}/usr/local/%{name}
 # ++ copy du binaire precedement builder par "gitlab pipeline"
-cp -r ./ROOT.war     %{buildroot}/usr/local/%{name}/ROOT.war
+cp -r ./ROOT.war                 %{buildroot}/usr/local/%{name}/ROOT.war
 # ++ copy des scripts resources
 cp    ./scripts/*                %{buildroot}/usr/local/%{name}/
 
