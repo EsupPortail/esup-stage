@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class MenuService {
 
-  private _navbarOpened = false;
+  private _navbarOpened = true;
 
   constructor() { }
 

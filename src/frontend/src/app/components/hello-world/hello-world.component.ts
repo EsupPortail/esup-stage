@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthService } from "../../services/auth.service";
 
 @Component({
   selector: 'app-hello-world',
@@ -7,9 +8,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HelloWorldComponent implements OnInit {
 
-  constructor() { }
+  constructor(private authService: AuthService) { }
 
   ngOnInit(): void {
+    this.authService.secure([]);
   }
 
 }

@@ -1,8 +1,11 @@
 <mat-toolbar color="primary">
-  <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon" (click)="slideNavbar()">
+  <button mat-icon-button (click)="slideNavbar()">
     <mat-icon>menu</mat-icon>
   </button>
-  <span>ESUP-Stage</span>
-  <span class="example-spacer"></span>
+  <span><a routerLink="/">ESUP-Stage</a></span>
+  <span class="spacer"></span>
+  <button mat-icon-button (click)="logout()">
+    <mat-icon>logout</mat-icon>
+  </button>
 </mat-toolbar>
 

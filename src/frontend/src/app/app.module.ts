@@ -12,6 +12,9 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatButtonModule } from "@angular/material/button";
 import { MenuComponent } from './components/menu/menu.component';
 import { MatListModule } from "@angular/material/list";
+import { HTTP_INTERCEPTORS, HttpClientModule } from "@angular/common/http";
+import { CookieService } from "ngx-cookie-service";
+import { TechnicalInterceptor } from "./interceptors/technical.interceptor";
 
 @NgModule({
   declarations: [
@@ -22,6 +25,7 @@ import { MatListModule } from "@angular/material/list";
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     MatSidenavModule,
@@ -30,7 +34,10 @@ import { MatListModule } from "@angular/material/list";
     MatButtonModule,
     MatListModule,
   ],
-  providers: [],
+  providers: [
+    CookieService,
+    {provide: HTTP_INTERCEPTORS, useClass: TechnicalInterceptor, multi: true }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

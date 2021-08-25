@@ -17,4 +17,8 @@ export class HeaderComponent implements OnInit {
     let opened = this.menuService.navbarOpened;
     this.menuService.navbarOpened = !opened;
   }
+
+  logout(): void {
+    console.log('logged out');
+  }
 }
