@@ -6,6 +6,7 @@ public class AppConfig {
     private String casUrlLogin;
     private String casUrlLogout;
     private String casUrlService;
+    private String url;
 
     public String getCasUrlLogin() {
         return casUrlLogin;
@@ -31,10 +32,20 @@ public class AppConfig {
         this.casUrlService = casUrlService;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     public void initProperties(Properties props, String prefixeProps) {
         this.casUrlLogout = props.getProperty("cas.url.logout");
         this.casUrlLogin = props.getProperty("cas.url.login");
         this.casUrlService = props.getProperty("cas.url.service");
+
+        this.url = props.getProperty(prefixeProps+"url");
     }
 
     @Override
@@ -43,6 +54,7 @@ public class AppConfig {
                 ", casUrlLogin='" + casUrlLogin + "'" +
                 ", casUrlLogout='" + casUrlLogout + "'" +
                 ", casUrlService='" + casUrlService + "'" +
+                ", url='" + url + '\'' +
                 "}";
     }
 }

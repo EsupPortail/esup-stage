@@ -1,5 +1,6 @@
-package fr.dauphine.estage.security;
+package fr.dauphine.estage.security.filter;
 
+import fr.dauphine.estage.security.TokenFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

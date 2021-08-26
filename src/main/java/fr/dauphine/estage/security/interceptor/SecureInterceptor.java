@@ -1,8 +1,15 @@
 package fr.dauphine.estage.security.interceptor;
 
+import fr.dauphine.estage.dto.ContextDto;
+import fr.dauphine.estage.exception.ForbiddenException;
+import fr.dauphine.estage.exception.NotAcceptableException;
 import fr.dauphine.estage.exception.UnauthorizedException;
+import fr.dauphine.estage.model.RoleEnum;
 import fr.dauphine.estage.model.Utilisateur;
+import fr.dauphine.estage.model.helper.UtilisateurHelper;
+import fr.dauphine.estage.security.ServiceContext;
 import fr.dauphine.estage.security.TokenFactory;
+import fr.dauphine.estage.security.common.CasLayer;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -38,69 +45,98 @@ public class SecureInterceptor {
 
         MethodSignature methodSignature = (MethodSignature) joinPoint.getStaticPart().getSignature();
         Secure authorized = methodSignature.getMethod().getAnnotation(Secure.class);
-        String[] roles = authorized.roles();
+        RoleEnum[] roles = authorized.roles();
 
         // validation du token
         String token = null;
-        if (request.getParameter("token")!=null) {
+        if (request.getParameter("token") != null) {
             token = new String(Base64.getDecoder().decode(request.getParameter("token")));
         }
 
-        String login = null;
-        if( token!=null && TokenFactory.matchTokenPattern(token)){
+        String login;
+        String auth;
+        if (token != null && TokenFactory.matchTokenPattern(token)) {
             String[] tokenAttributes = token.split("\\|");
             login = tokenAttributes[0];
-            String date = tokenAttributes[1];
-            String hash = tokenAttributes[2];
+            auth = tokenAttributes[1];
+            String date = tokenAttributes[2];
+            String hash = tokenAttributes[3];
 
             try {
                 DateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
                 Date dateTicket = df.parse(date);
-                Date nDate	=new Date();
-                long diffMinutes	= TimeUnit.MINUTES.convert(nDate.getTime() - dateTicket.getTime(),TimeUnit.MILLISECONDS);
-                if(diffMinutes > Integer.parseInt("1800") || dateTicket.after(nDate)) {
+                Date nDate = new Date();
+                long diffMinutes = TimeUnit.MINUTES.convert(nDate.getTime() - dateTicket.getTime(), TimeUnit.MILLISECONDS);
+                if (diffMinutes > Integer.parseInt("1800") || dateTicket.after(nDate)) {
                     logger.info(" -> token expire");
-                    throw new UnauthorizedException("TOKEN_ERROR_INVALID");
+                    throw new UnauthorizedException("Token invalide");
                 }
-                if(!hash.equals(TokenFactory.generateHash(login, date, "Azkjn32klklOP"))) {
-                    throw new UnauthorizedException("TOKEN_ERROR_INVALID");
+                if (!hash.equals(TokenFactory.generateHash(login, date, "Azkjn32klklOP"))) {
+                    throw new UnauthorizedException("Token invalide");
                 }
             } catch (ParseException e) {
                 logger.info(" -> format date invalid");
-                throw new UnauthorizedException("TOKEN_ERROR_INVALID");
+                throw new UnauthorizedException("Token invalide");
             }
 
 
         } else {
-            throw new UnauthorizedException("Vous devez disposer d'un jeton valide pour vous connecter à l'application");
+            // on check si on a pas une authentification cas
+            CasLayer.CasUser casUser = (CasLayer.CasUser) request.getSession().getAttribute("casUser");
+            if (casUser == null) {
+                throw new UnauthorizedException("Token invalide");
+            } else {
+                login = casUser.getLogin();
+                auth = "cas";
+            }
         }
 
         // get the user
-//        Utilisateur utilisateur = utilisateurDao.getUtilisateurByUsername(login);
-        Utilisateur utilisateur = new Utilisateur();
-        utilisateur.setDisplayname("test");
-        utilisateur.setUsername("usernametest");
-        if (utilisateur==null) {
-            throw new UnauthorizedException("Vous devez disposer d'un jeton valide pour vous connecter à l'application");
+        Utilisateur utilisateur;
+        // TODO récupération de l'utilisateur
+//        if (auth.equals("cas")) {
+//            utilisateur = utilisateurDao.getUtilisateurByPasseport(login);
+//        } else {
+//            utilisateur = utilisateurDao.getById(Utilisateur.class, Integer.parseInt(login));
+//        }
+        utilisateur = new Utilisateur();
+        utilisateur.setUsername("username");
+        utilisateur.setDisplayname("displayname");
+        utilisateur.setActif(true);
+
+        if (utilisateur == null) {
+            throw new UnauthorizedException("Vous n'êtes pas autorisé");
+        }
+
+        // Utilisateur not active
+        if (!utilisateur.isActif()) {
+            throw new NotAcceptableException("Votre compte est inactif");
         }
 
         // si des roles sont précisés, il faut vérifier que l'utilisateur en dispose
-        if (roles!=null && roles.length>0) {
-            boolean hasRight=false;
-            for(String role:roles){
-                if (role.equals(utilisateur.getRole())) {
-                    hasRight=true;
+        if (roles != null && roles.length > 0) {
+            boolean hasRight = false;
+            for (RoleEnum role : roles) {
+                if (UtilisateurHelper.isRole(utilisateur, role)) {
+                    hasRight = true;
                 }
             }
             if (!hasRight) {
-                throw new UnauthorizedException("L'accès à cette ressource est interdit avec votre rôle");
+                throw new ForbiddenException("Votre rôle de donne pas accès à cette ressource");
             }
         }
 
-        // on stocke l'utilisateur dans la request pour le transmettre aux services
-        request.setAttribute("utilisateur",utilisateur);
+        ////////////////////////////////////
+        // on crée le contexte de service
+        ////////////////////////////////////
 
-        return joinPoint.proceed();
+        ContextDto context = new ContextDto(utilisateur, auth);
+        ServiceContext.initialize(context);
+        try {
+            return joinPoint.proceed();
+        } finally {
+            ServiceContext.cleanup();
+        }
     }
 
     private HttpServletRequest currentRequest() {

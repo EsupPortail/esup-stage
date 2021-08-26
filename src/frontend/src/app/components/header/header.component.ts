@@ -1,5 +1,6 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { MenuService } from "../../services/menu.service";
+import { AuthService } from "../../services/auth.service";
 
 @Component({
   selector: 'app-header',
@@ -8,7 +9,7 @@ import { MenuService } from "../../services/menu.service";
 })
 export class HeaderComponent implements OnInit {
 
-  constructor(private menuService: MenuService) { }
+  constructor(private menuService: MenuService, private authService: AuthService) { }
 
   ngOnInit(): void {
   }
@@ -19,6 +20,6 @@ export class HeaderComponent implements OnInit {
   }
 
   logout(): void {
-    console.log('logged out');
+    this.authService.logout();
   }
 }

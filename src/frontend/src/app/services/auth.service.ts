@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { environment } from "../../environments/environment";
 import { Observable } from "rxjs";
+import { TokenService } from "./token.service";
 
 @Injectable({
   providedIn: 'root'
@@ -10,10 +11,16 @@ export class AuthService {
 
   userConnected: any = undefined;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private tokenService: TokenService) { }
 
   getCurrentUser(): Observable<any> {
     return this.http.get(environment.apiUrl + "/users/connected");
+  }
+
+  logout() {
+    this.userConnected = undefined;
+    this.tokenService.logout();
+    window.location.href = environment.logoutUrl;
   }
 
   async secure(rights: any) {

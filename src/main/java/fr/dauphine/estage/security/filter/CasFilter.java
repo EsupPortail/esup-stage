@@ -1,4 +1,4 @@
-package fr.dauphine.estage.security;
+package fr.dauphine.estage.security.filter;
 
 import fr.dauphine.commons.exception.ApplicationClientException;
 import fr.dauphine.estage.bootstrap.ApplicationBootstrap;
@@ -37,7 +37,7 @@ public class CasFilter implements Filter {
         String	protocol	=httpServletRequest.getHeader("x-forwarded-proto");
         logger.debug("port " + port +", protocol : "+protocol);
 
-        if (httpServletRequest.getSession(true).getAttribute("casUser")==null) {
+        if (httpServletRequest.getSession(true).getAttribute("casUser") == null && httpServletRequest.getSession().getAttribute("tokenUser") == null) {
             String newURL = requestURL;
             String jSessionId = null;
             Cookie[] cookies = httpServletRequest.getCookies();

@@ -1,5 +1,6 @@
 package fr.dauphine.estage.security;
 
+import fr.dauphine.estage.model.Utilisateur;
 import fr.dauphine.estage.security.common.CasLayer;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
@@ -20,22 +21,35 @@ public class TokenFactory {
 	private	static final char TOKEN_SEP	='|';
 
 	public static String create(HttpServletRequest request) {
+		String login=null;
+		String auth=null;
 
-		String login = ((CasLayer.CasUser)request.getSession().getAttribute("casUser")).getLogin();
+		// lecture des infos CAS SAML
+		if (request.getSession().getAttribute("casUser")!=null){
+			login = ((CasLayer.CasUser)request.getSession().getAttribute("casUser")).getLogin();
+			auth = "cas";
+		} else if (request.getSession().getAttribute("tokenUser")!=null) {
+			login = ((Utilisateur)request.getSession().getAttribute("tokenUser")).getId()+"";
+			auth = "token";
+		}
 
 		if (login!=null) {
 			DateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
 			Date today = Calendar.getInstance().getTime();
-			return TokenFactory.generationToken(login, df.format(today), "Azkjn32klklOP");
+			return TokenFactory.generationToken(login, df.format(today), "Azkjn32klklOP", auth);
 		} else {
 			return null;
 		}
 	}
 
+	public static String generationTokenAuth(String login, Date date) {
+		DateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
+		return generationToken(login, df.format(date), "SeldeSurv3ill@nt", "token");
+	}
 
-	private static String generationToken(String login, String date, String sel) {
+	private static String generationToken(String login, String date, String sel, String auth) {
 		String hash = TokenFactory.generateHash(login, date, sel);
-		String token = login + TokenFactory.TOKEN_SEP + date + TokenFactory.TOKEN_SEP + hash;
+		String token = login + TokenFactory.TOKEN_SEP + auth + TokenFactory.TOKEN_SEP + date + TokenFactory.TOKEN_SEP + hash;
 		return new String(Base64.getEncoder().encode(token.getBytes()));
 	}
 
@@ -44,7 +58,7 @@ public class TokenFactory {
 	}
 
 	public static Boolean matchTokenPattern(String token) {
-		Pattern pattern = Pattern.compile("[-_A-Za-z0-9]+\\|[0-9]{14}\\|.*$");
+		Pattern pattern = Pattern.compile("[-_A-Za-z0-9]+\\|[a-z]+\\|[0-9]{14}\\|.*$");
 		Matcher matcher = pattern.matcher(token);
 		return matcher.matches();
 	}
