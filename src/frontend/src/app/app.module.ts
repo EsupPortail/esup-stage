@@ -15,13 +15,17 @@ import { MatListModule } from "@angular/material/list";
 import { HTTP_INTERCEPTORS, HttpClientModule } from "@angular/common/http";
 import { CookieService } from "ngx-cookie-service";
 import { TechnicalInterceptor } from "./interceptors/technical.interceptor";
+import { HomeComponent } from './components/home/home.component';
+import { TitleComponent } from './components/title/title.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HelloWorldComponent,
     HeaderComponent,
-    MenuComponent
+    MenuComponent,
+    HomeComponent,
+    TitleComponent
   ],
   imports: [
     BrowserModule,
