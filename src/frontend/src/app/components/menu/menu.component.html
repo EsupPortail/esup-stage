@@ -1,6 +1,12 @@
-<mat-nav-list>
-  <mat-list-item>
-    <mat-icon matListIcon>folder</mat-icon>
-    <a matLine routerLink="/hello-world">hello world</a>
-  </mat-list-item>
-</mat-nav-list>
+<div class="app-menu">
+  <mat-nav-list>
+    <mat-list-item>
+      <mat-icon matListIcon>folder</mat-icon>
+      <a matLine routerLink="/hello-world">hello world</a>
+    </mat-list-item>
+  </mat-nav-list>
+
+  <div class="app-version">
+    Version {{getAppVersion()}}
+  </div>
+</div>

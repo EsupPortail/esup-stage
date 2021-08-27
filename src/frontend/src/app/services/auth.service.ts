@@ -10,11 +10,16 @@ import { TokenService } from "./token.service";
 export class AuthService {
 
   userConnected: any = undefined;
+  appVersion: any = undefined;
 
   constructor(private http: HttpClient, private tokenService: TokenService) { }
 
   getCurrentUser(): Observable<any> {
     return this.http.get(environment.apiUrl + "/users/connected");
+  }
+
+  getAppVersion(): Observable<any> {
+    return this.http.get(environment.apiUrl + "/version", { responseType: 'text' });
   }
 
   logout() {
@@ -24,10 +29,13 @@ export class AuthService {
   }
 
   async secure(rights: any) {
-    if (this.userConnected != undefined) {
-      return this.checkRights(rights);
+    if (this.appVersion === undefined) {
+      this.appVersion = await this.getAppVersion().toPromise();
     }
-    else {
+
+    if (this.userConnected !== undefined) {
+      return this.checkRights(rights);
+    } else {
       let user = await this.getCurrentUser().toPromise();
       this.createUser(user);
       return this.checkRights(rights);
