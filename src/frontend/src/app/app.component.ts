@@ -8,7 +8,14 @@ import { MenuService } from "./services/menu.service";
 })
 export class AppComponent {
 
-  constructor(private menuService: MenuService) { }
+  favicon: HTMLLinkElement|null = document.querySelector('#app-favicon');
+
+  constructor(private menuService: MenuService) {
+    // TODO get favicon from db
+    if (this.favicon !== null) {
+      this.favicon.href = 'favicon.ico';
+    }
+  }
 
   isOpened(): boolean {
     return this.menuService.navbarOpened;

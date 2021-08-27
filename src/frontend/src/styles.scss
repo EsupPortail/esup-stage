@@ -4,6 +4,10 @@
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
+:root {
+  --primaryColor: #2e4588;
+}
+
 .text-red {
   color: #e95160;
 }
@@ -13,6 +17,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   font-weight: bold;
 }
 
-.mat-toolbar.mat-primary {
-  background-color: #2e4588 !important;
+.mat-toolbar.mat-primary
+, .mat-tab-group.mat-primary .mat-ink-bar, .mat-tab-nav-bar.mat-primary .mat-ink-bar {
+  background-color: var(--primaryColor) !important;
 }

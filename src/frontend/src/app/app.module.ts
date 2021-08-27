@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
-import { HelloWorldComponent } from './components/hello-world/hello-world.component';
 import { AppRoutingModule } from "./app-routing.module";
 import { HeaderComponent } from './components/header/header.component';
 import { MatSidenavModule } from "@angular/material/sidenav";
@@ -22,16 +21,26 @@ import { NgProgressRouterModule } from "ngx-progressbar/router";
 import { NgProgressHttpModule } from "ngx-progressbar/http";
 import { MessageComponent } from './components/message/message.component';
 import { MatDialogModule } from "@angular/material/dialog";
+import { PersonnalisationComponent } from './components/personnalisation/personnalisation.component';
+import { MatTabsModule } from "@angular/material/tabs";
+import {
+  MAT_COLOR_FORMATS,
+  NGX_MAT_COLOR_FORMATS,
+  NgxMatColorPickerModule
+} from "@angular-material-components/color-picker";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { ReactiveFormsModule } from "@angular/forms";
+import { MatInputModule } from "@angular/material/input";
 
 @NgModule({
   declarations: [
     AppComponent,
-    HelloWorldComponent,
     HeaderComponent,
     MenuComponent,
     HomeComponent,
     TitleComponent,
-    MessageComponent
+    MessageComponent,
+    PersonnalisationComponent
   ],
   imports: [
     BrowserModule,
@@ -45,16 +54,22 @@ import { MatDialogModule } from "@angular/material/dialog";
     }),
     NgProgressRouterModule,
     NgProgressHttpModule,
+    ReactiveFormsModule,
     MatSidenavModule,
     MatToolbarModule,
     MatIconModule,
     MatButtonModule,
     MatListModule,
     MatDialogModule,
+    MatTabsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    NgxMatColorPickerModule,
   ],
   providers: [
     CookieService,
-    {provide: HTTP_INTERCEPTORS, useClass: TechnicalInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: TechnicalInterceptor, multi: true },
+    { provide: MAT_COLOR_FORMATS, useValue: NGX_MAT_COLOR_FORMATS },
   ],
   bootstrap: [AppComponent]
 })
