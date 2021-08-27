@@ -5,6 +5,8 @@
 export const environment = {
   production: false,
   apiUrl : '../api',
+//   apiUrl : 'http://localhost.dauphine.fr:8080/api',
+  logoutUrl: '../logout',
 };
 
 /*
