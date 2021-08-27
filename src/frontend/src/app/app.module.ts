@@ -17,6 +17,9 @@ import { CookieService } from "ngx-cookie-service";
 import { TechnicalInterceptor } from "./interceptors/technical.interceptor";
 import { HomeComponent } from './components/home/home.component';
 import { TitleComponent } from './components/title/title.component';
+import { NgProgressModule } from "ngx-progressbar";
+import { NgProgressRouterModule } from "ngx-progressbar/router";
+import { NgProgressHttpModule } from "ngx-progressbar/http";
 
 @NgModule({
   declarations: [
@@ -32,6 +35,13 @@ import { TitleComponent } from './components/title/title.component';
     HttpClientModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    NgProgressModule.withConfig({
+      thick: true,
+      spinner: false,
+      color: "#6075e1"
+    }),
+    NgProgressRouterModule,
+    NgProgressHttpModule,
     MatSidenavModule,
     MatToolbarModule,
     MatIconModule,
