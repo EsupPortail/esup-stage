@@ -20,6 +20,8 @@ import { TitleComponent } from './components/title/title.component';
 import { NgProgressModule } from "ngx-progressbar";
 import { NgProgressRouterModule } from "ngx-progressbar/router";
 import { NgProgressHttpModule } from "ngx-progressbar/http";
+import { MessageComponent } from './components/message/message.component';
+import { MatDialogModule } from "@angular/material/dialog";
 
 @NgModule({
   declarations: [
@@ -28,7 +30,8 @@ import { NgProgressHttpModule } from "ngx-progressbar/http";
     HeaderComponent,
     MenuComponent,
     HomeComponent,
-    TitleComponent
+    TitleComponent,
+    MessageComponent
   ],
   imports: [
     BrowserModule,
@@ -47,6 +50,7 @@ import { NgProgressHttpModule } from "ngx-progressbar/http";
     MatIconModule,
     MatButtonModule,
     MatListModule,
+    MatDialogModule,
   ],
   providers: [
     CookieService,
