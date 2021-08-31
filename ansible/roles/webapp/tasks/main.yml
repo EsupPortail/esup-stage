@@ -169,9 +169,9 @@
   service:
    name: "{{ item }}"
    state: started
-  with_items: ["tomcat9","firewalld"]
+  with_items: ["tomcat9.0","firewalld"]
 - name: ensure.services.enable
   service:
     name: "{{ item }}"
     enabled: yes
-  with_items: ["tomcat9","firewalld"]
+  with_items: ["tomcat9.0","firewalld"]
