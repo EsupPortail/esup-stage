@@ -20,6 +20,11 @@
     owner: root
     group: root
     mode: 0640
+- name: webapp.config.enable
+  file:
+    src: /etc/httpd/conf.d/webapps-available/estage.qualif.dauphine.psl.eu_estage.conf
+    dest: /etc/httpd/conf.d/webapps-enabled/estage.qualif.dauphine.psl.eu_estage.conf
+    state: link
 - name: webapp.config.test
   command: apachectl configtest
   notify: httpd.restart
