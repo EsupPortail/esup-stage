@@ -1,0 +1,10 @@
+---
+###########################################################################################################
+# variables:                                                                                         ######
+#    "ESTAGE_ENVIRONMENT" >>  gere par la PROD dans l'INVENTORY                                 ######
+#    "ESTAGE_PROJECT"     >>  gere dans le GIT par l'équipe projet via 'ansible/extra-vars.yml' ######
+###########################################################################################################
+
+ESTAGE_PROJECT:
+  DO_APP: true
+  DO_PROXY: true

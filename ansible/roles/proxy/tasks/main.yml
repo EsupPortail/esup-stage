@@ -1,0 +1,11 @@
+---
+
+###################################################################
+### PREREQUIS                                                ######
+###################################################################
+# -- OS cible
+- name: check.invalid.requirement
+  fail: 
+    -msg: "playbook for OS='{{ target_os.name }}/{{ target_os.version }}' only -> host with OS='{{ ansible_distribution|lower }}/{{ ansible_distribution_major_version }}'"
+  when: not(ansible_distribution|lower==target_os.name and ansible_distribution_major_version|int==target_os.version)
+####################################################################

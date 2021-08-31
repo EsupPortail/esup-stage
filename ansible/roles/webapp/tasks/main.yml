@@ -1,0 +1,177 @@
+---
+
+###################################################################
+### PREREQUIS                                                ######
+###################################################################
+# -- OS cible
+- name: check.invalid.requirement
+  fail: 
+    msg: "playbook for OS='{{ target_os.name }}/{{ target_os.version }}' only -> host with OS='{{ ansible_distribution|lower }}/{{ ansible_distribution_major_version }}'"
+  when: not(ansible_distribution|lower==target_os.name and ansible_distribution_major_version|int==target_os.version)
+####################################################################
+
+
+####################################################################
+### RECUPERATION DU TAG/BRANCH GIT                            ######
+####################################################################
+- name: vars_converter.tower.appversion
+  set_fact: 
+    APP_VERSION: "{{ awx_job_scm_branch }}"
+- name: install.app_version
+  debug: 
+    msg: "Deploiement de l'applicatif en version => {{ APP_VERSION }}"
+###################################################################
+
+
+###################################################################
+### MOTD                                                     ######
+###################################################################
+- name: docs.motd.touch
+  copy: 
+    content: ""
+    dest: "/etc/motd"
+    force: no  
+    owner: root
+    group: root
+    mode: 0644
+- name: docs.motd.description
+  blockinfile:
+    path: /etc/motd
+    marker_begin: "BEGIN ESTAGE_WEBAPP"
+    marker_end:   "END   ESTAGE_WEBAPP"
+    marker: "# {mark} ANSIBLE-MANAGED-BLOCK"
+    content: |
+      -- Description >> Webapp pour ESTAGE
+      -- Manager     >> Claude Sylvanie
+      -- Source      >> https{{ ':' }}//sources.dauphine.psl.eu/scolarite/estage
+      -- Log         >>
+      -- Tower       >>
+      -- Version     >> {{ APP_VERSION }} deployed at {{ ansible_date_time.date }}
+      -- Supervision >> 
+    backup: no
+###################################################################
+
+
+###################################################################
+### WEBAPP "estage" (INTEGRATION)                            ######
+###################################################################
+# install
+- name: yum_repository.soa
+  yum_repository: 
+    name: "soa"
+    description: "depot SOA"
+    baseurl: "http://repository.dsi.dauphine.fr/soa_stable/"
+    enabled: no
+- name: dnf_install.estage
+  dnf: 
+    name: "estage-{{ APP_VERSION }}-*"
+    state: latest
+    disable_gpg_check: yes
+    update_cache: yes
+    enablerepo: soa
+  notify: app.restart
+# lanceur API
+#- name: app.service
+#  template: src="templates/estage.service.j2" dest="/usr/lib/systemd/system/estage.service"  owner=root group=root mode=0644
+#  notify: systemctl.daemon-reload
+# API config
+- name: app.config
+  template: 
+    src: "templates/application.properties.j2"
+    dest: "/etc/estage/application.properties"
+    owner: root
+    group: root
+    mode: 0640
+  notify: app.restart
+# handler right-now
+- name: handlers.force
+  meta: flush_handlers
+
+
+
+
+###################################################################
+### service : firewall                                       ######
+###################################################################
+- name: ensure.firewalld.started
+  service:
+    name: firewalld
+    state: started
+- name: firewalld.open.services
+  firewalld:
+    service: "{{ item }}"
+    permanent: true
+    immediate: yes
+    state: enabled
+  with_items: ['http']
+  notify: firewalld.restart
+- name: firewalld.open.ports
+  firewalld: 
+    port: "{{ item }}"
+    permanent: true
+    immediate: yes
+    state: enabled
+  with_items: ['{{ ESTAGE_PROD.TOMCAT.port }}/tcp']
+  notify: firewalld.restart
+# handler right-now
+- name: handlers.force
+  meta: flush_handlers
+
+
+###################################################################
+### test du service : API                                    ######
+###################################################################
+#- name: tests.webapp.api
+#  block:
+#    - name: wait.app-is-up
+#      pause: seconds=60
+    # execution des tests
+#    - name: service.supervision.local
+#      uri: url="http://localhost:{{ GESTEXAM_PROD.SPRINGBOOT.port }}/api/status/ping" method="GET" status_code=200 body_format=raw
+#    - name: service.supervision.fqdn
+#      uri: url="http://{{ inventory_hostname }}:{{ GESTEXAM_PROD.SPRINGBOOT.port }}/api/status/ping" method="GET" status_code=200 body_format=raw
+#  rescue:
+    # strategie d'arret du service (on failure)
+    ##- name: service.failure.close_http
+    ##  firewalld: service="{{ item }}" permanent=true immediate=yes state=disabled
+    ##  with_items: ['http']
+#    - name: service.confirm_failure
+#      fail: msg="Error, HTTP API service failed (sans blocage firewall sur 'http')"
+
+
+###################################################################
+### supervision                                              ######
+###################################################################
+#- name: supervision.web
+#  include_tasks: "supervision-http.yml"
+#  vars:
+#    # variables environnement - centreon
+#    host: "{{ inventory_params.centreon.host }}"
+#    username: "{{ inventory_params.centreon.username }}"
+#    password: "{{ inventory_params.centreon.password }}"
+    # label UI
+#    service: "gestexam_api"
+    # parametres sonde
+#    http_host: "{{ ansible_fqdn.split('.')[0] }}"
+#    http_port: "80"
+#    http_uri: "/api/status/ping" 
+    # comment
+#    comment: "Projet GIT > https://sources.dauphine.psl.eu/scolarite/gestexam"
+#  when:
+#    - inventory_params.centreon is defined
+#    - inventory_params.name     is defined  and ( inventory_params.name=="RU" or inventory_params.name=="PP" or inventory_params.name=="TF" )
+
+
+###################################################################
+### service : daemon/firewall                                ######
+###################################################################
+- name: ensure.services.started
+  service:
+   name: "{{ item }}"
+   state: started
+  with_items: ["tomcat9","firewalld"]
+- name: ensure.services.enable
+  service:
+    name: "{{ item }}"
+    enabled: yes
+  with_items: ["tomcat9","firewalld"]

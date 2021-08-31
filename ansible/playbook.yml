@@ -1,0 +1,28 @@
+---
+
+###############################################
+### WebApp Estage                        ######
+###############################################
+- hosts: estage_webapp
+  become: true
+  become_method: sudo
+  vars:
+    target_os:
+      name: "redhat"
+      version: 8
+    jvm: "java-11-openjdk"
+  roles:
+    - { role: "webapp", when: (ESTAGE_PROJECT.DO_WEBAPP is defined and ESTAGE_PROJECT.DO_WEBAPP) }
+
+###############################################
+### Proxy (httpd)                        ######
+###############################################
+- hosts: estage_proxy
+  become: true
+  become_method: sudo
+  vars:
+    target_os:
+      name: "redhat"
+      version: 8
+  roles:
+    - { role: "proxy", when: (ESTAGE_PROJECT.DO_PROXY is defined and ESTAGE_PROJECT.DO_PROXY) }
