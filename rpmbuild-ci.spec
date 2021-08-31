@@ -84,7 +84,7 @@ fi
 #( cd %{buildroot}/var/www/html/; tar xfz webroot.tgz; mv build gestexam; rm -f webroot.tgz )
 
 # ~~ logs output
-#install -d -m 755          %{buildroot}/var/log/%{name}
+install -d -m 755          %{buildroot}/var/log/%{name}
 
 # ~~ export-dir document
 #install -d -m 755          %{buildroot}/opt/%{name}/upload-documents
@@ -98,8 +98,9 @@ tree -L 4 %{buildroot}/
 ##%attr(-,root,root)                              /etc/logrotate.d/*
 ##%attr(-,root,root)                              /opt/%{name}/upload-documents
 ##%attr(-,root,root)                              /usr/local/%{name}
-##%attr(-,root,root)                              /var/log/%{name}
+%attr(-,root,root)                              /var/log/%{name}
 ##%attr(-,root,root)                              /var/www/html/%{name}
+%attr(-,root,root)                              /usr/local/catalina-war-repo/%{name}
 
 
 %clean
