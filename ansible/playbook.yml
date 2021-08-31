@@ -23,6 +23,6 @@
   vars:
     target_os:
       name: "redhat"
-      version: 8
+      version: 7
   roles:
     - { role: "proxy", when: (ESTAGE_PROJECT.DO_PROXY is defined and ESTAGE_PROJECT.DO_PROXY) }
