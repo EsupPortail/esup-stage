@@ -42,7 +42,7 @@ Group:          Scolarite
 URL:            https://sources.dauphine.psl.eu/scolarite/gestexam
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:  redhat-lsb-core, tree, maven
-Requires:	tomcat9.0, java-11-openjdk, java-11-openjdk-headless, jq, tee
+Requires:	tomcat9.0, java-11-openjdk, java-11-openjdk-headless, jq, coreutils
 
 %description
 estage (voir spec : https://sources.dauphine.psl.eu/scolarite/estage).
