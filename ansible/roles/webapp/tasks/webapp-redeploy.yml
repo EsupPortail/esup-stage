@@ -12,7 +12,7 @@
 # stopper le tomcat
 - name: tomcat.stop
   service: 
-    name: {{ tomcatid }}
+    name: "{{ tomcatid }}"
     state: stopped
 - name: tomcat.stop.wait
   pause: 
@@ -59,7 +59,7 @@
 # demarrer le tomcat
 - name: tomcat.started
   service: 
-    name: {{ tomcatid }}
+    name: "{{ tomcatid }}"
     state: started
 - name: tomcat.stop.wait
   pause: 
