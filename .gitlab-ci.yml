@@ -322,9 +322,7 @@ deploy_instructions:
     - echo "Information à fournir"                                                     >> /tmp/prod-instructions.txt
     - echo "========================"                                                  >> /tmp/prod-instructions.txt
     - echo " "                                                                         >> /tmp/prod-instructions.txt
-    - echo "    JOB_TEMPLATE   = \"JOBTPL_${CI_PROJECT_PATH}_frontoffice\""            >> /tmp/prod-instructions.txt
-    - echo "  ou"                                                                      >> /tmp/prod-instructions.txt
-    - echo "    JOB_TEMPLATE   = \"JOBTPL_${CI_PROJECT_PATH}_backoffice\""             >> /tmp/prod-instructions.txt
+    - echo "    JOB_TEMPLATE   = \"JOBTPL_${CI_PROJECT_PATH}\""                        >> /tmp/prod-instructions.txt
     - echo " "                                                                         >> /tmp/prod-instructions.txt
     - echo "    ENVIRONNEMENT  = << \"PROD\", \"PREPROD\", \"TEST_FONCTIONNEL\" >>"    >> /tmp/prod-instructions.txt
     - echo "    VMs FQDN       = << a donner la 1ere fois >>"                          >> /tmp/prod-instructions.txt
