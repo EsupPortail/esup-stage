@@ -6,6 +6,9 @@
 #- name: postfix.restart
 #  service: name=postfix         state=restarted
 
+- name: httpd.reload
+  command: apachectl graceful
+
 - name: httpd.restart
   service: name=httpd           state=restarted
 
