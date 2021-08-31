@@ -96,10 +96,10 @@ tree -L 4 %{buildroot}/
 %attr(-,root,root)                              /etc/%{name}
 ##%attr(-,root,root)                              /etc/rsyslog.d/*
 ##%attr(-,root,root)                              /etc/logrotate.d/*
-%attr(-,root,root)                              /opt/%{name}/upload-documents
-%attr(-,root,root)                              /usr/local/%{name}
-%attr(-,root,root)                              /var/log/%{name}
-%attr(-,root,root)                              /var/www/html/%{name}
+##%attr(-,root,root)                              /opt/%{name}/upload-documents
+##%attr(-,root,root)                              /usr/local/%{name}
+##%attr(-,root,root)                              /var/log/%{name}
+##%attr(-,root,root)                              /var/www/html/%{name}
 
 
 %clean
