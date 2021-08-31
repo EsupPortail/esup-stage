@@ -27,5 +27,5 @@
     state: link
 - name: webapp.config.test
   command: apachectl configtest
-  notify: httpd.restart
+  notify: httpd.reload
 ###################################################################
