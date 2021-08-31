@@ -15,7 +15,7 @@
 ###################################################################
 - name: webapp.config.deploy
   template: 
-    src: "templates/estage.qualif.dauphine.psl.eu.conf.j2"
+    src: "templates/estage.qualif.dauphine.psl.eu_estage.conf.j2"
     dest: "/etc/httpd/conf.d/webapps-available/estage.qualif.dauphine.psl.eu_estage.conf"
     owner: root
     group: root
