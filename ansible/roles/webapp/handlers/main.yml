@@ -20,3 +20,11 @@
 
 - name: nrpe.restart
   service: name=nrpe            state=restarted
+
+# == redeploiment webapp ==========================
+- name: redeploy.webapp
+  include_tasks: "webapp-redeploy.yml"
+  vars:
+    webapp: "ROOT"
+    tomcatid: "tomcat9.0"
+    delai: 35

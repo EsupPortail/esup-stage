@@ -69,7 +69,7 @@
     disable_gpg_check: yes
     update_cache: yes
     enablerepo: soa
-  notify: app.restart
+  notify: redeploy.webapp
 # lanceur API
 #- name: app.service
 #  template: src="templates/estage.service.j2" dest="/usr/lib/systemd/system/estage.service"  owner=root group=root mode=0644
@@ -82,7 +82,7 @@
     owner: root
     group: root
     mode: 0640
-  notify: app.restart
+  notify: redeploy.webapp
 # handler right-now
 - name: handlers.force
   meta: flush_handlers
