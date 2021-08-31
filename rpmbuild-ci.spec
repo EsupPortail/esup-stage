@@ -100,7 +100,7 @@ tree -L 4 %{buildroot}/
 ##%attr(-,root,root)                              /usr/local/%{name}
 %attr(-,root,root)                              /var/log/%{name}
 ##%attr(-,root,root)                              /var/www/html/%{name}
-%attr(-,root,root)                              /usr/local/catalina-war-repo/%{name}
+%attr(-,root,root)                              /usr/local/catalina-war-repo/
 
 
 %clean
