@@ -111,7 +111,7 @@
     permanent: true
     immediate: yes
     state: enabled
-  with_items: ['{{ ESTAGE_PROD.TOMCAT.port }}/tcp']
+  with_items: ['{{ ESTAGE_ENVIRONMENT.TOMCAT.port }}/tcp']
   notify: firewalld.restart
 # handler right-now
 - name: handlers.force
