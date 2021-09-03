@@ -1,7 +1,7 @@
 package fr.dauphine.estage.security.filter;
 
-import fr.dauphine.commons.exception.ApplicationClientException;
 import fr.dauphine.estage.bootstrap.ApplicationBootstrap;
+import fr.dauphine.estage.exception.ApplicationClientException;
 import fr.dauphine.estage.security.common.CasLayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

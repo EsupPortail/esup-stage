@@ -43,21 +43,6 @@
 		</profile>
 	</profiles>
 
-	<!-- DAUPHINE REPOSITORY -->
-	<repositories>
-		<repository>
-			<id>archiva-dauphine</id>
-			<name>Archiva Dauphine Repository</name>
-			<url>http://archiva.dsi.dauphine.fr/archiva/repository/dauphine/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-
 	<dependencies>
 <!--		<dependency>-->
 <!--			<groupId>org.springframework.boot</groupId>-->
@@ -76,10 +61,24 @@
 			<groupId>org.liquibase</groupId>
 			<artifactId>liquibase-core</artifactId>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
 		<dependency>
-			<groupId>fr.dauphine</groupId>
-			<artifactId>java-commons</artifactId>
-			<version>${dauphine.java-commons.version}</version>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.11.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5.13</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.json/json -->
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20210307</version>
 		</dependency>
 
 		<dependency>
