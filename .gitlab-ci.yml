@@ -169,7 +169,10 @@ appbuild:
     # build npm
     - echo "MAVEN build ..."
     - mvn --version
-    - ( cd ${CI_PROJECT_DIR} ; mvn clean package )
+    # TESTS UNITAIRES uniquement sur le profil "dev"
+    ##- ( cd ${CI_PROJECT_DIR} ; mvn -Pdev clean package )
+    # PACKAGING RPM sans test-unitaire
+    - ( cd ${CI_PROJECT_DIR} ; mvn clean package -Dmaven.test.skip=true)
     # envoi en cache
     - echo "CACHE copy ..."
     - mkdir -p ${PROJECT_CACHE_DIR}
