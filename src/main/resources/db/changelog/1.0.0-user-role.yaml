@@ -1,0 +1,120 @@
+databaseChangeLog:
+- changeSet:
+    id: userRole
+    author: ssound
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+                nullable: false
+                primaryKey: true
+            name: idUtilisateur
+            type: INT
+        - column:
+            constraints:
+                unique: true
+                nullable: false
+            name: login
+            type: VARCHAR(255)
+        - column:
+            name: password
+            type: VARCHAR(255)
+        - column:
+            name: nom
+            type: VARCHAR(255)
+        - column:
+            name: prenom
+            type: VARCHAR(255)
+        - column:
+            constraints:
+                nullable: false
+            name: actif
+            type: BIT
+        tableName: Utilisateur
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+                nullable: false
+                primaryKey: true
+            name: idRole
+            type: INT
+        - column:
+            constraints:
+                unique: true
+                nullable: false
+            name: code
+            type: VARCHAR(10)
+        tableName: Role
+    - createTable:
+        columns:
+        - column:
+            constraints:
+                nullable: false
+                foreignKeyName: fk_UtilisateurRole_Utilisateur1
+                references: Utilisateur(idUtilisateur)
+            name: idUtilisateur
+            type: INT
+        - column:
+            constraints:
+                nullable: false
+                foreignKeyName: fk_UtilisateurRole_Role1
+                references: Role(idRole)
+            name: idRole
+            type: INT
+        tableName: UtilisateurRole
+    - addPrimaryKey:
+        columnNames: idUtilisateur, idRole
+        constraintName: PRIMARY
+        tableName: UtilisateurRole
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: ADM
+        tableName: Role
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: RESP_GES
+        tableName: Role
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: GES
+        tableName: Role
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: ENS
+        tableName: Role
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: ETU
+        tableName: Role
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: OBS
+        tableName: Role
+- changeSet:
+    id: userRole-dateCreation
+    author: ssound
+    changes:
+    - addColumn:
+        tableName: Utilisateur
+        columns:
+        - column:
+            name: dateCreation
+            type: datetime
+            constraints:
+                nullable: false

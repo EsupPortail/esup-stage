@@ -9,6 +9,6 @@ public class UtilisateurHelper {
     }
 
     public static boolean isRole(Utilisateur utilisateur, RoleEnum code) {
-        return utilisateur.getRole().equals(code.name());
+        return utilisateur.getRoles().stream().filter(r -> r.getCode() == code).count() == 1;
     }
 }

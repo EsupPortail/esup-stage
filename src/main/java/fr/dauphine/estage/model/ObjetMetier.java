@@ -1,9 +1,8 @@
 package fr.dauphine.estage.model;
 
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import fr.dauphine.estage.security.ServiceContext;
+
+import javax.persistence.*;
 import java.util.Date;
 
 @MappedSuperclass
@@ -53,5 +52,25 @@ public abstract class ObjetMetier {
 
     public void setDateModif(Date dateModif) {
         this.dateModif = dateModif;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        setDateCreation(new Date());
+        setLoginCreation(getUtilisateurLogin());
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        setDateModif(new Date());
+        setLoginModif(getUtilisateurLogin());
+    }
+
+    private static String getUtilisateurLogin() {
+        if (ServiceContext.getServiceContext()!=null) {
+            return ServiceContext.getServiceContext().getUtilisateur().getLogin();
+        } else {
+            return null;
+        }
     }
 }

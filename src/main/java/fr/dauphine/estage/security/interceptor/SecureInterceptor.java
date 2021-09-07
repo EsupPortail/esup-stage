@@ -7,6 +7,7 @@ import fr.dauphine.estage.exception.UnauthorizedException;
 import fr.dauphine.estage.model.RoleEnum;
 import fr.dauphine.estage.model.Utilisateur;
 import fr.dauphine.estage.model.helper.UtilisateurHelper;
+import fr.dauphine.estage.repository.UtilisateurRepository;
 import fr.dauphine.estage.security.ServiceContext;
 import fr.dauphine.estage.security.TokenFactory;
 import fr.dauphine.estage.security.common.CasLayer;
@@ -16,6 +17,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -34,6 +36,9 @@ import java.util.concurrent.TimeUnit;
 public class SecureInterceptor {
 
     private static final Logger logger = LoggerFactory.getLogger(SecureInterceptor.class);
+
+    @Autowired
+    UtilisateurRepository utilisateurRepository;
 
     @Around("@annotation(Secure)")
     public Object checkAuthorization(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -93,16 +98,11 @@ public class SecureInterceptor {
 
         // get the user
         Utilisateur utilisateur;
-        // TODO récupération de l'utilisateur
-//        if (auth.equals("cas")) {
-//            utilisateur = utilisateurDao.getUtilisateurByPasseport(login);
-//        } else {
-//            utilisateur = utilisateurDao.getById(Utilisateur.class, Integer.parseInt(login));
-//        }
-        utilisateur = new Utilisateur();
-        utilisateur.setUsername("username");
-        utilisateur.setDisplayname("displayname");
-        utilisateur.setActif(true);
+        if (auth.equals("cas")) {
+            utilisateur = utilisateurRepository.findOneByLogin(login);
+        } else {
+            utilisateur = utilisateurRepository.findById(Integer.parseInt(login));
+        }
 
         if (utilisateur == null) {
             throw new UnauthorizedException("Vous n'êtes pas autorisé");
