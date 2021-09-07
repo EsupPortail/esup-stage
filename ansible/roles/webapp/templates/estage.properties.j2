@@ -1,7 +1,8 @@
 # parametres des URLs pour l'authentication CAS
-cas.url.login=https://passeport.qualif.dauphine.fr/cas/login?service={service}
-cas.url.service=https://passeport.qualif.dauphine.fr/cas/p3/serviceValidate?service={service}&ticket={ticket}&format=json
-cas.url.logout=https://passeport.qualif.dauphine.fr/cas/logout
+cas.url.login   ={{ ESTAGE_ENVIRONMENT.passeport_url | default('https://passeport.dauphine.fr/cas',true }}/login?service={service}
+cas.url.service ={{ ESTAGE_ENVIRONMENT.passeport_url | default('https://passeport.dauphine.fr/cas',true }}/p3/serviceValidate?service={service}&ticket={ticket}&format=json
+cas.url.logout  ={{ ESTAGE_ENVIRONMENT.passeport_url | default('https://passeport.dauphine.fr/cas',true }}/logout
 
 # url de l'application (notamment utilisée pour envoyer des liens par mail)
-appli.url=https://estage.qualif.dauphine.psl.eu/
+appli.url={{ ESTAGE_ENVIRONMENT.appli_url }}
+
