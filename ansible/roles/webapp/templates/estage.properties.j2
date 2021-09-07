@@ -6,3 +6,14 @@ cas.url.logout  ={{ ESTAGE_ENVIRONMENT.passeport_url | default('https://passepor
 # url de l'application (notamment utilisée pour envoyer des liens par mail)
 appli.url={{ ESTAGE_ENVIRONMENT.appli_url }}
 
+# parametres base de donnees
+appli.datasource.url={{ ESTAGE_ENVIRONMENT.DATASOURCE.url }}
+appli.datasource.username={{ ESTAGE_ENVIRONMENT.DATASOURCE.username }}
+appli.datasource.password={{ ESTAGE_ENVIRONMENT.DATASOURCE.password }}
+appli.datasource.driver={{ ESTAGE_ENVIRONMENT.DATASOURCE.driver }}
+
+# url de l'application (notamment utilisée pour envoyer des liens par mail)
+appli.url={{ ESTAGE_ENVIRONMENT.appli_url }}
+
+# logins des admin technique, séparés par des ; (utilisateurs à créer au 1er lancement pour paramétrer l'application)
+appli.admin_technique={{ ESTAGE_ENVIRONMENT.appli_admintech }}

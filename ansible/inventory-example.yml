@@ -5,5 +5,16 @@
 #    "ESTAGE_PROJECT"     >>  gere dans le GIT par l'équipe projet via 'ansible/extra-vars.yml'      ######
 ###########################################################################################################
 
-ESTAGE_PROJECT:
-  dummy: true
+ESTAGE_ENVIRONMENT:
+  TOMCAT:
+    port: 8009
+    secret: "******"
+    host: "t1-estage-al1.cric.dauphine.fr"
+  DATASOURCE:
+    driver: "org.mariadb.jdbc.Driver"
+    url: "jdbc:mariadb://t1-estage-al1.cric.dauphine.fr:3306/estage"
+    username: "estage"
+    password: "******"
+  passeport_url: "https://passeport.qualif.dauphine.fr/cas"
+  appli_url: "https://estage.qualif.dauphine.psl.eu/frontend/#/"
+  appli_admintech: "csylvanie;ssound"
