@@ -118,3 +118,13 @@ databaseChangeLog:
             type: datetime
             constraints:
                 nullable: false
+- changeSet:
+    id: userRole-admtech
+    author: ssound
+    changes:
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: ADM_TECH
+        tableName: Role

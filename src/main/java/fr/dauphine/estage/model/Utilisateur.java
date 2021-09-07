@@ -10,7 +10,7 @@ import java.util.List;
 public class Utilisateur {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idUtilisateur", nullable = false)
     private int id;
 
@@ -103,5 +103,10 @@ public class Utilisateur {
 
     public void setRoles(List<Role> roles) {
         this.roles = roles;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        setDateCreation(new Date());
     }
 }
