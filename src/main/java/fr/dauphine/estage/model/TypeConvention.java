@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class TypeConvention {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idTypeConvention", nullable = false)
     private int id;
 

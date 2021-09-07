@@ -8,7 +8,7 @@ import java.util.Date;
 public class Structure extends ObjetMetier {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idStructure", nullable = false)
     private int id;
 

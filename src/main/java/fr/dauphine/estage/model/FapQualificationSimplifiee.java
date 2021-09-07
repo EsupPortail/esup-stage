@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class FapQualificationSimplifiee {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idQualificationSimplifiee", nullable = false)
     private int id;
 

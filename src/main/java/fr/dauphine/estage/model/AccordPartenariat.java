@@ -7,7 +7,7 @@ import java.util.Date;
 @Table(name = "AccordPartenariat")
 public class AccordPartenariat {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idAccordPartenariat", nullable = false)
     private int id;
 

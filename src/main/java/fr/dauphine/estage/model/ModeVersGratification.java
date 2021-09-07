@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class ModeVersGratification {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idModeVersGratification", nullable = false)
     private int id;
 

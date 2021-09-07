@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class Niveau {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idNiveau", nullable = false)
     private int id;
 

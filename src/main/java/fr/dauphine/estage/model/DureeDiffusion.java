@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class DureeDiffusion {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idDureeDiffusion", nullable = false)
     private int id;
 

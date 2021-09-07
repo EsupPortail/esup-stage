@@ -9,7 +9,7 @@ import java.util.Date;
 public class Convention extends ObjetMetier {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idConvention", nullable = false)
     private int id;
 

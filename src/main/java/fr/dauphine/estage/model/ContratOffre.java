@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class ContratOffre {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idContratOffre", nullable = false)
     private int id;
 

@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class CentreGestion extends ObjetMetier {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idCentreGestion", nullable = false)
     private int id;
 

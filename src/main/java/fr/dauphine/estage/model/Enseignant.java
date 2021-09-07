@@ -11,7 +11,7 @@ import javax.persistence.*;
 public class Enseignant extends ObjetMetier {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idEnseignant", nullable = false)
     private int id;
 

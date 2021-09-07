@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class TypeStructure {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idTypeStructure", nullable = false)
     private int id;
 

@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class ModeValidationStage {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idModeValidationStage", nullable = false)
     private int id;
 

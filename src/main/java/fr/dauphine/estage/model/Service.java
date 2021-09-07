@@ -8,7 +8,7 @@ import java.util.Date;
 public class Service extends ObjetMetier {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idService", nullable = false)
     private int id;
 

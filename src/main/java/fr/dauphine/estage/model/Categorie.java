@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class Categorie {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idCategorie", nullable = false)
     private int id;
 

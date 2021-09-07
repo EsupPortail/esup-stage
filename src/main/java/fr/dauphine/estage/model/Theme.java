@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class Theme {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idTheme", nullable = false)
     private int id;
 

@@ -6,7 +6,7 @@ import javax.persistence.*;
 @Table(name = "FAP_Qualification")
 public class FapQualification {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "numFAP_Qualification", nullable = false)
     private int id;
 

@@ -9,7 +9,7 @@ import java.util.List;
 public class ModeCandidature {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idModeCandidature", nullable = false)
     private int id;
 

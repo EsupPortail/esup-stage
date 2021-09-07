@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class Fichier {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idFichier", nullable = false)
     private int id;
 
