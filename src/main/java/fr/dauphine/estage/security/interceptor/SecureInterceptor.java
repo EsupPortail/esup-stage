@@ -7,7 +7,7 @@ import fr.dauphine.estage.exception.UnauthorizedException;
 import fr.dauphine.estage.model.RoleEnum;
 import fr.dauphine.estage.model.Utilisateur;
 import fr.dauphine.estage.model.helper.UtilisateurHelper;
-import fr.dauphine.estage.repository.UtilisateurRepository;
+import fr.dauphine.estage.repository.UtilisateurJpaRepository;
 import fr.dauphine.estage.security.ServiceContext;
 import fr.dauphine.estage.security.TokenFactory;
 import fr.dauphine.estage.security.common.CasLayer;
@@ -38,7 +38,7 @@ public class SecureInterceptor {
     private static final Logger logger = LoggerFactory.getLogger(SecureInterceptor.class);
 
     @Autowired
-    UtilisateurRepository utilisateurRepository;
+    UtilisateurJpaRepository utilisateurRepository;
 
     @Around("@annotation(Secure)")
     public Object checkAuthorization(ProceedingJoinPoint joinPoint) throws Throwable {

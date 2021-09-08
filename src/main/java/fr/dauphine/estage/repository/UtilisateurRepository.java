@@ -1,15 +1,18 @@
 package fr.dauphine.estage.repository;
 
 import fr.dauphine.estage.model.Utilisateur;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.EntityManager;
+import java.util.Arrays;
+
 @Repository
-public interface UtilisateurRepository extends JpaRepository<Utilisateur, Integer> {
+public class UtilisateurRepository extends PaginationRepository<Utilisateur> {
 
-    Utilisateur findById(int id);
+    protected final String alias = "u";
 
-    @Query("SELECT u FROM Utilisateur u WHERE u.login = :login AND u.actif = true")
-    Utilisateur findOneByLogin(String login);
+    public UtilisateurRepository(EntityManager em) {
+        super(em, Utilisateur.class, "u");
+        this.predicateWhitelist = Arrays.asList("login", "nom", "prenom", "actif");
+    }
 }

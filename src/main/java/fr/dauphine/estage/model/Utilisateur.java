@@ -7,7 +7,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "Utilisateur")
-public class Utilisateur {
+public class Utilisateur implements PaginatedEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -3,7 +3,7 @@ package fr.dauphine.estage.security.filter;
 import fr.dauphine.estage.bootstrap.ApplicationBootstrap;
 import fr.dauphine.estage.exception.ApplicationClientException;
 import fr.dauphine.estage.model.Utilisateur;
-import fr.dauphine.estage.repository.UtilisateurRepository;
+import fr.dauphine.estage.repository.UtilisateurJpaRepository;
 import fr.dauphine.estage.security.common.CasLayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +25,7 @@ public class CasFilter implements Filter {
     ApplicationBootstrap applicationBootstrap;
 
     @Autowired
-    UtilisateurRepository utilisateurRepository;
+    UtilisateurJpaRepository utilisateurRepository;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {

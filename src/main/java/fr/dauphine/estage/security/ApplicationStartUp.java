@@ -5,7 +5,7 @@ import fr.dauphine.estage.model.Role;
 import fr.dauphine.estage.model.RoleEnum;
 import fr.dauphine.estage.model.Utilisateur;
 import fr.dauphine.estage.repository.RoleRepository;
-import fr.dauphine.estage.repository.UtilisateurRepository;
+import fr.dauphine.estage.repository.UtilisateurJpaRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ public class ApplicationStartUp {
     ApplicationBootstrap applicationBootstrap;
 
     @Autowired
-    UtilisateurRepository utilisateurRepository;
+    UtilisateurJpaRepository utilisateurRepository;
 
     @Autowired
     RoleRepository roleRepository;
