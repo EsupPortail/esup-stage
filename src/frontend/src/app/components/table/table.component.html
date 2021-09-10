@@ -1,0 +1,55 @@
+<mat-card *ngIf="filters.length > 0">
+  <mat-card-content>
+    <form>
+      <div class="row">
+        <mat-form-field class="col-md-3" appearance="fill" *ngFor="let filter of filters">
+          <mat-label>{{filter.libelle}}</mat-label>
+          <ng-container [ngSwitch]="filter.type">
+            <ng-container *ngSwitchCase="'boolean'">
+              <mat-select [name]="filter.id" [(ngModel)]="filterValues[filter.id].value">
+                <mat-option></mat-option>
+                <mat-option [value]="true">Oui</mat-option>
+                <mat-option [value]="false">Non</mat-option>
+              </mat-select>
+            </ng-container>
+            <ng-container *ngSwitchDefault>
+              <input matInput [name]="filter.id" [(ngModel)]="filterValues[filter.id].value" />
+            </ng-container>
+          </ng-container>
+        </mat-form-field>
+      </div>
+      <div class="text-right">
+        <button mat-button (click)="reset()">Supprimer les filters</button>
+        <button mat-button color="primary" (click)="update()">Rechercher</button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>
+
+<table mat-table [dataSource]="data" matSort [matSortActive]="sortColumn" matSortDisableClear [matSortDirection]="sortOrder" (matSortChange)="sort($event)">
+  <ng-container *ngFor="let column of columns" [matColumnDef]="column.id">
+    <ng-container *ngIf="column.id === 'action'; else notAction">
+      <th mat-header-cell *matHeaderCellDef>{{column.libelle}}</th>
+      <td mat-cell *matCellDef="let row">
+        <ng-container [ngTemplateOutlet]="actionTemplate" [ngTemplateOutletContext]="{data: row}"></ng-container>
+      </td>
+    </ng-container>
+    <ng-template #notAction>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="!column.sortable">{{column.libelle}}</th>
+      <ng-container [ngSwitch]="column.type">
+        <ng-container *ngSwitchCase="'boolean'">
+          <td mat-cell *matCellDef="let row">{{row[column.id] | boolean}}</td>
+        </ng-container>
+        <ng-container *ngSwitchDefault>
+          <td mat-cell *matCellDef="let row">{{row[column.id]}}</td>
+        </ng-container>
+      </ng-container>
+    </ng-template>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+</table>
+
+<mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" [pageSize]="pageSize" [length]="total" (page)="changePaginator($event)"></mat-paginator>

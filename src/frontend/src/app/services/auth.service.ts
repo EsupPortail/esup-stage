@@ -3,6 +3,7 @@ import { HttpClient } from "@angular/common/http";
 import { environment } from "../../environments/environment";
 import { Observable } from "rxjs";
 import { TokenService } from "./token.service";
+import { Role } from "../constants/role";
 
 @Injectable({
   providedIn: 'root'
@@ -51,11 +52,16 @@ export class AuthService {
     if (Array.isArray(rights) && rights.length > 0) {
       hasRight = false;
       rights.forEach(right => {
-        if (right == this.userConnected.role) {
+        const roles = this.userConnected.roles.map((r: any) => r.code);
+        if (roles.indexOf(right) > -1) {
           hasRight = true;
         }
       });
     }
     return hasRight;
+  }
+
+  isAdmin() {
+    return this.userConnected && this.checkRights(Role.ADM.code);
   }
 }

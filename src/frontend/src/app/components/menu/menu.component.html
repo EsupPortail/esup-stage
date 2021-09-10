@@ -1,10 +1,12 @@
 <div class="app-menu">
   <mat-nav-list>
-    <a matLine routerLink="/personnalisation">
-      <mat-list-item>
-        <mat-icon matListIcon fontSet="fa" fontIcon="fa-cog"></mat-icon> Personnalisation
-      </mat-list-item>
-    </a>
+    <ng-container *ngFor="let route of routes">
+      <a matLine [routerLink]="route.path" *ngIf="route.canView()">
+        <mat-list-item>
+          <mat-icon matListIcon fontSet="fa" [fontIcon]="route.icon"></mat-icon> {{route.libelle}}
+        </mat-list-item>
+      </a>
+    </ng-container>
   </mat-nav-list>
 
   <div class="app-version">

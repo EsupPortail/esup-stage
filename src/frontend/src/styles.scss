@@ -21,3 +21,25 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 , .mat-tab-group.mat-primary .mat-ink-bar, .mat-tab-nav-bar.mat-primary .mat-ink-bar {
   background-color: var(--primaryColor) !important;
 }
+
+.mat-tab-body-wrapper {
+  margin-top: 20px;
+}
+
+.mat-table {
+  width: 100%;
+}
+
+.mat-tooltip {
+  font-size: 0.75em !important;
+}
+
+form {
+  font-size: 0.8rem;
+}
+
+.mat-card {
+  box-shadow: none !important;
+  border-radius: unset !important;
+  margin-bottom: 20px;
+}

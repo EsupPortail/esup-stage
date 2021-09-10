@@ -1,0 +1,12 @@
+<mat-tab-group>
+  <mat-tab label="Liste">
+    <app-table [service]="userService" [columns]="columns" [sortColumn]="sortColumn" [actionTemplate]="actionTemplate" [filters]="filters"></app-table>
+
+    <ng-template #actionTemplate let-data="data">
+      <button mat-icon-button matTooltip="Éditer" (click)="edit(data)"><i class="fa fa-pen"></i></button>
+    </ng-template>
+  </mat-tab>
+  <mat-tab label="Création">
+
+  </mat-tab>
+</mat-tab-group>

@@ -1,7 +1,7 @@
 <ng-progress></ng-progress>
 <app-header></app-header>
 <mat-sidenav-container>
-  <mat-sidenav mode="side" [opened]="isOpened()">
+  <mat-sidenav mode="side" [opened]="isOpened()" *ngIf="isConnected()">
     <app-menu></app-menu>
   </mat-sidenav>
   <mat-sidenav-content>
