@@ -33,7 +33,7 @@ public class Utilisateur implements PaginatedEntity {
     @Column(nullable = false)
     private Date dateCreation;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
     @JoinTable(
             name = "UtilisateurRole",
             joinColumns = @JoinColumn(name = "idUtilisateur"),

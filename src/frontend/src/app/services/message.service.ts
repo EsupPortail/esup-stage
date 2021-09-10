@@ -40,7 +40,7 @@ export class MessageService {
   }
 
   setSuccess(message: string, keep: boolean = false): void {
-    this.setMessage(message, 'sucess', keep);
+    this.setMessage(message, 'success', keep);
   }
 
   setWarning(message: string, keep: boolean = true): void {
