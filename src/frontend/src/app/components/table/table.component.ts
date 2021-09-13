@@ -47,6 +47,7 @@ export class TableComponent implements OnInit {
     this.service.getPaginated(this.page, this.pageSize, this.sortColumn, this.sortOrder, JSON.stringify(f)).subscribe((results: any) => {
       this.total = results.total;
       this.data = results.data;
+      this.onUpdated.emit(this.data);
     });
   }
 
