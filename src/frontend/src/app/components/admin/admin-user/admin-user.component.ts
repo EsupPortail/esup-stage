@@ -119,7 +119,7 @@ export class AdminUserComponent implements OnInit {
           this.messageService.setSuccess('Utilisateur modifé');
         })
       } else {
-        // TODO create
+        // TODO create : en attente de la configuration du REST LDAP par établissement
       }
     }
   }
