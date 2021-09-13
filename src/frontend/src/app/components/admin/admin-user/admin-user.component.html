@@ -1,10 +1,31 @@
 <mat-tab-group #tabs (selectedTabChange)="tabChanged($event)">
   <mat-tab label="Liste">
-    <app-table #table [service]="userService" [columns]="columns" [sortColumn]="sortColumn" [actionTemplate]="actionTemplate" [filters]="filters"></app-table>
+    <app-table [service]="userService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters"
+               matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'" (matSortChange)="appTable ? appTable.sorting($event) : null">
+      <ng-container matColumnDef="login">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Login</th>
+        <td mat-cell *matCellDef="let row">{{row.login}}</td>
+      </ng-container>
+      <ng-container matColumnDef="nom">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Nom</th>
+        <td mat-cell *matCellDef="let row">{{row.nom}}</td>
+      </ng-container>
+      <ng-container matColumnDef="prenom">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Prénom</th>
+        <td mat-cell *matCellDef="let row">{{row.prenom}}</td>
+      </ng-container>
+      <ng-container matColumnDef="actif">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Actif</th>
+        <td mat-cell *matCellDef="let row">{{row.actif|boolean}}</td>
+      </ng-container>
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let row">
+          <button mat-icon-button matTooltip="Éditer" (click)="edit(data)"><i class="fa fa-pen"></i></button>
+        </td>
+      </ng-container>
+    </app-table>
 
-    <ng-template #actionTemplate let-data="data">
-      <button mat-icon-button matTooltip="Éditer" (click)="edit(data)"><i class="fa fa-pen"></i></button>
-    </ng-template>
   </mat-tab>
   <mat-tab label="{{data.id ? 'Édition' : 'Création'}}">
     <mat-card>

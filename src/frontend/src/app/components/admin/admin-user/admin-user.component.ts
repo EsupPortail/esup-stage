@@ -6,6 +6,7 @@ import { RoleService } from "../../../services/role.service";
 import { MessageService } from "../../../services/message.service";
 import { TableComponent } from "../../table/table.component";
 import { AuthService } from "../../../services/auth.service";
+import { MatTable } from "@angular/material/table";
 
 @Component({
   selector: 'app-admin-user',
@@ -38,8 +39,8 @@ export class AdminUserComponent implements OnInit {
     textField: 'code',
   }
 
-  @ViewChild('table') table: TableComponent;
-  @ViewChild('tabs') tabs: MatTabGroup;
+  @ViewChild(TableComponent) appTable: TableComponent | undefined;
+  @ViewChild('tabs') tabs: MatTabGroup | undefined;
 
   constructor(
     public userService: UserService,
@@ -93,7 +94,9 @@ export class AdminUserComponent implements OnInit {
 
   edit(data: any): void {
     this.data = data;
-    this.tabs.selectedIndex = this.formTabIndex;
+    if (this.tabs) {
+      this.tabs.selectedIndex = this.formTabIndex;
+    }
     this.setFormData();
     this.form.get('login')?.disable();
     // Interdiction de se désactiver soi-même
@@ -115,7 +118,9 @@ export class AdminUserComponent implements OnInit {
         this.userService.update(this.data.id, this.form.value).subscribe((response: any) => {
           this.data = response;
           this.setFormData();
-          this.table.update();
+          if (this.appTable) {
+            this.appTable.update();
+          }
           this.messageService.setSuccess('Utilisateur modifé');
         })
       } else {

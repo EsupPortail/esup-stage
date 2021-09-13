@@ -1,22 +1,33 @@
-import { Component, EventEmitter, Input, OnInit, Output, TemplateRef } from '@angular/core';
+import {
+  AfterContentInit,
+  Component, ContentChildren,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output, QueryList,
+  ViewChild
+} from '@angular/core';
 import { Sort, SortDirection } from "@angular/material/sort";
 import { PageEvent } from "@angular/material/paginator";
+import { MatColumnDef, MatTable } from "@angular/material/table";
 
 @Component({
   selector: 'app-table',
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.scss']
 })
-export class TableComponent implements OnInit {
+export class TableComponent implements OnInit, AfterContentInit {
 
   @Input() service: any;
   @Input() columns: any;
   @Input() sortColumn: string = '';
   @Input() sortOrder: SortDirection = 'asc';
-  @Input() actionTemplate: TemplateRef<any> | null = null;
   @Input() filters: any[] = [];
 
   @Output() onUpdated = new EventEmitter<any>();
+
+  @ViewChild(MatTable, { static: true }) table: MatTable<any> | undefined;
+  @ContentChildren(MatColumnDef) columnDefs: QueryList<MatColumnDef> | undefined;
 
   displayedColumns = [];
   total: number = 0;
@@ -31,6 +42,16 @@ export class TableComponent implements OnInit {
     this.displayedColumns = this.columns.map((c: any) => c.id);
     this.initFilters();
     this.update();
+  }
+
+  ngAfterContentInit() {
+    if (this.columnDefs) {
+      this.columnDefs.forEach(columnDef => {
+        if (this.table) {
+          this.table.addColumnDef(columnDef)
+        }
+      });
+    }
   }
 
   update(): void {
@@ -57,7 +78,7 @@ export class TableComponent implements OnInit {
     this.update();
   }
 
-  sort(event: Sort): void {
+  sorting(event: Sort): void {
     this.sortColumn = event.active;
     this.sortOrder = event.direction;
     this.update();
