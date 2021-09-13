@@ -47,6 +47,9 @@ import { MatCardModule } from "@angular/material/card";
 import { RoleLibellePipe } from './pipes/role-libelle.pipe';
 import { MatSelectModule } from "@angular/material/select";
 import { MatCheckboxModule } from "@angular/material/checkbox";
+import { ConventionSearchComponent } from './components/convention/convention-search/convention-search.component';
+import { ConventionCreateComponent } from './components/convention/convention-create/convention-create.component';
+import { MatStepperModule } from "@angular/material/stepper";
 
 registerLocaleData(localeFr, 'fr');
 
@@ -62,7 +65,9 @@ registerLocaleData(localeFr, 'fr');
     AdminUserComponent,
     TableComponent,
     BooleanPipe,
-    RoleLibellePipe
+    RoleLibellePipe,
+    ConventionSearchComponent,
+    ConventionCreateComponent
   ],
   imports: [
     BrowserModule,
@@ -95,6 +100,7 @@ registerLocaleData(localeFr, 'fr');
     MatCardModule,
     MatSelectModule,
     MatCheckboxModule,
+    MatStepperModule,
   ],
   providers: [
     CookieService,

@@ -1,15 +1,13 @@
-<div class="app-menu">
-  <mat-nav-list>
-    <ng-container *ngFor="let route of routes">
-      <a matLine [routerLink]="route.path" *ngIf="route.canView()">
-        <mat-list-item>
-          <mat-icon matListIcon fontSet="fa" [fontIcon]="route.icon"></mat-icon> {{route.libelle}}
-        </mat-list-item>
-      </a>
-    </ng-container>
-  </mat-nav-list>
-
-  <div class="app-version">
-    Version {{getAppVersion()}}
-  </div>
+<a mat-list-item [ngStyle]="{'padding-left': (depth * 12) + 'px'}" (click)="onItemSelected(item)"
+   [ngClass]="{'active': item.path ? router.isActive(item.path, true): false, 'expanded': expanded}"
+   *ngIf="!item.canView || item.canView()"
+   class="menu-list-item">
+  <ng-container>
+    <mat-icon *ngIf="item.icon && !item.children" matListIcon fontSet="fa" [fontIcon]="item.icon"></mat-icon>
+    <mat-icon *ngIf="item.children" [@indicatorRotate]="expanded ? 'expanded': 'collapsed'">expand_less</mat-icon>
+  </ng-container>
+  {{item.libelle}}
+</a>
+<div *ngIf="expanded">
+  <app-menu *ngFor="let child of item.children" [item]="child" [depth]="depth+1"></app-menu>
 </div>

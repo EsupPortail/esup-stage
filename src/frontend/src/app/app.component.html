@@ -2,7 +2,14 @@
 <app-header></app-header>
 <mat-sidenav-container>
   <mat-sidenav mode="side" [opened]="isOpened()" *ngIf="isConnected()">
-    <app-menu></app-menu>
+    <div class="app-menu">
+      <mat-nav-list>
+        <app-menu *ngFor="let item of items" [item]="item"></app-menu>
+      </mat-nav-list>
+      <div class="app-version">
+        Version {{getAppVersion()}}
+      </div>
+    </div>
   </mat-sidenav>
   <mat-sidenav-content>
     <app-title></app-title>
