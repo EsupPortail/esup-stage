@@ -6,10 +6,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Parameter;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class PaginationRepository<T> {
 
@@ -71,7 +74,8 @@ public class PaginationRepository<T> {
         }
 
         logger.debug("Dynamic query string: " + queryString);
-        logger.debug("Paramters: " + query.getParameters());
+        Set<Parameter<?>> parameters = query.getParameters();
+        logger.debug("Parameters: {" + parameters.stream().map(p -> p.getName() + ": " + query.getParameterValue(p.getName())).collect(Collectors.joining(", ")) + "}");
 
         return query.getResultList();
     }

@@ -10,6 +10,7 @@ import {
 import { Sort, SortDirection } from "@angular/material/sort";
 import { PageEvent } from "@angular/material/paginator";
 import { MatColumnDef, MatTable } from "@angular/material/table";
+import { PaginatedService } from "../../services/paginated.service";
 
 @Component({
   selector: 'app-table',
@@ -18,7 +19,7 @@ import { MatColumnDef, MatTable } from "@angular/material/table";
 })
 export class TableComponent implements OnInit, AfterContentInit {
 
-  @Input() service: any;
+  @Input() service: PaginatedService;
   @Input() columns: any;
   @Input() sortColumn: string = '';
   @Input() sortOrder: SortDirection = 'asc';
@@ -29,7 +30,6 @@ export class TableComponent implements OnInit, AfterContentInit {
   @ViewChild(MatTable, { static: true }) table: MatTable<any> | undefined;
   @ContentChildren(MatColumnDef) columnDefs: QueryList<MatColumnDef> | undefined;
 
-  displayedColumns = [];
   total: number = 0;
   data: any;
   page: number = 1;
@@ -39,7 +39,6 @@ export class TableComponent implements OnInit, AfterContentInit {
   constructor() { }
 
   ngOnInit(): void {
-    this.displayedColumns = this.columns.map((c: any) => c.id);
     this.initFilters();
     this.update();
   }

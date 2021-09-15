@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { TableComponent } from "../../table/table.component";
+import { ConventionService } from "../../../services/convention.service";
 
 @Component({
   selector: 'app-convention-search',
@@ -7,7 +9,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ConventionSearchComponent implements OnInit {
 
-  constructor() { }
+  columns = ['id', 'etudiant', 'etablissement', 'periode', 'ufr', 'etape', 'validationPedagogique', 'validationConvention', 'avenant', 'annee', 'action']
+  sortColumn = 'id';
+  filters = [];
+
+  @ViewChild(TableComponent) appTable: TableComponent | undefined;
+
+  constructor(public conventionService: ConventionService) {
+  }
 
   ngOnInit(): void {
   }

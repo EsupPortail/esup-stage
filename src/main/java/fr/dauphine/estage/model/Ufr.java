@@ -1,14 +1,19 @@
 package fr.dauphine.estage.model;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import fr.dauphine.estage.dto.view.Views;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "Ufr")
 public class Ufr {
 
+    @JsonView(Views.List.class)
     @EmbeddedId
     private UfrId id;
 
+    @JsonView(Views.List.class)
     @Column(name = "libelleUFR", nullable = false, length = 100)
     private String libelle;
 

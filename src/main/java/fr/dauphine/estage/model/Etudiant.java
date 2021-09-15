@@ -1,5 +1,8 @@
 package fr.dauphine.estage.model;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import fr.dauphine.estage.dto.view.Views;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -12,14 +15,17 @@ import java.util.Date;
 )
 public class Etudiant extends ObjetMetier {
 
+    @JsonView(Views.List.class)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idEtudiant", nullable = false)
     private int id;
 
+    @JsonView(Views.List.class)
     @Column(nullable = false, length = 50)
     private String nom;
 
+    @JsonView(Views.List.class)
     @Column(nullable = false, length = 50)
     private String prenom;
 

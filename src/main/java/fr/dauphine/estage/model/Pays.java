@@ -25,7 +25,7 @@ public class Pays {
     private Integer actual;
 
     @Column(name = "CRPAY")
-    private int crpay;
+    private Integer crpay;
 
     @Column(nullable = false, length = 70)
     private String lib;
@@ -63,11 +63,11 @@ public class Pays {
         this.actual = actual;
     }
 
-    public int getCrpay() {
+    public Integer getCrpay() {
         return crpay;
     }
 
-    public void setCrpay(int crpay) {
+    public void setCrpay(Integer crpay) {
         this.crpay = crpay;
     }
 

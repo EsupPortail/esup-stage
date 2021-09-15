@@ -14,30 +14,20 @@ export class AppComponent {
 
   items: any[] = [
     {
+      libelle: 'Tableau de bord',
+      path: 'tableau-de-bord',
+      icon: 'fa-columns',
+      canView: () => {
+        return this.authService.checkRights([Role.ADM.code, Role.RESP_GES.code, Role.GES.code, Role.ENS.code, Role.ETU.code, Role.OBS.code])
+      }
+    },
+    {
       libelle: 'Utilisateurs',
       path: 'utilisateurs',
       icon: 'fa-users',
       canView: () => {
         return this.authService.checkRights([Role.ADM.code, Role.ADM_TECH.code])
       }
-    },
-    {
-      libelle: 'Conventions',
-      canView: () => {
-        return this.authService.checkRights([Role.ADM.code, Role.RESP_GES.code, Role.GES.code, Role.ENS.code, Role.ETU.code, Role.OBS.code])
-      },
-      children: [
-        {
-          libelle: 'Recherche',
-          path: 'conventions',
-          icon: 'fa-search',
-        },
-        {
-          libelle: 'Créer',
-          path: 'conventions/create',
-          icon: 'fa-plus',
-        },
-      ]
     },
   ]
 

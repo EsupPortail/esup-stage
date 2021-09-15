@@ -1,5 +1,8 @@
 package fr.dauphine.estage.model;
 
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+
 import javax.persistence.*;
 
 @Entity
@@ -81,7 +84,7 @@ public class CentreGestion extends ObjetMetier {
     private boolean autorisationEtudiantCreationConvention;
 
     @ManyToOne
-    @JoinColumn(name = "idModeValidationStage", nullable = false)
+    @JoinColumn(name = "idModeValidationStage")
     private ModeValidationStage modeValidationStage;
 
     private Boolean visibiliteEvalPro;

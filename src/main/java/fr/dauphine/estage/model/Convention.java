@@ -1,18 +1,24 @@
 package fr.dauphine.estage.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonView;
+import fr.dauphine.estage.dto.view.Views;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
 @Table(name = "Convention")
-public class Convention extends ObjetMetier {
+public class Convention extends ObjetMetier implements PaginatedEntity {
 
+    @JsonView(Views.List.class)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idConvention", nullable = false)
     private int id;
 
+    @JsonView(Views.List.class)
     @ManyToOne
     @JoinColumn(name = "idEtudiant", nullable = false)
     private Etudiant etudiant;
@@ -21,6 +27,7 @@ public class Convention extends ObjetMetier {
     @JoinColumn(name = "idCentreGestion", nullable = false)
     private CentreGestion centreGestion;
 
+    @JsonView(Views.List.class)
     @ManyToOne
     @JoinColumns({
             @JoinColumn(name = "codeUFR", referencedColumnName = "codeUFR"),
@@ -28,6 +35,7 @@ public class Convention extends ObjetMetier {
     })
     private Ufr ufr;
 
+    @JsonView(Views.List.class)
     @ManyToOne
     @JoinColumns({
             @JoinColumn(name = "codeEtape", referencedColumnName = "codeEtape"),
@@ -43,6 +51,7 @@ public class Convention extends ObjetMetier {
     @JoinColumn(name = "idEnseignant")
     private Enseignant enseignant;
 
+    @JsonView(Views.List.class)
     @ManyToOne
     @JoinColumn(name = "idStructure")
     private Structure structure;
@@ -70,10 +79,12 @@ public class Convention extends ObjetMetier {
     @Column(nullable = false)
     private String sujetStage;
 
+    @JsonView(Views.List.class)
     @Column(nullable = false)
     @Temporal(TemporalType.DATE)
     private Date dateDebutStage;
 
+    @JsonView(Views.List.class)
     @Column(nullable = false)
     @Temporal(TemporalType.DATE)
     private Date dateFinStage;
@@ -110,8 +121,10 @@ public class Convention extends ObjetMetier {
 
     private Boolean conventionStructure;
 
+    @JsonView(Views.List.class)
     private Boolean validationPedagogique;
 
+    @JsonView(Views.List.class)
     private Boolean validationConvention;
 
     @Column(nullable = false)
@@ -151,6 +164,7 @@ public class Convention extends ObjetMetier {
 
     private String details;
 
+    @JsonView(Views.List.class)
     @Column(length = 10)
     private String annee;
 
@@ -175,7 +189,7 @@ public class Convention extends ObjetMetier {
     private String modeEncadreSuivi;
 
     @ManyToOne
-    @JoinColumn(name = "idModeVersGratification", nullable = false)
+    @JoinColumn(name = "idModeVersGratification")
     private ModeVersGratification modeVersGratification;
 
     private String avantagesNature;

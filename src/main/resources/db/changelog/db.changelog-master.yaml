@@ -5,3 +5,6 @@ databaseChangeLog:
   - include:
       file: 1.0.0-user-role.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 1.0.0-foreignkey-nullable.yaml
+      relativeToChangelogFile: true

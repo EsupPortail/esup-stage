@@ -16,12 +16,12 @@ const routes: Routes = [
     data: {roles: [Role.ADM.code, Role.ADM_TECH.code], title: 'Gestion des utilisateurs'}
   },
   {
-    path: 'conventions',
+    path: 'tableau-de-bord',
     component: ConventionSearchComponent,
     canActivate: [AuthGuard],
     data: {
       roles: [Role.ADM.code, Role.RESP_GES.code, Role.GES.code, Role.ENS.code, Role.ETU.code, Role.OBS.code],
-      title: 'Recherche de conventions'
+      title: 'Tableau de bord'
     }
   },
   {

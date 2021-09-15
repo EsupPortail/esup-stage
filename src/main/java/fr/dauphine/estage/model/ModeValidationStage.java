@@ -11,7 +11,7 @@ public class ModeValidationStage {
     @Column(name = "idModeValidationStage", nullable = false)
     private int id;
 
-    @Column(name = "libelleModeValidationStage", nullable = false, length = 100)
+    @Column(name = "libelleModeValidationStage", nullable = false, length = 150)
     private String libelle;
 
     @Column(name = "temEnServModeValid", nullable = false, length = 1)

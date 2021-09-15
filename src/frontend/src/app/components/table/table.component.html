@@ -26,12 +26,22 @@
   </mat-card-content>
 </mat-card>
 
+<mat-paginator [pageSizeOptions]="[10, 25, 50, 100]"
+               [pageSize]="pageSize"
+               [length]="total"
+               [showFirstLastButtons]="true"
+               (page)="changePaginator($event)"></mat-paginator>
+
 <table mat-table [dataSource]="data">
   <ng-content></ng-content>
 
-  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  <tr mat-header-row *matHeaderRowDef="columns"></tr>
+  <tr mat-row *matRowDef="let row; columns: columns;"></tr>
 
 </table>
 
-<mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" [pageSize]="pageSize" [length]="total" (page)="changePaginator($event)"></mat-paginator>
+<mat-paginator [pageSizeOptions]="[10, 25, 50, 100]"
+               [pageSize]="pageSize"
+               [length]="total"
+               [showFirstLastButtons]="true"
+               (page)="changePaginator($event)"></mat-paginator>

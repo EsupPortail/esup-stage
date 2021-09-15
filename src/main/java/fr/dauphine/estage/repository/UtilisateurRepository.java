@@ -9,8 +9,6 @@ import java.util.Arrays;
 @Repository
 public class UtilisateurRepository extends PaginationRepository<Utilisateur> {
 
-    protected final String alias = "u";
-
     public UtilisateurRepository(EntityManager em) {
         super(em, Utilisateur.class, "u");
         this.predicateWhitelist = Arrays.asList("login", "nom", "prenom", "actif");

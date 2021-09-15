@@ -15,13 +15,7 @@ import { MatTable } from "@angular/material/table";
 })
 export class AdminUserComponent implements OnInit {
 
-  columns = [
-    { id: 'login', libelle: 'Login', sortable: true },
-    { id: 'nom', libelle: 'Nom', sortable: true },
-    { id: 'prenom', libelle: 'Prénom', sortable: true },
-    { id: 'actif', libelle: 'Actif', type: 'boolean' },
-    { id: 'action', libelle: 'Actions' },
-  ]
+  columns = ['login', 'nom', 'prenom', 'actif', 'action'];
   sortColumn = 'login';
   filters = [
     { id: 'login', libelle: 'Login' },
