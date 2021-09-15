@@ -79,7 +79,6 @@ registerLocaleData(localeFr, 'fr');
       spinner: false,
       color: "#6075e1"
     }),
-    NgProgressRouterModule,
     NgProgressHttpModule,
     ReactiveFormsModule,
     FormsModule,
