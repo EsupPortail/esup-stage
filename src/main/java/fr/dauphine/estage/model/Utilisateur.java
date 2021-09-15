@@ -27,7 +27,7 @@ public class Utilisateur implements PaginatedEntity {
     private String prenom;
 
     @Column(nullable = false)
-    private boolean actif;
+    private Boolean actif;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
@@ -81,11 +81,11 @@ public class Utilisateur implements PaginatedEntity {
         this.prenom = prenom;
     }
 
-    public boolean isActif() {
+    public Boolean isActif() {
         return actif;
     }
 
-    public void setActif(boolean actif) {
+    public void setActif(Boolean actif) {
         this.actif = actif;
     }
 

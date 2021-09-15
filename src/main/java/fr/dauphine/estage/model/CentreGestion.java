@@ -1,9 +1,8 @@
 package fr.dauphine.estage.model;
 
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
-
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "CentreGestion")
@@ -104,6 +103,9 @@ public class CentreGestion extends ObjetMetier {
 
     @Column(length = 10)
     private String codePostal;
+
+    @OneToMany(mappedBy = "centreGestion")
+    private List<PersonnelCentreGestion> personnels =  new ArrayList<>();
 
     public int getId() {
         return id;
@@ -351,5 +353,13 @@ public class CentreGestion extends ObjetMetier {
 
     public void setCodePostal(String codePostal) {
         this.codePostal = codePostal;
+    }
+
+    public List<PersonnelCentreGestion> getPersonnels() {
+        return personnels;
+    }
+
+    public void setPersonnels(List<PersonnelCentreGestion> personnels) {
+        this.personnels = personnels;
     }
 }

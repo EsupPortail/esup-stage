@@ -23,6 +23,7 @@ public class PaginationRepository<T> {
     protected JSONObject filters;
     protected final String alias;
     protected List<String> predicateWhitelist = new ArrayList<>(); // whitelist pour éviter l'injection sql au niveau du order by
+    protected List<String> joins = new ArrayList<>();
 
     public PaginationRepository(EntityManager em, Class<T> typeClass, String alias) {
         this.em = em;
@@ -33,7 +34,8 @@ public class PaginationRepository<T> {
     public Long count(String filters) {
         formatFilters(filters);
         String queryString = "SELECT COUNT(" + alias + ") FROM " + this.typeClass.getName() + " " + alias;
-        List<String> clauses = getClauses(alias);
+        queryString += " " + String.join(" ", joins);
+        List<String> clauses = getClauses();
         if (clauses.size() > 0) {
             queryString += " WHERE " + String.join(" AND ", clauses);
         }
@@ -50,7 +52,8 @@ public class PaginationRepository<T> {
     public List<PaginatedEntity> findPaginated(int page, int perPage, String predicate, String sortOrder, String filters) {
         formatFilters(filters);
         String queryString = "SELECT " + alias + " FROM " + this.typeClass.getName() + " " + alias;
-        List<String> clauses = getClauses(alias);
+        queryString += " " + String.join(" ", joins);
+        List<String> clauses = getClauses();
         if (clauses.size() > 0) {
             queryString += " WHERE " + String.join(" AND ", clauses);
         }
@@ -80,11 +83,17 @@ public class PaginationRepository<T> {
         return query.getResultList();
     }
 
-    private void formatFilters(String jsonString) {
+    protected void formatFilters(String jsonString) {
         filters = new JSONObject(jsonString);
     }
 
-    private List<String> getClauses(String alias) {
+    protected void addJoins(String join) {
+        if (!joins.contains(join)) {
+            joins.add(join);
+        }
+    }
+
+    private List<String> getClauses() {
         List<String> clauses = new ArrayList<>();
         for (int i = 0; i < filters.length(); ++ i) {
             String key = filters.names().getString(i);

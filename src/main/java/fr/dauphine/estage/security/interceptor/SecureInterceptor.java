@@ -99,9 +99,9 @@ public class SecureInterceptor {
         // get the user
         Utilisateur utilisateur;
         if (auth.equals("cas")) {
-            utilisateur = utilisateurRepository.findOneByLogin(login);
+            utilisateur = utilisateurRepository.findOneByLoginAcitf(login);
         } else {
-            utilisateur = utilisateurRepository.findById(Integer.parseInt(login));
+            utilisateur = utilisateurRepository.findByIdActif(Integer.parseInt(login));
         }
 
         if (utilisateur == null) {

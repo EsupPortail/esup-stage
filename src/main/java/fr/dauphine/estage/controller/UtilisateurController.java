@@ -47,14 +47,16 @@ public class UtilisateurController {
     @PutMapping("/{id}")
     @Secure(roles = {RoleEnum.ADM_TECH, RoleEnum.ADM})
     public Utilisateur update(@PathVariable("id") int id, @RequestBody Utilisateur requestUtilisateur) {
-        Utilisateur utilisateur = utilisateurJpaRepository.findById(id);
+        Utilisateur utilisateur = utilisateurJpaRepository.findByIdActif(id);
         if (utilisateur == null) {
             throw new NotFoundException("Utilisateur non trouvé");
         }
         utilisateur.setNom(requestUtilisateur.getNom());
         utilisateur.setPrenom(requestUtilisateur.getPrenom());
         utilisateur.setRoles(requestUtilisateur.getRoles());
-        utilisateur.setActif(requestUtilisateur.isActif());
+        if (requestUtilisateur.isActif() != null) {
+            utilisateur.setActif(requestUtilisateur.isActif());
+        }
         utilisateur = utilisateurJpaRepository.saveAndFlush(utilisateur);
         return utilisateur;
     }

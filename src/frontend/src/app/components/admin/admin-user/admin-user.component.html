@@ -21,7 +21,7 @@
       <ng-container matColumnDef="action">
         <th mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let row">
-          <button mat-icon-button matTooltip="Éditer" (click)="edit(data)"><i class="fa fa-pen"></i></button>
+          <button mat-icon-button matTooltip="Éditer" (click)="edit(row)"><i class="fa fa-pen"></i></button>
         </td>
       </ng-container>
     </app-table>

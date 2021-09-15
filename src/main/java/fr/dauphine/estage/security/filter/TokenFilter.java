@@ -44,7 +44,7 @@ public class TokenFilter implements Filter {
                 int id = Integer.parseInt(pathInfos[2]);
                 String token = pathInfos[3];
 
-                Utilisateur utilisateur = utilisateurRepository.findById(id);
+                Utilisateur utilisateur = utilisateurRepository.findByIdActif(id);
                 if (utilisateur != null) {
                     // vérification du token d'authentification
                     String tokenAuth = TokenFactory.generationTokenAuth(id+"", utilisateur.getDateCreation());
