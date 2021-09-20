@@ -6,6 +6,7 @@ import { Role } from "./constants/role";
 import { AdminUserComponent } from "./components/admin/admin-user/admin-user.component";
 import { ConventionSearchComponent } from "./components/convention/convention-search/convention-search.component";
 import { ConventionCreateComponent } from "./components/convention/convention-create/convention-create.component";
+import { AdminNomenclaturesComponent } from "./components/admin/admin-nomenclatures/admin-nomenclatures.component";
 
 const routes: Routes = [
   {path: '', component: HomeComponent, canActivate: [AuthGuard], data: {roles: [], title: 'Accueil'}},
@@ -14,6 +15,12 @@ const routes: Routes = [
     component: AdminUserComponent,
     canActivate: [AuthGuard],
     data: {roles: [Role.ADM.code, Role.ADM_TECH.code], title: 'Gestion des utilisateurs'}
+  },
+  {
+    path: 'nomenclatures',
+    component: AdminNomenclaturesComponent,
+    canActivate: [AuthGuard],
+    data: {roles: [Role.ADM.code, Role.ADM_TECH.code], title: 'Gestion des tables des nomenclatures'}
   },
   {
     path: 'tableau-de-bord',

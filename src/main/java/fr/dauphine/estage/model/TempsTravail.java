@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "TempsTravail")
-public class TempsTravail {
+public class TempsTravail implements PaginatedEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

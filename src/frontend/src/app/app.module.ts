@@ -50,6 +50,7 @@ import { MatCheckboxModule } from "@angular/material/checkbox";
 import { ConventionSearchComponent } from './components/convention/convention-search/convention-search.component';
 import { ConventionCreateComponent } from './components/convention/convention-create/convention-create.component';
 import { MatStepperModule } from "@angular/material/stepper";
+import { AdminNomenclaturesComponent } from './components/admin/admin-nomenclatures/admin-nomenclatures.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -67,7 +68,8 @@ registerLocaleData(localeFr, 'fr');
     BooleanPipe,
     RoleLibellePipe,
     ConventionSearchComponent,
-    ConventionCreateComponent
+    ConventionCreateComponent,
+    AdminNomenclaturesComponent
   ],
   imports: [
     BrowserModule,

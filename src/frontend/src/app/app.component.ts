@@ -29,6 +29,14 @@ export class AppComponent {
         return this.authService.checkRights([Role.ADM.code, Role.ADM_TECH.code])
       }
     },
+    {
+      libelle: 'Tables des nomenclatures',
+      path: 'nomenclatures',
+      icon: 'fa-table',
+      canView: () => {
+        return this.authService.checkRights([Role.ADM.code, Role.ADM_TECH.code])
+      }
+    },
   ]
 
   constructor(private menuService: MenuService, private authService: AuthService) {
