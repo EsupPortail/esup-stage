@@ -5,6 +5,7 @@ import { MatTable } from "@angular/material/table";
 import { TypeConventionService } from "../../../services/type-convention.service";
 import { LangueConventionService } from "../../../services/langue-convention.service";
 import { TempsTravailService } from "../../../services/temps-travail.service";
+import { UniteDureeService } from "../../../services/unite-duree.service";
 import { MessageService } from "../../../services/message.service";
 import { TableComponent } from "../../table/table.component";
 import { AdminNomenclaturesEditionComponent } from './admin-nomenclatures-edition/admin-nomenclatures-edition.component';
@@ -26,7 +27,8 @@ export class AdminNomenclaturesComponent implements OnInit {
   nomenclatures = [
     { key: 'id', label: 'Type Convention', service: this.typeConventionService, tableIndex: 0 },
     { key: 'code', label: 'Langue Convention', service: this.langueConventionService, tableIndex: 1 },
-    { key: 'id', label: 'Temps Travail', service: this.tempsTravailService, tableIndex: 2 }
+    { key: 'id', label: 'Temps Travail', service: this.tempsTravailService, tableIndex: 2 },
+    { key: 'id', label: 'Fréquence de versement', service: this.uniteDureeService, tableIndex: 3 },
   ];
 
   data: any;
@@ -38,6 +40,7 @@ export class AdminNomenclaturesComponent implements OnInit {
     public typeConventionService: TypeConventionService,
     public langueConventionService: LangueConventionService,
     public tempsTravailService: TempsTravailService,
+    public uniteDureeService: UniteDureeService,
     public matDialog: MatDialog,
     private messageService: MessageService,
   ) { }
