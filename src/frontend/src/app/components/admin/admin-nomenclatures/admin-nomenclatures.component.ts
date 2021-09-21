@@ -1,12 +1,14 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatTable } from "@angular/material/table";
 import { TypeConventionService } from "../../../services/type-convention.service";
 import { LangueConventionService } from "../../../services/langue-convention.service";
 import { TempsTravailService } from "../../../services/temps-travail.service";
 import { MessageService } from "../../../services/message.service";
 import { TableComponent } from "../../table/table.component";
+import { AdminNomenclaturesEditionComponent } from './admin-nomenclatures-edition/admin-nomenclatures-edition.component';
+import { ConfirmationPopupComponent } from '../../confirmation-popup/confirmation-popup.component';
 
 @Component({
   selector: 'app-admin-nomenclatures',
@@ -22,52 +24,65 @@ export class AdminNomenclaturesComponent implements OnInit {
     { id: 'libelle', libelle: 'Libellé' },
   ];
   nomenclatures = [
-    { key: 'id', label: 'Type Convention', service: this.typeConventionService },
-    { key: 'code', label: 'Langue Convention', service: this.langueConventionService },
-    { key: 'id', label: 'Temps Travail', service: this.tempsTravailService}
+    { key: 'id', label: 'Type Convention', service: this.typeConventionService, tableIndex: 0 },
+    { key: 'code', label: 'Langue Convention', service: this.langueConventionService, tableIndex: 1 },
+    { key: 'id', label: 'Temps Travail', service: this.tempsTravailService, tableIndex: 2 }
   ];
 
-  formTabIndex = 1;
   data: any;
-  form: FormGroup;
 
-  @ViewChild(TableComponent) appTable: TableComponent | undefined;
+  @ViewChildren(TableComponent) appTables: QueryList<TableComponent> | undefined;
   @ViewChild('tabs') tabs: MatTabGroup | undefined;
 
   constructor(
     public typeConventionService: TypeConventionService,
     public langueConventionService: LangueConventionService,
     public tempsTravailService: TempsTravailService,
-    private fb: FormBuilder,
+    public matDialog: MatDialog,
     private messageService: MessageService,
-  ) {
-    this.form = this.fb.group({
-      libelle: [null, [Validators.maxLength(100)]],
-    });
-    this.emptyData();
-  }
+  ) { }
 
   ngOnInit(): void {
   }
 
-  emptyData(): void {
-    this.data = {
-      libelle: null
-    };
-    this.setFormData();
-  }
-
-  setFormData(): void {
-    const data = {...this.data};
-    delete data.id;
-    delete data.codeCtrl;
-    delete data.temEnServ;
-    delete data.modifiable;
-    this.form.setValue(data);
-  }
-
   tabChanged(event: MatTabChangeEvent): void {
-    this.emptyData();
+  }
+
+  openEditionModal(service: any, data: any, tableIndex: number) {
+    this.data = data;
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.data = {service: service, data: this.data};
+    dialogConfig.width = "50%";
+    const modalDialog = this.matDialog.open(AdminNomenclaturesEditionComponent, dialogConfig);
+    modalDialog.afterClosed().subscribe(dialogResponse => {
+      if (dialogResponse == true) {
+        if (this.appTables)
+          this.appTables.toArray()[tableIndex].update();
+        this.messageService.setSuccess("Modification effectuée");
+      }
+    });
+  }
+
+  setState(service: any, data: any, actionString: string, tableIndex: number) {
+    const message = "Voulez-vous " + actionString + " le libellé '" + data.libelle + "' ?";
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.data = message;
+    dialogConfig.width = "600px";
+    dialogConfig.panelClass = "confirm-dialog";
+    const modalDialog = this.matDialog.open(ConfirmationPopupComponent, dialogConfig);
+    modalDialog.afterClosed().subscribe(dialogResponse => {
+      if (dialogResponse == true) {
+        this.data = data;
+        this.data.temEnServ = (this.data.temEnServ == "O") ? "N" : "O";
+        let key = this.data.id ? this.data.id : this.data.code;
+        service.update(key, this.data).subscribe((response: any) => {
+          this.data = response;
+          if (this.appTables)
+            this.appTables.toArray()[tableIndex].update();
+          this.messageService.setSuccess("Modification effectuée");
+        });
+      }
+    });
   }
 
 }

@@ -14,4 +14,8 @@ export class LangueConventionService implements PaginatedService {
   getPaginated(page: number, perPage: number, predicate: string, sortOrder: string, filters: string): Observable<any> {
     return this.http.get(environment.apiUrl + "/langue-convention", {params: {page, perPage, predicate, sortOrder, filters}});
   }
+
+  update(id: number, data: any): Observable<any> {
+    return this.http.put(environment.apiUrl + '/langue-convention/' + id, data);
+  }
 }

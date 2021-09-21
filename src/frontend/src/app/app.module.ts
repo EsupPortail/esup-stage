@@ -51,6 +51,8 @@ import { ConventionSearchComponent } from './components/convention/convention-se
 import { ConventionCreateComponent } from './components/convention/convention-create/convention-create.component';
 import { MatStepperModule } from "@angular/material/stepper";
 import { AdminNomenclaturesComponent } from './components/admin/admin-nomenclatures/admin-nomenclatures.component';
+import { AdminNomenclaturesEditionComponent } from './components/admin/admin-nomenclatures/admin-nomenclatures-edition/admin-nomenclatures-edition.component';
+import { ConfirmationPopupComponent } from './components/confirmation-popup/confirmation-popup.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -69,7 +71,9 @@ registerLocaleData(localeFr, 'fr');
     RoleLibellePipe,
     ConventionSearchComponent,
     ConventionCreateComponent,
-    AdminNomenclaturesComponent
+    AdminNomenclaturesComponent,
+    AdminNomenclaturesEditionComponent,
+    ConfirmationPopupComponent
   ],
   imports: [
     BrowserModule,
