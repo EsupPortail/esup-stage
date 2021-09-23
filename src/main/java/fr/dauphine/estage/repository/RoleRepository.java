@@ -1,7 +1,7 @@
 package fr.dauphine.estage.repository;
 
+import fr.dauphine.estage.enums.RoleEnum;
 import fr.dauphine.estage.model.Role;
-import fr.dauphine.estage.model.RoleEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

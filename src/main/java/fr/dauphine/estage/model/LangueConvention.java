@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "LangueConvention")
-public class LangueConvention implements PaginatedEntity {
+public class LangueConvention {
 
     @Id
     @Column(name = "codeLangueConvention", nullable = false)

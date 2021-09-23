@@ -1,8 +1,10 @@
 package fr.dauphine.estage.controller;
 
 import fr.dauphine.estage.dto.PaginatedResponse;
+import fr.dauphine.estage.enums.AppFonctionEnum;
+import fr.dauphine.estage.enums.DroitEnum;
+import fr.dauphine.estage.enums.RoleEnum;
 import fr.dauphine.estage.model.LangueConvention;
-import fr.dauphine.estage.model.RoleEnum;
 import fr.dauphine.estage.repository.LangueConventionJpaRepository;
 import fr.dauphine.estage.repository.LangueConventionRepository;
 import fr.dauphine.estage.security.interceptor.Secure;
@@ -22,16 +24,16 @@ public class LangueConventionController {
     LangueConventionJpaRepository langueConventionJpaRepository;
 
     @GetMapping
-    @Secure(roles = {RoleEnum.ADM_TECH, RoleEnum.ADM})
-    public PaginatedResponse search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
-        PaginatedResponse paginatedResponse = new PaginatedResponse();
+    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.LECTURE})
+    public PaginatedResponse<LangueConvention> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
+        PaginatedResponse<LangueConvention> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(langueConventionRepository.count(filters));
         paginatedResponse.setData(langueConventionRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
         return paginatedResponse;
     }
 
     @PutMapping("/{code}")
-    @Secure(roles = {RoleEnum.ADM_TECH, RoleEnum.ADM})
+    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
     public LangueConvention update(@PathVariable("code") String code, @RequestBody LangueConvention requestLangueConvention) {
         LangueConvention langueConvention = langueConventionJpaRepository.findByCode(code);
 

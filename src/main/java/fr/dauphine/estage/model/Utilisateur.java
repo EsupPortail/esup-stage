@@ -7,7 +7,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "Utilisateur")
-public class Utilisateur implements PaginatedEntity {
+public class Utilisateur {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +33,7 @@ public class Utilisateur implements PaginatedEntity {
     @Column(nullable = false)
     private Date dateCreation;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.REMOVE})
     @JoinTable(
             name = "UtilisateurRole",
             joinColumns = @JoinColumn(name = "idUtilisateur"),

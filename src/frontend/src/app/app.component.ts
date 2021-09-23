@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { MenuService } from "./services/menu.service";
 import { AuthService } from "./services/auth.service";
 import { Role } from "./constants/role";
+import { AppFonction } from "./constants/app-fonction";
+import { Droit } from "./constants/droit";
 
 @Component({
   selector: 'app-root',
@@ -18,23 +20,33 @@ export class AppComponent {
       path: 'tableau-de-bord',
       icon: 'fa-columns',
       canView: () => {
-        return this.authService.checkRights([Role.ADM.code, Role.RESP_GES.code, Role.GES.code, Role.ENS.code, Role.ETU.code, Role.OBS.code])
+        return this.authService.checkRights({fonction: AppFonction.CONVENTION, droits: [Droit.LECTURE]})
       }
     },
     {
-      libelle: 'Utilisateurs',
-      path: 'utilisateurs',
-      icon: 'fa-users',
+      libelle: 'Paramétrage de l\'application',
       canView: () => {
-        return this.authService.checkRights([Role.ADM.code, Role.ADM_TECH.code])
-      }
+        return this.authService.checkRights({fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.LECTURE]})
+      },
+      children: [
+        {
+          libelle: 'Utilisateurs',
+          path: 'utilisateurs',
+          icon: 'fa-users',
+        },
+        {
+          libelle: 'Rôles',
+          path: 'roles',
+          icon: 'fa-user-lock',
+        },
+      ]
     },
     {
       libelle: 'Tables des nomenclatures',
       path: 'nomenclatures',
       icon: 'fa-table',
       canView: () => {
-        return this.authService.checkRights([Role.ADM.code, Role.ADM_TECH.code])
+        return this.authService.checkRights({fonction: AppFonction.NOMENCLATURE, droits: [Droit.LECTURE]})
       }
     },
   ]

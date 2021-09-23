@@ -1,10 +1,11 @@
 package fr.dauphine.estage.security.interceptor;
 
 import fr.dauphine.estage.dto.ContextDto;
+import fr.dauphine.estage.enums.AppFonctionEnum;
+import fr.dauphine.estage.enums.DroitEnum;
 import fr.dauphine.estage.exception.ForbiddenException;
 import fr.dauphine.estage.exception.NotAcceptableException;
 import fr.dauphine.estage.exception.UnauthorizedException;
-import fr.dauphine.estage.model.RoleEnum;
 import fr.dauphine.estage.model.Utilisateur;
 import fr.dauphine.estage.model.helper.UtilisateurHelper;
 import fr.dauphine.estage.repository.UtilisateurJpaRepository;
@@ -50,7 +51,8 @@ public class SecureInterceptor {
 
         MethodSignature methodSignature = (MethodSignature) joinPoint.getStaticPart().getSignature();
         Secure authorized = methodSignature.getMethod().getAnnotation(Secure.class);
-        RoleEnum[] roles = authorized.roles();
+        AppFonctionEnum fonction = authorized.fonction();
+        DroitEnum[] droits = authorized.droits();
 
         // validation du token
         String token = null;
@@ -113,17 +115,18 @@ public class SecureInterceptor {
             throw new NotAcceptableException("Votre compte est inactif");
         }
 
-        // si des roles sont précisés, il faut vérifier que l'utilisateur en dispose
-        if (roles != null && roles.length > 0) {
-            boolean hasRight = false;
-            for (RoleEnum role : roles) {
-                if (UtilisateurHelper.isRole(utilisateur, role)) {
+        boolean hasRight = fonction == AppFonctionEnum.NONE && droits.length == 0;
+        // on a les droits si fonction droit == none
+        if (!hasRight) {
+            // Si une fonction/droit est définie, il faut vérifier ses habilitations
+            if (fonction != AppFonctionEnum.NONE && droits.length > 0) {
+                if (UtilisateurHelper.isRole(utilisateur, fonction, droits)) {
                     hasRight = true;
                 }
             }
-            if (!hasRight) {
-                throw new ForbiddenException("Votre rôle de donne pas accès à cette ressource");
-            }
+        }
+        if (!hasRight) {
+            throw new ForbiddenException("Votre rôle de donne pas accès à cette ressource");
         }
 
         ////////////////////////////////////

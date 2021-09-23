@@ -1,11 +1,9 @@
-package fr.dauphine.estage.model;
+package fr.dauphine.estage.enums;
 
 public enum RoleEnum {
-    ADM_TECH,
     ADM,
     RESP_GES,
     GES,
     ENS,
     ETU,
-    OBS,
 }

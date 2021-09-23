@@ -100,12 +100,6 @@ databaseChangeLog:
             name: code
             value: ETU
         tableName: Role
-    - insert:
-        columns:
-        - column:
-            name: code
-            value: OBS
-        tableName: Role
 - changeSet:
     id: userRole-dateCreation
     author: ssound
@@ -119,12 +113,936 @@ databaseChangeLog:
             constraints:
                 nullable: false
 - changeSet:
-    id: userRole-admtech
+    id: userRole-libelle
+    author: ssound
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            constraints:
+                unique: true
+            name: roleLibelle
+            type: VARCHAR(255)
+        tableName: Role
+    - update:
+        columns:
+        - column:
+            name: roleLibelle
+            value: Administrateur
+        tableName: Role
+        where: code='ADM'
+    - update:
+        columns:
+        - column:
+            name: roleLibelle
+            value: Responsable gestionnaire
+        tableName: Role
+        where: code='RESP_GES'
+    - update:
+        columns:
+        - column:
+            name: roleLibelle
+            value: Gestionnaire
+        tableName: Role
+        where: code='GES'
+    - update:
+        columns:
+        - column:
+            name: roleLibelle
+            value: Enseignant
+        tableName: Role
+        where: code='ENS'
+    - update:
+        columns:
+        - column:
+            name: roleLibelle
+            value: Étudiant
+        tableName: Role
+        where: code='ETU'
+    - update:
+        columns:
+        - column:
+            name: roleLibelle
+            value: Administrateur technique
+        tableName: Role
+        where: code='ADM_TECH'
+- changeSet:
+    id: userRole-appFonction
+    author: ssound
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+                nullable: false
+                primaryKey: true
+            name: idAppFonction
+            type: INT
+        - column:
+            constraints:
+                unique: true
+                nullable: false
+            name: codeAppFonction
+            type: VARCHAR(50)
+        - column:
+            constraints:
+                unique: true
+                nullable: false
+            name: libelleAppFonction
+            type: VARCHAR(255)
+        tableName: AppFonction
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+                nullable: false
+                primaryKey: true
+            name: idRoleAppFonction
+            type: INT
+        - column:
+            constraints:
+                nullable: false
+            name: idRole
+            type: INT
+        - column:
+            constraints:
+                nullable: false
+            name: idAppFonction
+            type: INT
+        - column:
+            constraints:
+                nullable: false
+            defaultValueBoolean: false
+            name: lecture
+            type: BIT
+        - column:
+            constraints:
+                nullable: false
+            defaultValueBoolean: false
+            name: creation
+            type: BIT
+        - column:
+            constraints:
+                nullable: false
+            defaultValueBoolean: false
+            name: modification
+            type: BIT
+        - column:
+            constraints:
+                nullable: false
+            defaultValueBoolean: false
+            name: suppression
+            type: BIT
+        - column:
+            constraints:
+                nullable: false
+            defaultValueBoolean: false
+            name: validation
+            type: BIT
+        tableName: RoleAppFonction
+    - addForeignKeyConstraint:
+          baseColumnNames: idRole
+          baseTableName: RoleAppFonction
+          constraintName: FK_RoleAppFonction_Role
+          deferrable: false
+          initiallyDeferred: false
+          onDelete: NO ACTION
+          onUpdate: NO ACTION
+          referencedColumnNames: idRole
+          referencedTableName: Role
+          validate: true
+    - addForeignKeyConstraint:
+          baseColumnNames: idAppFonction
+          baseTableName: RoleAppFonction
+          constraintName: FK_RoleAppFonction_AppFonction
+          deferrable: false
+          initiallyDeferred: false
+          onDelete: NO ACTION
+          onUpdate: NO ACTION
+          referencedColumnNames: idAppFonction
+          referencedTableName: AppFonction
+          validate: true
+    - addUniqueConstraint:
+          columnNames: idRole, idAppFonction
+          constraintName: uniq_RoleAppFonction_Role_AppFonction
+          tableName: RoleAppFonction
+    - insert:
+        columns:
+        - column:
+            name: codeAppFonction
+            value: PARAM_GLOBAL
+        - column:
+            name: libelleAppFonction
+            value: Paramétrage global
+        tableName: AppFonction
+    - insert:
+        columns:
+        - column:
+            name: codeAppFonction
+            value: PARAM_CENTRE
+        - column:
+            name: libelleAppFonction
+            value: Paramétrage centre de gestion
+        tableName: AppFonction
+    - insert:
+        columns:
+        - column:
+            name: codeAppFonction
+            value: CONVENTION
+        - column:
+            name: libelleAppFonction
+            value: Conventions de stage
+        tableName: AppFonction
+    - insert:
+        columns:
+        - column:
+            name: codeAppFonction
+            value: AVENANT
+        - column:
+            name: libelleAppFonction
+            value: Avenants aux conventions de stage
+        tableName: AppFonction
+    - insert:
+        columns:
+        - column:
+            name: codeAppFonction
+            value: ORGA_ACC
+        - column:
+            name: libelleAppFonction
+            value: Organismes d’accueil
+        tableName: AppFonction
+    - insert:
+        columns:
+        - column:
+            name: codeAppFonction
+            value: NOMENCLATURE
+        - column:
+            name: libelleAppFonction
+            value: Table de nomenclature
+        tableName: AppFonction
+- changeSet:
+    id: userRole-appFonction-insert
     author: ssound
     changes:
     - insert:
         columns:
         - column:
-            name: code
-            value: ADM_TECH
-        tableName: Role
+            name: idRole
+            valueComputed: (SELECT idRole FROM Role WHERE code = 'ADM')
+        - column:
+            name: idAppFonction
+            valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'PARAM_GLOBAL')
+        - column:
+            name: lecture
+            valueBoolean: true
+        - column:
+            name: creation
+            valueBoolean: true
+        - column:
+            name: modification
+            valueBoolean: true
+        - column:
+            name: suppression
+            valueBoolean: true
+        - column:
+            name: validation
+            valueBoolean: true
+        tableName: RoleAppFonction
+    - insert:
+        columns:
+        - column:
+            name: idRole
+            valueComputed: (SELECT idRole FROM Role WHERE code = 'ADM')
+        - column:
+            name: idAppFonction
+            valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'PARAM_CENTRE')
+        - column:
+            name: lecture
+            valueBoolean: true
+        - column:
+            name: creation
+            valueBoolean: true
+        - column:
+            name: modification
+            valueBoolean: true
+        - column:
+            name: suppression
+            valueBoolean: true
+        - column:
+            name: validation
+            valueBoolean: true
+        tableName: RoleAppFonction
+    - insert:
+        columns:
+        - column:
+            name: idRole
+            valueComputed: (SELECT idRole FROM Role WHERE code = 'ADM')
+        - column:
+            name: idAppFonction
+            valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'CONVENTION')
+        - column:
+            name: lecture
+            valueBoolean: true
+        - column:
+            name: creation
+            valueBoolean: true
+        - column:
+            name: modification
+            valueBoolean: true
+        - column:
+            name: suppression
+            valueBoolean: true
+        - column:
+            name: validation
+            valueBoolean: true
+        tableName: RoleAppFonction
+    - insert:
+        columns:
+        - column:
+            name: idRole
+            valueComputed: (SELECT idRole FROM Role WHERE code = 'ADM')
+        - column:
+            name: idAppFonction
+            valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'AVENANT')
+        - column:
+            name: lecture
+            valueBoolean: true
+        - column:
+            name: creation
+            valueBoolean: true
+        - column:
+            name: modification
+            valueBoolean: true
+        - column:
+            name: suppression
+            valueBoolean: true
+        - column:
+            name: validation
+            valueBoolean: true
+        tableName: RoleAppFonction
+    - insert:
+        columns:
+        - column:
+            name: idRole
+            valueComputed: (SELECT idRole FROM Role WHERE code = 'ADM')
+        - column:
+            name: idAppFonction
+            valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'ORGA_ACC')
+        - column:
+            name: lecture
+            valueBoolean: true
+        - column:
+            name: creation
+            valueBoolean: true
+        - column:
+            name: modification
+            valueBoolean: true
+        - column:
+            name: suppression
+            valueBoolean: true
+        - column:
+            name: validation
+            valueBoolean: true
+        tableName: RoleAppFonction
+    - insert:
+        columns:
+        - column:
+            name: idRole
+            valueComputed: (SELECT idRole FROM Role WHERE code = 'ADM')
+        - column:
+            name: idAppFonction
+            valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'NOMENCLATURE')
+        - column:
+            name: lecture
+            valueBoolean: true
+        - column:
+            name: creation
+            valueBoolean: true
+        - column:
+            name: modification
+            valueBoolean: true
+        - column:
+            name: suppression
+            valueBoolean: true
+        - column:
+            name: validation
+            valueBoolean: true
+        tableName: RoleAppFonction
+    - insert:
+        columns:
+        - column:
+            name: idRole
+            valueComputed: (SELECT idRole FROM Role WHERE code = 'RESP_GES')
+        - column:
+            name: idAppFonction
+            valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'PARAM_GLOBAL')
+        - column:
+            name: lecture
+            valueBoolean: true
+        - column:
+            name: creation
+            valueBoolean: true
+        - column:
+            name: modification
+            valueBoolean: true
+        - column:
+            name: suppression
+            valueBoolean: true
+        - column:
+            name: validation
+            valueBoolean: true
+        tableName: RoleAppFonction
+    - insert:
+        columns:
+        - column:
+            name: idRole
+            valueComputed: (SELECT idRole FROM Role WHERE code = 'RESP_GES')
+        - column:
+            name: idAppFonction
+            valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'PARAM_CENTRE')
+        - column:
+            name: lecture
+            valueBoolean: true
+        - column:
+            name: creation
+            valueBoolean: true
+        - column:
+            name: modification
+            valueBoolean: true
+        - column:
+            name: suppression
+            valueBoolean: true
+        - column:
+            name: validation
+            valueBoolean: true
+        tableName: RoleAppFonction
+    - insert:
+        columns:
+        - column:
+            name: idRole
+            valueComputed: (SELECT idRole FROM Role WHERE code = 'RESP_GES')
+        - column:
+            name: idAppFonction
+            valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'CONVENTION')
+        - column:
+            name: lecture
+            valueBoolean: true
+        - column:
+            name: creation
+            valueBoolean: true
+        - column:
+            name: modification
+            valueBoolean: true
+        - column:
+            name: suppression
+            valueBoolean: true
+        - column:
+            name: validation
+            valueBoolean: true
+        tableName: RoleAppFonction
+    - insert:
+        columns:
+        - column:
+            name: idRole
+            valueComputed: (SELECT idRole FROM Role WHERE code = 'RESP_GES')
+        - column:
+            name: idAppFonction
+            valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'AVENANT')
+        - column:
+            name: lecture
+            valueBoolean: true
+        - column:
+            name: creation
+            valueBoolean: true
+        - column:
+            name: modification
+            valueBoolean: true
+        - column:
+            name: suppression
+            valueBoolean: true
+        - column:
+            name: validation
+            valueBoolean: true
+        tableName: RoleAppFonction
+    - insert:
+        columns:
+        - column:
+            name: idRole
+            valueComputed: (SELECT idRole FROM Role WHERE code = 'RESP_GES')
+        - column:
+            name: idAppFonction
+            valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'ORGA_ACC')
+        - column:
+            name: lecture
+            valueBoolean: true
+        - column:
+            name: creation
+            valueBoolean: true
+        - column:
+            name: modification
+            valueBoolean: true
+        - column:
+            name: suppression
+            valueBoolean: true
+        - column:
+            name: validation
+            valueBoolean: true
+        tableName: RoleAppFonction
+    - insert:
+        columns:
+        - column:
+            name: idRole
+            valueComputed: (SELECT idRole FROM Role WHERE code = 'RESP_GES')
+        - column:
+            name: idAppFonction
+            valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'NOMENCLATURE')
+        - column:
+            name: lecture
+            valueBoolean: true
+        - column:
+            name: creation
+            valueBoolean: false
+        - column:
+            name: modification
+            valueBoolean: false
+        - column:
+            name: suppression
+            valueBoolean: false
+        - column:
+            name: validation
+            valueBoolean: false
+        tableName: RoleAppFonction
+    - insert:
+        columns:
+        - column:
+            name: idRole
+            valueComputed: (SELECT idRole FROM Role WHERE code = 'GES')
+        - column:
+            name: idAppFonction
+            valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'PARAM_GLOBAL')
+        - column:
+            name: lecture
+            valueBoolean: false
+        - column:
+            name: creation
+            valueBoolean: false
+        - column:
+            name: modification
+            valueBoolean: false
+        - column:
+            name: suppression
+            valueBoolean: false
+        - column:
+            name: validation
+            valueBoolean: false
+        tableName: RoleAppFonction
+    - insert:
+        columns:
+        - column:
+            name: idRole
+            valueComputed: (SELECT idRole FROM Role WHERE code = 'GES')
+        - column:
+            name: idAppFonction
+            valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'PARAM_CENTRE')
+        - column:
+            name: lecture
+            valueBoolean: false
+        - column:
+            name: creation
+            valueBoolean: false
+        - column:
+            name: modification
+            valueBoolean: false
+        - column:
+            name: suppression
+            valueBoolean: false
+        - column:
+            name: validation
+            valueBoolean: false
+        tableName: RoleAppFonction
+    - insert:
+        columns:
+        - column:
+            name: idRole
+            valueComputed: (SELECT idRole FROM Role WHERE code = 'GES')
+        - column:
+            name: idAppFonction
+            valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'CONVENTION')
+        - column:
+            name: lecture
+            valueBoolean: true
+        - column:
+            name: creation
+            valueBoolean: true
+        - column:
+            name: modification
+            valueBoolean: true
+        - column:
+            name: suppression
+            valueBoolean: true
+        - column:
+            name: validation
+            valueBoolean: true
+        tableName: RoleAppFonction
+    - insert:
+        columns:
+        - column:
+            name: idRole
+            valueComputed: (SELECT idRole FROM Role WHERE code = 'GES')
+        - column:
+            name: idAppFonction
+            valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'AVENANT')
+        - column:
+            name: lecture
+            valueBoolean: true
+        - column:
+            name: creation
+            valueBoolean: true
+        - column:
+            name: modification
+            valueBoolean: true
+        - column:
+            name: suppression
+            valueBoolean: true
+        - column:
+            name: validation
+            valueBoolean: true
+        tableName: RoleAppFonction
+    - insert:
+        columns:
+        - column:
+            name: idRole
+            valueComputed: (SELECT idRole FROM Role WHERE code = 'GES')
+        - column:
+            name: idAppFonction
+            valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'ORGA_ACC')
+        - column:
+            name: lecture
+            valueBoolean: true
+        - column:
+            name: creation
+            valueBoolean: true
+        - column:
+            name: modification
+            valueBoolean: true
+        - column:
+            name: suppression
+            valueBoolean: true
+        - column:
+            name: validation
+            valueBoolean: true
+        tableName: RoleAppFonction
+    - insert:
+        columns:
+        - column:
+            name: idRole
+            valueComputed: (SELECT idRole FROM Role WHERE code = 'GES')
+        - column:
+            name: idAppFonction
+            valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'NOMENCLATURE')
+        - column:
+            name: lecture
+            valueBoolean: true
+        - column:
+            name: creation
+            valueBoolean: false
+        - column:
+            name: modification
+            valueBoolean: false
+        - column:
+            name: suppression
+            valueBoolean: false
+        - column:
+            name: validation
+            valueBoolean: false
+        tableName: RoleAppFonction
+    - insert:
+        columns:
+        - column:
+            name: idRole
+            valueComputed: (SELECT idRole FROM Role WHERE code = 'ENS')
+        - column:
+            name: idAppFonction
+            valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'PARAM_GLOBAL')
+        - column:
+            name: lecture
+            valueBoolean: false
+        - column:
+            name: creation
+            valueBoolean: false
+        - column:
+            name: modification
+            valueBoolean: false
+        - column:
+            name: suppression
+            valueBoolean: false
+        - column:
+            name: validation
+            valueBoolean: false
+        tableName: RoleAppFonction
+    - insert:
+        columns:
+        - column:
+            name: idRole
+            valueComputed: (SELECT idRole FROM Role WHERE code = 'ENS')
+        - column:
+            name: idAppFonction
+            valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'PARAM_CENTRE')
+        - column:
+            name: lecture
+            valueBoolean: false
+        - column:
+            name: creation
+            valueBoolean: false
+        - column:
+            name: modification
+            valueBoolean: false
+        - column:
+            name: suppression
+            valueBoolean: false
+        - column:
+            name: validation
+            valueBoolean: false
+        tableName: RoleAppFonction
+    - insert:
+        columns:
+        - column:
+            name: idRole
+            valueComputed: (SELECT idRole FROM Role WHERE code = 'ENS')
+        - column:
+            name: idAppFonction
+            valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'CONVENTION')
+        - column:
+            name: lecture
+            valueBoolean: true
+        - column:
+            name: creation
+            valueBoolean: false
+        - column:
+            name: modification
+            valueBoolean: false
+        - column:
+            name: suppression
+            valueBoolean: false
+        - column:
+            name: validation
+            valueBoolean: true
+        tableName: RoleAppFonction
+    - insert:
+        columns:
+        - column:
+            name: idRole
+            valueComputed: (SELECT idRole FROM Role WHERE code = 'ENS')
+        - column:
+            name: idAppFonction
+            valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'AVENANT')
+        - column:
+            name: lecture
+            valueBoolean: true
+        - column:
+            name: creation
+            valueBoolean: true
+        - column:
+            name: modification
+            valueBoolean: true
+        - column:
+            name: suppression
+            valueBoolean: true
+        - column:
+            name: validation
+            valueBoolean: true
+        tableName: RoleAppFonction
+    - insert:
+        columns:
+        - column:
+            name: idRole
+            valueComputed: (SELECT idRole FROM Role WHERE code = 'ENS')
+        - column:
+            name: idAppFonction
+            valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'ORGA_ACC')
+        - column:
+            name: lecture
+            valueBoolean: true
+        - column:
+            name: creation
+            valueBoolean: true
+        - column:
+            name: modification
+            valueBoolean: true
+        - column:
+            name: suppression
+            valueBoolean: true
+        - column:
+            name: validation
+            valueBoolean: true
+        tableName: RoleAppFonction
+    - insert:
+        columns:
+        - column:
+            name: idRole
+            valueComputed: (SELECT idRole FROM Role WHERE code = 'ENS')
+        - column:
+            name: idAppFonction
+            valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'NOMENCLATURE')
+        - column:
+            name: lecture
+            valueBoolean: false
+        - column:
+            name: creation
+            valueBoolean: false
+        - column:
+            name: modification
+            valueBoolean: false
+        - column:
+            name: suppression
+            valueBoolean: false
+        - column:
+            name: validation
+            valueBoolean: false
+        tableName: RoleAppFonction
+    - insert:
+        columns:
+        - column:
+            name: idRole
+            valueComputed: (SELECT idRole FROM Role WHERE code = 'ETU')
+        - column:
+            name: idAppFonction
+            valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'PARAM_GLOBAL')
+        - column:
+            name: lecture
+            valueBoolean: false
+        - column:
+            name: creation
+            valueBoolean: false
+        - column:
+            name: modification
+            valueBoolean: false
+        - column:
+            name: suppression
+            valueBoolean: false
+        - column:
+            name: validation
+            valueBoolean: false
+        tableName: RoleAppFonction
+    - insert:
+        columns:
+        - column:
+            name: idRole
+            valueComputed: (SELECT idRole FROM Role WHERE code = 'ETU')
+        - column:
+            name: idAppFonction
+            valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'PARAM_CENTRE')
+        - column:
+            name: lecture
+            valueBoolean: false
+        - column:
+            name: creation
+            valueBoolean: false
+        - column:
+            name: modification
+            valueBoolean: false
+        - column:
+            name: suppression
+            valueBoolean: false
+        - column:
+            name: validation
+            valueBoolean: false
+        tableName: RoleAppFonction
+    - insert:
+        columns:
+        - column:
+            name: idRole
+            valueComputed: (SELECT idRole FROM Role WHERE code = 'ETU')
+        - column:
+            name: idAppFonction
+            valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'CONVENTION')
+        - column:
+            name: lecture
+            valueBoolean: true
+        - column:
+            name: creation
+            valueBoolean: true
+        - column:
+            name: modification
+            valueBoolean: true
+        - column:
+            name: suppression
+            valueBoolean: true
+        - column:
+            name: validation
+            valueBoolean: false
+        tableName: RoleAppFonction
+    - insert:
+        columns:
+        - column:
+            name: idRole
+            valueComputed: (SELECT idRole FROM Role WHERE code = 'ETU')
+        - column:
+            name: idAppFonction
+            valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'AVENANT')
+        - column:
+            name: lecture
+            valueBoolean: true
+        - column:
+            name: creation
+            valueBoolean: true
+        - column:
+            name: modification
+            valueBoolean: true
+        - column:
+            name: suppression
+            valueBoolean: true
+        - column:
+            name: validation
+            valueBoolean: true
+        tableName: RoleAppFonction
+    - insert:
+        columns:
+        - column:
+            name: idRole
+            valueComputed: (SELECT idRole FROM Role WHERE code = 'ETU')
+        - column:
+            name: idAppFonction
+            valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'ORGA_ACC')
+        - column:
+            name: lecture
+            valueBoolean: true
+        - column:
+            name: creation
+            valueBoolean: true
+        - column:
+            name: modification
+            valueBoolean: true
+        - column:
+            name: suppression
+            valueBoolean: true
+        - column:
+            name: validation
+            valueBoolean: true
+        tableName: RoleAppFonction
+    - insert:
+        columns:
+        - column:
+            name: idRole
+            valueComputed: (SELECT idRole FROM Role WHERE code = 'ETU')
+        - column:
+            name: idAppFonction
+            valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'NOMENCLATURE')
+        - column:
+            name: lecture
+            valueBoolean: false
+        - column:
+            name: creation
+            valueBoolean: false
+        - column:
+            name: modification
+            valueBoolean: false
+        - column:
+            name: suppression
+            valueBoolean: false
+        - column:
+            name: validation
+            valueBoolean: false
+        tableName: RoleAppFonction

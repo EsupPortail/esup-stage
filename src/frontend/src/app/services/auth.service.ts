@@ -4,6 +4,7 @@ import { environment } from "../../environments/environment";
 import { Observable } from "rxjs";
 import { TokenService } from "./token.service";
 import { Role } from "../constants/role";
+import { AppFonction } from "../constants/app-fonction";
 
 @Injectable({
   providedIn: 'root'
@@ -29,17 +30,17 @@ export class AuthService {
     window.location.href = environment.logoutUrl;
   }
 
-  async secure(rights: any) {
+  async secure(right: any) {
     if (this.appVersion === undefined) {
       this.appVersion = await this.getAppVersion().toPromise();
     }
 
     if (this.userConnected !== undefined) {
-      return this.checkRights(rights);
+      return this.checkRights(right);
     } else {
       let user = await this.getCurrentUser().toPromise();
       this.createUser(user);
-      return this.checkRights(rights);
+      return this.checkRights(right);
     }
   }
 
@@ -47,21 +48,23 @@ export class AuthService {
     this.userConnected = user;
   }
 
-  checkRights(rights: any) {
+  checkRights(right: any) {
     let hasRight = true;
-    if (Array.isArray(rights) && rights.length > 0) {
+    if (right.fonction && right.droits) {
       hasRight = false;
-      rights.forEach(right => {
-        const roles = this.userConnected.roles.map((r: any) => r.code);
-        if (roles.indexOf(right) > -1) {
-          hasRight = true;
-        }
+      this.userConnected.roles.forEach((r: any) => {
+        r.roleAppFonctions.forEach((ha: any) => {
+          if (ha.appFonction.code === right.fonction) {
+            right.droits.forEach((d: any) => {
+              if (ha[d.toLowerCase()]) {
+                hasRight = true;
+              }
+            });
+          }
+        });
       });
     }
     return hasRight;
   }
 
-  isAdmin() {
-    return this.userConnected && this.checkRights(Role.ADM.code);
-  }
 }

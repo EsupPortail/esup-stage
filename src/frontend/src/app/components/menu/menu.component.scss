@@ -2,6 +2,19 @@ mat-icon {
   margin-right: 10px;
 }
 
+.mat-list-item {
+  font-size: 0.8rem;
+  height: 48px !important;
+}
+
 .mat-list-item.active {
   background-color: #e8eaf6;
+}
+
+.mat-icon {
+  height: 20px !important;
+  width: 20px !important;
+}
+.material-icons, .mat-list-icon {
+  font-size: 20px !important;
 }

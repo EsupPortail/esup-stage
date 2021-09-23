@@ -1,8 +1,8 @@
 package fr.dauphine.estage.security;
 
 import fr.dauphine.estage.bootstrap.ApplicationBootstrap;
+import fr.dauphine.estage.enums.RoleEnum;
 import fr.dauphine.estage.model.Role;
-import fr.dauphine.estage.model.RoleEnum;
 import fr.dauphine.estage.model.Utilisateur;
 import fr.dauphine.estage.repository.RoleRepository;
 import fr.dauphine.estage.repository.UtilisateurJpaRepository;
@@ -29,7 +29,7 @@ public class ApplicationStartUp {
 
     @EventListener(ApplicationReadyEvent.class)
     public void createAdminTech() {
-        Role roleAdmTech = roleRepository.findOneByCode(RoleEnum.ADM_TECH);
+        Role roleAdmTech = roleRepository.findOneByCode(RoleEnum.ADM);
         for (String login : applicationBootstrap.getAppConfig().getAdminTechs()) {
             Utilisateur utilisateur = utilisateurRepository.findOneByLogin(login);
             if (utilisateur == null) {

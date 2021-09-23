@@ -2,16 +2,15 @@ package fr.dauphine.estage.dto;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import fr.dauphine.estage.dto.view.Views;
-import fr.dauphine.estage.model.PaginatedEntity;
 
 import java.util.List;
 
-public class PaginatedResponse {
+public class PaginatedResponse<T> {
     @JsonView(Views.List.class)
     private Long total;
 
     @JsonView(Views.List.class)
-    private List<PaginatedEntity> data;
+    private List<T> data;
 
     public Long getTotal() {
         return total;
@@ -21,11 +20,11 @@ public class PaginatedResponse {
         this.total = total;
     }
 
-    public List<PaginatedEntity> getData() {
+    public List<T> getData() {
         return data;
     }
 
-    public void setData(List<PaginatedEntity> data) {
+    public void setData(List<T> data) {
         this.data = data;
     }
 }

@@ -10,7 +10,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "Convention")
-public class Convention extends ObjetMetier implements PaginatedEntity {
+public class Convention extends ObjetMetier {
 
     @JsonView(Views.List.class)
     @Id

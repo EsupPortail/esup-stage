@@ -1,6 +1,5 @@
 package fr.dauphine.estage.repository;
 
-import fr.dauphine.estage.model.PaginatedEntity;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,12 +43,13 @@ public class PaginationRepository<T> {
         setParameters(query);
 
         logger.debug("Dynamic query string: " + queryString);
-        logger.debug("Paramters: " + query.getParameters());
+        Set<Parameter<?>> parameters = query.getParameters();
+        logger.debug("Parameters: {" + parameters.stream().map(p -> p.getName() + ": " + query.getParameterValue(p.getName())).collect(Collectors.joining(", ")) + "}");
 
         return query.getSingleResult();
     }
 
-    public List<PaginatedEntity> findPaginated(int page, int perPage, String predicate, String sortOrder, String filters) {
+    public List<T> findPaginated(int page, int perPage, String predicate, String sortOrder, String filters) {
         formatFilters(filters);
         String queryString = "SELECT " + alias + " FROM " + this.typeClass.getName() + " " + alias;
         queryString += " " + String.join(" ", joins);
@@ -66,7 +66,7 @@ public class PaginationRepository<T> {
             }
         }
 
-        TypedQuery<PaginatedEntity> query = em.createQuery(queryString, PaginatedEntity.class);
+        TypedQuery<T> query = em.createQuery(queryString, this.typeClass);
         setParameters(query);
 
         if (page > 0) {

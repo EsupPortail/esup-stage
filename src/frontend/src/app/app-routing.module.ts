@@ -7,27 +7,29 @@ import { AdminUserComponent } from "./components/admin/admin-user/admin-user.com
 import { ConventionSearchComponent } from "./components/convention/convention-search/convention-search.component";
 import { ConventionCreateComponent } from "./components/convention/convention-create/convention-create.component";
 import { AdminNomenclaturesComponent } from "./components/admin/admin-nomenclatures/admin-nomenclatures.component";
+import { AppFonction } from "./constants/app-fonction";
+import { Droit } from "./constants/droit";
 
 const routes: Routes = [
-  {path: '', component: HomeComponent, canActivate: [AuthGuard], data: {roles: [], title: 'Accueil'}},
+  {path: '', component: HomeComponent, canActivate: [AuthGuard], data: {role: {}, title: 'Accueil'}},
   {
     path: 'utilisateurs',
     component: AdminUserComponent,
     canActivate: [AuthGuard],
-    data: {roles: [Role.ADM.code, Role.ADM_TECH.code], title: 'Gestion des utilisateurs'}
+    data: {role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.LECTURE]}, title: 'Gestion des utilisateurs'}
   },
   {
     path: 'nomenclatures',
     component: AdminNomenclaturesComponent,
     canActivate: [AuthGuard],
-    data: {roles: [Role.ADM.code, Role.ADM_TECH.code], title: 'Gestion des tables des nomenclatures'}
+    data: {role: {fonction: AppFonction.NOMENCLATURE, droits: [Droit.LECTURE]}, title: 'Gestion des tables des nomenclatures'}
   },
   {
     path: 'tableau-de-bord',
     component: ConventionSearchComponent,
     canActivate: [AuthGuard],
     data: {
-      roles: [Role.ADM.code, Role.RESP_GES.code, Role.GES.code, Role.ENS.code, Role.ETU.code, Role.OBS.code],
+      role: {fonction: AppFonction.CONVENTION, droits: [Droit.LECTURE]},
       title: 'Tableau de bord'
     }
   },
@@ -36,7 +38,7 @@ const routes: Routes = [
     component: ConventionCreateComponent,
     canActivate: [AuthGuard],
     data: {
-      roles: [Role.ADM.code, Role.RESP_GES.code, Role.GES.code, Role.ENS.code, Role.ETU.code, Role.OBS.code],
+      role: {fonction: AppFonction.CONVENTION, droits: [Droit.CREATION]},
       title: 'Création d\'une conventions'
     }
   },

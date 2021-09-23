@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonView;
 import fr.dauphine.estage.dto.ContextDto;
 import fr.dauphine.estage.dto.PaginatedResponse;
 import fr.dauphine.estage.dto.view.Views;
-import fr.dauphine.estage.model.Role;
-import fr.dauphine.estage.model.RoleEnum;
+import fr.dauphine.estage.enums.AppFonctionEnum;
+import fr.dauphine.estage.enums.DroitEnum;
+import fr.dauphine.estage.enums.RoleEnum;
+import fr.dauphine.estage.model.Convention;
 import fr.dauphine.estage.model.Utilisateur;
 import fr.dauphine.estage.model.helper.UtilisateurHelper;
 import fr.dauphine.estage.repository.ConventionRepository;
@@ -18,9 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @ApiController
@@ -32,8 +32,8 @@ public class ConventionController {
 
     @JsonView(Views.List.class)
     @GetMapping
-    @Secure(roles = {RoleEnum.ADM, RoleEnum.RESP_GES, RoleEnum.GES, RoleEnum.ENS, RoleEnum.ETU, RoleEnum.OBS})
-    public PaginatedResponse search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
+    @Secure(fonction = AppFonctionEnum.CONVENTION, droits = {DroitEnum.LECTURE})
+    public PaginatedResponse<Convention> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         ContextDto contexteDto = ServiceContext.getServiceContext();
         Utilisateur utilisateur = contexteDto.getUtilisateur();
         if (!UtilisateurHelper.isRole(utilisateur, RoleEnum.ADM)) {
@@ -56,7 +56,7 @@ public class ConventionController {
             filters = jsonFilters.toString();
         }
 
-        PaginatedResponse paginatedResponse = new PaginatedResponse();
+        PaginatedResponse<Convention> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(conventionRepository.count(filters));
         paginatedResponse.setData(conventionRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
         return paginatedResponse;

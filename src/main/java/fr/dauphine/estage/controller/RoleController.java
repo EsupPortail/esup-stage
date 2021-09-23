@@ -1,7 +1,9 @@
 package fr.dauphine.estage.controller;
 
+import fr.dauphine.estage.enums.AppFonctionEnum;
+import fr.dauphine.estage.enums.DroitEnum;
+import fr.dauphine.estage.enums.RoleEnum;
 import fr.dauphine.estage.model.Role;
-import fr.dauphine.estage.model.RoleEnum;
 import fr.dauphine.estage.repository.RoleRepository;
 import fr.dauphine.estage.security.interceptor.Secure;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +20,7 @@ public class RoleController {
     RoleRepository roleRepository;
 
     @GetMapping
-    @Secure(roles = {RoleEnum.ADM, RoleEnum.ADM_TECH})
+    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.LECTURE})
     public List<Role> getAll() {
         return roleRepository.findAll();
     }
