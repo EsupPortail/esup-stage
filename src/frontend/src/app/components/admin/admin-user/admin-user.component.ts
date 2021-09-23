@@ -112,9 +112,7 @@ export class AdminUserComponent implements OnInit {
         this.userService.update(this.data.id, this.form.value).subscribe((response: any) => {
           this.data = response;
           this.setFormData();
-          if (this.appTable) {
-            this.appTable.update();
-          }
+          this.appTable?.update();
           this.messageService.setSuccess('Utilisateur modifé');
         })
       } else {

@@ -9,6 +9,7 @@ import { ConventionCreateComponent } from "./components/convention/convention-cr
 import { AdminNomenclaturesComponent } from "./components/admin/admin-nomenclatures/admin-nomenclatures.component";
 import { AppFonction } from "./constants/app-fonction";
 import { Droit } from "./constants/droit";
+import { AdminRoleComponent } from "./components/admin/admin-role/admin-role.component";
 
 const routes: Routes = [
   {path: '', component: HomeComponent, canActivate: [AuthGuard], data: {role: {}, title: 'Accueil'}},
@@ -17,6 +18,12 @@ const routes: Routes = [
     component: AdminUserComponent,
     canActivate: [AuthGuard],
     data: {role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.LECTURE]}, title: 'Gestion des utilisateurs'}
+  },
+  {
+    path: 'roles',
+    component: AdminRoleComponent,
+    canActivate: [AuthGuard],
+    data: {role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.LECTURE]}, title: 'Gestion des rôles'}
   },
   {
     path: 'nomenclatures',

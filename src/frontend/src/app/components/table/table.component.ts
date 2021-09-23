@@ -24,6 +24,7 @@ export class TableComponent implements OnInit, AfterContentInit {
   @Input() sortColumn: string = '';
   @Input() sortOrder: SortDirection = 'asc';
   @Input() filters: any[] = [];
+  @Input() pagination: boolean = true;
 
   @Output() onUpdated = new EventEmitter<any>();
 
@@ -39,6 +40,9 @@ export class TableComponent implements OnInit, AfterContentInit {
   constructor() { }
 
   ngOnInit(): void {
+    if (!this.pagination) {
+      this.pageSize = 0;
+    }
     this.initFilters();
     this.update();
   }

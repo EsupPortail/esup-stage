@@ -38,7 +38,7 @@ form {
   font-size: 0.8rem;
 }
 
-.mat-card {
+.mat-card:not([class*=mat-elevation-z]) {
   box-shadow: none !important;
   border-radius: unset !important;
   margin-bottom: 20px;

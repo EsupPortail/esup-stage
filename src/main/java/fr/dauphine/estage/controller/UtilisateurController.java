@@ -4,14 +4,14 @@ import fr.dauphine.estage.dto.ContextDto;
 import fr.dauphine.estage.dto.PaginatedResponse;
 import fr.dauphine.estage.enums.AppFonctionEnum;
 import fr.dauphine.estage.enums.DroitEnum;
-import fr.dauphine.estage.enums.RoleEnum;
-import fr.dauphine.estage.exception.NotFoundException;
+import fr.dauphine.estage.exception.AppException;
 import fr.dauphine.estage.model.Utilisateur;
 import fr.dauphine.estage.repository.UtilisateurJpaRepository;
 import fr.dauphine.estage.repository.UtilisateurRepository;
 import fr.dauphine.estage.security.ServiceContext;
 import fr.dauphine.estage.security.interceptor.Secure;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -51,7 +51,7 @@ public class UtilisateurController {
     public Utilisateur update(@PathVariable("id") int id, @RequestBody Utilisateur requestUtilisateur) {
         Utilisateur utilisateur = utilisateurJpaRepository.findByIdActif(id);
         if (utilisateur == null) {
-            throw new NotFoundException("Utilisateur non trouvé");
+            throw new AppException(HttpStatus.NOT_FOUND, "Utilisateur non trouvé");
         }
         utilisateur.setNom(requestUtilisateur.getNom());
         utilisateur.setPrenom(requestUtilisateur.getPrenom());

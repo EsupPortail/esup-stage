@@ -26,7 +26,8 @@
   </mat-card-content>
 </mat-card>
 
-<mat-paginator [pageSizeOptions]="[10, 25, 50, 100]"
+<mat-paginator *ngIf="pagination"
+               [pageSizeOptions]="[10, 25, 50, 100]"
                [pageSize]="pageSize"
                [length]="total"
                [showFirstLastButtons]="true"
@@ -40,7 +41,8 @@
 
 </table>
 
-<mat-paginator [pageSizeOptions]="[10, 25, 50, 100]"
+<mat-paginator *ngIf="pagination"
+               [pageSizeOptions]="[10, 25, 50, 100]"
                [pageSize]="pageSize"
                [length]="total"
                [showFirstLastButtons]="true"

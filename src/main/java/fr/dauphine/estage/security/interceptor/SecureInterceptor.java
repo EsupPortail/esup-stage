@@ -3,9 +3,7 @@ package fr.dauphine.estage.security.interceptor;
 import fr.dauphine.estage.dto.ContextDto;
 import fr.dauphine.estage.enums.AppFonctionEnum;
 import fr.dauphine.estage.enums.DroitEnum;
-import fr.dauphine.estage.exception.ForbiddenException;
-import fr.dauphine.estage.exception.NotAcceptableException;
-import fr.dauphine.estage.exception.UnauthorizedException;
+import fr.dauphine.estage.exception.AppException;
 import fr.dauphine.estage.model.Utilisateur;
 import fr.dauphine.estage.model.helper.UtilisateurHelper;
 import fr.dauphine.estage.repository.UtilisateurJpaRepository;
@@ -20,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -76,14 +75,14 @@ public class SecureInterceptor {
                 long diffMinutes = TimeUnit.MINUTES.convert(nDate.getTime() - dateTicket.getTime(), TimeUnit.MILLISECONDS);
                 if (diffMinutes > Integer.parseInt("1800") || dateTicket.after(nDate)) {
                     logger.info(" -> token expire");
-                    throw new UnauthorizedException("Token invalide");
+                    throw new AppException(HttpStatus.UNAUTHORIZED, "Token invalide");
                 }
                 if (!hash.equals(TokenFactory.generateHash(login, date, "Azkjn32klklOP"))) {
-                    throw new UnauthorizedException("Token invalide");
+                    throw new AppException(HttpStatus.UNAUTHORIZED, "Token invalide");
                 }
             } catch (ParseException e) {
                 logger.info(" -> format date invalid");
-                throw new UnauthorizedException("Token invalide");
+                throw new AppException(HttpStatus.UNAUTHORIZED, "Token invalide");
             }
 
 
@@ -91,7 +90,7 @@ public class SecureInterceptor {
             // on check si on a pas une authentification cas
             CasLayer.CasUser casUser = (CasLayer.CasUser) request.getSession().getAttribute("casUser");
             if (casUser == null) {
-                throw new UnauthorizedException("Token invalide");
+                throw new AppException(HttpStatus.UNAUTHORIZED, "Token invalide");
             } else {
                 login = casUser.getLogin();
                 auth = "cas";
@@ -107,12 +106,12 @@ public class SecureInterceptor {
         }
 
         if (utilisateur == null) {
-            throw new UnauthorizedException("Vous n'êtes pas autorisé");
+            throw new AppException(HttpStatus.UNAUTHORIZED, "Vous n'êtes pas autorisé");
         }
 
         // Utilisateur not active
         if (!utilisateur.isActif()) {
-            throw new NotAcceptableException("Votre compte est inactif");
+            throw new AppException(HttpStatus.NOT_ACCEPTABLE, "Votre compte est inactif");
         }
 
         boolean hasRight = fonction == AppFonctionEnum.NONE && droits.length == 0;
@@ -126,7 +125,7 @@ public class SecureInterceptor {
             }
         }
         if (!hasRight) {
-            throw new ForbiddenException("Votre rôle de donne pas accès à cette ressource");
+            throw new AppException(HttpStatus.FORBIDDEN, "Votre rôle de donne pas accès à cette ressource");
         }
 
         ////////////////////////////////////

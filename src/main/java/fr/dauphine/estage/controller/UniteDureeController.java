@@ -3,7 +3,6 @@ package fr.dauphine.estage.controller;
 import fr.dauphine.estage.dto.PaginatedResponse;
 import fr.dauphine.estage.enums.AppFonctionEnum;
 import fr.dauphine.estage.enums.DroitEnum;
-import fr.dauphine.estage.enums.RoleEnum;
 import fr.dauphine.estage.model.UniteDuree;
 import fr.dauphine.estage.repository.UniteDureeJpaRepository;
 import fr.dauphine.estage.repository.UniteDureeRepository;

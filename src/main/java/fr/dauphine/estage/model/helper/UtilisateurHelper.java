@@ -2,7 +2,6 @@ package fr.dauphine.estage.model.helper;
 
 import fr.dauphine.estage.enums.AppFonctionEnum;
 import fr.dauphine.estage.enums.DroitEnum;
-import fr.dauphine.estage.enums.RoleEnum;
 import fr.dauphine.estage.model.Role;
 import fr.dauphine.estage.model.RoleAppFonction;
 import fr.dauphine.estage.model.Utilisateur;
@@ -11,11 +10,11 @@ import java.lang.reflect.InvocationTargetException;
 
 public class UtilisateurHelper {
     public static boolean isAdmin(Utilisateur utilisateur) {
-        return isRole(utilisateur, RoleEnum.ADM);
+        return isRole(utilisateur, Role.ADM);
     }
 
-    public static boolean isRole(Utilisateur utilisateur, RoleEnum code) {
-        return utilisateur.getRoles().stream().anyMatch(r -> r.getCode() == code);
+    public static boolean isRole(Utilisateur utilisateur, String code) {
+        return utilisateur.getRoles().stream().anyMatch(r -> r.getCode().equals(code));
     }
 
     public static boolean isRole(Utilisateur utilisateur, AppFonctionEnum fonction, DroitEnum[] droits) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {

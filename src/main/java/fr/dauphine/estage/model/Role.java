@@ -1,6 +1,7 @@
 package fr.dauphine.estage.model;
 
-import fr.dauphine.estage.enums.RoleEnum;
+import com.fasterxml.jackson.annotation.JsonView;
+import fr.dauphine.estage.dto.view.Views;
 
 import javax.persistence.*;
 import java.util.List;
@@ -9,19 +10,27 @@ import java.util.List;
 @Table(name = "Role")
 public class Role {
 
+    public static final String ADM = "ADM";
+    public static final String RESP_GES = "RESP_GES";
+    public static final String GES = "GES";
+    public static final String ENS = "ENS";
+    public static final String ETU = "ETU";
+
+    @JsonView(Views.List.class)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idRole", nullable = false)
     private int id;
 
-    @Enumerated(EnumType.STRING)
+    @JsonView(Views.List.class)
     @Column(nullable = false, unique = true, length = 50)
-    private RoleEnum code;
+    private String code;
 
+    @JsonView(Views.List.class)
     @Column(name = "roleLibelle", unique = true)
     private String libelle;
 
-    @OneToMany(mappedBy = "role", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "role", fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<RoleAppFonction> roleAppFonctions;
 
     public int getId() {
@@ -32,11 +41,11 @@ public class Role {
         this.id = id;
     }
 
-    public RoleEnum getCode() {
+    public String getCode() {
         return code;
     }
 
-    public void setCode(RoleEnum code) {
+    public void setCode(String code) {
         this.code = code;
     }
 
@@ -54,5 +63,10 @@ public class Role {
 
     public void setRoleAppFonctions(List<RoleAppFonction> roleAppFonctions) {
         this.roleAppFonctions = roleAppFonctions;
+        for (RoleAppFonction roleAppFonction : this.roleAppFonctions) {
+            if (roleAppFonction.getRole() == null) {
+                roleAppFonction.setRole(this);
+            }
+        }
     }
 }

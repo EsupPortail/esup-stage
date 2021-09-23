@@ -6,8 +6,8 @@ import fr.dauphine.estage.dto.PaginatedResponse;
 import fr.dauphine.estage.dto.view.Views;
 import fr.dauphine.estage.enums.AppFonctionEnum;
 import fr.dauphine.estage.enums.DroitEnum;
-import fr.dauphine.estage.enums.RoleEnum;
 import fr.dauphine.estage.model.Convention;
+import fr.dauphine.estage.model.Role;
 import fr.dauphine.estage.model.Utilisateur;
 import fr.dauphine.estage.model.helper.UtilisateurHelper;
 import fr.dauphine.estage.repository.ConventionRepository;
@@ -36,20 +36,20 @@ public class ConventionController {
     public PaginatedResponse<Convention> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         ContextDto contexteDto = ServiceContext.getServiceContext();
         Utilisateur utilisateur = contexteDto.getUtilisateur();
-        if (!UtilisateurHelper.isRole(utilisateur, RoleEnum.ADM)) {
+        if (!UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
             JSONObject jsonFilters = new JSONObject(filters);
             Map<String, Object> currentUser = new HashMap<>();
             currentUser.put("type", "int");
             currentUser.put("value", utilisateur.getId());
-            if (UtilisateurHelper.isRole(utilisateur, RoleEnum.RESP_GES) || UtilisateurHelper.isRole(utilisateur, RoleEnum.GES)) {
+            if (UtilisateurHelper.isRole(utilisateur, Role.RESP_GES) || UtilisateurHelper.isRole(utilisateur, Role.GES)) {
                 Map<String, Object> ges = new HashMap<>();
                 ges.put("type", "text");
                 ges.put("value", utilisateur.getLogin());
                 ges.put("specific", true);
                 jsonFilters.put("centreGestion.personnels", ges);
-            } else if (UtilisateurHelper.isRole(utilisateur, RoleEnum.ENS)) {
+            } else if (UtilisateurHelper.isRole(utilisateur, Role.ENS)) {
                 jsonFilters.append("enseignant", currentUser);
-            } else if (UtilisateurHelper.isRole(utilisateur, RoleEnum.ETU)) {
+            } else if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
                 jsonFilters.append("etudiant", currentUser);
             }
 
