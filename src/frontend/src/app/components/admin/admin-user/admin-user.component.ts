@@ -6,6 +6,8 @@ import { RoleService } from "../../../services/role.service";
 import { MessageService } from "../../../services/message.service";
 import { TableComponent } from "../../table/table.component";
 import { AuthService } from "../../../services/auth.service";
+import { AppFonction } from "../../../constants/app-fonction";
+import { Droit } from "../../../constants/droit";
 
 @Component({
   selector: 'app-admin-user',
@@ -118,6 +120,10 @@ export class AdminUserComponent implements OnInit {
         // TODO create : en attente de la configuration du REST LDAP par établissement
       }
     }
+  }
+
+  canEdit(): boolean {
+    return this.authService.checkRights({fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.MODIFICATION]});
   }
 
 }
