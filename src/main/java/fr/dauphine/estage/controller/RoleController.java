@@ -11,6 +11,7 @@ import fr.dauphine.estage.model.Role;
 import fr.dauphine.estage.repository.AppFonctionJpaRepository;
 import fr.dauphine.estage.repository.RoleJpaRepository;
 import fr.dauphine.estage.repository.RoleRepository;
+import fr.dauphine.estage.repository.UtilisateurJpaRepository;
 import fr.dauphine.estage.security.interceptor.Secure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,6 +32,9 @@ public class RoleController {
 
     @Autowired
     AppFonctionJpaRepository appFonctionJpaRepository;
+
+    @Autowired
+    UtilisateurJpaRepository utilisateurJpaRepository;
 
     @JsonView(Views.List.class)
     @GetMapping
@@ -58,21 +62,32 @@ public class RoleController {
 
     @PutMapping("/{id}")
     @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.MODIFICATION})
-    public Role update(@PathVariable("id") int id, @RequestBody Role roleParam) throws Exception {
+    public Role update(@PathVariable("id") int id, @RequestBody Role roleParam) {
         Role role = roleJpaRepository.findById(id);
         if (role == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Role non trouvé");
         }
-        // TODO
-//        _checkRole(roleParam);
-//        role.setCode(roleParam.getCode());
-//        role.setLibelle(roleParam.getLibelle());
-//        role.setRoleAppFonctions(roleParam.getRoleAppFonctions());
-//        role = roleJpaRepository.saveAndFlush(role);
+        _checkRole(roleParam);
+        role = roleJpaRepository.saveAndFlush(roleParam);
         return role;
     }
 
-    private void _checkRole(Role role) throws Exception {
+    @DeleteMapping("/{id}")
+    @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.SUPPRESSION})
+    public boolean delete(@PathVariable("id") int id) {
+        Role role = roleJpaRepository.findById(id);
+        if (role == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Role non trouvé");
+        }
+        if (utilisateurJpaRepository.countUserWithRole(role.getId()) > 0) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Des utilisateurs sont affectés sur ce rôle. La suppression n'est pas possible.");
+        }
+        roleJpaRepository.delete(role);
+        roleJpaRepository.flush();
+        return true;
+    }
+
+    private void _checkRole(Role role) {
         // vérification code / libelle non existant
         if (roleRepository.exist(role)) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Code ou libellé déjà existant");

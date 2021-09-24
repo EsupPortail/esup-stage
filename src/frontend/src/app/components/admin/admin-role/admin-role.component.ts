@@ -64,6 +64,12 @@ export class AdminRoleComponent implements OnInit {
           delete ra.id;
         });
       }
+      this.appFonctions.forEach((af: any) => {
+        const ra = this.data.roleAppFonctions.find((r: any) => r.appFonction.code === af.code);
+        if (ra === undefined) {
+          this.addEmptyAppFonction(af);
+        }
+      });
       this.setFormData();
     })
   }
@@ -75,16 +81,20 @@ export class AdminRoleComponent implements OnInit {
       roleAppFonctions: [],
     };
     this.appFonctions.forEach((af: any) => {
-      this.data.roleAppFonctions.push({
-        appFonction: af,
-        lecture: false,
-        creation: false,
-        modification: false,
-        suppression: false,
-        validation: false,
-      });
+      this.addEmptyAppFonction(af);
     });
     this.setFormData();
+  }
+
+  addEmptyAppFonction(af: any): void {
+    this.data.roleAppFonctions.push({
+      appFonction: af,
+      lecture: false,
+      creation: false,
+      modification: false,
+      suppression: false,
+      validation: false,
+    });
   }
 
   setFormData(): void {
@@ -104,6 +114,10 @@ export class AdminRoleComponent implements OnInit {
 
   canEdit(): boolean {
     return this.authService.checkRights({fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.MODIFICATION]});
+  }
+
+  canDelete(): boolean {
+    return this.authService.checkRights({fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.SUPPRESSION]});
   }
 
   hasRight(fonction: AppFonction, droit: Droit): boolean {
@@ -149,6 +163,13 @@ export class AdminRoleComponent implements OnInit {
         });
       }
     }
+  }
+
+  delete(data: any): void {
+    this.roleService.delete(data.id).subscribe((response: any) => {
+      this.messageService.setSuccess('Rôle supprimé');
+      this.appTable?.update();
+    });
   }
 
 }

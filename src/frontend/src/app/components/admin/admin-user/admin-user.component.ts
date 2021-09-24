@@ -6,7 +6,6 @@ import { RoleService } from "../../../services/role.service";
 import { MessageService } from "../../../services/message.service";
 import { TableComponent } from "../../table/table.component";
 import { AuthService } from "../../../services/auth.service";
-import { MatTable } from "@angular/material/table";
 
 @Component({
   selector: 'app-admin-user',
@@ -55,7 +54,7 @@ export class AdminUserComponent implements OnInit {
 
   ngOnInit(): void {
     this.roleService.findAll().subscribe((response: any) => {
-      this.roles = response;
+      this.roles = response.data;
     });
   }
 

@@ -18,4 +18,7 @@ public interface UtilisateurJpaRepository extends JpaRepository<Utilisateur, Int
 
     @Query("SELECT u FROM Utilisateur u WHERE u.login = :login")
     Utilisateur findOneByLogin(String login);
+
+    @Query("SELECT COUNT(u.id) FROM Utilisateur u JOIN u.roles r WHERE r.id = :idRole")
+    Long countUserWithRole(int idRole);
 }

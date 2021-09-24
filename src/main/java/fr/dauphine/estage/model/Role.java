@@ -30,7 +30,7 @@ public class Role {
     @Column(name = "roleLibelle", unique = true)
     private String libelle;
 
-    @OneToMany(mappedBy = "role", fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "role", fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.ALL}, orphanRemoval = true)
     private List<RoleAppFonction> roleAppFonctions;
 
     public int getId() {

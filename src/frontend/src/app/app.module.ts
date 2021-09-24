@@ -54,7 +54,7 @@ import { AdminNomenclaturesComponent } from './components/admin/admin-nomenclatu
 import { AdminNomenclaturesEditionComponent } from './components/admin/admin-nomenclatures/admin-nomenclatures-edition/admin-nomenclatures-edition.component';
 import { ConfirmationPopupComponent } from './components/confirmation-popup/confirmation-popup.component';
 import { AdminRoleComponent } from './components/admin/admin-role/admin-role.component';
-import { AuthService } from "./services/auth.service";
+import { ConfirmComponent } from './components/confirm/confirm.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -76,7 +76,8 @@ registerLocaleData(localeFr, 'fr');
     AdminNomenclaturesComponent,
     AdminNomenclaturesEditionComponent,
     ConfirmationPopupComponent,
-    AdminRoleComponent
+    AdminRoleComponent,
+    ConfirmComponent
   ],
   imports: [
     BrowserModule,

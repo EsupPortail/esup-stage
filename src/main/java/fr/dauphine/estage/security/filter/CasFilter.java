@@ -88,6 +88,8 @@ public class CasFilter implements Filter {
                     return;
                 }
 
+                // TODO création de l'utilisateur avec le rôle correspondant (ETU, ENS : à rechercher dans le LDAP) s'il n'existe pas en base
+
                 // Recherche de l'utilisateur en base pour mettre à jour son nom/prénom si non existant
                 Utilisateur utilisateur = utilisateurRepository.findOneByLogin(casUser.getLogin());
                 if (utilisateur != null) {

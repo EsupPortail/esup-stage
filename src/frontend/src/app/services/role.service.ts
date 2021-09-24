@@ -31,6 +31,10 @@ export class RoleService implements PaginatedService {
     return this.http.put(environment.apiUrl + "/roles/" + id, data);
   }
 
+  delete(id: number): Observable<any> {
+    return this.http.delete(environment.apiUrl + "/roles/" + id);
+  }
+
   findAllAppFonction() {
     return this.http.get(environment.apiUrl + "/roles/appFonctions");
   }

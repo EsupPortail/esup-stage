@@ -18,6 +18,9 @@
             <button mat-icon-button matTooltip="Éditer" (click)="edit(row, false)"><i class="fa fa-pen"></i></button>
             <button mat-icon-button matTooltip="Dupliquer" (click)="edit(row, true)"><i class="fa fa-copy"></i></button>
           </ng-container>
+          <span *ngIf="canDelete()" (confirm)="delete(row)" [confirmMessage]="'Êtes-vous sûr de vouloir supprimer ce rôle ?'">
+            <button mat-icon-button matTooltip="Supprimer"><i class="fa fa-trash-alt"></i></button>
+          </span>
         </td>
       </ng-container>
     </app-table>
