@@ -25,18 +25,19 @@ export class AppComponent {
     },
     {
       libelle: 'Paramétrage de l\'application',
+      path: 'param-global',
       canView: () => {
         return this.authService.checkRights({fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.LECTURE]})
       },
       children: [
         {
           libelle: 'Utilisateurs',
-          path: 'utilisateurs',
+          path: 'param-global/utilisateurs',
           icon: 'fa-users',
         },
         {
           libelle: 'Rôles',
-          path: 'roles',
+          path: 'param-global/roles',
           icon: 'fa-user-lock',
         },
       ]

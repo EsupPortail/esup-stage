@@ -14,13 +14,13 @@ import { AdminRoleComponent } from "./components/admin/admin-role/admin-role.com
 const routes: Routes = [
   {path: '', component: HomeComponent, canActivate: [AuthGuard], data: {role: {}, title: 'Accueil'}},
   {
-    path: 'utilisateurs',
+    path: 'param-global/utilisateurs',
     component: AdminUserComponent,
     canActivate: [AuthGuard],
     data: {role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.LECTURE]}, title: 'Gestion des utilisateurs'}
   },
   {
-    path: 'roles',
+    path: 'param-global/roles',
     component: AdminRoleComponent,
     canActivate: [AuthGuard],
     data: {role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.LECTURE]}, title: 'Gestion des rôles'}

@@ -25,16 +25,20 @@ export class MenuComponent implements OnInit {
   @Input() item: any;
   @Input() depth: number = 0;
 
-  constructor(private menuService: MenuService, public router: Router, private authService: AuthService) {
-  }
+  constructor(private menuService: MenuService, public router: Router) { }
 
   ngOnInit() {
+    this.setExpanded(this.router.url);
     this.menuService.currentUrl.subscribe((url: string) => {
-      if (this.item.path && url) {
-        this.expanded = url.indexOf(`/${this.item.path}`) === 0;
-        this.ariaExpanded = this.expanded;
-      }
+      this.setExpanded(url);
     });
+  }
+
+  setExpanded(url: string): void {
+    if (this.item.path && url) {
+      this.expanded = url.indexOf(`/${this.item.path}`) === 0;
+      this.ariaExpanded = this.expanded;
+    }
   }
 
   onItemSelected(item: any) {
