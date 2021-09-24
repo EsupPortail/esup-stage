@@ -4,8 +4,10 @@ import fr.dauphine.estage.dto.ContextDto;
 import fr.dauphine.estage.enums.AppFonctionEnum;
 import fr.dauphine.estage.enums.DroitEnum;
 import fr.dauphine.estage.exception.AppException;
+import fr.dauphine.estage.model.AppConfig;
 import fr.dauphine.estage.model.Utilisateur;
 import fr.dauphine.estage.model.helper.UtilisateurHelper;
+import fr.dauphine.estage.repository.AppConfigJpaRepository;
 import fr.dauphine.estage.repository.UtilisateurJpaRepository;
 import fr.dauphine.estage.security.ServiceContext;
 import fr.dauphine.estage.security.TokenFactory;
@@ -28,6 +30,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -39,6 +42,9 @@ public class SecureInterceptor {
 
     @Autowired
     UtilisateurJpaRepository utilisateurRepository;
+
+    @Autowired
+    AppConfigJpaRepository appConfigJpaRepository;
 
     @Around("@annotation(Secure)")
     public Object checkAuthorization(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -132,7 +138,9 @@ public class SecureInterceptor {
         // on crée le contexte de service
         ////////////////////////////////////
 
-        ContextDto context = new ContextDto(utilisateur, auth);
+        List<AppConfig> appConfigs = appConfigJpaRepository.findAll();
+
+        ContextDto context = new ContextDto(utilisateur, auth, appConfigs);
         ServiceContext.initialize(context);
         try {
             return joinPoint.proceed();

@@ -55,6 +55,8 @@ import { AdminNomenclaturesEditionComponent } from './components/admin/admin-nom
 import { ConfirmationPopupComponent } from './components/confirmation-popup/confirmation-popup.component';
 import { AdminRoleComponent } from './components/admin/admin-role/admin-role.component';
 import { ConfirmComponent } from './components/confirm/confirm.component';
+import { ConfigGeneraleComponent } from './components/admin/config-generale/config-generale.component';
+import { MatRadioModule } from "@angular/material/radio";
 
 registerLocaleData(localeFr, 'fr');
 
@@ -77,7 +79,8 @@ registerLocaleData(localeFr, 'fr');
     AdminNomenclaturesEditionComponent,
     ConfirmationPopupComponent,
     AdminRoleComponent,
-    ConfirmComponent
+    ConfirmComponent,
+    ConfigGeneraleComponent
   ],
   imports: [
     BrowserModule,
@@ -110,6 +113,7 @@ registerLocaleData(localeFr, 'fr');
     MatSelectModule,
     MatCheckboxModule,
     MatStepperModule,
+    MatRadioModule,
   ],
   providers: [
     CookieService,

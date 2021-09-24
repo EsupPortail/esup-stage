@@ -40,6 +40,11 @@ export class AppComponent {
           path: 'param-global/roles',
           icon: 'fa-user-lock',
         },
+        {
+          libelle: 'Paramètres généraux',
+          path: 'param-global/config-generale',
+          icon: 'fa-cogs',
+        },
       ]
     },
     {

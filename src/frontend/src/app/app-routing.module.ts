@@ -10,6 +10,7 @@ import { AdminNomenclaturesComponent } from "./components/admin/admin-nomenclatu
 import { AppFonction } from "./constants/app-fonction";
 import { Droit } from "./constants/droit";
 import { AdminRoleComponent } from "./components/admin/admin-role/admin-role.component";
+import { ConfigGeneraleComponent } from "./components/admin/config-generale/config-generale.component";
 
 const routes: Routes = [
   {path: '', component: HomeComponent, canActivate: [AuthGuard], data: {role: {}, title: 'Accueil'}},
@@ -24,6 +25,12 @@ const routes: Routes = [
     component: AdminRoleComponent,
     canActivate: [AuthGuard],
     data: {role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.LECTURE]}, title: 'Gestion des rôles'}
+  },
+  {
+    path: 'param-global/config-generale',
+    component: ConfigGeneraleComponent,
+    canActivate: [AuthGuard],
+    data: {role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.LECTURE]}, title: 'Paramétres généraux'}
   },
   {
     path: 'nomenclatures',
