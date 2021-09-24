@@ -6,6 +6,8 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 :root {
   --primaryColor: #2e4588;
+  --dangerColor: #e95160;
+  --successColor: #adcd68;
 }
 
 .text-red {
@@ -46,4 +48,20 @@ form {
 
 .mat-radio-button ~ .mat-radio-button {
   margin-left: 16px;
+}
+
+.mat-cell button:not(.mat-icon-button.mat-button-disabled.mat-button-disabled) .fa {
+  color: var(--primaryColor);
+}
+
+.mat-cell button:not(.mat-icon-button.mat-button-disabled.mat-button-disabled) {
+  .fa.fa-trash-alt, .fa.fa-trash {
+    color: var(--dangerColor);
+  }
+}
+
+.mat-cell button:not(.mat-icon-button.mat-button-disabled.mat-button-disabled) {
+  .fa.fa-sync {
+    color: var(--successColor);
+  }
 }
