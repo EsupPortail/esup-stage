@@ -52,7 +52,6 @@ import { ConventionCreateComponent } from './components/convention/convention-cr
 import { MatStepperModule } from "@angular/material/stepper";
 import { AdminNomenclaturesComponent } from './components/admin/admin-nomenclatures/admin-nomenclatures.component';
 import { AdminNomenclaturesEditionComponent } from './components/admin/admin-nomenclatures/admin-nomenclatures-edition/admin-nomenclatures-edition.component';
-import { ConfirmationPopupComponent } from './components/confirmation-popup/confirmation-popup.component';
 import { AdminRoleComponent } from './components/admin/admin-role/admin-role.component';
 import { ConfirmComponent } from './components/confirm/confirm.component';
 import { ConfigGeneraleComponent } from './components/admin/config-generale/config-generale.component';
@@ -77,7 +76,6 @@ registerLocaleData(localeFr, 'fr');
     ConventionCreateComponent,
     AdminNomenclaturesComponent,
     AdminNomenclaturesEditionComponent,
-    ConfirmationPopupComponent,
     AdminRoleComponent,
     ConfirmComponent,
     ConfigGeneraleComponent

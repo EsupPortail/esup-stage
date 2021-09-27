@@ -3,11 +3,14 @@ package fr.dauphine.estage.controller;
 import fr.dauphine.estage.dto.PaginatedResponse;
 import fr.dauphine.estage.enums.AppFonctionEnum;
 import fr.dauphine.estage.enums.DroitEnum;
+import fr.dauphine.estage.exception.AppException;
 import fr.dauphine.estage.model.LangueConvention;
+import fr.dauphine.estage.repository.ConventionJpaRepository;
 import fr.dauphine.estage.repository.LangueConventionJpaRepository;
 import fr.dauphine.estage.repository.LangueConventionRepository;
 import fr.dauphine.estage.security.interceptor.Secure;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -21,6 +24,9 @@ public class LangueConventionController {
 
     @Autowired
     LangueConventionJpaRepository langueConventionJpaRepository;
+
+    @Autowired
+    ConventionJpaRepository conventionJpaRepository;
 
     @GetMapping
     @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.LECTURE})
@@ -42,5 +48,17 @@ public class LangueConventionController {
         }
         langueConvention = langueConventionJpaRepository.saveAndFlush(langueConvention);
         return langueConvention;
+    }
+
+    @DeleteMapping("/{code}")
+    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
+    public void delete(@PathVariable("code") String code) {
+        LangueConvention langueConvention = langueConventionJpaRepository.findByCode(code);
+        Long count = conventionJpaRepository.countConventionWithLangueConvention(code);
+        if (count > 0) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Des conventions ont déjà été créées avec ce libellé, vous ne pouvez pas le supprimer");
+        }
+        langueConventionJpaRepository.delete(langueConvention);
+        langueConventionJpaRepository.flush();
     }
 }

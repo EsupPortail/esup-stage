@@ -18,4 +18,8 @@ export class UniteDureeService implements PaginatedService {
   update(id: number, data: any): Observable<any> {
     return this.http.put(environment.apiUrl + '/unite-duree/' + id, data);
   }
+
+  delete(id: number): Observable<any> {
+    return this.http.delete(environment.apiUrl + '/unite-duree/' + id);
+  }
 }

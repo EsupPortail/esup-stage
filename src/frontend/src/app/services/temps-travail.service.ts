@@ -7,7 +7,7 @@ import { PaginatedService } from "./paginated.service";
 @Injectable({
   providedIn: 'root'
 })
-export class TempsTravailService {
+export class TempsTravailService implements PaginatedService {
 
   constructor(private http: HttpClient) { }
 
@@ -17,5 +17,9 @@ export class TempsTravailService {
 
   update(id: number, data: any): Observable<any> {
     return this.http.put(environment.apiUrl + '/temps-travail/' + id, data);
+  }
+
+  delete(id: number): Observable<any> {
+    return this.http.delete(environment.apiUrl + '/temps-travail/' + id);
   }
 }

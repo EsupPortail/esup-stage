@@ -18,4 +18,8 @@ export class TypeConventionService implements PaginatedService {
   update(id: number, data: any): Observable<any> {
     return this.http.put(environment.apiUrl + '/type-convention/' + id, data);
   }
+
+  delete(id: number): Observable<any> {
+    return this.http.delete(environment.apiUrl + '/type-convention/' + id);
+  }
 }
