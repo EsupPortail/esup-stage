@@ -30,4 +30,28 @@ public interface ConventionJpaRepository extends JpaRepository<Convention, Integ
 
     @Query("SELECT COUNT(c.id) FROM Convention c WHERE c.modeVersGratification.id = :idModeVersGratification")
     Long countConventionWithModeVersGratification(int idModeVersGratification);
+
+    @Query("SELECT COUNT(c.id) FROM Convention c WHERE c.modeValidationStage.id = :idModeValidationStage")
+    Long countConventionWithModeValidationStage(int idModeValidationStage);
+
+    @Query("SELECT COUNT(c.id) FROM Convention c WHERE c.offre.niveauFormation.id = :idNiveauFormation")
+    Long countConventionWithNiveauFormation(int idNiveauFormation);
+
+    @Query("SELECT COUNT(c.id) FROM Convention c WHERE c.offre.typeOffre.id = :idTypeOffre")
+    Long countConventionWithTypeOffre(int idTypeOffre);
+
+    @Query("SELECT COUNT(c.id) FROM Convention c WHERE c.offre.contratOffre.id = :idContratOffre")
+    Long countConventionWithContratOffre(int idContratOffre);
+
+    @Query("SELECT COUNT(c.id) FROM Convention c WHERE c.origineStage.id = :idOrigineStage")
+    Long countConventionWithOrigineStage(int idOrigineStage);
+
+    @Query("SELECT COUNT(c.id) FROM Convention c WHERE c.structure.typeStructure.id = :idTypeStructure")
+    Long countConventionWithTypeStructure(int idTypeStructure);
+
+    @Query("SELECT COUNT(c.id) FROM Convention c WHERE c.structure.statutJuridique.id = :idStatutJuridique")
+    Long countConventionWithStatutJuridique(int idStatutJuridique);
+
+    @Query("SELECT COUNT(c.id) FROM Convention c WHERE c.structure.pays.id = :idPays")
+    Long countConventionWithPays(int idPays);
 }

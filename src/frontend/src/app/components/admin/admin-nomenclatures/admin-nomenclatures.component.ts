@@ -10,6 +10,14 @@ import { ThemeService } from "../../../services/theme.service";
 import { UniteDureeService } from "../../../services/unite-duree.service";
 import { UniteGratificationService } from "../../../services/unite-gratification.service";
 import { ModeVersGratificationService } from "../../../services/mode-vers-gratification.service";
+import { ModeValidationStageService } from "../../../services/mode-validation-stage.service";
+import { NiveauFormationService } from "../../../services/niveau-formation.service";
+import { OrigineStageService } from "../../../services/origine-stage.service";
+import { TypeStructureService } from "../../../services/type-structure.service";
+import { StatutJuridiqueService } from "../../../services/statut-juridique.service";
+import { TypeOffreService } from "../../../services/type-offre.service";
+import { ContratOffreService } from "../../../services/contrat-offre.service";
+import { PaysService } from "../../../services/pays.service";
 import { MessageService } from "../../../services/message.service";
 import { TableComponent } from "../../table/table.component";
 import { AdminNomenclaturesEditionComponent } from './admin-nomenclatures-edition/admin-nomenclatures-edition.component';
@@ -25,18 +33,32 @@ export class AdminNomenclaturesComponent implements OnInit {
 
   columns = ['id', 'libelle', 'action'];
   sortColumn = 'libelle';
+
   filters = [
     { id: 'id', libelle: 'Id' },
     { id: 'libelle', libelle: 'Libellé' },
   ];
+  filtersPays = [
+    { id: 'id', libelle: 'Id'},
+    { id: 'lib', libelle: 'Libellé'},
+  ];
+
   nomenclatures = [
     { key: 'id', label: 'Type Convention', service: this.typeConventionService, tableIndex: 0 },
     { key: 'code', label: 'Langue Convention', service: this.langueConventionService, tableIndex: 1 },
-    { key: 'id', label: 'Thème', service: this.themeService, tableIndex: 2 },
-    { key: 'id', label: 'Temps Travail', service: this.tempsTravailService, tableIndex: 3 },
-    { key: 'id', label: 'Fréquence de versement', service: this.uniteDureeService, tableIndex: 4 },
-    { key: 'id', label: 'Type de gratification', service: this.uniteGratificationService, tableIndex: 5 },
-    { key: 'id', label: 'Modalité de paiement', service: this.modeVersGratificationService, tableIndex: 6 },
+    { key: 'id', label: 'Pays', service: this.paysService, tableIndex: 2 },
+    { key: 'id', label: 'Thème', service: this.themeService, tableIndex: 3 },
+    { key: 'id', label: 'Temps Travail', service: this.tempsTravailService, tableIndex: 4 },
+    { key: 'id', label: 'Fréquence de versement', service: this.uniteDureeService, tableIndex: 5 },
+    { key: 'id', label: 'Type de gratification', service: this.uniteGratificationService, tableIndex: 6 },
+    { key: 'id', label: 'Modalité de paiement', service: this.modeVersGratificationService, tableIndex: 7 },
+    { key: 'id', label: 'Mode de validation du stage', service: this.modeValidationStageService, tableIndex: 8 },
+    { key: 'id', label: 'Niveau de formation', service: this.niveauFormationService, tableIndex: 9 },
+    { key: 'id', label: 'Origine du stage', service: this.origineStageService, tableIndex: 10 },
+    { key: 'id', label: 'Type de structure', service: this.typeStructureService, tableIndex: 11 },
+    { key: 'id', label: 'Statut juridique', service: this.statutJuridiqueService, tableIndex: 12 },
+    { key: 'id', label: "Type d'offre de stage", service: this.typeOffreService, tableIndex: 13 },
+    { key: 'id', label: "Contrat du stage", service: this.contratOffreService, tableIndex: 14 },
   ];
 
   data: any;
@@ -55,6 +77,14 @@ export class AdminNomenclaturesComponent implements OnInit {
     public uniteDureeService: UniteDureeService,
     public uniteGratificationService: UniteGratificationService,
     public modeVersGratificationService: ModeVersGratificationService,
+    public modeValidationStageService: ModeValidationStageService,
+    public niveauFormationService: NiveauFormationService,
+    public origineStageService: OrigineStageService,
+    public typeStructureService: TypeStructureService,
+    public statutJuridiqueService: StatutJuridiqueService,
+    public typeOffreService: TypeOffreService,
+    public contratOffreService: ContratOffreService,
+    public paysService: PaysService,
     public matDialog: MatDialog,
     private messageService: MessageService,
   ) { }
