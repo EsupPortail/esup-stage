@@ -12,6 +12,11 @@
                 <mat-option [value]="false">Non</mat-option>
               </mat-select>
             </ng-container>
+            <ng-container *ngSwitchCase="'list'">
+              <mat-select [name]="filter.id" multiple [(ngModel)]="filterValues[filter.id].value">
+                <mat-option *ngFor="let option of filter.options" [value]="option[filter.keyId]">{{option[filter.keyLibelle]}}</mat-option>
+              </mat-select>
+            </ng-container>
             <ng-container *ngSwitchDefault>
               <input matInput [name]="filter.id" [(ngModel)]="filterValues[filter.id].value" />
             </ng-container>

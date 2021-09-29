@@ -43,7 +43,7 @@ export class TableComponent implements OnInit, AfterContentInit {
     if (!this.pagination) {
       this.pageSize = 0;
     }
-    this.initFilters();
+    this.initFilters(false);
     this.update();
   }
 
@@ -87,18 +87,18 @@ export class TableComponent implements OnInit, AfterContentInit {
     this.update();
   }
 
-  initFilters(): void {
+  initFilters(emptyValues: boolean): void {
     for (const filter of this.filters) {
       this.filterValues[filter.id] = {
         type: filter.type ?? 'text',
-        value: filter.value,
+        value: emptyValues ? undefined : filter.value,
         specific: filter.specific
       }
     }
   }
 
   reset(): void {
-    this.initFilters();
+    this.initFilters(true);
     this.update();
   }
 

@@ -31,13 +31,13 @@ public class ConventionRepository extends PaginationRepository<Convention> {
     protected void addSpecificParemeter(String key, JSONObject parameter, List<String> clauses) {
         if (key.equals("centreGestion.personnels")) {
             clauses.add("personnel.uidPersonnel = :" + key.replace(".", ""));
-        };
+        }
     }
 
     @Override
     protected void setSpecificParemeterValue(String key, JSONObject parameter, Query query) {
         if (key.equals("centreGestion.personnels")) {
             query.setParameter(key.replace(".", ""), parameter.getString("value"));
-        };
+        }
     }
 }

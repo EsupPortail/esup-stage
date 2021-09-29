@@ -1,5 +1,6 @@
 package fr.dauphine.estage.repository;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,9 +33,9 @@ public class PaginationRepository<T> {
 
     public Long count(String filters) {
         formatFilters(filters);
-        String queryString = "SELECT COUNT(" + alias + ") FROM " + this.typeClass.getName() + " " + alias;
-        queryString += " " + String.join(" ", joins);
+        String queryString = "SELECT COUNT(DISTINCT " + alias + ") FROM " + this.typeClass.getName() + " " + alias;
         List<String> clauses = getClauses();
+        queryString += " " + String.join(" ", joins);
         if (clauses.size() > 0) {
             queryString += " WHERE " + String.join(" AND ", clauses);
         }
@@ -51,9 +52,9 @@ public class PaginationRepository<T> {
 
     public List<T> findPaginated(int page, int perPage, String predicate, String sortOrder, String filters) {
         formatFilters(filters);
-        String queryString = "SELECT " + alias + " FROM " + this.typeClass.getName() + " " + alias;
-        queryString += " " + String.join(" ", joins);
+        String queryString = "SELECT DISTINCT " + alias + " FROM " + this.typeClass.getName() + " " + alias;
         List<String> clauses = getClauses();
+        queryString += " " + String.join(" ", joins);
         if (clauses.size() > 0) {
             queryString += " WHERE " + String.join(" AND ", clauses);
         }
@@ -108,6 +109,9 @@ public class PaginationRepository<T> {
                     case "boolean":
                         op = "=";
                         break;
+                    case "list":
+                        op = "IN";
+                        break;
                     default:
                         column = "LOWER(" + column + ")";
                         op = "LIKE";
@@ -133,6 +137,14 @@ public class PaginationRepository<T> {
                         break;
                     case "boolean":
                         query.setParameter(key.replace(".", ""), condition.getBoolean("value"));
+                        break;
+                    case "list":
+                        List<Object> values = new ArrayList<>();
+                        JSONArray jsonArray = condition.getJSONArray("value");
+                        for (int j = 0 ; j < jsonArray.length(); ++j) {
+                            values.add(jsonArray.get(j));
+                        }
+                        query.setParameter(key.replace(".", ""), values);
                         break;
                     default:
                         query.setParameter(key.replace(".", ""), "%" + condition.getString("value").toLowerCase() + "%");

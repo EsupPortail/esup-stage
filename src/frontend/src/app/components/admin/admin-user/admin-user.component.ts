@@ -8,6 +8,7 @@ import { TableComponent } from "../../table/table.component";
 import { AuthService } from "../../../services/auth.service";
 import { AppFonction } from "../../../constants/app-fonction";
 import { Droit } from "../../../constants/droit";
+import { Role } from "../../../constants/role";
 
 @Component({
   selector: 'app-admin-user',
@@ -16,12 +17,11 @@ import { Droit } from "../../../constants/droit";
 })
 export class AdminUserComponent implements OnInit {
 
-  columns = ['login', 'nom', 'prenom', 'actif', 'action'];
+  columns = ['login', 'nom', 'prenom', 'roles', 'actif', 'action'];
   sortColumn = 'login';
   filters = [
-    { id: 'login', libelle: 'Login' },
-    { id: 'nom', libelle: 'Nom' },
-    { id: 'prenom', libelle: 'Prénom' },
+    { id: 'utilisateur', libelle: 'Utilisateur', specific: true },
+    { id: 'roles', libelle: 'Rôle', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
     { id: 'actif', libelle: 'Actif', type: 'boolean' },
   ];
 
@@ -57,6 +57,11 @@ export class AdminUserComponent implements OnInit {
   ngOnInit(): void {
     this.roleService.findAll().subscribe((response: any) => {
       this.roles = response.data;
+      const filterRole = this.filters.find((f: any) => f.id === 'roles');
+      if (filterRole) {
+        filterRole.options = this.roles;
+        filterRole.value = this.roles.filter((r: any) => [Role.ADM, Role.GES, Role.RESP_GES].indexOf(r.code) > -1).map((r: any) => r.id);
+      }
     });
   }
 
