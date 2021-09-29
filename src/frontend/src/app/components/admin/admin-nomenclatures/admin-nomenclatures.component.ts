@@ -106,7 +106,6 @@ export class AdminNomenclaturesComponent implements OnInit {
     this.data = data;
     const dialogConfig = new MatDialogConfig();
     dialogConfig.data = {service: service, data: this.data};
-    dialogConfig.width = "50%";
     const modalDialog = this.matDialog.open(AdminNomenclaturesEditionComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse == true) {
