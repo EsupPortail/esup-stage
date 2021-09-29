@@ -18,4 +18,12 @@ export class ConfigService {
     return this.http.post(environment.apiUrl + `/config/generale`, data);
   }
 
+  getConfigAlerteMail(): Observable<any> {
+    return this.http.get(environment.apiUrl + "/config/alerte-mail");
+  }
+
+  updateAlerteMail(data: any): Observable<any> {
+    return this.http.post(environment.apiUrl + `/config/alerte-mail`, data);
+  }
+
 }

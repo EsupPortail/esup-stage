@@ -18,7 +18,22 @@ export class ConfigGeneraleComponent implements OnInit {
   configTheme: any;
 
   formGenerale: FormGroup;
-  formAlerte: FormGroup;
+
+  alertes = [
+    {code: 'creationConventionEtudiant', libelle: 'Création d\'une convention par l\'étudiant'},
+    {code: 'modificationConventionEtudiant', libelle: 'Modification d\'une convention par l\'étudiant'},
+    {code: 'creationConventionGestionnaire', libelle: 'Création d\'une convention par le gestionnaire'},
+    {code: 'modificationConventionGestionnaire', libelle: 'Modification d\'une convention par le gestionnaire'},
+    {code: 'creationAvenantEtudiant', libelle: 'Création d\'un avenant par l\'étudiant'},
+    {code: 'modificationAvenantEtudiant', libelle: 'Modification d\'un avenant par l\'étudiant'},
+    {code: 'creationAvenantGestionnaire', libelle: 'Création d\'un avenant par le gestionnaire'},
+    {code: 'modificationAvenantGestionnaire', libelle: 'Modification d\'un avenant par le gestionnaire'},
+    {code: 'validationPedagogiqueConvention', libelle: 'Validation pédagogique d\'une convention'},
+    {code: 'validationAdministrativeConvention', libelle: 'Validation administrative d\'une convention'},
+    {code: 'validationAvenant', libelle: 'Validation d\'un avenant'},
+  ];
+  alerteColumns = ['alertes', 'alerteEtudiant', 'alerteGestionnaire', 'alerteRespGestionnaire', 'alerteEnseignant'];
+
   formTheme: FormGroup;
 
   typeCentres = ['VIDE', 'COMPOSANTE', 'ETAPE', 'MIXTE'];
@@ -45,6 +60,9 @@ export class ConfigGeneraleComponent implements OnInit {
       if (this.configGenerale.typeCentre === null) this.configGenerale.typeCentre = 'VIDE';
       this.formGenerale.setValue(this.configGenerale);
     });
+    this.configService.getConfigAlerteMail().subscribe((response: any) => {
+      this.configAlerte = response;
+    });
   }
 
   canEdit(): boolean {
@@ -58,6 +76,13 @@ export class ConfigGeneraleComponent implements OnInit {
         this.messageService.setSuccess('Paramètre d\'élements généraux modifés');
       });
     }
+  }
+
+  saveAlerteMail(): void {
+    this.configService.updateAlerteMail(this.configAlerte).subscribe((response: any) => {
+      this.configAlerte = response;
+      this.messageService.setSuccess('Paramètre d\'alertes mail modifés');
+    });
   }
 
 }

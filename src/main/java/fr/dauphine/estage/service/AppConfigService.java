@@ -31,10 +31,6 @@ public class AppConfigService {
     }
 
     private AppConfig getByCode(AppConfigCodeEnum code) {
-        AppConfig appConfig = appConfigJpaRepository.findByCode(code);
-        if (appConfig == null) {
-            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Configuration manquante");
-        }
-        return appConfig;
+        return appConfigJpaRepository.findByCode(code);
     }
 }
