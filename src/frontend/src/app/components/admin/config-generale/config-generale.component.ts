@@ -27,11 +27,12 @@ export class ConfigGeneraleComponent implements OnInit {
     this.formGenerale = this.fb.group({
       anneeBasculeJour: [null, [Validators.required, Validators.min(1), Validators.max(31)]],
       anneeBasculeMois: [null, [Validators.required, Validators.min(1), Validators.max(12)]],
-      autoriserConventionsOrphelines: [null, []],
+      autoriserConventionsOrphelines: [null, [Validators.required]],
       typeCentre: [null, [Validators.required]],
-      autoriserCentresBloquerImpressionConvention: [null, []],
-      autoriserEtudiantAModifierEntreprise: [null, []],
-      autoriserValidationAutoOrgaAccCreaEtu: [null, []],
+      autoriserCentresBloquerImpressionConvention: [null, [Validators.required]],
+      autoriserEtudiantAModifierEntreprise: [null, [Validators.required]],
+      autoriserValidationAutoOrgaAccCreaEtu: [null, [Validators.required]],
+      ldapFiltreEnseignant: [null, [Validators.required]],
     })
   }
 

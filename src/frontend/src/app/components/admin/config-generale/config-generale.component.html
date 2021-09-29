@@ -58,6 +58,12 @@
               </mat-radio-group>
             </div>
           </div>
+          <div class="row">
+            <mat-form-field class="col-md-12" appearance="fill">
+              <mat-label>Filtre LDAP pour la recherche des enseignants</mat-label>
+              <input matInput formControlName="ldapFiltreEnseignant" />
+            </mat-form-field>
+          </div>
           <div class="mt-3" *ngIf="canEdit()">
             <button mat-flat-button color="primary">Valider</button>
           </div>

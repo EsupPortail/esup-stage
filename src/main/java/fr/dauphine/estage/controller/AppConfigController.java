@@ -13,6 +13,7 @@ import fr.dauphine.estage.model.helper.AppConfigHelper;
 import fr.dauphine.estage.repository.AppConfigJpaRepository;
 import fr.dauphine.estage.security.ServiceContext;
 import fr.dauphine.estage.security.interceptor.Secure;
+import fr.dauphine.estage.service.AppConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,11 +27,13 @@ public class AppConfigController {
     @Autowired
     AppConfigJpaRepository appConfigJpaRepository;
 
+    @Autowired
+    AppConfigService appConfigService;
+
     @GetMapping("/generale")
     @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.LECTURE})
     public ConfigGeneraleDto getConfigGenerale() {
-        ContextDto contexteDto = ServiceContext.getServiceContext();
-        return contexteDto.getConfigGenerale();
+        return appConfigService.getConfigGenerale();
     }
 
     @PostMapping("/generale")

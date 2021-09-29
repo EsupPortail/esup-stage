@@ -10,6 +10,7 @@ public class ConfigGeneraleDto {
     private boolean autoriserCentresBloquerImpressionConvention = false;
     private boolean autoriserEtudiantAModifierEntreprise = false;
     private boolean autoriserValidationAutoOrgaAccCreaEtu = false;
+    private String ldapFiltreEnseignant;
 
     public int getAnneeBasculeJour() {
         return anneeBasculeJour;
@@ -65,5 +66,13 @@ public class ConfigGeneraleDto {
 
     public void setAutoriserValidationAutoOrgaAccCreaEtu(boolean autoriserValidationAutoOrgaAccCreaEtu) {
         this.autoriserValidationAutoOrgaAccCreaEtu = autoriserValidationAutoOrgaAccCreaEtu;
+    }
+
+    public String getLdapFiltreEnseignant() {
+        return ldapFiltreEnseignant;
+    }
+
+    public void setLdapFiltreEnseignant(String ldapFiltreEnseignant) {
+        this.ldapFiltreEnseignant = ldapFiltreEnseignant;
     }
 }

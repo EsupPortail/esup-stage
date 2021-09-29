@@ -138,9 +138,7 @@ public class SecureInterceptor {
         // on crée le contexte de service
         ////////////////////////////////////
 
-        List<AppConfig> appConfigs = appConfigJpaRepository.findAll();
-
-        ContextDto context = new ContextDto(utilisateur, auth, appConfigs);
+        ContextDto context = new ContextDto(utilisateur, auth);
         ServiceContext.initialize(context);
         try {
             return joinPoint.proceed();
