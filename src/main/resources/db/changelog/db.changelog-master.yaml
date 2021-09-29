@@ -11,3 +11,9 @@ databaseChangeLog:
   - include:
       file: 1.0.0-app-config.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 1.0.0-devise.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 1.0.0-convention.yaml
+      relativeToChangelogFile: true

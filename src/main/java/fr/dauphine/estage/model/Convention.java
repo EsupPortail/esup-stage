@@ -298,6 +298,10 @@ public class Convention extends ObjetMetier {
     @Column(length = 30)
     private String typePresence;
 
+    @ManyToOne
+    @JoinColumn(name = "idDevise")
+    private Devise devise;
+
     public int getId() {
         return id;
     }
@@ -992,5 +996,13 @@ public class Convention extends ObjetMetier {
 
     public void setTypePresence(String typePresence) {
         this.typePresence = typePresence;
+    }
+
+    public Devise getDevise() {
+        return devise;
+    }
+
+    public void setDevise(Devise devise) {
+        this.devise = devise;
     }
 }

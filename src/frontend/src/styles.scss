@@ -55,7 +55,7 @@ form {
 }
 
 .mat-cell button:not(.mat-icon-button.mat-button-disabled.mat-button-disabled) {
-  .fa.fa-trash-alt, .fa.fa-trash {
+  .fa.fa-trash-alt, .fa.fa-trash, .fa.fa-ban {
     color: var(--dangerColor);
   }
 }
