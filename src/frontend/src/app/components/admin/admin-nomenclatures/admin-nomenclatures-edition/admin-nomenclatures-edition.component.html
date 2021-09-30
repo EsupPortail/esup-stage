@@ -1,0 +1,17 @@
+<h2>Edition</h2>
+<mat-card>
+  <mat-card-content>
+    <form [formGroup]="form" (submit)="save()">
+      <div>
+        <mat-form-field appearance="fill">
+          <mat-label>Libellé</mat-label>
+          <input matInput formControlName="libelle">
+        </mat-form-field>
+      </div>
+      <mat-dialog-actions>
+        <button type="button" mat-flat-button color="warn" (click)="close()">Annuler</button>
+        <button mat-flat-button color="primary">Valider</button>
+      </mat-dialog-actions>
+    </form>
+  </mat-card-content>
+</mat-card>

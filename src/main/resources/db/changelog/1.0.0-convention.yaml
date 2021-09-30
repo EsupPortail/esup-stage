@@ -1,0 +1,15 @@
+databaseChangeLog:
+- changeSet:
+    id: convention-idDevise
+    author: jwang
+    changes:
+    - addColumn:
+        tableName: Convention
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            constraints:
+                foreignKeyName: fk_Convention_Devise1
+                references: Devise(idDevise)
+            name: idDevise
+            type: INT

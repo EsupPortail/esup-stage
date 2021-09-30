@@ -1,0 +1,10 @@
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# PROJECT  https://sources.dauphine.psl.eu/scolarite/estage
+# ROLE     proxy
+#
+#    fichier de configuration inclu sur un VHOST pre-existant
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+<Location />
+   ProxyPass          ajp://{{ ESTAGE_ENVIRONMENT.TOMCAT.host }}:{{ ESTAGE_ENVIRONMENT.TOMCAT.port }}/  secret={{ ESTAGE_ENVIRONMENT.TOMCAT.secret }} connectiontimeout=300
+   ProxyPassReverse   ajp://{{ ESTAGE_ENVIRONMENT.TOMCAT.host }}:{{ ESTAGE_ENVIRONMENT.TOMCAT.port }}/
+</Location>

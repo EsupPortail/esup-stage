@@ -77,8 +77,8 @@
 # API config
 - name: app.config
   template: 
-    src: "templates/application.properties.j2"
-    dest: "/etc/estage/application.properties"
+    src: "templates/estage.properties.j2"
+    dest: "/etc/estage/estage.properties"
     owner: root
     group: root
     mode: 0640

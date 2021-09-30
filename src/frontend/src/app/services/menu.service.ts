@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject } from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -6,6 +7,7 @@ import { Injectable } from '@angular/core';
 export class MenuService {
 
   private _navbarOpened = true;
+  public currentUrl = new BehaviorSubject<string>('');
 
   constructor() { }
 

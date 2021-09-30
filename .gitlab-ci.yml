@@ -169,7 +169,10 @@ appbuild:
     # build npm
     - echo "MAVEN build ..."
     - mvn --version
-    - ( cd ${CI_PROJECT_DIR} ; mvn clean package )
+    # TESTS UNITAIRES uniquement sur le profil "dev"
+    ##- ( cd ${CI_PROJECT_DIR} ; mvn -Pdev clean package )
+    # PACKAGING RPM sans test-unitaire
+    - ( cd ${CI_PROJECT_DIR} ; mvn clean package -Dmaven.test.skip=true)
     # envoi en cache
     - echo "CACHE copy ..."
     - mkdir -p ${PROJECT_CACHE_DIR}
@@ -372,6 +375,8 @@ deploy_auto_tower_backoffice:
     - EXTRA_VARS="{}"
     - '[ -f ${CI_PROJECT_DIR}/ansible/extra-vars.yml ] && EXTRA_VARS="$(cat ${CI_PROJECT_DIR}/ansible/extra-vars.yml)"'
     - EXTRA_VARS_BASE64="$(echo -n "${EXTRA_VARS}" | base64 2>/dev/null | tr -d '\n')"
+    # tower => jobtemplate
+    - TOWER_JOBNAME="JOBTPL_${CI_PROJECT_PATH}"
     #
     #
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -379,8 +384,8 @@ deploy_auto_tower_backoffice:
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     - 'HEADER_JSON="Content-Type: application/json"'
     - 'HEADER_SNI="HOST: ${TOWERCI_HOST}"'
-    - 'API_DATA="{\"jobtemplate\": \"JOBTPL_${CI_PROJECT_PATH}_backoffice\", \"branch\": \"${SCM_BRANCH}\", \"extra_vars_base64\": \"${EXTRA_VARS_BASE64}\"}"'
-    - 'echo "{\"jobtemplate\": \"JOBTPL_${CI_PROJECT_PATH}_backoffice\", \"branch\": \"${SCM_BRANCH}\", \"extra_vars_base64\": \"${EXTRA_VARS_BASE64}\"}" > /tmp/api_modify.json'
+    - 'API_DATA="{\"jobtemplate\": \"${TOWER_JOBNAME}\", \"branch\": \"${SCM_BRANCH}\", \"extra_vars_base64\": \"${EXTRA_VARS_BASE64}\"}"'
+    - 'echo "{\"jobtemplate\": \"${TOWER_JOBNAME}\", \"branch\": \"${SCM_BRANCH}\", \"extra_vars_base64\": \"${EXTRA_VARS_BASE64}\"}" > /tmp/api_modify.json'
     # appel
     - echo "CMD> curl -s -o /tmp/jobtpl-modify.json -H '${HEADER_SNI}' -H '${HEADER_JSON}' -X PATCH --data '${API_DATA}'   ${TOWERCI_BASEURL}/apitowerci/job_template"
     - curl -s -o /tmp/jobtpl-modify.json -H "${HEADER_SNI}" -H "${HEADER_JSON}" -X PATCH --data @/tmp/api_modify.json      ${TOWERCI_BASEURL}/apitowerci/job_template
@@ -388,8 +393,8 @@ deploy_auto_tower_backoffice:
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Executer le JOB_TEMPLATE sur l'environnement par défault
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    - 'API_LAUNCH="{\"jobtemplate\": \"JOBTPL_${CI_PROJECT_PATH}_backoffice\", \"inventory\": \"${CI_INVENTORY}\"}"'
-    - 'echo "{\"jobtemplate\": \"JOBTPL_${CI_PROJECT_PATH}_backoffice\", \"inventory\": \"${CI_INVENTORY}\"}" > /tmp/api_launch.json'
+    - 'API_LAUNCH="{\"jobtemplate\": \"${TOWER_JOBNAME}\", \"inventory\": \"${CI_INVENTORY}\"}"'
+    - 'echo "{\"jobtemplate\": \"${TOWER_JOBNAME}\", \"inventory\": \"${CI_INVENTORY}\"}" > /tmp/api_launch.json'
     # appel
     - echo "CMD> curl -s -o /tmp/jobtpl-launch.json -H '${HEADER_SNI}' -H '${HEADER_JSON}' -X POST --data '${API_LAUNCH}'  ${TOWERCI_BASEURL}/apitowerci/launch"
     - curl -s -o /tmp/jobtpl-launch.json -H "${HEADER_SNI}" -H "${HEADER_JSON}" -X POST --data @/tmp/api_launch.json       ${TOWERCI_BASEURL}/apitowerci/launch
@@ -400,7 +405,7 @@ deploy_auto_tower_backoffice:
     - JOB_ID=$(    jq -r '.job'     /tmp/jobtpl-launch.json)
     - JOB_STATUS=$(jq -r '.status'  /tmp/jobtpl-launch.json)
     - JOB_FAILED=$(jq -r '.failed'  /tmp/jobtpl-launch.json)
-    - echo "JOB-API > ID=${JOB_ID} + STATUS=${JOB_STATUS} + FAILED=${JOB_FAILED}"
+    - echo "JOB-API > ID=${JOB_ID} + STATUS=${JOB_STATUS} + FAILED=${JOB_FAILED}   for job='${TOWER_JOBNAME}' in TOWER"
     - echo "waiting job execution ..."
     #
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -447,3 +452,4 @@ app_result:
     - echo ""
   #dependencies: ["app_deploy"]
   tags: ["Docker"]
+

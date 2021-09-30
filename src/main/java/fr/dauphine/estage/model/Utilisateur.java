@@ -1,14 +1,45 @@
 package fr.dauphine.estage.model;
 
+import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+@Entity
+@Table(name = "Utilisateur")
 public class Utilisateur {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "idUtilisateur", nullable = false)
     private int id;
-    private String role;
-    private String username;
-    private String displayname;
+
+    @Column(nullable = false, unique = true)
+    private String login;
+
+    @Column
+    private String password;
+
+    @Column
+    private String nom;
+
+    @Column
+    private String prenom;
+
+    @Column(nullable = false)
+    private Boolean actif;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false)
     private Date dateCreation;
-    private boolean actif;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.REMOVE})
+    @JoinTable(
+            name = "UtilisateurRole",
+            joinColumns = @JoinColumn(name = "idUtilisateur"),
+            inverseJoinColumns = @JoinColumn(name = "idRole")
+    )
+    private List<Role> roles = new ArrayList<>();
 
     public int getId() {
         return id;
@@ -18,28 +49,44 @@ public class Utilisateur {
         this.id = id;
     }
 
-    public String getRole() {
-        return role;
+    public String getLogin() {
+        return login;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setLogin(String login) {
+        this.login = login;
     }
 
-    public String getUsername() {
-        return username;
+    public String getPassword() {
+        return password;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    public String getDisplayname() {
-        return displayname;
+    public String getNom() {
+        return nom;
     }
 
-    public void setDisplayname(String displayname) {
-        this.displayname = displayname;
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+
+    public String getPrenom() {
+        return prenom;
+    }
+
+    public void setPrenom(String prenom) {
+        this.prenom = prenom;
+    }
+
+    public Boolean isActif() {
+        return actif;
+    }
+
+    public void setActif(Boolean actif) {
+        this.actif = actif;
     }
 
     public Date getDateCreation() {
@@ -50,11 +97,16 @@ public class Utilisateur {
         this.dateCreation = dateCreation;
     }
 
-    public boolean isActif() {
-        return actif;
+    public List<Role> getRoles() {
+        return roles;
     }
 
-    public void setActif(boolean actif) {
-        this.actif = actif;
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        setDateCreation(new Date());
     }
 }

@@ -2,6 +2,7 @@ package fr.dauphine.estage.security.filter;
 
 import fr.dauphine.estage.bootstrap.ApplicationBootstrap;
 import fr.dauphine.estage.model.Utilisateur;
+import fr.dauphine.estage.repository.UtilisateurJpaRepository;
 import fr.dauphine.estage.security.TokenFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,9 @@ public class TokenFilter implements Filter {
 
     @Autowired
     ApplicationBootstrap applicationBootstrap;
+
+    @Autowired
+    UtilisateurJpaRepository utilisateurRepository;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -40,9 +44,7 @@ public class TokenFilter implements Filter {
                 int id = Integer.parseInt(pathInfos[2]);
                 String token = pathInfos[3];
 
-                // TODO récupération de l'utilisateur
-//                Utilisateur utilisateur = utilisateurDao.getById(Utilisateur.class, id);
-                Utilisateur utilisateur = null;
+                Utilisateur utilisateur = utilisateurRepository.findByIdActif(id);
                 if (utilisateur != null) {
                     // vérification du token d'authentification
                     String tokenAuth = TokenFactory.generationTokenAuth(id+"", utilisateur.getDateCreation());

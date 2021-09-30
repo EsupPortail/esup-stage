@@ -2,8 +2,8 @@ package fr.dauphine.estage.security.common;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fr.dauphine.commons.exception.ApplicationClientException;
-import fr.dauphine.commons.exception.ApplicationClientInterruption;
+import fr.dauphine.estage.exception.ApplicationClientException;
+import fr.dauphine.estage.exception.ApplicationClientInterruption;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;

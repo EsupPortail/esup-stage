@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - include:
+      file: 000-init.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 1.0.0-user-role.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 1.0.0-foreignkey-nullable.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 1.0.0-app-config.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 1.0.0-devise.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 1.0.0-convention.yaml
+      relativeToChangelogFile: true

@@ -1,7 +1,9 @@
 package fr.dauphine.estage.security.filter;
 
-import fr.dauphine.commons.exception.ApplicationClientException;
 import fr.dauphine.estage.bootstrap.ApplicationBootstrap;
+import fr.dauphine.estage.exception.ApplicationClientException;
+import fr.dauphine.estage.model.Utilisateur;
+import fr.dauphine.estage.repository.UtilisateurJpaRepository;
 import fr.dauphine.estage.security.common.CasLayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +23,9 @@ public class CasFilter implements Filter {
 
     @Autowired
     ApplicationBootstrap applicationBootstrap;
+
+    @Autowired
+    UtilisateurJpaRepository utilisateurRepository;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -81,6 +86,25 @@ public class CasFilter implements Filter {
                     HttpServletResponse httpResp = (HttpServletResponse) response;
                     httpResp.sendError(HttpServletResponse.SC_FORBIDDEN, "Non autorisé");
                     return;
+                }
+
+                // TODO création de l'utilisateur avec le rôle correspondant (ETU, ENS : à rechercher dans le LDAP) s'il n'existe pas en base
+
+                // Recherche de l'utilisateur en base pour mettre à jour son nom/prénom si non existant
+                Utilisateur utilisateur = utilisateurRepository.findOneByLogin(casUser.getLogin());
+                if (utilisateur != null) {
+                    boolean update = false;
+                    if (utilisateur.getNom() == null) {
+                        utilisateur.setNom(casUser.getNom());
+                        update = true;
+                    }
+                    if (utilisateur.getPrenom() == null) {
+                        utilisateur.setPrenom(casUser.getPrenom());
+                        update = true;
+                    }
+                    if (update) {
+                        utilisateurRepository.saveAndFlush(utilisateur);
+                    }
                 }
 
                 // log de redirection

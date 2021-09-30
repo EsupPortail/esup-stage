@@ -1,0 +1,5832 @@
+databaseChangeLog:
+- changeSet:
+    id: 1630931429942-1
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idAccordPartenariat
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: idStructure
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: idContact
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: dateCreation
+            type: datetime
+        - column:
+            constraints:
+              nullable: false
+            name: loginCreation
+            type: VARCHAR(50)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateValidation
+            type: datetime
+        - column:
+            name: loginValidation
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            defaultValueBoolean: false
+            name: estValide
+            type: BIT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueBoolean: false
+            name: comptesSupprimes
+            type: BIT
+        - column:
+            name: raisonSuppressionComptes
+            type: TEXT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateSuppressionComptes
+            type: datetime
+        - column:
+            name: loginSuppressionComptes
+            type: VARCHAR(50)
+        tableName: AccordPartenariat
+- changeSet:
+    id: 1630931429942-2
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idAdminStructure
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idCivilite
+            type: INT
+        - column:
+            name: nom
+            type: VARCHAR(50)
+        - column:
+            name: prenom
+            type: VARCHAR(50)
+        - column:
+            name: mail
+            type: VARCHAR(50)
+        - column:
+            name: login
+            remarks: login/uid
+            type: VARCHAR(50)
+        - column:
+            name: eppn
+            type: VARCHAR(50)
+        - column:
+            name: mdp
+            type: VARCHAR(200)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: derniereConnexion
+            type: datetime
+        - column:
+            defaultValueComputed: 'NULL'
+            name: avantDerniereConnexion
+            type: datetime
+        - column:
+            constraints:
+              nullable: false
+            name: dateCreation
+            type: datetime
+        - column:
+            constraints:
+              nullable: false
+            name: loginCreation
+            type: VARCHAR(50)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateModif
+            type: datetime
+        - column:
+            name: loginModif
+            type: VARCHAR(50)
+        tableName: AdminStructure
+- changeSet:
+    id: 1630931429942-3
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: codeAffectation
+            type: VARCHAR(10)
+        - column:
+            name: libelleAffectation
+            type: VARCHAR(150)
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            defaultValue: ' '
+            name: codeUniversite
+            type: VARCHAR(50)
+        tableName: Affectation
+- changeSet:
+    id: 1630931429942-4
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idAssurance
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: libelleAssurance
+            type: VARCHAR(100)
+        - column:
+            constraints:
+              nullable: false
+            defaultValue: O
+            name: temEnServAss
+            type: VARCHAR(1)
+        - column:
+            constraints:
+              nullable: false
+            name: codeCtrl
+            type: VARCHAR(20)
+        tableName: Assurance
+- changeSet:
+    id: 1630931429942-5
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idAvenant
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: idConvention
+            type: INT
+        - column:
+            name: titreAvenant
+            type: TEXT
+        - column:
+            name: motifAvenant
+            type: TEXT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueNumeric: 0
+            name: rupture
+            type: TINYINT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueNumeric: 0
+            name: modificationPeriode
+            type: TINYINT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateDebutStage
+            type: date
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateFinStage
+            type: date
+        - column:
+            constraints:
+              nullable: false
+            defaultValueNumeric: 0
+            name: interruptionStage
+            type: TINYINT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateDebutInterruption
+            type: date
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateFinInterruption
+            type: date
+        - column:
+            defaultValueNumeric: 0
+            name: modificationLieu
+            type: TINYINT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idService
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueNumeric: 0
+            name: modificationSujet
+            type: TINYINT
+        - column:
+            name: sujetStage
+            type: TEXT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueNumeric: 0
+            name: modificationEnseignant
+            type: TINYINT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueNumeric: 0
+            name: modificationSalarie
+            type: TINYINT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idContact
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueNumeric: 0
+            name: validationAvenant
+            type: TINYINT
+        - column:
+            constraints:
+              nullable: false
+            name: loginCreation
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            name: dateCreation
+            type: datetime
+        - column:
+            name: loginModif
+            type: VARCHAR(50)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateModif
+            type: datetime
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idEnseignant
+            type: INT
+        - column:
+            name: montantGratification
+            type: VARCHAR(7)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idUniteGratification
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueNumeric: 0
+            name: modificationMontantGratification
+            type: TINYINT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateRupture
+            type: date
+        - column:
+            name: commentaireRupture
+            type: TEXT
+        - column:
+            defaultValue: euros
+            name: monnaieGratification
+            type: VARCHAR(50)
+        - column:
+            defaultValueNumeric: 4
+            name: idUniteDureeGratification
+            type: INT
+        tableName: Avenant
+- changeSet:
+    id: 1630931429942-6
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            defaultValue: ''
+            name: codeCaisse
+            type: VARCHAR(5)
+        - column:
+            constraints:
+              nullable: false
+            name: libelleCaisse
+            type: VARCHAR(100)
+        - column:
+            constraints:
+              nullable: false
+            name: infoCaisse
+            type: VARCHAR(100)
+        - column:
+            constraints:
+              nullable: false
+            defaultValue: O
+            name: temEnServCaisse
+            type: VARCHAR(1)
+        - column:
+            defaultValueBoolean: false
+            name: modifiable
+            type: BIT
+        tableName: CaisseRegime
+- changeSet:
+    id: 1630931429942-7
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idCategorie
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: typeCategorie
+            type: INT
+        tableName: Categorie
+- changeSet:
+    id: 1630931429942-8
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idCentreGestion
+            type: INT
+        - column:
+            name: nomCentre
+            type: VARCHAR(100)
+        - column:
+            constraints:
+              nullable: false
+            name: idNiveauCentre
+            type: INT
+        - column:
+            name: adresse
+            type: VARCHAR(200)
+        - column:
+            name: voie
+            type: VARCHAR(200)
+        - column:
+            name: commune
+            type: VARCHAR(200)
+        - column:
+            name: codePostal
+            type: VARCHAR(10)
+        - column:
+            name: siteWeb
+            type: VARCHAR(50)
+        - column:
+            name: mail
+            type: VARCHAR(50)
+        - column:
+            name: telephone
+            type: VARCHAR(20)
+        - column:
+            name: fax
+            type: VARCHAR(20)
+        - column:
+            name: commentaire
+            type: TEXT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueBoolean: false
+            name: presenceTuteurEns
+            type: BIT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueBoolean: false
+            name: presenceTuteurPro
+            type: BIT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueBoolean: false
+            name: saisieTuteurProParEtudiant
+            type: BIT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueBoolean: false
+            name: depotAnonyme
+            type: BIT
+        - column:
+            constraints:
+              nullable: false
+            name: codeUniversite
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            name: dateCreation
+            type: datetime
+        - column:
+            constraints:
+              nullable: false
+            name: loginCreation
+            type: VARCHAR(50)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateModif
+            type: datetime
+        - column:
+            name: loginModif
+            type: VARCHAR(50)
+        - column:
+            name: nomViseur
+            remarks: pr�nom , nom viseur - signature
+            type: VARCHAR(50)
+        - column:
+            name: prenomViseur
+            type: VARCHAR(50)
+        - column:
+            name: qualiteViseur
+            type: VARCHAR(100)
+        - column:
+            name: urlPageInstruction
+            type: VARCHAR(200)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idCentreGestionSuperViseur
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: codeConfidentialite
+            type: VARCHAR(1)
+        - column:
+            constraints:
+              nullable: false
+            defaultValueBoolean: true
+            name: autoriserImpressionConvention
+            type: BIT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idFichier
+            type: INT
+        - column:
+            defaultValueNumeric: 0
+            name: validationPedagogique
+            type: TINYINT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueBoolean: true
+            name: autorisationEtudiantCreationConvention
+            type: BIT
+        - column:
+            constraints:
+              nullable: false
+            name: idModeValidationStage
+            type: INT
+        - column:
+            defaultValueBoolean: false
+            name: visibiliteEvalPro
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: recupInscriptionAnterieure
+            type: BIT
+        - column:
+            defaultValueNumeric: 0
+            name: dureeRecupInscriptionAnterieure
+            type: INT
+        tableName: CentreGestion
+- changeSet:
+    id: 1630931429942-9
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idCentreGestionSuperViseur
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: nomCentreSuperViseur
+            type: VARCHAR(100)
+        tableName: CentreGestionSuperViseur
+- changeSet:
+    id: 1630931429942-10
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idCivilite
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: libelleCivilite
+            type: VARCHAR(50)
+        tableName: Civilite
+- changeSet:
+    id: 1630931429942-11
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: codeConfidentialite
+            type: VARCHAR(1)
+        - column:
+            constraints:
+              nullable: false
+            name: libelleConfidentialite
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            defaultValue: O
+            name: temEnServConfid
+            type: VARCHAR(1)
+        tableName: Confidentialite
+- changeSet:
+    id: 1630931429942-12
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idContact
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: idService
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idCivilite
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: idCentreGestion
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: nom
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            name: prenom
+            type: VARCHAR(50)
+        - column:
+            name: mail
+            type: VARCHAR(50)
+        - column:
+            name: tel
+            type: VARCHAR(50)
+        - column:
+            name: fax
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            name: fonction
+            type: VARCHAR(100)
+        - column:
+            name: login
+            type: VARCHAR(12)
+        - column:
+            name: mdp
+            type: VARCHAR(200)
+        - column:
+            name: commentaire
+            type: TEXT
+        - column:
+            constraints:
+              nullable: false
+            name: loginCreation
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            name: dateCreation
+            type: datetime
+        - column:
+            name: loginModif
+            type: VARCHAR(50)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateModif
+            type: datetime
+        - column:
+            defaultValueComputed: 'NULL'
+            name: infosAJour
+            type: date
+        - column:
+            name: loginInfosAJour
+            type: VARCHAR(50)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: derniereConnexion
+            type: datetime
+        - column:
+            defaultValueComputed: 'NULL'
+            name: avantDerniereConnexion
+            type: datetime
+        tableName: Contact
+- changeSet:
+    id: 1630931429942-13
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idContratOffre
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: idTypeOffre
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: libelleContratOffre
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            defaultValue: O
+            name: temEnServContratOffre
+            type: VARCHAR(1)
+        - column:
+            constraints:
+              nullable: false
+            name: codeCtrl
+            type: VARCHAR(20)
+        - column:
+            defaultValueBoolean: false
+            name: modifiable
+            type: BIT
+        tableName: ContratOffre
+- changeSet:
+    id: 1630931429942-14
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idConvention
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: idEtudiant
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: idCentreGestion
+            type: INT
+        - column:
+            name: codeUFR
+            type: VARCHAR(10)
+        - column:
+            name: codeUniversiteUFR
+            type: VARCHAR(50)
+        - column:
+            name: codeEtape
+            type: VARCHAR(10)
+        - column:
+            name: codeVersionEtape
+            type: VARCHAR(10)
+        - column:
+            name: codeUniversiteEtape
+            type: VARCHAR(50)
+        - column:
+            name: codeDepartement
+            type: VARCHAR(10)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idEnseignant
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idStructure
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idService
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idContact
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idSignataire
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: idTypeConvention
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idOffre
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: sujetStage
+            type: TEXT
+        - column:
+            constraints:
+              nullable: false
+            name: dateDebutStage
+            type: date
+        - column:
+            constraints:
+              nullable: false
+            name: dateFinStage
+            type: date
+        - column:
+            constraints:
+              nullable: false
+            defaultValueNumeric: 0
+            name: interruptionStage
+            type: TINYINT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateDebutInterruption
+            type: date
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateFinInterruption
+            type: date
+        - column:
+            constraints:
+              nullable: false
+            defaultValue: '5'
+            name: nbJoursHebdo
+            type: ENUM('0.5', '1', '1.5', '2', '2.5', '3', '3.5', '4', '4.5', '5',
+              '5.5', '6')
+        - column:
+            constraints:
+              nullable: false
+            name: idTempsTravail
+            type: INT
+        - column:
+            name: commentaireDureeTravail
+            type: TEXT
+        - column:
+            constraints:
+              nullable: false
+            name: codeLangueConvention
+            type: VARCHAR(2)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idOrigineStage
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: idTheme
+            type: INT
+        - column:
+            defaultValueNumeric: 0
+            name: conventionStructure
+            type: TINYINT
+        - column:
+            defaultValueNumeric: 0
+            name: validationPedagogique
+            type: TINYINT
+        - column:
+            defaultValueNumeric: 0
+            name: validationConvention
+            type: TINYINT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueNumeric: 0
+            name: conversionEnContrat
+            type: TINYINT
+        - column:
+            name: commentaireStage
+            type: TEXT
+        - column:
+            name: adresseEtudiant
+            type: VARCHAR(200)
+        - column:
+            name: codePostalEtudiant
+            type: VARCHAR(10)
+        - column:
+            name: villeEtudiant
+            type: VARCHAR(80)
+        - column:
+            name: paysEtudiant
+            type: VARCHAR(50)
+        - column:
+            name: courrielPersoEtudiant
+            type: VARCHAR(100)
+        - column:
+            name: telEtudiant
+            type: VARCHAR(20)
+        - column:
+            name: telPortableEtudiant
+            type: VARCHAR(20)
+        - column:
+            constraints:
+              nullable: false
+            name: idIndemnisation
+            type: INT
+        - column:
+            name: montantGratification
+            type: VARCHAR(15)
+        - column:
+            name: fonctionsEtTaches
+            type: TEXT
+        - column:
+            name: details
+            type: TEXT
+        - column:
+            name: annee
+            type: VARCHAR(10)
+        - column:
+            constraints:
+              nullable: false
+            name: idAssurance
+            type: INT
+        - column:
+            name: insee
+            type: VARCHAR(15)
+        - column:
+            name: codeCaisse
+            type: VARCHAR(5)
+        - column:
+            constraints:
+              nullable: false
+            defaultValue: N
+            name: temConfSujetTeme
+            type: VARCHAR(1)
+        - column:
+            name: nbHeuresHebdo
+            type: VARCHAR(5)
+        - column:
+            defaultValueNumeric: 100
+            name: quotiteTravail
+            type: INT
+        - column:
+            name: modeEncadreSuivi
+            type: TEXT
+        - column:
+            constraints:
+              nullable: false
+            name: idModeVersGratification
+            type: INT
+        - column:
+            name: avantagesNature
+            type: TEXT
+        - column:
+            constraints:
+              nullable: false
+            name: idNatureTravail
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: idModeValidationStage
+            type: INT
+        - column:
+            name: codeElp
+            type: VARCHAR(8)
+        - column:
+            name: libelleELP
+            type: VARCHAR(60)
+        - column:
+            defaultValueComputed: '0.00'
+            name: creditECTS
+            type: DECIMAL(7, 2)
+        - column:
+            name: travailNuitFerie
+            type: TEXT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueNumeric: 0
+            name: dureeStage
+            remarks: en semaine
+            type: INT
+        - column:
+            name: nomEtabRef
+            type: VARCHAR(100)
+        - column:
+            name: adresseEtabRef
+            type: VARCHAR(250)
+        - column:
+            name: nomSignataireComposante
+            type: VARCHAR(30)
+        - column:
+            name: qualiteSignataire
+            type: VARCHAR(60)
+        - column:
+            name: libelleCPAM
+            type: VARCHAR(100)
+        - column:
+            name: dureeExceptionnelle
+            type: VARCHAR(4)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idUniteDureeExceptionnelle
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idUniteGratification
+            type: INT
+        - column:
+            name: codeFinalite
+            type: VARCHAR(3)
+        - column:
+            name: libelleFinalite
+            type: VARCHAR(60)
+        - column:
+            name: codeCursusLMD
+            type: VARCHAR(1)
+        - column:
+            defaultValueBoolean: false
+            name: priseEnChargeFraisMission
+            type: BIT
+        - column:
+            name: codeRGI
+            type: VARCHAR(1)
+        - column:
+            constraints:
+              nullable: false
+            name: loginCreation
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            name: dateCreation
+            type: datetime
+        - column:
+            name: loginModif
+            type: VARCHAR(50)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateModif
+            type: datetime
+        - column:
+            name: loginValidation
+            type: VARCHAR(50)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateValidation
+            type: datetime
+        - column:
+            name: loginSignature
+            type: VARCHAR(50)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateSignature
+            type: datetime
+        - column:
+            defaultValueBoolean: false
+            name: envoiMailEtudiant
+            type: BIT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateEnvoiMailEtudiant
+            type: datetime
+        - column:
+            defaultValueBoolean: false
+            name: envoiMailTuteurPedago
+            type: BIT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateEnvoiMailTuteurPedago
+            type: datetime
+        - column:
+            defaultValueBoolean: false
+            name: envoiMailTuteurPro
+            type: BIT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateEnvoiMailTuteurPro
+            type: datetime
+        - column:
+            name: nbConges
+            type: TEXT
+        - column:
+            name: competences
+            type: TEXT
+        - column:
+            defaultValueNumeric: 4
+            name: idUniteDureeGratification
+            type: INT
+        - column:
+            defaultValue: euros
+            name: monnaieGratification
+            type: VARCHAR(50)
+        - column:
+            defaultValue: '0'
+            name: volumeHoraireFormation
+            type: VARCHAR(10)
+        - column:
+            name: typePresence
+            type: VARCHAR(30)
+        tableName: Convention
+- changeSet:
+    id: 1630931429942-15
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idCritere
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: valeur
+            type: VARCHAR(100)
+        - column:
+            constraints:
+              nullable: false
+            name: clef
+            type: VARCHAR(15)
+        - column:
+            constraints:
+              nullable: false
+            name: niveau
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: typeCategorie
+            type: INT
+        tableName: Critere
+- changeSet:
+    id: 1630931429942-16
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: codeCritere
+            type: VARCHAR(15)
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            defaultValue: ''
+            name: codeVersionEtape
+            type: VARCHAR(10)
+        - column:
+            constraints:
+              nullable: false
+            name: libelleCritere
+            type: VARCHAR(200)
+        - column:
+            constraints:
+              nullable: false
+            name: idCentreGestion
+            type: INT
+        tableName: CritereGestion
+- changeSet:
+    id: 1630931429942-17
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idDroitAdministration
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: libelleDroitAdministration
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            defaultValue: O
+            name: temEnServDroitAdmin
+            type: VARCHAR(1)
+        tableName: DroitAdministration
+- changeSet:
+    id: 1630931429942-18
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idDureeDiffusion
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueNumeric: 0
+            name: adminSeulement
+            type: TINYINT
+        - column:
+            constraints:
+              nullable: false
+            name: libelleDureeDiffusion
+            type: VARCHAR(20)
+        tableName: DureeDiffusion
+- changeSet:
+    id: 1630931429942-19
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idEffectif
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: libelleEffectif
+            type: VARCHAR(100)
+        - column:
+            constraints:
+              nullable: false
+            defaultValue: O
+            name: temEnServEffectif
+            type: VARCHAR(1)
+        - column:
+            defaultValueBoolean: false
+            name: modifiable
+            type: BIT
+        tableName: Effectif
+- changeSet:
+    id: 1630931429942-20
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idEnseignant
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: uidEnseignant
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            name: nom
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            name: prenom
+            type: VARCHAR(50)
+        - column:
+            name: mail
+            type: VARCHAR(50)
+        - column:
+            name: telephone
+            type: VARCHAR(30)
+        - column:
+            name: fax
+            type: VARCHAR(50)
+        - column:
+            name: campus
+            type: VARCHAR(250)
+        - column:
+            name: bureau
+            type: VARCHAR(20)
+        - column:
+            name: batiment
+            type: VARCHAR(45)
+        - column:
+            constraints:
+              nullable: false
+            name: codeUniversite
+            type: VARCHAR(10)
+        - column:
+            name: typePersonne
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            name: loginCreation
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            name: dateCreation
+            type: datetime
+        - column:
+            name: loginModif
+            type: VARCHAR(50)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateModif
+            type: datetime
+        - column:
+            constraints:
+              nullable: false
+            name: codeAffectation
+            type: VARCHAR(10)
+        - column:
+            constraints:
+              nullable: false
+            name: codeUniversiteAffectation
+            type: VARCHAR(50)
+        tableName: Enseignant
+- changeSet:
+    id: 1630931429942-21
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: codeEtape
+            type: VARCHAR(10)
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            defaultValue: ''
+            name: codeVersionEtape
+            type: VARCHAR(10)
+        - column:
+            constraints:
+              nullable: false
+            name: libelleEtape
+            type: VARCHAR(200)
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            defaultValue: ' '
+            name: codeUniversite
+            type: VARCHAR(50)
+        tableName: Etape
+- changeSet:
+    id: 1630931429942-22
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idEtudiant
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: identEtudiant
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            defaultValue: ''
+            name: nom
+            type: VARCHAR(50)
+        - column:
+            name: nomMarital
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            defaultValue: ''
+            name: prenom
+            type: VARCHAR(50)
+        - column:
+            defaultValue: ''
+            name: mail
+            type: VARCHAR(100)
+        - column:
+            constraints:
+              nullable: false
+            defaultValue: ''
+            name: numEtudiant
+            type: VARCHAR(20)
+        - column:
+            constraints:
+              nullable: false
+            name: codeUniversite
+            type: VARCHAR(50)
+        - column:
+            name: numSS
+            type: VARCHAR(15)
+        - column:
+            name: codeSexe
+            type: VARCHAR(1)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateNais
+            type: date
+        - column:
+            constraints:
+              nullable: false
+            name: loginCreation
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            name: dateCreation
+            type: datetime
+        - column:
+            name: loginModif
+            type: VARCHAR(50)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateModif
+            type: datetime
+        tableName: Etudiant
+- changeSet:
+    id: 1630931429942-23
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: codeFAP_N1
+            type: VARCHAR(1)
+        - column:
+            constraints:
+              nullable: false
+            name: libelle
+            type: VARCHAR(200)
+        tableName: FAP_N1
+- changeSet:
+    id: 1630931429942-24
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: codeFAP_N2
+            type: VARCHAR(3)
+        - column:
+            constraints:
+              nullable: false
+            name: libelle
+            type: VARCHAR(200)
+        - column:
+            constraints:
+              nullable: false
+            name: codeFAP_N1
+            type: VARCHAR(1)
+        tableName: FAP_N2
+- changeSet:
+    id: 1630931429942-25
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: codeFAP_N3
+            type: VARCHAR(5)
+        - column:
+            constraints:
+              nullable: false
+            name: libelle
+            type: VARCHAR(200)
+        - column:
+            constraints:
+              nullable: false
+            name: codeFAP_N2
+            type: VARCHAR(3)
+        - column:
+            constraints:
+              nullable: false
+            name: numFAP_Qualification
+            type: INT
+        tableName: FAP_N3
+- changeSet:
+    id: 1630931429942-26
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: numFAP_Qualification
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: libelleQualification
+            type: VARCHAR(100)
+        - column:
+            constraints:
+              nullable: false
+            name: idQualificationSimplifiee
+            type: INT
+        tableName: FAP_Qualification
+- changeSet:
+    id: 1630931429942-27
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idQualificationSimplifiee
+            type: INT
+        - column:
+            name: libelleQualification
+            type: VARCHAR(100)
+        tableName: FAP_QualificationSimplifiee
+- changeSet:
+    id: 1630931429942-28
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idFicheEvaluation
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: idCentreGestion
+            type: INT
+        - column:
+            defaultValueBoolean: false
+            name: validationEtudiant
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: validationEnseignant
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: validationEntreprise
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEnt1
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEnt2
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEnt3
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEnt4
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEnt5
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEnt6
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEnt7
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEnt8
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEnt9
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEnt10
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEnt11
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEnt12
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEnt13
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEnt14
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEnt15
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEnt16
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEnt17
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEnt18
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEnt19
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEtuI1
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEtuI2
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEtuI3
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEtuI4
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEtuI5
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEtuI6
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEtuI7
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEtuI8
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEtuII1
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEtuII2
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEtuII3
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEtuII4
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEtuII5
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEtuII6
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEtuIII1
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEtuIII2
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEtuIII3
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEtuIII4
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEtuIII5
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEtuIII6
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEtuIII7
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEtuIII8
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEtuIII9
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEtuIII10
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEtuIII11
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEtuIII12
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEtuIII13
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEtuIII14
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEtuIII15
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEtuIII16
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEnsI1
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEnsI2
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEnsI3
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEnsII1
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEnsII2
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEnsII3
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEnsII4
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEnsII5
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEnsII6
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEnsII7
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEnsII8
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEnsII9
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEnsII10
+            type: BIT
+        - column:
+            defaultValueBoolean: true
+            name: questionEnsII11
+            type: BIT
+        tableName: FicheEvaluation
+- changeSet:
+    id: 1630931429942-29
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idFichier
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: nomFichier
+            type: VARCHAR(255)
+        - column:
+            name: nomReel
+            type: VARCHAR(255)
+        tableName: Fichiers
+- changeSet:
+    id: 1630931429942-30
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idIndemnisation
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: libelleIndemnisation
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            defaultValue: O
+            name: temEnServIndem
+            type: VARCHAR(1)
+        tableName: Indemnisation
+- changeSet:
+    id: 1630931429942-31
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: codeLangueConvention
+            type: VARCHAR(2)
+        - column:
+            constraints:
+              nullable: false
+            name: libelleLangueConvention
+            type: VARCHAR(100)
+        - column:
+            defaultValue: O
+            name: temEnServLangue
+            type: VARCHAR(1)
+        tableName: LangueConvention
+- changeSet:
+    id: 1630931429942-32
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idModeCandidature
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: libelleModeCandidature
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            defaultValue: O
+            name: temEnServModeCandidature
+            type: VARCHAR(1)
+        - column:
+            constraints:
+              nullable: false
+            name: codeCtrl
+            type: VARCHAR(20)
+        remarks: Mode de candidature privil�gi�
+        tableName: ModeCandidature
+- changeSet:
+    id: 1630931429942-33
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idModeValidationStage
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: libelleModeValidationStage
+            type: VARCHAR(150)
+        - column:
+            constraints:
+              nullable: false
+            defaultValue: O
+            name: temEnServModeValid
+            type: VARCHAR(1)
+        - column:
+            defaultValueBoolean: false
+            name: modifiable
+            type: BIT
+        tableName: ModeValidationStage
+- changeSet:
+    id: 1630931429942-34
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idModeVersGratification
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: libelleModeVersGratification
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            defaultValue: O
+            name: temEnServModeVersGrat
+            type: VARCHAR(1)
+        tableName: ModeVersGratification
+- changeSet:
+    id: 1630931429942-35
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: codeNAF_N1
+            type: VARCHAR(1)
+        - column:
+            constraints:
+              nullable: false
+            name: libelleNAF_N1
+            type: VARCHAR(150)
+        - column:
+            defaultValue: O
+            name: temEnServNAF_N1
+            type: VARCHAR(1)
+        tableName: NAF_N1
+- changeSet:
+    id: 1630931429942-36
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: codeNAF_N5
+            type: VARCHAR(6)
+        - column:
+            name: libelleNAF_N5
+            type: VARCHAR(150)
+        - column:
+            constraints:
+              nullable: false
+            name: codeNAF_N1
+            type: VARCHAR(1)
+        - column:
+            defaultValue: O
+            name: temEnServNAF_N5
+            type: VARCHAR(1)
+        tableName: NAF_N5
+- changeSet:
+    id: 1630931429942-37
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idNatureTravail
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: libelleNatureTravail
+            type: VARCHAR(150)
+        - column:
+            constraints:
+              nullable: false
+            defaultValue: O
+            name: temEnServNatTrav
+            type: VARCHAR(1)
+        tableName: NatureTravail
+- changeSet:
+    id: 1630931429942-38
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idNiveau
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: valeur
+            type: INT
+        tableName: Niveau
+- changeSet:
+    id: 1630931429942-39
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idNiveauCentre
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: libelleNiveauCentre
+            remarks: ETAB,ENTR,ETAPE,UFR
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            defaultValue: O
+            name: temEnServNiveauCentre
+            type: VARCHAR(1)
+        tableName: NiveauCentre
+- changeSet:
+    id: 1630931429942-40
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idNiveauFormation
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: libelleNiveauFormation
+            type: VARCHAR(45)
+        - column:
+            constraints:
+              nullable: false
+            defaultValue: O
+            name: temEnServNiveauForm
+            type: VARCHAR(1)
+        - column:
+            defaultValueBoolean: false
+            name: modifiable
+            type: BIT
+        tableName: NiveauFormation
+- changeSet:
+    id: 1630931429942-41
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idOffre
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: idTypeOffre
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idContratOffre
+            type: INT
+        - column:
+            name: moisDebut
+            type: VARCHAR(50)
+        - column:
+            name: anneeDebut
+            type: VARCHAR(50)
+        - column:
+            name: precisionDebut
+            type: VARCHAR(200)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: duree
+            remarks: Si CDD, en semaine
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idUniteDuree
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idQualificationSimplifiee
+            type: INT
+        - column:
+            name: codeFAP_N3
+            type: VARCHAR(1)
+        - column:
+            constraints:
+              nullable: false
+            name: intitule
+            type: VARCHAR(200)
+        - column:
+            constraints:
+              nullable: false
+            name: description
+            type: TEXT
+        - column:
+            name: lieuCommune
+            type: VARCHAR(200)
+        - column:
+            name: codeCommune
+            type: VARCHAR(10)
+        - column:
+            name: lieuCodePostal
+            type: VARCHAR(10)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idLieuPays
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueBoolean: false
+            name: deplacement
+            type: BIT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueBoolean: false
+            name: permis
+            type: BIT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueBoolean: false
+            name: voiture
+            type: BIT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueBoolean: true
+            name: remuneration
+            remarks: salaire/indemnit�
+            type: BIT
+        - column:
+            name: avantages
+            type: VARCHAR(200)
+        - column:
+            name: precisionRemuneration
+            type: VARCHAR(200)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idTempsTravail
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: quotiteTravail
+            type: INT
+        - column:
+            name: commentaireTempsTravail
+            type: VARCHAR(200)
+        - column:
+            name: observations
+            remarks: Commentaires/Observation
+            type: TEXT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idNiveauFormation
+            type: INT
+        - column:
+            name: competences
+            remarks: Competences Souhait�es
+            type: TEXT
+        - column:
+            name: referenceOffreEtablissement
+            type: VARCHAR(100)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateDiffusion
+            type: date
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateFinDiffusion
+            type: date
+        - column:
+            name: loginDiffusion
+            type: VARCHAR(50)
+        - column:
+            name: loginStopDiffusion
+            type: VARCHAR(50)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateStopDiffusion
+            type: datetime
+        - column:
+            constraints:
+              nullable: false
+            name: idStructure
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: idCentreGestion
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idReferent
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idContactCand
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idContactInfo
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idContactProprio
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueBoolean: false
+            name: cacherTelContactCand
+            type: BIT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueBoolean: false
+            name: cacherTelContactInfo
+            type: BIT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueBoolean: false
+            name: cacherFaxContactCand
+            type: BIT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueBoolean: false
+            name: cacherFaxContactInfo
+            type: BIT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueBoolean: false
+            name: cacherMailContactCand
+            type: BIT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueBoolean: false
+            name: cacherMailContactInfo
+            type: BIT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueBoolean: false
+            name: cacherNomContactCand
+            type: BIT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueBoolean: false
+            name: cacherNomContactInfo
+            type: BIT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueBoolean: false
+            name: cacherEtablissement
+            type: BIT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueBoolean: false
+            name: estPourvue
+            type: BIT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueBoolean: false
+            name: offrePourvueEtudiantLocal
+            type: BIT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueBoolean: false
+            name: estDiffusee
+            type: BIT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueBoolean: false
+            name: estValidee
+            type: BIT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueNumeric: 0
+            name: etatValidation
+            remarks: |-
+              Si validation des offres
+              0 : non valid�e
+              1 : valid�e
+              2 : en cours
+              3 : refus�e
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueBoolean: false
+            name: estSupprimee
+            remarks: Suppression logique pour historique
+            type: BIT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueBoolean: false
+            name: estAccessERQTH
+            remarks: Reconnaissance de Qualification de travailleur handicap�
+            type: BIT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueBoolean: false
+            name: estPrioERQTH
+            remarks: Reconnaissance de Qualification de travailleur handicap�
+            type: BIT
+        - column:
+            name: precisionHandicap
+            type: VARCHAR(200)
+        - column:
+            constraints:
+              nullable: false
+            defaultValueBoolean: false
+            name: avecFichier
+            type: BIT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueBoolean: false
+            name: avecLien
+            type: BIT
+        - column:
+            name: lienAttache
+            type: VARCHAR(200)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idFichier
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: loginCreation
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            name: dateCreation
+            type: datetime
+        - column:
+            name: loginModif
+            type: VARCHAR(50)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateModif
+            type: datetime
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateValidation
+            type: datetime
+        - column:
+            name: loginValidation
+            type: VARCHAR(50)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateStopValidation
+            type: datetime
+        - column:
+            name: loginStopValidation
+            type: VARCHAR(50)
+        - column:
+            name: loginRejetValidation
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            name: anneeUniversitaire
+            type: VARCHAR(50)
+        tableName: Offre
+- changeSet:
+    id: 1630931429942-42
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+            name: idCentreGestion
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: idOffre
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueBoolean: false
+            name: estMiseEnAvant
+            type: BIT
+        tableName: OffreDiffusion
+- changeSet:
+    id: 1630931429942-43
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idOffre
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idModeCandidature
+            type: INT
+        tableName: OffreModeCandidature
+- changeSet:
+    id: 1630931429942-44
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idOrigineStage
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: libelleOrigineStage
+            type: VARCHAR(45)
+        - column:
+            constraints:
+              nullable: false
+            defaultValue: O
+            name: temEnServOrigineStage
+            type: VARCHAR(1)
+        - column:
+            defaultValueBoolean: false
+            name: modifiable
+            type: BIT
+        tableName: OrigineStage
+- changeSet:
+    id: 1630931429942-45
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idPays
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: COG
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: actual
+            remarks: |-
+              1=actuel,
+              3=territoire n'ayant pas son propre code officiel g�ographique
+              4=territoire ayant son propre code officiel g�ographique
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: CRPAY
+            remarks: Code officiel g�ographique du pays de rattachement du territoire.
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: lib
+            type: VARCHAR(70)
+        - column:
+            name: ISO2
+            type: VARCHAR(2)
+        - column:
+            constraints:
+              nullable: false
+            defaultValueBoolean: false
+            name: siretObligatoire
+            type: BIT
+        - column:
+            constraints:
+              nullable: false
+            defaultValue: O
+            name: temEnServPays
+            type: VARCHAR(1)
+        tableName: Pays
+- changeSet:
+    id: 1630931429942-46
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idPersonnelCentreGestion
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: idCentreGestion
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: uidPersonnel
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            name: nom
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            name: prenom
+            type: VARCHAR(50)
+        - column:
+            name: mail
+            type: VARCHAR(50)
+        - column:
+            name: telephone
+            type: VARCHAR(50)
+        - column:
+            name: fax
+            type: VARCHAR(50)
+        - column:
+            name: fonction
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            name: idDroitAdministration
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idCivilite
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueBoolean: false
+            name: impressionConvention
+            type: BIT
+        - column:
+            name: codeUniversite
+            type: VARCHAR(50)
+        - column:
+            name: typePersonne
+            type: VARCHAR(50)
+        - column:
+            name: campus
+            type: VARCHAR(50)
+        - column:
+            name: batiment
+            type: VARCHAR(50)
+        - column:
+            name: bureau
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            name: loginCreation
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            name: dateCreation
+            type: datetime
+        - column:
+            name: loginModif
+            type: VARCHAR(50)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateModif
+            type: datetime
+        - column:
+            constraints:
+              nullable: false
+            name: codeAffectation
+            type: VARCHAR(10)
+        - column:
+            constraints:
+              nullable: false
+            name: codeUniversiteAffectation
+            type: VARCHAR(50)
+        - column:
+            defaultValueBoolean: false
+            name: alertesMail
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: droitEvaluationEtudiant
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: droitEvaluationEnseignant
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: droitEvaluationEntreprise
+            type: BIT
+        tableName: PersonnelCentreGestion
+- changeSet:
+    id: 1630931429942-47
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idQuestionSupplementaire
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: idFicheEvaluation
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: idPlacement
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: question
+            type: VARCHAR(200)
+        - column:
+            constraints:
+              nullable: false
+            name: typeQuestion
+            type: VARCHAR(5)
+        tableName: QuestionSupplementaire
+- changeSet:
+    id: 1630931429942-48
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idFicheEvaluation
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idConvention
+            type: INT
+        - column:
+            defaultValueBoolean: false
+            name: validationEtudiant
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: validationEnseignant
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: validationEntreprise
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: impressionEtudiant
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: impressionEnseignant
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: impressionEntreprise
+            type: BIT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEnt1
+            type: INT
+        - column:
+            name: reponseEnt1bis
+            type: TEXT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEnt2
+            type: INT
+        - column:
+            name: reponseEnt2bis
+            type: TEXT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEnt3
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEnt4
+            type: INT
+        - column:
+            name: reponseEnt4bis
+            type: TEXT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEnt5
+            type: INT
+        - column:
+            name: reponseEnt5bis
+            type: TEXT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEnt6
+            type: INT
+        - column:
+            name: reponseEnt6bis
+            type: TEXT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEnt7
+            type: INT
+        - column:
+            name: reponseEnt7bis
+            type: TEXT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEnt8
+            type: INT
+        - column:
+            name: reponseEnt8bis
+            type: TEXT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEnt9
+            type: INT
+        - column:
+            name: reponseEnt9bis
+            type: TEXT
+        - column:
+            defaultValueBoolean: false
+            name: reponseEnt10
+            type: BIT
+        - column:
+            name: reponseEnt10bis
+            type: TEXT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEnt11
+            type: INT
+        - column:
+            name: reponseEnt11bis
+            type: TEXT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEnt12
+            type: INT
+        - column:
+            name: reponseEnt12bis
+            type: TEXT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEnt13
+            type: INT
+        - column:
+            name: reponseEnt13bis
+            type: TEXT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEnt14
+            type: INT
+        - column:
+            name: reponseEnt14bis
+            type: TEXT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEnt15
+            type: INT
+        - column:
+            name: reponseEnt15bis
+            type: TEXT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEnt16
+            type: INT
+        - column:
+            name: reponseEnt16bis
+            type: TEXT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEnt17
+            type: INT
+        - column:
+            name: reponseEnt17bis
+            type: TEXT
+        - column:
+            defaultValueBoolean: false
+            name: reponseEnt18
+            type: BIT
+        - column:
+            name: reponseEnt18bis
+            type: TEXT
+        - column:
+            name: reponseEnt19
+            type: TEXT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEtuI1
+            type: INT
+        - column:
+            name: reponseEtuI1bis
+            type: TEXT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEtuI2
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEtuI3
+            type: INT
+        - column:
+            defaultValueBoolean: false
+            name: reponseEtuI4a
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: reponseEtuI4b
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: reponseEtuI4c
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: reponseEtuI4d
+            type: BIT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEtuI5
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEtuI6
+            type: INT
+        - column:
+            defaultValueBoolean: false
+            name: reponseEtuI7
+            type: BIT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEtuI7bis1
+            type: INT
+        - column:
+            defaultValueBoolean: false
+            name: reponseEtuI7bis1a
+            type: BIT
+        - column:
+            name: reponseEtuI7bis1b
+            type: TEXT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEtuI7bis2
+            type: INT
+        - column:
+            defaultValueBoolean: false
+            name: reponseEtuI8
+            type: BIT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEtuII1
+            type: INT
+        - column:
+            name: reponseEtuII1bis
+            type: TEXT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEtuII2
+            type: INT
+        - column:
+            name: reponseEtuII2bis
+            type: TEXT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEtuII3
+            type: INT
+        - column:
+            name: reponseEtuII3bis
+            type: TEXT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEtuII4
+            type: INT
+        - column:
+            defaultValueBoolean: false
+            name: reponseEtuII5
+            type: BIT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEtuII5a
+            type: INT
+        - column:
+            defaultValueBoolean: false
+            name: reponseEtuII5b
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: reponseEtuII6
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: reponseEtuIII1
+            type: BIT
+        - column:
+            name: reponseEtuIII1bis
+            type: TEXT
+        - column:
+            defaultValueBoolean: false
+            name: reponseEtuIII2
+            type: BIT
+        - column:
+            name: reponseEtuIII2bis
+            type: TEXT
+        - column:
+            defaultValueBoolean: false
+            name: reponseEtuIII3
+            type: BIT
+        - column:
+            name: reponseEtuIII3bis
+            type: TEXT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEtuIII4
+            type: INT
+        - column:
+            defaultValueBoolean: false
+            name: reponseEtuIII5a
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: reponseEtuIII5b
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: reponseEtuIII5c
+            type: BIT
+        - column:
+            name: reponseEtuIII5bis
+            type: TEXT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEtuIII6
+            type: INT
+        - column:
+            name: reponseEtuIII6bis
+            type: TEXT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEtuIII7
+            type: INT
+        - column:
+            name: reponseEtuIII7bis
+            type: TEXT
+        - column:
+            defaultValueBoolean: false
+            name: reponseEtuIII8
+            type: BIT
+        - column:
+            name: reponseEtuIII8bis
+            type: TEXT
+        - column:
+            defaultValueBoolean: false
+            name: reponseEtuIII9
+            type: BIT
+        - column:
+            name: reponseEtuIII9bis
+            type: TEXT
+        - column:
+            defaultValueBoolean: false
+            name: reponseEtuIII10
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: reponseEtuIII11
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: reponseEtuIII12
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: reponseEtuIII13
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: reponseEtuIII14
+            type: BIT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEtuIII15
+            type: INT
+        - column:
+            name: reponseEtuIII15bis
+            type: TEXT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEtuIII16
+            type: INT
+        - column:
+            name: reponseEtuIII16bis
+            type: TEXT
+        - column:
+            defaultValueBoolean: false
+            name: reponseEnsI1a
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: reponseEnsI1b
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: reponseEnsI1c
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: reponseEnsI2a
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: reponseEnsI2b
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: reponseEnsI2c
+            type: BIT
+        - column:
+            name: reponseEnsI3
+            type: TEXT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEnsII1
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEnsII2
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEnsII3
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEnsII4
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEnsII5
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEnsII6
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEnsII7
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEnsII8
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEnsII9
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseEnsII10
+            type: INT
+        - column:
+            name: reponseEnsII11
+            type: TEXT
+        tableName: ReponseEvaluation
+- changeSet:
+    id: 1630931429942-49
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idQuestionSupplementaire
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idConvention
+            type: INT
+        - column:
+            name: reponseTxt
+            type: TEXT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: reponseInt
+            type: INT
+        - column:
+            defaultValueBoolean: false
+            name: reponseBool
+            type: BIT
+        tableName: ReponseSupplementaire
+- changeSet:
+    id: 1630931429942-50
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idService
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: nom
+            type: VARCHAR(70)
+        - column:
+            constraints:
+              nullable: false
+            name: loginCreation
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            name: dateCreation
+            type: datetime
+        - column:
+            name: loginModif
+            type: VARCHAR(50)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateModif
+            type: datetime
+        - column:
+            defaultValueComputed: 'NULL'
+            name: infosAJour
+            type: date
+        - column:
+            name: loginInfosAJour
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            name: idStructure
+            type: INT
+        - column:
+            name: batimentResidence
+            type: VARCHAR(200)
+        - column:
+            constraints:
+              nullable: false
+            name: voie
+            type: VARCHAR(200)
+        - column:
+            name: commune
+            type: VARCHAR(200)
+        - column:
+            constraints:
+              nullable: false
+            name: codePostal
+            type: VARCHAR(10)
+        - column:
+            constraints:
+              nullable: false
+            name: idPays
+            type: INT
+        - column:
+            name: codeCommune
+            type: VARCHAR(10)
+        - column:
+            name: telephone
+            type: VARCHAR(20)
+        tableName: Service
+- changeSet:
+    id: 1630931429942-51
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idStatutJuridique
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: libelleStatutJuridique
+            type: VARCHAR(100)
+        - column:
+            constraints:
+              nullable: false
+            name: idTypeStructure
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            defaultValue: O
+            name: temEnServStatut
+            type: VARCHAR(1)
+        - column:
+            defaultValueBoolean: false
+            name: modifiable
+            type: BIT
+        tableName: StatutJuridique
+- changeSet:
+    id: 1630931429942-52
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idStructure
+            type: INT
+        - column:
+            name: codeEtab
+            remarks: Siret pour la France
+            type: VARCHAR(20)
+        - column:
+            name: numeroSiret
+            type: VARCHAR(14)
+        - column:
+            name: codeNAF_N5
+            type: VARCHAR(6)
+        - column:
+            constraints:
+              nullable: false
+            name: raisonSociale
+            remarks: denomination
+            type: VARCHAR(150)
+        - column:
+            name: batimentResidence
+            remarks: |-
+              ENTREE-BATIMENT-IMMEUBLE-
+              RES-ZI
+            type: VARCHAR(200)
+        - column:
+            constraints:
+              nullable: false
+            name: voie
+            type: VARCHAR(200)
+        - column:
+            name: commune
+            type: VARCHAR(200)
+        - column:
+            name: codePostal
+            remarks: ou Cedex
+            type: VARCHAR(10)
+        - column:
+            name: codeCommune
+            type: VARCHAR(10)
+        - column:
+            name: libCedex
+            remarks: ou L ocalite Destination
+            type: VARCHAR(28)
+        - column:
+            constraints:
+              nullable: false
+            name: idPays
+            type: INT
+        - column:
+            name: activitePrincipale
+            type: TEXT
+        - column:
+            name: telephone
+            type: VARCHAR(20)
+        - column:
+            name: fax
+            type: VARCHAR(20)
+        - column:
+            name: mail
+            type: VARCHAR(50)
+        - column:
+            name: siteWeb
+            type: VARCHAR(200)
+        - column:
+            name: groupe
+            type: VARCHAR(50)
+        - column:
+            name: logo
+            type: VARCHAR(200)
+        - column:
+            constraints:
+              nullable: false
+            defaultValueNumeric: 0
+            name: estValidee
+            type: INT
+        - column:
+            name: loginModif
+            type: VARCHAR(50)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateModif
+            type: datetime
+        - column:
+            name: loginValidation
+            type: VARCHAR(50)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateValidation
+            type: datetime
+        - column:
+            name: loginStopValidation
+            type: VARCHAR(50)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateStopValidation
+            type: datetime
+        - column:
+            constraints:
+              nullable: false
+            name: loginCreation
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            name: dateCreation
+            type: datetime
+        - column:
+            defaultValueComputed: 'NULL'
+            name: infosAJour
+            type: date
+        - column:
+            name: loginInfosAJour
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            name: idEffectif
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idStatutJuridique
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: idTypeStructure
+            type: INT
+        - column:
+            name: nomDirigeant
+            type: VARCHAR(50)
+        - column:
+            name: prenomDirigeant
+            type: VARCHAR(50)
+        - column:
+            defaultValue: O
+            name: temEnServStructure
+            type: VARCHAR(1)
+        tableName: Structure
+- changeSet:
+    id: 1630931429942-53
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idTempsTravail
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: libelleTempsTravail
+            type: VARCHAR(200)
+        - column:
+            constraints:
+              nullable: false
+            defaultValue: O
+            name: temEnServTempsTravail
+            type: VARCHAR(1)
+        - column:
+            constraints:
+              nullable: false
+            name: codeCtrl
+            type: VARCHAR(20)
+        - column:
+            defaultValueBoolean: false
+            name: modifiable
+            type: BIT
+        tableName: TempsTravail
+- changeSet:
+    id: 1630931429942-54
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idTheme
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: libelleTheme
+            type: VARCHAR(50)
+        - column:
+            defaultValue: O
+            name: temEnServTheme
+            type: VARCHAR(1)
+        tableName: Theme
+- changeSet:
+    id: 1630931429942-55
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: ticket
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            name: idStructure
+            type: INT
+        tableName: TicketStructure
+- changeSet:
+    id: 1630931429942-56
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idTypeConvention
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: libelleTypeConvention
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            name: codeCtrl
+            type: VARCHAR(20)
+        - column:
+            constraints:
+              nullable: false
+            defaultValue: O
+            name: temEnServTypeConvention
+            type: VARCHAR(1)
+        - column:
+            defaultValueBoolean: false
+            name: modifiable
+            type: BIT
+        tableName: TypeConvention
+- changeSet:
+    id: 1630931429942-57
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idTypeOffre
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: libelleType
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            defaultValue: O
+            name: temEnServTypeOffre
+            type: VARCHAR(1)
+        - column:
+            constraints:
+              nullable: false
+            name: codeCtrl
+            type: VARCHAR(20)
+        - column:
+            defaultValueBoolean: false
+            name: modifiable
+            type: BIT
+        tableName: TypeOffre
+- changeSet:
+    id: 1630931429942-58
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idTypeStructure
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: libelleTypeStructure
+            type: VARCHAR(100)
+        - column:
+            constraints:
+              nullable: false
+            defaultValueBoolean: true
+            name: siretObligatoire
+            type: BIT
+        - column:
+            constraints:
+              nullable: false
+            defaultValue: O
+            name: temEnServTypeStructure
+            type: VARCHAR(1)
+        - column:
+            defaultValueBoolean: false
+            name: modifiable
+            type: BIT
+        tableName: TypeStructure
+- changeSet:
+    id: 1630931429942-59
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: codeUFR
+            type: VARCHAR(10)
+        - column:
+            constraints:
+              nullable: false
+            name: libelleUFR
+            type: VARCHAR(100)
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            defaultValue: ' '
+            name: codeUniversite
+            type: VARCHAR(50)
+        tableName: Ufr
+- changeSet:
+    id: 1630931429942-60
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idUniteDuree
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: libelleUniteDuree
+            type: VARCHAR(100)
+        - column:
+            constraints:
+              nullable: false
+            defaultValue: O
+            name: temEnServUniteDuree
+            type: VARCHAR(1)
+        tableName: UniteDuree
+- changeSet:
+    id: 1630931429942-61
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idUniteGratification
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: libelleUniteGratification
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            defaultValue: O
+            name: temEnServGrat
+            type: VARCHAR(1)
+        tableName: UniteGratification
+- changeSet:
+    id: 1630931429942-62
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: id
+            type: VARCHAR(255)
+        - column:
+            name: disp_name
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: admi
+            type: BIT
+        - column:
+            name: lang
+            type: VARCHAR(255)
+        tableName: pstagedata_user
+- changeSet:
+    id: 1630931429942-63
+    author: ssound (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: id
+            type: BIGINT
+        - column:
+            name: vers
+            type: VARCHAR(255)
+        tableName: pstagedata_vers_mana
+- changeSet:
+    id: 1630931429942-64
+    author: ssound (generated)
+    changes:
+    - addPrimaryKey:
+        columnNames: idOffre, idCentreGestion
+        constraintName: PRIMARY
+        tableName: OffreDiffusion
+- changeSet:
+    id: 1630931429942-65
+    author: ssound (generated)
+    changes:
+    - addUniqueConstraint:
+        columnNames: codeEtape, codeVersionEtape, codeUniversite
+        constraintName: index_codeEtape_codeUniversite
+        tableName: Etape
+- changeSet:
+    id: 1630931429942-66
+    author: ssound (generated)
+    changes:
+    - addUniqueConstraint:
+        columnNames: codeUFR, codeUniversite
+        constraintName: index_codeUfr_codeUniversite
+        tableName: Ufr
+- changeSet:
+    id: 1630931429942-67
+    author: ssound (generated)
+    changes:
+    - addUniqueConstraint:
+        columnNames: identEtudiant, codeUniversite
+        constraintName: index_ident_etudiant_code_universite
+        tableName: Etudiant
+- changeSet:
+    id: 1630931429942-68
+    author: ssound (generated)
+    changes:
+    - addUniqueConstraint:
+        columnNames: uidEnseignant, codeUniversite
+        constraintName: index_uidEnseignant_codeUniversite
+        tableName: Enseignant
+- changeSet:
+    id: 1630931429942-69
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: niveau
+        indexName: FK_Niveau
+        tableName: Critere
+- changeSet:
+    id: 1630931429942-70
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idContact
+        indexName: fk_AccordPartenariat_Contact1
+        tableName: AccordPartenariat
+- changeSet:
+    id: 1630931429942-71
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idStructure
+        indexName: fk_AccordPartenariat_Structure1
+        tableName: AccordPartenariat
+- changeSet:
+    id: 1630931429942-72
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idCivilite
+        indexName: fk_AdminStructure_Civilite1
+        tableName: AdminStructure
+- changeSet:
+    id: 1630931429942-73
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idContact
+        indexName: fk_Avenant_Contact1
+        tableName: Avenant
+- changeSet:
+    id: 1630931429942-74
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idConvention
+        indexName: fk_Avenant_Convention1
+        tableName: Avenant
+- changeSet:
+    id: 1630931429942-75
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idService
+        indexName: fk_Avenant_Service1
+        tableName: Avenant
+- changeSet:
+    id: 1630931429942-76
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idCentreGestionSuperViseur
+        indexName: fk_CentreGestion_CentreGestionSuperViseur1
+        tableName: CentreGestion
+- changeSet:
+    id: 1630931429942-77
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: codeConfidentialite
+        indexName: fk_CentreGestion_Confidentialite1
+        tableName: CentreGestion
+- changeSet:
+    id: 1630931429942-78
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idFichier
+        indexName: fk_CentreGestion_Fichiers1
+        tableName: CentreGestion
+- changeSet:
+    id: 1630931429942-79
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idNiveauCentre
+        indexName: fk_CentreGestion_NiveauCentre1
+        tableName: CentreGestion
+- changeSet:
+    id: 1630931429942-80
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idCentreGestion
+        indexName: fk_Contact_CentreGestion1
+        tableName: Contact
+- changeSet:
+    id: 1630931429942-81
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idCivilite
+        indexName: fk_Contact_Civilite1
+        tableName: Contact
+- changeSet:
+    id: 1630931429942-82
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idService
+        indexName: fk_Contact_Service1
+        tableName: Contact
+- changeSet:
+    id: 1630931429942-83
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idTypeOffre
+        indexName: fk_ContratOffre_TypeOffre1
+        tableName: ContratOffre
+- changeSet:
+    id: 1630931429942-84
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idCentreGestion
+        indexName: fk_Convention_CentreGestion1
+        tableName: Convention
+- changeSet:
+    id: 1630931429942-85
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idContact
+        indexName: fk_Convention_Contact1
+        tableName: Convention
+- changeSet:
+    id: 1630931429942-86
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idEnseignant
+        indexName: fk_Convention_Enseignant1
+        tableName: Convention
+- changeSet:
+    id: 1630931429942-87
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: codeEtape
+        - column:
+            name: codeVersionEtape
+        - column:
+            name: codeUniversiteEtape
+        indexName: fk_Convention_Etape1
+        tableName: Convention
+- changeSet:
+    id: 1630931429942-88
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idEtudiant
+        indexName: fk_Convention_Etudiant1
+        tableName: Convention
+- changeSet:
+    id: 1630931429942-89
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idIndemnisation
+        indexName: fk_Convention_Indemnisation1
+        tableName: Convention
+- changeSet:
+    id: 1630931429942-90
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: codeLangueConvention
+        indexName: fk_Convention_LangueConvention1
+        tableName: Convention
+- changeSet:
+    id: 1630931429942-91
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idModeValidationStage
+        indexName: fk_Convention_ModeValidationStage1
+        tableName: Convention
+- changeSet:
+    id: 1630931429942-92
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idNatureTravail
+        indexName: fk_Convention_NatureTravail1
+        tableName: Convention
+- changeSet:
+    id: 1630931429942-93
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idOffre
+        indexName: fk_Convention_Offre1
+        tableName: Convention
+- changeSet:
+    id: 1630931429942-94
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idOrigineStage
+        indexName: fk_Convention_OrigineStage1
+        tableName: Convention
+- changeSet:
+    id: 1630931429942-95
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idService
+        indexName: fk_Convention_Service1
+        tableName: Convention
+- changeSet:
+    id: 1630931429942-96
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idSignataire
+        indexName: fk_Convention_Signataire
+        tableName: Convention
+- changeSet:
+    id: 1630931429942-97
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idStructure
+        indexName: fk_Convention_Structure1
+        tableName: Convention
+- changeSet:
+    id: 1630931429942-98
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idTempsTravail
+        indexName: fk_Convention_TempsTravail1
+        tableName: Convention
+- changeSet:
+    id: 1630931429942-99
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idTheme
+        indexName: fk_Convention_Theme1
+        tableName: Convention
+- changeSet:
+    id: 1630931429942-100
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idTypeConvention
+        indexName: fk_Convention_TypeConvention1
+        tableName: Convention
+- changeSet:
+    id: 1630931429942-101
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: codeUFR
+        - column:
+            name: codeUniversiteUFR
+        indexName: fk_Convention_Ufr1
+        tableName: Convention
+- changeSet:
+    id: 1630931429942-102
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idUniteDureeExceptionnelle
+        indexName: fk_Convention_UniteDuree1
+        tableName: Convention
+- changeSet:
+    id: 1630931429942-103
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idUniteGratification
+        indexName: fk_Convention_UniteGratification1
+        tableName: Convention
+- changeSet:
+    id: 1630931429942-104
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idCentreGestion
+        indexName: fk_CritereGestion_CentreGestion1
+        tableName: CritereGestion
+- changeSet:
+    id: 1630931429942-105
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: codeAffectation
+        - column:
+            name: codeUniversiteAffectation
+        indexName: fk_Enseignant_Affectation1
+        tableName: Enseignant
+- changeSet:
+    id: 1630931429942-106
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: codeFAP_N1
+        indexName: fk_FAP_N2_FAP_N11
+        tableName: FAP_N2
+- changeSet:
+    id: 1630931429942-107
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: codeFAP_N2
+        indexName: fk_FAP_N3_FAP_N21
+        tableName: FAP_N3
+- changeSet:
+    id: 1630931429942-108
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: numFAP_Qualification
+        indexName: fk_FAP_N3_FAP_Qualification1
+        tableName: FAP_N3
+- changeSet:
+    id: 1630931429942-109
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idQualificationSimplifiee
+        indexName: fk_FAP_Qualification_QualificationSimplifiee1
+        tableName: FAP_Qualification
+- changeSet:
+    id: 1630931429942-110
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idCentreGestion
+        indexName: fk_FicheEvaluation_CentreGestion1
+        tableName: FicheEvaluation
+- changeSet:
+    id: 1630931429942-111
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: codeNAF_N1
+        indexName: fk_NAF_N5_NAF_N11
+        tableName: NAF_N5
+- changeSet:
+    id: 1630931429942-112
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idModeCandidature
+        indexName: fk_OffreModeCandidature_ModeCandidature1
+        tableName: OffreModeCandidature
+- changeSet:
+    id: 1630931429942-113
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idOffre
+        indexName: fk_OffreModeCandidature_Offre1
+        tableName: OffreModeCandidature
+- changeSet:
+    id: 1630931429942-114
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idCentreGestion
+        indexName: fk_Offre_CentreGestion1
+        tableName: Offre
+- changeSet:
+    id: 1630931429942-115
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idContactCand
+        indexName: fk_Offre_Contact1
+        tableName: Offre
+- changeSet:
+    id: 1630931429942-116
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idContactInfo
+        indexName: fk_Offre_Contact2
+        tableName: Offre
+- changeSet:
+    id: 1630931429942-117
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idContactProprio
+        indexName: fk_Offre_Contact3
+        tableName: Offre
+- changeSet:
+    id: 1630931429942-118
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idContratOffre
+        indexName: fk_Offre_ContratOffre1
+        tableName: Offre
+- changeSet:
+    id: 1630931429942-119
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: codeFAP_N3
+        indexName: fk_Offre_FAP_N11
+        tableName: Offre
+- changeSet:
+    id: 1630931429942-120
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idFichier
+        indexName: fk_Offre_Fichiers1
+        tableName: Offre
+- changeSet:
+    id: 1630931429942-121
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idNiveauFormation
+        indexName: fk_Offre_NiveauFormation1
+        tableName: Offre
+- changeSet:
+    id: 1630931429942-122
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idLieuPays
+        indexName: fk_Offre_Pays1
+        tableName: Offre
+- changeSet:
+    id: 1630931429942-123
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idReferent
+        indexName: fk_Offre_PersonnelCentreGestion1
+        tableName: Offre
+- changeSet:
+    id: 1630931429942-124
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idQualificationSimplifiee
+        indexName: fk_Offre_QualificationSimplifiee1
+        tableName: Offre
+- changeSet:
+    id: 1630931429942-125
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idStructure
+        indexName: fk_Offre_Structure1
+        tableName: Offre
+- changeSet:
+    id: 1630931429942-126
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idTempsTravail
+        indexName: fk_Offre_TempsTravail1
+        tableName: Offre
+- changeSet:
+    id: 1630931429942-127
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idTypeOffre
+        indexName: fk_Offre_TypeOffre1
+        tableName: Offre
+- changeSet:
+    id: 1630931429942-128
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idUniteDuree
+        indexName: fk_Offre_UniteDuree1
+        tableName: Offre
+- changeSet:
+    id: 1630931429942-129
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idCentreGestion
+        indexName: fk_Offre_has_CentreGestion_CentreGestion1
+        tableName: OffreDiffusion
+- changeSet:
+    id: 1630931429942-130
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idOffre
+        indexName: fk_Offre_has_CentreGestion_Offre1
+        tableName: OffreDiffusion
+- changeSet:
+    id: 1630931429942-131
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idCentreGestion
+        indexName: fk_PersonnelCentreGestion_CentreGestion1
+        tableName: PersonnelCentreGestion
+- changeSet:
+    id: 1630931429942-132
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idCivilite
+        indexName: fk_PersonnelCentreGestion_Civilite1
+        tableName: PersonnelCentreGestion
+- changeSet:
+    id: 1630931429942-133
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idDroitAdministration
+        indexName: fk_PersonnelCentreGestion_DroitAdministration1
+        tableName: PersonnelCentreGestion
+- changeSet:
+    id: 1630931429942-134
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idFicheEvaluation
+        indexName: fk_QuestionSupplementaire_FicheEvaluation1
+        tableName: QuestionSupplementaire
+- changeSet:
+    id: 1630931429942-135
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idConvention
+        indexName: fk_ReponseEvaluation_Convention
+        tableName: ReponseEvaluation
+- changeSet:
+    id: 1630931429942-136
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idConvention
+        indexName: fk_ReponseSupplementaire_Convention1
+        tableName: ReponseSupplementaire
+- changeSet:
+    id: 1630931429942-137
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idQuestionSupplementaire
+        indexName: fk_ReponseSupplementaire_QuestionSupplementaire1
+        tableName: ReponseSupplementaire
+- changeSet:
+    id: 1630931429942-138
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idPays
+        indexName: fk_Service_Pays1
+        tableName: Service
+- changeSet:
+    id: 1630931429942-139
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idStructure
+        indexName: fk_Service_Structure1
+        tableName: Service
+- changeSet:
+    id: 1630931429942-140
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idTypeStructure
+        indexName: fk_StatutJuridique_TypeStructure1
+        tableName: StatutJuridique
+- changeSet:
+    id: 1630931429942-141
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idEffectif
+        indexName: fk_Structure_Effectif1
+        tableName: Structure
+- changeSet:
+    id: 1630931429942-142
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: codeNAF_N5
+        indexName: fk_Structure_NAF_N51
+        tableName: Structure
+- changeSet:
+    id: 1630931429942-143
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idPays
+        indexName: fk_Structure_Pays1
+        tableName: Structure
+- changeSet:
+    id: 1630931429942-144
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: idStatutJuridique
+        indexName: fk_Structure_StatutJuridique1
+        tableName: Structure
+- changeSet:
+    id: 1630931429942-145
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: idTypeStructure
+        indexName: fk_Structure_TypeStructure1
+        tableName: Structure
+- changeSet:
+    id: 1630931429942-146
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: typeCategorie
+        indexName: index_categorie
+        tableName: Critere
+- changeSet:
+    id: 1630931429942-147
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: nom
+        - column:
+            name: prenom
+        indexName: index_nom_enseignant
+        tableName: Enseignant
+- changeSet:
+    id: 1630931429942-148
+    author: ssound (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: nom
+        - column:
+            name: prenom
+        indexName: index_nom_etudiant
+        tableName: Etudiant
+- changeSet:
+    id: 1630931429942-149
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: typeCategorie
+        baseTableName: Critere
+        constraintName: FK_Categorie
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: CASCADE
+        onUpdate: RESTRICT
+        referencedColumnNames: idCategorie
+        referencedTableName: Categorie
+        validate: true
+- changeSet:
+    id: 1630931429942-150
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: niveau
+        baseTableName: Critere
+        constraintName: FK_Niveau
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: RESTRICT
+        onUpdate: RESTRICT
+        referencedColumnNames: idNiveau
+        referencedTableName: Niveau
+        validate: true
+- changeSet:
+    id: 1630931429942-151
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idContact
+        baseTableName: AccordPartenariat
+        constraintName: fk_AccordPartenariat_Contact1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idContact
+        referencedTableName: Contact
+        validate: true
+- changeSet:
+    id: 1630931429942-152
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idStructure
+        baseTableName: AccordPartenariat
+        constraintName: fk_AccordPartenariat_Structure1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idStructure
+        referencedTableName: Structure
+        validate: true
+- changeSet:
+    id: 1630931429942-153
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idCivilite
+        baseTableName: AdminStructure
+        constraintName: fk_AdminStructure_Civilite1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idCivilite
+        referencedTableName: Civilite
+        validate: true
+- changeSet:
+    id: 1630931429942-154
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idContact
+        baseTableName: Avenant
+        constraintName: fk_Avenant_Contact1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idContact
+        referencedTableName: Contact
+        validate: true
+- changeSet:
+    id: 1630931429942-155
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idConvention
+        baseTableName: Avenant
+        constraintName: fk_Avenant_Convention1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idConvention
+        referencedTableName: Convention
+        validate: true
+- changeSet:
+    id: 1630931429942-156
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idService
+        baseTableName: Avenant
+        constraintName: fk_Avenant_Service1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idService
+        referencedTableName: Service
+        validate: true
+- changeSet:
+    id: 1630931429942-157
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idCentreGestionSuperViseur
+        baseTableName: CentreGestion
+        constraintName: fk_CentreGestion_CentreGestionSuperViseur1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idCentreGestionSuperViseur
+        referencedTableName: CentreGestionSuperViseur
+        validate: true
+- changeSet:
+    id: 1630931429942-158
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: codeConfidentialite
+        baseTableName: CentreGestion
+        constraintName: fk_CentreGestion_Confidentialite1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: codeConfidentialite
+        referencedTableName: Confidentialite
+        validate: true
+- changeSet:
+    id: 1630931429942-159
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idFichier
+        baseTableName: CentreGestion
+        constraintName: fk_CentreGestion_Fichiers1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idFichier
+        referencedTableName: Fichiers
+        validate: true
+- changeSet:
+    id: 1630931429942-160
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idNiveauCentre
+        baseTableName: CentreGestion
+        constraintName: fk_CentreGestion_NiveauCentre1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idNiveauCentre
+        referencedTableName: NiveauCentre
+        validate: true
+- changeSet:
+    id: 1630931429942-161
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idCentreGestion
+        baseTableName: Contact
+        constraintName: fk_Contact_CentreGestion1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idCentreGestion
+        referencedTableName: CentreGestion
+        validate: true
+- changeSet:
+    id: 1630931429942-162
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idCivilite
+        baseTableName: Contact
+        constraintName: fk_Contact_Civilite1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idCivilite
+        referencedTableName: Civilite
+        validate: true
+- changeSet:
+    id: 1630931429942-163
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idService
+        baseTableName: Contact
+        constraintName: fk_Contact_Service1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idService
+        referencedTableName: Service
+        validate: true
+- changeSet:
+    id: 1630931429942-164
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idTypeOffre
+        baseTableName: ContratOffre
+        constraintName: fk_ContratOffre_TypeOffre1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idTypeOffre
+        referencedTableName: TypeOffre
+        validate: true
+- changeSet:
+    id: 1630931429942-165
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idCentreGestion
+        baseTableName: Convention
+        constraintName: fk_Convention_CentreGestion1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idCentreGestion
+        referencedTableName: CentreGestion
+        validate: true
+- changeSet:
+    id: 1630931429942-166
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idContact
+        baseTableName: Convention
+        constraintName: fk_Convention_Contact1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idContact
+        referencedTableName: Contact
+        validate: true
+- changeSet:
+    id: 1630931429942-167
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idEnseignant
+        baseTableName: Convention
+        constraintName: fk_Convention_Enseignant1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idEnseignant
+        referencedTableName: Enseignant
+        validate: true
+- changeSet:
+    id: 1630931429942-168
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: codeEtape,codeVersionEtape,codeUniversiteEtape
+        baseTableName: Convention
+        constraintName: fk_Convention_Etape1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: codeEtape,codeVersionEtape,codeUniversite
+        referencedTableName: Etape
+        validate: true
+- changeSet:
+    id: 1630931429942-169
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idEtudiant
+        baseTableName: Convention
+        constraintName: fk_Convention_Etudiant1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idEtudiant
+        referencedTableName: Etudiant
+        validate: true
+- changeSet:
+    id: 1630931429942-170
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idIndemnisation
+        baseTableName: Convention
+        constraintName: fk_Convention_Indemnisation1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idIndemnisation
+        referencedTableName: Indemnisation
+        validate: true
+- changeSet:
+    id: 1630931429942-171
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: codeLangueConvention
+        baseTableName: Convention
+        constraintName: fk_Convention_LangueConvention1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: codeLangueConvention
+        referencedTableName: LangueConvention
+        validate: true
+- changeSet:
+    id: 1630931429942-172
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idModeValidationStage
+        baseTableName: Convention
+        constraintName: fk_Convention_ModeValidationStage1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idModeValidationStage
+        referencedTableName: ModeValidationStage
+        validate: true
+- changeSet:
+    id: 1630931429942-173
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idNatureTravail
+        baseTableName: Convention
+        constraintName: fk_Convention_NatureTravail1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idNatureTravail
+        referencedTableName: NatureTravail
+        validate: true
+- changeSet:
+    id: 1630931429942-174
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idOffre
+        baseTableName: Convention
+        constraintName: fk_Convention_Offre1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idOffre
+        referencedTableName: Offre
+        validate: true
+- changeSet:
+    id: 1630931429942-175
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idOrigineStage
+        baseTableName: Convention
+        constraintName: fk_Convention_OrigineStage1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idOrigineStage
+        referencedTableName: OrigineStage
+        validate: true
+- changeSet:
+    id: 1630931429942-176
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idService
+        baseTableName: Convention
+        constraintName: fk_Convention_Service1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idService
+        referencedTableName: Service
+        validate: true
+- changeSet:
+    id: 1630931429942-177
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idSignataire
+        baseTableName: Convention
+        constraintName: fk_Convention_Signataire
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idContact
+        referencedTableName: Contact
+        validate: true
+- changeSet:
+    id: 1630931429942-178
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idStructure
+        baseTableName: Convention
+        constraintName: fk_Convention_Structure1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idStructure
+        referencedTableName: Structure
+        validate: true
+- changeSet:
+    id: 1630931429942-179
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idTempsTravail
+        baseTableName: Convention
+        constraintName: fk_Convention_TempsTravail1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idTempsTravail
+        referencedTableName: TempsTravail
+        validate: true
+- changeSet:
+    id: 1630931429942-180
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idTheme
+        baseTableName: Convention
+        constraintName: fk_Convention_Theme1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idTheme
+        referencedTableName: Theme
+        validate: true
+- changeSet:
+    id: 1630931429942-181
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idTypeConvention
+        baseTableName: Convention
+        constraintName: fk_Convention_TypeConvention1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idTypeConvention
+        referencedTableName: TypeConvention
+        validate: true
+- changeSet:
+    id: 1630931429942-182
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: codeUFR,codeUniversiteUFR
+        baseTableName: Convention
+        constraintName: fk_Convention_Ufr1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: codeUFR,codeUniversite
+        referencedTableName: Ufr
+        validate: true
+- changeSet:
+    id: 1630931429942-183
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idUniteDureeExceptionnelle
+        baseTableName: Convention
+        constraintName: fk_Convention_UniteDuree1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idUniteDuree
+        referencedTableName: UniteDuree
+        validate: true
+- changeSet:
+    id: 1630931429942-184
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idUniteGratification
+        baseTableName: Convention
+        constraintName: fk_Convention_UniteGratification1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idUniteGratification
+        referencedTableName: UniteGratification
+        validate: true
+- changeSet:
+    id: 1630931429942-185
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idCentreGestion
+        baseTableName: CritereGestion
+        constraintName: fk_CritereGestion_CentreGestion1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idCentreGestion
+        referencedTableName: CentreGestion
+        validate: true
+- changeSet:
+    id: 1630931429942-186
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: codeAffectation,codeUniversiteAffectation
+        baseTableName: Enseignant
+        constraintName: fk_Enseignant_Affectation1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: codeAffectation,codeUniversite
+        referencedTableName: Affectation
+        validate: true
+- changeSet:
+    id: 1630931429942-187
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: codeFAP_N1
+        baseTableName: FAP_N2
+        constraintName: fk_FAP_N2_FAP_N11
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: codeFAP_N1
+        referencedTableName: FAP_N1
+        validate: true
+- changeSet:
+    id: 1630931429942-188
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: codeFAP_N2
+        baseTableName: FAP_N3
+        constraintName: fk_FAP_N3_FAP_N21
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: codeFAP_N2
+        referencedTableName: FAP_N2
+        validate: true
+- changeSet:
+    id: 1630931429942-189
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: numFAP_Qualification
+        baseTableName: FAP_N3
+        constraintName: fk_FAP_N3_FAP_Qualification1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: numFAP_Qualification
+        referencedTableName: FAP_Qualification
+        validate: true
+- changeSet:
+    id: 1630931429942-190
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idQualificationSimplifiee
+        baseTableName: FAP_Qualification
+        constraintName: fk_FAP_Qualification_QualificationSimplifiee1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idQualificationSimplifiee
+        referencedTableName: FAP_QualificationSimplifiee
+        validate: true
+- changeSet:
+    id: 1630931429942-191
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idCentreGestion
+        baseTableName: FicheEvaluation
+        constraintName: fk_FicheEvaluation_CentreGestion
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idCentreGestion
+        referencedTableName: CentreGestion
+        validate: true
+- changeSet:
+    id: 1630931429942-192
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: codeNAF_N1
+        baseTableName: NAF_N5
+        constraintName: fk_NAF_N5_NAF_N11
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: codeNAF_N1
+        referencedTableName: NAF_N1
+        validate: true
+- changeSet:
+    id: 1630931429942-193
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idModeCandidature
+        baseTableName: OffreModeCandidature
+        constraintName: fk_OffreModeCandidature_ModeCandidature1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idModeCandidature
+        referencedTableName: ModeCandidature
+        validate: true
+- changeSet:
+    id: 1630931429942-194
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idOffre
+        baseTableName: OffreModeCandidature
+        constraintName: fk_OffreModeCandidature_Offre1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idOffre
+        referencedTableName: Offre
+        validate: true
+- changeSet:
+    id: 1630931429942-195
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idCentreGestion
+        baseTableName: Offre
+        constraintName: fk_Offre_CentreGestion1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idCentreGestion
+        referencedTableName: CentreGestion
+        validate: true
+- changeSet:
+    id: 1630931429942-196
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idContactCand
+        baseTableName: Offre
+        constraintName: fk_Offre_Contact1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idContact
+        referencedTableName: Contact
+        validate: true
+- changeSet:
+    id: 1630931429942-197
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idContactInfo
+        baseTableName: Offre
+        constraintName: fk_Offre_Contact2
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idContact
+        referencedTableName: Contact
+        validate: true
+- changeSet:
+    id: 1630931429942-198
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idContactProprio
+        baseTableName: Offre
+        constraintName: fk_Offre_Contact3
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idContact
+        referencedTableName: Contact
+        validate: true
+- changeSet:
+    id: 1630931429942-199
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idContratOffre
+        baseTableName: Offre
+        constraintName: fk_Offre_ContratOffre1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idContratOffre
+        referencedTableName: ContratOffre
+        validate: true
+- changeSet:
+    id: 1630931429942-200
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: codeFAP_N3
+        baseTableName: Offre
+        constraintName: fk_Offre_FAP_N11
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: codeFAP_N1
+        referencedTableName: FAP_N1
+        validate: true
+- changeSet:
+    id: 1630931429942-201
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idFichier
+        baseTableName: Offre
+        constraintName: fk_Offre_Fichiers1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idFichier
+        referencedTableName: Fichiers
+        validate: true
+- changeSet:
+    id: 1630931429942-202
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idNiveauFormation
+        baseTableName: Offre
+        constraintName: fk_Offre_NiveauFormation1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idNiveauFormation
+        referencedTableName: NiveauFormation
+        validate: true
+- changeSet:
+    id: 1630931429942-203
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idLieuPays
+        baseTableName: Offre
+        constraintName: fk_Offre_Pays1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idPays
+        referencedTableName: Pays
+        validate: true
+- changeSet:
+    id: 1630931429942-204
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idReferent
+        baseTableName: Offre
+        constraintName: fk_Offre_PersonnelCentreGestion1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idPersonnelCentreGestion
+        referencedTableName: PersonnelCentreGestion
+        validate: true
+- changeSet:
+    id: 1630931429942-205
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idQualificationSimplifiee
+        baseTableName: Offre
+        constraintName: fk_Offre_QualificationSimplifiee1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idQualificationSimplifiee
+        referencedTableName: FAP_QualificationSimplifiee
+        validate: true
+- changeSet:
+    id: 1630931429942-206
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idStructure
+        baseTableName: Offre
+        constraintName: fk_Offre_Structure1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idStructure
+        referencedTableName: Structure
+        validate: true
+- changeSet:
+    id: 1630931429942-207
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idTempsTravail
+        baseTableName: Offre
+        constraintName: fk_Offre_TempsTravail1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idTempsTravail
+        referencedTableName: TempsTravail
+        validate: true
+- changeSet:
+    id: 1630931429942-208
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idTypeOffre
+        baseTableName: Offre
+        constraintName: fk_Offre_TypeOffre1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idTypeOffre
+        referencedTableName: TypeOffre
+        validate: true
+- changeSet:
+    id: 1630931429942-209
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idUniteDuree
+        baseTableName: Offre
+        constraintName: fk_Offre_UniteDuree1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idUniteDuree
+        referencedTableName: UniteDuree
+        validate: true
+- changeSet:
+    id: 1630931429942-210
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idCentreGestion
+        baseTableName: OffreDiffusion
+        constraintName: fk_Offre_has_CentreGestion_CentreGestion1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idCentreGestion
+        referencedTableName: CentreGestion
+        validate: true
+- changeSet:
+    id: 1630931429942-211
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idOffre
+        baseTableName: OffreDiffusion
+        constraintName: fk_Offre_has_CentreGestion_Offre1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idOffre
+        referencedTableName: Offre
+        validate: true
+- changeSet:
+    id: 1630931429942-212
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idCentreGestion
+        baseTableName: PersonnelCentreGestion
+        constraintName: fk_PersonnelCentreGestion_CentreGestion1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idCentreGestion
+        referencedTableName: CentreGestion
+        validate: true
+- changeSet:
+    id: 1630931429942-213
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idCivilite
+        baseTableName: PersonnelCentreGestion
+        constraintName: fk_PersonnelCentreGestion_Civilite1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idCivilite
+        referencedTableName: Civilite
+        validate: true
+- changeSet:
+    id: 1630931429942-214
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idDroitAdministration
+        baseTableName: PersonnelCentreGestion
+        constraintName: fk_PersonnelCentreGestion_DroitAdministration1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idDroitAdministration
+        referencedTableName: DroitAdministration
+        validate: true
+- changeSet:
+    id: 1630931429942-215
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idFicheEvaluation
+        baseTableName: QuestionSupplementaire
+        constraintName: fk_QuestionSupplementaire_FicheEvaluation
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idFicheEvaluation
+        referencedTableName: FicheEvaluation
+        validate: true
+- changeSet:
+    id: 1630931429942-216
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idConvention
+        baseTableName: ReponseEvaluation
+        constraintName: fk_ReponseEvaluation_Convention
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idConvention
+        referencedTableName: Convention
+        validate: true
+- changeSet:
+    id: 1630931429942-217
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idFicheEvaluation
+        baseTableName: ReponseEvaluation
+        constraintName: fk_ReponseEvaluation_FicheEvaluation
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idFicheEvaluation
+        referencedTableName: FicheEvaluation
+        validate: true
+- changeSet:
+    id: 1630931429942-218
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idConvention
+        baseTableName: ReponseSupplementaire
+        constraintName: fk_ReponseSupplementaire_Convention
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idConvention
+        referencedTableName: Convention
+        validate: true
+- changeSet:
+    id: 1630931429942-219
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idQuestionSupplementaire
+        baseTableName: ReponseSupplementaire
+        constraintName: fk_ReponseSupplementaire_QuestionSupplementaire
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idQuestionSupplementaire
+        referencedTableName: QuestionSupplementaire
+        validate: true
+- changeSet:
+    id: 1630931429942-220
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idPays
+        baseTableName: Service
+        constraintName: fk_Service_Pays1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idPays
+        referencedTableName: Pays
+        validate: true
+- changeSet:
+    id: 1630931429942-221
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idStructure
+        baseTableName: Service
+        constraintName: fk_Service_Structure1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idStructure
+        referencedTableName: Structure
+        validate: true
+- changeSet:
+    id: 1630931429942-222
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idTypeStructure
+        baseTableName: StatutJuridique
+        constraintName: fk_StatutJuridique_TypeStructure1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idTypeStructure
+        referencedTableName: TypeStructure
+        validate: true
+- changeSet:
+    id: 1630931429942-223
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idEffectif
+        baseTableName: Structure
+        constraintName: fk_Structure_Effectif1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idEffectif
+        referencedTableName: Effectif
+        validate: true
+- changeSet:
+    id: 1630931429942-224
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: codeNAF_N5
+        baseTableName: Structure
+        constraintName: fk_Structure_NAF_N51
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: codeNAF_N5
+        referencedTableName: NAF_N5
+        validate: true
+- changeSet:
+    id: 1630931429942-225
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idPays
+        baseTableName: Structure
+        constraintName: fk_Structure_Pays1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idPays
+        referencedTableName: Pays
+        validate: true
+- changeSet:
+    id: 1630931429942-226
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idStatutJuridique
+        baseTableName: Structure
+        constraintName: fk_Structure_StatutJuridique1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idStatutJuridique
+        referencedTableName: StatutJuridique
+        validate: true
+- changeSet:
+    id: 1630931429942-227
+    author: ssound (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: idTypeStructure
+        baseTableName: Structure
+        constraintName: fk_Structure_TypeStructure1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: idTypeStructure
+        referencedTableName: TypeStructure
+        validate: true
+

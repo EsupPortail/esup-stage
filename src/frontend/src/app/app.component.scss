@@ -6,3 +6,21 @@ mat-sidenav-content {
   padding: 30px 50px;
   max-height: calc(100vh - 64px);
 }
+
+.app-menu {
+  display: flex;
+  flex-direction: column;
+}
+
+mat-nav-list {
+   flex-grow: 1;
+   height: calc(100vh - 64px - 39px);
+   overflow-y: auto;
+ }
+
+.app-version {
+  text-align: center;
+  font-size: 0.75em;
+  padding: 10px 0;
+  background-color: #f2f2f2;
+}

@@ -1,0 +1,85 @@
+<mat-tab-group #tabs (selectedTabChange)="tabChanged($event)">
+  <mat-tab label="Liste">
+    <app-table *ngIf="roles" [service]="userService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters"
+               matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'" (matSortChange)="appTable ? appTable.sorting($event) : null">
+      <ng-container matColumnDef="login">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Login</th>
+        <td mat-cell *matCellDef="let row">{{row.login}}</td>
+      </ng-container>
+      <ng-container matColumnDef="nom">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Nom</th>
+        <td mat-cell *matCellDef="let row">{{row.nom}}</td>
+      </ng-container>
+      <ng-container matColumnDef="prenom">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Prénom</th>
+        <td mat-cell *matCellDef="let row">{{row.prenom}}</td>
+      </ng-container>
+      <ng-container matColumnDef="roles">
+        <th mat-header-cell *matHeaderCellDef>Rôles</th>
+        <td mat-cell *matCellDef="let row">
+          <ul>
+            <li *ngFor="let role of row.roles">{{role.libelle}}</li>
+          </ul>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="actif">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Actif</th>
+        <td mat-cell *matCellDef="let row">{{row.actif|boolean}}</td>
+      </ng-container>
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let row">
+          <ng-container *ngIf="canEdit()">
+            <button mat-icon-button matTooltip="Éditer" (click)="edit(row)"><i class="fa fa-pen"></i></button>
+          </ng-container>
+        </td>
+      </ng-container>
+    </app-table>
+
+  </mat-tab>
+  <mat-tab label="{{data.id ? 'Édition' : 'Création'}}">
+    <mat-card>
+      <mat-card-content>
+        <form [formGroup]="form" (submit)="save()">
+          <div>
+            <mat-form-field appearance="fill">
+              <mat-label>Login</mat-label>
+              <input matInput formControlName="login" />
+            </mat-form-field>
+          </div>
+
+          <div>
+            <mat-form-field appearance="fill">
+              <mat-label>Nom</mat-label>
+              <input matInput formControlName="nom" />
+            </mat-form-field>
+          </div>
+
+          <div>
+            <mat-form-field appearance="fill">
+              <mat-label>Prénom</mat-label>
+              <input matInput formControlName="prenom" />
+            </mat-form-field>
+          </div>
+
+          <div>
+            <mat-form-field appearance="fill">
+              <mat-label>Rôles</mat-label>
+              <mat-select formControlName="roles" multiple [compareWith]="compareRole">
+                <mat-option *ngFor="let role of roles" [value]="role">{{role|roleLibelle}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div>
+            <mat-checkbox formControlName="actif">Actif</mat-checkbox>
+          </div>
+
+          <div>
+            <button mat-flat-button color="primary">Valider</button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </mat-tab>
+</mat-tab-group>

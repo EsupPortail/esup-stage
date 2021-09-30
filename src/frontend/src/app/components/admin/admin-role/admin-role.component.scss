@@ -1,0 +1,12 @@
+.role-droit-icons i {
+  cursor: pointer;
+  color: #cdcdcd;
+}
+
+.role-droit-icons.disabled i {
+  cursor: default;
+}
+
+.role-droit-icons i.activate {
+  color: var(--primaryColor);
+}

@@ -1,0 +1,19 @@
+# parametres des URLs pour l'authentication CAS
+cas.url.login   ={{ ESTAGE_ENVIRONMENT.passeport_url | default('https://passeport.dauphine.fr/cas',true }}/login?service={service}
+cas.url.service ={{ ESTAGE_ENVIRONMENT.passeport_url | default('https://passeport.dauphine.fr/cas',true }}/p3/serviceValidate?service={service}&ticket={ticket}&format=json
+cas.url.logout  ={{ ESTAGE_ENVIRONMENT.passeport_url | default('https://passeport.dauphine.fr/cas',true }}/logout
+
+# url de l'application (notamment utilisée pour envoyer des liens par mail)
+appli.url={{ ESTAGE_ENVIRONMENT.appli_url }}
+
+# parametres base de donnees
+appli.datasource.url={{ ESTAGE_ENVIRONMENT.DATASOURCE.url }}
+appli.datasource.username={{ ESTAGE_ENVIRONMENT.DATASOURCE.username }}
+appli.datasource.password={{ ESTAGE_ENVIRONMENT.DATASOURCE.password }}
+appli.datasource.driver={{ ESTAGE_ENVIRONMENT.DATASOURCE.driver }}
+
+# url de l'application (notamment utilisée pour envoyer des liens par mail)
+appli.url={{ ESTAGE_ENVIRONMENT.appli_url }}
+
+# logins des admin technique, séparés par des ; (utilisateurs à créer au 1er lancement pour paramétrer l'application)
+appli.admin_technique={{ ESTAGE_ENVIRONMENT.appli_admintech }}

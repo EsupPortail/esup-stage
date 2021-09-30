@@ -6,6 +6,8 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 :root {
   --primaryColor: #2e4588;
+  --dangerColor: #e95160;
+  --successColor: #adcd68;
 }
 
 .text-red {
@@ -20,4 +22,46 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .mat-toolbar.mat-primary
 , .mat-tab-group.mat-primary .mat-ink-bar, .mat-tab-nav-bar.mat-primary .mat-ink-bar {
   background-color: var(--primaryColor) !important;
+}
+
+.mat-tab-body-wrapper {
+  margin-top: 20px;
+}
+
+.mat-table {
+  width: 100%;
+}
+
+.mat-tooltip {
+  font-size: 0.75em !important;
+}
+
+form {
+  font-size: 0.8rem;
+}
+
+.mat-card:not([class*=mat-elevation-z]) {
+  box-shadow: none !important;
+  border-radius: unset !important;
+  margin-bottom: 20px;
+}
+
+.mat-radio-button ~ .mat-radio-button {
+  margin-left: 16px;
+}
+
+.mat-cell button:not(.mat-icon-button.mat-button-disabled.mat-button-disabled) .fa {
+  color: var(--primaryColor);
+}
+
+.mat-cell button:not(.mat-icon-button.mat-button-disabled.mat-button-disabled) {
+  .fa.fa-trash-alt, .fa.fa-trash, .fa.fa-ban {
+    color: var(--dangerColor);
+  }
+}
+
+.mat-cell button:not(.mat-icon-button.mat-button-disabled.mat-button-disabled) {
+  .fa.fa-sync {
+    color: var(--successColor);
+  }
 }

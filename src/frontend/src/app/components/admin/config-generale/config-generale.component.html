@@ -1,0 +1,118 @@
+<mat-tab-group>
+  <mat-tab label="Éléments généraux">
+    <mat-card>
+      <mat-card-content>
+        <form [formGroup]="formGenerale" novalidate (submit)="saveGenerale()">
+          <div class="row">
+            <mat-form-field class="col-md-3" appearance="fill">
+              <mat-label>Année bascule / Jour</mat-label>
+              <input matInput type="number" formControlName="anneeBasculeJour" />
+            </mat-form-field>
+
+            <mat-form-field class="col-md-3" appearance="fill">
+              <mat-label>Année bascule / Mois</mat-label>
+              <input matInput type="number" formControlName="anneeBasculeMois" />
+            </mat-form-field>
+          </div>
+          <div class="row mb-2">
+            <div class="col-md-12">
+              <div class="mb-2">Autoriser la création d'une convention par les étudiants dont l'ETAPE / COMPOSANTE n'est gérée par aucun centre ?</div>
+              <mat-radio-group formControlName="autoriserConventionsOrphelines">
+                <mat-radio-button [value]="true">Oui</mat-radio-button>
+                <mat-radio-button [value]="false">Non</mat-radio-button>
+              </mat-radio-group>
+            </div>
+          </div>
+          <div class="row">
+            <mat-form-field class="col-md-12" appearance="fill">
+              <mat-label>Définition du type de centre</mat-label>
+              <mat-select formControlName="typeCentre">
+                <mat-option *ngFor="let typeCentre of typeCentres" [value]="typeCentre">{{typeCentre}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="row mb-2">
+            <div class="col-md-12">
+              <div class="mb-2">Autorisation des centres de gestion à bloquer l'impression de la convention par les étudiants ?</div>
+              <mat-radio-group formControlName="autoriserCentresBloquerImpressionConvention">
+                <mat-radio-button [value]="true">Oui</mat-radio-button>
+                <mat-radio-button [value]="false">Non</mat-radio-button>
+              </mat-radio-group>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-md-12">
+              <div class="mb-2">Autorisation des étudiants à modifier les données entreprise existantes (fiche signalétique, services, contacts) lorsqu'ils créent une convention ?</div>
+              <mat-radio-group formControlName="autoriserEtudiantAModifierEntreprise">
+                <mat-radio-button [value]="true">Oui</mat-radio-button>
+                <mat-radio-button [value]="false">Non</mat-radio-button>
+              </mat-radio-group>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-md-12">
+              <div class="mb-2">Autoridation de la validation automatique des nouveaux organismes d'accueil créés par les étudiants ?</div>
+              <mat-radio-group formControlName="autoriserValidationAutoOrgaAccCreaEtu">
+                <mat-radio-button [value]="true">Oui</mat-radio-button>
+                <mat-radio-button [value]="false">Non</mat-radio-button>
+              </mat-radio-group>
+            </div>
+          </div>
+          <div class="row">
+            <mat-form-field class="col-md-12" appearance="fill">
+              <mat-label>Filtre LDAP pour la recherche des enseignants</mat-label>
+              <input matInput formControlName="ldapFiltreEnseignant" />
+            </mat-form-field>
+          </div>
+          <div class="mt-3" *ngIf="canEdit()">
+            <button mat-flat-button color="primary">Valider</button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </mat-tab>
+  <mat-tab label="Alertes mail">
+    <mat-card>
+      <mat-card-content>
+        <table mat-table [dataSource]="alertes" *ngIf="configAlerte">
+          <ng-container matColumnDef="alertes">
+            <th mat-header-cell *matHeaderCellDef>Alertes</th>
+            <td mat-cell *matCellDef="let alertes">{{alertes.libelle}}</td>
+          </ng-container>
+          <ng-container matColumnDef="alerteEtudiant">
+            <th mat-header-cell *matHeaderCellDef>Étudiant</th>
+            <td mat-cell *matCellDef="let alertes">
+              <mat-checkbox [(ngModel)]="configAlerte.alerteEtudiant[alertes.code]"></mat-checkbox>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="alerteGestionnaire">
+            <th mat-header-cell *matHeaderCellDef>Gestionnaire</th>
+            <td mat-cell *matCellDef="let alertes">
+              <mat-checkbox [(ngModel)]="configAlerte.alerteGestionnaire[alertes.code]"></mat-checkbox>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="alerteRespGestionnaire">
+            <th mat-header-cell *matHeaderCellDef>Responsable gestionnaire</th>
+            <td mat-cell *matCellDef="let alertes">
+              <mat-checkbox [(ngModel)]="configAlerte.alerteRespGestionnaire[alertes.code]"></mat-checkbox>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="alerteEnseignant">
+            <th mat-header-cell *matHeaderCellDef>Enseignant</th>
+            <td mat-cell *matCellDef="let alertes">
+              <mat-checkbox [(ngModel)]="configAlerte.alerteEnseignant[alertes.code]"></mat-checkbox>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="alerteColumns"></tr>
+          <tr mat-row *matRowDef="let alertes; columns: alerteColumns;"></tr>
+        </table>
+        <div class="mt-3" *ngIf="canEdit()">
+          <button mat-flat-button color="primary" (click)="saveAlerteMail()">Valider</button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </mat-tab>
+  <mat-tab label="Thème">
+  </mat-tab>
+</mat-tab-group>

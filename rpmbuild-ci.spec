@@ -72,7 +72,7 @@ cp -r ./etc/%{name}/*      %{buildroot}/etc/%{name}/
 install -d -m 755                %{buildroot}/usr/local/%{name}
 # ++ copy du binaire precedement builder par "gitlab pipeline"
 [ ! -d /usr/local/catalina-war-repo ] && mkdir -p %{buildroot}/usr/local/catalina-war-repo/
-cp    ./ROOT.war                 %{buildroot}/usr/local/catalina-war-repo/ROOT.war
+cp    ./ROOT.war                 %{buildroot}/usr/local/catalina-war-repo/tomcat9.0_ROOT.war
 # ++ copy des scripts resources
 if [ -d ./scripts ]; then
     cp    ./scripts/*                %{buildroot}/usr/local/%{name}/

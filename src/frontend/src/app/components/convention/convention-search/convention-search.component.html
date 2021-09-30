@@ -1,0 +1,50 @@
+
+<app-table [service]="conventionService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters"
+           matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'" (matSortChange)="appTable ? appTable.sorting($event) : null">
+  <ng-container matColumnDef="id">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>N°</th>
+    <td mat-cell *matCellDef="let row">{{row.id}}</td>
+  </ng-container>
+  <ng-container matColumnDef="etudiant">
+    <th mat-header-cell *matHeaderCellDef>Étudiant</th>
+    <td mat-cell *matCellDef="let row">{{row.etudiant.prenom + ' ' + row.etudiant.nom}}</td>
+  </ng-container>
+  <ng-container matColumnDef="etablissement">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Établissement</th>
+    <td mat-cell *matCellDef="let row">{{row.structure ? row.structure.raisonSociale : ''}}</td>
+  </ng-container>
+  <ng-container matColumnDef="periode">
+    <th mat-header-cell *matHeaderCellDef>Période</th>
+    <td mat-cell *matCellDef="let row">{{'Du ' + (row.dateDebutStage|date:'shortDate') + ' au ' + (row.dateFinStage|date:'shortDate')}}</td>
+  </ng-container>
+  <ng-container matColumnDef="ufr">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>UFR</th>
+    <td mat-cell *matCellDef="let row">{{row.ufr ? row.ufr.libelle : ''}}</td>
+  </ng-container>
+  <ng-container matColumnDef="etape">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Étape d'étude</th>
+    <td mat-cell *matCellDef="let row">{{row.etape ? row.etape.libelle : ''}}</td>
+  </ng-container>
+  <ng-container matColumnDef="validationPedagogique">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Validation Pédagogique</th>
+    <td mat-cell *matCellDef="let row">{{row.validationPedagogique|boolean}}</td>
+  </ng-container>
+  <ng-container matColumnDef="validationConvention">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Validation administrative</th>
+    <td mat-cell *matCellDef="let row">{{row.validationConvention|boolean}}</td>
+  </ng-container>
+  <ng-container matColumnDef="avenant">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Avenant</th>
+    <td mat-cell *matCellDef="let row">TODO</td>
+  </ng-container>
+  <ng-container matColumnDef="annee">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Année univ.</th>
+    <td mat-cell *matCellDef="let row">{{row.annee}}</td>
+  </ng-container>
+  <ng-container matColumnDef="action">
+    <th mat-header-cell *matHeaderCellDef>Actions</th>
+    <td mat-cell *matCellDef="let row">
+      <button mat-icon-button matTooltip="Visualiser"><i class="fa fa-eye"></i></button>
+    </td>
+  </ng-container>
+</app-table>

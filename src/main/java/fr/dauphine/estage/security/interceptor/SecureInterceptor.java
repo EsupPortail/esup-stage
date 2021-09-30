@@ -1,12 +1,14 @@
 package fr.dauphine.estage.security.interceptor;
 
 import fr.dauphine.estage.dto.ContextDto;
-import fr.dauphine.estage.exception.ForbiddenException;
-import fr.dauphine.estage.exception.NotAcceptableException;
-import fr.dauphine.estage.exception.UnauthorizedException;
-import fr.dauphine.estage.model.RoleEnum;
+import fr.dauphine.estage.enums.AppFonctionEnum;
+import fr.dauphine.estage.enums.DroitEnum;
+import fr.dauphine.estage.exception.AppException;
+import fr.dauphine.estage.model.AppConfig;
 import fr.dauphine.estage.model.Utilisateur;
 import fr.dauphine.estage.model.helper.UtilisateurHelper;
+import fr.dauphine.estage.repository.AppConfigJpaRepository;
+import fr.dauphine.estage.repository.UtilisateurJpaRepository;
 import fr.dauphine.estage.security.ServiceContext;
 import fr.dauphine.estage.security.TokenFactory;
 import fr.dauphine.estage.security.common.CasLayer;
@@ -16,7 +18,9 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -26,6 +30,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -34,6 +39,12 @@ import java.util.concurrent.TimeUnit;
 public class SecureInterceptor {
 
     private static final Logger logger = LoggerFactory.getLogger(SecureInterceptor.class);
+
+    @Autowired
+    UtilisateurJpaRepository utilisateurRepository;
+
+    @Autowired
+    AppConfigJpaRepository appConfigJpaRepository;
 
     @Around("@annotation(Secure)")
     public Object checkAuthorization(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -45,7 +56,8 @@ public class SecureInterceptor {
 
         MethodSignature methodSignature = (MethodSignature) joinPoint.getStaticPart().getSignature();
         Secure authorized = methodSignature.getMethod().getAnnotation(Secure.class);
-        RoleEnum[] roles = authorized.roles();
+        AppFonctionEnum fonction = authorized.fonction();
+        DroitEnum[] droits = authorized.droits();
 
         // validation du token
         String token = null;
@@ -69,14 +81,14 @@ public class SecureInterceptor {
                 long diffMinutes = TimeUnit.MINUTES.convert(nDate.getTime() - dateTicket.getTime(), TimeUnit.MILLISECONDS);
                 if (diffMinutes > Integer.parseInt("1800") || dateTicket.after(nDate)) {
                     logger.info(" -> token expire");
-                    throw new UnauthorizedException("Token invalide");
+                    throw new AppException(HttpStatus.UNAUTHORIZED, "Token invalide");
                 }
                 if (!hash.equals(TokenFactory.generateHash(login, date, "Azkjn32klklOP"))) {
-                    throw new UnauthorizedException("Token invalide");
+                    throw new AppException(HttpStatus.UNAUTHORIZED, "Token invalide");
                 }
             } catch (ParseException e) {
                 logger.info(" -> format date invalid");
-                throw new UnauthorizedException("Token invalide");
+                throw new AppException(HttpStatus.UNAUTHORIZED, "Token invalide");
             }
 
 
@@ -84,7 +96,7 @@ public class SecureInterceptor {
             // on check si on a pas une authentification cas
             CasLayer.CasUser casUser = (CasLayer.CasUser) request.getSession().getAttribute("casUser");
             if (casUser == null) {
-                throw new UnauthorizedException("Token invalide");
+                throw new AppException(HttpStatus.UNAUTHORIZED, "Token invalide");
             } else {
                 login = casUser.getLogin();
                 auth = "cas";
@@ -93,37 +105,33 @@ public class SecureInterceptor {
 
         // get the user
         Utilisateur utilisateur;
-        // TODO récupération de l'utilisateur
-//        if (auth.equals("cas")) {
-//            utilisateur = utilisateurDao.getUtilisateurByPasseport(login);
-//        } else {
-//            utilisateur = utilisateurDao.getById(Utilisateur.class, Integer.parseInt(login));
-//        }
-        utilisateur = new Utilisateur();
-        utilisateur.setUsername("username");
-        utilisateur.setDisplayname("displayname");
-        utilisateur.setActif(true);
+        if (auth.equals("cas")) {
+            utilisateur = utilisateurRepository.findOneByLoginAcitf(login);
+        } else {
+            utilisateur = utilisateurRepository.findByIdActif(Integer.parseInt(login));
+        }
 
         if (utilisateur == null) {
-            throw new UnauthorizedException("Vous n'êtes pas autorisé");
+            throw new AppException(HttpStatus.UNAUTHORIZED, "Vous n'êtes pas autorisé");
         }
 
         // Utilisateur not active
         if (!utilisateur.isActif()) {
-            throw new NotAcceptableException("Votre compte est inactif");
+            throw new AppException(HttpStatus.NOT_ACCEPTABLE, "Votre compte est inactif");
         }
 
-        // si des roles sont précisés, il faut vérifier que l'utilisateur en dispose
-        if (roles != null && roles.length > 0) {
-            boolean hasRight = false;
-            for (RoleEnum role : roles) {
-                if (UtilisateurHelper.isRole(utilisateur, role)) {
+        boolean hasRight = fonction == AppFonctionEnum.NONE && droits.length == 0;
+        // on a les droits si fonction droit == none
+        if (!hasRight) {
+            // Si une fonction/droit est définie, il faut vérifier ses habilitations
+            if (fonction != AppFonctionEnum.NONE && droits.length > 0) {
+                if (UtilisateurHelper.isRole(utilisateur, fonction, droits)) {
                     hasRight = true;
                 }
             }
-            if (!hasRight) {
-                throw new ForbiddenException("Votre rôle de donne pas accès à cette ressource");
-            }
+        }
+        if (!hasRight) {
+            throw new AppException(HttpStatus.FORBIDDEN, "Votre rôle de donne pas accès à cette ressource");
         }
 
         ////////////////////////////////////

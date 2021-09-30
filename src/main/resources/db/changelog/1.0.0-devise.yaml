@@ -1,0 +1,42 @@
+databaseChangeLog:
+- changeSet:
+    id: devise
+    author: jwang
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+                nullable: false
+                primaryKey: true
+            name: idDevise
+            type: INT
+        - column:
+            constraints:
+                nullable: false
+            name: libelleDevise
+            type: VARCHAR(50)
+        - column:
+            constraints:
+                nullable: false
+            defaultValue: O
+            name: temEnServDevise
+            type: VARCHAR(1)
+        tableName: Devise
+- changeSet:
+    id: devise-init
+    author: jwang
+    changes:
+    - insert:
+        columns:
+        - column:
+            name: libelleDevise
+            value: euros
+        tableName: Devise
+    - insert:
+        columns:
+        - column:
+            name: libelleDevise
+            value: autres
+        tableName: Devise

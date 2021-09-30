@@ -1,0 +1,19 @@
+databaseChangeLog:
+- changeSet:
+    id: appConfig
+    author: ssound
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+                nullable: false
+                primaryKey: true
+            name: codeAppConfig
+            type: VARCHAR(20)
+        - column:
+            constraints:
+                nullable: false
+            name: parametres
+            type: TEXT
+        tableName: AppConfig
