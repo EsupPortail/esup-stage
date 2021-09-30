@@ -93,13 +93,13 @@ install -d -m 755          %{buildroot}/var/log/%{name}
 tree -L 4 %{buildroot}/
 
 %files
-%attr(-,root,root)                              /etc/%{name}
-##%attr(-,root,root)                              /etc/rsyslog.d/*
-##%attr(-,root,root)                              /etc/logrotate.d/*
-##%attr(-,root,root)                              /opt/%{name}/upload-documents
-##%attr(-,root,root)                              /usr/local/%{name}
+%attr(-,tomcat,tomcat)                          /etc/%{name}
+##%attr(-,root,root)                            /etc/rsyslog.d/*
+##%attr(-,root,root)                            /etc/logrotate.d/*
+##%attr(-,root,root)                            /opt/%{name}/upload-documents
+##%attr(-,root,root)                            /usr/local/%{name}
 %attr(-,root,root)                              /var/log/%{name}
-##%attr(-,root,root)                              /var/www/html/%{name}
+##%attr(-,root,root)                            /var/www/html/%{name}
 %attr(-,root,root)                              /usr/local/catalina-war-repo/
 
 

@@ -79,8 +79,8 @@
   template: 
     src: "templates/estage.properties.j2"
     dest: "/etc/estage/estage.properties"
-    owner: root
-    group: root
+    owner: tomcat
+    group: tomcat
     mode: 0640
   notify: redeploy.webapp
 # handler right-now
