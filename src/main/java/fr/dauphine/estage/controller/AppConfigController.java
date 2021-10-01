@@ -4,22 +4,21 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.dauphine.estage.dto.ConfigAlerteMailDto;
 import fr.dauphine.estage.dto.ConfigGeneraleDto;
-import fr.dauphine.estage.dto.ContextDto;
+import fr.dauphine.estage.dto.ConfigThemeDto;
 import fr.dauphine.estage.enums.AppConfigCodeEnum;
 import fr.dauphine.estage.enums.AppFonctionEnum;
 import fr.dauphine.estage.enums.DroitEnum;
 import fr.dauphine.estage.enums.TypeCentreEnum;
 import fr.dauphine.estage.model.AppConfig;
-import fr.dauphine.estage.model.helper.AppConfigHelper;
 import fr.dauphine.estage.repository.AppConfigJpaRepository;
-import fr.dauphine.estage.security.ServiceContext;
 import fr.dauphine.estage.security.interceptor.Secure;
 import fr.dauphine.estage.service.AppConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Date;
 
 @ApiController
 @RequestMapping("/config")
@@ -50,14 +49,14 @@ public class AppConfigController {
         }
         ObjectMapper mapper = new ObjectMapper();
         appConfig.setParametres(mapper.writeValueAsString(configGeneraleDto));
-        appConfig = appConfigJpaRepository.saveAndFlush(appConfig);
-        return AppConfigHelper.getConfigGenerale(appConfig);
+        appConfigJpaRepository.saveAndFlush(appConfig);
+        return appConfigService.getConfigGenerale();
     }
 
     @GetMapping("/alerte-mail")
     @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.LECTURE})
     public ConfigAlerteMailDto getConfigAlerteMail() {
-        return appConfigService.getConfigAlerte();
+        return appConfigService.getConfigAlerteMail();
     }
 
     @PostMapping("/alerte-mail")
@@ -70,7 +69,41 @@ public class AppConfigController {
         }
         ObjectMapper mapper = new ObjectMapper();
         appConfig.setParametres(mapper.writeValueAsString(configAlerteMailDto));
-        appConfig = appConfigJpaRepository.saveAndFlush(appConfig);
-        return AppConfigHelper.getConfigAlerteMail(appConfig);
+        appConfigJpaRepository.saveAndFlush(appConfig);
+        return appConfigService.getConfigAlerteMail();
+    }
+
+    @GetMapping("/theme")
+    @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.LECTURE})
+    public ConfigThemeDto getConfigTheme() {
+        return appConfigService.getConfigTheme();
+    }
+
+    @PostMapping("/theme")
+    @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.MODIFICATION})
+    public ConfigThemeDto updateTheme(@RequestBody ConfigThemeDto configAlerteMailDto) throws IOException, URISyntaxException {
+        AppConfig appConfig = appConfigJpaRepository.findByCode(AppConfigCodeEnum.THEME);
+        if (appConfig == null) {
+            appConfig = new AppConfig();
+            appConfig.setCode(AppConfigCodeEnum.THEME);
+        }
+        configAlerteMailDto.setDateModification(new Date());
+        ObjectMapper mapper = new ObjectMapper();
+        appConfig.setParametres(mapper.writeValueAsString(configAlerteMailDto));
+        appConfigJpaRepository.saveAndFlush(appConfig);
+        appConfigService.updateTheme();
+        return appConfigService.getConfigTheme();
+    }
+
+    @DeleteMapping("/theme")
+    @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.SUPPRESSION})
+    public ConfigThemeDto rollbackTheme() throws IOException, URISyntaxException {
+        AppConfig appConfig = appConfigJpaRepository.findByCode(AppConfigCodeEnum.THEME);
+        if (appConfig != null) {
+            appConfigJpaRepository.delete(appConfig);
+            appConfigJpaRepository.flush();
+        }
+        appConfigService.updateTheme();
+        return appConfigService.getConfigTheme();
     }
 }

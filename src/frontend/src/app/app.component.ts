@@ -4,6 +4,8 @@ import { AuthService } from "./services/auth.service";
 import { Role } from "./constants/role";
 import { AppFonction } from "./constants/app-fonction";
 import { Droit } from "./constants/droit";
+import { environment } from "../environments/environment";
+import { ConfigService } from "./services/config.service";
 
 @Component({
   selector: 'app-root',
@@ -13,6 +15,7 @@ import { Droit } from "./constants/droit";
 export class AppComponent {
 
   favicon: HTMLLinkElement | null = document.querySelector('#app-favicon');
+  theme: HTMLLinkElement | null = document.querySelector('#theme');
 
   items: any[] = [
     {
@@ -57,11 +60,17 @@ export class AppComponent {
     },
   ]
 
-  constructor(private menuService: MenuService, private authService: AuthService) {
+  constructor(private menuService: MenuService, private authService: AuthService, private configService: ConfigService) {
     // TODO get favicon from config
     if (this.favicon !== null) {
       this.favicon.href = 'favicon.ico';
     }
+    this.configService.getConfigTheme();
+    this.configService.themeModified.subscribe((date: any) => {
+      if (this.theme !== null) {
+        this.theme.href = environment.themeUrl + `?q=${(new Date(date)).getTime()}`;
+      }
+    });
   }
 
   isOpened(): boolean {

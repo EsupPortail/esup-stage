@@ -1,27 +1,50 @@
+@use '~@angular/material' as mat;
+
 /* You can add global styles to this file, and also import other style files */
 @import "~@fortawesome/fontawesome-free/css/all.css";
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+@include mat.core();
 
-:root {
-  --primaryColor: #2e4588;
-  --dangerColor: #e95160;
-  --successColor: #adcd68;
-}
+$my-primary-palette: (
+  500: var(--primaryColor),
+  contrast: (
+    500: white,
+  )
+);
+$my-accent-palette: (
+  500: var(--secondaryColor),
+  contrast: (
+    500: white,
+  )
+);
+$my-warn-palette: (
+  500: var(--dangerColor),
+  contrast: (
+    500: white,
+  )
+);
+$my-primary: mat.define-palette($my-primary-palette, 500);
+$my-accent: mat.define-palette($my-accent-palette, 500);
+$my-warn: mat.define-palette($my-warn-palette, 500);
+$my-theme: mat.define-light-theme((
+  color: (
+    primary: $my-primary,
+    accent: $my-accent,
+    warn: $my-warn,
+  )
+));
+@include mat.all-component-themes($my-theme);
+
+html, body { height: 100%; }
+body { margin: 0; font-family: var(--fontFamily); font-size: var(--fontSize); }
 
 .text-red {
-  color: #e95160;
+  color: var(--dangerColor);
 }
 
 .text-title {
-  color: #2e4588;
+  color: var(--primaryColor);
   font-weight: bold;
-}
-
-.mat-toolbar.mat-primary
-, .mat-tab-group.mat-primary .mat-ink-bar, .mat-tab-nav-bar.mat-primary .mat-ink-bar {
-  background-color: var(--primaryColor) !important;
 }
 
 .mat-tab-body-wrapper {
@@ -36,8 +59,8 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   font-size: 0.75em !important;
 }
 
-form {
-  font-size: 0.8rem;
+form, .mat-cell {
+  font-size: var(--fontSize);
 }
 
 .mat-card:not([class*=mat-elevation-z]) {
@@ -48,16 +71,6 @@ form {
 
 .mat-radio-button ~ .mat-radio-button {
   margin-left: 16px;
-}
-
-.mat-cell button:not(.mat-icon-button.mat-button-disabled.mat-button-disabled) .fa {
-  color: var(--primaryColor);
-}
-
-.mat-cell button:not(.mat-icon-button.mat-button-disabled.mat-button-disabled) {
-  .fa.fa-trash-alt, .fa.fa-trash, .fa.fa-ban {
-    color: var(--dangerColor);
-  }
 }
 
 .mat-cell button:not(.mat-icon-button.mat-button-disabled.mat-button-disabled) {

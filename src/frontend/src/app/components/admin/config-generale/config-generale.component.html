@@ -51,7 +51,7 @@
           </div>
           <div class="row mb-2">
             <div class="col-md-12">
-              <div class="mb-2">Autoridation de la validation automatique des nouveaux organismes d'accueil créés par les étudiants ?</div>
+              <div class="mb-2">Autorisation de la validation automatique des nouveaux organismes d'accueil créés par les étudiants ?</div>
               <mat-radio-group formControlName="autoriserValidationAutoOrgaAccCreaEtu">
                 <mat-radio-button [value]="true">Oui</mat-radio-button>
                 <mat-radio-button [value]="false">Non</mat-radio-button>
@@ -114,5 +114,70 @@
     </mat-card>
   </mat-tab>
   <mat-tab label="Thème">
+    <mat-card>
+      <mat-card-content>
+        <div class="alert alert-info">
+          La page devra être rechargée après la modification.
+        </div>
+        <form [formGroup]="formTheme" novalidate>
+          <div class="row">
+            <mat-form-field class="col-md-3" appearance="fill">
+              <mat-label>Police</mat-label>
+              <input matInput formControlName="fontFamily" />
+            </mat-form-field>
+
+            <mat-form-field class="col-md-3" appearance="fill">
+              <mat-label>Taille du texte</mat-label>
+              <mat-select formControlName="fontSize">
+                <mat-option [value]="'0.8rem'">Petit</mat-option>
+                <mat-option [value]="'0.9rem'">Moyen</mat-option>
+                <mat-option [value]="'1rem'">Grand</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="row">
+            <mat-form-field class="col-md-3" appearance="fill">
+              <mat-label>Couleur pricipale</mat-label>
+              <input matInput [ngxMatColorPicker]="pickerPrimaryColor" formControlName="primaryColor">
+              <ngx-mat-color-toggle matSuffix [for]="pickerPrimaryColor"></ngx-mat-color-toggle>
+              <ngx-mat-color-picker #pickerPrimaryColor></ngx-mat-color-picker>
+            </mat-form-field>
+
+            <mat-form-field class="col-md-3" appearance="fill">
+              <mat-label>Couleur secondaire</mat-label>
+              <input matInput [ngxMatColorPicker]="pickerSecondaryColor" formControlName="secondaryColor">
+              <ngx-mat-color-toggle matSuffix [for]="pickerSecondaryColor"></ngx-mat-color-toggle>
+              <ngx-mat-color-picker #pickerSecondaryColor></ngx-mat-color-picker>
+            </mat-form-field>
+          </div>
+          <div class="row">
+            <mat-form-field class="col-md-3" appearance="fill">
+              <mat-label>Couleur danger</mat-label>
+              <input matInput [ngxMatColorPicker]="pickerDangerColor" formControlName="dangerColor">
+              <ngx-mat-color-toggle matSuffix [for]="pickerDangerColor"></ngx-mat-color-toggle>
+              <ngx-mat-color-picker #pickerDangerColor></ngx-mat-color-picker>
+            </mat-form-field>
+
+            <mat-form-field class="col-md-3" appearance="fill">
+              <mat-label>Couleur warning</mat-label>
+              <input matInput [ngxMatColorPicker]="pickerWarningColor" formControlName="warningColor">
+              <ngx-mat-color-toggle matSuffix [for]="pickerWarningColor"></ngx-mat-color-toggle>
+              <ngx-mat-color-picker #pickerWarningColor></ngx-mat-color-picker>
+            </mat-form-field>
+
+            <mat-form-field class="col-md-3" appearance="fill">
+              <mat-label>Couleur succès</mat-label>
+              <input matInput [ngxMatColorPicker]="pickerSuccessColor" formControlName="successColor">
+              <ngx-mat-color-toggle matSuffix [for]="pickerSuccessColor"></ngx-mat-color-toggle>
+              <ngx-mat-color-picker #pickerSuccessColor></ngx-mat-color-picker>
+            </mat-form-field>
+          </div>
+          <div class="mt-3">
+            <button *ngIf="canDelete()" mat-flat-button class="mr-2" (click)="rollbackTheme()">Remettre la configuration par défaut</button>
+            <button *ngIf="canEdit()" mat-flat-button color="primary" (click)="saveTheme()">Valider</button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
   </mat-tab>
 </mat-tab-group>

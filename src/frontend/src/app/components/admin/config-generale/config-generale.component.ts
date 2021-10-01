@@ -5,6 +5,7 @@ import { AppFonction } from "../../../constants/app-fonction";
 import { Droit } from "../../../constants/droit";
 import { AuthService } from "../../../services/auth.service";
 import { MessageService } from "../../../services/message.service";
+import { Color } from "@angular-material-components/color-picker";
 
 @Component({
   selector: 'app-config-generale',
@@ -49,11 +50,23 @@ export class ConfigGeneraleComponent implements OnInit {
       autoriserValidationAutoOrgaAccCreaEtu: [null, [Validators.required]],
       ldapFiltreEnseignant: [null, [Validators.required]],
     })
+    this.formTheme = this.fb.group({
+      logo: [null, [Validators.required]],
+      favicon: [null, [Validators.required]],
+      fontFamily: [null, [Validators.required]],
+      fontSize: [null, [Validators.required]],
+      primaryColor: [null, [Validators.required]],
+      secondaryColor: [null, [Validators.required]],
+      dangerColor: [null, [Validators.required]],
+      warningColor: [null, [Validators.required]],
+      successColor: [null, [Validators.required]],
+    })
   }
 
   ngOnInit(): void {
     if (!this.canEdit()) {
       this.formGenerale.disable();
+      this.formTheme.disable();
     }
     this.configService.getConfigGenerale().subscribe((response: any) => {
       this.configGenerale = response;
@@ -63,10 +76,33 @@ export class ConfigGeneraleComponent implements OnInit {
     this.configService.getConfigAlerteMail().subscribe((response: any) => {
       this.configAlerte = response;
     });
+    this.configService.getConfigTheme().then((response: any) => {
+      this.configTheme = response;
+      this.setFormThemeValue();
+    });
+  }
+
+  setFormThemeValue(): void {
+    this.formTheme.get('fontFamily')?.setValue(this.configTheme.fontFamily);
+    this.formTheme.get('fontSize')?.setValue(this.configTheme.fontSize);
+    this.setColor('primaryColor');
+    this.setColor('secondaryColor');
+    this.setColor('dangerColor');
+    this.setColor('warningColor');
+    this.setColor('successColor');
+  }
+
+  setColor(key: string): void {
+    const color = this.hexToRgb(this.configTheme[key]);
+    this.formTheme.get(key)?.setValue(new Color(color.r, color.g, color.b));
   }
 
   canEdit(): boolean {
     return this.authService.checkRights({fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.MODIFICATION]});
+  }
+
+  canDelete(): boolean {
+    return this.authService.checkRights({fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.SUPPRESSION]});
   }
 
   saveGenerale(): void {
@@ -83,6 +119,40 @@ export class ConfigGeneraleComponent implements OnInit {
       this.configAlerte = response;
       this.messageService.setSuccess('Paramètre d\'alertes mail modifés');
     });
+  }
+
+  saveTheme(): void {
+    const config = {...this.formTheme.value};
+    config.primaryColor = '#' + config.primaryColor.hex;
+    config.secondaryColor = '#' + config.secondaryColor.hex;
+    config.dangerColor = '#' + config.dangerColor.hex;
+    config.warningColor = '#' + config.warningColor.hex;
+    config.successColor = '#' + config.successColor.hex;
+    this.configService.updateTheme(config).then((response: any) => {
+      this.configTheme = response;
+      this.messageService.setSuccess('Thème modifié');
+      this.setFormThemeValue();
+    });
+  }
+
+  rollbackTheme(): void {
+    this.configService.rollbackTheme().then((response: any) => {
+      this.configTheme = response;
+      this.messageService.setSuccess('Thème réinitialisé');
+      this.setFormThemeValue();
+    });
+  }
+
+  hexToRgb(hex: string): any {
+    hex = hex.replace('#', '');
+    const hexR = hex.substring(0, 2);
+    const hexG = hex.substring(2, 4);
+    const hexB = hex.substring(4);
+    return {
+      r: parseInt(hexR, 16),
+      g: parseInt(hexG, 16),
+      b: parseInt(hexB, 16),
+    }
   }
 
 }

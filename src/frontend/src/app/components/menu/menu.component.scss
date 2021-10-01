@@ -1,10 +1,9 @@
 mat-icon {
   margin-right: 10px;
-  color: var(--primaryColor);
 }
 
 .mat-list-item {
-  font-size: 0.8rem;
+  font-size: var(--fontSize);
   height: 48px !important;
 }
 

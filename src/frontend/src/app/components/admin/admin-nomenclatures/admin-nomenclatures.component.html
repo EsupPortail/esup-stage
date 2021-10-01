@@ -14,16 +14,16 @@
       <ng-container matColumnDef="action">
         <th mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let row">
-          <button mat-icon-button matTooltip="Éditer" *ngIf="canEdit()" (click)="openEditionModal(nomenclature.service, row, nomenclature.tableIndex)" [disabled]="row.modifiable != null && !row.modifiable"><i class="fa fa-pen"></i></button>
+          <button mat-icon-button matTooltip="Éditer" *ngIf="canEdit()" (click)="openEditionModal(nomenclature.service, row, nomenclature.tableIndex)" [disabled]="row.modifiable != null && !row.modifiable" color="primary"><i class="fa fa-pen"></i></button>
           <ng-container *ngIf="canDelete()">
             <span (confirm)="setState(nomenclature.service, row, nomenclature.tableIndex)" [confirmMessage]="'Voulez-vous désactiver le libellé ' + row.libelle + ' ?'">
-              <button mat-icon-button matTooltip="Désactiver" *ngIf="row.temEnServ == 'O'"><i class="fa fa-ban"></i></button>
+              <button mat-icon-button matTooltip="Désactiver" *ngIf="row.temEnServ == 'O'" color="warn"><i class="fa fa-ban"></i></button>
             </span>
             <span (confirm)="setState(nomenclature.service, row, nomenclature.tableIndex)" [confirmMessage]="'Voulez-vous réactiver le libellé ' + row.libelle + ' ?'">
               <button mat-icon-button matTooltip="Réactiver"  *ngIf="row.temEnServ == 'N'"><i class="fa fa-sync"></i></button>
             </span>
             <span (confirm)="delete(nomenclature.service, row, nomenclature.tableIndex)" [confirmMessage]="'Voulez-vous supprimer le libellé ' + row.libelle + ' ?'">
-              <button mat-icon-button matTooltip="Supprimer"><i class="fa fa-trash"></i></button>
+              <button mat-icon-button matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
             </span>
           </ng-container>
         </td>

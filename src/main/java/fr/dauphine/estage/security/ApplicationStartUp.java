@@ -5,12 +5,16 @@ import fr.dauphine.estage.model.Role;
 import fr.dauphine.estage.model.Utilisateur;
 import fr.dauphine.estage.repository.RoleJpaRepository;
 import fr.dauphine.estage.repository.UtilisateurJpaRepository;
+import fr.dauphine.estage.service.AppConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 @Component
 public class ApplicationStartUp {
@@ -26,6 +30,9 @@ public class ApplicationStartUp {
     @Autowired
     RoleJpaRepository roleJpaRepository;
 
+    @Autowired
+    AppConfigService appConfigService;
+
     @EventListener(ApplicationReadyEvent.class)
     public void createAdminTech() {
         Role roleAdmTech = roleJpaRepository.findOneByCode(Role.ADM);
@@ -40,5 +47,11 @@ public class ApplicationStartUp {
                 utilisateurRepository.saveAndFlush(utilisateur);
             }
         }
+    }
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void loadTheming() throws IOException, URISyntaxException {
+        logger.info("Initialisation du thème de l'application");
+        appConfigService.updateTheme();
     }
 }
