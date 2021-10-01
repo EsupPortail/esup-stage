@@ -3,8 +3,8 @@ package fr.dauphine.estage.dto;
 import java.util.Date;
 
 public class ConfigThemeDto {
-    private String logo;
-    private String favicon;
+    private File64 logo;
+    private File64 favicon;
     private String fontFamily = "Roboto, \"Helvetica Neue\", sans-serif";
     private String fontSize = "0.9rem";
     private String primaryColor = "#2e4588";
@@ -14,19 +14,19 @@ public class ConfigThemeDto {
     private String successColor = "#adcd68";
     private Date dateModification = new Date();
 
-    public String getLogo() {
+    public File64 getLogo() {
         return logo;
     }
 
-    public void setLogo(String logo) {
+    public void setLogo(File64 logo) {
         this.logo = logo;
     }
 
-    public String getFavicon() {
+    public File64 getFavicon() {
         return favicon;
     }
 
-    public void setFavicon(String favicon) {
+    public void setFavicon(File64 favicon) {
         this.favicon = favicon;
     }
 
@@ -92,5 +92,26 @@ public class ConfigThemeDto {
 
     public void setDateModification(Date dateModification) {
         this.dateModification = dateModification;
+    }
+
+    public static class File64 {
+        private String contentType;
+        private String base64;
+
+        public String getContentType() {
+            return contentType;
+        }
+
+        public void setContentType(String contentType) {
+            this.contentType = contentType;
+        }
+
+        public String getBase64() {
+            return base64;
+        }
+
+        public void setBase64(String base64) {
+            this.base64 = base64;
+        }
     }
 }

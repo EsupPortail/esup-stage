@@ -33,20 +33,20 @@ export class ConfigService {
   async getConfigTheme(): Promise<any> {
     if (!this.configTheme) {
       this.configTheme = await this.http.get(environment.apiUrl + "/config/theme").toPromise();
-      this.themeSubject.next(this.configTheme.dateModification);
+      this.themeSubject.next(this.configTheme);
     }
     return this.configTheme;
   }
 
   async updateTheme(data: any): Promise<any> {
     this.configTheme = await this.http.post(environment.apiUrl + `/config/theme`, data).toPromise();
-    this.themeSubject.next(this.configTheme.dateModification);
+    this.themeSubject.next(this.configTheme);
     return this.configTheme;
   }
 
   async rollbackTheme(): Promise<any> {
     this.configTheme = await this.http.delete(environment.apiUrl + `/config/theme`).toPromise();
-    this.themeSubject.next(this.configTheme.dateModification);
+    this.themeSubject.next(this.configTheme);
     return this.configTheme;
   }
 

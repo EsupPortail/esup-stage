@@ -61,14 +61,13 @@ export class AppComponent {
   ]
 
   constructor(private menuService: MenuService, private authService: AuthService, private configService: ConfigService) {
-    // TODO get favicon from config
-    if (this.favicon !== null) {
-      this.favicon.href = 'favicon.ico';
-    }
     this.configService.getConfigTheme();
-    this.configService.themeModified.subscribe((date: any) => {
+    this.configService.themeModified.subscribe((config: any) => {
+      if (this.favicon !== null && config.favicon) {
+        this.favicon.href = `data:${config.favicon.contentType};base64,${config.favicon.base64}`;
+      }
       if (this.theme !== null) {
-        this.theme.href = environment.themeUrl + `?q=${(new Date(date)).getTime()}`;
+        this.theme.href = environment.themeUrl + `?q=${(new Date(config.dateModification)).getTime()}`;
       }
     });
   }

@@ -113,8 +113,8 @@ public class AppConfig {
                 ", datasourceUrl='" + datasourceUrl + "'" +
                 ", datasourceUsername='" + datasourceUsername + "'" +
                 ", datasourceDriver='" + datasourceDriver + "'" +
-                ", url='" + url + '\'' +
-                ", adminTechs='" + adminTechs + '\'' +
+                ", url='" + url + "'" +
+                ", adminTechs='" + adminTechs + "'" +
                 "}";
     }
 }

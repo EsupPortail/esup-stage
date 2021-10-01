@@ -121,6 +121,23 @@
         </div>
         <form [formGroup]="formTheme" novalidate>
           <div class="row">
+            <div class="col-md-3 mb-2">
+              <button mat-stroked-button color="primary" (click)="logoInput.click()">
+                <span>Logo</span>
+                <input #logoInput type="file" (change)="onLogoChange($event)" accept="image/*" style="display:none">
+              </button>
+              <div *ngIf="logoFile">{{logoFile.name}}</div>
+            </div>
+
+            <div class="col-md-3 mb-2">
+              <button mat-stroked-button color="primary" (click)="faviconInput.click()">
+                <span>Favicon</span>
+                <input #faviconInput type="file" (change)="onFavionChange($event)" accept="image/*" style="display:none">
+              </button>
+              <div *ngIf="faviconFile">{{faviconFile.name}}</div>
+            </div>
+          </div>
+          <div class="row">
             <mat-form-field class="col-md-3" appearance="fill">
               <mat-label>Police</mat-label>
               <input matInput formControlName="fontFamily" />

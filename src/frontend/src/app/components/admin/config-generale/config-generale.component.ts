@@ -39,6 +39,9 @@ export class ConfigGeneraleComponent implements OnInit {
 
   typeCentres = ['VIDE', 'COMPOSANTE', 'ETAPE', 'MIXTE'];
 
+  logoFile: File|undefined;
+  faviconFile: File|undefined;
+
   constructor(private configService: ConfigService, private fb: FormBuilder, private authService: AuthService, private messageService: MessageService) {
     this.formGenerale = this.fb.group({
       anneeBasculeJour: [null, [Validators.required, Validators.min(1), Validators.max(31)]],
@@ -128,7 +131,15 @@ export class ConfigGeneraleComponent implements OnInit {
     config.dangerColor = '#' + config.dangerColor.hex;
     config.warningColor = '#' + config.warningColor.hex;
     config.successColor = '#' + config.successColor.hex;
-    this.configService.updateTheme(config).then((response: any) => {
+    const formData = new FormData();
+    if (this.logoFile !== undefined) {
+      formData.append('logo', this.logoFile, this.logoFile.name);
+    }
+    if (this.faviconFile !== undefined) {
+      formData.append('favicon', this.faviconFile, this.faviconFile.name);
+    }
+    formData.append('data', JSON.stringify(config));
+    this.configService.updateTheme(formData).then((response: any) => {
       this.configTheme = response;
       this.messageService.setSuccess('Thème modifié');
       this.setFormThemeValue();
@@ -152,6 +163,24 @@ export class ConfigGeneraleComponent implements OnInit {
       r: parseInt(hexR, 16),
       g: parseInt(hexG, 16),
       b: parseInt(hexB, 16),
+    }
+  }
+
+  onLogoChange(event: any): void {
+    this.logoFile = event.target.files.item(0);
+    if (this.logoFile?.type.indexOf('image/') === -1) {
+      this.messageService.setError("Le fichier doit être au format image");
+      this.logoFile = undefined;
+      return;
+    }
+  }
+
+  onFavionChange(event: any): void {
+    this.faviconFile = event.target.files.item(0);
+    if (this.faviconFile?.type.indexOf('image/') === -1) {
+      this.messageService.setError("Le fichier doit être au format image");
+      this.faviconFile = undefined;
+      return;
     }
   }
 

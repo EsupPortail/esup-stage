@@ -17,11 +17,9 @@ import { TechnicalInterceptor } from "./interceptors/technical.interceptor";
 import { HomeComponent } from './components/home/home.component';
 import { TitleComponent } from './components/title/title.component';
 import { NgProgressModule } from "ngx-progressbar";
-import { NgProgressRouterModule } from "ngx-progressbar/router";
 import { NgProgressHttpModule } from "ngx-progressbar/http";
 import { MessageComponent } from './components/message/message.component';
 import { MatDialogModule } from "@angular/material/dialog";
-import { PersonnalisationComponent } from './components/personnalisation/personnalisation.component';
 import { MatTabsModule } from "@angular/material/tabs";
 import {
   MAT_COLOR_FORMATS,
@@ -67,7 +65,6 @@ registerLocaleData(localeFr, 'fr');
     HomeComponent,
     TitleComponent,
     MessageComponent,
-    PersonnalisationComponent,
     AdminUserComponent,
     TableComponent,
     BooleanPipe,

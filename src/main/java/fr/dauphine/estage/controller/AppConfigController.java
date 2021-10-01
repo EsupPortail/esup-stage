@@ -15,9 +15,11 @@ import fr.dauphine.estage.security.interceptor.Secure;
 import fr.dauphine.estage.service.AppConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Base64;
 import java.util.Date;
 
 @ApiController
@@ -81,17 +83,39 @@ public class AppConfigController {
 
     @PostMapping("/theme")
     @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.MODIFICATION})
-    public ConfigThemeDto updateTheme(@RequestBody ConfigThemeDto configAlerteMailDto) throws IOException, URISyntaxException {
+    public ConfigThemeDto updateTheme(@RequestParam String data, @RequestParam(required = false) MultipartFile logo, @RequestParam(required = false) MultipartFile favicon) throws IOException, URISyntaxException {
+        ObjectMapper mapper = new ObjectMapper();
+        ConfigThemeDto configThemeDto = mapper.readValue(data, ConfigThemeDto.class);
+        ConfigThemeDto configThemeDtoOrigin = appConfigService.getConfigTheme();
         AppConfig appConfig = appConfigJpaRepository.findByCode(AppConfigCodeEnum.THEME);
         if (appConfig == null) {
             appConfig = new AppConfig();
             appConfig.setCode(AppConfigCodeEnum.THEME);
         }
-        configAlerteMailDto.setDateModification(new Date());
-        ObjectMapper mapper = new ObjectMapper();
-        appConfig.setParametres(mapper.writeValueAsString(configAlerteMailDto));
+        configThemeDto.setDateModification(new Date());
+
+        if (logo != null) {
+            ConfigThemeDto.File64 logo64 = new ConfigThemeDto.File64();
+            logo64.setContentType(logo.getContentType());
+            logo64.setBase64(Base64.getEncoder().encodeToString(logo.getBytes()));
+            configThemeDto.setLogo(logo64);
+        } else {
+            configThemeDto.setLogo(configThemeDtoOrigin.getLogo());
+        }
+
+        if (favicon != null) {
+            ConfigThemeDto.File64 favicon64 = new ConfigThemeDto.File64();
+            favicon64.setContentType(favicon.getContentType());
+            favicon64.setBase64(Base64.getEncoder().encodeToString(favicon.getBytes()));
+            configThemeDto.setFavicon(favicon64);
+        } else {
+            configThemeDto.setFavicon(configThemeDtoOrigin.getFavicon());
+        }
+
+        appConfig.setParametres(mapper.writeValueAsString(configThemeDto));
         appConfigJpaRepository.saveAndFlush(appConfig);
         appConfigService.updateTheme();
+
         return appConfigService.getConfigTheme();
     }
 
