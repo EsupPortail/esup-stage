@@ -1,4 +1,4 @@
-import { LOCALE_ID, NgModule } from '@angular/core';
+import { APP_INITIALIZER, LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
@@ -54,6 +54,10 @@ import { AdminRoleComponent } from './components/admin/admin-role/admin-role.com
 import { ConfirmComponent } from './components/confirm/confirm.component';
 import { ConfigGeneraleComponent } from './components/admin/config-generale/config-generale.component';
 import { MatRadioModule } from "@angular/material/radio";
+import { ContenuComponent } from './components/admin/contenu/contenu.component';
+import { ContenuPipe } from './pipes/contenu.pipe';
+import { ContenuService } from "./services/contenu.service";
+import { CKEditorModule } from "@ckeditor/ckeditor5-angular";
 
 registerLocaleData(localeFr, 'fr');
 
@@ -75,7 +79,9 @@ registerLocaleData(localeFr, 'fr');
     AdminNomenclaturesEditionComponent,
     AdminRoleComponent,
     ConfirmComponent,
-    ConfigGeneraleComponent
+    ConfigGeneraleComponent,
+    ContenuComponent,
+    ContenuPipe
   ],
   imports: [
     BrowserModule,
@@ -109,14 +115,17 @@ registerLocaleData(localeFr, 'fr');
     MatCheckboxModule,
     MatStepperModule,
     MatRadioModule,
+    CKEditorModule,
   ],
   providers: [
     CookieService,
+    ContenuService,
     { provide: LOCALE_ID, useValue: 'fr' },
     { provide: HTTP_INTERCEPTORS, useClass: TechnicalInterceptor, multi: true },
     { provide: MAT_COLOR_FORMATS, useValue: NGX_MAT_COLOR_FORMATS },
     { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' },
-    { provide: MatPaginatorIntl, useClass: PaginatorIntl }
+    { provide: MatPaginatorIntl, useClass: PaginatorIntl },
+    { provide: APP_INITIALIZER, useFactory: (cs: ContenuService) => () => cs.getAllLibelle(), deps: [ContenuService], multi: true },
   ],
   bootstrap: [AppComponent]
 })

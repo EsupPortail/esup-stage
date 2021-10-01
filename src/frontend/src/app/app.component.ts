@@ -6,6 +6,7 @@ import { AppFonction } from "./constants/app-fonction";
 import { Droit } from "./constants/droit";
 import { environment } from "../environments/environment";
 import { ConfigService } from "./services/config.service";
+import { ContenuService } from "./services/contenu.service";
 
 @Component({
   selector: 'app-root',
@@ -47,6 +48,11 @@ export class AppComponent {
           libelle: 'Paramètres généraux',
           path: 'param-global/config-generale',
           icon: 'fa-cogs',
+        },
+        {
+          libelle: 'Contenu',
+          path: 'param-global/contenu',
+          icon: 'fa-font',
         },
       ]
     },

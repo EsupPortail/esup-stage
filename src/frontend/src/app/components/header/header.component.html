@@ -2,8 +2,10 @@
   <button mat-icon-button (click)="slideNavbar()">
     <i class="fa fa-bars"></i>
   </button>
-  <img #logo id="app-logo" src="" alt="logo" />
-  <span class="app-name"><a routerLink="/">Gestion des conventions et des offres de Stage</a></span>
+  <a routerLink="/">
+    <img #logo id="app-logo" src="" alt="logo" />
+    <span class="app-name">{{'TITRE_APPLICATION'|contenu}}</span>
+  </a>
   <span class="spacer"></span>
   <button mat-icon-button (click)="logout()">
     <i class="fa fa-sign-out-alt"></i>

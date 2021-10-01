@@ -1,0 +1,117 @@
+databaseChangeLog:
+- changeSet:
+    id: contenu
+    author: ssound
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+                nullable: false
+                primaryKey: true
+            name: codeContenu
+            type: VARCHAR(100)
+        - column:
+            constraints:
+                nullable: false
+            name: libelle
+            type: TINYINT
+        - column:
+            constraints:
+                nullable: false
+            name: texte
+            type: TEXT
+        - column:
+            constraints:
+                nullable: false
+            name: loginCreation
+            type: VARCHAR(50)
+        - column:
+            constraints:
+                nullable: false
+            name: dateCreation
+            type: datetime
+        - column:
+            name: loginModif
+            type: VARCHAR(50)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateModif
+            type: datetime
+        tableName: Contenu
+- changeSet:
+    id: contenu-init
+    author: ssound
+    changes:
+    - insert:
+        columns:
+        - column:
+            name: codeContenu
+            value: TITRE_APPLICATION
+        - column:
+            name: libelle
+            valueBoolean: true
+        - column:
+            name: texte
+            value: Gestion des conventions et des offres de Stage
+        - column:
+            name: loginCreation
+            value: liquibase
+        - column:
+            name: dateCreation
+            value: now()
+        tableName: Contenu
+    - insert:
+        columns:
+        - column:
+            name: codeContenu
+            value: TEXTE_ACCUEIL
+        - column:
+            name: libelle
+            valueBoolean: false
+        - column:
+            name: texte
+            value: Bienvenue sur votre application de gestion des conventions de Stage.
+        - column:
+            name: loginCreation
+            value: liquibase
+        - column:
+            name: dateCreation
+            value: now()
+        tableName: Contenu
+    - insert:
+        columns:
+        - column:
+            name: codeContenu
+            value: BOUTON_VALIDER
+        - column:
+            name: libelle
+            valueBoolean: true
+        - column:
+            name: texte
+            value: Valider
+        - column:
+            name: loginCreation
+            value: liquibase
+        - column:
+            name: dateCreation
+            value: now()
+        tableName: Contenu
+    - insert:
+        columns:
+        - column:
+            name: codeContenu
+            value: BOUTON_ANNULER
+        - column:
+            name: libelle
+            valueBoolean: true
+        - column:
+            name: texte
+            value: Annuler
+        - column:
+            name: loginCreation
+            value: liquibase
+        - column:
+            name: dateCreation
+            value: now()
+        tableName: Contenu
