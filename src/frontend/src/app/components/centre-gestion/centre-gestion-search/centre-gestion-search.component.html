@@ -1,0 +1,36 @@
+<app-table [service]="centreGestionService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters"
+           matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'" (matSortChange)="appTable ? appTable.sorting($event) : null">
+
+  <ng-container matColumnDef="personnel">
+    <th mat-header-cell *matHeaderCellDef><mat-icon fontSet="fa" [fontIcon]="'fa-user'" color="primary"></mat-icon></th>
+    <td mat-cell *matCellDef="let row">
+      <mat-icon fontSet="fa" [fontIcon]="isPersonnel(row) ? 'fa-check' : 'fa-times'" [color]="isPersonnel(row) ? 'primary' : 'warn'"></mat-icon>
+    </td>
+  </ng-container>
+  <ng-container matColumnDef="id">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>N°</th>
+    <td mat-cell *matCellDef="let row">{{row.id}}</td>
+  </ng-container>
+  <ng-container matColumnDef="nomCentre">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Nom Centre</th>
+    <td mat-cell *matCellDef="let row">{{row.nomCentre}}</td>
+  </ng-container>
+  <ng-container matColumnDef="niveauCentre">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+    <td mat-cell *matCellDef="let row">{{row.niveauCentre.libelle}}</td>
+  </ng-container>
+  <ng-container matColumnDef="validationPedagogique">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Validation pédagogique</th>
+    <td mat-cell *matCellDef="let row">{{row.validationPedagogique ? 'Oui' : 'Non'}}</td>
+  </ng-container>
+  <ng-container matColumnDef="codeConfidentialite">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Confidentialité</th>
+    <td mat-cell *matCellDef="let row">{{row.codeConfidentialite.libelle}}</td>
+  </ng-container>
+  <ng-container matColumnDef="action">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
+    <td mat-cell *matCellDef="let row">
+      <button mat-icon-button matTooltip="Supprimer (todo)" color="warn"><i class="fa fa-trash"></i></button>
+    </td>
+  </ng-container>
+</app-table>

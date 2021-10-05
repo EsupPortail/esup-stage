@@ -1,5 +1,7 @@
 package fr.dauphine.estage.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -105,6 +107,7 @@ public class CentreGestion extends ObjetMetier {
     private String codePostal;
 
     @OneToMany(mappedBy = "centreGestion")
+    @JsonManagedReference
     private List<PersonnelCentreGestion> personnels =  new ArrayList<>();
 
     public int getId() {

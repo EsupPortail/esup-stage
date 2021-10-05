@@ -28,6 +28,14 @@ export class AppComponent {
       }
     },
     {
+      libelle: 'Centre de Gestion',
+      path: 'centre-gestion',
+      icon: 'fa-cogs',
+      canView: () => {
+        return this.authService.checkRights({fonction: AppFonction.PARAM_CENTRE, droits: [Droit.LECTURE]})
+      }
+    },
+    {
       libelle: 'Paramétrage de l\'application',
       path: 'param-global',
       canView: () => {

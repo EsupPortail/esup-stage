@@ -1,5 +1,7 @@
 package fr.dauphine.estage.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -39,6 +41,7 @@ public class PersonnelCentreGestion extends ObjetMetier {
 
     @ManyToOne
     @JoinColumn(name = "idCentreGestion", nullable = false)
+    @JsonBackReference
     private CentreGestion centreGestion;
 
     @Column(nullable = false, length = 50)

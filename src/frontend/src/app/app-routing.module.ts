@@ -12,6 +12,7 @@ import { Droit } from "./constants/droit";
 import { AdminRoleComponent } from "./components/admin/admin-role/admin-role.component";
 import { ConfigGeneraleComponent } from "./components/admin/config-generale/config-generale.component";
 import { ContenuComponent } from "./components/admin/contenu/contenu.component";
+import { CentreGestionSearchComponent } from "./components/centre-gestion/centre-gestion-search/centre-gestion-search.component";
 
 const routes: Routes = [
   {path: '', component: HomeComponent, canActivate: [AuthGuard], data: {role: {}, title: 'Accueil'}},
@@ -63,6 +64,15 @@ const routes: Routes = [
       title: 'Création d\'une conventions'
     }
   },
+  {
+    path: 'centre-gestion',
+    component: CentreGestionSearchComponent,
+    canActivate: [AuthGuard],
+    data: {
+      role: {fonction: AppFonction.PARAM_CENTRE, droits: [Droit.LECTURE]},
+      title: 'Liste des centres de gestion'
+    }
+  }
 ];
 
 @NgModule({
