@@ -1,7 +1,166 @@
 <mat-card>
   <mat-card-content>
+    <div class="row">
+      <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+        <mat-label>Choisissez votre type de recherche</mat-label>
+        <mat-select [(ngModel)]="searchType" (ngModelChange)="reset()">
+          <mat-option [value]="1">Par raison sociale</mat-option>
+          <mat-option [value]="2">Par numéro SIRET</mat-option>
+          <mat-option [value]="3">Par activité</mat-option>
+          <mat-option [value]="4">Par tel/fax</mat-option>
+          <mat-option [value]="5">Par adresse</mat-option>
+          <mat-option [value]="6">Par service</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <ng-container [ngSwitch]="searchType">
+      <ng-container *ngSwitchCase="1">
+        <form [formGroup]="formRaisonSociale" novalidate>
+          <div class="row">
+            <mat-form-field class="col-sm-6 mb-2" appearance="fill">
+              <mat-label>Raison sociale de l'établissement</mat-label>
+              <input matInput formControlName="raisonSociale" />
+              <mat-hint>(si le champ est laissé vide, la recherche ne sera pas filtrée)</mat-hint>
+            </mat-form-field>
+            <mat-form-field class="col-sm-6 mb-2" appearance="fill">
+              <mat-label>Pays (facultatif)</mat-label>
+              <mat-select formControlName="pays">
+                <mat-option *ngFor="let country of countries" [value]="country">{{country.libelle}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </form>
+      </ng-container>
+      <ng-container *ngSwitchCase="2">
+        <form [formGroup]="formSiret" novalidate>
+          <ng-container [ngTemplateOutlet]="atLeatOne" *ngIf="errorAtLeastOne"></ng-container>
+          <div class="row">
+            <mat-form-field class="col-sm-6 mb-2" appearance="fill">
+              <mat-label>Saisissez le n°SIRET de l'établissement recherché</mat-label>
+              <input matInput formControlName="siret" />
+            </mat-form-field>
+            <mat-form-field class="col-sm-6 mb-2" appearance="fill">
+              <mat-label>Saisissez le n°SIREN de l'établissement recherché</mat-label>
+              <input matInput formControlName="siren" />
+            </mat-form-field>
+          </div>
+        </form>
+      </ng-container>
+      <ng-container *ngSwitchCase="3">
+        <form [formGroup]="formActivite" novalidate>
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="row">
+                <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                  <mat-label>Type d'établissement</mat-label>
+                  <mat-select formControlName="typeEtablissement">
+                    <mat-option *ngFor="let typeStructure of typeStructures" [value]="typeStructure">{{typeStructure.libelle}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                  <mat-label>Secteur d'activité</mat-label>
+                  <mat-select formControlName="secteur">
+                    <mat-option *ngFor="let secteurActivite of secteurActivites" [value]="secteurActivite" [title]="secteurActivite.libelle">{{secteurActivite.libelle}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="row">
+                <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                  <mat-label>Département (facultatif)</mat-label>
+                  <input matInput formControlName="departement" />
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+          </div>
+        </form>
+      </ng-container>
+      <ng-container *ngSwitchCase="4">
+        <form [formGroup]="formTel" novalidate>
+          <ng-container [ngTemplateOutlet]="atLeatOne" *ngIf="errorAtLeastOne"></ng-container>
+          <div class="row">
+            <mat-form-field class="col-sm-6 mb-2" appearance="fill">
+              <mat-label>Téléphone</mat-label>
+              <input matInput formControlName="tel" />
+            </mat-form-field>
+            <mat-form-field class="col-sm-6 mb-2" appearance="fill">
+              <mat-label>Fax</mat-label>
+              <input matInput formControlName="fax" />
+            </mat-form-field>
+          </div>
+        </form>
+      </ng-container>
+      <ng-container *ngSwitchCase="5">
+        <form [formGroup]="formAdresse" novalidate>
+          <ng-container [ngTemplateOutlet]="atLeatOne" *ngIf="errorAtLeastOne"></ng-container>
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="row">
+                <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                  <mat-label>Voie</mat-label>
+                  <input matInput formControlName="voie" />
+                </mat-form-field>
+                <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                  <mat-label>Batiment/Résidence/Z.I.</mat-label>
+                  <input matInput formControlName="batiment" />
+                </mat-form-field>
+                <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                  <mat-label>Ville</mat-label>
+                  <input matInput formControlName="ville" />
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="row">
+                <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                  <mat-label>Dép./Code postal</mat-label>
+                  <input matInput formControlName="cp" />
+                </mat-form-field>
+                <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                  <mat-label>Pays</mat-label>
+                  <mat-select formControlName="pays">
+                    <mat-option *ngFor="let country of countries" [value]="country">{{country.libelle}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+        </form>
+      </ng-container>
+      <ng-container *ngSwitchCase="6">
+        <form [formGroup]="formService">
+          <div class="row">
+            <mat-form-field class="col-sm-6 mb-2" appearance="fill">
+              <mat-label>Nom du service</mat-label>
+              <input matInput formControlName="service" />
+            </mat-form-field>
+            <mat-form-field class="col-sm-6 mb-2" appearance="fill">
+              <mat-label>Département (facultatif)</mat-label>
+              <input matInput formControlName="departement" />
+            </mat-form-field>
+          </div>
+        </form>
+      </ng-container>
+    </ng-container>
+    <div class="mt-2 text-center">
+      <button mat-flat-button color="primary" (click)="search()">Rechercher</button>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<mat-card>
+  <mat-card-content>
     <div class="mt-2">
       <button mat-flat-button color="primary" (click)="validate()">{{'BOUTON_VALIDER'|contenu}}</button>
     </div>
   </mat-card-content>
 </mat-card>
+
+<ng-template #atLeatOne>
+  <div class="alert alert-danger">
+    Veuillez renseigner au moins l'un des critères
+  </div>
+</ng-template>

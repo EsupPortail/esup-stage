@@ -83,7 +83,15 @@ form, .mat-cell {
   min-height: 200px;
 }
 
-.convention .mat-tab-label {
-  min-width: unset;
-  padding: 0 12px;
+.convention {
+  .mat-tab-label {
+    min-width: unset;
+    padding: 0 12px;
+  }
+  .mat-card-header {
+    font-weight: bold;
+  }
+  .mat-card-header-text {
+    margin: 0;
+  }
 }
