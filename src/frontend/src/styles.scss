@@ -82,3 +82,8 @@ form, .mat-cell {
 .ck-content {
   min-height: 200px;
 }
+
+.convention .mat-tab-label {
+  min-width: unset;
+  padding: 0 12px;
+}

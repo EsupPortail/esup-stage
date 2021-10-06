@@ -36,6 +36,14 @@ export class AppComponent {
       }
     },
     {
+      libelle: 'Créer une convention',
+      path: 'conventions/create',
+      icon: 'fa-file-contract',
+      canView: () => {
+        return this.authService.checkRights({fonction: AppFonction.CONVENTION, droits: [Droit.CREATION]})
+      }
+    },
+    {
       libelle: 'Paramétrage de l\'application',
       path: 'param-global',
       canView: () => {
