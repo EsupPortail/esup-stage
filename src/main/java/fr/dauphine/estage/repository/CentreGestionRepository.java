@@ -11,6 +11,6 @@ public class CentreGestionRepository extends PaginationRepository<CentreGestion>
 
     public CentreGestionRepository(EntityManager em) {
         super(em, CentreGestion.class, "cg");
-        this.predicateWhitelist = Arrays.asList("id", "nomCentre");
+        this.predicateWhitelist = Arrays.asList("id", "nomCentre", "niveauCentre.libelle");
     }
 }

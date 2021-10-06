@@ -10,7 +10,7 @@ import { AuthService } from "../../../services/auth.service";
 })
 export class CentreGestionSearchComponent implements OnInit {
 
-  columns = ['personnel', 'id', 'nomCentre', 'niveauCentre', 'validationPedagogique', 'codeConfidentialite', 'action']
+  columns = ['personnels', 'id', 'nomCentre', 'niveauCentre.libelle', 'validationPedagogique', 'codeConfidentialite', 'action']
   sortColumn = 'id';
   filters = [
     { id: 'nomCentre', libelle: 'Nom du centre de gestion' }
