@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ConventionSearchComponent } from './convention-search.component';
+import { ConventionComponent } from './convention.component';
 
-describe('ConventionSearchComponent', () => {
-  let component: ConventionSearchComponent;
-  let fixture: ComponentFixture<ConventionSearchComponent>;
+describe('ConventionComponent', () => {
+  let component: ConventionComponent;
+  let fixture: ComponentFixture<ConventionComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ConventionSearchComponent ]
+      declarations: [ ConventionComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ConventionSearchComponent);
+    fixture = TestBed.createComponent(ConventionComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

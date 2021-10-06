@@ -4,8 +4,8 @@ import { AuthGuard } from "./guard/auth.guard";
 import { HomeComponent } from "./components/home/home.component";
 import { Role } from "./constants/role";
 import { AdminUserComponent } from "./components/admin/admin-user/admin-user.component";
-import { ConventionSearchComponent } from "./components/convention/convention-search/convention-search.component";
-import { ConventionCreateComponent } from "./components/convention/convention-create/convention-create.component";
+import { DashboardComponent } from "./components/dashboard/dashboard.component";
+import { ConventionComponent } from "./components/convention/convention.component";
 import { AdminNomenclaturesComponent } from "./components/admin/admin-nomenclatures/admin-nomenclatures.component";
 import { AppFonction } from "./constants/app-fonction";
 import { Droit } from "./constants/droit";
@@ -48,7 +48,7 @@ const routes: Routes = [
   },
   {
     path: 'tableau-de-bord',
-    component: ConventionSearchComponent,
+    component: DashboardComponent,
     canActivate: [AuthGuard],
     data: {
       role: {fonction: AppFonction.CONVENTION, droits: [Droit.LECTURE]},
@@ -57,7 +57,7 @@ const routes: Routes = [
   },
   {
     path: 'conventions/create',
-    component: ConventionCreateComponent,
+    component: ConventionComponent,
     canActivate: [AuthGuard],
     data: {
       role: {fonction: AppFonction.CONVENTION, droits: [Droit.CREATION]},

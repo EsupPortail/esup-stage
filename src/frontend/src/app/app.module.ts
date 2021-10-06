@@ -45,8 +45,8 @@ import { MatCardModule } from "@angular/material/card";
 import { RoleLibellePipe } from './pipes/role-libelle.pipe';
 import { MatSelectModule } from "@angular/material/select";
 import { MatCheckboxModule } from "@angular/material/checkbox";
-import { ConventionSearchComponent } from './components/convention/convention-search/convention-search.component';
-import { ConventionCreateComponent } from './components/convention/convention-create/convention-create.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { ConventionComponent } from './components/convention/convention.component';
 import { MatStepperModule } from "@angular/material/stepper";
 import { AdminNomenclaturesComponent } from './components/admin/admin-nomenclatures/admin-nomenclatures.component';
 import { AdminNomenclaturesEditionComponent } from './components/admin/admin-nomenclatures/admin-nomenclatures-edition/admin-nomenclatures-edition.component';
@@ -59,6 +59,7 @@ import { ContenuPipe } from './pipes/contenu.pipe';
 import { ContenuService } from "./services/contenu.service";
 import { CKEditorModule } from "@ckeditor/ckeditor5-angular";
 import { CentreGestionSearchComponent } from './components/centre-gestion/centre-gestion-search/centre-gestion-search.component';
+import { EtabAccueilComponent } from './components/convention/etab-accueil/etab-accueil.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -74,8 +75,8 @@ registerLocaleData(localeFr, 'fr');
     TableComponent,
     BooleanPipe,
     RoleLibellePipe,
-    ConventionSearchComponent,
-    ConventionCreateComponent,
+    DashboardComponent,
+    ConventionComponent,
     AdminNomenclaturesComponent,
     AdminNomenclaturesEditionComponent,
     AdminRoleComponent,
@@ -83,7 +84,8 @@ registerLocaleData(localeFr, 'fr');
     ConfigGeneraleComponent,
     ContenuComponent,
     ContenuPipe,
-    CentreGestionSearchComponent
+    CentreGestionSearchComponent,
+    EtabAccueilComponent,
   ],
   imports: [
     BrowserModule,
