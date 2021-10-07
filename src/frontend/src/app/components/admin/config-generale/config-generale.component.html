@@ -5,6 +5,12 @@
         <form [formGroup]="formGenerale" novalidate (submit)="saveGenerale()">
           <div class="row">
             <mat-form-field class="col-md-3" appearance="fill">
+              <mat-label>Code université</mat-label>
+              <input matInput type="text" formControlName="codeUniversite" />
+            </mat-form-field>
+          </div>
+          <div class="row">
+            <mat-form-field class="col-md-3" appearance="fill">
               <mat-label>Année bascule / Jour</mat-label>
               <input matInput type="number" formControlName="anneeBasculeJour" />
             </mat-form-field>

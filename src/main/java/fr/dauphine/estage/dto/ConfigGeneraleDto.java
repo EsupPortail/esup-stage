@@ -3,6 +3,7 @@ package fr.dauphine.estage.dto;
 import fr.dauphine.estage.enums.TypeCentreEnum;
 
 public class ConfigGeneraleDto {
+    private String codeUniversite;
     private int anneeBasculeJour = 13;
     private int anneeBasculeMois = 12;
     private boolean autoriserConventionsOrphelines = false;
@@ -10,7 +11,15 @@ public class ConfigGeneraleDto {
     private boolean autoriserCentresBloquerImpressionConvention = false;
     private boolean autoriserEtudiantAModifierEntreprise = false;
     private boolean autoriserValidationAutoOrgaAccCreaEtu = false;
-    private String ldapFiltreEnseignant;
+    private String ldapFiltreEnseignant = "(|(eduPersonAffiliation=teacher)(eduPersonAffiliation=faculty)";
+
+    public String getCodeUniversite() {
+        return codeUniversite;
+    }
+
+    public void setCodeUniversite(String codeUniversite) {
+        this.codeUniversite = codeUniversite;
+    }
 
     public int getAnneeBasculeJour() {
         return anneeBasculeJour;

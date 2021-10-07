@@ -44,6 +44,7 @@ export class ConfigGeneraleComponent implements OnInit {
 
   constructor(private configService: ConfigService, private fb: FormBuilder, private authService: AuthService, private messageService: MessageService) {
     this.formGenerale = this.fb.group({
+      codeUniversite: [null, [Validators.required]],
       anneeBasculeJour: [null, [Validators.required, Validators.min(1), Validators.max(31)]],
       anneeBasculeMois: [null, [Validators.required, Validators.min(1), Validators.max(12)]],
       autoriserConventionsOrphelines: [null, [Validators.required]],
