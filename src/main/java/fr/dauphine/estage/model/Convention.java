@@ -1,6 +1,5 @@
 package fr.dauphine.estage.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonView;
 import fr.dauphine.estage.dto.view.Views;
 
@@ -301,6 +300,9 @@ public class Convention extends ObjetMetier {
     @ManyToOne
     @JoinColumn(name = "idDevise")
     private Devise devise;
+
+    @Column(nullable = false)
+    private boolean validationCreation = false;
 
     public int getId() {
         return id;
@@ -1004,5 +1006,13 @@ public class Convention extends ObjetMetier {
 
     public void setDevise(Devise devise) {
         this.devise = devise;
+    }
+
+    public boolean isValidationCreation() {
+        return validationCreation;
+    }
+
+    public void setValidationCreation(boolean validationCreation) {
+        this.validationCreation = validationCreation;
     }
 }

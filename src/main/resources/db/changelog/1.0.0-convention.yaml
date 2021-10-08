@@ -13,3 +13,22 @@ databaseChangeLog:
                 references: Devise(idDevise)
             name: idDevise
             type: INT
+- changeSet:
+    id: convention-validationCreation
+    author: ssound
+    changes:
+    - addColumn:
+        tableName: Convention
+        columns:
+        - column:
+            defaultValueBoolean: false
+            constraints:
+                nullable: false
+            name: validationCreation
+            type: BIT
+    - update:
+        columns:
+        - column:
+            name: validationCreation
+            valueBoolean: true
+        tableName: Convention
