@@ -1,8 +1,8 @@
-<mat-card>
+<mat-card [hidden]="!isView('list')">
   <mat-card-content>
     <app-table [service]="structureService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters"
                matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'"
-               (matSortChange)="appTable ? appTable.sorting($event) : null">
+               (matSortChange)="appTable ? appTable.sorting($event) : null" [actionButton]="createButton">
       <ng-container matColumnDef="raisonSociale">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Raison sociale</th>
         <td mat-cell *matCellDef="let row">{{row.raisonSociale}}</td>
@@ -33,4 +33,34 @@
       </ng-container>
     </app-table>
   </mat-card-content>
+</mat-card>
+
+<mat-card [hidden]="!isView('create')">
+  <form>
+    <mat-accordion [multi]="true">
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Général</mat-panel-title>
+        </mat-expansion-panel-header>
+      </mat-expansion-panel>
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Activité</mat-panel-title>
+        </mat-expansion-panel-header>
+      </mat-expansion-panel>
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Coordonnées</mat-panel-title>
+        </mat-expansion-panel-header>
+      </mat-expansion-panel>
+    </mat-accordion>
+    <div class="row mt-3">
+      <div class="col-sm-12 col-md-6">
+        <button mat-button mat-flat-button (click)="changeView('list')">Retour à la liste</button>
+      </div>
+      <div class="col-sm-12 col-md-6 text-right">
+        <button mat-button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
+      </div>
+    </div>
+  </form>
 </mat-card>

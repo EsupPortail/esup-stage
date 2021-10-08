@@ -60,6 +60,7 @@ import { ContenuService } from "./services/contenu.service";
 import { CKEditorModule } from "@ckeditor/ckeditor5-angular";
 import { CentreGestionSearchComponent } from './components/centre-gestion/centre-gestion-search/centre-gestion-search.component';
 import { EtabAccueilComponent } from './components/convention/etab-accueil/etab-accueil.component';
+import { MatExpansionModule } from "@angular/material/expansion";
 
 registerLocaleData(localeFr, 'fr');
 
@@ -120,6 +121,7 @@ registerLocaleData(localeFr, 'fr');
     MatStepperModule,
     MatRadioModule,
     CKEditorModule,
+    MatExpansionModule,
   ],
   providers: [
     CookieService,

@@ -27,6 +27,7 @@ export class TableComponent implements OnInit, AfterContentInit {
   @Input() sortOrder: SortDirection = 'asc';
   @Input() filters: any[] = [];
   @Input() pagination: boolean = true;
+  @Input() actionButton: any;
 
   @Output() onUpdated = new EventEmitter<any>();
 

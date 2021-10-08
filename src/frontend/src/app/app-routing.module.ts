@@ -61,7 +61,7 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     data: {
       role: {fonction: AppFonction.CONVENTION, droits: [Droit.CREATION]},
-      title: 'Création d\'une conventions'
+      title: 'Création d\'une convention'
     }
   },
   {

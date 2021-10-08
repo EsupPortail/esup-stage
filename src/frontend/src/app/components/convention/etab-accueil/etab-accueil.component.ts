@@ -22,9 +22,12 @@ export class EtabAccueilComponent implements OnInit {
   formTabIndex = 1;
   data: any;
 
-  countries: any[] = [];
-  typeStructures: any[] = [];
-  secteurActivites: any[] = [];
+  createButton = {
+    libelle: 'Créer un établissement d\'accueil',
+    action: () => this.changeView('create'),
+  }
+
+  view = 'list';
 
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
 
@@ -42,36 +45,44 @@ export class EtabAccueilComponent implements OnInit {
     this.filters = [
       { id: 'raisonSociale', libelle: 'Raison sociale' },
       { id: 'numeroSiret', libelle: 'Numéro SIRET' },
-      { id: 'nafN1.id', libelle: 'Activité', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', specific: true },
+      { id: 'nafN1.code', libelle: 'Activité', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'code', specific: true },
       { id: 'pays.id', libelle: 'Pays', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id' },
       { id: 'commune', libelle: 'Commune' },
       { id: 'typeStructure.id', libelle: 'Type d\'organisme', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id' },
       { id: 'statutJuridique.id', libelle: 'Forme juridique', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id' },
     ];
-    this.paysService.getPaginated(1, 0, 'lib', 'asc', '{}').subscribe((response: any) => {
+    this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServPays: {value: 'O', type: 'text'}})).subscribe((response: any) => {
       const filter = this.filters.find((f: any) => f.id === 'pays.id');
       if (filter) {
         filter.options = response.data;
       }
     });
-    this.typeStructureService.getPaginated(1, 0, 'libelle', 'asc', '{}').subscribe((response: any) => {
+    this.typeStructureService.getPaginated(1, 0, 'libelle', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
       const filter = this.filters.find((f: any) => f.id === 'typeStructure.id');
       if (filter) {
         filter.options = response.data;
       }
     });
-    this.secteurActiviteService.getPaginated(1, 0, 'libelle', 'asc', '{}').subscribe((response: any) => {
-      const filter = this.filters.find((f: any) => f.id === 'nafN1.id');
+    this.secteurActiviteService.getPaginated(1, 0, 'libelle', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
+      const filter = this.filters.find((f: any) => f.id === 'nafN1.code');
       if (filter) {
         filter.options = response.data;
       }
     });
-    this.statutJuridiqueService.getPaginated(1, 0, 'libelle', 'asc', '{}').subscribe((response: any) => {
+    this.statutJuridiqueService.getPaginated(1, 0, 'libelle', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
       const filter = this.filters.find((f: any) => f.id === 'statutJuridique.id');
       if (filter) {
         filter.options = response.data;
       }
     });
+  }
+
+  isView(view: string): boolean {
+    return this.view === view;
+  }
+
+  changeView(view: string): void {
+    this.view = view;
   }
 
 }

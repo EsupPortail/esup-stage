@@ -1,4 +1,4 @@
-<mat-card *ngIf="filters.length > 0">
+<mat-card *ngIf="filters.length > 0" class="table-filters">
   <mat-card-content>
     <form>
       <div class="row">
@@ -23,8 +23,13 @@
           </ng-container>
         </mat-form-field>
       </div>
-      <div class="text-right">
-        <button mat-button (click)="reset()">Supprimer les filters</button>
+      <div class="row">
+        <div class="col-sm-12 col-md-6" *ngIf="actionButton">
+          <button mat-button mat-flat-button color="primary" (click)="actionButton.action()">{{actionButton.libelle}}</button>
+        </div>
+        <div class="col-sm-12 col-md-6 text-right">
+          <button mat-button (click)="reset()">Supprimer les filters</button>
+        </div>
       </div>
     </form>
   </mat-card-content>
