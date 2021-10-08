@@ -30,10 +30,24 @@ export class AppComponent {
     {
       libelle: 'Centre de Gestion',
       path: 'centre-gestion',
-      icon: 'fa-cogs',
       canView: () => {
         return this.authService.checkRights({fonction: AppFonction.PARAM_CENTRE, droits: [Droit.LECTURE]})
-      }
+      },
+      children: [
+        {
+          libelle: 'Liste des centres de gestion',
+          path: 'centre-gestion/search',
+          icon: 'fa-cogs',
+        },
+        {
+          libelle: 'Ajouter un centre de gestion',
+          path: 'centre-gestion/create',
+          icon: 'fa-file-contract',
+          canView: () => {
+            return this.authService.checkRights({fonction: AppFonction.PARAM_CENTRE, droits: [Droit.CREATION]})
+          }
+        },
+      ]
     },
     {
       libelle: 'Créer une convention',

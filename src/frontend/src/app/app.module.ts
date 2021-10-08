@@ -58,9 +58,10 @@ import { ContenuComponent } from './components/admin/contenu/contenu.component';
 import { ContenuPipe } from './pipes/contenu.pipe';
 import { ContenuService } from "./services/contenu.service";
 import { CKEditorModule } from "@ckeditor/ckeditor5-angular";
-import { CentreGestionSearchComponent } from './components/centre-gestion/centre-gestion-search/centre-gestion-search.component';
+import { CentreGestionSearchComponent } from './components/centre-gestion-search/centre-gestion-search.component';
 import { EtabAccueilComponent } from './components/convention/etab-accueil/etab-accueil.component';
 import { MatExpansionModule } from "@angular/material/expansion";
+import { CentreGestionComponent } from './components/centre-gestion/centre-gestion.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -87,6 +88,7 @@ registerLocaleData(localeFr, 'fr');
     ContenuPipe,
     CentreGestionSearchComponent,
     EtabAccueilComponent,
+    CentreGestionComponent,
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,32 @@
+<mat-tab-group class="centre-gestion">
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <span class="progress-status" [ngClass]="{editing: statuts['statutCoordCentre'] === 1, done: statuts['statutCoordCentre'] === 2}"></span>
+      Coordonnées du centre
+    </ng-template>
+  </mat-tab>
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <span class="progress-status" [ngClass]="{editing: statuts['statutParamCentre'] === 1, done: statuts['statutParamCentre'] === 2}"></span>
+      Paramètres du centre
+    </ng-template>
+  </mat-tab>
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <span class="progress-status" [ngClass]="{editing: statuts['statutPersoCentre'] === 1, done: statuts['statutPersoCentre'] === 2}"></span>
+      Personnalisation du centre
+    </ng-template>
+  </mat-tab>
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <span class="progress-status" [ngClass]="{editing: statuts['statutRattachGest'] === 1, done: statuts['statutRattachGest'] === 2}"></span>
+      Rattacher un gestionnaire
+    </ng-template>
+  </mat-tab>
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <span class="progress-status" [ngClass]="{editing: statuts['statutAlerteGest'] === 1, done: statuts['statutAlerteGest'] === 2}"></span>
+      Gestion des alertes mail du gestionnaire
+    </ng-template>
+  </mat-tab>
+</mat-tab-group>
