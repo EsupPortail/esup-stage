@@ -1,16 +1,21 @@
 package fr.dauphine.estage.model;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import fr.dauphine.estage.dto.view.Views;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "StatutJuridique")
 public class StatutJuridique {
 
+    @JsonView(Views.List.class)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idStatutJuridique", nullable = false)
     private int id;
 
+    @JsonView(Views.List.class)
     @Column(name = "libelleStatutJuridique", nullable = false, length = 100)
     private String libelle;
 

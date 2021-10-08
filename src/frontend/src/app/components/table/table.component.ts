@@ -11,6 +11,8 @@ import { Sort, SortDirection } from "@angular/material/sort";
 import { PageEvent } from "@angular/material/paginator";
 import { MatColumnDef, MatTable } from "@angular/material/table";
 import { PaginatedService } from "../../services/paginated.service";
+import { Subject } from "rxjs";
+import { debounceTime } from "rxjs/operators";
 
 @Component({
   selector: 'app-table',
@@ -36,8 +38,27 @@ export class TableComponent implements OnInit, AfterContentInit {
   page: number = 1;
   pageSize: number = 50;
   filterValues: any = [];
+  filterChanged = new Subject();
 
-  constructor() { }
+  constructor() {
+    this.filterChanged.pipe(debounceTime(500)).subscribe(() => {
+      let f: any = {};
+      for (let key of Object.keys(this.filterValues)) {
+        if (this.filterValues[key].value !== undefined && this.filterValues[key].value !== '' && this.filterValues[key].value.length > 0) {
+          f[key] = this.filterValues[key];
+          if (f[key].specific === undefined) {
+            delete f[key].specific;
+          }
+        }
+      }
+
+      this.service.getPaginated(this.page, this.pageSize, this.sortColumn, this.sortOrder, JSON.stringify(f)).subscribe((results: any) => {
+        this.total = results.total;
+        this.data = results.data;
+        this.onUpdated.emit(this.data);
+      });
+      })
+  }
 
   ngOnInit(): void {
     if (!this.pagination) {
@@ -58,21 +79,7 @@ export class TableComponent implements OnInit, AfterContentInit {
   }
 
   update(): void {
-    let f: any = {};
-    for (let key of Object.keys(this.filterValues)) {
-      if (this.filterValues[key].value !== undefined) {
-        f[key] = this.filterValues[key];
-        if (f[key].specific === undefined) {
-          delete f[key].specific;
-        }
-      }
-    }
-
-    this.service.getPaginated(this.page, this.pageSize, this.sortColumn, this.sortOrder, JSON.stringify(f)).subscribe((results: any) => {
-      this.total = results.total;
-      this.data = results.data;
-      this.onUpdated.emit(this.data);
-    });
+    this.filterChanged.next();
   }
 
   changePaginator(event: PageEvent): void {

@@ -1,11 +1,15 @@
 package fr.dauphine.estage.model;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import fr.dauphine.estage.dto.view.Views;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "Pays")
 public class Pays {
 
+    @JsonView(Views.List.class)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idPays", nullable = false)
@@ -27,9 +31,11 @@ public class Pays {
     @Column(name = "CRPAY")
     private Integer crpay;
 
+    @JsonView(Views.List.class)
     @Column(nullable = false, length = 70)
     private String lib;
 
+    @JsonView(Views.List.class)
     @Column(name = "ISO2", length = 2)
     private String iso2;
 

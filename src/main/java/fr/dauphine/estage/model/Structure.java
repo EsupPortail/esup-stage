@@ -26,8 +26,10 @@ public class Structure extends ObjetMetier {
     @Column(length = 14)
     private String numeroSiret;
 
-    @Column(name = "codeNAF_N5", length = 6)
-    private String codeNafN5;
+    @JsonView(Views.List.class)
+    @ManyToOne
+    @JoinColumn(name = "codeNAF_N5")
+    private NafN5 nafN5;
 
     @JsonView(Views.List.class)
     @Column(nullable = false, length = 150)
@@ -79,10 +81,12 @@ public class Structure extends ObjetMetier {
     @JoinColumn(name = "idEffectif", nullable = false)
     private Effectif effectif;
 
+    @JsonView(Views.List.class)
     @ManyToOne
     @JoinColumn(name = "idStatutJuridique")
     private StatutJuridique statutJuridique;
 
+    @JsonView(Views.List.class)
     @ManyToOne
     @JoinColumn(name = "idTypeStructure", nullable = false)
     private TypeStructure typeStructure;
@@ -102,6 +106,7 @@ public class Structure extends ObjetMetier {
     @Column(nullable = false, length = 200)
     private String voie;
 
+    @JsonView(Views.List.class)
     @Column(length = 200)
     private String commune;
 
@@ -111,6 +116,7 @@ public class Structure extends ObjetMetier {
     @Column(length = 10)
     private String codeCommune;
 
+    @JsonView(Views.List.class)
     @ManyToOne
     @JoinColumn(name = "idPays", nullable = false)
     private Pays pays;
@@ -147,12 +153,12 @@ public class Structure extends ObjetMetier {
         this.numeroSiret = numeroSiret;
     }
 
-    public String getCodeNafN5() {
-        return codeNafN5;
+    public NafN5 getNafN5() {
+        return nafN5;
     }
 
-    public void setCodeNafN5(String codeNafN5) {
-        this.codeNafN5 = codeNafN5;
+    public void setNafN5(NafN5 nafN5) {
+        this.nafN5 = nafN5;
     }
 
     public String getRaisonSociale() {

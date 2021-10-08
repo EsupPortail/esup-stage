@@ -6,26 +6,25 @@
           <mat-label>{{filter.libelle}}</mat-label>
           <ng-container [ngSwitch]="filter.type">
             <ng-container *ngSwitchCase="'boolean'">
-              <mat-select [name]="filter.id" [(ngModel)]="filterValues[filter.id].value">
+              <mat-select [name]="filter.id" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()">
                 <mat-option></mat-option>
                 <mat-option [value]="true">Oui</mat-option>
                 <mat-option [value]="false">Non</mat-option>
               </mat-select>
             </ng-container>
             <ng-container *ngSwitchCase="'list'">
-              <mat-select [name]="filter.id" multiple [(ngModel)]="filterValues[filter.id].value">
+              <mat-select [name]="filter.id" multiple [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()">
                 <mat-option *ngFor="let option of filter.options" [value]="option[filter.keyId]">{{option[filter.keyLibelle]}}</mat-option>
               </mat-select>
             </ng-container>
             <ng-container *ngSwitchDefault>
-              <input matInput [name]="filter.id" [(ngModel)]="filterValues[filter.id].value" />
+              <input matInput [name]="filter.id" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()" />
             </ng-container>
           </ng-container>
         </mat-form-field>
       </div>
       <div class="text-right">
         <button mat-button (click)="reset()">Supprimer les filters</button>
-        <button mat-button color="primary" (click)="update()">Rechercher</button>
       </div>
     </form>
   </mat-card-content>
