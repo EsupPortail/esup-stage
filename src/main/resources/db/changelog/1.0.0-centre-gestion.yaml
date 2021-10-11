@@ -18,3 +18,35 @@ databaseChangeLog:
             name: validationCreation
             valueBoolean: true
         tableName: CentreGestion
+- changeSet:
+    id: centre-gestion-nullable
+    author: jwang
+    changes:
+    - dropNotNullConstraint:
+        columnName: presenceTuteurEns
+        columnDataType: BIT
+        tableName: CentreGestion
+    - dropNotNullConstraint:
+        columnName: presenceTuteurPro
+        columnDataType: BIT
+        tableName: CentreGestion
+    - dropNotNullConstraint:
+        columnName: saisieTuteurProParEtudiant
+        columnDataType: BIT
+        tableName: CentreGestion
+    - dropNotNullConstraint:
+        columnName: depotAnonyme
+        columnDataType: BIT
+        tableName: CentreGestion
+    - dropNotNullConstraint:
+        columnName: codeConfidentialite
+        columnDataType: VARCHAR(1)
+        tableName: CentreGestion
+    - dropNotNullConstraint:
+        columnName: autoriserImpressionConvention
+        columnDataType: BIT
+        tableName: CentreGestion
+    - dropNotNullConstraint:
+        columnName: autorisationEtudiantCreationConvention
+        columnDataType: BIT
+        tableName: CentreGestion
