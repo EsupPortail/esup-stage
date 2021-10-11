@@ -1,0 +1,20 @@
+databaseChangeLog:
+- changeSet:
+    id: centre-gestion-validationCreation
+    author: jwang
+    changes:
+    - addColumn:
+        tableName: CentreGestion
+        columns:
+        - column:
+            defaultValueBoolean: false
+            constraints:
+                nullable: false
+            name: validationCreation
+            type: BIT
+    - update:
+        columns:
+        - column:
+            name: validationCreation
+            valueBoolean: true
+        tableName: CentreGestion

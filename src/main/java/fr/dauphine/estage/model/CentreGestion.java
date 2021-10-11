@@ -110,6 +110,9 @@ public class CentreGestion extends ObjetMetier {
     @JsonManagedReference
     private List<PersonnelCentreGestion> personnels =  new ArrayList<>();
 
+    @Column(nullable = false)
+    private boolean validationCreation;
+
     public int getId() {
         return id;
     }
@@ -364,5 +367,13 @@ public class CentreGestion extends ObjetMetier {
 
     public void setPersonnels(List<PersonnelCentreGestion> personnels) {
         this.personnels = personnels;
+    }
+
+    public boolean isValidationCreation() {
+        return validationCreation;
+    }
+
+    public void setValidationCreation(boolean validationCreation) {
+        this.validationCreation = validationCreation;
     }
 }

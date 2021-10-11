@@ -20,3 +20,6 @@ databaseChangeLog:
   - include:
       file: 1.0.0-contenu.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 1.0.0-centre-gestion.yaml
+      relativeToChangelogFile: true
