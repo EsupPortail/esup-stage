@@ -18,3 +18,8 @@ ESTAGE_ENVIRONMENT:
   passeport_url: "https://passeport.qualif.dauphine.fr/cas"
   appli_url: "https://estage.qualif.dauphine.psl.eu/frontend/#/"
   appli_admintech: "csylvanie;ssound"
+  REFERENTIEL_WS:
+    login: "root"
+    password: "******"
+    ldap_url: "https://referentiel-test.parisnanterre.fr/ldap"
+    apogee_url: "https://referentiel-test.parisnanterre.fr/apogee"

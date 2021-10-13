@@ -15,6 +15,10 @@ public class AppConfig {
     private String datasourceDriver;
     private String url;
     private List<String> adminTechs = new ArrayList<>();
+    private String referentielWsLogin;
+    private String referentielWsPassword;
+    private String referentielWsLdapUrl;
+    private String referentielWsApogeeUrl;
 
     public String getCasUrlLogin() {
         return casUrlLogin;
@@ -88,6 +92,38 @@ public class AppConfig {
         this.adminTechs = adminTechs;
     }
 
+    public String getReferentielWsLogin() {
+        return referentielWsLogin;
+    }
+
+    public void setReferentielWsLogin(String referentielWsLogin) {
+        this.referentielWsLogin = referentielWsLogin;
+    }
+
+    public String getReferentielWsPassword() {
+        return referentielWsPassword;
+    }
+
+    public void setReferentielWsPassword(String referentielWsPassword) {
+        this.referentielWsPassword = referentielWsPassword;
+    }
+
+    public String getReferentielWsLdapUrl() {
+        return referentielWsLdapUrl;
+    }
+
+    public void setReferentielWsLdapUrl(String referentielWsLdapUrl) {
+        this.referentielWsLdapUrl = referentielWsLdapUrl;
+    }
+
+    public String getReferentielWsApogeeUrl() {
+        return referentielWsApogeeUrl;
+    }
+
+    public void setReferentielWsApogeeUrl(String referentielWsApogeeUrl) {
+        this.referentielWsApogeeUrl = referentielWsApogeeUrl;
+    }
+
     public void initProperties(Properties props, String prefixeProps) {
         this.casUrlLogout = props.getProperty("cas.url.logout");
         this.casUrlLogin = props.getProperty("cas.url.login");
@@ -102,6 +138,11 @@ public class AppConfig {
         if (props.containsKey(prefixeProps+"admin_technique")) {
             this.adminTechs = Arrays.asList(props.getProperty(prefixeProps+"admin_technique").split(";"));
         }
+
+        this.referentielWsLogin = props.getProperty("referentiel.ws.login");
+        this.referentielWsPassword = props.getProperty("referentiel.ws.password");
+        this.referentielWsLdapUrl = props.getProperty("referentiel.ws.ldap_url");
+        this.referentielWsApogeeUrl = props.getProperty("referentiel.ws.apogee_url");
     }
 
     @Override
@@ -115,6 +156,9 @@ public class AppConfig {
                 ", datasourceDriver='" + datasourceDriver + "'" +
                 ", url='" + url + "'" +
                 ", adminTechs='" + adminTechs + "'" +
+                ", referentielWsLogin='" + referentielWsLogin + "'" +
+                ", referentielWsLdapUrl='" + referentielWsLdapUrl + "'" +
+                ", referentielWsApogeeUrl='" + referentielWsApogeeUrl + "'" +
                 "}";
     }
 }
