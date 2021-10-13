@@ -2,6 +2,7 @@ package fr.dauphine.estage.model;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import fr.dauphine.estage.dto.view.Views;
+import fr.dauphine.estage.enums.NbJoursHebdoEnum;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -68,28 +69,28 @@ public class Convention extends ObjetMetier {
     private Contact signataire;
 
     @ManyToOne
-    @JoinColumn(name = "idTypeConvention", nullable = false)
+    @JoinColumn(name = "idTypeConvention")
     private TypeConvention typeConvention;
 
     @ManyToOne
     @JoinColumn(name = "idOffre")
     private Offre offre;
 
-    @Column(nullable = false)
+    @Column()
     private String sujetStage;
 
     @JsonView(Views.List.class)
-    @Column(nullable = false)
+    @Column()
     @Temporal(TemporalType.DATE)
     private Date dateDebutStage;
 
     @JsonView(Views.List.class)
-    @Column(nullable = false)
+    @Column()
     @Temporal(TemporalType.DATE)
     private Date dateFinStage;
 
-    @Column(nullable = false)
-    private boolean interruptionStage;
+    @Column()
+    private Boolean interruptionStage;
 
     @Temporal(TemporalType.DATE)
     private Date dateDebutInterruption;
@@ -97,17 +98,17 @@ public class Convention extends ObjetMetier {
     @Temporal(TemporalType.DATE)
     private Date dateFinInterruption;
 
-    @Column(nullable = false)
-    private String nbJoursHebdo; // TODO enum ?
+    @Column()
+    private NbJoursHebdoEnum nbJoursHebdo;
 
     @ManyToOne
-    @JoinColumn(name = "idTempsTravail", nullable = false)
+    @JoinColumn(name = "idTempsTravail")
     private TempsTravail tempsTravail;
 
     private String commentaireDureeTravail;
 
     @ManyToOne
-    @JoinColumn(name = "codeLangueConvention", nullable = false)
+    @JoinColumn(name = "codeLangueConvention")
     private LangueConvention langueConvention;
 
     @ManyToOne
@@ -115,7 +116,7 @@ public class Convention extends ObjetMetier {
     private OrigineStage origineStage;
 
     @ManyToOne
-    @JoinColumn(name = "idTheme", nullable = false)
+    @JoinColumn(name = "idTheme")
     private Theme theme;
 
     private Boolean conventionStructure;
@@ -126,8 +127,8 @@ public class Convention extends ObjetMetier {
     @JsonView(Views.List.class)
     private Boolean validationConvention;
 
-    @Column(nullable = false)
-    private boolean conversionEnContrat;
+    @Column()
+    private Boolean conversionEnContrat;
 
     private String commentaireStage;
 
@@ -153,7 +154,7 @@ public class Convention extends ObjetMetier {
     private String telPortableEtudiant;
 
     @ManyToOne
-    @JoinColumn(name = "idIndemnisation", nullable = false)
+    @JoinColumn(name = "idIndemnisation")
     private Indemnisation indemnisation;
 
     @Column(length = 15)
@@ -168,7 +169,7 @@ public class Convention extends ObjetMetier {
     private String annee;
 
     @ManyToOne
-    @JoinColumn(name = "idAssurance", nullable = false)
+    @JoinColumn(name = "idAssurance")
     private Assurance assurance;
 
     @Column(length = 15)
@@ -177,7 +178,7 @@ public class Convention extends ObjetMetier {
     @Column(length = 5)
     private String codeCaisse;
 
-    @Column(nullable = false, length = 1)
+    @Column(length = 1)
     private String temConfSujetTeme;
 
     @Column(length = 5)
@@ -194,11 +195,11 @@ public class Convention extends ObjetMetier {
     private String avantagesNature;
 
     @ManyToOne
-    @JoinColumn(name = "idNatureTravail", nullable = false)
+    @JoinColumn(name = "idNatureTravail")
     private NatureTravail natureTravail;
 
     @ManyToOne
-    @JoinColumn(name = "idModeValidationStage", nullable = false)
+    @JoinColumn(name = "idModeValidationStage")
     private ModeValidationStage modeValidationStage;
 
     @Column(length = 8)
@@ -211,8 +212,8 @@ public class Convention extends ObjetMetier {
 
     private String travailNuitFerie;
 
-    @Column(nullable = false)
-    private int dureeStage;
+    @Column()
+    private Integer dureeStage;
 
     @Column(length = 100)
     private String nomEtabRef;
@@ -432,11 +433,11 @@ public class Convention extends ObjetMetier {
         this.dateFinStage = dateFinStage;
     }
 
-    public boolean isInterruptionStage() {
+    public Boolean getInterruptionStage() {
         return interruptionStage;
     }
 
-    public void setInterruptionStage(boolean interruptionStage) {
+    public void setInterruptionStage(Boolean interruptionStage) {
         this.interruptionStage = interruptionStage;
     }
 
@@ -456,11 +457,11 @@ public class Convention extends ObjetMetier {
         this.dateFinInterruption = dateFinInterruption;
     }
 
-    public String getNbJoursHebdo() {
+    public NbJoursHebdoEnum getNbJoursHebdo() {
         return nbJoursHebdo;
     }
 
-    public void setNbJoursHebdo(String nbJoursHebdo) {
+    public void setNbJoursHebdo(NbJoursHebdoEnum nbJoursHebdo) {
         this.nbJoursHebdo = nbJoursHebdo;
     }
 
@@ -528,11 +529,11 @@ public class Convention extends ObjetMetier {
         this.validationConvention = validationConvention;
     }
 
-    public boolean isConversionEnContrat() {
+    public Boolean getConversionEnContrat() {
         return conversionEnContrat;
     }
 
-    public void setConversionEnContrat(boolean conversionEnContrat) {
+    public void setConversionEnContrat(Boolean conversionEnContrat) {
         this.conversionEnContrat = conversionEnContrat;
     }
 
@@ -760,11 +761,11 @@ public class Convention extends ObjetMetier {
         this.travailNuitFerie = travailNuitFerie;
     }
 
-    public int getDureeStage() {
+    public Integer getDureeStage() {
         return dureeStage;
     }
 
-    public void setDureeStage(int dureeStage) {
+    public void setDureeStage(Integer dureeStage) {
         this.dureeStage = dureeStage;
     }
 

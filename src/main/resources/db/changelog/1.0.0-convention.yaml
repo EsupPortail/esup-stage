@@ -32,3 +32,71 @@ databaseChangeLog:
             name: validationCreation
             valueBoolean: true
         tableName: Convention
+- changeSet:
+    id: convention-nullable
+    author: ssound
+    changes:
+    - dropNotNullConstraint:
+        columnName: idTypeConvention
+        columnDataType: INT
+        tableName: Convention
+    - dropNotNullConstraint:
+        columnName: sujetStage
+        columnDataType: TEXT
+        tableName: Convention
+    - dropNotNullConstraint:
+        columnName: dateDebutStage
+        columnDataType: date
+        tableName: Convention
+    - dropNotNullConstraint:
+        columnName: dateFinStage
+        columnDataType: date
+        tableName: Convention
+    - dropNotNullConstraint:
+        columnName: interruptionStage
+        columnDataType: TINYINT
+        tableName: Convention
+    - dropNotNullConstraint:
+        columnName: nbJoursHebdo
+        columnDataType: ENUM('0.5', '1', '1.5', '2', '2.5', '3', '3.5', '4', '4.5', '5', '5.5', '6')
+        tableName: Convention
+    - dropNotNullConstraint:
+        columnName: idTempsTravail
+        columnDataType: INT
+        tableName: Convention
+    - dropNotNullConstraint:
+        columnName: codeLangueConvention
+        columnDataType: VARCHAR(2)
+        tableName: Convention
+    - dropNotNullConstraint:
+        columnName: idTheme
+        columnDataType: INT
+        tableName: Convention
+    - dropNotNullConstraint:
+        columnName: conversionEnContrat
+        columnDataType: TINYINT
+        tableName: Convention
+    - dropNotNullConstraint:
+        columnName: idIndemnisation
+        columnDataType: INT
+        tableName: Convention
+    - dropNotNullConstraint:
+        columnName: idAssurance
+        columnDataType: INT
+        tableName: Convention
+    - dropNotNullConstraint:
+        columnName: temConfSujetTeme
+        columnDataType: VARCHAR(1)
+        tableName: Convention
+    - dropNotNullConstraint:
+        columnName: idNatureTravail
+        columnDataType: INT
+        tableName: Convention
+    - dropNotNullConstraint:
+        columnName: idModeValidationStage
+        columnDataType: INT
+        tableName: Convention
+    - dropNotNullConstraint:
+        columnName: dureeStage
+        columnDataType: INT
+        tableName: Convention
