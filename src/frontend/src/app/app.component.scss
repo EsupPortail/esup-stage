@@ -10,11 +10,43 @@ mat-sidenav-content {
 .app-menu {
   display: flex;
   flex-direction: column;
+  margin-top: 48px;
+}
+
+.menu-button {
+  button {
+    font-size: 20px;
+    margin-left: 8px;
+    margin-top: 8px;
+    z-index: 5;
+    position: fixed;
+    outline: none;
+    transition: opacity .3s, transform .3s;
+    opacity: 0;
+  }
+
+  .menu-open-button {
+    transform: rotate(180deg);
+  }
+
+  .menu-close-button {
+    transform: rotate(0deg);
+  }
+
+  .menu-open-button.visible {
+    transform: rotate(-180deg);
+    opacity: 1;
+  }
+
+  .menu-close-button.visible {
+    transform: rotate(180deg);
+    opacity: 1;
+  }
 }
 
 mat-nav-list {
    flex-grow: 1;
-   height: calc(100vh - 64px - 39px);
+   height: calc(100vh - 64px - 39px - 48px);
    overflow-y: auto;
  }
 

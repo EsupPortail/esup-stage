@@ -1,8 +1,6 @@
-import { Component, ElementRef, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { MenuService } from "../../services/menu.service";
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { AuthService } from "../../services/auth.service";
 import { ConfigService } from "../../services/config.service";
-import { environment } from "../../../environments/environment";
 
 @Component({
   selector: 'app-header',
@@ -13,7 +11,7 @@ export class HeaderComponent implements OnInit {
 
   @ViewChild('logo') logo: ElementRef;
 
-  constructor(private menuService: MenuService, private authService: AuthService, private configService: ConfigService) { }
+  constructor(private authService: AuthService, private configService: ConfigService) { }
 
   ngOnInit(): void {
     this.configService.themeModified.subscribe((config: any) => {
@@ -21,11 +19,6 @@ export class HeaderComponent implements OnInit {
         this.logo.nativeElement.src = `data:${config.logo.contentType};base64,${config.logo.base64}`;
       }
     })
-  }
-
-  slideNavbar(): void {
-    let opened = this.menuService.navbarOpened;
-    this.menuService.navbarOpened = !opened;
   }
 
   logout(): void {

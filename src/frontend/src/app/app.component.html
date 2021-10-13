@@ -1,4 +1,12 @@
 <app-header></app-header>
+<div class="menu-button">
+  <button mat-icon-button (click)="slideNavbar()" class="menu-open-button" [ngClass]="{visible: !menuService.navbarOpened}">
+    <i class="fa fa-bars"></i>
+  </button>
+  <button mat-icon-button (click)="slideNavbar()" class="menu-close-button" [ngClass]="{visible: menuService.navbarOpened}">
+    <i class="fa fa-times"></i>
+  </button>
+</div>
 <mat-sidenav-container>
   <mat-sidenav mode="side" [opened]="isOpened()" *ngIf="isConnected()">
     <div class="app-menu">

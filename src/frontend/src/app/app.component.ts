@@ -94,7 +94,7 @@ export class AppComponent {
     },
   ]
 
-  constructor(private menuService: MenuService, private authService: AuthService, private configService: ConfigService) {
+  constructor(public menuService: MenuService, private authService: AuthService, private configService: ConfigService) {
     this.configService.getConfigTheme();
     this.configService.themeModified.subscribe((config: any) => {
       if (this.favicon !== null && config.favicon) {
@@ -116,6 +116,11 @@ export class AppComponent {
 
   getAppVersion(): string {
     return this.authService.appVersion;
+  }
+
+  slideNavbar(): void {
+    let opened = this.menuService.navbarOpened;
+    this.menuService.navbarOpened = !opened;
   }
 
 }
