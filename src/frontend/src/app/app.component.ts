@@ -1,12 +1,10 @@
 import { Component } from '@angular/core';
 import { MenuService } from "./services/menu.service";
 import { AuthService } from "./services/auth.service";
-import { Role } from "./constants/role";
 import { AppFonction } from "./constants/app-fonction";
 import { Droit } from "./constants/droit";
 import { environment } from "../environments/environment";
 import { ConfigService } from "./services/config.service";
-import { ContenuService } from "./services/contenu.service";
 
 @Component({
   selector: 'app-root',

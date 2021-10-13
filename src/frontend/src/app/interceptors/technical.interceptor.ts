@@ -1,20 +1,18 @@
 import { Injectable } from '@angular/core';
-import {
-  HttpRequest,
-  HttpHandler,
-  HttpEvent,
-  HttpInterceptor
-} from '@angular/common/http';
-import { Observable, ObservableInput, throwError } from 'rxjs';
+import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
+import { Observable, ObservableInput } from 'rxjs';
 import { TokenService } from "../services/token.service";
 import { environment } from "../../environments/environment";
-import { catchError } from "rxjs/operators";
+import { catchError, finalize } from "rxjs/operators";
 import { MessageService } from "../services/message.service";
+import { LoaderService } from "../services/loader.service";
 
 @Injectable()
 export class TechnicalInterceptor implements HttpInterceptor {
 
-  constructor(private tokenService: TokenService, private messageService: MessageService) {}
+  private nbRequests: number = 0;
+
+  constructor(private tokenService: TokenService, private messageService: MessageService, private loaderService: LoaderService) {}
 
   addToken(req: HttpRequest<any>, token: string): HttpRequest<any> {
     if (req.url.indexOf(environment.apiUrl) > -1) {
@@ -29,10 +27,20 @@ export class TechnicalInterceptor implements HttpInterceptor {
   }
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+    this.loaderService.show();
+    this.nbRequests++;
     if (this.tokenService.getToken()) {
       return next.handle(this.addToken(request, this.tokenService.getToken()))
         .pipe(
           catchError(error => this.handleError(error))
+        )
+        .pipe(
+          finalize(() => {
+            this.nbRequests--;
+            if (this.nbRequests === 0) {
+              this.loaderService.hide();
+            }
+          })
         )
       ;
     }

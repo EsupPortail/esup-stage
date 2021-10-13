@@ -16,8 +16,6 @@ import { CookieService } from "ngx-cookie-service";
 import { TechnicalInterceptor } from "./interceptors/technical.interceptor";
 import { HomeComponent } from './components/home/home.component';
 import { TitleComponent } from './components/title/title.component';
-import { NgProgressModule } from "ngx-progressbar";
-import { NgProgressHttpModule } from "ngx-progressbar/http";
 import { MessageComponent } from './components/message/message.component';
 import { MatDialogModule } from "@angular/material/dialog";
 import { MatTabsModule } from "@angular/material/tabs";
@@ -63,6 +61,8 @@ import { EtabAccueilComponent } from './components/convention/etab-accueil/etab-
 import { MatExpansionModule } from "@angular/material/expansion";
 import { CentreGestionComponent } from './components/centre-gestion/centre-gestion.component';
 import { EtudiantComponent } from './components/convention/etudiant/etudiant.component';
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { LoaderComponent } from './components/loader/loader.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -91,18 +91,13 @@ registerLocaleData(localeFr, 'fr');
     EtabAccueilComponent,
     CentreGestionComponent,
     EtudiantComponent,
+    LoaderComponent,
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    NgProgressModule.withConfig({
-      thick: true,
-      spinner: false,
-      color: "#6075e1"
-    }),
-    NgProgressHttpModule,
     ReactiveFormsModule,
     FormsModule,
     MatSidenavModule,
@@ -126,6 +121,7 @@ registerLocaleData(localeFr, 'fr');
     MatRadioModule,
     CKEditorModule,
     MatExpansionModule,
+    MatProgressSpinnerModule,
   ],
   providers: [
     CookieService,
