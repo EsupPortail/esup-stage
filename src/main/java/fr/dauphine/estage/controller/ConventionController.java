@@ -10,6 +10,7 @@ import fr.dauphine.estage.model.Convention;
 import fr.dauphine.estage.model.Role;
 import fr.dauphine.estage.model.Utilisateur;
 import fr.dauphine.estage.model.helper.UtilisateurHelper;
+import fr.dauphine.estage.repository.ConventionJpaRepository;
 import fr.dauphine.estage.repository.ConventionRepository;
 import fr.dauphine.estage.security.ServiceContext;
 import fr.dauphine.estage.security.interceptor.Secure;
@@ -29,6 +30,9 @@ public class ConventionController {
 
     @Autowired
     ConventionRepository conventionRepository;
+
+    @Autowired
+    ConventionJpaRepository conventionJpaRepository;
 
     @JsonView(Views.List.class)
     @GetMapping
@@ -60,5 +64,17 @@ public class ConventionController {
         paginatedResponse.setTotal(conventionRepository.count(filters));
         paginatedResponse.setData(conventionRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
         return paginatedResponse;
+    }
+
+    @GetMapping("/brouillon")
+    @Secure
+    public Convention getBrouillon() {
+        ContextDto contexteDto = ServiceContext.getServiceContext();
+        Utilisateur utilisateur = contexteDto.getUtilisateur();
+        Convention convention = conventionJpaRepository.findBrouillon(utilisateur.getLogin());
+        if (convention == null) {
+            convention = new Convention();
+        }
+        return convention;
     }
 }

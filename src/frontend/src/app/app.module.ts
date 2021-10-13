@@ -62,6 +62,7 @@ import { CentreGestionSearchComponent } from './components/centre-gestion-search
 import { EtabAccueilComponent } from './components/convention/etab-accueil/etab-accueil.component';
 import { MatExpansionModule } from "@angular/material/expansion";
 import { CentreGestionComponent } from './components/centre-gestion/centre-gestion.component';
+import { EtudiantComponent } from './components/convention/etudiant/etudiant.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -89,6 +90,7 @@ registerLocaleData(localeFr, 'fr');
     CentreGestionSearchComponent,
     EtabAccueilComponent,
     CentreGestionComponent,
+    EtudiantComponent,
   ],
   imports: [
     BrowserModule,

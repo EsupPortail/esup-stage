@@ -57,4 +57,7 @@ public interface ConventionJpaRepository extends JpaRepository<Convention, Integ
 
     @Query("SELECT COUNT(c.id) FROM Convention c WHERE c.devise.id = :idDevise")
     Long countConventionWithDevise(int idDevise);
+
+    @Query("SELECT c FROM Convention c WHERE c.loginCreation = :login AND c.validationCreation = FALSE")
+    Convention findBrouillon(String login);
 }

@@ -67,4 +67,8 @@ export class AuthService {
     return hasRight;
   }
 
+  isEtudiant(): boolean {
+    return this.userConnected && this.userConnected.roles.find((r: any) => r.code === 'ETU') !== undefined;
+  }
+
 }

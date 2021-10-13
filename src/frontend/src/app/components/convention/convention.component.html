@@ -1,48 +1,49 @@
-<mat-tab-group class="convention">
+<mat-tab-group class="convention" *ngIf="convention">
   <mat-tab>
     <ng-template mat-tab-label>
       <span class="progress-status" [ngClass]="{editing: statuts['statutEtudiant'] === 1, done: statuts['statutEtudiant'] === 2}"></span>
       Étudiant
     </ng-template>
+    <app-convention-etudiant></app-convention-etudiant>
   </mat-tab>
-  <mat-tab>
+  <mat-tab [disabled]="!convention.id">
     <ng-template mat-tab-label>
       <span class="progress-status" [ngClass]="{editing: statuts['statutEtabAccueil'] === 1, done: statuts['statutEtabAccueil'] === 2}"></span>
       Étab. d'accueil
     </ng-template>
     <app-etab-accueil (validated)="setStatus('statutEtabAccueil', $event)"></app-etab-accueil>
   </mat-tab>
-  <mat-tab>
+  <mat-tab [disabled]="!convention.id">
     <ng-template mat-tab-label>
       <span class="progress-status" [ngClass]="{editing: statuts['statutServiceAccueil'] === 1, done: statuts['statutServiceAccueil'] === 2}"></span>
       Service d'accueil
     </ng-template>
   </mat-tab>
-  <mat-tab>
+  <mat-tab [disabled]="!convention.id">
     <ng-template mat-tab-label>
       <span class="progress-status" [ngClass]="{editing: statuts['statutTuteurPro'] === 1, done: statuts['statutTuteurPro'] === 2}"></span>
       Tuteur professionnel
     </ng-template>
   </mat-tab>
-  <mat-tab>
+  <mat-tab [disabled]="!convention.id">
     <ng-template mat-tab-label>
       <span class="progress-status" [ngClass]="{editing: statuts['statutStage'] === 1, done: statuts['statutStage'] === 2}"></span>
       Stage
     </ng-template>
   </mat-tab>
-  <mat-tab>
+  <mat-tab [disabled]="!convention.id">
     <ng-template mat-tab-label>
       <span class="progress-status" [ngClass]="{editing: statuts['statutEnseignantRef'] === 1, done: statuts['statutEnseignantRef'] === 2}"></span>
       Enseignant référent
     </ng-template>
   </mat-tab>
-  <mat-tab>
+  <mat-tab [disabled]="!convention.id">
     <ng-template mat-tab-label>
       <span class="progress-status" [ngClass]="{editing: statuts['statutSignataire'] === 1, done: statuts['statutSignataire'] === 2}"></span>
       Signataire
     </ng-template>
   </mat-tab>
-  <mat-tab [disabled]="true">
+  <mat-tab [disabled]="!convention.id || !allValid">
     <ng-template mat-tab-label>
       <span class="progress-status" [ngClass]="{editing: statuts['statutRecap'] === 1, done: statuts['statutRecap'] === 2}"></span>
       Récapitulatif

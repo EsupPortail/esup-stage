@@ -14,4 +14,13 @@ export class ConventionService implements PaginatedService {
   getPaginated(page: number, perPage: number, predicate: string, sortOrder: string, filters: string): Observable<any> {
     return this.http.get(environment.apiUrl + "/conventions", {params: {page, perPage, predicate, sortOrder, filters}});
   }
+
+  getBrouillon(): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/conventions/brouillon`);
+  }
+
+  getById(id: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/conventions/${id}`);
+  }
+
 }

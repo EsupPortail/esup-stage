@@ -57,7 +57,7 @@ const routes: Routes = [
     }
   },
   {
-    path: 'conventions/create',
+    path: 'conventions/:id',
     component: ConventionComponent,
     canActivate: [AuthGuard],
     data: {

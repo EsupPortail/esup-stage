@@ -1,0 +1,14 @@
+.convention-etudiant-details {
+  display: flex;
+}
+
+.convention-etudiant-details mat-card {
+  width: 50%;
+}
+
+.convention-etudiant-details mat-card:first-child {
+  margin-right: 10px;
+}
+.convention-etudiant-details mat-card:last-child {
+  margin-left: 10px;
+}
