@@ -26,20 +26,20 @@ mat-sidenav-content {
   }
 
   .menu-open-button {
-    transform: rotate(180deg);
-  }
-
-  .menu-close-button {
     transform: rotate(0deg);
   }
 
+  .menu-close-button {
+    transform: rotate(180deg);
+  }
+
   .menu-open-button.visible {
-    transform: rotate(-180deg);
+    transform: rotate(180deg);
     opacity: 1;
   }
 
   .menu-close-button.visible {
-    transform: rotate(180deg);
+    transform: rotate(0deg);
     opacity: 1;
   }
 }
