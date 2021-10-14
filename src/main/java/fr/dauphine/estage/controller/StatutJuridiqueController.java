@@ -37,6 +37,18 @@ public class StatutJuridiqueController {
         return paginatedResponse;
     }
 
+    @PostMapping
+    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.CREATION})
+    public StatutJuridique create(@RequestBody StatutJuridique statutJuridique) {
+        if (statutJuridiqueRepository.exists(statutJuridique.getLibelle(), statutJuridique.getId())) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Libellé déjà existant");
+        }
+        statutJuridique.setTemEnServ("O");
+        statutJuridique.setModifiable(true);
+        statutJuridique = statutJuridiqueJpaRepository.saveAndFlush(statutJuridique);
+        return statutJuridique;
+    }
+
     @PutMapping("/{id}")
     @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
     public StatutJuridique update(@PathVariable("id") int id, @RequestBody StatutJuridique requestStatutJuridique) {

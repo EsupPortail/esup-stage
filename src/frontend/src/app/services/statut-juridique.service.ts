@@ -15,6 +15,10 @@ export class StatutJuridiqueService implements PaginatedService {
     return this.http.get(environment.apiUrl + "/statut-juridique", {params: {page, perPage, predicate, sortOrder, filters}});
   }
 
+  create(data: any): Observable<any> {
+    return this.http.post(environment.apiUrl + "/statut-juridique", data);
+  }
+
   update(id: number, data: any): Observable<any> {
     return this.http.put(environment.apiUrl + '/statut-juridique/' + id, data);
   }

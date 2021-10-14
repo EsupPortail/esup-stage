@@ -131,9 +131,10 @@ export class AdminNomenclaturesComponent implements OnInit {
   openCreationModal() {
     let service = this.createButton.service;
     let tableIndex = this.createButton.tableIndex;
+    let labelTable = this.nomenclatures[tableIndex].label;
     let creationFormType = this.createButton.creationFormType;
     const dialogConfig = new MatDialogConfig();
-    dialogConfig.data = {service: service, creationFormType: creationFormType};
+    dialogConfig.data = {service: service, creationFormType: creationFormType, labelTable: labelTable};
     const modalDialog = this.matDialog.open(AdminNomenclaturesCreationComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse == true) {

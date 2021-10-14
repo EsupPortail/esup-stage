@@ -37,6 +37,17 @@ public class LangueConventionController {
         return paginatedResponse;
     }
 
+    @PostMapping
+    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.CREATION})
+    public LangueConvention create(@RequestBody LangueConvention langueConvention) {
+        if (langueConventionRepository.exists(langueConvention)) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Libellé déjà existant");
+        }
+        langueConvention.setTemEnServ("O");
+        langueConvention = langueConventionJpaRepository.saveAndFlush(langueConvention);
+        return langueConvention;
+    }
+
     @PutMapping("/{code}")
     @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
     public LangueConvention update(@PathVariable("code") String code, @RequestBody LangueConvention requestLangueConvention) {

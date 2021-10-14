@@ -49,6 +49,17 @@ public class PaysController {
         return paginatedResponsePaysDto;
     }
 
+    @PostMapping
+    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.CREATION})
+    public Pays create(@RequestBody Pays pays) {
+        if (paysRepository.exists(pays)) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Libellé déjà existant");
+        }
+        pays.setTemEnServPays("O");
+        pays = paysJpaRepository.saveAndFlush(pays);
+        return pays;
+    }
+
     @PutMapping("/{id}")
     @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
     public PaysDto update(@PathVariable("id") int id, @RequestBody PaysDto requestPays) {

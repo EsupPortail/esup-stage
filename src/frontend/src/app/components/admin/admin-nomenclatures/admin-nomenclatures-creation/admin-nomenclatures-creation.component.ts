@@ -1,6 +1,8 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { TypeStructureService } from "../../../../services/type-structure.service";
+import { TypeOffreService } from "../../../../services/type-offre.service";
 
 @Component({
   selector: 'app-admin-nomenclatures-creation',
@@ -11,13 +13,21 @@ export class AdminNomenclaturesCreationComponent implements OnInit {
 
   form: FormGroup;
   service: any;
+  labelTable: string;
+  typeStructures: any;
+  typeOffres: any;
+
+  actualList = [1, 2, 3, 4];
 
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<AdminNomenclaturesCreationComponent>,
+    private typeStructureService: TypeStructureService,
+    private typeOffreService: TypeOffreService,
     @Inject(MAT_DIALOG_DATA) data: any
   ) {
     this.service = data.service;
+    this.labelTable = data.labelTable;
     if (data.creationFormType == 1) {
       this.form = this.fb.group({
         libelle: [null, [Validators.required, Validators.maxLength(150)]],
@@ -27,6 +37,24 @@ export class AdminNomenclaturesCreationComponent implements OnInit {
         libelle: [null, [Validators.required, Validators.maxLength(150)]],
         codeCtrl: [null, [Validators.required, Validators.maxLength(20)]],
       });
+    } else {
+      switch(this.labelTable) {
+        case 'Langue Convention':
+          this.setLangueConventionForm();
+          break;
+        case 'Type de structure':
+          this.setTypeStructureForm();
+          break;
+        case 'Statut juridique':
+          this.setStatutJuridiqueForm();
+          break;
+        case 'Contrat du stage':
+          this.setContratOffreForm();
+          break;
+        case 'Pays':
+          this.setPaysForm();
+          break;
+      }
     }
   }
 
@@ -37,12 +65,65 @@ export class AdminNomenclaturesCreationComponent implements OnInit {
     this.dialogRef.close(false);
   }
 
+  setLangueConventionForm() {
+    this.form = this.fb.group({
+      code: [null, [Validators.required, Validators.maxLength(2)]],
+      libelle: [null, [Validators.required, Validators.maxLength(150)]],
+    });
+  }
+
+  setTypeStructureForm() {
+    this.form = this.fb.group({
+      libelle: [null, [Validators.required, Validators.maxLength(100)]],
+      siretObligatoire: [false, [Validators.required]],
+    });
+  }
+
+  setStatutJuridiqueForm() {
+    this.form = this.fb.group({
+      libelle: [null, [Validators.required, Validators.maxLength(100)]],
+      typeStructure: [null, [Validators.required]],
+    });
+    this.typeStructureService.getPaginated(1, 0, 'libelle', 'asc', '').subscribe((response: any) => {
+      this.typeStructures = response.data;
+    });
+  }
+
+  setContratOffreForm() {
+    this.form = this.fb.group({
+      libelle: [null, [Validators.required, Validators.maxLength(100)]],
+      codeCtrl: [null, [Validators.required, Validators.maxLength(20)]],
+      typeOffre: [null, [Validators.required]],
+    });
+    this.typeOffreService.getPaginated(1, 0, 'libelle', 'asc', '').subscribe((response: any) => {
+      this.typeOffres = response.data;
+    });
+  }
+
+  setPaysForm() {
+    this.form = this.fb.group({
+      cog: [null, [Validators.required]],
+      actual: [null, [Validators.required]],
+      crpay: [null],
+      lib: [null, [Validators.required, Validators.maxLength(70)]],
+      iso2: [null, [Validators.maxLength(2)]],
+      siretObligatoire: [false, [Validators.required]],
+    });
+  }
+
   save(): void {
     if (this.form.valid) {
       this.service.create(this.form.value).subscribe((response: any) => {
         this.dialogRef.close(true);
       });
     }
+  }
+
+  compare(option: any, value: any): boolean {
+    if (option && value) {
+      return option.code === value.code;
+    }
+    return false;
   }
 
 }

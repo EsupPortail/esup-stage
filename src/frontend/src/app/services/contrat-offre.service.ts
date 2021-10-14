@@ -15,6 +15,10 @@ export class ContratOffreService implements PaginatedService {
     return this.http.get(environment.apiUrl + "/contrat-offre", {params: {page, perPage, predicate, sortOrder, filters}});
   }
 
+  create(data: any): Observable<any> {
+    return this.http.post(environment.apiUrl + "/contrat-offre", data);
+  }
+
   update(id: number, data: any): Observable<any> {
     return this.http.put(environment.apiUrl + '/contrat-offre/' + id, data);
   }

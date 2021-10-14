@@ -37,6 +37,18 @@ public class ContratOffreController {
         return paginatedResponse;
     }
 
+    @PostMapping
+    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.CREATION})
+    public ContratOffre create(@RequestBody ContratOffre contratOffre) {
+        if (contratOffreRepository.exists(contratOffre.getLibelle(), contratOffre.getId())) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Libellé déjà existant");
+        }
+        contratOffre.setTemEnServ("O");
+        contratOffre.setModifiable(true);
+        contratOffre = contratOffreJpaRepository.saveAndFlush(contratOffre);
+        return contratOffre;
+    }
+
     @PutMapping("/{id}")
     @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
     public ContratOffre update(@PathVariable("id") int id, @RequestBody ContratOffre requestContratOffre) {

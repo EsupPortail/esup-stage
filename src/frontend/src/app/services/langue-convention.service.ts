@@ -15,6 +15,10 @@ export class LangueConventionService implements PaginatedService {
     return this.http.get(environment.apiUrl + "/langue-convention", {params: {page, perPage, predicate, sortOrder, filters}});
   }
 
+  create(data: any): Observable<any> {
+    return this.http.post(environment.apiUrl + "/langue-convention", data);
+  }
+
   update(code: string, data: any): Observable<any> {
     return this.http.put(environment.apiUrl + '/langue-convention/' + code, data);
   }

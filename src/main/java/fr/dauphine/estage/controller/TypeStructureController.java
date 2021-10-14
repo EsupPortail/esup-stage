@@ -37,6 +37,18 @@ public class TypeStructureController {
         return paginatedResponse;
     }
 
+    @PostMapping
+    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.CREATION})
+    public TypeStructure create(@RequestBody TypeStructure typeStructure) {
+        if (typeStructureRepository.exists(typeStructure.getLibelle(), typeStructure.getId())) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Libellé déjà existant");
+        }
+        typeStructure.setTemEnServ("O");
+        typeStructure.setModifiable(true);
+        typeStructure = typeStructureJpaRepository.saveAndFlush(typeStructure);
+        return typeStructure;
+    }
+
     @PutMapping("/{id}")
     @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
     public TypeStructure update(@PathVariable("id") int id, @RequestBody TypeStructure requestTypeStructure) {

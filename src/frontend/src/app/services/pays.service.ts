@@ -15,6 +15,10 @@ export class PaysService implements PaginatedService {
     return this.http.get(environment.apiUrl + "/pays", {params: {page, perPage, predicate, sortOrder, filters}});
   }
 
+  create(data: any): Observable<any> {
+    return this.http.post(environment.apiUrl + "/pays", data);
+  }
+
   update(id: number, data: any): Observable<any> {
     return this.http.put(environment.apiUrl + '/pays/' + id, data);
   }
