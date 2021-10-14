@@ -37,6 +37,17 @@ public class ThemeController {
         return paginatedResponse;
     }
 
+    @PostMapping
+    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.CREATION})
+    public Theme create(@RequestBody Theme theme) {
+        if (themeRepository.exists(theme.getLibelle(), theme.getId())) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Libellé déjà existant");
+        }
+        theme.setTemEnServ("O");
+        theme = themeJpaRepository.saveAndFlush(theme);
+        return theme;
+    }
+
     @PutMapping("/{id}")
     @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
     public Theme update(@PathVariable("id") int id, @RequestBody Theme requestTheme) {

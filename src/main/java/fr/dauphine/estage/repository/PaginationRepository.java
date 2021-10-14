@@ -154,6 +154,18 @@ public class PaginationRepository<T> {
         }
     }
 
+    public boolean exists(String libelle, int id) {
+        String queryString = "SELECT id FROM " + this.typeClass.getName() + " WHERE libelle = :libelle";
+        TypedQuery<Integer> query = em.createQuery(queryString, Integer.class);
+        query.setParameter("libelle", libelle);
+        List<Integer> results = query.getResultList();
+        if (id == 0 && results.size() > 0) {
+            return true;
+        }
+
+        return results.stream().anyMatch(i -> i != id);
+    }
+
     protected void addSpecificParemeter(String key, JSONObject parameter, List<String> clauses) {}
     protected void setSpecificParemeterValue(String key, JSONObject parameter, Query query) {}
 }

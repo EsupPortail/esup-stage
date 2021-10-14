@@ -22,6 +22,7 @@ import { DeviseService } from "../../../services/devise.service";
 import { MessageService } from "../../../services/message.service";
 import { TableComponent } from "../../table/table.component";
 import { AdminNomenclaturesEditionComponent } from './admin-nomenclatures-edition/admin-nomenclatures-edition.component';
+import { AdminNomenclaturesCreationComponent } from './admin-nomenclatures-creation/admin-nomenclatures-creation.component';
 import { AppFonction } from "../../../constants/app-fonction";
 import { Droit } from "../../../constants/droit";
 
@@ -48,23 +49,31 @@ export class AdminNomenclaturesComponent implements OnInit {
     { id: 'lib', libelle: 'Libellé'},
   ];
 
+  createButton: any = {
+    libelle: 'Ajouter un élément',
+    service: this.typeConventionService,
+    tableIndex: 0,
+    creationFormType: 2,
+    action: () => this.openCreationModal()
+  }
+
   nomenclatures = [
-    { key: 'id', label: 'Type Convention', service: this.typeConventionService, tableIndex: 0 },
-    { key: 'code', label: 'Langue Convention', service: this.langueConventionService, tableIndex: 1 },
-    { key: 'id', label: 'Pays', service: this.paysService, tableIndex: 2 },
-    { key: 'id', label: 'Thème', service: this.themeService, tableIndex: 3 },
-    { key: 'id', label: 'Temps Travail', service: this.tempsTravailService, tableIndex: 4 },
-    { key: 'id', label: 'Fréquence de versement', service: this.uniteDureeService, tableIndex: 5 },
-    { key: 'id', label: 'Devise', service: this.deviseService, tableIndex: 6 },
-    { key: 'id', label: 'Type de gratification', service: this.uniteGratificationService, tableIndex: 7 },
-    { key: 'id', label: 'Modalité de paiement', service: this.modeVersGratificationService, tableIndex: 8 },
-    { key: 'id', label: 'Mode de validation du stage', service: this.modeValidationStageService, tableIndex: 9 },
-    { key: 'id', label: 'Niveau de formation', service: this.niveauFormationService, tableIndex: 10 },
-    { key: 'id', label: 'Origine du stage', service: this.origineStageService, tableIndex: 11 },
-    { key: 'id', label: 'Type de structure', service: this.typeStructureService, tableIndex: 12 },
-    { key: 'id', label: 'Statut juridique', service: this.statutJuridiqueService, tableIndex: 13 },
-    { key: 'id', label: "Type d'offre de stage", service: this.typeOffreService, tableIndex: 14 },
-    { key: 'id', label: "Contrat du stage", service: this.contratOffreService, tableIndex: 15 },
+    { key: 'id', label: 'Type Convention', service: this.typeConventionService, tableIndex: 0, creationFormType: 2 },
+    { key: 'code', label: 'Langue Convention', service: this.langueConventionService, tableIndex: 1, creationFormType: 3 },
+    { key: 'id', label: 'Pays', service: this.paysService, tableIndex: 2, creationFormType: 3 },
+    { key: 'id', label: 'Thème', service: this.themeService, tableIndex: 3, creationFormType: 1 },
+    { key: 'id', label: 'Temps Travail', service: this.tempsTravailService, tableIndex: 4, creationFormType: 2 },
+    { key: 'id', label: 'Fréquence de versement', service: this.uniteDureeService, tableIndex: 5, creationFormType: 1 },
+    { key: 'id', label: 'Devise', service: this.deviseService, tableIndex: 6, creationFormType: 1 },
+    { key: 'id', label: 'Type de gratification', service: this.uniteGratificationService, tableIndex: 7, creationFormType: 1 },
+    { key: 'id', label: 'Modalité de paiement', service: this.modeVersGratificationService, tableIndex: 8, creationFormType: 1 },
+    { key: 'id', label: 'Mode de validation du stage', service: this.modeValidationStageService, tableIndex: 9, creationFormType: 1 },
+    { key: 'id', label: 'Niveau de formation', service: this.niveauFormationService, tableIndex: 10, creationFormType: 1 },
+    { key: 'id', label: 'Origine du stage', service: this.origineStageService, tableIndex: 11, creationFormType: 1 },
+    { key: 'id', label: 'Type de structure', service: this.typeStructureService, tableIndex: 12, creationFormType: 3 },
+    { key: 'id', label: 'Statut juridique', service: this.statutJuridiqueService, tableIndex: 13, creationFormType: 3 },
+    { key: 'id', label: "Type d'offre de stage", service: this.typeOffreService, tableIndex: 14, creationFormType: 2 },
+    { key: 'id', label: "Contrat du stage", service: this.contratOffreService, tableIndex: 15, creationFormType: 3 },
   ];
 
   data: any;
@@ -100,6 +109,9 @@ export class AdminNomenclaturesComponent implements OnInit {
   }
 
   tabChanged(event: MatTabChangeEvent): void {
+    this.createButton.service = this.nomenclatures[event.index].service;
+    this.createButton.tableIndex = event.index;
+    this.createButton.creationFormType = this.nomenclatures[event.index].creationFormType;
   }
 
   openEditionModal(service: any, data: any, tableIndex: number) {
@@ -112,6 +124,22 @@ export class AdminNomenclaturesComponent implements OnInit {
         if (this.appTables)
           this.appTables.toArray()[tableIndex].update();
         this.messageService.setSuccess("Modification effectuée");
+      }
+    });
+  }
+
+  openCreationModal() {
+    let service = this.createButton.service;
+    let tableIndex = this.createButton.tableIndex;
+    let creationFormType = this.createButton.creationFormType;
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.data = {service: service, creationFormType: creationFormType};
+    const modalDialog = this.matDialog.open(AdminNomenclaturesCreationComponent, dialogConfig);
+    modalDialog.afterClosed().subscribe(dialogResponse => {
+      if (dialogResponse == true) {
+        if (this.appTables)
+          this.appTables.toArray()[tableIndex].update();
+        this.messageService.setSuccess("Libellé ajouté");
       }
     });
   }

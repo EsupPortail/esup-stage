@@ -15,6 +15,10 @@ export class DeviseService implements PaginatedService {
     return this.http.get(environment.apiUrl + "/devise", {params: {page, perPage, predicate, sortOrder, filters}});
   }
 
+  create(data: any): Observable<any> {
+    return this.http.post(environment.apiUrl + "/devise", data);
+  }
+
   update(id: number, data: any): Observable<any> {
     return this.http.put(environment.apiUrl + '/devise/' + id, data);
   }
