@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { AuthService } from "../../../services/auth.service";
-import { FormBuilder, FormGroup } from "@angular/forms";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MessageService } from "../../../services/message.service";
 import { EtudiantService } from "../../../services/etudiant.service";
 import { MatExpansionPanel } from "@angular/material/expansion";
@@ -18,6 +18,9 @@ export class EtudiantComponent implements OnInit {
   columns = ['numetudiant', 'nomprenom', 'action'];
   etudiants: any[] = [];
   etudiant: any;
+  selectedNumEtudiant: string|null = null;
+
+  formAdresse: FormGroup;
 
   @ViewChild(MatExpansionPanel) searchEtudiantPanel: MatExpansionPanel|undefined;
 
@@ -26,6 +29,15 @@ export class EtudiantComponent implements OnInit {
       id: [null, []],
       nom: [null, []],
       prenom: [null, []],
+    });
+    this.formAdresse = this.fb.group({
+      mainAddress: [null, [Validators.required]],
+      postalCode: [null, [Validators.required]],
+      town: [null, [Validators.required]],
+      country: [null, [Validators.required]],
+      phone: [null, []],
+      portablePhone: [null, []],
+      mailPerso: [null, [Validators.required, Validators.email]],
     });
   }
 
@@ -41,21 +53,36 @@ export class EtudiantComponent implements OnInit {
       this.messageService.setError(`Veuillez renseigner au moins l'un des critères`);
       return;
     }
+    this.etudiant = undefined;
+    this.selectedNumEtudiant = null;
     this.etudiantService.searchEtudiants(this.form.value).subscribe((response: any) => {
       this.etudiants = response;
+      if (this.etudiants.length === 1) {
+        this.choose(this.etudiants[0]);
+      }
     });
   }
 
   choose(row: any): void {
-    // TODO récupération des données apogée de l'étudiant
-    if (this.searchEtudiantPanel) {
-      this.searchEtudiantPanel.expanded = false;
-    }
-    this.etudiant = row;
-    console.log(this.etudiant);
+    this.etudiantService.getApogeeData(row.codEtu).subscribe((response: any) => {
+      this.selectedNumEtudiant = row.codEtu;
+      if (this.searchEtudiantPanel) {
+        this.searchEtudiantPanel.expanded = false;
+      }
+      this.etudiant = response;
+      this.formAdresse.setValue({
+        mainAddress: this.etudiant.mainAddress,
+        postalCode: this.etudiant.postalCode,
+        town: this.etudiant.town,
+        country: this.etudiant.country,
+        phone: this.etudiant.phone,
+        portablePhone: this.etudiant.portablePhone,
+        mailPerso: this.etudiant.mailPerso,
+      });
+    });
   }
 
-  getApogeeData(): void {
+  validate(): void {
 
   }
 

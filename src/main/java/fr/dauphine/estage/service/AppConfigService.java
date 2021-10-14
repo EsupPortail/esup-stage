@@ -2,6 +2,7 @@ package fr.dauphine.estage.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.dauphine.estage.bootstrap.ApplicationBootstrap;
 import fr.dauphine.estage.dto.ConfigAlerteMailDto;
 import fr.dauphine.estage.dto.ConfigGeneraleDto;
 import fr.dauphine.estage.dto.ConfigThemeDto;
@@ -23,6 +24,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
+import java.util.Calendar;
+import java.util.Date;
 
 @Service
 public class AppConfigService {
@@ -92,5 +95,27 @@ public class AppConfigService {
             file.flush();
             file.close();
         }
+    }
+
+    public String getAnneeUniv() {
+        return getAnneeUniv(new Date());
+    }
+
+    public String getAnneeUniv(Date date) {
+        ConfigGeneraleDto configGeneraleDto = getConfigGenerale();
+        int jourBascule = configGeneraleDto.getAnneeBasculeJour();
+        int moisBascule = configGeneraleDto.getAnneeBasculeMois();
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+
+        Calendar bascule = Calendar.getInstance();
+        bascule.set(currentYear, (moisBascule - 1), jourBascule, 0, 0);
+        bascule.clear(Calendar.MILLISECOND);
+        Date dateBascule = bascule.getTime();
+
+        return date.before(dateBascule) ? String.valueOf(currentYear) : String.valueOf(currentYear + 1);
+    }
+
+    public String getAnneeUnivLibelle(String annee) {
+        return annee + "/" + (Integer.parseInt(annee) + 1);
     }
 }
