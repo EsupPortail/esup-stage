@@ -33,19 +33,13 @@ import { Droit } from "../../../constants/droit";
 })
 export class AdminNomenclaturesComponent implements OnInit {
 
-  columns = ['id', 'libelle', 'action'];
+  columns = ['libelle', 'action'];
   sortColumn = 'libelle';
 
   filters = [
-    { id: 'id', libelle: 'Id', type: 'int' },
     { id: 'libelle', libelle: 'Libellé' },
   ];
-  filtersCode = [
-    { id: 'code', libelle: 'Code' },
-    { id: 'libelle', libelle: 'Libellé' }
-  ];
   filtersPays = [
-    { id: 'id', libelle: 'Id', type: 'int' },
     { id: 'lib', libelle: 'Libellé'},
   ];
 
