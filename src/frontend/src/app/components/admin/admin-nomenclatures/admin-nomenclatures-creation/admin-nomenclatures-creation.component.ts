@@ -20,7 +20,12 @@ export class AdminNomenclaturesCreationComponent implements OnInit {
     this.service = data.service;
     if (data.creationFormType == 1) {
       this.form = this.fb.group({
-        libelle: [null, [Validators.required, Validators.maxLength(100)]],
+        libelle: [null, [Validators.required, Validators.maxLength(150)]],
+      });
+    } else if (data.creationFormType == 2) {
+      this.form = this.fb.group({
+        libelle: [null, [Validators.required, Validators.maxLength(150)]],
+        codeCtrl: [null, [Validators.required, Validators.maxLength(20)]],
       });
     }
   }

@@ -37,6 +37,18 @@ public class TypeOffreController {
         return paginatedResponse;
     }
 
+    @PostMapping
+    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.CREATION})
+    public TypeOffre create(@RequestBody TypeOffre typeOffre) {
+        if (typeOffreRepository.exists(typeOffre.getLibelle(), typeOffre.getId())) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Libellé déjà existant");
+        }
+        typeOffre.setTemEnServ("O");
+        typeOffre.setModifiable(true);
+        typeOffre = typeOffreJpaRepository.saveAndFlush(typeOffre);
+        return typeOffre;
+    }
+
     @PutMapping("/{id}")
     @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
     public TypeOffre update(@PathVariable("id") int id, @RequestBody TypeOffre requestTypeOffre) {

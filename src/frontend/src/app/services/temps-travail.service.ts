@@ -15,6 +15,10 @@ export class TempsTravailService implements PaginatedService {
     return this.http.get(environment.apiUrl + "/temps-travail", {params: {page, perPage, predicate, sortOrder, filters}});
   }
 
+  create(data: any): Observable<any> {
+    return this.http.post(environment.apiUrl + "/temps-travail", data);
+  }
+
   update(id: number, data: any): Observable<any> {
     return this.http.put(environment.apiUrl + '/temps-travail/' + id, data);
   }
