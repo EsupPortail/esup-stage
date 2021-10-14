@@ -15,4 +15,8 @@ export class StructureService implements PaginatedService {
     return this.http.get(`${environment.apiUrl}/structures`, {params: {page, perPage, predicate, sortOrder, filters}});
   }
 
+  getById(id: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/structures/${id}`);
+  }
+
 }

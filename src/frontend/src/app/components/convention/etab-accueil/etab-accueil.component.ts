@@ -7,6 +7,7 @@ import { StructureService } from "../../../services/structure.service";
 import { TableComponent } from "../../table/table.component";
 import { MatTabGroup } from "@angular/material/tabs";
 import { StatutJuridiqueService } from "../../../services/statut-juridique.service";
+import { MatExpansionPanel } from "@angular/material/expansion";
 
 @Component({
   selector: 'app-etab-accueil',
@@ -15,7 +16,7 @@ import { StatutJuridiqueService } from "../../../services/statut-juridique.servi
 })
 export class EtabAccueilComponent implements OnInit {
 
-  columns = ['raisonSociale', 'numeroSiret', 'nafN5', 'pays', 'commune', 'typeStructure', 'statutJuridique'];
+  columns = ['raisonSociale', 'numeroSiret', 'nafN5', 'pays', 'commune', 'typeStructure', 'statutJuridique', 'action'];
   sortColumn = 'raisonSociale';
   filters: any[] = [];
 
@@ -24,12 +25,14 @@ export class EtabAccueilComponent implements OnInit {
 
   createButton = {
     libelle: 'Créer un établissement d\'accueil',
-    action: () => this.changeView('create'),
+    action: () => this.initCreate(),
   }
 
-  view = 'list';
+  etab: any;
+  modif: boolean = false;
 
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
+  @ViewChild(MatExpansionPanel) firstPanel: MatExpansionPanel|undefined;
 
   @Output() validated = new EventEmitter<number>();
 
@@ -77,12 +80,17 @@ export class EtabAccueilComponent implements OnInit {
     });
   }
 
-  isView(view: string): boolean {
-    return this.view === view;
+  choose(row: any): void {
+    this.structureService.getById(row.id).subscribe((response: any) => {
+      this.etab = response;
+      if (this.firstPanel) {
+        this.firstPanel.expanded = false;
+      }
+    });
   }
 
-  changeView(view: string): void {
-    this.view = view;
+  initCreate(): void {
+    this.etab = {}; // TODO
   }
 
 }

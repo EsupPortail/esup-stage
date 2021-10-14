@@ -1,137 +1,135 @@
-<ng-container>
-  <mat-accordion>
-    <mat-expansion-panel *ngIf="!isEtudiant" [expanded]="true">
-      <mat-expansion-panel-header>
-        <mat-panel-title>Recherchez un étudiant via son numéro ou son nom/prénom</mat-panel-title>
-      </mat-expansion-panel-header>
+<mat-accordion>
+  <mat-expansion-panel *ngIf="!isEtudiant" [expanded]="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title>Recherchez un étudiant via son numéro ou son nom/prénom</mat-panel-title>
+    </mat-expansion-panel-header>
 
-      <form [formGroup]="form" novalidate (submit)="search()" class="mt-2 mb-3">
-        <div class="row">
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>N° étudiant</mat-label>
-            <input matInput formControlName="id" />
-          </mat-form-field>
-        </div>
-        <div class="row">
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Nom</mat-label>
-            <input matInput formControlName="nom" />
-          </mat-form-field>
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Prénom</mat-label>
-            <input matInput formControlName="prenom" />
-          </mat-form-field>
-        </div>
-        <div class="mt-2 text-center">
-          <button mat-flat-button color="primary">Rechercher</button>
-        </div>
-      </form>
+    <form [formGroup]="form" novalidate (submit)="search()" class="mt-2 mb-3">
+      <div class="row">
+        <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+          <mat-label>N° étudiant</mat-label>
+          <input matInput formControlName="id" />
+        </mat-form-field>
+      </div>
+      <div class="row">
+        <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+          <mat-label>Nom</mat-label>
+          <input matInput formControlName="nom" />
+        </mat-form-field>
+        <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+          <mat-label>Prénom</mat-label>
+          <input matInput formControlName="prenom" />
+        </mat-form-field>
+      </div>
+      <div class="mt-2 text-center">
+        <button mat-flat-button color="primary">Rechercher</button>
+      </div>
+    </form>
 
-      <div class="alert alert-info" *ngIf="etudiants.length === 10">La recherche est limitée à 10 étudiants. Veuillez affiner la recherche si l'étudiant n'apparaît pas.</div>
-      <table mat-table [dataSource]="etudiants">
-        <tr class="mat-row" *matNoDataRow>
-          <td class="mat-cell" colspan="9999">Aucun étudiant trouvé</td>
-        </tr>
-        <ng-container matColumnDef="numetudiant">
-          <th mat-header-cell *matHeaderCellDef>N° étudiant</th>
-          <td mat-cell *matCellDef="let row">{{row.codEtu}}</td>
-        </ng-container>
-        <ng-container matColumnDef="nomprenom">
-          <th mat-header-cell *matHeaderCellDef>Nom / Prénom</th>
-          <td mat-cell *matCellDef="let row">{{row.displayName}}</td>
-        </ng-container>
-        <ng-container matColumnDef="action">
-          <th mat-header-cell *matHeaderCellDef></th>
-          <td mat-cell *matCellDef="let row">
-            <button mat-button (click)="choose(row)" color="primary">
-              <span *ngIf="!selectedNumEtudiant || selectedNumEtudiant !== row.codEtu; else notSelected"><i class="fa fa-check"></i> Sélectionner</span>
-              <ng-template #notSelected>
-                <i class="fa fa-check-circle"></i> Sélectionner
-              </ng-template>
-            </button>
-          </td>
-        </ng-container>
+    <div class="alert alert-info" *ngIf="etudiants.length === 10">La recherche est limitée à 10 étudiants. Veuillez affiner la recherche si l'étudiant n'apparaît pas.</div>
+    <table mat-table [dataSource]="etudiants">
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="9999">Aucun étudiant trouvé</td>
+      </tr>
+      <ng-container matColumnDef="numetudiant">
+        <th mat-header-cell *matHeaderCellDef>N° étudiant</th>
+        <td mat-cell *matCellDef="let row">{{row.codEtu}}</td>
+      </ng-container>
+      <ng-container matColumnDef="nomprenom">
+        <th mat-header-cell *matHeaderCellDef>Nom / Prénom</th>
+        <td mat-cell *matCellDef="let row">{{row.displayName}}</td>
+      </ng-container>
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row">
+          <button mat-button (click)="choose(row)" color="primary">
+            <span *ngIf="!selectedNumEtudiant || selectedNumEtudiant !== row.codEtu; else notSelected"><i class="fa fa-check"></i> Sélectionner</span>
+            <ng-template #notSelected>
+              <i class="fa fa-check-circle"></i> Sélectionner
+            </ng-template>
+          </button>
+        </td>
+      </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="columns"></tr>
-        <tr mat-row *matRowDef="let row; columns: columns;"></tr>
-      </table>
-    </mat-expansion-panel>
-    <mat-expansion-panel [disabled]="!etudiant" [expanded]="etudiant">
-      <mat-expansion-panel-header>
-        <mat-panel-title>Cadre du stage</mat-panel-title>
-      </mat-expansion-panel-header>
-      <form *ngIf="etudiant" [formGroup]="formAdresse" novalidate (submit)="validate()">
-        <div class="convention-etudiant-details">
-          <mat-card>
-            <mat-card-content>
-              <div class="text-title"><i class="fa fa-user"></i> Étudiant</div>
-              <mat-divider></mat-divider>
-              <div class="mt-3 mb-3">
-                <div class="row">
-                  <div class="col-sm-6 font-weight-bold">N° étudiant</div>
-                  <div class="col-sm-6">{{selectedNumEtudiant}}</div>
-                </div>
-                <div class="row">
-                  <div class="col-sm-6 font-weight-bold">Nom</div>
-                  <div class="col-sm-6">{{etudiant.nompatro}}</div>
-                </div>
-                <div class="row">
-                  <div class="col-sm-6 font-weight-bold">Prénom</div>
-                  <div class="col-sm-6">{{etudiant.prenom}}</div>
-                </div>
+      <tr mat-header-row *matHeaderRowDef="columns"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+    </table>
+  </mat-expansion-panel>
+  <mat-expansion-panel [disabled]="!etudiant" [expanded]="etudiant">
+    <mat-expansion-panel-header>
+      <mat-panel-title>Cadre du stage</mat-panel-title>
+    </mat-expansion-panel-header>
+    <form *ngIf="etudiant" [formGroup]="formAdresse" novalidate (submit)="validate()">
+      <div class="convention-etudiant-details">
+        <mat-card>
+          <mat-card-content>
+            <div class="text-title"><i class="fa fa-user"></i> Étudiant</div>
+            <mat-divider></mat-divider>
+            <div class="mt-3 mb-3">
+              <div class="row">
+                <div class="col-sm-6 font-weight-bold">N° étudiant</div>
+                <div class="col-sm-6">{{selectedNumEtudiant}}</div>
               </div>
-
-              <div class="text-title"><i class="fa fa-star"></i> Vérifiez les coordonnées</div>
-              <mat-divider></mat-divider>
-              <div class="mt-3 mb-3">
-                <div class="row">
-                  <mat-form-field class="col-sm-12 mb-2" appearance="fill">
-                    <mat-label>Adresse</mat-label>
-                    <input matInput formControlName="mainAddress" required />
-                  </mat-form-field>
-                  <mat-form-field class="col-sm-12 mb-2" appearance="fill">
-                    <mat-label>Code postal</mat-label>
-                    <input matInput formControlName="postalCode" required />
-                  </mat-form-field>
-                  <mat-form-field class="col-sm-12 mb-2" appearance="fill">
-                    <mat-label>Commune</mat-label>
-                    <input matInput formControlName="town" required />
-                  </mat-form-field>
-                  <mat-form-field class="col-sm-12 mb-2" appearance="fill">
-                    <mat-label>Pays</mat-label>
-                    <input matInput formControlName="country" required />
-                  </mat-form-field>
-                  <mat-form-field class="col-sm-12 mb-2" appearance="fill">
-                    <mat-label>Téléphone</mat-label>
-                    <input matInput formControlName="phone" />
-                  </mat-form-field>
-                  <mat-form-field class="col-sm-12 mb-2" appearance="fill">
-                    <mat-label>Téléphone portable</mat-label>
-                    <input matInput formControlName="portablePhone" />
-                  </mat-form-field>
-                  <mat-form-field class="col-sm-12 mb-2" appearance="fill">
-                    <mat-label>Mail personnel</mat-label>
-                    <input matInput type="email" formControlName="mailPerso" required />
-                  </mat-form-field>
-                  <mat-form-field class="col-sm-12 mb-2" appearance="fill">
-                    <mat-label>Mail institutionnel</mat-label>
-                    <input matInput type="email" disabled [value]="etudiant.mail" />
-                  </mat-form-field>
-                </div>
+              <div class="row">
+                <div class="col-sm-6 font-weight-bold">Nom</div>
+                <div class="col-sm-6">{{etudiant.nompatro}}</div>
               </div>
-            </mat-card-content>
-          </mat-card>
-          <mat-card>
-            <mat-card-content>
-              <div class="text-title"><i class="fa fa-graduation-cap"></i> Choisissez le cadre du stage</div>
-              <mat-divider></mat-divider>
-            </mat-card-content>
-          </mat-card>
-        </div>
-        <div class="mt-3 text-right">
-          <button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
-        </div>
-      </form>
-    </mat-expansion-panel>
-  </mat-accordion>
-</ng-container>
+              <div class="row">
+                <div class="col-sm-6 font-weight-bold">Prénom</div>
+                <div class="col-sm-6">{{etudiant.prenom}}</div>
+              </div>
+            </div>
+
+            <div class="text-title"><i class="fa fa-star"></i> Vérifiez les coordonnées</div>
+            <mat-divider></mat-divider>
+            <div class="mt-3 mb-3">
+              <div class="row">
+                <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                  <mat-label>Adresse</mat-label>
+                  <input matInput formControlName="mainAddress" required />
+                </mat-form-field>
+                <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                  <mat-label>Code postal</mat-label>
+                  <input matInput formControlName="postalCode" required />
+                </mat-form-field>
+                <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                  <mat-label>Commune</mat-label>
+                  <input matInput formControlName="town" required />
+                </mat-form-field>
+                <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                  <mat-label>Pays</mat-label>
+                  <input matInput formControlName="country" required />
+                </mat-form-field>
+                <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                  <mat-label>Téléphone</mat-label>
+                  <input matInput formControlName="phone" />
+                </mat-form-field>
+                <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                  <mat-label>Téléphone portable</mat-label>
+                  <input matInput formControlName="portablePhone" />
+                </mat-form-field>
+                <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                  <mat-label>Mail personnel</mat-label>
+                  <input matInput type="email" formControlName="mailPerso" required />
+                </mat-form-field>
+                <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                  <mat-label>Mail institutionnel</mat-label>
+                  <input matInput type="email" disabled [value]="etudiant.mail" />
+                </mat-form-field>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        <mat-card>
+          <mat-card-content>
+            <div class="text-title"><i class="fa fa-graduation-cap"></i> Choisissez le cadre du stage</div>
+            <mat-divider></mat-divider>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      <div class="mt-3 text-right">
+        <button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
+      </div>
+    </form>
+  </mat-expansion-panel>
+</mat-accordion>
