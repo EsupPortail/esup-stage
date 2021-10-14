@@ -37,6 +37,17 @@ public class ModeVersGratificationController {
         return paginatedResponse;
     }
 
+    @PostMapping
+    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.CREATION})
+    public ModeVersGratification create(@RequestBody ModeVersGratification modeVersGratification) {
+        if (modeVersGratificationRepository.exists(modeVersGratification.getLibelle(), modeVersGratification.getId())) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Libellé déjà existant");
+        }
+        modeVersGratification.setTemEnServ("O");
+        modeVersGratification = modeVersGratificationJpaRepository.saveAndFlush(modeVersGratification);
+        return modeVersGratification;
+    }
+
     @PutMapping("/{id}")
     @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
     public ModeVersGratification update(@PathVariable("id") int id, @RequestBody ModeVersGratification requestModeVersGratification) {

@@ -37,6 +37,18 @@ public class ModeValidationStageController {
         return paginatedResponse;
     }
 
+    @PostMapping
+    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.CREATION})
+    public ModeValidationStage create(@RequestBody ModeValidationStage modeValidationStage) {
+        if (modeValidationStageRepository.exists(modeValidationStage.getLibelle(), modeValidationStage.getId())) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Libellé déjà existant");
+        }
+        modeValidationStage.setTemEnServ("O");
+        modeValidationStage.setModifiable(true);
+        modeValidationStage = modeValidationStageJpaRepository.saveAndFlush(modeValidationStage);
+        return modeValidationStage;
+    }
+
     @PutMapping("/{id}")
     @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
     public ModeValidationStage update(@PathVariable("id") int id, @RequestBody ModeValidationStage requestModeValidationStage) {

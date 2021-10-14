@@ -15,6 +15,10 @@ export class UniteDureeService implements PaginatedService {
     return this.http.get(environment.apiUrl + "/unite-duree", {params: {page, perPage, predicate, sortOrder, filters}});
   }
 
+  create(data: any): Observable<any> {
+    return this.http.post(environment.apiUrl + "/unite-duree", data);
+  }
+
   update(id: number, data: any): Observable<any> {
     return this.http.put(environment.apiUrl + '/unite-duree/' + id, data);
   }

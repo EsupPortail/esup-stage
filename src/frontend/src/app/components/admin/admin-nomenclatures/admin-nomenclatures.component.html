@@ -2,7 +2,8 @@
   <mat-tab *ngFor="let nomenclature of nomenclatures">
     <ng-template mat-tab-label>{{nomenclature.label}}</ng-template>
     <app-table [service]="nomenclature.service" [columns]="columns" [sortColumn]="sortColumn" [filters]="nomenclature.label == 'Pays' ? filtersPays : nomenclature.key == 'code' ? filtersCode : filters"
-               matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'" (matSortChange)="appTables ? appTables.toArray()[nomenclature.tableIndex].sorting($event) : null">
+               matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'" (matSortChange)="appTables ? appTables.toArray()[nomenclature.tableIndex].sorting($event) : null"
+               [actionButton]="createButton">
       <ng-container matColumnDef="id">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>{{nomenclature.key == 'id' ? 'Id' : 'Code'}}</th>
         <td mat-cell *matCellDef="let row">{{nomenclature.key == 'id' ? row.id : row.code}}</td>

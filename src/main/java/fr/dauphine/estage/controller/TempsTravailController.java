@@ -37,6 +37,18 @@ public class TempsTravailController {
         return paginatedResponse;
     }
 
+    @PostMapping
+    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.CREATION})
+    public TempsTravail create(@RequestBody TempsTravail tempsTravail) {
+        if (tempsTravailRepository.exists(tempsTravail.getLibelle(), tempsTravail.getId())) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Libellé déjà existant");
+        }
+        tempsTravail.setTemEnServ("O");
+        tempsTravail.setModifiable(true);
+        tempsTravail = tempsTravailJpaRepository.saveAndFlush(tempsTravail);
+        return tempsTravail;
+    }
+
     @PutMapping("{id}")
     @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
     public TempsTravail update(@PathVariable("id") int id, @RequestBody TempsTravail requestTempsTravail) {

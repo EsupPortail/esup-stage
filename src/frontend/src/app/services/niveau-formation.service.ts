@@ -15,6 +15,10 @@ export class NiveauFormationService implements PaginatedService {
     return this.http.get(environment.apiUrl + "/niveau-formation", {params: {page, perPage, predicate, sortOrder, filters}});
   }
 
+  create(data: any): Observable<any> {
+    return this.http.post(environment.apiUrl + "/niveau-formation", data);
+  }
+
   update(id: number, data: any): Observable<any> {
     return this.http.put(environment.apiUrl + '/niveau-formation/' + id, data);
   }

@@ -15,6 +15,10 @@ export class TypeConventionService implements PaginatedService {
     return this.http.get(environment.apiUrl + "/type-convention", {params: {page, perPage, predicate, sortOrder, filters}});
   }
 
+  create(data: any): Observable<any> {
+    return this.http.post(environment.apiUrl + "/type-convention", data);
+  }
+
   update(id: number, data: any): Observable<any> {
     return this.http.put(environment.apiUrl + '/type-convention/' + id, data);
   }

@@ -15,6 +15,10 @@ export class TypeOffreService implements PaginatedService {
     return this.http.get(environment.apiUrl + "/type-offre", {params: {page, perPage, predicate, sortOrder, filters}});
   }
 
+  create(data: any): Observable<any> {
+    return this.http.post(environment.apiUrl + "/type-offre", data);
+  }
+
   update(id: number, data: any): Observable<any> {
     return this.http.put(environment.apiUrl + '/type-offre/' + id, data);
   }

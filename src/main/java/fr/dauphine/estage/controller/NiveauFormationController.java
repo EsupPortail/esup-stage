@@ -37,6 +37,18 @@ public class NiveauFormationController {
         return paginatedResponse;
     }
 
+    @PostMapping
+    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.CREATION})
+    public NiveauFormation create(@RequestBody NiveauFormation niveauFormation) {
+        if (niveauFormationRepository.exists(niveauFormation.getLibelle(), niveauFormation.getId())) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Libellé déjà existant");
+        }
+        niveauFormation.setTemEnServ("O");
+        niveauFormation.setModifiable(true);
+        niveauFormation = niveauFormationJpaRepository.saveAndFlush(niveauFormation);
+        return niveauFormation;
+    }
+
     @PutMapping("/{id}")
     @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
     public NiveauFormation update(@PathVariable("id") int id, @RequestBody NiveauFormation requestNiveauFormation) {

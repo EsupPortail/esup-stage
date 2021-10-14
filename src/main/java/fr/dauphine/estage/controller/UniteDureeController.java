@@ -37,6 +37,17 @@ public class UniteDureeController {
         return paginatedResponse;
     }
 
+    @PostMapping
+    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.CREATION})
+    public UniteDuree create(@RequestBody UniteDuree uniteDuree) {
+        if (uniteDureeRepository.exists(uniteDuree.getLibelle(), uniteDuree.getId())) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Libellé déjà existant");
+        }
+        uniteDuree.setTemEnServ("O");
+        uniteDuree = uniteDureeJpaRepository.saveAndFlush(uniteDuree);
+        return uniteDuree;
+    }
+
     @PutMapping("/{id}")
     @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
     public UniteDuree update(@PathVariable("id") int id, @RequestBody UniteDuree requestUniteDuree) {

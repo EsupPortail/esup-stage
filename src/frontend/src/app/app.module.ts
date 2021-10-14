@@ -63,6 +63,7 @@ import { CentreGestionComponent } from './components/centre-gestion/centre-gesti
 import { EtudiantComponent } from './components/convention/etudiant/etudiant.component';
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { LoaderComponent } from './components/loader/loader.component';
+import { AdminNomenclaturesCreationComponent } from './components/admin/admin-nomenclatures/admin-nomenclatures-creation/admin-nomenclatures-creation.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -92,6 +93,7 @@ registerLocaleData(localeFr, 'fr');
     CentreGestionComponent,
     EtudiantComponent,
     LoaderComponent,
+    AdminNomenclaturesCreationComponent,
   ],
   imports: [
     BrowserModule,
