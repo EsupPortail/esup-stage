@@ -28,6 +28,7 @@ export class TableComponent implements OnInit, AfterContentInit {
   @Input() filters: any[] = [];
   @Input() pagination: boolean = true;
   @Input() actionButton: any;
+  @Input() hideDeleteFilters: boolean;
 
   @Output() onUpdated = new EventEmitter<any>();
 
