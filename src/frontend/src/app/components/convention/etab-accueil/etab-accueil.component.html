@@ -161,14 +161,14 @@
                 <span class="text-success"><i class="fa fa-check"></i> {{selectedNafN5.libelle}}</span>
               </ng-container>
               <ng-template #invalidNafN5>
-                <span class="text-danger">Ce code est invalid</span>
+                <span class="text-danger">Ce code est invalide</span>
               </ng-template>
             </mat-hint>
           </mat-form-field>
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Activité principale</mat-label>
-            <textarea matInput formControlName="activitePrincipale" rows="5"></textarea>
-          </mat-form-field>
+          <div class="col-sm-12 col-md-6 mb-2">
+            <label>Activité principale</label>
+            <quill-editor formControlName="activitePrincipale"></quill-editor>
+          </div>
         </div>
 
         <div class="text-title">Coordonnées</div>

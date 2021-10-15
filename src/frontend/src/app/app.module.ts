@@ -55,7 +55,6 @@ import { MatRadioModule } from "@angular/material/radio";
 import { ContenuComponent } from './components/admin/contenu/contenu.component';
 import { ContenuPipe } from './pipes/contenu.pipe';
 import { ContenuService } from "./services/contenu.service";
-import { CKEditorModule } from "@ckeditor/ckeditor5-angular";
 import { CentreGestionSearchComponent } from './components/centre-gestion-search/centre-gestion-search.component';
 import { EtabAccueilComponent } from './components/convention/etab-accueil/etab-accueil.component';
 import { MatExpansionModule } from "@angular/material/expansion";
@@ -64,6 +63,7 @@ import { EtudiantComponent } from './components/convention/etudiant/etudiant.com
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { LoaderComponent } from './components/loader/loader.component';
 import { AdminNomenclaturesCreationComponent } from './components/admin/admin-nomenclatures/admin-nomenclatures-creation/admin-nomenclatures-creation.component';
+import { QuillModule } from "ngx-quill";
 
 registerLocaleData(localeFr, 'fr');
 
@@ -121,9 +121,9 @@ registerLocaleData(localeFr, 'fr');
     MatCheckboxModule,
     MatStepperModule,
     MatRadioModule,
-    CKEditorModule,
     MatExpansionModule,
     MatProgressSpinnerModule,
+    QuillModule.forRoot(),
   ],
   providers: [
     CookieService,

@@ -6,7 +6,6 @@ import { AppFonction } from "../../../constants/app-fonction";
 import { Droit } from "../../../constants/droit";
 import { AuthService } from "../../../services/auth.service";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { MessageService } from "../../../services/message.service";
 
 @Component({
@@ -26,7 +25,6 @@ export class ContenuComponent implements OnInit {
   formTabIndex = 1;
   data: any;
   form: FormGroup;
-  Editor = ClassicEditor;
 
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
   @ViewChild('tabs') tabs: MatTabGroup | undefined;
