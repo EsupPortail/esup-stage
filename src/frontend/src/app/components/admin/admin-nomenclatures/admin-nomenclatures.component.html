@@ -3,7 +3,7 @@
     <ng-template mat-tab-label>{{nomenclature.label}}</ng-template>
     <app-table [service]="nomenclature.service" [columns]="columns" [sortColumn]="sortColumn" [filters]="nomenclature.label == 'Pays' ? filtersPays : filters"
                matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'" (matSortChange)="appTables ? appTables.toArray()[nomenclature.tableIndex].sorting($event) : null"
-               [actionButton]="createButton">
+               [actionButton]="createButton" [hideDeleteFilters]="true">
       <ng-container matColumnDef="libelle">
         <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Libellé</th>
         <td mat-cell *matCellDef="let row">{{row.libelle}}</td>
