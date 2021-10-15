@@ -7,9 +7,9 @@ import javax.persistence.EntityManager;
 import java.util.Arrays;
 
 @Repository
-public class SecteurActiviteRepository extends PaginationRepository<NafN1> {
+public class NafN1Repository extends PaginationRepository<NafN1> {
 
-    public SecteurActiviteRepository(EntityManager em) {
+    public NafN1Repository(EntityManager em) {
         super(em, NafN1.class, "n");
         this.predicateWhitelist = Arrays.asList("code", "libelle");
     }

@@ -46,6 +46,15 @@ body { margin: 0; font-family: var(--fontFamily); font-size: var(--fontSize); }
   color: var(--primaryColor);
   font-weight: bold;
 }
+.text-danger {
+  color: var(--dangerColor);
+}
+.text-warning {
+  color: var(--warningColor);
+}
+.text-success {
+  color: var(--successColor);
+}
 
 .mat-tab-body-wrapper {
   margin-top: 20px;
@@ -99,5 +108,11 @@ form, .mat-cell {
   }
   .mat-card-header-text {
     margin: 0;
+  }
+}
+
+.mat-form-field {
+  mat-icon.icon-help {
+    cursor: help;
   }
 }

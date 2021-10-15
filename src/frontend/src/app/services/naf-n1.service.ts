@@ -7,11 +7,11 @@ import { environment } from "../../environments/environment";
 @Injectable({
   providedIn: 'root'
 })
-export class SecteurActiviteService implements PaginatedService {
+export class NafN1Service implements PaginatedService {
 
   constructor(private http: HttpClient) { }
 
   getPaginated(page: number, perPage: number, predicate: string, sortOrder: string, filters: string): Observable<any> {
-    return this.http.get(`${environment.apiUrl}/secteur-activites`, {params: {page, perPage, predicate, sortOrder, filters}});
+    return this.http.get(`${environment.apiUrl}/nafn1`, {params: {page, perPage, predicate, sortOrder, filters}});
   }
 }

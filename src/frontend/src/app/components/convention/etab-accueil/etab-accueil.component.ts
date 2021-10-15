@@ -2,12 +2,14 @@ import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/cor
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { PaysService } from "../../../services/pays.service";
 import { TypeStructureService } from "../../../services/type-structure.service";
-import { SecteurActiviteService } from "../../../services/secteur-activite.service";
+import { NafN1Service } from "../../../services/naf-n1.service";
 import { StructureService } from "../../../services/structure.service";
 import { TableComponent } from "../../table/table.component";
-import { MatTabGroup } from "@angular/material/tabs";
 import { StatutJuridiqueService } from "../../../services/statut-juridique.service";
 import { MatExpansionPanel } from "@angular/material/expansion";
+import { EffectifService } from "../../../services/effectif.service";
+import { MessageService } from "../../../services/message.service";
+import { NafN5Service } from "../../../services/naf-n5.service";
 
 @Component({
   selector: 'app-etab-accueil',
@@ -20,6 +22,12 @@ export class EtabAccueilComponent implements OnInit {
   sortColumn = 'raisonSociale';
   filters: any[] = [];
 
+  countries: any[] = [];
+  typeStructures: any[] = [];
+  secteurs: any[] = [];
+  statutJuridiques: any[] = [];
+  effectifs: any[] = [];
+
   formTabIndex = 1;
   data: any;
 
@@ -30,6 +38,8 @@ export class EtabAccueilComponent implements OnInit {
 
   etab: any;
   modif: boolean = false;
+  form: FormGroup;
+  selectedNafN5: any;
 
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
   @ViewChild(MatExpansionPanel) firstPanel: MatExpansionPanel|undefined;
@@ -39,9 +49,32 @@ export class EtabAccueilComponent implements OnInit {
   constructor(public structureService: StructureService,
               private paysService: PaysService,
               private typeStructureService: TypeStructureService,
-              private secteurActiviteService: SecteurActiviteService,
+              private nafN1Service: NafN1Service,
+              private nafN5Service: NafN5Service,
               private statutJuridiqueService: StatutJuridiqueService,
+              private effectifService: EffectifService,
+              private fb: FormBuilder,
+              private messageService: MessageService,
   ) {
+    this.form = this.fb.group({
+      raisonSociale: [null, [Validators.required, Validators.maxLength(150)]],
+      numeroSiret: [null, [Validators.maxLength(14)]],
+      effectif: [null, [Validators.required]],
+      typeStructure: [null, [Validators.required]],
+      statutJuridique: [null, [Validators.required]],
+      nafN5: [null, []],
+      activitePrincipale: [null, []],
+      voie: [null, [Validators.required, Validators.maxLength(200)]],
+      codePostal: [null, [Validators.required, Validators.maxLength(10)]],
+      batimentResidence: [null, [Validators.maxLength(200)]],
+      commune: [null, [Validators.required, Validators.maxLength(200)]],
+      libCedex: [null, [Validators.maxLength(20)]],
+      pays: [null, [Validators.required]],
+      mail: [null, [Validators.email, Validators.maxLength(50)]],
+      telephone: [null, [Validators.required, Validators.maxLength(20)]],
+      siteWeb: [null, [Validators.maxLength(200)]],
+      fax: [null, [Validators.maxLength(20)]],
+    });
   }
 
   ngOnInit(): void {
@@ -55,42 +88,109 @@ export class EtabAccueilComponent implements OnInit {
       { id: 'statutJuridique.id', libelle: 'Forme juridique', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id' },
     ];
     this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServPays: {value: 'O', type: 'text'}})).subscribe((response: any) => {
+      this.countries = response.data;
       const filter = this.filters.find((f: any) => f.id === 'pays.id');
       if (filter) {
-        filter.options = response.data;
+        filter.options = this.countries;
       }
     });
     this.typeStructureService.getPaginated(1, 0, 'libelle', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
+      this.typeStructures = response.data;
       const filter = this.filters.find((f: any) => f.id === 'typeStructure.id');
       if (filter) {
-        filter.options = response.data;
+        filter.options = this.typeStructures;
       }
     });
-    this.secteurActiviteService.getPaginated(1, 0, 'libelle', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
+    this.nafN1Service.getPaginated(1, 0, 'libelle', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
+      this.secteurs = response.data;
       const filter = this.filters.find((f: any) => f.id === 'nafN1.code');
       if (filter) {
-        filter.options = response.data;
+        filter.options = this.secteurs;
       }
     });
     this.statutJuridiqueService.getPaginated(1, 0, 'libelle', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
+      this.statutJuridiques = response.data;
       const filter = this.filters.find((f: any) => f.id === 'statutJuridique.id');
       if (filter) {
-        filter.options = response.data;
+        filter.options = this.statutJuridiques;
       }
+    });
+    this.effectifService.getAll().subscribe((response: any) => {
+      this.effectifs =  response;
     });
   }
 
   choose(row: any): void {
+    this.modif = false;
     this.structureService.getById(row.id).subscribe((response: any) => {
       this.etab = response;
+      this.selectedNafN5 = this.etab.nafN5;
       if (this.firstPanel) {
         this.firstPanel.expanded = false;
       }
+      // TODO enregistrer l'établissement au niveau de la convention
+      this.validated.emit(2);
     });
   }
 
   initCreate(): void {
-    this.etab = {}; // TODO
+    this.etab = {};
+    this.form.reset();
+    this.selectedNafN5 = undefined;
+  }
+
+  edit(): void {
+    this.form.setValue({
+      raisonSociale: this.etab.raisonSociale,
+      numeroSiret: this.etab.numeroSiret,
+      effectif: this.etab.effectif,
+      typeStructure: this.etab.typeStructure,
+      statutJuridique: this.etab.statutJuridique,
+      nafN5: this.etab.nafN5.code,
+      activitePrincipale: this.etab.activitePrincipale,
+      voie: this.etab.voie,
+      codePostal: this.etab.codePostal,
+      batimentResidence: this.etab.batimentResidence,
+      commune: this.etab.commune,
+      libCedex: this.etab.libCedex,
+      pays: this.etab.pays,
+      mail: this.etab.mail,
+      telephone: this.etab.telephone,
+      siteWeb: this.etab.siteWeb,
+      fax: this.etab.fax,
+    });
+    this.modif = true;
+  }
+
+  cancelEdit(): void {
+    this.modif = false;
+  }
+
+  compare(option: any, value: any): boolean {
+    if (option && value) {
+      return option === value.id;
+    }
+    return false;
+  }
+
+  getNafN5(): void {
+    const nafN5Code = this.form.get('nafN5')?.value;
+    if (nafN5Code) {
+      this.nafN5Service.getByCode(nafN5Code).subscribe((response: any) => {
+        this.selectedNafN5 = response;
+      });
+    }
+  }
+
+  save(): void {
+    if (this.form.valid) {
+      // Contrôle code APE ou activité principale renseignée
+      if (!this.form.get('nafN5')?.value && !this.form.get('activitePrincipale')?.value) {
+        this.messageService.setError('Une de ces deux informations doivent être renseignée : Code APE, Activité principale');
+        return;
+      }
+      // TODO call api
+    }
   }
 
 }
