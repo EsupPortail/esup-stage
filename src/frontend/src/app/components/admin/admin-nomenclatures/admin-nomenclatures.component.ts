@@ -38,9 +38,11 @@ export class AdminNomenclaturesComponent implements OnInit {
 
   filters = [
     { id: 'libelle', libelle: 'Libellé' },
+    { id: 'temEnServ', libelle: 'Valeurs actives', type: 'temEnServ' }
   ];
   filtersPays = [
-    { id: 'lib', libelle: 'Libellé'},
+    { id: 'lib', libelle: 'Libellé' },
+    { id: 'temEnServPays', libelle: 'Valeurs actives', type: 'temEnServ' }
   ];
 
   createButton: any = {
