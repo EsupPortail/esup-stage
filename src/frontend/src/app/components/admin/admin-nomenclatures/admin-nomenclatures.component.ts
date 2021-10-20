@@ -54,22 +54,22 @@ export class AdminNomenclaturesComponent implements OnInit {
   }
 
   nomenclatures = [
-    { key: 'id', label: 'Type Convention', service: this.typeConventionService, tableIndex: 0, creationFormType: 2 },
-    { key: 'code', label: 'Langue Convention', service: this.langueConventionService, tableIndex: 1, creationFormType: 3 },
-    { key: 'id', label: 'Pays', service: this.paysService, tableIndex: 2, creationFormType: 3 },
-    { key: 'id', label: 'Thème', service: this.themeService, tableIndex: 3, creationFormType: 1 },
-    { key: 'id', label: 'Temps Travail', service: this.tempsTravailService, tableIndex: 4, creationFormType: 2 },
-    { key: 'id', label: 'Fréquence de versement', service: this.uniteDureeService, tableIndex: 5, creationFormType: 1 },
-    { key: 'id', label: 'Devise', service: this.deviseService, tableIndex: 6, creationFormType: 1 },
-    { key: 'id', label: 'Type de gratification', service: this.uniteGratificationService, tableIndex: 7, creationFormType: 1 },
-    { key: 'id', label: 'Modalité de paiement', service: this.modeVersGratificationService, tableIndex: 8, creationFormType: 1 },
-    { key: 'id', label: 'Mode de validation du stage', service: this.modeValidationStageService, tableIndex: 9, creationFormType: 1 },
-    { key: 'id', label: 'Niveau de formation', service: this.niveauFormationService, tableIndex: 10, creationFormType: 1 },
-    { key: 'id', label: 'Origine du stage', service: this.origineStageService, tableIndex: 11, creationFormType: 1 },
-    { key: 'id', label: 'Type de structure', service: this.typeStructureService, tableIndex: 12, creationFormType: 3 },
-    { key: 'id', label: 'Statut juridique', service: this.statutJuridiqueService, tableIndex: 13, creationFormType: 3 },
-    { key: 'id', label: "Type d'offre de stage", service: this.typeOffreService, tableIndex: 14, creationFormType: 2 },
-    { key: 'id', label: "Contrat du stage", service: this.contratOffreService, tableIndex: 15, creationFormType: 3 },
+    { key: 'id', label: 'Type Convention', service: this.typeConventionService, tableIndex: 0, creationFormType: 2, init: false },
+    { key: 'code', label: 'Langue Convention', service: this.langueConventionService, tableIndex: 1, creationFormType: 3, init: false },
+    { key: 'id', label: 'Pays', service: this.paysService, tableIndex: 2, creationFormType: 3, init: false },
+    { key: 'id', label: 'Thème', service: this.themeService, tableIndex: 3, creationFormType: 1, init: false },
+    { key: 'id', label: 'Temps Travail', service: this.tempsTravailService, tableIndex: 4, creationFormType: 2, init: false },
+    { key: 'id', label: 'Fréquence de versement', service: this.uniteDureeService, tableIndex: 5, creationFormType: 1, init: false },
+    { key: 'id', label: 'Devise', service: this.deviseService, tableIndex: 6, creationFormType: 1, init: false },
+    { key: 'id', label: 'Type de gratification', service: this.uniteGratificationService, tableIndex: 7, creationFormType: 1, init: false },
+    { key: 'id', label: 'Modalité de paiement', service: this.modeVersGratificationService, tableIndex: 8, creationFormType: 1, init: false },
+    { key: 'id', label: 'Mode de validation du stage', service: this.modeValidationStageService, tableIndex: 9, creationFormType: 1, init: false },
+    { key: 'id', label: 'Niveau de formation', service: this.niveauFormationService, tableIndex: 10, creationFormType: 1, init: false },
+    { key: 'id', label: 'Origine du stage', service: this.origineStageService, tableIndex: 11, creationFormType: 1, init: false },
+    { key: 'id', label: 'Type de structure', service: this.typeStructureService, tableIndex: 12, creationFormType: 3, init: false },
+    { key: 'id', label: 'Statut juridique', service: this.statutJuridiqueService, tableIndex: 13, creationFormType: 3, init: false },
+    { key: 'id', label: "Type d'offre de stage", service: this.typeOffreService, tableIndex: 14, creationFormType: 2, init: false },
+    { key: 'id', label: "Contrat du stage", service: this.contratOffreService, tableIndex: 15, creationFormType: 3, init: false },
   ];
 
   data: any;
@@ -102,12 +102,14 @@ export class AdminNomenclaturesComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.nomenclatures[0].init = true;
   }
 
   tabChanged(event: MatTabChangeEvent): void {
     this.createButton.service = this.nomenclatures[event.index].service;
     this.createButton.tableIndex = event.index;
     this.createButton.creationFormType = this.nomenclatures[event.index].creationFormType;
+    this.nomenclatures[event.index].init = true;
   }
 
   openEditionModal(service: any, data: any, tableIndex: number) {

@@ -59,7 +59,7 @@ export class TableComponent implements OnInit, AfterContentInit {
         this.data = results.data;
         this.onUpdated.emit(this.data);
       });
-      })
+    });
   }
 
   ngOnInit(): void {

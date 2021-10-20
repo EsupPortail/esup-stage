@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from "@angular/router";
 import { ConventionService } from "../../services/convention.service";
+import { MatTabChangeEvent } from "@angular/material/tabs";
 
 @Component({
   selector: 'app-convention',
@@ -21,6 +22,7 @@ export class ConventionComponent implements OnInit {
     statutSignataire: 0,
     statutRecap: 0,
   };
+  initedTabs = [0];
 
   allValid = false;
 
@@ -41,12 +43,30 @@ export class ConventionComponent implements OnInit {
         //   this.convention = response;
         // });
       }
+      this.convention = {id: 1}; // TODO à supprimer : ajout d'un id au niveau de la convention pour activer les onglets
     });
     // TODO maj des statuts
   }
 
   setStatus(statut: string, value: number): void {
     this.statuts[statut] = value;
+  }
+
+  isCreated(): boolean {
+    return this.convention.id !== 0;
+  }
+
+  tabChanged(event: MatTabChangeEvent): void {
+    if (this.initedTabs.indexOf(event.index) === -1) {
+      this.initedTabs.push(event.index);
+    }
+  }
+
+  hasInit(origin: number|null): boolean {
+    if (origin) {
+      return this.initedTabs.indexOf(origin) > -1;
+    }
+    return false;
   }
 
 }
