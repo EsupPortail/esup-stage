@@ -6,7 +6,7 @@
 
     <app-table [service]="structureService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters"
                matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'"
-               (matSortChange)="appTable ? appTable.sorting($event) : null" [actionButton]="createButton">
+               (matSortChange)="appTable ? appTable.sorting($event) : null" [actionButton]="canCreate() ? createButton : undefined">
       <tr class="mat-row" *matNoDataRow>
         <td class="mat-cell" colspan="9999">Aucun établissement trouvé</td>
       </tr>
@@ -107,7 +107,7 @@
           <div class="col-sm-9">{{etab.nafN5 ? (etab.nafN5.code + ' (' + etab.nafN5.libelle + ')') : ''}}</div>
         </div>
       </div>
-      <div *ngIf="modif">
+      <div *ngIf="modif && canEdit()">
         <div class="text-title">Général</div>
         <mat-divider class="mb-2"></mat-divider>
         <div class="row">
@@ -228,7 +228,7 @@
           </mat-form-field>
         </div>
       </div>
-      <div class="row mt-3">
+      <div class="row mt-3" *ngIf="canEdit() || canCreate()">
         <div class="col-sm-6">
           <button mat-button color="primary" *ngIf="etab.id && !modif" (click)="edit()">Modifier ces informations</button>
           <button mat-button color="warn" *ngIf="etab.id && modif" (click)="cancelEdit()">{{'BOUTON_ANNULER'|contenu}}</button>

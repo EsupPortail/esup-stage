@@ -10,6 +10,9 @@ import { MatExpansionPanel } from "@angular/material/expansion";
 import { EffectifService } from "../../../services/effectif.service";
 import { MessageService } from "../../../services/message.service";
 import { NafN5Service } from "../../../services/naf-n5.service";
+import { AppFonction } from "../../../constants/app-fonction";
+import { Droit } from "../../../constants/droit";
+import { AuthService } from "../../../services/auth.service";
 
 @Component({
   selector: 'app-etab-accueil',
@@ -55,6 +58,7 @@ export class EtabAccueilComponent implements OnInit {
               private effectifService: EffectifService,
               private fb: FormBuilder,
               private messageService: MessageService,
+              private authService: AuthService,
   ) {
     this.form = this.fb.group({
       raisonSociale: [null, [Validators.required, Validators.maxLength(150)]],
@@ -118,6 +122,14 @@ export class EtabAccueilComponent implements OnInit {
     this.effectifService.getAll().subscribe((response: any) => {
       this.effectifs =  response;
     });
+  }
+
+  canCreate(): boolean {
+    return this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.CREATION]});
+  }
+
+  canEdit(): boolean {
+    return this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.MODIFICATION]});
   }
 
   choose(row: any): void {

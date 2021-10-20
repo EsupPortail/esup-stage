@@ -3,6 +3,8 @@ package fr.dauphine.estage.controller;
 import com.fasterxml.jackson.annotation.JsonView;
 import fr.dauphine.estage.dto.PaginatedResponse;
 import fr.dauphine.estage.dto.view.Views;
+import fr.dauphine.estage.enums.AppFonctionEnum;
+import fr.dauphine.estage.enums.DroitEnum;
 import fr.dauphine.estage.exception.AppException;
 import fr.dauphine.estage.model.Structure;
 import fr.dauphine.estage.repository.StructureJpaRepository;
@@ -29,7 +31,7 @@ public class StructureController {
 
     @JsonView(Views.List.class)
     @GetMapping
-    @Secure
+    @Secure(fonction = AppFonctionEnum.ORGA_ACC, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<Structure> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         PaginatedResponse<Structure> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(structureRepository.count(filters));
@@ -38,7 +40,7 @@ public class StructureController {
     }
 
     @GetMapping("/{id}")
-    @Secure
+    @Secure(fonction = AppFonctionEnum.ORGA_ACC, droits = {DroitEnum.LECTURE})
     public Structure getById(@PathVariable("id") int id) {
         Structure structure = structureJpaRepository.findById(id);
         if (structure == null) {

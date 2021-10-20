@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from "@angular/router";
 import { ConventionService } from "../../services/convention.service";
 import { MatTabChangeEvent } from "@angular/material/tabs";
+import { AppFonction } from "../../constants/app-fonction";
+import { Droit } from "../../constants/droit";
 
 @Component({
   selector: 'app-convention',
