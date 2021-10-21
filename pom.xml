@@ -8,11 +8,11 @@
 		<version>2.5.4</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>fr.dauphine</groupId>
-	<artifactId>estage</artifactId>
+	<groupId>org.esup_portail.esup_stage</groupId>
+	<artifactId>esup-stage</artifactId>
 	<version>0.0.4</version>
 	<packaging>war</packaging>
-	<name>estage</name>
+	<name>esup-stage</name>
 	<description>Application ESUP-Stage</description>
 
 	<properties>
