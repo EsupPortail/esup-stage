@@ -17,8 +17,6 @@ export class AdminNomenclaturesCreationComponent implements OnInit {
   typeStructures: any;
   typeOffres: any;
 
-  actualList = [1, 2, 3, 4];
-
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<AdminNomenclaturesCreationComponent>,
@@ -50,9 +48,6 @@ export class AdminNomenclaturesCreationComponent implements OnInit {
           break;
         case 'Contrat du stage':
           this.setContratOffreForm();
-          break;
-        case 'Pays':
-          this.setPaysForm();
           break;
       }
     }
@@ -97,17 +92,6 @@ export class AdminNomenclaturesCreationComponent implements OnInit {
     });
     this.typeOffreService.getPaginated(1, 0, 'libelle', 'asc', '').subscribe((response: any) => {
       this.typeOffres = response.data;
-    });
-  }
-
-  setPaysForm() {
-    this.form = this.fb.group({
-      cog: [null, [Validators.required]],
-      actual: [null, [Validators.required]],
-      crpay: [null],
-      lib: [null, [Validators.required, Validators.maxLength(70)]],
-      iso2: [null, [Validators.maxLength(2)]],
-      siretObligatoire: [false, [Validators.required]],
     });
   }
 

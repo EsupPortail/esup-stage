@@ -41,45 +41,6 @@
           </mat-select>
         </mat-form-field>
       </div>
-
-      <div class="row">
-        <div class="col-sm-6" *ngIf="form.get('cog')">
-          <mat-form-field appearance="fill">
-            <mat-label>COG</mat-label>
-            <input matInput formControlName="cog">
-          </mat-form-field>
-        </div>
-        <div class="col-sm-6" *ngIf="form.get('actual')">
-          <mat-form-field appearance="fill">
-            <mat-label>Code actualité</mat-label>
-            <mat-select formControlName="actual" [compareWith]="compare">
-              <mat-option *ngFor="let actual of actualList" [value]="actual">{{actual}}</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-sm-6" *ngIf="form.get('crpay')">
-          <mat-form-field appearance="fill">
-            <mat-label>CRPAY</mat-label>
-            <input matInput formControlName="crpay">
-          </mat-form-field>
-        </div>
-        <div class="col-sm-6" *ngIf="form.get('lib')">
-          <mat-form-field appearance="fill">
-            <mat-label>Libellé</mat-label>
-            <input matInput formControlName="lib">
-          </mat-form-field>
-        </div>
-      </div>
-
-      <div *ngIf="form.get('iso2')">
-        <mat-form-field appearance="fill">
-          <mat-label>ISO2</mat-label>
-          <input matInput formControlName="iso2">
-        </mat-form-field>
-      </div>
       <div *ngIf="form.get('siretObligatoire')">
         <mat-label id="siret-label">Numéro SIRET obligatoire ?</mat-label><br>
         <mat-radio-group formControlName="siretObligatoire">
