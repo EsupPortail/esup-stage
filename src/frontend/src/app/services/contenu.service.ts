@@ -17,8 +17,8 @@ export class ContenuService implements PaginatedService {
     return this.http.get(`${environment.apiUrl}/contenus`, {params: {page, perPage, predicate, sortOrder, filters}});
   }
 
-  async getAllLibelle() {
-    if (this.contenus === undefined) {
+  async getAllLibelle(forceReload: boolean|undefined = undefined) {
+    if (this.contenus === undefined || forceReload) {
       this.contenus = await this.http.get(`${environment.apiUrl}/contenus/libelle`).toPromise();
     }
   }

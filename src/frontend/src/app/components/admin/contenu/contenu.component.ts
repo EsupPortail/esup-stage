@@ -67,6 +67,7 @@ export class ContenuComponent implements OnInit {
       this.contenuService.update(this.data.code, this.form.value).subscribe((response: any) => {
         this.data = response;
         this.appTable?.update();
+        this.contenuService.getAllLibelle(true);
         this.messageService.setSuccess('Contenu modifé');
       });
     }

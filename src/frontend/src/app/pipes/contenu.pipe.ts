@@ -2,7 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { ContenuService } from "../services/contenu.service";
 
 @Pipe({
-  name: 'contenu'
+  name: 'contenu',
+  pure: false,
 })
 export class ContenuPipe implements PipeTransform {
 
