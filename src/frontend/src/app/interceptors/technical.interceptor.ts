@@ -27,6 +27,10 @@ export class TechnicalInterceptor implements HttpInterceptor {
   }
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+    const activeElement = document.activeElement;
+    if (activeElement instanceof HTMLElement) {
+      activeElement.blur();
+    }
     this.loaderService.show();
     this.nbRequests++;
     if (this.tokenService.getToken()) {
@@ -38,6 +42,9 @@ export class TechnicalInterceptor implements HttpInterceptor {
           finalize(() => {
             this.nbRequests--;
             if (this.nbRequests === 0) {
+              if (activeElement instanceof HTMLElement) {
+                activeElement.focus();
+              }
               this.loaderService.hide();
             }
           })
