@@ -41,7 +41,7 @@
       <ng-container matColumnDef="action">
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let row">
-          <button mat-button (click)="choose(row)" color="primary">
+          <button mat-button mat-stroked-button (click)="choose(row)" color="primary">
             <span *ngIf="!etab || etab.id !== row.id; else notSelected"><i class="fa fa-check"></i> Sélectionner</span>
             <ng-template #notSelected>
               <i class="fa fa-check-circle"></i> Sélectionner
@@ -242,8 +242,8 @@
       </div>
       <div class="row mt-3" *ngIf="canEdit() || canCreate()">
         <div class="col-sm-6">
-          <button mat-button color="primary" *ngIf="etab.id && !modif" (click)="edit()">Modifier ces informations</button>
-          <button mat-button color="warn" *ngIf="etab.id && modif" (click)="cancelEdit()">{{'BOUTON_ANNULER'|contenu}}</button>
+          <button mat-button mat-stroked-button color="primary" *ngIf="etab.id && !modif" (click)="edit()">Modifier ces informations</button>
+          <button mat-button mat-stroked-button color="warn" *ngIf="etab.id && modif" (click)="cancelEdit()">{{'BOUTON_ANNULER'|contenu}}</button>
         </div>
         <div class="col-sm-6 text-right" *ngIf="modif">
           <button mat-button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
