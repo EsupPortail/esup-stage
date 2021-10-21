@@ -71,7 +71,7 @@ export class AdminNomenclaturesComponent implements OnInit {
     { key: 'id', label: 'Type de structure', service: this.typeStructureService, tableIndex: 12, creationFormType: 3, init: false },
     { key: 'id', label: 'Statut juridique', service: this.statutJuridiqueService, tableIndex: 13, creationFormType: 3, init: false },
     { key: 'id', label: "Type d'offre de stage", codeCtrl: true, service: this.typeOffreService, tableIndex: 14, creationFormType: 2, init: false },
-    { key: 'id', label: "Contrat du stage", service: this.contratOffreService, tableIndex: 15, creationFormType: 3, init: false },
+    { key: 'id', label: "Contrat du stage", codeCtrl: true, service: this.contratOffreService, tableIndex: 15, creationFormType: 3, init: false },
   ];
 
   data: any;
@@ -117,6 +117,7 @@ export class AdminNomenclaturesComponent implements OnInit {
   openEditionModal(service: any, data: any, tableIndex: number) {
     this.data = data;
     const dialogConfig = new MatDialogConfig();
+    dialogConfig.width = '500px';
     dialogConfig.data = {service: service, data: this.data};
     const modalDialog = this.matDialog.open(AdminNomenclaturesEditionComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
@@ -134,6 +135,7 @@ export class AdminNomenclaturesComponent implements OnInit {
     let labelTable = this.nomenclatures[tableIndex].label;
     let creationFormType = this.createButton.creationFormType;
     const dialogConfig = new MatDialogConfig();
+    dialogConfig.width = '500px';
     dialogConfig.data = {service: service, creationFormType: creationFormType, labelTable: labelTable};
     const modalDialog = this.matDialog.open(AdminNomenclaturesCreationComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
