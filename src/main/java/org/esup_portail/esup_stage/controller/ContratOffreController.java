@@ -40,8 +40,8 @@ public class ContratOffreController {
     @PostMapping
     @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.CREATION})
     public ContratOffre create(@RequestBody ContratOffre contratOffre) {
-        if (contratOffreRepository.exists(contratOffre.getLibelle(), contratOffre.getId())) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Libellé déjà existant");
+        if (contratOffreRepository.exists(contratOffre.getCodeCtrl(), contratOffre.getId())) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Code déjà existant");
         }
         contratOffre.setTemEnServ("O");
         contratOffre.setModifiable(true);
