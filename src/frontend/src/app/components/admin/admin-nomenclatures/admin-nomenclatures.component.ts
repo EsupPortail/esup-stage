@@ -17,8 +17,8 @@ import { TypeStructureService } from "../../../services/type-structure.service";
 import { StatutJuridiqueService } from "../../../services/statut-juridique.service";
 import { TypeOffreService } from "../../../services/type-offre.service";
 import { ContratOffreService } from "../../../services/contrat-offre.service";
-import { PaysService } from "../../../services/pays.service";
 import { DeviseService } from "../../../services/devise.service";
+import { EffectifService } from "../../../services/effectif.service";
 import { MessageService } from "../../../services/message.service";
 import { TableComponent } from "../../table/table.component";
 import { AdminNomenclaturesEditionComponent } from './admin-nomenclatures-edition/admin-nomenclatures-edition.component';
@@ -55,22 +55,23 @@ export class AdminNomenclaturesComponent implements OnInit {
     action: () => this.openCreationModal()
   }
 
-  nomenclatures = [
-    { key: 'id', label: 'Type Convention', codeCtrl: true, service: this.typeConventionService, tableIndex: 0, creationFormType: 2, init: false },
-    { key: 'code', label: 'Langue Convention', service: this.langueConventionService, tableIndex: 1, creationFormType: 3, init: false },
-    { key: 'id', label: 'Thème', service: this.themeService, tableIndex: 2, creationFormType: 1, init: false },
-    { key: 'id', label: 'Temps Travail', codeCtrl: true, service: this.tempsTravailService, tableIndex: 3, creationFormType: 2, init: false },
-    { key: 'id', label: 'Fréquence de versement', service: this.uniteDureeService, tableIndex: 4, creationFormType: 1, init: false },
-    { key: 'id', label: 'Devise', service: this.deviseService, tableIndex: 5, creationFormType: 1, init: false },
-    { key: 'id', label: 'Type de gratification', service: this.uniteGratificationService, tableIndex: 6, creationFormType: 1, init: false },
-    { key: 'id', label: 'Modalité de paiement', service: this.modeVersGratificationService, tableIndex: 7, creationFormType: 1, init: false },
-    { key: 'id', label: 'Mode de validation du stage', service: this.modeValidationStageService, tableIndex: 8, creationFormType: 1, init: false },
-    { key: 'id', label: 'Niveau de formation', service: this.niveauFormationService, tableIndex: 9, creationFormType: 1, init: false },
-    { key: 'id', label: 'Origine du stage', service: this.origineStageService, tableIndex: 10, creationFormType: 1, init: false },
-    { key: 'id', label: 'Type de structure', service: this.typeStructureService, tableIndex: 11, creationFormType: 3, init: false },
-    { key: 'id', label: 'Statut juridique', service: this.statutJuridiqueService, tableIndex: 12, creationFormType: 3, init: false },
-    { key: 'id', label: "Type d'offre de stage", codeCtrl: true, service: this.typeOffreService, tableIndex: 13, creationFormType: 2, init: false },
-    { key: 'id', label: "Contrat du stage", codeCtrl: true, service: this.contratOffreService, tableIndex: 14, creationFormType: 3, init: false },
+  nomenclatures: any = [
+    { key: 'id', label: 'Type Convention', codeCtrl: true, service: this.typeConventionService, tableIndex: undefined, creationFormType: 2, init: false },
+    { key: 'code', label: 'Langue Convention', service: this.langueConventionService, tableIndex: undefined, creationFormType: 3, init: false },
+    { key: 'id', label: 'Thème', service: this.themeService, tableIndex: undefined, creationFormType: 1, init: false },
+    { key: 'id', label: 'Temps Travail', codeCtrl: true, service: this.tempsTravailService, tableIndex: undefined, creationFormType: 2, init: false },
+    { key: 'id', label: 'Fréquence de versement', service: this.uniteDureeService, tableIndex: undefined, creationFormType: 1, init: false },
+    { key: 'id', label: 'Devise', service: this.deviseService, tableIndex: undefined, creationFormType: 1, init: false },
+    { key: 'id', label: 'Type de gratification', service: this.uniteGratificationService, tableIndex: undefined, creationFormType: 1, init: false },
+    { key: 'id', label: 'Modalité de paiement', service: this.modeVersGratificationService, tableIndex: undefined, creationFormType: 1, init: false },
+    { key: 'id', label: 'Mode de validation du stage', service: this.modeValidationStageService, tableIndex: undefined, creationFormType: 1, init: false },
+    { key: 'id', label: 'Niveau de formation', service: this.niveauFormationService, tableIndex: undefined, creationFormType: 1, init: false },
+    { key: 'id', label: 'Origine du stage', service: this.origineStageService, tableIndex: undefined, creationFormType: 1, init: false },
+    { key: 'id', label: 'Type de structure', service: this.typeStructureService, tableIndex: undefined, creationFormType: 3, init: false },
+    { key: 'id', label: 'Statut juridique', service: this.statutJuridiqueService, tableIndex: undefined, creationFormType: 3, init: false },
+    { key: 'id', label: "Type d'offre de stage", codeCtrl: true, service: this.typeOffreService, tableIndex: undefined, creationFormType: 2, init: false },
+    { key: 'id', label: "Contrat du stage", codeCtrl: true, service: this.contratOffreService, tableIndex: undefined, creationFormType: 3, init: false },
+    { key: 'id', label: "Effectif", service: this.effectifService, tableIndex: undefined, creationFormType: 1, init: false },
   ];
 
   data: any;
@@ -96,19 +97,23 @@ export class AdminNomenclaturesComponent implements OnInit {
     public statutJuridiqueService: StatutJuridiqueService,
     public typeOffreService: TypeOffreService,
     public contratOffreService: ContratOffreService,
-    public paysService: PaysService,
     public deviseService: DeviseService,
+    public effectifService: EffectifService,
     public matDialog: MatDialog,
     private messageService: MessageService,
   ) { }
 
   ngOnInit(): void {
     this.nomenclatures[0].init = true;
+    this.nomenclatures[0].tableIndex = 0;
   }
 
   tabChanged(event: MatTabChangeEvent): void {
+    if (this.appTables) {
+      this.nomenclatures[event.index].tableIndex = this.appTables.toArray().findIndex(t => t.service == this.nomenclatures[event.index].service);
+    }
     this.createButton.service = this.nomenclatures[event.index].service;
-    this.createButton.tableIndex = event.index;
+    this.createButton.tableIndex = this.nomenclatures[event.index].tableIndex;
     this.createButton.creationFormType = this.nomenclatures[event.index].creationFormType;
     this.nomenclatures[event.index].init = true;
   }
