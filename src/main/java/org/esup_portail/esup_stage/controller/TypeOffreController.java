@@ -40,8 +40,8 @@ public class TypeOffreController {
     @PostMapping
     @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.CREATION})
     public TypeOffre create(@RequestBody TypeOffre typeOffre) {
-        if (typeOffreRepository.exists(typeOffre.getLibelle(), typeOffre.getId())) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Libellé déjà existant");
+        if (typeOffreRepository.exists(typeOffre.getCodeCtrl(), typeOffre.getId())) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Code déjà existant");
         }
         typeOffre.setTemEnServ("O");
         typeOffre.setModifiable(true);

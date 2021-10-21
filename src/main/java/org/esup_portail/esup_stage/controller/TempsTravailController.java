@@ -40,8 +40,8 @@ public class TempsTravailController {
     @PostMapping
     @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.CREATION})
     public TempsTravail create(@RequestBody TempsTravail tempsTravail) {
-        if (tempsTravailRepository.exists(tempsTravail.getLibelle(), tempsTravail.getId())) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Libellé déjà existant");
+        if (tempsTravailRepository.exists(tempsTravail.getCodeCtrl(), tempsTravail.getId())) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Code déjà existant");
         }
         tempsTravail.setTemEnServ("O");
         tempsTravail.setModifiable(true);

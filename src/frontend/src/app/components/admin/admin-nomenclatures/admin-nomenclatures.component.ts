@@ -34,15 +34,17 @@ import { Droit } from "../../../constants/droit";
 export class AdminNomenclaturesComponent implements OnInit {
 
   columns = ['libelle', 'action'];
+  columnsCodeCtrl = ['libelle', 'code', 'action'];
   sortColumn = 'libelle';
 
   filters = [
     { id: 'libelle', libelle: 'Libellé' },
     { id: 'temEnServ', libelle: 'Valeurs actives', type: 'temEnServ' }
   ];
-  filtersPays = [
-    { id: 'lib', libelle: 'Libellé' },
-    { id: 'temEnServPays', libelle: 'Valeurs actives', type: 'temEnServ' }
+  filtersCodeCtrl = [
+    { id: 'libelle', libelle: 'Libellé' },
+    { id: 'codeCtrl', libelle: 'Code'},
+    { id: 'temEnServ', libelle: 'Valeurs actives', type: 'temEnServ' }
   ];
 
   createButton: any = {
@@ -54,11 +56,11 @@ export class AdminNomenclaturesComponent implements OnInit {
   }
 
   nomenclatures = [
-    { key: 'id', label: 'Type Convention', service: this.typeConventionService, tableIndex: 0, creationFormType: 2, init: false },
+    { key: 'id', label: 'Type Convention', codeCtrl: true, service: this.typeConventionService, tableIndex: 0, creationFormType: 2, init: false },
     { key: 'code', label: 'Langue Convention', service: this.langueConventionService, tableIndex: 1, creationFormType: 3, init: false },
     { key: 'id', label: 'Pays', service: this.paysService, tableIndex: 2, creationFormType: 3, init: false },
     { key: 'id', label: 'Thème', service: this.themeService, tableIndex: 3, creationFormType: 1, init: false },
-    { key: 'id', label: 'Temps Travail', service: this.tempsTravailService, tableIndex: 4, creationFormType: 2, init: false },
+    { key: 'id', label: 'Temps Travail', codeCtrl: true, service: this.tempsTravailService, tableIndex: 4, creationFormType: 2, init: false },
     { key: 'id', label: 'Fréquence de versement', service: this.uniteDureeService, tableIndex: 5, creationFormType: 1, init: false },
     { key: 'id', label: 'Devise', service: this.deviseService, tableIndex: 6, creationFormType: 1, init: false },
     { key: 'id', label: 'Type de gratification', service: this.uniteGratificationService, tableIndex: 7, creationFormType: 1, init: false },
@@ -68,7 +70,7 @@ export class AdminNomenclaturesComponent implements OnInit {
     { key: 'id', label: 'Origine du stage', service: this.origineStageService, tableIndex: 11, creationFormType: 1, init: false },
     { key: 'id', label: 'Type de structure', service: this.typeStructureService, tableIndex: 12, creationFormType: 3, init: false },
     { key: 'id', label: 'Statut juridique', service: this.statutJuridiqueService, tableIndex: 13, creationFormType: 3, init: false },
-    { key: 'id', label: "Type d'offre de stage", service: this.typeOffreService, tableIndex: 14, creationFormType: 2, init: false },
+    { key: 'id', label: "Type d'offre de stage", codeCtrl: true, service: this.typeOffreService, tableIndex: 14, creationFormType: 2, init: false },
     { key: 'id', label: "Contrat du stage", service: this.contratOffreService, tableIndex: 15, creationFormType: 3, init: false },
   ];
 

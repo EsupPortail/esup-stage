@@ -40,8 +40,8 @@ public class TypeConventionController {
     @PostMapping
     @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.CREATION})
     public TypeConvention create(@RequestBody TypeConvention typeConvention) {
-        if (typeConventionRepository.exists(typeConvention.getLibelle(), typeConvention.getId())) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Libellé déjà existant");
+        if (typeConventionRepository.exists(typeConvention.getCodeCtrl(), typeConvention.getId())) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Code déjà existant");
         }
         typeConvention.setTemEnServ("O");
         typeConvention.setModifiable(true);

@@ -17,8 +17,8 @@
         </div>
         <div class="col-sm-6" *ngIf="form.get('codeCtrl')">
           <mat-form-field appearance="fill">
-            <mat-label>Code Ctrl</mat-label>
-            <input matInput formControlName="codeCtrl">
+            <mat-label>Saisir un code unique</mat-label>
+            <input matInput oninput="this.value = this.value.toUpperCase()" formControlName="codeCtrl">
           </mat-form-field>
         </div>
       </div>

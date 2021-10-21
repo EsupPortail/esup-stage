@@ -1,12 +1,16 @@
 <mat-tab-group #tabs (selectedTabChange)="tabChanged($event)">
   <mat-tab #tab *ngFor="let nomenclature of nomenclatures">
     <ng-template mat-tab-label>{{nomenclature.label}}</ng-template>
-    <app-table *ngIf="tab.isActive || nomenclature.init" [service]="nomenclature.service" [columns]="columns" [sortColumn]="sortColumn" [filters]="nomenclature.label == 'Pays' ? filtersPays : filters"
+    <app-table *ngIf="tab.isActive || nomenclature.init" [service]="nomenclature.service" [columns]="nomenclature.codeCtrl ? columnsCodeCtrl : columns" [sortColumn]="sortColumn" [filters]="nomenclature.codeCtrl ? filtersCodeCtrl : filters"
                matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'" (matSortChange)="appTables ? appTables.toArray()[nomenclature.tableIndex].sorting($event) : null"
                [actionButton]="createButton" [hideDeleteFilters]="true">
       <ng-container matColumnDef="libelle">
         <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Libellé</th>
         <td mat-cell *matCellDef="let row">{{row.libelle}}</td>
+      </ng-container>
+      <ng-container matColumnDef="code" *ngIf="nomenclature.codeCtrl">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Code</th>
+        <td mat-cell *matCellDef="let row">{{row.codeCtrl}}</td>
       </ng-container>
       <ng-container matColumnDef="action">
         <th mat-header-cell *matHeaderCellDef>Actions</th>
