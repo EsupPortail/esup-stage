@@ -2,8 +2,13 @@ package fr.dauphine.estage.model;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import fr.dauphine.estage.dto.view.Views;
+import org.hibernate.validator.constraints.URL;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 @Entity
@@ -22,15 +27,22 @@ public class Structure extends ObjetMetier {
     @Column(length = 20)
     private String codeEtab;
 
+    @NotNull
+    @NotEmpty
+    @Size(min = 14, max = 14)
     @JsonView(Views.List.class)
     @Column(length = 14)
     private String numeroSiret;
 
+    @NotNull
     @JsonView(Views.List.class)
     @ManyToOne
     @JoinColumn(name = "codeNAF_N5")
     private NafN5 nafN5;
 
+    @NotNull
+    @NotEmpty
+    @Size(max = 150)
     @JsonView(Views.List.class)
     @Column(nullable = false, length = 150)
     private String raisonSociale;
@@ -38,15 +50,24 @@ public class Structure extends ObjetMetier {
     @Lob
     private String activitePrincipale;
 
+    @NotNull
+    @NotEmpty
+    @Size(max = 20)
     @Column(length = 20)
     private String telephone;
 
     @Column(length = 20)
     private String fax;
 
+    @Size(max = 50)
+    @Email
     @Column(length = 50)
     private String mail;
 
+    @NotNull
+    @NotEmpty
+    @Size(max = 200)
+    @URL
     @Column(length = 200)
     private String siteWeb;
 
@@ -77,15 +98,18 @@ public class Structure extends ObjetMetier {
     @Column(length = 50)
     private String loginInfosAJour;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "idEffectif", nullable = false)
     private Effectif effectif;
 
+    @NotNull
     @JsonView(Views.List.class)
     @ManyToOne
     @JoinColumn(name = "idStatutJuridique")
     private StatutJuridique statutJuridique;
 
+    @NotNull
     @JsonView(Views.List.class)
     @ManyToOne
     @JoinColumn(name = "idTypeStructure", nullable = false)
@@ -103,19 +127,28 @@ public class Structure extends ObjetMetier {
     @Column(length = 200)
     private String batimentResidence;
 
+    @NotNull
+    @NotEmpty
+    @Size(max = 200)
     @Column(nullable = false, length = 200)
     private String voie;
 
+    @NotNull
+    @NotEmpty
+    @Size(max = 200)
     @JsonView(Views.List.class)
     @Column(length = 200)
     private String commune;
 
+    @NotNull
+    @Size(max = 10)
     @Column(length = 10)
     private String codePostal;
 
     @Column(length = 10)
     private String codeCommune;
 
+    @NotNull
     @JsonView(Views.List.class)
     @ManyToOne
     @JoinColumn(name = "idPays", nullable = false)

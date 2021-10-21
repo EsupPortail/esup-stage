@@ -19,4 +19,12 @@ export class StructureService implements PaginatedService {
     return this.http.get(`${environment.apiUrl}/structures/${id}`);
   }
 
+  update(id: number, data: any): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/structures/${id}`, data);
+  }
+
+  create(data: any): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/structures`, data);
+  }
+
 }

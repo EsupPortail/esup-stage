@@ -64,6 +64,7 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { LoaderComponent } from './components/loader/loader.component';
 import { AdminNomenclaturesCreationComponent } from './components/admin/admin-nomenclatures/admin-nomenclatures-creation/admin-nomenclatures-creation.component';
 import { QuillModule } from "ngx-quill";
+import { FormErrorComponent } from './components/form-error/form-error.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -94,6 +95,7 @@ registerLocaleData(localeFr, 'fr');
     EtudiantComponent,
     LoaderComponent,
     AdminNomenclaturesCreationComponent,
+    FormErrorComponent,
   ],
   imports: [
     BrowserModule,

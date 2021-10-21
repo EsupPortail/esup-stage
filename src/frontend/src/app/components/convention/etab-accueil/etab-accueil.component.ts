@@ -62,7 +62,7 @@ export class EtabAccueilComponent implements OnInit {
   ) {
     this.form = this.fb.group({
       raisonSociale: [null, [Validators.required, Validators.maxLength(150)]],
-      numeroSiret: [null, [Validators.maxLength(14)]],
+      numeroSiret: [null, [Validators.maxLength(14), Validators.pattern('[0-9]{14}')]],
       effectif: [null, [Validators.required]],
       typeStructure: [null, [Validators.required]],
       statutJuridique: [null, [Validators.required]],
@@ -76,7 +76,7 @@ export class EtabAccueilComponent implements OnInit {
       pays: [null, [Validators.required]],
       mail: [null, [Validators.email, Validators.maxLength(50)]],
       telephone: [null, [Validators.required, Validators.maxLength(20)]],
-      siteWeb: [null, [Validators.maxLength(200)]],
+      siteWeb: [null, [Validators.maxLength(200), Validators.pattern('^https?://(\\w([\\w\\-]{0,61}\\w)?\\.)+[a-zA-Z]{2,6}([/]{1}.*)?$')]],
       fax: [null, [Validators.maxLength(20)]],
     });
   }
@@ -149,6 +149,7 @@ export class EtabAccueilComponent implements OnInit {
     this.etab = {};
     this.form.reset();
     this.selectedNafN5 = undefined;
+    this.modif = true;
   }
 
   edit(): void {
@@ -180,7 +181,7 @@ export class EtabAccueilComponent implements OnInit {
 
   compare(option: any, value: any): boolean {
     if (option && value) {
-      return option === value.id;
+      return option.id === value.id;
     }
     return false;
   }
@@ -201,7 +202,22 @@ export class EtabAccueilComponent implements OnInit {
         this.messageService.setError('Une de ces deux informations doivent être renseignée : Code APE, Activité principale');
         return;
       }
-      // TODO call api
+      // TODO contrôle de saisie
+      const data = {...this.form.value};
+      data.nafN5 = this.selectedNafN5;
+      if (this.etab.id) {
+        this.structureService.update(this.etab.id, data).subscribe((response: any) => {
+          this.messageService.setSuccess('Établissement d\'accueil modifé');
+          this.etab = response;
+          this.modif = false;
+        });
+      } else {
+        this.structureService.create(data).subscribe((response: any) => {
+          this.messageService.setSuccess('Établissement d\'accueil créé');
+          this.etab = response;
+          this.choose(this.etab);
+        });
+      }
     }
   }
 

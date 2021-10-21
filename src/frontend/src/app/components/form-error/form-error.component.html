@@ -1,0 +1,6 @@
+<ng-container *ngIf="field && field.invalid">
+  <div *ngIf="field.hasError('required')">Ce champ est obligatoire</div>
+  <div *ngIf="field.hasError('maxlength')">Ce champ est trop long</div>
+  <div *ngIf="field.hasError('minlength')">Ce champ est trop court</div>
+  <div *ngIf="field.hasError('email') || field.hasError('pattern')">Ce champ est invalide</div>
+</ng-container>

@@ -115,25 +115,29 @@
             <mat-label>Raison sociale</mat-label>
             <input matInput formControlName="raisonSociale" required />
             <mat-icon matSuffix class="icon-help" matTooltip="Nom de l'organisme">help</mat-icon>
+            <mat-error><app-form-error [field]="form.get('raisonSociale')"></app-form-error></mat-error>
           </mat-form-field>
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Numéro Siret</mat-label>
             <input matInput formControlName="numeroSiret" required />
             <mat-icon matSuffix class="icon-help" matTooltip="Code INSEE à demander à votre établissement d'accueil ou consultable sur des sites de référencement d'entreprises. Correspond à l'identifiant géographique de l'établissement. (format : 14 chiffres consécutifs sans espace - ex: 12345678912345)">help</mat-icon>
+            <mat-error><app-form-error [field]="form.get('numeroSiret')"></app-form-error></mat-error>
           </mat-form-field>
         </div>
         <div class="row">
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Effectif</mat-label>
             <mat-select formControlName="effectif" required [compareWith]="compare">
-              <mat-option *ngFor="let effectif of effectifs" [value]="effectif.id">{{effectif.libelle}}</mat-option>
+              <mat-option *ngFor="let effectif of effectifs" [value]="effectif">{{effectif.libelle}}</mat-option>
             </mat-select>
+            <mat-error><app-form-error [field]="form.get('effectif')"></app-form-error></mat-error>
           </mat-form-field>
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Type d'établissement</mat-label>
             <mat-select formControlName="typeStructure" required [compareWith]="compare">
-              <mat-option *ngFor="let typeStructure of typeStructures" [value]="typeStructure.id">{{typeStructure.libelle}}</mat-option>
+              <mat-option *ngFor="let typeStructure of typeStructures" [value]="typeStructure">{{typeStructure.libelle}}</mat-option>
             </mat-select>
+            <mat-error><app-form-error [field]="form.get('typeStructure')"></app-form-error></mat-error>
           </mat-form-field>
         </div>
         <div class="row">
@@ -141,8 +145,9 @@
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Statut juridique</mat-label>
             <mat-select formControlName="statutJuridique" required [compareWith]="compare">
-              <mat-option *ngFor="let statutJuridique of statutJuridiques" [value]="statutJuridique.id">{{statutJuridique.libelle}}</mat-option>
+              <mat-option *ngFor="let statutJuridique of statutJuridiques" [value]="statutJuridique">{{statutJuridique.libelle}}</mat-option>
             </mat-select>
+            <mat-error><app-form-error [field]="form.get('statutJuridique')"></app-form-error></mat-error>
           </mat-form-field>
         </div>
 
@@ -177,10 +182,12 @@
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Voie</mat-label>
             <input matInput formControlName="voie" required />
+            <mat-error><app-form-error [field]="form.get('voie')"></app-form-error></mat-error>
           </mat-form-field>
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Code postale</mat-label>
+            <mat-label>Code postal</mat-label>
             <input matInput formControlName="codePostal" required />
+            <mat-error><app-form-error [field]="form.get('codePostal')"></app-form-error></mat-error>
           </mat-form-field>
         </div>
         <div class="row">
@@ -191,6 +198,7 @@
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Commune</mat-label>
             <input matInput formControlName="commune" required />
+            <mat-error><app-form-error [field]="form.get('commune')"></app-form-error></mat-error>
           </mat-form-field>
         </div>
         <div class="row">
@@ -201,8 +209,9 @@
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Pays</mat-label>
             <mat-select formControlName="pays" required [compareWith]="compare">
-              <mat-option *ngFor="let country of countries" [value]="country.id">{{country.libelle}}</mat-option>
+              <mat-option *ngFor="let country of countries" [value]="country">{{country.libelle}}</mat-option>
             </mat-select>
+            <mat-error><app-form-error [field]="form.get('pays')"></app-form-error></mat-error>
           </mat-form-field>
         </div>
         <div class="row">
@@ -210,10 +219,12 @@
             <mat-label>Adresse mail</mat-label>
             <input type="email" matInput formControlName="mail" />
             <mat-hint>Sous cette forme adresse@domain.fr</mat-hint>
+            <mat-error><app-form-error [field]="form.get('email')"></app-form-error></mat-error>
           </mat-form-field>
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Téléphone</mat-label>
             <input matInput formControlName="telephone" required />
+            <mat-error><app-form-error [field]="form.get('telephone')"></app-form-error></mat-error>
           </mat-form-field>
         </div>
         <div class="row">
@@ -221,6 +232,7 @@
             <mat-label>Site internet</mat-label>
             <input type="url" matInput formControlName="siteWeb" />
             <mat-hint>Sous cette forme http://siteinternet.fr/...</mat-hint>
+            <mat-error><app-form-error [field]="form.get('siteWeb')"></app-form-error></mat-error>
           </mat-form-field>
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Fax</mat-label>
