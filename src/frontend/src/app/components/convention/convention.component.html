@@ -1,5 +1,5 @@
 <mat-tab-group class="convention" *ngIf="convention" (selectedTabChange)="tabChanged($event)">
-  <mat-tab #etudiantTeb>
+  <mat-tab #etudiantTab>
     <ng-template mat-tab-label>
       <span class="progress-status" [ngClass]="{editing: statuts['statutEtudiant'] === 1, done: statuts['statutEtudiant'] === 2}"></span>
       Étudiant

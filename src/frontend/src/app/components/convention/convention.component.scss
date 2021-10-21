@@ -3,7 +3,7 @@
   margin-right: 5px;
   display: inline-block;
   border-radius: 50%;
-  background-color: #e9ecef;
+  background-color: var(--dangerColor);
 }
 
 .progress-status.done {

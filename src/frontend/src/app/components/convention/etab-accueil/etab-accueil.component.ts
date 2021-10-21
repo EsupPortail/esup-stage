@@ -136,7 +136,9 @@ export class EtabAccueilComponent implements OnInit {
     this.modif = false;
     this.structureService.getById(row.id).subscribe((response: any) => {
       this.etab = response;
-      this.selectedNafN5 = this.etab.nafN5;
+      if (this.etab.nafN5) {
+        this.selectedNafN5 = this.etab.nafN5;
+      }
       if (this.firstPanel) {
         this.firstPanel.expanded = false;
       }
@@ -159,7 +161,7 @@ export class EtabAccueilComponent implements OnInit {
       effectif: this.etab.effectif,
       typeStructure: this.etab.typeStructure,
       statutJuridique: this.etab.statutJuridique,
-      nafN5: this.etab.nafN5.code,
+      nafN5: this.etab.nafN5 ? this.etab.nafN5.code : null,
       activitePrincipale: this.etab.activitePrincipale,
       voie: this.etab.voie,
       codePostal: this.etab.codePostal,

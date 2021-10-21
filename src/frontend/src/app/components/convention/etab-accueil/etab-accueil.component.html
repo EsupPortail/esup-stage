@@ -166,7 +166,7 @@
                 <span class="text-success"><i class="fa fa-check"></i> {{selectedNafN5.libelle}}</span>
               </ng-container>
               <ng-template #invalidNafN5>
-                <span class="text-danger">Ce code est invalide</span>
+                <span class="text-danger" *ngIf="selectedNafN5 !== undefined">Ce code est invalide</span>
               </ng-template>
             </mat-hint>
           </mat-form-field>
