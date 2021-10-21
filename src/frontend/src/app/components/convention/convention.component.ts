@@ -71,4 +71,10 @@ export class ConventionComponent implements OnInit {
     return false;
   }
 
+  getProgressValue(key: string): number {
+    if (this.statuts[key] === 1) return 66;
+    if (this.statuts[key] === 2) return 100;
+    return 33;
+  }
+
 }

@@ -1,52 +1,52 @@
 <mat-tab-group class="convention" *ngIf="convention" (selectedTabChange)="tabChanged($event)">
   <mat-tab #etudiantTab>
     <ng-template mat-tab-label>
-      <span class="progress-status" [ngClass]="{editing: statuts['statutEtudiant'] === 1, done: statuts['statutEtudiant'] === 2}"></span>
       Étudiant
+      <mat-progress-bar mode="determinate" [value]="getProgressValue('statutEtudiant')" [ngClass]="{editing: statuts['statutEtudiant'] === 1, done: statuts['statutEtudiant'] === 2}"></mat-progress-bar>
     </ng-template>
     <app-convention-etudiant></app-convention-etudiant>
   </mat-tab>
   <mat-tab #etabAccueilTab [disabled]="isCreated()">
     <ng-template mat-tab-label>
-      <span class="progress-status" [ngClass]="{editing: statuts['statutEtabAccueil'] === 1, done: statuts['statutEtabAccueil'] === 2}"></span>
       Étab. d'accueil
+      <mat-progress-bar mode="determinate" [value]="getProgressValue('statutEtabAccueil')" [ngClass]="{editing: statuts['statutEtabAccueil'] === 1, done: statuts['statutEtabAccueil'] === 2}"></mat-progress-bar>
     </ng-template>
     <app-etab-accueil *ngIf="etabAccueilTab.isActive || hasInit(etabAccueilTab.origin)" (validated)="setStatus('statutEtabAccueil', $event)"></app-etab-accueil>
   </mat-tab>
   <mat-tab #serviceAccueilTab [disabled]="isCreated()">
     <ng-template mat-tab-label>
-      <span class="progress-status" [ngClass]="{editing: statuts['statutServiceAccueil'] === 1, done: statuts['statutServiceAccueil'] === 2}"></span>
       Service d'accueil
+      <mat-progress-bar mode="determinate" [value]="getProgressValue('statutServiceAccueil')" [ngClass]="{editing: statuts['statutServiceAccueil'] === 1, done: statuts['statutServiceAccueil'] === 2}"></mat-progress-bar>
     </ng-template>
   </mat-tab>
   <mat-tab #tuteurProTab [disabled]="isCreated()">
     <ng-template mat-tab-label>
-      <span class="progress-status" [ngClass]="{editing: statuts['statutTuteurPro'] === 1, done: statuts['statutTuteurPro'] === 2}"></span>
       Tuteur professionnel
+      <mat-progress-bar mode="determinate" [value]="getProgressValue('statutTuteurPro')" [ngClass]="{editing: statuts['statutTuteurPro'] === 1, done: statuts['statutTuteurPro'] === 2}"></mat-progress-bar>
     </ng-template>
   </mat-tab>
   <mat-tab #stageTab [disabled]="isCreated()">
     <ng-template mat-tab-label>
-      <span class="progress-status" [ngClass]="{editing: statuts['statutStage'] === 1, done: statuts['statutStage'] === 2}"></span>
       Stage
+      <mat-progress-bar mode="determinate" [value]="getProgressValue('statutStage')" [ngClass]="{editing: statuts['statutStage'] === 1, done: statuts['statutStage'] === 2}"></mat-progress-bar>
     </ng-template>
   </mat-tab>
   <mat-tab #enseignantRefTab [disabled]="isCreated()">
     <ng-template mat-tab-label>
-      <span class="progress-status" [ngClass]="{editing: statuts['statutEnseignantRef'] === 1, done: statuts['statutEnseignantRef'] === 2}"></span>
       Enseignant référent
+      <mat-progress-bar mode="determinate" [value]="getProgressValue('statutEnseignantRef')" [ngClass]="{editing: statuts['statutEnseignantRef'] === 1, done: statuts['statutEnseignantRef'] === 2}"></mat-progress-bar>
     </ng-template>
   </mat-tab>
   <mat-tab [disabled]="isCreated()">
     <ng-template mat-tab-label>
-      <span class="progress-status" [ngClass]="{editing: statuts['statutSignataire'] === 1, done: statuts['statutSignataire'] === 2}"></span>
       Signataire
+      <mat-progress-bar mode="determinate" [value]="getProgressValue('statutSignataire')" [ngClass]="{editing: statuts['statutSignataire'] === 1, done: statuts['statutSignataire'] === 2}"></mat-progress-bar>
     </ng-template>
   </mat-tab>
   <mat-tab #recapTab [disabled]="isCreated() || !allValid">
     <ng-template mat-tab-label>
-      <span class="progress-status" [ngClass]="{editing: statuts['statutRecap'] === 1, done: statuts['statutRecap'] === 2}"></span>
       Récapitulatif
+      <mat-progress-bar mode="determinate" [value]="getProgressValue('statutRecap')" [ngClass]="{editing: statuts['statutRecap'] === 1, done: statuts['statutRecap'] === 2}"></mat-progress-bar>
     </ng-template>
   </mat-tab>
 </mat-tab-group>

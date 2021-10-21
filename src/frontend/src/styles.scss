@@ -107,11 +107,34 @@ form, .mat-cell {
     padding: 0 12px;
     opacity: 1;
   }
+  .mat-tab-label .mat-tab-label-content {
+    display: block;
+    width: 100%;
+  }
+  .mat-tab-label-active {
+    background-color: rgba(197,202,233,.3);
+  }
+  mat-ink-bar {
+    display: none;
+  }
   .mat-card-header {
     font-weight: bold;
   }
   .mat-card-header-text {
     margin: 0;
+  }
+  mat-progress-bar {
+    width: 80px;
+    margin: auto;
+  }
+  mat-progress-bar .mat-progress-bar-fill::after {
+    background-color: var(--dangerColor);
+  }
+  mat-progress-bar.done .mat-progress-bar-fill::after, .progress-status.done {
+    background-color: var(--successColor);
+  }
+  mat-progress-bar.editing .mat-progress-bar-fill::after, .progress-status.editing {
+    background-color: var(--warningColor);
   }
 }
 

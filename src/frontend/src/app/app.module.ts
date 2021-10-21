@@ -65,6 +65,7 @@ import { LoaderComponent } from './components/loader/loader.component';
 import { AdminNomenclaturesCreationComponent } from './components/admin/admin-nomenclatures/admin-nomenclatures-creation/admin-nomenclatures-creation.component';
 import { QuillModule } from "ngx-quill";
 import { FormErrorComponent } from './components/form-error/form-error.component';
+import { MatProgressBarModule } from "@angular/material/progress-bar";
 
 registerLocaleData(localeFr, 'fr');
 
@@ -126,6 +127,7 @@ registerLocaleData(localeFr, 'fr');
     MatExpansionModule,
     MatProgressSpinnerModule,
     QuillModule.forRoot(),
+    MatProgressBarModule,
   ],
   providers: [
     CookieService,
