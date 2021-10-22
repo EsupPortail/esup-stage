@@ -121,22 +121,22 @@
 ###################################################################
 ### test du service : API                                    ######
 ###################################################################
-#- name: tests.webapp.api
-#  block:
-#    - name: wait.app-is-up
-#      pause: seconds=60
-    # execution des tests
-#    - name: service.supervision.local
-#      uri: url="http://localhost:{{ GESTEXAM_PROD.SPRINGBOOT.port }}/api/status/ping" method="GET" status_code=200 body_format=raw
-#    - name: service.supervision.fqdn
-#      uri: url="http://{{ inventory_hostname }}:{{ GESTEXAM_PROD.SPRINGBOOT.port }}/api/status/ping" method="GET" status_code=200 body_format=raw
-#  rescue:
-    # strategie d'arret du service (on failure)
-    ##- name: service.failure.close_http
-    ##  firewalld: service="{{ item }}" permanent=true immediate=yes state=disabled
-    ##  with_items: ['http']
-#    - name: service.confirm_failure
-#      fail: msg="Error, HTTP API service failed (sans blocage firewall sur 'http')"
+- name: tests.webapp.api
+  block:
+    - name: wait.app-is-up
+      pause: seconds=60
+     execution des tests
+    - name: service.supervision.local
+      uri: url="http://localhost:{{ ESTAGE_ENVIRONMENT.TOMCAT.port }}/api/version" method="GET" status_code=200 body_format=raw
+    - name: service.supervision.fqdn
+      uri: url="http://{{ inventory_hostname }}:{{ ESTAGE_ENVIRONMENT.TOMCAT.port }}/api/version" method="GET" status_code=200 body_format=raw
+  rescue:
+     strategie d'arret du service (on failure)
+    #- name: service.failure.close_http
+    #  firewalld: service="{{ item }}" permanent=true immediate=yes state=disabled
+    #  with_items: ['http']
+    - name: service.confirm_failure
+      fail: msg="Error, HTTP API service failed (sans blocage firewall sur 'http')"
 
 
 ###################################################################
