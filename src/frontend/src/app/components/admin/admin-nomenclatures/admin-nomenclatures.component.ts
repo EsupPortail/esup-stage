@@ -34,7 +34,7 @@ import { Droit } from "../../../constants/droit";
 export class AdminNomenclaturesComponent implements OnInit {
 
   columns = ['libelle', 'action'];
-  columnsCodeCtrl = ['libelle', 'code', 'action'];
+  columnsCodeCtrl = ['code', 'libelle', 'action'];
   sortColumn = 'libelle';
 
   filters = [
