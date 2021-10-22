@@ -127,9 +127,9 @@
 #      pause: seconds=60
     # execution des tests
     - name: service.supervision.local
-      uri: url="http://localhost:{{ ESTAGE_ENVIRONMENT.TOMCAT.port }}/api/version" method="GET" status_code=200 body_format=raw
+      uri: url="http://localhost:8080/api/version" method="GET" status_code=200 body_format=raw
     - name: service.supervision.fqdn
-      uri: url="http://{{ inventory_hostname }}:{{ ESTAGE_ENVIRONMENT.TOMCAT.port }}/api/version" method="GET" status_code=200 body_format=raw
+      uri: url="http://{{ inventory_hostname }}:8080/api/version" method="GET" status_code=200 body_format=raw
   rescue:
     # strategie d'arret du service (on failure)
     #- name: service.failure.close_http
