@@ -9,6 +9,9 @@ import { AuthService } from "../../../services/auth.service";
 import { AppFonction } from "../../../constants/app-fonction";
 import { Droit } from "../../../constants/droit";
 import { Role } from "../../../constants/role";
+import { LdapService } from "../../../services/ldap.service";
+import { Subject } from "rxjs";
+import { debounceTime } from "rxjs/operators";
 
 @Component({
   selector: 'app-admin-user',
@@ -25,7 +28,12 @@ export class AdminUserComponent implements OnInit {
     { id: 'actif', libelle: 'Actif', type: 'boolean' },
   ];
 
-  formTabIndex = 1;
+  ldapUsers: any[] = [];
+  searchedLogin: string = '';
+  searchedLoginChanged = new Subject();
+
+  createTabIndex = 1;
+  editTabIndex = 2;
   data: any;
   form: FormGroup;
   roles: any;
@@ -33,8 +41,10 @@ export class AdminUserComponent implements OnInit {
     idField: 'code',
     textField: 'code',
   }
+  ldapUser: any;
 
-  @ViewChild(TableComponent) appTable: TableComponent | undefined;
+  @ViewChild('tableList') appTable: TableComponent | undefined;
+  @ViewChild('tableCreate') appTableCreate: TableComponent | undefined;
   @ViewChild('tabs') tabs: MatTabGroup | undefined;
 
   constructor(
@@ -43,6 +53,7 @@ export class AdminUserComponent implements OnInit {
     private roleService: RoleService,
     private messageService: MessageService,
     private authService: AuthService,
+    public ldapService: LdapService,
   ) {
     this.form = this.fb.group({
       login: [null, [Validators.required, Validators.maxLength(255)]],
@@ -62,6 +73,12 @@ export class AdminUserComponent implements OnInit {
         filterRole.options = this.roles;
         filterRole.value = this.roles.filter((r: any) => [Role.ADM, Role.GES, Role.RESP_GES].indexOf(r.code) > -1).map((r: any) => r.id);
       }
+    });
+
+    this.searchedLoginChanged.pipe(debounceTime(500)).subscribe(() => {
+      this.ldapService.searchUsers(this.searchedLogin).subscribe((response: any) => {
+        this.ldapUsers = response;
+      });
     });
   }
 
@@ -85,7 +102,7 @@ export class AdminUserComponent implements OnInit {
   }
 
   tabChanged(event: MatTabChangeEvent): void {
-    if (event.index !== this.formTabIndex) {
+    if (event.index !== this.editTabIndex) {
       this.emptyData();
       this.form.get('login')?.enable();
       this.form.get('actif')?.enable();
@@ -95,7 +112,7 @@ export class AdminUserComponent implements OnInit {
   edit(data: any): void {
     this.data = data;
     if (this.tabs) {
-      this.tabs.selectedIndex = this.formTabIndex;
+      this.tabs.selectedIndex = this.editTabIndex;
     }
     this.setFormData();
     this.form.get('login')?.disable();
@@ -119,7 +136,7 @@ export class AdminUserComponent implements OnInit {
           this.data = response;
           this.setFormData();
           this.appTable?.update();
-          this.messageService.setSuccess('Utilisateur modifé');
+          this.messageService.setSuccess('Utilisateur modifié');
         })
       } else {
         // TODO create : en attente de la configuration du REST LDAP par établissement
@@ -129,6 +146,16 @@ export class AdminUserComponent implements OnInit {
 
   canEdit(): boolean {
     return this.authService.checkRights({fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.MODIFICATION]});
+  }
+
+  search(): void {
+    if (this.searchedLogin) {
+      this.searchedLoginChanged.next();
+    }
+  }
+
+  choose(row: any): void {
+    this.ldapUser = row;
   }
 
 }

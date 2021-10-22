@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MessageService } from "../../../services/message.service";
 import { EtudiantService } from "../../../services/etudiant.service";
 import { MatExpansionPanel } from "@angular/material/expansion";
+import { LdapService } from "../../../services/ldap.service";
 
 @Component({
   selector: 'app-convention-etudiant',
@@ -24,7 +25,7 @@ export class EtudiantComponent implements OnInit {
 
   @ViewChild(MatExpansionPanel) searchEtudiantPanel: MatExpansionPanel|undefined;
 
-  constructor(private authService: AuthService, private etudiantService: EtudiantService, private fb: FormBuilder, private messageService: MessageService) {
+  constructor(private authService: AuthService, private etudiantService: EtudiantService, private fb: FormBuilder, private messageService: MessageService, private ldapService: LdapService) {
     this.form = this.fb.group({
       id: [null, []],
       nom: [null, []],
@@ -55,7 +56,7 @@ export class EtudiantComponent implements OnInit {
     }
     this.etudiant = undefined;
     this.selectedNumEtudiant = null;
-    this.etudiantService.searchEtudiants(this.form.value).subscribe((response: any) => {
+    this.ldapService.searchEtudiants(this.form.value).subscribe((response: any) => {
       this.etudiants = response;
       if (this.etudiants.length === 1) {
         this.choose(this.etudiants[0]);

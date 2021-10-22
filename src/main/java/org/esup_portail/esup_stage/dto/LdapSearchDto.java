@@ -1,6 +1,6 @@
 package org.esup_portail.esup_stage.dto;
 
-public class EtudiantSearchDto {
+public class LdapSearchDto {
     private String id;
     private String nom;
     private String prenom;

@@ -3,7 +3,7 @@ package org.esup_portail.esup_stage.service.ldap;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
-import org.esup_portail.esup_stage.dto.EtudiantSearchDto;
+import org.esup_portail.esup_stage.dto.LdapSearchDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
 import org.slf4j.Logger;
@@ -17,10 +17,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class LdapService {
@@ -29,22 +28,31 @@ public class LdapService {
     @Autowired
     ApplicationBootstrap applicationBootstrap;
 
-    private String call(String api, Object params) {
+    private String call(String api, String method, Object params) {
         HttpURLConnection con;
         ObjectMapper mapper = new ObjectMapper();
 
         try {
-            URL url = new URL(applicationBootstrap.getAppConfig().getReferentielWsLdapUrl() + api);
+            String query = "";
+            if (method.equals("GET")) {
+                List<String> listParams = new ArrayList<>();
+                ((Map<String, String>) params).forEach((key, value) -> listParams.add(key + "=" + URLEncoder.encode(value, StandardCharsets.UTF_8)));
+                if (listParams.size() > 0) {
+                    query += "?" + String.join("&", listParams);
+                }
+            }
+            URL url = new URL(applicationBootstrap.getAppConfig().getReferentielWsLdapUrl() + api + query);
             con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("POST");
+            con.setRequestMethod(method);
             con.setRequestProperty("Authorization", "Basic " + Base64.getEncoder().encodeToString((applicationBootstrap.getAppConfig().getReferentielWsLogin() + ":" + applicationBootstrap.getAppConfig().getReferentielWsPassword()).getBytes()));
             con.setRequestProperty("Accept", "application/json");
             con.setRequestProperty("Content-type", "application/json");
-            con.setDoOutput(true);
-
-            try (OutputStream os = con.getOutputStream()) {
-                byte[] input = mapper.writeValueAsString(params).getBytes(StandardCharsets.UTF_8);
-                os.write(input, 0, input.length);
+            if (method.equals("POST")) {
+                con.setDoOutput(true);
+                try (OutputStream os = con.getOutputStream()) {
+                    byte[] input = mapper.writeValueAsString(params).getBytes(StandardCharsets.UTF_8);
+                    os.write(input, 0, input.length);
+                }
             }
 
             if (con.getResponseCode() != HttpURLConnection.HTTP_OK) {
@@ -67,14 +75,26 @@ public class LdapService {
         }
     }
 
-    public List<LdapUser> search(EtudiantSearchDto etudiantSearchDto) {
-        List<LdapUser> users = new ArrayList<>();
-        String response = call("/etudiant", etudiantSearchDto);
+    public List<LdapUser> search(String api, LdapSearchDto ldapSearchDto) {
+        String response = call(api, "POST", ldapSearchDto);
         try {
             ObjectMapper mapper = new ObjectMapper();
             return mapper.readValue(response, List.class);
         } catch (JsonProcessingException e) {
-            LOGGER.error("Erreur lors de la lecture de la réponse sur l'api etudiant: " + e.getMessage(), e);
+            LOGGER.error("Erreur lors de la lecture de la réponse sur l'api " + api + ": " + e.getMessage(), e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
+        }
+    }
+
+    public List<LdapUser> searchByLogin(String login) {
+        Map<String, String> params = new HashMap<>();
+        params.put("filter", "(supannAliasLogin=" + login + "*)");
+        String response = call("/byFilter", "GET", params);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readValue(response, List.class);
+        } catch (JsonProcessingException e) {
+            LOGGER.error("Erreur lors de la lecture de la réponse sur l'api byFilter: " + e.getMessage(), e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
         }
     }

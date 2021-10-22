@@ -1,6 +1,6 @@
 <mat-tab-group #tabs (selectedTabChange)="tabChanged($event)">
   <mat-tab label="Liste">
-    <app-table *ngIf="roles" [service]="userService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters"
+    <app-table #tableList *ngIf="roles" [service]="userService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters"
                matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'" (matSortChange)="appTable ? appTable.sorting($event) : null">
       <ng-container matColumnDef="login">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Login</th>
@@ -35,9 +35,53 @@
         </td>
       </ng-container>
     </app-table>
-
   </mat-tab>
-  <mat-tab label="{{data.id ? 'Édition' : 'Création'}}">
+
+  <mat-tab label="Création">
+    <mat-accordion>
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>Rechercher par login</mat-expansion-panel-header>
+        <form class="mt-2 mb-3">
+          <div class="row">
+            <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+              <mat-label>Login</mat-label>
+              <input matInput name="searchedLogin" [(ngModel)]="searchedLogin" (ngModelChange)="search()" />
+            </mat-form-field>
+          </div>
+        </form>
+        <div class="alert alert-info" *ngIf="ldapUsers.length === 10">La recherche est limitée à 10 utilisateurs. Veuillez affiner la recherche si l'utilisateur n'apparaît pas.</div>
+        <table mat-table [dataSource]="ldapUsers">
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" colspan="9999">Aucun utilisateur trouvé</td>
+          </tr>
+          <ng-container matColumnDef="uid">
+            <th mat-header-cell *matHeaderCellDef>Login</th>
+            <td mat-cell *matCellDef="let row">{{row.supannAliasLogin}}</td>
+          </ng-container>
+          <ng-container matColumnDef="displayName">
+            <th mat-header-cell *matHeaderCellDef>Nom / Prénom</th>
+            <td mat-cell *matCellDef="let row">{{row.displayName}}</td>
+          </ng-container>
+          <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let row">
+              <button mat-button mat-stroked-button (click)="choose(row)" color="primary">
+                <span *ngIf="!ldapUser || ldapUser.uid !== row.uid; else notSelected"><i class="fa fa-check"></i> Sélectionner</span>
+                <ng-template #notSelected>
+                  <i class="fa fa-check-circle"></i> Sélectionner
+                </ng-template>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="['uid', 'displayName', 'action']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['uid', 'displayName', 'action'];"></tr>
+        </table>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </mat-tab>
+
+  <mat-tab *ngIf="data.id" label="Édition">
     <mat-card>
       <mat-card-content>
         <form [formGroup]="form" (submit)="save()">

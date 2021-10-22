@@ -10,10 +10,6 @@ export class EtudiantService {
 
   constructor(private http: HttpClient) { }
 
-  searchEtudiants(filters: any): Observable<any> {
-    return this.http.post(`${environment.apiUrl}/etudiants/ldap-search`, filters);
-  }
-
   getApogeeData(numEtudiant: string): Observable<any> {
     return this.http.get(`${environment.apiUrl}/etudiants/${numEtudiant}/apogee-data`);
   }

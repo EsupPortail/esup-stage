@@ -38,7 +38,7 @@ public class UtilisateurController {
     }
 
     @GetMapping
-    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.LECTURE})
+    @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<Utilisateur> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         PaginatedResponse<Utilisateur> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(utilisateurRepository.count(filters));
@@ -47,7 +47,7 @@ public class UtilisateurController {
     }
 
     @PutMapping("/{id}")
-    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.MODIFICATION})
+    @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.MODIFICATION})
     public Utilisateur update(@PathVariable("id") int id, @RequestBody Utilisateur requestUtilisateur) {
         Utilisateur utilisateur = utilisateurJpaRepository.findByIdActif(id);
         if (utilisateur == null) {
