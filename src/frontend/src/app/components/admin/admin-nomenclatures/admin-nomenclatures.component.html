@@ -4,7 +4,7 @@
     <app-table *ngIf="tab.isActive || nomenclature.init" [service]="nomenclature.service" [columns]="nomenclature.codeCtrl ? columnsCodeCtrl : columns" [sortColumn]="sortColumn" [filters]="nomenclature.codeCtrl ? filtersCodeCtrl : filters"
                matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'" (matSortChange)="appTables ? appTables.toArray()[nomenclature.tableIndex].sorting($event) : null"
                [actionButton]="createButton" [hideDeleteFilters]="true">
-      <ng-container matColumnDef="code" *ngIf="nomenclature.codeCtrl">
+      <ng-container matColumnDef="codeCtrl" *ngIf="nomenclature.codeCtrl">
         <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Code</th>
         <td mat-cell *matCellDef="let row">{{row.codeCtrl}}</td>
       </ng-container>

@@ -13,7 +13,7 @@ public class ContratOffreRepository extends PaginationRepository<ContratOffre> {
 
     public ContratOffreRepository(EntityManager em) {
         super(em, ContratOffre.class, "co");
-        this.predicateWhitelist = Arrays.asList("id", "libelle");
+        this.predicateWhitelist = Arrays.asList("id", "libelle", "codeCtrl");
     }
 
     public boolean exists(String codeCtrl, int id) {

@@ -13,7 +13,7 @@ public class TempsTravailRepository extends PaginationRepository<TempsTravail> {
 
     public TempsTravailRepository(EntityManager em) {
         super(em, TempsTravail.class, "tt");
-        this.predicateWhitelist = Arrays.asList("id", "libelle");
+        this.predicateWhitelist = Arrays.asList("id", "libelle", "codeCtrl");
     }
 
     public boolean exists(String codeCtrl, int id) {

@@ -13,7 +13,7 @@ public class TypeOffreRepository extends PaginationRepository<TypeOffre> {
 
     public TypeOffreRepository(EntityManager em) {
         super(em, TypeOffre.class, "to");
-        this.predicateWhitelist = Arrays.asList("id", "libelle");
+        this.predicateWhitelist = Arrays.asList("id", "libelle", "codeCtrl");
     }
 
     public boolean exists(String codeCtrl, int id) {

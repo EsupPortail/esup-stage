@@ -13,7 +13,7 @@ public class TypeConventionRepository extends PaginationRepository<TypeConventio
 
     public TypeConventionRepository(EntityManager em) {
         super(em, TypeConvention.class, "tc");
-        this.predicateWhitelist = Arrays.asList("id", "libelle");
+        this.predicateWhitelist = Arrays.asList("id", "libelle", "codeCtrl");
     }
 
     public boolean exists(String codeCtrl, int id) {
