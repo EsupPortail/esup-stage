@@ -28,7 +28,8 @@ export class TechnicalInterceptor implements HttpInterceptor {
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     const activeElement = document.activeElement;
-    if (activeElement instanceof HTMLElement) {
+    const inputs = ['input', 'select', 'button', 'textarea'];
+    if (activeElement instanceof HTMLElement && inputs.indexOf(activeElement.tagName.toLowerCase()) > -1) {
       activeElement.blur();
     }
     this.loaderService.show();
@@ -42,7 +43,7 @@ export class TechnicalInterceptor implements HttpInterceptor {
           finalize(() => {
             this.nbRequests--;
             if (this.nbRequests === 0) {
-              if (activeElement instanceof HTMLElement) {
+              if (activeElement instanceof HTMLElement && inputs.indexOf(activeElement.tagName.toLowerCase()) > -1) {
                 activeElement.focus();
               }
               this.loaderService.hide();
