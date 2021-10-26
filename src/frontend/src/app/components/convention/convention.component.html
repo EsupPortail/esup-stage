@@ -18,6 +18,7 @@
       Service d'accueil
       <mat-progress-bar mode="determinate" [value]="getProgressValue('statutServiceAccueil')" [ngClass]="{editing: statuts['statutServiceAccueil'] === 1, done: statuts['statutServiceAccueil'] === 2}"></mat-progress-bar>
     </ng-template>
+    <app-service-accueil *ngIf="serviceAccueilTab.isActive || hasInit(serviceAccueilTab.origin)" (validated)="setStatus('statutServiceAccueil', $event)"></app-service-accueil>
   </mat-tab>
   <mat-tab #tuteurProTab [disabled]="isCreated()">
     <ng-template mat-tab-label>

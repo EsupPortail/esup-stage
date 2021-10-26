@@ -66,6 +66,7 @@ import { AdminNomenclaturesCreationComponent } from './components/admin/admin-no
 import { QuillModule } from "ngx-quill";
 import { FormErrorComponent } from './components/form-error/form-error.component';
 import { MatProgressBarModule } from "@angular/material/progress-bar";
+import { ServiceAccueilComponent } from './components/convention/service-accueil/service-accueil.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -97,6 +98,7 @@ registerLocaleData(localeFr, 'fr');
     LoaderComponent,
     AdminNomenclaturesCreationComponent,
     FormErrorComponent,
+    ServiceAccueilComponent,
   ],
   imports: [
     BrowserModule,
