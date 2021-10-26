@@ -37,16 +37,16 @@ public class CentreGestion extends ObjetMetier {
     @Lob
     private String commentaire;
 
-    @Column(nullable = false)
+    @Column()
     private boolean presenceTuteurEns;
 
-    @Column(nullable = false)
+    @Column()
     private boolean presenceTuteurPro;
 
-    @Column(nullable = false)
+    @Column()
     private boolean saisieTuteurProParEtudiant;
 
-    @Column(nullable = false)
+    @Column()
     private boolean depotAnonyme;
 
     @Column(nullable = false, length = 50)
@@ -69,10 +69,10 @@ public class CentreGestion extends ObjetMetier {
     private CentreGestionSuperviseur centreGestionSuperViseur;
 
     @ManyToOne
-    @JoinColumn(name = "codeConfidentialite", nullable = false)
+    @JoinColumn(name = "codeConfidentialite")
     private Confidentialite codeConfidentialite;
 
-    @Column(nullable = false)
+    @Column()
     private boolean autoriserImpressionConvention;
 
     @ManyToOne
@@ -81,7 +81,7 @@ public class CentreGestion extends ObjetMetier {
 
     private Boolean validationPedagogique;
 
-    @Column(nullable = false)
+    @Column()
     private boolean autorisationEtudiantCreationConvention;
 
     @ManyToOne
