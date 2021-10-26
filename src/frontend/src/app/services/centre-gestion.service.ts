@@ -14,4 +14,8 @@ export class CentreGestionService implements PaginatedService {
   getPaginated(page: number, perPage: number, predicate: string, sortOrder: string, filters: string): Observable<any> {
     return this.http.get(environment.apiUrl + "/centre-gestion", {params: {page, perPage, predicate, sortOrder, filters}});
   }
+
+  getBrouillonByLogin(): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/creation-brouillon`);
+  }
 }

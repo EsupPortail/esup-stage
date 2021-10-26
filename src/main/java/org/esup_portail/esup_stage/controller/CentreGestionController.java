@@ -1,5 +1,6 @@
 package org.esup_portail.esup_stage.controller;
 
+import org.esup_portail.esup_stage.dto.ContextDto;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
@@ -8,6 +9,7 @@ import org.esup_portail.esup_stage.model.PersonnelCentreGestion;
 import org.esup_portail.esup_stage.model.Utilisateur;
 import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.CentreGestionRepository;
+import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,5 +52,18 @@ public class CentreGestionController {
         }
 
         return paginatedResponse;
+    }
+
+    @GetMapping("/creation-brouillon")
+    @Secure(fonction = AppFonctionEnum.PARAM_CENTRE, droits = {DroitEnum.CREATION})
+    public CentreGestion getBrouillonByLogin(@RequestParam("loginCreation") String loginCreation) {
+        ContextDto contexteDto = ServiceContext.getServiceContext();
+        Utilisateur utilisateur = contexteDto.getUtilisateur();
+        CentreGestion centreGestion = centreGestionJpaRepository.findBrouillon(utilisateur.getLogin());
+        if (centreGestion == null) {
+            centreGestion = new CentreGestion();
+        }
+
+        return centreGestion;
     }
 }
