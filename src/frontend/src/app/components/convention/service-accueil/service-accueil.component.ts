@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnInit, OnChanges, Input, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { PaysService } from "../../../services/pays.service";
 import { ServiceService } from "../../../services/service.service";
@@ -13,14 +13,13 @@ import { AuthService } from "../../../services/auth.service";
   templateUrl: './service-accueil.component.html',
   styleUrls: ['./service-accueil.component.scss']
 })
-export class ServiceAccueilComponent implements OnInit {
+export class ServiceAccueilComponent implements OnInit, OnChanges {
 
   countries: any[] = [];
 
   data: any;
 
-  //TODO : récupérer l'établissement depuis la convention
-  etabId:number = 13096;
+  @Input() etab = {id:null!};
   services:any[] = [];
 
   service: any;
@@ -46,17 +45,20 @@ export class ServiceAccueilComponent implements OnInit {
       pays: [null, [Validators.required]],
       telephone: [null, [Validators.maxLength(20)]],
     });
-
-    this.serviceService.getByStructure(this.etabId).subscribe((response: any) => {
-      this.services = response;
-    });
-
   }
 
   ngOnInit(): void {
     this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServPays: {value: 'O', type: 'text'}})).subscribe((response: any) => {
       this.countries = response.data;
     });
+  }
+
+  ngOnChanges(): void{
+    if (this.etab){
+      this.serviceService.getByStructure(this.etab.id).subscribe((response: any) => {
+        this.services = response;
+      });
+    }
   }
 
   canCreate(): boolean {
@@ -72,6 +74,7 @@ export class ServiceAccueilComponent implements OnInit {
     if (this.firstPanel) {
       this.firstPanel.expanded = false;
     }
+    this.validated.emit(2);
   }
 
   initCreate(): void {
@@ -110,11 +113,12 @@ export class ServiceAccueilComponent implements OnInit {
       // TODO contrôle de saisie
       const data = {...this.form.value};
 
-      data.structure = {'id':this.etabId};
+      //ajoute idStructure à l'objet service
+      data.structure = {'id':this.etab.id};
 
       if (this.service.id) {
         this.serviceService.update(this.service.id, data).subscribe((response: any) => {
-          this.messageService.setSuccess('Service modifé');
+          this.messageService.setSuccess('Service modifié');
           this.service = response;
           this.modif = false;
         });

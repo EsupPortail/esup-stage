@@ -11,14 +11,14 @@
       Étab. d'accueil
       <mat-progress-bar mode="determinate" [value]="getProgressValue('statutEtabAccueil')" [ngClass]="{editing: statuts['statutEtabAccueil'] === 1, done: statuts['statutEtabAccueil'] === 2}"></mat-progress-bar>
     </ng-template>
-    <app-etab-accueil *ngIf="etabAccueilTab.isActive || hasInit(etabAccueilTab.origin)" (validated)="setStatus('statutEtabAccueil', $event)"></app-etab-accueil>
+    <app-etab-accueil *ngIf="etabAccueilTab.isActive || hasInit(etabAccueilTab.origin)" (validated)="setStatus('statutEtabAccueil', $event)" (etabSelected)="setEtab($event)"></app-etab-accueil>
   </mat-tab>
   <mat-tab #serviceAccueilTab [disabled]="isCreated()">
     <ng-template mat-tab-label>
       Service d'accueil
       <mat-progress-bar mode="determinate" [value]="getProgressValue('statutServiceAccueil')" [ngClass]="{editing: statuts['statutServiceAccueil'] === 1, done: statuts['statutServiceAccueil'] === 2}"></mat-progress-bar>
     </ng-template>
-    <app-service-accueil *ngIf="serviceAccueilTab.isActive || hasInit(serviceAccueilTab.origin)" (validated)="setStatus('statutServiceAccueil', $event)"></app-service-accueil>
+    <app-service-accueil *ngIf="serviceAccueilTab.isActive || hasInit(serviceAccueilTab.origin)" [etab]="etab" (validated)="setStatus('statutServiceAccueil', $event)"></app-service-accueil>
   </mat-tab>
   <mat-tab #tuteurProTab [disabled]="isCreated()">
     <ng-template mat-tab-label>
