@@ -13,14 +13,14 @@
     </ng-template>
     <app-etab-accueil *ngIf="etabAccueilTab.isActive || hasInit(etabAccueilTab.origin)" (validated)="setStatus('statutEtabAccueil', $event)" (etabSelected)="setEtab($event)"></app-etab-accueil>
   </mat-tab>
-  <mat-tab #serviceAccueilTab [disabled]="isCreated()">
+  <mat-tab #serviceAccueilTab [disabled]="isCreated() || !etab">
     <ng-template mat-tab-label>
       Service d'accueil
       <mat-progress-bar mode="determinate" [value]="getProgressValue('statutServiceAccueil')" [ngClass]="{editing: statuts['statutServiceAccueil'] === 1, done: statuts['statutServiceAccueil'] === 2}"></mat-progress-bar>
     </ng-template>
     <app-service-accueil *ngIf="serviceAccueilTab.isActive || hasInit(serviceAccueilTab.origin)" [etab]="etab" (validated)="setStatus('statutServiceAccueil', $event)"></app-service-accueil>
   </mat-tab>
-  <mat-tab #tuteurProTab [disabled]="isCreated()">
+  <mat-tab #tuteurProTab [disabled]="isCreated() || !etab">
     <ng-template mat-tab-label>
       Tuteur professionnel
       <mat-progress-bar mode="determinate" [value]="getProgressValue('statutTuteurPro')" [ngClass]="{editing: statuts['statutTuteurPro'] === 1, done: statuts['statutTuteurPro'] === 2}"></mat-progress-bar>
