@@ -7,7 +7,7 @@
     <div class="row">
       <mat-form-field class="col-md-12" appearance="fill">
         <mat-label>Selectionez un service :</mat-label>
-        <mat-select formControlName="typeCentre" [(value)]="service">
+        <mat-select [(value)]="service">
           <mat-option *ngFor="let service of services" [value]="service">{{service.nom}}</mat-option>
         </mat-select>
       </mat-form-field>

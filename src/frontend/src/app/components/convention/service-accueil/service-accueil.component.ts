@@ -109,6 +109,9 @@ export class ServiceAccueilComponent implements OnInit {
 
       // TODO contrôle de saisie
       const data = {...this.form.value};
+
+      data.structure = {'id':this.etabId};
+
       if (this.service.id) {
         this.serviceService.update(this.service.id, data).subscribe((response: any) => {
           this.messageService.setSuccess('Service modifé');
@@ -116,9 +119,6 @@ export class ServiceAccueilComponent implements OnInit {
           this.modif = false;
         });
       } else {
-        console.log('data : ' + JSON.stringify(data, null, 2) )
-        data.idStructure = this.etabId;
-        console.log('data : ' + JSON.stringify(data, null, 2) )
         this.serviceService.create(data).subscribe((response: any) => {
           this.messageService.setSuccess('Service créé');
           this.service = response;
