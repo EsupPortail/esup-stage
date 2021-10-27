@@ -54,6 +54,10 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(): void{
+    this.refreshServices();
+  }
+
+  refreshServices(): void{
     if (this.etab){
       this.serviceService.getByStructure(this.etab.id).subscribe((response: any) => {
         this.services = response;
@@ -115,16 +119,21 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
       //ajoute idStructure à l'objet service
       data.structure = {'id':this.etab.id};
 
+      console.log('data : ' + JSON.stringify(data, null, 2) )
       if (this.service.id) {
         this.serviceService.update(this.service.id, data).subscribe((response: any) => {
           this.messageService.setSuccess('Service modifié');
           this.service = response;
+          console.log('response : ' + JSON.stringify(response, null, 2) )
+          this.refreshServices();
           this.modif = false;
         });
       } else {
         this.serviceService.create(data).subscribe((response: any) => {
           this.messageService.setSuccess('Service créé');
           this.service = response;
+          console.log('response : ' + JSON.stringify(response, null, 2) )
+          this.refreshServices();
           this.choose(this.service);
         });
       }

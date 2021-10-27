@@ -86,7 +86,7 @@
           </mat-form-field>
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Pays</mat-label>
-            <mat-select formControlName="pays" required [compareWith]="compare">
+            <mat-select formControlName="pays" required>
               <mat-option *ngFor="let country of countries" [value]="country">{{country.libelle}}</mat-option>
             </mat-select>
             <mat-error><app-form-error [field]="form.get('pays')"></app-form-error></mat-error>
