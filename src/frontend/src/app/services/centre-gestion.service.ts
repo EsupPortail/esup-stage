@@ -16,6 +16,10 @@ export class CentreGestionService implements PaginatedService {
   }
 
   getBrouillonByLogin(): Observable<any> {
-    return this.http.get(`${environment.apiUrl}/creation-brouillon`);
+    return this.http.get(`${environment.apiUrl}/centre-gestion/creation-brouillon`);
+  }
+
+  create(data: any): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/centre-gestion`, data);
   }
 }

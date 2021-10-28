@@ -75,7 +75,7 @@ const routes: Routes = [
     }
   },
   {
-    path: 'centre-gestion/create',
+    path: 'centre-gestion/:id',
     component: CentreGestionComponent,
     canActivate: [AuthGuard],
     data: {

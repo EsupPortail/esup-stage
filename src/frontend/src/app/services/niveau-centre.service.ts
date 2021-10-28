@@ -10,7 +10,7 @@ export class NiveauCentreService {
 
   constructor(private http: HttpClient) { }
 
-  findAll(): Observable<any> {
-    return this.http.get(environment.apiUrl + "/niveau-centre");
+  findList(): Observable<any> {
+    return this.http.get(environment.apiUrl + "/niveau-centre/centre-gestion-list");
   }
 }

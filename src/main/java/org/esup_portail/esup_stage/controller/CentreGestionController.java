@@ -11,14 +11,17 @@ import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.CentreGestionRepository;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
+import org.esup_portail.esup_stage.service.AppConfigService;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 
 @ApiController
@@ -34,9 +37,18 @@ public class CentreGestionController {
     @Autowired
     UtilisateurController utilisateurController;
 
+    @Autowired
+    AppConfigService appConfigService;
+
     @GetMapping
     @Secure(fonction = AppFonctionEnum.PARAM_CENTRE, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<CentreGestion> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
+        JSONObject jsonFilters = new JSONObject(filters);
+        Map<String, Object> map = new HashMap<>();
+        map.put("type", "boolean");
+        map.put("value", true);
+        jsonFilters.put("validationCreation", map);
+        filters = jsonFilters.toString();
         PaginatedResponse<CentreGestion> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(centreGestionRepository.count(filters));
         paginatedResponse.setData(centreGestionRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
@@ -56,7 +68,7 @@ public class CentreGestionController {
 
     @GetMapping("/creation-brouillon")
     @Secure(fonction = AppFonctionEnum.PARAM_CENTRE, droits = {DroitEnum.CREATION})
-    public CentreGestion getBrouillonByLogin(@RequestParam("loginCreation") String loginCreation) {
+    public CentreGestion getBrouillonByLogin() {
         ContextDto contexteDto = ServiceContext.getServiceContext();
         Utilisateur utilisateur = contexteDto.getUtilisateur();
         CentreGestion centreGestion = centreGestionJpaRepository.findBrouillon(utilisateur.getLogin());
@@ -65,5 +77,12 @@ public class CentreGestionController {
         }
 
         return centreGestion;
+    }
+
+    @PostMapping
+    @Secure(fonction = AppFonctionEnum.PARAM_CENTRE, droits = {DroitEnum.CREATION})
+    public CentreGestion create(@Valid @RequestBody CentreGestion centreGestion) {
+        centreGestion.setCodeUniversite(appConfigService.getConfigGenerale().getCodeUniversite());
+        return centreGestionJpaRepository.saveAndFlush(centreGestion);
     }
 }

@@ -1,0 +1,73 @@
+<mat-accordion>
+  <mat-expansion-panel [expanded]="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title>Nom et type du centre</mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <form [formGroup]="form">
+      <div class="row">
+        <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
+          <mat-label>Nom du centre</mat-label>
+          <input matInput formControlName="nomCentre">
+        </mat-form-field>
+        <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
+          <mat-label>Type de centre</mat-label>
+          <mat-select formControlName="niveauCentre" [compareWith]="compare">
+            <mat-option *ngFor="let niveauCentre of niveauxCentre" [value]="niveauCentre">{{niveauCentre.libelle}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </form>
+  </mat-expansion-panel>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>Coordonnées du centre</mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <form [formGroup]="form">
+      <div class="row">
+        <mat-form-field class="col-sm12 col-md-6" appearance="fill">
+          <mat-label>Voie</mat-label>
+          <input matInput formControlName="voie">
+        </mat-form-field>
+        <mat-form-field class="col-sm12 col-md-6" appearance="fill">
+          <mat-label>Code postal</mat-label>
+          <input matInput formControlName="codePostal">
+        </mat-form-field>
+      </div>
+      <div class="row">
+        <mat-form-field class="col-sm12 col-md-6" appearance="fill">
+          <mat-label>Bâtiment / Résidence / Z.I.</mat-label>
+          <input matInput formControlName="adresse">
+        </mat-form-field>
+        <mat-form-field class="col-sm12 col-md-6" appearance="fill">
+          <mat-label>Commune</mat-label>
+          <input matInput formControlName="commune">
+        </mat-form-field>
+      </div>
+      <div class="row">
+        <mat-form-field class="col-sm12 col-md-6" appearance="fill">
+          <mat-label>Adresse mail</mat-label>
+          <input matInput formControlName="mail">
+        </mat-form-field>
+        <mat-form-field class="col-sm12 col-md-6" appearance="fill">
+          <mat-label>Téléphone</mat-label>
+          <input matInput formControlName="telephone">
+        </mat-form-field>
+      </div>
+      <div class="row">
+        <mat-form-field class="col-sm12 col-md-6" appearance="fill">
+          <mat-label>Site Internet</mat-label>
+          <input matInput formControlName="siteWeb">
+        </mat-form-field>
+        <mat-form-field class="col-sm12 col-md-6" appearance="fill">
+          <mat-label>Fax</mat-label>
+          <input matInput formControlName="fax">
+        </mat-form-field>
+      </div>
+      <mat-dialog-actions>
+        <button mat-flat-button color="primary" (click)="validate()">{{'BOUTON_VALIDER'|contenu}}</button>
+      </mat-dialog-actions>
+    </form>
+  </mat-expansion-panel>
+</mat-accordion>
