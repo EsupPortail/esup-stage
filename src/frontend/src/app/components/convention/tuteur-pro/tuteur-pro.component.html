@@ -5,7 +5,7 @@
     </mat-expansion-panel-header>
 
     <div class="row">
-      <mat-form-field class="col-md-12" appearance="fill">
+      <mat-form-field class="col-md-12" appearance="fill" [hidden]="contacts.length == 0">
         <mat-label>Selectionez un tuteur existant :</mat-label>
         <mat-select [(value)]="contact" (selectionChange)="choose($event.value)">
           <mat-option *ngFor="let contact of contacts" [value]="contact">{{contact.nom}}</mat-option>
