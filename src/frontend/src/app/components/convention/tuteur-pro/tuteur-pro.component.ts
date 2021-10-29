@@ -55,6 +55,7 @@ export class TuteurProComponent implements OnInit, OnChanges {
 
   ngOnChanges(): void{
     this.refreshContacts();
+    this.resetState();
   }
 
   refreshContacts(): void{
@@ -81,6 +82,15 @@ export class TuteurProComponent implements OnInit, OnChanges {
     this.validated.emit(2);
   }
 
+  resetState(): void {
+    this.contact = null;
+    this.modif = false;
+    if (this.firstPanel) {
+      this.firstPanel.expanded = true;
+    }
+    this.validated.emit(0);
+  }
+
   initCreate(): void {
     this.contact = {};
     this.form.reset();
@@ -88,7 +98,6 @@ export class TuteurProComponent implements OnInit, OnChanges {
   }
 
   edit(): void {
-    console.log('data : ' + JSON.stringify(this.contact, null, 2));
     this.form.setValue({
       nom: this.contact.nom,
       prenom: this.contact.prenom,

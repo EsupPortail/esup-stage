@@ -56,6 +56,7 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
 
   ngOnChanges(): void{
     this.refreshServices();
+    this.resetState();
   }
 
   refreshServices(): void{
@@ -80,6 +81,16 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
       this.firstPanel.expanded = false;
     }
     this.validated.emit(2);
+    this.serviceSelected.emit(this.service);
+  }
+
+  resetState(): void {
+    this.service = null;
+    this.modif = false;
+    if (this.firstPanel) {
+      this.firstPanel.expanded = true;
+    }
+    this.validated.emit(0);
     this.serviceSelected.emit(this.service);
   }
 
