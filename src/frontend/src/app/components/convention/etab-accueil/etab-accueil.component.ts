@@ -64,17 +64,17 @@ export class EtabAccueilComponent implements OnInit {
     this.form = this.fb.group({
       raisonSociale: [null, [Validators.required, Validators.maxLength(150)]],
       numeroSiret: [null, [Validators.maxLength(14), Validators.pattern('[0-9]{14}')]],
-      effectif: [null, [Validators.required]],
-      typeStructure: [null, [Validators.required]],
-      statutJuridique: [null, [Validators.required]],
-      nafN5: [null, []],
+      idEffectif: [null, [Validators.required]],
+      idTypeStructure: [null, [Validators.required]],
+      idStatutJuridique: [null, [Validators.required]],
+      codeNafN5: [null, []],
       activitePrincipale: [null, []],
       voie: [null, [Validators.required, Validators.maxLength(200)]],
       codePostal: [null, [Validators.required, Validators.maxLength(10)]],
       batimentResidence: [null, [Validators.maxLength(200)]],
       commune: [null, [Validators.required, Validators.maxLength(200)]],
       libCedex: [null, [Validators.maxLength(20)]],
-      pays: [null, [Validators.required]],
+      idPays: [null, [Validators.required]],
       mail: [null, [Validators.email, Validators.maxLength(50)]],
       telephone: [null, [Validators.required, Validators.maxLength(20)]],
       siteWeb: [null, [Validators.maxLength(200), Validators.pattern('^https?://(\\w([\\w\\-]{0,61}\\w)?\\.)+[a-zA-Z]{2,6}([/]{1}.*)?$')]],
@@ -160,17 +160,17 @@ export class EtabAccueilComponent implements OnInit {
     this.form.setValue({
       raisonSociale: this.etab.raisonSociale,
       numeroSiret: this.etab.numeroSiret,
-      effectif: this.etab.effectif,
-      typeStructure: this.etab.typeStructure,
-      statutJuridique: this.etab.statutJuridique,
-      nafN5: this.etab.nafN5 ? this.etab.nafN5.code : null,
+      idEffectif: this.etab.effectif ? this.etab.effectif.id : null,
+      idTypeStructure: this.etab.typeStructure ? this.etab.typeStructure.id : null,
+      idStatutJuridique: this.etab.statutJuridique ? this.etab.statutJuridique.id : null,
+      codeNafN5: this.etab.nafN5 ? this.etab.nafN5.code : null,
       activitePrincipale: this.etab.activitePrincipale,
       voie: this.etab.voie,
       codePostal: this.etab.codePostal,
       batimentResidence: this.etab.batimentResidence,
       commune: this.etab.commune,
       libCedex: this.etab.libCedex,
-      pays: this.etab.pays,
+      idPays: this.etab.pays ? this.etab.pays.id : null,
       mail: this.etab.mail,
       telephone: this.etab.telephone,
       siteWeb: this.etab.siteWeb,
@@ -181,13 +181,6 @@ export class EtabAccueilComponent implements OnInit {
 
   cancelEdit(): void {
     this.modif = false;
-  }
-
-  compare(option: any, value: any): boolean {
-    if (option && value) {
-      return option.id === value.id;
-    }
-    return false;
   }
 
   getNafN5(): void {

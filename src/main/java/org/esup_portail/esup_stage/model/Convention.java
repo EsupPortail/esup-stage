@@ -3,6 +3,8 @@ package org.esup_portail.esup_stage.model;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.esup_portail.esup_stage.dto.view.Views;
 import org.esup_portail.esup_stage.enums.NbJoursHebdoEnum;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -170,6 +172,7 @@ public class Convention extends ObjetMetier {
 
     @ManyToOne
     @JoinColumn(name = "idAssurance")
+    @NotFound(action=NotFoundAction.IGNORE)
     private Assurance assurance;
 
     @Column(length = 15)

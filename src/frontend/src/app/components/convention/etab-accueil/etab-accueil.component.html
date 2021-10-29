@@ -127,27 +127,27 @@
         <div class="row">
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Effectif</mat-label>
-            <mat-select formControlName="effectif" required [compareWith]="compare">
-              <mat-option *ngFor="let effectif of effectifs" [value]="effectif">{{effectif.libelle}}</mat-option>
+            <mat-select formControlName="idEffectif" required>
+              <mat-option *ngFor="let effectif of effectifs" [value]="effectif.id">{{effectif.libelle}}</mat-option>
             </mat-select>
-            <mat-error><app-form-error [field]="form.get('effectif')"></app-form-error></mat-error>
+            <mat-error><app-form-error [field]="form.get('idEffectif')"></app-form-error></mat-error>
           </mat-form-field>
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Type d'établissement</mat-label>
-            <mat-select formControlName="typeStructure" required [compareWith]="compare">
-              <mat-option *ngFor="let typeStructure of typeStructures" [value]="typeStructure">{{typeStructure.libelle}}</mat-option>
+            <mat-select formControlName="idTypeStructure" required>
+              <mat-option *ngFor="let typeStructure of typeStructures" [value]="typeStructure.id">{{typeStructure.libelle}}</mat-option>
             </mat-select>
-            <mat-error><app-form-error [field]="form.get('typeStructure')"></app-form-error></mat-error>
+            <mat-error><app-form-error [field]="form.get('idTypeStructure')"></app-form-error></mat-error>
           </mat-form-field>
         </div>
         <div class="row">
           <div class="col-sm-12 col-md-6 mb-2"></div>
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Statut juridique</mat-label>
-            <mat-select formControlName="statutJuridique" required [compareWith]="compare">
-              <mat-option *ngFor="let statutJuridique of statutJuridiques" [value]="statutJuridique">{{statutJuridique.libelle}}</mat-option>
+            <mat-select formControlName="idStatutJuridique" required>
+              <mat-option *ngFor="let statutJuridique of statutJuridiques" [value]="statutJuridique.id">{{statutJuridique.libelle}}</mat-option>
             </mat-select>
-            <mat-error><app-form-error [field]="form.get('statutJuridique')"></app-form-error></mat-error>
+            <mat-error><app-form-error [field]="form.get('idStatutJuridique')"></app-form-error></mat-error>
           </mat-form-field>
         </div>
 
@@ -159,7 +159,7 @@
         <div class="row">
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Code APE</mat-label>
-            <input matInput formControlName="nafN5" (change)="getNafN5()" />
+            <input matInput formControlName="codeNafN5" (change)="getNafN5()" />
             <mat-icon matSuffix class="icon-help" matTooltip="Code à demander directement à votre établissement d'accueil ou consultable sur un site de référencement d'entreprises. Composé de quatre chiffres et une lettre (ex: 01.10Z) faisant référence à la nomenclature d'activité françaises (NAF).">help</mat-icon>
             <mat-hint>
               <ng-container *ngIf="selectedNafN5; else invalidNafN5">
@@ -208,10 +208,10 @@
           </mat-form-field>
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Pays</mat-label>
-            <mat-select formControlName="pays" required [compareWith]="compare">
-              <mat-option *ngFor="let country of countries" [value]="country">{{country.libelle}}</mat-option>
+            <mat-select formControlName="idPays" required>
+              <mat-option *ngFor="let country of countries" [value]="country.id">{{country.libelle}}</mat-option>
             </mat-select>
-            <mat-error><app-form-error [field]="form.get('pays')"></app-form-error></mat-error>
+            <mat-error><app-form-error [field]="form.get('idPays')"></app-form-error></mat-error>
           </mat-form-field>
         </div>
         <div class="row">
