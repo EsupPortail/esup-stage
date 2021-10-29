@@ -13,6 +13,7 @@ export class ConventionComponent implements OnInit {
   convention: any;
 
   etab: any;
+  service: any;
 
   tabs: any = {
     0: { statut: 0, init: true },
@@ -55,6 +56,10 @@ export class ConventionComponent implements OnInit {
 
   setEtab(value: any): void {
     this.etab = value;
+  }
+
+  setService(value: any): void {
+    this.service = value;
   }
 
   isCreated(): boolean {

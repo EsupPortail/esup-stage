@@ -67,6 +67,7 @@ import { QuillModule } from "ngx-quill";
 import { FormErrorComponent } from './components/form-error/form-error.component';
 import { MatProgressBarModule } from "@angular/material/progress-bar";
 import { ServiceAccueilComponent } from './components/convention/service-accueil/service-accueil.component';
+import { TuteurProComponent } from './components/convention/tuteur-pro/tuteur-pro.component';
 import { CoordCentreComponent } from './components/centre-gestion/coord-centre/coord-centre.component';
 
 registerLocaleData(localeFr, 'fr');
@@ -101,6 +102,7 @@ registerLocaleData(localeFr, 'fr');
     FormErrorComponent,
     ServiceAccueilComponent,
     CoordCentreComponent,
+    TuteurProComponent,
   ],
   imports: [
     BrowserModule,

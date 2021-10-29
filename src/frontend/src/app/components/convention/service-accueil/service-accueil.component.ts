@@ -29,6 +29,7 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
   @ViewChild(MatExpansionPanel) firstPanel: MatExpansionPanel|undefined;
 
   @Output() validated = new EventEmitter<number>();
+  @Output() serviceSelected = new EventEmitter<any>();
 
   constructor(public serviceService: ServiceService,
               private fb: FormBuilder,
@@ -79,6 +80,7 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
       this.firstPanel.expanded = false;
     }
     this.validated.emit(2);
+    this.serviceSelected.emit(this.service);
   }
 
   initCreate(): void {
@@ -119,12 +121,10 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
       //ajoute idStructure à l'objet service
       data.structure = {'id':this.etab.id};
 
-      console.log('data : ' + JSON.stringify(data, null, 2) )
       if (this.service.id) {
         this.serviceService.update(this.service.id, data).subscribe((response: any) => {
           this.messageService.setSuccess('Service modifié');
           this.service = response;
-          console.log('response : ' + JSON.stringify(response, null, 2) )
           this.refreshServices();
           this.modif = false;
         });
@@ -132,7 +132,6 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
         this.serviceService.create(data).subscribe((response: any) => {
           this.messageService.setSuccess('Service créé');
           this.service = response;
-          console.log('response : ' + JSON.stringify(response, null, 2) )
           this.refreshServices();
           this.choose(this.service);
         });
