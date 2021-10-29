@@ -130,7 +130,8 @@ export class EtabAccueilComponent implements OnInit {
   }
 
   canEdit(): boolean {
-    return this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.MODIFICATION]});
+    const hasRight = this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.MODIFICATION]});
+    return !this.authService.isEtudiant() && hasRight;
   }
 
   choose(row: any): void {
