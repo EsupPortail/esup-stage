@@ -137,6 +137,11 @@ export class TuteurProComponent implements OnInit, OnChanges {
           this.modif = false;
         });
       } else {
+
+        //ajoute un idCentreGestion factice à l'objet contact
+        //TODO : récupérer idCentreGestion à la création de la convention
+        data.centreGestion = {'id':1};
+
         this.contactService.create(data).subscribe((response: any) => {
           this.messageService.setSuccess('Contact créé');
           this.contact = response;
