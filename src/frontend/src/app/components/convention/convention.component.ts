@@ -15,6 +15,7 @@ export class ConventionComponent implements OnInit {
   convention: any;
 
   etab: any;
+  service: any;
 
   statuts: any = {
     statutEtudiant: 0,
@@ -58,6 +59,10 @@ export class ConventionComponent implements OnInit {
 
   setEtab(value: any): void {
     this.etab = value;
+  }
+
+  setService(value: any): void {
+    this.service = value;
   }
 
   isCreated(): boolean {
