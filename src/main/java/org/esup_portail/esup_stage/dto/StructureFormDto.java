@@ -1,5 +1,7 @@
 package org.esup_portail.esup_stage.dto;
 
+import org.hibernate.validator.constraints.URL;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -37,6 +39,7 @@ public class StructureFormDto {
     @Size(max = 50)
     private String mail;
 
+    @URL
     @Size(max = 200)
     private String siteWeb;
 
