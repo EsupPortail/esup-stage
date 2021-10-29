@@ -47,7 +47,6 @@
   <mat-tab #recapTab [disabled]="isCreated() || !allValid">
     <ng-template mat-tab-label>
       Récapitulatif
-      <mat-progress-bar mode="determinate" [value]="getProgressValue(7)" [ngClass]="{editing: tabs[7].statut === 1, done: tabs[7].statut === 2}"></mat-progress-bar>
     </ng-template>
   </mat-tab>
 </mat-tab-group>
