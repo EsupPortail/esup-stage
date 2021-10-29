@@ -2,9 +2,9 @@ import {
   AfterContentInit,
   Component, ContentChildren,
   EventEmitter,
-  Input,
+  Input, OnChanges,
   OnInit,
-  Output, QueryList,
+  Output, QueryList, SimpleChanges,
   ViewChild
 } from '@angular/core';
 import { Sort, SortDirection } from "@angular/material/sort";
@@ -13,13 +13,14 @@ import { MatColumnDef, MatTable } from "@angular/material/table";
 import { PaginatedService } from "../../services/paginated.service";
 import { Subject } from "rxjs";
 import { debounceTime } from "rxjs/operators";
+import * as _ from "lodash";
 
 @Component({
   selector: 'app-table',
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.scss']
 })
-export class TableComponent implements OnInit, AfterContentInit {
+export class TableComponent implements OnInit, AfterContentInit, OnChanges {
 
   @Input() service: PaginatedService;
   @Input() columns: any;
@@ -29,6 +30,7 @@ export class TableComponent implements OnInit, AfterContentInit {
   @Input() pagination: boolean = true;
   @Input() actionButton: any;
   @Input() hideDeleteFilters: boolean;
+  @Input() selectedRow: any;
 
   @Output() onUpdated = new EventEmitter<any>();
 
@@ -80,6 +82,9 @@ export class TableComponent implements OnInit, AfterContentInit {
     }
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+  }
+
   update(): void {
     this.filterChanged.next();
   }
@@ -109,6 +114,10 @@ export class TableComponent implements OnInit, AfterContentInit {
   reset(): void {
     this.initFilters(true);
     this.update();
+  }
+
+  isSelected(row: any): boolean {
+    return _.isEqual(row, this.selectedRow);
   }
 
 }

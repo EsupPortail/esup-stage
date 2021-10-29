@@ -43,6 +43,7 @@ export class EtabAccueilComponent implements OnInit {
   modif: boolean = false;
   form: FormGroup;
   selectedNafN5: any;
+  selectedRow: any = undefined;
 
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
   @ViewChild(MatExpansionPanel) firstPanel: MatExpansionPanel|undefined;
@@ -136,6 +137,7 @@ export class EtabAccueilComponent implements OnInit {
 
   choose(row: any): void {
     this.modif = false;
+    this.selectedRow = row;
     this.structureService.getById(row.id).subscribe((response: any) => {
       this.etab = response;
       if (this.etab.nafN5) {
@@ -155,6 +157,7 @@ export class EtabAccueilComponent implements OnInit {
     this.form.reset();
     this.selectedNafN5 = undefined;
     this.modif = true;
+    this.selectedRow = undefined;
   }
 
   edit(): void {

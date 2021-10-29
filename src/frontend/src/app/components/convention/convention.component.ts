@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from "@angular/router";
 import { ConventionService } from "../../services/convention.service";
 import { MatTabChangeEvent } from "@angular/material/tabs";
-import { AppFonction } from "../../constants/app-fonction";
-import { Droit } from "../../constants/droit";
 
 @Component({
   selector: 'app-convention',
@@ -16,17 +14,16 @@ export class ConventionComponent implements OnInit {
 
   etab: any;
 
-  statuts: any = {
-    statutEtudiant: 0,
-    statutEtabAccueil: 0,
-    statutServiceAccueil: 0,
-    statutTuteurPro: 0,
-    statutStage: 0,
-    statutEnseignantRef: 0,
-    statutSignataire: 0,
-    statutRecap: 0,
-  };
-  initedTabs = [0];
+  tabs: any = {
+    0: { statut: 0, init: true },
+    1: { statut: 0, init: false },
+    2: { statut: 0, init: false },
+    3: { statut: 0, init: false },
+    4: { statut: 0, init: false },
+    5: { statut: 0, init: false },
+    6: { statut: 0, init: false },
+    7: { statut: 0, init: false },
+  }
 
   allValid = false;
 
@@ -52,8 +49,8 @@ export class ConventionComponent implements OnInit {
     // TODO maj des statuts
   }
 
-  setStatus(statut: string, value: number): void {
-    this.statuts[statut] = value;
+  setStatus(key: number, value: number): void {
+    this.tabs[key].statut = value;
   }
 
   setEtab(value: any): void {
@@ -65,21 +62,12 @@ export class ConventionComponent implements OnInit {
   }
 
   tabChanged(event: MatTabChangeEvent): void {
-    if (this.initedTabs.indexOf(event.index) === -1) {
-      this.initedTabs.push(event.index);
-    }
+    this.tabs[event.index].init = true;
   }
 
-  hasInit(origin: number|null): boolean {
-    if (origin) {
-      return this.initedTabs.indexOf(origin) > -1;
-    }
-    return false;
-  }
-
-  getProgressValue(key: string): number {
-    if (this.statuts[key] === 1) return 66;
-    if (this.statuts[key] === 2) return 100;
+  getProgressValue(key: number): number {
+    if (this.tabs[key].statut === 1) return 66;
+    if (this.tabs[key].statut === 2) return 100;
     return 33;
   }
 

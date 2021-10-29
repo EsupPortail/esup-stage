@@ -6,7 +6,7 @@
 
     <app-table [service]="structureService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters"
                matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'"
-               (matSortChange)="appTable ? appTable.sorting($event) : null" [actionButton]="canCreate() ? createButton : undefined">
+               (matSortChange)="appTable ? appTable.sorting($event) : null" [actionButton]="canCreate() ? createButton : undefined" [selectedRow]="selectedRow">
       <tr class="mat-row" *matNoDataRow>
         <td class="mat-cell" colspan="9999">Aucun établissement trouvé</td>
       </tr>
@@ -42,10 +42,7 @@
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let row">
           <button mat-button mat-stroked-button (click)="choose(row)" color="primary">
-            <span *ngIf="!etab || etab.id !== row.id; else notSelected"><i class="fa fa-check"></i> Sélectionner</span>
-            <ng-template #notSelected>
-              <i class="fa fa-check-circle"></i> Sélectionner
-            </ng-template>
+            <i class="fa fa-check"></i> Sélectionner
           </button>
         </td>
       </ng-container>
