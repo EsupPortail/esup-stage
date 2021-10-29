@@ -38,7 +38,7 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
               private paysService: PaysService,
   ) {
     this.form = this.fb.group({
-      nom: [null, [Validators.required, Validators.maxLength(150)]],
+      nom: [null, [Validators.required, Validators.maxLength(70)]],
       voie: [null, [Validators.required, Validators.maxLength(200)]],
       codePostal: [null, [Validators.required, Validators.maxLength(10), Validators.pattern('[0-9]+')]],
       batimentResidence: [null, [Validators.maxLength(200)]],

@@ -37,13 +37,13 @@ export class TuteurProComponent implements OnInit, OnChanges {
               private civiliteService: CiviliteService,
   ) {
     this.form = this.fb.group({
-      nom: [null, [Validators.required, Validators.maxLength(150)]],
-      prenom: [null, [Validators.required, Validators.maxLength(200)]],
+      nom: [null, [Validators.required, Validators.maxLength(50)]],
+      prenom: [null, [Validators.required, Validators.maxLength(50)]],
       civilite: [null, []],
-      fonction: [null, [Validators.required, Validators.maxLength(200)]],
-      tel: [null, [Validators.maxLength(200)]],
-      fax: [null, [Validators.maxLength(200)]],
-      mail: [null, [Validators.required, Validators.email, Validators.maxLength(200)]],
+      fonction: [null, [Validators.required, Validators.maxLength(100)]],
+      tel: [null, [Validators.maxLength(50)]],
+      fax: [null, [Validators.maxLength(50)]],
+      mail: [null, [Validators.required, Validators.email, Validators.maxLength(50)]],
     });
   }
 
