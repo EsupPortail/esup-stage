@@ -73,8 +73,8 @@
           </mat-form-field>
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Civilité</mat-label>
-            <mat-select formControlName="civilite" required [compareWith]="compare">
-              <mat-option *ngFor="let civilite of civilites" [value]="civilite">{{civilite.libelle}}</mat-option>
+            <mat-select formControlName="idCivilite" required >
+              <mat-option *ngFor="let civilite of civilites" [value]="civilite.id">{{civilite.libelle}}</mat-option>
             </mat-select>
             <mat-error><app-form-error [field]="form.get('civilite')"></app-form-error></mat-error>
           </mat-form-field>

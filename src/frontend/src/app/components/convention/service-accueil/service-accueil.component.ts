@@ -43,7 +43,7 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
       codePostal: [null, [Validators.required, Validators.maxLength(10), Validators.pattern('[0-9]+')]],
       batimentResidence: [null, [Validators.maxLength(200)]],
       commune: [null, [Validators.required, Validators.maxLength(200)]],
-      pays: [null, [Validators.required]],
+      idPays: [null, [Validators.required]],
       telephone: [null, [Validators.maxLength(20)]],
     });
   }
@@ -107,7 +107,7 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
       codePostal: this.service.codePostal,
       batimentResidence: this.service.batimentResidence,
       commune: this.service.commune,
-      pays: this.service.pays,
+      idPays: this.service.pays ? this.service.pays.id : null,
       telephone: this.service.telephone,
     });
     this.modif = true;
@@ -117,20 +117,10 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
     this.modif = false;
   }
 
-  compare(option: any, value: any): boolean {
-    if (option && value) {
-      return option.id === value.id;
-    }
-    return false;
-  }
-
   save(): void {
     if (this.form.valid) {
 
       const data = {...this.form.value};
-
-      //ajoute idStructure à l'objet service
-      data.structure = {'id':this.etab.id};
 
       if (this.service.id) {
         this.serviceService.update(this.service.id, data).subscribe((response: any) => {
@@ -140,6 +130,8 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
           this.modif = false;
         });
       } else {
+        //ajoute idStructure à l'objet service
+        data.idStructure = this.etab.id;
         this.serviceService.create(data).subscribe((response: any) => {
           this.messageService.setSuccess('Service créé');
           this.service = response;

@@ -39,7 +39,7 @@ export class TuteurProComponent implements OnInit, OnChanges {
     this.form = this.fb.group({
       nom: [null, [Validators.required, Validators.maxLength(50)]],
       prenom: [null, [Validators.required, Validators.maxLength(50)]],
-      civilite: [null, []],
+      idCivilite: [null, []],
       fonction: [null, [Validators.required, Validators.maxLength(100)]],
       tel: [null, [Validators.maxLength(50)]],
       fax: [null, [Validators.maxLength(50)]],
@@ -101,7 +101,7 @@ export class TuteurProComponent implements OnInit, OnChanges {
     this.form.setValue({
       nom: this.contact.nom,
       prenom: this.contact.prenom,
-      civilite: this.contact.civilite,
+      idCivilite: this.contact.civilite ? this.contact.civilite.id : null,
       fonction: this.contact.fonction,
       tel: this.contact.tel,
       fax: this.contact.fax,
@@ -126,9 +126,6 @@ export class TuteurProComponent implements OnInit, OnChanges {
 
       const data = {...this.form.value};
 
-      //ajoute idService à l'objet contact
-      data.service = {'id':this.service.id};
-
       if (this.contact.id) {
         this.contactService.update(this.contact.id, data).subscribe((response: any) => {
           this.messageService.setSuccess('Contact modifié');
@@ -140,7 +137,10 @@ export class TuteurProComponent implements OnInit, OnChanges {
 
         //ajoute un idCentreGestion factice à l'objet contact
         //TODO : récupérer idCentreGestion à la création de la convention
-        data.centreGestion = {'id':1};
+        data.idCentreGestion = 1;
+
+        //ajoute idService à l'objet contact
+        data.idService = this.service.id;
 
         this.contactService.create(data).subscribe((response: any) => {
           this.messageService.setSuccess('Contact créé');

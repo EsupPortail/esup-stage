@@ -1,7 +1,6 @@
 package org.esup_portail.esup_stage.model;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Entity
@@ -22,7 +21,6 @@ public class Service extends ObjetMetier {
     @Column(length = 50)
     private String loginInfosAJour;
 
-    @NotNull
     @ManyToOne
     @JoinColumn(name = "idStructure", nullable = false)
     private Structure structure;

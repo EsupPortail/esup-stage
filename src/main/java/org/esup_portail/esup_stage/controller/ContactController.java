@@ -2,13 +2,13 @@ package org.esup_portail.esup_stage.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
+import org.esup_portail.esup_stage.dto.ContactFormDto;
 import org.esup_portail.esup_stage.dto.view.Views;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
-import org.esup_portail.esup_stage.model.Contact;
-import org.esup_portail.esup_stage.repository.ContactJpaRepository;
-import org.esup_portail.esup_stage.repository.ContactRepository;
+import org.esup_portail.esup_stage.model.*;
+import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,6 +28,15 @@ public class ContactController {
     @Autowired
     ContactJpaRepository contactJpaRepository;
 
+    @Autowired
+    ServiceJpaRepository serviceJpaRepository;
+
+    @Autowired
+    CentreGestionJpaRepository centreGestionJpaRepository;
+
+    @Autowired
+    CiviliteJpaRepository civiliteJpaRepository;
+
     @JsonView(Views.List.class)
     @GetMapping
     @Secure(fonction = AppFonctionEnum.ORGA_ACC, droits = {DroitEnum.LECTURE})
@@ -43,7 +52,7 @@ public class ContactController {
     public Contact getById(@PathVariable("id") int id) {
         Contact contact = contactJpaRepository.findById(id);
         if (contact == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Contact non trouvée");
+            throw new AppException(HttpStatus.NOT_FOUND, "Contact non trouvé");
         }
         return contact;
     }
@@ -53,33 +62,57 @@ public class ContactController {
     public List<Contact> getByService(@PathVariable("id") int id) {
         List<Contact> contact = contactJpaRepository.findByService(id);
         if (contact == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Contact non trouvée");
+            throw new AppException(HttpStatus.NOT_FOUND, "Contact non trouvé");
         }
         return contact;
     }
 
     @PostMapping
     @Secure(fonction = AppFonctionEnum.ORGA_ACC, droits = {DroitEnum.CREATION})
-    public Contact create(@Valid @RequestBody Contact _contact) {
-        return contactJpaRepository.saveAndFlush(_contact);
+    public Contact create(@Valid @RequestBody ContactFormDto contactFormDto) {
+        Contact contact = new Contact();
+        setContactData(contact, contactFormDto);
+
+        Service service = serviceJpaRepository.findById(contactFormDto.getIdService());
+        if (service == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Service non trouvé");
+        }
+        CentreGestion centreGestion = centreGestionJpaRepository.findById(contactFormDto.getIdCentreGestion());
+        if (centreGestion == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "CentreGestion non trouvé");
+        }
+
+        contact.setCentreGestion(centreGestion);
+        contact.setService(service);
+
+        return contactJpaRepository.saveAndFlush(contact);
     }
 
     @PutMapping("/{id}")
     @Secure(fonction = AppFonctionEnum.ORGA_ACC, droits = {DroitEnum.MODIFICATION})
-    public Contact update(@PathVariable("id") int id, @Valid @RequestBody Contact _contact) {
+    public Contact update(@PathVariable("id") int id, @Valid @RequestBody ContactFormDto contactFormDto) {
         Contact contact = contactJpaRepository.findById(id);
-        if (contact == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Contact non trouvée");
-        }
-        contact.setNom(_contact.getNom());
-        contact.setPrenom(_contact.getPrenom());
-        contact.setCivilite(_contact.getCivilite());
-        contact.setFonction(_contact.getFonction());
-        contact.setTel(_contact.getTel());
-        contact.setFax(_contact.getFax());
-        contact.setMail(_contact.getMail());
+        setContactData(contact, contactFormDto);
         contact = contactJpaRepository.saveAndFlush(contact);
         return contact;
     }
 
+
+    private void setContactData(Contact contact, ContactFormDto contactFormDto) {
+        if (contact == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Contact non trouvé");
+        }
+        Civilite civilite = civiliteJpaRepository.findById(contactFormDto.getIdCivilite());
+        if (civilite == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Civilite non trouvée");
+        }
+        contact.setNom(contactFormDto.getNom());
+        contact.setPrenom(contactFormDto.getPrenom());
+        contact.setCivilite(civilite);
+        contact.setFonction(contactFormDto.getFonction());
+        contact.setTel(contactFormDto.getTel());
+        contact.setFax(contactFormDto.getFax());
+        contact.setMail(contactFormDto.getMail());
+
+    }
 }
