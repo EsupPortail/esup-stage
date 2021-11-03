@@ -5,13 +5,15 @@
     </mat-expansion-panel-header>
 
     <div class="row">
-      <mat-form-field class="col-md-12" appearance="fill">
+      <mat-form-field class="col-md-12" appearance="fill" [hidden]="services.length == 0">
         <mat-label>Selectionez un service :</mat-label>
         <mat-select [(value)]="service" (selectionChange)="choose($event.value)">
           <mat-option *ngFor="let service of services" [value]="service">{{service.nom}}</mat-option>
         </mat-select>
       </mat-form-field>
-      <button mat-flat-button (click)="initCreate()" color="primary">Créer un nouveau service d'acceuil</button>
+      <div class="col-md-12">
+        <button mat-flat-button (click)="initCreate()" color="primary">Créer un nouveau service d'acceuil</button>
+      </div>
     </div>
 
   </mat-expansion-panel>
@@ -19,11 +21,6 @@
   <mat-expansion-panel [expanded]="service" [disabled]="!service">
     <mat-expansion-panel-header>
       <mat-panel-title>Service d'accueil</mat-panel-title>
-      <mat-panel-description>
-        <div class="w-100 text-right">
-          <mat-icon fontSet="fa" fontIcon="fa-building"></mat-icon>
-        </div>
-      </mat-panel-description>
     </mat-expansion-panel-header>
     <form *ngIf="service" [formGroup]="form" novalidate (submit)="save()">
       <div class="mt-3 mb-3" *ngIf="service.id && !modif">
@@ -86,10 +83,10 @@
           </mat-form-field>
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Pays</mat-label>
-            <mat-select formControlName="pays" required [compareWith]="compare">
-              <mat-option *ngFor="let country of countries" [value]="country">{{country.libelle}}</mat-option>
+            <mat-select formControlName="idPays" required>
+              <mat-option *ngFor="let country of countries" [value]="country.id">{{country.libelle}}</mat-option>
             </mat-select>
-            <mat-error><app-form-error [field]="form.get('pays')"></app-form-error></mat-error>
+            <mat-error><app-form-error [field]="form.get('idPays')"></app-form-error></mat-error>
           </mat-form-field>
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Téléphone</mat-label>

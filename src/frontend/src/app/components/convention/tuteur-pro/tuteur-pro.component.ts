@@ -37,13 +37,13 @@ export class TuteurProComponent implements OnInit, OnChanges {
               private civiliteService: CiviliteService,
   ) {
     this.form = this.fb.group({
-      nom: [null, [Validators.required, Validators.maxLength(150)]],
-      prenom: [null, [Validators.required, Validators.maxLength(200)]],
-      civilite: [null, []],
-      fonction: [null, [Validators.required, Validators.maxLength(200)]],
-      tel: [null, [Validators.maxLength(200)]],
-      fax: [null, [Validators.maxLength(200)]],
-      mail: [null, [Validators.required, Validators.email, Validators.maxLength(200)]],
+      nom: [null, [Validators.required, Validators.maxLength(50)]],
+      prenom: [null, [Validators.required, Validators.maxLength(50)]],
+      idCivilite: [null, []],
+      fonction: [null, [Validators.required, Validators.maxLength(100)]],
+      tel: [null, [Validators.maxLength(50)]],
+      fax: [null, [Validators.maxLength(50)]],
+      mail: [null, [Validators.required, Validators.email, Validators.maxLength(50)]],
     });
   }
 
@@ -55,6 +55,7 @@ export class TuteurProComponent implements OnInit, OnChanges {
 
   ngOnChanges(): void{
     this.refreshContacts();
+    this.resetState();
   }
 
   refreshContacts(): void{
@@ -81,6 +82,15 @@ export class TuteurProComponent implements OnInit, OnChanges {
     this.validated.emit(2);
   }
 
+  resetState(): void {
+    this.contact = null;
+    this.modif = false;
+    if (this.firstPanel) {
+      this.firstPanel.expanded = true;
+    }
+    this.validated.emit(0);
+  }
+
   initCreate(): void {
     this.contact = {};
     this.form.reset();
@@ -88,11 +98,10 @@ export class TuteurProComponent implements OnInit, OnChanges {
   }
 
   edit(): void {
-    console.log('data : ' + JSON.stringify(this.contact, null, 2));
     this.form.setValue({
       nom: this.contact.nom,
       prenom: this.contact.prenom,
-      civilite: this.contact.civilite,
+      idCivilite: this.contact.civilite ? this.contact.civilite.id : null,
       fonction: this.contact.fonction,
       tel: this.contact.tel,
       fax: this.contact.fax,
@@ -117,9 +126,6 @@ export class TuteurProComponent implements OnInit, OnChanges {
 
       const data = {...this.form.value};
 
-      //ajoute idService à l'objet contact
-      data.service = {'id':this.service.id};
-
       if (this.contact.id) {
         this.contactService.update(this.contact.id, data).subscribe((response: any) => {
           this.messageService.setSuccess('Contact modifié');
@@ -128,6 +134,14 @@ export class TuteurProComponent implements OnInit, OnChanges {
           this.modif = false;
         });
       } else {
+
+        //ajoute un idCentreGestion factice à l'objet contact
+        //TODO : récupérer idCentreGestion à la création de la convention
+        data.idCentreGestion = 1;
+
+        //ajoute idService à l'objet contact
+        data.idService = this.service.id;
+
         this.contactService.create(data).subscribe((response: any) => {
           this.messageService.setSuccess('Contact créé');
           this.contact = response;
