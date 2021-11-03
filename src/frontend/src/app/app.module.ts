@@ -72,6 +72,7 @@ import { CoordCentreComponent } from './components/centre-gestion/coord-centre/c
 import { SignataireComponent } from './components/convention/signataire/signataire.component';
 import { EnseignantReferentComponent } from './components/convention/enseignant-referent/enseignant-referent.component';
 import { TemplateMailComponent } from './components/admin/template-mail/template-mail.component';
+import { ParamCentreComponent } from './components/centre-gestion/param-centre/param-centre.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -109,6 +110,7 @@ registerLocaleData(localeFr, 'fr');
     SignataireComponent,
     EnseignantReferentComponent,
     TemplateMailComponent,
+    ParamCentreComponent,
   ],
   imports: [
     BrowserModule,

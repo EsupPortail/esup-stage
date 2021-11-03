@@ -22,4 +22,8 @@ export class CentreGestionService implements PaginatedService {
   create(data: any): Observable<any> {
     return this.http.post(`${environment.apiUrl}/centre-gestion`, data);
   }
+
+  update(data: any): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/centre-gestion`, data);
+  }
 }

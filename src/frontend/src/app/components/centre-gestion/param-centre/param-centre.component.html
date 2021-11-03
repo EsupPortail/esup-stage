@@ -1,0 +1,21 @@
+<mat-card>
+  <mat-card-content>
+    <form [formGroup]="form">
+      <div>
+        <mat-checkbox formControlName="saisieTuteurProParEtudiant">Autoriser les étudiants à saisir leur tuteur professionnel</mat-checkbox>
+      </div>
+      <div>
+        <mat-checkbox formControlName="autorisationEtudiantCreationConvention">Autoriser les étudiants à créer des conventions</mat-checkbox>
+      </div>
+      <div>
+        <mat-checkbox formControlName="validationPedagogique">Validation pédagogique des conventions</mat-checkbox>
+      </div>
+      <div>
+        <mat-checkbox formControlName="recupInscriptionAnterieure">Autoriser les gestionnaires à créer des conventions sur l'année universitaire précédente</mat-checkbox>
+      </div>
+      <mat-dialog-actions>
+        <button mat-flat-button color="primary" (click)="validate()">{{'BOUTON_VALIDER'|contenu}}</button>
+      </mat-dialog-actions>
+    </form>
+  </mat-card-content>
+</mat-card>

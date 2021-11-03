@@ -85,4 +85,10 @@ public class CentreGestionController {
         centreGestion.setCodeUniversite(appConfigService.getConfigGenerale().getCodeUniversite());
         return centreGestionJpaRepository.saveAndFlush(centreGestion);
     }
+
+    @PutMapping
+    @Secure(fonction = AppFonctionEnum.PARAM_CENTRE, droits = {DroitEnum.MODIFICATION})
+    public CentreGestion update(@Valid @RequestBody CentreGestion centreGestion) {
+        return centreGestionJpaRepository.saveAndFlush(centreGestion);
+    }
 }
