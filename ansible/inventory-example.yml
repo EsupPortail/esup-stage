@@ -23,3 +23,13 @@ ESTAGE_ENVIRONMENT:
     password: "******"
     ldap_url: "https://referentiel-test.parisnanterre.fr/ldap"
     apogee_url: "https://referentiel-test.parisnanterre.fr/apogee"
+  MAILER:
+    protocol: "smtp"
+    host: "smtp.univ.fr"
+    port: 25
+    auth: "true"
+    username: "username@domaine.com"
+    password: "******"
+    from: "from@domain.com"
+    disable_delivery: "false"
+    delivery_address: "null"

@@ -19,6 +19,15 @@ public class AppConfig {
     private String referentielWsPassword;
     private String referentielWsLdapUrl;
     private String referentielWsApogeeUrl;
+    private String mailerProtocol;
+    private String mailerHost;
+    private int mailerPort;
+    private boolean mailerAuth;
+    private String mailerUsername;
+    private String mailerPassword;
+    private String mailerFrom;
+    private boolean mailerDisableDelivery;
+    private String mailerDeliveryAddress;
 
     public String getCasUrlLogin() {
         return casUrlLogin;
@@ -124,6 +133,78 @@ public class AppConfig {
         this.referentielWsApogeeUrl = referentielWsApogeeUrl;
     }
 
+    public String getMailerProtocol() {
+        return mailerProtocol;
+    }
+
+    public void setMailerProtocol(String mailerProtocol) {
+        this.mailerProtocol = mailerProtocol;
+    }
+
+    public String getMailerHost() {
+        return mailerHost;
+    }
+
+    public void setMailerHost(String mailerHost) {
+        this.mailerHost = mailerHost;
+    }
+
+    public int getMailerPort() {
+        return mailerPort;
+    }
+
+    public void setMailerPort(int mailerPort) {
+        this.mailerPort = mailerPort;
+    }
+
+    public boolean getMailerAuth() {
+        return mailerAuth;
+    }
+
+    public void setMailerAuth(boolean mailerAuth) {
+        this.mailerAuth = mailerAuth;
+    }
+
+    public String getMailerUsername() {
+        return mailerUsername;
+    }
+
+    public void setMailerUsername(String mailerUsername) {
+        this.mailerUsername = mailerUsername;
+    }
+
+    public String getMailerPassword() {
+        return mailerPassword;
+    }
+
+    public void setMailerPassword(String mailerPassword) {
+        this.mailerPassword = mailerPassword;
+    }
+
+    public String getMailerFrom() {
+        return mailerFrom;
+    }
+
+    public void setMailerFrom(String mailerFrom) {
+        this.mailerFrom = mailerFrom;
+    }
+
+    public boolean getMailerDisableDelivery() {
+        return mailerDisableDelivery;
+    }
+
+    public void setMailerDisableDelivery(boolean mailerDisableDelivery) {
+        this.mailerDisableDelivery = mailerDisableDelivery;
+    }
+
+    public String getMailerDeliveryAddress() {
+        return mailerDeliveryAddress;
+    }
+
+    public void setMailerDeliveryAddress(String mailerDeliveryAddress) {
+        this.mailerDeliveryAddress = mailerDeliveryAddress;
+    }
+
     public void initProperties(Properties props, String prefixeProps) {
         this.casUrlLogout = props.getProperty("cas.url.logout");
         this.casUrlLogin = props.getProperty("cas.url.login");
@@ -143,6 +224,22 @@ public class AppConfig {
         this.referentielWsPassword = props.getProperty("referentiel.ws.password");
         this.referentielWsLdapUrl = props.getProperty("referentiel.ws.ldap_url");
         this.referentielWsApogeeUrl = props.getProperty("referentiel.ws.apogee_url");
+
+        this.mailerProtocol = props.getProperty(prefixeProps+"mailer.protocol");
+        this.mailerHost = props.getProperty(prefixeProps+"mailer.host");
+        this.mailerPort = Integer.parseInt(props.getProperty(prefixeProps+"mailer.port"));
+        this.mailerAuth = Boolean.parseBoolean(props.getProperty(prefixeProps+"mailer.auth"));
+        this.mailerUsername = props.getProperty(prefixeProps+"mailer.username");
+        this.mailerPassword = props.getProperty(prefixeProps+"mailer.password");
+        this.mailerFrom = props.getProperty(prefixeProps+"mailer.from");
+        if (props.containsKey(prefixeProps+"mailer.disable_delivery")) {
+            this.mailerDisableDelivery = Boolean.parseBoolean(props.getProperty(prefixeProps+"mailer.disable_delivery"));
+        } else {
+            this.mailerDisableDelivery = false;
+        }
+        if (props.containsKey(prefixeProps+"mailer.delivery_address") && !props.getProperty(prefixeProps+"mailer.delivery_address").equals("null")) {
+            this.mailerDeliveryAddress = props.getProperty(prefixeProps+"mailer.delivery_address");
+        }
     }
 
     @Override
@@ -159,6 +256,14 @@ public class AppConfig {
                 ", referentielWsLogin='" + referentielWsLogin + "'" +
                 ", referentielWsLdapUrl='" + referentielWsLdapUrl + "'" +
                 ", referentielWsApogeeUrl='" + referentielWsApogeeUrl + "'" +
+                ", mailerProtocol='" + mailerProtocol + "'" +
+                ", mailerHost='" + mailerHost + "'" +
+                ", mailerPort='" + mailerPort + "'" +
+                ", mailerAuth='" + mailerAuth + "'" +
+                ", mailerUsername='" + mailerUsername + "'" +
+                ", mailerFrom='" + mailerFrom + "'" +
+                ", mailerDisableDelivery='" + mailerDisableDelivery + "'" +
+                ", mailerDeliveryAddress='" + mailerDeliveryAddress + "'" +
                 "}";
     }
 }

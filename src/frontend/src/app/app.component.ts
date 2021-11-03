@@ -82,6 +82,11 @@ export class AppComponent {
           path: 'param-global/contenu',
           icon: 'fa-font',
         },
+        {
+          libelle: 'Template de mails',
+          path: 'param-global/mails',
+          icon: 'fa-envelope',
+        },
       ]
     },
     {

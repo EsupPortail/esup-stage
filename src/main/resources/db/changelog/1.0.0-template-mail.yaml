@@ -1,0 +1,303 @@
+databaseChangeLog:
+- changeSet:
+    id: templateMail-structure
+    author: ssound
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+                nullable: false
+                primaryKey: true
+            name: id
+            type: INT
+        - column:
+            constraints:
+                unique: true
+                nullable: false
+            name: code
+            type: VARCHAR(150)
+        - column:
+            constraints:
+                nullable: false
+            name: libelle
+            type: VARCHAR(150)
+        - column:
+            constraints:
+                nullable: false
+            name: objet
+            type: VARCHAR(250)
+        - column:
+            constraints:
+                nullable: false
+            name: texte
+            type: TEXT
+        - column:
+            constraints:
+                nullable: false
+            name: dateCreation
+            type: datetime
+        - column:
+            constraints:
+                nullable: false
+            name: loginCreation
+            type: VARCHAR(50)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateModif
+            type: datetime
+        - column:
+            name: loginModif
+            type: VARCHAR(50)
+        tableName: TemplateMail
+    - createTable:
+        columns:
+        - column:
+            constraints:
+                nullable: false
+                primaryKey: true
+            name: code
+            type: VARCHAR(50)
+        - column:
+            name: libelle
+            type: VARCHAR(150)
+        - column:
+            name: exemple
+            type: VARCHAR(200)
+        tableName: ParamMail
+- changeSet:
+    id: templateMail-insert
+    author: ssound
+    changes:
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: ETU_CREA_CONVENTION
+        - column:
+            name: libelle
+            value: Création d'une convention par l'étudiant
+        - column:
+            name: objet
+            value: Création d'une convention
+        - column:
+            name: texte
+            value: Texte à modifier
+        - column:
+            name: dateCreation
+            value: now()
+        - column:
+            name: loginCreation
+            value: liquibase
+        tableName: TemplateMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: ETU_MODIF_CONVENTION
+        - column:
+            name: libelle
+            value: Modification d'une convention par l'étudiant
+        - column:
+            name: objet
+            value: Modification d'une convention
+        - column:
+            name: texte
+            value: Texte à modifier
+        - column:
+            name: dateCreation
+            value: now()
+        - column:
+            name: loginCreation
+            value: liquibase
+        tableName: TemplateMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: GES_CREA_CONVENTION
+        - column:
+            name: libelle
+            value: Création d'une convention par le gestinnaire
+        - column:
+            name: objet
+            value: Création d'une convention
+        - column:
+            name: texte
+            value: Texte à modifier
+        - column:
+            name: dateCreation
+            value: now()
+        - column:
+            name: loginCreation
+            value: liquibase
+        tableName: TemplateMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: GES_MODIF_CONVENTION
+        - column:
+            name: libelle
+            value: Modification d'une convention par le gestionnaire
+        - column:
+            name: objet
+            value: Modification d'une convention
+        - column:
+            name: texte
+            value: Texte à modifier
+        - column:
+            name: dateCreation
+            value: now()
+        - column:
+            name: loginCreation
+            value: liquibase
+        tableName: TemplateMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: ETU_CREA_AVENANT
+        - column:
+            name: libelle
+            value: Création d'un avenant par l'étudiant
+        - column:
+            name: objet
+            value: Création d'un avenant
+        - column:
+            name: texte
+            value: Texte à modifier
+        - column:
+            name: dateCreation
+            value: now()
+        - column:
+            name: loginCreation
+            value: liquibase
+        tableName: TemplateMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: ETU_MODIF_AVENANT
+        - column:
+            name: libelle
+            value: Modification d'un avenant par l'étudiant
+        - column:
+            name: objet
+            value: Modification d'un avenant
+        - column:
+            name: texte
+            value: Texte à modifier
+        - column:
+            name: dateCreation
+            value: now()
+        - column:
+            name: loginCreation
+            value: liquibase
+        tableName: TemplateMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: GES_CREA_AVENANT
+        - column:
+            name: libelle
+            value: Création d'un avenant par le gestinnaire
+        - column:
+            name: objet
+            value: Création d'un avenant
+        - column:
+            name: texte
+            value: Texte à modifier
+        - column:
+            name: dateCreation
+            value: now()
+        - column:
+            name: loginCreation
+            value: liquibase
+        tableName: TemplateMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: GES_MODIF_AVENANT
+        - column:
+            name: libelle
+            value: Modification d'un avenant par le gestionnaire
+        - column:
+            name: objet
+            value: Modification d'un avenant
+        - column:
+            name: texte
+            value: Texte à modifier
+        - column:
+            name: dateCreation
+            value: now()
+        - column:
+            name: loginCreation
+            value: liquibase
+        tableName: TemplateMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: CONVENTION_VALID_PEDAGOGIQUE
+        - column:
+            name: libelle
+            value: Validation pédagogique d'une convention
+        - column:
+            name: objet
+            value: Convention validée pédogogiquement
+        - column:
+            name: texte
+            value: Texte à modifier
+        - column:
+            name: dateCreation
+            value: now()
+        - column:
+            name: loginCreation
+            value: liquibase
+        tableName: TemplateMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: CONVENTION_VALID_ADMINISTRATIVE
+        - column:
+            name: libelle
+            value: Validation administrative d'une convention
+        - column:
+            name: objet
+            value: Convention validée administrativement
+        - column:
+            name: texte
+            value: Texte à modifier
+        - column:
+            name: dateCreation
+            value: now()
+        - column:
+            name: loginCreation
+            value: liquibase
+        tableName: TemplateMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: AVENANT_VALIDATION
+        - column:
+            name: libelle
+            value: Validation d'un avenant
+        - column:
+            name: objet
+            value: Avenant validé
+        - column:
+            name: texte
+            value: Texte à modifier
+        - column:
+            name: dateCreation
+            value: now()
+        - column:
+            name: loginCreation
+            value: liquibase
+        tableName: TemplateMail

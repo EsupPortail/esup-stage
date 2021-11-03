@@ -147,3 +147,8 @@ form, .mat-cell {
 .ql-container {
   height: auto;
 }
+
+label.required::after {
+  content: '*';
+  padding-left: 5px;
+}
