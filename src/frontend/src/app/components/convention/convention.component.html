@@ -38,6 +38,7 @@
       Enseignant référent
       <mat-progress-bar mode="determinate" [value]="getProgressValue(5)" [ngClass]="{editing: tabs[5].statut === 1, done: tabs[5].statut === 2}"></mat-progress-bar>
     </ng-template>
+    <app-enseignant-referent *ngIf="enseignantRefTab.isActive || tabs[5].init" (validated)="setStatus(5, $event)"></app-enseignant-referent>
   </mat-tab>
   <mat-tab #signataireTab [disabled]="isCreated() || !service">
     <ng-template mat-tab-label>

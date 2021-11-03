@@ -17,4 +17,7 @@ export class LdapService {
   searchEtudiants(filters: any): Observable<any> {
     return this.http.post(`${environment.apiUrl}/ldap/etudiants`, filters);
   }
+  searchEnseignants(filters: any): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/ldap/enseignants`, filters);
+  }
 }

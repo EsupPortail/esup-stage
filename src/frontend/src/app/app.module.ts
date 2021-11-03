@@ -70,6 +70,7 @@ import { ServiceAccueilComponent } from './components/convention/service-accueil
 import { TuteurProComponent } from './components/convention/tuteur-pro/tuteur-pro.component';
 import { CoordCentreComponent } from './components/centre-gestion/coord-centre/coord-centre.component';
 import { SignataireComponent } from './components/convention/signataire/signataire.component';
+import { EnseignantReferentComponent } from './components/convention/enseignant-referent/enseignant-referent.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -105,6 +106,7 @@ registerLocaleData(localeFr, 'fr');
     CoordCentreComponent,
     TuteurProComponent,
     SignataireComponent,
+    EnseignantReferentComponent,
   ],
   imports: [
     BrowserModule,

@@ -31,6 +31,15 @@ public class LdapController {
         return ldapService.search("/etudiant", ldapSearchDto);
     }
 
+    @PostMapping("/enseignants")
+    @Secure
+    public List<LdapUser> getLdapEnseignants(@RequestBody LdapSearchDto ldapSearchDto) {
+        if (ldapSearchDto.getId() == null && ldapSearchDto.getNom() == null && ldapSearchDto.getPrenom() == null && ldapSearchDto.getMail() == null && ldapSearchDto.getPrimaryAffiliation() == null && ldapSearchDto.getAffiliation() == null) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Veuillez renseigner au moins un des filtres");
+        }
+        return ldapService.search("/tuteur", ldapSearchDto);
+    }
+
     @GetMapping
     @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.LECTURE})
     public List<LdapUser> searchLdapUserByLogin(@Valid @RequestParam("login") @Pattern(regexp = "[A-Za-z0-9]+") String login) {
