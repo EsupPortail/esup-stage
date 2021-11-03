@@ -66,10 +66,10 @@ body { margin: 0; font-family: var(--fontFamily); font-size: var(--fontSize); }
 .mat-table {
   width: 100%;
 }
-.mat-row td:not(:last-child) {
+.mat-row td:not(:last-child), .mat-header-row th:not(:last-child) {
   padding-right: 10px;
 }
-.mat-row td:not(:first-child) {
+.mat-row td:not(:first-child), .mat-header-row th:not(:first-child) {
   padding-left: 10px;
 }
 

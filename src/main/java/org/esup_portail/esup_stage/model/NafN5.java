@@ -11,7 +11,7 @@ public class NafN5 {
 
     @JsonView(Views.List.class)
     @Id
-    @Column(name = "codeNAF_N5", nullable = false)
+    @Column(name = "codeNAF_N5", nullable = false, length = 6)
     private String code;
 
     @JsonView(Views.List.class)

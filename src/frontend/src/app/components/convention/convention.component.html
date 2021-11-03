@@ -1,53 +1,53 @@
-<mat-tab-group class="convention" *ngIf="convention" (selectedTabChange)="tabChanged($event)">
+<mat-tab-group #tabGroup class="convention" *ngIf="convention" (selectedTabChange)="tabChanged($event)">
   <mat-tab #etudiantTab>
     <ng-template mat-tab-label>
       Étudiant
-      <mat-progress-bar mode="determinate" [value]="getProgressValue('statutEtudiant')" [ngClass]="{editing: statuts['statutEtudiant'] === 1, done: statuts['statutEtudiant'] === 2}"></mat-progress-bar>
+      <mat-progress-bar mode="determinate" [value]="getProgressValue(0)" [ngClass]="{editing: tabs[0].statut === 1, done: tabs[0].statut === 2}"></mat-progress-bar>
     </ng-template>
     <app-convention-etudiant></app-convention-etudiant>
   </mat-tab>
   <mat-tab #etabAccueilTab [disabled]="isCreated()">
     <ng-template mat-tab-label>
       Étab. d'accueil
-      <mat-progress-bar mode="determinate" [value]="getProgressValue('statutEtabAccueil')" [ngClass]="{editing: statuts['statutEtabAccueil'] === 1, done: statuts['statutEtabAccueil'] === 2}"></mat-progress-bar>
+      <mat-progress-bar mode="determinate" [value]="getProgressValue(1)" [ngClass]="{editing: tabs[1].statut === 1, done: tabs[1].statut === 2}"></mat-progress-bar>
     </ng-template>
-    <app-etab-accueil *ngIf="etabAccueilTab.isActive || hasInit(etabAccueilTab.origin)" (validated)="setStatus('statutEtabAccueil', $event)" (etabSelected)="setEtab($event)"></app-etab-accueil>
+    <app-etab-accueil *ngIf="etabAccueilTab.isActive || tabs[1].init" (validated)="setStatus(1, $event)" (etabSelected)="setEtab($event)"></app-etab-accueil>
   </mat-tab>
   <mat-tab #serviceAccueilTab [disabled]="isCreated() || !etab">
     <ng-template mat-tab-label>
       Service d'accueil
-      <mat-progress-bar mode="determinate" [value]="getProgressValue('statutServiceAccueil')" [ngClass]="{editing: statuts['statutServiceAccueil'] === 1, done: statuts['statutServiceAccueil'] === 2}"></mat-progress-bar>
+      <mat-progress-bar mode="determinate" [value]="getProgressValue(2)" [ngClass]="{editing: tabs[2].statut === 1, done: tabs[2].statut === 2}"></mat-progress-bar>
     </ng-template>
-    <app-service-accueil *ngIf="serviceAccueilTab.isActive || hasInit(serviceAccueilTab.origin)" [etab]="etab" (validated)="setStatus('statutServiceAccueil', $event)"></app-service-accueil>
+    <app-service-accueil *ngIf="serviceAccueilTab.isActive || tabs[2].init" [etab]="etab" (validated)="setStatus(2, $event)" (serviceSelected)="setService($event)"></app-service-accueil>
   </mat-tab>
-  <mat-tab #tuteurProTab [disabled]="isCreated() || !etab">
+  <mat-tab #tuteurProTab [disabled]="isCreated() || !service">
     <ng-template mat-tab-label>
       Tuteur professionnel
-      <mat-progress-bar mode="determinate" [value]="getProgressValue('statutTuteurPro')" [ngClass]="{editing: statuts['statutTuteurPro'] === 1, done: statuts['statutTuteurPro'] === 2}"></mat-progress-bar>
+      <mat-progress-bar mode="determinate" [value]="getProgressValue(3)" [ngClass]="{editing: tabs[3].statut === 1, done: tabs[3].statut === 2}"></mat-progress-bar>
     </ng-template>
+    <app-tuteur-pro *ngIf="tuteurProTab.isActive || tabs[3].init" [service]="service" (validated)="setStatus(3, $event)"></app-tuteur-pro>
   </mat-tab>
   <mat-tab #stageTab [disabled]="isCreated()">
     <ng-template mat-tab-label>
       Stage
-      <mat-progress-bar mode="determinate" [value]="getProgressValue('statutStage')" [ngClass]="{editing: statuts['statutStage'] === 1, done: statuts['statutStage'] === 2}"></mat-progress-bar>
+      <mat-progress-bar mode="determinate" [value]="getProgressValue(4)" [ngClass]="{editing: tabs[4].statut === 1, done: tabs[4].statut === 2}"></mat-progress-bar>
     </ng-template>
   </mat-tab>
   <mat-tab #enseignantRefTab [disabled]="isCreated()">
     <ng-template mat-tab-label>
       Enseignant référent
-      <mat-progress-bar mode="determinate" [value]="getProgressValue('statutEnseignantRef')" [ngClass]="{editing: statuts['statutEnseignantRef'] === 1, done: statuts['statutEnseignantRef'] === 2}"></mat-progress-bar>
+      <mat-progress-bar mode="determinate" [value]="getProgressValue(5)" [ngClass]="{editing: tabs[5].statut === 1, done: tabs[5].statut === 2}"></mat-progress-bar>
     </ng-template>
   </mat-tab>
-  <mat-tab [disabled]="isCreated()">
+  <mat-tab #signataireTab [disabled]="isCreated()">
     <ng-template mat-tab-label>
       Signataire
-      <mat-progress-bar mode="determinate" [value]="getProgressValue('statutSignataire')" [ngClass]="{editing: statuts['statutSignataire'] === 1, done: statuts['statutSignataire'] === 2}"></mat-progress-bar>
+      <mat-progress-bar mode="determinate" [value]="getProgressValue(6)" [ngClass]="{editing: tabs[6].statut === 1, done: tabs[6].statut === 2}"></mat-progress-bar>
     </ng-template>
   </mat-tab>
   <mat-tab #recapTab [disabled]="isCreated() || !allValid">
     <ng-template mat-tab-label>
       Récapitulatif
-      <mat-progress-bar mode="determinate" [value]="getProgressValue('statutRecap')" [ngClass]="{editing: statuts['statutRecap'] === 1, done: statuts['statutRecap'] === 2}"></mat-progress-bar>
     </ng-template>
   </mat-tab>
 </mat-tab-group>
