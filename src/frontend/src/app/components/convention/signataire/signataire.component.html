@@ -4,7 +4,7 @@
       Sélection du signataire
     </mat-expansion-panel-header>
 
-    <div class="row">
+    <div class="row mt-3">
       <mat-form-field class="col-md-12" appearance="fill" [hidden]="contacts.length == 0">
         <mat-label>Selectionez un signataire existant :</mat-label>
         <mat-select [(value)]="contact" (selectionChange)="choose($event.value)">
@@ -23,7 +23,7 @@
       <mat-panel-title>Signataire</mat-panel-title>
       <mat-panel-description>
         <div class="w-100 text-right">
-          <mat-icon fontSet="fa" fontIcon="fa-address-card"></mat-icon>
+          <mat-icon fontSet="fa" fontIcon="fa-user"></mat-icon>
         </div>
       </mat-panel-description>
     </mat-expansion-panel-header>

@@ -4,7 +4,7 @@
       Choix du service dans lequel le stage sera effectué
     </mat-expansion-panel-header>
 
-    <div class="row">
+    <div class="row mt-3">
       <mat-form-field class="col-md-12" appearance="fill" [hidden]="services.length == 0">
         <mat-label>Selectionez un service :</mat-label>
         <mat-select [(value)]="service" (selectionChange)="choose($event.value)">
