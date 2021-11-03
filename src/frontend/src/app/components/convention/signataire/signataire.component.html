@@ -1,18 +1,18 @@
 <mat-accordion>
   <mat-expansion-panel [expanded]="true">
     <mat-expansion-panel-header>
-      Sélection du tuteur professionnel
+      Sélection du signataire
     </mat-expansion-panel-header>
 
     <div class="row">
       <mat-form-field class="col-md-12" appearance="fill" [hidden]="contacts.length == 0">
-        <mat-label>Selectionez un tuteur existant :</mat-label>
+        <mat-label>Selectionez un signataire existant :</mat-label>
         <mat-select [(value)]="contact" (selectionChange)="choose($event.value)">
           <mat-option *ngFor="let contact of contacts" [value]="contact">{{contact.nom+' '+contact.prenom}}</mat-option>
         </mat-select>
       </mat-form-field>
       <div class="col-md-12">
-        <button mat-flat-button (click)="initCreate()" color="primary">Créez un nouveau tuteur</button>
+        <button mat-flat-button (click)="initCreate()" color="primary">Créez un nouveau signataire</button>
       </div>
     </div>
 
@@ -20,7 +20,7 @@
 
   <mat-expansion-panel [expanded]="contact" [disabled]="!contact">
     <mat-expansion-panel-header>
-      <mat-panel-title>Tuteur professionnel</mat-panel-title>
+      <mat-panel-title>Signataire</mat-panel-title>
       <mat-panel-description>
         <div class="w-100 text-right">
           <mat-icon fontSet="fa" fontIcon="fa-address-card"></mat-icon>

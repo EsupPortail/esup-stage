@@ -39,11 +39,12 @@
       <mat-progress-bar mode="determinate" [value]="getProgressValue(5)" [ngClass]="{editing: tabs[5].statut === 1, done: tabs[5].statut === 2}"></mat-progress-bar>
     </ng-template>
   </mat-tab>
-  <mat-tab #signataireTab [disabled]="isCreated()">
+  <mat-tab #signataireTab [disabled]="isCreated() || !service">
     <ng-template mat-tab-label>
       Signataire
       <mat-progress-bar mode="determinate" [value]="getProgressValue(6)" [ngClass]="{editing: tabs[6].statut === 1, done: tabs[6].statut === 2}"></mat-progress-bar>
     </ng-template>
+    <app-signataire *ngIf="signataireTab.isActive || tabs[6].init" [service]="service" (validated)="setStatus(6, $event)"></app-signataire>
   </mat-tab>
   <mat-tab #recapTab [disabled]="isCreated() || !allValid">
     <ng-template mat-tab-label>
