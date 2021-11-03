@@ -69,6 +69,7 @@ import { MatProgressBarModule } from "@angular/material/progress-bar";
 import { ServiceAccueilComponent } from './components/convention/service-accueil/service-accueil.component';
 import { TuteurProComponent } from './components/convention/tuteur-pro/tuteur-pro.component';
 import { CoordCentreComponent } from './components/centre-gestion/coord-centre/coord-centre.component';
+import { TemplateMailComponent } from './components/admin/template-mail/template-mail.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -103,6 +104,7 @@ registerLocaleData(localeFr, 'fr');
     ServiceAccueilComponent,
     CoordCentreComponent,
     TuteurProComponent,
+    TemplateMailComponent,
   ],
   imports: [
     BrowserModule,

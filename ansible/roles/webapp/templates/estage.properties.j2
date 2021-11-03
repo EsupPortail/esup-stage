@@ -22,3 +22,15 @@ referentiel.ws.password={{ ESTAGE_ENVIRONMENT.REFERENTIEL_WS.password }}
 referentiel.ws.ldap_url={{ ESTAGE_ENVIRONMENT.REFERENTIEL_WS.ldap_url }}
 # url du service Apogée
 referentiel.ws.apogee_url={{ ESTAGE_ENVIRONMENT.REFERENTIEL_WS.apogee_url }}
+
+# mailer
+appli.mailer.protocol={{ ESTAGE_ENVIRONMENT.MAILER.protocol }}
+appli.mailer.host={{ ESTAGE_ENVIRONMENT.MAILER.host }}
+appli.mailer.port={{ ESTAGE_ENVIRONMENT.MAILER.port }}
+appli.mailer.auth={{ ESTAGE_ENVIRONMENT.MAILER.auth | default('false',true) }}
+appli.mailer.username={{ ESTAGE_ENVIRONMENT.MAILER.username | default('null',true) }}
+appli.mailer.password={{ ESTAGE_ENVIRONMENT.MAILER.password | default('null',true) }}
+appli.mailer.from={{ ESTAGE_ENVIRONMENT.MAILER.from }}
+# paramètres pour le développement
+appli.mailer.disable_delivery={{ ESTAGE_ENVIRONMENT.MAILER.disable_delivery | default('false',true) }}
+appli.mailer.delivery_address={{ ESTAGE_ENVIRONMENT.MAILER.delivery_address | default('null',true) }}

@@ -14,6 +14,7 @@ import { ConfigGeneraleComponent } from "./components/admin/config-generale/conf
 import { ContenuComponent } from "./components/admin/contenu/contenu.component";
 import { CentreGestionSearchComponent } from "./components/centre-gestion-search/centre-gestion-search.component";
 import { CentreGestionComponent } from "./components/centre-gestion/centre-gestion.component";
+import { TemplateMailComponent } from "./components/admin/template-mail/template-mail.component";
 
 const routes: Routes = [
   {path: '', component: HomeComponent, canActivate: [AuthGuard], data: {role: {}, title: 'Accueil'}},
@@ -40,6 +41,12 @@ const routes: Routes = [
     component: ContenuComponent,
     canActivate: [AuthGuard],
     data: {role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.LECTURE]}, title: 'Contenu'}
+  },
+  {
+    path: 'param-global/mails',
+    component: TemplateMailComponent,
+    canActivate: [AuthGuard],
+    data: {role: {fonction: AppFonction.NOMENCLATURE, droits: [Droit.LECTURE]}, title: 'Template de mails'}
   },
   {
     path: 'nomenclatures',
