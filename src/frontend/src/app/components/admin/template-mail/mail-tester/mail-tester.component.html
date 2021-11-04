@@ -1,0 +1,19 @@
+<h1 mat-dialog-title>Tester l'envoi du mail : {{data.libelle}}</h1>
+<div mat-dialog-content>
+  <p>Saisir l'adresse mail devant recevoir le mail de test.</p>
+  <form [formGroup]="form" novalidate (submit)="send()">
+    <div class="row">
+      <mat-form-field class="col-12" appearance="fill">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" required>
+        <mat-error><app-form-error [field]="form.get('email')"></app-form-error></mat-error>
+      </mat-form-field>
+    </div>
+    <div class="row">
+      <div class="col-12 text-right">
+        <button type="button" mat-flat-button color="warn" class="mr-2" (click)="close()">{{'BOUTON_ANNULER'|contenu}}</button>
+        <button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
+      </div>
+    </div>
+  </form>
+</div>

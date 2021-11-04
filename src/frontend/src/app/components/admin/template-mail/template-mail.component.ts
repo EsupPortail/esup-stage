@@ -7,6 +7,8 @@ import { AuthService } from "../../../services/auth.service";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
 import { MessageService } from "../../../services/message.service";
+import { MatDialog } from "@angular/material/dialog";
+import { MailTesterComponent } from "./mail-tester/mail-tester.component";
 
 @Component({
   selector: 'app-template-mail',
@@ -37,6 +39,7 @@ export class TemplateMailComponent implements OnInit {
     private authService: AuthService,
     private fb: FormBuilder,
     private messageService: MessageService,
+    private dialog: MatDialog,
   ) {
     this.form = this.fb.group({
       code: [null, [Validators.required, Validators.maxLength(150)]],
@@ -61,7 +64,7 @@ export class TemplateMailComponent implements OnInit {
   }
 
   canEdit(): boolean {
-    return this.authService.checkRights({fonction: AppFonction.NOMENCLATURE, droits: [Droit.MODIFICATION]});
+    return this.authService.checkRights({fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.MODIFICATION]});
   }
 
   edit(row: any): void {
@@ -87,6 +90,12 @@ export class TemplateMailComponent implements OnInit {
         this.appTable?.update();
       });
     }
+  }
+
+  openTestSend(row: any): void {
+    const dialogRef = this.dialog.open(MailTesterComponent, {
+      data: row,
+    });
   }
 
 }

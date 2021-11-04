@@ -1,10 +1,12 @@
 package org.esup_portail.esup_stage.model;
 
+import org.esup_portail.esup_stage.dto.TemplateMailInterface;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "TemplateMail")
-public class TemplateMail extends ObjetMetier {
+public class TemplateMail extends ObjetMetier implements TemplateMailInterface {
 
     @Id
     @Column(nullable = false)

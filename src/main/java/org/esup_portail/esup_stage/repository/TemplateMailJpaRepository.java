@@ -10,4 +10,7 @@ public interface TemplateMailJpaRepository extends JpaRepository<TemplateMail, I
 
     @Query("SELECT tm FROM TemplateMail tm WHERE tm.id = :id")
     TemplateMail findById(int id);
+
+    @Query("SELECT tm FROM TemplateMail tm WHERE tm.code = :code")
+    TemplateMail findByCode(String code);
 }

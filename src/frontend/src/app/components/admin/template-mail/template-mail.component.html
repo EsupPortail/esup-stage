@@ -19,6 +19,7 @@
         <td mat-cell *matCellDef="let row">
           <ng-container *ngIf="canEdit()">
             <button mat-icon-button matTooltip="Éditer" (click)="edit(row)" color="primary"><i class="fa fa-pen"></i></button>
+            <button mat-icon-button matTooltip="Tester l'envoi" (click)="openTestSend(row)" color="accent"><i class="fa fa-paper-plane"></i></button>
           </ng-container>
         </td>
       </ng-container>
@@ -28,6 +29,9 @@
   <mat-tab *ngIf="data.id" label="Édition">
     <mat-card>
       <mat-card-content>
+        <div class="alert alert-info">
+          Les paramètres doivent être saisis sous la forme ${{ '{' }}...{{ '}' }}. Par exemple : ${{ '{' }}convention.dateDebut{{ '}' }}
+        </div>
         <form [formGroup]="form" (submit)="save()" novalidate>
           <div class="row">
             <mat-form-field class="col-md-3" appearance="fill">
