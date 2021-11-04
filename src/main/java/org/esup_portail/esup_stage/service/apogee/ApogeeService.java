@@ -4,10 +4,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
 import org.esup_portail.esup_stage.exception.AppException;
+import org.esup_portail.esup_stage.service.apogee.model.Composante;
+import org.esup_portail.esup_stage.service.apogee.model.Etape;
 import org.esup_portail.esup_stage.service.apogee.model.EtudiantRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.json.JsonParseException;
+import org.springframework.boot.json.JsonParser;
+import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -72,6 +77,46 @@ public class ApogeeService {
             return mapper.readValue(response, EtudiantRef.class);
         } catch (JsonProcessingException e) {
             LOGGER.error("Erreur lors de la lecture de la réponse sur l'api etudiantRef: " + e.getMessage(), e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
+        }
+    }
+
+    public List<Composante> getListComposante() {
+        List<Composante> list = new ArrayList<>();
+        Map<String, String> params = new HashMap<>();
+        String response = call("/composantesPrincipalesRef", params);
+        try {
+            JsonParser jsonParser = JsonParserFactory.getJsonParser();
+            Map<String, Object> map = jsonParser.parseMap(response);
+            for (Map.Entry<String, Object> entry : map.entrySet()) {
+                Composante composante = new Composante();
+                composante.setCode(entry.getKey());
+                composante.setLibelle(entry.getValue().toString());
+                list.add(composante);
+            }
+            return list;
+        } catch (JsonParseException e) {
+            LOGGER.error("Erreur lors de la lecture de la réponse sur l'api composantesPrincipalesRef: " + e.getMessage(), e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
+        }
+    }
+
+    public List<Etape> getListEtape() {
+        List<Etape> list = new ArrayList<>();
+        Map<String, String> params = new HashMap<>();
+        String response = call("/etapesReference", params);
+        try {
+            JsonParser jsonParser = JsonParserFactory.getJsonParser();
+            Map<String, Object> map = jsonParser.parseMap(response);
+            for (Map.Entry<String, Object> entry : map.entrySet()) {
+                Etape etape = new Etape();
+                etape.setCode(entry.getKey());
+                etape.setLibelle(entry.getValue().toString());
+                list.add(etape);
+            }
+            return list;
+        } catch (JsonParseException e) {
+            LOGGER.error("Erreur lors de la lecture de la réponse sur l'api etapesReference: " + e.getMessage(), e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
         }
     }
