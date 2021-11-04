@@ -301,3 +301,313 @@ databaseChangeLog:
             name: loginCreation
             value: liquibase
         tableName: TemplateMail
+- changeSet:
+    id: paramMail-insert
+    author: ssound
+    changes:
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.numero
+        - column:
+            name: libelle
+            value: Numéro de la convention
+        - column:
+            name: exemple
+            value: 25869
+        tableName: ParamMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.typeStage
+        - column:
+            name: libelle
+            value: Type de stage de la convention
+        - column:
+            name: exemple
+            value: Formation Initiale - Stage Obligatoire
+        tableName: ParamMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.paysAccueil
+        - column:
+            name: libelle
+            value: Pays d'accueil de la convention
+        - column:
+            name: exemple
+            value: FRANCE
+        tableName: ParamMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.etape
+        - column:
+            name: libelle
+            value: Étape de la convention
+        - column:
+            name: exemple
+            value: M5I294 - Master Management et organisations - Parcours Management dans les pays du sud
+        tableName: ParamMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.sujet
+        - column:
+            name: libelle
+            value: sujet du stage
+        tableName: ParamMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.fonction
+        - column:
+            name: libelle
+            value: Fonctions et tâches (missions et compétences)
+        tableName: ParamMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.dateDebut
+        - column:
+            name: libelle
+            value: Date début du stage
+        - column:
+            name: exemple
+            value: 01/08/2021
+        tableName: ParamMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.dateFin
+        - column:
+            name: libelle
+            value: Date fin du stage
+        - column:
+            name: exemple
+            value: 31/08/2021
+        tableName: ParamMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.tempsTravail
+        - column:
+            name: libelle
+            value: Type du temps de travail
+        - column:
+            name: exemple
+            value: Temps plein
+        tableName: ParamMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.tempsTravailComment
+        - column:
+            name: libelle
+            value: Commentaire sur le type du temps de travail
+        tableName: ParamMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.lien
+        - column:
+            name: libelle
+            value: Lien de l'application pointant sur la convention
+        - column:
+            name: exemple
+            value: http://urldexemple.domain.org/convention/numero
+        tableName: ParamMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.elementModifs
+        - column:
+            name: libelle
+            value: Éléments modifiés de la convention
+        - column:
+            name: exemple
+            value: les infos étudiant, le tuteur professionnel, le signataire, le détail du stage, l'enseignant référent
+        tableName: ParamMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: tuteurPro.nom
+        - column:
+            name: libelle
+            value: Nom du tuteur professionnel
+        tableName: ParamMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: tuteurPro.prenom
+        - column:
+            name: libelle
+            value: Prénom du tuteur professionnel
+        tableName: ParamMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: tuteurPro.mail
+        - column:
+            name: libelle
+            value: Adresse mail du tuteur professionnel
+        tableName: ParamMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: tuteurPro.tel
+        - column:
+            name: libelle
+            value: Numéro de téléphone du tuteur professionnel
+        tableName: ParamMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: tuteurPro.etabAccueil
+        - column:
+            name: libelle
+            value: Établissement d'accueil du tuteur professionnel
+        tableName: ParamMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: tuteurPro.serviceAccueil
+        - column:
+            name: libelle
+            value: Service d'accueil du tuteur professionnel
+        tableName: ParamMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: tuteurPro.fonction
+        - column:
+            name: libelle
+            value: Fonction du tuteur professionnel
+        tableName: ParamMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: signataire.nom
+        - column:
+            name: libelle
+            value: Nom du signataire
+        tableName: ParamMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: signataire.prenom
+        - column:
+            name: libelle
+            value: Prénom du signataire
+        tableName: ParamMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: signataire.mail
+        - column:
+            name: libelle
+            value: Adresse mail du signataire
+        tableName: ParamMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: signataire.tel
+        - column:
+            name: libelle
+            value: Numéro de téléphone du signataire
+        tableName: ParamMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: signataire.fonction
+        - column:
+            name: libelle
+            value: Fonction du signataire
+        tableName: ParamMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: etudiant.nom
+        - column:
+            name: libelle
+            value: Nom de l'étudiant
+        tableName: ParamMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: etudiant.prenom
+        - column:
+            name: libelle
+            value: Prénom de l'étudiant
+        tableName: ParamMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: etudiant.mail
+        - column:
+            name: libelle
+            value: Adresse mail de l'étudiant
+        tableName: ParamMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: etudiant.tel
+        - column:
+            name: libelle
+            value: Numéro de téléphone de l'étudiant
+        tableName: ParamMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: avenant.numero
+        - column:
+            name: libelle
+            value: Numéro de l'avenant
+        tableName: ParamMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: modifiePar.nom
+        - column:
+            name: libelle
+            value: Nom de l'utilisateur ayant modifié/validé
+        tableName: ParamMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: modifiePar.prenom
+        - column:
+            name: libelle
+            value: Prénom de l'utilisateur ayant modifié/validé
+        tableName: ParamMail

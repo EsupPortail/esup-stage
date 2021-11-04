@@ -10,7 +10,6 @@ import org.esup_portail.esup_stage.repository.UtilisateurJpaRepository;
 import org.esup_portail.esup_stage.repository.UtilisateurRepository;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
-import org.esup_portail.esup_stage.service.MailerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -28,9 +27,6 @@ public class UtilisateurController {
     @Autowired
     UtilisateurJpaRepository utilisateurJpaRepository;
 
-    @Autowired
-    MailerService mailerService;
-
     @GetMapping("/connected")
     @Secure()
     public Utilisateur getUserConnected() {
@@ -47,7 +43,6 @@ public class UtilisateurController {
         PaginatedResponse<Utilisateur> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(utilisateurRepository.count(filters));
         paginatedResponse.setData(utilisateurRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
-        mailerService.sendMail("sophie.sound@yahoo.fr", "test mail esup", "Test d'envoi d'un mail sur le projet esup stage");
         return paginatedResponse;
     }
 

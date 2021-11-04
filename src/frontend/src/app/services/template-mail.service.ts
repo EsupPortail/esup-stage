@@ -26,4 +26,8 @@ export class TemplateMailService implements PaginatedService {
   getParams(): Observable<any> {
     return this.http.get(`${environment.apiUrl}/template-mails/params`);
   }
+
+  sendMailTest(data: any): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/template-mails/send-test`, data);
+  }
 }

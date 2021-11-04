@@ -46,7 +46,7 @@ const routes: Routes = [
     path: 'param-global/mails',
     component: TemplateMailComponent,
     canActivate: [AuthGuard],
-    data: {role: {fonction: AppFonction.NOMENCLATURE, droits: [Droit.LECTURE]}, title: 'Template de mails'}
+    data: {role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.LECTURE]}, title: 'Template de mails'}
   },
   {
     path: 'nomenclatures',
