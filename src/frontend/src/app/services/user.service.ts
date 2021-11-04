@@ -18,4 +18,8 @@ export class UserService implements PaginatedService {
   update(id: number, data: any): Observable<any> {
     return this.http.put(environment.apiUrl + '/users/' + id, data);
   }
+
+  create(data: any): Observable<any> {
+    return this.http.post(environment.apiUrl + '/users', data);
+  }
 }

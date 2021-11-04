@@ -12,6 +12,8 @@ import { Role } from "../../../constants/role";
 import { LdapService } from "../../../services/ldap.service";
 import { Subject } from "rxjs";
 import { debounceTime } from "rxjs/operators";
+import { CreateDialogComponent } from "./create-dialog/create-dialog.component";
+import { MatDialog } from "@angular/material/dialog";
 
 @Component({
   selector: 'app-admin-user',
@@ -54,6 +56,7 @@ export class AdminUserComponent implements OnInit {
     private messageService: MessageService,
     private authService: AuthService,
     public ldapService: LdapService,
+    private dialog: MatDialog,
   ) {
     this.form = this.fb.group({
       login: [null, [Validators.required, Validators.maxLength(255)]],
@@ -156,6 +159,18 @@ export class AdminUserComponent implements OnInit {
 
   choose(row: any): void {
     this.ldapUser = row;
+    const dialogRef = this.dialog.open(CreateDialogComponent, {
+      data: {
+        ldapUser: this.ldapUser,
+        form: this.form,
+        roles: this.roles,
+        compareRoles: this.compareRole
+      },
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      this.form.enable();
+      this.appTable?.update();
+    });
   }
 
 }

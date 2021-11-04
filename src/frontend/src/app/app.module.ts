@@ -74,6 +74,7 @@ import { EnseignantReferentComponent } from './components/convention/enseignant-
 import { TemplateMailComponent } from './components/admin/template-mail/template-mail.component';
 import { ParamCentreComponent } from './components/centre-gestion/param-centre/param-centre.component';
 import { MailTesterComponent } from "./components/admin/template-mail/mail-tester/mail-tester.component";
+import { CreateDialogComponent } from './components/admin/admin-user/create-dialog/create-dialog.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -113,6 +114,7 @@ registerLocaleData(localeFr, 'fr');
     TemplateMailComponent,
     ParamCentreComponent,
     MailTesterComponent,
+    CreateDialogComponent,
   ],
   imports: [
     BrowserModule,
