@@ -29,7 +29,6 @@ export class CentreGestionComponent implements OnInit {
     4: { statut: 0, init: false },
   }
 
-  initedTabs = [0];
   centreGestion: any;
   centreGestionInited = false;
 
@@ -62,9 +61,6 @@ export class CentreGestionComponent implements OnInit {
 
   tabChanged(event: MatTabChangeEvent): void {
     this.tabs[event.index].init = true;
-    if (this.initedTabs.indexOf(event.index) === -1) {
-      this.initedTabs.push(event.index);
-    }
   }
 
   setStatus(key: number, value: number): void {
