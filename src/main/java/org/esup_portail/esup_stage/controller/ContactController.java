@@ -103,9 +103,7 @@ public class ContactController {
             throw new AppException(HttpStatus.NOT_FOUND, "Contact non trouvé");
         }
         Civilite civilite = civiliteJpaRepository.findById(contactFormDto.getIdCivilite());
-        if (civilite == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Civilite non trouvée");
-        }
+
         contact.setNom(contactFormDto.getNom());
         contact.setPrenom(contactFormDto.getPrenom());
         contact.setCivilite(civilite);

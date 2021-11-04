@@ -17,17 +17,20 @@ public class ContactFormDto {
     @Size(max = 50)
     private String prenom;
 
+    @NotNull
+    @NotEmpty
     @Email
     @Size(max = 50)
     private String mail;
 
+    @NotNull
+    @NotEmpty
     @Size(max = 50)
     private String tel;
 
     @Size(max = 50)
     private String fax;
 
-    @NotNull
     private int idCivilite;
 
     @NotNull
