@@ -39,7 +39,7 @@
         </div>
         <div class="row">
           <div class="col-sm-3 font-weight-bold">Civilité</div>
-          <div class="col-sm-9">{{contact.civilite.libelle}}</div>
+          <div class="col-sm-9">{{this.contact.civilite ? this.contact.civilite.libelle : null}}</div>
         </div>
         <div class="row">
           <div class="col-sm-3 font-weight-bold">Fonction</div>
@@ -50,12 +50,12 @@
           <div class="col-sm-9">{{contact.tel}}</div>
         </div>
         <div class="row">
-          <div class="col-sm-3 font-weight-bold">Fax</div>
-          <div class="col-sm-9">{{contact.fax}}</div>
-        </div>
-        <div class="row">
           <div class="col-sm-3 font-weight-bold">Email</div>
           <div class="col-sm-9">{{contact.mail}}</div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3 font-weight-bold">Fax</div>
+          <div class="col-sm-9">{{contact.fax}}</div>
         </div>
       </div>
       <div *ngIf="modif && canEdit()">
@@ -73,7 +73,7 @@
           </mat-form-field>
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Civilité</mat-label>
-            <mat-select formControlName="idCivilite" required >
+            <mat-select formControlName="idCivilite">
               <mat-option *ngFor="let civilite of civilites" [value]="civilite.id">{{civilite.libelle}}</mat-option>
             </mat-select>
             <mat-error><app-form-error [field]="form.get('civilite')"></app-form-error></mat-error>
@@ -85,18 +85,18 @@
           </mat-form-field>
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Téléphone</mat-label>
-            <input matInput formControlName="tel" />
+            <input matInput formControlName="tel" required />
             <mat-error><app-form-error [field]="form.get('tel')"></app-form-error></mat-error>
-          </mat-form-field>
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Fax</mat-label>
-            <input matInput formControlName="fax" />
-            <mat-error><app-form-error [field]="form.get('fax')"></app-form-error></mat-error>
           </mat-form-field>
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Email</mat-label>
             <input matInput formControlName="mail" required />
             <mat-error><app-form-error [field]="form.get('mail')"></app-form-error></mat-error>
+          </mat-form-field>
+          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+            <mat-label>Fax</mat-label>
+            <input matInput formControlName="fax" />
+            <mat-error><app-form-error [field]="form.get('fax')"></app-form-error></mat-error>
           </mat-form-field>
         </div>
       </div>

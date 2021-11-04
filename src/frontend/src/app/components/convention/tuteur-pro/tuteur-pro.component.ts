@@ -40,10 +40,10 @@ export class TuteurProComponent implements OnInit, OnChanges {
       nom: [null, [Validators.required, Validators.maxLength(50)]],
       prenom: [null, [Validators.required, Validators.maxLength(50)]],
       idCivilite: [null, []],
-      fonction: [null, [Validators.required, Validators.maxLength(100)]],
-      tel: [null, [Validators.maxLength(50)]],
-      fax: [null, [Validators.maxLength(50)]],
+      fonction: [null, [Validators.maxLength(100)]],
+      tel: [null, [Validators.required, Validators.maxLength(50)]],
       mail: [null, [Validators.required, Validators.email, Validators.maxLength(50)]],
+      fax: [null, [Validators.maxLength(50)]],
     });
   }
 
