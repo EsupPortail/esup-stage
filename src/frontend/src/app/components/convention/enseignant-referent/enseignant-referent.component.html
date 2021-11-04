@@ -20,7 +20,8 @@
       </div>
     </form>
 
-    <table mat-table [dataSource]="enseignants">
+    <div class="alert alert-info" *ngIf="enseignants.length > 10">La recherche est limitée à 10 enseignants. Veuillez affiner la recherche si l'enseignant n'apparaît pas.</div>
+    <table mat-table [dataSource]="enseignants | slice:0:10">
       <tr class="mat-row" *matNoDataRow>
         <td class="mat-cell" colspan="9999">Aucun enseignant trouvé</td>
       </tr>
