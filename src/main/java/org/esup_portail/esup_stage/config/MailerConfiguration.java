@@ -1,11 +1,13 @@
 package org.esup_portail.esup_stage.config;
 
+import freemarker.template.TemplateExceptionHandler;
 import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
 import java.util.Properties;
 
@@ -32,5 +34,17 @@ public class MailerConfiguration {
         props.put("mail." + protocol + ".from", applicationBootstrap.getAppConfig().getMailerFrom());
 
         return mailSender;
+    }
+
+    @Bean
+    public FreeMarkerConfigurer freemarkerClassLoaderConfig() {
+        freemarker.template.Configuration configuration = new freemarker.template.Configuration(freemarker.template.Configuration.VERSION_2_3_27);
+        configuration.setClassForTemplateLoading(this.getClass(), "/templates");
+        configuration.setDefaultEncoding("UTF-8");
+        configuration.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+        configuration.setLogTemplateExceptions(false);
+        FreeMarkerConfigurer freeMarkerConfigurer = new FreeMarkerConfigurer();
+        freeMarkerConfigurer.setConfiguration(configuration);
+        return freeMarkerConfigurer;
     }
 }
