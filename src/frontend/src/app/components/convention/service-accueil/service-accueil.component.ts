@@ -19,7 +19,7 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
 
   data: any;
 
-  @Input() etab = {id:null!};
+  @Input() etab: any;
   services:any[] = [];
 
   service: any;
@@ -97,6 +97,15 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
   initCreate(): void {
     this.service = {};
     this.form.reset();
+    this.form.setValue({
+      nom: null,
+      voie: this.etab.voie,
+      codePostal: this.etab.codePostal,
+      batimentResidence: this.etab.batimentResidence,
+      commune: this.etab.commune,
+      idPays: this.etab.pays ? this.etab.pays.id : null,
+      telephone: this.etab.telephone,
+    });
     this.modif = true;
   }
 
