@@ -4,14 +4,14 @@
       Coordonnées du centre
       <mat-progress-bar mode="determinate" [value]="getProgressValue(0)" [ngClass]="{editing: statuts['statutCoordCentre'] === 1, done: statuts['statutCoordCentre'] === 2}"></mat-progress-bar>
     </ng-template>
-    <app-coord-centre *ngIf="centreGestionInited && (coordCentreTab.isActive || tabs[0].init)" [form]="coordCentreForm" [centreGestion]="centreGestion" (update)="update()" (refreshCentreGestion)="setCentreGestion($event)"></app-coord-centre>
+    <app-coord-centre *ngIf="centreGestionInited && (coordCentreTab.isActive || tabs[0].init)" [form]="coordCentreForm" [centreGestion]="centreGestion" (update)="update()" (refreshCentreGestion)="refreshCentreGestion($event)"></app-coord-centre>
   </mat-tab>
   <mat-tab #paramCentreTab>
     <ng-template mat-tab-label>
       Paramètres du centre
       <mat-progress-bar mode="determinate" [value]="getProgressValue(1)" [ngClass]="{editing: statuts['statutParamCentre'] === 1, done: statuts['statutParamCentre'] === 2}"></mat-progress-bar>
     </ng-template>
-    <app-param-centre *ngIf="centreGestionInited && (paramCentreTab.isActive || tabs[1].init)" [form]="paramCentreForm" [centreGestion]="centreGestion" (update)="update()" (refreshCentreGestion)="setCentreGestion($event)"></app-param-centre>
+    <app-param-centre *ngIf="centreGestionInited && (paramCentreTab.isActive || tabs[1].init)" [form]="paramCentreForm" [centreGestion]="centreGestion" (update)="update()"></app-param-centre>
   </mat-tab>
   <mat-tab>
     <ng-template mat-tab-label>

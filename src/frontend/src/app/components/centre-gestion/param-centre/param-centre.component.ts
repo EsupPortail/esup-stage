@@ -13,7 +13,6 @@ export class ParamCentreComponent implements OnInit {
   @Input() centreGestion: any;
   @Input() form: FormGroup;
 
-  @Output() refreshCentreGestion = new EventEmitter<any>();
   @Output() update = new EventEmitter<any>();
 
   constructor(private centreGestionService: CentreGestionService, private messageService: MessageService, private fb: FormBuilder) { }

@@ -4,6 +4,7 @@ import { CentreGestionService } from "../../services/centre-gestion.service";
 import { MessageService } from "../../services/message.service";
 import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-centre-gestion',
@@ -49,6 +50,9 @@ export class CentreGestionComponent implements OnInit {
         this.centreGestionService.getBrouillonByLogin().subscribe((response: any) => {
           this.centreGestion = response;
           this.centreGestionInited = true;
+          if (this.centreGestion.id) {
+            this.updateOnChanges();
+          }
         });
       } else {
         // todo edit
@@ -73,47 +77,26 @@ export class CentreGestionComponent implements OnInit {
     return 33;
   }
 
-  update() {
-    let centreGestionValid = true;
-    this.initedTabs.forEach((tab: number) => {
-      // si un des formulaires n'est pas valide, on interrompt le traitement
-      if (!centreGestionValid) {
-        return;
-      }
-
-      // on récupère les éventuelles modifications faites dans les onglets accédés par l'utilisateur
-      switch (tab) {
-        case 0:
-          if (!this.coordCentreForm.valid) {
-            centreGestionValid = false;
-            this.messageService.setError("Veuillez remplir les champs obligatoires");
-            if (this.matTabs)
-              this.matTabs.selectedIndex = 0;
-          }
-          this.setCentreGestionCoordCentre();
-          break;
-        case 1:
-          if (!this.paramCentreForm.valid) {
-            centreGestionValid = false;
-            this.messageService.setError("Veuillez remplir les champs obligatoires");
-            if (this.matTabs)
-              this.matTabs.selectedIndex = 1;
-          }
-          this.setCentreGestionParamCentre();
-          break;
-      }
-    });
-
-    if (centreGestionValid) {
-      this.centreGestionService.update(this.centreGestion).subscribe((response: any) => {
-        this.messageService.setSuccess("Centre de gestion modifié");
-        this.centreGestion = response;
-      });
-    }
+  refreshCentreGestion(value: any): void {
+    this.centreGestion = value;
+    this.updateOnChanges();
   }
 
-  setCentreGestion(value: any): void {
-    this.centreGestion = value;
+  update() {
+    this.centreGestionService.update(this.centreGestion).subscribe((response: any) => {
+      this.centreGestion = response;
+    });
+  }
+
+  updateOnChanges(): void {
+    this.coordCentreForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
+      this.setCentreGestionCoordCentre();
+      this.update();
+    });
+    this.paramCentreForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
+      this.setCentreGestionParamCentre();
+      this.update();
+    });
   }
 
   setCoordCentreForm() {
