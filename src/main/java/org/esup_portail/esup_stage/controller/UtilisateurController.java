@@ -62,4 +62,15 @@ public class UtilisateurController {
         utilisateur = utilisateurJpaRepository.saveAndFlush(utilisateur);
         return utilisateur;
     }
+
+    @PostMapping
+    @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.CREATION})
+    public Utilisateur create(@RequestBody Utilisateur requestUtilisateur) {
+        Utilisateur utilisateur = utilisateurJpaRepository.findOneByLogin(requestUtilisateur.getLogin());
+        if (utilisateur != null) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Utilisateur déjà existant");
+        }
+        requestUtilisateur = utilisateurJpaRepository.saveAndFlush(requestUtilisateur);
+        return requestUtilisateur;
+    }
 }

@@ -1,0 +1,44 @@
+<h1 mat-dialog-title>Création de l'utilisateur : {{data.ldapUser.supannAliasLogin}}</h1>
+<div mat-dialog-content>
+  <form [formGroup]="data.form" (submit)="save()">
+    <div class="row">
+      <mat-form-field class="col-sm-12" appearance="fill">
+        <mat-label>Login</mat-label>
+        <input matInput formControlName="login" required />
+      </mat-form-field>
+    </div>
+
+    <div class="row">
+      <mat-form-field class="col-sm-6" appearance="fill">
+        <mat-label>Nom</mat-label>
+        <input matInput formControlName="nom" required />
+      </mat-form-field>
+      <mat-form-field class="col-sm-6" appearance="fill">
+        <mat-label>Prénom</mat-label>
+        <input matInput formControlName="prenom" required />
+      </mat-form-field>
+    </div>
+
+    <div class="row">
+      <mat-form-field class="col-sm-12" appearance="fill">
+        <mat-label>Rôles</mat-label>
+        <mat-select formControlName="roles" multiple [compareWith]="data.compareRole">
+          <mat-option *ngFor="let role of data.roles" [value]="role">{{role|roleLibelle}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-12">
+        <mat-checkbox formControlName="actif">Actif</mat-checkbox>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12 text-right">
+        <button type="button" mat-flat-button color="warn" class="mr-2" (click)="close()">{{'BOUTON_ANNULER'|contenu}}</button>
+        <button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
+      </div>
+    </div>
+  </form>
+</div>
