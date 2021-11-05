@@ -4,25 +4,25 @@ import org.esup_portail.esup_stage.dto.ContextDto;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
-import org.esup_portail.esup_stage.model.CentreGestion;
-import org.esup_portail.esup_stage.model.PersonnelCentreGestion;
-import org.esup_portail.esup_stage.model.Utilisateur;
+import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.CentreGestionRepository;
+import org.esup_portail.esup_stage.repository.CritereGestionJpaRepository;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
+import org.esup_portail.esup_stage.service.apogee.ApogeeService;
+import org.esup_portail.esup_stage.service.apogee.model.Composante;
+import org.esup_portail.esup_stage.service.apogee.model.Etape;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @ApiController
 @RequestMapping("/centre-gestion")
@@ -35,10 +35,16 @@ public class CentreGestionController {
     CentreGestionJpaRepository centreGestionJpaRepository;
 
     @Autowired
+    CritereGestionJpaRepository critereGestionJpaRepository;
+
+    @Autowired
     UtilisateurController utilisateurController;
 
     @Autowired
     AppConfigService appConfigService;
+
+    @Autowired
+    ApogeeService apogeeService;
 
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
@@ -90,5 +96,89 @@ public class CentreGestionController {
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.MODIFICATION})
     public CentreGestion update(@Valid @RequestBody CentreGestion centreGestion) {
         return centreGestionJpaRepository.saveAndFlush(centreGestion);
+    }
+
+    @GetMapping("/{id}/composantes")
+    @Secure()
+    public List<Composante> getComposantes(@PathVariable("id") int id) {
+        List<Composante> composantes = apogeeService.getListComposante();
+        List<CritereGestion> critereGestionsComposantes = critereGestionJpaRepository.findComposantes();
+
+        composantes = composantes.stream().filter(c -> critereGestionsComposantes.stream().noneMatch(cg -> cg.getId().getCode().equalsIgnoreCase(c.getCode()) && cg.getCentreGestion().getId() != id)).collect(Collectors.toList());
+        composantes.sort(Comparator.comparing(Composante::getCode));
+        return composantes;
+    }
+
+    @GetMapping("/{id}/composante")
+    @Secure()
+    public Composante getCentreComposante(@PathVariable("id") int id) {
+        CritereGestion critereGestion = critereGestionJpaRepository.findByCentreId(id);
+        Composante composante = new Composante();
+        if (critereGestion != null) {
+            composante.setCode(critereGestion.getId().getCode());
+            composante.setLibelle(critereGestion.getLibelle());
+        }
+        return composante;
+    }
+
+    @PutMapping("/{id}/set-composante")
+    @Secure()
+    public Composante setComposante(@PathVariable("id") int id, @RequestBody Composante _composante) {
+        CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
+        CritereGestion critereGestion = critereGestionJpaRepository.findByCentreId(id);
+        CritereGestionId critereGestionId = new CritereGestionId();
+        critereGestionId.setCode(_composante.getCode());
+        critereGestionId.setCodeVersionEtape("");
+
+        if (critereGestion != null) {
+            //todo : check convention rattachée à la composante
+
+            critereGestionJpaRepository.delete(critereGestion);
+        }
+
+        critereGestion = new CritereGestion();
+        critereGestion.setId(critereGestionId);
+        critereGestion.setLibelle(_composante.getLibelle());
+        critereGestion.setCentreGestion(centreGestion);
+        critereGestionJpaRepository.saveAndFlush(critereGestion);
+        return _composante;
+    }
+
+    @GetMapping("/{id}/etapes")
+    @Secure()
+    public List<Etape> getEtapes(@PathVariable("id") int id) {
+        List<Etape> etapes = apogeeService.getListEtape();
+        List<CritereGestion> critereGestionsEtapes = critereGestionJpaRepository.findEtapes();
+        etapes = etapes.stream().filter(e -> critereGestionsEtapes.stream().noneMatch(cg -> cg.getId().getCode().equalsIgnoreCase(e.getCode()) && cg.getCentreGestion().getId() != id)).collect(Collectors.toList());
+        etapes.sort(Comparator.comparing(Etape::getCodeVrsEtp).thenComparing(Etape::getCode));
+        return etapes;
+    }
+
+    @PostMapping("/{id}/add-etape")
+    @Secure()
+    public Etape addEtape(@PathVariable("id") int id, @RequestBody Etape _etape) {
+        CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
+        CritereGestionId critereGestionId = new CritereGestionId();
+        critereGestionId.setCode(_etape.getCode());
+        critereGestionId.setCodeVersionEtape(_etape.getCodeVrsEtp());
+
+        CritereGestion critereGestion = new CritereGestion();
+        critereGestion.setId(critereGestionId);
+        critereGestion.setLibelle(_etape.getLibelle());
+        critereGestion.setCentreGestion(centreGestion);
+        critereGestionJpaRepository.saveAndFlush(critereGestion);
+
+        return _etape;
+    }
+
+    @DeleteMapping("/delete-etape")
+    @Secure()
+    public void deleteEtape(@RequestBody Etape _etape) {
+        CritereGestion critereGestion = critereGestionJpaRepository.findEtapeById(_etape.getCode(), _etape.getCodeVrsEtp());
+
+        //todo : check convention rattachée à l'étape
+
+        critereGestionJpaRepository.delete(critereGestion);
+        critereGestionJpaRepository.flush();
     }
 }

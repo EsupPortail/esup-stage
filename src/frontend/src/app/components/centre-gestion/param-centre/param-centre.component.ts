@@ -23,12 +23,6 @@ export class ParamCentreComponent implements OnInit {
     }
   }
 
-  validate(): void {
-    if (this.centreGestion.id) {
-      this.update.emit();
-    }
-  }
-
   setFormData(): void {
     this.form.setValue({
       saisieTuteurProParEtudiant: this.centreGestion.saisieTuteurProParEtudiant,

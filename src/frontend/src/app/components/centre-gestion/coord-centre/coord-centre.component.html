@@ -18,6 +18,23 @@
         </mat-form-field>
       </div>
     </form>
+    <div class="row" *ngIf="centreGestion.id && form.get('niveauCentre')?.value.libelle == 'UFR'">
+      <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
+        <mat-label>Composante</mat-label>
+        <mat-select [(ngModel)]="selectedComposante" (selectionChange)="composanteChange($event.value)" [compareWith]="compareCode">
+          <mat-option *ngFor="let composante of composantes" [value]="composante">{{composante.code}} - {{composante.libelle}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <!--<div class="row" *ngIf="centreGestion.id && form.get('niveauCentre')?.value.libelle == 'ETAPE'">
+      <mat-form-field class="col-sm-12 col-md-12" appearance="fill">
+        <mat-label>Etapes</mat-label>
+        <mat-select multiple>
+          <mat-option *ngFor="let etape of etapes" [value]="etapes">{{etape.code}};{{etape.codeVrsEtp}} - {{etape.libelle}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>-->
+
   </mat-expansion-panel>
   <mat-expansion-panel>
     <mat-expansion-panel-header>

@@ -18,16 +18,46 @@ export class CoordCentreComponent implements OnInit {
   @Output() update = new EventEmitter<any>();
 
   niveauxCentre: any[] = [];
+  composantes: any[] = [];
+  etapes: any[] = [];
+
+  selectedComposante: any;
 
   constructor(private centreGestionService: CentreGestionService, private niveauCentreService: NiveauCentreService, private messageService: MessageService, private fb: FormBuilder) { }
 
   ngOnInit(): void {
-    this.niveauCentreService.findList().subscribe(response => {
+    this.niveauCentreService.findList().subscribe((response: any) => {
       this.niveauxCentre = response;
     });
     if (this.centreGestion.id) {
       this.setFormData();
+      if (this.centreGestion.niveauCentre.libelle == 'UFR') {
+        this.getComposantes();
+        this.getCentreComposante();
+      }
+      else if (this.centreGestion.niveauCentre.libelle == 'ETAPE') {
+        this.getEtapes();
+      }
+      this.form.get('niveauCentre')?.disable();
     }
+  }
+
+  getComposantes(): void {
+    this.centreGestionService.getComposantes(this.centreGestion.id).subscribe((response: any) => {
+      this.composantes = response;
+    });
+  }
+
+  getCentreComposante(): void {
+    this.centreGestionService.getCentreComposante(this.centreGestion.id).subscribe((response: any) => {
+      this.selectedComposante = response;
+    });
+  }
+
+  getEtapes(): void {
+    this.centreGestionService.getEtapes(this.centreGestion.id).subscribe((response: any) => {
+      this.etapes = response;
+    });
   }
 
   validate(): void {
@@ -43,13 +73,28 @@ export class CoordCentreComponent implements OnInit {
         this.messageService.setSuccess("Centre de gestion créé");
         this.centreGestion = response;
         this.refreshCentreGestion.emit(this.centreGestion);
+        this.getComposantes();
       });
     }
+  }
+
+  setComposante(): void {
+    this.centreGestionService.setComposante(this.selectedComposante, this.centreGestion.id).subscribe((response: any) => {
+      this.getComposantes();
+      this.getCentreComposante();
+    });
   }
 
   compare(option: any, value: any): boolean {
     if (option && value) {
       return option.id === value.id;
+    }
+    return false;
+  }
+
+  compareCode(option: any, value: any): boolean {
+    if (option && value) {
+      return option.code === value.code;
     }
     return false;
   }
@@ -67,6 +112,11 @@ export class CoordCentreComponent implements OnInit {
       commune: this.centreGestion.commune,
       codePostal: this.centreGestion.codePostal,
     });
+  }
+
+  composanteChange(composante: any) {
+    this.selectedComposante = composante;
+    this.setComposante();
   }
 
 }
