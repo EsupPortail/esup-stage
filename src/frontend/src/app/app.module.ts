@@ -66,6 +66,8 @@ import { AdminNomenclaturesCreationComponent } from './components/admin/admin-no
 import { QuillModule } from "ngx-quill";
 import { FormErrorComponent } from './components/form-error/form-error.component';
 import { MatProgressBarModule } from "@angular/material/progress-bar";
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { ServiceAccueilComponent } from './components/convention/service-accueil/service-accueil.component';
 import { TuteurProComponent } from './components/convention/tuteur-pro/tuteur-pro.component';
 import { CoordCentreComponent } from './components/centre-gestion/coord-centre/coord-centre.component';
@@ -75,6 +77,7 @@ import { TemplateMailComponent } from './components/admin/template-mail/template
 import { ParamCentreComponent } from './components/centre-gestion/param-centre/param-centre.component';
 import { MailTesterComponent } from "./components/admin/template-mail/mail-tester/mail-tester.component";
 import { CreateDialogComponent } from './components/admin/admin-user/create-dialog/create-dialog.component';
+import { StageComponent } from './components/convention/stage/stage.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -115,6 +118,7 @@ registerLocaleData(localeFr, 'fr');
     ParamCentreComponent,
     MailTesterComponent,
     CreateDialogComponent,
+    StageComponent,
   ],
   imports: [
     BrowserModule,
@@ -146,6 +150,8 @@ registerLocaleData(localeFr, 'fr');
     MatProgressSpinnerModule,
     QuillModule.forRoot(),
     MatProgressBarModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
   ],
   providers: [
     CookieService,
