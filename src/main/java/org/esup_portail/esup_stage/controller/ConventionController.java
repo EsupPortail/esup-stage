@@ -80,7 +80,7 @@ public class ConventionController {
 
 
     @PutMapping("/{id}")
-    @Secure(fonction = AppFonctionEnum.ORGA_ACC, droits = {DroitEnum.MODIFICATION})
+    @Secure(fonctions = AppFonctionEnum.ORGA_ACC, droits = {DroitEnum.MODIFICATION})
     public Convention update(@PathVariable("id") int id, @Valid @RequestBody ConventionFormDto conventionFormDto) {
         Convention convention = conventionJpaRepository.findById(id);
         setConventionData(convention, conventionFormDto);
