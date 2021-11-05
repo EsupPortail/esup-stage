@@ -143,7 +143,7 @@ appbuild:
     - cat /etc/yum.repos.d/nodesource-el7.repo
     - yum clean all
     - yum makecache fast
-    - yum install -y nodejs
+    - yum install -y nodejs --enablerepo=nodesource
     #   >> install yarn (derniere version)
     - yum remove -y yarn
     - 'curl -sL https://dl.yarnpkg.com/rpm/yarn.repo | tee /etc/yum.repos.d/yarn.repo'
