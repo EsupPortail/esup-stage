@@ -66,6 +66,8 @@ import { AdminNomenclaturesCreationComponent } from './components/admin/admin-no
 import { QuillModule } from "ngx-quill";
 import { FormErrorComponent } from './components/form-error/form-error.component';
 import { MatProgressBarModule } from "@angular/material/progress-bar";
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { ServiceAccueilComponent } from './components/convention/service-accueil/service-accueil.component';
 import { TuteurProComponent } from './components/convention/tuteur-pro/tuteur-pro.component';
 import { CoordCentreComponent } from './components/centre-gestion/coord-centre/coord-centre.component';
@@ -77,6 +79,7 @@ import { MailTesterComponent } from "./components/admin/template-mail/mail-teste
 import { CreateDialogComponent } from './components/admin/admin-user/create-dialog/create-dialog.component';
 import { GestionEtabAccueilComponent } from "./components/gestion-etab-accueil/gestion-etab-accueil.component";
 import { EtabAccueilFormComponent } from './components/gestion-etab-accueil/etab-accueil-form/etab-accueil-form.component';
+import { StageComponent } from './components/convention/stage/stage.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -119,6 +122,7 @@ registerLocaleData(localeFr, 'fr');
     CreateDialogComponent,
     GestionEtabAccueilComponent,
     EtabAccueilFormComponent,
+    StageComponent,
   ],
   imports: [
     BrowserModule,
@@ -150,6 +154,8 @@ registerLocaleData(localeFr, 'fr');
     MatProgressSpinnerModule,
     QuillModule.forRoot(),
     MatProgressBarModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
   ],
   providers: [
     CookieService,

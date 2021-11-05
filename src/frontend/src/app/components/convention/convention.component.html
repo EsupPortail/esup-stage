@@ -32,6 +32,7 @@
       Stage
       <mat-progress-bar mode="determinate" [value]="getProgressValue(4)" [ngClass]="{editing: tabs[4].statut === 1, done: tabs[4].statut === 2}"></mat-progress-bar>
     </ng-template>
+    <app-stage *ngIf="stageTab.isActive || tabs[4].init" [convention]="convention" (validated)="setStatus(4, $event)"></app-stage>
   </mat-tab>
   <mat-tab #enseignantRefTab [disabled]="isCreated()">
     <ng-template mat-tab-label>
