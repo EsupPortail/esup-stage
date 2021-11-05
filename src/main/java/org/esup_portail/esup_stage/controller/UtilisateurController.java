@@ -38,7 +38,7 @@ public class UtilisateurController {
     }
 
     @GetMapping
-    @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<Utilisateur> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         PaginatedResponse<Utilisateur> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(utilisateurRepository.count(filters));
@@ -47,7 +47,7 @@ public class UtilisateurController {
     }
 
     @PutMapping("/{id}")
-    @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.MODIFICATION})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.MODIFICATION})
     public Utilisateur update(@PathVariable("id") int id, @RequestBody Utilisateur requestUtilisateur) {
         Utilisateur utilisateur = utilisateurJpaRepository.findByIdActif(id);
         if (utilisateur == null) {
@@ -64,7 +64,7 @@ public class UtilisateurController {
     }
 
     @PostMapping
-    @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.CREATION})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.CREATION})
     public Utilisateur create(@RequestBody Utilisateur requestUtilisateur) {
         Utilisateur utilisateur = utilisateurJpaRepository.findOneByLogin(requestUtilisateur.getLogin());
         if (utilisateur != null) {

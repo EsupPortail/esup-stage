@@ -57,7 +57,7 @@
         </div>
       </mat-panel-description>
     </mat-expansion-panel-header>
-    <form *ngIf="etab" [formGroup]="form" novalidate (submit)="save()">
+    <div *ngIf="etab">
       <div class="mt-3 mb-3" *ngIf="etab.id && !modif">
         <div class="row">
           <div class="col-sm-3 font-weight-bold">Raison sociale</div>
@@ -103,149 +103,15 @@
           <div class="col-sm-3 font-weight-bold">Code APE</div>
           <div class="col-sm-9">{{etab.nafN5 ? (etab.nafN5.code + ' (' + etab.nafN5.libelle + ')') : ''}}</div>
         </div>
-      </div>
-      <div *ngIf="modif && canEdit()">
-        <div class="text-title">Général</div>
-        <mat-divider class="mb-2"></mat-divider>
-        <div class="row">
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Raison sociale</mat-label>
-            <input matInput formControlName="raisonSociale" required />
-            <mat-icon matSuffix class="icon-help" matTooltip="Nom de l'organisme">help</mat-icon>
-            <mat-error><app-form-error [field]="form.get('raisonSociale')"></app-form-error></mat-error>
-          </mat-form-field>
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Numéro Siret</mat-label>
-            <input matInput formControlName="numeroSiret" required />
-            <mat-icon matSuffix class="icon-help" matTooltip="Code INSEE à demander à votre établissement d'accueil ou consultable sur des sites de référencement d'entreprises. Correspond à l'identifiant géographique de l'établissement. (format : 14 chiffres consécutifs sans espace - ex: 12345678912345)">help</mat-icon>
-            <mat-error><app-form-error [field]="form.get('numeroSiret')"></app-form-error></mat-error>
-          </mat-form-field>
-        </div>
-        <div class="row">
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Effectif</mat-label>
-            <mat-select formControlName="idEffectif" required>
-              <mat-option *ngFor="let effectif of effectifs" [value]="effectif.id">{{effectif.libelle}}</mat-option>
-            </mat-select>
-            <mat-error><app-form-error [field]="form.get('idEffectif')"></app-form-error></mat-error>
-          </mat-form-field>
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Type d'établissement</mat-label>
-            <mat-select formControlName="idTypeStructure" required>
-              <mat-option *ngFor="let typeStructure of typeStructures" [value]="typeStructure.id">{{typeStructure.libelle}}</mat-option>
-            </mat-select>
-            <mat-error><app-form-error [field]="form.get('idTypeStructure')"></app-form-error></mat-error>
-          </mat-form-field>
-        </div>
-        <div class="row">
-          <div class="col-sm-12 col-md-6 mb-2"></div>
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Statut juridique</mat-label>
-            <mat-select formControlName="idStatutJuridique" required>
-              <mat-option *ngFor="let statutJuridique of statutJuridiques" [value]="statutJuridique.id">{{statutJuridique.libelle}}</mat-option>
-            </mat-select>
-            <mat-error><app-form-error [field]="form.get('idStatutJuridique')"></app-form-error></mat-error>
-          </mat-form-field>
-        </div>
-
-        <div class="text-title">Activité</div>
-        <mat-divider class="mb-2"></mat-divider>
-        <div class="alert alert-info text-center">
-          Une de ces deux informations doit être renseignée.
-        </div>
-        <div class="row">
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Code APE</mat-label>
-            <input matInput formControlName="codeNafN5" (change)="getNafN5()" />
-            <mat-icon matSuffix class="icon-help" matTooltip="Code à demander directement à votre établissement d'accueil ou consultable sur un site de référencement d'entreprises. Composé de quatre chiffres et une lettre (ex: 01.10Z) faisant référence à la nomenclature d'activité françaises (NAF).">help</mat-icon>
-            <mat-hint>
-              <ng-container *ngIf="selectedNafN5; else invalidNafN5">
-                <span class="text-success"><i class="fa fa-check"></i> {{selectedNafN5.libelle}}</span>
-              </ng-container>
-              <ng-template #invalidNafN5>
-                <span class="text-danger" *ngIf="selectedNafN5 !== undefined">Ce code est invalide</span>
-              </ng-template>
-            </mat-hint>
-          </mat-form-field>
-          <div class="col-sm-12 col-md-6 mb-2">
-            <label>Activité principale</label>
-            <quill-editor formControlName="activitePrincipale"></quill-editor>
+        <div class="row mt-3" *ngIf="canEdit()">
+          <div class="col-sm-6">
+            <button mat-button mat-stroked-button color="primary" *ngIf="etab.id && !modif" (click)="edit()">Modifier ces informations</button>
           </div>
         </div>
-
-        <div class="text-title">Coordonnées</div>
-        <mat-divider class="mb-2"></mat-divider>
-        <div class="row">
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Voie</mat-label>
-            <input matInput formControlName="voie" required />
-            <mat-error><app-form-error [field]="form.get('voie')"></app-form-error></mat-error>
-          </mat-form-field>
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Code postal</mat-label>
-            <input matInput formControlName="codePostal" required />
-            <mat-error><app-form-error [field]="form.get('codePostal')"></app-form-error></mat-error>
-          </mat-form-field>
-        </div>
-        <div class="row">
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Bâtiment / Résidence / Z.I</mat-label>
-            <input matInput formControlName="batimentResidence" />
-          </mat-form-field>
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Commune</mat-label>
-            <input matInput formControlName="commune" required />
-            <mat-error><app-form-error [field]="form.get('commune')"></app-form-error></mat-error>
-          </mat-form-field>
-        </div>
-        <div class="row">
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Libellé Cedex ou Localité de destination</mat-label>
-            <input matInput formControlName="libCedex" />
-          </mat-form-field>
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Pays</mat-label>
-            <mat-select formControlName="idPays" required>
-              <mat-option *ngFor="let country of countries" [value]="country.id">{{country.libelle}}</mat-option>
-            </mat-select>
-            <mat-error><app-form-error [field]="form.get('idPays')"></app-form-error></mat-error>
-          </mat-form-field>
-        </div>
-        <div class="row">
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Adresse mail</mat-label>
-            <input type="email" matInput formControlName="mail" />
-            <mat-hint>Sous cette forme adresse@domain.fr</mat-hint>
-            <mat-error><app-form-error [field]="form.get('email')"></app-form-error></mat-error>
-          </mat-form-field>
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Téléphone</mat-label>
-            <input matInput formControlName="telephone" required />
-            <mat-error><app-form-error [field]="form.get('telephone')"></app-form-error></mat-error>
-          </mat-form-field>
-        </div>
-        <div class="row">
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Site internet</mat-label>
-            <input type="url" matInput formControlName="siteWeb" />
-            <mat-hint>Sous cette forme http://siteinternet.fr/...</mat-hint>
-            <mat-error><app-form-error [field]="form.get('siteWeb')"></app-form-error></mat-error>
-          </mat-form-field>
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Fax</mat-label>
-            <input matInput formControlName="fax" />
-          </mat-form-field>
-        </div>
       </div>
-      <div class="row mt-3">
-        <div class="col-sm-6" *ngIf="canEdit()">
-          <button mat-button mat-stroked-button color="primary" *ngIf="etab.id && !modif" (click)="edit()">Modifier ces informations</button>
-          <button mat-button mat-stroked-button color="warn" *ngIf="etab.id && modif" (click)="cancelEdit()">{{'BOUTON_ANNULER'|contenu}}</button>
-        </div>
-        <div class="col-sm-6 text-right" *ngIf="(canEdit() || canCreate()) && modif">
-          <button mat-button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
-        </div>
+      <div *ngIf="modif && canEdit()">
+        <app-etab-accueil-form [etab]="etab" (submitted)="choose($event)" (canceled)="modif = false"></app-etab-accueil-form>
       </div>
-    </form>
+    </div>
   </mat-expansion-panel>
 </mat-accordion>

@@ -29,7 +29,7 @@ public class StatutJuridiqueController {
     ConventionJpaRepository conventionJpaRepository;
 
     @GetMapping
-    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<StatutJuridique> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         PaginatedResponse<StatutJuridique> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(statutJuridiqueRepository.count(filters));
@@ -38,7 +38,7 @@ public class StatutJuridiqueController {
     }
 
     @PostMapping
-    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.CREATION})
+    @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.CREATION})
     public StatutJuridique create(@RequestBody StatutJuridique statutJuridique) {
         if (statutJuridiqueRepository.exists(statutJuridique.getLibelle(), statutJuridique.getId())) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Libellé déjà existant");
@@ -50,7 +50,7 @@ public class StatutJuridiqueController {
     }
 
     @PutMapping("/{id}")
-    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
+    @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
     public StatutJuridique update(@PathVariable("id") int id, @RequestBody StatutJuridique requestStatutJuridique) {
         StatutJuridique statutJuridique = statutJuridiqueJpaRepository.findById(id);
 
@@ -63,7 +63,7 @@ public class StatutJuridiqueController {
     }
 
     @DeleteMapping("/{id}")
-    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
+    @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
     public void delete(@PathVariable("id") int id) {
         Long count = conventionJpaRepository.countConventionWithStatutJuridique(id);
         if (count > 0) {

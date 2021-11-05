@@ -29,7 +29,7 @@ public class DeviseController {
     ConventionJpaRepository conventionJpaRepository;
 
     @GetMapping
-    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<Devise> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         PaginatedResponse<Devise> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(deviseRepository.count(filters));
@@ -38,7 +38,7 @@ public class DeviseController {
     }
 
     @PostMapping
-    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.CREATION})
+    @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.CREATION})
     public Devise create(@RequestBody Devise devise) {
         if (deviseRepository.exists(devise.getLibelle(), devise.getId())) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Libellé déjà existant");
@@ -49,7 +49,7 @@ public class DeviseController {
     }
 
     @PutMapping("/{id}")
-    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
+    @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
     public Devise update(@PathVariable("id") int id, @RequestBody Devise requestDevise) {
         Devise devise = deviseJpaRepository.findById(id);
 
@@ -62,7 +62,7 @@ public class DeviseController {
     }
 
     @DeleteMapping("/{id}")
-    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
+    @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
     public void delete(@PathVariable("id") int id) {
         Long count = conventionJpaRepository.countConventionWithDevise(id);
         if (count > 0) {

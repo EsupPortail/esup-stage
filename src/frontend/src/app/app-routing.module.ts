@@ -15,6 +15,7 @@ import { ContenuComponent } from "./components/admin/contenu/contenu.component";
 import { CentreGestionSearchComponent } from "./components/centre-gestion-search/centre-gestion-search.component";
 import { CentreGestionComponent } from "./components/centre-gestion/centre-gestion.component";
 import { TemplateMailComponent } from "./components/admin/template-mail/template-mail.component";
+import { GestionEtabAccueilComponent } from "./components/gestion-etab-accueil/gestion-etab-accueil.component";
 
 const routes: Routes = [
   {path: '', component: HomeComponent, canActivate: [AuthGuard], data: {role: {}, title: 'Accueil'}},
@@ -47,6 +48,12 @@ const routes: Routes = [
     component: TemplateMailComponent,
     canActivate: [AuthGuard],
     data: {role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.LECTURE]}, title: 'Template de mails'}
+  },
+  {
+    path: 'etab-accueils',
+    component: GestionEtabAccueilComponent,
+    canActivate: [AuthGuard],
+    data: {role: {fonction: AppFonction.NOMENCLATURE, droits: [Droit.LECTURE]}, title: 'Gestion des établissements d\'accueil'}
   },
   {
     path: 'nomenclatures',

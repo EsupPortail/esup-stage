@@ -29,7 +29,7 @@ public class ThemeController {
     ConventionJpaRepository conventionJpaRepository;
 
     @GetMapping
-    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<Theme> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         PaginatedResponse<Theme> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(themeRepository.count(filters));
@@ -38,7 +38,7 @@ public class ThemeController {
     }
 
     @PostMapping
-    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.CREATION})
+    @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.CREATION})
     public Theme create(@RequestBody Theme theme) {
         if (themeRepository.exists(theme.getLibelle(), theme.getId())) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Libellé déjà existant");
@@ -49,7 +49,7 @@ public class ThemeController {
     }
 
     @PutMapping("/{id}")
-    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
+    @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
     public Theme update(@PathVariable("id") int id, @RequestBody Theme requestTheme) {
         Theme theme = themeJpaRepository.findById(id);
 
@@ -62,7 +62,7 @@ public class ThemeController {
     }
 
     @DeleteMapping("/{id}")
-    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
+    @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
     public void delete(@PathVariable("id") int id) {
         Long count = conventionJpaRepository.countConventionWithTheme(id);
         if (count > 0) {

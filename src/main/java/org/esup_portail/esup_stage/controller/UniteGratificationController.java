@@ -29,7 +29,7 @@ public class UniteGratificationController {
     ConventionJpaRepository conventionJpaRepository;
 
     @GetMapping
-    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<UniteGratification> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         PaginatedResponse<UniteGratification> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(uniteGratificationRepository.count(filters));
@@ -38,7 +38,7 @@ public class UniteGratificationController {
     }
 
     @PostMapping
-    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.CREATION})
+    @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.CREATION})
     public UniteGratification create(@RequestBody UniteGratification uniteGratification) {
         if (uniteGratificationRepository.exists(uniteGratification.getLibelle(), uniteGratification.getId())) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Libellé déjà existant");
@@ -49,7 +49,7 @@ public class UniteGratificationController {
     }
 
     @PutMapping("/{id}")
-    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
+    @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
     public UniteGratification update(@PathVariable("id") int id, @RequestBody UniteGratification requestUniteGratification) {
         UniteGratification uniteGratification = uniteGratificationJpaRepository.findById(id);
 
@@ -62,7 +62,7 @@ public class UniteGratificationController {
     }
 
     @DeleteMapping("/{id}")
-    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
+    @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
     public void delete(@PathVariable("id") int id) {
         Long count = conventionJpaRepository.countConventionWithUniteGratification(id);
         if (count > 0) {

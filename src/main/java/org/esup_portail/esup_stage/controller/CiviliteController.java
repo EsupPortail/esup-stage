@@ -28,7 +28,7 @@ public class CiviliteController {
     CiviliteJpaRepository civiliteJpaRepository;
 
     @GetMapping
-    @Secure(fonction = AppFonctionEnum.ORGA_ACC, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<Civilite> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         PaginatedResponse<Civilite> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(civiliteRepository.count(filters));
@@ -37,7 +37,7 @@ public class CiviliteController {
     }
 
     @GetMapping("/{id}")
-    @Secure(fonction = AppFonctionEnum.ORGA_ACC, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.LECTURE})
     public Civilite getById(@PathVariable("id") int id) {
         Civilite civilite = civiliteJpaRepository.findById(id);
         if (civilite == null) {
@@ -47,13 +47,13 @@ public class CiviliteController {
     }
 
     @PostMapping
-    @Secure(fonction = AppFonctionEnum.ORGA_ACC, droits = {DroitEnum.CREATION})
+    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.CREATION})
     public Civilite create(@Valid @RequestBody Civilite _civilite) {
         return civiliteJpaRepository.saveAndFlush(_civilite);
     }
 
     @PutMapping("/{id}")
-    @Secure(fonction = AppFonctionEnum.ORGA_ACC, droits = {DroitEnum.MODIFICATION})
+    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.MODIFICATION})
     public Civilite update(@PathVariable("id") int id, @Valid @RequestBody Civilite _civilite) {
         Civilite civilite = civiliteJpaRepository.findById(id);
         if (civilite == null) {

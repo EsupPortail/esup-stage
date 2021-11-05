@@ -33,13 +33,13 @@ public class AppConfigController {
     AppConfigService appConfigService;
 
     @GetMapping("/generale")
-    @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public ConfigGeneraleDto getConfigGenerale() {
         return appConfigService.getConfigGenerale();
     }
 
     @PostMapping("/generale")
-    @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.MODIFICATION})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.MODIFICATION})
     public ConfigGeneraleDto updateGenerale(@RequestBody ConfigGeneraleDto configGeneraleDto) throws JsonProcessingException {
         AppConfig appConfig = appConfigJpaRepository.findByCode(AppConfigCodeEnum.GENERAL);
         if (appConfig == null) {
@@ -56,13 +56,13 @@ public class AppConfigController {
     }
 
     @GetMapping("/alerte-mail")
-    @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public ConfigAlerteMailDto getConfigAlerteMail() {
         return appConfigService.getConfigAlerteMail();
     }
 
     @PostMapping("/alerte-mail")
-    @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.MODIFICATION})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.MODIFICATION})
     public ConfigAlerteMailDto updateAlerteMail(@RequestBody ConfigAlerteMailDto configAlerteMailDto) throws JsonProcessingException {
         AppConfig appConfig = appConfigJpaRepository.findByCode(AppConfigCodeEnum.ALERTE);
         if (appConfig == null) {
@@ -76,13 +76,13 @@ public class AppConfigController {
     }
 
     @GetMapping("/theme")
-    @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public ConfigThemeDto getConfigTheme() {
         return appConfigService.getConfigTheme();
     }
 
     @PostMapping("/theme")
-    @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.MODIFICATION})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.MODIFICATION})
     public ConfigThemeDto updateTheme(@RequestParam String data, @RequestParam(required = false) MultipartFile logo, @RequestParam(required = false) MultipartFile favicon) throws IOException, URISyntaxException {
         ObjectMapper mapper = new ObjectMapper();
         ConfigThemeDto configThemeDto = mapper.readValue(data, ConfigThemeDto.class);
@@ -120,7 +120,7 @@ public class AppConfigController {
     }
 
     @DeleteMapping("/theme")
-    @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.SUPPRESSION})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.SUPPRESSION})
     public ConfigThemeDto rollbackTheme() throws IOException, URISyntaxException {
         AppConfig appConfig = appConfigJpaRepository.findByCode(AppConfigCodeEnum.THEME);
         if (appConfig != null) {

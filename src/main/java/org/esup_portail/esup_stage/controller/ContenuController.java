@@ -25,7 +25,7 @@ public class ContenuController {
     ContenuJpaRepository contenuJpaRepository;
 
     @GetMapping
-    @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<Contenu> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters) {
         PaginatedResponse<Contenu> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(contenuRepository.count(filters));
@@ -46,7 +46,7 @@ public class ContenuController {
     }
 
     @PutMapping("/{code}")
-    @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.MODIFICATION})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.MODIFICATION})
     public Contenu update(@PathVariable("code") String code, @RequestBody Contenu contenuRequest) {
         Contenu contenu = contenuJpaRepository.findByCode(code);
         if (contenu == null) {
