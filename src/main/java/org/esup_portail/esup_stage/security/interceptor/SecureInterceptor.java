@@ -54,7 +54,7 @@ public class SecureInterceptor {
 
         MethodSignature methodSignature = (MethodSignature) joinPoint.getStaticPart().getSignature();
         Secure authorized = methodSignature.getMethod().getAnnotation(Secure.class);
-        AppFonctionEnum fonction = authorized.fonction();
+        AppFonctionEnum[] fonctions = authorized.fonctions();
         DroitEnum[] droits = authorized.droits();
 
         // validation du token
@@ -118,12 +118,12 @@ public class SecureInterceptor {
             throw new AppException(HttpStatus.NOT_ACCEPTABLE, "Votre compte est inactif");
         }
 
-        boolean hasRight = fonction == AppFonctionEnum.NONE && droits.length == 0;
+        boolean hasRight = fonctions.length == 0 && droits.length == 0;
         // on a les droits si fonction droit == none
         if (!hasRight) {
             // Si une fonction/droit est définie, il faut vérifier ses habilitations
-            if (fonction != AppFonctionEnum.NONE && droits.length > 0) {
-                if (UtilisateurHelper.isRole(utilisateur, fonction, droits)) {
+            if (fonctions.length > 0 && droits.length > 0) {
+                if (UtilisateurHelper.isRole(utilisateur, fonctions, droits)) {
                     hasRight = true;
                 }
             }

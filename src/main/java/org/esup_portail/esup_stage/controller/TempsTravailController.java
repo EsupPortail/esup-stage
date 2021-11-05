@@ -29,7 +29,7 @@ public class TempsTravailController {
     ConventionJpaRepository conventionJpaRepository;
 
     @GetMapping
-    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<TempsTravail> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         PaginatedResponse<TempsTravail> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(tempsTravailRepository.count(filters));
@@ -38,7 +38,7 @@ public class TempsTravailController {
     }
 
     @PostMapping
-    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.CREATION})
+    @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.CREATION})
     public TempsTravail create(@RequestBody TempsTravail tempsTravail) {
         if (tempsTravailRepository.exists(tempsTravail.getCodeCtrl(), tempsTravail.getId())) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Code déjà existant");
@@ -50,7 +50,7 @@ public class TempsTravailController {
     }
 
     @PutMapping("{id}")
-    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
+    @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
     public TempsTravail update(@PathVariable("id") int id, @RequestBody TempsTravail requestTempsTravail) {
         TempsTravail tempsTravail = tempsTravailJpaRepository.findById(id);
 
@@ -63,7 +63,7 @@ public class TempsTravailController {
     }
 
     @DeleteMapping("/{id}")
-    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
+    @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
     public void delete(@PathVariable("id") int id) {
         Long count = conventionJpaRepository.countConventionWithTempsTravail(id);
         if (count > 0) {

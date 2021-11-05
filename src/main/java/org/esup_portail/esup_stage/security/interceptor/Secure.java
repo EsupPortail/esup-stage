@@ -14,6 +14,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({ TYPE, METHOD })
 @Retention(RUNTIME)
 public @interface Secure {
-    AppFonctionEnum fonction() default AppFonctionEnum.NONE;
+    AppFonctionEnum[] fonctions() default {};
     DroitEnum[] droits() default {};
 }

@@ -90,6 +90,14 @@ export class AppComponent {
       ]
     },
     {
+      libelle: 'Établissements d\'accueil',
+      path: 'etab-accueils',
+      icon: 'fa-building',
+      canView: () => {
+        return this.authService.checkRights({fonction: AppFonction.NOMENCLATURE, droits: [Droit.LECTURE]})
+      }
+    },
+    {
       libelle: 'Tables des nomenclatures',
       path: 'nomenclatures',
       icon: 'fa-table',

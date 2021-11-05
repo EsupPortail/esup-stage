@@ -41,7 +41,7 @@ public class LdapController {
     }
 
     @GetMapping
-    @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public List<LdapUser> searchLdapUserByLogin(@Valid @RequestParam("login") @Pattern(regexp = "[A-Za-z0-9]+") String login) {
         return ldapService.searchByLogin(login);
     }
