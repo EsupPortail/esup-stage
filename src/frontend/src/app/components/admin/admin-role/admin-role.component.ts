@@ -23,7 +23,7 @@ export class AdminRoleComponent implements OnInit {
   ];
 
   formTabIndex = 1;
-  data: any;
+  data: any = {};
   form: FormGroup;
 
   appFonctions: any[] = [];
@@ -37,12 +37,12 @@ export class AdminRoleComponent implements OnInit {
       code: [null, [Validators.required, Validators.maxLength(50)]],
       libelle: [null, [Validators.maxLength(255)]],
     });
-    this.emptyData();
   }
 
   ngOnInit(): void {
     this.roleService.findAllAppFonction().subscribe((response: any) => {
       this.appFonctions = response;
+      this.emptyData();
     });
   }
 
@@ -140,8 +140,22 @@ export class AdminRoleComponent implements OnInit {
         roleAppFonction.modification = !roleAppFonction.modification;
         roleAppFonction.suppression = !roleAppFonction.suppression;
         roleAppFonction.validation = !roleAppFonction.validation;
+        roleAppFonction.lecture = true;
       } else {
         roleAppFonction[droit.toLowerCase()] = ! roleAppFonction[droit.toLowerCase()]
+        // On a désactivé le droit de lecture : il faut désactiver les droits d'écriture
+        if (droit === Droit.LECTURE) {
+          if (!roleAppFonction[droit.toLowerCase()]) {
+            roleAppFonction.creation = false;
+            roleAppFonction.modification = false;
+            roleAppFonction.suppression = false;
+            roleAppFonction.validation = false;
+          }
+        } else { // On a activé le droit d'écriture : il faut activer le droit de lecture
+          if (roleAppFonction[droit.toLowerCase()]) {
+            roleAppFonction.lecture = true;
+          }
+        }
       }
     }
   }
