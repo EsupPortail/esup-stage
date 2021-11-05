@@ -50,7 +50,7 @@ public class PaysController {
     }
 
     @PostMapping
-    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.CREATION})
+    @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.CREATION})
     public Pays create(@RequestBody Pays pays) {
         if (paysRepository.exists(pays)) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Libellé déjà existant");
@@ -61,7 +61,7 @@ public class PaysController {
     }
 
     @PutMapping("/{id}")
-    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
+    @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
     public PaysDto update(@PathVariable("id") int id, @RequestBody PaysDto requestPays) {
         Pays pays = paysJpaRepository.findById(id);
 
@@ -75,7 +75,7 @@ public class PaysController {
     }
 
     @DeleteMapping("/{id}")
-    @Secure(fonction = AppFonctionEnum.NOMENCLATURE, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
+    @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
     public void delete(@PathVariable("id") int id) {
         Long count = conventionJpaRepository.countConventionWithPays(id);
         if (count > 0) {

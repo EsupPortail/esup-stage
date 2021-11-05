@@ -42,7 +42,7 @@ public class TemplateMailController {
     MailerService mailerService;
 
     @GetMapping
-    @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<TemplateMail> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters) {
         PaginatedResponse<TemplateMail> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(templateMailRepository.count(filters));
@@ -51,13 +51,13 @@ public class TemplateMailController {
     }
 
     @GetMapping("/{id}")
-    @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public TemplateMail getById(@PathVariable("id") int id) {
         return templateMailJpaRepository.findById(id);
     }
 
     @PutMapping("/{id}")
-    @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.MODIFICATION})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.MODIFICATION})
     public TemplateMail update(@PathVariable("id") int id, @Valid @RequestBody TemplateMailFormDto templateMailFormDto) {
         checkTemplateMail(templateMailFormDto);
         TemplateMail templateMail = templateMailJpaRepository.findById(id);
@@ -72,7 +72,7 @@ public class TemplateMailController {
     }
 
     @GetMapping("/params")
-    @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public List<ParamMail> getParams() {
         return paramMailJpaRepository.findAll();
     }
@@ -118,7 +118,7 @@ public class TemplateMailController {
     }
 
     @PostMapping("/send-test")
-    @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public boolean testSendMail(@Valid @RequestBody SendMailTestDto sendMailTestDto) {
         mailerService.sendTest(sendMailTestDto, ServiceContext.getServiceContext().getUtilisateur());
         return true;

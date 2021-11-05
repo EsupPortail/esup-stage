@@ -1,0 +1,52 @@
+<mat-tab-group #tabs (selectedTabChange)="tabChanged($event)">
+  <mat-tab label="Liste">
+    <app-table [service]="structureService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters"
+               matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'"
+               (matSortChange)="appTable ? appTable.sorting($event) : null">
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="9999">Aucun établissement trouvé</td>
+      </tr>
+      <ng-container matColumnDef="raisonSociale">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Raison sociale</th>
+        <td mat-cell *matCellDef="let row">{{row.raisonSociale}}</td>
+      </ng-container>
+      <ng-container matColumnDef="numeroSiret">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Numéro SIRET</th>
+        <td mat-cell *matCellDef="let row">{{row.numeroSiret}}</td>
+      </ng-container>
+      <ng-container matColumnDef="nafN5">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Activité</th>
+        <td mat-cell *matCellDef="let row">{{row.nafN5 ? row.nafN5.nafN1.libelle : ''}}</td>
+      </ng-container>
+      <ng-container matColumnDef="pays">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Pays</th>
+        <td mat-cell *matCellDef="let row">{{row.pays.lib}}</td>
+      </ng-container>
+      <ng-container matColumnDef="commune">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Commune</th>
+        <td mat-cell *matCellDef="let row">{{row.commune}}</td>
+      </ng-container>
+      <ng-container matColumnDef="typeStructure">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Type d'organisme</th>
+        <td mat-cell *matCellDef="let row">{{row.typeStructure.libelle}}</td>
+      </ng-container>
+      <ng-container matColumnDef="statutJuridique">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Forme juridique</th>
+        <td mat-cell *matCellDef="let row">{{row.statutJuridique ? row.statutJuridique.libelle : ''}}</td>
+      </ng-container>
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let row">
+          <button mat-icon-button matTooltip="Éditer" *ngIf="canEdit()" (click)="edit(row)" color="primary"><i class="fa fa-pen"></i></button>
+        </td>
+      </ng-container>
+    </app-table>
+  </mat-tab>
+  <mat-tab label="{{data.id ? 'Édition' : 'Création'}}">
+    <mat-card>
+      <mat-card-content>
+        <app-etab-accueil-form [etab]="data"></app-etab-accueil-form>
+      </mat-card-content>
+    </mat-card>
+  </mat-tab>
+</mat-tab-group>

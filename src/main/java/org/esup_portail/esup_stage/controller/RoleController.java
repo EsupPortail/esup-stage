@@ -38,7 +38,7 @@ public class RoleController {
 
     @JsonView(Views.List.class)
     @GetMapping
-    @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<Role> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         PaginatedResponse<Role> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(roleRepository.count(filters));
@@ -47,13 +47,13 @@ public class RoleController {
     }
 
     @GetMapping("/{id}")
-    @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public Role getById(@PathVariable("id") int id) {
         return roleJpaRepository.findById(id);
     }
 
     @PostMapping
-    @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.CREATION})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.CREATION})
     public Role create(@RequestBody Role role) throws Exception {
         _checkRole(role);
         role = roleJpaRepository.saveAndFlush(role);
@@ -61,7 +61,7 @@ public class RoleController {
     }
 
     @PutMapping("/{id}")
-    @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.MODIFICATION})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.MODIFICATION})
     public Role update(@PathVariable("id") int id, @RequestBody Role roleParam) {
         Role role = roleJpaRepository.findById(id);
         if (role == null) {
@@ -73,7 +73,7 @@ public class RoleController {
     }
 
     @DeleteMapping("/{id}")
-    @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.SUPPRESSION})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.SUPPRESSION})
     public boolean delete(@PathVariable("id") int id) {
         Role role = roleJpaRepository.findById(id);
         if (role == null) {
@@ -95,7 +95,7 @@ public class RoleController {
     }
 
     @GetMapping("/appFonctions")
-    @Secure(fonction = AppFonctionEnum.PARAM_GLOBAL, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public List<AppFonction> getAppFonctions() {
         return appFonctionJpaRepository.findAll();
     }

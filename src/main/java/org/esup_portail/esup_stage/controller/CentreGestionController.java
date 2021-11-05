@@ -41,7 +41,7 @@ public class CentreGestionController {
     AppConfigService appConfigService;
 
     @GetMapping
-    @Secure(fonction = AppFonctionEnum.PARAM_CENTRE, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<CentreGestion> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         JSONObject jsonFilters = new JSONObject(filters);
         Map<String, Object> map = new HashMap<>();
@@ -67,7 +67,7 @@ public class CentreGestionController {
     }
 
     @GetMapping("/creation-brouillon")
-    @Secure(fonction = AppFonctionEnum.PARAM_CENTRE, droits = {DroitEnum.CREATION})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.CREATION})
     public CentreGestion getBrouillonByLogin() {
         ContextDto contexteDto = ServiceContext.getServiceContext();
         Utilisateur utilisateur = contexteDto.getUtilisateur();
@@ -80,14 +80,14 @@ public class CentreGestionController {
     }
 
     @PostMapping
-    @Secure(fonction = AppFonctionEnum.PARAM_CENTRE, droits = {DroitEnum.CREATION})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.CREATION})
     public CentreGestion create(@Valid @RequestBody CentreGestion centreGestion) {
         centreGestion.setCodeUniversite(appConfigService.getConfigGenerale().getCodeUniversite());
         return centreGestionJpaRepository.saveAndFlush(centreGestion);
     }
 
     @PutMapping
-    @Secure(fonction = AppFonctionEnum.PARAM_CENTRE, droits = {DroitEnum.MODIFICATION})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.MODIFICATION})
     public CentreGestion update(@Valid @RequestBody CentreGestion centreGestion) {
         return centreGestionJpaRepository.saveAndFlush(centreGestion);
     }

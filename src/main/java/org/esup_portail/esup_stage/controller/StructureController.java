@@ -44,7 +44,7 @@ public class StructureController {
 
     @JsonView(Views.List.class)
     @GetMapping
-    @Secure(fonction = AppFonctionEnum.ORGA_ACC, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<Structure> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         PaginatedResponse<Structure> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(structureRepository.count(filters));
@@ -53,7 +53,7 @@ public class StructureController {
     }
 
     @GetMapping("/{id}")
-    @Secure(fonction = AppFonctionEnum.ORGA_ACC, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
     public Structure getById(@PathVariable("id") int id) {
         Structure structure = structureJpaRepository.findById(id);
         if (structure == null) {
@@ -63,7 +63,7 @@ public class StructureController {
     }
 
     @PostMapping
-    @Secure(fonction = AppFonctionEnum.ORGA_ACC, droits = {DroitEnum.CREATION})
+    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.CREATION})
     public Structure create(@Valid @RequestBody StructureFormDto structureFormDto) {
         Structure structure = new Structure();
         setStructureData(structure, structureFormDto);
@@ -71,7 +71,7 @@ public class StructureController {
     }
 
     @PutMapping("/{id}")
-    @Secure(fonction = AppFonctionEnum.ORGA_ACC, droits = {DroitEnum.MODIFICATION})
+    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.MODIFICATION})
     public Structure update(@PathVariable("id") int id, @Valid @RequestBody StructureFormDto structureFormDto) {
         Structure structure = structureJpaRepository.findById(id);
         setStructureData(structure, structureFormDto);
