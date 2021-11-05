@@ -109,8 +109,11 @@ public class ApogeeService {
             JsonParser jsonParser = JsonParserFactory.getJsonParser();
             Map<String, Object> map = jsonParser.parseMap(response);
             for (Map.Entry<String, Object> entry : map.entrySet()) {
+                // 0: code Etape, 1: code version Etape
+                String[] codes = entry.getKey().split(";");
                 Etape etape = new Etape();
-                etape.setCode(entry.getKey());
+                etape.setCode(codes[0]);
+                etape.setCodeVrsEtp(codes[1]);
                 etape.setLibelle(entry.getValue().toString());
                 list.add(etape);
             }
