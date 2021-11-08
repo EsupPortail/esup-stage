@@ -1,6 +1,13 @@
 import { Component, EventEmitter, OnInit , Input, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { PaysService } from "../../../services/pays.service";
+import { ThemeService } from "../../../services/theme.service";
+import { DeviseService } from "../../../services/devise.service";
+import { LangueConventionService } from "../../../services/langue-convention.service";
+import { ModeVersGratificationService } from "../../../services/mode-vers-gratification.service";
+import { UniteDureeService } from "../../../services/unite-duree.service";
+import { UniteGratificationService } from "../../../services/unite-gratification.service";
+import { TempsTravailService } from "../../../services/temps-travail.service";
 import { AuthService } from "../../../services/auth.service";
 import { ConventionService } from "../../../services/convention.service";
 import { debounceTime } from 'rxjs/operators';
@@ -13,22 +20,13 @@ import { debounceTime } from 'rxjs/operators';
 export class StageComponent implements OnInit {
 
   countries: any[] = [];
-
-  //TODO codeLangueConvention
-  langues: string[] = ['Anglais','Français'];
-
-  //TODO idTheme
-  thematiques: string[] = ['TODO','TODO'];
-  //TODO idTempsTravail
-  tempsTravail: string[] = ['TODO','TODO'];
-  //TODO idUniteGratification
-  unitesGratification: string[] = ['Brut','Net'];
-  //TODO idUniteDureeGratification
-  unitesDureeGratification: string[] = ['Horaire','Mensuel'];
-  //TODO idMonnaieGratification
-  monnaiesGratification: string[] = ['Euros','Dollars'];
-  //TODO idModeVersGratification
-  modesVersGratification: string[] = ['Chèque','Virement'];
+  thematiques: any[] = [];
+  devises: any[] = [];
+  langueConventions: any[] = [];
+  modeVersGratifications: any[] = [];
+  uniteDurees: any[] = [];
+  uniteGratifications: any[] = [];
+  tempsTravails: any[] = [];
 
   @Input() convention: any;
 
@@ -40,6 +38,13 @@ export class StageComponent implements OnInit {
               private fb: FormBuilder,
               private authService: AuthService,
               private paysService: PaysService,
+              private themeService: ThemeService,
+              private deviseService: DeviseService,
+              private langueConventionService: LangueConventionService,
+              private modeVersGratificationService: ModeVersGratificationService,
+              private uniteDureeService: UniteDureeService,
+              private uniteGratificationService: UniteGratificationService,
+              private tempsTravailService: TempsTravailService,
   ) {
     this.form = this.fb.group({
       // - Modèle de la convention
@@ -65,9 +70,9 @@ export class StageComponent implements OnInit {
       //TODO champ de saisie du type de gratification (gratification à l’heure, gratification lissée).
       gratificationStage: [false, [Validators.required]],
       montantGratification: [null, [Validators.required]],
-      idUniteGratification: ['Brut', [Validators.required]],
-      idUniteDureeGratification: ['Mensuel', [Validators.required]],
-      idMonnaieGratification: [null, [Validators.required]],
+      idUniteGratification: [null, [Validators.required]],
+      idUniteDuree: [null, [Validators.required]],
+      idDevise: [null, [Validators.required]],
       idModeVersGratification: [null, [Validators.required]],
       //TODO un bandeau doit permettre de mettre un message à l’attention de l’étudiant
       // - Partie Divers
@@ -85,6 +90,34 @@ export class StageComponent implements OnInit {
     this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServPays: {value: 'O', type: 'text'}})).subscribe((response: any) => {
       this.countries = response.data;
     });
+    this.themeService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
+      this.thematiques = response.data;
+    });
+    this.langueConventionService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
+      this.langueConventions = response.data;
+    });
+    this.modeVersGratificationService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
+      this.modeVersGratifications = response.data;
+    });
+    this.uniteDureeService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
+      this.uniteDurees = response.data;
+      if(this.uniteDurees.length>0){
+        this.form.controls['idUniteDuree'].setValue(this.uniteDurees[0].id);
+      }
+    });
+    this.uniteGratificationService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
+      this.uniteGratifications = response.data;
+      if(this.uniteGratifications.length>0){
+        this.form.controls['idUniteGratification'].setValue(this.uniteGratifications[0].id);
+      }
+    });
+    this.deviseService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
+      this.devises = response.data;
+    });
+    this.tempsTravailService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
+      this.tempsTravails = response.data;
+    });
+
   }
 
   updateBrouillon(): void {

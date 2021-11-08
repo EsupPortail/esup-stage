@@ -9,7 +9,7 @@
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Langue de la convention</mat-label>
             <mat-select formControlName="codeLangueConvention" required>
-              <mat-option *ngFor="let langue of langues" [value]="langue">{{langue}}</mat-option>
+              <mat-option *ngFor="let langueConvention of langueConventions" [value]="langueConvention.code">{{langueConvention.libelle}}</mat-option>
             </mat-select>
             <mat-error><app-form-error [field]="form.get('codeLangueConvention')"></app-form-error></mat-error>
           </mat-form-field>
@@ -29,7 +29,7 @@
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Thèmatique du stage</mat-label>
             <mat-select formControlName="idTheme" required>
-              <mat-option *ngFor="let thematique of thematiques" [value]="thematique">{{thematique}}</mat-option>
+              <mat-option *ngFor="let thematique of thematiques" [value]="thematique.id">{{thematique.libelle}}</mat-option>
             </mat-select>
             <mat-error><app-form-error [field]="form.get('idTheme')"></app-form-error></mat-error>
           </mat-form-field>
@@ -101,7 +101,7 @@
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Temps de travail</mat-label>
             <mat-select formControlName="idTempsTravail" required>
-              <mat-option *ngFor="let temps of tempsTravail" [value]="temps">{{temps}}</mat-option>
+              <mat-option *ngFor="let tempsTravail of tempsTravails" [value]="tempsTravail.id">{{tempsTravail.libelle}}</mat-option>
             </mat-select>
             <mat-error><app-form-error [field]="form.get('idTempsTravail')"></app-form-error></mat-error>
           </mat-form-field>
@@ -131,27 +131,27 @@
           </mat-form-field>
           <mat-form-field class="col-sm-3 col-md-3 mb-2" appearance="fill">
             <mat-select formControlName="idUniteGratification" required>
-              <mat-option *ngFor="let uniteGrat of unitesGratification" [value]="uniteGrat">{{uniteGrat}}</mat-option>
+              <mat-option *ngFor="let uniteGratification of uniteGratifications" [value]="uniteGratification.id">{{uniteGratification.libelle}}</mat-option>
             </mat-select>
             <mat-error><app-form-error [field]="form.get('idUniteGratification')"></app-form-error></mat-error>
           </mat-form-field>
           <mat-form-field class="col-sm-3 col-md-3 mb-2" appearance="fill">
-            <mat-select formControlName="idUniteDureeGratification" required>
-              <mat-option *ngFor="let uniteDureeGrat of unitesDureeGratification" [value]="uniteDureeGrat">{{uniteDureeGrat}}</mat-option>
+            <mat-select formControlName="idUniteDuree" required>
+              <mat-option *ngFor="let uniteDuree of uniteDurees" [value]="uniteDuree.id">{{uniteDuree.libelle}}</mat-option>
             </mat-select>
-            <mat-error><app-form-error [field]="form.get('idUniteDureeGratification')"></app-form-error></mat-error>
+            <mat-error><app-form-error [field]="form.get('idUniteDuree')"></app-form-error></mat-error>
           </mat-form-field>
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Monnaie utilisée pour le paiement</mat-label>
-            <mat-select formControlName="idMonnaieGratification" required>
-              <mat-option *ngFor="let monnaie of monnaiesGratification" [value]="monnaie">{{monnaie}}</mat-option>
+            <mat-select formControlName="idDevise" required>
+              <mat-option *ngFor="let devise of devises" [value]="devise.id">{{devise.libelle}}</mat-option>
             </mat-select>
-            <mat-error><app-form-error [field]="form.get('idMonnaieGratification')"></app-form-error></mat-error>
+            <mat-error><app-form-error [field]="form.get('idDevise')"></app-form-error></mat-error>
           </mat-form-field>
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Modalité de versement de la gratification</mat-label>
             <mat-select formControlName="idModeVersGratification" required>
-              <mat-option *ngFor="let modeVers of modesVersGratification" [value]="modeVers">{{modeVers}}</mat-option>
+              <mat-option *ngFor="let modeVersGratification of modeVersGratifications" [value]="modeVersGratification.id">{{modeVersGratification.libelle}}</mat-option>
             </mat-select>
             <mat-error><app-form-error [field]="form.get('idModeVersGratification')"></app-form-error></mat-error>
           </mat-form-field>
