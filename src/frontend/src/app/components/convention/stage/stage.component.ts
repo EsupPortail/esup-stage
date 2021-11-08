@@ -8,6 +8,9 @@ import { ModeVersGratificationService } from "../../../services/mode-vers-gratif
 import { UniteDureeService } from "../../../services/unite-duree.service";
 import { UniteGratificationService } from "../../../services/unite-gratification.service";
 import { TempsTravailService } from "../../../services/temps-travail.service";
+import { OrigineStageService } from "../../../services/origine-stage.service";
+import { NatureTravailService } from "../../../services/nature-travail.service";
+import { ModeValidationStageService } from "../../../services/mode-validation-stage.service";
 import { AuthService } from "../../../services/auth.service";
 import { ConventionService } from "../../../services/convention.service";
 import { debounceTime } from 'rxjs/operators';
@@ -27,6 +30,9 @@ export class StageComponent implements OnInit {
   uniteDurees: any[] = [];
   uniteGratifications: any[] = [];
   tempsTravails: any[] = [];
+  origineStages: any[] = [];
+  natureTravails: any[] = [];
+  modeValidationStages: any[] = [];
 
   @Input() convention: any;
 
@@ -45,6 +51,9 @@ export class StageComponent implements OnInit {
               private uniteDureeService: UniteDureeService,
               private uniteGratificationService: UniteGratificationService,
               private tempsTravailService: TempsTravailService,
+              private origineStageService: OrigineStageService,
+              private natureTravailService: NatureTravailService,
+              private modeValidationStageService: ModeValidationStageService,
   ) {
     this.form = this.fb.group({
       // - Modèle de la convention
@@ -76,6 +85,15 @@ export class StageComponent implements OnInit {
       idModeVersGratification: [null, [Validators.required]],
       //TODO un bandeau doit permettre de mettre un message à l’attention de l’étudiant
       // - Partie Divers
+      idOrigineStage: [null, [Validators.required]],
+      //TODO ajout de nature travail au model convention
+      idNatureTravail: [null, [Validators.required]],
+      idModeValidationStage: [null, [Validators.required]],
+      modeEncadreSuivi: [null, ],
+      avantagesNature: [null, ],
+      travailNuitFerie: [null, ],
+      //TODO ajout de confidentiel au model convention
+      confidentiel: [false, [Validators.required]],
 
     });
     console.log('convention : ' + JSON.stringify(this.convention, null, 2))
@@ -87,6 +105,7 @@ export class StageComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
     this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServPays: {value: 'O', type: 'text'}})).subscribe((response: any) => {
       this.countries = response.data;
     });
@@ -116,6 +135,18 @@ export class StageComponent implements OnInit {
     });
     this.tempsTravailService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
       this.tempsTravails = response.data;
+    });
+    this.origineStageService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
+      this.origineStages = response.data;
+    });
+
+    this.natureTravails = ['TODO','TODO'];
+    //this.natureTravailService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
+    //  this.natureTravails = response.data;
+    //});
+
+    this.modeValidationStageService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
+      this.modeValidationStages = response.data;
     });
 
   }

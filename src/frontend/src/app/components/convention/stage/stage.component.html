@@ -157,6 +157,58 @@
           </mat-form-field>
         </div>
 
+        <div class="text-title">Divers</div>
+        <mat-divider class="mb-2"></mat-divider>
+        <div class="row">
+          <div class="row col-sm-12 col-md-6">
+            <mat-form-field class="col-12 mb-2" appearance="fill">
+              <mat-label>Comment le stage a-t-il été trouvé ?</mat-label>
+              <mat-select formControlName="idOrigineStage" required>
+                <mat-option *ngFor="let origineStage of origineStages" [value]="origineStage.id">{{origineStage.libelle}}</mat-option>
+              </mat-select>
+              <mat-error><app-form-error [field]="form.get('idOrigineStage')"></app-form-error></mat-error>
+            </mat-form-field>
+            <div class="col-12 mb-2">
+              <div class="mb-2">Confidentialité du stage / Thème du stage</div>
+              <mat-radio-group formControlName="confidentiel">
+                <mat-radio-button [value]="true">Oui</mat-radio-button>
+                <mat-radio-button [value]="false">Non</mat-radio-button>
+              </mat-radio-group>
+            </div>
+            <mat-form-field class="col-12 mb-2" appearance="fill">
+              <mat-label>Nature du travail à fournir suite au stage</mat-label>
+              <mat-select formControlName="idNatureTravail" required>
+                <mat-option *ngFor="let natureTravail of natureTravails" [value]="natureTravail.id">{{natureTravail.libelle}}</mat-option>
+              </mat-select>
+              <mat-error><app-form-error [field]="form.get('idNatureTravail')"></app-form-error></mat-error>
+            </mat-form-field>
+            <mat-form-field class="col-12 mb-2" appearance="fill">
+              <mat-label>Modalité de validation du stage</mat-label>
+              <mat-select formControlName="idModeValidationStage" required>
+                <mat-option *ngFor="let modeValidationStage of modeValidationStages" [value]="modeValidationStage.id">{{modeValidationStage.libelle}}</mat-option>
+              </mat-select>
+              <mat-error><app-form-error [field]="form.get('idModeValidationStage')"></app-form-error></mat-error>
+            </mat-form-field>
+          </div>
+          <div class="row col-sm-12 col-md-6">
+            <mat-form-field class="col-12 mb-2" appearance="fill">
+              <mat-label>Modalité de suivi du stagiaire</mat-label>
+              <textarea matInput formControlName="modeEncadreSuivi"></textarea>
+              <mat-error><app-form-error [field]="form.get('modeEncadreSuivi')"></app-form-error></mat-error>
+            </mat-form-field>
+            <mat-form-field class="col-12 mb-2" appearance="fill">
+              <mat-label>Liste des avantages en nature</mat-label>
+              <textarea matInput formControlName="avantagesNature"></textarea>
+              <mat-error><app-form-error [field]="form.get('avantagesNature')"></app-form-error></mat-error>
+            </mat-form-field>
+            <mat-form-field class="col-12 mb-2" appearance="fill">
+              <mat-label>Si le stagiaire doit être présent la nuit, le dimanche, ou un jour férié, préciser :”</mat-label>
+              <textarea matInput formControlName="travailNuitFerie"></textarea>
+              <mat-error><app-form-error [field]="form.get('travailNuitFerie')"></app-form-error></mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+
       </div>
     </form>
   </mat-card-content>
