@@ -12,18 +12,18 @@ export class NatureTravailService implements PaginatedService {
   constructor(private http: HttpClient) { }
 
   getPaginated(page: number, perPage: number, predicate: string, sortOrder: string, filters: string): Observable<any> {
-    return this.http.get(environment.apiUrl + "/natureTravail", {params: {page, perPage, predicate, sortOrder, filters}});
+    return this.http.get(environment.apiUrl + "/nature-travail", {params: {page, perPage, predicate, sortOrder, filters}});
   }
 
   create(data: any): Observable<any> {
-    return this.http.post(environment.apiUrl + "/natureTravail", data);
+    return this.http.post(environment.apiUrl + "/nature-travail", data);
   }
 
   update(id: number, data: any): Observable<any> {
-    return this.http.put(environment.apiUrl + "/natureTravail/" + id, data);
+    return this.http.put(environment.apiUrl + "/nature-travail/" + id, data);
   }
 
   delete(id: number): Observable<any> {
-    return this.http.delete(environment.apiUrl + "/natureTravail/" + id);
+    return this.http.delete(environment.apiUrl + "/nature-travail/" + id);
   }
 }

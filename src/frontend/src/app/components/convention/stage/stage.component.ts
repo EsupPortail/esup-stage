@@ -11,6 +11,7 @@ import { TempsTravailService } from "../../../services/temps-travail.service";
 import { OrigineStageService } from "../../../services/origine-stage.service";
 import { NatureTravailService } from "../../../services/nature-travail.service";
 import { ModeValidationStageService } from "../../../services/mode-validation-stage.service";
+import { TypeConventionService } from "../../../services/type-convention.service";
 import { AuthService } from "../../../services/auth.service";
 import { ConventionService } from "../../../services/convention.service";
 import { debounceTime } from 'rxjs/operators';
@@ -33,6 +34,7 @@ export class StageComponent implements OnInit {
   origineStages: any[] = [];
   natureTravails: any[] = [];
   modeValidationStages: any[] = [];
+  typeConventions: any[] = [];
 
   @Input() convention: any;
 
@@ -54,14 +56,17 @@ export class StageComponent implements OnInit {
               private origineStageService: OrigineStageService,
               private natureTravailService: NatureTravailService,
               private modeValidationStageService: ModeValidationStageService,
+              private typeConventionService: TypeConventionService,
   ) {
     this.form = this.fb.group({
       // - Modèle de la convention
       codeLangueConvention: [null, [Validators.required]],
+      //TODO add paysConvention to model
       idPays: [null, [Validators.required]],
+      idTypeConvention: [null, [Validators.required]],
       // - Description du stage
       idTheme: [null, [Validators.required]],
-      //TODO case à cocher pour rendre les champs confidentiels
+      //TODO case à cocher pour rendre les champs confidentiels cf 2.2.1.2 règles de gestions
       sujetStage: [null, [Validators.required]],
       competences: [null, [Validators.required]],
       fonctionsEtTaches: [null, [Validators.required]],
@@ -71,8 +76,12 @@ export class StageComponent implements OnInit {
       dateDebutStage: [null, [Validators.required]],
       dateFinStage: [null, [Validators.required]],
       interruptionStage: [false, [Validators.required]],
+      //TODO multiples dates d'interruptions
       dateDebutInterruption: [null],
       dateFinInterruption: [null],
+      //TODO ajout de horairesReguliers au model convention
+      horairesReguliers: [true, [Validators.required]],
+      nbHeuresHebdo: [null, [Validators.required], Validators.pattern('[0-9]+')],
       idTempsTravail: [null, [Validators.required]],
       commentaireDureeTravail: [null],
       // - Partie Gratification
@@ -86,12 +95,11 @@ export class StageComponent implements OnInit {
       //TODO un bandeau doit permettre de mettre un message à l’attention de l’étudiant
       // - Partie Divers
       idOrigineStage: [null, [Validators.required]],
-      //TODO ajout de nature travail au model convention
       idNatureTravail: [null, [Validators.required]],
       idModeValidationStage: [null, [Validators.required]],
-      modeEncadreSuivi: [null, ],
-      avantagesNature: [null, ],
-      travailNuitFerie: [null, ],
+      modeEncadreSuivi: [null],
+      avantagesNature: [null],
+      travailNuitFerie: [null],
       //TODO ajout de confidentiel au model convention
       confidentiel: [false, [Validators.required]],
 
@@ -139,12 +147,12 @@ export class StageComponent implements OnInit {
     this.origineStageService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
       this.origineStages = response.data;
     });
-
-    this.natureTravails = ['TODO','TODO'];
-    //this.natureTravailService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
-    //  this.natureTravails = response.data;
-    //});
-
+    this.typeConventionService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
+      this.typeConventions = response.data;
+    });
+    this.natureTravailService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
+      this.natureTravails = response.data;
+    });
     this.modeValidationStageService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
       this.modeValidationStages = response.data;
     });

@@ -21,6 +21,14 @@
             </mat-select>
             <mat-error><app-form-error [field]="form.get('idPays')"></app-form-error></mat-error>
           </mat-form-field>
+
+          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+            <mat-label>Type de convention</mat-label>
+            <mat-select formControlName="idTypeConvention" required>
+              <mat-option *ngFor="let typeConvention of typeConventions" [value]="typeConvention.id">{{typeConvention.libelle}}</mat-option>
+            </mat-select>
+            <mat-error><app-form-error [field]="form.get('idTypeConvention')"></app-form-error></mat-error>
+          </mat-form-field>
         </div>
 
         <div class="text-title">Description du stage</div>
@@ -97,6 +105,25 @@
           </mat-form-field>
         </div>
 
+        <div class="row">
+          <div class="col-sm-12 col-md-12 mb-2">
+            <div class="mb-2" >Avez-vous des horaires de travail réguliers</div>
+            <mat-radio-group formControlName="horairesReguliers" required>
+              <mat-radio-button [value]="true">Oui</mat-radio-button>
+              <mat-radio-button [value]="false">Non</mat-radio-button>
+            </mat-radio-group>
+          </div>
+        </div>
+        <div class="row" *ngIf="form.value.horairesReguliers">
+          <mat-form-field class="col-sm-6 col-md-6 mb-2" appearance="fill">
+            <mat-label>Nombre d’heures hebdomadaires du stage</mat-label>
+            <input matInput formControlName="nbHeuresHebdo" required />
+            <mat-error><app-form-error [field]="form.get('nbHeuresHebdo')"></app-form-error></mat-error>
+          </mat-form-field>
+        </div>
+        <div class="row" *ngIf="!form.value.horairesReguliers">
+            TODO Calendrier
+        </div>
         <div class="row">
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Temps de travail</mat-label>
