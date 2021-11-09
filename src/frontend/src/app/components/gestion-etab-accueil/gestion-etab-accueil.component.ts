@@ -23,10 +23,6 @@ export class GestionEtabAccueilComponent implements OnInit {
   sortColumn = 'raisonSociale';
   filters: any[] = [];
 
-  // createButton = {
-  //   libelle: 'Créer un établissement d\'accueil',
-  //   action: () => this.initCreate(),
-  // }
   formTabIndex = 1;
   data: any = {};
 
@@ -100,6 +96,12 @@ export class GestionEtabAccueilComponent implements OnInit {
       this.tabs.selectedIndex = this.formTabIndex;
     }
     this.data = row;
+  }
+
+  returnToList(): void {
+    if (this.tabs) {
+      this.tabs.selectedIndex = 0;
+    }
   }
 
 }

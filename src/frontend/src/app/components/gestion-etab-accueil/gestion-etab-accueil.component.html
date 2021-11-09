@@ -43,10 +43,14 @@
     </app-table>
   </mat-tab>
   <mat-tab label="{{data.id ? 'Édition' : 'Création'}}">
-    <mat-card>
-      <mat-card-content>
-        <app-etab-accueil-form [etab]="data"></app-etab-accueil-form>
-      </mat-card-content>
-    </mat-card>
+    <mat-accordion>
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>Établissement d'accueil</mat-expansion-panel-header>
+        <app-etab-accueil-form [etab]="data" (canceled)="returnToList()"></app-etab-accueil-form>
+      </mat-expansion-panel>
+      <mat-expansion-panel *ngIf="data.id">
+        <mat-expansion-panel-header>Contacts</mat-expansion-panel-header>
+      </mat-expansion-panel>
+    </mat-accordion>
   </mat-tab>
 </mat-tab-group>
