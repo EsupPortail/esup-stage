@@ -1,6 +1,7 @@
 package org.esup_portail.esup_stage.dto;
 
 import org.esup_portail.esup_stage.enums.NbJoursHebdoEnum;
+import org.esup_portail.esup_stage.model.Pays;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
@@ -227,6 +228,11 @@ public class ConventionFormDto {
     private String typePresence;
 
     private int idDevise;
+
+    private Pays paysConvention;
+
+    private boolean horairesReguliers = false;
+
 
     public String getEtudiantLogin() {
         return etudiantLogin;
@@ -922,5 +928,21 @@ public class ConventionFormDto {
 
     public void setIdDevise(int idDevise) {
         this.idDevise = idDevise;
+    }
+
+    public Pays getPaysConvention() {
+        return paysConvention;
+    }
+
+    public void setPaysConvention(Pays paysConvention) {
+        this.paysConvention = paysConvention;
+    }
+
+    public boolean isHorairesReguliers() {
+        return horairesReguliers;
+    }
+
+    public void setHorairesReguliers(boolean horairesReguliers) {
+        this.horairesReguliers = horairesReguliers;
     }
 }

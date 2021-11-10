@@ -61,7 +61,6 @@ export class StageComponent implements OnInit {
     this.form = this.fb.group({
       // - Modèle de la convention
       codeLangueConvention: [null, [Validators.required]],
-      //TODO add paysConvention to model
       idPays: [null, [Validators.required]],
       idTypeConvention: [null, [Validators.required]],
       // - Description du stage
@@ -79,13 +78,11 @@ export class StageComponent implements OnInit {
       //TODO multiples dates d'interruptions
       dateDebutInterruption: [null],
       dateFinInterruption: [null],
-      //TODO ajout de horairesReguliers au model convention
       horairesReguliers: [true, [Validators.required]],
-      nbHeuresHebdo: [null, [Validators.required], Validators.pattern('[0-9]+')],
+      nbHeuresHebdo: [null, [Validators.required], Validators.pattern('[0-9]+([,.][0-9]{1,2})?')],
       idTempsTravail: [null, [Validators.required]],
       commentaireDureeTravail: [null],
       // - Partie Gratification
-      //TODO champ de saisie du type de gratification (gratification à l’heure, gratification lissée).
       gratificationStage: [false, [Validators.required]],
       montantGratification: [null, [Validators.required]],
       idUniteGratification: [null, [Validators.required]],

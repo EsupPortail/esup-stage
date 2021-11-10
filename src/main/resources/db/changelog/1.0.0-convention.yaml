@@ -100,3 +100,28 @@ databaseChangeLog:
         columnName: dureeStage
         columnDataType: INT
         tableName: Convention
+- changeSet:
+    id: convention-idPays
+    author: tjubera
+    changes:
+    - addColumn:
+        tableName: Convention
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            constraints:
+                foreignKeyName: fk_Convention_PaysConvention1
+                references: Pays(idPays)
+            name: idPays
+            type: INT
+- changeSet:
+    id: convention-horairesReguliers
+    author: tjubera
+    changes:
+    - addColumn:
+        tableName: Convention
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: horairesReguliers
+            type: BIT
