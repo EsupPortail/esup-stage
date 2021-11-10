@@ -95,7 +95,9 @@ export class GestionEtabAccueilComponent implements OnInit {
     if (this.tabs) {
       this.tabs.selectedIndex = this.formTabIndex;
     }
-    this.data = row;
+    this.structureService.getById(row.id).subscribe((response: any) => {
+      this.data = response;
+    });
   }
 
   returnToList(): void {
