@@ -1,6 +1,8 @@
 package org.esup_portail.esup_stage.dto;
 
 import org.esup_portail.esup_stage.enums.NbJoursHebdoEnum;
+import org.esup_portail.esup_stage.model.Pays;
+
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -241,4 +243,11 @@ public class ConventionFormDto {
 
     @NotNull
     private int idDevise;
+
+    @NotNull
+    private Pays paysConvention;
+
+    @NotNull
+    private boolean horairesReguliers = false;
+
 }

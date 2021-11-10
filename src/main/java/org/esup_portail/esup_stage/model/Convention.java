@@ -308,6 +308,13 @@ public class Convention extends ObjetMetier {
     @Column(nullable = false)
     private boolean validationCreation = false;
 
+    @ManyToOne
+    @JoinColumn(name = "idPays")
+    private Pays paysConvention;
+
+    @Column(nullable = false)
+    private boolean horairesReguliers;
+
     public int getId() {
         return id;
     }
@@ -1019,4 +1026,21 @@ public class Convention extends ObjetMetier {
     public void setValidationCreation(boolean validationCreation) {
         this.validationCreation = validationCreation;
     }
+
+    public Pays getPaysConvention() {
+        return paysConvention;
+    }
+
+    public void setPaysConvention(Pays paysConvention) {
+        this.paysConvention = paysConvention;
+    }
+
+    public boolean isHorairesReguliers() {
+        return horairesReguliers;
+    }
+
+    public void setHorairesReguliers(boolean horairesReguliers) {
+        this.horairesReguliers = horairesReguliers;
+    }
+
 }
