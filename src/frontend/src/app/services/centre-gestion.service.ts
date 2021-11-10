@@ -50,4 +50,8 @@ export class CentreGestionService implements PaginatedService {
   deleteEtape(data: any): Observable<any> {
     return this.http.delete(`${environment.apiUrl}/centre-gestion/delete-etape`, data);
   }
+
+  findByEtape(codeEtape: string, codeVersion: string): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/centre-gestion/by-etape/${codeEtape}/${codeVersion}`);
+  }
 }

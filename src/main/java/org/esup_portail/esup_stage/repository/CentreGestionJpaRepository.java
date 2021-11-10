@@ -12,4 +12,7 @@ public interface CentreGestionJpaRepository extends JpaRepository<CentreGestion,
 
     @Query("SELECT cg FROM CentreGestion cg WHERE cg.loginCreation = :loginCreation AND cg.validationCreation = FALSE")
     CentreGestion findBrouillon(String loginCreation);
+
+    @Query("SELECT cg FROM CentreGestion cg JOIN cg.criteres c WHERE c.id.code = :codeEtape and c.id.codeVersionEtape = :codeVersion")
+    CentreGestion findByCodeEtape(String codeEtape, String codeVersion);
 }

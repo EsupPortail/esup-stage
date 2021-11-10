@@ -4,6 +4,7 @@ import org.esup_portail.esup_stage.dto.ContextDto;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
+import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.CentreGestionRepository;
@@ -16,6 +17,7 @@ import org.esup_portail.esup_stage.service.apogee.model.Composante;
 import org.esup_portail.esup_stage.service.apogee.model.Etape;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -180,5 +182,15 @@ public class CentreGestionController {
 
         critereGestionJpaRepository.delete(critereGestion);
         critereGestionJpaRepository.flush();
+    }
+
+    @GetMapping("/by-etape/{codeEtape}/{codeVersion}")
+    @Secure()
+    public CentreGestion getByEtape(@PathVariable("codeEtape") String codeEtape, @PathVariable("codeVersion") String codeVersion) {
+        CentreGestion centreGestion = centreGestionJpaRepository.findByCodeEtape(codeEtape, codeVersion);
+        if (centreGestion == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion non trouvé");
+        }
+        return centreGestion;
     }
 }

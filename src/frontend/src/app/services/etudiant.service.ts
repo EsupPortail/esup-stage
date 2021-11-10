@@ -14,4 +14,12 @@ export class EtudiantService {
     return this.http.get(`${environment.apiUrl}/etudiants/${numEtudiant}/apogee-data`);
   }
 
+  getApogeeInscriptions(numEtudiant: string): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/etudiants/${numEtudiant}/apogee-inscriptions`);
+  }
+
+  getByLogin(login: string): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/etudiants/by-login/${login}`);
+  }
+
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
 import org.esup_portail.esup_stage.exception.AppException;
+import org.esup_portail.esup_stage.service.apogee.model.ApogeeMap;
 import org.esup_portail.esup_stage.service.apogee.model.Composante;
 import org.esup_portail.esup_stage.service.apogee.model.Etape;
 import org.esup_portail.esup_stage.service.apogee.model.EtudiantRef;
@@ -33,7 +34,6 @@ public class ApogeeService {
 
     private String call(String api, Map<String, String> params) {
         HttpURLConnection con;
-        ObjectMapper mapper = new ObjectMapper();
 
         try {
             String urlWithQuery = applicationBootstrap.getAppConfig().getReferentielWsApogeeUrl() + api;
@@ -120,6 +120,33 @@ public class ApogeeService {
             return list;
         } catch (JsonParseException e) {
             LOGGER.error("Erreur lors de la lecture de la réponse sur l'api etapesReference: " + e.getMessage(), e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
+        }
+    }
+
+    public List<String> getAnneeInscriptions(String numEtudiant) {
+        Map<String, String> params = new HashMap<>();
+        params.put("codEtud", numEtudiant);
+        String response = call("/anneesIa", params);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readValue(response, List.class);
+        } catch (JsonProcessingException e) {
+            LOGGER.error("Erreur lors de la lecture de la réponse sur l'api anneesla: " + e.getMessage(), e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
+        }
+    }
+
+    public ApogeeMap getEtudiantEtapesInscription(String numEtudiant, String annee) {
+        Map<String, String> params = new HashMap<>();
+        params.put("codEtud", numEtudiant);
+        params.put("annee", annee);
+        String response = call("/etapesByEtudiantAndAnnee", params);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readValue(response, ApogeeMap.class);
+        } catch (JsonProcessingException e) {
+            LOGGER.error("Erreur lors de la lecture de la réponse sur l'api etapesByEtudiantAndAnnee: " + e.getMessage(), e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
         }
     }

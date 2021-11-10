@@ -27,4 +27,8 @@ export class ConventionService implements PaginatedService {
     return this.http.put(`${environment.apiUrl}/conventions/${id}`, data);
   }
 
+  create(data: any): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/conventions`, data);
+  }
+
 }

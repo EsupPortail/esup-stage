@@ -1,5 +1,6 @@
 package org.esup_portail.esup_stage.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
@@ -112,6 +113,10 @@ public class CentreGestion extends ObjetMetier {
 
     @Column(nullable = false)
     private boolean validationCreation;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "centreGestion")
+    private List<CritereGestion> criteres = new ArrayList<>();
 
     public int getId() {
         return id;
@@ -375,5 +380,13 @@ public class CentreGestion extends ObjetMetier {
 
     public void setValidationCreation(boolean validationCreation) {
         this.validationCreation = validationCreation;
+    }
+
+    public List<CritereGestion> getCriteres() {
+        return criteres;
+    }
+
+    public void setCriteres(List<CritereGestion> criteres) {
+        this.criteres = criteres;
     }
 }

@@ -3,6 +3,7 @@ import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { environment } from "../../environments/environment";
 import { PaginatedService } from "./paginated.service";
+import { stringify } from "@angular/compiler/src/util";
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +14,13 @@ export class TypeConventionService implements PaginatedService {
 
   getPaginated(page: number, perPage: number, predicate: string, sortOrder: string, filters: string): Observable<any> {
     return this.http.get(environment.apiUrl + "/type-convention", {params: {page, perPage, predicate, sortOrder, filters}});
+  }
+
+  getListActive(): Observable<any> {
+    const filters = {
+      temEnServ: {value: 'O', type: 'text'},
+    };
+    return this.getPaginated(1, 0, 'libelle', 'asc', JSON.stringify(filters));
   }
 
   create(data: any): Observable<any> {

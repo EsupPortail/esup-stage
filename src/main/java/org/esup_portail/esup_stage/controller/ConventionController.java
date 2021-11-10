@@ -10,10 +10,12 @@ import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
-import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
-import org.esup_portail.esup_stage.repository.ConventionRepository;
+import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
+import org.esup_portail.esup_stage.service.AppConfigService;
+import org.esup_portail.esup_stage.service.apogee.ApogeeService;
+import org.esup_portail.esup_stage.service.apogee.model.EtudiantRef;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,6 +35,30 @@ public class ConventionController {
 
     @Autowired
     ConventionJpaRepository conventionJpaRepository;
+
+    @Autowired
+    TypeConventionJpaRepository typeConventionJpaRepository;
+
+    @Autowired
+    LangueConventionJpaRepository langueConventionJpaRepository;
+
+    @Autowired
+    EtudiantJpaRepository etudiantJpaRepository;
+
+    @Autowired
+    EtapeJpaRepository etapeJpaRepository;
+
+    @Autowired
+    UfrJpaRepository ufrJpaRepository;
+
+    @Autowired
+    CentreGestionJpaRepository centreGestionJpaRepository;
+
+    @Autowired
+    ApogeeService apogeeService;
+
+    @Autowired
+    AppConfigService appConfigService;
 
     @JsonView(Views.List.class)
     @GetMapping
@@ -78,6 +104,15 @@ public class ConventionController {
         return convention;
     }
 
+    @PostMapping
+    @Secure
+    public Convention create(@Valid @RequestBody ConventionFormDto conventionFormDto) {
+        Convention convention = new Convention();
+        convention.setValidationCreation(false);
+        setConventionData(convention, conventionFormDto);
+        convention = conventionJpaRepository.saveAndFlush(convention);
+        return convention;
+    }
 
     @PutMapping("/{id}")
     @Secure(fonctions = AppFonctionEnum.ORGA_ACC, droits = {DroitEnum.MODIFICATION})
@@ -92,6 +127,58 @@ public class ConventionController {
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
+        TypeConvention typeConvention = typeConventionJpaRepository.findById(conventionFormDto.getIdTypeConvention());
+        if (typeConvention == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Type de convention non trouvé");
+        }
+        LangueConvention langueConvention = langueConventionJpaRepository.findByCode(conventionFormDto.getCodeLangueConvention());
+        if (langueConvention == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Langue de convention non trouvée");
+        }
+        EtudiantRef etudiantRef = apogeeService.getInfoApogee(conventionFormDto.getNumEtudiant(), appConfigService.getAnneeUniv());
+        if (etudiantRef == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Étudiant non trouvé");
+        }
+        Etape etape = etapeJpaRepository.findById(conventionFormDto.getCodeEtape(), conventionFormDto.getCodeVerionEtape(), appConfigService.getConfigGenerale().getCodeUniversite());
+        if (etape == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Étape non trouvée");
+        }
+        Ufr ufr = ufrJpaRepository.findById(conventionFormDto.getCodeComposante(), appConfigService.getConfigGenerale().getCodeUniversite());
+        if (ufr == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "UFR non trouvée");
+        }
+        CentreGestion centreGestion = centreGestionJpaRepository.findByCodeEtape(etape.getId().getCode(), etape.getId().getCodeVersionEtape());
+        if (centreGestion == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion non trouvé");
+        }
+        Etudiant etudiant = etudiantJpaRepository.findByNumEtudiant(conventionFormDto.getNumEtudiant());
+        if (etudiant == null) {
+            etudiant = new Etudiant();
+            etudiant.setIdentEtudiant(conventionFormDto.getEtudiantLogin());
+            etudiant.setNumEtudiant(conventionFormDto.getNumEtudiant());
+            etudiant.setNumEtudiant(etudiantRef.getNompatro());
+            etudiant.setPrenom(etudiantRef.getPrenom());
+            etudiant.setMail(etudiantRef.getMail());
+            etudiant.setCodeUniversite(appConfigService.getConfigGenerale().getCodeUniversite());
+            etudiant.setCodeSexe(etudiantRef.getCodeSexe());
+            etudiant.setDateNais(etudiantRef.getDateNais());
+            etudiant = etudiantJpaRepository.saveAndFlush(etudiant);
+        }
+        convention.setEtudiant(etudiant);
+        convention.setAdresseEtudiant(conventionFormDto.getAdresseEtudiant());
+        convention.setCodePostalEtudiant(conventionFormDto.getCodePostalEtudiant());
+        convention.setVilleEtudiant(conventionFormDto.getVilleEtudiant());
+        convention.setPaysEtudiant(convention.getPaysEtudiant());
+        convention.setTelEtudiant(conventionFormDto.getTelEtudiant());
+        convention.setTelPortableEtudiant(conventionFormDto.getTelPortableEtudiant());
+        convention.setCourrielPersoEtudiant(conventionFormDto.getCourrielPersoEtudiant());
+        convention.setTypeConvention(typeConvention);
+        convention.setLangueConvention(langueConvention);
+        convention.setUfr(ufr);
+        convention.setEtape(etape);
+        convention.setCentreGestion(centreGestion);
         //TODO set champs
+        convention = conventionJpaRepository.save(convention);
+        conventionJpaRepository.flush();
     }
 }

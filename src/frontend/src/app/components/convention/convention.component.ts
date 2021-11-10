@@ -45,7 +45,6 @@ export class ConventionComponent implements OnInit {
         //   this.convention = response;
         // });
       }
-      this.convention = {id: 1}; // TODO à supprimer : ajout d'un id au niveau de la convention pour activer les onglets
     });
     // TODO maj des statuts
   }
@@ -63,7 +62,7 @@ export class ConventionComponent implements OnInit {
   }
 
   isCreated(): boolean {
-    return this.convention.id !== 0;
+    return this.convention.id && this.convention.id !== 0;
   }
 
   tabChanged(event: MatTabChangeEvent): void {
@@ -74,6 +73,10 @@ export class ConventionComponent implements OnInit {
     if (this.tabs[key].statut === 1) return 66;
     if (this.tabs[key].statut === 2) return 100;
     return 33;
+  }
+
+  updateConvention(data: any): void {
+    this.convention = data;
   }
 
 }
