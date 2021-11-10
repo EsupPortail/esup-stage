@@ -11,6 +11,7 @@ import { UniteDureeService } from "../../../services/unite-duree.service";
 import { UniteGratificationService } from "../../../services/unite-gratification.service";
 import { ModeVersGratificationService } from "../../../services/mode-vers-gratification.service";
 import { ModeValidationStageService } from "../../../services/mode-validation-stage.service";
+import { NatureTravailService } from "../../../services/nature-travail.service";
 import { NiveauFormationService } from "../../../services/niveau-formation.service";
 import { OrigineStageService } from "../../../services/origine-stage.service";
 import { TypeStructureService } from "../../../services/type-structure.service";
@@ -65,6 +66,7 @@ export class AdminNomenclaturesComponent implements OnInit {
     { key: 'id', label: 'Type de gratification', service: this.uniteGratificationService, tableIndex: undefined, creationFormType: 1, init: false },
     { key: 'id', label: 'Modalité de paiement', service: this.modeVersGratificationService, tableIndex: undefined, creationFormType: 1, init: false },
     { key: 'id', label: 'Mode de validation du stage', service: this.modeValidationStageService, tableIndex: undefined, creationFormType: 1, init: false },
+    { key: 'id', label: 'Nature du travail à fournir', service: this.natureTravailService, tableIndex: undefined, creationFormType: 1, init: false },
     { key: 'id', label: 'Niveau de formation', service: this.niveauFormationService, tableIndex: undefined, creationFormType: 1, init: false },
     { key: 'id', label: 'Origine du stage', service: this.origineStageService, tableIndex: undefined, creationFormType: 1, init: false },
     { key: 'id', label: 'Type de structure', service: this.typeStructureService, tableIndex: undefined, creationFormType: 3, init: false },
@@ -91,6 +93,7 @@ export class AdminNomenclaturesComponent implements OnInit {
     public uniteGratificationService: UniteGratificationService,
     public modeVersGratificationService: ModeVersGratificationService,
     public modeValidationStageService: ModeValidationStageService,
+    public natureTravailService: NatureTravailService,
     public niveauFormationService: NiveauFormationService,
     public origineStageService: OrigineStageService,
     public typeStructureService: TypeStructureService,
