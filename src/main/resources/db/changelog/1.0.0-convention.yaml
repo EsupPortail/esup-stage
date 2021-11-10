@@ -37,10 +37,6 @@ databaseChangeLog:
     author: ssound
     changes:
     - dropNotNullConstraint:
-        columnName: idTypeConvention
-        columnDataType: INT
-        tableName: Convention
-    - dropNotNullConstraint:
         columnName: sujetStage
         columnDataType: TEXT
         tableName: Convention
@@ -63,10 +59,6 @@ databaseChangeLog:
     - dropNotNullConstraint:
         columnName: idTempsTravail
         columnDataType: INT
-        tableName: Convention
-    - dropNotNullConstraint:
-        columnName: codeLangueConvention
-        columnDataType: VARCHAR(2)
         tableName: Convention
     - dropNotNullConstraint:
         columnName: idTheme
