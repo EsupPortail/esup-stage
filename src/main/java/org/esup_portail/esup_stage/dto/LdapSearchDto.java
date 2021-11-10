@@ -7,6 +7,7 @@ public class LdapSearchDto {
     private String mail;
     private String primaryAffiliation;
     private String affiliation;
+    private String supannAliasLogin;
 
     public String getId() {
         return id;
@@ -54,5 +55,13 @@ public class LdapSearchDto {
 
     public void setAffiliation(String affiliation) {
         this.affiliation = affiliation;
+    }
+
+    public String getSupannAliasLogin() {
+        return supannAliasLogin;
+    }
+
+    public void setSupannAliasLogin(String supannAliasLogin) {
+        this.supannAliasLogin = supannAliasLogin;
     }
 }

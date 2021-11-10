@@ -1,10 +1,16 @@
 package org.esup_portail.esup_stage.security.filter;
 
 import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
+import org.esup_portail.esup_stage.dto.LdapSearchDto;
 import org.esup_portail.esup_stage.exception.ApplicationClientException;
+import org.esup_portail.esup_stage.model.Role;
 import org.esup_portail.esup_stage.model.Utilisateur;
+import org.esup_portail.esup_stage.repository.RoleJpaRepository;
 import org.esup_portail.esup_stage.repository.UtilisateurJpaRepository;
 import org.esup_portail.esup_stage.security.common.CasLayer;
+import org.esup_portail.esup_stage.service.AppConfigService;
+import org.esup_portail.esup_stage.service.ldap.LdapService;
+import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +21,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class CasFilter implements Filter {
@@ -25,7 +33,16 @@ public class CasFilter implements Filter {
     ApplicationBootstrap applicationBootstrap;
 
     @Autowired
-    UtilisateurJpaRepository utilisateurRepository;
+    UtilisateurJpaRepository utilisateurJpaRepository;
+
+    @Autowired
+    RoleJpaRepository roleJpaRepository;
+
+    @Autowired
+    AppConfigService appConfigService;
+
+    @Autowired
+    LdapService ldapService;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -88,10 +105,36 @@ public class CasFilter implements Filter {
                     return;
                 }
 
-                // TODO création de l'utilisateur avec le rôle correspondant (ETU, ENS : à rechercher dans le LDAP) s'il n'existe pas en base
+                // Recherche de l'utilisateur
+                Utilisateur utilisateur = utilisateurJpaRepository.findOneByLogin(casUser.getLogin());
 
-                // Recherche de l'utilisateur en base pour mettre à jour son nom/prénom si non existant
-                Utilisateur utilisateur = utilisateurRepository.findOneByLogin(casUser.getLogin());
+                // création de l'utilisateur avec le rôle correspondant (ETU, ENS : à rechercher dans le LDAP) s'il n'existe pas en base
+                if (utilisateur == null) {
+                    String role = Role.ETU;
+                    LdapSearchDto ldapSearchDto = new LdapSearchDto();
+                    ldapSearchDto.setSupannAliasLogin(casUser.getLogin());
+                    List<LdapUser> users = ldapService.search("/etudiant", ldapSearchDto);
+                    if (users.size() == 0) {
+                        String filter = appConfigService.getConfigGenerale().getLdapFiltreEnseignant() + "(&(supannAliasLogin=" + casUser.getLogin() + "))";
+                        users = ldapService.searchByFilter(filter);
+                        role = Role.ENS;
+                    }
+
+                    if (users.size() == 1) {
+                        // Création de l'utilisateur
+                        List<Role> roles = new ArrayList<>();
+                        roles.add(roleJpaRepository.findOneByCode(role));
+                        utilisateur = new Utilisateur();
+                        utilisateur.setLogin(casUser.getLogin());
+                        utilisateur.setNom(casUser.getNom());
+                        utilisateur.setPrenom(casUser.getPrenom());
+                        utilisateur.setActif(true);
+                        utilisateur.setRoles(roles);
+                        utilisateur = utilisateurJpaRepository.saveAndFlush(utilisateur);
+                    }
+                }
+
+                // éventuel mise à jour de son nom/prénom si non existant
                 if (utilisateur != null) {
                     boolean update = false;
                     if (utilisateur.getNom() == null) {
@@ -103,7 +146,7 @@ public class CasFilter implements Filter {
                         update = true;
                     }
                     if (update) {
-                        utilisateurRepository.saveAndFlush(utilisateur);
+                        utilisateurJpaRepository.saveAndFlush(utilisateur);
                     }
                 }
 
