@@ -1,6 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { StructureService } from "../../services/structure.service";
+import { ServiceService } from "../../services/service.service";
+import { ContactService } from "../../services/contact.service";
 import { PaysService } from "../../services/pays.service";
+import { CiviliteService } from "../../services/civilite.service";
 import { TypeStructureService } from "../../services/type-structure.service";
 import { NafN1Service } from "../../services/naf-n1.service";
 import { NafN5Service } from "../../services/naf-n5.service";
@@ -11,6 +15,8 @@ import { TableComponent } from "../table/table.component";
 import { AppFonction } from "../../constants/app-fonction";
 import { Droit } from "../../constants/droit";
 import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
+import { ServiceAccueilFormComponent } from './service-accueil-form/service-accueil-form.component';
+import { ContactFormComponent } from './contact-form/contact-form.component';
 
 @Component({
   selector: 'app-gestion-etab-accueil',
@@ -21,23 +27,36 @@ export class GestionEtabAccueilComponent implements OnInit {
 
   columns = ['raisonSociale', 'numeroSiret', 'nafN5', 'pays', 'commune', 'typeStructure', 'statutJuridique', 'action'];
   sortColumn = 'raisonSociale';
+  serviceTableColumns = ['nom', 'voie', 'codePostal','batimentResidence', 'commune', 'pays', 'telephone',  'actions'];
+  contactTableColumns = ['centreGestionnaire', 'civilite', 'nom','prenom', 'telephone', 'mail', 'fax',  'actions'];
   filters: any[] = [];
+  countries: any[] = [];
+  civilites: any[] = [];
 
   formTabIndex = 1;
   data: any = {};
+
+  services:any[] = [];
+  service: any;
+
+  contacts:any[] = [];
 
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
   @ViewChild('tabs') tabs: MatTabGroup | undefined;
 
   constructor(
     public structureService: StructureService,
+    private serviceService: ServiceService,
+    private contactService: ContactService,
     private paysService: PaysService,
+    private civiliteService: CiviliteService,
     private typeStructureService: TypeStructureService,
     private nafN1Service: NafN1Service,
     private nafN5Service: NafN5Service,
     private statutJuridiqueService: StatutJuridiqueService,
     private messageService: MessageService,
     private authService: AuthService,
+    public matDialog: MatDialog,
   ) { }
 
   ngOnInit(): void {
@@ -51,6 +70,7 @@ export class GestionEtabAccueilComponent implements OnInit {
       { id: 'statutJuridique.id', libelle: 'Forme juridique', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id' },
     ];
     this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServPays: {value: 'O', type: 'text'}})).subscribe((response: any) => {
+      this.countries = response.data;
       const filter = this.filters.find((f: any) => f.id === 'pays.id');
       if (filter) {
         filter.options = response.data;
@@ -73,6 +93,9 @@ export class GestionEtabAccueilComponent implements OnInit {
       if (filter) {
         filter.options = response.data;
       }
+    });
+    this.civiliteService.getPaginated(1, 0, 'libelle', 'asc','').subscribe((response: any) => {
+      this.civilites = response.data;
     });
   }
 
@@ -97,6 +120,94 @@ export class GestionEtabAccueilComponent implements OnInit {
     }
     this.structureService.getById(row.id).subscribe((response: any) => {
       this.data = response;
+      this.refreshServices();
+    });
+  }
+
+  refreshServices(): void{
+    if (this.data){
+      this.serviceService.getByStructure(this.data.id).subscribe((response: any) => {
+        this.services = response;
+      });
+    }
+  }
+
+  selectService(): void{
+    this.refreshContacts();
+  }
+
+  createService(): void {
+    this.openServiceFormModal(null);
+  }
+
+  editService(row: any): void {
+    this.openServiceFormModal(row);
+  }
+
+  deleteService(row: any): void {
+    this.serviceService.delete(row.id).subscribe((response: any) => {
+      this.messageService.setSuccess('Service supprimé');
+      this.service = null;
+      this.refreshServices();
+    });
+  }
+
+  refreshContacts(): void{
+    if (this.service){
+      this.contactService.getByService(this.service.id).subscribe((response: any) => {
+        this.contacts = response;
+      });
+    }
+  }
+
+  createContact(): void {
+    this.openContactFormModal(null);
+  }
+
+  editContact(row: any): void {
+    this.openContactFormModal(row);
+  }
+
+  deleteContact(row: any): void {
+    this.contactService.delete(row.id).subscribe((response: any) => {
+      this.messageService.setSuccess('Contact supprimé');
+      this.refreshContacts();
+    });
+  }
+
+  openServiceFormModal(service: any) {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.width = '1000px';
+    dialogConfig.data = {service: service, etab: this.data, countries: this.countries};
+    const modalDialog = this.matDialog.open(ServiceAccueilFormComponent, dialogConfig);
+    modalDialog.afterClosed().subscribe(dialogResponse => {
+      if (dialogResponse) {
+        if (this.service) {
+          this.messageService.setSuccess("Service modifié avec succès");
+        }else{
+          this.messageService.setSuccess("Service créé avec succès");
+        }
+        this.service = dialogResponse;
+        this.refreshServices();
+        this.refreshContacts();
+      }
+    });
+  }
+
+  openContactFormModal(contact: any) {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.width = '1000px';
+    dialogConfig.data = {contact: contact, service: this.service, civilites: this.civilites};
+    const modalDialog = this.matDialog.open(ContactFormComponent, dialogConfig);
+    modalDialog.afterClosed().subscribe(dialogResponse => {
+      if (dialogResponse) {
+        if (this.service) {
+          this.messageService.setSuccess("Contact modifié avec succès");
+        }else{
+          this.messageService.setSuccess("Contact créé avec succès");
+        }
+        this.refreshContacts();
+      }
     });
   }
 

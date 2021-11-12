@@ -97,6 +97,17 @@ public class ContactController {
         return contact;
     }
 
+    @DeleteMapping("/{id}")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.SUPPRESSION})
+    public boolean delete(@PathVariable("id") int id) {
+        Contact contact = contactJpaRepository.findById(id);
+        if (contact == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Contact non trouvé");
+        }
+        contactJpaRepository.delete(contact);
+        contactJpaRepository.flush();
+        return true;
+    }
 
     private void setContactData(Contact contact, ContactFormDto contactFormDto) {
         if (contact == null) {
@@ -111,6 +122,5 @@ public class ContactController {
         contact.setTel(contactFormDto.getTel());
         contact.setFax(contactFormDto.getFax());
         contact.setMail(contactFormDto.getMail());
-
     }
 }

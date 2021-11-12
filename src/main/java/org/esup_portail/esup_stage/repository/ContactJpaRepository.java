@@ -13,4 +13,7 @@ public interface ContactJpaRepository extends JpaRepository<Contact, Integer> {
 
     @Query("SELECT c FROM Contact c WHERE c.service.id = :idService")
     List<Contact> findByService(int idService);
+
+    @Query("SELECT COUNT(c.id) FROM Contact c WHERE c.service.id = :idService")
+    Long countContactWithService(int idService);
 }

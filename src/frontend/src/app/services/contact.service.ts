@@ -31,4 +31,7 @@ export class ContactService implements PaginatedService {
     return this.http.post(`${environment.apiUrl}/contacts`, data);
   }
 
+  delete(id: number): Observable<any> {
+    return this.http.delete(environment.apiUrl + "/contacts/" + id);
+  }
 }

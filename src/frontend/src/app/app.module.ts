@@ -80,6 +80,8 @@ import { CreateDialogComponent } from './components/admin/admin-user/create-dial
 import { GestionEtabAccueilComponent } from "./components/gestion-etab-accueil/gestion-etab-accueil.component";
 import { EtabAccueilFormComponent } from './components/gestion-etab-accueil/etab-accueil-form/etab-accueil-form.component';
 import { StageComponent } from './components/convention/stage/stage.component';
+import { ServiceAccueilFormComponent } from './components/gestion-etab-accueil/service-accueil-form/service-accueil-form.component';
+import { ContactFormComponent } from './components/gestion-etab-accueil/contact-form/contact-form.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -123,6 +125,8 @@ registerLocaleData(localeFr, 'fr');
     GestionEtabAccueilComponent,
     EtabAccueilFormComponent,
     StageComponent,
+    ServiceAccueilFormComponent,
+    ContactFormComponent,
   ],
   imports: [
     BrowserModule,

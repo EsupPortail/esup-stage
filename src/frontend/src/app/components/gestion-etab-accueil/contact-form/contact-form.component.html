@@ -1,0 +1,49 @@
+<form [formGroup]="form" novalidate (submit)="save()">
+  <div class="row">
+    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+      <mat-label>Nom</mat-label>
+      <input matInput formControlName="nom" required />
+      <mat-error><app-form-error [field]="form.get('nom')"></app-form-error></mat-error>
+    </mat-form-field>
+    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+      <mat-label>Prénom</mat-label>
+      <input matInput formControlName="prenom" required />
+      <mat-error><app-form-error [field]="form.get('prenom')"></app-form-error></mat-error>
+    </mat-form-field>
+    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+      <mat-label>Civilité</mat-label>
+      <mat-select formControlName="idCivilite">
+        <mat-option *ngFor="let civilite of civilites" [value]="civilite.id">{{civilite.libelle}}</mat-option>
+      </mat-select>
+      <mat-error><app-form-error [field]="form.get('civilite')"></app-form-error></mat-error>
+    </mat-form-field>
+    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+      <mat-label>Fonction</mat-label>
+      <input matInput formControlName="fonction" required />
+      <mat-error><app-form-error [field]="form.get('fonction')"></app-form-error></mat-error>
+    </mat-form-field>
+    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+      <mat-label>Téléphone</mat-label>
+      <input matInput formControlName="tel" required />
+      <mat-error><app-form-error [field]="form.get('tel')"></app-form-error></mat-error>
+    </mat-form-field>
+    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="mail" required />
+      <mat-error><app-form-error [field]="form.get('mail')"></app-form-error></mat-error>
+    </mat-form-field>
+    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+      <mat-label>Fax</mat-label>
+      <input matInput formControlName="fax" />
+      <mat-error><app-form-error [field]="form.get('fax')"></app-form-error></mat-error>
+    </mat-form-field>
+  </div>
+  <div class="row mt-3">
+    <div class="col-sm-6">
+      <button type="button" mat-button mat-stroked-button color="warn" (click)="close()">{{'BOUTON_ANNULER'|contenu}}</button>
+    </div>
+    <div class="col-sm-6 text-right">
+      <button mat-button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
+    </div>
+  </div>
+</form>

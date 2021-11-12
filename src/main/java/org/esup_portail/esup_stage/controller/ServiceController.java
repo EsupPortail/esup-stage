@@ -8,10 +8,7 @@ import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.Pays;
 import org.esup_portail.esup_stage.model.Service;
 import org.esup_portail.esup_stage.model.Structure;
-import org.esup_portail.esup_stage.repository.StructureJpaRepository;
-import org.esup_portail.esup_stage.repository.ServiceJpaRepository;
-import org.esup_portail.esup_stage.repository.ServiceRepository;
-import org.esup_portail.esup_stage.repository.PaysJpaRepository;
+import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,6 +27,9 @@ public class ServiceController {
 
     @Autowired
     ServiceJpaRepository serviceJpaRepository;
+
+    @Autowired
+    ContactJpaRepository contactJpaRepository;
 
     @Autowired
     StructureJpaRepository structureJpaRepository;
@@ -89,6 +89,21 @@ public class ServiceController {
         setServiceData(service, serviceFormDto);
         service = serviceJpaRepository.saveAndFlush(service);
         return service;
+    }
+
+    @DeleteMapping("/{id}")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.SUPPRESSION})
+    public boolean delete(@PathVariable("id") int id) {
+        Service service = serviceJpaRepository.findById(id);
+        if (service == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Service non trouvé");
+        }
+        if (contactJpaRepository.countContactWithService(service.getId()) > 0) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Des contacts existent sur ce service. La suppression n'est pas possible.");
+        }
+        serviceJpaRepository.delete(service);
+        serviceJpaRepository.flush();
+        return true;
     }
 
     private void setServiceData(Service service, ServiceFormDto serviceFormDto) {
