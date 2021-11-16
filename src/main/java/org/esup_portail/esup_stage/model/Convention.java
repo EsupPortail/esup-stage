@@ -312,7 +312,6 @@ public class Convention extends ObjetMetier {
     @JoinColumn(name = "idPays")
     private Pays paysConvention;
 
-    @Column(nullable = false)
     private boolean horairesReguliers;
 
     public int getId() {
