@@ -78,9 +78,9 @@ public class ConventionController {
                 ges.put("specific", true);
                 jsonFilters.put("centreGestion.personnels", ges);
             } else if (UtilisateurHelper.isRole(utilisateur, Role.ENS)) {
-                jsonFilters.append("enseignant", currentUser);
+                jsonFilters.put("enseignant.id", currentUser);
             } else if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
-                jsonFilters.append("etudiant", currentUser);
+                jsonFilters.put("etudiant.id", currentUser);
             }
 
             filters = jsonFilters.toString();

@@ -76,7 +76,7 @@ public class AppConfigController {
     }
 
     @GetMapping("/theme")
-    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
+    @Secure
     public ConfigThemeDto getConfigTheme() {
         return appConfigService.getConfigTheme();
     }
