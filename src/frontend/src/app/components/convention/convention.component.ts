@@ -38,6 +38,7 @@ export class ConventionComponent implements OnInit {
         // Récupération de la convention au mode brouillon
         this.conventionService.getBrouillon().subscribe((response: any) => {
           this.convention = response;
+          this.majStatus();
         });
       } else {
         // Récupération de la convention correspondant à l'id
@@ -46,7 +47,30 @@ export class ConventionComponent implements OnInit {
         // });
       }
     });
-    // TODO maj des statuts
+  }
+
+  majStatus(): void {
+    if (this.convention.etudiant){
+      this.setStatus(0,2);
+    }
+    if (this.convention.structure){
+      this.setStatus(1,2);
+    }
+    if (this.convention.service){
+      this.setStatus(2,2);
+    }
+    if (this.convention.contact){
+      this.setStatus(3,2);
+    }
+
+    //TODO setStatus(4,2)
+
+    if (this.convention.enseignant){
+      this.setStatus(5,2);
+    }
+    if (this.convention.signataire){
+      this.setStatus(6,2);
+    }
   }
 
   setStatus(key: number, value: number): void {
@@ -77,6 +101,7 @@ export class ConventionComponent implements OnInit {
 
   updateConvention(data: any): void {
     this.convention = data;
+    this.setStatus(0,2);
   }
 
 }
