@@ -129,7 +129,7 @@ export class StageComponent implements OnInit {
       gratificationStage: [this.convention.gratificationStage, [Validators.required]],
       montantGratification: [this.convention.montantGratification, [Validators.required]],
       idUniteGratification: [this.convention.uniteGratification ? this.convention.uniteGratification.id : null, [Validators.required]],
-      idUniteDuree: [this.convention.uniteDuree ? this.convention.uniteDuree.id : null, [Validators.required]],
+      idUniteDuree: [this.convention.uniteDureeGratification ? this.convention.uniteDureeGratification.id : null, [Validators.required]],
       idDevise: [this.convention.devise ? this.convention.devise.id : null, [Validators.required]],
       idModeVersGratification: [this.convention.modeVersGratification ? this.convention.modeVersGratification.id : null, [Validators.required]],
       //TODO un bandeau doit permettre de mettre un message à l’attention de l’étudiant
