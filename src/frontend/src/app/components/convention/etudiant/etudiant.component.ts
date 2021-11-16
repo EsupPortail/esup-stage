@@ -79,8 +79,8 @@ export class EtudiantComponent implements OnInit, OnChanges {
       telPortableEtudiant: [this.convention.telPortableEtudiant, []],
       courrielPersoEtudiant: [this.convention.courrielPersoEtudiant, [Validators.required, Validators.email]],
       inscription: [null, [Validators.required]],
-      idTypeConvention: [this.convention.typeConvention.id, [Validators.required]],
-      codeLangueConvention: [this.convention.langueConvention.code, [Validators.required]],
+      idTypeConvention: [this.convention.typeConvention ? this.convention.typeConvention.id : null, [Validators.required]],
+      codeLangueConvention: [this.convention.langueConvention ? this.convention.langueConvention.code : null, [Validators.required]],
     });
 
     if (codEtu !== undefined) {
@@ -169,6 +169,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
       data.codeComposante = this.formConvention.value.inscription.codeComposante;
       data.codeEtape = this.formConvention.value.inscription.codeEtp;
       data.codeVerionEtape = this.formConvention.value.inscription.codVrsVet
+      data.annee = this.formConvention.value.inscription.annee
       if (this.isEtudiant) {
         data.etudiantLogin = this.authService.userConnected.login;
       } else if (this.selectedRow && this.selectedRow.supannAliasLogin) {
@@ -176,7 +177,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
       } else if (this.convention && this.convention.etudiant) {
         data.etudiantLogin = this.convention.etudiant.identEtudiant;
       }
-      if (!this.convention && !this.convention.id) {
+      if (!this.convention || !this.convention.id) {
         this.conventionService.create(data).subscribe((response: any) => {
           this.validated.emit(response);
         });

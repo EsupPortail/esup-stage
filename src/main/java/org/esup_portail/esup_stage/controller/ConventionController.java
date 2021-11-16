@@ -156,7 +156,7 @@ public class ConventionController {
             etudiant = new Etudiant();
             etudiant.setIdentEtudiant(conventionFormDto.getEtudiantLogin());
             etudiant.setNumEtudiant(conventionFormDto.getNumEtudiant());
-            etudiant.setNumEtudiant(etudiantRef.getNompatro());
+            etudiant.setNom(etudiantRef.getNompatro());
             etudiant.setPrenom(etudiantRef.getPrenom());
             etudiant.setMail(etudiantRef.getMail());
             etudiant.setCodeUniversite(appConfigService.getConfigGenerale().getCodeUniversite());
@@ -177,8 +177,7 @@ public class ConventionController {
         convention.setUfr(ufr);
         convention.setEtape(etape);
         convention.setCentreGestion(centreGestion);
+        convention.setAnnee(conventionFormDto.getAnnee() + "/" + (Integer.parseInt(conventionFormDto.getAnnee()) + 1));
         //TODO set champs
-        convention = conventionJpaRepository.save(convention);
-        conventionJpaRepository.flush();
     }
 }
