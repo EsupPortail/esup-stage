@@ -44,11 +44,11 @@
   </mat-tab>
   <mat-tab label="{{data.id ? 'Édition' : 'Création'}}">
     <mat-accordion>
-      <mat-expansion-panel>
+      <mat-expansion-panel [expanded]="true">
         <mat-expansion-panel-header>Établissement d'accueil</mat-expansion-panel-header>
         <app-etab-accueil-form [etab]="data" (canceled)="returnToList()"></app-etab-accueil-form>
       </mat-expansion-panel>
-      <mat-expansion-panel *ngIf="data.id" [expanded]="true">
+      <mat-expansion-panel *ngIf="data.id">
         <mat-expansion-panel-header>Contacts</mat-expansion-panel-header>
         <div class="row mt-3">
           <mat-form-field class="col-md-12" appearance="fill" *ngIf="services.length > 0">
