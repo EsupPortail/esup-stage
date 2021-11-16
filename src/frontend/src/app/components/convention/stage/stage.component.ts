@@ -14,7 +14,7 @@ import { ModeValidationStageService } from "../../../services/mode-validation-st
 import { TypeConventionService } from "../../../services/type-convention.service";
 import { AuthService } from "../../../services/auth.service";
 import { ConventionService } from "../../../services/convention.service";
-import { debounceTime } from 'rxjs/operators';
+import {pairwise,debounceTime,startWith}from 'rxjs/operators'
 
 @Component({
   selector: 'app-stage',
@@ -40,6 +40,8 @@ export class StageComponent implements OnInit {
 
   form: FormGroup;
 
+  previousValues: any;
+
   @Output() validated = new EventEmitter<number>();
 
   constructor(public conventionService: ConventionService,
@@ -58,55 +60,6 @@ export class StageComponent implements OnInit {
               private modeValidationStageService: ModeValidationStageService,
               private typeConventionService: TypeConventionService,
   ) {
-    this.form = this.fb.group({
-      // - Modèle de la convention
-      codeLangueConvention: [null, [Validators.required]],
-      idPays: [null, [Validators.required]],
-      idTypeConvention: [null, [Validators.required]],
-      // - Description du stage
-      idTheme: [null, [Validators.required]],
-      //TODO case à cocher pour rendre les champs confidentiels cf 2.2.1.2 règles de gestions
-      sujetStage: [null, [Validators.required]],
-      competences: [null, [Validators.required]],
-      fonctionsEtTaches: [null, [Validators.required]],
-      details: [null, [Validators.required]],
-      // - Partie Dates / horaires
-      //TODO contrôle de la cohérence des dates saisies
-      dateDebutStage: [null, [Validators.required]],
-      dateFinStage: [null, [Validators.required]],
-      interruptionStage: [false, [Validators.required]],
-      //TODO multiples dates d'interruptions
-      dateDebutInterruption: [null],
-      dateFinInterruption: [null],
-      horairesReguliers: [true, [Validators.required]],
-      nbHeuresHebdo: [null, [Validators.required], Validators.pattern('[0-9]+([,.][0-9]{1,2})?')],
-      idTempsTravail: [null, [Validators.required]],
-      commentaireDureeTravail: [null],
-      // - Partie Gratification
-      gratificationStage: [false, [Validators.required]],
-      montantGratification: [null, [Validators.required]],
-      idUniteGratification: [null, [Validators.required]],
-      idUniteDuree: [null, [Validators.required]],
-      idDevise: [null, [Validators.required]],
-      idModeVersGratification: [null, [Validators.required]],
-      //TODO un bandeau doit permettre de mettre un message à l’attention de l’étudiant
-      // - Partie Divers
-      idOrigineStage: [null, [Validators.required]],
-      idNatureTravail: [null, [Validators.required]],
-      idModeValidationStage: [null, [Validators.required]],
-      modeEncadreSuivi: [null],
-      avantagesNature: [null],
-      travailNuitFerie: [null],
-      //TODO ajout de confidentiel au model convention
-      confidentiel: [false, [Validators.required]],
-
-    });
-    console.log('convention : ' + JSON.stringify(this.convention, null, 2))
-    this.form.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
-      console.log('val : ' + JSON.stringify(val, null, 2))
-      this.updateBrouillon();
-    });
-
   }
 
   ngOnInit(): void {
@@ -125,15 +78,9 @@ export class StageComponent implements OnInit {
     });
     this.uniteDureeService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
       this.uniteDurees = response.data;
-      if(this.uniteDurees.length>0){
-        this.form.controls['idUniteDuree'].setValue(this.uniteDurees[0].id);
-      }
     });
     this.uniteGratificationService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
       this.uniteGratifications = response.data;
-      if(this.uniteGratifications.length>0){
-        this.form.controls['idUniteGratification'].setValue(this.uniteGratifications[0].id);
-      }
     });
     this.deviseService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
       this.devises = response.data;
@@ -154,10 +101,73 @@ export class StageComponent implements OnInit {
       this.modeValidationStages = response.data;
     });
 
+    this.form = this.fb.group({
+      // - Modèle de la convention
+      codeLangueConvention: [this.convention.langueConvention ? this.convention.langueConvention.code : null, [Validators.required]],
+      idPays: [this.convention.paysConvention ? this.convention.paysConvention.id : null, [Validators.required]],
+      idTypeConvention: [this.convention.typeConvention ? this.convention.typeConvention.id : null, [Validators.required]],
+      // - Description du stage
+      idTheme: [this.convention.theme ? this.convention.theme.id : null, [Validators.required]],
+      //TODO case à cocher pour rendre les champs confidentiels cf 2.2.1.2 règles de gestions
+      sujetStage: [this.convention.sujetStage, [Validators.required]],
+      competences: [this.convention.competences, [Validators.required]],
+      fonctionsEtTaches: [this.convention.fonctionsEtTaches, [Validators.required]],
+      details: [this.convention.details, [Validators.required]],
+      // - Partie Dates / horaires
+      //TODO contrôle de la cohérence des dates saisies
+      dateDebutStage: [this.convention.dateDebutStage, [Validators.required]],
+      dateFinStage: [this.convention.dateFinStage, [Validators.required]],
+      interruptionStage: [this.convention.interruptionStage, [Validators.required]],
+      //TODO multiples dates d'interruptions
+      dateDebutInterruption: [this.convention.dateDebutInterruption],
+      dateFinInterruption: [this.convention.dateFinInterruption],
+      horairesReguliers: [this.convention.horairesReguliers, [Validators.required]],
+      nbHeuresHebdo: [this.convention.nbHeuresHebdo, [Validators.required, Validators.pattern('[0-9]+([,.][0-9]{1,2})?')]],
+      idTempsTravail: [this.convention.tempsTravail ? this.convention.tempsTravail.id : null, [Validators.required]],
+      commentaireDureeTravail: [this.convention.commentaireDureeTravail],
+      // - Partie Gratification
+      gratificationStage: [this.convention.gratificationStage, [Validators.required]],
+      montantGratification: [this.convention.montantGratification, [Validators.required]],
+      idUniteGratification: [this.convention.uniteGratification ? this.convention.uniteGratification.id : null, [Validators.required]],
+      idUniteDuree: [this.convention.uniteDuree ? this.convention.uniteDuree.id : null, [Validators.required]],
+      idDevise: [this.convention.devise ? this.convention.devise.id : null, [Validators.required]],
+      idModeVersGratification: [this.convention.modeVersGratification ? this.convention.modeVersGratification.id : null, [Validators.required]],
+      //TODO un bandeau doit permettre de mettre un message à l’attention de l’étudiant
+      // - Partie Divers
+      idOrigineStage: [this.convention.origineStage ? this.convention.origineStage.id : null, [Validators.required]],
+      idNatureTravail: [this.convention.natureTravail ? this.convention.natureTravail.id : null, [Validators.required]],
+      idModeValidationStage: [this.convention.modeValidationStage ? this.convention.modeValidationStage.id : null, [Validators.required]],
+      modeEncadreSuivi: [this.convention.modeEncadreSuivi],
+      avantagesNature: [this.convention.avantagesNature],
+      travailNuitFerie: [this.convention.travailNuitFerie],
+      //TODO ajout de confidentiel au model convention
+      confidentiel: [this.convention.confidentiel, [Validators.required]],
+    });
+
+    this.previousValues={...this.form.value}
+    this.form.valueChanges.pipe(debounceTime(1000)).subscribe(res=>{
+      const keys=Object.keys(res).filter(k=>res[k]!=this.previousValues[k])
+      this.previousValues={...this.form.value}
+      keys.forEach((key: string) => {
+        this.updateSingleField(key,res[key]);
+      });
+    })
   }
 
-  updateBrouillon(): void {
-  //TODO
+  updateSingleField(key: string,value: any): void {
+
+    if (this.form.get(key)!.valid) {
+      const data = {
+        "field":key,
+        "value":value,
+      };
+      this.conventionService.patch(this.convention.id, data).subscribe((response: any) => {
+        this.convention = response;
+      });
+    }
+    if (this.form.valid) {
+      this.validated.emit(2);
+    }
   }
 
 }

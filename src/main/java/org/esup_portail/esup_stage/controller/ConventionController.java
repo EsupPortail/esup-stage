@@ -2,6 +2,7 @@ package org.esup_portail.esup_stage.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import org.esup_portail.esup_stage.dto.ContextDto;
+import org.esup_portail.esup_stage.dto.ConventionSingleFieldDto;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.dto.ConventionFormDto;
 import org.esup_portail.esup_stage.dto.view.Views;
@@ -23,8 +24,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @ApiController
 @RequestMapping("/conventions")
@@ -53,6 +56,29 @@ public class ConventionController {
 
     @Autowired
     CentreGestionJpaRepository centreGestionJpaRepository;
+
+    @Autowired
+    ServiceJpaRepository serviceJpaRepository;
+    @Autowired
+    PaysJpaRepository paysJpaRepository;
+    @Autowired
+    ThemeJpaRepository themeJpaRepository;
+    @Autowired
+    TempsTravailJpaRepository tempsTravailJpaRepository;
+    @Autowired
+    UniteGratificationJpaRepository uniteGratificationJpaRepository;
+    @Autowired
+    UniteDureeJpaRepository uniteDureeJpaRepository;
+    @Autowired
+    DeviseJpaRepository deviseJpaRepository;
+    @Autowired
+    ModeVersGratificationJpaRepository modeVersGratificationJpaRepository;
+    @Autowired
+    OrigineStageJpaRepository origineStageJpaRepository;
+    @Autowired
+    NatureTravailJpaRepository natureTravailJpaRepository;
+    @Autowired
+    ModeValidationStageJpaRepository modeValidationStageJpaRepository;
 
     @Autowired
     ApogeeService apogeeService;
@@ -123,6 +149,15 @@ public class ConventionController {
         return convention;
     }
 
+    @PatchMapping("/{id}")
+    @Secure(fonctions = AppFonctionEnum.ORGA_ACC, droits = {DroitEnum.MODIFICATION})
+    public Convention singleFieldUpdate(@PathVariable("id") int id, @Valid @RequestBody ConventionSingleFieldDto conventionSingleFieldDto) {
+        Convention convention = conventionJpaRepository.findById(id);
+        setSingleFieldData(convention, conventionSingleFieldDto);
+        convention = conventionJpaRepository.saveAndFlush(convention);
+        return convention;
+    }
+
     private void setConventionData(Convention convention, ConventionFormDto conventionFormDto) {
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
@@ -178,6 +213,161 @@ public class ConventionController {
         convention.setEtape(etape);
         convention.setCentreGestion(centreGestion);
         convention.setAnnee(conventionFormDto.getAnnee() + "/" + (Integer.parseInt(conventionFormDto.getAnnee()) + 1));
-        //TODO set champs
+    }
+
+    private void setSingleFieldData(Convention convention, ConventionSingleFieldDto conventionSingleFieldDto) {
+
+        if (Objects.equals(conventionSingleFieldDto.getField(), "idService")){
+            Service service = serviceJpaRepository.findById((int) conventionSingleFieldDto.getValue());
+            if (service == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "Service non trouvé");
+            }
+            convention.setService(service);
+        }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "codeLangueConvention")){
+            LangueConvention langueConvention = langueConventionJpaRepository.findByCode((String) conventionSingleFieldDto.getValue());
+            if (langueConvention == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "LangueConvention non trouvé");
+            }
+            convention.setLangueConvention(langueConvention);
+        }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "idPays")){
+            Pays pays = paysJpaRepository.findById((int) conventionSingleFieldDto.getValue());
+            if (pays == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "Pays non trouvé");
+            }
+            convention.setPaysConvention(pays);
+        }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "idTypeConvention")){
+            TypeConvention typeConvention = typeConventionJpaRepository.findById((int) conventionSingleFieldDto.getValue());
+            if (typeConvention == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "TypeConvention non trouvé");
+            }
+            convention.setTypeConvention(typeConvention);
+        }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "idTheme")){
+            Theme theme = themeJpaRepository.findById((int) conventionSingleFieldDto.getValue());
+            if (theme == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "Theme non trouvé");
+            }
+            convention.setTheme(theme);
+        }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "sujetStage")){
+            convention.setSujetStage((String) conventionSingleFieldDto.getValue());
+        }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "competences")){
+            convention.setCompetences((String) conventionSingleFieldDto.getValue());
+        }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "fonctionsEtTaches")){
+            convention.setFonctionsEtTaches((String) conventionSingleFieldDto.getValue());
+        }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "details")){
+            convention.setDetails((String) conventionSingleFieldDto.getValue());
+        }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "dateDebutStage")){
+            Instant instant = Instant.parse((String) conventionSingleFieldDto.getValue()) ;
+            convention.setDateDebutStage(java.util.Date.from(instant));
+        }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "dateFinStage")){
+            Instant instant = Instant.parse((String) conventionSingleFieldDto.getValue()) ;
+            convention.setDateFinStage(java.util.Date.from(instant));
+        }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "interruptionStage")){
+            convention.setInterruptionStage((Boolean) conventionSingleFieldDto.getValue());
+        }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "dateDebutInterruption")){
+            Instant instant = Instant.parse((String) conventionSingleFieldDto.getValue()) ;
+            convention.setDateDebutInterruption(java.util.Date.from(instant));
+        }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "dateFinInterruption")){
+            Instant instant = Instant.parse((String) conventionSingleFieldDto.getValue()) ;
+            convention.setDateFinInterruption(java.util.Date.from(instant));
+        }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "horairesReguliers")){
+            convention.setHorairesReguliers((Boolean) conventionSingleFieldDto.getValue());
+        }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "nbHeuresHebdo")){
+            convention.setNbHeuresHebdo((String) conventionSingleFieldDto.getValue());
+        }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "idTempsTravail")){
+            TempsTravail tempsTravail = tempsTravailJpaRepository.findById((int) conventionSingleFieldDto.getValue());
+            if (tempsTravail == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "TempsTravail non trouvé");
+            }
+            convention.setTempsTravail(tempsTravail);
+        }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "commentaireDureeTravail")){
+            convention.setCommentaireDureeTravail((String) conventionSingleFieldDto.getValue());
+        }
+        //TODO add gratificationStage boolean to Convention model
+        //if (Objects.equals(conventionSingleFieldDto.getField(), "gratificationStage")){
+        //    convention.setGratificationStage((Boolean) conventionSingleFieldDto.getValue());
+        //}
+        if (Objects.equals(conventionSingleFieldDto.getField(), "montantGratification")){
+            convention.setMontantGratification((String) conventionSingleFieldDto.getValue());
+        }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "idUniteGratification")){
+            UniteGratification uniteGratification = uniteGratificationJpaRepository.findById((int) conventionSingleFieldDto.getValue());
+            if (uniteGratification == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "UniteGratification non trouvé");
+            }
+            convention.setUniteGratification(uniteGratification);
+        }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "idUniteDuree")){
+            UniteDuree uniteDuree = uniteDureeJpaRepository.findById((int) conventionSingleFieldDto.getValue());
+            if (uniteDuree == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "UniteDuree non trouvé");
+            }
+            convention.setUniteDureeGratification(uniteDuree);
+        }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "idDevise")){
+            Devise devise = deviseJpaRepository.findById((int) conventionSingleFieldDto.getValue());
+            if (devise == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "Devise non trouvé");
+            }
+            convention.setDevise(devise);
+        }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "idModeVersGratification")){
+            ModeVersGratification modeVersGratification = modeVersGratificationJpaRepository.findById((int) conventionSingleFieldDto.getValue());
+            if (modeVersGratification == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "ModeVersGratification non trouvé");
+            }
+            convention.setModeVersGratification(modeVersGratification);
+        }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "idOrigineStage")){
+            OrigineStage origineStage = origineStageJpaRepository.findById((int) conventionSingleFieldDto.getValue());
+            if (origineStage == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "OrigineStage non trouvé");
+            }
+            convention.setOrigineStage(origineStage);
+        }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "idNatureTravail")){
+            NatureTravail natureTravail = natureTravailJpaRepository.findById((int) conventionSingleFieldDto.getValue());
+            if (natureTravail == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "NatureTravail non trouvé");
+            }
+            convention.setNatureTravail(natureTravail);
+        }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "idModeValidationStage")){
+            ModeValidationStage modeValidationStage = modeValidationStageJpaRepository.findById((int) conventionSingleFieldDto.getValue());
+            if (modeValidationStage == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "ModeValidationStage non trouvé");
+            }
+            convention.setModeValidationStage(modeValidationStage);
+        }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "modeEncadreSuivi")){
+            convention.setModeEncadreSuivi((String) conventionSingleFieldDto.getValue());
+        }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "avantagesNature")){
+            convention.setAvantagesNature((String) conventionSingleFieldDto.getValue());
+        }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "travailNuitFerie")){
+            convention.setTravailNuitFerie((String) conventionSingleFieldDto.getValue());
+        }
+        //TODO add confidentiel boolean to Convention model
+        //if (Objects.equals(conventionSingleFieldDto.getField(), "confidentiel")){
+        //    convention.setConfidentiel((Boolean) conventionSingleFieldDto.getValue());
+        //}
+
     }
 }
