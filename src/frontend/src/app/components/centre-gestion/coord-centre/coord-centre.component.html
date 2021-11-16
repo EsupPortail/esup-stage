@@ -26,14 +26,46 @@
         </mat-select>
       </mat-form-field>
     </div>
-    <!--<div class="row" *ngIf="centreGestion.id && form.get('niveauCentre')?.value.libelle == 'ETAPE'">
+    <div class="row" *ngIf="centreGestion.id && form.get('niveauCentre')?.value.libelle == 'ETAPE'">
       <mat-form-field class="col-sm-12 col-md-12" appearance="fill">
         <mat-label>Etapes</mat-label>
-        <mat-select multiple>
-          <mat-option *ngFor="let etape of etapes" [value]="etapes">{{etape.code}};{{etape.codeVrsEtp}} - {{etape.libelle}}</mat-option>
+        <mat-select [(ngModel)]="selectedValues" multiple #multiSelect [compareWith]="compareCode">
+          <ngx-mat-select-search [formControl]="etapeFilterCtrl" placeholderLabel="Filtrer par code ou libellé VET" noEntriesFoundLabel="Aucune étape trouvée"></ngx-mat-select-search>
+          <mat-option #matOption *ngFor="let etape of filteredEtapes | async" [value]="etape" (click)="etapesChange(etape, matOption.selected)">{{etape.code}};{{etape.codeVrsEtp}} - {{etape.libelle}}</mat-option>
         </mat-select>
       </mat-form-field>
-    </div>-->
+    </div>
+    <div *ngIf="centreGestion.id && form.get('niveauCentre')?.value.libelle == 'ETAPE' && selectedValues.length > 0">
+      <mat-panel-title>Liste des étapes rattachées au centre</mat-panel-title>
+      <table mat-table [dataSource]="selectedValues">
+
+        <ng-container matColumnDef="code">
+          <th mat-header-cell *matHeaderCellDef>Code</th>
+          <td mat-cell *matCellDef="let element"> {{element.code}} </td>
+        </ng-container>
+
+
+        <ng-container matColumnDef="codeVrsEtp">
+          <th mat-header-cell *matHeaderCellDef>Code version</th>
+          <td mat-cell *matCellDef="let element"> {{element.codeVrsEtp}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="libelle">
+          <th mat-header-cell *matHeaderCellDef>Libellé</th>
+          <td mat-cell *matCellDef="let element"> {{element.libelle}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-icon-button matTooltip="Supprimer" color="warn" (click)="deleteEtape(element)"><i class="fa fa-trash"></i></button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedEtapesColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedEtapesColumns;"></tr>
+      </table>
+    </div>
 
   </mat-expansion-panel>
   <mat-expansion-panel>

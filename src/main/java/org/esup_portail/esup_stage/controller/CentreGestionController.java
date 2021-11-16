@@ -156,6 +156,25 @@ public class CentreGestionController {
         return etapes;
     }
 
+    @GetMapping("/{id}/centre-etapes")
+    @Secure()
+    public List<Etape> getCentreEtapes(@PathVariable("id") int id) {
+        List<CritereGestion> critereGestionsEtapes = critereGestionJpaRepository.findEtapesByCentreId(id);
+        List<Etape> etapes = new ArrayList<>();
+
+        for (CritereGestion cg : critereGestionsEtapes) {
+            if (cg != null) {
+                Etape etape = new Etape();
+                etape.setCode(cg.getId().getCode());
+                etape.setCodeVrsEtp(cg.getId().getCodeVersionEtape());
+                etape.setLibelle(cg.getLibelle());
+                etapes.add(etape);
+            }
+        }
+
+        return etapes;
+    }
+
     @PostMapping("/{id}/add-etape")
     @Secure()
     public Etape addEtape(@PathVariable("id") int id, @RequestBody Etape _etape) {
@@ -173,10 +192,10 @@ public class CentreGestionController {
         return _etape;
     }
 
-    @DeleteMapping("/delete-etape")
+    @DeleteMapping("/delete-etape/{codeEtape}/{codeVersion}")
     @Secure()
-    public void deleteEtape(@RequestBody Etape _etape) {
-        CritereGestion critereGestion = critereGestionJpaRepository.findEtapeById(_etape.getCode(), _etape.getCodeVrsEtp());
+    public void deleteEtape(@PathVariable("codeEtape") String codeEtape, @PathVariable("codeVersion") String codeVersion) {
+        CritereGestion critereGestion = critereGestionJpaRepository.findEtapeById(codeEtape, codeVersion);
 
         //todo : check convention rattachée à l'étape
 

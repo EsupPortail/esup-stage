@@ -47,11 +47,15 @@ export class CentreGestionService implements PaginatedService {
     return this.http.post(`${environment.apiUrl}/centre-gestion/${id}/add-etape`, data);
   }
 
-  deleteEtape(data: any): Observable<any> {
-    return this.http.delete(`${environment.apiUrl}/centre-gestion/delete-etape`, data);
+  deleteEtape(codeEtape: string, codeVersion: string): Observable<any> {
+    return this.http.delete(`${environment.apiUrl}/centre-gestion/delete-etape/${codeEtape}/${codeVersion}`);
   }
 
   findByEtape(codeEtape: string, codeVersion: string): Observable<any> {
     return this.http.get(`${environment.apiUrl}/centre-gestion/by-etape/${codeEtape}/${codeVersion}`);
+  }
+
+  getCentreEtapes(id: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/centre-gestion/${id}/centre-etapes`)
   }
 }
