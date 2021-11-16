@@ -41,6 +41,11 @@ $my-theme: mat.define-light-theme((
 html, body { height: 100%; }
 body { margin: 0; font-family: var(--fontFamily); font-size: var(--fontSize); }
 
+.fa, .fas {
+  font-family: 'Font Awesome 5 Free' !important;
+  font-weight: 900 !important;
+}
+
 .text-red {
   color: var(--dangerColor);
 }
