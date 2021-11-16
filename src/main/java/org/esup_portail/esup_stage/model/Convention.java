@@ -66,6 +66,7 @@ public class Convention extends ObjetMetier {
     @JoinColumn(name = "idContact")
     private Contact contact;
 
+    @JsonView(Views.List.class)
     @ManyToOne
     @JoinColumn(name = "idSignataire")
     private Contact signataire;
@@ -78,6 +79,7 @@ public class Convention extends ObjetMetier {
     @JoinColumn(name = "idOffre")
     private Offre offre;
 
+    @JsonView(Views.List.class)
     @Column()
     private String sujetStage;
 
@@ -221,6 +223,7 @@ public class Convention extends ObjetMetier {
     @Column(length = 100)
     private String nomEtabRef;
 
+    @JsonView(Views.List.class)
     @Column(length = 200)
     private String adresseEtabRef;
 

@@ -1,5 +1,5 @@
 <mat-accordion>
-  <mat-expansion-panel *ngIf="!isEtudiant" [expanded]="!convention">
+  <mat-expansion-panel *ngIf="!isEtudiant" [expanded]="!convention.id">
     <mat-expansion-panel-header>
       <mat-panel-title>Recherchez un étudiant via son numéro ou son nom/prénom</mat-panel-title>
     </mat-expansion-panel-header>
@@ -56,7 +56,7 @@
     <mat-expansion-panel-header>
       <mat-panel-title>Cadre du stage</mat-panel-title>
     </mat-expansion-panel-header>
-    <form *ngIf="etudiant" [formGroup]="formConvention" novalidate (submit)="validate()">
+    <form *ngIf="etudiant && formConvention" [formGroup]="formConvention" novalidate (submit)="validate()">
       <div class="convention-etudiant-details">
         <mat-card>
           <mat-card-content>

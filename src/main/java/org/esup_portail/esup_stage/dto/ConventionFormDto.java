@@ -117,6 +117,8 @@ public class ConventionFormDto {
 
     private String details;
 
+    @NotNull
+    @NotEmpty
     @Size(max = 10)
     private String annee;
 
