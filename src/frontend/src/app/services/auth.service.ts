@@ -68,7 +68,15 @@ export class AuthService {
   }
 
   isEtudiant(): boolean {
-    return this.userConnected && this.userConnected.roles.find((r: any) => r.code === 'ETU') !== undefined;
+    return this.userConnected && this.userConnected.roles.find((r: any) => r.code === Role.ETU) !== undefined;
+  }
+
+  isGestionnaire(): boolean {
+    return this.userConnected && this.userConnected.roles.find((r: any) => [Role.ADM, Role.GES, Role.RESP_GES].indexOf(r.code) > -1) !== undefined;
+  }
+
+  isEnseignant(): boolean {
+    return this.userConnected && this.userConnected.roles.find((r: any) => [Role.ENS].indexOf(r.code) > -1) !== undefined;
   }
 
 }

@@ -8,7 +8,9 @@ import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "Convention")
@@ -49,6 +51,7 @@ public class Convention extends ObjetMetier {
     @Column(length = 10)
     private String codeDepartement;
 
+    @JsonView(Views.List.class)
     @ManyToOne
     @JoinColumn(name = "idEnseignant")
     private Enseignant enseignant;
@@ -315,7 +318,12 @@ public class Convention extends ObjetMetier {
     @JoinColumn(name = "idPays")
     private Pays paysConvention;
 
-    private boolean horairesReguliers;
+    @Column
+    private Boolean horairesReguliers;
+
+    @JsonView(Views.List.class)
+    @OneToMany(mappedBy = "convention")
+    private List<Avenant> avenants = new ArrayList<>();
 
     public int getId() {
         return id;
@@ -1037,12 +1045,19 @@ public class Convention extends ObjetMetier {
         this.paysConvention = paysConvention;
     }
 
-    public boolean isHorairesReguliers() {
+    public Boolean isHorairesReguliers() {
         return horairesReguliers;
     }
 
-    public void setHorairesReguliers(boolean horairesReguliers) {
+    public void setHorairesReguliers(Boolean horairesReguliers) {
         this.horairesReguliers = horairesReguliers;
     }
 
+    public List<Avenant> getAvenants() {
+        return avenants;
+    }
+
+    public void setAvenants(List<Avenant> avenants) {
+        this.avenants = avenants;
+    }
 }

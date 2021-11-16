@@ -1,5 +1,8 @@
 package org.esup_portail.esup_stage.model;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import org.esup_portail.esup_stage.dto.view.Views;
+
 import javax.persistence.*;
 
 @Entity
@@ -10,14 +13,17 @@ import javax.persistence.*;
 )
 public class Enseignant extends ObjetMetier {
 
+    @JsonView(Views.List.class)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idEnseignant", nullable = false)
     private int id;
 
+    @JsonView(Views.List.class)
     @Column(nullable = false, length = 50)
     private String nom;
 
+    @JsonView(Views.List.class)
     @Column(nullable = false, length = 50)
     private String prenom;
 

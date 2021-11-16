@@ -1,5 +1,9 @@
 package org.esup_portail.esup_stage.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+import org.esup_portail.esup_stage.dto.view.Views;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -7,15 +11,18 @@ import java.util.Date;
 @Table(name = "Avenant")
 public class Avenant extends ObjetMetier {
 
+    @JsonView(Views.List.class)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idAvenant", nullable = false)
     private int id;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "idConvention", nullable = false)
     private Convention convention;
 
+    @JsonView(Views.List.class)
     @Lob
     private String titreAvenant;
 

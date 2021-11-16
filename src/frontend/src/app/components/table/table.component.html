@@ -2,33 +2,35 @@
   <mat-card-content>
     <form>
       <div class="row">
-        <mat-form-field class="col-md-3" appearance="fill" *ngFor="let filter of filters">
-          <mat-label>{{filter.libelle}}</mat-label>
-          <ng-container [ngSwitch]="filter.type">
-            <ng-container *ngSwitchCase="'boolean'">
-              <mat-select [name]="filter.id" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()">
-                <mat-option></mat-option>
-                <mat-option [value]="true">Oui</mat-option>
-                <mat-option [value]="false">Non</mat-option>
-              </mat-select>
+        <ng-container *ngFor="let filter of filters">
+          <mat-form-field class="col-md-3" appearance="fill" *ngIf="!filter.hidden">
+            <mat-label>{{filter.libelle}}</mat-label>
+            <ng-container [ngSwitch]="filter.type">
+              <ng-container *ngSwitchCase="'boolean'">
+                <mat-select [name]="filter.id" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()">
+                  <mat-option></mat-option>
+                  <mat-option [value]="true">Oui</mat-option>
+                  <mat-option [value]="false">Non</mat-option>
+                </mat-select>
+              </ng-container>
+              <ng-container *ngSwitchCase="'list'">
+                <mat-select [name]="filter.id" multiple [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()">
+                  <mat-option *ngFor="let option of filter.options" [value]="option[filter.keyId]">{{option[filter.keyLibelle]}}</mat-option>
+                </mat-select>
+              </ng-container>
+              <ng-container *ngSwitchCase="'temEnServ'">
+                <mat-select [name]="filter.id" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()">
+                  <mat-option></mat-option>
+                  <mat-option [value]="'O'">Oui</mat-option>
+                  <mat-option [value]="'N'">Non</mat-option>
+                </mat-select>
+              </ng-container>
+              <ng-container *ngSwitchDefault>
+                <input matInput [name]="filter.id" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()" />
+              </ng-container>
             </ng-container>
-            <ng-container *ngSwitchCase="'list'">
-              <mat-select [name]="filter.id" multiple [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()">
-                <mat-option *ngFor="let option of filter.options" [value]="option[filter.keyId]">{{option[filter.keyLibelle]}}</mat-option>
-              </mat-select>
-            </ng-container>
-            <ng-container *ngSwitchCase="'temEnServ'">
-              <mat-select [name]="filter.id" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()">
-                <mat-option></mat-option>
-                <mat-option [value]="'O'">Oui</mat-option>
-                <mat-option [value]="'N'">Non</mat-option>
-              </mat-select>
-            </ng-container>
-            <ng-container *ngSwitchDefault>
-              <input matInput [name]="filter.id" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()" />
-            </ng-container>
-          </ng-container>
-        </mat-form-field>
+          </mat-form-field>
+        </ng-container>
       </div>
       <div class="row">
         <div class="col-sm-12 col-md-6">
