@@ -4,7 +4,7 @@
       <mat-panel-title>Recherchez un étudiant via son numéro ou son nom/prénom</mat-panel-title>
     </mat-expansion-panel-header>
 
-    <form [formGroup]="form" novalidate (submit)="search()" class="mt-2 mb-3">
+    <form [formGroup]="form" novalidate class="mt-2 mb-3">
       <div class="row">
         <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
           <mat-label>N° étudiant</mat-label>
@@ -20,9 +20,6 @@
           <mat-label>Prénom</mat-label>
           <input matInput formControlName="prenom" />
         </mat-form-field>
-      </div>
-      <div class="mt-2 text-center">
-        <button mat-flat-button color="primary">Rechercher</button>
       </div>
     </form>
 

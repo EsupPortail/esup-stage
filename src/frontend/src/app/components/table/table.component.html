@@ -25,16 +25,27 @@
                   <mat-option [value]="'N'">Non</mat-option>
                 </mat-select>
               </ng-container>
+              <ng-container *ngSwitchCase="'date'">
+                <input matInput [name]="filter.id" [matDatepicker]="datepicker" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()" />
+              </ng-container>
+              <ng-container *ngSwitchCase="'date-min'">
+                <input matInput [name]="filter.id" [matDatepicker]="datepicker" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()" />
+              </ng-container>
+              <ng-container *ngSwitchCase="'date-max'">
+                <input matInput [name]="filter.id" [matDatepicker]="datepicker" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()" />
+              </ng-container>
               <ng-container *ngSwitchDefault>
                 <input matInput [name]="filter.id" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()" />
               </ng-container>
             </ng-container>
+            <mat-datepicker-toggle matSuffix [for]="datepicker" [style.display]="['date', 'date-min', 'date-max'].indexOf(filter.type) === -1 ? 'none' : ''"></mat-datepicker-toggle>
+            <mat-datepicker #datepicker></mat-datepicker>
           </mat-form-field>
         </ng-container>
       </div>
       <div class="row">
         <div class="col-sm-12 col-md-6">
-          <button mat-button mat-flat-button color="primary" *ngIf="actionButton" (click)="actionButton.action()">{{actionButton.libelle}}</button>
+          <button type="button" mat-button mat-flat-button color="primary" *ngIf="actionButton" (click)="actionButton.action()">{{actionButton.libelle}}</button>
         </div>
         <div class="col-sm-12 col-md-6 text-right" [hidden]="hideDeleteFilters">
           <button mat-button mat-stroked-button (click)="reset()">Supprimer les filtres</button>
@@ -51,7 +62,7 @@
                [showFirstLastButtons]="true"
                (page)="changePaginator($event)"></mat-paginator>
 
-<table mat-table [dataSource]="data">
+<table mat-table [dataSource]="data" class="app-table">
   <ng-content></ng-content>
 
   <tr mat-header-row *matHeaderRowDef="columns"></tr>

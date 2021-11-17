@@ -10,6 +10,7 @@ import javax.persistence.Parameter;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -107,7 +108,14 @@ public class PaginationRepository<T> {
                 switch (condition.getString("type")) {
                     case "int":
                     case "boolean":
+                    case "date":
                         op = "=";
+                        break;
+                    case "date-min":
+                        op = ">=";
+                        break;
+                    case "date-max":
+                        op = "<=";
                         break;
                     case "list":
                         op = "IN";
@@ -137,6 +145,12 @@ public class PaginationRepository<T> {
                         break;
                     case "boolean":
                         query.setParameter(key.replace(".", ""), condition.getBoolean("value"));
+                        break;
+                    case "date":
+                    case "date-min":
+                    case "date-max":
+                        Date date = new Date(condition.getLong("value"));
+                        query.setParameter(key.replace(".", ""), date);
                         break;
                     case "list":
                         List<Object> values = new ArrayList<>();

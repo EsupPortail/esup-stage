@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, HostListener } from '@angular/core';
 import { MenuService } from "./services/menu.service";
 import { AuthService } from "./services/auth.service";
 import { AppFonction } from "./constants/app-fonction";
@@ -107,7 +107,7 @@ export class AppComponent {
     },
   ]
 
-  constructor(public menuService: MenuService, private authService: AuthService, private configService: ConfigService) {
+  constructor(public menuService: MenuService, private authService: AuthService, private configService: ConfigService, private el: ElementRef) {
     this.configService.getConfigTheme();
     this.configService.themeModified.subscribe((config: any) => {
       if (this.favicon !== null && config.favicon) {
@@ -134,6 +134,16 @@ export class AppComponent {
   slideNavbar(): void {
     let opened = this.menuService.navbarOpened;
     this.menuService.navbarOpened = !opened;
+  }
+
+  @HostListener('submit') onClick(): void {
+    const firstInvalidControl: HTMLElement = this.el.nativeElement.querySelector("form .ng-invalid");
+
+    if (firstInvalidControl) {
+      firstInvalidControl.scrollIntoView({
+        behavior: 'smooth',
+      });
+    }
   }
 
 }

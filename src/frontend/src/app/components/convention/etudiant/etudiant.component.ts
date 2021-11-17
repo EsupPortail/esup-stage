@@ -10,6 +10,7 @@ import { LangueConventionService } from "../../../services/langue-convention.ser
 import * as _ from "lodash";
 import { CentreGestionService } from "../../../services/centre-gestion.service";
 import { ConventionService } from "../../../services/convention.service";
+import { debounceTime } from "rxjs/operators";
 
 @Component({
   selector: 'app-convention-etudiant',
@@ -99,6 +100,10 @@ export class EtudiantComponent implements OnInit, OnChanges {
           this.centreGestion = response;
         });
       }
+    });
+
+    this.form.valueChanges.pipe(debounceTime(500)).subscribe(() => {
+      this.search();
     });
   }
 
