@@ -11,42 +11,42 @@
       Étab. d'accueil
       <mat-progress-bar mode="determinate" [value]="getProgressValue(1)" [ngClass]="{editing: tabs[1].statut === 1, done: tabs[1].statut === 2}"></mat-progress-bar>
     </ng-template>
-    <app-etab-accueil *ngIf="etabAccueilTab.isActive || tabs[1].init" (validated)="setStatus(1, $event)" (etabSelected)="setEtab($event)"></app-etab-accueil>
+    <app-etab-accueil *ngIf="etabAccueilTab.isActive || tabs[1].init" (validated)="updateEtab($event)" [etab]="convention.structure"></app-etab-accueil>
   </mat-tab>
-  <mat-tab #serviceAccueilTab [disabled]="!convention.id || !etab">
+  <mat-tab #serviceAccueilTab [disabled]="!convention.id || !convention.structure">
     <ng-template mat-tab-label>
       Service d'accueil
       <mat-progress-bar mode="determinate" [value]="getProgressValue(2)" [ngClass]="{editing: tabs[2].statut === 1, done: tabs[2].statut === 2}"></mat-progress-bar>
     </ng-template>
-    <app-service-accueil *ngIf="serviceAccueilTab.isActive || tabs[2].init" [etab]="etab" (validated)="setStatus(2, $event)" (serviceSelected)="setService($event)"></app-service-accueil>
+    <app-service-accueil *ngIf="serviceAccueilTab.isActive || tabs[2].init" (validated)="updateService($event)" [etab]="convention.structure" [service]="convention.service"></app-service-accueil>
   </mat-tab>
-  <mat-tab #tuteurProTab [disabled]="!convention.id || !service">
+  <mat-tab #tuteurProTab [disabled]="!convention.id || !convention.service">
     <ng-template mat-tab-label>
       Tuteur professionnel
       <mat-progress-bar mode="determinate" [value]="getProgressValue(3)" [ngClass]="{editing: tabs[3].statut === 1, done: tabs[3].statut === 2}"></mat-progress-bar>
     </ng-template>
-    <app-tuteur-pro *ngIf="tuteurProTab.isActive || tabs[3].init" [service]="service" (validated)="setStatus(3, $event)"></app-tuteur-pro>
+    <app-tuteur-pro *ngIf="tuteurProTab.isActive || tabs[3].init" (validated)="updateTuteurPro($event)" [centreGestion]="convention.centreGestion" [contact]="convention.contact" [service]="convention.service"></app-tuteur-pro>
   </mat-tab>
   <mat-tab #stageTab [disabled]="!convention.id">
     <ng-template mat-tab-label>
       Stage
       <mat-progress-bar mode="determinate" [value]="getProgressValue(4)" [ngClass]="{editing: tabs[4].statut === 1, done: tabs[4].statut === 2}"></mat-progress-bar>
     </ng-template>
-    <app-stage *ngIf="stageTab.isActive || tabs[4].init" [convention]="convention" (validated)="setStatus(4, $event)"></app-stage>
+    <app-stage *ngIf="stageTab.isActive || tabs[4].init" [convention]="convention" (validated)="updateStage($event)"></app-stage>
   </mat-tab>
   <mat-tab #enseignantRefTab [disabled]="!convention.id">
     <ng-template mat-tab-label>
       Enseignant référent
       <mat-progress-bar mode="determinate" [value]="getProgressValue(5)" [ngClass]="{editing: tabs[5].statut === 1, done: tabs[5].statut === 2}"></mat-progress-bar>
     </ng-template>
-    <app-enseignant-referent *ngIf="enseignantRefTab.isActive || tabs[5].init" (validated)="setStatus(5, $event)"></app-enseignant-referent>
+    <app-enseignant-referent *ngIf="enseignantRefTab.isActive || tabs[5].init" (validated)="updateEnseignant($event)" [enseignant]="convention.enseignant"></app-enseignant-referent>
   </mat-tab>
-  <mat-tab #signataireTab [disabled]="!convention.id || !service">
+  <mat-tab #signataireTab [disabled]="!convention.id || !convention.service">
     <ng-template mat-tab-label>
       Signataire
       <mat-progress-bar mode="determinate" [value]="getProgressValue(6)" [ngClass]="{editing: tabs[6].statut === 1, done: tabs[6].statut === 2}"></mat-progress-bar>
     </ng-template>
-    <app-signataire *ngIf="signataireTab.isActive || tabs[6].init" [service]="service" (validated)="setStatus(6, $event)"></app-signataire>
+    <app-signataire *ngIf="signataireTab.isActive || tabs[6].init" (validated)="updateSignataire($event)" [centreGestion]="convention.centreGestion" [contact]="convention.signataire" [service]="convention.service"></app-signataire>
   </mat-tab>
   <mat-tab #recapTab [disabled]="!convention.id || !allValid">
     <ng-template mat-tab-label>

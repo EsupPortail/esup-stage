@@ -19,10 +19,12 @@ export class SignataireComponent implements OnInit, OnChanges {
 
   data: any;
 
-  @Input() service = {id:null!};
+  @Input() service: any;
+  @Input() centreGestion: any;
+
+  @Input() contact: any;
   contacts:any[] = [];
 
-  contact: any;
   modif: boolean = false;
   form: FormGroup;
 
@@ -55,7 +57,6 @@ export class SignataireComponent implements OnInit, OnChanges {
 
   ngOnChanges(): void{
     this.refreshContacts();
-    this.resetState();
   }
 
   refreshContacts(): void{
@@ -79,16 +80,7 @@ export class SignataireComponent implements OnInit, OnChanges {
     if (this.firstPanel) {
       this.firstPanel.expanded = false;
     }
-    this.validated.emit(2);
-  }
-
-  resetState(): void {
-    this.contact = null;
-    this.modif = false;
-    if (this.firstPanel) {
-      this.firstPanel.expanded = true;
-    }
-    this.validated.emit(0);
+    this.validated.emit(this.contact);
   }
 
   initCreate(): void {
@@ -135,9 +127,8 @@ export class SignataireComponent implements OnInit, OnChanges {
         });
       } else {
 
-        //ajoute un idCentreGestion factice à l'objet contact
-        //TODO : récupérer idCentreGestion à la création de la convention
-        data.idCentreGestion = 1;
+        //ajoute idCentreGestion à l'objet contact
+        data.idCentreGestion = this.centreGestion.id;
 
         //ajoute idService à l'objet contact
         data.idService = this.service.id;

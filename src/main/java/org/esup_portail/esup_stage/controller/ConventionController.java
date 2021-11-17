@@ -58,8 +58,6 @@ public class ConventionController {
     CentreGestionJpaRepository centreGestionJpaRepository;
 
     @Autowired
-    ServiceJpaRepository serviceJpaRepository;
-    @Autowired
     PaysJpaRepository paysJpaRepository;
     @Autowired
     ThemeJpaRepository themeJpaRepository;
@@ -79,6 +77,14 @@ public class ConventionController {
     NatureTravailJpaRepository natureTravailJpaRepository;
     @Autowired
     ModeValidationStageJpaRepository modeValidationStageJpaRepository;
+    @Autowired
+    StructureJpaRepository structureJpaRepository;
+    @Autowired
+    ServiceJpaRepository serviceJpaRepository;
+    @Autowired
+    ContactJpaRepository contactJpaRepository;
+    @Autowired
+    EnseignantJpaRepository enseignantJpaRepository;
 
     @Autowired
     ApogeeService apogeeService;
@@ -217,13 +223,6 @@ public class ConventionController {
 
     private void setSingleFieldData(Convention convention, ConventionSingleFieldDto conventionSingleFieldDto) {
 
-        if (Objects.equals(conventionSingleFieldDto.getField(), "idService")){
-            Service service = serviceJpaRepository.findById((int) conventionSingleFieldDto.getValue());
-            if (service == null) {
-                throw new AppException(HttpStatus.NOT_FOUND, "Service non trouvé");
-            }
-            convention.setService(service);
-        }
         if (Objects.equals(conventionSingleFieldDto.getField(), "codeLangueConvention")){
             LangueConvention langueConvention = langueConventionJpaRepository.findByCode((String) conventionSingleFieldDto.getValue());
             if (langueConvention == null) {
@@ -368,6 +367,49 @@ public class ConventionController {
         //if (Objects.equals(conventionSingleFieldDto.getField(), "confidentiel")){
         //    convention.setConfidentiel((Boolean) conventionSingleFieldDto.getValue());
         //}
+
+        if (Objects.equals(conventionSingleFieldDto.getField(), "idStructure")){
+            Structure structure = structureJpaRepository.findById((int) conventionSingleFieldDto.getValue());
+            if (structure == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "Structure non trouvé");
+            }
+            convention.setStructure(structure);
+            //Cascade structure change to relevant fields
+            convention.setService(null);
+            convention.setContact(null);
+            convention.setSignataire(null);
+        }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "idService")){
+            Service service = serviceJpaRepository.findById((int) conventionSingleFieldDto.getValue());
+            if (service == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "Service non trouvé");
+            }
+            convention.setService(service);
+            //Cascade service change to relevant fields
+            convention.setContact(null);
+            convention.setSignataire(null);
+        }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "idContact")){
+            Contact contact = contactJpaRepository.findById((int) conventionSingleFieldDto.getValue());
+            if (contact == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "Contact non trouvé");
+            }
+            convention.setContact(contact);
+        }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "idEnseignant")){
+            Enseignant enseignant = enseignantJpaRepository.findById((int) conventionSingleFieldDto.getValue());
+            if (enseignant == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "Enseignant non trouvé");
+            }
+            convention.setEnseignant(enseignant);
+        }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "idSignataire")){
+            Contact signataire = contactJpaRepository.findById((int) conventionSingleFieldDto.getValue());
+            if (signataire == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "Signataire non trouvé");
+            }
+            convention.setSignataire(signataire);
+        }
 
     }
 }

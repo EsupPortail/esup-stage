@@ -12,9 +12,6 @@ export class ConventionComponent implements OnInit {
 
   convention: any;
 
-  etab: any;
-  service: any;
-
   tabs: any = {
     0: { statut: 0, init: true },
     1: { statut: 0, init: false },
@@ -52,37 +49,41 @@ export class ConventionComponent implements OnInit {
   majStatus(): void {
     if (this.convention.etudiant){
       this.setStatus(0,2);
+    }else{
+      this.setStatus(0,0);
     }
     if (this.convention.structure){
       this.setStatus(1,2);
+    }else{
+      this.setStatus(1,0);
     }
     if (this.convention.service){
       this.setStatus(2,2);
+    }else{
+      this.setStatus(2,0);
     }
     if (this.convention.contact){
       this.setStatus(3,2);
+    }else{
+      this.setStatus(3,0);
     }
 
     //TODO setStatus(4,2)
 
     if (this.convention.enseignant){
       this.setStatus(5,2);
+    }else{
+      this.setStatus(5,0);
     }
     if (this.convention.signataire){
       this.setStatus(6,2);
+    }else{
+      this.setStatus(6,0);
     }
   }
 
   setStatus(key: number, value: number): void {
     this.tabs[key].statut = value;
-  }
-
-  setEtab(value: any): void {
-    this.etab = value;
-  }
-
-  setService(value: any): void {
-    this.service = value;
   }
 
   isCreated(): boolean {
@@ -102,6 +103,42 @@ export class ConventionComponent implements OnInit {
   updateConvention(data: any): void {
     this.convention = data;
     this.setStatus(0,2);
+  }
+
+  updateEtab(data: any): void {
+    this.updateSingleField('idStructure',data.id);
+  }
+
+  updateService(data: any): void {
+    this.updateSingleField('idService',data.id);
+  }
+
+  updateTuteurPro(data: any): void {
+    this.updateSingleField('idContact',data.id);
+  }
+
+  updateStage(data: any): void {
+    //TODO
+  }
+
+  updateEnseignant(data: any): void {
+    this.updateSingleField('idEnseignant',data.id);
+  }
+
+  updateSignataire(data: any): void {
+    this.updateSingleField('idSignataire',data.id);
+  }
+
+  updateSingleField(key: string, value: any): void {
+    const data = {
+      "field":key,
+      "value":value,
+    };
+    console.log('data: ' + JSON.stringify(data, null, 2));
+    this.conventionService.patch(this.convention.id, data).subscribe((response: any) => {
+      this.convention = response;
+      this.majStatus();
+    });
   }
 
 }

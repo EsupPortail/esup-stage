@@ -75,7 +75,7 @@ public class ServiceController {
 
         Structure structure = structureJpaRepository.findById(serviceFormDto.getIdStructure());
         if (structure == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Structure non trouvée");
+            throw new AppException(HttpStatus.NOT_FOUND, "Service non trouvée");
         }
         service.setStructure(structure);
 

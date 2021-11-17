@@ -22,14 +22,13 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
   @Input() etab: any;
   services:any[] = [];
 
-  service: any;
+  @Input() service: any;
   modif: boolean = false;
   form: FormGroup;
 
   @ViewChild(MatExpansionPanel) firstPanel: MatExpansionPanel|undefined;
 
   @Output() validated = new EventEmitter<number>();
-  @Output() serviceSelected = new EventEmitter<any>();
 
   constructor(public serviceService: ServiceService,
               private fb: FormBuilder,
@@ -56,15 +55,12 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
 
   ngOnChanges(): void{
     this.refreshServices();
-    this.resetState();
   }
 
   refreshServices(): void{
-    if (this.etab){
-      this.serviceService.getByStructure(this.etab.id).subscribe((response: any) => {
-        this.services = response;
-      });
-    }
+    this.serviceService.getByStructure(this.etab.id).subscribe((response: any) => {
+      this.services = response;
+    });
   }
 
   canCreate(): boolean {
@@ -80,18 +76,7 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
     if (this.firstPanel) {
       this.firstPanel.expanded = false;
     }
-    this.validated.emit(2);
-    this.serviceSelected.emit(this.service);
-  }
-
-  resetState(): void {
-    this.service = null;
-    this.modif = false;
-    if (this.firstPanel) {
-      this.firstPanel.expanded = true;
-    }
-    this.validated.emit(0);
-    this.serviceSelected.emit(this.service);
+    this.validated.emit(this.service);
   }
 
   initCreate(): void {

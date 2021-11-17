@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { PaysService } from "../../../services/pays.service";
 import { TypeStructureService } from "../../../services/type-structure.service";
 import { NafN1Service } from "../../../services/naf-n1.service";
@@ -31,15 +31,14 @@ export class EtabAccueilComponent implements OnInit {
     action: () => this.initCreate(),
   }
 
-  etab: any;
+  @Input() etab: any;
   modif: boolean = false;
   selectedRow: any = undefined;
 
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
   @ViewChild(MatExpansionPanel) firstPanel: MatExpansionPanel|undefined;
 
-  @Output() validated = new EventEmitter<number>();
-  @Output() etabSelected = new EventEmitter<any>();
+  @Output() validated = new EventEmitter<any>();
 
   constructor(public structureService: StructureService,
               private paysService: PaysService,
@@ -101,13 +100,10 @@ export class EtabAccueilComponent implements OnInit {
     this.selectedRow = row;
     this.structureService.getById(row.id).subscribe((response: any) => {
       this.etab = response;
-
       if (this.firstPanel) {
         this.firstPanel.expanded = false;
       }
-
-      this.validated.emit(2);
-      this.etabSelected.emit(this.etab);
+      this.validated.emit(this.etab);
     });
   }
 

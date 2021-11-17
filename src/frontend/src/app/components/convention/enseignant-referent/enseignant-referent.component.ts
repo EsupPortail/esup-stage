@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit, ViewChild } from '@angular/core';
 import { AuthService } from "../../../services/auth.service";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MessageService } from "../../../services/message.service";
@@ -17,7 +17,7 @@ export class EnseignantReferentComponent implements OnInit {
   columns = ['nomprenom', 'mail', 'departement', 'action'];
 
   enseignants: any[] = [];
-  enseignant: any;
+  @Input() enseignant: any;
 
   formAdresse: FormGroup;
 
@@ -25,7 +25,11 @@ export class EnseignantReferentComponent implements OnInit {
 
   @Output() validated = new EventEmitter<number>();
 
-  constructor(private authService: AuthService, private fb: FormBuilder, private messageService: MessageService, private ldapService: LdapService) {
+  constructor(private authService: AuthService,
+              private fb: FormBuilder,
+              private messageService: MessageService,
+              private ldapService: LdapService,
+     ) {
     this.form = this.fb.group({
       nom: [null, []],
       prenom: [null, []],
@@ -54,7 +58,14 @@ export class EnseignantReferentComponent implements OnInit {
       if (this.searchEnseignantPanel) {
         this.searchEnseignantPanel.expanded = false;
       }
-      this.validated.emit(2);
+      this.updateEnseignant();
   }
 
+  updateEnseignant(): void {
+    const data = {
+      "field":'idEnseignant',
+      "value":this.enseignant.id,
+    };
+    //TODO update
+  }
 }
