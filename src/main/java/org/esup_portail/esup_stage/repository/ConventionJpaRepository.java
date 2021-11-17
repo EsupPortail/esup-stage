@@ -1,5 +1,6 @@
 package org.esup_portail.esup_stage.repository;
 
+import org.esup_portail.esup_stage.dto.ConventionEnAttenteDto;
 import org.esup_portail.esup_stage.model.Convention;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -66,4 +67,10 @@ public interface ConventionJpaRepository extends JpaRepository<Convention, Integ
 
     @Query("SELECT c FROM Convention c WHERE c.loginCreation = :login AND c.validationCreation = FALSE")
     Convention findBrouillon(String login);
+
+    @Query("SELECT new org.esup_portail.esup_stage.dto.ConventionEnAttenteDto(CASE WHEN c.validationPedagogique != TRUE THEN COUNT(c.id) ELSE 0 END, CASE WHEN c.validationConvention != TRUE THEN COUNT(c.id) ELSE 0 END) FROM Convention c WHERE c.annee = :annee AND c.validationCreation = TRUE")
+    ConventionEnAttenteDto countConventionEnAttente(String annee);
+
+    @Query("SELECT new org.esup_portail.esup_stage.dto.ConventionEnAttenteDto(CASE WHEN c.validationPedagogique != TRUE THEN COUNT(c.id) ELSE 0 END, CASE WHEN c.validationConvention != TRUE THEN COUNT(c.id) ELSE 0 END) FROM Convention c JOIN c.centreGestion cg JOIN cg.personnels p WHERE c.annee = :annee AND p.uidPersonnel = :userLogin AND c.validationCreation = TRUE")
+    ConventionEnAttenteDto countConventionEnAttente(String annee, String userLogin);
 }

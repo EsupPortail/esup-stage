@@ -14,8 +14,13 @@ export class DashboardComponent implements OnInit {
   sortColumn = 'id';
   filters: any[] = [];
 
-  anneeEnCours: any;
-  annees: string[] = ['2019/2020', '2020/2021', '2021/2022']; // TODO
+  nbConventionsEnAttente: number|undefined;
+  anneeEnCours: string|undefined;
+  annees: any[] = [
+    { id: '2019', libelle: '2019/2020' },
+    { id: '2020', libelle: '2020/2021' },
+    { id: '2021', libelle: '2021/2022' }
+  ]; // TODO récupérer une liste dynamique
 
   selected: any[] = [];
 
@@ -31,7 +36,7 @@ export class DashboardComponent implements OnInit {
     if (this.isEtudiant()) {
       this.columns = ['id', 'etudiant', 'structure', 'dateDebutStage', 'dateFinStage', 'ufr', 'etape', 'enseignant', 'signataire', 'validationPedagogique', 'validationConvention', 'avenant', 'annee', 'action'];
       this.filters = [
-        { id: 'id', libelle: 'N° de la convention' },
+        { id: 'id', libelle: 'N° de la convention', type: 'int' },
         { id: 'etudiant', libelle: 'Étudiant', specific: true },
         { id: 'structure', libelle: 'Établissement d\'accueil', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
         { id: 'dateDebutStage', libelle: 'Date début du stage', type: 'date' },
@@ -48,7 +53,7 @@ export class DashboardComponent implements OnInit {
     } else if (this.isGestionnaire()) {
       this.columns = ['select', 'id', 'etudiant', 'structure', 'dateDebutStage', 'dateFinStage', 'ufr', 'etape', 'enseignant', 'action'];
       this.filters = [
-        { id: 'id', libelle: 'N° de la convention' },
+        { id: 'id', libelle: 'N° de la convention', type: 'int' },
         { id: 'etudiant', libelle: 'Étudiant', specific: true },
         { id: 'structure', libelle: 'Établissement d\'accueil', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
         { id: 'dateDebutStage', libelle: 'Date début du stage', type: 'date' },
@@ -61,7 +66,7 @@ export class DashboardComponent implements OnInit {
     } else if (this.isEnseignant()) {
       this.columns = ['id', 'etudiant', 'ufr', 'etape',  'dateDebutStage', 'dateFinStage', 'structure', 'sujetStage', 'adresseEtabRef', 'etatValidation', 'avenant', 'signataire', 'action'];
       this.filters = [
-        { id: 'id', libelle: 'N° de la convention' },
+        { id: 'id', libelle: 'N° de la convention', type: 'int' },
         { id: 'etudiant', libelle: 'Étudiant', specific: true },
         { id: 'ufr', libelle: 'Composnante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
         { id: 'etape', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
@@ -78,6 +83,12 @@ export class DashboardComponent implements OnInit {
     } else {
       // TODO
     }
+
+    this.filters.push({ id: 'validationCreation', type: 'boolean', value: true, hidden: true });
+
+    // TODO sélectionner l'année en cours
+    this.anneeEnCours = '2020';
+    this.countConvention();
   }
 
   isEtudiant(): boolean {
@@ -93,6 +104,8 @@ export class DashboardComponent implements OnInit {
   }
 
   changeAnnee(): void {
+    this.countConvention();
+    // TODO ajouter le filtre année dans la recherche
     this.appTable?.update();
   }
 
@@ -122,6 +135,14 @@ export class DashboardComponent implements OnInit {
       }
     });
     return allSelected;
+  }
+
+  countConvention(): void {
+    if ((this.isGestionnaire() || this.isEnseignant()) && this.anneeEnCours) {
+      this.conventionService.countConventionEnAttente(this.anneeEnCours).subscribe((response: any) => {
+        this.nbConventionsEnAttente = response.nbEnAttenteValidPedadogique + response.nbEnAttenteValidAdministratif;
+      });
+    }
   }
 }
 

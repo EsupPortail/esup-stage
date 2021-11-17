@@ -51,7 +51,7 @@
                [showFirstLastButtons]="true"
                (page)="changePaginator($event)"></mat-paginator>
 
-<table mat-table [dataSource]="data">
+<table mat-table [dataSource]="data" class="app-table">
   <ng-content></ng-content>
 
   <tr mat-header-row *matHeaderRowDef="columns"></tr>

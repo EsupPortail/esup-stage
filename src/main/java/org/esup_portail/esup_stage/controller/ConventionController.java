@@ -1,10 +1,7 @@
 package org.esup_portail.esup_stage.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import org.esup_portail.esup_stage.dto.ContextDto;
-import org.esup_portail.esup_stage.dto.ConventionSingleFieldDto;
-import org.esup_portail.esup_stage.dto.PaginatedResponse;
-import org.esup_portail.esup_stage.dto.ConventionFormDto;
+import org.esup_portail.esup_stage.dto.*;
 import org.esup_portail.esup_stage.dto.view.Views;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
@@ -119,7 +116,7 @@ public class ConventionController {
     }
 
     @GetMapping("/brouillon")
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public Convention getBrouillon() {
         ContextDto contexteDto = ServiceContext.getServiceContext();
         Utilisateur utilisateur = contexteDto.getUtilisateur();
@@ -131,7 +128,7 @@ public class ConventionController {
     }
 
     @PostMapping
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.CREATION})
     public Convention create(@Valid @RequestBody ConventionFormDto conventionFormDto) {
         Convention convention = new Convention();
         convention.setValidationCreation(false);
@@ -141,7 +138,7 @@ public class ConventionController {
     }
 
     @PutMapping("/{id}")
-    @Secure(fonctions = AppFonctionEnum.ORGA_ACC, droits = {DroitEnum.MODIFICATION})
+    @Secure(fonctions = AppFonctionEnum.CONVENTION, droits = {DroitEnum.MODIFICATION})
     public Convention update(@PathVariable("id") int id, @Valid @RequestBody ConventionFormDto conventionFormDto) {
         Convention convention = conventionJpaRepository.findById(id);
         setConventionData(convention, conventionFormDto);
@@ -150,12 +147,23 @@ public class ConventionController {
     }
 
     @PatchMapping("/{id}")
-    @Secure(fonctions = AppFonctionEnum.ORGA_ACC, droits = {DroitEnum.MODIFICATION})
+    @Secure(fonctions = AppFonctionEnum.CONVENTION, droits = {DroitEnum.MODIFICATION})
     public Convention singleFieldUpdate(@PathVariable("id") int id, @Valid @RequestBody ConventionSingleFieldDto conventionSingleFieldDto) {
         Convention convention = conventionJpaRepository.findById(id);
         setSingleFieldData(convention, conventionSingleFieldDto);
         convention = conventionJpaRepository.saveAndFlush(convention);
         return convention;
+    }
+
+    @GetMapping("/{annee}/en-attente-validation")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
+    public ConventionEnAttenteDto countConventionEnAttente(@PathVariable("annee") String annee) {
+        ContextDto contexteDto = ServiceContext.getServiceContext();
+        Utilisateur utilisateur = contexteDto.getUtilisateur();
+        if (UtilisateurHelper.isRole(utilisateur, Role.RESP_GES) || UtilisateurHelper.isRole(utilisateur, Role.GES)) {
+            return conventionJpaRepository.countConventionEnAttente(annee, utilisateur.getLogin());
+        }
+        return conventionJpaRepository.countConventionEnAttente(annee);
     }
 
     private void setConventionData(Convention convention, ConventionFormDto conventionFormDto) {
