@@ -1,12 +1,15 @@
-import { Component, OnInit, Input, Output, EventEmitter, ViewChild, OnDestroy, AfterViewInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ViewChildren, QueryList, OnDestroy, AfterViewInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl, Validators } from "@angular/forms";
 import { CentreGestionService } from "../../../services/centre-gestion.service";
 import { NiveauCentreService } from "../../../services/niveau-centre.service";
+import { CritereGestionService } from "../../../services/critere-gestion.service";
 import { MessageService } from "../../../services/message.service";
 import { ReplaySubject, Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { MatSelect } from '@angular/material/select';
 import { HttpErrorResponse } from '@angular/common/http';
+import { MatExpansionPanel } from '@angular/material/expansion';
+import { TableComponent } from "../../table/table.component";
 
 @Component({
   selector: 'app-coord-centre',
@@ -32,11 +35,21 @@ export class CoordCentreComponent implements OnInit {
   composantes: any[] = [];
   etapes: any[] = [];
 
-  displayedEtapesColumns: string[] = ['code', 'codeVrsEtp', 'libelle', 'action'];
+  displayedEtapesColumns = ['id.code', 'id.codeVersionEtape', 'libelle', 'action'];
+  sortColumn = 'id.code';
+  filters: any[] = [];
 
   selectedComposante: any;
 
-  constructor(private centreGestionService: CentreGestionService, private niveauCentreService: NiveauCentreService, private messageService: MessageService, private fb: FormBuilder) { }
+  @ViewChild(TableComponent) appTable: TableComponent | undefined;
+  @ViewChildren(MatExpansionPanel) pannels: QueryList<MatExpansionPanel>;
+
+  constructor(
+    private centreGestionService: CentreGestionService,
+    private niveauCentreService: NiveauCentreService,
+    public critereGestionService: CritereGestionService,
+    private messageService: MessageService,
+    private fb: FormBuilder) { }
 
   ngOnInit(): void {
     this.niveauCentreService.findList().subscribe((response: any) => {
@@ -51,6 +64,7 @@ export class CoordCentreComponent implements OnInit {
       else if (this.centreGestion.niveauCentre.libelle == 'ETAPE') {
         this.getEtapes();
         this.getCentreEtapes();
+        this.filters.push({id: 'centreGestion.id', value: this.centreGestion.id, type: 'int', hidden: true});
       }
       this.form.get('niveauCentre')?.disable();
     }
@@ -93,6 +107,11 @@ export class CoordCentreComponent implements OnInit {
     } else {
       if (!this.form.valid) {
         this.messageService.setError("Veuillez remplir les champs obligatoires");
+        if (this.form.get('nomCentre')?.invalid || this.form.get('niveauCentre')?.invalid) {
+          this.pannels.first.open();
+          this.form.get('nomCentre')?.markAsTouched();
+          this.form.get('niveauCentre')?.markAsTouched();
+        }
         return;
       }
       this.centreGestionService.create(data).subscribe((response: any) => {
@@ -150,21 +169,23 @@ export class CoordCentreComponent implements OnInit {
     if (selected) {
       this.centreGestionService.addEtape(etape, this.centreGestion.id).subscribe((response: any) => {
         this.getCentreEtapes();
+        if (this.appTable)
+          this.appTable.update();
       });
     } else {
-      this.centreGestionService.deleteEtape(etape.code, etape.codeVrsEtp).subscribe((response: any) => {
-        this.getCentreEtapes();
-      }, (err: HttpErrorResponse) => {
-        this.getCentreEtapes();
-      });
+      this.deleteEtape(etape.code, etape.codeVrsEtp);
     }
   }
 
-  deleteEtape(etape: any) {
-    this.centreGestionService.deleteEtape(etape.code, etape.codeVrsEtp).subscribe((response: any) => {
+  deleteEtape(code: string, codeVrsEtp: string) {
+    this.centreGestionService.deleteEtape(code, codeVrsEtp).subscribe((response: any) => {
       this.getCentreEtapes();
+      if (this.appTable)
+        this.appTable.update();
     }, (err: HttpErrorResponse) => {
       this.getCentreEtapes();
+      if (this.appTable)
+        this.appTable.update();
     });
   }
 
