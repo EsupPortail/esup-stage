@@ -1,47 +1,47 @@
 <mat-tab-group #tabGroup class="convention" *ngIf="convention" (selectedTabChange)="tabChanged($event)">
-  <mat-tab #etudiantTab>
+  <mat-tab #etudiantTab *ngIf="!isValide()">
     <ng-template mat-tab-label>
       Étudiant
       <mat-progress-bar mode="determinate" [value]="getProgressValue(0)" [ngClass]="{editing: tabs[0].statut === 1, done: tabs[0].statut === 2}"></mat-progress-bar>
     </ng-template>
     <app-convention-etudiant (validated)="updateConvention($event)" [convention]="convention"></app-convention-etudiant>
   </mat-tab>
-  <mat-tab #etabAccueilTab [disabled]="!convention.id">
+  <mat-tab #etabAccueilTab [disabled]="!convention.id" *ngIf="!isValide()">
     <ng-template mat-tab-label>
       Étab. d'accueil
       <mat-progress-bar mode="determinate" [value]="getProgressValue(1)" [ngClass]="{editing: tabs[1].statut === 1, done: tabs[1].statut === 2}"></mat-progress-bar>
     </ng-template>
     <app-etab-accueil *ngIf="etabAccueilTab.isActive || tabs[1].init" (validated)="updateEtab($event)" [etab]="convention.structure"></app-etab-accueil>
   </mat-tab>
-  <mat-tab #serviceAccueilTab [disabled]="!convention.id || !convention.structure">
+  <mat-tab #serviceAccueilTab [disabled]="!convention.id || !convention.structure" *ngIf="!isValide()">
     <ng-template mat-tab-label>
       Service d'accueil
       <mat-progress-bar mode="determinate" [value]="getProgressValue(2)" [ngClass]="{editing: tabs[2].statut === 1, done: tabs[2].statut === 2}"></mat-progress-bar>
     </ng-template>
     <app-service-accueil *ngIf="serviceAccueilTab.isActive || tabs[2].init" (validated)="updateService($event)" [etab]="convention.structure" [service]="convention.service"></app-service-accueil>
   </mat-tab>
-  <mat-tab #tuteurProTab [disabled]="!convention.id || !convention.service">
+  <mat-tab #tuteurProTab [disabled]="!convention.id || !convention.service" *ngIf="!isValide()">
     <ng-template mat-tab-label>
       Tuteur professionnel
       <mat-progress-bar mode="determinate" [value]="getProgressValue(3)" [ngClass]="{editing: tabs[3].statut === 1, done: tabs[3].statut === 2}"></mat-progress-bar>
     </ng-template>
     <app-tuteur-pro *ngIf="tuteurProTab.isActive || tabs[3].init" (validated)="updateTuteurPro($event)" [centreGestion]="convention.centreGestion" [contact]="convention.contact" [service]="convention.service"></app-tuteur-pro>
   </mat-tab>
-  <mat-tab #stageTab [disabled]="!convention.id">
+  <mat-tab #stageTab [disabled]="!convention.id" *ngIf="!isValide()">
     <ng-template mat-tab-label>
       Stage
       <mat-progress-bar mode="determinate" [value]="getProgressValue(4)" [ngClass]="{editing: tabs[4].statut === 1, done: tabs[4].statut === 2}"></mat-progress-bar>
     </ng-template>
     <app-stage *ngIf="stageTab.isActive || tabs[4].init" [convention]="convention" (validated)="updateStage($event)"></app-stage>
   </mat-tab>
-  <mat-tab #enseignantRefTab [disabled]="!convention.id">
+  <mat-tab #enseignantRefTab [disabled]="!convention.id" *ngIf="!isValide()">
     <ng-template mat-tab-label>
       Enseignant référent
       <mat-progress-bar mode="determinate" [value]="getProgressValue(5)" [ngClass]="{editing: tabs[5].statut === 1, done: tabs[5].statut === 2}"></mat-progress-bar>
     </ng-template>
     <app-enseignant-referent *ngIf="enseignantRefTab.isActive || tabs[5].init" (validated)="updateEnseignant($event)" [enseignant]="convention.enseignant"></app-enseignant-referent>
   </mat-tab>
-  <mat-tab #signataireTab [disabled]="!convention.id || !convention.service">
+  <mat-tab #signataireTab [disabled]="!convention.id || !convention.service" *ngIf="!isValide()">
     <ng-template mat-tab-label>
       Signataire
       <mat-progress-bar mode="determinate" [value]="getProgressValue(6)" [ngClass]="{editing: tabs[6].statut === 1, done: tabs[6].statut === 2}"></mat-progress-bar>
@@ -51,6 +51,11 @@
   <mat-tab #recapTab [disabled]="!convention.id || !allValid">
     <ng-template mat-tab-label>
       Récapitulatif
+    </ng-template>
+  </mat-tab>
+  <mat-tab #avenantTab *ngIf="isValide()">
+    <ng-template mat-tab-label>
+      Avenants
     </ng-template>
   </mat-tab>
 </mat-tab-group>

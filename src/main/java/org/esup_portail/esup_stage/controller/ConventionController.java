@@ -133,6 +133,16 @@ public class ConventionController {
         return convention;
     }
 
+    @GetMapping("/{id}")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
+    public Convention getById(@PathVariable("id") int id) {
+        Convention convention = conventionJpaRepository.findById(id);
+        if (convention == null) {
+            convention = new Convention();
+        }
+        return convention;
+    }
+
     @PostMapping
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.CREATION})
     public Convention create(@Valid @RequestBody ConventionFormDto conventionFormDto) {
@@ -196,7 +206,10 @@ public class ConventionController {
         if (ufr == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "UFR non trouvée");
         }
-        CentreGestion centreGestion = centreGestionJpaRepository.findByCodeEtape(etape.getId().getCode(), etape.getId().getCodeVersionEtape());
+        CentreGestion centreGestion = centreGestionJpaRepository.getByCode(conventionFormDto.getCodeComposante());
+        if (centreGestion == null) {
+            centreGestion = centreGestionJpaRepository.findByCodeEtape(etape.getId().getCode(), etape.getId().getCodeVersionEtape());
+        }
         if (centreGestion == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion non trouvé");
         }

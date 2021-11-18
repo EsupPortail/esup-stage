@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from "@angular/router";
 import { ConventionService } from "../../services/convention.service";
 import { MatTabChangeEvent } from "@angular/material/tabs";
+import { TitleService } from "../../services/title.service";
 
 @Component({
   selector: 'app-convention',
@@ -25,23 +26,25 @@ export class ConventionComponent implements OnInit {
 
   allValid = false;
 
-  constructor(private activatedRoute: ActivatedRoute, private conventionService: ConventionService) { }
+  constructor(private activatedRoute: ActivatedRoute, private conventionService: ConventionService, private titleService: TitleService) { }
 
   ngOnInit(): void {
     this.activatedRoute.params.subscribe((param: any) => {
       const pathId = param.id;
       // TODO création/récupération de la convention
       if (pathId === 'create') {
+        this.titleService.title = 'Création d\'une convention';
         // Récupération de la convention au mode brouillon
         this.conventionService.getBrouillon().subscribe((response: any) => {
           this.convention = response;
           this.majStatus();
         });
       } else {
+        this.titleService.title = 'Gestion d\'une convention';
         // Récupération de la convention correspondant à l'id
-        // this.conventionService.getById(pathId).subscribe((response: any) => {
-        //   this.convention = response;
-        // });
+        this.conventionService.getById(pathId).subscribe((response: any) => {
+          this.convention = response;
+        });
       }
     });
   }
@@ -139,6 +142,10 @@ export class ConventionComponent implements OnInit {
       this.convention = response;
       this.majStatus();
     });
+  }
+
+  isValide(): boolean {
+    return this.convention && (this.convention.validationPedagogique || this.convention.validationConvention); // TODO valider avec Claude
   }
 
 }

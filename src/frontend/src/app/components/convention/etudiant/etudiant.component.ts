@@ -182,9 +182,9 @@ export class EtudiantComponent implements OnInit, OnChanges {
       data.codeEtape = this.formConvention.value.inscription.etapeInscription.codeEtp;
       data.codeVerionEtape = this.formConvention.value.inscription.etapeInscription.codVrsVet;
       data.annee = this.formConvention.value.inscription.annee;
-      data.codeElp = this.formConvention.value.inscriptionElp.codElp;
-      data.libelleELP = this.formConvention.value.inscriptionElp.libElp;
-      data.creditECTS = this.formConvention.value.inscriptionElp.nbrCrdElp;
+      data.codeElp = this.formConvention.value.inscriptionElp ? this.formConvention.value.inscriptionElp.codElp : null;
+      data.libelleELP = this.formConvention.value.inscriptionElp ? this.formConvention.value.inscriptionElp.libElp : null;
+      data.creditECTS = this.formConvention.value.inscriptionElp ? this.formConvention.value.inscriptionElp.nbrCrdElp : null;
       if (this.isEtudiant) {
         data.etudiantLogin = this.authService.userConnected.login;
       } else if (this.selectedRow && this.selectedRow.supannAliasLogin) {
