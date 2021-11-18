@@ -43,6 +43,9 @@ public class EtudiantController {
     @GetMapping("/{numEtudiant}/apogee-inscriptions")
     @Secure
     public List<ConventionFormationDto> getFormationInscriptions(@PathVariable("numEtudiant") String numEtudiant) {
+        // TODO récupération des années éligibles (voir avec Claude)
+        // cas étudiant : année en cours et éventuellement l'année précédente
+        // cas autres : toutes les années dispo
         List<String> anneeInscriptions = apogeeService.getAnneeInscriptions(numEtudiant);
         List<ConventionFormationDto> inscriptions = new ArrayList<>();
         for (String annee : anneeInscriptions) {

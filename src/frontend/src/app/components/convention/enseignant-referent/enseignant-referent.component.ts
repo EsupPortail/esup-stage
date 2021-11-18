@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output, OnInit, ViewChild } from '@angular/core';
+import { EnseignantService } from "../../../services/enseignant.service";
 import { AuthService } from "../../../services/auth.service";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MessageService } from "../../../services/message.service";
@@ -30,6 +31,7 @@ export class EnseignantReferentComponent implements OnInit {
               private fb: FormBuilder,
               private messageService: MessageService,
               private ldapService: LdapService,
+              private enseignantService: EnseignantService,
      ) {
     this.form = this.fb.group({
       nom: [null, []],
@@ -58,18 +60,32 @@ export class EnseignantReferentComponent implements OnInit {
   }
 
   choose(row: any): void {
-      this.enseignant = row;
       if (this.searchEnseignantPanel) {
         this.searchEnseignantPanel.expanded = false;
       }
-      this.updateEnseignant();
+      this.enseignantService.getByUid(row.supannAliasLogin).subscribe((response: any) => {
+        this.enseignant = response;
+        if (this.enseignant == null){
+          this.createEnseignant(row);
+        }else{
+          this.validated.emit(this.enseignant);
+        }
+      });
   }
 
-  updateEnseignant(): void {
+  createEnseignant(row: any): void {
+    const displayName = row.displayName.split(/(\s+)/);
     const data = {
-      "field":'idEnseignant',
-      "value":this.enseignant.id,
+      "nom": displayName[2],
+      "prenom": displayName[0],
+      "mail": row.mail,
+      "typePersonne": row.eduPersonPrimaryAffiliation,
+      "uidEnseignant": row.uid,
     };
-    //TODO update
+
+    this.enseignantService.create(data).subscribe((response: any) => {
+      this.enseignant = response;
+      this.validated.emit(this.enseignant);
+    });
   }
 }

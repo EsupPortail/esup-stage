@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { TableComponent } from "../table/table.component";
 import { ConventionService } from "../../services/convention.service";
 import { AuthService } from "../../services/auth.service";
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'app-dashboard',
@@ -29,6 +30,7 @@ export class DashboardComponent implements OnInit {
   constructor(
     public conventionService: ConventionService,
     private authService: AuthService,
+    private router: Router,
   ) {
   }
 
@@ -143,6 +145,10 @@ export class DashboardComponent implements OnInit {
         this.nbConventionsEnAttente = response.nbEnAttenteValidPedadogique + response.nbEnAttenteValidAdministratif;
       });
     }
+  }
+
+  goToConvention(id: number): void {
+    this.router.navigate([`/conventions/${id}`], )
   }
 }
 
