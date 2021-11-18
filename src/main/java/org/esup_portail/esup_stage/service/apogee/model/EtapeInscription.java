@@ -14,7 +14,6 @@ public class EtapeInscription {
     private String codFinalite;
     private String libFinalite;
     private String volumeHoraire;
-    private String annee;
 
     public String getCodeComposante() {
         return codeComposante;
@@ -118,13 +117,5 @@ public class EtapeInscription {
 
     public void setVolumeHoraire(String volumeHoraire) {
         this.volumeHoraire = volumeHoraire;
-    }
-
-    public String getAnnee() {
-        return annee;
-    }
-
-    public void setAnnee(String annee) {
-        this.annee = annee;
     }
 }

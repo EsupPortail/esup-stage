@@ -8,4 +8,7 @@ public interface EtudiantJpaRepository extends JpaRepository<Etudiant, Integer> 
 
     @Query("SELECT e FROM Etudiant e WHERE e.numEtudiant = :numEtudiant")
     Etudiant findByNumEtudiant(String numEtudiant);
+
+    @Query("SELECT e FROM Etudiant e WHERE e.identEtudiant = :login")
+    Etudiant findByLogin(String login);
 }

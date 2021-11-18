@@ -227,6 +227,9 @@ public class ConventionController {
         convention.setEtape(etape);
         convention.setCentreGestion(centreGestion);
         convention.setAnnee(conventionFormDto.getAnnee() + "/" + (Integer.parseInt(conventionFormDto.getAnnee()) + 1));
+        convention.setCodeElp(conventionFormDto.getCodeElp());
+        convention.setLibelleELP(conventionFormDto.getLibelleELP());
+        convention.setCreditECTS(conventionFormDto.getCreditECTS());
     }
 
     private void setSingleFieldData(Convention convention, ConventionSingleFieldDto conventionSingleFieldDto) {

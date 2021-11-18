@@ -6,6 +6,9 @@ import javax.persistence.*;
 @Table(name = "NiveauCentre")
 public class NiveauCentre {
 
+    public static final String UFR = "UFR";
+    public static final String ETAPE = "ETAPE";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idNiveauCentre", nullable = false)

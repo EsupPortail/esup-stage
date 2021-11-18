@@ -15,4 +15,7 @@ public interface CentreGestionJpaRepository extends JpaRepository<CentreGestion,
 
     @Query("SELECT cg FROM CentreGestion cg JOIN cg.criteres c WHERE c.id.code = :codeEtape and c.id.codeVersionEtape = :codeVersion")
     CentreGestion findByCodeEtape(String codeEtape, String codeVersion);
+
+    @Query("SELECT cg FROM CentreGestion cg where LOWER(cg.nomCentre) = LOWER(:code)")
+    CentreGestion getByCode(String code);
 }

@@ -29,7 +29,7 @@ public class TypeConventionController {
     ConventionJpaRepository conventionJpaRepository;
 
     @GetMapping
-    @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
+    @Secure
     public PaginatedResponse<TypeConvention> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         PaginatedResponse<TypeConvention> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(typeConventionRepository.count(filters));
