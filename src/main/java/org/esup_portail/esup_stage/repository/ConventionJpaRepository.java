@@ -73,4 +73,10 @@ public interface ConventionJpaRepository extends JpaRepository<Convention, Integ
 
     @Query("SELECT new org.esup_portail.esup_stage.dto.ConventionEnAttenteDto(CASE WHEN c.validationPedagogique != TRUE THEN COUNT(c.id) ELSE 0 END, CASE WHEN c.validationConvention != TRUE THEN COUNT(c.id) ELSE 0 END) FROM Convention c JOIN c.centreGestion cg JOIN cg.personnels p WHERE c.annee = :annee AND p.uidPersonnel = :userLogin AND c.validationCreation = TRUE")
     ConventionEnAttenteDto countConventionEnAttente(String annee, String userLogin);
+
+    @Query("SELECT COUNT(c.id) FROM Convention c WHERE c.centreGestion.id = :idCentreGestion and c.ufr.id.code = :codeUfr")
+    Long countConventionRattacheUfr(int idCentreGestion, String codeUfr);
+
+    @Query("SELECT COUNT(c.id) FROM Convention c WHERE c.centreGestion.id = :idCentreGestion AND c.etape.id.code = :codeEtape AND c.etape.id.codeVersionEtape = :codeVersionEtape")
+    Long countConventionRattacheEtape(int idCentreGestion, String codeEtape, String codeVersionEtape);
 }

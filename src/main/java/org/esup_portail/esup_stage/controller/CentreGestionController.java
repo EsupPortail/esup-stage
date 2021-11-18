@@ -8,6 +8,7 @@ import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.CentreGestionRepository;
+import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
 import org.esup_portail.esup_stage.repository.CritereGestionJpaRepository;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
@@ -38,6 +39,9 @@ public class CentreGestionController {
 
     @Autowired
     CritereGestionJpaRepository critereGestionJpaRepository;
+
+    @Autowired
+    ConventionJpaRepository conventionJpaRepository;
 
     @Autowired
     UtilisateurController utilisateurController;
@@ -133,7 +137,9 @@ public class CentreGestionController {
         critereGestionId.setCodeVersionEtape("");
 
         if (critereGestion != null) {
-            //todo : check convention rattachée à la composante
+            if (conventionJpaRepository.countConventionRattacheUfr(critereGestion.getCentreGestion().getId(), _composante.getCode()) > 0) {
+                throw new AppException(HttpStatus.FORBIDDEN, "Une convention est déjà rattachée à cette composante");
+            }
 
             critereGestionJpaRepository.delete(critereGestion);
         }
@@ -196,8 +202,11 @@ public class CentreGestionController {
     @Secure()
     public void deleteEtape(@PathVariable("codeEtape") String codeEtape, @PathVariable("codeVersion") String codeVersion) {
         CritereGestion critereGestion = critereGestionJpaRepository.findEtapeById(codeEtape, codeVersion);
+        int idCentreGestion = critereGestion.getCentreGestion().getId();
 
-        //todo : check convention rattachée à l'étape
+        if (conventionJpaRepository.countConventionRattacheEtape(idCentreGestion, codeEtape, codeVersion) > 0) {
+            throw new AppException(HttpStatus.FORBIDDEN, "Une convention est déjà rattachée à cette étape");
+        }
 
         critereGestionJpaRepository.delete(critereGestion);
         critereGestionJpaRepository.flush();
