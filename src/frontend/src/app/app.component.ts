@@ -35,12 +35,12 @@ export class AppComponent {
         {
           libelle: 'Liste des centres de gestion',
           path: 'centre-gestion/search',
-          icon: 'fa-cogs',
+          icon: 'fa-list',
         },
         {
           libelle: 'Ajouter un centre de gestion',
           path: 'centre-gestion/create',
-          icon: 'fa-file-contract',
+          icon: 'fa-plus',
           canView: () => {
             return this.authService.checkRights({fonction: AppFonction.PARAM_CENTRE, droits: [Droit.CREATION]})
           }
