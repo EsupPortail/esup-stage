@@ -63,10 +63,12 @@ export class EtudiantComponent implements OnInit, OnChanges {
     let codEtu: string|undefined = undefined;
     if (this.convention && this.convention.etudiant) {
       codEtu = this.convention.etudiant.numEtudiant;
+      this.choose({codEtu: codEtu});
     } else {
       if (this.isEtudiant) {
         this.etudiantService.getByLogin(this.authService.userConnected.login).subscribe((response: any) => {
           codEtu = response.numEtudiant;
+          this.choose({codEtu: codEtu});
         });
       }
     }
@@ -80,13 +82,11 @@ export class EtudiantComponent implements OnInit, OnChanges {
       telPortableEtudiant: [this.convention.telPortableEtudiant, []],
       courrielPersoEtudiant: [this.convention.courrielPersoEtudiant, [Validators.required, Validators.email]],
       inscription: [null, [Validators.required]],
+      inscriptionElp: [null, []],
       idTypeConvention: [this.convention.typeConvention ? this.convention.typeConvention.id : null, [Validators.required]],
       codeLangueConvention: [this.convention.langueConvention ? this.convention.langueConvention.code : null, [Validators.required]],
     });
 
-    if (codEtu !== undefined) {
-      this.choose({codEtu: codEtu});
-    }
     this.typeConventionService.getListActive().subscribe((response: any) => {
       this.typeConventions = response.data;
     });
@@ -96,9 +96,10 @@ export class EtudiantComponent implements OnInit, OnChanges {
 
     this.formConvention.get('inscription')?.valueChanges.subscribe((inscription: any) => {
       if (inscription) {
-        this.centreGestionService.findByEtape(inscription.codeEtp, inscription.codVrsVet).subscribe((response: any) => {
+        this.centreGestionService.findByEtape(inscription.etapeInscription.codeComposante, inscription.etapeInscription.codeEtp, inscription.etapeInscription.codVrsVet).subscribe((response: any) => {
           this.centreGestion = response;
         });
+        this.formConvention.get('inscriptionElp')?.setValue(null);
       }
     });
 
@@ -149,10 +150,16 @@ export class EtudiantComponent implements OnInit, OnChanges {
       }
       if (this.convention.etape) {
         const inscription = this.inscriptions.find((i: any) => {
-          return i.codeEtp === this.convention.etape.id.code;
+          return i.etapeInscription.codeEtp === this.convention.etape.id.code;
         });
         if (inscription) {
           this.formConvention.get('inscription')?.setValue(inscription);
+          if (this.convention.codeElp) {
+            const inscriptionElp = inscription.elementPedagogiques.find((i: any) => {
+              return i.codElp === this.convention.codeElp;
+            });
+            this.formConvention.get('inscriptionElp')?.setValue(inscriptionElp);
+          }
         }
       }
     });
@@ -171,10 +178,13 @@ export class EtudiantComponent implements OnInit, OnChanges {
       const data = {...this.formConvention.value};
       delete data.isncription;
       data.numEtudiant = this.selectedNumEtudiant;
-      data.codeComposante = this.formConvention.value.inscription.codeComposante;
-      data.codeEtape = this.formConvention.value.inscription.codeEtp;
-      data.codeVerionEtape = this.formConvention.value.inscription.codVrsVet
-      data.annee = this.formConvention.value.inscription.annee
+      data.codeComposante = this.formConvention.value.inscription.etapeInscription.codeComposante;
+      data.codeEtape = this.formConvention.value.inscription.etapeInscription.codeEtp;
+      data.codeVerionEtape = this.formConvention.value.inscription.etapeInscription.codVrsVet;
+      data.annee = this.formConvention.value.inscription.annee;
+      data.codeElp = this.formConvention.value.inscriptionElp.codElp;
+      data.libelleELP = this.formConvention.value.inscriptionElp.libElp;
+      data.creditECTS = this.formConvention.value.inscriptionElp.nbrCrdElp;
       if (this.isEtudiant) {
         data.etudiantLogin = this.authService.userConnected.login;
       } else if (this.selectedRow && this.selectedRow.supannAliasLogin) {

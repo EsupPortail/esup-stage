@@ -137,7 +137,7 @@
                     <mat-form-field class="col-sm-12 mb-2" appearance="fill">
                       <mat-label>Formation</mat-label>
                       <mat-select formControlName="inscription" required>
-                        <mat-option *ngFor="let inscription of inscriptions" [value]="inscription">{{inscription.codeEtp + ' - ' + inscription.libComposante}}</mat-option>
+                        <mat-option *ngFor="let inscription of inscriptions" [value]="inscription">{{inscription.etapeInscription.codeEtp + ' - ' + inscription.etapeInscription.libComposante}}</mat-option>
                       </mat-select>
                       <mat-error><app-form-error [field]="formConvention.get('inscription')"></app-form-error></mat-error>
                     </mat-form-field>
@@ -148,9 +148,18 @@
                     <div class="col-sm-4 font-weight-bold">Année inscription</div>
                     <div class="col-sm-8">{{selectedInscription.annee}}</div>
                   </div>
-                  <div class="row">
+                  <div class="row mb-2">
                     <div class="col-sm-4 font-weight-bold">Formation</div>
-                    <div class="col-sm-8">{{selectedInscription.codeEtp + ' - ' + selectedInscription.libComposante}}</div>
+                    <div class="col-sm-8">{{selectedInscription.etapeInscription.codeEtp + ' - ' + selectedInscription.etapeInscription.libComposante}}</div>
+                  </div>
+                  <div class="row" *ngIf="selectedInscription.elementPedagogiques.length > 0">
+                    <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                      <mat-label>Élément pédagogique</mat-label>
+                      <mat-select formControlName="inscriptionElp" required>
+                        <mat-option *ngFor="let elp of selectedInscription.elementPedagogiques" [value]="elp">{{elp.codElp + ' - ' + elp.libElp + ' : ' + elp.nbrCrdElp}}</mat-option>
+                      </mat-select>
+                      <mat-error><app-form-error [field]="formConvention.get('inscriptionElp')"></app-form-error></mat-error>
+                    </mat-form-field>
                   </div>
                   <div class="row">
                     <mat-form-field class="col-sm-12 mb-2" appearance="fill">
