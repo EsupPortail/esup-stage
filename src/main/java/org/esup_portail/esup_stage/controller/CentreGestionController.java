@@ -212,10 +212,14 @@ public class CentreGestionController {
         critereGestionJpaRepository.flush();
     }
 
-    @GetMapping("/by-etape/{codeEtape}/{codeVersion}")
+    @GetMapping("/{codeComposante}/by-etape/{codeEtape}/{codeVersion}")
     @Secure()
-    public CentreGestion getByEtape(@PathVariable("codeEtape") String codeEtape, @PathVariable("codeVersion") String codeVersion) {
-        CentreGestion centreGestion = centreGestionJpaRepository.findByCodeEtape(codeEtape, codeVersion);
+    public CentreGestion getByEtape(@PathVariable("codeComposante") String codeComposante, @PathVariable("codeEtape") String codeEtape, @PathVariable("codeVersion") String codeVersion) {
+        CentreGestion centreGestion = centreGestionJpaRepository.getByCode(codeComposante);
+        if (centreGestion != null && centreGestion.getNiveauCentre().getLibelle().equalsIgnoreCase(NiveauCentre.UFR)) {
+            return centreGestion;
+        }
+        centreGestion = centreGestionJpaRepository.findByCodeEtape(codeEtape, codeVersion);
         if (centreGestion == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion non trouvé");
         }
