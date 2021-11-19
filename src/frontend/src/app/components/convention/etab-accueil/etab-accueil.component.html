@@ -6,10 +6,8 @@
 
     <app-table [service]="structureService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters"
                matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'"
-               (matSortChange)="appTable ? appTable.sorting($event) : null" [actionButton]="canCreate() ? createButton : undefined" [selectedRow]="selectedRow">
-      <tr class="mat-row" *matNoDataRow>
-        <td class="mat-cell" colspan="9999">Aucun établissement trouvé</td>
-      </tr>
+               (matSortChange)="appTable ? appTable.sorting($event) : null" [actionButton]="canCreate() ? createButton : undefined" [selectedRow]="selectedRow"
+               [noResultText]="'Aucun établissement trouvé'">
       <ng-container matColumnDef="raisonSociale">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Raison sociale</th>
         <td mat-cell *matCellDef="let row">{{row.raisonSociale}}</td>

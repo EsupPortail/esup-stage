@@ -6,6 +6,9 @@
 }
 
 .app-table {
-  display: block;
   overflow-x: auto;
+
+  .mat-table {
+    max-width: 100%;
+  }
 }
