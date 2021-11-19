@@ -22,9 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @ApiController
 @RequestMapping("/conventions")
@@ -131,6 +129,41 @@ public class ConventionController {
             convention = new Convention();
         }
         return convention;
+    }
+
+    @GetMapping("/annees")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
+    public List<AnneeUniversitaireDto> getListAnnees() {
+        ContextDto contexteDto = ServiceContext.getServiceContext();
+        Utilisateur utilisateur = contexteDto.getUtilisateur();
+        List<AnneeUniversitaireDto> results = new ArrayList<>();
+        List<String> annees;
+        if (!UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
+            if (UtilisateurHelper.isRole(utilisateur, Role.RESP_GES) || UtilisateurHelper.isRole(utilisateur, Role.GES)) {
+                annees = conventionJpaRepository.getGestionnaireAnnees(utilisateur.getLogin());
+            } else if (UtilisateurHelper.isRole(utilisateur, Role.ENS)) {
+                annees = conventionJpaRepository.getEnseignantAnnees(utilisateur.getLogin());
+            } else if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
+                annees = conventionJpaRepository.getEtudiantAnnees(utilisateur.getLogin());
+            } else {
+                annees = conventionJpaRepository.getAnnees(utilisateur.getLogin());
+            }
+        } else {
+            annees = conventionJpaRepository.getAnnees(utilisateur.getLogin());
+        }
+        String anneeEnCours = appConfigService.getAnneeUniv();
+        for (String anneeLibelle : annees) {
+            String annee = appConfigService.getAnneeUnivFromLibelle(anneeLibelle);
+            AnneeUniversitaireDto anneeUniversitaireDto = new AnneeUniversitaireDto(annee, anneeLibelle);
+            if (annee.equals(anneeEnCours)) {
+                anneeUniversitaireDto.setAnneeEnCours(true);
+            }
+            results.add(anneeUniversitaireDto);
+        }
+        if (results.stream().noneMatch(AnneeUniversitaireDto::isAnneeEnCours)) {
+            results.add(new AnneeUniversitaireDto(anneeEnCours, appConfigService.getAnneeUnivLibelle(anneeEnCours), true));
+        }
+        return results;
     }
 
     @GetMapping("/{id}")

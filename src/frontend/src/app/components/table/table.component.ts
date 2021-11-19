@@ -123,4 +123,12 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
     return _.isEqual(row, this.selectedRow);
   }
 
+  setFilter(filter: any): void {
+    this.filterValues[filter.id] = {
+      type: filter.type ?? 'text',
+      value: filter.value,
+      specific: filter.specific
+    };
+  }
+
 }

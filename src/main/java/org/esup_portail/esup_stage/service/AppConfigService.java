@@ -113,4 +113,9 @@ public class AppConfigService {
     public String getAnneeUnivLibelle(String annee) {
         return annee + "/" + (Integer.parseInt(annee) + 1);
     }
+
+    public String getAnneeUnivFromLibelle(String anneeLibelle) {
+        String[] parts = anneeLibelle.split("/");
+        return parts[0];
+    }
 }

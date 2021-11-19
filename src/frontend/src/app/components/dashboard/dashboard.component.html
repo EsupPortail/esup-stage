@@ -8,7 +8,7 @@
         <mat-form-field>
           <mat-label>Année universitaire</mat-label>
           <mat-select [(ngModel)]="anneeEnCours" (ngModelChange)="changeAnnee()">
-            <mat-option *ngFor="let annee of annees" [value]="annee.id">{{annee.libelle}}</mat-option>
+            <mat-option *ngFor="let annee of annees" [value]="annee.annee">{{annee.libelle}}</mat-option>
           </mat-select>
         </mat-form-field>
       </div>

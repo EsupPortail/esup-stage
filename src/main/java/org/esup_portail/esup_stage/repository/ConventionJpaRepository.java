@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface ConventionJpaRepository extends JpaRepository<Convention, Integer> {
 
@@ -79,4 +81,16 @@ public interface ConventionJpaRepository extends JpaRepository<Convention, Integ
 
     @Query("SELECT COUNT(c.id) FROM Convention c WHERE c.centreGestion.id = :idCentreGestion AND c.etape.id.code = :codeEtape AND c.etape.id.codeVersionEtape = :codeVersionEtape")
     Long countConventionRattacheEtape(int idCentreGestion, String codeEtape, String codeVersionEtape);
+
+    @Query("SELECT DISTINCT(c.annee) FROM Convention c JOIN c.centreGestion cg JOIN cg.personnels p WHERE p.uidPersonnel = :login")
+    List<String> getGestionnaireAnnees(String login);
+
+    @Query("SELECT DISTINCT(c.annee) FROM Convention c WHERE c.enseignant.uidEnseignant = :login")
+    List<String> getEnseignantAnnees(String login);
+
+    @Query("SELECT DISTINCT(c.annee) FROM Convention c WHERE c.etudiant.identEtudiant = :login")
+    List<String> getEtudiantAnnees(String login);
+
+    @Query("SELECT DISTINCT(c.annee) FROM Convention c")
+    List<String> getAnnees(String login);
 }

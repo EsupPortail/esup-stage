@@ -39,4 +39,8 @@ export class ConventionService implements PaginatedService {
     return this.http.get(`${environment.apiUrl}/conventions/${annee}/en-attente-validation`);
   }
 
+  getListAnnee(): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/conventions/annees`);
+  }
+
 }

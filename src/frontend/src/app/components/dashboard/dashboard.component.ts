@@ -17,11 +17,7 @@ export class DashboardComponent implements OnInit {
 
   nbConventionsEnAttente: number|undefined;
   anneeEnCours: string|undefined;
-  annees: any[] = [
-    { id: '2019', libelle: '2019/2020' },
-    { id: '2020', libelle: '2020/2021' },
-    { id: '2021', libelle: '2021/2022' }
-  ]; // TODO récupérer une liste dynamique
+  annees: any[] = [];
 
   selected: any[] = [];
 
@@ -51,7 +47,6 @@ export class DashboardComponent implements OnInit {
         { id: 'adresseEtabRef', libelle: 'Lieu du stage' },
         { id: 'etatValidation', libelle: 'État de validation de la convention', specific: true },
         { id: 'avenant', libelle: 'Avenant', specific: true },
-        { id: 'annee', libelle: 'Année', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], hidden: true },
       ];
     } else if (this.isEtudiant()) {
       this.columns = ['id', 'structure', 'dateDebutStage', 'dateFinStage', 'ufr', 'etape', 'enseignant', 'validationPedagogique', 'validationConvention', 'avenant', 'annee', 'action'];
@@ -71,12 +66,13 @@ export class DashboardComponent implements OnInit {
     } else {
       this.setDataGestionnaire();
     }
-
     this.filters.push({ id: 'validationCreation', type: 'boolean', value: true, hidden: true });
 
-    // TODO sélectionner l'année en cours
-    this.anneeEnCours = '2020';
-    this.countConvention();
+    this.conventionService.getListAnnee().subscribe((response: any) => {
+      this.annees = response;
+      this.anneeEnCours = this.annees.find((a: any) => { return a.anneeEnCours === true }).annee;
+      this.changeAnnee();
+    });
   }
 
   setDataGestionnaire(): void {
@@ -90,7 +86,6 @@ export class DashboardComponent implements OnInit {
       { id: 'ufr', libelle: 'Composnante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
       { id: 'etape', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
       { id: 'enseignant', libelle: 'Enseignant', specific: true },
-      { id: 'annee', libelle: 'Année', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], hidden: true },
     ];
   }
 
@@ -108,7 +103,7 @@ export class DashboardComponent implements OnInit {
 
   changeAnnee(): void {
     this.countConvention();
-    // TODO ajouter le filtre année dans la recherche
+    this.appTable?.setFilter({id: 'annee', type: 'text', value: this.anneeEnCours, specific: false});
     this.appTable?.update();
   }
 
