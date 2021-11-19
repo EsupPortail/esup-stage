@@ -80,7 +80,7 @@ export class EnseignantReferentComponent implements OnInit {
       "prenom": displayName[0],
       "mail": row.mail,
       "typePersonne": row.eduPersonPrimaryAffiliation,
-      "uidEnseignant": row.uid,
+      "uidEnseignant": row.supannAliasLogin,
     };
 
     this.enseignantService.create(data).subscribe((response: any) => {
