@@ -83,6 +83,7 @@ import { StageComponent } from './components/convention/stage/stage.component';
 import { ServiceAccueilFormComponent } from './components/gestion-etab-accueil/service-accueil-form/service-accueil-form.component';
 import { ContactFormComponent } from './components/gestion-etab-accueil/contact-form/contact-form.component';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { GestionnairesComponent } from './components/centre-gestion/gestionnaires/gestionnaires.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -128,6 +129,7 @@ registerLocaleData(localeFr, 'fr');
     StageComponent,
     ServiceAccueilFormComponent,
     ContactFormComponent,
+    GestionnairesComponent,
   ],
   imports: [
     BrowserModule,

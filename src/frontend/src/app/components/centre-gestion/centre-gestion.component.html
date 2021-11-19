@@ -24,6 +24,7 @@
       Rattacher un gestionnaire
       <mat-progress-bar mode="determinate" [value]="getProgressValue(3)" [ngClass]="{editing: statuts['statutRattachGest'] === 1, done: statuts['statutRattachGest'] === 2}"></mat-progress-bar>
     </ng-template>
+    <app-gestionnaires *ngIf="centreGestionInited && (paramCentreTab.isActive || tabs[3].init)"></app-gestionnaires>
   </mat-tab>
   <mat-tab>
     <ng-template mat-tab-label>

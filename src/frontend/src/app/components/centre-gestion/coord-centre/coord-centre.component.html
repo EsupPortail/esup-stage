@@ -108,7 +108,7 @@
           <input matInput formControlName="fax">
         </mat-form-field>
       </div>
-      <mat-dialog-actions>
+      <mat-dialog-actions *ngIf="!centreGestion.id">
         <button mat-flat-button color="primary" (click)="validate()">{{'BOUTON_VALIDER'|contenu}}</button>
       </mat-dialog-actions>
     </form>
