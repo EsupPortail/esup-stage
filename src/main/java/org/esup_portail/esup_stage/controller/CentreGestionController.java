@@ -208,19 +208,4 @@ public class CentreGestionController {
         critereGestionJpaRepository.delete(critereGestion);
         critereGestionJpaRepository.flush();
     }
-
-    @GetMapping("/{codeComposante}/by-etape/{codeEtape}/{codeVersion}")
-    @Secure()
-    public CentreGestion getByEtape(@PathVariable("codeComposante") String codeComposante, @PathVariable("codeEtape") String codeEtape, @PathVariable("codeVersion") String codeVersion) {
-        CritereGestion critereGestion = critereGestionJpaRepository.findEtapeById(codeComposante, "");
-        if (critereGestion != null) {
-            return critereGestion.getCentreGestion();
-        }
-        critereGestion = critereGestionJpaRepository.findEtapeById(codeEtape, codeVersion);
-        // Erreur si on n'autorise pas la création de convention non rattaché à un centre de gestion
-        if (!appConfigService.getConfigGenerale().isAutoriserConventionsOrphelines() && critereGestion == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion non trouvé");
-        }
-        return critereGestion.getCentreGestion();
-    }
 }

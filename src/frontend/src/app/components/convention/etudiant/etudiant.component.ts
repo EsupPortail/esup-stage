@@ -97,9 +97,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
 
       this.formConvention.get('inscription')?.valueChanges.subscribe((inscription: any) => {
         if (inscription) {
-          this.centreGestionService.findByEtape(inscription.etapeInscription.codeComposante, inscription.etapeInscription.codeEtp, inscription.etapeInscription.codVrsVet).subscribe((response: any) => {
-            this.centreGestion = response;
-          });
+          this.centreGestion = inscription.centreGestion;
           this.formConvention.get('inscriptionElp')?.setValue(null);
         }
       });
