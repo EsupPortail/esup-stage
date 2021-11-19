@@ -31,6 +31,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   @Input() actionButton: any;
   @Input() hideDeleteFilters: boolean;
   @Input() selectedRow: any;
+  @Input() noResultText: string = 'Aucun élément trouvé';
 
   @Output() onUpdated = new EventEmitter<any>();
 
@@ -129,6 +130,10 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
       value: filter.value,
       specific: filter.specific
     };
+  }
+
+  setFilterValue(id: string, value: any): void {
+    this.filterValues[id] .value = value;
   }
 
 }

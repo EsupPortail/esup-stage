@@ -62,13 +62,19 @@
                [showFirstLastButtons]="true"
                (page)="changePaginator($event)"></mat-paginator>
 
-<table mat-table [dataSource]="data" class="app-table">
-  <ng-content></ng-content>
+<div class="app-table">
+  <table mat-table [dataSource]="data">
+    <ng-content></ng-content>
 
-  <tr mat-header-row *matHeaderRowDef="columns"></tr>
-  <tr mat-row *matRowDef="let row; columns: columns;" [class.selected]="isSelected(row)"></tr>
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell" colspan="9999">{{noResultText}}</td>
+    </tr>
 
-</table>
+    <tr mat-header-row *matHeaderRowDef="columns"></tr>
+    <tr mat-row *matRowDef="let row; columns: columns;" [class.selected]="isSelected(row)"></tr>
+
+  </table>
+</div>
 
 <mat-paginator *ngIf="pagination"
                [pageSizeOptions]="[10, 25, 50, 100]"

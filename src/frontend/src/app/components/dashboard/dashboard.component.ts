@@ -16,7 +16,7 @@ export class DashboardComponent implements OnInit {
   filters: any[] = [];
 
   nbConventionsEnAttente: number|undefined;
-  anneeEnCours: string|undefined;
+  anneeEnCours: any|undefined;
   annees: any[] = [];
 
   selected: any[] = [];
@@ -61,7 +61,7 @@ export class DashboardComponent implements OnInit {
         { id: 'validationPedagogique', libelle: 'Validation pédagogique', type: 'boolean' },
         { id: 'validationConvention', libelle: 'Validation pédagogique', type: 'boolean' },
         { id: 'avenant', libelle: 'Avenant', specific: true },
-        { id: 'annee', libelle: 'Année', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
+        { id: 'annee', libelle: 'Année', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'libelle', value: [] },
       ];
     } else {
       this.setDataGestionnaire();
@@ -70,8 +70,16 @@ export class DashboardComponent implements OnInit {
 
     this.conventionService.getListAnnee().subscribe((response: any) => {
       this.annees = response;
-      this.anneeEnCours = this.annees.find((a: any) => { return a.anneeEnCours === true }).annee;
-      this.changeAnnee();
+      this.anneeEnCours = this.annees.find((a: any) => { return a.anneeEnCours === true });
+      if (!this.isEtudiant()) {
+        this.changeAnnee();
+      } else {
+        const filterAnnee = this.filters.find(((f: any) => f.id === 'annee'));
+        if (filterAnnee) {
+          filterAnnee.options = this.annees;
+        }
+        this.appTable?.setFilterValue('annee', [this.anneeEnCours.libelle]);
+      }
     });
   }
 
@@ -103,7 +111,7 @@ export class DashboardComponent implements OnInit {
 
   changeAnnee(): void {
     this.countConvention();
-    this.appTable?.setFilter({id: 'annee', type: 'text', value: this.anneeEnCours, specific: false});
+    this.appTable?.setFilter({id: 'annee', type: 'text', value: this.anneeEnCours.annee, specific: false});
     this.appTable?.update();
   }
 
@@ -137,7 +145,7 @@ export class DashboardComponent implements OnInit {
 
   countConvention(): void {
     if ((this.isGestionnaire() || this.isEnseignant()) && this.anneeEnCours) {
-      this.conventionService.countConventionEnAttente(this.anneeEnCours).subscribe((response: any) => {
+      this.conventionService.countConventionEnAttente(this.anneeEnCours.annee).subscribe((response: any) => {
         this.nbConventionsEnAttente = response.nbEnAttenteValidPedadogique + response.nbEnAttenteValidAdministratif;
       });
     }

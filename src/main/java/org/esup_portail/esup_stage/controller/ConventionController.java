@@ -96,8 +96,8 @@ public class ConventionController {
         if (!UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
             JSONObject jsonFilters = new JSONObject(filters);
             Map<String, Object> currentUser = new HashMap<>();
-            currentUser.put("type", "int");
-            currentUser.put("value", utilisateur.getId());
+            currentUser.put("type", "text");
+            currentUser.put("value", utilisateur.getLogin());
             if (UtilisateurHelper.isRole(utilisateur, Role.RESP_GES) || UtilisateurHelper.isRole(utilisateur, Role.GES)) {
                 Map<String, Object> ges = new HashMap<>();
                 ges.put("type", "text");
@@ -105,9 +105,9 @@ public class ConventionController {
                 ges.put("specific", true);
                 jsonFilters.put("centreGestion.personnels", ges);
             } else if (UtilisateurHelper.isRole(utilisateur, Role.ENS)) {
-                jsonFilters.put("enseignant.id", currentUser);
+                jsonFilters.put("enseignant.uidEnseignant", currentUser);
             } else if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
-                jsonFilters.put("etudiant.id", currentUser);
+                jsonFilters.put("etudiant.identEtudiant", currentUser);
             }
 
             filters = jsonFilters.toString();

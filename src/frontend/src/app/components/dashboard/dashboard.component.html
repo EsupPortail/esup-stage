@@ -17,7 +17,8 @@
 </mat-card>
 
 <app-table [service]="conventionService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters"
-           matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'" (matSortChange)="appTable ? appTable.sorting($event) : null">
+           matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'" (matSortChange)="appTable ? appTable.sorting($event) : null"
+           [noResultText]="'Aucune convention trouvée'">
   <ng-container *ngIf="isGestionnaire()" matColumnDef="select">
     <th mat-header-cell *matHeaderCellDef>
       <!-- TODO -->
