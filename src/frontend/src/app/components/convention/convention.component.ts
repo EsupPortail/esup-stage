@@ -18,7 +18,7 @@ export class ConventionComponent implements OnInit {
     1: { statut: 0, init: false },
     2: { statut: 0, init: false },
     3: { statut: 0, init: false },
-    4: { statut: 0, init: false },
+    4: { statut: 0, init: true },
     5: { statut: 0, init: false },
     6: { statut: 0, init: false },
     7: { statut: 0, init: false },
@@ -69,9 +69,6 @@ export class ConventionComponent implements OnInit {
     }else{
       this.setStatus(3,0);
     }
-
-    //TODO setStatus(4,2)
-
     if (this.convention.enseignant){
       this.setStatus(5,2);
     }else{
@@ -117,10 +114,6 @@ export class ConventionComponent implements OnInit {
 
   updateTuteurPro(data: any): void {
     this.updateSingleField('idContact',data.id);
-  }
-
-  updateStage(data: any): void {
-    //TODO
   }
 
   updateEnseignant(data: any): void {

@@ -73,17 +73,19 @@
             <input matInput [matDatepicker]="dateDebutStagePicker" formControlName="dateDebutStage" required >
             <mat-datepicker-toggle matSuffix [for]="dateDebutStagePicker"></mat-datepicker-toggle>
             <mat-datepicker #dateDebutStagePicker></mat-datepicker>
+            <mat-error><app-form-error [field]="form.get('dateDebutStage')"></app-form-error></mat-error>
           </mat-form-field>
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Date de fin du stage</mat-label>
             <input matInput [matDatepicker]="dateFinStagePicker" formControlName="dateFinStage" required >
             <mat-datepicker-toggle matSuffix [for]="dateFinStagePicker"></mat-datepicker-toggle>
             <mat-datepicker #dateFinStagePicker></mat-datepicker>
+            <mat-error><app-form-error [field]="form.get('dateFinStage')"></app-form-error></mat-error>
           </mat-form-field>
 
           <div class="col-sm-12 col-md-12 mb-2">
             <div class="mb-2">Interruption au cours du stage ?</div>
-            <mat-radio-group formControlName="interruptionStage">
+            <mat-radio-group formControlName="interruptionStage" (change)="setInterruptionStageFormControls($event)">
               <mat-radio-button [value]="true">Oui</mat-radio-button>
               <mat-radio-button [value]="false">Non</mat-radio-button>
             </mat-radio-group>
@@ -96,19 +98,21 @@
             <input matInput [matDatepicker]="dateDebutInterruptionPicker" formControlName="dateDebutInterruption" required >
             <mat-datepicker-toggle matSuffix [for]="dateDebutInterruptionPicker"></mat-datepicker-toggle>
             <mat-datepicker #dateDebutInterruptionPicker></mat-datepicker>
+            <mat-error><app-form-error [field]="form.get('dateDebutInterruption')"></app-form-error></mat-error>
           </mat-form-field>
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Date de fin d'interruption du stage </mat-label>
             <input matInput [matDatepicker]="dateFinInterruptionPicker" formControlName="dateFinInterruption" required >
             <mat-datepicker-toggle matSuffix [for]="dateFinInterruptionPicker"></mat-datepicker-toggle>
             <mat-datepicker #dateFinInterruptionPicker></mat-datepicker>
+            <mat-error><app-form-error [field]="form.get('dateFinInterruption')"></app-form-error></mat-error>
           </mat-form-field>
         </div>
 
         <div class="row">
           <div class="col-sm-12 col-md-12 mb-2">
             <div class="mb-2" >Avez-vous des horaires de travail réguliers</div>
-            <mat-radio-group formControlName="horairesReguliers" required>
+            <mat-radio-group formControlName="horairesReguliers" (change)="setHorairesReguliersFormControls($event)">
               <mat-radio-button [value]="true">Oui</mat-radio-button>
               <mat-radio-button [value]="false">Non</mat-radio-button>
             </mat-radio-group>
@@ -144,7 +148,7 @@
         <div class="row">
           <div class="col-sm-12 col-md-12 mb-2">
             <div class="mb-2">Gratification au cours du stage ?</div>
-            <mat-radio-group formControlName="gratificationStage">
+            <mat-radio-group formControlName="gratificationStage" (change)="setGratificationStageFormControls($event)">
               <mat-radio-button [value]="true">Oui</mat-radio-button>
               <mat-radio-button [value]="false">Non</mat-radio-button>
             </mat-radio-group>

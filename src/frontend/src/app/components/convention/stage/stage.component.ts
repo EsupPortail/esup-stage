@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit , Input, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Input, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { PaysService } from "../../../services/pays.service";
 import { ThemeService } from "../../../services/theme.service";
@@ -22,6 +22,17 @@ import {pairwise,debounceTime,startWith}from 'rxjs/operators'
   styleUrls: ['./stage.component.scss']
 })
 export class StageComponent implements OnInit {
+
+  fieldValidators : any = {
+      'dateDebutInterruption': [Validators.required],
+      'dateFinInterruption': [Validators.required],
+      'nbHeuresHebdo': [Validators.required, Validators.pattern('[0-9]{1,2}([,.][0-9]{1,2})?')],
+      'montantGratification': [Validators.required, Validators.pattern('[0-9]{1,10}([,.][0-9]{1,2})?')],
+      'idUniteGratification': [Validators.required],
+      'idUniteDuree': [Validators.required],
+      'idDevise': [Validators.required],
+      'idModeVersGratification': [Validators.required],
+  }
 
   countries: any[] = [];
   thematiques: any[] = [];
@@ -111,35 +122,35 @@ export class StageComponent implements OnInit {
       sujetStage: [this.convention.sujetStage, [Validators.required]],
       competences: [this.convention.competences, [Validators.required]],
       fonctionsEtTaches: [this.convention.fonctionsEtTaches, [Validators.required]],
-      details: [this.convention.details, [Validators.required]],
+      details: [this.convention.details],
       // - Partie Dates / horaires
       //TODO contrôle de la cohérence des dates saisies
       dateDebutStage: [this.convention.dateDebutStage, [Validators.required]],
       dateFinStage: [this.convention.dateFinStage, [Validators.required]],
       interruptionStage: [this.convention.interruptionStage, [Validators.required]],
       //TODO multiples dates d'interruptions
-      dateDebutInterruption: [this.convention.dateDebutInterruption],
-      dateFinInterruption: [this.convention.dateFinInterruption],
+      dateDebutInterruption: [this.convention.dateDebutInterruption, this.fieldValidators['dateDebutInterruption']],
+      dateFinInterruption: [this.convention.dateFinInterruption, this.fieldValidators['dateFinInterruption']],
       horairesReguliers: [this.convention.horairesReguliers, [Validators.required]],
-      nbHeuresHebdo: [this.convention.nbHeuresHebdo, [Validators.required, Validators.pattern('[0-9]+([,.][0-9]{1,2})?')]],
+      nbHeuresHebdo: [this.convention.nbHeuresHebdo, this.fieldValidators['nbHeuresHebdo']],
       idTempsTravail: [this.convention.tempsTravail ? this.convention.tempsTravail.id : null, [Validators.required]],
       commentaireDureeTravail: [this.convention.commentaireDureeTravail],
       // - Partie Gratification
       gratificationStage: [this.convention.gratificationStage, [Validators.required]],
-      montantGratification: [this.convention.montantGratification, [Validators.required]],
-      idUniteGratification: [this.convention.uniteGratification ? this.convention.uniteGratification.id : null, [Validators.required]],
-      idUniteDuree: [this.convention.uniteDureeGratification ? this.convention.uniteDureeGratification.id : null, [Validators.required]],
-      idDevise: [this.convention.devise ? this.convention.devise.id : null, [Validators.required]],
-      idModeVersGratification: [this.convention.modeVersGratification ? this.convention.modeVersGratification.id : null, [Validators.required]],
+      montantGratification: [this.convention.montantGratification, this.fieldValidators['montantGratification']],
+      idUniteGratification: [this.convention.uniteGratification ? this.convention.uniteGratification.id : null, this.fieldValidators['idUniteGratification']],
+      idUniteDuree: [this.convention.uniteDureeGratification ? this.convention.uniteDureeGratification.id : null, this.fieldValidators['idUniteDuree']],
+      idDevise: [this.convention.devise ? this.convention.devise.id : null, this.fieldValidators['idDevise']],
+      idModeVersGratification: [this.convention.modeVersGratification ? this.convention.modeVersGratification.id : null, this.fieldValidators['idModeVersGratification']],
       //TODO un bandeau doit permettre de mettre un message à l’attention de l’étudiant
       // - Partie Divers
       idOrigineStage: [this.convention.origineStage ? this.convention.origineStage.id : null, [Validators.required]],
+      confidentiel: [this.convention.confidentiel, [Validators.required]],
       idNatureTravail: [this.convention.natureTravail ? this.convention.natureTravail.id : null, [Validators.required]],
       idModeValidationStage: [this.convention.modeValidationStage ? this.convention.modeValidationStage.id : null, [Validators.required]],
       modeEncadreSuivi: [this.convention.modeEncadreSuivi],
       avantagesNature: [this.convention.avantagesNature],
       travailNuitFerie: [this.convention.travailNuitFerie],
-      confidentiel: [this.convention.confidentiel, [Validators.required]],
     });
 
     //Set default value for booleans
@@ -149,11 +160,19 @@ export class StageComponent implements OnInit {
     if (this.convention.horairesReguliers == null){
       this.form.get('horairesReguliers')?.setValue(true);
     }
-    if (this.convention.interruptionStage == null){
+    if (this.convention.gratificationStage == null){
       this.form.get('gratificationStage')?.setValue(false);
     }
     if (this.convention.confidentiel == null){
       this.form.get('confidentiel')?.setValue(false);
+    }
+    //Update validators that depends on booleans
+    this.toggleValidators(['dateDebutInterruption','dateFinInterruption'],this.convention.interruptionStage);
+    this.toggleValidators(['nbHeuresHebdo',],this.convention.horairesReguliers);
+    this.toggleValidators(['montantGratification','idUniteGratification','idUniteDuree','idDevise','idModeVersGratification'],this.convention.gratificationStage);
+
+    if (this.form.valid) {
+      this.validated.emit(2);
     }
 
     this.previousValues={...this.form.value}
@@ -179,7 +198,33 @@ export class StageComponent implements OnInit {
     }
     if (this.form.valid) {
       this.validated.emit(2);
+    }else{
+      this.validated.emit(0);
     }
+  }
+
+
+  toggleValidators(keys: string[],toggle: boolean): void {
+    keys.forEach((key: string) => {
+      if (toggle){
+        this.form.get(key)!.setValidators(this.fieldValidators[key]);
+      }else{
+        this.form.get(key)!.clearValidators();
+      }
+      this.form.get(key)!.updateValueAndValidity();
+    });
+  }
+
+  setInterruptionStageFormControls(event : any): void {
+    this.toggleValidators(['dateDebutInterruption','dateFinInterruption'],event.value);
+  }
+
+  setHorairesReguliersFormControls(event : any): void {
+    this.toggleValidators(['nbHeuresHebdo',],event.value);
+  }
+
+  setGratificationStageFormControls(event : any): void {
+    this.toggleValidators(['montantGratification','idUniteGratification','idUniteDuree','idDevise','idModeVersGratification'],event.value);
   }
 
 }
