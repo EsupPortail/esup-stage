@@ -28,7 +28,7 @@ public class Convention extends ObjetMetier {
     private Etudiant etudiant;
 
     @ManyToOne
-    @JoinColumn(name = "idCentreGestion", nullable = false)
+    @JoinColumn(name = "idCentreGestion")
     private CentreGestion centreGestion;
 
     @JsonView(Views.List.class)

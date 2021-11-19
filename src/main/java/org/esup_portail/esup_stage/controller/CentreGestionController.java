@@ -217,7 +217,8 @@ public class CentreGestionController {
             return critereGestion.getCentreGestion();
         }
         critereGestion = critereGestionJpaRepository.findEtapeById(codeEtape, codeVersion);
-        if (critereGestion == null) {
+        // Erreur si on n'autorise pas la création de convention non rattaché à un centre de gestion
+        if (!appConfigService.getConfigGenerale().isAutoriserConventionsOrphelines() && critereGestion == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion non trouvé");
         }
         return critereGestion.getCentreGestion();

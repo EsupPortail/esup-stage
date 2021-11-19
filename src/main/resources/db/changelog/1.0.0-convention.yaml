@@ -117,3 +117,11 @@ databaseChangeLog:
             defaultValueComputed: 'NULL'
             name: horairesReguliers
             type: BIT
+- changeSet:
+    id: convention-nullable-centreGeston
+    author: ssound
+    changes:
+    - dropNotNullConstraint:
+        columnName: idCentreGestion
+        columnDataType: INT
+        tableName: Convention

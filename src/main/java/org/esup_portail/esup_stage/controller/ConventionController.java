@@ -189,6 +189,7 @@ public class ConventionController {
     @PutMapping("/{id}")
     @Secure(fonctions = AppFonctionEnum.CONVENTION, droits = {DroitEnum.MODIFICATION})
     public Convention update(@PathVariable("id") int id, @Valid @RequestBody ConventionFormDto conventionFormDto) {
+        // TODO vérifier que la convention est modifiable
         Convention convention = conventionJpaRepository.findById(id);
         setConventionData(convention, conventionFormDto);
         convention = conventionJpaRepository.saveAndFlush(convention);
@@ -198,6 +199,7 @@ public class ConventionController {
     @PatchMapping("/{id}")
     @Secure(fonctions = AppFonctionEnum.CONVENTION, droits = {DroitEnum.MODIFICATION})
     public Convention singleFieldUpdate(@PathVariable("id") int id, @Valid @RequestBody ConventionSingleFieldDto conventionSingleFieldDto) {
+        // TODO vérifier que la convention est modifiable
         Convention convention = conventionJpaRepository.findById(id);
         setSingleFieldData(convention, conventionSingleFieldDto);
         convention = conventionJpaRepository.saveAndFlush(convention);
@@ -247,7 +249,8 @@ public class ConventionController {
         if (centreGestion == null) {
             critereGestion = critereGestionJpaRepository.findEtapeById(conventionFormDto.getCodeEtape(), conventionFormDto.getCodeVerionEtape());
         }
-        if (critereGestion == null) {
+        // Erreur si on n'autorise pas la création de convention non rattaché à un centre de gestion
+        if (!appConfigService.getConfigGenerale().isAutoriserConventionsOrphelines() && critereGestion == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion non trouvé");
         }
         centreGestion = critereGestion.getCentreGestion();

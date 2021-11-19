@@ -29,7 +29,7 @@ public class OrigineStageController {
     ConventionJpaRepository conventionJpaRepository;
 
     @GetMapping
-    @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
+    @Secure
     public PaginatedResponse<OrigineStage> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         PaginatedResponse<OrigineStage> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(origineStageRepository.count(filters));

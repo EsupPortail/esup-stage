@@ -7,6 +7,7 @@ import { MatExpansionPanel } from "@angular/material/expansion";
 import { AppFonction } from "../../../constants/app-fonction";
 import { Droit } from "../../../constants/droit";
 import { AuthService } from "../../../services/auth.service";
+import { ConfigService } from "../../../services/config.service";
 
 @Component({
   selector: 'app-signataire',
@@ -28,6 +29,8 @@ export class SignataireComponent implements OnInit, OnChanges {
   modif: boolean = false;
   form: FormGroup;
 
+  autorisationModification = false;
+
   @ViewChild(MatExpansionPanel) firstPanel: MatExpansionPanel|undefined;
 
   @Output() validated = new EventEmitter<number>();
@@ -37,6 +40,7 @@ export class SignataireComponent implements OnInit, OnChanges {
               private messageService: MessageService,
               private authService: AuthService,
               private civiliteService: CiviliteService,
+              private configService: ConfigService,
   ) {
     this.form = this.fb.group({
       nom: [null, [Validators.required, Validators.maxLength(50)]],
@@ -50,6 +54,9 @@ export class SignataireComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
+    this.configService.getConfigGenerale().subscribe((response: any) => {
+      this.autorisationModification = response.autoriserEtudiantAModifierEntreprise;
+    });
     this.civiliteService.getPaginated(1, 0, 'libelle', 'asc','').subscribe((response: any) => {
       this.civilites = response.data;
     });
@@ -72,7 +79,11 @@ export class SignataireComponent implements OnInit, OnChanges {
   }
 
   canEdit(): boolean {
-    return this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.MODIFICATION]});
+    let hasRight = this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.MODIFICATION]});
+    if (this.authService.isEtudiant() && !this.autorisationModification) {
+      hasRight = false;
+    }
+    return hasRight;
   }
 
   choose(row: any): void {

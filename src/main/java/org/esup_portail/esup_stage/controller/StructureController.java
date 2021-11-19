@@ -1,6 +1,7 @@
 package org.esup_portail.esup_stage.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import org.esup_portail.esup_stage.dto.ContextDto;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.dto.StructureFormDto;
 import org.esup_portail.esup_stage.dto.view.Views;
@@ -8,14 +9,18 @@ import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
+import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
 import org.esup_portail.esup_stage.repository.*;
+import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
+import org.esup_portail.esup_stage.service.AppConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.util.Date;
 
 @ApiController
 @RequestMapping("/structures")
@@ -42,6 +47,9 @@ public class StructureController {
     @Autowired
     PaysJpaRepository paysJpaRepository;
 
+    @Autowired
+    AppConfigService appConfigService;
+
     @JsonView(Views.List.class)
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
@@ -67,6 +75,13 @@ public class StructureController {
     public Structure create(@Valid @RequestBody StructureFormDto structureFormDto) {
         Structure structure = new Structure();
         setStructureData(structure, structureFormDto);
+        ContextDto contextDto = ServiceContext.getServiceContext();
+        Utilisateur utilisateur = contextDto.getUtilisateur();
+        if (!UtilisateurHelper.isRole(utilisateur, Role.ETU) || appConfigService.getConfigGenerale().isAutoriserValidationAutoOrgaAccCreaEtu()) {
+            structure.setLoginValidation(utilisateur.getLogin());
+            structure.setEstValidee(true);
+            structure.setDateValidation(new Date());
+        }
         return structureJpaRepository.saveAndFlush(structure);
     }
 
