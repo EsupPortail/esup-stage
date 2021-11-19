@@ -141,8 +141,6 @@ export class AdminUserComponent implements OnInit {
           this.appTable?.update();
           this.messageService.setSuccess('Utilisateur modifié');
         })
-      } else {
-        // TODO create : en attente de la configuration du REST LDAP par établissement
       }
     }
   }

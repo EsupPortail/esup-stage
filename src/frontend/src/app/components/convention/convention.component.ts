@@ -31,7 +31,6 @@ export class ConventionComponent implements OnInit {
   ngOnInit(): void {
     this.activatedRoute.params.subscribe((param: any) => {
       const pathId = param.id;
-      // TODO création/récupération de la convention
       if (pathId === 'create') {
         this.titleService.title = 'Création d\'une convention';
         // Récupération de la convention au mode brouillon
