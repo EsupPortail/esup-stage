@@ -64,11 +64,20 @@
               </mat-radio-group>
             </div>
           </div>
-          <div class="row">
+          <div class="row mb-2">
             <mat-form-field class="col-md-12" appearance="fill">
               <mat-label>Filtre LDAP pour la recherche des enseignants</mat-label>
               <input matInput formControlName="ldapFiltreEnseignant" />
             </mat-form-field>
+          </div>
+          <div class="row mb-2">
+            <div class="col-md-12">
+              <div class="mb-2">Autorisation la création d'une convention sans choisir l'élément pédagogique ?</div>
+              <mat-radio-group formControlName="autoriserElementPedagogiqueFacultatif">
+                <mat-radio-button [value]="true">Oui</mat-radio-button>
+                <mat-radio-button [value]="false">Non</mat-radio-button>
+              </mat-radio-group>
+            </div>
           </div>
           <div class="mt-3" *ngIf="canEdit()">
             <button mat-flat-button color="primary">Valider</button>

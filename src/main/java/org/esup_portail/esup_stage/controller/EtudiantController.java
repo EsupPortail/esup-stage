@@ -63,6 +63,10 @@ public class EtudiantController {
                 }
             }
         }
+        // On supprime les formations sans ELP si la config n'autorise pas la création de convention sans ELP
+        if (!appConfigService.getConfigGenerale().isAutoriserElementPedagogiqueFacultatif()) {
+            inscriptions = inscriptions.stream().filter(i -> i.getElementPedagogiques().size() > 0).collect(Collectors.toList());
+        }
         return inscriptions;
     }
 

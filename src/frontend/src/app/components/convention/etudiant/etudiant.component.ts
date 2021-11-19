@@ -11,6 +11,7 @@ import * as _ from "lodash";
 import { CentreGestionService } from "../../../services/centre-gestion.service";
 import { ConventionService } from "../../../services/convention.service";
 import { debounceTime } from "rxjs/operators";
+import { ConfigService } from "../../../services/config.service";
 
 @Component({
   selector: 'app-convention-etudiant',
@@ -29,6 +30,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
   selectedNumEtudiant: string|null = null;
   inscriptions: any[] = [];
   centreGestion: any;
+  sansElp: boolean = false;
 
   formConvention: FormGroup;
 
@@ -50,6 +52,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
     private langueConventionService: LangueConventionService,
     private centreGestionService: CentreGestionService,
     private conventionService: ConventionService,
+    private configService: ConfigService,
   ) {
     this.form = this.fb.group({
       id: [null, []],
@@ -73,18 +76,33 @@ export class EtudiantComponent implements OnInit, OnChanges {
       }
     }
 
-    this.formConvention = this.fb.group({
-      adresseEtudiant: [this.convention.adresseEtudiant, [Validators.required]],
-      codePostalEtudiant: [this.convention.codePostalEtudiant, [Validators.required]],
-      villeEtudiant: [this.convention.villeEtudiant, [Validators.required]],
-      paysEtudiant: [this.convention.paysEtudiant, [Validators.required]],
-      telEtudiant: [this.convention.telEtudiant, []],
-      telPortableEtudiant: [this.convention.telPortableEtudiant, []],
-      courrielPersoEtudiant: [this.convention.courrielPersoEtudiant, [Validators.required, Validators.email]],
-      inscription: [null, [Validators.required]],
-      inscriptionElp: [null, []],
-      idTypeConvention: [this.convention.typeConvention ? this.convention.typeConvention.id : null, [Validators.required]],
-      codeLangueConvention: [this.convention.langueConvention ? this.convention.langueConvention.code : null, [Validators.required]],
+    this.configService.getConfigGenerale().subscribe((response: any) => {
+      this.formConvention = this.fb.group({
+        adresseEtudiant: [this.convention.adresseEtudiant, [Validators.required]],
+        codePostalEtudiant: [this.convention.codePostalEtudiant, [Validators.required]],
+        villeEtudiant: [this.convention.villeEtudiant, [Validators.required]],
+        paysEtudiant: [this.convention.paysEtudiant, [Validators.required]],
+        telEtudiant: [this.convention.telEtudiant, []],
+        telPortableEtudiant: [this.convention.telPortableEtudiant, []],
+        courrielPersoEtudiant: [this.convention.courrielPersoEtudiant, [Validators.required, Validators.email]],
+        inscription: [null, [Validators.required]],
+        inscriptionElp: [null, []],
+        idTypeConvention: [this.convention.typeConvention ? this.convention.typeConvention.id : null, [Validators.required]],
+        codeLangueConvention: [this.convention.langueConvention ? this.convention.langueConvention.code : null, [Validators.required]],
+      });
+      this.sansElp = response.autoriserElementPedagogiqueFacultatif;
+      if (!this.sansElp) {
+        this.formConvention.get('inscriptionElp')?.setValidators([Validators.required]);
+      }
+
+      this.formConvention.get('inscription')?.valueChanges.subscribe((inscription: any) => {
+        if (inscription) {
+          this.centreGestionService.findByEtape(inscription.etapeInscription.codeComposante, inscription.etapeInscription.codeEtp, inscription.etapeInscription.codVrsVet).subscribe((response: any) => {
+            this.centreGestion = response;
+          });
+          this.formConvention.get('inscriptionElp')?.setValue(null);
+        }
+      });
     });
 
     this.typeConventionService.getListActive().subscribe((response: any) => {
@@ -92,15 +110,6 @@ export class EtudiantComponent implements OnInit, OnChanges {
     });
     this.langueConventionService.getListActive().subscribe((response: any) => {
       this.langueConventions = response.data;
-    });
-
-    this.formConvention.get('inscription')?.valueChanges.subscribe((inscription: any) => {
-      if (inscription) {
-        this.centreGestionService.findByEtape(inscription.etapeInscription.codeComposante, inscription.etapeInscription.codeEtp, inscription.etapeInscription.codVrsVet).subscribe((response: any) => {
-          this.centreGestion = response;
-        });
-        this.formConvention.get('inscriptionElp')?.setValue(null);
-      }
     });
 
     this.form.valueChanges.pipe(debounceTime(500)).subscribe(() => {

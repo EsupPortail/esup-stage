@@ -12,6 +12,7 @@ public class ConfigGeneraleDto {
     private boolean autoriserEtudiantAModifierEntreprise = false;
     private boolean autoriserValidationAutoOrgaAccCreaEtu = false;
     private String ldapFiltreEnseignant = "(|(eduPersonAffiliation=teacher)(eduPersonAffiliation=faculty)";
+    private boolean autoriserElementPedagogiqueFacultatif = false;
 
     public String getCodeUniversite() {
         return codeUniversite;
@@ -83,5 +84,13 @@ public class ConfigGeneraleDto {
 
     public void setLdapFiltreEnseignant(String ldapFiltreEnseignant) {
         this.ldapFiltreEnseignant = ldapFiltreEnseignant;
+    }
+
+    public boolean isAutoriserElementPedagogiqueFacultatif() {
+        return autoriserElementPedagogiqueFacultatif;
+    }
+
+    public void setAutoriserElementPedagogiqueFacultatif(boolean autoriserElementPedagogiqueFacultatif) {
+        this.autoriserElementPedagogiqueFacultatif = autoriserElementPedagogiqueFacultatif;
     }
 }

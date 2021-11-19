@@ -53,6 +53,7 @@ export class ConfigGeneraleComponent implements OnInit {
       autoriserEtudiantAModifierEntreprise: [null, [Validators.required]],
       autoriserValidationAutoOrgaAccCreaEtu: [null, [Validators.required]],
       ldapFiltreEnseignant: [null, [Validators.required]],
+      autoriserElementPedagogiqueFacultatif: [null, [Validators.required]],
     })
     this.formTheme = this.fb.group({
       logo: [null, [Validators.required]],
@@ -75,7 +76,7 @@ export class ConfigGeneraleComponent implements OnInit {
     this.configService.getConfigGenerale().subscribe((response: any) => {
       this.configGenerale = response;
       if (this.configGenerale.typeCentre === null) this.configGenerale.typeCentre = 'VIDE';
-      this.formGenerale.setValue(this.configGenerale);
+      this.formGenerale.patchValue(this.configGenerale);
     });
     this.configService.getConfigAlerteMail().subscribe((response: any) => {
       this.configAlerte = response;
