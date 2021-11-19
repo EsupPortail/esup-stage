@@ -29,7 +29,7 @@ public class UniteGratificationController {
     ConventionJpaRepository conventionJpaRepository;
 
     @GetMapping
-    @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
+    @Secure
     public PaginatedResponse<UniteGratification> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         PaginatedResponse<UniteGratification> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(uniteGratificationRepository.count(filters));

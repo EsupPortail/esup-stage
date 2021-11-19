@@ -4,8 +4,8 @@ import org.esup_portail.esup_stage.enums.TypeCentreEnum;
 
 public class ConfigGeneraleDto {
     private String codeUniversite;
-    private int anneeBasculeJour = 13;
-    private int anneeBasculeMois = 12;
+    private int anneeBasculeJour = 1;
+    private int anneeBasculeMois = 9;
     private boolean autoriserConventionsOrphelines = false;
     private TypeCentreEnum typeCentre = null;
     private boolean autoriserCentresBloquerImpressionConvention = false;

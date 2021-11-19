@@ -11,6 +11,7 @@ import { NafN5Service } from "../../../services/naf-n5.service";
 import { AppFonction } from "../../../constants/app-fonction";
 import { Droit } from "../../../constants/droit";
 import { AuthService } from "../../../services/auth.service";
+import { ConfigService } from "../../../services/config.service";
 
 @Component({
   selector: 'app-etab-accueil',
@@ -35,6 +36,8 @@ export class EtabAccueilComponent implements OnInit {
   modif: boolean = false;
   selectedRow: any = undefined;
 
+  autorisationModification = false;
+
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
   @ViewChild(MatExpansionPanel) firstPanel: MatExpansionPanel|undefined;
 
@@ -48,9 +51,13 @@ export class EtabAccueilComponent implements OnInit {
               private statutJuridiqueService: StatutJuridiqueService,
               private messageService: MessageService,
               private authService: AuthService,
+              private configService: ConfigService,
   ) { }
 
   ngOnInit(): void {
+    this.configService.getConfigGenerale().subscribe((response: any) => {
+      this.autorisationModification = response.autoriserEtudiantAModifierEntreprise;
+    });
     this.filters = [
       { id: 'raisonSociale', libelle: 'Raison sociale' },
       { id: 'numeroSiret', libelle: 'Numéro SIRET' },
@@ -91,7 +98,11 @@ export class EtabAccueilComponent implements OnInit {
   }
 
   canEdit(): boolean {
-    return this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.MODIFICATION]});
+    let hasRight = this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.MODIFICATION]});
+    if (this.authService.isEtudiant() && !this.autorisationModification) {
+      hasRight = false;
+    }
+    return hasRight;
   }
 
   choose(row: any): void {

@@ -97,17 +97,12 @@ public class AppConfigService {
     }
 
     public String getAnneeUniv(Date date) {
-        ConfigGeneraleDto configGeneraleDto = getConfigGenerale();
-        int jourBascule = configGeneraleDto.getAnneeBasculeJour();
-        int moisBascule = configGeneraleDto.getAnneeBasculeMois();
-        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+        Calendar dateCalendar = Calendar.getInstance();
+        dateCalendar.setTime(date);
+        int year = dateCalendar.get(Calendar.YEAR);
+        Calendar dateBascule = getDateBascule(year);
 
-        Calendar bascule = Calendar.getInstance();
-        bascule.set(currentYear, (moisBascule - 1), jourBascule, 0, 0);
-        bascule.clear(Calendar.MILLISECOND);
-        Date dateBascule = bascule.getTime();
-
-        return date.before(dateBascule) ? String.valueOf(currentYear) : String.valueOf(currentYear + 1);
+        return date.before(dateBascule.getTime()) ? String.valueOf(dateBascule.get(Calendar.YEAR) - 1) : String.valueOf(dateBascule.get(Calendar.YEAR));
     }
 
     public String getAnneeUnivLibelle(String annee) {
@@ -117,5 +112,16 @@ public class AppConfigService {
     public String getAnneeUnivFromLibelle(String anneeLibelle) {
         String[] parts = anneeLibelle.split("/");
         return parts[0];
+    }
+
+    public Calendar getDateBascule(int year) {
+        ConfigGeneraleDto configGeneraleDto = getConfigGenerale();
+        int jourBascule = configGeneraleDto.getAnneeBasculeJour();
+        int moisBascule = configGeneraleDto.getAnneeBasculeMois();
+
+        Calendar bascule = Calendar.getInstance();
+        bascule.set(year, (moisBascule - 1), jourBascule, 0, 0);
+        bascule.clear(Calendar.MILLISECOND);
+        return bascule;
     }
 }

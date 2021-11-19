@@ -29,7 +29,7 @@ public class ThemeController {
     ConventionJpaRepository conventionJpaRepository;
 
     @GetMapping
-    @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
+    @Secure
     public PaginatedResponse<Theme> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         PaginatedResponse<Theme> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(themeRepository.count(filters));

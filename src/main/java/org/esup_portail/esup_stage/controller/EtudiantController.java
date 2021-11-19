@@ -1,9 +1,13 @@
 package org.esup_portail.esup_stage.controller;
 
+import org.esup_portail.esup_stage.dto.ContextDto;
 import org.esup_portail.esup_stage.dto.ConventionFormationDto;
 import org.esup_portail.esup_stage.exception.AppException;
-import org.esup_portail.esup_stage.model.Etudiant;
+import org.esup_portail.esup_stage.model.*;
+import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
+import org.esup_portail.esup_stage.repository.CritereGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.EtudiantJpaRepository;
+import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.apogee.ApogeeService;
@@ -18,6 +22,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +40,9 @@ public class EtudiantController {
     @Autowired
     EtudiantJpaRepository etudiantJpaRepository;
 
+    @Autowired
+    CritereGestionJpaRepository critereGestionJpaRepository;
+
     @GetMapping("/{numEtudiant}/apogee-data")
     @Secure
     public EtudiantRef getApogeeData(@PathVariable("numEtudiant") String numEtudiant) {
@@ -43,18 +52,36 @@ public class EtudiantController {
     @GetMapping("/{numEtudiant}/apogee-inscriptions")
     @Secure
     public List<ConventionFormationDto> getFormationInscriptions(@PathVariable("numEtudiant") String numEtudiant) {
-        // TODO récupération des années éligibles (voir avec Claude)
-        // cas étudiant : année en cours et éventuellement l'année précédente
-        // cas autres : toutes les années dispo
-        List<String> anneeInscriptions = apogeeService.getAnneeInscriptions(numEtudiant);
+        ContextDto contextDto = ServiceContext.getServiceContext();
+        Utilisateur utilisateur = contextDto.getUtilisateur();
+        List<String> annees = new ArrayList<>();
+        String anneeEnCours = appConfigService.getAnneeUniv();
+        String anneePrecedente = String.valueOf(Integer.parseInt(anneeEnCours) - 1);
+        annees.add(anneePrecedente); // Ajout de l'année précédente
+        annees.add(anneeEnCours); // Ajout de l'année en cours
+        Date currentDate = new Date();
+        Calendar dateBascule = appConfigService.getDateBascule(Integer.parseInt(anneeEnCours));
         List<ConventionFormationDto> inscriptions = new ArrayList<>();
+        List<String> anneeInscriptions = apogeeService.getAnneeInscriptions(numEtudiant);
+        anneeInscriptions.retainAll(annees);
         for (String annee : anneeInscriptions) {
             ApogeeMap apogeeMap = apogeeService.getEtudiantEtapesInscription(numEtudiant, annee);
             for (EtapeInscription etapeInscription : apogeeMap.getListeEtapeInscriptions()) {
                 ConventionFormationDto conventionFormationDto = new ConventionFormationDto();
                 conventionFormationDto.setEtapeInscription(etapeInscription);
                 conventionFormationDto.setAnnee(annee);
-                inscriptions.add(conventionFormationDto);
+                // récup centre de gestion
+                CritereGestion critereGestion = critereGestionJpaRepository.findEtapeById(etapeInscription.getCodeComposante(), "");
+                if (critereGestion == null) {
+                    critereGestion = critereGestionJpaRepository.findEtapeById(etapeInscription.getCodeEtp(), etapeInscription.getCodVrsVet());
+                }
+                if (critereGestion != null) {
+                    conventionFormationDto.setCentreGestion(critereGestion.getCentreGestion());
+                }
+                // Erreur si on n'autorise pas la création de convention non rattaché à un centre de gestion
+                if (appConfigService.getConfigGenerale().isAutoriserConventionsOrphelines() || critereGestion != null) {
+                    inscriptions.add(conventionFormationDto);
+                }
             }
             for (ElementPedagogique elementPedagogique : apogeeMap.getListeELPs()) {
                 ConventionFormationDto conventionFormationDto = inscriptions.stream().filter(i -> i.getEtapeInscription().getCodeEtp().equals(elementPedagogique.getCodEtp()) && i.getEtapeInscription().getCodVrsVet().equals(elementPedagogique.getCodVrsVet())).findAny().orElse(null);
@@ -66,6 +93,29 @@ public class EtudiantController {
         // On supprime les formations sans ELP si la config n'autorise pas la création de convention sans ELP
         if (!appConfigService.getConfigGenerale().isAutoriserElementPedagogiqueFacultatif()) {
             inscriptions = inscriptions.stream().filter(i -> i.getElementPedagogiques().size() > 0).collect(Collectors.toList());
+        }
+        if (!UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
+            if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
+                // On garde les formations dont le centre de gestion autorise la création d'une convention
+                inscriptions = inscriptions.stream().filter(i -> i.getCentreGestion().isAutorisationEtudiantCreationConvention()).collect(Collectors.toList());
+            }
+            // Si ce n'est pas un utilisateur admin, on doit afficher les formations de l'année précédente seulement si le centre l'autorise
+            inscriptions = inscriptions.stream().filter(i -> {
+                CentreGestion centreGestion = i.getCentreGestion();
+                Boolean autorisationAnneePrecedente = centreGestion.getRecupInscriptionAnterieure();
+                if (i.getAnnee().equals(anneeEnCours)) {
+                    return true;
+                }
+                if (!autorisationAnneePrecedente) {
+                    return false;
+                }
+                Integer mois = centreGestion.getDureeRecupInscriptionAnterieure();
+                if (mois != null) {
+                    dateBascule.add(Calendar.MONTH, mois);
+                    return currentDate.before(dateBascule.getTime());
+                }
+                return false;
+            }).collect(Collectors.toList());
         }
         return inscriptions;
     }

@@ -7,6 +7,7 @@ import { MatExpansionPanel } from "@angular/material/expansion";
 import { AppFonction } from "../../../constants/app-fonction";
 import { Droit } from "../../../constants/droit";
 import { AuthService } from "../../../services/auth.service";
+import { ConfigService } from "../../../services/config.service";
 
 @Component({
   selector: 'app-service-accueil',
@@ -26,6 +27,8 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
   modif: boolean = false;
   form: FormGroup;
 
+  autorisationModification = false;
+
   @ViewChild(MatExpansionPanel) firstPanel: MatExpansionPanel|undefined;
 
   @Output() validated = new EventEmitter<number>();
@@ -35,6 +38,7 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
               private messageService: MessageService,
               private authService: AuthService,
               private paysService: PaysService,
+              private configService: ConfigService,
   ) {
     this.form = this.fb.group({
       nom: [null, [Validators.required, Validators.maxLength(70)]],
@@ -48,6 +52,9 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
+    this.configService.getConfigGenerale().subscribe((response: any) => {
+      this.autorisationModification = response.autoriserEtudiantAModifierEntreprise;
+    });
     this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServPays: {value: 'O', type: 'text'}})).subscribe((response: any) => {
       this.countries = response.data;
     });
@@ -68,7 +75,11 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
   }
 
   canEdit(): boolean {
-    return this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.MODIFICATION]});
+    let hasRight = this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.MODIFICATION]});
+    if (this.authService.isEtudiant() && !this.autorisationModification) {
+      hasRight = false;
+    }
+    return hasRight;
   }
 
   choose(row: any): void {

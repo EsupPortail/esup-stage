@@ -33,7 +33,7 @@ public class AppConfigController {
     AppConfigService appConfigService;
 
     @GetMapping("/generale")
-    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
+    @Secure
     public ConfigGeneraleDto getConfigGenerale() {
         return appConfigService.getConfigGenerale();
     }

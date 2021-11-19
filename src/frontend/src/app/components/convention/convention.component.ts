@@ -137,7 +137,8 @@ export class ConventionComponent implements OnInit {
   }
 
   isValide(): boolean {
-    return this.convention && (this.convention.validationPedagogique || this.convention.validationConvention); // TODO valider avec Claude
+    // TODO prendre en compte le paramétration du centre de gestion : une convention ne peut plus être modifiée si la dernière validation a été faite
+    return this.convention && (this.convention.validationPedagogique || this.convention.validationConvention);
   }
 
 }

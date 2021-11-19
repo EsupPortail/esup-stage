@@ -63,18 +63,6 @@ export class EtudiantComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.isEtudiant = this.authService.isEtudiant();
-    let codEtu: string|undefined = undefined;
-    if (this.convention && this.convention.etudiant) {
-      codEtu = this.convention.etudiant.numEtudiant;
-      this.choose({codEtu: codEtu});
-    } else {
-      if (this.isEtudiant) {
-        this.etudiantService.getByLogin(this.authService.userConnected.login).subscribe((response: any) => {
-          codEtu = response.numEtudiant;
-          this.choose({codEtu: codEtu});
-        });
-      }
-    }
 
     this.configService.getConfigGenerale().subscribe((response: any) => {
       this.formConvention = this.fb.group({
@@ -97,12 +85,23 @@ export class EtudiantComponent implements OnInit, OnChanges {
 
       this.formConvention.get('inscription')?.valueChanges.subscribe((inscription: any) => {
         if (inscription) {
-          this.centreGestionService.findByEtape(inscription.etapeInscription.codeComposante, inscription.etapeInscription.codeEtp, inscription.etapeInscription.codVrsVet).subscribe((response: any) => {
-            this.centreGestion = response;
-          });
+          this.centreGestion = inscription.centreGestion;
           this.formConvention.get('inscriptionElp')?.setValue(null);
         }
       });
+
+      let codEtu: string|undefined = undefined;
+      if (this.convention && this.convention.etudiant) {
+        codEtu = this.convention.etudiant.numEtudiant;
+        this.choose({codEtu: codEtu});
+      } else {
+        if (this.isEtudiant) {
+          this.etudiantService.getByLogin(this.authService.userConnected.login).subscribe((response: any) => {
+            codEtu = response.numEtudiant;
+            this.choose({codEtu: codEtu});
+          });
+        }
+      }
     });
 
     this.typeConventionService.getListActive().subscribe((response: any) => {
