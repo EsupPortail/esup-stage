@@ -233,7 +233,11 @@ public class ConventionFormDto {
 
     private Pays paysConvention;
 
-    private boolean horairesReguliers = false;
+    private boolean horairesReguliers;
+
+    private boolean gratificationStage;
+
+    private boolean confidentiel;
 
 
     public String getEtudiantLogin() {
@@ -946,5 +950,21 @@ public class ConventionFormDto {
 
     public void setHorairesReguliers(boolean horairesReguliers) {
         this.horairesReguliers = horairesReguliers;
+    }
+
+    public boolean isGratificationStage() {
+        return gratificationStage;
+    }
+
+    public void setGratificationStage(boolean gratificationStage) {
+        this.gratificationStage = gratificationStage;
+    }
+
+    public boolean isConfidentiel() {
+        return confidentiel;
+    }
+
+    public void setConfidentiel(boolean confidentiel) {
+        this.confidentiel = confidentiel;
     }
 }

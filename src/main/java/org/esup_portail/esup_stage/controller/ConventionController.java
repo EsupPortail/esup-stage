@@ -360,10 +360,9 @@ public class ConventionController {
         if (Objects.equals(conventionSingleFieldDto.getField(), "commentaireDureeTravail")){
             convention.setCommentaireDureeTravail((String) conventionSingleFieldDto.getValue());
         }
-        //TODO add gratificationStage boolean to Convention model
-        //if (Objects.equals(conventionSingleFieldDto.getField(), "gratificationStage")){
-        //    convention.setGratificationStage((Boolean) conventionSingleFieldDto.getValue());
-        //}
+        if (Objects.equals(conventionSingleFieldDto.getField(), "gratificationStage")){
+            convention.setGratificationStage((Boolean) conventionSingleFieldDto.getValue());
+        }
         if (Objects.equals(conventionSingleFieldDto.getField(), "montantGratification")){
             convention.setMontantGratification((String) conventionSingleFieldDto.getValue());
         }
@@ -425,10 +424,9 @@ public class ConventionController {
         if (Objects.equals(conventionSingleFieldDto.getField(), "travailNuitFerie")){
             convention.setTravailNuitFerie((String) conventionSingleFieldDto.getValue());
         }
-        //TODO add confidentiel boolean to Convention model
-        //if (Objects.equals(conventionSingleFieldDto.getField(), "confidentiel")){
-        //    convention.setConfidentiel((Boolean) conventionSingleFieldDto.getValue());
-        //}
+        if (Objects.equals(conventionSingleFieldDto.getField(), "confidentiel")){
+            convention.setConfidentiel((Boolean) conventionSingleFieldDto.getValue());
+        }
 
         if (Objects.equals(conventionSingleFieldDto.getField(), "idStructure")){
             Structure structure = structureJpaRepository.findById((int) conventionSingleFieldDto.getValue());

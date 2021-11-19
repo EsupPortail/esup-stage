@@ -321,6 +321,12 @@ public class Convention extends ObjetMetier {
     @Column
     private Boolean horairesReguliers;
 
+    @Column
+    private Boolean gratificationStage;
+
+    @Column
+    private Boolean confidentiel;
+
     @JsonView(Views.List.class)
     @OneToMany(mappedBy = "convention")
     private List<Avenant> avenants = new ArrayList<>();
@@ -1051,6 +1057,22 @@ public class Convention extends ObjetMetier {
 
     public void setHorairesReguliers(Boolean horairesReguliers) {
         this.horairesReguliers = horairesReguliers;
+    }
+
+    public Boolean getGratificationStage() {
+        return gratificationStage;
+    }
+
+    public void setGratificationStage(Boolean gratificationStage) {
+        this.gratificationStage = gratificationStage;
+    }
+
+    public Boolean getConfidentiel() {
+        return confidentiel;
+    }
+
+    public void setConfidentiel(Boolean confidentiel) {
+        this.confidentiel = confidentiel;
     }
 
     public List<Avenant> getAvenants() {

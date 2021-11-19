@@ -117,3 +117,25 @@ databaseChangeLog:
             defaultValueComputed: 'NULL'
             name: horairesReguliers
             type: BIT
+- changeSet:
+    id: convention-gratificationStage
+    author: tjubera
+    changes:
+    - addColumn:
+        tableName: Convention
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: gratificationStage
+            type: BIT
+- changeSet:
+    id: convention-confidentiel
+    author: tjubera
+    changes:
+    - addColumn:
+        tableName: Convention
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: confidentiel
+            type: BIT

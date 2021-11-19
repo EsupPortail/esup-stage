@@ -108,7 +108,6 @@ export class StageComponent implements OnInit {
       idTypeConvention: [this.convention.typeConvention ? this.convention.typeConvention.id : null, [Validators.required]],
       // - Description du stage
       idTheme: [this.convention.theme ? this.convention.theme.id : null, [Validators.required]],
-      //TODO case à cocher pour rendre les champs confidentiels cf 2.2.1.2 règles de gestions
       sujetStage: [this.convention.sujetStage, [Validators.required]],
       competences: [this.convention.competences, [Validators.required]],
       fonctionsEtTaches: [this.convention.fonctionsEtTaches, [Validators.required]],
@@ -140,9 +139,22 @@ export class StageComponent implements OnInit {
       modeEncadreSuivi: [this.convention.modeEncadreSuivi],
       avantagesNature: [this.convention.avantagesNature],
       travailNuitFerie: [this.convention.travailNuitFerie],
-      //TODO ajout de confidentiel au model convention
       confidentiel: [this.convention.confidentiel, [Validators.required]],
     });
+
+    //Set default value for booleans
+    if (this.convention.interruptionStage == null){
+      this.form.get('interruptionStage')?.setValue(false);
+    }
+    if (this.convention.horairesReguliers == null){
+      this.form.get('horairesReguliers')?.setValue(true);
+    }
+    if (this.convention.interruptionStage == null){
+      this.form.get('gratificationStage')?.setValue(false);
+    }
+    if (this.convention.confidentiel == null){
+      this.form.get('confidentiel')?.setValue(false);
+    }
 
     this.previousValues={...this.form.value}
     this.form.valueChanges.pipe(debounceTime(1000)).subscribe(res=>{
