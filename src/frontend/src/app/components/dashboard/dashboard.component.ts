@@ -35,38 +35,10 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (this.isEtudiant()) {
-      this.columns = ['id', 'etudiant', 'structure', 'dateDebutStage', 'dateFinStage', 'ufr', 'etape', 'enseignant', 'signataire', 'validationPedagogique', 'validationConvention', 'avenant', 'annee', 'action'];
-      this.filters = [
-        { id: 'id', libelle: 'N° de la convention', type: 'int' },
-        { id: 'etudiant', libelle: 'Étudiant', specific: true },
-        { id: 'structure', libelle: 'Établissement d\'accueil', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
-        { id: 'dateDebutStage', libelle: 'Date début du stage', type: 'date' },
-        { id: 'dateFinStage', libelle: 'Date fin du stage', type: 'date' },
-        { id: 'ufr', libelle: 'Composnante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
-        { id: 'etape', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
-        { id: 'enseignant', libelle: 'Enseignant', specific: true },
-        { id: 'signataire', libelle: 'Gestionnaire', specific: true },
-        { id: 'validationPedagogique', libelle: 'Validation pédagogique', type: 'boolean' },
-        { id: 'validationConvention', libelle: 'Validation pédagogique', type: 'boolean' },
-        { id: 'avenant', libelle: 'Avenant', specific: true },
-        { id: 'annee', libelle: 'Année', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
-      ];
-    } else if (this.isGestionnaire()) {
-      this.columns = ['select', 'id', 'etudiant', 'structure', 'dateDebutStage', 'dateFinStage', 'ufr', 'etape', 'enseignant', 'action'];
-      this.filters = [
-        { id: 'id', libelle: 'N° de la convention', type: 'int' },
-        { id: 'etudiant', libelle: 'Étudiant', specific: true },
-        { id: 'structure', libelle: 'Établissement d\'accueil', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
-        { id: 'dateDebutStage', libelle: 'Date début du stage', type: 'date' },
-        { id: 'dateFinStage', libelle: 'Date fin du stage', type: 'date' },
-        { id: 'ufr', libelle: 'Composnante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
-        { id: 'etape', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
-        { id: 'enseignant', libelle: 'Enseignant', specific: true },
-        { id: 'annee', libelle: 'Année', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], hidden: true },
-      ];
+    if (this.isGestionnaire()) {
+      this.setDataGestionnaire();
     } else if (this.isEnseignant()) {
-      this.columns = ['id', 'etudiant', 'ufr', 'etape',  'dateDebutStage', 'dateFinStage', 'structure', 'sujetStage', 'adresseEtabRef', 'etatValidation', 'avenant', 'signataire', 'action'];
+      this.columns = ['id', 'etudiant', 'ufr', 'etape',  'dateDebutStage', 'dateFinStage', 'structure', 'sujetStage', 'adresseEtabRef', 'etatValidation', 'avenant', 'action'];
       this.filters = [
         { id: 'id', libelle: 'N° de la convention', type: 'int' },
         { id: 'etudiant', libelle: 'Étudiant', specific: true },
@@ -79,11 +51,25 @@ export class DashboardComponent implements OnInit {
         { id: 'adresseEtabRef', libelle: 'Lieu du stage' },
         { id: 'etatValidation', libelle: 'État de validation de la convention', specific: true },
         { id: 'avenant', libelle: 'Avenant', specific: true },
-        { id: 'signataire', libelle: 'Gestionnaire', specific: true },
         { id: 'annee', libelle: 'Année', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], hidden: true },
       ];
+    } else if (this.isEtudiant()) {
+      this.columns = ['id', 'structure', 'dateDebutStage', 'dateFinStage', 'ufr', 'etape', 'enseignant', 'validationPedagogique', 'validationConvention', 'avenant', 'annee', 'action'];
+      this.filters = [
+        { id: 'id', libelle: 'N° de la convention', type: 'int' },
+        { id: 'structure', libelle: 'Établissement d\'accueil', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
+        { id: 'dateDebutStage', libelle: 'Date début du stage', type: 'date' },
+        { id: 'dateFinStage', libelle: 'Date fin du stage', type: 'date' },
+        { id: 'ufr', libelle: 'Composnante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
+        { id: 'etape', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
+        { id: 'enseignant', libelle: 'Enseignant', specific: true },
+        { id: 'validationPedagogique', libelle: 'Validation pédagogique', type: 'boolean' },
+        { id: 'validationConvention', libelle: 'Validation pédagogique', type: 'boolean' },
+        { id: 'avenant', libelle: 'Avenant', specific: true },
+        { id: 'annee', libelle: 'Année', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
+      ];
     } else {
-      // TODO
+      this.setDataGestionnaire();
     }
 
     this.filters.push({ id: 'validationCreation', type: 'boolean', value: true, hidden: true });
@@ -91,6 +77,21 @@ export class DashboardComponent implements OnInit {
     // TODO sélectionner l'année en cours
     this.anneeEnCours = '2020';
     this.countConvention();
+  }
+
+  setDataGestionnaire(): void {
+    this.columns = ['select', 'id', 'etudiant', 'structure', 'dateDebutStage', 'dateFinStage', 'ufr', 'etape', 'enseignant', 'action'];
+    this.filters = [
+      { id: 'id', libelle: 'N° de la convention', type: 'int' },
+      { id: 'etudiant', libelle: 'Étudiant', specific: true },
+      { id: 'structure', libelle: 'Établissement d\'accueil', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
+      { id: 'dateDebutStage', libelle: 'Date début du stage', type: 'date' },
+      { id: 'dateFinStage', libelle: 'Date fin du stage', type: 'date' },
+      { id: 'ufr', libelle: 'Composnante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
+      { id: 'etape', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
+      { id: 'enseignant', libelle: 'Enseignant', specific: true },
+      { id: 'annee', libelle: 'Année', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], hidden: true },
+    ];
   }
 
   isEtudiant(): boolean {

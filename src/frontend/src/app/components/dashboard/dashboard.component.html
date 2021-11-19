@@ -37,10 +37,6 @@
     <th mat-header-cell *matHeaderCellDef mat-sort-header>Enseignant</th>
     <td mat-cell *matCellDef="let row">{{row.enseignant.nom + ' ' + row.enseignant.prenom}}</td>
   </ng-container>
-  <ng-container *ngIf="isEtudiant() || isEnseignant()" matColumnDef="signataire">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header>Gestionnaire</th>
-    <td mat-cell *matCellDef="let row">{{row.signataire ? row.signataire.nom + ' ' + row.signataire.prenom : ''}}</td>
-  </ng-container>
   <ng-container *ngIf="isEnseignant()" matColumnDef="sujetStage">
     <th mat-header-cell *matHeaderCellDef mat-sort-header>Sujet du stage</th>
     <td mat-cell *matCellDef="let row">{{row.sujetStage}}</td>
@@ -57,7 +53,7 @@
     <th mat-header-cell *matHeaderCellDef mat-sort-header>N°</th>
     <td mat-cell *matCellDef="let row">{{row.id}}</td>
   </ng-container>
-  <ng-container matColumnDef="etudiant">
+  <ng-container matColumnDef="etudiant" *ngIf="!isEtudiant()">
     <th mat-header-cell *matHeaderCellDef>Étudiant</th>
     <td mat-cell *matCellDef="let row">{{row.etudiant.prenom + ' ' + row.etudiant.nom}}</td>
   </ng-container>
