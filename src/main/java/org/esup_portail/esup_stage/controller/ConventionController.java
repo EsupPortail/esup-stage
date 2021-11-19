@@ -52,7 +52,7 @@ public class ConventionController {
     UfrJpaRepository ufrJpaRepository;
 
     @Autowired
-    CentreGestionJpaRepository centreGestionJpaRepository;
+    CritereGestionJpaRepository critereGestionJpaRepository;
 
     @Autowired
     PaysJpaRepository paysJpaRepository;
@@ -206,13 +206,18 @@ public class ConventionController {
         if (ufr == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "UFR non trouvée");
         }
-        CentreGestion centreGestion = centreGestionJpaRepository.getByCode(conventionFormDto.getCodeComposante());
-        if (centreGestion == null) {
-            centreGestion = centreGestionJpaRepository.findByCodeEtape(etape.getId().getCode(), etape.getId().getCodeVersionEtape());
+        CentreGestion centreGestion = null;
+        CritereGestion critereGestion = critereGestionJpaRepository.findEtapeById(conventionFormDto.getCodeComposante(), "");
+        if (critereGestion != null) {
+            centreGestion =  critereGestion.getCentreGestion();
         }
         if (centreGestion == null) {
+            critereGestion = critereGestionJpaRepository.findEtapeById(conventionFormDto.getCodeEtape(), conventionFormDto.getCodeVerionEtape());
+        }
+        if (critereGestion == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion non trouvé");
         }
+        centreGestion = critereGestion.getCentreGestion();
         Etudiant etudiant = etudiantJpaRepository.findByNumEtudiant(conventionFormDto.getNumEtudiant());
         if (etudiant == null) {
             etudiant = new Etudiant();
