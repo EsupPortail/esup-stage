@@ -1,15 +1,111 @@
 <mat-accordion>
   <mat-expansion-panel [expanded]="true">
     <mat-expansion-panel-header>
+      <mat-panel-title>Liste des gestionnaires rattachés</mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <app-table [service]="personnelCentreService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters"
+               matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'" (matSortChange)="appTable ? appTable.sorting($event) : null" [hideDeleteFilters]="true">
+
+      <ng-container matColumnDef="civilite.libelle">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Civilité</th>
+        <td mat-cell *matCellDef="let row"> {{row.civilite.libelle}}</td>
+      </ng-container>
+      <ng-container matColumnDef="nom">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Nom</th>
+        <td mat-cell *matCellDef="let row"> {{row.nom}}</td>
+      </ng-container>
+      <ng-container matColumnDef="prenom">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Prénom</th>
+        <td mat-cell *matCellDef="let row"> {{row.prenom}}</td>
+      </ng-container>
+      <ng-container matColumnDef="droitAdministration.libelle">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Droits d'accès aux conventions</th>
+        <td mat-cell *matCellDef="let row"> {{row.droitAdministration.libelle}}</td>
+      </ng-container>
+      <ng-container matColumnDef="alertesMail">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Alertes Mail</th>
+        <td mat-cell *matCellDef="let row"> {{row.alertesMail ? 'Oui' : 'Non'}}</td>
+      </ng-container>
+      <ng-container matColumnDef="droitsEvaluation">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Droits Evaluation</th>
+        <td mat-cell *matCellDef="let row">
+          <span style="display: block" *ngIf="row.droitEvaluationEtudiant">Etudiants</span>
+          <span style="display: block" *ngIf="row.droitEvaluationEnseignant">Enseignant</span>
+          <span style="display: block" *ngIf="row.droitEvaluationEntreprise">Entreprise</span>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let row">
+          <button mat-icon-button matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
+        </td>
+      </ng-container>
+    </app-table>
+  </mat-expansion-panel>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
       <mat-panel-title>Choix d'un gestionnaire à rattacher</mat-panel-title>
     </mat-expansion-panel-header>
 
+    <form [formGroup]="searchForm" novalidate class="mt-2 mb-3">
+      <div class="row">
+        <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+          <mat-label>Nom</mat-label>
+          <input matInput formControlName="nom" />
+        </mat-form-field>
+        <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+          <mat-label>Prénom</mat-label>
+          <input matInput formControlName="prenom" />
+        </mat-form-field>
+      </div>
+    </form>
 
+    <div class="alert alert-info" *ngIf="gestionnaires.length > 10">La recherche est limitée à 10 gestionnaires. Veuillez affiner la recherche si le gestionnaire n'apparaît pas.</div>
+    <table mat-table [dataSource]="gestionnaires | slice:0:10">
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="9999">Aucun gestionnaire trouvé</td>
+      </tr>
+      <ng-container matColumnDef="nomprenom">
+        <th mat-header-cell *matHeaderCellDef>Nom / Prénom</th>
+        <td mat-cell *matCellDef="let row">{{row.displayName}}</td>
+      </ng-container>
+      <ng-container matColumnDef="mail">
+        <th mat-header-cell *matHeaderCellDef>Mail</th>
+        <td mat-cell *matCellDef="let row">{{row.mail}}</td>
+      </ng-container>
+      <ng-container matColumnDef="departement">
+        <th mat-header-cell *matHeaderCellDef>Département</th>
+        <td mat-cell *matCellDef="let row">-</td>
+      </ng-container>
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row">
+          <button mat-button mat-stroked-button (click)="choose(row)" color="primary">
+            <span *ngIf="true"><i class="fa fa-check"></i> Sélectionner</span>
+            <ng-template #notSelected>
+              <i class="fa fa-check-circle"></i> Sélectionner
+            </ng-template>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="searchColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: searchColumns;"></tr>
+    </table>
   </mat-expansion-panel>
-
-  <mat-expansion-panel>
+  <mat-expansion-panel [disabled]="!gestionnaire">
     <mat-expansion-panel-header>
-      <mat-panel-title>Liste des gestionnaires rattachés</mat-panel-title>
+      Détail du gestionnaire
     </mat-expansion-panel-header>
+
+    <form [formGroup]="form" (submit)="save()">
+      <div class="row">
+        <div class="col-sm-6"><b>Nom</b> &nbsp; {{this.form.get('nom')?.value}}</div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6"><b>Prénom</b> &nbsp; {{this.form.get('prenom')?.value}}</div>
+      </div>
+    </form>
   </mat-expansion-panel>
 </mat-accordion>
