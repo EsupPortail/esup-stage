@@ -41,12 +41,12 @@
     </ng-template>
     <app-enseignant-referent *ngIf="enseignantRefTab.isActive || tabs[5].init" (validated)="updateEnseignant($event)" [enseignant]="convention.enseignant"></app-enseignant-referent>
   </mat-tab>
-  <mat-tab #signataireTab [disabled]="!convention.id || !convention.service" *ngIf="!isValide()">
+  <mat-tab #signataireTab [disabled]="!convention.id || !convention.structure" *ngIf="!isValide()">
     <ng-template mat-tab-label>
       Signataire
       <mat-progress-bar mode="determinate" [value]="getProgressValue(6)" [ngClass]="{editing: tabs[6].statut === 1, done: tabs[6].statut === 2}"></mat-progress-bar>
     </ng-template>
-    <app-signataire *ngIf="signataireTab.isActive || tabs[6].init" (validated)="updateSignataire($event)" [centreGestion]="convention.centreGestion" [contact]="convention.signataire" [service]="convention.service"></app-signataire>
+    <app-signataire *ngIf="signataireTab.isActive || tabs[6].init" (validated)="updateSignataire($event)" [convention]="convention"></app-signataire>
   </mat-tab>
   <mat-tab #recapTab [disabled]="!convention.id || !allValid">
     <ng-template mat-tab-label>

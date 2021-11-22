@@ -129,7 +129,6 @@ export class ConventionComponent implements OnInit {
       "field":key,
       "value":value,
     };
-    console.log('data: ' + JSON.stringify(data, null, 2));
     this.conventionService.patch(this.convention.id, data).subscribe((response: any) => {
       this.convention = response;
       this.majStatus();

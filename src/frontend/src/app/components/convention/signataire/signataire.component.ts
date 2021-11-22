@@ -1,13 +1,17 @@
 import { Component, EventEmitter, OnInit, OnChanges, Input, Output, ViewChild } from '@angular/core';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { CiviliteService } from "../../../services/civilite.service";
+import { ServiceService } from "../../../services/service.service";
 import { ContactService } from "../../../services/contact.service";
+import { PaysService } from "../../../services/pays.service";
+import { CiviliteService } from "../../../services/civilite.service";
 import { MessageService } from "../../../services/message.service";
 import { MatExpansionPanel } from "@angular/material/expansion";
 import { AppFonction } from "../../../constants/app-fonction";
 import { Droit } from "../../../constants/droit";
 import { AuthService } from "../../../services/auth.service";
 import { ConfigService } from "../../../services/config.service";
+import { ServiceAccueilFormComponent } from '../../gestion-etab-accueil/service-accueil-form/service-accueil-form.component';
 
 @Component({
   selector: 'app-signataire',
@@ -17,14 +21,17 @@ import { ConfigService } from "../../../services/config.service";
 export class SignataireComponent implements OnInit, OnChanges {
 
   civilites: any[] = [];
-
-  data: any;
-
-  @Input() service: any;
-  @Input() centreGestion: any;
-
-  @Input() contact: any;
+  countries: any[] = [];
   contacts:any[] = [];
+  services: any[] = [];
+
+  serviceTableColumns = ['nom', 'voie', 'codePostal','batimentResidence', 'commune', 'pays', 'telephone',  'actions'];
+
+  @Input() convention: any;
+
+  etab: any;
+  contact: any;
+  service: any;
 
   modif: boolean = false;
   form: FormGroup;
@@ -35,12 +42,15 @@ export class SignataireComponent implements OnInit, OnChanges {
 
   @Output() validated = new EventEmitter<number>();
 
-  constructor(public contactService: ContactService,
+  constructor(private contactService: ContactService,
               private fb: FormBuilder,
               private messageService: MessageService,
               private authService: AuthService,
+              private serviceService: ServiceService,
+              private paysService: PaysService,
               private civiliteService: CiviliteService,
               private configService: ConfigService,
+              private matDialog: MatDialog,
   ) {
     this.form = this.fb.group({
       nom: [null, [Validators.required, Validators.maxLength(50)]],
@@ -60,18 +70,63 @@ export class SignataireComponent implements OnInit, OnChanges {
     this.civiliteService.getPaginated(1, 0, 'libelle', 'asc','').subscribe((response: any) => {
       this.civilites = response.data;
     });
+    this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServPays: {value: 'O', type: 'text'}})).subscribe((response: any) => {
+      this.countries = response.data;
+    });
   }
 
-  ngOnChanges(): void{
+  ngOnChanges(): void {
+    this.etab = this.convention.structure;
+    this.contact = this.convention.signataire;
+    this.service = this.contact ? this.contact.service : null;
     this.refreshContacts();
+    this.refreshServices();
   }
 
-  refreshContacts(): void{
+  refreshServices(): void {
+    this.serviceService.getByStructure(this.etab.id).subscribe((response: any) => {
+      this.services = response;
+    });
+  }
+
+  refreshContacts(): void {
     if (this.service){
       this.contactService.getByService(this.service.id).subscribe((response: any) => {
         this.contacts = response;
       });
     }
+  }
+
+  openServiceFormModal(service: any) {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.width = '1000px';
+    dialogConfig.data = {service: service, etab: this.etab, countries: this.countries};
+    const modalDialog = this.matDialog.open(ServiceAccueilFormComponent, dialogConfig);
+    modalDialog.afterClosed().subscribe(dialogResponse => {
+      if (dialogResponse) {
+        if (this.service) {
+          this.messageService.setSuccess("Service modifié avec succès");
+        }else{
+          this.messageService.setSuccess("Service créé avec succès");
+        }
+        this.service = dialogResponse;
+        this.refreshServices();
+        this.refreshContacts();
+      }
+    });
+  }
+
+  selectService(): void{
+    this.refreshContacts();
+    this.contact = null;
+  }
+
+  createService(): void {
+    this.openServiceFormModal(null);
+  }
+
+  editService(row: any): void {
+    this.openServiceFormModal(row);
   }
 
   canCreate(): boolean {
@@ -139,7 +194,7 @@ export class SignataireComponent implements OnInit, OnChanges {
       } else {
 
         //ajoute idCentreGestion à l'objet contact
-        data.idCentreGestion = this.centreGestion.id;
+        data.idCentreGestion = this.convention.centreGestion.id;
 
         //ajoute idService à l'objet contact
         data.idService = this.service.id;
@@ -147,7 +202,6 @@ export class SignataireComponent implements OnInit, OnChanges {
         this.contactService.create(data).subscribe((response: any) => {
           this.messageService.setSuccess('Contact créé');
           this.contact = response;
-          this.refreshContacts();
           this.choose(this.contact);
         });
       }
