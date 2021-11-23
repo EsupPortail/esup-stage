@@ -32,7 +32,7 @@
       Stage
       <mat-progress-bar mode="determinate" [value]="getProgressValue(4)" [ngClass]="{editing: tabs[4].statut === 1, done: tabs[4].statut === 2}"></mat-progress-bar>
     </ng-template>
-    <app-stage *ngIf="stageTab.isActive || tabs[4].init" [convention]="convention" (validated)="setStatus(4, $event)"></app-stage>
+    <app-stage *ngIf="stageTab.isActive || tabs[4].init" [convention]="convention" (updateField)="updateStage($event)" (validated)="setStatus(4, $event)"></app-stage>
   </mat-tab>
   <mat-tab #enseignantRefTab [disabled]="!convention.id" *ngIf="!isValide()">
     <ng-template mat-tab-label>
@@ -52,6 +52,7 @@
     <ng-template mat-tab-label>
       Récapitulatif
     </ng-template>
+    <app-recapitulatif *ngIf="recapTab.isActive || tabs[7].init" [convention]="convention"></app-recapitulatif>
   </mat-tab>
   <mat-tab #avenantTab *ngIf="isValide()">
     <ng-template mat-tab-label>

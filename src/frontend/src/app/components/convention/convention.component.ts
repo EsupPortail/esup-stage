@@ -83,6 +83,16 @@ export class ConventionComponent implements OnInit {
 
   setStatus(key: number, value: number): void {
     this.tabs[key].statut = value;
+    this.majAllValid();
+  }
+
+  majAllValid(): void {
+    this.allValid = true;
+    for (let key in this.tabs) {
+        if (key != '7' && this.tabs[key].statut == 0){
+          this.allValid = false;
+        }
+    }
   }
 
   isCreated(): boolean {
@@ -116,6 +126,10 @@ export class ConventionComponent implements OnInit {
     this.updateSingleField('idContact',data.id);
   }
 
+  updateStage(data: any): void {
+    this.updateSingleField(data.field,data.value);
+  }
+
   updateEnseignant(data: any): void {
     this.updateSingleField('idEnseignant',data.id);
   }
@@ -123,6 +137,7 @@ export class ConventionComponent implements OnInit {
   updateSignataire(data: any): void {
     this.updateSingleField('idSignataire',data.id);
   }
+
 
   updateSingleField(key: string, value: any): void {
     const data = {

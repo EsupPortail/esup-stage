@@ -84,6 +84,7 @@ import { ServiceAccueilFormComponent } from './components/gestion-etab-accueil/s
 import { ContactFormComponent } from './components/gestion-etab-accueil/contact-form/contact-form.component';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { GestionnairesComponent } from './components/centre-gestion/gestionnaires/gestionnaires.component';
+import { RecapitulatifComponent } from './components/convention/recapitulatif/recapitulatif.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -130,6 +131,7 @@ registerLocaleData(localeFr, 'fr');
     ServiceAccueilFormComponent,
     ContactFormComponent,
     GestionnairesComponent,
+    RecapitulatifComponent,
   ],
   imports: [
     BrowserModule,

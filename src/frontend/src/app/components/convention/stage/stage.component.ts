@@ -54,6 +54,7 @@ export class StageComponent implements OnInit {
   previousValues: any;
 
   @Output() validated = new EventEmitter<number>();
+  @Output() updateField = new EventEmitter<any>();
 
   constructor(public conventionService: ConventionService,
               private fb: FormBuilder,
@@ -192,9 +193,7 @@ export class StageComponent implements OnInit {
         "field":key,
         "value":value,
       };
-      this.conventionService.patch(this.convention.id, data).subscribe((response: any) => {
-        this.convention = response;
-      });
+      this.updateField.emit(data);
     }
     if (this.form.valid) {
       this.validated.emit(2);
