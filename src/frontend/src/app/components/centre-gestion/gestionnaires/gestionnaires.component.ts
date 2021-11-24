@@ -97,9 +97,9 @@ export class GestionnairesComponent implements OnInit {
   }
 
   choose(row: any): void {
-      /*if (this.pannels) {
+      if (this.pannels) {
         this.pannels.last.open();
-      }*/
+      }
       this.gestionnaire = row;
       this.setData(this.gestionnaire);
   }
@@ -113,17 +113,33 @@ export class GestionnairesComponent implements OnInit {
       typePersonne: gestionnaire.eduPersonPrimaryAffiliation,
       uidPersonnel: gestionnaire.supannAliasLogin,
       impressionConvention: true,
+      droitEvaluationEtudiant: false,
+      droitEvaluationEnseignant: false,
+      droitEvaluationEntreprise: false,
       droitAdministration: this.droits[0],
     });
   }
 
   save(): void {
+    const data = {...this.form.value}
     if (this.form.invalid) {
       this.messageService.setError("Veuillez remplir les champs obligatoires")
       return;
     }
+    this.personnelCentreService.create(data, this.centreGestion.id).subscribe((response: any) => {
+      this.messageService.setSuccess("Personnel rattaché avec succès");
+      if (this.pannels) {
+        this.pannels.first.open();
+      }
+    });
 
+  }
 
+  compare(option: any, value: any): boolean {
+    if (option && value) {
+      return option.id === value.id;
+    }
+    return false;
   }
 
 }

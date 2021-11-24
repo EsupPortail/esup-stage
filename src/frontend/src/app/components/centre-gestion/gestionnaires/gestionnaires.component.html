@@ -9,7 +9,7 @@
 
       <ng-container matColumnDef="civilite.libelle">
         <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Civilité</th>
-        <td mat-cell *matCellDef="let row"> {{row.civilite.libelle}}</td>
+        <td mat-cell *matCellDef="let row"> {{row.civilite ? row.civilite.libelle : ''}}</td>
       </ng-container>
       <ng-container matColumnDef="nom">
         <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Nom</th>
@@ -100,12 +100,60 @@
     </mat-expansion-panel-header>
 
     <form [formGroup]="form" (submit)="save()">
-      <div class="row">
-        <div class="col-sm-6"><b>Nom</b> &nbsp; {{this.form.get('nom')?.value}}</div>
+      <div class="gest-info" style="margin-bottom: 15px">
+        <div class="row">
+          <div class="col-sm-6"><b>Nom</b> &nbsp; {{this.form.get('nom')?.value}}</div>
+          <div class="col-sm-6"><b>Affectation</b> &nbsp; {{this.form.get('codeAffectation')?.value}}</div>
+        </div>
+        <div class="row">
+          <div class="col-sm-6"><b>Prénom</b> &nbsp; {{this.form.get('prenom')?.value}}</div>
+          <div class="col-sm-6"><b>Type</b> &nbsp; {{this.form.get('typePersonne')?.value}}</div>
+        </div>
+        <div class="row">
+          <div class="col-sm-6"><b>Mail</b> &nbsp; {{this.form.get('mail')?.value}}</div>
+        </div>
       </div>
-      <div class="row">
-        <div class="col-sm-6"><b>Prénom</b> &nbsp; {{this.form.get('prenom')?.value}}</div>
+
+      <div class="gest-fields">
+        <div class="row">
+          <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
+            <mat-label>Téléphone</mat-label>
+            <input matInput formControlName="tel" />
+          </mat-form-field>
+          <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
+            <mat-label>Campus</mat-label>
+            <input matInput formControlName="campus" />
+          </mat-form-field>
+        </div>
+        <div class="row">
+          <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
+            <mat-label>Bâtiment</mat-label>
+            <input matInput formControlName="batiment" />
+          </mat-form-field>
+          <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
+            <mat-label>Bureau</mat-label>
+            <input matInput formControlName="bureau" />
+          </mat-form-field>
+        </div>
+        <div class="row">
+          <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
+            <mat-label>Droits</mat-label>
+            <mat-select formControlName="droitAdministration" [compareWith]="compare">
+              <mat-option *ngFor="let droit of droits" [value]="droit">{{droit.libelle}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div>
+          <mat-checkbox class="d-block" formControlName="impressionConvention">Possibilité d'imprimer les conventions de stage avant leur validation</mat-checkbox>
+          <mat-checkbox class="d-block" formControlName="droitEvaluationEtudiant">Gestion des évaluations des étudiants</mat-checkbox>
+          <mat-checkbox class="d-block" formControlName="droitEvaluationEnseignant">Gestion des évaluations des enseignants référents</mat-checkbox>
+          <mat-checkbox class="d-block" formControlName="droitEvaluationEntreprise">Gestion des évaluations des tuteurs professionnels</mat-checkbox>
+        </div>
       </div>
+
+      <mat-dialog-actions>
+        <button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
+      </mat-dialog-actions>
     </form>
   </mat-expansion-panel>
 </mat-accordion>
