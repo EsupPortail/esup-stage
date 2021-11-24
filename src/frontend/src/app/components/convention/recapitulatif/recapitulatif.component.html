@@ -183,7 +183,7 @@
         </div>
       </div>
     </div>
-    <div class="row">
+    <div class="row" *ngIf="!convention.id">
       <div class="col-sm-12 text-center">
         <button mat-button mat-flat-button color="primary" (click)="validate()">{{'BOUTON_VALIDER'|contenu}}</button>
       </div>

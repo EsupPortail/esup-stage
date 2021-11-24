@@ -8,7 +8,7 @@
         <mat-form-field>
           <mat-label>Année universitaire</mat-label>
           <mat-select [(ngModel)]="anneeEnCours" (ngModelChange)="changeAnnee()">
-            <mat-option *ngFor="let annee of annees" [value]="annee.annee">{{annee.libelle}}</mat-option>
+            <mat-option *ngFor="let annee of annees" [value]="annee">{{annee.libelle}}</mat-option>
           </mat-select>
         </mat-form-field>
       </div>
@@ -88,7 +88,9 @@
   </ng-container>
   <ng-container *ngIf="isEtudiant() || isEnseignant()" matColumnDef="avenant">
     <th mat-header-cell *matHeaderCellDef mat-sort-header>Avenant</th>
-    <td mat-cell *matCellDef="let row">TODO</td>
+    <td mat-cell *matCellDef="let row">
+      <span *ngFor="let avenant of row.avenants">{{avenant.id}}<br/></span>
+    </td>
   </ng-container>
   <ng-container *ngIf="isEtudiant()" matColumnDef="annee">
     <th mat-header-cell *matHeaderCellDef mat-sort-header>Année univ.</th>

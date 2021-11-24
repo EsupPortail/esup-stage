@@ -38,7 +38,7 @@ export class DashboardComponent implements OnInit {
       this.filters = [
         { id: 'id', libelle: 'N° de la convention', type: 'int' },
         { id: 'etudiant', libelle: 'Étudiant', specific: true },
-        { id: 'ufr', libelle: 'Composnante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
+        { id: 'ufr', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
         { id: 'etape', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
         { id: 'dateDebutStage', libelle: 'Date début du stage', type: 'date-min' },
         { id: 'dateFinStage', libelle: 'Date fin du stage', type: 'date-max' },
@@ -55,11 +55,11 @@ export class DashboardComponent implements OnInit {
         { id: 'structure', libelle: 'Établissement d\'accueil', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
         { id: 'dateDebutStage', libelle: 'Date début du stage', type: 'date' },
         { id: 'dateFinStage', libelle: 'Date fin du stage', type: 'date' },
-        { id: 'ufr', libelle: 'Composnante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
+        { id: 'ufr', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
         { id: 'etape', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
         { id: 'enseignant', libelle: 'Enseignant', specific: true },
         { id: 'validationPedagogique', libelle: 'Validation pédagogique', type: 'boolean' },
-        { id: 'validationConvention', libelle: 'Validation pédagogique', type: 'boolean' },
+        { id: 'validationConvention', libelle: 'Validation administrative', type: 'boolean' },
         { id: 'avenant', libelle: 'Avenant', specific: true },
         { id: 'annee', libelle: 'Année', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'libelle', value: [] },
       ];
@@ -91,7 +91,7 @@ export class DashboardComponent implements OnInit {
       { id: 'structure', libelle: 'Établissement d\'accueil', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
       { id: 'dateDebutStage', libelle: 'Date début du stage', type: 'date' },
       { id: 'dateFinStage', libelle: 'Date fin du stage', type: 'date' },
-      { id: 'ufr', libelle: 'Composnante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
+      { id: 'ufr', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
       { id: 'etape', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
       { id: 'enseignant', libelle: 'Enseignant', specific: true },
     ];

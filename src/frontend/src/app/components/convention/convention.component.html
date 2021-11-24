@@ -52,7 +52,7 @@
     <ng-template mat-tab-label>
       Récapitulatif
     </ng-template>
-    <app-recapitulatif *ngIf="recapTab.isActive || tabs[7].init" [convention]="convention"></app-recapitulatif>
+    <app-recapitulatif *ngIf="(recapTab.isActive || tabs[7].init) && convention.id" [convention]="convention"></app-recapitulatif>
   </mat-tab>
   <mat-tab #avenantTab *ngIf="isValide()">
     <ng-template mat-tab-label>
