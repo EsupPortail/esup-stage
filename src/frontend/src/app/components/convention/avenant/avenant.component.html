@@ -1,0 +1,159 @@
+<mat-accordion>
+  <mat-expansion-panel [expanded]="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title>Création d'un nouvel avenant</mat-panel-title>
+    </mat-expansion-panel-header>
+    <form [formGroup]="form" novalidate (submit)="save()">
+      <div class="row">
+        <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+          <mat-label>Titre</mat-label>
+          <input matInput formControlName="titreAvenant" required />
+          <mat-error><app-form-error [field]="form.get('titreAvenant')"></app-form-error></mat-error>
+        </mat-form-field>
+      </div>
+
+
+      <div class="text-title">Selectionez un ou plusieurs motifs de création de l'avenant :</div>
+      <mat-divider></mat-divider>
+      <div class="row mt-3 mb-3">
+        <mat-checkbox class="col-12" formControlName="rupture">Rupture de stage</mat-checkbox>
+        <mat-checkbox class="col-12" formControlName="modificationSujet">Modification du sujet de stage</mat-checkbox>
+        <mat-checkbox class="col-12" formControlName="modificationPeriode">Modification de la période de stage</mat-checkbox>
+        <mat-checkbox class="col-12" formControlName="modificationMontantGratification">Modification du montant de la gratification</mat-checkbox>
+        <mat-checkbox class="col-12" formControlName="modificationLieu">Modification du lieu de stage</mat-checkbox>
+        <mat-checkbox class="col-12" formControlName="modificationTuteurPro">Modification du tuteur professionnel</mat-checkbox>
+        <mat-checkbox class="col-12" formControlName="modificationEnseignant">Modification de l’enseignant référent</mat-checkbox>
+        <mat-checkbox class="col-12" [(ngModel)]="autreModifChecked">Autre modification</mat-checkbox>
+      </div>
+
+      <div *ngIf="form.value.rupture">
+        <div class="text-title">Rupture de stage</div>
+        <mat-divider></mat-divider>
+        <div class="row mt-3 mb-3">
+          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+            <mat-label>dateRupture</mat-label>
+            <input matInput [matDatepicker]="dateRupturePicker" formControlName="dateRupture" required >
+            <mat-datepicker-toggle matSuffix [for]="dateRupturePicker"></mat-datepicker-toggle>
+            <mat-datepicker #dateRupturePicker></mat-datepicker>
+            <mat-error><app-form-error [field]="form.get('dateRupture')"></app-form-error></mat-error>
+          </mat-form-field>
+          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+            <mat-label>commentaireRupture</mat-label>
+            <input matInput formControlName="commentaireRupture" required />
+            <mat-error><app-form-error [field]="form.get('commentaireRupture')"></app-form-error></mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div *ngIf="form.value.modificationSujet">
+        <div class="text-title">Modification du sujet de stage</div>
+        <mat-divider></mat-divider>
+        <div class="row mt-3">
+          <div class="col-sm-3 font-weight-bold">Sujet</div>
+          <div class="col-sm-9">{{convention.sujetStage}}</div>
+        </div>
+        <div class="row mt-3 mb-3">
+          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+            <mat-label>Nouveau sujet de stage</mat-label>
+            <input matInput formControlName="sujetStage" required />
+            <mat-error><app-form-error [field]="form.get('sujetStage')"></app-form-error></mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div *ngIf="form.value.modificationPeriode">
+        <div class="text-title">Modification de la période de stage</div>
+        <mat-divider></mat-divider>
+        <div class="row mt-3 ">
+          <div class="col-sm-3 font-weight-bold">Date de début du stage</div>
+          <div class="col-sm-9">{{convention.dateDebutStage}}</div>
+          <div class="col-sm-3 font-weight-bold">Date de fin du stage</div>
+          <div class="col-sm-9">{{convention.dateFinStage}}</div>
+          <div class="col-sm-3 font-weight-bold">Interruption au cours du stage</div>
+          <div class="col-sm-9">{{convention.interruptionStage ? 'Oui' : 'Non'}}</div>
+        </div>
+        <div class="row" *ngIf="convention.interruptionStage">
+          <div class="col-sm-3 font-weight-bold">Date de début d'interruption du stage</div>
+          <div class="col-sm-9">{{convention.dateDebutInterruption}}</div>
+          <div class="col-sm-3 font-weight-bold">Date de fin d'interruption du stage</div>
+          <div class="col-sm-9">{{convention.dateFinInterruption}}</div>
+        </div>
+        <div class="row mt-3 mb-3">
+          <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
+            <mat-label>Nouvelle date de début</mat-label>
+            <input matInput [matDatepicker]="dateDebutStagePicker" formControlName="dateDebutStage" required >
+            <mat-datepicker-toggle matSuffix [for]="dateDebutStagePicker"></mat-datepicker-toggle>
+            <mat-datepicker #dateDebutStagePicker></mat-datepicker>
+            <mat-error><app-form-error [field]="form.get('dateDebutStage')"></app-form-error></mat-error>
+          </mat-form-field>
+          <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
+            <mat-label>Nouvelle date de fin</mat-label>
+            <input matInput [matDatepicker]="dateFinStagePicker" formControlName="dateFinStage" required >
+            <mat-datepicker-toggle matSuffix [for]="dateFinStagePicker"></mat-datepicker-toggle>
+            <mat-datepicker #dateFinStagePicker></mat-datepicker>
+            <mat-error><app-form-error [field]="form.get('dateFinStage')"></app-form-error></mat-error>
+          </mat-form-field>
+          <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
+            <mat-label>Nouvelle date de début d'intérruption</mat-label>
+            <input matInput [matDatepicker]="dateDebutInterruptionPicker" formControlName="dateDebutInterruption" required >
+            <mat-datepicker-toggle matSuffix [for]="dateDebutInterruptionPicker"></mat-datepicker-toggle>
+            <mat-datepicker #dateDebutInterruptionPicker></mat-datepicker>
+            <mat-error><app-form-error [field]="form.get('dateDebutInterruption')"></app-form-error></mat-error>
+          </mat-form-field>
+          <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
+            <mat-label>Nouvelle date de fin d'intérruption</mat-label>
+            <input matInput [matDatepicker]="dateFinInterruptionPicker" formControlName="dateFinInterruption" required >
+            <mat-datepicker-toggle matSuffix [for]="dateFinInterruptionPicker"></mat-datepicker-toggle>
+            <mat-datepicker #dateFinInterruptionPicker></mat-datepicker>
+            <mat-error><app-form-error [field]="form.get('dateFinInterruption')"></app-form-error></mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div *ngIf="form.value.modificationMontantGratification">
+        <div class="text-title">Modification du montant de la gratification</div>
+        <mat-divider></mat-divider>
+        <div class="row mt-3 mb-3">
+          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+            <mat-label>montantGratification</mat-label>
+            <input matInput formControlName="montantGratification" required />
+            <mat-error><app-form-error [field]="form.get('montantGratification')"></app-form-error></mat-error>
+          </mat-form-field>
+          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+            <mat-label>uniteGratification</mat-label>
+            <mat-select formControlName="idUniteGratification" required>
+              <mat-option *ngFor="let uniteGratification of uniteGratifications" [value]="uniteGratification.id">{{uniteGratification.libelle}}</mat-option>
+            </mat-select>
+            <mat-error><app-form-error [field]="form.get('idUniteGratification')"></app-form-error></mat-error>
+          </mat-form-field>
+          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+            <mat-label>monnaieGratification</mat-label>
+            <input matInput formControlName="monnaieGratification" required />
+            <mat-error><app-form-error [field]="form.get('monnaieGratification')"></app-form-error></mat-error>
+          </mat-form-field>
+          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+            <mat-label>uniteDuree</mat-label>
+            <mat-select formControlName="idUniteDuree" required>
+              <mat-option *ngFor="let uniteDuree of uniteDurees" [value]="uniteDuree.id">{{uniteDuree.libelle}}</mat-option>
+            </mat-select>
+            <mat-error><app-form-error [field]="form.get('idUniteDuree')"></app-form-error></mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col-sm-6">
+          <button mat-button mat-stroked-button color="warn" (click)="cancel()">{{'BOUTON_ANNULER'|contenu}}</button>
+        </div>
+        <div class="col-sm-6 text-right">
+          <button mat-button mat-flat-button color="primary" [disabled]="!form.valid">{{'BOUTON_VALIDER'|contenu}}</button>
+        </div>
+      </div>
+    </form>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel [expanded]="false">
+    <mat-expansion-panel-header>
+      <mat-panel-title>Avenants existants</mat-panel-title>
+    </mat-expansion-panel-header>
+  </mat-expansion-panel>
+</mat-accordion>

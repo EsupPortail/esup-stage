@@ -85,6 +85,7 @@ import { ContactFormComponent } from './components/gestion-etab-accueil/contact-
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { GestionnairesComponent } from './components/centre-gestion/gestionnaires/gestionnaires.component';
 import { RecapitulatifComponent } from './components/convention/recapitulatif/recapitulatif.component';
+import { AvenantComponent } from './components/convention/avenant/avenant.component';
 import { MatChipsModule } from "@angular/material/chips";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
 
@@ -134,6 +135,7 @@ registerLocaleData(localeFr, 'fr');
     ContactFormComponent,
     GestionnairesComponent,
     RecapitulatifComponent,
+    AvenantComponent,
   ],
   imports: [
     BrowserModule,
