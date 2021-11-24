@@ -157,3 +157,9 @@ label.required::after {
   content: '*';
   padding-left: 5px;
 }
+
+.mat-chip-remove mat-icon {
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+}

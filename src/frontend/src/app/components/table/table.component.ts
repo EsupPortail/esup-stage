@@ -11,9 +11,10 @@ import { Sort, SortDirection } from "@angular/material/sort";
 import { PageEvent } from "@angular/material/paginator";
 import { MatColumnDef, MatTable } from "@angular/material/table";
 import { PaginatedService } from "../../services/paginated.service";
-import { Subject } from "rxjs";
+import { Observable, Subject } from "rxjs";
 import { debounceTime } from "rxjs/operators";
 import * as _ from "lodash";
+import { MatAutocompleteSelectedEvent } from "@angular/material/autocomplete";
 
 @Component({
   selector: 'app-table',
@@ -44,6 +45,8 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   pageSize: number = 50;
   filterValues: any = [];
   filterChanged = new Subject();
+  autocmpleteChanged: any = [];
+  autocompleteData: any = [];
 
   constructor() {
     this.filterChanged.pipe(debounceTime(500)).subscribe(() => {
@@ -54,10 +57,27 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
           if (['date', 'date-min', 'date-max'].indexOf(f[key].type) > -1) {
             f[key].value = f[key].value.getTime();
           }
+          // conversion de l'array d'objets en array de keyId
+          if (['autocomplete'].indexOf(f[key].type) > -1) {
+            f[key].type = 'list';
+            const filter = this.filters.find((filter: any) => { return filter.id === key; });
+            if (filter) {
+              f[key].value = f[key].value.map((v: any) => { return v[filter.keyId]; });
+            }
+          }
           if (f[key].specific === undefined) {
             delete f[key].specific;
           }
         }
+      }
+
+      for (const key of Object.keys(this.autocmpleteChanged)) {
+        this.autocmpleteChanged[key].pipe(debounceTime(500)).subscribe(async (event: any) => {
+          if (event.value.length >= 2) {
+            this.autocompleteData[event.filter.id] = await event.filter.autocompleteService.getAutocompleteData(event.value).toPromise();
+            this.autocompleteData[event.filter.id] = this.autocompleteData[event.filter.id].data;
+          }
+        });
       }
 
       this.service.getPaginated(this.page, this.pageSize, this.sortColumn, this.sortOrder, JSON.stringify(f)).subscribe((results: any) => {
@@ -112,6 +132,9 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
         value: emptyValues ? undefined : filter.value,
         specific: filter.specific
       }
+      if (filter.type === 'autocomplete') {
+        this.autocmpleteChanged[filter.id] = new Subject();
+      }
     }
   }
 
@@ -133,7 +156,25 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   }
 
   setFilterValue(id: string, value: any): void {
-    this.filterValues[id] .value = value;
+    this.filterValues[id].value = value;
+  }
+
+  searchAutocomplete(filter: any, value: string): void {
+    this.autocmpleteChanged[filter.id].next({filter, value});
+  }
+
+  autocompleteSelected(filter: any, event: MatAutocompleteSelectedEvent): void {
+    this.filterValues[filter.id].value.push({...event.option.value});
+    this.filterValues[filter.id].autocomplete = null;
+    this.filterChanged.next();
+  }
+
+  removeAutocomplete(filter: any, value: any): void {
+    const index = this.filterValues[filter.id].value.findIndex((v: any) => { return v[filter.keyId] === value[filter.keyId]; });
+    if (index > -1) {
+      this.filterValues[filter.id].value.splice(index, 1);
+      this.filterChanged.next();
+    }
   }
 
 }

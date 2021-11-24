@@ -3,6 +3,7 @@ import { TableComponent } from "../table/table.component";
 import { ConventionService } from "../../services/convention.service";
 import { AuthService } from "../../services/auth.service";
 import { Router } from "@angular/router";
+import { StructureService } from "../../services/structure.service";
 
 @Component({
   selector: 'app-dashboard',
@@ -27,6 +28,7 @@ export class DashboardComponent implements OnInit {
     public conventionService: ConventionService,
     private authService: AuthService,
     private router: Router,
+    public structureService: StructureService,
   ) {
   }
 
@@ -42,7 +44,7 @@ export class DashboardComponent implements OnInit {
         { id: 'etape', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
         { id: 'dateDebutStage', libelle: 'Date début du stage', type: 'date-min' },
         { id: 'dateFinStage', libelle: 'Date fin du stage', type: 'date-max' },
-        { id: 'structure', libelle: 'Établissement d\'accueil', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
+        { id: 'structure.id', libelle: 'Établissement d\'accueil', type: 'autocomplete', autocompleteService: this.structureService, keyLibelle: 'raisonSociale', keyId: 'id', value: [] },
         { id: 'sujetStage', libelle: 'Sujet du stage' },
         { id: 'adresseEtabRef', libelle: 'Lieu du stage' },
         { id: 'etatValidation', libelle: 'État de validation de la convention', specific: true },
@@ -52,7 +54,7 @@ export class DashboardComponent implements OnInit {
       this.columns = ['id', 'structure', 'dateDebutStage', 'dateFinStage', 'ufr', 'etape', 'enseignant', 'validationPedagogique', 'validationConvention', 'avenant', 'annee', 'action'];
       this.filters = [
         { id: 'id', libelle: 'N° de la convention', type: 'int' },
-        { id: 'structure', libelle: 'Établissement d\'accueil', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
+        { id: 'structure.id', libelle: 'Établissement d\'accueil', type: 'autocomplete', autocompleteService: this.structureService, keyLibelle: 'raisonSociale', keyId: 'id', value: [] },
         { id: 'dateDebutStage', libelle: 'Date début du stage', type: 'date' },
         { id: 'dateFinStage', libelle: 'Date fin du stage', type: 'date' },
         { id: 'ufr', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
@@ -88,7 +90,7 @@ export class DashboardComponent implements OnInit {
     this.filters = [
       { id: 'id', libelle: 'N° de la convention', type: 'int' },
       { id: 'etudiant', libelle: 'Étudiant', specific: true },
-      { id: 'structure', libelle: 'Établissement d\'accueil', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
+      { id: 'structure.id', libelle: 'Établissement d\'accueil', type: 'autocomplete', autocompleteService: this.structureService, keyLibelle: 'raisonSociale', keyId: 'id', value: [] },
       { id: 'dateDebutStage', libelle: 'Date début du stage', type: 'date' },
       { id: 'dateFinStage', libelle: 'Date fin du stage', type: 'date' },
       { id: 'ufr', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },

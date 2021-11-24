@@ -3,11 +3,12 @@ import { PaginatedService } from "./paginated.service";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { environment } from "../../environments/environment";
+import { AutocompleteService } from "./autocomplete.service";
 
 @Injectable({
   providedIn: 'root'
 })
-export class StructureService implements PaginatedService {
+export class StructureService implements PaginatedService, AutocompleteService {
 
   constructor(private http: HttpClient) { }
 
@@ -25,6 +26,16 @@ export class StructureService implements PaginatedService {
 
   create(data: any): Observable<any> {
     return this.http.post(`${environment.apiUrl}/structures`, data);
+  }
+
+  getAutocompleteData(search: string): Observable<any> {
+    const filters = {
+      raisonSociale: {
+        value: search,
+        type: 'text',
+      }
+    };
+    return this.getPaginated(1, 0, '', '', JSON.stringify(filters));
   }
 
 }
