@@ -6,6 +6,7 @@ import { Router } from "@angular/router";
 import { StructureService } from "../../services/structure.service";
 import { UfrService } from "../../services/ufr.service";
 import { EtapeService } from "../../services/etape.service";
+import { MessageService } from "../../services/message.service";
 
 @Component({
   selector: 'app-dashboard',
@@ -39,6 +40,7 @@ export class DashboardComponent implements OnInit {
     public structureService: StructureService,
     private ufrService: UfrService,
     private etapeService: EtapeService,
+    private messageService: MessageService,
   ) {
   }
 
@@ -111,6 +113,7 @@ export class DashboardComponent implements OnInit {
       { id: 'ufr.id', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
       { id: 'etape.id', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
       { id: 'enseignant', libelle: 'Enseignant', specific: true },
+      { id: 'etatGestionnaire', libelle: 'État de validation', type: 'boolean', value: true, specific: true, hidden: true },
     ];
   }
 
@@ -128,7 +131,7 @@ export class DashboardComponent implements OnInit {
 
   changeAnnee(): void {
     this.countConvention();
-    this.appTable?.setFilter({id: 'annee', type: 'text', value: this.anneeEnCours.annee, specific: false});
+    this.appTable?.setFilter({id: 'annee', type: 'text', value: this.anneeEnCours.libelle, specific: false});
     this.appTable?.update();
   }
 
@@ -146,7 +149,16 @@ export class DashboardComponent implements OnInit {
   }
 
   masterToggle(): void {
-    // TODO
+    if (this.isAllSelected()) {
+      this.selected = [];
+      return;
+    }
+    this.appTable?.data.forEach((d: any) => {
+      const index = this.selected.findIndex((s: any) => s.id === d.id);
+      if (index === -1) {
+        this.selected.push(d);
+      }
+    });
   }
 
   isAllSelected(): boolean {
@@ -163,13 +175,23 @@ export class DashboardComponent implements OnInit {
   countConvention(): void {
     if ((this.isGestionnaire() || this.isEnseignant()) && this.anneeEnCours) {
       this.conventionService.countConventionEnAttente(this.anneeEnCours.annee).subscribe((response: any) => {
-        this.nbConventionsEnAttente = response.nbEnAttenteValidPedadogique + response.nbEnAttenteValidAdministratif;
+        this.nbConventionsEnAttente = response;
       });
     }
   }
 
   goToConvention(id: number): void {
     this.router.navigate([`/conventions/${id}`], )
+  }
+
+  validationAdministrative(): void {
+    const ids = this.selected.map((s: any) => s.id);
+    this.conventionService.validationAdministrative(ids).subscribe((response: any) => {
+      this.messageService.setSuccess(`${response} convention(s) validée(s)`);
+      this.selected = [];
+      this.countConvention();
+      this.appTable?.update();
+    });
   }
 }
 

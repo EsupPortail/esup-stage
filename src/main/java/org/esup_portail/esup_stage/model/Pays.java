@@ -32,7 +32,7 @@ public class Pays {
     private Integer crpay;
 
     @JsonView(Views.List.class)
-    @Column(nullable = false, length = 70)
+    @Column(nullable = false, length = 75)
     private String lib;
 
     @JsonView(Views.List.class)

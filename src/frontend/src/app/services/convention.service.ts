@@ -43,4 +43,8 @@ export class ConventionService implements PaginatedService {
     return this.http.get(`${environment.apiUrl}/conventions/annees`);
   }
 
+  validationAdministrative(ids: number[]): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/conventions/validation-administrative`, {ids});
+  }
+
 }

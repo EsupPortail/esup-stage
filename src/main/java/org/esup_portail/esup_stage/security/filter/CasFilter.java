@@ -5,6 +5,7 @@ import org.esup_portail.esup_stage.dto.LdapSearchDto;
 import org.esup_portail.esup_stage.exception.ApplicationClientException;
 import org.esup_portail.esup_stage.model.Role;
 import org.esup_portail.esup_stage.model.Utilisateur;
+import org.esup_portail.esup_stage.repository.PersonnelCentreGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.RoleJpaRepository;
 import org.esup_portail.esup_stage.repository.UtilisateurJpaRepository;
 import org.esup_portail.esup_stage.security.common.CasLayer;
@@ -37,6 +38,9 @@ public class CasFilter implements Filter {
 
     @Autowired
     RoleJpaRepository roleJpaRepository;
+
+    @Autowired
+    PersonnelCentreGestionJpaRepository personnelCentreGestionJpaRepository;
 
     @Autowired
     AppConfigService appConfigService;
@@ -124,6 +128,13 @@ public class CasFilter implements Filter {
                         // Création de l'utilisateur
                         List<Role> roles = new ArrayList<>();
                         roles.add(roleJpaRepository.findOneByCode(role));
+                        // si l'enseignant est rattaché à un centre de gestion, on lui ajoute le rôle gestionnaire
+                        if (role.equals(Role.ENS)) {
+                            long count = personnelCentreGestionJpaRepository.countPersonnelByLogin(casUser.getLogin());
+                            if (count > 0) {
+                                roles.add(roleJpaRepository.findOneByCode(Role.GES));
+                            }
+                        }
                         utilisateur = new Utilisateur();
                         utilisateur.setLogin(casUser.getLogin());
                         utilisateur.setNom(casUser.getNom());

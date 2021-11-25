@@ -72,6 +72,8 @@
   </mat-card-content>
 </mat-card>
 
+<ng-container [ngTemplateOutlet]="customTemplateRef" *ngIf="customTemplateRef"></ng-container>
+
 <mat-paginator *ngIf="pagination"
                [pageSizeOptions]="[10, 25, 50, 100]"
                [pageSize]="pageSize"

@@ -12,6 +12,7 @@ import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
+import org.esup_portail.esup_stage.service.MailerService;
 import org.esup_portail.esup_stage.service.apogee.ApogeeService;
 import org.esup_portail.esup_stage.service.apogee.model.EtudiantRef;
 import org.json.JSONObject;
@@ -23,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @ApiController
 @RequestMapping("/conventions")
@@ -85,10 +87,16 @@ public class ConventionController {
     CentreGestionJpaRepository centreGestionJpaRepository;
 
     @Autowired
+    UtilisateurJpaRepository utilisateurJpaRepository;
+
+    @Autowired
     ApogeeService apogeeService;
 
     @Autowired
     AppConfigService appConfigService;
+
+    @Autowired
+    MailerService mailerService;
 
     @JsonView(Views.List.class)
     @GetMapping
@@ -211,13 +219,70 @@ public class ConventionController {
 
     @GetMapping("/{annee}/en-attente-validation")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
-    public ConventionEnAttenteDto countConventionEnAttente(@PathVariable("annee") String annee) {
+    public long countConventionEnAttente(@PathVariable("annee") String annee) {
         ContextDto contexteDto = ServiceContext.getServiceContext();
         Utilisateur utilisateur = contexteDto.getUtilisateur();
-        if (UtilisateurHelper.isRole(utilisateur, Role.RESP_GES) || UtilisateurHelper.isRole(utilisateur, Role.GES)) {
-            return conventionJpaRepository.countConventionEnAttente(annee, utilisateur.getLogin());
+        if (UtilisateurHelper.isRole(utilisateur, Role.ENS)) {
+            return conventionJpaRepository.countConventionEnAttenteEnseignant(appConfigService.getAnneeUnivLibelle(annee), utilisateur.getLogin());
         }
-        return conventionJpaRepository.countConventionEnAttente(annee);
+        if (!UtilisateurHelper.isRole(utilisateur, Role.ADM) && (UtilisateurHelper.isRole(utilisateur, Role.RESP_GES) || UtilisateurHelper.isRole(utilisateur, Role.GES))) {
+            return conventionJpaRepository.countConventionEnAttenteGestionnaire(appConfigService.getAnneeUnivLibelle(annee), utilisateur.getLogin());
+        }
+        return conventionJpaRepository.countConventionEnAttenteGestionnaire(appConfigService.getAnneeUnivLibelle(annee));
+    }
+
+    @PostMapping("/validation-administrative")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.VALIDATION})
+    public int validationAdministrative(@RequestBody IdsListDto idsListDto) {
+        ContextDto contextDto = ServiceContext.getServiceContext();
+        if (idsListDto.getIds().size() == 0) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "La liste est vide");
+        }
+        boolean sendMailEtudiant = appConfigService.getConfigAlerteMail().getAlerteEtudiant().isValidationAdministrativeConvention();
+        boolean sendMailGestionnaire = appConfigService.getConfigAlerteMail().getAlerteGestionnaire().isValidationAdministrativeConvention();
+        boolean sendMailResGes = appConfigService.getConfigAlerteMail().getAlerteRespGestionnaire().isValidationAdministrativeConvention();
+        boolean sendMailEnseignant = appConfigService.getConfigAlerteMail().getAlerteEnseignant().isValidationAdministrativeConvention();
+        int count = 0;
+        for (int id : idsListDto.getIds()) {
+            Convention convention = conventionJpaRepository.findById(id);
+            if (convention == null) {
+                continue;
+            }
+            convention.setValidationConvention(true);
+            convention = conventionJpaRepository.saveAndFlush(convention);
+            count++;
+
+            // Récupération du personnel du centre de gestion de la convention avec alertMail=1
+            List<PersonnelCentreGestion> personnels = convention.getCentreGestion().getPersonnels();
+            personnels = personnels.stream().filter(PersonnelCentreGestion::getAlertesMail).collect(Collectors.toList());
+
+            // Récupération de la fiche utilisateur des personnels
+            List<Utilisateur> utilisateurPersonnels = utilisateurJpaRepository.findByLogins(personnels.stream().map(PersonnelCentreGestion::getUidPersonnel).collect(Collectors.toList()));
+
+            // Envoi du mail de validation administrative
+            if (sendMailEtudiant) mailerService.sendAlerteValidationAdministrative(convention.getEtudiant().getMail(), convention, contextDto.getUtilisateur());
+            if (sendMailGestionnaire) {
+                // Parmi le personnel avec alertMail=1, on ne garde que ceux qui n'ont pas le rôle RESP_GES pour éviter l'envoi en double du mail à la même personne
+                for (PersonnelCentreGestion personnel : personnels) {
+                    Utilisateur utilisateur = utilisateurPersonnels.stream().filter(u -> u.getLogin().equals(personnel.getUidPersonnel())).findAny().orElse(null);
+                    if (utilisateur == null || !UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)) {
+                        mailerService.sendAlerteValidationAdministrative(personnel.getMail(), convention, contextDto.getUtilisateur());
+                    }
+                }
+            }
+            if (sendMailResGes) {
+                // Parmi le personnel avec alertMail=1, on ne garde ceux qui ont le rôle RESP_GES pour éviter l'envoi en double du mail à la même personne
+                mailerService.sendAlerteValidationAdministrative(convention.getEtudiant().getMail(), convention, contextDto.getUtilisateur());
+                for (PersonnelCentreGestion personnel : personnels) {
+                    Utilisateur utilisateur = utilisateurPersonnels.stream().filter(u -> u.getLogin().equals(personnel.getUidPersonnel())).findAny().orElse(null);
+                    if (utilisateur != null && UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)) {
+                        mailerService.sendAlerteValidationAdministrative(personnel.getMail(), convention, contextDto.getUtilisateur());
+                    }
+                }
+            }
+            if (sendMailEnseignant) mailerService.sendAlerteValidationAdministrative(convention.getEnseignant().getMail(), convention, contextDto.getUtilisateur());
+        }
+        return count;
     }
 
     private void setConventionData(Convention convention, ConventionFormDto conventionFormDto) {
@@ -297,6 +362,7 @@ public class ConventionController {
         convention.setCodeElp(conventionFormDto.getCodeElp());
         convention.setLibelleELP(conventionFormDto.getLibelleELP());
         convention.setCreditECTS(conventionFormDto.getCreditECTS());
+        // TODO mettre à TRUE les validations non prises en compte dans le centre de gestion
     }
 
     private void setSingleFieldData(Convention convention, ConventionSingleFieldDto conventionSingleFieldDto) {

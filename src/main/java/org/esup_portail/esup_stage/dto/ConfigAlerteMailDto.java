@@ -39,7 +39,7 @@ public class ConfigAlerteMailDto {
         this.alerteEnseignant = alerteEnseignant;
     }
 
-    private static class Alerte {
+    public static class Alerte {
         private boolean creationConventionEtudiant;
         private boolean modificationConventionEtudiant;
         private boolean creationConventionGestionnaire;

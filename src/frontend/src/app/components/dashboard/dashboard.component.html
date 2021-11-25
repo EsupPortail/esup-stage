@@ -16,12 +16,19 @@
   </mat-card-content>
 </mat-card>
 
+<ng-template #validAction>
+  <mat-card class="custom-table-buttons">
+    <mat-card-content>
+      <button type="button" mat-button mat-flat-button color="primary" [disabled]="selected.length === 0" (click)="validationAdministrative()">Valider la sélection</button>
+    </mat-card-content>
+  </mat-card>
+</ng-template>
+
 <app-table [service]="conventionService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters"
            matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'" (matSortChange)="appTable ? appTable.sorting($event) : null"
-           [noResultText]="'Aucune convention trouvée'">
+           [noResultText]="'Aucune convention trouvée'" [customTemplateRef]="validAction">
   <ng-container *ngIf="isGestionnaire()" matColumnDef="select">
     <th mat-header-cell *matHeaderCellDef>
-      <!-- TODO -->
       <mat-checkbox (change)="$event ? masterToggle() : null"
                     [checked]="selected.length > 0 && isAllSelected()"
                     [indeterminate]="selected.length > 0 && !isAllSelected()">

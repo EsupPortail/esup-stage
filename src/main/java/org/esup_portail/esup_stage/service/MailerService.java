@@ -46,6 +46,15 @@ public class MailerService {
      * Mettre sous formation de list "les infos étudiant", "le tuteur professionnel" etc et concatener les valeurs avec ", "
      */
 
+    public void sendAlerteValidationAdministrative(String to, Convention convention, Utilisateur userModif) {
+        TemplateMail templateMail = templateMailJpaRepository.findByCode(TemplateMail.CODE_CONVENTION_VALID_ADMINISTRATIVE);
+        if (templateMail == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Template mail CONVENTION_VALID_ADMINISTRATIVE non trouvé");
+        }
+        MailContext mailContext = new MailContext(applicationBootstrap, convention, null, userModif);
+        sendMail(to, templateMail, mailContext, false);
+    }
+
     public void sendTest(SendMailTestDto sendMailTestDto, Utilisateur utilisateur) {
         TemplateMail templateMail = templateMailJpaRepository.findByCode(sendMailTestDto.getTemplateMail());
         if (templateMail == null) {
@@ -101,12 +110,16 @@ public class MailerService {
         public MailContext() { }
 
         public MailContext(ApplicationBootstrap applicationBootstrap, Convention convention, Avenant avenant, Utilisateur userModif) {
-            this.convention = new ConventionContext(applicationBootstrap, convention);
-            this.tuteurPro = new TuteurProContext(convention.getContact(), convention.getStructure(), convention.getService());
-            this.signataire = new SignataireContext(convention.getSignataire());
+            if (convention != null) {
+                this.convention = new ConventionContext(applicationBootstrap, convention);
+                this.tuteurPro = new TuteurProContext(convention.getContact(), convention.getStructure(), convention.getService());
+                this.signataire = new SignataireContext(convention.getSignataire());
+                this.etudiant = new EtudiantContext(convention.getEtudiant(), convention.getCourrielPersoEtudiant(), convention.getTelEtudiant());
+            }
+            if (avenant != null) {
+                this.avenant = new AvenantContext(avenant);
+            }
             this.modifiePar = new ModifieParContext(userModif);
-            this.etudiant = new EtudiantContext(convention.getEtudiant(), convention.getCourrielPersoEtudiant(), convention.getTelEtudiant());
-            this.avenant = new AvenantContext(avenant);
         }
 
         public ConventionContext getConvention() {

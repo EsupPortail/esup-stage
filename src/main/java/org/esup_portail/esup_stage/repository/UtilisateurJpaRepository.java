@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface UtilisateurJpaRepository extends JpaRepository<Utilisateur, Integer> {
 
@@ -21,4 +23,7 @@ public interface UtilisateurJpaRepository extends JpaRepository<Utilisateur, Int
 
     @Query("SELECT COUNT(u.id) FROM Utilisateur u JOIN u.roles r WHERE r.id = :idRole")
     Long countUserWithRole(int idRole);
+
+    @Query("SELECT u FROM Utilisateur u WHERE u.login IN :logins")
+    List<Utilisateur> findByLogins(List<String> logins);
 }
