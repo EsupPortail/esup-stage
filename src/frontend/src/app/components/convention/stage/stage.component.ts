@@ -2,11 +2,11 @@ import { Component, EventEmitter, OnInit, Input, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { PaysService } from "../../../services/pays.service";
 import { ThemeService } from "../../../services/theme.service";
-import { DeviseService } from "../../../services/devise.service";
 import { LangueConventionService } from "../../../services/langue-convention.service";
 import { ModeVersGratificationService } from "../../../services/mode-vers-gratification.service";
 import { UniteDureeService } from "../../../services/unite-duree.service";
 import { UniteGratificationService } from "../../../services/unite-gratification.service";
+import { DeviseService } from "../../../services/devise.service";
 import { TempsTravailService } from "../../../services/temps-travail.service";
 import { OrigineStageService } from "../../../services/origine-stage.service";
 import { NatureTravailService } from "../../../services/nature-travail.service";
@@ -36,11 +36,11 @@ export class StageComponent implements OnInit {
 
   countries: any[] = [];
   thematiques: any[] = [];
-  devises: any[] = [];
   langueConventions: any[] = [];
   modeVersGratifications: any[] = [];
   uniteDurees: any[] = [];
   uniteGratifications: any[] = [];
+  devises: any[] = [];
   tempsTravails: any[] = [];
   origineStages: any[] = [];
   natureTravails: any[] = [];
@@ -61,11 +61,11 @@ export class StageComponent implements OnInit {
               private authService: AuthService,
               private paysService: PaysService,
               private themeService: ThemeService,
-              private deviseService: DeviseService,
               private langueConventionService: LangueConventionService,
               private modeVersGratificationService: ModeVersGratificationService,
               private uniteDureeService: UniteDureeService,
               private uniteGratificationService: UniteGratificationService,
+              private deviseService: DeviseService,
               private tempsTravailService: TempsTravailService,
               private origineStageService: OrigineStageService,
               private natureTravailService: NatureTravailService,
@@ -201,7 +201,6 @@ export class StageComponent implements OnInit {
       this.validated.emit(0);
     }
   }
-
 
   toggleValidators(keys: string[],toggle: boolean): void {
     keys.forEach((key: string) => {

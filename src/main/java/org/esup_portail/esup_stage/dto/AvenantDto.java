@@ -2,55 +2,84 @@ package org.esup_portail.esup_stage.dto;
 
 import org.esup_portail.esup_stage.model.*;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;
 
 public class AvenantDto {
+    
+    @NotNull
+    private int idConvention;
 
-    private Convention convention;
+    @NotEmpty
+    @NotNull
     private String titreAvenant;
+
     private String motifAvenant;
+
     @NotNull
     private boolean rupture;
+
     @NotNull
     private boolean modificationPeriode;
+
     private Date dateDebutStage;
+
     private Date dateFinStage;
+
     @NotNull
     private boolean interruptionStage;
+
     private Date dateDebutInterruption;
+
     private Date dateFinInterruption;
+
     private Boolean modificationLieu;
-    private Service service;
+
+    private int idService;
+
     @NotNull
     private boolean modificationSujet;
+
     private String sujetStage;
+
     @NotNull
     private boolean modificationEnseignant;
+
     @NotNull
     private boolean modificationSalarie;
-    private Contact contact;
+
+    private int idContact;
+
     @NotNull
     private boolean validationAvenant;
-    private Enseignant enseignant;
+
+    private int idEnseignant;
+
     @Size(max = 7)
     private String montantGratification;
-    private UniteGratification uniteGratification;
+
+    private int idUniteGratification;
+
     @NotNull
     private boolean modificationMontantGratification;
+
     private Date dateRupture;
+
     private String commentaireRupture;
+
     @Size(max = 50)
     private String monnaieGratification;
-    private UniteDuree uniteDuree;
+    
+    private int idUniteDuree;
 
-    public Convention getConvention() {
-        return convention;
+    public int getIdConvention() {
+        return idConvention;
     }
 
-    public void setConvention(Convention convention) {
-        this.convention = convention;
+    public void setIdConvention(int idConvention) {
+        this.idConvention = idConvention;
     }
 
     public String getTitreAvenant() {
@@ -133,12 +162,12 @@ public class AvenantDto {
         this.modificationLieu = modificationLieu;
     }
 
-    public Service getService() {
-        return service;
+    public int getIdService() {
+        return idService;
     }
 
-    public void setService(Service service) {
-        this.service = service;
+    public void setIdService(int idService) {
+        this.idService = idService;
     }
 
     public boolean getModificationSujet() {
@@ -173,12 +202,12 @@ public class AvenantDto {
         this.modificationSalarie = modificationSalarie;
     }
 
-    public Contact getContact() {
-        return contact;
+    public int getIdContact() {
+        return idContact;
     }
 
-    public void setContact(Contact contact) {
-        this.contact = contact;
+    public void setIdContact(int idContact) {
+        this.idContact = idContact;
     }
 
     public boolean getValidationAvenant() {
@@ -189,12 +218,12 @@ public class AvenantDto {
         this.validationAvenant = validationAvenant;
     }
 
-    public Enseignant getEnseignant() {
-        return enseignant;
+    public int getIdEnseignant() {
+        return idEnseignant;
     }
 
-    public void setEnseignant(Enseignant enseignant) {
-        this.enseignant = enseignant;
+    public void setIdEnseignant(int idEnseignant) {
+        this.idEnseignant = idEnseignant;
     }
 
     public String getMontantGratification() {
@@ -205,12 +234,12 @@ public class AvenantDto {
         this.montantGratification = montantGratification;
     }
 
-    public UniteGratification getUniteGratification() {
-        return uniteGratification;
+    public int getIdUniteGratification() {
+        return idUniteGratification;
     }
 
-    public void setUniteGratification(UniteGratification uniteGratification) {
-        this.uniteGratification = uniteGratification;
+    public void setIdUniteGratification(int idUniteGratification) {
+        this.idUniteGratification = idUniteGratification;
     }
 
     public boolean getModificationMontantGratification() {
@@ -245,11 +274,11 @@ public class AvenantDto {
         this.monnaieGratification = monnaieGratification;
     }
 
-    public UniteDuree getUniteDuree() {
-        return uniteDuree;
+    public int getIdUniteDuree() {
+        return idUniteDuree;
     }
 
-    public void setUniteDuree(UniteDuree uniteDuree) {
-        this.uniteDuree = uniteDuree;
+    public void setIdUniteDuree(int idUniteDuree) {
+        this.idUniteDuree = idUniteDuree;
     }
 }

@@ -5,9 +5,8 @@ import org.esup_portail.esup_stage.dto.AvenantDto;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
-import org.esup_portail.esup_stage.model.Avenant;
-import org.esup_portail.esup_stage.repository.AvenantJpaRepository;
-import org.esup_portail.esup_stage.repository.AvenantRepository;
+import org.esup_portail.esup_stage.model.*;
+import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +18,23 @@ import javax.validation.Valid;
 @ApiController
 @RequestMapping("/avenant")
 public class AvenantController {
+
+    @Autowired
+    ConventionJpaRepository conventionJpaRepository;
+    @Autowired
+    ServiceJpaRepository serviceJpaRepository;
+    @Autowired
+    ContactJpaRepository contactJpaRepository;
+    @Autowired
+    EnseignantJpaRepository enseignantJpaRepository;
+    @Autowired
+    UniteGratificationJpaRepository uniteGratificationJpaRepository;
+    @Autowired
+    UniteDureeJpaRepository uniteDureeJpaRepository;
+    @Autowired
+    ModeVersGratificationJpaRepository modeVersGratificationJpaRepository;
+    @Autowired
+    DeviseJpaRepository deviseJpaRepository;
 
     @Autowired
     AvenantRepository avenantRepository;
@@ -77,7 +93,64 @@ public class AvenantController {
     }
 
     private void setAvenantData(Avenant avenant, AvenantDto avenantDto) {
-        avenant.setConvention(avenantDto.getConvention());
+
+        Convention convention = conventionJpaRepository.findById(avenantDto.getIdConvention());
+        if (convention == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvé");
+        }
+
+        if (avenantDto.getIdService() != 0) {
+            Service service = serviceJpaRepository.findById(avenantDto.getIdService());
+            if (service == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "Service non trouvé");
+            }
+            avenant.setService(service);
+        }
+        if (avenantDto.getIdContact() != 0) {
+            Contact contact = contactJpaRepository.findById(avenantDto.getIdContact());
+            if (contact == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "Contact non trouvé");
+            }
+            avenant.setContact(contact);
+        }
+        if (avenantDto.getIdEnseignant() != 0) {
+            Enseignant enseignant = enseignantJpaRepository.findById(avenantDto.getIdEnseignant());
+            if (enseignant == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "Enseignant non trouvé");
+            }
+            avenant.setEnseignant(enseignant);
+        }
+        if (avenantDto.getIdUniteGratification() != 0) {
+            UniteGratification uniteGratification = uniteGratificationJpaRepository.findById(avenantDto.getIdUniteGratification());
+            if (uniteGratification == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "UniteGratification non trouvé");
+            }
+            avenant.setUniteGratification(uniteGratification);
+        }
+        if (avenantDto.getIdUniteDuree() != 0) {
+            UniteDuree uniteDuree = uniteDureeJpaRepository.findById(avenantDto.getIdUniteDuree());
+            if (uniteDuree == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "UniteDuree non trouvé");
+            }
+            avenant.setUniteDuree(uniteDuree);
+        }
+        //if (avenantDto.getIdModeVersGratification() != 0) {
+        //    ModeVersGratification modeVersGratification = modeVersGratificationJpaRepository.findById(avenantDto.getIdModeVersGratification());
+        //    if (modeVersGratification == null) {
+        //        throw new AppException(HttpStatus.NOT_FOUND, "ModeVersGratification non trouvé");
+        //    }
+        //    avenant.setModeVersGratification(modeVersGratification);
+        //}
+        //if (avenantDto.getIdDevise() != 0) {
+        //    Devise devise = deviseJpaRepository.findById(avenantDto.getIdDevise());
+        //    if (devise == null) {
+        //        throw new AppException(HttpStatus.NOT_FOUND, "Devise non trouvé");
+        //    }
+        //    avenant.setDevise(devise);
+        //}
+
+
+        avenant.setConvention(convention);
         avenant.setTitreAvenant(avenantDto.getTitreAvenant());
         avenant.setMotifAvenant(avenantDto.getMotifAvenant());
         avenant.setRupture(avenantDto.getRupture());
@@ -88,20 +161,15 @@ public class AvenantController {
         avenant.setDateDebutInterruption(avenantDto.getDateDebutInterruption());
         avenant.setDateFinInterruption(avenantDto.getDateFinInterruption());
         avenant.setModificationLieu(avenantDto.getModificationLieu());
-        avenant.setService(avenantDto.getService());
         avenant.setModificationSujet(avenantDto.getModificationSujet());
         avenant.setSujetStage(avenantDto.getSujetStage());
         avenant.setModificationEnseignant(avenantDto.getModificationEnseignant());
         avenant.setModificationSalarie(avenantDto.getModificationSalarie());
-        avenant.setContact(avenantDto.getContact());
         avenant.setValidationAvenant(avenantDto.getValidationAvenant());
-        avenant.setEnseignant(avenantDto.getEnseignant());
         avenant.setMontantGratification(avenantDto.getMontantGratification());
-        avenant.setUniteGratification(avenantDto.getUniteGratification());
         avenant.setModificationMontantGratification(avenantDto.getModificationMontantGratification());
         avenant.setDateRupture(avenantDto.getDateRupture());
         avenant.setCommentaireRupture(avenantDto.getCommentaireRupture());
         avenant.setMonnaieGratification(avenantDto.getMonnaieGratification());
-        avenant.setUniteDuree(avenantDto.getUniteDuree());
     }
 }
