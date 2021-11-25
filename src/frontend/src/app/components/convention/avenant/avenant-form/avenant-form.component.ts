@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Output, EventEmitter, OnInit, Input } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { ServiceService } from "../../../../services/service.service";
 import { MessageService } from "../../../../services/message.service";
@@ -34,6 +34,8 @@ export class AvenantFormComponent implements OnInit {
   form: FormGroup;
 
   autreModifChecked: boolean = false;
+
+  @Output() validated = new EventEmitter<any>();
 
   constructor(private avenantService: AvenantService,
               private serviceService: ServiceService,
@@ -125,10 +127,12 @@ export class AvenantFormComponent implements OnInit {
         this.avenantService.update(this.avenant.id,data).subscribe((response: any) => {
           this.avenant = response;
           this.messageService.setSuccess('Avenant modifié avec succès');
+          this.validated.emit();
         });
       }else{
         this.avenantService.create(data).subscribe((response: any) => {
           this.messageService.setSuccess('Avenant créé avec succès');
+          this.validated.emit();
         });
       }
     }

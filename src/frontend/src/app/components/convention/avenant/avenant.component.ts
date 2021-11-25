@@ -17,9 +17,12 @@ export class AvenantComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.updateAvenants();
+  }
+
+  updateAvenants(): void {
     this.avenantService.getByConvention(this.convention.id).subscribe((response: any) => {
       this.avenants = response;
     });
   }
-
 }

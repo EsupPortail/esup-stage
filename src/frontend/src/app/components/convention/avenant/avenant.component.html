@@ -3,7 +3,7 @@
     <mat-expansion-panel-header>
       <mat-panel-title>Création d'un nouvel avenant</mat-panel-title>
     </mat-expansion-panel-header>
-    <app-avenant-form [convention]="convention" [avenant]="{}"></app-avenant-form>
+    <app-avenant-form [convention]="convention" [avenant]="{}" (validated)="updateAvenants()"></app-avenant-form>
   </mat-expansion-panel>
 
   <mat-expansion-panel [expanded]="false">
@@ -15,7 +15,7 @@
         <mat-expansion-panel-header>
           <mat-panel-title>{{avenant.titreAvenant}}</mat-panel-title>
         </mat-expansion-panel-header>
-        <app-avenant-form [convention]="convention" [avenant]="avenant"></app-avenant-form>
+        <app-avenant-form [convention]="convention" [avenant]="avenant" (validated)="updateAvenants()"></app-avenant-form>
       </mat-expansion-panel>
     </mat-accordion>
   </mat-expansion-panel>
