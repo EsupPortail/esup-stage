@@ -38,8 +38,12 @@
       <ng-container matColumnDef="action">
         <th mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let row">
-          <button mat-icon-button matTooltip="Modifier" color="primary" (click)="edit(row)"><i class="fa fa-pen"></i></button>
-          <button mat-icon-button matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
+          <span>
+            <button mat-icon-button matTooltip="Modifier" color="primary" (click)="edit(row)"><i class="fa fa-pen"></i></button>
+          </span>
+          <span (confirm)="delete(row.id)" [confirmMessage]="'Voulez-vous supprimer ce gestionnaire de ce centre ?'">
+            <button mat-icon-button matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
+          </span>
         </td>
       </ng-container>
     </app-table>
@@ -143,6 +147,15 @@
               <mat-option *ngFor="let droit of droits" [value]="droit">{{droit.libelle}}</mat-option>
             </mat-select>
           </mat-form-field>
+          <div class="col-sm-6">
+            <button type="button" #matMenuTrigger mat-raised-button color="primary"[matMenuTriggerFor]="menu">Paramétrer les alertes mail</button>
+            <mat-menu #menu="matMenu">
+              <mat-checkbox #menuItems *ngFor="let alerte of alertesMail" formControlName="{{alerte.id}}"
+                            (click)="$event.stopPropagation()" style="padding: 8px">
+                {{ alerte.libelle }}
+              </mat-checkbox>
+            </mat-menu>
+          </div>
         </div>
         <div>
           <mat-checkbox class="d-block" formControlName="impressionConvention">Possibilité d'imprimer les conventions de stage avant leur validation</mat-checkbox>

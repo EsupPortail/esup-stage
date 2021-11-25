@@ -23,6 +23,10 @@ export class PersonnelCentreService implements PaginatedService {
     return this.http.put(`${environment.apiUrl}/personnel-centre/${id}`, data);
   }
 
+  delete(id: number): Observable<any> {
+    return this.http.delete(`${environment.apiUrl}/personnel-centre/${id}`);
+  }
+
   getDroitsAdmin() {
     return this.http.get(`${environment.apiUrl}/personnel-centre/droits-admin`)
   }

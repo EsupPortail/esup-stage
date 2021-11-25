@@ -89,6 +89,7 @@ import { AvenantComponent } from './components/convention/avenant/avenant.compon
 import { MatChipsModule } from "@angular/material/chips";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { AvenantFormComponent } from './components/convention/avenant/avenant-form/avenant-form.component';
+import { MatMenuModule } from "@angular/material/menu";
 
 registerLocaleData(localeFr, 'fr');
 
@@ -174,6 +175,7 @@ registerLocaleData(localeFr, 'fr');
     NgxMatSelectSearchModule,
     MatChipsModule,
     MatAutocompleteModule,
+    MatMenuModule,
   ],
   providers: [
     CookieService,

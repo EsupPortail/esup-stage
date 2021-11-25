@@ -33,6 +33,20 @@ export class GestionnairesComponent implements OnInit {
   gestionnaires: any[] = [];
   gestionnaire: any;
 
+  alertesMail = [
+    {id: 'creationConventionEtudiant', libelle: 'Création d\'une convention par l’étudiant'},
+    {id: 'modificationConventionEtudiant', libelle: 'Modification d\'une convention par l’étudiant'},
+    {id: 'creationConventionGestionnaire', libelle: 'Création d\'une convention par le gestionnaire'},
+    {id: 'modificationConventionGestionnaire', libelle: 'Modification d\'une convention par le gestionnaire'},
+    {id: 'creationAvenantEtudiant', libelle: 'Création d\'un avenant par l’étudiant'},
+    {id: 'modificationAvenantEtudiant', libelle: 'Modification d\'un avenant par l’étudiant'},
+    {id: 'creationAvenantGestionnaire', libelle: 'Création d\'un avenant par le gestionnaire'},
+    {id: 'modificationAvenantGestionnaire', libelle: 'Modification d\'un avenant par le gestionnaire'},
+    {id: 'validationPedagogiqueConvention', libelle: 'Validation pédagogique d\'une convention'},
+    {id: 'validationAdministrativeConvention', libelle: 'Validation administrative d\'une convention'},
+    {id: 'validationAvenant', libelle: 'Validation d\'un avenant '},
+  ];
+
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
   @ViewChildren(MatExpansionPanel) pannels: QueryList<MatExpansionPanel>;
 
@@ -58,11 +72,22 @@ export class GestionnairesComponent implements OnInit {
       campus: [null, []],
       batiment: [null, []],
       bureau: [null, []],
-      codeAffectation: ['', []],
+      codeAffectation: [null, []],
       alerteMail: [null, []],
       droitEvaluationEtudiant: [null, []],
       droitEvaluationEnseignant: [null, []],
       droitEvaluationEntreprise: [null, []],
+      creationConventionEtudiant: [null, []],
+      modificationConventionEtudiant: [null, []],
+      creationConventionGestionnaire: [null, []],
+      modificationConventionGestionnaire: [null, []],
+      creationAvenantEtudiant: [null, []],
+      modificationAvenantEtudiant: [null, []],
+      creationAvenantGestionnaire: [null, []],
+      modificationAvenantGestionnaire: [null, []],
+      validationPedagogiqueConvention: [null, []],
+      validationAdministrativeConvention: [null, []],
+      validationAvenant: [null, []],
     });
     this.searchForm = this.fb.group({
       nom: [null, []],
@@ -113,6 +138,7 @@ export class GestionnairesComponent implements OnInit {
       mail: gestionnaire.mail,
       typePersonne: gestionnaire.eduPersonPrimaryAffiliation,
       uidPersonnel: gestionnaire.supannAliasLogin,
+      codeAffectation: '',
       impressionConvention: true,
       droitEvaluationEtudiant: false,
       droitEvaluationEnseignant: false,
@@ -143,6 +169,8 @@ export class GestionnairesComponent implements OnInit {
           this.pannels.first.open();
         }
         this.gestionnaire = undefined;
+        if (this.appTable)
+          this.appTable.update();
       });
     } else {
       this.personnelCentreService.create(data, this.centreGestion.id).subscribe((response: any) => {
@@ -151,8 +179,19 @@ export class GestionnairesComponent implements OnInit {
           this.pannels.first.open();
         }
         this.gestionnaire = undefined;
+        if (this.appTable)
+          this.appTable.update();
       });
     }
+  }
+
+  delete(id: number) {
+    this.personnelCentreService.delete(id).subscribe((response: any) => {
+      this.messageService.setSuccess("Personnel supprimé");
+      this.gestionnaire = undefined;
+      if (this.appTable)
+        this.appTable.update();
+    });
   }
 
   compare(option: any, value: any): boolean {
