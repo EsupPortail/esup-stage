@@ -5,3 +5,16 @@
     align-items: center;
   }
 }
+
+.dashboard-validation {
+  i {
+    cursor: pointer;
+    color: var(--dangerColor);
+  }
+  i.activate {
+    color: var(--successColor);
+  }
+  i:not(:first-child) {
+    margin-left: 5px;
+  }
+}

@@ -4,6 +4,8 @@ import { ConventionService } from "../../services/convention.service";
 import { AuthService } from "../../services/auth.service";
 import { Router } from "@angular/router";
 import { StructureService } from "../../services/structure.service";
+import { UfrService } from "../../services/ufr.service";
+import { EtapeService } from "../../services/etape.service";
 
 @Component({
   selector: 'app-dashboard',
@@ -15,6 +17,12 @@ export class DashboardComponent implements OnInit {
   columns: string[] = [];
   sortColumn = 'id';
   filters: any[] = [];
+  validationsOptions: any[] = [
+    { id: 'validationPedagogique', libelle: 'Validée pédagogiquement' },
+    { id: 'validationConvention', libelle: 'Validée administrativement' },
+    { id: 'nonValidationPedagogique', libelle: 'Non validée pédagogiquement' },
+    { id: 'nonValidationConvention', libelle: 'Non validée administrativement' },
+  ];
 
   nbConventionsEnAttente: number|undefined;
   anneeEnCours: any|undefined;
@@ -29,6 +37,8 @@ export class DashboardComponent implements OnInit {
     private authService: AuthService,
     private router: Router,
     public structureService: StructureService,
+    private ufrService: UfrService,
+    private etapeService: EtapeService,
   ) {
   }
 
@@ -40,14 +50,14 @@ export class DashboardComponent implements OnInit {
       this.filters = [
         { id: 'id', libelle: 'N° de la convention', type: 'int' },
         { id: 'etudiant', libelle: 'Étudiant', specific: true },
-        { id: 'ufr', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
-        { id: 'etape', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
+        { id: 'ufr.id', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
+        { id: 'etape.id', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
         { id: 'dateDebutStage', libelle: 'Date début du stage', type: 'date-min' },
         { id: 'dateFinStage', libelle: 'Date fin du stage', type: 'date-max' },
         { id: 'structure.id', libelle: 'Établissement d\'accueil', type: 'autocomplete', autocompleteService: this.structureService, keyLibelle: 'raisonSociale', keyId: 'id', value: [] },
         { id: 'sujetStage', libelle: 'Sujet du stage' },
         { id: 'adresseEtabRef', libelle: 'Lieu du stage' },
-        { id: 'etatValidation', libelle: 'État de validation de la convention', specific: true },
+        { id: 'etatValidation', libelle: 'État de validation de la convention', type: 'list', options: this.validationsOptions, keyLibelle: 'libelle', keyId: 'id', value: ['nonValidationPedagogique', 'nonValidationConvention'], specific: true },
         { id: 'avenant', libelle: 'Avenant', specific: true },
       ];
     } else if (this.isEtudiant()) {
@@ -57,8 +67,8 @@ export class DashboardComponent implements OnInit {
         { id: 'structure.id', libelle: 'Établissement d\'accueil', type: 'autocomplete', autocompleteService: this.structureService, keyLibelle: 'raisonSociale', keyId: 'id', value: [] },
         { id: 'dateDebutStage', libelle: 'Date début du stage', type: 'date' },
         { id: 'dateFinStage', libelle: 'Date fin du stage', type: 'date' },
-        { id: 'ufr', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
-        { id: 'etape', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
+        { id: 'ufr.id', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
+        { id: 'etape.id', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
         { id: 'enseignant', libelle: 'Enseignant', specific: true },
         { id: 'validationPedagogique', libelle: 'Validation pédagogique', type: 'boolean' },
         { id: 'validationConvention', libelle: 'Validation administrative', type: 'boolean' },
@@ -70,16 +80,21 @@ export class DashboardComponent implements OnInit {
     }
     this.filters.push({ id: 'validationCreation', type: 'boolean', value: true, hidden: true });
 
+    this.ufrService.getPaginated(1, 0, 'libelle', 'asc', '{}').subscribe((response: any) => {
+      this.appTable?.setFilterOption('ufr.id', response.data);
+    });
+
+    this.etapeService.getPaginated(1, 0, 'libelle', 'asc', '{}').subscribe((response: any) => {
+      this.appTable?.setFilterOption('etape.id', response.data);
+    });
+
     this.conventionService.getListAnnee().subscribe((response: any) => {
       this.annees = response;
       this.anneeEnCours = this.annees.find((a: any) => { return a.anneeEnCours === true });
       if (!this.isEtudiant()) {
         this.changeAnnee();
       } else {
-        const filterAnnee = this.filters.find(((f: any) => f.id === 'annee'));
-        if (filterAnnee) {
-          filterAnnee.options = this.annees;
-        }
+        this.appTable?.setFilterOption('annee', this.annees);
         this.appTable?.setFilterValue('annee', [this.anneeEnCours.libelle]);
       }
     });
@@ -93,8 +108,8 @@ export class DashboardComponent implements OnInit {
       { id: 'structure.id', libelle: 'Établissement d\'accueil', type: 'autocomplete', autocompleteService: this.structureService, keyLibelle: 'raisonSociale', keyId: 'id', value: [] },
       { id: 'dateDebutStage', libelle: 'Date début du stage', type: 'date' },
       { id: 'dateFinStage', libelle: 'Date fin du stage', type: 'date' },
-      { id: 'ufr', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
-      { id: 'etape', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
+      { id: 'ufr.id', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
+      { id: 'etape.id', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
       { id: 'enseignant', libelle: 'Enseignant', specific: true },
     ];
   }

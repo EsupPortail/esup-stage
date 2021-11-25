@@ -159,6 +159,13 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
     this.filterValues[id].value = value;
   }
 
+  setFilterOption(id: string, options: any[]): void {
+    const filter = this.filters.find((f: any) => { return f.id === id; });
+    if (filter) {
+      filter.options = options;
+    }
+  }
+
   searchAutocomplete(filter: any, value: string): void {
     this.autocmpleteChanged[filter.id].next({filter, value});
   }
