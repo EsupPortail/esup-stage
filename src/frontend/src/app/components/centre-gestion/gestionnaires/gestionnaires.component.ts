@@ -97,11 +97,12 @@ export class GestionnairesComponent implements OnInit {
   }
 
   choose(row: any): void {
-      if (this.pannels) {
-        this.pannels.last.open();
-      }
-      this.gestionnaire = row;
-      this.setData(this.gestionnaire);
+    if (this.pannels) {
+      this.pannels.last.open();
+    }
+    this.gestionnaire = row;
+    this.form.reset();
+    this.setData(this.gestionnaire);
   }
 
   setData(gestionnaire: any) {
@@ -120,19 +121,38 @@ export class GestionnairesComponent implements OnInit {
     });
   }
 
+  edit(gestionnaire: any) {
+    if (this.pannels) {
+      this.pannels.last.open();
+    }
+    this.gestionnaire = gestionnaire;
+    this.form.reset();
+    this.form.patchValue(this.gestionnaire);
+  }
+
   save(): void {
     const data = {...this.form.value}
     if (this.form.invalid) {
       this.messageService.setError("Veuillez remplir les champs obligatoires")
       return;
     }
-    this.personnelCentreService.create(data, this.centreGestion.id).subscribe((response: any) => {
-      this.messageService.setSuccess("Personnel rattaché avec succès");
-      if (this.pannels) {
-        this.pannels.first.open();
-      }
-    });
-
+    if (this.gestionnaire.id) {
+      this.personnelCentreService.update(data, this.gestionnaire.id).subscribe((response: any) => {
+        this.messageService.setSuccess("Personnel mis à jour");
+        if (this.pannels) {
+          this.pannels.first.open();
+        }
+        this.gestionnaire = undefined;
+      });
+    } else {
+      this.personnelCentreService.create(data, this.centreGestion.id).subscribe((response: any) => {
+        this.messageService.setSuccess("Personnel rattaché");
+        if (this.pannels) {
+          this.pannels.first.open();
+        }
+        this.gestionnaire = undefined;
+      });
+    }
   }
 
   compare(option: any, value: any): boolean {
