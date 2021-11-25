@@ -76,6 +76,18 @@ public class PersonnelCentreGestion extends ObjetMetier {
     private Boolean droitEvaluationEnseignant;
     private Boolean droitEvaluationEntreprise;
 
+    private Boolean creationConventionEtudiant;
+    private Boolean modificationConventionEtudiant;
+    private Boolean creationConventionGestionnaire;
+    private Boolean modificationConventionGestionnaire;
+    private Boolean creationAvenantEtudiant;
+    private Boolean modificationAvenantEtudiant;
+    private Boolean creationAvenantGestionnaire;
+    private Boolean modificationAvenantGestionnaire;
+    private Boolean validationPedagogiqueConvention;
+    private Boolean validationAdministrativeConvention;
+    private Boolean validationAvenant;
+
     public int getId() {
         return id;
     }
@@ -258,5 +270,93 @@ public class PersonnelCentreGestion extends ObjetMetier {
 
     public void setDroitEvaluationEntreprise(Boolean droitEvaluationEntreprise) {
         this.droitEvaluationEntreprise = droitEvaluationEntreprise;
+    }
+
+    public Boolean getCreationConventionEtudiant() {
+        return creationConventionEtudiant;
+    }
+
+    public void setCreationConventionEtudiant(Boolean creationConventionEtudiant) {
+        this.creationConventionEtudiant = creationConventionEtudiant;
+    }
+
+    public Boolean getModificationConventionEtudiant() {
+        return modificationConventionEtudiant;
+    }
+
+    public void setModificationConventionEtudiant(Boolean modificationConventionEtudiant) {
+        this.modificationConventionEtudiant = modificationConventionEtudiant;
+    }
+
+    public Boolean getCreationConventionGestionnaire() {
+        return creationConventionGestionnaire;
+    }
+
+    public void setCreationConventionGestionnaire(Boolean creationConventionGestionnaire) {
+        this.creationConventionGestionnaire = creationConventionGestionnaire;
+    }
+
+    public Boolean getModificationConventionGestionnaire() {
+        return modificationConventionGestionnaire;
+    }
+
+    public void setModificationConventionGestionnaire(Boolean modificationConventionGestionnaire) {
+        this.modificationConventionGestionnaire = modificationConventionGestionnaire;
+    }
+
+    public Boolean getCreationAvenantEtudiant() {
+        return creationAvenantEtudiant;
+    }
+
+    public void setCreationAvenantEtudiant(Boolean creationAvenantEtudiant) {
+        this.creationAvenantEtudiant = creationAvenantEtudiant;
+    }
+
+    public Boolean getModificationAvenantEtudiant() {
+        return modificationAvenantEtudiant;
+    }
+
+    public void setModificationAvenantEtudiant(Boolean modificationAvenantEtudiant) {
+        this.modificationAvenantEtudiant = modificationAvenantEtudiant;
+    }
+
+    public Boolean getCreationAvenantGestionnaire() {
+        return creationAvenantGestionnaire;
+    }
+
+    public void setCreationAvenantGestionnaire(Boolean creationAvenantGestionnaire) {
+        this.creationAvenantGestionnaire = creationAvenantGestionnaire;
+    }
+
+    public Boolean getModificationAvenantGestionnaire() {
+        return modificationAvenantGestionnaire;
+    }
+
+    public void setModificationAvenantGestionnaire(Boolean modificationAvenantGestionnaire) {
+        this.modificationAvenantGestionnaire = modificationAvenantGestionnaire;
+    }
+
+    public Boolean getValidationPedagogiqueConvention() {
+        return validationPedagogiqueConvention;
+    }
+
+    public void setValidationPedagogiqueConvention(Boolean validationPedagogiqueConvention) {
+        this.validationPedagogiqueConvention = validationPedagogiqueConvention;
+    }
+
+    public Boolean getValidationAdministrativeConvention() {
+        return validationAdministrativeConvention;
+    }
+
+    public void setValidationAdministrativeConvention(Boolean validationAdministrativeConvention) {
+        this.validationAdministrativeConvention = validationAdministrativeConvention;
+    }
+
+    public Boolean getValidationAvenant() {
+        return validationAvenant;
+    }
+
+    public void setValidationAvenant(Boolean validationAvenant) {
+        this.validationAvenant = validationAvenant;
     }
 }
