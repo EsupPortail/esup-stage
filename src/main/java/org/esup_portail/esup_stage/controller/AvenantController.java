@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.util.List;
 
 @ApiController
 @RequestMapping("/avenant")
@@ -55,6 +56,16 @@ public class AvenantController {
     @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.LECTURE})
     public Avenant getById(@PathVariable("id") int id) {
         Avenant avenant = avenantJpaRepository.findById(id);
+        if (avenant == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvée");
+        }
+        return avenant;
+    }
+
+    @GetMapping("/getByConvention/{id}")
+    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.LECTURE})
+    public List<Avenant> getByConvention(@PathVariable("id") int id) {
+        List<Avenant> avenant = avenantJpaRepository.findByConvention(id);
         if (avenant == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvée");
         }

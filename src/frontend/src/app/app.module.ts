@@ -88,6 +88,7 @@ import { RecapitulatifComponent } from './components/convention/recapitulatif/re
 import { AvenantComponent } from './components/convention/avenant/avenant.component';
 import { MatChipsModule } from "@angular/material/chips";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
+import { AvenantFormComponent } from './components/convention/avenant/avenant-form/avenant-form.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -136,6 +137,7 @@ registerLocaleData(localeFr, 'fr');
     GestionnairesComponent,
     RecapitulatifComponent,
     AvenantComponent,
+    AvenantFormComponent,
   ],
   imports: [
     BrowserModule,
