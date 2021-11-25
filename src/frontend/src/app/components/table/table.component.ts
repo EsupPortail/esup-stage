@@ -4,7 +4,7 @@ import {
   EventEmitter,
   Input, OnChanges,
   OnInit,
-  Output, QueryList, SimpleChanges,
+  Output, QueryList, SimpleChanges, TemplateRef,
   ViewChild
 } from '@angular/core';
 import { Sort, SortDirection } from "@angular/material/sort";
@@ -33,6 +33,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   @Input() hideDeleteFilters: boolean;
   @Input() selectedRow: any;
   @Input() noResultText: string = 'Aucun élément trouvé';
+  @Input() customTemplateRef: TemplateRef<any>|undefined;
 
   @Output() onUpdated = new EventEmitter<any>();
 
