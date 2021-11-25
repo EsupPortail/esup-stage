@@ -1,0 +1,9 @@
+databaseChangeLog:
+- changeSet:
+    id: payslibelle
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: lib
+        newDataType: VARCHAR(75)
+        tableName: Pays
