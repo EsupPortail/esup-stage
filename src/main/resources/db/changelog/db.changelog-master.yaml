@@ -27,5 +27,8 @@ databaseChangeLog:
       file: 1.0.0-template-mail.yaml
       relativeToChangelogFile: true
   - include:
+      file: 1.0.0-personnel-centre-gestion.yaml
+      relativeToChangelogFile: true
+  - include:
       file: 1.0.0-pays.yaml
       relativeToChangelogFile: true

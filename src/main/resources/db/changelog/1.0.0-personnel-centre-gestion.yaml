@@ -1,0 +1,52 @@
+databaseChangeLog:
+- changeSet:
+    id: personnel-centre-gestion-alerteMails
+    author: jwang
+    changes:
+    - addColumn:
+        tableName: PersonnelCentreGestion
+        columns:
+        - column:
+            defaultValueBoolean: false
+            name: creationConventionEtudiant
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: modificationConventionEtudiant
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: creationConventionGestionnaire
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: modificationConventionGestionnaire
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: creationAvenantEtudiant
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: modificationAvenantEtudiant
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: creationAvenantGestionnaire
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: modificationAvenantGestionnaire
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: validationPedagogiqueConvention
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: validationAdministrativeConvention
+            type: BIT
+        - column:
+            defaultValueBoolean: false
+            name: validationAvenant
+            type: BIT

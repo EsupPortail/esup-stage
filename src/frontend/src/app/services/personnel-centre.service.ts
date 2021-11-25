@@ -19,8 +19,8 @@ export class PersonnelCentreService implements PaginatedService {
     return this.http.post(`${environment.apiUrl}/personnel-centre/${idCentre}`, data);
   }
 
-  update(data: any): Observable<any> {
-    return this.http.put(`${environment.apiUrl}/personnel-centre`, data);
+  update(data: any, id: number): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/personnel-centre/${id}`, data);
   }
 
   getDroitsAdmin() {

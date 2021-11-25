@@ -38,6 +38,7 @@
       <ng-container matColumnDef="action">
         <th mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let row">
+          <button mat-icon-button matTooltip="Modifier" color="primary" (click)="edit(row)"><i class="fa fa-pen"></i></button>
           <button mat-icon-button matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
         </td>
       </ng-container>

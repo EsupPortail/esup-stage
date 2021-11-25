@@ -55,9 +55,21 @@ public class PersonnelCentreGestionController {
         return personnelCentreGestionJpaRepository.saveAndFlush(personnelCentreGestion);
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     @Secure
-    public PersonnelCentreGestion update(@Valid @RequestBody PersonnelCentreGestion personnelCentreGestion) {
+    public PersonnelCentreGestion update(@PathVariable("id") int id, @Valid @RequestBody PersonnelCentreGestion _personnelCentreGestion) {
+        PersonnelCentreGestion personnelCentreGestion = personnelCentreGestionJpaRepository.findById(id);
+
+        personnelCentreGestion.setTel(_personnelCentreGestion.getTel());
+        personnelCentreGestion.setCampus(_personnelCentreGestion.getCampus());
+        personnelCentreGestion.setBatiment(_personnelCentreGestion.getBatiment());
+        personnelCentreGestion.setBureau(_personnelCentreGestion.getBureau());
+        personnelCentreGestion.setDroitAdministration(_personnelCentreGestion.getDroitAdministration());
+        personnelCentreGestion.setImpressionConvention(_personnelCentreGestion.isImpressionConvention());
+        personnelCentreGestion.setDroitEvaluationEtudiant(_personnelCentreGestion.getDroitEvaluationEtudiant());
+        personnelCentreGestion.setDroitEvaluationEnseignant(_personnelCentreGestion.getDroitEvaluationEnseignant());
+        personnelCentreGestion.setDroitEvaluationEntreprise(_personnelCentreGestion.getDroitEvaluationEntreprise());
+
         return personnelCentreGestionJpaRepository.saveAndFlush(personnelCentreGestion);
     }
 
