@@ -82,6 +82,9 @@ public class ConventionController {
     EnseignantJpaRepository enseignantJpaRepository;
 
     @Autowired
+    CentreGestionJpaRepository centreGestionJpaRepository;
+
+    @Autowired
     ApogeeService apogeeService;
 
     @Autowired
@@ -242,15 +245,25 @@ public class ConventionController {
             throw new AppException(HttpStatus.NOT_FOUND, "UFR non trouvée");
         }
         CentreGestion centreGestion = null;
-        CritereGestion critereGestion = critereGestionJpaRepository.findEtapeById(conventionFormDto.getCodeComposante(), "");
-        if (critereGestion != null) {
-            centreGestion =  critereGestion.getCentreGestion();
+        // Recherche du centre de gestion par codeEtape/versionEtape
+        CritereGestion critereGestion = critereGestionJpaRepository.findEtapeById(conventionFormDto.getCodeEtape(), conventionFormDto.getCodeVerionEtape());
+        // Si non trouvé, recherche par code composante et version = ""
+        if (critereGestion == null) {
+            critereGestion = critereGestionJpaRepository.findEtapeById(conventionFormDto.getCodeComposante(), "");
         }
+        // Si non trouvé on vérifie l'autorisation de création de convention non liée à un centre
+        if (critereGestion == null) {
+            // Erreur si on n'autorise pas la création de convention non rattaché à un centre de gestion
+            if (!appConfigService.getConfigGenerale().isAutoriserConventionsOrphelines()) {
+                throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion non trouvé");
+            }
+            // Sinon on prend le centre de type établissement
+            centreGestion = centreGestionJpaRepository.getCentreEtablissement();
+        } else {
+            centreGestion = critereGestion.getCentreGestion();
+        }
+        // Erreur si le centre est null
         if (centreGestion == null) {
-            critereGestion = critereGestionJpaRepository.findEtapeById(conventionFormDto.getCodeEtape(), conventionFormDto.getCodeVerionEtape());
-        }
-        // Erreur si on n'autorise pas la création de convention non rattaché à un centre de gestion
-        if (!appConfigService.getConfigGenerale().isAutoriserConventionsOrphelines() && critereGestion == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion non trouvé");
         }
         centreGestion = critereGestion.getCentreGestion();

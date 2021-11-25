@@ -18,4 +18,7 @@ public interface CentreGestionJpaRepository extends JpaRepository<CentreGestion,
 
     @Query("SELECT cg FROM CentreGestion cg where LOWER(cg.nomCentre) = LOWER(:code)")
     CentreGestion getByCode(String code);
+
+    @Query("SELECT cg FROM CentreGestion cg where cg.niveauCentre.libelle = 'ETABLISSEMENT'")
+    CentreGestion getCentreEtablissement();
 }

@@ -5,6 +5,7 @@ import org.esup_portail.esup_stage.dto.ConventionFormationDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
+import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.CritereGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.EtudiantJpaRepository;
 import org.esup_portail.esup_stage.security.ServiceContext;
@@ -43,6 +44,9 @@ public class EtudiantController {
     @Autowired
     CritereGestionJpaRepository critereGestionJpaRepository;
 
+    @Autowired
+    CentreGestionJpaRepository centreGestionJpaRepository;
+
     @GetMapping("/{numEtudiant}/apogee-data")
     @Secure
     public EtudiantRef getApogeeData(@PathVariable("numEtudiant") String numEtudiant) {
@@ -70,16 +74,24 @@ public class EtudiantController {
                 ConventionFormationDto conventionFormationDto = new ConventionFormationDto();
                 conventionFormationDto.setEtapeInscription(etapeInscription);
                 conventionFormationDto.setAnnee(annee);
-                // récup centre de gestion
-                CritereGestion critereGestion = critereGestionJpaRepository.findEtapeById(etapeInscription.getCodeComposante(), "");
+                CentreGestion centreGestion = null;
+                // Recherche du centre de gestion par codeEtape/versionEtape
+                CritereGestion critereGestion = critereGestionJpaRepository.findEtapeById(etapeInscription.getCodeEtp(), etapeInscription.getCodVrsVet());
+                // Si non trouvé, recherche par code composante et version = ""
                 if (critereGestion == null) {
-                    critereGestion = critereGestionJpaRepository.findEtapeById(etapeInscription.getCodeEtp(), etapeInscription.getCodVrsVet());
+                    critereGestion = critereGestionJpaRepository.findEtapeById(etapeInscription.getCodeComposante(), "");
                 }
-                if (critereGestion != null) {
-                    conventionFormationDto.setCentreGestion(critereGestion.getCentreGestion());
+                // Si non trouvé on vérifie l'autorisation de création de convention non liée à un centre
+                if (critereGestion == null) {
+                    // récupération du centre de gestion établissement si autorisation de création d'une convention non rattachée à un centre
+                    if (appConfigService.getConfigGenerale().isAutoriserConventionsOrphelines()) {
+                        centreGestion = centreGestionJpaRepository.getCentreEtablissement();
+                    }
+                } else {
+                    centreGestion = critereGestion.getCentreGestion();
                 }
-                // Erreur si on n'autorise pas la création de convention non rattaché à un centre de gestion
-                if (appConfigService.getConfigGenerale().isAutoriserConventionsOrphelines() || critereGestion != null) {
+                if (centreGestion != null) {
+                    conventionFormationDto.setCentreGestion(centreGestion);
                     inscriptions.add(conventionFormationDto);
                 }
             }
