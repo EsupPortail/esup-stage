@@ -211,13 +211,16 @@ public class ConventionController {
 
     @GetMapping("/{annee}/en-attente-validation")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
-    public ConventionEnAttenteDto countConventionEnAttente(@PathVariable("annee") String annee) {
+    public long countConventionEnAttente(@PathVariable("annee") String annee) {
         ContextDto contexteDto = ServiceContext.getServiceContext();
         Utilisateur utilisateur = contexteDto.getUtilisateur();
-        if (UtilisateurHelper.isRole(utilisateur, Role.RESP_GES) || UtilisateurHelper.isRole(utilisateur, Role.GES)) {
-            return conventionJpaRepository.countConventionEnAttente(annee, utilisateur.getLogin());
+        if (UtilisateurHelper.isRole(utilisateur, Role.ENS)) {
+            return conventionJpaRepository.countConventionEnAttenteEnseignant(appConfigService.getAnneeUnivLibelle(annee), utilisateur.getLogin());
         }
-        return conventionJpaRepository.countConventionEnAttente(annee);
+        if (!UtilisateurHelper.isRole(utilisateur, Role.ADM) && (UtilisateurHelper.isRole(utilisateur, Role.RESP_GES) || UtilisateurHelper.isRole(utilisateur, Role.GES))) {
+            return conventionJpaRepository.countConventionEnAttenteGestionnaire(appConfigService.getAnneeUnivLibelle(annee), utilisateur.getLogin());
+        }
+        return conventionJpaRepository.countConventionEnAttenteGestionnaire(appConfigService.getAnneeUnivLibelle(annee));
     }
 
     private void setConventionData(Convention convention, ConventionFormDto conventionFormDto) {

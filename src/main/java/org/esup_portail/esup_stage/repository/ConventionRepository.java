@@ -88,6 +88,10 @@ public class ConventionRepository extends PaginationRepository<Convention> {
                 clauses.add("(" + String.join(" OR ", clauseOr) + ")");
             }
         }
+        if (key.equals("etatGestionnaire")) {
+            clauses.add("c.validationConvention = FALSE");
+            clauses.add("c.validationPedagogique = TRUE");
+        }
     }
 
     @Override

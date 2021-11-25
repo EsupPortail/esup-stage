@@ -111,6 +111,7 @@ export class DashboardComponent implements OnInit {
       { id: 'ufr.id', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
       { id: 'etape.id', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
       { id: 'enseignant', libelle: 'Enseignant', specific: true },
+      { id: 'etatGestionnaire', libelle: 'État de validation', type: 'boolean', value: true, specific: true, hidden: true },
     ];
   }
 
@@ -128,7 +129,7 @@ export class DashboardComponent implements OnInit {
 
   changeAnnee(): void {
     this.countConvention();
-    this.appTable?.setFilter({id: 'annee', type: 'text', value: this.anneeEnCours.annee, specific: false});
+    this.appTable?.setFilter({id: 'annee', type: 'text', value: this.anneeEnCours.libelle, specific: false});
     this.appTable?.update();
   }
 
@@ -163,7 +164,7 @@ export class DashboardComponent implements OnInit {
   countConvention(): void {
     if ((this.isGestionnaire() || this.isEnseignant()) && this.anneeEnCours) {
       this.conventionService.countConventionEnAttente(this.anneeEnCours.annee).subscribe((response: any) => {
-        this.nbConventionsEnAttente = response.nbEnAttenteValidPedadogique + response.nbEnAttenteValidAdministratif;
+        this.nbConventionsEnAttente = response;
       });
     }
   }
