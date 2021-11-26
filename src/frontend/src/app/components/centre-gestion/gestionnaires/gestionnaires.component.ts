@@ -113,7 +113,7 @@ export class GestionnairesComponent implements OnInit {
       return;
     }
     this.gestionnaire = undefined;
-    this.ldapService.searchEnseignants(this.searchForm.value).subscribe((response: any) => {
+    this.ldapService.searchUsersByName(this.searchForm.get('nom')?.value, this.searchForm.get('prenom')?.value).subscribe((response: any) => {
       this.gestionnaires = response;
       if (this.gestionnaires.length === 1) {
         this.choose(this.gestionnaires[0]);

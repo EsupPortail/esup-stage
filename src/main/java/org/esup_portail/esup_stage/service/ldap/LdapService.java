@@ -99,6 +99,32 @@ public class LdapService {
         }
     }
 
+    public List<LdapUser> searchByName(String nom, String prenom) {
+        Map<String, String> params = new HashMap<>();
+        // construction du filtre
+        String filter = null;
+        if (!nom.equalsIgnoreCase("null")) {
+            filter = "(sn=" + nom + "*)";
+        }
+        if (!prenom.equalsIgnoreCase("null")) {
+            if (filter==null) {
+                filter =  "(givenName=" + prenom + "*)";
+            } else {
+                filter =  "(&(givenName=" + prenom + "*)" + filter + ")";
+            }
+        }
+
+        params.put("filter", filter);
+        String response = call("/byFilter", "GET", params);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readValue(response, List.class);
+        } catch (JsonProcessingException e) {
+            LOGGER.error("Erreur lors de la lecture de la réponse sur l'api byFilter: " + e.getMessage(), e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
+        }
+    }
+
     public List<LdapUser> searchByFilter(String filter) {
         Map<String, String> params = new HashMap<>();
         params.put("filter", filter);

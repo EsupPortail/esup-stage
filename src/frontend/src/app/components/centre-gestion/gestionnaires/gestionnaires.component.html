@@ -66,7 +66,7 @@
       </div>
     </form>
 
-    <div class="alert alert-info" *ngIf="gestionnaires.length > 10">La recherche est limitée à 10 gestionnaires. Veuillez affiner la recherche si le gestionnaire n'apparaît pas.</div>
+    <div class="alert alert-info" *ngIf="gestionnaires.length >= 10">La recherche est limitée à 10 gestionnaires. Veuillez affiner la recherche si le gestionnaire n'apparaît pas.</div>
     <table mat-table [dataSource]="gestionnaires | slice:0:10">
       <tr class="mat-row" *matNoDataRow>
         <td class="mat-cell" colspan="9999">Aucun gestionnaire trouvé</td>

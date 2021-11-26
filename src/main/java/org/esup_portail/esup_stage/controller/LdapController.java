@@ -40,6 +40,15 @@ public class LdapController {
         return ldapService.search("/tuteur", ldapSearchDto);
     }
 
+    @GetMapping("/search-by-name")
+    @Secure
+    public List<LdapUser> searchLdapUserByName(@RequestParam("nom") String nom, @RequestParam("prenom") String prenom) {
+        if (nom == null && prenom == null) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Veuillez renseigner au moins un des filtres");
+        }
+        return ldapService.searchByName(nom, prenom);
+    }
+
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public List<LdapUser> searchLdapUserByLogin(@Valid @RequestParam("login") @Pattern(regexp = "[A-Za-z0-9]+") String login) {
