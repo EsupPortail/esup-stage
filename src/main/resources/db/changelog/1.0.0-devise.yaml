@@ -26,17 +26,21 @@ databaseChangeLog:
         tableName: Devise
 - changeSet:
     id: devise-init
-    author: jwang
+    author: ssound
     changes:
-    - insert:
-        columns:
-        - column:
-            name: libelleDevise
-            value: euros
-        tableName: Devise
-    - insert:
-        columns:
-        - column:
-            name: libelleDevise
-            value: autres
-        tableName: Devise
+    - sql:
+        sql: INSERT INTO Devise (libelleDevise) SELECT DISTINCT monnaieGratification FROM Convention WHERE monnaieGratification IS NOT NULL AND monnaieGratification != ''
+    - sql:
+        sql: INSERT INTO Devise (libelleDevise) SELECT DISTINCT monnaieGratification FROM Avenant WHERE monnaieGratification IS NOT NULL AND monnaieGratification != '' AND monnaieGratification NOT IN (SELECT libelleDevise FROM Devise)
+- changeSet:
+    id: devise-init-convention
+    author: ssound
+    changes:
+    - sql:
+        sql: UPDATE Convention c SET c.idDevise = (SELECT d.idDevise FROM Devise d WHERE d.libelleDevise = c.monnaieGratification)
+- changeSet:
+    id: devise-init-avenant
+    author: ssound
+    changes:
+    - sql:
+        sql: UPDATE Avenant a SET a.idDevise = (SELECT d.idDevise FROM Devise d WHERE d.libelleDevise = a.monnaieGratification)
