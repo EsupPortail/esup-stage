@@ -33,6 +33,7 @@ export class CentreGestionComponent implements OnInit {
   centreGestionInited = false;
 
   isCreate: boolean;
+  pathId: any;
 
   coordCentreForm: FormGroup;
   paramCentreForm: FormGroup;
@@ -46,8 +47,8 @@ export class CentreGestionComponent implements OnInit {
 
   ngOnInit(): void {
     this.activatedRoute.params.subscribe((param: any) => {
-      const pathId = param.id;
-      if (pathId === 'create') {
+      this.pathId = param.id;
+      if (this.pathId === 'create') {
         this.isCreate = true;
         this.centreGestionService.getBrouillonByLogin().subscribe((response: any) => {
           this.centreGestion = response;
@@ -58,8 +59,15 @@ export class CentreGestionComponent implements OnInit {
           this.majStatus();
         });
       } else {
-        // todo edit
         this.isCreate = false;
+        this.centreGestionService.getById(this.pathId).subscribe((response: any) => {
+          this.centreGestion = response;
+          this.centreGestionInited = true;
+          if (this.centreGestion.id) {
+            this.updateOnChanges();
+          }
+          this.majStatus();
+        });
       }
     });
   }
@@ -102,6 +110,11 @@ export class CentreGestionComponent implements OnInit {
   refreshPersonnelsCentre(): void {
     if (this.isCreate) {
       this.centreGestionService.getBrouillonByLogin().subscribe((response: any) => {
+        this.centreGestion = response;
+        this.majStatus();
+      });
+    } else {
+      this.centreGestionService.getById(this.pathId).subscribe((response: any) => {
         this.centreGestion = response;
         this.majStatus();
       });

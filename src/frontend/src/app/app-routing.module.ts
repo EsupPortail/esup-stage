@@ -93,8 +93,8 @@ const routes: Routes = [
     component: CentreGestionComponent,
     canActivate: [AuthGuard],
     data: {
-      role: {fonction: AppFonction.PARAM_CENTRE, droits: [Droit.CREATION]},
-      title: 'Création d\'un centre de gestion'
+      role: {fonction: AppFonction.PARAM_CENTRE, droits: [Droit.CREATION, Droit.VALIDATION, Droit.LECTURE, Droit.MODIFICATION]},
+      title: 'Modification d\'un centre de gestion'
     }
   }
 ];

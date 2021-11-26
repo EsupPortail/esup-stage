@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { TableComponent } from "../table/table.component";
 import { CentreGestionService } from "../../services/centre-gestion.service";
 import { AuthService } from "../../services/auth.service";
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'app-centre-gestion-search',
@@ -23,7 +24,8 @@ export class CentreGestionSearchComponent implements OnInit {
 
   constructor(
     public centreGestionService: CentreGestionService,
-    public authService: AuthService) { }
+    public authService: AuthService,
+    private router: Router) { }
 
   ngOnInit(): void {
     this.authService.getCurrentUser().subscribe(response => {
@@ -33,6 +35,10 @@ export class CentreGestionSearchComponent implements OnInit {
 
   isPersonnel(data: any) {
     return data.personnels.some((p: any) => p.uidPersonnel == this.currentUser.login);
+  }
+
+  editCentre(id: number): void {
+    this.router.navigate([`/centre-gestion/${id}`], )
   }
 
 }

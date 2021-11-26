@@ -88,6 +88,16 @@ public class CentreGestionController {
         return centreGestion;
     }
 
+    @GetMapping("/{id}")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
+    public CentreGestion getById(@PathVariable("id") int id) {
+        CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
+        if (centreGestion == null) {
+            centreGestion = new CentreGestion();
+        }
+        return centreGestion;
+    }
+
     @PostMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.CREATION})
     public CentreGestion create(@Valid @RequestBody CentreGestion centreGestion) {

@@ -19,6 +19,10 @@ export class CentreGestionService implements PaginatedService {
     return this.http.get(`${environment.apiUrl}/centre-gestion/creation-brouillon`);
   }
 
+  getById(id: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/centre-gestion/${id}`);
+  }
+
   create(data: any): Observable<any> {
     return this.http.post(`${environment.apiUrl}/centre-gestion`, data);
   }
