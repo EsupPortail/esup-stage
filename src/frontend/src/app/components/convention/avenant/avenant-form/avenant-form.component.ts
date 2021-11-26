@@ -86,6 +86,8 @@ export class AvenantFormComponent implements OnInit {
         idModeVersGratification: [this.avenant.modeVersGratification?this.avenant.modeVersGratification.id:null],
         idDevise: [this.avenant.devise?this.avenant.devise.id:null],
         validationAvenant: [this.avenant.validationAvenant],
+        modificationAutre: [this.avenant.motifAvenant?true:false],
+        motifAvenant: [this.avenant.motifAvenant],
       });
     }else{
       this.form = this.fb.group({
@@ -111,6 +113,8 @@ export class AvenantFormComponent implements OnInit {
         idModeVersGratification: [null],
         idDevise: [null],
         validationAvenant: [null],
+        modificationAutre: [null],
+        motifAvenant: [null],
       });
     }
 
@@ -141,7 +145,7 @@ export class AvenantFormComponent implements OnInit {
   customFormValidation(): boolean {
     let valid = false;
     const checkboxFields = ['dateRupture', 'modificationPeriode', 'modificationLieu', 'modificationSujet', 'modificationTuteurPro',
-       'modificationEnseignant', 'modificationMontantGratification'];
+       'modificationEnseignant', 'modificationMontantGratification', 'modificationAutre'];
 
     checkboxFields.forEach((field: string) => {
       if (this.form.get(field)!.value){
@@ -156,7 +160,6 @@ export class AvenantFormComponent implements OnInit {
   }
 
   loadServices(): void{
-    console.log('form modificationEnseignant : ' + this.form.get('modificationEnseignant')!.value);
     if (this.services.length == 0){
       this.serviceService.getByStructure(this.convention.structure.id).subscribe((response: any) => {
         this.services = response;
