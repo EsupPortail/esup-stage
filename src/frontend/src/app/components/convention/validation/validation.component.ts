@@ -9,9 +9,14 @@ export class ValidationComponent implements OnInit {
 
   @Input() convention: any;
 
+  validations: string[] = [];
+
   constructor() { }
 
   ngOnInit(): void {
+    // TODO gestion de l'ordre des validations
+    if (this.convention.centreGestion.validationPedagogique) this.validations.push('validationPedagogique');
+    this.validations.push('validationConvention');
   }
 
 }

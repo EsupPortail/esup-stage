@@ -1,0 +1,15 @@
+.validation-card {
+  margin: 5px;
+  padding: 20px;
+  border: 1px solid var(--primaryColor);
+  border-radius: 5px;
+}
+
+.validation-card .info {
+  color: var(--dangerColor);
+  font-weight: bold;
+}
+
+.validation-card .info.validate {
+  color: var(--successColor);
+}

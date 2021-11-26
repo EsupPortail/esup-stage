@@ -226,7 +226,6 @@ public class Convention extends ObjetMetier {
     @Column(length = 100)
     private String nomEtabRef;
 
-    @JsonView(Views.List.class)
     @Column(length = 200)
     private String adresseEtabRef;
 
@@ -334,6 +333,10 @@ public class Convention extends ObjetMetier {
     @OneToOne(mappedBy = "convention", cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
     private ConventionNomenclature nomenclature;
+
+    @JsonView(Views.List.class)
+    @Transient
+    private String lieuStage;
 
     public int getId() {
         return id;
@@ -1093,5 +1096,16 @@ public class Convention extends ObjetMetier {
 
     public void setNomenclature(ConventionNomenclature nomenclature) {
         this.nomenclature = nomenclature;
+    }
+
+    public String getLieuStage() {
+        if (getService() != null) {
+            return getService().getNom() + " " + getService().getCommune() + (getService().getPays() != null ? " " + getService().getPays().getLib() : "");
+        }
+        return null;
+    }
+
+    public void setLieuStage(String lieuStage) {
+        this.lieuStage = lieuStage;
     }
 }

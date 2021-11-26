@@ -91,6 +91,7 @@ import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { AvenantFormComponent } from './components/convention/avenant/avenant-form/avenant-form.component';
 import { MatMenuModule } from "@angular/material/menu";
 import { ValidationComponent } from './components/convention/validation/validation.component';
+import { ValidationCardComponent } from './components/convention/validation/validation-card/validation-card.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -141,6 +142,7 @@ registerLocaleData(localeFr, 'fr');
     AvenantComponent,
     AvenantFormComponent,
     ValidationComponent,
+    ValidationCardComponent,
   ],
   imports: [
     BrowserModule,

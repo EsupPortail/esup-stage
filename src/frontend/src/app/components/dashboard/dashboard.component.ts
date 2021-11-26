@@ -7,6 +7,7 @@ import { StructureService } from "../../services/structure.service";
 import { UfrService } from "../../services/ufr.service";
 import { EtapeService } from "../../services/etape.service";
 import { MessageService } from "../../services/message.service";
+import { ConfigService } from "../../services/config.service";
 
 @Component({
   selector: 'app-dashboard',
@@ -30,6 +31,7 @@ export class DashboardComponent implements OnInit {
   annees: any[] = [];
 
   selected: any[] = [];
+  validationLibelles: any = {};
 
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
 
@@ -41,14 +43,19 @@ export class DashboardComponent implements OnInit {
     private ufrService: UfrService,
     private etapeService: EtapeService,
     private messageService: MessageService,
+    private configService: ConfigService,
   ) {
   }
 
   ngOnInit(): void {
+    this.configService.getConfigGenerale().subscribe((response: any) => {
+      this.validationLibelles.validationPedagogique = response.validationPedagogiqueLibelle;
+      this.validationLibelles.validationConvention = response.validationAdministrativeLibelle;
+    });
     if (this.isGestionnaire()) {
       this.setDataGestionnaire();
     } else if (this.isEnseignant()) {
-      this.columns = ['id', 'etudiant', 'ufr', 'etape',  'dateDebutStage', 'dateFinStage', 'structure', 'sujetStage', 'adresseEtabRef', 'etatValidation', 'avenant', 'action'];
+      this.columns = ['id', 'etudiant', 'ufr', 'etape',  'dateDebutStage', 'dateFinStage', 'structure', 'sujetStage', 'lieuStage', 'etatValidation', 'avenant', 'action'];
       this.filters = [
         { id: 'id', libelle: 'N° de la convention', type: 'int' },
         { id: 'etudiant', libelle: 'Étudiant', specific: true },
@@ -58,7 +65,7 @@ export class DashboardComponent implements OnInit {
         { id: 'dateFinStage', libelle: 'Date fin du stage', type: 'date-max' },
         { id: 'structure.id', libelle: 'Établissement d\'accueil', type: 'autocomplete', autocompleteService: this.structureService, keyLibelle: 'raisonSociale', keyId: 'id', value: [] },
         { id: 'sujetStage', libelle: 'Sujet du stage' },
-        { id: 'adresseEtabRef', libelle: 'Lieu du stage' },
+        { id: 'lieuStage', libelle: 'Lieu du stage' },
         { id: 'etatValidation', libelle: 'État de validation de la convention', type: 'list', options: this.validationsOptions, keyLibelle: 'libelle', keyId: 'id', value: ['nonValidationPedagogique', 'nonValidationConvention'], specific: true },
         { id: 'avenant', libelle: 'Avenant', specific: true },
       ];
@@ -72,8 +79,8 @@ export class DashboardComponent implements OnInit {
         { id: 'ufr.id', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
         { id: 'etape.id', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
         { id: 'enseignant', libelle: 'Enseignant', specific: true },
-        { id: 'validationPedagogique', libelle: 'Validation pédagogique', type: 'boolean' },
-        { id: 'validationConvention', libelle: 'Validation administrative', type: 'boolean' },
+        { id: 'validationPedagogique', libelle: this.validationLibelles.validationPedagogique, type: 'boolean' },
+        { id: 'validationConvention', libelle: this.validationLibelles.validationConvention, type: 'boolean' },
         { id: 'avenant', libelle: 'Avenant', specific: true },
         { id: 'annee', libelle: 'Année', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'libelle', value: [] },
       ];

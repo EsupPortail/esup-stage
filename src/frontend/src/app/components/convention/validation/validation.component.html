@@ -1,1 +1,49 @@
-<p>validation works!</p>
+<mat-card>
+  <mat-card-content>
+    <div class="text-title"><i class="fa fa-check"></i> Validation de la convention</div>
+    <mat-divider></mat-divider>
+    <div class="mt-3 mb-3">
+      <div class="row">
+        <div class="col-sm-3 font-weight-bold">Étudiant</div>
+        <div class="col-sm-9">{{convention.etudiant.nom + ' ' + convention.etudiant.prenom}}</div>
+      </div>
+      <div class="row">
+        <div class="col-sm-3 font-weight-bold">Date de début du stage</div>
+        <div class="col-sm-9">{{convention.dateDebutStage|date:'shortDate'}}</div>
+      </div>
+      <div class="row">
+        <div class="col-sm-3 font-weight-bold">Date de fin du stage</div>
+        <div class="col-sm-9">{{convention.dateFinStage|date:'shortDate'}}</div>
+      </div>
+      <div class="row">
+        <div class="col-sm-3 font-weight-bold">Sujet</div>
+        <div class="col-sm-9">{{convention.sujetStage}}</div>
+      </div>
+      <div class="row">
+        <div class="col-sm-3 font-weight-bold">Fonctions et tâches</div>
+        <div class="col-sm-9">{{convention.fonctionsEtTaches}}</div>
+      </div>
+      <div class="row">
+        <div class="col-sm-3 font-weight-bold">Modalité de validation du stage</div>
+        <div class="col-sm-9">{{convention.modeValidationStage.libelle}}</div>
+      </div>
+      <div class="row">
+        <div class="col-sm-3 font-weight-bold">Etablissement d'accueil</div>
+        <div class="col-sm-9">{{convention.structure.raisonSociale}}</div>
+      </div>
+      <div class="row">
+        <div class="col-sm-3 font-weight-bold">Lieu du stage</div>
+        <div class="col-sm-9">{{convention.lieuStage}}</div>
+      </div>
+    </div>
+    <app-validation-card *ngFor="let validation of validations" [convention]="convention" [validation]="validation"></app-validation-card>
+<!--    <div class="validation-card">-->
+<!--      <h5 class="text-title">Validation administrative</h5>-->
+<!--      <p>La convention est considérée <b>validée administrativement</b> lorsque tous les partenaires du stage ont signé la convention papier.</p>-->
+<!--      <div class="text-center info" [class.validate]="convention.validationConvention">-->
+<!--        <ng-container *ngIf="convention.validationConvention; else nonValidA"><i class="fa fa-check"></i> Cette convention est validée administrativement.</ng-container>-->
+<!--        <ng-template #nonValidA><i class="fa fa-times"></i> Cette convention n'est pas encore validée administrativement.</ng-template>-->
+<!--      </div>-->
+<!--    </div>-->
+  </mat-card-content>
+</mat-card>
