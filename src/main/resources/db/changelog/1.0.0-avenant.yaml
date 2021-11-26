@@ -1,0 +1,29 @@
+databaseChangeLog:
+- changeSet:
+    id: avenant-idDevise
+    author: tjubera
+    changes:
+    - addColumn:
+        tableName: Avenant
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            constraints:
+                foreignKeyName: fk_Avenant_Devise1
+                references: Devise(idDevise)
+            name: idDevise
+            type: INT
+- changeSet:
+    id: avenant-idModeVersGratification
+    author: tjubera
+    changes:
+    - addColumn:
+        tableName: Avenant
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            constraints:
+                foreignKeyName: fk_Avenant_ModeVersGratification1
+                references: ModeVersGratification(idModeVersGratification)
+            name: idModeVersGratification
+            type: INT

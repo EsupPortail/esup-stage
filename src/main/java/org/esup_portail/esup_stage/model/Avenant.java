@@ -86,6 +86,14 @@ public class Avenant extends ObjetMetier {
     @JoinColumn(name = "idUniteGratification")
     private UniteGratification uniteGratification;
 
+    @ManyToOne
+    @JoinColumn(name = "idModeVersGratification")
+    private ModeVersGratification modeVersGratification;
+
+    @ManyToOne
+    @JoinColumn(name = "idDevise")
+    private Devise devise;
+
     @Column(nullable = false)
     private boolean modificationMontantGratification;
 
@@ -276,6 +284,22 @@ public class Avenant extends ObjetMetier {
 
     public void setUniteGratification(UniteGratification uniteGratification) {
         this.uniteGratification = uniteGratification;
+    }
+
+    public ModeVersGratification getModeVersGratification() {
+        return modeVersGratification;
+    }
+
+    public void setModeVersGratification(ModeVersGratification modeVersGratification) {
+        this.modeVersGratification = modeVersGratification;
+    }
+
+    public Devise getDevise() {
+        return devise;
+    }
+
+    public void setDevise(Devise devise) {
+        this.devise = devise;
     }
 
     public boolean isModificationMontantGratification() {

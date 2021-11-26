@@ -14,7 +14,7 @@
     <app-avenant-form [convention]="convention" [avenant]="{}" (validated)="updateAvenants()"></app-avenant-form>
   </mat-expansion-panel>
 
-  <mat-expansion-panel [expanded]="false">
+  <mat-expansion-panel [disabled]="avenants.length == 0" [expanded]="false">
     <mat-expansion-panel-header>
       <mat-panel-title>Avenants existants</mat-panel-title>
     </mat-expansion-panel-header>
