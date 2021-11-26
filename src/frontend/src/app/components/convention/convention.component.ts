@@ -3,6 +3,7 @@ import { ActivatedRoute } from "@angular/router";
 import { ConventionService } from "../../services/convention.service";
 import { MatTabChangeEvent } from "@angular/material/tabs";
 import { TitleService } from "../../services/title.service";
+import { AuthService } from "../../services/auth.service";
 
 @Component({
   selector: 'app-convention',
@@ -22,11 +23,13 @@ export class ConventionComponent implements OnInit {
     5: { statut: 0, init: false },
     6: { statut: 0, init: false },
     7: { statut: 0, init: false },
+    8: { statut: 0, init: false },
   }
 
   allValid = false;
+  modifiable = true;
 
-  constructor(private activatedRoute: ActivatedRoute, private conventionService: ConventionService, private titleService: TitleService) { }
+  constructor(private activatedRoute: ActivatedRoute, private conventionService: ConventionService, private titleService: TitleService, private authService: AuthService) { }
 
   ngOnInit(): void {
     this.activatedRoute.params.subscribe((param: any) => {
@@ -43,6 +46,19 @@ export class ConventionComponent implements OnInit {
         // Récupération de la convention correspondant à l'id
         this.conventionService.getById(pathId).subscribe((response: any) => {
           this.convention = response;
+          this.majStatus();
+          // Si la convention est validée administrativement, elle n'est plus modifiable par de gestionnaire
+          if (this.authService.isEnseignant() && this.convention.validationPedagogique) {
+            this.modifiable = false;
+          }
+          // Si la convention est validée pédagogiquement, elle n'est plus modifiable par l'enseignant
+          if (this.authService.isGestionnaire() && this.convention.validationConvention) {
+            this.modifiable = false;
+          }
+          // Une convention n'est plus modifiable par l'étudiant dès qu'il y a eu au moins une validation
+          if (this.isEtudiant() && (this.convention.validationPedagogique || this.convention.validationConvention)) {
+            this.modifiable = false;
+          }
         });
       }
     });
@@ -89,7 +105,7 @@ export class ConventionComponent implements OnInit {
   majAllValid(): void {
     this.allValid = true;
     for (let key in this.tabs) {
-        if (key != '7' && this.tabs[key].statut == 0){
+        if (key != '7' && key != '8' && this.tabs[key].statut == 0) {
           this.allValid = false;
         }
     }
@@ -150,9 +166,12 @@ export class ConventionComponent implements OnInit {
     });
   }
 
-  isValide(): boolean {
-    // TODO prendre en compte le paramétration du centre de gestion : une convention ne peut plus être modifiée si la dernière validation a été faite
-    return this.convention && (this.convention.validationPedagogique || this.convention.validationConvention);
+  isConventionValide(): boolean {
+    return this.convention && this.convention.validationPedagogique && this.convention.validationConvention;
+  }
+
+  isEtudiant(): boolean {
+    return this.authService.isEtudiant();
   }
 
 }

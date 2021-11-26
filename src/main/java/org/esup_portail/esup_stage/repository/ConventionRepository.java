@@ -92,6 +92,13 @@ public class ConventionRepository extends PaginationRepository<Convention> {
             clauses.add("c.validationConvention = FALSE");
             clauses.add("c.validationPedagogique = TRUE");
         }
+        if (key.equals("lieuStage")) {
+            List<String> clauseOr = new ArrayList<>();
+            clauseOr.add("LOWER(c.service.nom) = :lieuStage");
+            clauseOr.add("LOWER(c.service.commune) = :lieuStage");
+            clauseOr.add("LOWER(c.service.pays.lib) = :lieuStage");
+            clauses.add("(" + String.join(" OR ", clauseOr) + ")");
+        }
     }
 
     @Override
@@ -124,6 +131,9 @@ public class ConventionRepository extends PaginationRepository<Convention> {
         }
         if (key.equals("avenant")) {
             query.setParameter("avenant", "%" + parameter.getString("value").toLowerCase() + "%");
+        }
+        if (key.equals("lieuStage")) {
+            query.setParameter("lieuStage", "%" + parameter.getString("value").toLowerCase() + "%");
         }
     }
 }

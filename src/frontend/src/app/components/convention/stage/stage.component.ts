@@ -56,6 +56,8 @@ export class StageComponent implements OnInit {
   @Output() validated = new EventEmitter<number>();
   @Output() updateField = new EventEmitter<any>();
 
+  @Input() modifiable: boolean;
+
   constructor(public conventionService: ConventionService,
               private fb: FormBuilder,
               private authService: AuthService,
@@ -184,6 +186,10 @@ export class StageComponent implements OnInit {
         this.updateSingleField(key,res[key]);
       });
     })
+
+    if (!this.modifiable) {
+      this.form.disable();
+    }
   }
 
   updateSingleField(key: string,value: any): void {

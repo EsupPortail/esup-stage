@@ -25,4 +25,8 @@ export class AvenantComponent implements OnInit {
       this.avenants = response;
     });
   }
+
+  isConventionValide(): boolean {
+    return this.convention && this.convention.validationPedagogique && this.convention.validationConvention;
+  }
 }

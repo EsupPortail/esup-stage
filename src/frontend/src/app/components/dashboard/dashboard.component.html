@@ -49,15 +49,15 @@
     <th mat-header-cell *matHeaderCellDef mat-sort-header>Sujet du stage</th>
     <td mat-cell *matCellDef="let row">{{row.sujetStage}}</td>
   </ng-container>
-  <ng-container *ngIf="isEnseignant()" matColumnDef="adresseEtabRef">
+  <ng-container *ngIf="isEnseignant()" matColumnDef="lieuStage">
     <th mat-header-cell *matHeaderCellDef mat-sort-header>Lieu du stage</th>
-    <td mat-cell *matCellDef="let row">{{row.adresseEtabRef}}</td>
+    <td mat-cell *matCellDef="let row">{{row.lieuStage}}</td>
   </ng-container>
   <ng-container *ngIf="isEnseignant()" matColumnDef="etatValidation">
     <th mat-header-cell *matHeaderCellDef mat-sort-header>État de validation de la convention</th>
     <td mat-cell *matCellDef="let row" class="dashboard-validation">
-      <i class="fa fa-graduation-cap" [class.activate]="row.validationPedagogique" matTooltip="{{row.validationPedagogique ? 'validée pédagogiquement' : 'non validée pédagogiquement'}}"></i>
-      <i class="fa fa-scroll" [class.activate]="row.validationConvention" matTooltip="{{row.validationConvention ? 'validée administrativement' : 'non validée administrativement'}}"></i>
+      <i class="fa fa-graduation-cap" [class.activate]="row.validationPedagogique" matTooltip="{{row.validationPedagogique ? validationLibelles.validationPedagogique + ' effectuée' : 'en attente ' + validationLibelles.validationPedagogique}}"></i>
+      <i class="fa fa-scroll" [class.activate]="row.validationConvention" matTooltip="{{row.validationConvention ? validationLibelles.validationConvention + ' effectuée' : 'en attente ' + validationLibelles.validationConvention}}"></i>
     </td>
   </ng-container>
   <ng-container matColumnDef="id">
@@ -89,11 +89,11 @@
     <td mat-cell *matCellDef="let row">{{row.etape ? row.etape.libelle : ''}}</td>
   </ng-container>
   <ng-container *ngIf="isEtudiant()" matColumnDef="validationPedagogique">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header>Validation Pédagogique</th>
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>{{validationLibelles.validationPedagogique}}</th>
     <td mat-cell *matCellDef="let row">{{row.validationPedagogique|boolean}}</td>
   </ng-container>
   <ng-container *ngIf="isEtudiant()" matColumnDef="validationConvention">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header>Validation administrative</th>
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>{{validationLibelles.validationConvention}}</th>
     <td mat-cell *matCellDef="let row">{{row.validationConvention|boolean}}</td>
   </ng-container>
   <ng-container *ngIf="isEtudiant() || isEnseignant()" matColumnDef="avenant">

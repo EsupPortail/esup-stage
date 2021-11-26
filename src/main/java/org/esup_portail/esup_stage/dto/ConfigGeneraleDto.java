@@ -13,6 +13,8 @@ public class ConfigGeneraleDto {
     private boolean autoriserValidationAutoOrgaAccCreaEtu = false;
     private String ldapFiltreEnseignant = "(|(eduPersonAffiliation=teacher)(eduPersonAffiliation=faculty)";
     private boolean autoriserElementPedagogiqueFacultatif = false;
+    private String validationPedagogiqueLibelle = "validation pédagogique";
+    private String validationAdministrativeLibelle = "validation administrative";
 
     public String getCodeUniversite() {
         return codeUniversite;
@@ -92,5 +94,21 @@ public class ConfigGeneraleDto {
 
     public void setAutoriserElementPedagogiqueFacultatif(boolean autoriserElementPedagogiqueFacultatif) {
         this.autoriserElementPedagogiqueFacultatif = autoriserElementPedagogiqueFacultatif;
+    }
+
+    public String getValidationPedagogiqueLibelle() {
+        return validationPedagogiqueLibelle;
+    }
+
+    public void setValidationPedagogiqueLibelle(String validationPedagogiqueLibelle) {
+        this.validationPedagogiqueLibelle = validationPedagogiqueLibelle;
+    }
+
+    public String getValidationAdministrativeLibelle() {
+        return validationAdministrativeLibelle;
+    }
+
+    public void setValidationAdministrativeLibelle(String validationAdministrativeLibelle) {
+        this.validationAdministrativeLibelle = validationAdministrativeLibelle;
     }
 }

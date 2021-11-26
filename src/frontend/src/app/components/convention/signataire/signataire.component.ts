@@ -42,6 +42,8 @@ export class SignataireComponent implements OnInit, OnChanges {
 
   @Output() validated = new EventEmitter<number>();
 
+  @Input() modifiable: boolean;
+
   constructor(private contactService: ContactService,
               private fb: FormBuilder,
               private messageService: MessageService,
@@ -130,7 +132,7 @@ export class SignataireComponent implements OnInit, OnChanges {
   }
 
   canCreate(): boolean {
-    return this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.CREATION]});
+    return this.modifiable && this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.CREATION]});
   }
 
   canEdit(): boolean {
@@ -138,7 +140,7 @@ export class SignataireComponent implements OnInit, OnChanges {
     if (this.authService.isEtudiant() && !this.autorisationModification) {
       hasRight = false;
     }
-    return hasRight;
+    return this.modifiable && hasRight;
   }
 
   choose(row: any): void {

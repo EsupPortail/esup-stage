@@ -62,6 +62,10 @@ public class AvenantDto {
 
     private int idUniteGratification;
 
+    private int idModeVersGratification;
+
+    private int idDevise;
+
     @NotNull
     private boolean modificationMontantGratification;
 
@@ -244,6 +248,22 @@ public class AvenantDto {
 
     public boolean getModificationMontantGratification() {
         return modificationMontantGratification;
+    }
+
+    public int getIdModeVersGratification() {
+        return idModeVersGratification;
+    }
+
+    public void setIdModeVersGratification(int idModeVersGratification) {
+        this.idModeVersGratification = idModeVersGratification;
+    }
+
+    public int getIdDevise() {
+        return idDevise;
+    }
+
+    public void setIdDevise(int idDevise) {
+        this.idDevise = idDevise;
     }
 
     public void setModificationMontantGratification(boolean modificationMontantGratification) {

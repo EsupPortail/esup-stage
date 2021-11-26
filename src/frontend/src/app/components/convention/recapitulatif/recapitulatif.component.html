@@ -171,19 +171,19 @@
           <div class="col-sm-3 font-weight-bold">Service du stage</div>
           <div class="col-sm-9">{{convention.service.nom}}</div>
           <div class="col-sm-3 font-weight-bold">Tuteur professionnel</div>
-          <div class="col-sm-9">{{convention.contact.civilite.libelle + ' ' +convention.contact.nom + ' ' +convention.contact.prenom +
+          <div class="col-sm-9">{{(convention.contact.civilite ? convention.contact.civilite.libelle + ' ' : '') +convention.contact.nom + ' ' +convention.contact.prenom +
           (convention.contact.fonction ? ', ' + convention.contact.fonction : '')}}</div>
           <div class="col-sm-3 font-weight-bold">Coordonéees tuteur professionnel</div>
           <div class="col-sm-9">{{(convention.contact.mail? 'Mail : ' + convention.contact.mail : '') +
             (convention.contact.tel? ' - Tel : ' + convention.contact.tel : '')+
             (convention.contact.fax? ' - Fax : ' + convention.contact.fax : '')}}</div>
           <div class="col-sm-3 font-weight-bold">Signataire</div>
-          <div class="col-sm-9">{{convention.signataire.civilite.libelle + ' ' +convention.signataire.nom + ' ' +convention.signataire.prenom +
+          <div class="col-sm-9">{{(convention.signataire.civilite ? convention.signataire.civilite.libelle + ' ' : '') +convention.signataire.nom + ' ' +convention.signataire.prenom +
             (convention.signataire.fonction ? ', ' + convention.signataire.fonction : '')}}</div>
         </div>
       </div>
     </div>
-    <div class="row" *ngIf="!convention.id">
+    <div class="row" *ngIf="!convention.validationCreation">
       <div class="col-sm-12 text-center">
         <button mat-button mat-flat-button color="primary" (click)="validate()">{{'BOUTON_VALIDER'|contenu}}</button>
       </div>

@@ -191,6 +191,7 @@ public class ConventionController {
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.CREATION})
     public Convention create(@Valid @RequestBody ConventionFormDto conventionFormDto) {
         Convention convention = new Convention();
+        convention.setNomenclature(new ConventionNomenclature());
         convention.setValidationCreation(false);
         setConventionData(convention, conventionFormDto);
         convention = conventionJpaRepository.saveAndFlush(convention);

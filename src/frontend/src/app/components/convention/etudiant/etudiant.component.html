@@ -1,5 +1,5 @@
 <mat-accordion>
-  <mat-expansion-panel *ngIf="!isEtudiant" [expanded]="!convention.id">
+  <mat-expansion-panel *ngIf="!isEtudiant && modifiable" [expanded]="!convention.id">
     <mat-expansion-panel-header>
       <mat-panel-title>Recherchez un étudiant via son numéro ou son nom/prénom</mat-panel-title>
     </mat-expansion-panel-header>

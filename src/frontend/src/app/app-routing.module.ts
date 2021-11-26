@@ -75,7 +75,7 @@ const routes: Routes = [
     component: ConventionComponent,
     canActivate: [AuthGuard],
     data: {
-      role: {fonction: AppFonction.CONVENTION, droits: [Droit.CREATION]},
+      role: {fonction: AppFonction.CONVENTION, droits: [Droit.CREATION, Droit.VALIDATION, Droit.LECTURE, Droit.MODIFICATION]},
       title: 'Création d\'une convention'
     }
   },
