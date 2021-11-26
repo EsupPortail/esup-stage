@@ -2,34 +2,33 @@
   <mat-tab #coordCentreTab>
     <ng-template mat-tab-label>
       Coordonnées du centre
-      <mat-progress-bar mode="determinate" [value]="getProgressValue(0)" [ngClass]="{editing: statuts['statutCoordCentre'] === 1, done: statuts['statutCoordCentre'] === 2}"></mat-progress-bar>
+      <mat-progress-bar mode="determinate" [value]="getProgressValue(0)" [ngClass]="{editing: tabs[0].statut === 1, done: tabs[0].statut === 2}"></mat-progress-bar>
     </ng-template>
     <app-coord-centre *ngIf="centreGestionInited && (coordCentreTab.isActive || tabs[0].init)" [form]="coordCentreForm" [centreGestion]="centreGestion" (update)="update()" (refreshCentreGestion)="refreshCentreGestion($event)"></app-coord-centre>
   </mat-tab>
-  <mat-tab #paramCentreTab>
+  <mat-tab #paramCentreTab [disabled]="centreGestion && !centreGestion.id">
     <ng-template mat-tab-label>
       Paramètres du centre
-      <mat-progress-bar mode="determinate" [value]="getProgressValue(1)" [ngClass]="{editing: statuts['statutParamCentre'] === 1, done: statuts['statutParamCentre'] === 2}"></mat-progress-bar>
+      <mat-progress-bar mode="determinate" [value]="getProgressValue(1)" [ngClass]="{editing: tabs[1].statut === 1, done: tabs[1].statut === 2}"></mat-progress-bar>
     </ng-template>
     <app-param-centre *ngIf="centreGestionInited && (paramCentreTab.isActive || tabs[1].init)" [form]="paramCentreForm" [centreGestion]="centreGestion" (update)="update()"></app-param-centre>
   </mat-tab>
-  <mat-tab>
+  <mat-tab [disabled]="centreGestion && !centreGestion.id">
     <ng-template mat-tab-label>
       Personnalisation du centre
-      <mat-progress-bar mode="determinate" [value]="getProgressValue(2)" [ngClass]="{editing: statuts['statutPersoCentre'] === 1, done: statuts['statutPersoCentre'] === 2}"></mat-progress-bar>
+      <mat-progress-bar mode="determinate" [value]="getProgressValue(2)" [ngClass]="{editing: tabs[2].statut === 1, done: tabs[2].statut === 2}"></mat-progress-bar>
     </ng-template>
   </mat-tab>
-  <mat-tab>
+  <mat-tab [disabled]="centreGestion && !centreGestion.id">
     <ng-template mat-tab-label>
       Rattacher un gestionnaire
-      <mat-progress-bar mode="determinate" [value]="getProgressValue(3)" [ngClass]="{editing: statuts['statutRattachGest'] === 1, done: statuts['statutRattachGest'] === 2}"></mat-progress-bar>
+      <mat-progress-bar mode="determinate" [value]="getProgressValue(3)" [ngClass]="{editing: tabs[3].statut === 1, done: tabs[3].statut === 2}"></mat-progress-bar>
     </ng-template>
-    <app-gestionnaires *ngIf="centreGestionInited && (paramCentreTab.isActive || tabs[3].init)" [centreGestion]="centreGestion"></app-gestionnaires>
+    <app-gestionnaires *ngIf="centreGestionInited && (paramCentreTab.isActive || tabs[3].init)" [centreGestion]="centreGestion" (refreshPersonnelsCentre)="refreshPersonnelsCentre()"></app-gestionnaires>
   </mat-tab>
-  <mat-tab>
+  <mat-tab [disabled]="centreGestion && !centreGestion.id" *ngIf="centreGestion && !centreGestion.validationCreation">
     <ng-template mat-tab-label>
-      Gestion des alertes mail du gestionnaire
-      <mat-progress-bar mode="determinate" [value]="getProgressValue(4)" [ngClass]="{editing: statuts['statutAlerteGest'] === 1, done: statuts['statutAlerteGest'] === 2}"></mat-progress-bar>
+      Validation définitive
     </ng-template>
   </mat-tab>
 </mat-tab-group>

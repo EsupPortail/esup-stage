@@ -32,6 +32,8 @@ export class CentreGestionComponent implements OnInit {
   centreGestion: any;
   centreGestionInited = false;
 
+  isCreate: boolean;
+
   coordCentreForm: FormGroup;
   paramCentreForm: FormGroup;
 
@@ -46,17 +48,36 @@ export class CentreGestionComponent implements OnInit {
     this.activatedRoute.params.subscribe((param: any) => {
       const pathId = param.id;
       if (pathId === 'create') {
+        this.isCreate = true;
         this.centreGestionService.getBrouillonByLogin().subscribe((response: any) => {
           this.centreGestion = response;
           this.centreGestionInited = true;
           if (this.centreGestion.id) {
             this.updateOnChanges();
           }
+          this.majStatus();
         });
       } else {
         // todo edit
+        this.isCreate = false;
       }
     });
+  }
+
+  majStatus(): void {
+    if (this.coordCentreForm.valid) {
+      this.setStatus(0,2);
+    } else {
+      this.setStatus(0,0);
+    }
+
+    // todo: statut param centre
+
+    if (this.centreGestion.personnels && this.centreGestion.personnels.length > 0) {
+      this.setStatus(3, 2);
+    } else {
+      this.setStatus(3, 0);
+    }
   }
 
   tabChanged(event: MatTabChangeEvent): void {
@@ -78,9 +99,19 @@ export class CentreGestionComponent implements OnInit {
     this.updateOnChanges();
   }
 
+  refreshPersonnelsCentre(): void {
+    if (this.isCreate) {
+      this.centreGestionService.getBrouillonByLogin().subscribe((response: any) => {
+        this.centreGestion = response;
+        this.majStatus();
+      });
+    }
+  }
+
   update() {
     this.centreGestionService.update(this.centreGestion).subscribe((response: any) => {
       this.centreGestion = response;
+      this.majStatus();
     });
   }
 

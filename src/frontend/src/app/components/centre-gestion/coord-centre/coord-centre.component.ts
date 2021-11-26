@@ -120,6 +120,9 @@ export class CoordCentreComponent implements OnInit {
         this.refreshCentreGestion.emit(this.centreGestion);
         this.form.get('niveauCentre')?.disable();
         this.getComposantes();
+        this.getEtapes();
+        this.getCentreEtapes();
+        this.filters.push({id: 'centreGestion.id', value: this.centreGestion.id, type: 'int', hidden: true});
       });
     }
   }

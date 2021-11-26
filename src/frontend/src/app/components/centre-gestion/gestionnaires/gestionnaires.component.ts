@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, ViewChild, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { PersonnelCentreService } from "../../../services/personnel-centre.service";
 import { MessageService } from "../../../services/message.service";
@@ -16,6 +16,7 @@ import { debounceTime } from "rxjs/operators";
 export class GestionnairesComponent implements OnInit {
 
   @Input() centreGestion: any;
+  @Output() refreshPersonnelsCentre = new EventEmitter<any>();
 
   form: FormGroup;
   searchForm: FormGroup;
@@ -167,7 +168,7 @@ export class GestionnairesComponent implements OnInit {
   save(): void {
     const data = {...this.form.value}
     if (this.form.invalid) {
-      this.messageService.setError("Veuillez remplir les champs obligatoires")
+      this.messageService.setError("Veuillez remplir les champs obligatoires");
       return;
     }
     if (this.gestionnaire.id) {
@@ -177,6 +178,7 @@ export class GestionnairesComponent implements OnInit {
           this.pannels.first.open();
         }
         this.gestionnaire = undefined;
+        this.refreshPersonnelsCentre.emit();
         if (this.appTable)
           this.appTable.update();
       });
@@ -187,6 +189,7 @@ export class GestionnairesComponent implements OnInit {
           this.pannels.first.open();
         }
         this.gestionnaire = undefined;
+        this.refreshPersonnelsCentre.emit();
         if (this.appTable)
           this.appTable.update();
       });
@@ -197,6 +200,7 @@ export class GestionnairesComponent implements OnInit {
     this.personnelCentreService.delete(id).subscribe((response: any) => {
       this.messageService.setSuccess("Personnel supprimé");
       this.gestionnaire = undefined;
+      this.refreshPersonnelsCentre.emit();
       if (this.appTable)
         this.appTable.update();
     });
