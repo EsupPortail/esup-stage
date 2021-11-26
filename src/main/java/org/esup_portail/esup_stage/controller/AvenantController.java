@@ -145,20 +145,20 @@ public class AvenantController {
             }
             avenant.setUniteDuree(uniteDuree);
         }
-        //if (avenantDto.getIdModeVersGratification() != 0) {
-        //    ModeVersGratification modeVersGratification = modeVersGratificationJpaRepository.findById(avenantDto.getIdModeVersGratification());
-        //    if (modeVersGratification == null) {
-        //        throw new AppException(HttpStatus.NOT_FOUND, "ModeVersGratification non trouvé");
-        //    }
-        //    avenant.setModeVersGratification(modeVersGratification);
-        //}
-        //if (avenantDto.getIdDevise() != 0) {
-        //    Devise devise = deviseJpaRepository.findById(avenantDto.getIdDevise());
-        //    if (devise == null) {
-        //        throw new AppException(HttpStatus.NOT_FOUND, "Devise non trouvé");
-        //    }
-        //    avenant.setDevise(devise);
-        //}
+        if (avenantDto.getIdModeVersGratification() != 0) {
+            ModeVersGratification modeVersGratification = modeVersGratificationJpaRepository.findById(avenantDto.getIdModeVersGratification());
+            if (modeVersGratification == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "ModeVersGratification non trouvé");
+            }
+            avenant.setModeVersGratification(modeVersGratification);
+        }
+        if (avenantDto.getIdDevise() != 0) {
+            Devise devise = deviseJpaRepository.findById(avenantDto.getIdDevise());
+            if (devise == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "Devise non trouvé");
+            }
+            avenant.setDevise(devise);
+        }
 
 
         avenant.setConvention(convention);
