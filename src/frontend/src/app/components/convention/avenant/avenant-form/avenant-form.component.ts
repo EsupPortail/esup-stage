@@ -1,4 +1,5 @@
-import { Component, Output, EventEmitter, OnInit, Input } from '@angular/core';
+import { Component, Output, EventEmitter, OnInit, Input, ViewChild  } from '@angular/core';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { ServiceService } from "../../../../services/service.service";
 import { MessageService } from "../../../../services/message.service";
@@ -6,7 +7,10 @@ import { ModeVersGratificationService } from "../../../../services/mode-vers-gra
 import { UniteDureeService } from "../../../../services/unite-duree.service";
 import { UniteGratificationService } from "../../../../services/unite-gratification.service";
 import { DeviseService } from "../../../../services/devise.service";
+import { PaysService } from "../../../../services/pays.service";
 import { AvenantService } from "../../../../services/avenant.service";
+import { TableComponent } from "../../../table/table.component";
+import { ServiceAccueilFormComponent } from '../../../gestion-etab-accueil/service-accueil-form/service-accueil-form.component';
 
 @Component({
   selector: 'app-avenant-form',
@@ -23,10 +27,13 @@ export class AvenantFormComponent implements OnInit {
   uniteDurees: any[] = [];
   uniteGratifications: any[] = [];
   devises: any[] = [];
+  countries: any[] = [];
 
-  services: any[] = [];
+  service: any = 0;
 
-  serviceTableColumns = ['nom', 'voie', 'codePostal','batimentResidence', 'commune'];
+  serviceTableColumns = ['choix','nom', 'voie', 'codePostal','batimentResidence', 'commune'];
+  sortColumn = 'nom';
+  filters: any[] = [];
 
   @Input() avenant: any;
   @Input() convention: any;
@@ -36,15 +43,18 @@ export class AvenantFormComponent implements OnInit {
   autreModifChecked: boolean = false;
 
   @Output() validated = new EventEmitter<any>();
+  @ViewChild(TableComponent) appTable: TableComponent | undefined;
 
   constructor(private avenantService: AvenantService,
-              private serviceService: ServiceService,
+              public serviceService: ServiceService,
               private modeVersGratificationService: ModeVersGratificationService,
               private uniteDureeService: UniteDureeService,
               private uniteGratificationService: UniteGratificationService,
               private deviseService: DeviseService,
+              private paysService: PaysService,
               private fb: FormBuilder,
               private messageService: MessageService,
+              public matDialog: MatDialog,
   ) {
   }
 
@@ -61,6 +71,19 @@ export class AvenantFormComponent implements OnInit {
     this.deviseService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
       this.devises = response.data;
     });
+    this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServPays: {value: 'O', type: 'text'}})).subscribe((response: any) => {
+      this.countries = response.data;
+    });
+
+    this.filters = [
+        { id: 'structure.id', libelle: 'Structure', type: 'int',value:this.convention.structure.id, hidden : true},
+    ];
+
+    if (this.avenant.modificationLieu){
+      this.service = this.avenant.service;
+    }else{
+      this.service = this.convention.service;
+    }
 
     if (this.avenant.id){
       this.form = this.fb.group({
@@ -127,6 +150,10 @@ export class AvenantFormComponent implements OnInit {
 
       data.idConvention = this.convention.id
 
+      if (this.form.get('modificationLieu')!.value){
+        data.idService = this.service.id;
+      }
+
       if (this.avenant.id){
         this.avenantService.update(this.avenant.id,data).subscribe((response: any) => {
           this.avenant = response;
@@ -159,12 +186,25 @@ export class AvenantFormComponent implements OnInit {
   cancel(): void {
   }
 
-  loadServices(): void{
-    if (this.services.length == 0){
-      this.serviceService.getByStructure(this.convention.structure.id).subscribe((response: any) => {
-        this.services = response;
-      });
-    }
+  selectService(row: any): void{
+    this.service = row;
   }
 
+  createService(): void {
+    this.openServiceFormModal(null);
+  }
+
+  openServiceFormModal(service: any) {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.width = '1000px';
+    dialogConfig.data = {service: service, etab: this.convention.structure, countries: this.countries};
+    const modalDialog = this.matDialog.open(ServiceAccueilFormComponent, dialogConfig);
+    modalDialog.afterClosed().subscribe(dialogResponse => {
+      if (dialogResponse) {
+        this.messageService.setSuccess("Service créé avec succès");
+        this.service = dialogResponse;
+        this.appTable!.update();
+      }
+    });
+  }
 }
