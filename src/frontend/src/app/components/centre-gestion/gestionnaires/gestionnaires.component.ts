@@ -47,6 +47,8 @@ export class GestionnairesComponent implements OnInit {
     {id: 'validationAvenant', libelle: 'Validation d\'un avenant '},
   ];
 
+  toggleAlertes = true;
+
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
   @ViewChildren(MatExpansionPanel) pannels: QueryList<MatExpansionPanel>;
 
@@ -154,6 +156,12 @@ export class GestionnairesComponent implements OnInit {
     this.gestionnaire = gestionnaire;
     this.form.reset();
     this.form.patchValue(this.gestionnaire);
+    for (let alerte of this.alertesMail) {
+      if (this.form.get(alerte.id)?.value == true) {
+        this.toggleAlertes = false;
+        break;
+      }
+    }
   }
 
   save(): void {
@@ -199,6 +207,13 @@ export class GestionnairesComponent implements OnInit {
       return option.id === value.id;
     }
     return false;
+  }
+
+  toggleAll() {
+    for (let alerte of this.alertesMail) {
+      this.form.get(alerte.id)?.setValue(this.toggleAlertes);
+    }
+    this.toggleAlertes = !this.toggleAlertes;
   }
 
 }
