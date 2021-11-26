@@ -1,5 +1,5 @@
 <mat-accordion>
-  <mat-expansion-panel [expanded]="!contact">
+  <mat-expansion-panel [expanded]="!contact" *ngIf="modifiable">
     <mat-expansion-panel-header>
       Sélection du tuteur professionnel
     </mat-expansion-panel-header>

@@ -27,6 +27,8 @@ export class EnseignantReferentComponent implements OnInit {
 
   @Output() validated = new EventEmitter<number>();
 
+  @Input() modifiable: boolean;
+
   constructor(private authService: AuthService,
               private fb: FormBuilder,
               private messageService: MessageService,

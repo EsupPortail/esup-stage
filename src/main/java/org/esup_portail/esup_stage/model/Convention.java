@@ -331,6 +331,10 @@ public class Convention extends ObjetMetier {
     @OneToMany(mappedBy = "convention")
     private List<Avenant> avenants = new ArrayList<>();
 
+    @OneToOne(mappedBy = "convention", cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private ConventionNomenclature nomenclature;
+
     public int getId() {
         return id;
     }
@@ -1081,5 +1085,13 @@ public class Convention extends ObjetMetier {
 
     public void setAvenants(List<Avenant> avenants) {
         this.avenants = avenants;
+    }
+
+    public ConventionNomenclature getNomenclature() {
+        return nomenclature;
+    }
+
+    public void setNomenclature(ConventionNomenclature nomenclature) {
+        this.nomenclature = nomenclature;
     }
 }

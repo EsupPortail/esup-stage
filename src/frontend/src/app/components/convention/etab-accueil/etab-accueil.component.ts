@@ -36,6 +36,8 @@ export class EtabAccueilComponent implements OnInit {
   modif: boolean = false;
   selectedRow: any = undefined;
 
+  @Input() modifiable: boolean;
+
   autorisationModification = false;
 
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
@@ -94,7 +96,7 @@ export class EtabAccueilComponent implements OnInit {
   }
 
   canCreate(): boolean {
-    return this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.CREATION]});
+    return this.modifiable && this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.CREATION]});
   }
 
   canEdit(): boolean {
@@ -102,7 +104,7 @@ export class EtabAccueilComponent implements OnInit {
     if (this.authService.isEtudiant() && !this.autorisationModification) {
       hasRight = false;
     }
-    return hasRight;
+    return this.modifiable && hasRight;
   }
 
   choose(row: any): void {

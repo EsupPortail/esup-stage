@@ -1,5 +1,5 @@
 <mat-accordion>
-  <mat-expansion-panel [expanded]="!enseignant">
+  <mat-expansion-panel [expanded]="!enseignant" *ngIf="modifiable">
     <mat-expansion-panel-header>
       <mat-panel-title>Recherchez un enseignant via son nom et/ou son prénom</mat-panel-title>
     </mat-expansion-panel-header>

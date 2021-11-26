@@ -1,0 +1,59 @@
+databaseChangeLog:
+- changeSet:
+    id: convention-nomenclature
+    author: ssound
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+                nullable: false
+                primaryKey: true
+                foreignKeyName: fk_ConventionNomenclature_Convention1
+                references: Convention(idConvention)
+            name: idConvention
+            type: INT
+        - column:
+            name: langueConvention
+            type: VARCHAR(100)
+        - column:
+            name: devise
+            type: VARCHAR(50)
+        - column:
+            name: modeValidationStage
+            type: VARCHAR(150)
+        - column:
+            name: modeVersGratification
+            type: VARCHAR(50)
+        - column:
+            name: natureTravail
+            type: VARCHAR(150)
+        - column:
+            name: origineStage
+            type: VARCHAR(45)
+        - column:
+            name: tempsTravail
+            type: VARCHAR(200)
+        - column:
+            name: theme
+            type: VARCHAR(50)
+        - column:
+            name: typeConvention
+            type: VARCHAR(50)
+        - column:
+            name: uniteDureeExceptionnelle
+            type: VARCHAR(100)
+        - column:
+            name: uniteDureeGratification
+            type: VARCHAR(100)
+        - column:
+            name: uniteGratification
+            type: VARCHAR(50)
+        tableName: ConventionNomenclature
+- changeSet:
+    id: convention-nomenclature-init
+    author: ssound
+    changes:
+    - sqlFile:
+        path: 1.0.0-convention-nomenclature-init.sql
+        relativeToChangelogFile: true

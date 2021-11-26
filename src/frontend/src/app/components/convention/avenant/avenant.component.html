@@ -1,4 +1,12 @@
-<mat-accordion>
+<mat-card *ngIf="!isConventionValide()">
+  <mat-card-content>
+    <div class="alert alert-danger">
+      <i class="fa fa-exclamation-triangle"></i> Vous ne pouvez pas créer d'avenant si la convention n'est pas validée.
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<mat-accordion *ngIf="isConventionValide()">
   <mat-expansion-panel [expanded]="true">
     <mat-expansion-panel-header>
       <mat-panel-title>Création d'un nouvel avenant</mat-panel-title>

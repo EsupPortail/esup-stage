@@ -38,6 +38,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
   langueConventions: any[] = [];
 
   @Input() convention: any;
+  @Input() modifiable: boolean;
   @Output() validated = new EventEmitter<any>();
 
   @ViewChild(MatExpansionPanel) searchEtudiantPanel: MatExpansionPanel|undefined;
@@ -89,6 +90,10 @@ export class EtudiantComponent implements OnInit, OnChanges {
           this.formConvention.get('inscriptionElp')?.setValue(null);
         }
       });
+
+      if (!this.modifiable) {
+        this.formConvention.disable();
+      }
 
       let codEtu: string|undefined = undefined;
       if (this.convention && this.convention.etudiant) {
