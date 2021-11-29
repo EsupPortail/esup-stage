@@ -14,9 +14,18 @@ export class ValidationComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    // TODO gestion de l'ordre des validations
-    if (this.convention.centreGestion.validationPedagogique) this.validations.push('validationPedagogique');
-    this.validations.push('validationConvention');
+    if (this.convention.centreGestion.validationPedagogique && this.convention.centreGestion.validationPedagogiqueOrdre === 1) {
+      this.validations.push('validationPedagogique');
+    }
+    if (this.convention.centreGestion.validationConvention && this.convention.centreGestion.validationConventionOrdre === 1) {
+      this.validations.push('validationConvention');
+    }
+    if (this.convention.centreGestion.validationPedagogique && this.convention.centreGestion.validationPedagogiqueOrdre === 2) {
+      this.validations.push('validationPedagogique');
+    }
+    if (this.convention.centreGestion.validationConvention && this.convention.centreGestion.validationConventionOrdre === 2) {
+      this.validations.push('validationConvention');
+    }
   }
 
 }

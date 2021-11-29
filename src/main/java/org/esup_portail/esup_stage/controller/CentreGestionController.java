@@ -117,6 +117,14 @@ public class CentreGestionController {
     @PutMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.MODIFICATION})
     public CentreGestion update(@Valid @RequestBody CentreGestion centreGestion) {
+        // Les ordres de validations doivent être 1 ou 2, et on ne peut pas avoir le même ordre
+        if (
+                (centreGestion.getValidationPedagogiqueOrdre() != 1 && centreGestion.getValidationPedagogiqueOrdre() != 2)
+                || (centreGestion.getValidationConventionOrdre() != 1 && centreGestion.getValidationConventionOrdre() != 2)
+                || (Objects.equals(centreGestion.getValidationPedagogiqueOrdre(), centreGestion.getValidationConventionOrdre()))
+        ) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Les ordres de validations soivent être 1 ou 2, et être différentes pour chaque types de validation");
+        }
         return centreGestionJpaRepository.saveAndFlush(centreGestion);
     }
 

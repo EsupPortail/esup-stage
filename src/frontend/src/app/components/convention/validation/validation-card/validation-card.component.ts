@@ -24,4 +24,13 @@ export class ValidationCardComponent implements OnInit {
     })
   }
 
+  canRevertValidation(): boolean {
+    const validationOrdre = this.convention.centreGestion[this.validation + 'Ordre'];
+    if (validationOrdre === 2) { // On peut tout le temps dévalider la dernière validation
+      return true;
+    }
+    const otherValidation = this.validation === 'validationPedagogique' ? 'validationConvention' : 'validationPedagogique';
+    return !this.convention[otherValidation];
+  }
+
 }
