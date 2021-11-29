@@ -201,7 +201,6 @@ public class ConventionController {
     @PutMapping("/{id}")
     @Secure(fonctions = AppFonctionEnum.CONVENTION, droits = {DroitEnum.MODIFICATION})
     public Convention update(@PathVariable("id") int id, @Valid @RequestBody ConventionFormDto conventionFormDto) {
-        // TODO vérifier que la convention est modifiable
         Convention convention = conventionJpaRepository.findById(id);
         setConventionData(convention, conventionFormDto);
         convention = conventionJpaRepository.saveAndFlush(convention);
@@ -211,7 +210,6 @@ public class ConventionController {
     @PatchMapping("/{id}")
     @Secure(fonctions = AppFonctionEnum.CONVENTION, droits = {DroitEnum.MODIFICATION})
     public Convention singleFieldUpdate(@PathVariable("id") int id, @Valid @RequestBody ConventionSingleFieldDto conventionSingleFieldDto) {
-        // TODO vérifier que la convention est modifiable
         Convention convention = conventionJpaRepository.findById(id);
         setSingleFieldData(convention, conventionSingleFieldDto);
         convention = conventionJpaRepository.saveAndFlush(convention);
@@ -332,7 +330,11 @@ public class ConventionController {
         if (centreGestion == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion non trouvé");
         }
-        centreGestion = critereGestion.getCentreGestion();
+        // la convention est modifiable si la dernière validation n'est pas faite
+        if (centreGestion.getValidationPedagogiqueOrdre() == 2 && convention.getValidationPedagogique() || centreGestion.getValidationConventionOrdre() == 2 && convention.getValidationConvention()) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "La convention n'est plus modifiable");
+        }
+
         Etudiant etudiant = etudiantJpaRepository.findByNumEtudiant(conventionFormDto.getNumEtudiant());
         if (etudiant == null) {
             etudiant = new Etudiant();
@@ -363,11 +365,21 @@ public class ConventionController {
         convention.setCodeElp(conventionFormDto.getCodeElp());
         convention.setLibelleELP(conventionFormDto.getLibelleELP());
         convention.setCreditECTS(conventionFormDto.getCreditECTS());
-        // TODO mettre à TRUE les validations non prises en compte dans le centre de gestion
+        // mis à TRUE les validations non prises en compte dans le centre de gestion
+        if (!centreGestion.getValidationConvention()) {
+            convention.setValidationConvention(true);
+        }
+        if (!centreGestion.getValidationPedagogique()) {
+            convention.setValidationPedagogique(true);
+        }
     }
 
     private void setSingleFieldData(Convention convention, ConventionSingleFieldDto conventionSingleFieldDto) {
-
+        CentreGestion centreGestion = convention.getCentreGestion();
+        // la convention est modifiable si la dernière validation n'est pas faite
+        if (centreGestion.getValidationPedagogiqueOrdre() == 2 && convention.getValidationPedagogique() || centreGestion.getValidationConventionOrdre() == 2 && convention.getValidationConvention()) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "La convention n'est plus modifiable");
+        }
         if (Objects.equals(conventionSingleFieldDto.getField(), "codeLangueConvention")){
             LangueConvention langueConvention = langueConventionJpaRepository.findByCode((String) conventionSingleFieldDto.getValue());
             if (langueConvention == null) {
