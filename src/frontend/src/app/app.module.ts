@@ -92,6 +92,7 @@ import { AvenantFormComponent } from './components/convention/avenant/avenant-fo
 import { MatMenuModule } from "@angular/material/menu";
 import { ValidationComponent } from './components/convention/validation/validation.component';
 import { ValidationCardComponent } from './components/convention/validation/validation-card/validation-card.component';
+import { LogoCentreComponent } from './components/centre-gestion/logo-centre/logo-centre.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -143,6 +144,7 @@ registerLocaleData(localeFr, 'fr');
     AvenantFormComponent,
     ValidationComponent,
     ValidationCardComponent,
+    LogoCentreComponent,
   ],
   imports: [
     BrowserModule,

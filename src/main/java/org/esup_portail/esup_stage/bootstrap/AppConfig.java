@@ -28,6 +28,7 @@ public class AppConfig {
     private String mailerFrom;
     private boolean mailerDisableDelivery;
     private String mailerDeliveryAddress;
+    private String logoCentresDir;
 
     public String getCasUrlLogin() {
         return casUrlLogin;
@@ -205,6 +206,14 @@ public class AppConfig {
         this.mailerDeliveryAddress = mailerDeliveryAddress;
     }
 
+    public String getLogoCentresDir() {
+        return logoCentresDir;
+    }
+
+    public void setLogoCentresDir(String logoCentresDir) {
+        this.logoCentresDir = logoCentresDir;
+    }
+
     public void initProperties(Properties props, String prefixeProps) {
         this.casUrlLogout = props.getProperty("cas.url.logout");
         this.casUrlLogin = props.getProperty("cas.url.login");
@@ -240,6 +249,7 @@ public class AppConfig {
         if (props.containsKey(prefixeProps+"mailer.delivery_address") && !props.getProperty(prefixeProps+"mailer.delivery_address").equals("null")) {
             this.mailerDeliveryAddress = props.getProperty(prefixeProps+"mailer.delivery_address");
         }
+        this.logoCentresDir = props.getProperty(prefixeProps+"logo_centre_dir");
     }
 
     @Override
@@ -264,6 +274,7 @@ public class AppConfig {
                 ", mailerFrom='" + mailerFrom + "'" +
                 ", mailerDisableDelivery='" + mailerDisableDelivery + "'" +
                 ", mailerDeliveryAddress='" + mailerDeliveryAddress + "'" +
+                ", logoCentresDir='" + logoCentresDir + "'" +
                 "}";
     }
 }

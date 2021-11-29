@@ -1,5 +1,6 @@
 package org.esup_portail.esup_stage.controller;
 
+import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
 import org.esup_portail.esup_stage.dto.ContextDto;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
@@ -17,9 +18,14 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -47,10 +53,16 @@ public class CentreGestionController {
     PersonnelCentreGestionJpaRepository personnelCentreGestionJpaRepository;
 
     @Autowired
+    FichierJpaRepository fichierJpaRepository;
+
+    @Autowired
     AppConfigService appConfigService;
 
     @Autowired
     ApogeeService apogeeService;
+
+    @Autowired
+    ApplicationBootstrap applicationBootstrap;
 
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
@@ -267,5 +279,32 @@ public class CentreGestionController {
     public Confidentialite getEtablissementConfidentialite() {
         CentreGestion centreGestion = centreGestionJpaRepository.getCentreEtablissement();
         return centreGestion.getCodeConfidentialite();
+    }
+
+    @PostMapping("/{id}/logo-centre")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.MODIFICATION})
+    public CentreGestion insertLogoCentre(@PathVariable("id") int id, @RequestParam(required = true) MultipartFile logo) {
+        CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
+
+        try {
+            Path uploadLocation = Paths.get(this.getFilePath(logo.getOriginalFilename()));
+            Files.copy(logo.getInputStream(), uploadLocation, StandardCopyOption.REPLACE_EXISTING);
+        } catch (Exception e) {
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de l'insertion du fichier : " + e.getMessage());
+        }
+
+        Fichier fichier = new Fichier();
+        fichier.setNom(logo.getOriginalFilename());
+        fichier.setNomReel(logo.getOriginalFilename());
+
+        fichier = fichierJpaRepository.saveAndFlush(fichier);
+
+        centreGestion.setFichier(fichier);
+
+        return centreGestionJpaRepository.saveAndFlush(centreGestion);
+    }
+
+    private String getFilePath(String filename) {
+        return applicationBootstrap.getAppConfig().getLogoCentresDir() + "/" + filename;
     }
 }

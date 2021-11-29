@@ -13,18 +13,19 @@
     </ng-template>
     <app-param-centre *ngIf="centreGestionInited && (paramCentreTab.isActive || tabs[1].init)" [form]="paramCentreForm" [centreGestion]="centreGestion" (update)="update()"></app-param-centre>
   </mat-tab>
-  <mat-tab [disabled]="centreGestion && !centreGestion.id">
+  <mat-tab #logoCentreTab [disabled]="centreGestion && !centreGestion.id">
     <ng-template mat-tab-label>
       Personnalisation du centre
       <mat-progress-bar mode="determinate" [value]="getProgressValue(2)" [ngClass]="{editing: tabs[2].statut === 1, done: tabs[2].statut === 2}"></mat-progress-bar>
     </ng-template>
+    <app-logo-centre *ngIf="centreGestionInited && (logoCentreTab.isActive || tabs[2].init)" [centreGestion]="centreGestion" (refreshCentreGestion)="refreshCentreGestion($event)"></app-logo-centre>
   </mat-tab>
-  <mat-tab [disabled]="centreGestion && !centreGestion.id">
+  <mat-tab #gestCentreTab [disabled]="centreGestion && !centreGestion.id">
     <ng-template mat-tab-label>
       Rattacher un gestionnaire
       <mat-progress-bar mode="determinate" [value]="getProgressValue(3)" [ngClass]="{editing: tabs[3].statut === 1, done: tabs[3].statut === 2}"></mat-progress-bar>
     </ng-template>
-    <app-gestionnaires *ngIf="centreGestionInited && (paramCentreTab.isActive || tabs[3].init)" [centreGestion]="centreGestion" (refreshPersonnelsCentre)="refreshPersonnelsCentre()"></app-gestionnaires>
+    <app-gestionnaires *ngIf="centreGestionInited && (gestCentreTab.isActive || tabs[3].init)" [centreGestion]="centreGestion" (refreshPersonnelsCentre)="refreshPersonnelsCentre()"></app-gestionnaires>
   </mat-tab>
   <mat-tab [disabled]="centreGestion && !centreGestion.id" *ngIf="centreGestion && !centreGestion.validationCreation">
     <ng-template mat-tab-label>

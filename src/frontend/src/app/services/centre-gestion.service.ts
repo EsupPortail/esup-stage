@@ -74,4 +74,8 @@ export class CentreGestionService implements PaginatedService {
   getEtablissementConfidentialite(): Observable<any> {
     return this.http.get(`${environment.apiUrl}/centre-gestion/etablissement-confidentialite`);
   }
+
+  insertLogoCentre(data: any, id: number): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/centre-gestion/${id}/logo-centre`, data);
+  }
 }
