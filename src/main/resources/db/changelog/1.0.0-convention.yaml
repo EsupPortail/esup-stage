@@ -147,3 +147,9 @@ databaseChangeLog:
             defaultValueComputed: 'NULL'
             name: confidentiel
             type: BIT
+- changeSet:
+    id: devise-init-convention
+    author: ssound
+    changes:
+        - sql:
+            sql: UPDATE Convention c SET c.idDevise = (SELECT d.idDevise FROM Devise d WHERE d.libelleDevise = c.monnaieGratification)

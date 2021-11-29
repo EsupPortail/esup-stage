@@ -27,3 +27,9 @@ databaseChangeLog:
                 references: ModeVersGratification(idModeVersGratification)
             name: idModeVersGratification
             type: INT
+- changeSet:
+    id: devise-init-avenant
+    author: ssound
+    changes:
+        - sql:
+            sql: UPDATE Avenant a SET a.idDevise = (SELECT d.idDevise FROM Devise d WHERE d.libelleDevise = a.monnaieGratification)
