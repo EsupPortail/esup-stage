@@ -30,5 +30,18 @@
     <ng-template mat-tab-label>
       Validation définitive
     </ng-template>
+    <mat-card>
+      <mat-card-content>
+        <span style="display: block">Validation définitive du centre</span>
+        <mat-card-actions class="text-center">
+          <span (confirm)="validationCreation()" [confirmMessage]="'Voulez-vous vraiment valider la création du centre ?'">
+            <button class="validate" mat-flat-button color="primary">Valider la création du centre de gestion</button>
+          </span>
+          <span (confirm)="delete()" [confirmMessage]="'Voulez-vous vraiment supprimer le brouillon ?'">
+            <button class="delete" style="margin-left: 8px" mat-flat-button color="warn">Supprimer le brouillon</button>
+          </span>
+        </mat-card-actions>
+      </mat-card-content>
+    </mat-card>
   </mat-tab>
 </mat-tab-group>

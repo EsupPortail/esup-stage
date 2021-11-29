@@ -5,6 +5,7 @@ import { MessageService } from "../../services/message.service";
 import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { debounceTime } from 'rxjs/operators';
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'app-centre-gestion',
@@ -40,7 +41,7 @@ export class CentreGestionComponent implements OnInit {
 
   @ViewChild('matTabs') matTabs: MatTabGroup | undefined;
 
-  constructor(private activatedRoute: ActivatedRoute, private centreGestionService: CentreGestionService, private messageService: MessageService, private fb: FormBuilder) {
+  constructor(private activatedRoute: ActivatedRoute, private centreGestionService: CentreGestionService, private messageService: MessageService, private fb: FormBuilder, private router: Router) {
     this.setCoordCentreForm();
     this.setParamCentreForm();
   }
@@ -136,6 +137,19 @@ export class CentreGestionComponent implements OnInit {
     this.paramCentreForm.valueChanges.pipe(debounceTime(500)).subscribe(val => {
       this.setCentreGestionParamCentre();
       this.update();
+    });
+  }
+
+  validationCreation() {
+    this.centreGestionService.validationCreation(this.centreGestion.id).subscribe((response: any) => {
+      this.centreGestion = response;
+      this.router.navigate([`/centre-gestion/search`], );
+    });
+  }
+
+  delete() {
+    this.centreGestionService.delete(this.centreGestion.id).subscribe((response: any) => {
+      this.router.navigate([`/centre-gestion/search`], );
     });
   }
 

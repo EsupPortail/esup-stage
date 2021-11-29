@@ -44,7 +44,7 @@ public class CentreGestionController {
     ConfidentialiteJpaRepository confidentialiteJpaRepository;
 
     @Autowired
-    UtilisateurController utilisateurController;
+    PersonnelCentreGestionJpaRepository personnelCentreGestionJpaRepository;
 
     @Autowired
     AppConfigService appConfigService;
@@ -66,7 +66,8 @@ public class CentreGestionController {
         paginatedResponse.setData(centreGestionRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
 
         if (predicate.equals("personnels")) {
-            Utilisateur currentUser = utilisateurController.getUserConnected();
+            ContextDto contexteDto = ServiceContext.getServiceContext();
+            Utilisateur currentUser = contexteDto.getUtilisateur();
             List<CentreGestion> list =  paginatedResponse.getData();
             Predicate<PersonnelCentreGestion> condition = value -> value.getUidPersonnel().equals(currentUser.getLogin());
             list.sort((a, b) -> Boolean.compare(a.getPersonnels().stream().anyMatch(condition), b.getPersonnels().stream().anyMatch(condition)));
@@ -117,6 +118,26 @@ public class CentreGestionController {
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.MODIFICATION})
     public CentreGestion update(@Valid @RequestBody CentreGestion centreGestion) {
         return centreGestionJpaRepository.saveAndFlush(centreGestion);
+    }
+
+    @PutMapping("/{id}")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.MODIFICATION})
+    public CentreGestion validationCreation(@PathVariable("id") int id) {
+        CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
+        centreGestion.setValidationCreation(true);
+
+        return centreGestionJpaRepository.saveAndFlush(centreGestion);
+    }
+
+    @DeleteMapping("/{id}")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.SUPPRESSION})
+    public void delete(@PathVariable("id") int id) {
+        // Suppression des critères et personnels rattachés à ce centre
+        critereGestionJpaRepository.deleteCriteresByCentreId(id);
+        personnelCentreGestionJpaRepository.deletePersonnelsByCentreId(id);
+
+        centreGestionJpaRepository.deleteById(id);
+        centreGestionJpaRepository.flush();
     }
 
     @GetMapping("/{id}/composantes")

@@ -31,6 +31,14 @@ export class CentreGestionService implements PaginatedService {
     return this.http.put(`${environment.apiUrl}/centre-gestion`, data);
   }
 
+  validationCreation(id: number): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/centre-gestion/${id}`, null);
+  }
+
+  delete(id: number): Observable<any> {
+    return this.http.delete(`${environment.apiUrl}/centre-gestion/${id}`);
+  }
+
   getComposantes(id: number): Observable<any> {
     return this.http.get(`${environment.apiUrl}/centre-gestion/${id}/composantes`);
   }
