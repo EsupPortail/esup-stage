@@ -169,6 +169,7 @@ export class CentreGestionComponent implements OnInit {
 
   setParamCentreForm() {
     this.paramCentreForm = this.fb.group({
+      codeConfidentialite: [null],
       saisieTuteurProParEtudiant: [null],
       autorisationEtudiantCreationConvention: [null],
       validationPedagogique: [null],
@@ -182,6 +183,7 @@ export class CentreGestionComponent implements OnInit {
   }
 
   setCentreGestionParamCentre() {
+    this.centreGestion.codeConfidentialite = this.paramCentreForm.get('codeConfidentialite')?.value;
     this.centreGestion.saisieTuteurProParEtudiant = this.paramCentreForm.get('saisieTuteurProParEtudiant')?.value;
     this.centreGestion.autorisationEtudiantCreationConvention = this.paramCentreForm.get('autorisationEtudiantCreationConvention')?.value;
     this.centreGestion.validationPedagogique = this.paramCentreForm.get('validationPedagogique')?.value;

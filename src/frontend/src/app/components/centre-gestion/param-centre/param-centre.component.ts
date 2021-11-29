@@ -23,6 +23,9 @@ export class ParamCentreComponent implements OnInit {
   columns = ['nomprenom', 'mail', 'departement', 'action'];
   enseignants: any[] = [];
   enseignant: any;
+  confidentialites: any[] = [];
+  etablissementConfidentialite: any;
+
   @ViewChildren(MatExpansionPanel) pannels: QueryList<MatExpansionPanel>;
 
   @Output() update = new EventEmitter<any>();
@@ -46,10 +49,31 @@ export class ParamCentreComponent implements OnInit {
     this.viseurForm.valueChanges.pipe(debounceTime(500)).subscribe(() => {
       this.search();
     });
+    this.getConfidentialites();
+    this.getEtablissementConfidentialite();
+  }
+
+  getConfidentialites() {
+    this.centreGestionService.getConfidentialites().subscribe((response: any) => {
+      this.confidentialites = response;
+      if (this.centreGestion.id && this.centreGestion.niveauCentre.libelle !== 'ETABLISSEMENT') {
+        this.confidentialites.pop();
+      }
+    });
+  }
+
+  getEtablissementConfidentialite() {
+    this.centreGestionService.getEtablissementConfidentialite().subscribe((response: any) => {
+      this.etablissementConfidentialite = response;
+      if (this.centreGestion.id && this.centreGestion.niveauCentre.libelle !== 'ETABLISSEMENT' && this.etablissementConfidentialite.code != 2) {
+        this.form.get('codeConfidentialite')?.disable();
+      }
+    });
   }
 
   setFormData(): void {
     this.form.setValue({
+      codeConfidentialite: this.centreGestion.codeConfidentialite,
       saisieTuteurProParEtudiant: this.centreGestion.saisieTuteurProParEtudiant,
       autorisationEtudiantCreationConvention: this.centreGestion.autorisationEtudiantCreationConvention,
       validationPedagogique: this.centreGestion.validationPedagogique,
@@ -122,6 +146,13 @@ export class ParamCentreComponent implements OnInit {
     this.form.get('nomViseur')?.reset();
     this.form.get('prenomViseur')?.reset();
     this.form.get('qualiteViseur')?.reset();
+  }
+
+  compareCode(option: any, value: any): boolean {
+    if (option && value) {
+      return option.code === value.code;
+    }
+    return false;
   }
 
 }

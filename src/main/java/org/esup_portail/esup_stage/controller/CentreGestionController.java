@@ -41,6 +41,9 @@ public class CentreGestionController {
     ConventionJpaRepository conventionJpaRepository;
 
     @Autowired
+    ConfidentialiteJpaRepository confidentialiteJpaRepository;
+
+    @Autowired
     UtilisateurController utilisateurController;
 
     @Autowired
@@ -101,7 +104,12 @@ public class CentreGestionController {
     @PostMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.CREATION})
     public CentreGestion create(@Valid @RequestBody CentreGestion centreGestion) {
+        CentreGestion etablissement = centreGestionJpaRepository.getCentreEtablissement();
+
         centreGestion.setCodeUniversite(appConfigService.getConfigGenerale().getCodeUniversite());
+        if (etablissement != null) {
+            centreGestion.setCodeConfidentialite(etablissement.getCodeConfidentialite());
+        }
         return centreGestionJpaRepository.saveAndFlush(centreGestion);
     }
 
@@ -217,5 +225,18 @@ public class CentreGestionController {
 
         critereGestionJpaRepository.delete(critereGestion);
         critereGestionJpaRepository.flush();
+    }
+
+    @GetMapping("/confidentialite")
+    @Secure()
+    public List<Confidentialite> getConfidentialites() {
+        return confidentialiteJpaRepository.findAll();
+    }
+
+    @GetMapping("etablissement-confidentialite")
+    @Secure()
+    public Confidentialite getEtablissementConfidentialite() {
+        CentreGestion centreGestion = centreGestionJpaRepository.getCentreEtablissement();
+        return centreGestion.getCodeConfidentialite();
     }
 }

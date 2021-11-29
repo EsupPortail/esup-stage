@@ -8,6 +8,14 @@
       <mat-card-content>
         <form [formGroup]="form">
           <div>
+            <span>Critère de gestion de la confidentialité :</span>
+            <mat-form-field class="col-sm-12 col-md-2">
+              <mat-select formControlName="codeConfidentialite" [compareWith]="compareCode">
+                <mat-option *ngFor="let confidentialite of confidentialites" [value]="confidentialite">{{confidentialite.libelle}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div>
             <mat-checkbox formControlName="saisieTuteurProParEtudiant">Autoriser les étudiants à saisir leur tuteur professionnel</mat-checkbox>
           </div>
           <div>

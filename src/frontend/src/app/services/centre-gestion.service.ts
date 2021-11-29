@@ -58,4 +58,12 @@ export class CentreGestionService implements PaginatedService {
   getCentreEtapes(id: number): Observable<any> {
     return this.http.get(`${environment.apiUrl}/centre-gestion/${id}/centre-etapes`)
   }
+
+  getConfidentialites(): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/centre-gestion/confidentialite`);
+  }
+
+  getEtablissementConfidentialite(): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/centre-gestion/etablissement-confidentialite`);
+  }
 }
