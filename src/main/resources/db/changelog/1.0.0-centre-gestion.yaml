@@ -50,3 +50,36 @@ databaseChangeLog:
         columnName: autorisationEtudiantCreationConvention
         columnDataType: BIT
         tableName: CentreGestion
+- changeSet:
+    id: centre-gestion-validations
+    author: ssound
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            defaultValueBoolean: false
+            name: validationConvention
+            type: BIT
+        - column:
+            name: validationConventionOrdre
+            type: INT
+        - column:
+            name: validationPedagogiqueOrdre
+            type: INT
+        tableName: CentreGestion
+- changeSet:
+    id: centre-gestion-validations-init
+    author: ssound
+    changes:
+    - update:
+        columns:
+        - column:
+            name: validationConvention
+            valueBoolean: true
+        - column:
+            name: validationPedagogiqueOrdre
+            value: 1
+        - column:
+            name: validationConventionOrdre
+            value: 2
+        tableName: CentreGestion

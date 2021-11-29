@@ -22,9 +22,6 @@
             <mat-checkbox formControlName="autorisationEtudiantCreationConvention">Autoriser les étudiants à créer des conventions</mat-checkbox>
           </div>
           <div>
-            <mat-checkbox formControlName="validationPedagogique">Validation pédagogique des conventions</mat-checkbox>
-          </div>
-          <div>
             <mat-checkbox formControlName="recupInscriptionAnterieure" (change)="toggleRecupInscription()">Autoriser les gestionnaires à créer des conventions sur l'année universitaire précédente</mat-checkbox>
           </div>
           <div *ngIf="form.get('recupInscriptionAnterieure')?.value">
@@ -41,6 +38,24 @@
             <span>Url de la page d'instruction des consignes d'impression (facultatif)</span><br>
             <mat-form-field class="col-sm-12 col-md-6" appearance="fill" style="margin-left: -15px">
               <input matInput placeholder="http://siteinternet.fr/..." formControlName="urlPageInstruction">
+            </mat-form-field>
+          </div>
+          <div>
+            <mat-checkbox formControlName="validationPedagogique">{{validationLibelles.validationPedagogique}} des conventions</mat-checkbox>
+          </div>
+          <div class="row" *ngIf="form.get('validationPedagogique')?.value && form.get('validationConvention')?.value">
+            <mat-form-field class="col-12" appearance="fill">
+              <mat-label>Ordre {{validationLibelles.validationPedagogique}}</mat-label>
+              <input matInput type="number" formControlName="validationPedagogiqueOrdre">
+            </mat-form-field>
+          </div>
+          <div>
+            <mat-checkbox formControlName="validationConvention">{{validationLibelles.validationConvention}} des conventions</mat-checkbox>
+          </div>
+          <div class="row" *ngIf="form.get('validationPedagogique')?.value && form.get('validationConvention')?.value">
+            <mat-form-field class="col-12" appearance="fill">
+              <mat-label>Ordre {{validationLibelles.validationConvention}}</mat-label>
+              <input matInput type="number" formControlName="validationConventionOrdre">
             </mat-form-field>
           </div>
           <div *ngIf="form.get('nomViseur')?.value">

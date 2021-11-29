@@ -1,11 +1,12 @@
 import { Component, OnInit, Input, Output, EventEmitter, ViewChildren, QueryList } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { AbstractControl, FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { CentreGestionService } from "../../../services/centre-gestion.service";
 import { MessageService } from "../../../services/message.service";
 import { LdapService } from "../../../services/ldap.service";
 import { EnseignantService } from "../../../services/enseignant.service";
 import { MatExpansionPanel } from "@angular/material/expansion";
 import { debounceTime } from "rxjs/operators";
+import { ConfigService } from "../../../services/config.service";
 
 @Component({
   selector: 'app-param-centre',
@@ -26,6 +27,8 @@ export class ParamCentreComponent implements OnInit {
   confidentialites: any[] = [];
   etablissementConfidentialite: any;
 
+  validationLibelles: any = {};
+
   @ViewChildren(MatExpansionPanel) pannels: QueryList<MatExpansionPanel>;
 
   @Output() update = new EventEmitter<any>();
@@ -35,7 +38,9 @@ export class ParamCentreComponent implements OnInit {
     private messageService: MessageService,
     private fb: FormBuilder,
     private ldapService: LdapService,
-    private enseignantService: EnseignantService,) {
+    private enseignantService: EnseignantService,
+    private configService: ConfigService,
+    ) {
       this.viseurForm = this.fb.group({
         nom: [null, []],
         prenom: [null, []],
@@ -43,6 +48,10 @@ export class ParamCentreComponent implements OnInit {
     }
 
   ngOnInit(): void {
+    this.configService.getConfigGenerale().subscribe((response: any) => {
+      this.validationLibelles.validationPedagogique = response.validationPedagogiqueLibelle;
+      this.validationLibelles.validationConvention = response.validationAdministrativeLibelle;
+    });
     if (this.centreGestion.id) {
       this.setFormData();
     }
@@ -77,6 +86,9 @@ export class ParamCentreComponent implements OnInit {
       saisieTuteurProParEtudiant: this.centreGestion.saisieTuteurProParEtudiant,
       autorisationEtudiantCreationConvention: this.centreGestion.autorisationEtudiantCreationConvention,
       validationPedagogique: this.centreGestion.validationPedagogique,
+      validationConvention: this.centreGestion.validationConvention,
+      validationPedagogiqueOrdre: this.centreGestion.validationPedagogiqueOrdre,
+      validationConventionOrdre: this.centreGestion.validationConventionOrdre,
       recupInscriptionAnterieure: this.centreGestion.recupInscriptionAnterieure,
       dureeRecupInscriptionAnterieure: this.centreGestion.dureeRecupInscriptionAnterieure,
       urlPageInstruction: this.centreGestion.urlPageInstruction,
