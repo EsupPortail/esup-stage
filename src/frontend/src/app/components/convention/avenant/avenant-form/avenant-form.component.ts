@@ -4,6 +4,8 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { ServiceService } from "../../../../services/service.service";
 import { ContactService } from "../../../../services/contact.service";
 import { MessageService } from "../../../../services/message.service";
+import { LdapService } from "../../../../services/ldap.service";
+import { EnseignantService } from "../../../../services/enseignant.service";
 import { ModeVersGratificationService } from "../../../../services/mode-vers-gratification.service";
 import { UniteDureeService } from "../../../../services/unite-duree.service";
 import { UniteGratificationService } from "../../../../services/unite-gratification.service";
@@ -14,6 +16,7 @@ import { AvenantService } from "../../../../services/avenant.service";
 import { TableComponent } from "../../../table/table.component";
 import { ServiceAccueilFormComponent } from '../../../gestion-etab-accueil/service-accueil-form/service-accueil-form.component';
 import { ContactFormComponent } from '../../../gestion-etab-accueil/contact-form/contact-form.component';
+import { debounceTime } from "rxjs/operators";
 
 @Component({
   selector: 'app-avenant-form',
@@ -33,11 +36,14 @@ export class AvenantFormComponent implements OnInit {
   countries: any[] = [];
   civilites: any[] = [];
 
+  enseignants: any[] = [];
+  enseignant: any = 0;
   service: any = 0;
   contact: any = 0;
 
   serviceTableColumns = ['choix','nom', 'voie', 'codePostal','batimentResidence', 'commune'];
   contactTableColumns = ['choix','centreGestionnaire', 'civilite', 'nom','prenom', 'telephone', 'mail', 'fax'];
+  enseignantColumns = ['nomprenom', 'mail', 'departement', 'action'];
   serviceSortColumn = 'nom';
   contactSortColumn = 'nom';
   serviceFilters: any[] = [];
@@ -47,6 +53,7 @@ export class AvenantFormComponent implements OnInit {
   @Input() convention: any;
 
   form: FormGroup;
+  eneseignantSearchForm: FormGroup;
 
   autreModifChecked: boolean = false;
 
@@ -61,6 +68,8 @@ export class AvenantFormComponent implements OnInit {
               private uniteDureeService: UniteDureeService,
               private uniteGratificationService: UniteGratificationService,
               private deviseService: DeviseService,
+              private enseignantService: EnseignantService,
+              private ldapService: LdapService,
               private civiliteService: CiviliteService,
               private paysService: PaysService,
               private fb: FormBuilder,
@@ -108,7 +117,11 @@ export class AvenantFormComponent implements OnInit {
     }else{
       this.contact = this.convention.contact;
     }
-    console.log('this.avenant : ' + JSON.stringify(this.avenant, null, 2))
+
+    if (this.avenant.modificationEnseignant){
+      this.enseignant = this.avenant.enseignant;
+    }
+
     if (this.avenant.id){
       this.form = this.fb.group({
         titreAvenant: [this.avenant.titreAvenant],
@@ -128,6 +141,7 @@ export class AvenantFormComponent implements OnInit {
         modificationEnseignant: [this.avenant.modificationEnseignant],
         modificationMontantGratification: [this.avenant.modificationMontantGratification],
         montantGratification: [this.avenant.montantGratification, [Validators.maxLength(7)]],
+        //TODO bandeau montant
         idUniteGratification: [this.avenant.UniteGratification?this.avenant.UniteGratification.id:null],
         idUniteDuree: [this.avenant.uniteDuree?this.avenant.uniteDuree.id:null],
         idModeVersGratification: [this.avenant.modeVersGratification?this.avenant.modeVersGratification.id:null],
@@ -165,6 +179,14 @@ export class AvenantFormComponent implements OnInit {
       });
     }
 
+    this.eneseignantSearchForm = this.fb.group({
+      nom: [null, []],
+      prenom: [null, []],
+    });
+
+    this.eneseignantSearchForm.valueChanges.pipe(debounceTime(500)).subscribe(() => {
+      this.search();
+    });
   }
 
   createOrEdit(): void {
@@ -179,6 +201,9 @@ export class AvenantFormComponent implements OnInit {
       }
       if (this.form.get('modificationSalarie')!.value){
         data.idContact = this.contact.id;
+      }
+      if (this.form.get('modificationEnseignant')!.value){
+        data.idEnseignant = this.enseignant.id;
       }
 
       if (this.avenant.id){
@@ -207,6 +232,21 @@ export class AvenantFormComponent implements OnInit {
       }
     });
 
+    if (this.form.get('modificationLieu')!.value){
+      if(this.service.id === this.convention.service.id){
+        valid = false;
+      }
+    }
+    if (this.form.get('modificationSalarie')!.value){
+      if(this.contact.id === this.convention.contact.id){
+        valid = false;
+      }
+    }
+    if (this.form.get('modificationEnseignant')!.value){
+      if(!this.enseignant || this.enseignant.id === this.convention.enseignant.id){
+        valid = false;
+      }
+    }
     return valid && this.form.valid
   }
 
@@ -228,6 +268,7 @@ export class AvenantFormComponent implements OnInit {
   createContact(): void {
     this.openContactFormModal(null);
   }
+
   openServiceFormModal(service: any) {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.width = '1000px';
@@ -253,6 +294,42 @@ export class AvenantFormComponent implements OnInit {
         this.contact = dialogResponse;
         this.contactAppTable!.update();
       }
+    });
+  }
+
+  search(): void {
+    if (!this.eneseignantSearchForm.get('nom')?.value && !this.eneseignantSearchForm.get('prenom')?.value) {
+      this.messageService.setError(`Veuillez renseigner au moins l'un des critères`);
+      return;
+    }
+    this.enseignant = undefined;
+    this.ldapService.searchEnseignants(this.eneseignantSearchForm.value).subscribe((response: any) => {
+      this.enseignants = response;
+    });
+  }
+
+  chooseEnseignant(row: any): void {
+      this.enseignantService.getByUid(row.supannAliasLogin).subscribe((response: any) => {
+        this.enseignant = response;
+        if (this.enseignant == null){
+          this.createEnseignant(row);
+        }
+      });
+  }
+
+  createEnseignant(row: any): void {
+    const displayName = row.displayName.split(/(\s+)/);
+    const data = {
+      "nom": displayName[2],
+      "prenom": displayName[0],
+      "mail": row.mail,
+      "typePersonne": row.eduPersonPrimaryAffiliation,
+      "uidEnseignant": row.supannAliasLogin,
+    };
+
+    this.enseignantService.create(data).subscribe((response: any) => {
+      this.enseignant = response;
+      this.validated.emit(this.enseignant);
     });
   }
 }

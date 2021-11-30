@@ -258,6 +258,79 @@
     </div>
   </div>
 
+  <div *ngIf="form.value.modificationEnseignant">
+    <div class="text-title">Modification de l'enseignant référant</div>
+    <mat-divider></mat-divider>
+    <div class="mt-3 mb-3">Enseignant actuel :</div>
+    <div class="row mb-3">
+      <div class="col-sm-3 font-weight-bold">Nom / Prénom</div>
+      <div class="col-sm-9">{{convention.enseignant.nom+ ' ' + convention.enseignant.prenom}}</div>
+      <div class="col-sm-3 font-weight-bold">Fonction</div>
+      <div class="col-sm-9">{{convention.enseignant.typePersonne}}</div>
+      <div class="col-sm-3 font-weight-bold">Téléphone</div>
+      <div class="col-sm-9">{{convention.enseignant.tel}}</div>
+      <div class="col-sm-3 font-weight-bold">Mail</div>
+      <div class="col-sm-9">{{convention.enseignant.mail}}</div>
+    </div>
+
+    <div class="mb-3" >Recherchez un nouvel enseignant :</div>
+    <form [formGroup]="eneseignantSearchForm" novalidate class="mt-3">
+      <div class="row">
+        <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+          <mat-label>Nom</mat-label>
+          <input matInput formControlName="nom" />
+        </mat-form-field>
+        <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+          <mat-label>Prénom</mat-label>
+          <input matInput formControlName="prenom" />
+        </mat-form-field>
+      </div>
+    </form>
+
+    <div class="alert alert-info" *ngIf="enseignants.length > 10">La recherche est limitée à 10 enseignants. Veuillez affiner la recherche si l'enseignant n'apparaît pas.</div>
+    <table mat-table [dataSource]="enseignants | slice:0:10" *ngIf="enseignants.length > 0">
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="9999">Aucun enseignant trouvé</td>
+      </tr>
+      <ng-container matColumnDef="nomprenom">
+        <th mat-header-cell *matHeaderCellDef>Nom / Prénom</th>
+        <td mat-cell *matCellDef="let row">{{row.displayName}}</td>
+      </ng-container>
+      <ng-container matColumnDef="mail">
+        <th mat-header-cell *matHeaderCellDef>Mail</th>
+        <td mat-cell *matCellDef="let row">{{row.mail}}</td>
+      </ng-container>
+      <ng-container matColumnDef="departement">
+        <th mat-header-cell *matHeaderCellDef>Département</th>
+        <td mat-cell *matCellDef="let row">-</td>
+      </ng-container>
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row">
+          <button mat-button mat-stroked-button (click)="$event.preventDefault();chooseEnseignant(row)" color="primary">
+            <span *ngIf="true"><i class="fa fa-check"></i> Sélectionner</span>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="enseignantColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: enseignantColumns;"></tr>
+    </table>
+    <div class="mt-3" *ngIf="enseignant">
+      <div class="mb-3">Nouvel Enseignant :</div>
+      <div class="row mb-3">
+        <div class="col-sm-3 font-weight-bold">Nom / Prénom</div>
+        <div class="col-sm-9">{{enseignant.nom+ ' ' + enseignant.prenom}}</div>
+        <div class="col-sm-3 font-weight-bold">Fonction</div>
+        <div class="col-sm-9">{{enseignant.typePersonne}}</div>
+        <div class="col-sm-3 font-weight-bold">Téléphone</div>
+        <div class="col-sm-9">{{enseignant.tel}}</div>
+        <div class="col-sm-3 font-weight-bold">Mail</div>
+        <div class="col-sm-9">{{convention.enseignant.mail}}</div>
+      </div>
+    </div>
+  </div>
+
   <div *ngIf="form.value.modificationAutre">
     <div class="text-title">Autre modification</div>
     <mat-divider></mat-divider>
