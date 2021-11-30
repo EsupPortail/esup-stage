@@ -308,7 +308,7 @@
     </div>
 
     <div class="mb-3" >Recherchez un nouvel enseignant :</div>
-    <form [formGroup]="eneseignantSearchForm" novalidate class="mt-3">
+    <form [formGroup]="enseignantSearchForm" novalidate class="mt-3">
       <div class="row">
         <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
           <mat-label>Nom</mat-label>
@@ -378,10 +378,13 @@
   </div>
   <div class="row mt-3">
     <div class="col-sm-6">
-      <button mat-button type="button" mat-stroked-button color="warn" (click)="cancel()">{{'BOUTON_ANNULER'|contenu}}</button>
+      <button mat-button type="button" mat-stroked-button color="warn" (click)="cancel()" *ngIf="!avenant.id">{{'BOUTON_ANNULER'|contenu}}</button>
+      <span (confirm)="delete()" [confirmMessage]="'Êtes-vous sûr de vouloir supprimer cet avenant ?'" *ngIf="avenant.id">
+        <button mat-button type="button" mat-stroked-button color="warn">{{'Supprimer'}}</button>
+      </span>
     </div>
     <div class="col-sm-6 text-right">
-      <button mat-button mat-flat-button color="primary" [disabled]="!customFormValidation()">{{avenant.id?'Modifier':'Créer'}}</button>
+      <button mat-button mat-flat-button color="primary" [disabled]="!customValidForm">{{avenant.id?'Modifier':'Créer'}}</button>
     </div>
   </div>
 </form>

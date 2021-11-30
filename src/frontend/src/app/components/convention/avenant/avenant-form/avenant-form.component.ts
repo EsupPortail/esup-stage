@@ -53,11 +53,12 @@ export class AvenantFormComponent implements OnInit {
   @Input() convention: any;
 
   form: FormGroup;
-  eneseignantSearchForm: FormGroup;
+  enseignantSearchForm: FormGroup;
 
+  customValidForm: boolean = false;
   autreModifChecked: boolean = false;
 
-  @Output() validated = new EventEmitter<any>();
+  @Output() updated = new EventEmitter<any>();
   @ViewChild(TableComponent) serviceAppTable: TableComponent | undefined;
   @ViewChild(TableComponent) contactAppTable: TableComponent | undefined;
 
@@ -179,18 +180,21 @@ export class AvenantFormComponent implements OnInit {
       });
     }
 
-    this.eneseignantSearchForm = this.fb.group({
+    this.enseignantSearchForm = this.fb.group({
       nom: [null, []],
       prenom: [null, []],
     });
 
-    this.eneseignantSearchForm.valueChanges.pipe(debounceTime(500)).subscribe(() => {
+    this.form.valueChanges.subscribe(() => {
+      this.customFormValidation();
+    });
+    this.enseignantSearchForm.valueChanges.pipe(debounceTime(500)).subscribe(() => {
       this.search();
     });
   }
 
   createOrEdit(): void {
-    if (this.customFormValidation()) {
+    if (this.customValidForm) {
 
       const data = {...this.form.value};
 
@@ -210,18 +214,18 @@ export class AvenantFormComponent implements OnInit {
         this.avenantService.update(this.avenant.id,data).subscribe((response: any) => {
           this.avenant = response;
           this.messageService.setSuccess('Avenant modifié avec succès');
-          this.validated.emit();
+          this.updated.emit();
         });
       }else{
         this.avenantService.create(data).subscribe((response: any) => {
           this.messageService.setSuccess('Avenant créé avec succès');
-          this.validated.emit();
+          this.updated.emit();
         });
       }
     }
   }
 
-  customFormValidation(): boolean {
+  customFormValidation(): void {
     let valid = false;
     const checkboxFields = ['dateRupture', 'modificationPeriode', 'modificationLieu', 'modificationSujet', 'modificationSalarie',
        'modificationEnseignant', 'modificationMontantGratification', 'modificationAutre'];
@@ -247,14 +251,26 @@ export class AvenantFormComponent implements OnInit {
         valid = false;
       }
     }
-    return valid && this.form.valid
+    this.customValidForm = valid && this.form.valid;
   }
 
   cancel(): void {
+    this.form.reset();
+  }
+
+  delete(): void {
+  //TODO check si déjà valider
+    this.avenantService.delete(this.avenant.id).subscribe((response: any) => {
+      this.avenant = response;
+      this.messageService.setSuccess('Avenant supprimé avec succès');
+      this.updated.emit();
+    });
+
   }
 
   selectService(row: any): void{
     this.service = row;
+    this.customFormValidation();
   }
 
   createService(): void {
@@ -263,6 +279,7 @@ export class AvenantFormComponent implements OnInit {
 
   selectContact(row: any): void{
     this.contact = row;
+    this.customFormValidation();
   }
 
   createContact(): void {
@@ -277,7 +294,7 @@ export class AvenantFormComponent implements OnInit {
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse) {
         this.messageService.setSuccess("Service créé avec succès");
-        this.service = dialogResponse;
+        this.selectService(dialogResponse)
         this.serviceAppTable!.update();
       }
     });
@@ -291,19 +308,19 @@ export class AvenantFormComponent implements OnInit {
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse) {
         this.messageService.setSuccess("Contact créé avec succès");
-        this.contact = dialogResponse;
+        this.selectContact(dialogResponse)
         this.contactAppTable!.update();
       }
     });
   }
 
   search(): void {
-    if (!this.eneseignantSearchForm.get('nom')?.value && !this.eneseignantSearchForm.get('prenom')?.value) {
+    if (!this.enseignantSearchForm.get('nom')?.value && !this.enseignantSearchForm.get('prenom')?.value) {
       this.messageService.setError(`Veuillez renseigner au moins l'un des critères`);
       return;
     }
     this.enseignant = undefined;
-    this.ldapService.searchEnseignants(this.eneseignantSearchForm.value).subscribe((response: any) => {
+    this.ldapService.searchEnseignants(this.enseignantSearchForm.value).subscribe((response: any) => {
       this.enseignants = response;
     });
   }
@@ -311,6 +328,7 @@ export class AvenantFormComponent implements OnInit {
   chooseEnseignant(row: any): void {
       this.enseignantService.getByUid(row.supannAliasLogin).subscribe((response: any) => {
         this.enseignant = response;
+        this.customFormValidation();
         if (this.enseignant == null){
           this.createEnseignant(row);
         }
@@ -329,7 +347,6 @@ export class AvenantFormComponent implements OnInit {
 
     this.enseignantService.create(data).subscribe((response: any) => {
       this.enseignant = response;
-      this.validated.emit(this.enseignant);
     });
   }
 }
