@@ -78,4 +78,8 @@ export class CentreGestionService implements PaginatedService {
   insertLogoCentre(data: any, id: number): Observable<any> {
     return this.http.post(`${environment.apiUrl}/centre-gestion/${id}/logo-centre`, data);
   }
+
+  getLogoCentre(id: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/centre-gestion/${id}/logo-centre`, { responseType: 'blob'});
+  }
 }

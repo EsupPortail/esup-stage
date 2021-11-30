@@ -1,5 +1,8 @@
 package org.esup_portail.esup_stage.controller;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
 import org.esup_portail.esup_stage.dto.ContextDto;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
@@ -17,11 +20,15 @@ import org.esup_portail.esup_stage.service.apogee.model.Etape;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -285,26 +292,54 @@ public class CentreGestionController {
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.MODIFICATION})
     public CentreGestion insertLogoCentre(@PathVariable("id") int id, @RequestParam(required = true) MultipartFile logo) {
         CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
+        String extension = FilenameUtils.getExtension(logo.getOriginalFilename());
+        String nomFichier = DigestUtils.md5Hex(logo.getOriginalFilename()) + "." + extension;
+        String nomReel = logo.getOriginalFilename();
+
+        Fichier fichier = centreGestion.getFichier();
+        if (fichier == null) {
+            fichier = new Fichier();
+        }
+
+        fichier.setNom(nomFichier);
+        fichier.setNomReel(nomReel);
+        fichier = fichierJpaRepository.saveAndFlush(fichier);
 
         try {
-            Path uploadLocation = Paths.get(this.getFilePath(logo.getOriginalFilename()));
+            String filename = this.getNomFichier(fichier.getId(), fichier.getNom());
+            Path uploadLocation = Paths.get(this.getFilePath(filename));
             Files.copy(logo.getInputStream(), uploadLocation, StandardCopyOption.REPLACE_EXISTING);
         } catch (Exception e) {
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de l'insertion du fichier : " + e.getMessage());
         }
 
-        Fichier fichier = new Fichier();
-        fichier.setNom(logo.getOriginalFilename());
-        fichier.setNomReel(logo.getOriginalFilename());
-
-        fichier = fichierJpaRepository.saveAndFlush(fichier);
-
         centreGestion.setFichier(fichier);
-
         return centreGestionJpaRepository.saveAndFlush(centreGestion);
+    }
+
+    @GetMapping(value = "/{id}/logo-centre", produces = MediaType.IMAGE_PNG_VALUE)
+    @Secure()
+    public ResponseEntity<byte[]> getLogoCentre(@PathVariable("id") int id) {
+        CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
+        if (centreGestion.getFichier() != null) {
+            byte[] image;
+            try {
+                String filename = this.getNomFichier(centreGestion.getFichier().getId(), centreGestion.getFichier().getNom());
+                image = FileUtils.readFileToByteArray(new File(this.getFilePath(filename)));
+                return ResponseEntity.ok().body(image);
+            } catch (IOException e) {
+                throw new AppException(HttpStatus.NOT_FOUND, "Erreur lors de la récupération du fichier");
+            }
+        }
+
+        return null;
     }
 
     private String getFilePath(String filename) {
         return applicationBootstrap.getAppConfig().getLogoCentresDir() + "/" + filename;
+    }
+
+    private String getNomFichier(int idFichier, String nomFichier) {
+        return idFichier + "_" + nomFichier;
     }
 }

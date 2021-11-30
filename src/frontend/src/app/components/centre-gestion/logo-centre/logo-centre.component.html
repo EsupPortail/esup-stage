@@ -5,7 +5,9 @@
         <span>Logo</span>
         <input #logoInput type="file" (change)="onLogoChange($event)" accept="image/*" style="display:none">
       </button>
-      <div *ngIf="logoFile">{{logoFile.name}}</div>
+      <div *ngIf="currentFile && currentFile.size > 0">
+        <img #logo id="logo-centre" [src]="url" alt="logo" />
+      </div>
     </div>
   </mat-card-content>
 </mat-card>

@@ -14,10 +14,13 @@ export class LogoCentreComponent implements OnInit {
   @Output() refreshCentreGestion = new EventEmitter<any>();
 
   logoFile: File|undefined;
+  url: any;
+  currentFile: any;
 
   constructor(private centreGestionService: CentreGestionService, private messageService: MessageService) { }
 
   ngOnInit(): void {
+    this.getLogo();
   }
 
   onLogoChange(event: any): void {
@@ -34,8 +37,22 @@ export class LogoCentreComponent implements OnInit {
       this.centreGestionService.insertLogoCentre(formData, this.centreGestion.id).subscribe((response: any) => {
         this.centreGestion = response;
         this.refreshCentreGestion.emit(this.centreGestion);
+        this.getLogo();
       });
     }
+  }
+
+  getLogo() {
+    this.centreGestionService.getLogoCentre(this.centreGestion.id).subscribe((response: any) => {
+      this.currentFile = response;
+      if (this.currentFile.size > 0) {
+        const reader = new FileReader();
+        reader.readAsDataURL(this.currentFile);
+        reader.onload = (_event) => {
+          this.url = reader.result;
+        }
+      }
+    });
   }
 
 }
