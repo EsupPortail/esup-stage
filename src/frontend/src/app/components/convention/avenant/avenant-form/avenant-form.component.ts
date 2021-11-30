@@ -2,15 +2,21 @@ import { Component, Output, EventEmitter, OnInit, Input, ViewChild  } from '@ang
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { ServiceService } from "../../../../services/service.service";
+import { ContactService } from "../../../../services/contact.service";
 import { MessageService } from "../../../../services/message.service";
+import { LdapService } from "../../../../services/ldap.service";
+import { EnseignantService } from "../../../../services/enseignant.service";
 import { ModeVersGratificationService } from "../../../../services/mode-vers-gratification.service";
 import { UniteDureeService } from "../../../../services/unite-duree.service";
 import { UniteGratificationService } from "../../../../services/unite-gratification.service";
 import { DeviseService } from "../../../../services/devise.service";
+import { CiviliteService } from "../../../../services/civilite.service";
 import { PaysService } from "../../../../services/pays.service";
 import { AvenantService } from "../../../../services/avenant.service";
 import { TableComponent } from "../../../table/table.component";
 import { ServiceAccueilFormComponent } from '../../../gestion-etab-accueil/service-accueil-form/service-accueil-form.component';
+import { ContactFormComponent } from '../../../gestion-etab-accueil/contact-form/contact-form.component';
+import { debounceTime } from "rxjs/operators";
 
 @Component({
   selector: 'app-avenant-form',
@@ -28,29 +34,44 @@ export class AvenantFormComponent implements OnInit {
   uniteGratifications: any[] = [];
   devises: any[] = [];
   countries: any[] = [];
+  civilites: any[] = [];
 
+  enseignants: any[] = [];
+  enseignant: any = 0;
   service: any = 0;
+  contact: any = 0;
 
   serviceTableColumns = ['choix','nom', 'voie', 'codePostal','batimentResidence', 'commune'];
-  sortColumn = 'nom';
-  filters: any[] = [];
+  contactTableColumns = ['choix','centreGestionnaire', 'civilite', 'nom','prenom', 'telephone', 'mail', 'fax'];
+  enseignantColumns = ['nomprenom', 'mail', 'departement', 'action'];
+  serviceSortColumn = 'nom';
+  contactSortColumn = 'nom';
+  serviceFilters: any[] = [];
+  contactFilters: any[] = [];
 
   @Input() avenant: any;
   @Input() convention: any;
 
   form: FormGroup;
+  enseignantSearchForm: FormGroup;
 
+  customValidForm: boolean = false;
   autreModifChecked: boolean = false;
 
-  @Output() validated = new EventEmitter<any>();
-  @ViewChild(TableComponent) appTable: TableComponent | undefined;
+  @Output() updated = new EventEmitter<any>();
+  @ViewChild(TableComponent) serviceAppTable: TableComponent | undefined;
+  @ViewChild(TableComponent) contactAppTable: TableComponent | undefined;
 
   constructor(private avenantService: AvenantService,
               public serviceService: ServiceService,
+              public contactService: ContactService,
               private modeVersGratificationService: ModeVersGratificationService,
               private uniteDureeService: UniteDureeService,
               private uniteGratificationService: UniteGratificationService,
               private deviseService: DeviseService,
+              private enseignantService: EnseignantService,
+              private ldapService: LdapService,
+              private civiliteService: CiviliteService,
               private paysService: PaysService,
               private fb: FormBuilder,
               private messageService: MessageService,
@@ -74,15 +95,32 @@ export class AvenantFormComponent implements OnInit {
     this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServPays: {value: 'O', type: 'text'}})).subscribe((response: any) => {
       this.countries = response.data;
     });
+    this.civiliteService.getPaginated(1, 0, 'libelle', 'asc','').subscribe((response: any) => {
+      this.civilites = response.data;
+    });
 
-    this.filters = [
+    this.serviceFilters = [
         { id: 'structure.id', libelle: 'Structure', type: 'int',value:this.convention.structure.id, hidden : true},
+    ];
+
+    this.contactFilters = [
+        { id: 'service.id', libelle: 'Service', type: 'int',value:this.convention.service.id, hidden : true},
     ];
 
     if (this.avenant.modificationLieu){
       this.service = this.avenant.service;
     }else{
       this.service = this.convention.service;
+    }
+
+    if (this.avenant.modificationTuteurPro){
+      this.contact = this.avenant.contact;
+    }else{
+      this.contact = this.convention.contact;
+    }
+
+    if (this.avenant.modificationEnseignant){
+      this.enseignant = this.avenant.enseignant;
     }
 
     if (this.avenant.id){
@@ -100,10 +138,11 @@ export class AvenantFormComponent implements OnInit {
         modificationLieu: [this.avenant.modificationLieu],
         modificationSujet: [this.avenant.modificationSujet],
         sujetStage: [this.avenant.sujetStage],
-        modificationTuteurPro: [this.avenant.modificationTuteurPro],
+        modificationSalarie: [this.avenant.modificationSalarie],
         modificationEnseignant: [this.avenant.modificationEnseignant],
         modificationMontantGratification: [this.avenant.modificationMontantGratification],
-        montantGratification: [this.avenant.montantGratification],
+        montantGratification: [this.avenant.montantGratification, [Validators.maxLength(7)]],
+        //TODO bandeau montant
         idUniteGratification: [this.avenant.UniteGratification?this.avenant.UniteGratification.id:null],
         idUniteDuree: [this.avenant.uniteDuree?this.avenant.uniteDuree.id:null],
         idModeVersGratification: [this.avenant.modeVersGratification?this.avenant.modeVersGratification.id:null],
@@ -127,7 +166,7 @@ export class AvenantFormComponent implements OnInit {
         modificationLieu: [null],
         modificationSujet: [null],
         sujetStage: [null],
-        modificationTuteurPro: [false],
+        modificationSalarie: [false],
         modificationEnseignant: [null],
         modificationMontantGratification: [null],
         montantGratification: [null, [Validators.maxLength(7)]],
@@ -141,10 +180,21 @@ export class AvenantFormComponent implements OnInit {
       });
     }
 
+    this.enseignantSearchForm = this.fb.group({
+      nom: [null, []],
+      prenom: [null, []],
+    });
+
+    this.form.valueChanges.subscribe(() => {
+      this.customFormValidation();
+    });
+    this.enseignantSearchForm.valueChanges.pipe(debounceTime(500)).subscribe(() => {
+      this.search();
+    });
   }
 
   createOrEdit(): void {
-    if (this.customFormValidation()) {
+    if (this.customValidForm) {
 
       const data = {...this.form.value};
 
@@ -153,25 +203,31 @@ export class AvenantFormComponent implements OnInit {
       if (this.form.get('modificationLieu')!.value){
         data.idService = this.service.id;
       }
+      if (this.form.get('modificationSalarie')!.value){
+        data.idContact = this.contact.id;
+      }
+      if (this.form.get('modificationEnseignant')!.value){
+        data.idEnseignant = this.enseignant.id;
+      }
 
       if (this.avenant.id){
         this.avenantService.update(this.avenant.id,data).subscribe((response: any) => {
           this.avenant = response;
           this.messageService.setSuccess('Avenant modifié avec succès');
-          this.validated.emit();
+          this.updated.emit();
         });
       }else{
         this.avenantService.create(data).subscribe((response: any) => {
           this.messageService.setSuccess('Avenant créé avec succès');
-          this.validated.emit();
+          this.updated.emit();
         });
       }
     }
   }
 
-  customFormValidation(): boolean {
+  customFormValidation(): void {
     let valid = false;
-    const checkboxFields = ['dateRupture', 'modificationPeriode', 'modificationLieu', 'modificationSujet', 'modificationTuteurPro',
+    const checkboxFields = ['dateRupture', 'modificationPeriode', 'modificationLieu', 'modificationSujet', 'modificationSalarie',
        'modificationEnseignant', 'modificationMontantGratification', 'modificationAutre'];
 
     checkboxFields.forEach((field: string) => {
@@ -180,18 +236,54 @@ export class AvenantFormComponent implements OnInit {
       }
     });
 
-    return valid && this.form.valid
+    if (this.form.get('modificationLieu')!.value){
+      if(this.service.id === this.convention.service.id){
+        valid = false;
+      }
+    }
+    if (this.form.get('modificationSalarie')!.value){
+      if(this.contact.id === this.convention.contact.id){
+        valid = false;
+      }
+    }
+    if (this.form.get('modificationEnseignant')!.value){
+      if(!this.enseignant || this.enseignant.id === this.convention.enseignant.id){
+        valid = false;
+      }
+    }
+    this.customValidForm = valid && this.form.valid;
   }
 
   cancel(): void {
+    this.form.reset();
+  }
+
+  delete(): void {
+  //TODO check si déjà valider
+    this.avenantService.delete(this.avenant.id).subscribe((response: any) => {
+      this.avenant = response;
+      this.messageService.setSuccess('Avenant supprimé avec succès');
+      this.updated.emit();
+    });
+
   }
 
   selectService(row: any): void{
     this.service = row;
+    this.customFormValidation();
   }
 
   createService(): void {
     this.openServiceFormModal(null);
+  }
+
+  selectContact(row: any): void{
+    this.contact = row;
+    this.customFormValidation();
+  }
+
+  createContact(): void {
+    this.openContactFormModal(null);
   }
 
   openServiceFormModal(service: any) {
@@ -202,9 +294,59 @@ export class AvenantFormComponent implements OnInit {
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse) {
         this.messageService.setSuccess("Service créé avec succès");
-        this.service = dialogResponse;
-        this.appTable!.update();
+        this.selectService(dialogResponse)
+        this.serviceAppTable!.update();
       }
+    });
+  }
+
+  openContactFormModal(contact: any) {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.width = '1000px';
+    dialogConfig.data = {contact: contact, service: this.convention.service, civilites: this.civilites};
+    const modalDialog = this.matDialog.open(ContactFormComponent, dialogConfig);
+    modalDialog.afterClosed().subscribe(dialogResponse => {
+      if (dialogResponse) {
+        this.messageService.setSuccess("Contact créé avec succès");
+        this.selectContact(dialogResponse)
+        this.contactAppTable!.update();
+      }
+    });
+  }
+
+  search(): void {
+    if (!this.enseignantSearchForm.get('nom')?.value && !this.enseignantSearchForm.get('prenom')?.value) {
+      this.messageService.setError(`Veuillez renseigner au moins l'un des critères`);
+      return;
+    }
+    this.enseignant = undefined;
+    this.ldapService.searchEnseignants(this.enseignantSearchForm.value).subscribe((response: any) => {
+      this.enseignants = response;
+    });
+  }
+
+  chooseEnseignant(row: any): void {
+      this.enseignantService.getByUid(row.supannAliasLogin).subscribe((response: any) => {
+        this.enseignant = response;
+        this.customFormValidation();
+        if (this.enseignant == null){
+          this.createEnseignant(row);
+        }
+      });
+  }
+
+  createEnseignant(row: any): void {
+    const displayName = row.displayName.split(/(\s+)/);
+    const data = {
+      "nom": displayName[2],
+      "prenom": displayName[0],
+      "mail": row.mail,
+      "typePersonne": row.eduPersonPrimaryAffiliation,
+      "uidEnseignant": row.supannAliasLogin,
+    };
+
+    this.enseignantService.create(data).subscribe((response: any) => {
+      this.enseignant = response;
     });
   }
 }

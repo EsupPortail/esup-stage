@@ -1,13 +1,17 @@
 package org.esup_portail.esup_stage.controller;
 
+import org.esup_portail.esup_stage.dto.ContextDto;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.dto.AvenantDto;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
+import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
 import org.esup_portail.esup_stage.repository.*;
+import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
+import org.esup_portail.esup_stage.service.MailerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -43,6 +47,9 @@ public class AvenantController {
     @Autowired
     AvenantJpaRepository avenantJpaRepository;
 
+    @Autowired
+    MailerService mailerService;
+
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<Avenant> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
@@ -77,7 +84,14 @@ public class AvenantController {
     public Avenant create(@Valid @RequestBody AvenantDto avenantDto) {
         Avenant avenant = new Avenant();
         setAvenantData(avenant, avenantDto);
-        return avenantJpaRepository.saveAndFlush(avenant);
+        avenant = avenantJpaRepository.saveAndFlush(avenant);
+
+        ContextDto contexteDto = ServiceContext.getServiceContext();
+        Utilisateur utilisateur = contexteDto.getUtilisateur();
+        if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
+            mailerService.sendAlerteCreationAvenantParEtudiant(avenant.getConvention().getCentreGestion().getMail(), avenant, utilisateur);
+        }
+        return avenant;
     }
 
     @PutMapping("/{id}")

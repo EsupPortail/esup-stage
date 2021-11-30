@@ -23,7 +23,7 @@
         <mat-expansion-panel-header>
           <mat-panel-title>{{avenant.titreAvenant}}</mat-panel-title>
         </mat-expansion-panel-header>
-        <app-avenant-form [convention]="convention" [avenant]="avenant" (validated)="updateAvenants()"></app-avenant-form>
+        <app-avenant-form [convention]="convention" [avenant]="avenant" (updated)="updateAvenants()"></app-avenant-form>
       </mat-expansion-panel>
     </mat-accordion>
   </mat-expansion-panel>

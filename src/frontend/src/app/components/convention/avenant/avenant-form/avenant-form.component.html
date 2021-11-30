@@ -15,7 +15,7 @@
     <mat-checkbox class="col-12" formControlName="modificationPeriode">Modification de la période de stage</mat-checkbox>
     <mat-checkbox class="col-12" formControlName="modificationMontantGratification">Modification du montant de la gratification</mat-checkbox>
     <mat-checkbox class="col-12" formControlName="modificationLieu">Modification du lieu de stage</mat-checkbox>
-    <mat-checkbox class="col-12" formControlName="modificationTuteurPro">Modification du tuteur professionnel</mat-checkbox>
+    <mat-checkbox class="col-12" formControlName="modificationSalarie">Modification du tuteur professionnel</mat-checkbox>
     <mat-checkbox class="col-12" formControlName="modificationEnseignant">Modification de l’enseignant référent</mat-checkbox>
     <mat-checkbox class="col-12" formControlName="modificationAutre">Autre modification</mat-checkbox>
   </div>
@@ -158,8 +158,24 @@
     <div class="text-title">Modification du lieu de stage</div>
     <mat-divider></mat-divider>
 
-    <app-table [service]="serviceService" [columns]="serviceTableColumns" [sortColumn]="sortColumn" [filters]="filters"
-               matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'" (matSortChange)="appTable ? appTable.sorting($event) : null"
+    <div class="mt-3 mb-3">Lieu de stage actuel :</div>
+    <div class="row mb-3">
+      <div class="col-sm-3 font-weight-bold">Nom</div>
+      <div class="col-sm-9">{{convention.service.nom}}</div>
+      <div class="col-sm-3 font-weight-bold">Voie</div>
+      <div class="col-sm-9">{{convention.service.voie}}</div>
+      <div class="col-sm-3 font-weight-bold">Code postal</div>
+      <div class="col-sm-9">{{convention.service.codePostal}}</div>
+      <div class="col-sm-3 font-weight-bold">Commune</div>
+      <div class="col-sm-9">{{convention.service.commune}}</div>
+      <div class="col-sm-3 font-weight-bold">Pays</div>
+      <div class="col-sm-9">{{convention.service.pays.lib}}</div>
+      <div class="col-sm-3 font-weight-bold">Téléphone</div>
+      <div class="col-sm-9">{{convention.service.telephone}}</div>
+    </div>
+    <div>Sélectionez un nouveau lieu de stage :</div>
+    <app-table [service]="serviceService" [columns]="serviceTableColumns" [sortColumn]="serviceSortColumn" [filters]="serviceFilters"
+               matSort [matSortActive]="serviceSortColumn" [matSortDirection]="'asc'" (matSortChange)="serviceAppTable ? serviceAppTable.sorting($event) : null"
                [noResultText]="'Aucun service trouvé'" [hideDeleteFilters]="true">
       <ng-container matColumnDef="choix">
         <th mat-header-cell *matHeaderCellDef>Choix</th>
@@ -201,6 +217,154 @@
     </div>
   </div>
 
+  <div *ngIf="form.value.modificationSalarie">
+    <div class="text-title">Modification du tuteur professionnel</div>
+    <mat-divider></mat-divider>
+
+    <div class="mt-3 mb-3">Tuteur professionnel actuel :</div>
+    <div class="row mb-3">
+      <div class="col-sm-3 font-weight-bold">Nom</div>
+      <div class="col-sm-9">{{convention.contact.nom}}</div>
+      <div class="col-sm-3 font-weight-bold">Prénom</div>
+      <div class="col-sm-9">{{convention.contact.prenom}}</div>
+      <div class="col-sm-3 font-weight-bold">Civilité</div>
+      <div class="col-sm-9">{{convention.contact.civilite ? convention.contact.civilite.libelle : null}}</div>
+      <div class="col-sm-3 font-weight-bold">Fonction</div>
+      <div class="col-sm-9">{{convention.contact.fonction}}</div>
+      <div class="col-sm-3 font-weight-bold">Téléphone</div>
+      <div class="col-sm-9">{{convention.contact.tel}}</div>
+      <div class="col-sm-3 font-weight-bold">Email</div>
+      <div class="col-sm-9">{{convention.contact.mail}}</div>
+      <div class="col-sm-3 font-weight-bold">Fax</div>
+      <div class="col-sm-9">{{convention.contact.fax}}</div>
+    </div>
+    <div>Sélectionez un nouveau tuteur professionnel :</div>
+    <app-table [service]="contactService" [columns]="contactTableColumns" [sortColumn]="contactSortColumn" [filters]="contactFilters"
+               matSort [matSortActive]="contactSortColumn" [matSortDirection]="'asc'" (matSortChange)="contactAppTable ? contactAppTable.sorting($event) : null"
+               [noResultText]="'Aucun contact trouvé'" [hideDeleteFilters]="true">
+      <ng-container matColumnDef="choix">
+        <th mat-header-cell *matHeaderCellDef>Choix</th>
+        <td mat-cell *matCellDef="let row">
+          <mat-checkbox class="col-12" (click)="$event.preventDefault();selectContact(row)" [checked]="row.id === contact.id"></mat-checkbox>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="centreGestionnaire">
+        <th mat-header-cell *matHeaderCellDef>Centre gestionnaire</th>
+        <td mat-cell *matCellDef="let row">{{row.centreGestionnaire ? row.centreGestionnaire.nomCentre : null}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="civilite">
+        <th mat-header-cell *matHeaderCellDef>Civilité</th>
+        <td mat-cell *matCellDef="let row">{{row.civilite ? row.civilite.libelle : null}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="nom">
+        <th mat-header-cell *matHeaderCellDef>Nom</th>
+        <td mat-cell *matCellDef="let row">{{row.nom}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="prenom">
+        <th mat-header-cell *matHeaderCellDef>Prénom</th>
+        <td mat-cell *matCellDef="let row">{{row.prenom}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="telephone">
+        <th mat-header-cell *matHeaderCellDef>Téléphone</th>
+        <td mat-cell *matCellDef="let row">{{row.telephone}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="mail">
+        <th mat-header-cell *matHeaderCellDef>Mail</th>
+        <td mat-cell *matCellDef="let row">{{row.mail}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="fax">
+        <th mat-header-cell *matHeaderCellDef>Fax</th>
+        <td mat-cell *matCellDef="let row">{{row.fax}}</td>
+      </ng-container>
+    </app-table>
+
+
+    <div class="row mt-3 mb-3">
+      <div class="col-md-12">
+        <button mat-flat-button type="button" (click)="createContact()" color="primary">Créer un nouveau tuteur</button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="form.value.modificationEnseignant">
+    <div class="text-title">Modification de l'enseignant référant</div>
+    <mat-divider></mat-divider>
+    <div class="mt-3 mb-3">Enseignant actuel :</div>
+    <div class="row mb-3">
+      <div class="col-sm-3 font-weight-bold">Nom / Prénom</div>
+      <div class="col-sm-9">{{convention.enseignant.nom+ ' ' + convention.enseignant.prenom}}</div>
+      <div class="col-sm-3 font-weight-bold">Fonction</div>
+      <div class="col-sm-9">{{convention.enseignant.typePersonne}}</div>
+      <div class="col-sm-3 font-weight-bold">Téléphone</div>
+      <div class="col-sm-9">{{convention.enseignant.tel}}</div>
+      <div class="col-sm-3 font-weight-bold">Mail</div>
+      <div class="col-sm-9">{{convention.enseignant.mail}}</div>
+    </div>
+
+    <div class="mb-3" >Recherchez un nouvel enseignant :</div>
+    <form [formGroup]="enseignantSearchForm" novalidate class="mt-3">
+      <div class="row">
+        <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+          <mat-label>Nom</mat-label>
+          <input matInput formControlName="nom" />
+        </mat-form-field>
+        <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+          <mat-label>Prénom</mat-label>
+          <input matInput formControlName="prenom" />
+        </mat-form-field>
+      </div>
+    </form>
+
+    <div class="alert alert-info" *ngIf="enseignants.length > 10">La recherche est limitée à 10 enseignants. Veuillez affiner la recherche si l'enseignant n'apparaît pas.</div>
+    <table mat-table [dataSource]="enseignants | slice:0:10" *ngIf="enseignants.length > 0">
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="9999">Aucun enseignant trouvé</td>
+      </tr>
+      <ng-container matColumnDef="nomprenom">
+        <th mat-header-cell *matHeaderCellDef>Nom / Prénom</th>
+        <td mat-cell *matCellDef="let row">{{row.displayName}}</td>
+      </ng-container>
+      <ng-container matColumnDef="mail">
+        <th mat-header-cell *matHeaderCellDef>Mail</th>
+        <td mat-cell *matCellDef="let row">{{row.mail}}</td>
+      </ng-container>
+      <ng-container matColumnDef="departement">
+        <th mat-header-cell *matHeaderCellDef>Département</th>
+        <td mat-cell *matCellDef="let row">-</td>
+      </ng-container>
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row">
+          <button mat-button mat-stroked-button (click)="$event.preventDefault();chooseEnseignant(row)" color="primary">
+            <span *ngIf="true"><i class="fa fa-check"></i> Sélectionner</span>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="enseignantColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: enseignantColumns;"></tr>
+    </table>
+    <div class="mt-3" *ngIf="enseignant">
+      <div class="mb-3">Nouvel Enseignant :</div>
+      <div class="row mb-3">
+        <div class="col-sm-3 font-weight-bold">Nom / Prénom</div>
+        <div class="col-sm-9">{{enseignant.nom+ ' ' + enseignant.prenom}}</div>
+        <div class="col-sm-3 font-weight-bold">Fonction</div>
+        <div class="col-sm-9">{{enseignant.typePersonne}}</div>
+        <div class="col-sm-3 font-weight-bold">Téléphone</div>
+        <div class="col-sm-9">{{enseignant.tel}}</div>
+        <div class="col-sm-3 font-weight-bold">Mail</div>
+        <div class="col-sm-9">{{convention.enseignant.mail}}</div>
+      </div>
+    </div>
+  </div>
+
   <div *ngIf="form.value.modificationAutre">
     <div class="text-title">Autre modification</div>
     <mat-divider></mat-divider>
@@ -214,10 +378,13 @@
   </div>
   <div class="row mt-3">
     <div class="col-sm-6">
-      <button mat-button type="button" mat-stroked-button color="warn" (click)="cancel()">{{'BOUTON_ANNULER'|contenu}}</button>
+      <button mat-button type="button" mat-stroked-button color="warn" (click)="cancel()" *ngIf="!avenant.id">{{'BOUTON_ANNULER'|contenu}}</button>
+      <span (confirm)="delete()" [confirmMessage]="'Êtes-vous sûr de vouloir supprimer cet avenant ?'" *ngIf="avenant.id">
+        <button mat-button type="button" mat-stroked-button color="warn">{{'Supprimer'}}</button>
+      </span>
     </div>
     <div class="col-sm-6 text-right">
-      <button mat-button mat-flat-button color="primary" [disabled]="!customFormValidation()">{{avenant.id?'Modifier':'Créer'}}</button>
+      <button mat-button mat-flat-button color="primary" [disabled]="!customValidForm">{{avenant.id?'Modifier':'Créer'}}</button>
     </div>
   </div>
 </form>
