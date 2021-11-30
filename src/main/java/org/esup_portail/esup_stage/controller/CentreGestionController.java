@@ -25,15 +25,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.File;
-import java.io.IOException;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -333,6 +336,38 @@ public class CentreGestionController {
         }
 
         return null;
+    }
+
+    @PostMapping("/{id}/resize-logo")
+    @Secure()
+    public void resizeLogoCentre(@PathVariable("id") int id, @RequestBody List<Integer> dimensions) {
+        CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
+        if (centreGestion.getFichier() != null) {
+            byte[] image;
+            try {
+                String filename = this.getNomFichier(centreGestion.getFichier().getId(), centreGestion.getFichier().getNom());
+                image = FileUtils.readFileToByteArray(new File(this.getFilePath(filename)));
+
+                // Récupération de l'image originale
+                InputStream in = new ByteArrayInputStream(image);
+                BufferedImage originalImage = ImageIO.read(in);
+
+                // Création d'une nouvelle image à partir de l'originale et des dimensions spécifiées
+                Integer width = dimensions.get(0);
+                Integer height = dimensions.get(1);
+                Image resizedImage = originalImage.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+                BufferedImage outputImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+                outputImage.getGraphics().drawImage(resizedImage, 0, 0, null);
+                ByteArrayOutputStream os = new ByteArrayOutputStream();
+                ImageIO.write(outputImage, "png", os);
+                InputStream is = new ByteArrayInputStream(os.toByteArray());
+
+                Path uploadLocation = Paths.get(this.getFilePath(filename));
+                Files.copy(is, uploadLocation, StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors du redimensionnement de l'image");
+            }
+        }
     }
 
     private String getFilePath(String filename) {

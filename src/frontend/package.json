@@ -30,6 +30,7 @@
     "ngx-progressbar": "^6.1.1",
     "ngx-quill": "^14.3.0",
     "quill": "^1.3.7",
+    "quill-blot-formatter": "^1.0.5",
     "rxjs": "~6.6.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"

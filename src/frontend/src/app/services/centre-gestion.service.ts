@@ -82,4 +82,8 @@ export class CentreGestionService implements PaginatedService {
   getLogoCentre(id: number): Observable<any> {
     return this.http.get(`${environment.apiUrl}/centre-gestion/${id}/logo-centre`, { responseType: 'blob'});
   }
+
+  resizeLogoCentre(id: number, data: any): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/centre-gestion/${id}/resize-logo`, data)
+  }
 }

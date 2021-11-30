@@ -1,6 +1,11 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CentreGestionService } from "../../../services/centre-gestion.service";
 import { MessageService } from "../../../services/message.service";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { debounceTime } from 'rxjs/operators';
+import Quill from 'quill'
+import BlotFormatter from 'quill-blot-formatter';
+Quill.register('modules/blotFormatter', BlotFormatter);
 
 @Component({
   selector: 'app-logo-centre',
@@ -10,17 +15,34 @@ import { MessageService } from "../../../services/message.service";
 export class LogoCentreComponent implements OnInit {
 
   @Input() centreGestion: any;
-
   @Output() refreshCentreGestion = new EventEmitter<any>();
 
   logoFile: File|undefined;
   url: any;
   currentFile: any;
 
-  constructor(private centreGestionService: CentreGestionService, private messageService: MessageService) { }
+  modules = {};
+  form: FormGroup;
+
+  dimensions: any[] = [];
+  height: any;
+  width: any;
+
+  constructor(private centreGestionService: CentreGestionService, private messageService: MessageService, private fb: FormBuilder,) {
+    this.modules = {
+      blotFormatter: {
+      },
+      toolbar: false
+    }
+
+    this.form = this.fb.group({
+      content: [null]
+    });
+  }
 
   ngOnInit(): void {
     this.getLogo();
+    this.resizeLogoOnChange();
   }
 
   onLogoChange(event: any): void {
@@ -50,7 +72,30 @@ export class LogoCentreComponent implements OnInit {
         reader.readAsDataURL(this.currentFile);
         reader.onload = (_event) => {
           this.url = reader.result;
+          this.form.get('content')?.setValue('<p style="text-align: center"><img src="' + this.url + '" /><p>');
         }
+      }
+    });
+  }
+
+  setImageSize(event: any) {
+    if (event.content.ops[0].attributes) {
+      this.height = Math.round(event.content.ops[0].attributes.height);
+      this.width = Math.round(event.content.ops[0].attributes.width);
+    }
+  }
+
+  resizeLogoOnChange() {
+    this.form.valueChanges.pipe(debounceTime(500)).subscribe(val => {
+      if (this.height != null && this.width != null) {
+        this.dimensions.push(this.width)
+        this.dimensions.push(this.height)
+        this.centreGestionService.resizeLogoCentre(this.centreGestion.id, this.dimensions).subscribe((response: any) => {
+          this.dimensions = [];
+          this.height = null;
+          this.width = null;
+          this.getLogo();
+        });
       }
     });
   }

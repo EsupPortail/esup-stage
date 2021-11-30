@@ -2,12 +2,12 @@
   <mat-card-content>
     <div class="col-md-3 mb-2">
       <button mat-stroked-button color="primary" (click)="logoInput.click()">
-        <span>Logo</span>
+        <span>{{currentFile && currentFile.size > 0 ? 'Changer de logo' : 'Insérer un logo'}}</span>
         <input #logoInput type="file" (change)="onLogoChange($event)" accept="image/*" style="display:none">
       </button>
-      <div *ngIf="currentFile && currentFile.size > 0">
-        <img #logo id="logo-centre" [src]="url" alt="logo" />
-      </div>
     </div>
+    <form [formGroup]="form" *ngIf="currentFile && currentFile.size > 0">
+      <quill-editor [modules]="modules" formControlName="content" (onContentChanged)="setImageSize($event)"></quill-editor>
+    </form>
   </mat-card-content>
 </mat-card>
