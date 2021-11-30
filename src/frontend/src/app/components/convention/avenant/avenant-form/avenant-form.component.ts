@@ -2,15 +2,18 @@ import { Component, Output, EventEmitter, OnInit, Input, ViewChild  } from '@ang
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { ServiceService } from "../../../../services/service.service";
+import { ContactService } from "../../../../services/contact.service";
 import { MessageService } from "../../../../services/message.service";
 import { ModeVersGratificationService } from "../../../../services/mode-vers-gratification.service";
 import { UniteDureeService } from "../../../../services/unite-duree.service";
 import { UniteGratificationService } from "../../../../services/unite-gratification.service";
 import { DeviseService } from "../../../../services/devise.service";
+import { CiviliteService } from "../../../../services/civilite.service";
 import { PaysService } from "../../../../services/pays.service";
 import { AvenantService } from "../../../../services/avenant.service";
 import { TableComponent } from "../../../table/table.component";
 import { ServiceAccueilFormComponent } from '../../../gestion-etab-accueil/service-accueil-form/service-accueil-form.component';
+import { ContactFormComponent } from '../../../gestion-etab-accueil/contact-form/contact-form.component';
 
 @Component({
   selector: 'app-avenant-form',
@@ -28,12 +31,17 @@ export class AvenantFormComponent implements OnInit {
   uniteGratifications: any[] = [];
   devises: any[] = [];
   countries: any[] = [];
+  civilites: any[] = [];
 
   service: any = 0;
+  contact: any = 0;
 
   serviceTableColumns = ['choix','nom', 'voie', 'codePostal','batimentResidence', 'commune'];
-  sortColumn = 'nom';
-  filters: any[] = [];
+  contactTableColumns = ['choix','centreGestionnaire', 'civilite', 'nom','prenom', 'telephone', 'mail', 'fax'];
+  serviceSortColumn = 'nom';
+  contactSortColumn = 'nom';
+  serviceFilters: any[] = [];
+  contactFilters: any[] = [];
 
   @Input() avenant: any;
   @Input() convention: any;
@@ -43,14 +51,17 @@ export class AvenantFormComponent implements OnInit {
   autreModifChecked: boolean = false;
 
   @Output() validated = new EventEmitter<any>();
-  @ViewChild(TableComponent) appTable: TableComponent | undefined;
+  @ViewChild(TableComponent) serviceAppTable: TableComponent | undefined;
+  @ViewChild(TableComponent) contactAppTable: TableComponent | undefined;
 
   constructor(private avenantService: AvenantService,
               public serviceService: ServiceService,
+              public contactService: ContactService,
               private modeVersGratificationService: ModeVersGratificationService,
               private uniteDureeService: UniteDureeService,
               private uniteGratificationService: UniteGratificationService,
               private deviseService: DeviseService,
+              private civiliteService: CiviliteService,
               private paysService: PaysService,
               private fb: FormBuilder,
               private messageService: MessageService,
@@ -74,9 +85,16 @@ export class AvenantFormComponent implements OnInit {
     this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServPays: {value: 'O', type: 'text'}})).subscribe((response: any) => {
       this.countries = response.data;
     });
+    this.civiliteService.getPaginated(1, 0, 'libelle', 'asc','').subscribe((response: any) => {
+      this.civilites = response.data;
+    });
 
-    this.filters = [
+    this.serviceFilters = [
         { id: 'structure.id', libelle: 'Structure', type: 'int',value:this.convention.structure.id, hidden : true},
+    ];
+
+    this.contactFilters = [
+        { id: 'service.id', libelle: 'Service', type: 'int',value:this.convention.service.id, hidden : true},
     ];
 
     if (this.avenant.modificationLieu){
@@ -85,6 +103,12 @@ export class AvenantFormComponent implements OnInit {
       this.service = this.convention.service;
     }
 
+    if (this.avenant.modificationTuteurPro){
+      this.contact = this.avenant.contact;
+    }else{
+      this.contact = this.convention.contact;
+    }
+    console.log('this.avenant : ' + JSON.stringify(this.avenant, null, 2))
     if (this.avenant.id){
       this.form = this.fb.group({
         titreAvenant: [this.avenant.titreAvenant],
@@ -100,10 +124,10 @@ export class AvenantFormComponent implements OnInit {
         modificationLieu: [this.avenant.modificationLieu],
         modificationSujet: [this.avenant.modificationSujet],
         sujetStage: [this.avenant.sujetStage],
-        modificationTuteurPro: [this.avenant.modificationTuteurPro],
+        modificationSalarie: [this.avenant.modificationSalarie],
         modificationEnseignant: [this.avenant.modificationEnseignant],
         modificationMontantGratification: [this.avenant.modificationMontantGratification],
-        montantGratification: [this.avenant.montantGratification],
+        montantGratification: [this.avenant.montantGratification, [Validators.maxLength(7)]],
         idUniteGratification: [this.avenant.UniteGratification?this.avenant.UniteGratification.id:null],
         idUniteDuree: [this.avenant.uniteDuree?this.avenant.uniteDuree.id:null],
         idModeVersGratification: [this.avenant.modeVersGratification?this.avenant.modeVersGratification.id:null],
@@ -127,7 +151,7 @@ export class AvenantFormComponent implements OnInit {
         modificationLieu: [null],
         modificationSujet: [null],
         sujetStage: [null],
-        modificationTuteurPro: [false],
+        modificationSalarie: [false],
         modificationEnseignant: [null],
         modificationMontantGratification: [null],
         montantGratification: [null, [Validators.maxLength(7)]],
@@ -153,6 +177,9 @@ export class AvenantFormComponent implements OnInit {
       if (this.form.get('modificationLieu')!.value){
         data.idService = this.service.id;
       }
+      if (this.form.get('modificationSalarie')!.value){
+        data.idContact = this.contact.id;
+      }
 
       if (this.avenant.id){
         this.avenantService.update(this.avenant.id,data).subscribe((response: any) => {
@@ -171,7 +198,7 @@ export class AvenantFormComponent implements OnInit {
 
   customFormValidation(): boolean {
     let valid = false;
-    const checkboxFields = ['dateRupture', 'modificationPeriode', 'modificationLieu', 'modificationSujet', 'modificationTuteurPro',
+    const checkboxFields = ['dateRupture', 'modificationPeriode', 'modificationLieu', 'modificationSujet', 'modificationSalarie',
        'modificationEnseignant', 'modificationMontantGratification', 'modificationAutre'];
 
     checkboxFields.forEach((field: string) => {
@@ -194,6 +221,13 @@ export class AvenantFormComponent implements OnInit {
     this.openServiceFormModal(null);
   }
 
+  selectContact(row: any): void{
+    this.contact = row;
+  }
+
+  createContact(): void {
+    this.openContactFormModal(null);
+  }
   openServiceFormModal(service: any) {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.width = '1000px';
@@ -203,7 +237,21 @@ export class AvenantFormComponent implements OnInit {
       if (dialogResponse) {
         this.messageService.setSuccess("Service créé avec succès");
         this.service = dialogResponse;
-        this.appTable!.update();
+        this.serviceAppTable!.update();
+      }
+    });
+  }
+
+  openContactFormModal(contact: any) {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.width = '1000px';
+    dialogConfig.data = {contact: contact, service: this.convention.service, civilites: this.civilites};
+    const modalDialog = this.matDialog.open(ContactFormComponent, dialogConfig);
+    modalDialog.afterClosed().subscribe(dialogResponse => {
+      if (dialogResponse) {
+        this.messageService.setSuccess("Contact créé avec succès");
+        this.contact = dialogResponse;
+        this.contactAppTable!.update();
       }
     });
   }
