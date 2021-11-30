@@ -55,6 +55,15 @@ public class MailerService {
         sendMail(to, templateMail, mailContext, false);
     }
 
+    public void sendAlerteCreationAvenantParEtudiant(String to, Avenant avenant, Utilisateur userModif) {
+        TemplateMail templateMail = templateMailJpaRepository.findByCode(TemplateMail.CODE_ETU_CREA_AVENANT);
+        if (templateMail == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Template mail ETU_CREA_AVENANT non trouvé");
+        }
+        MailContext mailContext = new MailContext(applicationBootstrap, null, avenant, userModif);
+        sendMail(to, templateMail, mailContext, false);
+    }
+
     public void sendTest(SendMailTestDto sendMailTestDto, Utilisateur utilisateur) {
         TemplateMail templateMail = templateMailJpaRepository.findByCode(sendMailTestDto.getTemplateMail());
         if (templateMail == null) {
