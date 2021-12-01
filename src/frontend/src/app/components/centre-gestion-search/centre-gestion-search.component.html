@@ -27,7 +27,7 @@
   </ng-container>
   <ng-container matColumnDef="codeConfidentialite">
     <th mat-header-cell *matHeaderCellDef>Confidentialité</th>
-    <td mat-cell *matCellDef="let row">{{row.codeConfidentialite.libelle}}</td>
+    <td mat-cell *matCellDef="let row">{{row.codeConfidentialite ? row.codeConfidentialite.libelle : ''}}</td>
   </ng-container>
   <ng-container matColumnDef="action">
     <th mat-header-cell *matHeaderCellDef>Actions</th>

@@ -93,6 +93,7 @@ import { MatMenuModule } from "@angular/material/menu";
 import { ValidationComponent } from './components/convention/validation/validation.component';
 import { ValidationCardComponent } from './components/convention/validation/validation-card/validation-card.component';
 import { LogoCentreComponent } from './components/centre-gestion/logo-centre/logo-centre.component';
+import { DragDropModule } from "@angular/cdk/drag-drop";
 
 registerLocaleData(localeFr, 'fr');
 
@@ -182,6 +183,7 @@ registerLocaleData(localeFr, 'fr');
     MatChipsModule,
     MatAutocompleteModule,
     MatMenuModule,
+    DragDropModule,
   ],
   providers: [
     CookieService,

@@ -7,6 +7,7 @@ import { EnseignantService } from "../../../services/enseignant.service";
 import { MatExpansionPanel } from "@angular/material/expansion";
 import { debounceTime } from "rxjs/operators";
 import { ConfigService } from "../../../services/config.service";
+import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 
 @Component({
   selector: 'app-param-centre',
@@ -28,6 +29,7 @@ export class ParamCentreComponent implements OnInit {
   etablissementConfidentialite: any;
 
   validationLibelles: any = {};
+  validationsActives: any[] = [];
 
   @ViewChildren(MatExpansionPanel) pannels: QueryList<MatExpansionPanel>;
 
@@ -51,15 +53,29 @@ export class ParamCentreComponent implements OnInit {
     this.configService.getConfigGenerale().subscribe((response: any) => {
       this.validationLibelles.validationPedagogique = response.validationPedagogiqueLibelle;
       this.validationLibelles.validationConvention = response.validationAdministrativeLibelle;
+      if (this.centreGestion.id) {
+        this.setFormData();
+      }
     });
-    if (this.centreGestion.id) {
-      this.setFormData();
-    }
     this.viseurForm.valueChanges.pipe(debounceTime(500)).subscribe(() => {
       this.search();
     });
     this.getConfidentialites();
     this.getEtablissementConfidentialite();
+
+    for (let validation of ['validationPedagogique', 'verificationAdministrative', 'validationConvention']) {
+      this.form.get(validation)?.valueChanges.subscribe(val => {
+        if (val) {
+          this.addValidation(validation);
+        } else {
+          this.removeValidation(validation);
+          // On désactive la vérification administrative
+          if (validation === 'validationPedagogique') {
+            this.form.get('verificationAdministrative')?.setValue(false);
+          }
+        }
+      });
+    }
   }
 
   getConfidentialites() {
@@ -86,8 +102,10 @@ export class ParamCentreComponent implements OnInit {
       saisieTuteurProParEtudiant: this.centreGestion.saisieTuteurProParEtudiant,
       autorisationEtudiantCreationConvention: this.centreGestion.autorisationEtudiantCreationConvention,
       validationPedagogique: this.centreGestion.validationPedagogique,
+      verificationAdministrative: this.centreGestion.verificationAdministrative,
       validationConvention: this.centreGestion.validationConvention,
       validationPedagogiqueOrdre: this.centreGestion.validationPedagogiqueOrdre,
+      verificationAdministrativeOrdre: this.centreGestion.verificationAdministrativeOrdre,
       validationConventionOrdre: this.centreGestion.validationConventionOrdre,
       recupInscriptionAnterieure: this.centreGestion.recupInscriptionAnterieure,
       dureeRecupInscriptionAnterieure: this.centreGestion.dureeRecupInscriptionAnterieure,
@@ -165,6 +183,43 @@ export class ParamCentreComponent implements OnInit {
       return option.code === value.code;
     }
     return false;
+  }
+
+  dropValidation(event: CdkDragDrop<string[]>): void {
+    moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+    this.reorderValidations();
+  }
+
+  reorderValidations(): void {
+    let ordre = 1;
+    this.validationsActives.map((v: any) => v.ordre = ordre++);
+    let lastOrdre = 0;
+    this.validationsActives.forEach((v: any) => {
+      this.form.get(v.id + 'Ordre')?.setValue(v.ordre);
+      lastOrdre = v.ordre;
+    });
+    for (let validation of ['validationPedagogique', 'verificationAdministrative', 'validationConvention']) {
+      if (!this.form.get(validation)?.value) {
+        this.form.get(validation + 'Ordre')?.setValue(++lastOrdre);
+      }
+    }
+  }
+
+  addValidation(validation: string): void {
+    const ordres = this.validationsActives.map((v: any) => v.ordre);
+    let lastOrdre = 0;
+    if (ordres.length > 0) {
+      lastOrdre = Math.max.apply(Math, ordres);
+    }
+    this.validationsActives.push({ id: validation, ordre: lastOrdre + 1, libelle: this.validationLibelles[validation] ?? 'vérification administrative'})
+  }
+
+  removeValidation(validation: string): void {
+    const index = this.validationsActives.findIndex((v: any) => v.id === validation);
+    if (index > -1) {
+      this.validationsActives.splice(index, 1);
+      this.reorderValidations();
+    }
   }
 
 }

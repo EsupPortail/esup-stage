@@ -7,75 +7,83 @@
     <mat-card>
       <mat-card-content>
         <form [formGroup]="form">
-          <div>
-            <span>Critère de gestion de la confidentialité :</span>
-            <mat-form-field class="col-sm-12 col-md-2">
-              <mat-select formControlName="codeConfidentialite" [compareWith]="compareCode">
-                <mat-option *ngFor="let confidentialite of confidentialites" [value]="confidentialite">{{confidentialite.libelle}}</mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-          <div>
-            <mat-checkbox formControlName="saisieTuteurProParEtudiant">Autoriser les étudiants à saisir leur tuteur professionnel</mat-checkbox>
-          </div>
-          <div>
-            <mat-checkbox formControlName="autorisationEtudiantCreationConvention">Autoriser les étudiants à créer des conventions</mat-checkbox>
-          </div>
-          <div>
-            <mat-checkbox formControlName="recupInscriptionAnterieure" (change)="toggleRecupInscription()">Autoriser les gestionnaires à créer des conventions sur l'année universitaire précédente</mat-checkbox>
-          </div>
-          <div *ngIf="form.get('recupInscriptionAnterieure')?.value">
-            <span><i>Limité à une durée de</i></span>
-            <mat-form-field class="col-sm-12 col-md-2">
-              <mat-select formControlName="dureeRecupInscriptionAnterieure">
-                <mat-option></mat-option>
-                <mat-option *ngFor="let duree of dureeRecupList" [value]="duree">{{duree}} Mois</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <span><i>après la date de bascule de l'année universitaire</i></span>
-          </div>
-          <div>
-            <span>Url de la page d'instruction des consignes d'impression (facultatif)</span><br>
-            <mat-form-field class="col-sm-12 col-md-6" appearance="fill" style="margin-left: -15px">
-              <input matInput placeholder="http://siteinternet.fr/..." formControlName="urlPageInstruction">
-            </mat-form-field>
-          </div>
-          <div>
-            <mat-checkbox formControlName="validationPedagogique">{{validationLibelles.validationPedagogique}} des conventions</mat-checkbox>
-          </div>
-          <div class="row" *ngIf="form.get('validationPedagogique')?.value && form.get('validationConvention')?.value">
-            <mat-form-field class="col-12" appearance="fill">
-              <mat-label>Ordre {{validationLibelles.validationPedagogique}}</mat-label>
-              <input matInput type="number" formControlName="validationPedagogiqueOrdre">
-            </mat-form-field>
-          </div>
-          <div>
-            <mat-checkbox formControlName="validationConvention">{{validationLibelles.validationConvention}} des conventions</mat-checkbox>
-          </div>
-          <div class="row" *ngIf="form.get('validationPedagogique')?.value && form.get('validationConvention')?.value">
-            <mat-form-field class="col-12" appearance="fill">
-              <mat-label>Ordre {{validationLibelles.validationConvention}}</mat-label>
-              <input matInput type="number" formControlName="validationConventionOrdre">
-            </mat-form-field>
-          </div>
-          <div *ngIf="form.get('nomViseur')?.value">
-            <div class="row">
-              <div class="col-sm-6"><b>Nom du viseur</b> &nbsp; {{form.get('nomViseur')?.value}}</div>
-            </div>
-            <div class="row">
-              <div class="col-sm-6"><b>Prénom du viseur</b> &nbsp; {{form.get('prenomViseur')?.value}}</div>
-            </div>
-            <div class="row">
-              <div class="col-sm-6">
-                <b>Qualité du viseur</b>
-                <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
-                  <input matInput formControlName="qualiteViseur">
+          <div class="row">
+            <div class="col-sm-12 col-md-8">
+              <div>
+                <span>Critère de gestion de la confidentialité :</span>
+                <mat-form-field class="col-sm-12 col-md-2">
+                  <mat-select formControlName="codeConfidentialite" [compareWith]="compareCode">
+                    <mat-option *ngFor="let confidentialite of confidentialites" [value]="confidentialite">{{confidentialite.libelle}}</mat-option>
+                  </mat-select>
                 </mat-form-field>
               </div>
+              <div>
+                <mat-checkbox formControlName="saisieTuteurProParEtudiant">Autoriser les étudiants à saisir leur tuteur professionnel</mat-checkbox>
+              </div>
+              <div>
+                <mat-checkbox formControlName="autorisationEtudiantCreationConvention">Autoriser les étudiants à créer des conventions</mat-checkbox>
+              </div>
+              <div>
+                <mat-checkbox formControlName="recupInscriptionAnterieure" (change)="toggleRecupInscription()">Autoriser les gestionnaires à créer des conventions sur l'année universitaire précédente</mat-checkbox>
+              </div>
+              <div *ngIf="form.get('recupInscriptionAnterieure')?.value">
+                <span><i>Limité à une durée de</i></span>
+                <mat-form-field class="col-sm-12 col-md-2">
+                  <mat-select formControlName="dureeRecupInscriptionAnterieure">
+                    <mat-option></mat-option>
+                    <mat-option *ngFor="let duree of dureeRecupList" [value]="duree">{{duree}} Mois</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <span><i>après la date de bascule de l'année universitaire</i></span>
+              </div>
+              <div>
+                <span>Url de la page d'instruction des consignes d'impression (facultatif)</span><br>
+                <mat-form-field class="col-sm-12 col-md-6" appearance="fill" style="margin-left: -15px">
+                  <input matInput placeholder="http://siteinternet.fr/..." formControlName="urlPageInstruction">
+                </mat-form-field>
+              </div>
+              <div *ngIf="form.get('nomViseur')?.value">
+                <div class="row">
+                  <div class="col-sm-6"><b>Nom du viseur</b> &nbsp; {{form.get('nomViseur')?.value}}</div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-6"><b>Prénom du viseur</b> &nbsp; {{form.get('prenomViseur')?.value}}</div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-6">
+                    <b>Qualité du viseur</b>
+                    <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
+                      <input matInput formControlName="qualiteViseur">
+                    </mat-form-field>
+                  </div>
+                </div>
+                <mat-dialog-actions>
+                  <button mat-flat-button color="warn" (click)="resetViseur()">Retirer ce viseur</button>
+                </mat-dialog-actions>
+              </div>
             </div>
-            <mat-dialog-actions>
-              <button mat-flat-button color="warn" (click)="resetViseur()">Retirer ce viseur</button>
-            </mat-dialog-actions>
+            <div class="col-sm-12 col-md-4">
+              <div class="text-title"><i class="fa fa-check"></i> Validations</div>
+              <div>
+                <mat-checkbox formControlName="validationPedagogique">{{validationLibelles.validationPedagogique}} des conventions</mat-checkbox>
+              </div>
+              <div *ngIf="form.get('validationPedagogique')?.value">
+                <div>
+                  <mat-checkbox formControlName="verificationAdministrative">Vérification administrative des conventions</mat-checkbox>
+                </div>
+              </div>
+              <div>
+                <mat-checkbox formControlName="validationConvention">{{validationLibelles.validationConvention}} des conventions</mat-checkbox>
+              </div>
+              <div *ngIf="validationsActives.length > 0">
+                <p>Choix de l'ordre :</p>
+                <div cdkDropList [cdkDropListData]="validationsActives" (cdkDropListDropped)="dropValidation($event)">
+                  <div class="validation-ordre" *ngFor="let val of validationsActives" cdkDrag>
+                    <span cdkDragHandle>{{val.ordre}}</span>{{val.libelle}}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </form>
       </mat-card-content>

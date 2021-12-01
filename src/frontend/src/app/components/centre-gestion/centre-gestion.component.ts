@@ -215,8 +215,10 @@ export class CentreGestionComponent implements OnInit {
       saisieTuteurProParEtudiant: [null],
       autorisationEtudiantCreationConvention: [null],
       validationPedagogique: [null],
+      verificationAdministrative: [null],
       validationConvention: [null],
       validationPedagogiqueOrdre: [null],
+      verificationAdministrativeOrdre: [null],
       validationConventionOrdre: [null],
       recupInscriptionAnterieure: [null],
       dureeRecupInscriptionAnterieure: [null],
@@ -232,8 +234,10 @@ export class CentreGestionComponent implements OnInit {
     this.centreGestion.saisieTuteurProParEtudiant = this.paramCentreForm.get('saisieTuteurProParEtudiant')?.value;
     this.centreGestion.autorisationEtudiantCreationConvention = this.paramCentreForm.get('autorisationEtudiantCreationConvention')?.value;
     this.centreGestion.validationPedagogique = this.paramCentreForm.get('validationPedagogique')?.value;
+    this.centreGestion.verificationAdministrative = this.paramCentreForm.get('verificationAdministrative')?.value;
     this.centreGestion.validationConvention = this.paramCentreForm.get('validationConvention')?.value;
     this.centreGestion.validationPedagogiqueOrdre = this.paramCentreForm.get('validationPedagogiqueOrdre')?.value;
+    this.centreGestion.verificationAdministrativeOrdre = this.paramCentreForm.get('verificationAdministrativeOrdre')?.value;
     this.centreGestion.validationConventionOrdre = this.paramCentreForm.get('validationConventionOrdre')?.value;
     this.centreGestion.recupInscriptionAnterieure = this.paramCentreForm.get('recupInscriptionAnterieure')?.value;
     this.centreGestion.dureeRecupInscriptionAnterieure = this.paramCentreForm.get('dureeRecupInscriptionAnterieure')?.value;
@@ -241,16 +245,6 @@ export class CentreGestionComponent implements OnInit {
     this.centreGestion.nomViseur = this.paramCentreForm.get('nomViseur')?.value;
     this.centreGestion.prenomViseur = this.paramCentreForm.get('prenomViseur')?.value;
     this.centreGestion.qualiteViseur = this.paramCentreForm.get('qualiteViseur')?.value;
-
-    // Si une seule validation, on met l'ordre de l'autre à 1 et celle active à 2
-    if (this.centreGestion.validationPedagogique && !this.centreGestion.validationConvention) {
-      this.centreGestion.validationConventionOrdre = 1;
-      this.centreGestion.validationPedagogiqueOrdre = 2;
-    }
-    if (this.centreGestion.validationConvention && !this.centreGestion.validationPedagogique) {
-      this.centreGestion.validationConventionOrdre = 2;
-      this.centreGestion.validationPedagogiqueOrdre = 1;
-    }
   }
 
 }
