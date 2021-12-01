@@ -1,18 +1,19 @@
 <div class="validation-card">
-  <h5 class="text-title">{{validationLibelles[validation]}}</h5>
+  <h5 class="text-title">{{validationLibelles[validation] ?? 'vérification administrative'}}</h5>
   <p *ngIf="validation === 'validationPedagogique'"><b>{{validationLibelles[validation]}} : </b>lorsque le projet de stage saisi par l'étudiant a été vérifié, l'autorisant ainsi à l'imprimer.</p>
   <p *ngIf="validation === 'validationConvention'"><b>{{validationLibelles[validation]}} : </b>lorsque tous les partenaires du stage ont signé la convention papier.</p>
+  <p *ngIf="validation === 'verificationAdministrative'"><b>vérification administrative : </b>lorsque la convention saisie par l'étudiant a été vérifiée, l'autorisant ainsi à l'imprimer.</p>
   <div class="text-center info" [class.validate]="convention[validation]">
     <ng-container *ngIf="convention[validation]; else nonValid">
-      <i class="fa fa-check"></i> {{validationLibelles[validation]}} effectuée.
+      <i class="fa fa-check"></i> {{validationLibelles[validation] ?? 'vérification administrative'}} effectuée.
       <div class="mt-3" *ngIf="canRevertValidation()">
-        <button type="button" mat-button mat-flat-button color="warn">Annuler la validation</button>
+        <button type="button" mat-button mat-flat-button color="warn" (click)="cancelValidation()">Annuler la validation</button>
       </div>
     </ng-container>
     <ng-template #nonValid>
-      <i class="fa fa-times"></i> En attente de la {{validationLibelles[validation]}}.
-      <div class="mt-3">
-        <button type="button" mat-button mat-flat-button color="primary">Valider</button>
+      <i class="fa fa-times"></i> En attente de la {{validationLibelles[validation] ?? 'vérification administrative'}}.
+      <div class="mt-3" *ngIf="canValidate()">
+        <button type="button" mat-button mat-flat-button color="primary" (click)="validate()">Valider</button>
       </div>
     </ng-template>
   </div>

@@ -46,10 +46,10 @@ public class MailerService {
      * Mettre sous formation de list "les infos étudiant", "le tuteur professionnel" etc et concatener les valeurs avec ", "
      */
 
-    public void sendAlerteValidationAdministrative(String to, Convention convention, Utilisateur userModif) {
-        TemplateMail templateMail = templateMailJpaRepository.findByCode(TemplateMail.CODE_CONVENTION_VALID_ADMINISTRATIVE);
+    public void sendAlerteValidation(String to, Convention convention, Utilisateur userModif, String templateMailCode) {
+        TemplateMail templateMail = templateMailJpaRepository.findByCode(templateMailCode);
         if (templateMail == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Template mail CONVENTION_VALID_ADMINISTRATIVE non trouvé");
+            throw new AppException(HttpStatus.NOT_FOUND, "Template mail " + templateMailCode + " non trouvé");
         }
         MailContext mailContext = new MailContext(applicationBootstrap, convention, null, userModif);
         sendMail(to, templateMail, mailContext, false);
@@ -320,13 +320,15 @@ public class MailerService {
             public TuteurProContext() { }
 
             public TuteurProContext(Contact contact, Structure structure, org.esup_portail.esup_stage.model.Service service) {
-                this.nom = contact.getNom();
-                this.prenom = contact.getPrenom();
-                this.mail = contact.getMail();
-                this.tel = contact.getTel();
+                if (contact != null) {
+                    this.nom = contact.getNom();
+                    this.prenom = contact.getPrenom();
+                    this.mail = contact.getMail();
+                    this.tel = contact.getTel();
+                    this.fonction = contact.getFonction();
+                }
                 this.etabAccueil = structure != null ? structure.getRaisonSociale() : null;
                 this.serviceAccueil = service != null ? service.getNom() : null;
-                this.fonction = contact.getFonction();
             }
 
             public String getNom() {
@@ -396,11 +398,13 @@ public class MailerService {
             public SignataireContext() { }
 
             public SignataireContext(Contact contact) {
-                this.nom = contact.getNom();
-                this.prenom = contact.getPrenom();
-                this.mail = contact.getMail();
-                this.tel = contact.getTel();
-                this.fonction = contact.getFonction();
+                if (contact != null) {
+                    this.nom = contact.getNom();
+                    this.prenom = contact.getPrenom();
+                    this.mail = contact.getMail();
+                    this.tel = contact.getTel();
+                    this.fonction = contact.getFonction();
+                }
             }
 
             public String getNom() {

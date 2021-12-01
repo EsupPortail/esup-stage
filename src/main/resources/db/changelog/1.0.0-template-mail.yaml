@@ -611,3 +611,91 @@ databaseChangeLog:
             name: libelle
             value: Prénom de l'utilisateur ayant modifié/validé
         tableName: ParamMail
+- changeSet:
+    id: templateMail-insert-2
+    author: ssound
+    changes:
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: CONVENTION_DEVALID_ADMINISTRATIVE
+        - column:
+            name: libelle
+            value: Dévalidation administrative d'une convention
+        - column:
+            name: objet
+            value: Dévalidation d'une convention
+        - column:
+            name: texte
+            value: Texte à modifier
+        - column:
+            name: dateCreation
+            value: now()
+        - column:
+            name: loginCreation
+            value: liquibase
+        tableName: TemplateMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: CONVENTION_DEVALID_PEDAGOGIQUE
+        - column:
+            name: libelle
+            value: Dévalidation pédagogique d'une convention
+        - column:
+            name: objet
+            value: Dévalidation d'une convention
+        - column:
+            name: texte
+            value: Texte à modifier
+        - column:
+            name: dateCreation
+            value: now()
+        - column:
+            name: loginCreation
+            value: liquibase
+        tableName: TemplateMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: CONVENTION_VERIF_ADMINISTRATIVE
+        - column:
+            name: libelle
+            value: Vérification administrative d'une convention
+        - column:
+            name: objet
+            value: Vérification d'une convention
+        - column:
+            name: texte
+            value: Texte à modifier
+        - column:
+            name: dateCreation
+            value: now()
+        - column:
+            name: loginCreation
+            value: liquibase
+        tableName: TemplateMail
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: CONVENTION_DEVERIF_ADMINISTRATIVE
+        - column:
+            name: libelle
+            value: Annulation de la vérification administrative d'une convention
+        - column:
+            name: objet
+            value: Vérification annulée d'une convention
+        - column:
+            name: texte
+            value: Texte à modifier
+        - column:
+            name: dateCreation
+            value: now()
+        - column:
+            name: loginCreation
+            value: liquibase
+        tableName: TemplateMail

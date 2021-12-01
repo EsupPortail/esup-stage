@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from "@angular/router";
 import { ConventionService } from "../../services/convention.service";
-import { MatTabChangeEvent } from "@angular/material/tabs";
+import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
 import { TitleService } from "../../services/title.service";
 import { AuthService } from "../../services/auth.service";
 
@@ -28,6 +28,8 @@ export class ConventionComponent implements OnInit {
 
   allValid = false;
   modifiable = true;
+
+  @ViewChild("tabGroup") tabGroup: MatTabGroup;
 
   constructor(private activatedRoute: ActivatedRoute, private conventionService: ConventionService, private titleService: TitleService, private authService: AuthService) { }
 
@@ -172,6 +174,17 @@ export class ConventionComponent implements OnInit {
 
   isEtudiant(): boolean {
     return this.authService.isEtudiant();
+  }
+
+  conventionValidated(convention: any): any {
+    this.convention = convention;
+    if (this.tabGroup) {
+      if (this.isConventionValide()) {
+        this.tabGroup.selectedIndex = 1;
+      } else {
+        this.tabGroup.selectedIndex = 8;
+      }
+    }
   }
 
 }
