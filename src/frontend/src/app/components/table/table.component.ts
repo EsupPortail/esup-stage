@@ -8,7 +8,7 @@ import {
   ViewChild
 } from '@angular/core';
 import { Sort, SortDirection } from "@angular/material/sort";
-import { PageEvent } from "@angular/material/paginator";
+import { MatPaginator, PageEvent } from "@angular/material/paginator";
 import { MatColumnDef, MatTable } from "@angular/material/table";
 import { PaginatedService } from "../../services/paginated.service";
 import { Observable, Subject } from "rxjs";
@@ -38,6 +38,8 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   @Output() onUpdated = new EventEmitter<any>();
 
   @ViewChild(MatTable, { static: true }) table: MatTable<any> | undefined;
+  @ViewChild("paginatorTop") paginatorTop: MatPaginator;
+  @ViewChild("paginatorBottom") paginatorBottom: MatPaginator;
   @ContentChildren(MatColumnDef) columnDefs: QueryList<MatColumnDef> | undefined;
 
   total: number = 0;
