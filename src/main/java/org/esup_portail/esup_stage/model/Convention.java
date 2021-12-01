@@ -330,8 +330,7 @@ public class Convention extends ObjetMetier {
     @OneToMany(mappedBy = "convention")
     private List<Avenant> avenants = new ArrayList<>();
 
-    @OneToOne(mappedBy = "convention", cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn
+    @OneToOne(mappedBy = "convention", cascade = {CascadeType.MERGE, CascadeType.REMOVE, CascadeType.PERSIST})
     private ConventionNomenclature nomenclature;
 
     @JsonView(Views.List.class)
@@ -1096,6 +1095,7 @@ public class Convention extends ObjetMetier {
 
     public void setNomenclature(ConventionNomenclature nomenclature) {
         this.nomenclature = nomenclature;
+        this.nomenclature.setConvention(this);
     }
 
     public String getLieuStage() {

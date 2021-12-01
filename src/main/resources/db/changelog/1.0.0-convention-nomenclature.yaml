@@ -6,9 +6,16 @@ databaseChangeLog:
     - createTable:
         columns:
         - column:
+            autoIncrement: true
             constraints:
                 nullable: false
                 primaryKey: true
+            name: id
+            type: INT
+        - column:
+            constraints:
+                nullable: false
+                unique: true
                 foreignKeyName: fk_ConventionNomenclature_Convention1
                 references: Convention(idConvention)
             name: idConvention

@@ -9,12 +9,11 @@ import javax.persistence.*;
 public class ConventionNomenclature {
     @Id
     @Column(nullable = false)
-    private int idConvention;
+    private int id;
 
     @JsonIgnore
     @OneToOne
-    @MapsId
-    @JoinColumn(name = "idConvention")
+    @JoinColumn(name = "idConvention", unique = true)
     private Convention convention;
 
     @Column(length = 100)
@@ -53,12 +52,12 @@ public class ConventionNomenclature {
     @Column(length = 50)
     private String uniteGratification;
 
-    public int getIdConvention() {
-        return idConvention;
+    public int getId() {
+        return id;
     }
 
-    public void setIdConvention(int idConvention) {
-        this.idConvention = idConvention;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public Convention getConvention() {

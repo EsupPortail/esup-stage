@@ -331,7 +331,7 @@ public class ConventionController {
             throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion non trouvé");
         }
         // la convention est modifiable si la dernière validation n'est pas faite
-        if (centreGestion.getValidationPedagogiqueOrdre() == 2 && convention.getValidationPedagogique() || centreGestion.getValidationConventionOrdre() == 2 && convention.getValidationConvention()) {
+        if (centreGestion.getValidationPedagogiqueOrdre() == 2 && convention.getValidationPedagogique() != null && convention.getValidationPedagogique() || centreGestion.getValidationConventionOrdre() == 2 && convention.getValidationConvention() != null && convention.getValidationConvention()) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La convention n'est plus modifiable");
         }
 
@@ -377,7 +377,7 @@ public class ConventionController {
     private void setSingleFieldData(Convention convention, ConventionSingleFieldDto conventionSingleFieldDto) {
         CentreGestion centreGestion = convention.getCentreGestion();
         // la convention est modifiable si la dernière validation n'est pas faite
-        if (centreGestion.getValidationPedagogiqueOrdre() == 2 && convention.getValidationPedagogique() || centreGestion.getValidationConventionOrdre() == 2 && convention.getValidationConvention()) {
+        if (centreGestion.getValidationPedagogiqueOrdre() == 2 && convention.getValidationPedagogique() != null && convention.getValidationPedagogique() || centreGestion.getValidationConventionOrdre() == 2 && convention.getValidationConvention() != null && convention.getValidationConvention()) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La convention n'est plus modifiable");
         }
         if (Objects.equals(conventionSingleFieldDto.getField(), "codeLangueConvention")){
