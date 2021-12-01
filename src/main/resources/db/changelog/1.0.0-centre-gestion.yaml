@@ -85,14 +85,14 @@ databaseChangeLog:
             valueBoolean: true
         - column:
             name: verificationAdministrative
-            valueBoolean: true
+            valueBoolean: false
         - column:
             name: validationPedagogiqueOrdre
             value: 1
         - column:
             name: verificationAdministrativeOrdre
-            value: 2
+            value: 3
         - column:
             name: validationConventionOrdre
-            value: 3
+            value: 2
         tableName: CentreGestion
