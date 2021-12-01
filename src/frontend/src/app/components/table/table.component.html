@@ -65,7 +65,7 @@
           <button type="button" mat-button mat-flat-button color="primary" *ngIf="actionButton" (click)="actionButton.action()">{{actionButton.libelle}}</button>
         </div>
         <div class="col-sm-12 col-md-6 text-right" [hidden]="hideDeleteFilters">
-          <button mat-button mat-stroked-button (click)="reset()">Supprimer les filtres</button>
+          <button type="button" mat-button mat-stroked-button (click)="reset()">Supprimer les filtres</button>
         </div>
       </div>
     </form>
