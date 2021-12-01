@@ -90,6 +90,9 @@ public class ConventionController {
     UtilisateurJpaRepository utilisateurJpaRepository;
 
     @Autowired
+    HistoriqueValidationJpaRepository historiqueValidationJpaRepository;
+
+    @Autowired
     ApogeeService apogeeService;
 
     @Autowired
@@ -270,7 +273,7 @@ public class ConventionController {
             default:
                 throw new AppException(HttpStatus.BAD_REQUEST, "Type de validation inconnu");
         }
-        // TODO mettre les valeurs nomemclature dans la table ConventionNomenclature
+        // TODO mettre les valeurs nomemclature dans la table ConventionNomenclature après vérification administrative ou validation pédagogique
         return convention;
     }
 
@@ -296,6 +299,12 @@ public class ConventionController {
         }
         convention = conventionJpaRepository.saveAndFlush(convention);
         return convention;
+    }
+
+    @GetMapping("/{id}/historique-validations")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.VALIDATION})
+    public List<HistoriqueValidation> getHistoriqueValidations(@PathVariable("id") int idConvention) {
+        return historiqueValidationJpaRepository.findByConvention(idConvention);
     }
 
     private void setConventionData(Convention convention, ConventionFormDto conventionFormDto) {
@@ -609,20 +618,36 @@ public class ConventionController {
         boolean sendMailResGes = configAlerteMailDto.getAlerteRespGestionnaire().isValidationPedagogiqueConvention();
         boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isValidationPedagogiqueConvention();
 
+        HistoriqueValidation historique = new HistoriqueValidation();
+        historique.setValeurAvant(convention.getValidationPedagogique());
+        historique.setLogin(utilisateurContext.getLogin());
+        historique.setType("validationPedagogique");
+        historique.setConvention(convention);
+
         convention.setValidationPedagogique(valider);
         if (valider) {
             convention.setLoginValidation(utilisateurContext.getLogin());
         }
         convention = conventionJpaRepository.saveAndFlush(convention);
-        // TODO historique de validation
+
+        historique.setValeurApres(valider);
+        historiqueValidationJpaRepository.saveAndFlush(historique);
 
         sendValidationMail(convention, utilisateurContext, valider ? TemplateMail.CODE_CONVENTION_VALID_PEDAGOGIQUE : TemplateMail.CODE_CONVENTION_DEVALID_PEDAGOGIQUE, sendMailEtudiant, sendMailGestionnaire, sendMailResGes, sendMailEnseignant);
     }
 
     private void verificationAdministrative(Convention convention, Utilisateur utilisateurContext, boolean valider) {
+        HistoriqueValidation historique = new HistoriqueValidation();
+        historique.setValeurAvant(convention.getVerificationAdministrative());
+        historique.setLogin(utilisateurContext.getLogin());
+        historique.setType("verificationAdministrative");
+        historique.setConvention(convention);
+
         convention.setVerificationAdministrative(valider);
         convention = conventionJpaRepository.saveAndFlush(convention);
-        // TODO historique de validation
+
+        historique.setValeurApres(valider);
+        historiqueValidationJpaRepository.saveAndFlush(historique);
 
         mailerService.sendAlerteValidation(convention.getEtudiant().getMail(), convention, utilisateurContext, valider ? TemplateMail.CODE_CONVENTION_VERIF_ADMINISTRATIVE : TemplateMail.CODE_CONVENTION_DEVERIF_ADMINISTRATIVE);
     }
@@ -633,12 +658,20 @@ public class ConventionController {
         boolean sendMailResGes = configAlerteMailDto.getAlerteRespGestionnaire().isValidationAdministrativeConvention();
         boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isValidationAdministrativeConvention();
 
+        HistoriqueValidation historique = new HistoriqueValidation();
+        historique.setValeurAvant(convention.getValidationConvention());
+        historique.setLogin(utilisateurContext.getLogin());
+        historique.setType("validationConvention");
+        historique.setConvention(convention);
+
         convention.setValidationConvention(valider);
         if (valider) {
             convention.setLoginValidation(utilisateurContext.getLogin());
         }
         convention = conventionJpaRepository.saveAndFlush(convention);
-        // TODO historique de validation
+
+        historique.setValeurApres(valider);
+        historiqueValidationJpaRepository.saveAndFlush(historique);
 
         sendValidationMail(convention, utilisateurContext, valider ? TemplateMail.CODE_CONVENTION_VALID_ADMINISTRATIVE : TemplateMail.CODE_CONVENTION_DEVALID_ADMINISTRATIVE, sendMailEtudiant, sendMailGestionnaire, sendMailResGes, sendMailEnseignant);
     }

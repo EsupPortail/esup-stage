@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { ConfigService } from "../../../../services/config.service";
 import { ConventionService } from "../../../../services/convention.service";
 import { MessageService } from "../../../../services/message.service";
 
@@ -12,22 +11,16 @@ export class ValidationCardComponent implements OnInit {
 
   @Input() convention: any;
   @Input() validation: string;
+  @Input() validationLibelles: any;
   @Input() validationsActives: string[];
   @Output() conventionChanged = new EventEmitter<any>();
 
-  validationLibelles: any = {};
-
   constructor(
-    private configService: ConfigService,
     private conventionService: ConventionService,
     private messageService: MessageService,
   ) { }
 
   ngOnInit(): void {
-    this.configService.getConfigGenerale().subscribe((response) => {
-      this.validationLibelles.validationPedagogique = response.validationPedagogiqueLibelle;
-      this.validationLibelles.validationConvention = response.validationAdministrativeLibelle;
-    })
   }
 
   canRevertValidation(): boolean {

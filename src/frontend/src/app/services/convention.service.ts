@@ -55,4 +55,8 @@ export class ConventionService implements PaginatedService {
     return this.http.patch(`${environment.apiUrl}/conventions/${idConvention}/devalider/${validation}`, {});
   }
 
+  getHistoriqueValidations(idConvention: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/conventions/${idConvention}/historique-validations`);
+  }
+
 }

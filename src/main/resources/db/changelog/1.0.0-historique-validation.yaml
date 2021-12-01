@@ -1,0 +1,43 @@
+databaseChangeLog:
+- changeSet:
+    id: historiqueValidation-structure
+    author: ssound
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+                nullable: false
+                primaryKey: true
+            name: idHistoriqueValidation
+            type: INT
+        - column:
+            constraints:
+                nullable: false
+            name: loginModification
+            type: VARCHAR(255)
+        - column:
+            constraints:
+                nullable: false
+            name: typeValidation
+            type: VARCHAR(50)
+        - column:
+            name: valeurAvant
+            type: BIT
+        - column:
+            name: valeurApres
+            type: BIT
+        - column:
+            constraints:
+                nullable: false
+            name: dateValidation
+            type: datetime
+        - column:
+            constraints:
+                nullable: false
+                foreignKeyName: fk_HistoriqueValidation_Convention1
+                references: Convention(idConvention)
+            name: idConvention
+            type: INT
+        tableName: HistoriqueValidation
