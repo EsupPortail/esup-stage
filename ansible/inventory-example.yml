@@ -33,3 +33,4 @@ ESTAGE_ENVIRONMENT:
     from: "from@domain.com"
     disable_delivery: "false"
     delivery_address: "null"
+  appli_logo_centre_dir: "/data/estage/uploads"
