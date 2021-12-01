@@ -79,6 +79,28 @@ public class AvenantController {
         return avenant;
     }
 
+    @GetMapping("/validate/{id}")
+    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.VALIDATION})
+    public Avenant validate(@PathVariable("id") int id) {
+        Avenant avenant = avenantJpaRepository.findById(id);
+        if (avenant == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvée");
+        }
+        avenant.setValidationAvenant(true);
+        return avenantJpaRepository.saveAndFlush(avenant);
+    }
+
+    @GetMapping("/validate/cancel/{id}")
+    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.VALIDATION})
+    public Avenant cancelValidation(@PathVariable("id") int id) {
+        Avenant avenant = avenantJpaRepository.findById(id);
+        if (avenant == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvée");
+        }
+        avenant.setValidationAvenant(false);
+        return avenantJpaRepository.saveAndFlush(avenant);
+    }
+
     @PostMapping
     @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.CREATION})
     public Avenant create(@Valid @RequestBody AvenantDto avenantDto) {

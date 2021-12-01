@@ -94,6 +94,7 @@ import { ValidationComponent } from './components/convention/validation/validati
 import { ValidationCardComponent } from './components/convention/validation/validation-card/validation-card.component';
 import { LogoCentreComponent } from './components/centre-gestion/logo-centre/logo-centre.component';
 import { DragDropModule } from "@angular/cdk/drag-drop";
+import { AvenantViewComponent } from './components/convention/avenant/avenant-view/avenant-view.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -146,6 +147,7 @@ registerLocaleData(localeFr, 'fr');
     ValidationComponent,
     ValidationCardComponent,
     LogoCentreComponent,
+    AvenantViewComponent,
   ],
   imports: [
     BrowserModule,

@@ -30,4 +30,12 @@ export class AvenantService implements PaginatedService {
   delete(id: number): Observable<any> {
     return this.http.delete(environment.apiUrl + "/avenant/" + id);
   }
+
+  validate(id: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/avenant/validate/${id}`);
+  }
+
+  cancelValidation(id: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/avenant/validate/cancel/${id}`);
+  }
 }

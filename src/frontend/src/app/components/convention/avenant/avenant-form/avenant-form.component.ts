@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { ServiceService } from "../../../../services/service.service";
 import { ContactService } from "../../../../services/contact.service";
 import { MessageService } from "../../../../services/message.service";
+import { AuthService } from "../../../../services/auth.service";
 import { LdapService } from "../../../../services/ldap.service";
 import { EnseignantService } from "../../../../services/enseignant.service";
 import { ModeVersGratificationService } from "../../../../services/mode-vers-gratification.service";
@@ -73,6 +74,7 @@ export class AvenantFormComponent implements OnInit {
               private ldapService: LdapService,
               private civiliteService: CiviliteService,
               private paysService: PaysService,
+              private authService: AuthService,
               private fb: FormBuilder,
               private messageService: MessageService,
               public matDialog: MatDialog,
@@ -113,7 +115,7 @@ export class AvenantFormComponent implements OnInit {
       this.service = this.convention.service;
     }
 
-    if (this.avenant.modificationTuteurPro){
+    if (this.avenant.modificationSalarie){
       this.contact = this.avenant.contact;
     }else{
       this.contact = this.convention.contact;
@@ -143,7 +145,7 @@ export class AvenantFormComponent implements OnInit {
         modificationMontantGratification: [this.avenant.modificationMontantGratification],
         montantGratification: [this.avenant.montantGratification, [Validators.maxLength(7)]],
         //TODO bandeau montant
-        idUniteGratification: [this.avenant.UniteGratification?this.avenant.UniteGratification.id:null],
+        idUniteGratification: [this.avenant.uniteGratification?this.avenant.uniteGratification.id:null],
         idUniteDuree: [this.avenant.uniteDuree?this.avenant.uniteDuree.id:null],
         idModeVersGratification: [this.avenant.modeVersGratification?this.avenant.modeVersGratification.id:null],
         idDevise: [this.avenant.devise?this.avenant.devise.id:null],
@@ -268,6 +270,14 @@ export class AvenantFormComponent implements OnInit {
 
   }
 
+  validate(): void {
+    this.avenantService.validate(this.avenant.id).subscribe((response: any) => {
+      this.avenant = response;
+      this.messageService.setSuccess('L\'avenant a été validé avec succès');
+      this.updated.emit();
+    });
+  }
+
   selectService(row: any): void{
     this.service = row;
     this.customFormValidation();
@@ -348,5 +358,13 @@ export class AvenantFormComponent implements OnInit {
     this.enseignantService.create(data).subscribe((response: any) => {
       this.enseignant = response;
     });
+  }
+
+  isEtudiant(): boolean {
+    return this.authService.isEtudiant();
+  }
+
+  isGestionnaire(): boolean {
+    return this.authService.isGestionnaire();
   }
 }

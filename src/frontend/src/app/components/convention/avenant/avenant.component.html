@@ -7,23 +7,24 @@
 </mat-card>
 
 <mat-accordion *ngIf="isConventionValide()">
-  <mat-expansion-panel [expanded]="true">
+  <mat-expansion-panel [expanded]="avenants.length == 0">
     <mat-expansion-panel-header>
       <mat-panel-title>Création d'un nouvel avenant</mat-panel-title>
     </mat-expansion-panel-header>
-    <app-avenant-form [convention]="convention" [avenant]="{}" (validated)="updateAvenants()"></app-avenant-form>
+    <app-avenant-form [convention]="convention" [avenant]="{}" (updated)="updateAvenants()"></app-avenant-form>
   </mat-expansion-panel>
 
-  <mat-expansion-panel [disabled]="avenants.length == 0" [expanded]="false">
+  <mat-expansion-panel [disabled]="avenants.length == 0" [expanded]="avenants.length > 0">
     <mat-expansion-panel-header>
       <mat-panel-title>Avenants existants</mat-panel-title>
     </mat-expansion-panel-header>
     <mat-accordion>
       <mat-expansion-panel *ngFor="let avenant of avenants" [expanded]="false">
         <mat-expansion-panel-header>
-          <mat-panel-title>{{avenant.titreAvenant}}</mat-panel-title>
+          <mat-panel-title>{{avenant.titreAvenant + ' - ' + (avenant.validationAvenant?'Validé':'Non validé')}}</mat-panel-title>
         </mat-expansion-panel-header>
-        <app-avenant-form [convention]="convention" [avenant]="avenant" (updated)="updateAvenants()"></app-avenant-form>
+        <app-avenant-form [convention]="convention" [avenant]="avenant" (updated)="updateAvenants()" *ngIf="!avenant.validationAvenant"></app-avenant-form>
+        <app-avenant-view [convention]="convention" [avenant]="avenant" (updated)="updateAvenants()"  *ngIf="avenant.validationAvenant"></app-avenant-view>
       </mat-expansion-panel>
     </mat-accordion>
   </mat-expansion-panel>

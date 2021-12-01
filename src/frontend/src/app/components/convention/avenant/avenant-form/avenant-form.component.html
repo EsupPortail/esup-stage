@@ -360,7 +360,7 @@
         <div class="col-sm-3 font-weight-bold">Téléphone</div>
         <div class="col-sm-9">{{enseignant.tel}}</div>
         <div class="col-sm-3 font-weight-bold">Mail</div>
-        <div class="col-sm-9">{{convention.enseignant.mail}}</div>
+        <div class="col-sm-9">{{enseignant.mail}}</div>
       </div>
     </div>
   </div>
@@ -377,13 +377,16 @@
     </div>
   </div>
   <div class="row mt-3">
-    <div class="col-sm-6">
-      <button mat-button type="button" mat-stroked-button color="warn" (click)="cancel()" *ngIf="!avenant.id">{{'BOUTON_ANNULER'|contenu}}</button>
+    <div class="col-sm-4 text-left">
+      <button mat-button type="button" mat-flat-button color="warn" (click)="cancel()" *ngIf="!avenant.id">{{'BOUTON_ANNULER'|contenu}}</button>
       <span (confirm)="delete()" [confirmMessage]="'Êtes-vous sûr de vouloir supprimer cet avenant ?'" *ngIf="avenant.id">
-        <button mat-button type="button" mat-stroked-button color="warn">{{'Supprimer'}}</button>
+        <button mat-button type="button" mat-flat-button color="warn">Supprimer</button>
       </span>
     </div>
-    <div class="col-sm-6 text-right">
+    <div class="col-sm-4 text-center">
+      <button mat-button mat-flat-button type="button" color="primary" (click)="validate()" *ngIf="isGestionnaire() && avenant.id">Valider</button>
+    </div>
+    <div class="col-sm-4 text-right">
       <button mat-button mat-flat-button color="primary" [disabled]="!customValidForm">{{avenant.id?'Modifier':'Créer'}}</button>
     </div>
   </div>
