@@ -58,7 +58,7 @@
     <ng-template mat-tab-label>
       Validation
     </ng-template>
-    <app-validation *ngIf="validationTab.isActive && convention.id" [convention]="convention"></app-validation>
+    <app-validation *ngIf="validationTab.isActive && convention.id" [convention]="convention" (conventionChanged)="conventionValidated($event)"></app-validation>
   </mat-tab>
   <mat-tab #avenantTab *ngIf="isConventionValide()">
     <ng-template mat-tab-label>

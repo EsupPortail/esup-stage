@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'app-validation',
@@ -8,24 +8,25 @@ import { Component, Input, OnInit } from '@angular/core';
 export class ValidationComponent implements OnInit {
 
   @Input() convention: any;
+  @Output() conventionChanged = new EventEmitter<any>();
 
   validations: string[] = [];
 
   constructor() { }
 
   ngOnInit(): void {
-    if (this.convention.centreGestion.validationPedagogique && this.convention.centreGestion.validationPedagogiqueOrdre === 1) {
-      this.validations.push('validationPedagogique');
+    for (let validation of ['validationPedagogique', 'verificationAdministrative', 'validationConvention']) {
+      for (let ordre of [1, 2, 3]) {
+        if (this.convention.centreGestion[validation] && this.convention.centreGestion[validation + 'Ordre'] === ordre) {
+          this.validations.push(validation);
+        }
+      }
     }
-    if (this.convention.centreGestion.validationConvention && this.convention.centreGestion.validationConventionOrdre === 1) {
-      this.validations.push('validationConvention');
-    }
-    if (this.convention.centreGestion.validationPedagogique && this.convention.centreGestion.validationPedagogiqueOrdre === 2) {
-      this.validations.push('validationPedagogique');
-    }
-    if (this.convention.centreGestion.validationConvention && this.convention.centreGestion.validationConventionOrdre === 2) {
-      this.validations.push('validationConvention');
-    }
+  }
+
+  updateConvention(convention: any): void {
+    this.convention = convention;
+    this.conventionChanged.emit(this.convention);
   }
 
 }

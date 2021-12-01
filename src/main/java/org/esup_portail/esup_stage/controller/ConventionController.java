@@ -232,56 +232,70 @@ public class ConventionController {
 
     @PostMapping("/validation-administrative")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.VALIDATION})
-    public int validationAdministrative(@RequestBody IdsListDto idsListDto) {
+    public int validationAdministrativeMultiple(@RequestBody IdsListDto idsListDto) {
         ContextDto contextDto = ServiceContext.getServiceContext();
         if (idsListDto.getIds().size() == 0) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La liste est vide");
         }
-        boolean sendMailEtudiant = appConfigService.getConfigAlerteMail().getAlerteEtudiant().isValidationAdministrativeConvention();
-        boolean sendMailGestionnaire = appConfigService.getConfigAlerteMail().getAlerteGestionnaire().isValidationAdministrativeConvention();
-        boolean sendMailResGes = appConfigService.getConfigAlerteMail().getAlerteRespGestionnaire().isValidationAdministrativeConvention();
-        boolean sendMailEnseignant = appConfigService.getConfigAlerteMail().getAlerteEnseignant().isValidationAdministrativeConvention();
+        ConfigAlerteMailDto configAlerteMailDto = appConfigService.getConfigAlerteMail();
         int count = 0;
         for (int id : idsListDto.getIds()) {
             Convention convention = conventionJpaRepository.findById(id);
             if (convention == null) {
                 continue;
             }
-            convention.setValidationConvention(true);
-            convention = conventionJpaRepository.saveAndFlush(convention);
+            validationAdministrative(convention, configAlerteMailDto, contextDto.getUtilisateur(), true);
             count++;
-
-            // Récupération du personnel du centre de gestion de la convention avec alertMail=1
-            List<PersonnelCentreGestion> personnels = convention.getCentreGestion().getPersonnels();
-            personnels = personnels.stream().filter(PersonnelCentreGestion::getAlertesMail).collect(Collectors.toList());
-
-            // Récupération de la fiche utilisateur des personnels
-            List<Utilisateur> utilisateurPersonnels = utilisateurJpaRepository.findByLogins(personnels.stream().map(PersonnelCentreGestion::getUidPersonnel).collect(Collectors.toList()));
-
-            // Envoi du mail de validation administrative
-            if (sendMailEtudiant) mailerService.sendAlerteValidationAdministrative(convention.getEtudiant().getMail(), convention, contextDto.getUtilisateur());
-            if (sendMailGestionnaire) {
-                // Parmi le personnel avec alertMail=1, on ne garde que ceux qui n'ont pas le rôle RESP_GES pour éviter l'envoi en double du mail à la même personne
-                for (PersonnelCentreGestion personnel : personnels) {
-                    Utilisateur utilisateur = utilisateurPersonnels.stream().filter(u -> u.getLogin().equals(personnel.getUidPersonnel())).findAny().orElse(null);
-                    if (utilisateur == null || !UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)) {
-                        mailerService.sendAlerteValidationAdministrative(personnel.getMail(), convention, contextDto.getUtilisateur());
-                    }
-                }
-            }
-            if (sendMailResGes) {
-                // Parmi le personnel avec alertMail=1, on ne garde ceux qui ont le rôle RESP_GES pour éviter l'envoi en double du mail à la même personne
-                mailerService.sendAlerteValidationAdministrative(convention.getEtudiant().getMail(), convention, contextDto.getUtilisateur());
-                for (PersonnelCentreGestion personnel : personnels) {
-                    Utilisateur utilisateur = utilisateurPersonnels.stream().filter(u -> u.getLogin().equals(personnel.getUidPersonnel())).findAny().orElse(null);
-                    if (utilisateur != null && UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)) {
-                        mailerService.sendAlerteValidationAdministrative(personnel.getMail(), convention, contextDto.getUtilisateur());
-                    }
-                }
-            }
-            if (sendMailEnseignant) mailerService.sendAlerteValidationAdministrative(convention.getEnseignant().getMail(), convention, contextDto.getUtilisateur());
         }
         return count;
+    }
+
+    @PatchMapping("/{id}/valider/{type}")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.VALIDATION})
+    public Convention validate(@PathVariable("id") int id, @PathVariable("type") String type) {
+        Convention convention = conventionJpaRepository.findById(id);
+        if (convention == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        }
+        switch (type) {
+            case "validationPedagogique":
+                validationPedagogique(convention, appConfigService.getConfigAlerteMail(), ServiceContext.getServiceContext().getUtilisateur(), true);
+                break;
+            case "verificationAdministrative":
+                verificationAdministrative(convention, ServiceContext.getServiceContext().getUtilisateur(), true);
+                break;
+            case "validationConvention":
+                validationAdministrative(convention, appConfigService.getConfigAlerteMail(), ServiceContext.getServiceContext().getUtilisateur(), true);
+                break;
+            default:
+                throw new AppException(HttpStatus.BAD_REQUEST, "Type de validation inconnu");
+        }
+        // TODO mettre les valeurs nomemclature dans la table ConventionNomenclature
+        return convention;
+    }
+
+    @PatchMapping("/{id}/devalider/{type}")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.VALIDATION})
+    public Convention unvalidate(@PathVariable("id") int id, @PathVariable("type") String type) {
+        Convention convention = conventionJpaRepository.findById(id);
+        if (convention == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        }
+        switch (type) {
+            case "validationPedagogique":
+                validationPedagogique(convention, appConfigService.getConfigAlerteMail(), ServiceContext.getServiceContext().getUtilisateur(), false);
+                break;
+            case "verificationAdministrative":
+                verificationAdministrative(convention, ServiceContext.getServiceContext().getUtilisateur(), false);
+                break;
+            case "validationConvention":
+                validationAdministrative(convention, appConfigService.getConfigAlerteMail(), ServiceContext.getServiceContext().getUtilisateur(), false);
+                break;
+            default:
+                throw new AppException(HttpStatus.BAD_REQUEST, "Type de validation inconnu");
+        }
+        convention = conventionJpaRepository.saveAndFlush(convention);
+        return convention;
     }
 
     private void setConventionData(Convention convention, ConventionFormDto conventionFormDto) {
@@ -331,8 +345,17 @@ public class ConventionController {
             throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion non trouvé");
         }
         // la convention est modifiable si la dernière validation n'est pas faite
-        if (centreGestion.getValidationPedagogiqueOrdre() == 2 && convention.getValidationPedagogique() != null && convention.getValidationPedagogique() || centreGestion.getValidationConventionOrdre() == 2 && convention.getValidationConvention() != null && convention.getValidationConvention()) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "La convention n'est plus modifiable");
+        boolean derniereValidationActivee = false;
+        for (Integer ordre : Arrays.asList(3, 2, 1)) {
+            if (Objects.equals(centreGestion.getValidationPedagogiqueOrdre(), ordre) && convention.getValidationPedagogique() != null && convention.getValidationPedagogique()) {
+                derniereValidationActivee = true;
+            }
+            if (Objects.equals(centreGestion.getValidationConventionOrdre(), ordre) && convention.getValidationConvention() != null && convention.getValidationConvention()) {
+                derniereValidationActivee = true;
+            }
+            if (derniereValidationActivee) {
+                throw new AppException(HttpStatus.BAD_REQUEST, "La convention n'est plus modifiable");
+            }
         }
 
         Etudiant etudiant = etudiantJpaRepository.findByNumEtudiant(conventionFormDto.getNumEtudiant());
@@ -372,13 +395,25 @@ public class ConventionController {
         if (!centreGestion.getValidationPedagogique()) {
             convention.setValidationPedagogique(true);
         }
+        if (!centreGestion.getVerificationAdministrative()) {
+            convention.setVerificationAdministrative(true);
+        }
     }
 
     private void setSingleFieldData(Convention convention, ConventionSingleFieldDto conventionSingleFieldDto) {
         CentreGestion centreGestion = convention.getCentreGestion();
         // la convention est modifiable si la dernière validation n'est pas faite
-        if (centreGestion.getValidationPedagogiqueOrdre() == 2 && convention.getValidationPedagogique() != null && convention.getValidationPedagogique() || centreGestion.getValidationConventionOrdre() == 2 && convention.getValidationConvention() != null && convention.getValidationConvention()) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "La convention n'est plus modifiable");
+        boolean derniereValidationActivee = false;
+        for (Integer ordre : Arrays.asList(3, 2, 1)) {
+            if (Objects.equals(centreGestion.getValidationPedagogiqueOrdre(), ordre) && convention.getValidationPedagogique() != null && convention.getValidationPedagogique()) {
+                derniereValidationActivee = true;
+            }
+            if (Objects.equals(centreGestion.getValidationConventionOrdre(), ordre) && convention.getValidationConvention() != null && convention.getValidationConvention()) {
+                derniereValidationActivee = true;
+            }
+            if (derniereValidationActivee) {
+                throw new AppException(HttpStatus.BAD_REQUEST, "La convention n'est plus modifiable");
+            }
         }
         if (Objects.equals(conventionSingleFieldDto.getField(), "codeLangueConvention")){
             LangueConvention langueConvention = langueConventionJpaRepository.findByCode((String) conventionSingleFieldDto.getValue());
@@ -566,5 +601,77 @@ public class ConventionController {
             convention.setSignataire(signataire);
         }
 
+    }
+
+    private void validationPedagogique(Convention convention, ConfigAlerteMailDto configAlerteMailDto, Utilisateur utilisateurContext, boolean valider) {
+        boolean sendMailEtudiant = configAlerteMailDto.getAlerteEtudiant().isValidationPedagogiqueConvention();
+        boolean sendMailGestionnaire = configAlerteMailDto.getAlerteGestionnaire().isValidationPedagogiqueConvention();
+        boolean sendMailResGes = configAlerteMailDto.getAlerteRespGestionnaire().isValidationPedagogiqueConvention();
+        boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isValidationPedagogiqueConvention();
+
+        convention.setValidationPedagogique(valider);
+        if (valider) {
+            convention.setLoginValidation(utilisateurContext.getLogin());
+        }
+        convention = conventionJpaRepository.saveAndFlush(convention);
+        // TODO historique de validation
+
+        sendValidationMail(convention, utilisateurContext, valider ? TemplateMail.CODE_CONVENTION_VALID_PEDAGOGIQUE : TemplateMail.CODE_CONVENTION_DEVALID_PEDAGOGIQUE, sendMailEtudiant, sendMailGestionnaire, sendMailResGes, sendMailEnseignant);
+    }
+
+    private void verificationAdministrative(Convention convention, Utilisateur utilisateurContext, boolean valider) {
+        convention.setVerificationAdministrative(valider);
+        convention = conventionJpaRepository.saveAndFlush(convention);
+        // TODO historique de validation
+
+        mailerService.sendAlerteValidation(convention.getEtudiant().getMail(), convention, utilisateurContext, valider ? TemplateMail.CODE_CONVENTION_VERIF_ADMINISTRATIVE : TemplateMail.CODE_CONVENTION_DEVERIF_ADMINISTRATIVE);
+    }
+
+    private void validationAdministrative(Convention convention, ConfigAlerteMailDto configAlerteMailDto, Utilisateur utilisateurContext, boolean valider) {
+        boolean sendMailEtudiant = configAlerteMailDto.getAlerteEtudiant().isValidationAdministrativeConvention();
+        boolean sendMailGestionnaire = configAlerteMailDto.getAlerteGestionnaire().isValidationAdministrativeConvention();
+        boolean sendMailResGes = configAlerteMailDto.getAlerteRespGestionnaire().isValidationAdministrativeConvention();
+        boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isValidationAdministrativeConvention();
+
+        convention.setValidationConvention(valider);
+        if (valider) {
+            convention.setLoginValidation(utilisateurContext.getLogin());
+        }
+        convention = conventionJpaRepository.saveAndFlush(convention);
+        // TODO historique de validation
+
+        sendValidationMail(convention, utilisateurContext, valider ? TemplateMail.CODE_CONVENTION_VALID_ADMINISTRATIVE : TemplateMail.CODE_CONVENTION_DEVALID_ADMINISTRATIVE, sendMailEtudiant, sendMailGestionnaire, sendMailResGes, sendMailEnseignant);
+    }
+
+    private void sendValidationMail(Convention convention, Utilisateur utilisateurContext, String templateMailCode, boolean sendMailEtudiant, boolean sendMailGestionnaire, boolean sendMailResGes, boolean sendMailEnseignant) {
+        // Récupération du personnel du centre de gestion de la convention avec alertMail=1
+        List<PersonnelCentreGestion> personnels = convention.getCentreGestion().getPersonnels();
+        personnels = personnels.stream().filter(PersonnelCentreGestion::getAlertesMail).collect(Collectors.toList());
+
+        // Récupération de la fiche utilisateur des personnels
+        List<Utilisateur> utilisateurPersonnels = utilisateurJpaRepository.findByLogins(personnels.stream().map(PersonnelCentreGestion::getUidPersonnel).collect(Collectors.toList()));
+
+        // Envoi du mail de validation administrative
+        if (sendMailEtudiant) mailerService.sendAlerteValidation(convention.getEtudiant().getMail(), convention, utilisateurContext, templateMailCode);
+        if (sendMailGestionnaire) {
+            // Parmi le personnel avec alertMail=1, on ne garde que ceux qui n'ont pas le rôle RESP_GES pour éviter l'envoi en double du mail à la même personne
+            for (PersonnelCentreGestion personnel : personnels) {
+                Utilisateur utilisateur = utilisateurPersonnels.stream().filter(u -> u.getLogin().equals(personnel.getUidPersonnel())).findAny().orElse(null);
+                if (utilisateur == null || !UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)) {
+                    mailerService.sendAlerteValidation(personnel.getMail(), convention, utilisateurContext, templateMailCode);
+                }
+            }
+        }
+        if (sendMailResGes) {
+            // Parmi le personnel avec alertMail=1, on ne garde ceux qui ont le rôle RESP_GES pour éviter l'envoi en double du mail à la même personne
+            mailerService.sendAlerteValidation(convention.getEtudiant().getMail(), convention, utilisateurContext, templateMailCode);
+            for (PersonnelCentreGestion personnel : personnels) {
+                Utilisateur utilisateur = utilisateurPersonnels.stream().filter(u -> u.getLogin().equals(personnel.getUidPersonnel())).findAny().orElse(null);
+                if (utilisateur != null && UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)) {
+                    mailerService.sendAlerteValidation(personnel.getMail(), convention, utilisateurContext, templateMailCode);
+                }
+            }
+        }
+        if (sendMailEnseignant) mailerService.sendAlerteValidation(convention.getEnseignant().getMail(), convention, utilisateurContext, templateMailCode);
     }
 }

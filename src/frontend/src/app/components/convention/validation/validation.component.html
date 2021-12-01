@@ -36,14 +36,6 @@
         <div class="col-sm-9">{{convention.lieuStage}}</div>
       </div>
     </div>
-    <app-validation-card *ngFor="let validation of validations" [convention]="convention" [validation]="validation"></app-validation-card>
-<!--    <div class="validation-card">-->
-<!--      <h5 class="text-title">Validation administrative</h5>-->
-<!--      <p>La convention est considérée <b>validée administrativement</b> lorsque tous les partenaires du stage ont signé la convention papier.</p>-->
-<!--      <div class="text-center info" [class.validate]="convention.validationConvention">-->
-<!--        <ng-container *ngIf="convention.validationConvention; else nonValidA"><i class="fa fa-check"></i> Cette convention est validée administrativement.</ng-container>-->
-<!--        <ng-template #nonValidA><i class="fa fa-times"></i> Cette convention n'est pas encore validée administrativement.</ng-template>-->
-<!--      </div>-->
-<!--    </div>-->
+    <app-validation-card *ngFor="let validation of validations" [convention]="convention" [validation]="validation" [validationsActives]="validations" (conventionChanged)="updateConvention($event)"></app-validation-card>
   </mat-card-content>
 </mat-card>
