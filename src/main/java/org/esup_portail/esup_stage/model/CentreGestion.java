@@ -84,9 +84,13 @@ public class CentreGestion extends ObjetMetier {
 
     private Boolean validationConvention;
 
+    private Boolean verificationAdministrative;
+
     private Integer validationPedagogiqueOrdre;
 
     private Integer validationConventionOrdre;
+
+    private Integer verificationAdministrativeOrdre;
 
     @Column()
     private boolean autorisationEtudiantCreationConvention;
@@ -308,6 +312,14 @@ public class CentreGestion extends ObjetMetier {
         this.validationConvention = validationConvention;
     }
 
+    public Boolean getVerificationAdministrative() {
+        return verificationAdministrative;
+    }
+
+    public void setVerificationAdministrative(Boolean verificationAdministrative) {
+        this.verificationAdministrative = verificationAdministrative;
+    }
+
     public Integer getValidationPedagogiqueOrdre() {
         return validationPedagogiqueOrdre;
     }
@@ -322,6 +334,14 @@ public class CentreGestion extends ObjetMetier {
 
     public void setValidationConventionOrdre(Integer validationConventionOrdre) {
         this.validationConventionOrdre = validationConventionOrdre;
+    }
+
+    public Integer getVerificationAdministrativeOrdre() {
+        return verificationAdministrativeOrdre;
+    }
+
+    public void setVerificationAdministrativeOrdre(Integer verificationAdministrativeOrdre) {
+        this.verificationAdministrativeOrdre = verificationAdministrativeOrdre;
     }
 
     public boolean isAutorisationEtudiantCreationConvention() {

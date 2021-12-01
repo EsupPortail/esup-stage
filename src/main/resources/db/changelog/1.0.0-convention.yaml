@@ -153,3 +153,24 @@ databaseChangeLog:
     changes:
         - sql:
             sql: UPDATE Convention c SET c.idDevise = (SELECT d.idDevise FROM Devise d WHERE d.libelleDevise = c.monnaieGratification)
+- changeSet:
+    id: convention-verificationAdministrative
+    author: ssound
+    changes:
+    - addColumn:
+        tableName: Convention
+        columns:
+        - column:
+            defaultValueBoolean: false
+            name: verificationAdministrative
+            type: BIT
+- changeSet:
+    id: convention-verificationAdministrative-init
+    author: ssound
+    changes:
+    - update:
+        tableName: Convention
+        columns:
+        - column:
+            name: verificationAdministrative
+            valueBoolean: true

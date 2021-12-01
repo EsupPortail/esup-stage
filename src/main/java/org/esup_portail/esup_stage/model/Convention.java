@@ -134,6 +134,9 @@ public class Convention extends ObjetMetier {
     @JsonView(Views.List.class)
     private Boolean validationConvention;
 
+    @JsonView(Views.List.class)
+    private Boolean verificationAdministrative;
+
     @Column()
     private Boolean conversionEnContrat;
 
@@ -559,6 +562,14 @@ public class Convention extends ObjetMetier {
 
     public void setValidationConvention(Boolean validationConvention) {
         this.validationConvention = validationConvention;
+    }
+
+    public Boolean getVerificationAdministrative() {
+        return verificationAdministrative;
+    }
+
+    public void setVerificationAdministrative(Boolean verificationAdministrative) {
+        this.verificationAdministrative = verificationAdministrative;
     }
 
     public Boolean getConversionEnContrat() {

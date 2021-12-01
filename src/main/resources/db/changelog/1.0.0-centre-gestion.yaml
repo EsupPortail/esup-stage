@@ -61,10 +61,17 @@ databaseChangeLog:
             name: validationConvention
             type: BIT
         - column:
+            defaultValueBoolean: false
+            name: verificationAdministrative
+            type: BIT
+        - column:
             name: validationConventionOrdre
             type: INT
         - column:
             name: validationPedagogiqueOrdre
+            type: INT
+        - column:
+            name: verificationAdministrativeOrdre
             type: INT
         tableName: CentreGestion
 - changeSet:
@@ -77,9 +84,15 @@ databaseChangeLog:
             name: validationConvention
             valueBoolean: true
         - column:
+            name: verificationAdministrative
+            valueBoolean: true
+        - column:
             name: validationPedagogiqueOrdre
             value: 1
         - column:
-            name: validationConventionOrdre
+            name: verificationAdministrativeOrdre
             value: 2
+        - column:
+            name: validationConventionOrdre
+            value: 3
         tableName: CentreGestion
