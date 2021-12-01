@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { PersonnelCentreService } from "../../../services/personnel-centre.service";
+import { CiviliteService } from "../../../services/civilite.service";
 import { MessageService } from "../../../services/message.service";
 import { LdapService } from "../../../services/ldap.service";
 import { EnseignantService } from "../../../services/enseignant.service";
@@ -22,6 +23,7 @@ export class GestionnairesComponent implements OnInit {
   searchForm: FormGroup;
 
   droits: any;
+  civilites: any;
 
   columns = ['civilite.libelle', 'nom', 'prenom', 'droitAdministration.libelle', 'alertesMail', 'droitsEvaluation', 'action'];
   sortColumn = 'nom';
@@ -59,6 +61,7 @@ export class GestionnairesComponent implements OnInit {
     private messageService: MessageService,
     private ldapService: LdapService,
     private enseignantService: EnseignantService,
+    private civiliteService: CiviliteService
   ) {
     this.form = this.fb.group({
       nom: [null, []],
@@ -102,6 +105,9 @@ export class GestionnairesComponent implements OnInit {
     this.personnelCentreService.getDroitsAdmin().subscribe((response: any) => {
       this.droits = response;
     });
+    this.civiliteService.getPaginated(1, 0, 'libelle', 'asc','').subscribe((response: any) => {
+      this.civilites = response;
+    });
     if (this.centreGestion.id) {
       this.filters.push({id: 'centreGestion.id', value: this.centreGestion.id, type: 'int', hidden: true});
     }
@@ -135,10 +141,12 @@ export class GestionnairesComponent implements OnInit {
 
   setData(gestionnaire: any) {
     const displayName = gestionnaire.displayName.split(/(\s+)/);
+    let civiliteGest = this.setCivilite(gestionnaire.supannCivilite);
     this.form.patchValue({
       nom: displayName[2],
       prenom: displayName[0],
       mail: gestionnaire.mail,
+      civilite: civiliteGest,
       typePersonne: gestionnaire.eduPersonPrimaryAffiliation,
       uidPersonnel: gestionnaire.supannAliasLogin,
       codeAffectation: '',
@@ -148,6 +156,17 @@ export class GestionnairesComponent implements OnInit {
       droitEvaluationEntreprise: false,
       droitAdministration: this.droits[0],
     });
+  }
+
+  setCivilite(civilite: any) {
+    switch (civilite) {
+      case 'Mlle':
+        return this.civilites.data.find((c: any) => c.id == 1);
+      case 'Mme':
+        return this.civilites.data.find((c: any) => c.id == 2);
+      case 'M.':
+        return this.civilites.data.find((c: any) => c.id == 3);
+    }
   }
 
   edit(gestionnaire: any) {
