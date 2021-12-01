@@ -30,6 +30,8 @@ export class CentreGestionComponent implements OnInit {
     4: { statut: 0, init: false },
   }
 
+  allValid = false;
+
   centreGestion: any;
   centreGestionInited = false;
 
@@ -80,7 +82,17 @@ export class CentreGestionComponent implements OnInit {
       this.setStatus(0,0);
     }
 
-    // todo: statut param centre
+    if (this.centreGestion.validationConvention == true || this.centreGestion.validationPedagogique == true) {
+      this.setStatus(1, 2);
+    } else {
+      this.setStatus(1, 0);
+    }
+
+    if (this.centreGestion.fichier != null) {
+      this.setStatus(2, 2);
+    } else {
+      this.setStatus(2, 1);
+    }
 
     if (this.centreGestion.personnels && this.centreGestion.personnels.length > 0) {
       this.setStatus(3, 2);
@@ -95,6 +107,16 @@ export class CentreGestionComponent implements OnInit {
 
   setStatus(key: number, value: number): void {
     this.tabs[key].statut = value;
+    this.majAllValid();
+  }
+
+  majAllValid(): void {
+    this.allValid = true;
+    for (let key in this.tabs) {
+        if ((key == '0' || key == '1') && this.tabs[key].statut == 0) {
+          this.allValid = false;
+        }
+    }
   }
 
   getProgressValue(key: number): number {
@@ -105,6 +127,7 @@ export class CentreGestionComponent implements OnInit {
 
   refreshCentreGestion(value: any): void {
     this.centreGestion = value;
+    this.majStatus();
     this.updateOnChanges();
   }
 
@@ -141,6 +164,11 @@ export class CentreGestionComponent implements OnInit {
   }
 
   validationCreation() {
+    if (!this.allValid) {
+      this.messageService.setError('Vous devez compléter les onglets "Coordonnées" et "Paramètres" avant de pouvoir valider la création du centre');
+      return;
+    }
+
     this.centreGestionService.validationCreation(this.centreGestion.id).subscribe((response: any) => {
       this.centreGestion = response;
       this.router.navigate([`/centre-gestion/search`], );

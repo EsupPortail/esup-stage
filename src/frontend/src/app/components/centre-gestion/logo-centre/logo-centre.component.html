@@ -1,11 +1,14 @@
 <mat-card>
   <mat-card-content>
-    <div class="col-md-3 mb-2">
+    <p>Le logo est utilisé lors de l'impression des conventions, des avenants et des offres de stage et d'emploi.</p>
+    <p>Ce centre de gestion possède un critère de gestion de type {{centreGestion.niveauCentre.libelle}}</p>
+    <p>Le logo du centre de gestion au niveau ETABLISSEMENT sera également imprimé sur les conventions.</p>
+    <mat-card-actions class="text-center">
       <button mat-stroked-button color="primary" (click)="logoInput.click()">
         <span>{{currentFile && currentFile.size > 0 ? 'Changer de logo' : 'Insérer un logo'}}</span>
         <input #logoInput type="file" (change)="onLogoChange($event)" accept="image/*" style="display:none">
       </button>
-    </div>
+    </mat-card-actions>
     <form [formGroup]="form" *ngIf="currentFile && currentFile.size > 0">
       <quill-editor [modules]="modules" formControlName="content" (onContentChanged)="setImageSize($event)"></quill-editor>
     </form>
