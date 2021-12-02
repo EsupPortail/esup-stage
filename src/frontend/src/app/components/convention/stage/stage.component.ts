@@ -1,5 +1,6 @@
 import { Component, EventEmitter, OnInit, Input, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { PaysService } from "../../../services/pays.service";
 import { ThemeService } from "../../../services/theme.service";
 import { LangueConventionService } from "../../../services/langue-convention.service";
@@ -14,7 +15,8 @@ import { ModeValidationStageService } from "../../../services/mode-validation-st
 import { TypeConventionService } from "../../../services/type-convention.service";
 import { AuthService } from "../../../services/auth.service";
 import { ConventionService } from "../../../services/convention.service";
-import {pairwise,debounceTime,startWith}from 'rxjs/operators'
+import { pairwise,debounceTime,startWith }from 'rxjs/operators'
+import { CalendrierComponent } from './calendrier/calendrier.component';
 
 @Component({
   selector: 'app-stage',
@@ -27,7 +29,7 @@ export class StageComponent implements OnInit {
       'dateDebutInterruption': [Validators.required],
       'dateFinInterruption': [Validators.required],
       'nbHeuresHebdo': [Validators.required, Validators.pattern('[0-9]{1,2}([,.][0-9]{1,2})?')],
-      //'quotiteTravail': [Validators.required, Validators.pattern('[0-9]+')],
+      'quotiteTravail': [Validators.required, Validators.pattern('[0-9]+')],
       'montantGratification': [Validators.required, Validators.pattern('[0-9]{1,10}([,.][0-9]{1,2})?')],
       'idUniteGratification': [Validators.required],
       'idUniteDuree': [Validators.required],
@@ -78,6 +80,7 @@ export class StageComponent implements OnInit {
               private natureTravailService: NatureTravailService,
               private modeValidationStageService: ModeValidationStageService,
               private typeConventionService: TypeConventionService,
+              public matDialog: MatDialog,
   ) {
   }
 
@@ -141,7 +144,7 @@ export class StageComponent implements OnInit {
       dateFinInterruption: [this.convention.dateFinInterruption, this.fieldValidators['dateFinInterruption']],
       horairesReguliers: [this.convention.horairesReguliers, [Validators.required]],
       nbHeuresHebdo: [this.convention.nbHeuresHebdo, this.fieldValidators['nbHeuresHebdo']],
-      //quotiteTravail: [this.convention.quotiteTravail, this.fieldValidators['quotiteTravail']],
+      quotiteTravail: [this.convention.quotiteTravail, this.fieldValidators['quotiteTravail']],
       idTempsTravail: [this.convention.tempsTravail ? this.convention.tempsTravail.id : null, [Validators.required]],
       commentaireDureeTravail: [this.convention.commentaireDureeTravail],
       // - Partie Gratification
@@ -189,7 +192,9 @@ export class StageComponent implements OnInit {
       const keys=Object.keys(res).filter(k=>res[k]!=this.previousValues[k])
       this.previousValues={...this.form.value}
       keys.forEach((key: string) => {
-        this.updateSingleField(key,res[key]);
+        if (!['calendrierStartDate','calendrierEndDate'].includes(key)){
+          this.updateSingleField(key,res[key]);
+        }
       });
     })
 
@@ -257,4 +262,21 @@ export class StageComponent implements OnInit {
     this.form.get('dateFinStage')!.markAsTouched();
     this.form.get('dateFinStage')!.updateValueAndValidity();
   }
+
+  openCalendar(): void {
+    this.openCalendarModal();
+  }
+
+  openCalendarModal() {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.width = '1000px';
+    dialogConfig.data = {form: this.form};
+    const modalDialog = this.matDialog.open(CalendrierComponent, dialogConfig);
+    modalDialog.afterClosed().subscribe(dialogResponse => {
+      if (dialogResponse) {
+
+      }
+    });
+  }
+
 }

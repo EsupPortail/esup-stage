@@ -489,6 +489,9 @@ public class ConventionController {
         if (Objects.equals(conventionSingleFieldDto.getField(), "nbHeuresHebdo")){
             convention.setNbHeuresHebdo((String) conventionSingleFieldDto.getValue());
         }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "quotiteTravail")){
+            convention.setQuotiteTravail((Integer) conventionSingleFieldDto.getValue());
+        }
         if (Objects.equals(conventionSingleFieldDto.getField(), "idTempsTravail")){
             TempsTravail tempsTravail = tempsTravailJpaRepository.findById((int) conventionSingleFieldDto.getValue());
             if (tempsTravail == null) {
