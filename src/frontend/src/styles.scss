@@ -159,3 +159,9 @@ label.required::after {
   height: 18px;
   width: 18px;
 }
+
+ckeditor {
+  .ck.ck-editor__editable_inline {
+    border: 1px solid var(--ck-color-toolbar-border);
+  }
+}
