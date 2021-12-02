@@ -56,6 +56,11 @@ export class AvenantFormComponent implements OnInit {
   form: FormGroup;
   enseignantSearchForm: FormGroup;
 
+  minDateDebutStage: Date;
+  maxDateDebutStage: Date;
+  minDateFinStage: Date;
+  maxDateFinStage: Date;
+
   customValidForm: boolean = false;
   autreModifChecked: boolean = false;
 
@@ -193,6 +198,15 @@ export class AvenantFormComponent implements OnInit {
     this.enseignantSearchForm.valueChanges.pipe(debounceTime(500)).subscribe(() => {
       this.search();
     });
+
+    this.minDateDebutStage = new Date(new Date().getFullYear()-1, 0, 1);
+    this.maxDateDebutStage = new Date(new Date().getFullYear()+1, 0, 1);
+    if (this.convention.dateDebutStage){
+      this.updateDateFinBounds(new Date(this.convention.dateDebutStage));
+    }else{
+      this.minDateFinStage = new Date(new Date().getFullYear()-1, 0, 2);
+      this.maxDateFinStage = new Date(new Date().getFullYear()+2, 0, 1);
+    }
   }
 
   createOrEdit(): void {
@@ -366,5 +380,14 @@ export class AvenantFormComponent implements OnInit {
 
   isGestionnaire(): boolean {
     return this.authService.isGestionnaire();
+  }
+
+  dateDebutChanged(event: any): void {
+    this.updateDateFinBounds(event.value);
+  }
+
+  updateDateFinBounds(dateDebut: Date): void {
+    this.minDateFinStage = new Date(dateDebut.getTime() + (1000 * 60 * 60 * 24));
+    this.maxDateFinStage = new Date(dateDebut.getTime() + (1000 * 60 * 60 * 24 * 365));
   }
 }

@@ -75,14 +75,15 @@
     <div class="row mt-3 mb-3">
       <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
         <mat-label>Nouvelle date de début</mat-label>
-        <input matInput [matDatepicker]="dateDebutStagePicker" formControlName="dateDebutStage" required >
+        <input matInput [min]="minDateDebutStage" [max]="maxDateDebutStage" [matDatepicker]="dateDebutStagePicker"
+               (dateChange)="dateDebutChanged($event)" formControlName="dateDebutStage" required>
         <mat-datepicker-toggle matSuffix [for]="dateDebutStagePicker"></mat-datepicker-toggle>
         <mat-datepicker #dateDebutStagePicker></mat-datepicker>
         <mat-error><app-form-error [field]="form.get('dateDebutStage')"></app-form-error></mat-error>
       </mat-form-field>
       <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
         <mat-label>Nouvelle date de fin</mat-label>
-        <input matInput [matDatepicker]="dateFinStagePicker" formControlName="dateFinStage" required >
+        <input matInput  [min]="minDateFinStage" [max]="maxDateFinStage" [matDatepicker]="dateFinStagePicker" formControlName="dateFinStage" required>
         <mat-datepicker-toggle matSuffix [for]="dateFinStagePicker"></mat-datepicker-toggle>
         <mat-datepicker #dateFinStagePicker></mat-datepicker>
         <mat-error><app-form-error [field]="form.get('dateFinStage')"></app-form-error></mat-error>
