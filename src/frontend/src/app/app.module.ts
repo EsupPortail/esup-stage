@@ -95,6 +95,7 @@ import { ValidationCardComponent } from './components/convention/validation/vali
 import { LogoCentreComponent } from './components/centre-gestion/logo-centre/logo-centre.component';
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { AvenantViewComponent } from './components/convention/avenant/avenant-view/avenant-view.component';
+import { CKEditorModule } from "@ckeditor/ckeditor5-angular";
 
 registerLocaleData(localeFr, 'fr');
 
@@ -186,6 +187,7 @@ registerLocaleData(localeFr, 'fr');
     MatAutocompleteModule,
     MatMenuModule,
     DragDropModule,
+    CKEditorModule,
   ],
   providers: [
     CookieService,
