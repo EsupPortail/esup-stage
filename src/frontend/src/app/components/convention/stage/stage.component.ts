@@ -27,6 +27,7 @@ export class StageComponent implements OnInit {
       'dateDebutInterruption': [Validators.required],
       'dateFinInterruption': [Validators.required],
       'nbHeuresHebdo': [Validators.required, Validators.pattern('[0-9]{1,2}([,.][0-9]{1,2})?')],
+      //'quotiteTravail': [Validators.required, Validators.pattern('[0-9]+')],
       'montantGratification': [Validators.required, Validators.pattern('[0-9]{1,10}([,.][0-9]{1,2})?')],
       'idUniteGratification': [Validators.required],
       'idUniteDuree': [Validators.required],
@@ -51,6 +52,10 @@ export class StageComponent implements OnInit {
 
   form: FormGroup;
 
+  minDateDebutStage: Date;
+  maxDateDebutStage: Date;
+  minDateFinStage: Date;
+  maxDateFinStage: Date;
   previousValues: any;
 
   @Output() validated = new EventEmitter<number>();
@@ -136,6 +141,7 @@ export class StageComponent implements OnInit {
       dateFinInterruption: [this.convention.dateFinInterruption, this.fieldValidators['dateFinInterruption']],
       horairesReguliers: [this.convention.horairesReguliers, [Validators.required]],
       nbHeuresHebdo: [this.convention.nbHeuresHebdo, this.fieldValidators['nbHeuresHebdo']],
+      //quotiteTravail: [this.convention.quotiteTravail, this.fieldValidators['quotiteTravail']],
       idTempsTravail: [this.convention.tempsTravail ? this.convention.tempsTravail.id : null, [Validators.required]],
       commentaireDureeTravail: [this.convention.commentaireDureeTravail],
       // - Partie Gratification
@@ -190,6 +196,16 @@ export class StageComponent implements OnInit {
     if (!this.modifiable) {
       this.form.disable();
     }
+
+    this.minDateDebutStage = new Date(new Date().getTime() + (1000 * 60 * 60 * 24));
+    this.maxDateDebutStage = new Date(new Date().getFullYear()+1, 0, 1);
+    if (this.convention.dateDebutStage){
+      this.updateDateFinBounds(new Date(this.convention.dateDebutStage));
+    }else{
+      this.minDateFinStage = new Date(new Date().getFullYear()-1, 0, 2);
+      this.maxDateFinStage = new Date(new Date().getFullYear()+2, 0, 1);
+    }
+
   }
 
   updateSingleField(key: string,value: any): void {
@@ -231,4 +247,14 @@ export class StageComponent implements OnInit {
     this.toggleValidators(['montantGratification','idUniteGratification','idUniteDuree','idDevise','idModeVersGratification'],event.value);
   }
 
+  dateDebutChanged(event: any): void {
+    this.updateDateFinBounds(event.value);
+  }
+
+  updateDateFinBounds(dateDebut: Date): void {
+    this.minDateFinStage = new Date(dateDebut.getTime() + (1000 * 60 * 60 * 24));
+    this.maxDateFinStage = new Date(dateDebut.getTime() + (1000 * 60 * 60 * 24 * 365));
+    this.form.get('dateFinStage')!.markAsTouched();
+    this.form.get('dateFinStage')!.updateValueAndValidity();
+  }
 }
