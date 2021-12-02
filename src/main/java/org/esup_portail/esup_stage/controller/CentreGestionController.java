@@ -300,6 +300,10 @@ public class CentreGestionController {
         String extension = FilenameUtils.getExtension(logo.getOriginalFilename());
         String nomFichier = DigestUtils.md5Hex(logo.getOriginalFilename()) + "." + extension;
         String nomReel = logo.getOriginalFilename();
+        // Autorisation de l'upload d'images uniquement
+        if (logo.getContentType() == null || !logo.getContentType().startsWith("image/")) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Le fichier doit être au format image");
+        }
 
         Fichier fichier = centreGestion.getFichier();
         if (fichier == null) {
