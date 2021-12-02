@@ -34,7 +34,9 @@
               "./node_modules/bootstrap-css-only/css/bootstrap.min.css",
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/@ckeditor/ckeditor5-build-decoupled-document/build/translations/fr.js"
+            ]
           },
           "configurations": {
             "production": {

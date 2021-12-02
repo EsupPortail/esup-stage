@@ -96,6 +96,7 @@ import { LogoCentreComponent } from './components/centre-gestion/logo-centre/log
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { AvenantViewComponent } from './components/convention/avenant/avenant-view/avenant-view.component';
 import { CalendrierComponent } from './components/convention/stage/calendrier/calendrier.component';
+import { CKEditorModule } from "@ckeditor/ckeditor5-angular";
 
 registerLocaleData(localeFr, 'fr');
 
@@ -188,6 +189,7 @@ registerLocaleData(localeFr, 'fr');
     MatAutocompleteModule,
     MatMenuModule,
     DragDropModule,
+    CKEditorModule,
   ],
   providers: [
     CookieService,

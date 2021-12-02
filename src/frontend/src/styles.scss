@@ -102,10 +102,6 @@ form, .mat-cell {
   }
 }
 
-.ck-content {
-  min-height: 200px;
-}
-
 .convention, .centre-gestion {
   .mat-tab-label {
     min-width: unset;
@@ -162,4 +158,10 @@ label.required::after {
   font-size: 18px;
   height: 18px;
   width: 18px;
+}
+
+ckeditor {
+  .ck.ck-editor__editable_inline {
+    border: 1px solid var(--ck-color-toolbar-border);
+  }
 }
