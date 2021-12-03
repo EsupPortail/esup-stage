@@ -192,9 +192,10 @@ export class StageComponent implements OnInit {
       const keys=Object.keys(res).filter(k=>res[k]!=this.previousValues[k])
       this.previousValues={...this.form.value}
       keys.forEach((key: string) => {
-        if (!['calendrierStartDate','calendrierEndDate'].includes(key)){
-          this.updateSingleField(key,res[key]);
+        if (['dateDebutStage','dateFinStage','interruptionStage','dateDebutInterruption','dateFinInterruption','horairesReguliers','nbHeuresHebdo'].includes(key)){
+          this.updateHeuresTravails();
         }
+        this.updateSingleField(key,res[key]);
       });
     })
 
@@ -203,14 +204,14 @@ export class StageComponent implements OnInit {
     }
 
     this.minDateDebutStage = new Date(new Date().getTime() + (1000 * 60 * 60 * 24));
-    this.maxDateDebutStage = new Date(new Date().getFullYear()+1, 0, 1);
+    //TODO annee universitaire
+    //this.maxDateDebutStage = new Date(new Date().getFullYear()+1, 9, 1);
     if (this.convention.dateDebutStage){
       this.updateDateFinBounds(new Date(this.convention.dateDebutStage));
     }else{
       this.minDateFinStage = new Date(new Date().getFullYear()-1, 0, 2);
       this.maxDateFinStage = new Date(new Date().getFullYear()+2, 0, 1);
     }
-
   }
 
   updateSingleField(key: string,value: any): void {
@@ -267,7 +268,7 @@ export class StageComponent implements OnInit {
     this.openCalendarModal();
   }
 
-  openCalendarModal() {
+  openCalendarModal(): void {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.width = '1000px';
     dialogConfig.data = {convention: this.convention};
@@ -279,4 +280,30 @@ export class StageComponent implements OnInit {
     });
   }
 
+  updateHeuresTravails():void {
+
+      const dateDebutStage = new Date(this.form.get('dateDebutStage')!.value)
+      const dateFinStage = new Date(this.form.get('dateFinStage')!.value)
+
+      let diffDays = this.dateDiff(dateDebutStage,dateFinStage);
+
+      let nbHeuresTravail = diffDays;
+
+      if (this.form.get('interruptionStage')!.value){
+        const dateDebutInterruption = new Date(this.form.get('dateDebutInterruption')!.value)
+        const dateFinInterruption = new Date(this.form.get('dateFinInterruption')!.value)
+
+        diffDays = this.dateDiff(dateDebutInterruption,dateFinInterruption);
+        nbHeuresTravail = nbHeuresTravail - diffDays;
+      }
+
+      nbHeuresTravail = this.form.get('nbHeuresHebdo')!.value * nbHeuresTravail / 5 ;
+      this.form.get('quotiteTravail')?.setValue(nbHeuresTravail);
+  }
+
+
+  dateDiff(date1:Date,date2:Date):number {
+    const diffTime = Math.abs(date1.getTime() - date2.getTime());
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24))+1;
+  }
 }
