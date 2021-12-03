@@ -8,6 +8,7 @@ import { UfrService } from "../../services/ufr.service";
 import { EtapeService } from "../../services/etape.service";
 import { MessageService } from "../../services/message.service";
 import { ConfigService } from "../../services/config.service";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
   selector: 'app-dashboard',
@@ -44,6 +45,7 @@ export class DashboardComponent implements OnInit {
     private etapeService: EtapeService,
     private messageService: MessageService,
     private configService: ConfigService,
+    private snackBar: MatSnackBar,
   ) {
   }
 
@@ -140,6 +142,15 @@ export class DashboardComponent implements OnInit {
     this.appTable?.setFilter({id: 'annee', type: 'text', value: this.anneeEnCours.libelle, specific: false});
     this.appTable?.update();
     this.countConvention();
+    // Compte le nombre de conventions dont la date de validation se rapproche ou dépasse la date de début du stage
+    this.conventionService.countConventionEnAttenteAlerte(this.anneeEnCours.annee).subscribe((response: number) => {
+      if (response > 0) {
+        this.snackBar.open(`${response} convention(s) à valider dont la date de validation se rapproche ou dépasse la date de début du stage`, 'Fermer', {
+          horizontalPosition: 'center',
+          verticalPosition: 'top',
+        });
+      }
+    });
   }
 
   isSelected(data: any): boolean {

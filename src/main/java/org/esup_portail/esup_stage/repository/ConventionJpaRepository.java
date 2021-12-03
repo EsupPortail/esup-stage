@@ -69,14 +69,14 @@ public interface ConventionJpaRepository extends JpaRepository<Convention, Integ
     @Query("SELECT c FROM Convention c WHERE c.loginCreation = :login AND c.validationCreation = FALSE")
     Convention findBrouillon(String login);
 
-    @Query("SELECT COUNT(DISTINCT c.id) FROM Convention c WHERE c.annee = :annee AND c.validationCreation = TRUE AND c.validationPedagogique = TRUE AND c.validationConvention = FALSE")
-    long countConventionEnAttenteGestionnaire(String annee);
+    @Query("SELECT c FROM Convention c WHERE c.annee = :annee AND c.validationCreation = TRUE AND c.validationConvention = FALSE")
+    List<Convention> getConventionEnAttenteGestionnaire(String annee);
 
-    @Query("SELECT COUNT(DISTINCT c.id) FROM Convention c JOIN c.centreGestion cg JOIN cg.personnels p WHERE c.annee = :annee AND p.uidPersonnel = :userLogin AND c.validationCreation = TRUE AND c.validationPedagogique = TRUE AND c.validationConvention = FALSE")
-    long countConventionEnAttenteGestionnaire(String annee, String userLogin);
+    @Query("SELECT c FROM Convention c JOIN c.centreGestion cg JOIN cg.personnels p WHERE c.annee = :annee AND p.uidPersonnel = :userLogin AND c.validationCreation = TRUE AND c.validationConvention = FALSE")
+    List<Convention> getConventionEnAttenteGestionnaire(String annee, String userLogin);
 
-    @Query("SELECT COUNT(DISTINCT c.id) FROM Convention c WHERE c.annee = :annee AND c.enseignant.uidEnseignant = :userLogin AND c.validationCreation = TRUE AND c.validationPedagogique = FALSE")
-    long countConventionEnAttenteEnseignant(String annee, String userLogin);
+    @Query("SELECT c FROM Convention c WHERE c.annee = :annee AND c.enseignant.uidEnseignant = :userLogin AND c.validationCreation = TRUE AND c.validationPedagogique = FALSE")
+    List<Convention> getConventionEnAttenteEnseignant(String annee, String userLogin);
 
     @Query("SELECT COUNT(c.id) FROM Convention c WHERE c.centreGestion.id = :idCentreGestion and c.ufr.id.code = :codeUfr")
     Long countConventionRattacheUfr(int idCentreGestion, String codeUfr);

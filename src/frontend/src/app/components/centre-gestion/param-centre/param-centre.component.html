@@ -37,9 +37,15 @@
                 <span><i>après la date de bascule de l'année universitaire</i></span>
               </div>
               <div>
-                <span>Url de la page d'instruction des consignes d'impression (facultatif)</span><br>
-                <mat-form-field class="col-sm-12 col-md-6" appearance="fill" style="margin-left: -15px">
+                <mat-form-field class="col-sm-12 col-md-12" appearance="fill" style="margin-left: -15px">
+                  <mat-label>Url de la page d'instruction des consignes d'impression (facultatif)</mat-label>
                   <input matInput placeholder="http://siteinternet.fr/..." formControlName="urlPageInstruction">
+                </mat-form-field>
+              </div>
+              <div>
+                <mat-form-field class="col-sm-12 col-md-12" appearance="fill" style="margin-left: -15px">
+                  <mat-label>Nombre de jours avant le début du stage pour l'affichage de l'alerte de validation d'une convention</mat-label>
+                  <input type="number" matInput formControlName="delaiAlerteConvention" required>
                 </mat-form-field>
               </div>
               <div *ngIf="form.get('nomViseur')?.value">

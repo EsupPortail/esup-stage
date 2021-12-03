@@ -36,7 +36,7 @@ export class ConventionService implements PaginatedService {
   }
 
   countConventionEnAttenteAlerte(annee: string): Observable<any> {
-    return this.http.get(`${environment.apiUrl}/conventions/${annee}/en-attente-validation`);
+    return this.http.get(`${environment.apiUrl}/conventions/${annee}/en-attente-validation-alerte`);
   }
 
   getListAnnee(): Observable<any> {

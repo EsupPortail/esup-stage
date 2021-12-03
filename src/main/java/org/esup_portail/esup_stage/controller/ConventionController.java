@@ -224,18 +224,47 @@ public class ConventionController {
         return convention;
     }
 
-    @GetMapping("/{annee}/en-attente-validation")
+    @GetMapping("/{annee}/en-attente-validation-alerte")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
-    public long countConventionEnAttente(@PathVariable("annee") String annee) {
+    public int countConventionEnAttente(@PathVariable("annee") String annee) {
         ContextDto contexteDto = ServiceContext.getServiceContext();
         Utilisateur utilisateur = contexteDto.getUtilisateur();
+        List<Convention> conventions;
+        boolean isEnseignant = false;
+        // Récupération des conventions en attente de validation, pédagogique pour les enseignants, administrative pour les gestionnaires
         if (UtilisateurHelper.isRole(utilisateur, Role.ENS)) {
-            return conventionJpaRepository.countConventionEnAttenteEnseignant(appConfigService.getAnneeUnivLibelle(annee), utilisateur.getLogin());
+            conventions = conventionJpaRepository.getConventionEnAttenteEnseignant(appConfigService.getAnneeUnivLibelle(annee), utilisateur.getLogin());
+            isEnseignant = true;
+        } else if (!UtilisateurHelper.isRole(utilisateur, Role.ADM) && (UtilisateurHelper.isRole(utilisateur, Role.RESP_GES) || UtilisateurHelper.isRole(utilisateur, Role.GES))) {
+            conventions = conventionJpaRepository.getConventionEnAttenteGestionnaire(appConfigService.getAnneeUnivLibelle(annee), utilisateur.getLogin());
+        } else {
+            conventions = conventionJpaRepository.getConventionEnAttenteGestionnaire(appConfigService.getAnneeUnivLibelle(annee));
         }
-        if (!UtilisateurHelper.isRole(utilisateur, Role.ADM) && (UtilisateurHelper.isRole(utilisateur, Role.RESP_GES) || UtilisateurHelper.isRole(utilisateur, Role.GES))) {
-            return conventionJpaRepository.countConventionEnAttenteGestionnaire(appConfigService.getAnneeUnivLibelle(annee), utilisateur.getLogin());
+        int count = 0;
+        for (Convention convention : conventions) {
+            CentreGestion centreGestion = convention.getCentreGestion();
+            if (centreGestion != null) {
+                boolean enAttenteValidation = true;
+                // En fonction de l'ordre de validation, on regarde si l'éventuelle validation précédente est passée
+                Integer ordreValidation = isEnseignant ? centreGestion.getValidationPedagogiqueOrdre() : centreGestion.getValidationConventionOrdre();
+                if (ordreValidation != null && ordreValidation > 1) { // Il y a une validation précédente
+                    if (centreGestion.getValidationPedagogiqueOrdre() != null && centreGestion.getValidationPedagogiqueOrdre() <= (ordreValidation - 1)) {
+                        enAttenteValidation = convention.getValidationPedagogique() != null && convention.getValidationPedagogique();
+                    }
+                    if (centreGestion.getVerificationAdministrativeOrdre() != null && centreGestion.getVerificationAdministrativeOrdre() <= (ordreValidation - 1)) {
+                        enAttenteValidation = convention.getVerificationAdministrative() != null && convention.getVerificationAdministrative();
+                    }
+                    if (centreGestion.getValidationConventionOrdre() != null && centreGestion.getValidationConventionOrdre() <= (ordreValidation - 1)) {
+                        enAttenteValidation = convention.getValidationConvention() != null && convention.getValidationConvention();
+                    }
+                }
+                if (enAttenteValidation && convention.isDepasseDelaiValidation()) {
+                    count++;
+                }
+            }
+
         }
-        return conventionJpaRepository.countConventionEnAttenteGestionnaire(appConfigService.getAnneeUnivLibelle(annee));
+        return count;
     }
 
     @PostMapping("/validation-administrative")

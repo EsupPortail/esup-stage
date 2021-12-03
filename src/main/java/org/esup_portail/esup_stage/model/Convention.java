@@ -9,6 +9,7 @@ import org.hibernate.annotations.NotFoundAction;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -27,7 +28,8 @@ public class Convention extends ObjetMetier {
     @JoinColumn(name = "idEtudiant", nullable = false)
     private Etudiant etudiant;
 
-    @ManyToOne
+    @JsonView(Views.List.class)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "idCentreGestion")
     private CentreGestion centreGestion;
 
@@ -339,6 +341,10 @@ public class Convention extends ObjetMetier {
     @JsonView(Views.List.class)
     @Transient
     private String lieuStage;
+
+    @JsonView(Views.List.class)
+    @Transient
+    private boolean depasseDelaiValidation = false;
 
     public int getId() {
         return id;
@@ -1118,5 +1124,35 @@ public class Convention extends ObjetMetier {
 
     public void setLieuStage(String lieuStage) {
         this.lieuStage = lieuStage;
+    }
+
+    public boolean isDepasseDelaiValidation() {
+        CentreGestion centreGestion = getCentreGestion();
+        if (centreGestion != null) {
+            Date now = new Date();
+            Calendar calendarNow = Calendar.getInstance();
+            calendarNow.setTime(now);
+            calendarNow.set(Calendar.HOUR_OF_DAY, 0);
+            calendarNow.set(Calendar.MINUTE, 0);
+            calendarNow.set(Calendar.SECOND, 0);
+            calendarNow.set(Calendar.MILLISECOND, 0);
+            now = calendarNow.getTime();
+
+            Date dateDebutStage = getDateDebutStage();
+            if (dateDebutStage != null) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(dateDebutStage);
+                calendar.add(Calendar.DAY_OF_MONTH, centreGestion.getDelaiAlerteConvention() * -1);
+                calendar.set(Calendar.HOUR_OF_DAY, 0);
+                calendar.set(Calendar.MINUTE, 0);
+                calendar.set(Calendar.SECOND, 0);
+                calendar.set(Calendar.MILLISECOND, 0);
+                Date dateAlerte = calendar.getTime();
+                if (now.after(dateAlerte) || now.compareTo(dateAlerte) == 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

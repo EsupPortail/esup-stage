@@ -2,6 +2,8 @@ package org.esup_portail.esup_stage.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonView;
+import org.esup_portail.esup_stage.dto.view.Views;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -11,11 +13,13 @@ import java.util.List;
 @Table(name = "CentreGestion")
 public class CentreGestion extends ObjetMetier {
 
+    @JsonView(Views.List.class)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idCentreGestion", nullable = false)
     private int id;
 
+    @JsonView(Views.List.class)
     @Column(length = 100)
     private String nomCentre;
 
@@ -86,10 +90,13 @@ public class CentreGestion extends ObjetMetier {
 
     private Boolean verificationAdministrative;
 
+    @JsonView(Views.List.class)
     private Integer validationPedagogiqueOrdre;
 
+    @JsonView(Views.List.class)
     private Integer validationConventionOrdre;
 
+    @JsonView(Views.List.class)
     private Integer verificationAdministrativeOrdre;
 
     @Column()
@@ -127,6 +134,9 @@ public class CentreGestion extends ObjetMetier {
     @JsonIgnore
     @OneToMany(mappedBy = "centreGestion")
     private List<CritereGestion> criteres = new ArrayList<>();
+
+    @Column
+    private Integer delaiAlerteConvention = 0;
 
     public int getId() {
         return id;
@@ -438,5 +448,13 @@ public class CentreGestion extends ObjetMetier {
 
     public void setCriteres(List<CritereGestion> criteres) {
         this.criteres = criteres;
+    }
+
+    public Integer getDelaiAlerteConvention() {
+        return delaiAlerteConvention;
+    }
+
+    public void setDelaiAlerteConvention(Integer delaiAlerteConvention) {
+        this.delaiAlerteConvention = delaiAlerteConvention;
     }
 }

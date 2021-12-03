@@ -226,6 +226,7 @@ export class CentreGestionComponent implements OnInit {
       nomViseur: [null, [Validators.maxLength(50)]],
       prenomViseur: [null, [Validators.maxLength(50)]],
       qualiteViseur: [null, [Validators.maxLength(100)]],
+      delaiAlerteConvention: [null, [Validators.required, Validators.min(0)]],
     });
   }
 
@@ -245,6 +246,7 @@ export class CentreGestionComponent implements OnInit {
     this.centreGestion.nomViseur = this.paramCentreForm.get('nomViseur')?.value;
     this.centreGestion.prenomViseur = this.paramCentreForm.get('prenomViseur')?.value;
     this.centreGestion.qualiteViseur = this.paramCentreForm.get('qualiteViseur')?.value;
+    this.centreGestion.delaiAlerteConvention = this.paramCentreForm.get('delaiAlerteConvention')?.value;
   }
 
 }

@@ -5,6 +5,10 @@
   background-color: #e8eaf6;
 }
 
+.mat-row.alerte {
+  background-color: var(--dangerColor);
+}
+
 .app-table {
   overflow-x: auto;
 

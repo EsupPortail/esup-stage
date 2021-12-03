@@ -96,3 +96,14 @@ databaseChangeLog:
             name: validationConventionOrdre
             value: 2
         tableName: CentreGestion
+- changeSet:
+    id: centre-gestion-delaiAlerteConvention
+    author: ssound
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            name: delaiAlerteConvention
+            defaultValue: 0
+            type: INT
+        tableName: CentreGestion

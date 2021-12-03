@@ -24,10 +24,10 @@
   </mat-card>
 </ng-template>
 
-<app-table [service]="conventionService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters"
+<app-table [service]="conventionService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters" [sortOrder]="'desc'"
            matSort [matSortActive]="sortColumn" [matSortDirection]="'desc'" (matSortChange)="appTable ? appTable.sorting($event) : null"
            [noResultText]="'Aucune convention trouvée'" [customTemplateRef]="validAction"
-           (onUpdated)="countConvention()">
+           (onUpdated)="countConvention()" [setAlerte]="true">
   <ng-container *ngIf="isGestionnaire()" matColumnDef="select">
     <th mat-header-cell *matHeaderCellDef>
       <mat-checkbox (change)="$event ? masterToggle() : null"

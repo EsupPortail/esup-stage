@@ -96,6 +96,7 @@ import { DragDropModule } from "@angular/cdk/drag-drop";
 import { AvenantViewComponent } from './components/convention/avenant/avenant-view/avenant-view.component';
 import { CalendrierComponent } from './components/convention/stage/calendrier/calendrier.component';
 import { CKEditorModule } from "@ckeditor/ckeditor5-angular";
+import { MatSnackBarModule } from "@angular/material/snack-bar";
 
 registerLocaleData(localeFr, 'fr');
 
@@ -189,6 +190,7 @@ registerLocaleData(localeFr, 'fr');
     MatMenuModule,
     DragDropModule,
     CKEditorModule,
+    MatSnackBarModule,
   ],
   providers: [
     CookieService,

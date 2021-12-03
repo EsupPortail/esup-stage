@@ -11,10 +11,11 @@ import { Sort, SortDirection } from "@angular/material/sort";
 import { MatPaginator, PageEvent } from "@angular/material/paginator";
 import { MatColumnDef, MatTable } from "@angular/material/table";
 import { PaginatedService } from "../../services/paginated.service";
-import { Observable, Subject } from "rxjs";
+import { Subject } from "rxjs";
 import { debounceTime } from "rxjs/operators";
 import * as _ from "lodash";
 import { MatAutocompleteSelectedEvent } from "@angular/material/autocomplete";
+import { AuthService } from "../../services/auth.service";
 
 @Component({
   selector: 'app-table',
@@ -34,6 +35,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   @Input() selectedRow: any;
   @Input() noResultText: string = 'Aucun élément trouvé';
   @Input() customTemplateRef: TemplateRef<any>|undefined;
+  @Input() setAlerte: boolean = false;
 
   @Output() onUpdated = new EventEmitter<any>();
 
@@ -51,7 +53,9 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   autocmpleteChanged: any = [];
   autocompleteData: any = [];
 
-  constructor() {
+  constructor(
+    private authService: AuthService,
+  ) {
     this.filterChanged.pipe(debounceTime(500)).subscribe(() => {
       const filters = this.getFilters();
 
@@ -67,6 +71,20 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
       this.service.getPaginated(this.page, this.pageSize, this.sortColumn, this.sortOrder, JSON.stringify(filters)).subscribe((results: any) => {
         this.total = results.total;
         this.data = results.data;
+
+        if (this.setAlerte) {
+          this.data.forEach((row: any) => {
+            let depasse = false;
+            if (row.depasseDelaiValidation) {
+              const ordreValidation = this.authService.isEnseignant() ? row.centreGestion.validationPedagogiqueOrdre : row.centreGestion.validationConventionOrdre;
+              if (ordreValidation === 1) depasse = true;
+              if (row.centreGestion.validationPedagogiqueOrdre <= (ordreValidation - 1) && row.validationPedagogique) depasse = true;
+              if (row.centreGestion.verificationAdministrativeOrdre <= (ordreValidation - 1) && row.verificationAdministrative) depasse = true;
+              if (row.centreGestion.validationConventionOrdre <= (ordreValidation - 1) && row.validationConvention) depasse = true;
+            }
+            row.depasseDelaiValidation = depasse;
+          });
+        }
         this.onUpdated.emit(results);
       });
     });
@@ -84,7 +102,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
     if (this.columnDefs) {
       this.columnDefs.forEach(columnDef => {
         if (this.table) {
-          this.table.addColumnDef(columnDef)
+          this.table.addColumnDef(columnDef);
         }
       });
     }
