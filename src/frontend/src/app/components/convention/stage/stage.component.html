@@ -126,7 +126,7 @@
             <mat-error><app-form-error [field]="form.get('nbHeuresHebdo')"></app-form-error></mat-error>
           </mat-form-field>
         </div>
-        <div class="row" *ngIf="!form.value.horairesReguliers">
+        <div class="row" *ngIf="!form.value.horairesReguliers && modifiable">
           <div class="col-6 mb-3">
             <button mat-button mat-flat-button type="button" color="primary" (click)="openCalendar()">Calcul du nombre d'heures de stages</button>
           </div>

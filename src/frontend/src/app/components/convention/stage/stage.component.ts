@@ -270,7 +270,7 @@ export class StageComponent implements OnInit {
   openCalendarModal() {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.width = '1000px';
-    dialogConfig.data = {form: this.form};
+    dialogConfig.data = {convention: this.convention};
     const modalDialog = this.matDialog.open(CalendrierComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse) {

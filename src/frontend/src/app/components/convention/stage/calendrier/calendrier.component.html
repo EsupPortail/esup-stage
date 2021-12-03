@@ -3,8 +3,8 @@
   <mat-divider class="mb-3"></mat-divider>
   <div class="row">
     <mat-form-field class="col-6" appearance="fill">
-      <mat-label>Selectionez une nouvelle plage de dates</mat-label>
-      <mat-date-range-input [rangePicker]="calendrierPicker">
+      <mat-label>Selectionez une nouvelle période</mat-label>
+      <mat-date-range-input [dateFilter]="calendarDateFilter" [rangePicker]="calendrierPicker">
         <input matStartDate formControlName="calendrierStartDate" placeholder="Date de début">
         <input matEndDate formControlName="calendrierEndDate" placeholder="Date de fin">
       </mat-date-range-input>
