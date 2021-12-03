@@ -35,7 +35,7 @@ import { MatPaginatorIntl, MatPaginatorModule } from "@angular/material/paginato
 
 import { registerLocaleData } from "@angular/common";
 import localeFr from '@angular/common/locales/fr';
-import { MAT_DATE_LOCALE } from "@angular/material/core";
+import { MAT_DATE_LOCALE, MatNativeDateModule } from "@angular/material/core";
 import { PaginatorIntl } from "./paginator-intl";
 import { TableComponent } from './components/table/table.component';
 import { BooleanPipe } from './pipes/boolean.pipe';
@@ -66,7 +66,6 @@ import { AdminNomenclaturesCreationComponent } from './components/admin/admin-no
 import { QuillModule } from "ngx-quill";
 import { FormErrorComponent } from './components/form-error/form-error.component';
 import { MatProgressBarModule } from "@angular/material/progress-bar";
-import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { ServiceAccueilComponent } from './components/convention/service-accueil/service-accueil.component';
 import { TuteurProComponent } from './components/convention/tuteur-pro/tuteur-pro.component';

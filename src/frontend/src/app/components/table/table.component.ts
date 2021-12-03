@@ -53,26 +53,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
 
   constructor() {
     this.filterChanged.pipe(debounceTime(500)).subscribe(() => {
-      let f: any = {};
-      for (let key of Object.keys(this.filterValues)) {
-        if (this.filterValues[key].value !== undefined && this.filterValues[key].value !== '' && this.filterValues[key].value !== null && (!Array.isArray(this.filterValues[key].value) || this.filterValues[key].value.length > 0)) {
-          f[key] = {...this.filterValues[key]};
-          if (['date', 'date-min', 'date-max'].indexOf(f[key].type) > -1) {
-            f[key].value = f[key].value.getTime();
-          }
-          // conversion de l'array d'objets en array de keyId
-          if (['autocomplete'].indexOf(f[key].type) > -1) {
-            f[key].type = 'list';
-            const filter = this.filters.find((filter: any) => { return filter.id === key; });
-            if (filter) {
-              f[key].value = f[key].value.map((v: any) => { return v[filter.keyId]; });
-            }
-          }
-          if (f[key].specific === undefined) {
-            delete f[key].specific;
-          }
-        }
-      }
+      const filters = this.getFilters();
 
       for (const key of Object.keys(this.autocmpleteChanged)) {
         this.autocmpleteChanged[key].pipe(debounceTime(500)).subscribe(async (event: any) => {
@@ -83,7 +64,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
         });
       }
 
-      this.service.getPaginated(this.page, this.pageSize, this.sortColumn, this.sortOrder, JSON.stringify(f)).subscribe((results: any) => {
+      this.service.getPaginated(this.page, this.pageSize, this.sortColumn, this.sortOrder, JSON.stringify(filters)).subscribe((results: any) => {
         this.total = results.total;
         this.data = results.data;
         this.onUpdated.emit(results);
@@ -185,6 +166,31 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
       this.filterValues[filter.id].value.splice(index, 1);
       this.filterChanged.next();
     }
+  }
+
+  getFilters(): any {
+    let f: any = {};
+    for (let key of Object.keys(this.filterValues)) {
+      if (this.filterValues[key].value !== undefined && this.filterValues[key].value !== '' && this.filterValues[key].value !== null && (!Array.isArray(this.filterValues[key].value) || this.filterValues[key].value.length > 0)) {
+        f[key] = {...this.filterValues[key]};
+        if (['date', 'date-min', 'date-max'].indexOf(f[key].type) > -1) {
+          f[key].value = f[key].value.getTime();
+        }
+        // conversion de l'array d'objets en array de keyId
+        if (['autocomplete'].indexOf(f[key].type) > -1) {
+          f[key].type = 'list';
+          const filter = this.filters.find((filter: any) => { return filter.id === key; });
+          if (filter) {
+            f[key].value = f[key].value.map((v: any) => { return v[filter.keyId]; });
+          }
+        }
+        if (f[key].specific === undefined) {
+          delete f[key].specific;
+        }
+      }
+    }
+
+    return f;
   }
 
 }

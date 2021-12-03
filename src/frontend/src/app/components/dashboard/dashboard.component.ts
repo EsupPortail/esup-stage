@@ -137,9 +137,9 @@ export class DashboardComponent implements OnInit {
   }
 
   changeAnnee(): void {
-    this.countConvention();
     this.appTable?.setFilter({id: 'annee', type: 'text', value: this.anneeEnCours.libelle, specific: false});
     this.appTable?.update();
+    this.countConvention();
   }
 
   isSelected(data: any): boolean {
@@ -180,9 +180,12 @@ export class DashboardComponent implements OnInit {
   }
 
   countConvention(): void {
-    if ((this.isGestionnaire() || this.isEnseignant()) && this.anneeEnCours) {
-      this.conventionService.countConventionEnAttente(this.anneeEnCours.annee).subscribe((response: any) => {
-        this.nbConventionsEnAttente = response;
+    if ((this.isGestionnaire() || this.isEnseignant()) && this.appTable) {
+      const filters = this.appTable.getFilters();
+      if (this.isEnseignant()) filters.etatValidation = {value: ['nonValidationPedagogique'], type: 'list', specific: true};
+      else filters.etatValidation = {value: ['nonValidationConvention'], type: 'list', specific: true};
+      this.conventionService.getPaginated(1, 1, '', '', JSON.stringify(filters)).subscribe((response: any) => {
+        this.nbConventionsEnAttente = response.total;
       });
     }
   }

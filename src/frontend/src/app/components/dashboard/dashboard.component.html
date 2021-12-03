@@ -26,7 +26,8 @@
 
 <app-table [service]="conventionService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters"
            matSort [matSortActive]="sortColumn" [matSortDirection]="'desc'" (matSortChange)="appTable ? appTable.sorting($event) : null"
-           [noResultText]="'Aucune convention trouvée'" [customTemplateRef]="validAction">
+           [noResultText]="'Aucune convention trouvée'" [customTemplateRef]="validAction"
+           (onUpdated)="countConvention()">
   <ng-container *ngIf="isGestionnaire()" matColumnDef="select">
     <th mat-header-cell *matHeaderCellDef>
       <mat-checkbox (change)="$event ? masterToggle() : null"
