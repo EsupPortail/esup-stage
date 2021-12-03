@@ -26,4 +26,35 @@ public class TemplateConvention extends ObjetMetier {
     @Column
     private String texte;
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public TypeConvention getTypeConvention() {
+        return typeConvention;
+    }
+
+    public void setTypeConvention(TypeConvention typeConvention) {
+        this.typeConvention = typeConvention;
+    }
+
+    public LangueConvention getLangueConvention() {
+        return langueConvention;
+    }
+
+    public void setLangueConvention(LangueConvention langueConvention) {
+        this.langueConvention = langueConvention;
+    }
+
+    public String getTexte() {
+        return texte;
+    }
+
+    public void setTexte(String texte) {
+        this.texte = texte;
+    }
 }
