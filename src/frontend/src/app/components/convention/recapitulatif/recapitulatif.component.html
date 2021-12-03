@@ -9,7 +9,7 @@
           <div class="col-sm-3 font-weight-bold">Année universitaire</div>
           <div class="col-sm-9">{{convention.annee}}</div>
           <div class="col-sm-3 font-weight-bold">Langue de la convention</div>
-          <div class="col-sm-9">{{convention.langueConvention.libelle}}</div>
+          <div class="col-sm-9">{{isValide ? convention.nomenclature.langueConvnetion : convention.langueConvention.libelle}}</div>
         </div>
       </div>
       <div class="text-title">Etudiant</div>
@@ -63,9 +63,9 @@
       <div class="mt-3 mb-3">
         <div class="row">
           <div class="col-sm-3 font-weight-bold">Type de stage</div>
-          <div class="col-sm-9">{{convention.typeConvention.libelle}}</div>
+          <div class="col-sm-9">{{isValide ? convention.nomenclature.typeConvention : convention.typeConvention.libelle}}</div>
           <div class="col-sm-3 font-weight-bold">Thématique du stage</div>
-          <div class="col-sm-9">{{convention.theme.libelle}}</div>
+          <div class="col-sm-9">{{isValide ? convention.nomenclature.theme : convention.theme.libelle}}</div>
           <div class="col-sm-3 font-weight-bold">Sujet</div>
           <div class="col-sm-9">{{convention.sujetStage}}</div>
           <div class="col-sm-3 font-weight-bold">Fonctions et tâches</div>
@@ -99,7 +99,7 @@
           <div class="col-sm-3 font-weight-bold">Jours de travail hebdo</div>
           <div class="col-sm-9">TODO convention_nbJoursHebdo_libelle</div>
           <div class="col-sm-3 font-weight-bold">Temps de travail</div>
-          <div class="col-sm-9">{{convention.tempsTravail.libelle}}</div>
+          <div class="col-sm-9">{{isValide ? convention.nomenclature.tempsTravail : convention.tempsTravail.libelle}}</div>
           <div class="col-sm-3 font-weight-bold">Commentaire tps travail</div>
           <div class="col-sm-9">{{convention.commentaireDureeTravail}}</div>
           <div class="col-sm-3 font-weight-bold">Nombre d'heures hebdomadaires</div>
@@ -119,11 +119,11 @@
         </div>
         <div class="row" *ngIf="convention.gratificationStage">
           <div class="col-sm-3 font-weight-bold">Montant de la gratification</div>
-          <div class="col-sm-9">{{convention.montantGratification + ' ' + convention.uniteGratification.libelle + ' ' + convention.uniteDureeGratification.libelle}}</div>
+          <div class="col-sm-9">{{convention.montantGratification + ' ' + (isValide ? convention.nomenclature.uniteGratifications : convention.uniteGratification.libelle) + ' ' + (isValide ? convention.nomenclature.uniteDureeGratification : convention.uniteDureeGratification.libelle)}}</div>
           <div class="col-sm-3 font-weight-bold">Monnaie utilisée pour le paiement</div>
-          <div class="col-sm-9">{{convention.devise.libelle}}</div>
+          <div class="col-sm-9">{{isValide ? convention.nomenclature.devise : convention.devise.libelle}}</div>
           <div class="col-sm-3 font-weight-bold">Modalité de versement de la gratification</div>
-          <div class="col-sm-9">{{convention.modeVersGratification.libelle}}</div>
+          <div class="col-sm-9">{{isValide ? convention.nomenclature.modeVersGratifications : convention.modeVersGratification.libelle}}</div>
         </div>
       </div>
 
@@ -133,7 +133,7 @@
       <div class="mt-3 mb-3">
         <div class="row">
           <div class="col-sm-3 font-weight-bold">Origine du stage</div>
-          <div class="col-sm-9">{{convention.origineStage.libelle }}</div>
+          <div class="col-sm-9">{{isValide ? convention.nomenclature.origineStage : convention.origineStage.libelle }}</div>
           <div class="col-sm-3 font-weight-bold">Confidentialité sujet/theme</div>
           <div class="col-sm-9">{{convention.confidentiel? 'Oui' : 'Non'}}</div>
           <div class="col-sm-3 font-weight-bold">Modalité de suivi du stagiaire</div>
@@ -141,9 +141,9 @@
           <div class="col-sm-3 font-weight-bold">Liste des avantages en nature</div>
           <div class="col-sm-9">{{convention.avantagesNature}}</div>
           <div class="col-sm-3 font-weight-bold">Travail à fournir suite au stage</div>
-          <div class="col-sm-9">{{convention.natureTravail.libelle}}</div>
+          <div class="col-sm-9">{{isValide ? convention.nomenclature.natureTravail : convention.natureTravail.libelle}}</div>
           <div class="col-sm-3 font-weight-bold">Modalité de validation du stage</div>
-          <div class="col-sm-9">{{convention.modeValidationStage.libelle}}</div>
+          <div class="col-sm-9">{{isValide ? convention.nomenclature.modeValidationStage : convention.modeValidationStage.libelle}}</div>
           <div class="col-sm-3 font-weight-bold">Cas particuliers</div>
           <div class="col-sm-9">{{convention.travailNuitFerie}}</div>
         </div>

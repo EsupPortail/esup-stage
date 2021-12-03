@@ -17,7 +17,7 @@
 </mat-card>
 
 <ng-template #validAction>
-  <mat-card class="custom-table-buttons">
+  <mat-card class="custom-table-buttons" *ngIf="isGestionnaire()">
     <mat-card-content>
       <button type="button" mat-button mat-flat-button color="primary" [disabled]="selected.length === 0" (click)="validationAdministrative()">Valider la sélection</button>
     </mat-card-content>

@@ -55,7 +55,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
     this.filterChanged.pipe(debounceTime(500)).subscribe(() => {
       let f: any = {};
       for (let key of Object.keys(this.filterValues)) {
-        if (this.filterValues[key].value !== undefined && this.filterValues[key].value !== '' && (!Array.isArray(this.filterValues[key].value) || this.filterValues[key].value.length > 0)) {
+        if (this.filterValues[key].value !== undefined && this.filterValues[key].value !== '' && this.filterValues[key].value !== null && (!Array.isArray(this.filterValues[key].value) || this.filterValues[key].value.length > 0)) {
           f[key] = {...this.filterValues[key]};
           if (['date', 'date-min', 'date-max'].indexOf(f[key].type) > -1) {
             f[key].value = f[key].value.getTime();
@@ -86,7 +86,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
       this.service.getPaginated(this.page, this.pageSize, this.sortColumn, this.sortOrder, JSON.stringify(f)).subscribe((results: any) => {
         this.total = results.total;
         this.data = results.data;
-        this.onUpdated.emit(this.data);
+        this.onUpdated.emit(results);
       });
     });
   }

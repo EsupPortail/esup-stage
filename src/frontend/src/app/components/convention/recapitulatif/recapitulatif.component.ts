@@ -8,11 +8,13 @@ import { Component, OnInit, Input } from '@angular/core';
 export class RecapitulatifComponent implements OnInit {
 
   @Input() convention: any;
+  isValide: boolean = false;
 
   constructor() {
   }
 
   ngOnInit(): void {
+    this.isValide = this.convention.validationPedagogique && this.convention.validationConvention;
   }
 
   validate(): void {

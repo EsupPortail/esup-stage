@@ -134,7 +134,7 @@
         <div class="row">
           <mat-form-field class="col-6 mb-2" appearance="fill">
             <mat-label>Durée effective du stage en nombre d'heures</mat-label>
-            <input matInput formControlName="quotiteTravail" required />
+            <input type="number" matInput formControlName="quotiteTravail" required />
             <mat-error><app-form-error [field]="form.get('quotiteTravail')"></app-form-error></mat-error>
           </mat-form-field>
         </div>

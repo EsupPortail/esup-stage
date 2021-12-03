@@ -204,7 +204,12 @@ public class ConventionController {
     @PutMapping("/{id}")
     @Secure(fonctions = AppFonctionEnum.CONVENTION, droits = {DroitEnum.MODIFICATION})
     public Convention update(@PathVariable("id") int id, @Valid @RequestBody ConventionFormDto conventionFormDto) {
+        Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
         Convention convention = conventionJpaRepository.findById(id);
+        // Cas étudiant : on interdit la modification d'une convention qui ne lui est pas associé
+        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && convention != null && convention.getEtudiant() != null && !convention.getEtudiant().getIdentEtudiant().equalsIgnoreCase(utilisateur.getLogin())) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        }
         setConventionData(convention, conventionFormDto);
         convention = conventionJpaRepository.saveAndFlush(convention);
         return convention;
@@ -273,7 +278,6 @@ public class ConventionController {
             default:
                 throw new AppException(HttpStatus.BAD_REQUEST, "Type de validation inconnu");
         }
-        // TODO mettre les valeurs nomemclature dans la table ConventionNomenclature après vérification administrative ou validation pédagogique
         return convention;
     }
 
@@ -353,18 +357,13 @@ public class ConventionController {
         if (centreGestion == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion non trouvé");
         }
-        // la convention est modifiable si la dernière validation n'est pas faite
-        boolean derniereValidationActivee = false;
-        for (Integer ordre : Arrays.asList(3, 2, 1)) {
-            if (Objects.equals(centreGestion.getValidationPedagogiqueOrdre(), ordre) && convention.getValidationPedagogique() != null && convention.getValidationPedagogique()) {
-                derniereValidationActivee = true;
-            }
-            if (Objects.equals(centreGestion.getValidationConventionOrdre(), ordre) && convention.getValidationConvention() != null && convention.getValidationConvention()) {
-                derniereValidationActivee = true;
-            }
-            if (derniereValidationActivee) {
-                throw new AppException(HttpStatus.BAD_REQUEST, "La convention n'est plus modifiable");
-            }
+        // la convention est modifiable si la dernière validation n'est pas faite : ie toutes les validations à true
+        if (
+                (convention.getValidationPedagogique() != null && convention.getValidationPedagogique())
+                && (convention.getVerificationAdministrative() != null && convention.getVerificationAdministrative())
+                && (convention.getValidationConvention() != null && convention.getValidationConvention())
+        ) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "La convention n'est plus modifiable");
         }
 
         Etudiant etudiant = etudiantJpaRepository.findByNumEtudiant(conventionFormDto.getNumEtudiant());
@@ -398,31 +397,19 @@ public class ConventionController {
         convention.setLibelleELP(conventionFormDto.getLibelleELP());
         convention.setCreditECTS(conventionFormDto.getCreditECTS());
         // mis à TRUE les validations non prises en compte dans le centre de gestion
-        if (!centreGestion.getValidationConvention()) {
-            convention.setValidationConvention(true);
-        }
-        if (!centreGestion.getValidationPedagogique()) {
-            convention.setValidationPedagogique(true);
-        }
-        if (!centreGestion.getVerificationAdministrative()) {
-            convention.setVerificationAdministrative(true);
-        }
+        convention.setValidationConvention(!centreGestion.getValidationConvention());
+        convention.setValidationPedagogique(!centreGestion.getValidationPedagogique());
+        convention.setVerificationAdministrative(!centreGestion.getVerificationAdministrative());
     }
 
     private void setSingleFieldData(Convention convention, ConventionSingleFieldDto conventionSingleFieldDto) {
-        CentreGestion centreGestion = convention.getCentreGestion();
-        // la convention est modifiable si la dernière validation n'est pas faite
-        boolean derniereValidationActivee = false;
-        for (Integer ordre : Arrays.asList(3, 2, 1)) {
-            if (Objects.equals(centreGestion.getValidationPedagogiqueOrdre(), ordre) && convention.getValidationPedagogique() != null && convention.getValidationPedagogique()) {
-                derniereValidationActivee = true;
-            }
-            if (Objects.equals(centreGestion.getValidationConventionOrdre(), ordre) && convention.getValidationConvention() != null && convention.getValidationConvention()) {
-                derniereValidationActivee = true;
-            }
-            if (derniereValidationActivee) {
-                throw new AppException(HttpStatus.BAD_REQUEST, "La convention n'est plus modifiable");
-            }
+        // la convention est modifiable si la dernière validation n'est pas faite : ie toutes les validations à true
+        if (
+                (convention.getValidationPedagogique() != null && convention.getValidationPedagogique())
+                        && (convention.getVerificationAdministrative() != null && convention.getVerificationAdministrative())
+                        && (convention.getValidationConvention() != null && convention.getValidationConvention())
+        ) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "La convention n'est plus modifiable");
         }
         if (Objects.equals(conventionSingleFieldDto.getField(), "codeLangueConvention")){
             LangueConvention langueConvention = langueConventionJpaRepository.findByCode((String) conventionSingleFieldDto.getValue());
@@ -631,6 +618,7 @@ public class ConventionController {
         if (valider) {
             convention.setLoginValidation(utilisateurContext.getLogin());
         }
+        setValeurNomenclature(convention);
         convention = conventionJpaRepository.saveAndFlush(convention);
 
         historique.setValeurApres(valider);
@@ -647,6 +635,7 @@ public class ConventionController {
         historique.setConvention(convention);
 
         convention.setVerificationAdministrative(valider);
+        setValeurNomenclature(convention);
         convention = conventionJpaRepository.saveAndFlush(convention);
 
         historique.setValeurApres(valider);
@@ -677,6 +666,27 @@ public class ConventionController {
         historiqueValidationJpaRepository.saveAndFlush(historique);
 
         sendValidationMail(convention, utilisateurContext, valider ? TemplateMail.CODE_CONVENTION_VALID_ADMINISTRATIVE : TemplateMail.CODE_CONVENTION_DEVALID_ADMINISTRATIVE, sendMailEtudiant, sendMailGestionnaire, sendMailResGes, sendMailEnseignant);
+    }
+
+    private void setValeurNomenclature(Convention convention) {
+        ConventionNomenclature conventionNomenclature = convention.getNomenclature();
+        if (conventionNomenclature == null) {
+            conventionNomenclature = new ConventionNomenclature();
+            conventionNomenclature.setConvention(convention);
+        }
+        conventionNomenclature.setLangueConvention(convention.getLangueConvention().getLibelle());
+        conventionNomenclature.setDevise(convention.getDevise() != null ? convention.getDevise().getLibelle() : null);
+        conventionNomenclature.setModeValidationStage(convention.getModeValidationStage() != null ? convention.getModeValidationStage().getLibelle() : null);
+        conventionNomenclature.setModeVersGratification(convention.getModeVersGratification() != null ? convention.getModeVersGratification().getLibelle() : null);
+        conventionNomenclature.setNatureTravail(convention.getNatureTravail() != null ? convention.getNatureTravail().getLibelle() : null);
+        conventionNomenclature.setOrigineStage(convention.getOrigineStage() != null ? convention.getOrigineStage().getLibelle() : null);
+        conventionNomenclature.setTempsTravail(convention.getTempsTravail() != null ? convention.getTempsTravail().getLibelle() : null);
+        conventionNomenclature.setTheme(convention.getTheme() != null ? convention.getTheme().getLibelle() : null);
+        conventionNomenclature.setTypeConvention(convention.getTypeConvention().getLibelle());
+        conventionNomenclature.setUniteDureeExceptionnelle(convention.getUniteDureeExceptionnelle() != null ? convention.getUniteDureeExceptionnelle().getLibelle() : null);
+        conventionNomenclature.setUniteDureeGratification(convention.getUniteDureeGratification() != null ? convention.getUniteDureeGratification().getLibelle() : null);
+        conventionNomenclature.setUniteGratification(convention.getUniteGratification() != null ? convention.getUniteGratification().getLibelle() : null);
+        convention.setNomenclature(conventionNomenclature);
     }
 
     private void sendValidationMail(Convention convention, Utilisateur utilisateurContext, String templateMailCode, boolean sendMailEtudiant, boolean sendMailGestionnaire, boolean sendMailResGes, boolean sendMailEnseignant) {

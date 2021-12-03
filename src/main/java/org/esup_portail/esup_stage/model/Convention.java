@@ -129,13 +129,13 @@ public class Convention extends ObjetMetier {
     private Boolean conventionStructure;
 
     @JsonView(Views.List.class)
-    private Boolean validationPedagogique;
+    private Boolean validationPedagogique = false;
 
     @JsonView(Views.List.class)
-    private Boolean validationConvention;
+    private Boolean validationConvention = false;
 
     @JsonView(Views.List.class)
-    private Boolean verificationAdministrative;
+    private Boolean verificationAdministrative = false;
 
     @Column()
     private Boolean conversionEnContrat;
