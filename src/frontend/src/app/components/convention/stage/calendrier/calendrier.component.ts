@@ -11,17 +11,19 @@ export class CalendrierComponent implements OnInit  {
 
   periodes: any[] = [];
 
-  stageForm: FormGroup;
   periodesForm: FormGroup;
   heuresJournalieresForm: FormGroup;
 
+  convention: any;
   idPeriod : number = 0;
+
+  calendarDateFilter: any;
 
   constructor(private fb: FormBuilder,
               private dialogRef: MatDialogRef<CalendrierComponent>,
               @Inject(MAT_DIALOG_DATA) data: any
   ) {
-    this.stageForm = data.form
+    this.convention = data.convention;
   }
 
   ngOnInit(): void {
@@ -30,6 +32,28 @@ export class CalendrierComponent implements OnInit  {
       calendrierEndDate: [null, [Validators.required]],
     })
     this.heuresJournalieresForm = this.fb.group({})
+
+    this.calendarDateFilter = (d: Date | null): boolean => {
+        const date = (d || new Date());
+
+        let disable = false;
+        //disable dates already chosen
+        for (const periode of this.periodes) {
+            if (date >= periode.calendrierStartDate && date <= periode.calendrierEndDate){
+              disable = true;
+            }
+        }
+        //disable dates not within stage period
+        if (date < new Date(this.convention.dateDebutStage) || date > new Date(this.convention.dateFinStage)){
+          disable = true;
+        }
+        //disable dates within stage interruption period
+        if (date >= new Date(this.convention.dateDebutInterruption) && date <= new Date(this.convention.dateFinInterruption)){
+          disable = true;
+        }
+        return !disable;
+    };
+
   }
 
   addPeriode(): void {
@@ -39,8 +63,14 @@ export class CalendrierComponent implements OnInit  {
       this.idPeriod += 1;
       this.periodes.push(data);
       this.heuresJournalieresForm.addControl(data.formControlName, new FormControl(null, Validators.required));
+      this.clearDatePicker();
     }
+  }
 
+  clearDatePicker(): void {
+    this.periodesForm.reset();
+    this.periodesForm.get('calendrierStartDate')!.setErrors(null);
+    this.periodesForm.get('calendrierEndDate')!.setErrors(null);
   }
 
   removePeriode(periode: any): void {
