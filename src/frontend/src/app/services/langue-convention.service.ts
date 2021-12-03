@@ -22,6 +22,14 @@ export class LangueConventionService implements PaginatedService {
     return this.getPaginated(1, 0, 'libelle', 'asc', JSON.stringify(filters));
   }
 
+  getListActiveByTypeConvention(idTypeConvention: number): Observable<any> {
+    const filters = {
+      temEnServ: {value: 'O', type: 'text'},
+      typeConventionTemplate: {value: idTypeConvention, type: 'int', specific: true},
+    };
+    return this.getPaginated(1, 0, 'libelle', 'asc', JSON.stringify(filters));
+  }
+
   create(data: any): Observable<any> {
     return this.http.post(environment.apiUrl + "/langue-convention", data);
   }

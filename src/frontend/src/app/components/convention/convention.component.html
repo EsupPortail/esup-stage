@@ -48,7 +48,7 @@
     </ng-template>
     <app-signataire *ngIf="signataireTab.isActive || tabs[6].init" (validated)="updateSignataire($event)" [convention]="convention" [modifiable]="modifiable"></app-signataire>
   </mat-tab>
-  <mat-tab #recapTab [disabled]="!convention.id || !allValid">
+  <mat-tab #recapTab [disabled]="(!convention.id || !allValid) && !isConventionValide()">
     <ng-template mat-tab-label>
       Récapitulatif
     </ng-template>

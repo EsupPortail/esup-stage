@@ -169,7 +169,7 @@
                       </mat-select>
                       <mat-error><app-form-error [field]="formConvention.get('idTypeConvention')"></app-form-error></mat-error>
                     </mat-form-field>
-                    <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                    <mat-form-field class="col-sm-12 mb-2" appearance="fill" *ngIf="langueConventions.length > 0">
                       <mat-label>Langue de la convention</mat-label>
                       <mat-select formControlName="codeLangueConvention" required>
                         <mat-option *ngFor="let langueConvention of langueConventions" [value]="langueConvention.code">{{langueConvention.libelle}}</mat-option>

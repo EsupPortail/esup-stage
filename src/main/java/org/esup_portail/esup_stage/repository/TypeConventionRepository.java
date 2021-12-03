@@ -27,4 +27,12 @@ public class TypeConventionRepository extends PaginationRepository<TypeConventio
 
         return results.stream().anyMatch(i -> i != id);
     }
+
+    @Override
+    protected void formatFilters(String jsonString) {
+        super.formatFilters(jsonString);
+        if (filters.has("templatePDF")) {
+            addJoins("JOIN tc.templates template");
+        }
+    }
 }

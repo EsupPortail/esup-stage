@@ -1,6 +1,10 @@
 package org.esup_portail.esup_stage.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "TypeConvention")
@@ -21,6 +25,10 @@ public class TypeConvention {
     private String temEnServ;
 
     private Boolean modifiable;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "typeConvention")
+    private List<TemplateConvention> templates = new ArrayList<>();
 
     public int getId() {
         return id;
@@ -60,5 +68,13 @@ public class TypeConvention {
 
     public void setModifiable(Boolean modifiable) {
         this.modifiable = modifiable;
+    }
+
+    public List<TemplateConvention> getTemplates() {
+        return templates;
+    }
+
+    public void setTemplates(List<TemplateConvention> templates) {
+        this.templates = templates;
     }
 }

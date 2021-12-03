@@ -107,13 +107,22 @@ export class EtudiantComponent implements OnInit, OnChanges {
           });
         }
       }
+
+      // Recherche des langues disponible en fonction du type de convention
+      this.formConvention.get('idTypeConvention')?.valueChanges.subscribe((val: any) => {
+        if (val) {
+          this.langueConventionService.getListActiveByTypeConvention(val).subscribe((response: any) => {
+            this.langueConventions = response.data;
+          });
+        } else {
+          this.langueConventions = [];
+          this.messageService.setWarning("Aucune langue disponible pour ce type de convention.");
+        }
+      });
     });
 
-    this.typeConventionService.getListActive().subscribe((response: any) => {
+    this.typeConventionService.getListActiveWithTemplate().subscribe((response: any) => {
       this.typeConventions = response.data;
-    });
-    this.langueConventionService.getListActive().subscribe((response: any) => {
-      this.langueConventions = response.data;
     });
 
     this.form.valueChanges.pipe(debounceTime(500)).subscribe(() => {
