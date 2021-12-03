@@ -1,0 +1,68 @@
+databaseChangeLog:
+- changeSet:
+    id: templateConvention-create
+    author: jwang
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+                nullable: false
+                primaryKey: true
+            name: id
+            type: INT
+        - column:
+            constraints:
+                nullable: false
+                foreignKeyName: fk_TemplateConvention_TypeConvention1
+                references: TypeConvention(idTypeConvention)
+            name: idTypeConvention
+            type: INT
+        - column:
+            constraints:
+                nullable: false
+                foreignKeyName: fk_TemplateConvention_LangueConvention1
+                references: LangueConvention(codeLangueConvention)
+            name: codeLangueConvention
+            type: VARCHAR(2)
+        - column:
+            name: texte
+            type: TEXT
+        - column:
+            constraints:
+                nullable: false
+            name: dateCreation
+            type: datetime
+        - column:
+            constraints:
+                nullable: false
+            name: loginCreation
+            type: VARCHAR(50)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateModif
+            type: datetime
+        - column:
+            name: loginModif
+            type: VARCHAR(50)
+        tableName: TemplateConvention
+    - modifySql:
+        append:
+            value: ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci
+- changeSet:
+    id: templateConvention-unique
+    author: jwang
+    changes:
+    - addUniqueConstraint:
+        columnNames: idTypeConvention, codeLangueConvention
+        constraintName: index_idTypeConvention_codeLangueConvention
+        tableName: TemplateConvention
+- changeSet:
+    id: templateConvention-insert
+    author: jwang
+    changes:
+    - sql:
+        sql: INSERT INTO TemplateConvention VALUES (default, (SELECT idTypeConvention FROM TypeConvention WHERE libelleTypeConvention = 'Formation Initiale'), 'fr', '', NOW(), 'liquibase', null, null)
+    - sql:
+        sql: INSERT INTO TemplateConvention VALUES (default, (SELECT idTypeConvention FROM TypeConvention WHERE libelleTypeConvention = 'Formation Initiale'), 'en', '', NOW(), 'liquibase', null, null)
