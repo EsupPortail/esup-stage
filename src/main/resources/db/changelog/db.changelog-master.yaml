@@ -41,3 +41,6 @@ databaseChangeLog:
   - include:
       file: 1.0.0-historique-validation.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 1.0.0-engine-collate.yaml
+      relativeToChangelogFile: true
