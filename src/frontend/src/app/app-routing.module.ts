@@ -16,6 +16,7 @@ import { CentreGestionSearchComponent } from "./components/centre-gestion-search
 import { CentreGestionComponent } from "./components/centre-gestion/centre-gestion.component";
 import { TemplateMailComponent } from "./components/admin/template-mail/template-mail.component";
 import { GestionEtabAccueilComponent } from "./components/gestion-etab-accueil/gestion-etab-accueil.component";
+import { TemplateConventionComponent } from "./components/admin/template-convention/template-convention.component";
 
 const routes: Routes = [
   {path: '', component: HomeComponent, canActivate: [AuthGuard], data: {role: {}, title: 'Accueil'}},
@@ -48,6 +49,12 @@ const routes: Routes = [
     component: TemplateMailComponent,
     canActivate: [AuthGuard],
     data: {role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.LECTURE]}, title: 'Template de mails'}
+  },
+  {
+    path: 'param-global/conventions',
+    component: TemplateConventionComponent,
+    canActivate: [AuthGuard],
+    data: {role: {fonction: AppFonction.PARAM_GLOBAL}, droits: [Droit.LECTURE], title: 'Templates de convention'}
   },
   {
     path: 'etab-accueils',

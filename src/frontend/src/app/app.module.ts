@@ -97,6 +97,7 @@ import { DragDropModule } from "@angular/cdk/drag-drop";
 import { AvenantViewComponent } from './components/convention/avenant/avenant-view/avenant-view.component';
 import { CalendrierComponent } from './components/convention/stage/calendrier/calendrier.component';
 import { CKEditorModule } from "@ckeditor/ckeditor5-angular";
+import { TemplateConventionComponent } from './components/admin/template-convention/template-convention.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -151,6 +152,7 @@ registerLocaleData(localeFr, 'fr');
     LogoCentreComponent,
     AvenantViewComponent,
     CalendrierComponent,
+    TemplateConventionComponent,
   ],
   imports: [
     BrowserModule,

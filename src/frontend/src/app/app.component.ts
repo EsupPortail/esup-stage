@@ -87,6 +87,11 @@ export class AppComponent {
           path: 'param-global/mails',
           icon: 'fa-envelope',
         },
+        {
+          libelle: 'Templates de convention',
+          path: 'param-global/conventions',
+          icon: 'fa-file',
+        },
       ]
     },
     {

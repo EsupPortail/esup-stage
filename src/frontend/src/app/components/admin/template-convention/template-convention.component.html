@@ -1,0 +1,47 @@
+<mat-tab-group #tabs (selectedTabChange)="tabChanged($event)">
+  <mat-tab label="liste">
+    <app-table #tableList [service]="templateConventionService" [columns]="columns" [sortColumn]="sortColumn"
+               matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'" (matSortChange)="appTable ? appTable.sorting($event) : null">
+      <ng-container matColumnDef="typeConvention.libelle">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Type convention</th>
+        <td mat-cell *matCellDef="let row">{{row.typeConvention.libelle}}</td>
+      </ng-container>
+      <ng-container matColumnDef="langueConvention.code">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Langue convention</th>
+        <td mat-cell *matCellDef="let row">{{row.langueConvention.code}}</td>
+      </ng-container>
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
+        <td mat-cell *matCellDef="let row">
+          <ng-container>
+            <button mat-icon-button matTooltip="Éditer" (click)="edit(row)" color="primary"><i class="fa fa-pen"></i></button>
+          </ng-container>
+        </td>
+      </ng-container>
+    </app-table>
+  </mat-tab>
+
+  <mat-tab *ngIf="data.id" label="Édition">
+    <mat-card>
+      <mat-card-content>
+        <div class="alert alert-info">
+          Les paramètres doivent être saisis sous la forme ${{ '{' }}...{{ '}' }}. Par exemple : ${{ '{' }}convention.dateDebut{{ '}' }}
+        </div>
+        <form [formGroup]="form" (submit)="save()">
+          <div class="row">
+            <div class="col-12">
+              <label class="required">Texte</label>
+              <ckeditor [editor]="Editor" formControlName="texte" (ready)="onReady($event)"></ckeditor>
+            </div>
+          </div>
+
+          <div class="row mt-3">
+            <div class="col-12 text-right">
+              <button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
+            </div>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </mat-tab>
+</mat-tab-group>
