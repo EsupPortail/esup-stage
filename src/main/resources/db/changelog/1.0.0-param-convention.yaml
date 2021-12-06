@@ -1,0 +1,23 @@
+databaseChangeLog:
+- changeSet:
+    id: paramConvention-create
+    author: jwang
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+                nullable: false
+                primaryKey: true
+            name: code
+            type: VARCHAR(50)
+        - column:
+            name: libelle
+            type: VARCHAR(150)
+        - column:
+            name: exemple
+            type: VARCHAR(200)
+        tableName: ParamConvention
+    - modifySql:
+        append:
+            value: ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci
