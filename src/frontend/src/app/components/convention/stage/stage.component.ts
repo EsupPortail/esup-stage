@@ -13,10 +13,12 @@ import { OrigineStageService } from "../../../services/origine-stage.service";
 import { NatureTravailService } from "../../../services/nature-travail.service";
 import { ModeValidationStageService } from "../../../services/mode-validation-stage.service";
 import { TypeConventionService } from "../../../services/type-convention.service";
+import { PeriodeInterruptionStageService } from "../../../services/periode-interruption-stage.service";
 import { AuthService } from "../../../services/auth.service";
 import { ConventionService } from "../../../services/convention.service";
 import { pairwise,debounceTime,startWith }from 'rxjs/operators'
 import { CalendrierComponent } from './calendrier/calendrier.component';
+import { InterruptionsFormComponent } from './interruptions-form/interruptions-form.component';
 
 @Component({
   selector: 'app-stage',
@@ -36,6 +38,7 @@ export class StageComponent implements OnInit {
       'idDevise': [Validators.required],
       'idModeVersGratification': [Validators.required],
   }
+  interruptionsStageTableColumns = ['dateDebutInterruption', 'dateFinInterruption', 'actions'];
 
   countries: any[] = [];
   thematiques: any[] = [];
@@ -49,6 +52,7 @@ export class StageComponent implements OnInit {
   natureTravails: any[] = [];
   modeValidationStages: any[] = [];
   typeConventions: any[] = [];
+  interruptionsStage: any[] = [];
 
   @Input() convention: any;
 
@@ -80,6 +84,7 @@ export class StageComponent implements OnInit {
               private natureTravailService: NatureTravailService,
               private modeValidationStageService: ModeValidationStageService,
               private typeConventionService: TypeConventionService,
+              private periodeInterruptionStageService: PeriodeInterruptionStageService,
               public matDialog: MatDialog,
   ) {
   }
@@ -122,6 +127,8 @@ export class StageComponent implements OnInit {
     this.modeValidationStageService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
       this.modeValidationStages = response.data;
     });
+
+    this.refreshInterruptionsStage();
 
     this.form = this.fb.group({
       // - Modèle de la convention
@@ -264,6 +271,22 @@ export class StageComponent implements OnInit {
     this.form.get('dateFinStage')!.updateValueAndValidity();
   }
 
+  openInterruptionsForm(): void {
+    this.openInterruptionsFormModal();
+  }
+
+  openInterruptionsFormModal(): void {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.width = '1000px';
+    dialogConfig.data = {convention: this.convention};
+    const modalDialog = this.matDialog.open(InterruptionsFormComponent, dialogConfig);
+    modalDialog.afterClosed().subscribe(dialogResponse => {
+      if (dialogResponse) {
+        this.addInterruptionsStage(dialogResponse);
+      }
+    });
+  }
+
   openCalendar(): void {
     this.openCalendarModal();
   }
@@ -301,9 +324,37 @@ export class StageComponent implements OnInit {
       this.form.get('quotiteTravail')?.setValue(nbHeuresTravail);
   }
 
-
   dateDiff(date1:Date,date2:Date):number {
     const diffTime = Math.abs(date1.getTime() - date2.getTime());
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24))+1;
+  }
+
+  refreshInterruptionsStage() : void{
+    this.periodeInterruptionStageService.getByConvention(this.convention.id).subscribe((response: any) => {
+      this.interruptionsStage = response;
+    });
+  }
+
+  addInterruptionsStage(newInterruptions: any[]){
+    let finished = 0;
+    for (const newInterruption of newInterruptions){
+      this.periodeInterruptionStageService.create(newInterruption).subscribe((response: any) => {
+        finished++;
+        if (finished === newInterruptions.length){
+          this.refreshInterruptionsStage();
+        }
+      });
+    }
+  }
+
+  editInterruptionStage(row:any) : void{
+    this.periodeInterruptionStageService.getByConvention(this.convention.id).subscribe((response: any) => {
+      this.interruptionsStage = response;
+    });
+  }
+  deleteInterruptionStage(row:any) : void{
+    this.periodeInterruptionStageService.getByConvention(this.convention.id).subscribe((response: any) => {
+      this.interruptionsStage = response;
+    });
   }
 }

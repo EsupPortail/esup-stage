@@ -1,7 +1,9 @@
 package org.esup_portail.esup_stage.controller;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.dto.PeriodeInterruptionStageDto;
+import org.esup_portail.esup_stage.dto.view.Views;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
@@ -32,8 +34,9 @@ public class PeriodeInterruptionStageController {
     @Autowired
     ConventionJpaRepository conventionJpaRepository;
 
+    @JsonView(Views.List.class)
     @GetMapping
-    @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<PeriodeInterruptionStage> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         PaginatedResponse<PeriodeInterruptionStage> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(periodeInterruptionStageRepository.count(filters));
@@ -41,8 +44,9 @@ public class PeriodeInterruptionStageController {
         return paginatedResponse;
     }
 
+    @JsonView(Views.List.class)
     @GetMapping("/{id}")
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public PeriodeInterruptionStage getById(@PathVariable("id") int id) {
         PeriodeInterruptionStage periodeInterruptionStage = periodeInterruptionStageJpaRepository.findById(id);
         if (periodeInterruptionStage == null) {
@@ -51,18 +55,15 @@ public class PeriodeInterruptionStageController {
         return periodeInterruptionStage;
     }
 
+    @JsonView(Views.List.class)
     @GetMapping("/getByConvention/{id}")
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public List<PeriodeInterruptionStage> getByConvention(@PathVariable("id") int id) {
-        List<PeriodeInterruptionStage> periodeInterruptionStage = periodeInterruptionStageJpaRepository.findByConvention(id);
-        if (periodeInterruptionStage == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "PeriodeInterruptionStage non trouvée");
-        }
-        return periodeInterruptionStage;
+        return periodeInterruptionStageJpaRepository.findByConvention(id);
     }
 
     @PostMapping
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.CREATION})
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.CREATION})
     public PeriodeInterruptionStage create(@Valid @RequestBody PeriodeInterruptionStageDto periodeInterruptionStageDto) {
         PeriodeInterruptionStage periodeInterruptionStage = new PeriodeInterruptionStage();
         setPeriodeInterruptionStageData(periodeInterruptionStage, periodeInterruptionStageDto);
@@ -70,7 +71,7 @@ public class PeriodeInterruptionStageController {
     }
 
     @PutMapping("/{id}")
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.MODIFICATION})
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.MODIFICATION})
     public PeriodeInterruptionStage update(@PathVariable("id") int id, @Valid @RequestBody PeriodeInterruptionStageDto periodeInterruptionStageDto) {
         PeriodeInterruptionStage periodeInterruptionStage = periodeInterruptionStageJpaRepository.findById(id);
         if (periodeInterruptionStage == null) {
@@ -81,7 +82,7 @@ public class PeriodeInterruptionStageController {
     }
 
     @DeleteMapping("/{id}")
-    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.SUPPRESSION})
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.SUPPRESSION})
     public boolean delete(@PathVariable("id") int id) {
         PeriodeInterruptionStage periodeInterruptionStage = periodeInterruptionStageJpaRepository.findById(id);
         if (periodeInterruptionStage == null) {

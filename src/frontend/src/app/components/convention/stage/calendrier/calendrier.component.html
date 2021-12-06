@@ -14,13 +14,13 @@
       <mat-error><app-form-error [field]="periodesForm.get('calendrierEndDate')"></app-form-error></mat-error>
     </mat-form-field>
 
-    <button mat-fab color="primary" matTooltip="Ajouter" (click)="addPeriode()">
+    <button type="button" mat-fab color="primary" matTooltip="Ajouter" (click)="addPeriode()">
       <i class="fa fa-plus"></i>
     </button>
   </div>
 </form>
 
-<form [formGroup]="heuresJournalieresForm" novalidate (submit)="save()" *ngIf="periodes.length > 0">
+<form [formGroup]="heuresJournalieresForm" novalidate *ngIf="periodes.length > 0">
   <div *ngFor="let periode of periodes" >
     <mat-divider class="mb-2"></mat-divider>
     <div class="mb-3">Période du {{periode.calendrierStartDate|date:'shortDate'}} au {{periode.calendrierEndDate|date:'shortDate'}} :</div>
@@ -30,18 +30,18 @@
         <input matInput formControlName={{periode.formControlName}} required />
         <mat-error><app-form-error [field]="heuresJournalieresForm.get('periode.formControlName')"></app-form-error></mat-error>
       </mat-form-field>
-      <button mat-fab color="warn" matTooltip="Supprimer" (click)="removePeriode(periode)" >
+      <button type="button" mat-fab color="warn" matTooltip="Supprimer" (click)="removePeriode(periode)" >
         <i class="fa fa-trash-alt"></i>
       </button>
     </div>
   </div>
-  <div class="row">
-    <div class="col-sm-6">
-      <button type="button" mat-button mat-stroked-button color="warn" (click)="close()">{{'BOUTON_ANNULER'|contenu}}</button>
-    </div>
-    <div class="col-sm-6 text-right">
-      <button mat-button mat-flat-button color="primary" (click)="save()">{{'BOUTON_VALIDER'|contenu}}</button>
-    </div>
-  </div>
 </form>
 
+<div class="row">
+  <div class="col-sm-6">
+    <button type="button" mat-button mat-stroked-button color="warn" (click)="close()">{{'BOUTON_ANNULER'|contenu}}</button>
+  </div>
+  <div class="col-sm-6 text-right">
+    <button mat-button mat-flat-button color="primary" (click)="save()">{{'BOUTON_VALIDER'|contenu}}</button>
+  </div>
+</div>

@@ -94,20 +94,33 @@
         </div>
 
         <div class="row" *ngIf="form.value.interruptionStage">
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Date de début d'interruption du stage </mat-label>
-            <input matInput [matDatepicker]="dateDebutInterruptionPicker" formControlName="dateDebutInterruption" required >
-            <mat-datepicker-toggle matSuffix [for]="dateDebutInterruptionPicker"></mat-datepicker-toggle>
-            <mat-datepicker #dateDebutInterruptionPicker></mat-datepicker>
-            <mat-error><app-form-error [field]="form.get('dateDebutInterruption')"></app-form-error></mat-error>
-          </mat-form-field>
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Date de fin d'interruption du stage </mat-label>
-            <input matInput [matDatepicker]="dateFinInterruptionPicker" formControlName="dateFinInterruption" required >
-            <mat-datepicker-toggle matSuffix [for]="dateFinInterruptionPicker"></mat-datepicker-toggle>
-            <mat-datepicker #dateFinInterruptionPicker></mat-datepicker>
-            <mat-error><app-form-error [field]="form.get('dateFinInterruption')"></app-form-error></mat-error>
-          </mat-form-field>
+          <div class="col-6 mb-3">
+            <button mat-button mat-flat-button type="button" color="primary" (click)="openInterruptionsForm()">Ajouter des nouvelles périodes d'interruptions</button>
+          </div>
+          <div class="col-md-12 mb-3" *ngIf="interruptionsStage.length > 0">
+            <div class="text-title">Périodes d'interruptions actuelles :</div>
+            <table mat-table [dataSource]="interruptionsStage">
+              <ng-container matColumnDef="dateDebutInterruption">
+                <th mat-header-cell *matHeaderCellDef>date de Debut</th>
+                <td mat-cell *matCellDef="let row">{{row.dateDebutInterruption}}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="dateFinInterruption">
+                <th mat-header-cell *matHeaderCellDef>date de Fin</th>
+                <td mat-cell *matCellDef="let row">{{row.dateFinInterruption}}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>actions</th>
+                <td mat-cell *matCellDef="let row">
+                  <button mat-icon-button matTooltip="Éditer" (click)="editInterruptionStage(row)" color="primary"><i class="fa fa-pen"></i></button>
+                  <button mat-icon-button matTooltip="Supprimer" (click)="deleteInterruptionStage(row)" color="warn"><i class="fa fa-trash-alt"></i></button>
+                </td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="interruptionsStageTableColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: interruptionsStageTableColumns;"></tr>
+            </table>
+          </div>
         </div>
 
         <div class="row">

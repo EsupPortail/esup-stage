@@ -1,0 +1,41 @@
+<form [formGroup]="periodesForm" novalidate>
+  <div class="text-title"  *ngIf="!isEdit" >Ajouter des nouvelles périodes d'interruptions</div>
+  <div class="text-title"  *ngIf="isEdit">Modifier une période d'interruption</div>
+  <mat-divider class="mb-3"></mat-divider>
+  <div class="row">
+    <mat-form-field class="col-6" appearance="fill">
+      <mat-label>Ajoutez une nouvelle période</mat-label>
+      <mat-date-range-input [dateFilter]="interruptionsDateFilter" [rangePicker]="interruptionsPicker">
+        <input matStartDate formControlName="dateDebutInterruption" placeholder="Date de début">
+        <input matEndDate formControlName="dateFinInterruption" placeholder="Date de fin">
+      </mat-date-range-input>
+      <mat-datepicker-toggle matSuffix [for]="interruptionsPicker"></mat-datepicker-toggle>
+      <mat-date-range-picker #interruptionsPicker></mat-date-range-picker>
+
+      <mat-error><app-form-error [field]="periodesForm.get('dateFinInterruption')"></app-form-error></mat-error>
+    </mat-form-field>
+
+    <button mat-fab type="button" color="primary" matTooltip="Ajouter" (click)="addPeriode()" *ngIf="!isEdit">
+      <i class="fa fa-plus"></i>
+    </button>
+  </div>
+</form>
+
+<div *ngFor="let periode of periodes" >
+  <mat-divider class="mb-3"></mat-divider>
+  <div class="row mb-3">
+    <div class="col-6">Période du {{periode.dateDebutInterruption|date:'shortDate'}} au {{periode.dateFinInterruption|date:'shortDate'}}</div>
+    <button mat-fab color="warn" matTooltip="Supprimer" (click)="removePeriode(periode)" >
+      <i class="fa fa-trash-alt"></i>
+    </button>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-sm-6">
+    <button type="button" mat-button mat-stroked-button color="warn" (click)="close()">{{'BOUTON_ANNULER'|contenu}}</button>
+  </div>
+  <div class="col-sm-6 text-right">
+    <button mat-button mat-flat-button color="primary" (click)="save()">{{'BOUTON_VALIDER'|contenu}}</button>
+  </div>
+</div>

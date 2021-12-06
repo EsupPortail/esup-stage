@@ -51,7 +51,7 @@ public class AvenantController {
     MailerService mailerService;
 
     @GetMapping
-    @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<Avenant> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         PaginatedResponse<Avenant> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(avenantRepository.count(filters));
@@ -60,7 +60,7 @@ public class AvenantController {
     }
 
     @GetMapping("/{id}")
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.LECTURE})
     public Avenant getById(@PathVariable("id") int id) {
         Avenant avenant = avenantJpaRepository.findById(id);
         if (avenant == null) {
@@ -70,7 +70,7 @@ public class AvenantController {
     }
 
     @GetMapping("/getByConvention/{id}")
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.LECTURE})
     public List<Avenant> getByConvention(@PathVariable("id") int id) {
         List<Avenant> avenant = avenantJpaRepository.findByConvention(id);
         if (avenant == null) {
@@ -80,7 +80,7 @@ public class AvenantController {
     }
 
     @GetMapping("/validate/{id}")
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.VALIDATION})
+    @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.VALIDATION})
     public Avenant validate(@PathVariable("id") int id) {
         Avenant avenant = avenantJpaRepository.findById(id);
         if (avenant == null) {
@@ -91,7 +91,7 @@ public class AvenantController {
     }
 
     @GetMapping("/validate/cancel/{id}")
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.VALIDATION})
+    @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.VALIDATION})
     public Avenant cancelValidation(@PathVariable("id") int id) {
         Avenant avenant = avenantJpaRepository.findById(id);
         if (avenant == null) {
@@ -102,7 +102,7 @@ public class AvenantController {
     }
 
     @PostMapping
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.CREATION})
+    @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.CREATION})
     public Avenant create(@Valid @RequestBody AvenantDto avenantDto) {
         Avenant avenant = new Avenant();
         setAvenantData(avenant, avenantDto);
@@ -117,7 +117,7 @@ public class AvenantController {
     }
 
     @PutMapping("/{id}")
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.MODIFICATION})
+    @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.MODIFICATION})
     public Avenant update(@PathVariable("id") int id, @Valid @RequestBody AvenantDto avenantDto) {
         Avenant avenant = avenantJpaRepository.findById(id);
         if (avenant == null) {
@@ -128,7 +128,7 @@ public class AvenantController {
     }
 
     @DeleteMapping("/{id}")
-    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.SUPPRESSION})
+    @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.SUPPRESSION})
     public boolean delete(@PathVariable("id") int id) {
         Avenant avenant = avenantJpaRepository.findById(id);
         if (avenant == null) {

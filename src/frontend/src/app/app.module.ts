@@ -98,6 +98,7 @@ import { CalendrierComponent } from './components/convention/stage/calendrier/ca
 import { CKEditorModule } from "@ckeditor/ckeditor5-angular";
 import { TemplateConventionComponent } from './components/admin/template-convention/template-convention.component';
 import { MatSnackBarModule } from "@angular/material/snack-bar";
+import { InterruptionsFormComponent } from './components/convention/stage/interruptions-form/interruptions-form.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -153,6 +154,7 @@ registerLocaleData(localeFr, 'fr');
     AvenantViewComponent,
     CalendrierComponent,
     TemplateConventionComponent,
+    InterruptionsFormComponent,
   ],
   imports: [
     BrowserModule,
