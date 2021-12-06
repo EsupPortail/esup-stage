@@ -48,5 +48,8 @@ databaseChangeLog:
       file: 1.0.0-template-convention.yaml
       relativeToChangelogFile: true
   - include:
+      file: 1.0.0-periode-interruption-stage.yaml
+      relativeToChangelogFile: true
+  - include:
       file: 1.0.0-param-convention.yaml
       relativeToChangelogFile: true

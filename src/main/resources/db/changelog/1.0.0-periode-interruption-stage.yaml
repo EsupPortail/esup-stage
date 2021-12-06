@@ -1,0 +1,35 @@
+databaseChangeLog:
+- changeSet:
+    id: PeriodeInterruptionStage-create
+    author: tjubera
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+                nullable: false
+                primaryKey: true
+            name: id
+            type: INT
+        - column:
+              constraints:
+                  nullable: false
+              name: dateDebutInterruption
+              type: datetime
+        - column:
+              constraints:
+                  nullable: false
+              name: dateFinInterruption
+              type: datetime
+        - column:
+            constraints:
+                nullable: false
+                foreignKeyName: fk_PeriodeInterruptionStage_Convention1
+                references: Convention(idConvention)
+            name: idConvention
+            type: INT
+        tableName: PeriodeInterruptionStage
+    - modifySql:
+        append:
+            value: ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci

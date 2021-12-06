@@ -3,52 +3,47 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, FormControl, Validators } from "@angular/forms";
 
 @Component({
-  selector: 'app-calendrier',
-  templateUrl: './calendrier.component.html',
-  styleUrls: ['./calendrier.component.scss'],
+  selector: 'app-interruptions-form',
+  templateUrl: './interruptions-form.component.html',
+  styleUrls: ['./interruptions-form.component.scss'],
 })
-export class CalendrierComponent implements OnInit  {
+export class InterruptionsFormComponent implements OnInit  {
 
   periodes: any[] = [];
 
   periodesForm: FormGroup;
-  heuresJournalieresForm: FormGroup;
 
   convention: any;
-  idPeriod : number = 0;
+  isEdit: boolean;
 
-  calendarDateFilter: any;
+  interruptionsDateFilter: any;
 
   constructor(private fb: FormBuilder,
-              private dialogRef: MatDialogRef<CalendrierComponent>,
+              private dialogRef: MatDialogRef<InterruptionsFormComponent>,
               @Inject(MAT_DIALOG_DATA) data: any
   ) {
     this.convention = data.convention;
+    this.isEdit = data.isEdit;
   }
 
   ngOnInit(): void {
     this.periodesForm = this.fb.group({
-      calendrierStartDate: [null, [Validators.required]],
-      calendrierEndDate: [null, [Validators.required]],
+      dateDebutInterruption: [null, [Validators.required]],
+      dateFinInterruption: [null, [Validators.required]],
     })
-    this.heuresJournalieresForm = this.fb.group({})
 
-    this.calendarDateFilter = (d: Date | null): boolean => {
+    this.interruptionsDateFilter = (d: Date | null): boolean => {
         const date = (d || new Date());
 
         let disable = false;
         //disable dates already chosen
         for (const periode of this.periodes) {
-            if (date >= periode.calendrierStartDate && date <= periode.calendrierEndDate){
+            if (date >= periode.dateDebutInterruption && date <= periode.dateFinInterruption){
               disable = true;
             }
         }
         //disable dates not within stage period
         if (date < new Date(this.convention.dateDebutStage) || date > new Date(this.convention.dateFinStage)){
-          disable = true;
-        }
-        //disable dates within stage interruption period
-        if (date >= new Date(this.convention.dateDebutInterruption) && date <= new Date(this.convention.dateFinInterruption)){
           disable = true;
         }
         return !disable;
@@ -59,10 +54,8 @@ export class CalendrierComponent implements OnInit  {
   addPeriode(): void {
     if (this.periodesForm.valid){
       const data = {...this.periodesForm.value};
-      data.formControlName = 'heuresJournalieres' + this.idPeriod;
-      this.idPeriod += 1;
+      data.idConvention = this.convention.id;
       this.periodes.push(data);
-      this.heuresJournalieresForm.addControl(data.formControlName, new FormControl(null, Validators.required));
       this.clearDatePicker();
     }
   }
@@ -73,7 +66,6 @@ export class CalendrierComponent implements OnInit  {
 
   removePeriode(periode: any): void {
     this.removeItemOnce(this.periodes,periode);
-    this.heuresJournalieresForm.removeControl(periode.formControlName);
   }
 
   removeItemOnce(arr : any[], value : any) : any[] {
@@ -89,9 +81,7 @@ export class CalendrierComponent implements OnInit  {
   }
 
   save(): void {
-    if (this.heuresJournalieresForm.valid) {
-
-    }
+    this.dialogRef.close(this.periodes);
   }
 
 }
