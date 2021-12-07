@@ -36,6 +36,6 @@
     <button type="button" mat-button mat-stroked-button color="warn" (click)="close()">{{'BOUTON_ANNULER'|contenu}}</button>
   </div>
   <div class="col-sm-6 text-right">
-    <button mat-button mat-flat-button color="primary" (click)="save()">{{'BOUTON_VALIDER'|contenu}}</button>
+    <button mat-button mat-flat-button color="primary" (click)="save()" [disabled]="periodes.length === 0">{{'BOUTON_VALIDER'|contenu}}</button>
   </div>
 </div>

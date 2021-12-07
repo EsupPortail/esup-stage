@@ -5,13 +5,13 @@
     <mat-form-field class="col-6" appearance="fill">
       <mat-label>Selectionez une nouvelle période</mat-label>
       <mat-date-range-input [dateFilter]="calendarDateFilter" [rangePicker]="calendrierPicker">
-        <input matStartDate formControlName="calendrierStartDate" placeholder="Date de début">
-        <input matEndDate formControlName="calendrierEndDate" placeholder="Date de fin">
+        <input matStartDate formControlName="dateDebut" placeholder="Date de début">
+        <input matEndDate formControlName="dateFin" placeholder="Date de fin">
       </mat-date-range-input>
       <mat-datepicker-toggle matSuffix [for]="calendrierPicker"></mat-datepicker-toggle>
       <mat-date-range-picker #calendrierPicker></mat-date-range-picker>
 
-      <mat-error><app-form-error [field]="periodesForm.get('calendrierEndDate')"></app-form-error></mat-error>
+      <mat-error><app-form-error [field]="periodesForm.get('dateFin')"></app-form-error></mat-error>
     </mat-form-field>
 
     <button type="button" mat-fab color="primary" matTooltip="Ajouter" (click)="addPeriode()">
@@ -23,7 +23,7 @@
 <form [formGroup]="heuresJournalieresForm" novalidate (submit)="save()">
   <div *ngFor="let periode of periodes" >
     <mat-divider class="mb-2"></mat-divider>
-    <div class="mb-3">Période du {{periode.calendrierStartDate|date:'shortDate'}} au {{periode.calendrierEndDate|date:'shortDate'}} :</div>
+    <div class="mb-3">Période du {{periode.dateDebut|date:'shortDate'}} au {{periode.dateFin|date:'shortDate'}} :</div>
     <div class="row">
       <mat-form-field class="col-6 mb-2" appearance="fill">
         <mat-label>Nombre d’heures journalières sur cette période</mat-label>

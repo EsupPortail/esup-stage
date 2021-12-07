@@ -30,8 +30,8 @@ export class CalendrierComponent implements OnInit  {
 
   ngOnInit(): void {
     this.periodesForm = this.fb.group({
-      calendrierStartDate: [null, [Validators.required]],
-      calendrierEndDate: [null, [Validators.required]],
+      dateDebut: [null, [Validators.required]],
+      dateFin: [null, [Validators.required]],
     })
     this.heuresJournalieresForm = this.fb.group({})
 
@@ -44,7 +44,7 @@ export class CalendrierComponent implements OnInit  {
         let disable = false;
         //disable dates already chosen
         for (const periode of this.periodes) {
-            if (date >= periode.calendrierStartDate && date <= periode.calendrierEndDate){
+            if (date >= periode.dateDebut && date <= periode.dateFin){
               disable = true;
             }
         }
@@ -94,7 +94,10 @@ export class CalendrierComponent implements OnInit  {
 
   save(): void {
     if (this.heuresJournalieresForm.valid) {
-
+      for(let periode of this.periodes){
+        periode.nbHeuresJournalieres = parseInt(this.heuresJournalieresForm.get(periode.formControlName)!.value);
+      }
+      this.dialogRef.close(this.periodes);
     }
   }
 

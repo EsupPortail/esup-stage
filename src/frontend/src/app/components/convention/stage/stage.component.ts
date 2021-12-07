@@ -53,6 +53,7 @@ export class StageComponent implements OnInit {
   modeValidationStages: any[] = [];
   typeConventions: any[] = [];
   interruptionsStage: any[] = [];
+  periodesCalculHeuresStage : any[] = [];
 
   @Input() convention: any;
 
@@ -128,7 +129,7 @@ export class StageComponent implements OnInit {
       this.modeValidationStages = response.data;
     });
 
-    this.refreshInterruptionsStage();
+    this.loadInterruptionsStage();
 
     this.form = this.fb.group({
       // - Modèle de la convention
@@ -199,8 +200,8 @@ export class StageComponent implements OnInit {
       const keys=Object.keys(res).filter(k=>res[k]!=this.previousValues[k])
       this.previousValues={...this.form.value}
       keys.forEach((key: string) => {
-        if (['dateDebutStage','dateFinStage','interruptionStage','dateDebutInterruption','dateFinInterruption','horairesReguliers','nbHeuresHebdo'].includes(key)){
-          this.updateHeuresTravails();
+        if (['dateDebutStage','dateFinStage','interruptionStage','horairesReguliers','nbHeuresHebdo'].includes(key)){
+          this.updateHeuresTravail();
         }
         this.updateSingleField(key,res[key]);
       });
@@ -295,9 +296,16 @@ export class StageComponent implements OnInit {
     });
   }
 
+  loadInterruptionsStage() : void{
+    this.periodeInterruptionStageService.getByConvention(this.convention.id).subscribe((response: any) => {
+      this.interruptionsStage = response;
+    });
+  }
+
   refreshInterruptionsStage() : void{
     this.periodeInterruptionStageService.getByConvention(this.convention.id).subscribe((response: any) => {
       this.interruptionsStage = response;
+      this.updateHeuresTravail();
     });
   }
 
@@ -336,35 +344,58 @@ export class StageComponent implements OnInit {
     const modalDialog = this.matDialog.open(CalendrierComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse) {
-
+        this.periodesCalculHeuresStage = dialogResponse;
+        this.updateHeuresTravail();
       }
     });
   }
 
-  updateHeuresTravails():void {
+  updateHeuresTravail():void {
 
-      const dateDebutStage = new Date(this.form.get('dateDebutStage')!.value)
-      const dateFinStage = new Date(this.form.get('dateFinStage')!.value)
+      if (this.form.get('horairesReguliers')!.value){
 
-      let diffDays = this.dateDiff(dateDebutStage,dateFinStage);
+        const dateDebutStage = new Date(this.form.get('dateDebutStage')!.value)
+        const dateFinStage = new Date(this.form.get('dateFinStage')!.value)
+        const nbHeuresJournalieres = this.form.get('nbHeuresHebdo')!.value/5;
 
-      let nbHeuresTravail = diffDays;
+        const periodes = [{'dateDebut':dateDebutStage,'dateFin':dateFinStage,'nbHeuresJournalieres':nbHeuresJournalieres}];
 
-      if (this.form.get('interruptionStage')!.value){
-        const dateDebutInterruption = new Date(this.form.get('dateDebutInterruption')!.value)
-        const dateFinInterruption = new Date(this.form.get('dateFinInterruption')!.value)
+        this.form.get('quotiteTravail')?.setValue(this.calculHeuresTravails(periodes));
 
-        diffDays = this.dateDiff(dateDebutInterruption,dateFinInterruption);
-        nbHeuresTravail = nbHeuresTravail - diffDays;
+      }else{
+        this.form.get('quotiteTravail')?.setValue(this.calculHeuresTravails(this.periodesCalculHeuresStage));
       }
-
-      nbHeuresTravail = this.form.get('nbHeuresHebdo')!.value * nbHeuresTravail / 5 ;
-      this.form.get('quotiteTravail')?.setValue(nbHeuresTravail);
   }
 
-  dateDiff(date1:Date,date2:Date):number {
-    const diffTime = Math.abs(date1.getTime() - date2.getTime());
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24))+1;
-  }
+  calculHeuresTravails(periodes: any[]):number {
+    let heuresTravails = 0;
+    for (const periode of periodes){
+      let loopDate = periode.dateDebut;
+      let endDate = periode.dateFin;
+      let nbHeuresJournalieres = periode.nbHeuresJournalieres;
+      while(loopDate <= endDate){
+        let valid = true;
+        let dayOfWeek = loopDate.getDay();
+        //skip weekends
+        if ((dayOfWeek === 6) || (dayOfWeek  === 0)){
+          valid = false;
+        }
+        //skip périodes d'interruptions
+        if (this.form.get('interruptionStage')!.value){
+          for (const interruptionStage of this.interruptionsStage) {
+              if (loopDate >= new Date(interruptionStage.dateDebutInterruption) && loopDate <= new Date(interruptionStage.dateFinInterruption)){
+                valid = false;
+              }
+          }
+        }
+        //TODO skip jours fériés
 
+        if (valid){
+          heuresTravails = heuresTravails + nbHeuresJournalieres
+        }
+        loopDate = new Date(loopDate.getTime() + (1000 * 60 * 60 * 24));
+      }
+    }
+    return heuresTravails;
+  }
 }
