@@ -29,54 +29,6 @@ databaseChangeLog:
         columns:
         - column:
             name: code
-            value: caisseRegime.infoCaisse
-        - column:
-            name: libelle
-            value: Infos Caisse
-        - column:
-            name: exemple
-            value: Pour les étudiants, les travailleurs salariés, etc
-        tableName: ParamConvention
-    - insert:
-        columns:
-        - column:
-            name: code
-            value: caisseRegime.libelle
-        - column:
-            name: libelle
-            value: Libellé
-        - column:
-            name: exemple
-            value: Caisse Primaire d Assurance Maladie
-        tableName: ParamConvention
-    - insert:
-        columns:
-        - column:
-            name: code
-            value: caisseRegime.code
-        - column:
-            name: libelle
-            value: Code
-        - column:
-            name: exemple
-            value: CPAM
-        tableName: ParamConvention
-    - insert:
-        columns:
-        - column:
-            name: code
-            value: centreGestion.urlPageInstruction
-        - column:
-            name: libelle
-            value: Url de la page d'instruction des consignes d'impression
-        - column:
-            name: exemple
-            value: http://siteinstruction.fr
-        tableName: ParamConvention
-    - insert:
-        columns:
-        - column:
-            name: code
             value: centreGestion.prenomViseur
         - column:
             name: libelle
@@ -137,18 +89,6 @@ databaseChangeLog:
         columns:
         - column:
             name: code
-            value: centreGestion.confidentialiteLibelle
-        - column:
-            name: libelle
-            value: Libellé confidentialité
-        - column:
-            name: exemple
-            value: Confidentialité totale
-        tableName: ParamConvention
-    - insert:
-        columns:
-        - column:
-            name: code
             value: centreGestion.telephone
         - column:
             name: libelle
@@ -156,42 +96,6 @@ databaseChangeLog:
         - column:
             name: exemple
             value: 0223232323
-        tableName: ParamConvention
-    - insert:
-        columns:
-        - column:
-            name: code
-            value: centreGestion.niveauCentreLibelle
-        - column:
-            name: libelle
-            value: Libellé du type de centre
-        - column:
-            name: exemple
-            value: ETABLISSEMENT
-        tableName: ParamConvention
-    - insert:
-        columns:
-        - column:
-            name: code
-            value: centreGestion.fax
-        - column:
-            name: libelle
-            value: Fax
-        - column:
-            name: exemple
-            value: 
-        tableName: ParamConvention
-    - insert:
-        columns:
-        - column:
-            name: code
-            value: centreGestion.siteWeb
-        - column:
-            name: libelle
-            value: Site Web
-        - column:
-            name: exemple
-            value: 
         tableName: ParamConvention
     - insert:
         columns:
@@ -261,18 +165,6 @@ databaseChangeLog:
         columns:
         - column:
             name: code
-            value: convention.typeConventionLibelle
-        - column:
-            name: libelle
-            value: Libellé du type de convention
-        - column:
-            name: exemple
-            value: obligatoire
-        tableName: ParamConvention
-    - insert:
-        columns:
-        - column:
-            name: code
             value: etudiant.identEtudiant
         - column:
             name: libelle
@@ -288,7 +180,7 @@ databaseChangeLog:
             value: etudiant.dateNais
         - column:
             name: libelle
-            value: Date de naissance
+            value: Date de naissance de l'étudiant
         - column:
             name: exemple
             value: 08/07/1998
@@ -312,7 +204,7 @@ databaseChangeLog:
             value: etudiant.codeSexe
         - column:
             name: libelle
-            value: Code sexe
+            value: Code sexe de l'étudiant
         - column:
             name: exemple
             value: M
@@ -324,7 +216,7 @@ databaseChangeLog:
             value: etudiant.numSS
         - column:
             name: libelle
-            value: Numéro de Sécurité Sociale
+            value: Numéro de Sécurité Sociale de l'étudiant
         - column:
             name: exemple
             value: 188074419003876
@@ -336,22 +228,10 @@ databaseChangeLog:
             value: etudiant.mail
         - column:
             name: libelle
-            value: Mail
+            value: Mail de l'étudiant
         - column:
             name: exemple
             value: salim.amiour@etudiant.univ-rennes1.fr
-        tableName: ParamConvention
-    - insert:
-        columns:
-        - column:
-            name: code
-            value: etudiant.codeUniversite
-        - column:
-            name: libelle
-            value: Code université
-        - column:
-            name: exemple
-            value: UR1
         tableName: ParamConvention
     - insert:
         columns:
@@ -453,30 +333,6 @@ databaseChangeLog:
         columns:
         - column:
             name: code
-            value: convention.codeElp
-        - column:
-            name: libelle
-            value: Code Elp
-        - column:
-            name: exemple
-            value: R5C500AU
-        tableName: ParamConvention
-    - insert:
-        columns:
-        - column:
-            name: code
-            value: convention.indemnisationLibelle
-        - column:
-            name: libelle
-            value: Indemnisation
-        - column:
-            name: exemple
-            value: Oui
-        tableName: ParamConvention
-    - insert:
-        columns:
-        - column:
-            name: code
             value: convention.ufrLibelle
         - column:
             name: libelle
@@ -484,18 +340,6 @@ databaseChangeLog:
         - column:
             name: exemple
             value: IUT de Rennes
-        tableName: ParamConvention
-    - insert:
-        columns:
-        - column:
-            name: code
-            value: convention.ufrCode
-        - column:
-            name: libelle
-            value: Code UFR
-        - column:
-            name: exemple
-            value: 922
         tableName: ParamConvention
     - insert:
         columns:
@@ -525,18 +369,6 @@ databaseChangeLog:
         columns:
         - column:
             name: code
-            value: convention.uniteDureeLibelle
-        - column:
-            name: libelle
-            value: Libellé unité durée
-        - column:
-            name: exemple
-            value: mois
-        tableName: ParamConvention
-    - insert:
-        columns:
-        - column:
-            name: code
             value: convention.annee
         - column:
             name: libelle
@@ -556,42 +388,6 @@ databaseChangeLog:
         - column:
             name: exemple
             value: rh 5
-        tableName: ParamConvention
-    - insert:
-        columns:
-        - column:
-            name: code
-            value: contact.infosAJour
-        - column:
-            name: libelle
-            value: Infos à jour
-        - column:
-            name: exemple
-            value: 18/01/2011
-        tableName: ParamConvention
-    - insert:
-        columns:
-        - column:
-            name: code
-            value: contact.loginInfosAJour
-        - column:
-            name: libelle
-            value: Login infos à jour
-        - column:
-            name: exemple
-            value: dhouillo
-        tableName: ParamConvention
-    - insert:
-        columns:
-        - column:
-            name: code
-            value: contact.fax
-        - column:
-            name: libelle
-            value: Fax
-        - column:
-            name: exemple
-            value: 
         tableName: ParamConvention
     - insert:
         columns:
@@ -693,18 +489,6 @@ databaseChangeLog:
         columns:
         - column:
             name: code
-            value: convention.etapeCode
-        - column:
-            name: libelle
-            value: Code étape
-        - column:
-            name: exemple
-            value: T20341
-        tableName: ParamConvention
-    - insert:
-        columns:
-        - column:
-            name: code
             value: convention.creditECTS
         - column:
             name: libelle
@@ -759,7 +543,7 @@ databaseChangeLog:
             value: Interruption stage
         - column:
             name: exemple
-            value: true
+            value: Oui
         tableName: ParamConvention
     - insert:
         columns:
@@ -784,18 +568,6 @@ databaseChangeLog:
         - column:
             name: exemple
             value: 24/12/2010
-        tableName: ParamConvention
-    - insert:
-        columns:
-        - column:
-            name: code
-            value: convention.codeEtape
-        - column:
-            name: libelle
-            value: Code étape
-        - column:
-            name: exemple
-            value: T20341
         tableName: ParamConvention
     - insert:
         columns:
