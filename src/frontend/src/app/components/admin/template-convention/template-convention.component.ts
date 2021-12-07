@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { TableComponent } from "../../table/table.component";
 import { TemplateConventionService } from "../../../services/template-convention.service";
+import { ParamConventionService } from "../../../services/param-convention.service";
 import { MessageService } from "../../../services/message.service";
 import { AppFonction } from "../../../constants/app-fonction";
 import { Droit } from "../../../constants/droit";
@@ -27,15 +28,20 @@ export class TemplateConventionComponent implements OnInit {
   columns = ['typeConvention.libelle', 'langueConvention.code', 'action'];
   sortColumn = 'typeConvention.libelle';
 
+  paramColumns = ['code', 'libelle', 'exemple'];
+  paramSortColumn = 'code';
+
   editTabIndex = 1;
   data: any = {};
   form: FormGroup;
 
   @ViewChild('tableList') appTable: TableComponent | undefined;
+  @ViewChild('paramTableList') appParamTable: TableComponent | undefined;
   @ViewChild('tabs') tabs: MatTabGroup | undefined;
 
   constructor(
     public templateConventionService: TemplateConventionService,
+    public paramConventionService: ParamConventionService,
     public messageService: MessageService,
     private authService: AuthService,
     private fb: FormBuilder,

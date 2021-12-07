@@ -4,7 +4,9 @@ import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
+import org.esup_portail.esup_stage.model.ParamConvention;
 import org.esup_portail.esup_stage.model.TemplateConvention;
+import org.esup_portail.esup_stage.repository.ParamConventionJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateConventionJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateConventionRepository;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
@@ -13,6 +15,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @ApiController
 @RequestMapping("/template-convention")
@@ -23,6 +29,9 @@ public class TemplateConventionController {
 
     @Autowired
     TemplateConventionJpaRepository templateConventionJpaRepository;
+
+    @Autowired
+    ParamConventionJpaRepository paramConventionJpaRepository;
 
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
@@ -36,11 +45,9 @@ public class TemplateConventionController {
     @PutMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.MODIFICATION})
     public TemplateConvention update(@PathVariable("id") int id, @Valid @RequestBody String texte) {
-
-        //todo : vérif des params du template (similaire à template mail)
+        checkTemplateConvention(texte);
 
         TemplateConvention templateConvention = templateConventionJpaRepository.findById(id);
-
         if (templateConvention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Template convention non trouvé");
         }
@@ -50,4 +57,30 @@ public class TemplateConventionController {
         return templateConvention;
     }
 
+    private void checkTemplateConvention(String texte) {
+        // récupération des champs personnalisés existants
+        List<ParamConvention> champs = paramConventionJpaRepository.findAll();
+
+        // vérification des champs personnalisés du texte
+        List<String> liste = extractChamps(texte);
+        for (String champ : liste) {
+            checkChamp(champs, champ);
+        }
+    }
+
+    private List<String> extractChamps(String texte) {
+        List<String> liste = new ArrayList<>();
+        Pattern p = Pattern.compile("(.*?)\\$\\{(.*?)\\}.*?");
+        Matcher m = p.matcher(texte);
+        while (m.find()) {
+            liste.add(m.group(2));
+        }
+        return liste;
+    }
+
+    private void checkChamp(List<ParamConvention> champs, String champ) {
+        if (champs.stream().noneMatch(c -> c.getCode().equals(champ))) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Le champ personnalisé ${" + champ + "} n'existe pas");
+        }
+    }
 }
