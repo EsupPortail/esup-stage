@@ -20,7 +20,7 @@
   </div>
 </form>
 
-<form [formGroup]="heuresJournalieresForm" novalidate *ngIf="periodes.length > 0">
+<form [formGroup]="heuresJournalieresForm" novalidate (submit)="save()">
   <div *ngFor="let periode of periodes" >
     <mat-divider class="mb-2"></mat-divider>
     <div class="mb-3">Période du {{periode.calendrierStartDate|date:'shortDate'}} au {{periode.calendrierEndDate|date:'shortDate'}} :</div>
@@ -35,13 +35,14 @@
       </button>
     </div>
   </div>
+
+  <div class="row">
+    <div class="col-sm-6">
+      <button type="button" mat-button mat-stroked-button color="warn" (click)="close()">{{'BOUTON_ANNULER'|contenu}}</button>
+    </div>
+    <div class="col-sm-6 text-right">
+      <button mat-button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
+    </div>
+  </div>
 </form>
 
-<div class="row">
-  <div class="col-sm-6">
-    <button type="button" mat-button mat-stroked-button color="warn" (click)="close()">{{'BOUTON_ANNULER'|contenu}}</button>
-  </div>
-  <div class="col-sm-6 text-right">
-    <button mat-button mat-flat-button color="primary" (click)="save()">{{'BOUTON_VALIDER'|contenu}}</button>
-  </div>
-</div>

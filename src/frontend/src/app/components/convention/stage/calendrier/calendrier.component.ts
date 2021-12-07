@@ -10,6 +10,7 @@ import { FormBuilder, FormGroup, FormControl, Validators } from "@angular/forms"
 export class CalendrierComponent implements OnInit  {
 
   periodes: any[] = [];
+  interruptionsStage: any[] = [];
 
   periodesForm: FormGroup;
   heuresJournalieresForm: FormGroup;
@@ -24,6 +25,7 @@ export class CalendrierComponent implements OnInit  {
               @Inject(MAT_DIALOG_DATA) data: any
   ) {
     this.convention = data.convention;
+    this.interruptionsStage = data.interruptionsStage;
   }
 
   ngOnInit(): void {
@@ -35,6 +37,9 @@ export class CalendrierComponent implements OnInit  {
 
     this.calendarDateFilter = (d: Date | null): boolean => {
         const date = (d || new Date());
+
+        //fix problème de décalage d'une heure
+        date.setTime(date.getTime() + (1*60*60*1000));
 
         let disable = false;
         //disable dates already chosen
@@ -48,8 +53,10 @@ export class CalendrierComponent implements OnInit  {
           disable = true;
         }
         //disable dates within stage interruption period
-        if (date >= new Date(this.convention.dateDebutInterruption) && date <= new Date(this.convention.dateFinInterruption)){
-          disable = true;
+        for (const periode of this.interruptionsStage) {
+            if (date >= new Date(periode.dateDebutInterruption) && date <= new Date(periode.dateFinInterruption)){
+              disable = true;
+            }
         }
         return !disable;
     };
@@ -63,13 +70,10 @@ export class CalendrierComponent implements OnInit  {
       this.idPeriod += 1;
       this.periodes.push(data);
       this.heuresJournalieresForm.addControl(data.formControlName, new FormControl(null, Validators.required));
-      this.clearDatePicker();
+      this.periodesForm.reset();
     }
   }
 
-  clearDatePicker(): void {
-    this.periodesForm.reset();
-  }
 
   removePeriode(periode: any): void {
     this.removeItemOnce(this.periodes,periode);

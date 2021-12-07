@@ -10,11 +10,12 @@ import { FormBuilder, FormGroup, FormControl, Validators } from "@angular/forms"
 export class InterruptionsFormComponent implements OnInit  {
 
   periodes: any[] = [];
+  interruptionsStage: any[] = [];
 
   periodesForm: FormGroup;
 
   convention: any;
-  isEdit: boolean;
+  interruptionStage: any;
 
   interruptionsDateFilter: any;
 
@@ -23,7 +24,14 @@ export class InterruptionsFormComponent implements OnInit  {
               @Inject(MAT_DIALOG_DATA) data: any
   ) {
     this.convention = data.convention;
-    this.isEdit = data.isEdit;
+    this.interruptionsStage = data.interruptionsStage.slice();
+    this.interruptionStage = data.interruptionStage;
+
+    const date = new Date();
+
+    if (this.interruptionStage){
+      this.removeItemOnce(this.interruptionsStage,this.interruptionStage);
+    }
   }
 
   ngOnInit(): void {
@@ -35,10 +43,19 @@ export class InterruptionsFormComponent implements OnInit  {
     this.interruptionsDateFilter = (d: Date | null): boolean => {
         const date = (d || new Date());
 
+        //fix problème de décalage d'une heure
+        date.setTime(date.getTime() + (1*60*60*1000));
+
         let disable = false;
+
         //disable dates already chosen
         for (const periode of this.periodes) {
             if (date >= periode.dateDebutInterruption && date <= periode.dateFinInterruption){
+              disable = true;
+            }
+        }
+        for (const periode of this.interruptionsStage) {
+            if (date >= new Date(periode.dateDebutInterruption) && date <= new Date(periode.dateFinInterruption)){
               disable = true;
             }
         }
@@ -81,7 +98,17 @@ export class InterruptionsFormComponent implements OnInit  {
   }
 
   save(): void {
-    this.dialogRef.close(this.periodes);
+    if (this.interruptionStage){
+      if (this.periodesForm.valid){
+        const data = {...this.periodesForm.value};
+        data.idConvention = this.convention.id;
+        this.dialogRef.close(data);
+      }
+    }else{
+      if (this.periodes.length > 0){
+        this.dialogRef.close(this.periodes);
+      }
+    }
   }
 
 }

@@ -95,7 +95,7 @@
 
         <div class="row" *ngIf="form.value.interruptionStage">
           <div class="col-6 mb-3">
-            <button mat-button mat-flat-button type="button" color="primary" (click)="openInterruptionsForm()">Ajouter des nouvelles périodes d'interruptions</button>
+            <button mat-button mat-flat-button type="button" color="primary" (click)="openInterruptionsCreateFormModal()">Ajouter des nouvelles périodes d'interruptions</button>
           </div>
           <div class="col-md-12 mb-3" *ngIf="interruptionsStage.length > 0">
             <div class="text-title">Périodes d'interruptions actuelles :</div>
@@ -113,7 +113,7 @@
               <ng-container matColumnDef="actions">
                 <th mat-header-cell *matHeaderCellDef>actions</th>
                 <td mat-cell *matCellDef="let row">
-                  <button mat-icon-button matTooltip="Éditer" (click)="editInterruptionStage(row)" color="primary"><i class="fa fa-pen"></i></button>
+                  <button mat-icon-button matTooltip="Éditer" (click)="openInterruptionsEditFormModal(row)" color="primary"><i class="fa fa-pen"></i></button>
                   <button mat-icon-button matTooltip="Supprimer" (click)="deleteInterruptionStage(row)" color="warn"><i class="fa fa-trash-alt"></i></button>
                 </td>
               </ng-container>

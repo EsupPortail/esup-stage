@@ -24,10 +24,10 @@ export class PeriodeInterruptionStageService implements PaginatedService {
   }
 
   update(id: number, data: any): Observable<any> {
-    return this.http.put(environment.apiUrl + "/periode-interruption-stage" + id, data);
+    return this.http.put(environment.apiUrl + "/periode-interruption-stage/" + id, data);
   }
 
   delete(id: number): Observable<any> {
-    return this.http.delete(environment.apiUrl + "/periode-interruption-stage" + id);
+    return this.http.delete(environment.apiUrl + "/periode-interruption-stage/" + id);
   }
 }

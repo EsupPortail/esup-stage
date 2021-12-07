@@ -271,19 +271,57 @@ export class StageComponent implements OnInit {
     this.form.get('dateFinStage')!.updateValueAndValidity();
   }
 
-  openInterruptionsForm(): void {
-    this.openInterruptionsFormModal();
-  }
-
-  openInterruptionsFormModal(): void {
+  openInterruptionsCreateFormModal(): void {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.width = '1000px';
-    dialogConfig.data = {convention: this.convention};
+    dialogConfig.data = {convention: this.convention,interruptionsStage: this.interruptionsStage,interruptionStage: null};
     const modalDialog = this.matDialog.open(InterruptionsFormComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse) {
         this.addInterruptionsStage(dialogResponse);
       }
+    });
+  }
+
+  openInterruptionsEditFormModal(row: any): void {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.width = '1000px';
+    dialogConfig.data = {convention: this.convention,interruptionsStage: this.interruptionsStage, interruptionStage: row};
+    const modalDialog = this.matDialog.open(InterruptionsFormComponent, dialogConfig);
+    modalDialog.afterClosed().subscribe(dialogResponse => {
+      if (dialogResponse) {
+        this.editInterruptionStage(row.id, dialogResponse);
+      }
+    });
+  }
+
+  refreshInterruptionsStage() : void{
+    this.periodeInterruptionStageService.getByConvention(this.convention.id).subscribe((response: any) => {
+      this.interruptionsStage = response;
+    });
+  }
+
+  addInterruptionsStage(newInterruptions: any[]){
+    let finished = 0;
+    for (const newInterruption of newInterruptions){
+      this.periodeInterruptionStageService.create(newInterruption).subscribe((response: any) => {
+        finished++;
+        if (finished === newInterruptions.length){
+          this.refreshInterruptionsStage();
+        }
+      });
+    }
+  }
+
+  editInterruptionStage(id:number, data:any) : void{
+    this.periodeInterruptionStageService.update(id,data).subscribe((response: any) => {
+      this.refreshInterruptionsStage();
+    });
+  }
+
+  deleteInterruptionStage(row:any) : void{
+    this.periodeInterruptionStageService.delete(row.id).subscribe((response: any) => {
+      this.refreshInterruptionsStage();
     });
   }
 
@@ -294,7 +332,7 @@ export class StageComponent implements OnInit {
   openCalendarModal(): void {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.width = '1000px';
-    dialogConfig.data = {convention: this.convention};
+    dialogConfig.data = {convention: this.convention,interruptionsStage: this.interruptionsStage};
     const modalDialog = this.matDialog.open(CalendrierComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse) {
@@ -329,32 +367,4 @@ export class StageComponent implements OnInit {
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24))+1;
   }
 
-  refreshInterruptionsStage() : void{
-    this.periodeInterruptionStageService.getByConvention(this.convention.id).subscribe((response: any) => {
-      this.interruptionsStage = response;
-    });
-  }
-
-  addInterruptionsStage(newInterruptions: any[]){
-    let finished = 0;
-    for (const newInterruption of newInterruptions){
-      this.periodeInterruptionStageService.create(newInterruption).subscribe((response: any) => {
-        finished++;
-        if (finished === newInterruptions.length){
-          this.refreshInterruptionsStage();
-        }
-      });
-    }
-  }
-
-  editInterruptionStage(row:any) : void{
-    this.periodeInterruptionStageService.getByConvention(this.convention.id).subscribe((response: any) => {
-      this.interruptionsStage = response;
-    });
-  }
-  deleteInterruptionStage(row:any) : void{
-    this.periodeInterruptionStageService.getByConvention(this.convention.id).subscribe((response: any) => {
-      this.interruptionsStage = response;
-    });
-  }
 }

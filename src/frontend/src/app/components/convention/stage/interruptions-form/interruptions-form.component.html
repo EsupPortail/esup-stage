@@ -1,6 +1,6 @@
 <form [formGroup]="periodesForm" novalidate>
-  <div class="text-title"  *ngIf="!isEdit" >Ajouter des nouvelles périodes d'interruptions</div>
-  <div class="text-title"  *ngIf="isEdit">Modifier une période d'interruption</div>
+  <div class="text-title"  *ngIf="!interruptionStage" >Ajouter des nouvelles périodes d'interruptions</div>
+  <div class="text-title"  *ngIf="interruptionStage">Modifier une période d'interruption</div>
   <mat-divider class="mb-3"></mat-divider>
   <div class="row">
     <mat-form-field class="col-6" appearance="fill">
@@ -15,7 +15,7 @@
       <mat-error><app-form-error [field]="periodesForm.get('dateFinInterruption')"></app-form-error></mat-error>
     </mat-form-field>
 
-    <button mat-fab type="button" color="primary" matTooltip="Ajouter" (click)="addPeriode()" *ngIf="!isEdit">
+    <button mat-fab type="button" color="primary" matTooltip="Ajouter" (click)="addPeriode()" *ngIf="!interruptionStage">
       <i class="fa fa-plus"></i>
     </button>
   </div>
