@@ -641,3 +641,583 @@ databaseChangeLog:
             name: exemple
             value: michelle.montoir@laposte.net
         tableName: ParamConvention
+- changeSet:
+    id: paramConvention-insert-3
+    author: jwang
+    changes:
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.themeLibelle
+        - column:
+            name: libelle
+            value: Thème
+        - column:
+            name: exemple
+            value: Administration publique
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.modeValidationStageLibelle
+        - column:
+            name: libelle
+            value: Mode de validation du stage
+        - column:
+            name: exemple
+            value: Evaluation du mémoire et soutenance
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.nbJoursHebdo
+        - column:
+            name: libelle
+            value: Nombre de jours hebdomadaire
+        - column:
+            name: exemple
+            value: 4
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.origineStageLibelle
+        - column:
+            name: libelle
+            value: Origine du stage
+        - column:
+            name: exemple
+            value: candidature spontanée
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.insee
+        - column:
+            name: libelle
+            value: INSEE
+        - column:
+            name: exemple
+            value: 188074419003876
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: structure.activitePrincipale
+        - column:
+            name: libelle
+            value: Activité principale de l'établissement d'accueil
+        - column:
+            name: exemple
+            value: informatique
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: structure.raisonSociale
+        - column:
+            name: libelle
+            value: Raison sociale de l'établissement d'accueil
+        - column:
+            name: exemple
+            value: DANIELLE TIERS
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: structure.mail
+        - column:
+            name: libelle
+            value: Mail de l'établissement d'accueil
+        - column:
+            name: exemple
+            value: 
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: structure.numeroSiret
+        - column:
+            name: libelle
+            value: Numéro de Siret de l'établissement d'accueil
+        - column:
+            name: exemple
+            value: 
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: structure.effectifLibelle
+        - column:
+            name: libelle
+            value: Effectif de l'établissement d'accueil
+        - column:
+            name: exemple
+            value: 10 à 49
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: structure.typeStructureLibelle
+        - column:
+            name: libelle
+            value: Type de l'établissement d'accueil
+        - column:
+            name: exemple
+            value: Entreprise privée
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: structure.telephone
+        - column:
+            name: libelle
+            value: Téléphone
+        - column:
+            name: exemple
+            value: 0223232323
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: structure.statutJuridiqueLibelle
+        - column:
+            name: libelle
+            value: Statut juridique
+        - column:
+            name: exemple
+            value: SARL
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: structure.voie
+        - column:
+            name: libelle
+            value: Voie
+        - column:
+            name: exemple
+            value: Rue des vignes
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: structure.commune
+        - column:
+            name: libelle
+            value: Commune
+        - column:
+            name: exemple
+            value: XXXX
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: structure.codePostal
+        - column:
+            name: libelle
+            value: Code postal
+        - column:
+            name: exemple
+            value: 563333
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: structure.paysLibelle
+        - column:
+            name: libelle
+            value: Pays de l'établissement d'accueil
+        - column:
+            name: exemple
+            value: FINLANDE
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.nomEtabRef
+        - column:
+            name: libelle
+            value: Nom de l'établissement de référence
+        - column:
+            name: exemple
+            value: UNIVERSITE DE RENNES 1
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.quotiteTravail
+        - column:
+            name: libelle
+            value: Quotité Travail
+        - column:
+            name: exemple
+            value: 100
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.dureeStage
+        - column:
+            name: libelle
+            value: Durée du stage
+        - column:
+            name: exemple
+            value: 17
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.codeCursusLMD
+        - column:
+            name: libelle
+            value: Code cursus LMD
+        - column:
+            name: exemple
+            value: L
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.dateDebutInterruption
+        - column:
+            name: libelle
+            value: Date début interruption
+        - column:
+            name: exemple
+            value: 01/12/2010
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.modeVersGratificationLibelle
+        - column:
+            name: libelle
+            value: Mode de versement de la gratification
+        - column:
+            name: exemple
+            value: Virement bancaire
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.adresseEtabRef
+        - column:
+            name: libelle
+            value: Adresse de l'établissement de référence
+        - column:
+            name: exemple
+            value: 2 RUE DU THABOR CS 46510 35065 Rennes
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.natureTravailLibelle
+        - column:
+            name: libelle
+            value: Nature travail
+        - column:
+            name: exemple
+            value: Rapport de stage + Projet professionnel
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.codePostalEtudiant
+        - column:
+            name: libelle
+            value: Code postal de l'étudiant
+        - column:
+            name: exemple
+            value: 44600
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.adresseEtudiant
+        - column:
+            name: libelle
+            value: Adresse de l'étudiant
+        - column:
+            name: exemple
+            value: 30 rue claude bernard
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.assuranceLibelle
+        - column:
+            name: libelle
+            value: Assurance
+        - column:
+            name: exemple
+            value: en qualité d'ayant droit d'assuré social
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.fonctionsEtTaches
+        - column:
+            name: libelle
+            value: Fonctions et taches
+        - column:
+            name: exemple
+            value: gestion de la comptabilité
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.modeEncadreSuivi
+        - column:
+            name: libelle
+            value: Mode d'encadrement et de suivi
+        - column:
+            name: exemple
+            value: rdv téléphonique le vendredi
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.nbHeuresHebdo
+        - column:
+            name: libelle
+            value: Nombre d'heures hebdomadaire
+        - column:
+            name: exemple
+            value: 35.00
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: signataire.fonction
+        - column:
+            name: libelle
+            value: Fonction du signataire
+        - column:
+            name: exemple
+            value: compta
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: signataire.civiliteLibelle
+        - column:
+            name: libelle
+            value: Civilité du signataire
+        - column:
+            name: exemple
+            value: M.
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: signataire.tel
+        - column:
+            name: libelle
+            value: Téléphone du signataire
+        - column:
+            name: exemple
+            value: 0223232312
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: signataire.mail
+        - column:
+            name: libelle
+            value: Mail du signataire
+        - column:
+            name: exemple
+            value: martin.jules@free.fr
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: signataire.nom
+        - column:
+            name: libelle
+            value: Nom du signataire
+        - column:
+            name: exemple
+            value: MARTIN
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: signataire.prenom
+        - column:
+            name: libelle
+            value: Prénom du signataire
+        - column:
+            name: exemple
+            value: Jules cinq
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.telEtudiant
+        - column:
+            name: libelle
+            value: Téléphone de l'étudiant
+        - column:
+            name: exemple
+            value: 0240706665
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: enseignant.bureau
+        - column:
+            name: libelle
+            value: Bureau de l'enseignant
+        - column:
+            name: exemple
+            value: 312
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: enseignant.affectationLibelle
+        - column:
+            name: libelle
+            value: Affectation de l'enseignant
+        - column:
+            name: exemple
+            value: Faculté de droit et science politique
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: enseignant.tel
+        - column:
+            name: libelle
+            value: Téléphone de l'enseignant
+        - column:
+            name: exemple
+            value: +33 2 23 23 30 28
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: enseignant.nom
+        - column:
+            name: libelle
+            value: Nom de l'enseignant
+        - column:
+            name: exemple
+            value: Martin
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: enseignant.prenom
+        - column:
+            name: libelle
+            value: Prénom de l'enseignant
+        - column:
+            name: exemple
+            value: Jean-Paul
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: service.nom
+        - column:
+            name: libelle
+            value: Nom du service d'accueil
+        - column:
+            name: exemple
+            value: RH CINQ
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: service.voie
+        - column:
+            name: libelle
+            value: Voie du service d'accueil
+        - column:
+            name: exemple
+            value: 35 rue du ciel
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: service.commune
+        - column:
+            name: libelle
+            value: Commune du service d'accueil
+        - column:
+            name: exemple
+            value: REKIAVIK
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: service.codePostal
+        - column:
+            name: libelle
+            value: Code postal du service d'accueil
+        - column:
+            name: exemple
+            value: 25000
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: service.paysLibelle
+        - column:
+            name: libelle
+            value: Pays du service d'accueil
+        - column:
+            name: exemple
+            value: FINLANDE
+        tableName: ParamConvention
