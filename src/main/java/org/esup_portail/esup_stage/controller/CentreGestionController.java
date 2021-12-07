@@ -377,7 +377,7 @@ public class CentreGestionController {
     }
 
     private String getFilePath(String filename) {
-        return applicationBootstrap.getAppConfig().getLogoCentresDir() + "/" + filename;
+        return applicationBootstrap.getAppConfig().getDataDir() + "/centregestion/logos/" + filename;
     }
 
     private String getNomFichier(int idFichier, String nomFichier) {

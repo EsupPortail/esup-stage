@@ -28,7 +28,7 @@ public class AppConfig {
     private String mailerFrom;
     private boolean mailerDisableDelivery;
     private String mailerDeliveryAddress;
-    private String logoCentresDir;
+    private String dataDir;
 
     public String getCasUrlLogin() {
         return casUrlLogin;
@@ -206,12 +206,12 @@ public class AppConfig {
         this.mailerDeliveryAddress = mailerDeliveryAddress;
     }
 
-    public String getLogoCentresDir() {
-        return logoCentresDir;
+    public String getDataDir() {
+        return dataDir;
     }
 
-    public void setLogoCentresDir(String logoCentresDir) {
-        this.logoCentresDir = logoCentresDir;
+    public void setDataDir(String dataDir) {
+        this.dataDir = dataDir;
     }
 
     public void initProperties(Properties props, String prefixeProps) {
@@ -249,7 +249,7 @@ public class AppConfig {
         if (props.containsKey(prefixeProps+"mailer.delivery_address") && !props.getProperty(prefixeProps+"mailer.delivery_address").equals("null")) {
             this.mailerDeliveryAddress = props.getProperty(prefixeProps+"mailer.delivery_address");
         }
-        this.logoCentresDir = props.getProperty(prefixeProps+"logo_centre_dir");
+        this.dataDir = props.getProperty(prefixeProps+"data_dir");
     }
 
     @Override
@@ -274,7 +274,7 @@ public class AppConfig {
                 ", mailerFrom='" + mailerFrom + "'" +
                 ", mailerDisableDelivery='" + mailerDisableDelivery + "'" +
                 ", mailerDeliveryAddress='" + mailerDeliveryAddress + "'" +
-                ", logoCentresDir='" + logoCentresDir + "'" +
+                ", dataDir='" + dataDir + "'" +
                 "}";
     }
 }
