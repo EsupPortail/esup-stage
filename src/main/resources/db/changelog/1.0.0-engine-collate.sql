@@ -1,3 +1,4 @@
+SET FOREIGN_KEY_CHECKS=0;
 ALTER TABLE AccordPartenariat ENGINE = InnoDB;
 ALTER TABLE AccordPartenariat CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;
 ALTER TABLE AdminStructure ENGINE = InnoDB;
@@ -152,3 +153,4 @@ ALTER TABLE Utilisateur ENGINE = InnoDB;
 ALTER TABLE Utilisateur CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;
 ALTER TABLE UtilisateurRole ENGINE = InnoDB;
 ALTER TABLE UtilisateurRole CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;
+SET FOREIGN_KEY_CHECKS=1;
