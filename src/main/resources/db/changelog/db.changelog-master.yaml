@@ -53,3 +53,6 @@ databaseChangeLog:
   - include:
       file: 1.0.0-param-convention.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 1.0.0-periode-interruption-avenant.yaml
+      relativeToChangelogFile: true

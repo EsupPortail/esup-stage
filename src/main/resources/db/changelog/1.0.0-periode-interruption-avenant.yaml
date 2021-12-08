@@ -1,0 +1,51 @@
+databaseChangeLog:
+- changeSet:
+    id: PeriodeInterruptionAvenant-create
+    author: tjubera
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+                nullable: false
+                primaryKey: true
+            name: id
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            constraints:
+                nullable: true
+            name: dateDebutInterruption
+            type: datetime
+        - column:
+            defaultValueComputed: 'NULL'
+            constraints:
+                nullable: true
+            name: dateFinInterruption
+            type: datetime
+        - column:
+            defaultValueBoolean: false
+            constraints:
+                nullable: true
+            name: isModif
+            type: BIT
+        - column:
+            defaultValueComputed: 'NULL'
+            constraints:
+                nullable: true
+                foreignKeyName: fk_PeriodeInterruptionAvenant_PeriodeInterruptionStage1
+                references: PeriodeInterruptionStage(id)
+            name: idPeriodeInterruptionStage
+            type: INT
+        - column:
+            constraints:
+                nullable: false
+                foreignKeyName: fk_PeriodeInterruptionAvenant_Avenant1
+                references: Avenant(idAvenant)
+            name: idAvenant
+            type: INT
+        tableName: PeriodeInterruptionAvenant
+    - modifySql:
+        append:
+            value: ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci
