@@ -62,6 +62,14 @@
     description: "depot SOA"
     baseurl: "http://repository.dsi.dauphine.fr/soa_stable/"
     enabled: no
+- name: estage.datadir
+  ansible.builtin.file:
+    path: {{ ESTAGE_ENVIRONMENT.appli_data_dir }}/centregestion/logos
+    state: directory
+    recurse: yes
+    owner: tomcat
+    group: tomcat
+  notify: redeploy.webapp
 - name: dnf_install.estage
   dnf: 
     name: "estage-{{ APP_VERSION }}-*"
