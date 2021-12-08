@@ -31,6 +31,70 @@ public class ImpressionContext {
         }
     }
 
+    public ConventionContext getConvention() {
+        return convention;
+    }
+
+    public void setConvention(ConventionContext convention) {
+        this.convention = convention;
+    }
+
+    public CentreGestionContext getCentreGestion() {
+        return centreGestion;
+    }
+
+    public void setCentreGestion(CentreGestionContext centreGestion) {
+        this.centreGestion = centreGestion;
+    }
+
+    public ContactContext getContact() {
+        return contact;
+    }
+
+    public void setContact(ContactContext contact) {
+        this.contact = contact;
+    }
+
+    public EnseignantContext getEnseignant() {
+        return enseignant;
+    }
+
+    public void setEnseignant(EnseignantContext enseignant) {
+        this.enseignant = enseignant;
+    }
+
+    public EtudiantContext getEtudiant() {
+        return etudiant;
+    }
+
+    public void setEtudiant(EtudiantContext etudiant) {
+        this.etudiant = etudiant;
+    }
+
+    public ServiceContext getService() {
+        return service;
+    }
+
+    public void setService(ServiceContext service) {
+        this.service = service;
+    }
+
+    public SignataireContext getSignataire() {
+        return signataire;
+    }
+
+    public void setSignataire(SignataireContext signataire) {
+        this.signataire = signataire;
+    }
+
+    public StructureContext getStructure() {
+        return structure;
+    }
+
+    public void setStructure(StructureContext structure) {
+        this.structure = structure;
+    }
+
     public static class ConventionContext {
         private String adresseEtabRef;
         private String adresseEtudiant;
@@ -107,7 +171,7 @@ public class ImpressionContext {
             this.etapeLibelle = convention.getEtape() != null ? convention.getEtape().getLibelle() : null;
             this.fonctionsEtTaches = convention.getFonctionsEtTaches();
             this.insee = convention.getInsee();
-            this.interruptionStage = convention.getInterruptionStage() ? "Oui" : "Non";
+            this.interruptionStage = (convention.getInterruptionStage() != null && convention.getInterruptionStage())  ? "Oui" : "Non";
             this.libelleCPAM = convention.getLibelleCPAM();
             this.libelleFinalite = convention.getLibelleFinalite();
             this.modeEncadreSuivi = convention.getModeEncadreSuivi();
@@ -116,7 +180,7 @@ public class ImpressionContext {
             this.montantGratification = convention.getMontantGratification();
             this.natureTravailLibelle = convention.getNomenclature() != null ? convention.getNomenclature().getNatureTravail() : null;
             this.nbHeuresHebdo = convention.getNbHeuresHebdo();
-            this.nbJoursHebdo = convention.getNbJoursHebdo().getValue();
+            this.nbJoursHebdo = convention.getNbJoursHebdo() != null ? convention.getNbJoursHebdo().getValue() : null;
             this.nomEtabRef = convention.getNomEtabRef();
             this.nomSignataireComposante = convention.getNomSignataireComposante();
             this.origineStageLibelle = convention.getNomenclature() != null ? convention.getNomenclature().getOrigineStage() : null;

@@ -59,4 +59,8 @@ export class ConventionService implements PaginatedService {
     return this.http.get(`${environment.apiUrl}/conventions/${idConvention}/historique-validations`);
   }
 
+  getConventionPDF(id: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/conventions/${id}/pdf-convention`);
+  }
+
 }

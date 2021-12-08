@@ -15,6 +15,7 @@ import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.MailerService;
 import org.esup_portail.esup_stage.service.apogee.ApogeeService;
 import org.esup_portail.esup_stage.service.apogee.model.EtudiantRef;
+import org.esup_portail.esup_stage.service.impression.ImpressionService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -100,6 +101,9 @@ public class ConventionController {
 
     @Autowired
     MailerService mailerService;
+
+    @Autowired
+    ImpressionService impressionService;
 
     @JsonView(Views.List.class)
     @GetMapping
@@ -338,6 +342,17 @@ public class ConventionController {
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.VALIDATION})
     public List<HistoriqueValidation> getHistoriqueValidations(@PathVariable("id") int idConvention) {
         return historiqueValidationJpaRepository.findByConvention(idConvention);
+    }
+
+    @GetMapping("/{id}/pdf-convention")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
+    public void getConventionPDF(@PathVariable("id") int id) {
+        Convention convention = conventionJpaRepository.findById(id);
+        if (convention == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        }
+
+        impressionService.generateConventionPDF(convention);
     }
 
     private void setConventionData(Convention convention, ConventionFormDto conventionFormDto) {
