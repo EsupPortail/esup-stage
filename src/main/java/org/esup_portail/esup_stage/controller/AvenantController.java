@@ -45,6 +45,9 @@ public class AvenantController {
     AvenantRepository avenantRepository;
 
     @Autowired
+    PeriodeInterruptionAvenantJpaRepository periodeInterruptionAvenantJpaRepository;
+
+    @Autowired
     AvenantJpaRepository avenantJpaRepository;
 
     @Autowired
@@ -133,6 +136,11 @@ public class AvenantController {
         Avenant avenant = avenantJpaRepository.findById(id);
         if (avenant == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvé");
+        }
+        List<PeriodeInterruptionAvenant> periodeInterruptionAvenants = periodeInterruptionAvenantJpaRepository.findByAvenant(id);
+        for(PeriodeInterruptionAvenant periodeInterruptionAvenant : periodeInterruptionAvenants){
+            periodeInterruptionAvenantJpaRepository.delete(periodeInterruptionAvenant);
+            periodeInterruptionAvenantJpaRepository.flush();
         }
         avenantJpaRepository.delete(avenant);
         avenantJpaRepository.flush();

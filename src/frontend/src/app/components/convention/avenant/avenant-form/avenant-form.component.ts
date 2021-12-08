@@ -15,6 +15,7 @@ import { CiviliteService } from "../../../../services/civilite.service";
 import { PaysService } from "../../../../services/pays.service";
 import { AvenantService } from "../../../../services/avenant.service";
 import { PeriodeInterruptionStageService } from "../../../../services/periode-interruption-stage.service";
+import { PeriodeInterruptionAvenantService } from "../../../../services/periode-interruption-avenant.service";
 import { TableComponent } from "../../../table/table.component";
 import { ServiceAccueilFormComponent } from '../../../gestion-etab-accueil/service-accueil-form/service-accueil-form.component';
 import { ContactFormComponent } from '../../../gestion-etab-accueil/contact-form/contact-form.component';
@@ -90,6 +91,7 @@ export class AvenantFormComponent implements OnInit {
               private civiliteService: CiviliteService,
               private paysService: PaysService,
               private periodeInterruptionStageService: PeriodeInterruptionStageService,
+              private periodeInterruptionAvenantService: PeriodeInterruptionAvenantService,
               private authService: AuthService,
               private fb: FormBuilder,
               private messageService: MessageService,
@@ -241,16 +243,47 @@ export class AvenantFormComponent implements OnInit {
         data.idEnseignant = this.enseignant.id;
       }
 
+      if (this.form.get('modificationPeriode')!.value){
+
+        this.modifiedInterruptionsStage = [];
+        for(const interruption of this.interruptionsStage){
+          if (this.form.get(interruption.dateDebutInterruptionFormControlName)!.value ||
+              this.form.get(interruption.dateFinInterruptionFormControlName)!.value){
+            const modifiedInterruption = {
+              "dateDebutInterruption":interruption.dateDebutInterruption,
+              "dateFinInterruption":interruption.dateFinInterruption,
+              "isModif":true,
+              "idPeriodeInterruptionStage":interruption.id,
+            };
+            this.modifiedInterruptionsStage.push(modifiedInterruption);
+          }
+        }
+        for (let addedInterruption of this.addedInterruptionsStage){
+          addedInterruption.isModif = false;
+          console.log('addedInterruption : ' + JSON.stringify(addedInterruption, null, 2))
+        }
+        for (const modifiedInterruption of this.modifiedInterruptionsStage){
+          console.log('modifiedInterruption : ' + JSON.stringify(modifiedInterruption, null, 2))
+        }
+      }
       if (this.avenant.id){
         this.avenantService.update(this.avenant.id,data).subscribe((response: any) => {
           this.avenant = response;
           this.messageService.setSuccess('Avenant modifié avec succès');
-          this.updated.emit();
+          if (this.form.get('modificationPeriode')!.value){
+            this.addInterruptionsAvenant(response.id)
+          }else{
+            this.updated.emit();
+          }
         });
       }else{
         this.avenantService.create(data).subscribe((response: any) => {
           this.messageService.setSuccess('Avenant créé avec succès');
-          this.updated.emit();
+          if (this.form.get('modificationPeriode')!.value){
+            this.addInterruptionsAvenant(response.id)
+          }else{
+            this.updated.emit();
+          }
         });
       }
     }
@@ -426,6 +459,52 @@ export class AvenantFormComponent implements OnInit {
         interruption.dateDebutInterruptionFormControlName = dateDebutInterruptionFormControlName;
         interruption.dateFinInterruptionFormControlName = dateFinInterruptionFormControlName;
       }
+    });
+  }
+
+  loadInterruptionsAvenant() : void {
+    this.periodeInterruptionAvenantService.getByAvenant(this.avenant.id).subscribe((response: any) => {
+      for(let interruption of response){
+        if (interruption.isModif){
+          this.modifiedInterruptionsStage.push(interruption);
+        }else{
+          this.addedInterruptionsStage.push(interruption);
+        }
+      }
+    });
+  }
+
+  addInterruptionsAvenant(avenantId: number){
+    let finished = 0;
+    for (let addedInterruption of this.addedInterruptionsStage){
+      addedInterruption.idAvenant = avenantId;
+      console.log('addedInterruption : ' + JSON.stringify(addedInterruption, null, 2))
+      this.periodeInterruptionAvenantService.create(addedInterruption).subscribe((response: any) => {
+        finished++;
+        if (finished === (this.addedInterruptionsStage.length + this.modifiedInterruptionsStage.length)){
+          this.updated.emit();
+        }
+      });
+    }
+    for (let modifiedInterruption of this.modifiedInterruptionsStage){
+      modifiedInterruption.idAvenant = avenantId;
+      console.log('modifiedInterruption : ' + JSON.stringify(modifiedInterruption, null, 2))
+      this.periodeInterruptionAvenantService.create(modifiedInterruption).subscribe((response: any) => {
+        finished++;
+        if (finished === (this.addedInterruptionsStage.length + this.modifiedInterruptionsStage.length)){
+          this.updated.emit();
+        }
+      });
+    }
+  }
+
+  editInterruptionsAvenant(id:number, data:any) : void{
+    this.periodeInterruptionAvenantService.update(id,data).subscribe((response: any) => {
+    });
+  }
+
+  deleteInterruptionsAvenant(row:any) : void{
+    this.periodeInterruptionAvenantService.delete(row.id).subscribe((response: any) => {
     });
   }
 

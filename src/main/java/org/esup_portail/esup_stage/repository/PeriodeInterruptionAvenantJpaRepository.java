@@ -14,5 +14,5 @@ public interface PeriodeInterruptionAvenantJpaRepository extends JpaRepository<P
     PeriodeInterruptionAvenant findById(int id);
 
     @Query("SELECT pia FROM PeriodeInterruptionAvenant pia WHERE pia.avenant.id = :idAvenant")
-    List<PeriodeInterruptionStage> findByAvenant(int idAvenant);
+    List<PeriodeInterruptionAvenant> findByAvenant(int idAvenant);
 }

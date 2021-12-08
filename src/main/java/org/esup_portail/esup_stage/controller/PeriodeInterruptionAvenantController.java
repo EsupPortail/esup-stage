@@ -61,7 +61,7 @@ public class PeriodeInterruptionAvenantController {
     @JsonView(Views.List.class)
     @GetMapping("/getByAvenant/{id}")
     @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.LECTURE})
-    public List<PeriodeInterruptionStage> getByConvention(@PathVariable("id") int id) {
+    public List<PeriodeInterruptionAvenant> getByAvenant(@PathVariable("id") int id) {
         return periodeInterruptionAvenantJpaRepository.findByAvenant(id);
     }
 
@@ -104,9 +104,6 @@ public class PeriodeInterruptionAvenantController {
         }
 
         PeriodeInterruptionStage periodeInterruptionStage = periodeInterruptionStageJpaRepository.findById(periodeInterruptionAvenantDto.getIdPeriodeInterruptionStage());
-        if (periodeInterruptionStage == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "PeriodeInterruptionStage non trouvé");
-        }
 
         periodeInterruptionAvenant.setDateDebutInterruption(periodeInterruptionAvenantDto.getDateDebutInterruption());
         periodeInterruptionAvenant.setDateFinInterruption(periodeInterruptionAvenantDto.getDateFinInterruption());
