@@ -287,7 +287,7 @@ export class StageComponent implements OnInit {
   openInterruptionsEditFormModal(row: any): void {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.width = '1000px';
-    dialogConfig.data = {convention: this.convention,interruptionsStage: this.interruptionsStage, interruptionStage: row};
+    dialogConfig.data = {convention: this.convention,interruptionsStage: this.interruptionsStage, interruptionStage: row, periodes:null};
     const modalDialog = this.matDialog.open(InterruptionsFormComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse) {

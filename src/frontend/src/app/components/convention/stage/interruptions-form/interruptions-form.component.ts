@@ -16,6 +16,7 @@ export class InterruptionsFormComponent implements OnInit  {
 
   convention: any;
   interruptionStage: any;
+  initialPeriodesLength: number = 0;
 
   interruptionsDateFilter: any;
 
@@ -26,6 +27,11 @@ export class InterruptionsFormComponent implements OnInit  {
     this.convention = data.convention;
     this.interruptionsStage = data.interruptionsStage.slice();
     this.interruptionStage = data.interruptionStage;
+
+    if (data.periodes){
+      this.periodes = data.periodes.slice();
+      this.initialPeriodesLength = this.periodes.length;
+    }
 
     const date = new Date();
 
@@ -105,7 +111,7 @@ export class InterruptionsFormComponent implements OnInit  {
         this.dialogRef.close(data);
       }
     }else{
-      if (this.periodes.length > 0){
+      if (this.periodes.length > 0 || this.initialPeriodesLength > 0 ){
         this.dialogRef.close(this.periodes);
       }
     }

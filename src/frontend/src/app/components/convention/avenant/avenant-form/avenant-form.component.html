@@ -67,41 +67,55 @@
       <div class="col-sm-9">{{convention.interruptionStage ? 'Oui' : 'Non'}}</div>
     </div>
     <div class="row" *ngIf="convention.interruptionStage">
-      <div class="col-sm-3 font-weight-bold">Date de début d'interruption du stage</div>
-      <div class="col-sm-9">{{convention.dateDebutInterruption}}</div>
-      <div class="col-sm-3 font-weight-bold">Date de fin d'interruption du stage</div>
-      <div class="col-sm-9">{{convention.dateFinInterruption}}</div>
+      <div class="col-sm-3 font-weight-bold">Périodes d'interruption du stage</div>
+      <div class="col-sm-9"><span *ngFor="let interruption of interruptionsStage">
+            {{(interruptionsStage.length>1?'- Du ':'Du ') + (interruption.dateDebutInterruption|date:'shortDate') + ' au '+ (interruption.dateFinInterruption|date:'shortDate')}}<br></span>
+      </div>
     </div>
     <div class="row mt-3 mb-3">
       <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
-        <mat-label>Nouvelle date de début</mat-label>
+        <mat-label>Nouvelle date de début du stage</mat-label>
         <input matInput [min]="minDateDebutStage" [max]="maxDateDebutStage" [matDatepicker]="dateDebutStagePicker"
-               (dateChange)="dateDebutChanged($event)" formControlName="dateDebutStage" required>
+               (dateChange)="dateDebutChanged($event)" formControlName="dateDebutStage">
         <mat-datepicker-toggle matSuffix [for]="dateDebutStagePicker"></mat-datepicker-toggle>
         <mat-datepicker #dateDebutStagePicker></mat-datepicker>
         <mat-error><app-form-error [field]="form.get('dateDebutStage')"></app-form-error></mat-error>
       </mat-form-field>
       <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
-        <mat-label>Nouvelle date de fin</mat-label>
-        <input matInput  [min]="minDateFinStage" [max]="maxDateFinStage" [matDatepicker]="dateFinStagePicker" formControlName="dateFinStage" required>
+        <mat-label>Nouvelle date de fin du stage</mat-label>
+        <input matInput  [min]="minDateFinStage" [max]="maxDateFinStage" [matDatepicker]="dateFinStagePicker" formControlName="dateFinStage">
         <mat-datepicker-toggle matSuffix [for]="dateFinStagePicker"></mat-datepicker-toggle>
         <mat-datepicker #dateFinStagePicker></mat-datepicker>
         <mat-error><app-form-error [field]="form.get('dateFinStage')"></app-form-error></mat-error>
       </mat-form-field>
-      <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
-        <mat-label>Nouvelle date de début d'intérruption</mat-label>
-        <input matInput [matDatepicker]="dateDebutInterruptionPicker" formControlName="dateDebutInterruption" required >
-        <mat-datepicker-toggle matSuffix [for]="dateDebutInterruptionPicker"></mat-datepicker-toggle>
-        <mat-datepicker #dateDebutInterruptionPicker></mat-datepicker>
-        <mat-error><app-form-error [field]="form.get('dateDebutInterruption')"></app-form-error></mat-error>
-      </mat-form-field>
-      <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
-        <mat-label>Nouvelle date de fin d'intérruption</mat-label>
-        <input matInput [matDatepicker]="dateFinInterruptionPicker" formControlName="dateFinInterruption" required >
-        <mat-datepicker-toggle matSuffix [for]="dateFinInterruptionPicker"></mat-datepicker-toggle>
-        <mat-datepicker #dateFinInterruptionPicker></mat-datepicker>
-        <mat-error><app-form-error [field]="form.get('dateFinInterruption')"></app-form-error></mat-error>
-      </mat-form-field>
+    </div>
+    <div *ngIf="convention.interruptionStage">
+      <div>Modification d'une période d'interruption existante</div>
+      <mat-divider></mat-divider>
+      <div class="row mt-3" *ngFor="let interruption of interruptionsStage">
+        <div class="col-12">{{(interruptionsStage.length>1?'- Du ':'Du ') + (interruption.dateDebutInterruption|date:'shortDate') + ' au '+ (interruption.dateFinInterruption|date:'shortDate') + ':'}}</div>
+        <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
+          <mat-label>Nouvelle date de début d'intérruption</mat-label>
+          <input matInput [matDatepicker]="dateDebutInterruptionPicker" formControlName={{interruption.dateDebutInterruptionFormControlName}}>
+          <mat-datepicker-toggle matSuffix [for]="dateDebutInterruptionPicker"></mat-datepicker-toggle>
+          <mat-datepicker #dateDebutInterruptionPicker></mat-datepicker>
+          <mat-error><app-form-error [field]="form.get('interruption.dateDebutInterruptionFormControlName')"></app-form-error></mat-error>
+        </mat-form-field>
+        <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
+          <mat-label>Nouvelle date de fin d'intérruption</mat-label>
+          <input matInput [matDatepicker]="dateFinInterruptionPicker" formControlName={{interruption.dateFinInterruptionFormControlName}}>
+          <mat-datepicker-toggle matSuffix [for]="dateFinInterruptionPicker"></mat-datepicker-toggle>
+          <mat-datepicker #dateFinInterruptionPicker></mat-datepicker>
+          <mat-error><app-form-error [field]="form.get('interruption.dateFinInterruptionFormControlName')"></app-form-error></mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+    <div class="row mt-3 mb-3">
+      <div class="col-6">
+        <button mat-button mat-flat-button type="button" color="primary" (click)="openInterruptionsCreateFormModal()">{{addedInterruptionsStage.length === 0 ?'Ajouter des':'Gérer les'}} nouvelles périodes d'interruptions</button>
+      </div>
     </div>
   </div>
 

@@ -1,6 +1,6 @@
 import { Component, Output, EventEmitter, OnInit, Input, ViewChild  } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { FormBuilder, FormGroup, FormControl, Validators } from "@angular/forms";
 import { ServiceService } from "../../../../services/service.service";
 import { ContactService } from "../../../../services/contact.service";
 import { MessageService } from "../../../../services/message.service";
@@ -14,9 +14,11 @@ import { DeviseService } from "../../../../services/devise.service";
 import { CiviliteService } from "../../../../services/civilite.service";
 import { PaysService } from "../../../../services/pays.service";
 import { AvenantService } from "../../../../services/avenant.service";
+import { PeriodeInterruptionStageService } from "../../../../services/periode-interruption-stage.service";
 import { TableComponent } from "../../../table/table.component";
 import { ServiceAccueilFormComponent } from '../../../gestion-etab-accueil/service-accueil-form/service-accueil-form.component';
 import { ContactFormComponent } from '../../../gestion-etab-accueil/contact-form/contact-form.component';
+import { InterruptionsFormComponent } from '../../../convention/stage/interruptions-form/interruptions-form.component';
 import { debounceTime } from "rxjs/operators";
 
 @Component({
@@ -30,12 +32,20 @@ export class AvenantFormComponent implements OnInit {
       'dateRupture': [Validators.required],
   }
 
+  checkboxFields : any  = ['dateRupture', 'modificationPeriode', 'modificationLieu', 'modificationSujet', 'modificationSalarie',
+       'modificationEnseignant', 'modificationMontantGratification', 'modificationAutre'];
+
+  periodeStageFields : any = ['dateDebutStage', 'dateFinStage'];
+
   modeVersGratifications: any[] = [];
   uniteDurees: any[] = [];
   uniteGratifications: any[] = [];
   devises: any[] = [];
   countries: any[] = [];
   civilites: any[] = [];
+  interruptionsStage: any[] = [];
+  addedInterruptionsStage: any[] = [];
+  modifiedInterruptionsStage: any[] = [];
 
   enseignants: any[] = [];
   enseignant: any = 0;
@@ -79,6 +89,7 @@ export class AvenantFormComponent implements OnInit {
               private ldapService: LdapService,
               private civiliteService: CiviliteService,
               private paysService: PaysService,
+              private periodeInterruptionStageService: PeriodeInterruptionStageService,
               private authService: AuthService,
               private fb: FormBuilder,
               private messageService: MessageService,
@@ -113,6 +124,10 @@ export class AvenantFormComponent implements OnInit {
     this.contactFilters = [
         { id: 'service.id', libelle: 'Service', type: 'int',value:this.convention.service.id, hidden : true},
     ];
+
+    if(this.convention.interruptionStage){
+      this.loadInterruptionsStage();
+    }
 
     if (this.avenant.modificationLieu){
       this.service = this.avenant.service;
@@ -243,15 +258,22 @@ export class AvenantFormComponent implements OnInit {
 
   customFormValidation(): void {
     let valid = false;
-    const checkboxFields = ['dateRupture', 'modificationPeriode', 'modificationLieu', 'modificationSujet', 'modificationSalarie',
-       'modificationEnseignant', 'modificationMontantGratification', 'modificationAutre'];
 
-    checkboxFields.forEach((field: string) => {
+    this.checkboxFields.forEach((field: string) => {
       if (this.form.get(field)!.value){
         valid = true;
       }
     });
 
+    if (this.form.get('modificationPeriode')!.value){
+      let periodeStageValid = false;
+      this.periodeStageFields.forEach((field: string) => {
+        if (this.form.get(field)!.value){
+          periodeStageValid = true;
+        }
+      });
+      valid = valid && (periodeStageValid || this.addedInterruptionsStage.length > 0);
+    }
     if (this.form.get('modificationLieu')!.value){
       if(this.service.id === this.convention.service.id){
         valid = false;
@@ -389,5 +411,33 @@ export class AvenantFormComponent implements OnInit {
   updateDateFinBounds(dateDebut: Date): void {
     this.minDateFinStage = new Date(dateDebut.getTime() + (1000 * 60 * 60 * 24));
     this.maxDateFinStage = new Date(dateDebut.getTime() + (1000 * 60 * 60 * 24 * 365));
+  }
+
+  loadInterruptionsStage() : void{
+    this.periodeInterruptionStageService.getByConvention(this.convention.id).subscribe((response: any) => {
+      this.interruptionsStage = response;
+      for(let interruption of this.interruptionsStage){
+        const dateDebutInterruptionFormControlName = 'dateDebutInterruption' + interruption.id
+        const dateFinInterruptionFormControlName = 'dateFinInterruption' + interruption.id
+        this.form.addControl(dateDebutInterruptionFormControlName,new FormControl(null));
+        this.form.addControl(dateFinInterruptionFormControlName,new FormControl(null));
+        this.periodeStageFields.push(dateDebutInterruptionFormControlName);
+        this.periodeStageFields.push(dateFinInterruptionFormControlName);
+        interruption.dateDebutInterruptionFormControlName = dateDebutInterruptionFormControlName;
+        interruption.dateFinInterruptionFormControlName = dateFinInterruptionFormControlName;
+      }
+    });
+  }
+
+  openInterruptionsCreateFormModal(): void {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.width = '1000px';
+    dialogConfig.data = {convention: this.convention,interruptionsStage: [],interruptionStage: null,periodes:this.addedInterruptionsStage};
+    const modalDialog = this.matDialog.open(InterruptionsFormComponent, dialogConfig);
+    modalDialog.afterClosed().subscribe(dialogResponse => {
+      if (dialogResponse) {
+        this.addedInterruptionsStage = dialogResponse;
+      }
+    });
   }
 }
