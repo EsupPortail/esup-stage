@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { PeriodeInterruptionStageService } from "../../../services/periode-interruption-stage.service";
 
 @Component({
   selector: 'app-recapitulatif',
@@ -8,13 +9,23 @@ import { Component, OnInit, Input } from '@angular/core';
 export class RecapitulatifComponent implements OnInit {
 
   @Input() convention: any;
+  interruptionsStage: any[] = [];
   isValide: boolean = false;
 
-  constructor() {
+  constructor(private periodeInterruptionStageService: PeriodeInterruptionStageService) {
   }
 
   ngOnInit(): void {
     this.isValide = this.convention.validationPedagogique && this.convention.validationConvention;
+    if(this.convention.interruptionStage){
+      this.loadInterruptionsStage();
+    }
+  }
+
+  loadInterruptionsStage() : void{
+    this.periodeInterruptionStageService.getByConvention(this.convention.id).subscribe((response: any) => {
+      this.interruptionsStage = response;
+    });
   }
 
   validate(): void {

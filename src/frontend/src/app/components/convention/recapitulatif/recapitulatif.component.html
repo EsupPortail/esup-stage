@@ -88,10 +88,10 @@
           <div class="col-sm-9">{{convention.interruptionStage ? 'Oui' : 'Non'}}</div>
         </div>
         <div class="row" *ngIf="convention.interruptionStage">
-          <div class="col-sm-3 font-weight-bold">Date de début d'interruption du stage</div>
-          <div class="col-sm-9">{{convention.dateDebutInterruption}}</div>
-          <div class="col-sm-3 font-weight-bold">Date de fin d'interruption du stage</div>
-          <div class="col-sm-9">{{convention.dateFinInterruption}}</div>
+          <div class="col-sm-3 font-weight-bold">Périodes d'interruption du stage</div>
+          <div class="col-sm-9"><span *ngFor="let interruption of interruptionsStage">
+            {{(interruptionsStage.length>1?'- Du ':'Du ') + (interruption.dateDebutInterruption|date:'shortDate') + ' au '+ (interruption.dateFinInterruption|date:'shortDate')}}<br></span>
+          </div>
         </div>
         <div class="row">
           <div class="col-sm-3 font-weight-bold">Durée effective du stage</div>

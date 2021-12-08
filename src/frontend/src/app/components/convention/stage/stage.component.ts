@@ -143,11 +143,10 @@ export class StageComponent implements OnInit {
       fonctionsEtTaches: [this.convention.fonctionsEtTaches, [Validators.required]],
       details: [this.convention.details],
       // - Partie Dates / horaires
-      //TODO contrôle de la cohérence des dates saisies
       dateDebutStage: [this.convention.dateDebutStage, [Validators.required]],
       dateFinStage: [this.convention.dateFinStage, [Validators.required]],
       interruptionStage: [this.convention.interruptionStage, [Validators.required]],
-      //TODO multiples dates d'interruptions
+      //TODO validation périodes d'interruption multiple
       dateDebutInterruption: [this.convention.dateDebutInterruption, this.fieldValidators['dateDebutInterruption']],
       dateFinInterruption: [this.convention.dateFinInterruption, this.fieldValidators['dateFinInterruption']],
       horairesReguliers: [this.convention.horairesReguliers, [Validators.required]],
@@ -211,6 +210,7 @@ export class StageComponent implements OnInit {
       this.form.disable();
     }
 
+    //TODO pas de control pour les gestionnaires
     this.minDateDebutStage = new Date(new Date().getTime() + (1000 * 60 * 60 * 24));
     //TODO annee universitaire
     //this.maxDateDebutStage = new Date(new Date().getFullYear()+1, 9, 1);
