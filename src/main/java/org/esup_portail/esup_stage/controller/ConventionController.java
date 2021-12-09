@@ -286,6 +286,7 @@ public class ConventionController {
                 continue;
             }
             validationAdministrative(convention, configAlerteMailDto, contextDto.getUtilisateur(), true);
+            validationAutoDonnees(convention, contextDto.getUtilisateur());
             count++;
         }
         return count;
@@ -311,6 +312,7 @@ public class ConventionController {
             default:
                 throw new AppException(HttpStatus.BAD_REQUEST, "Type de validation inconnu");
         }
+        validationAutoDonnees(convention, ServiceContext.getServiceContext().getUtilisateur());
         return convention;
     }
 
@@ -710,6 +712,37 @@ public class ConventionController {
         historiqueValidationJpaRepository.saveAndFlush(historique);
 
         sendValidationMail(convention, utilisateurContext, valider ? TemplateMail.CODE_CONVENTION_VALID_ADMINISTRATIVE : TemplateMail.CODE_CONVENTION_DEVALID_ADMINISTRATIVE, sendMailEtudiant, sendMailGestionnaire, sendMailResGes, sendMailEnseignant);
+    }
+
+    private void validationAutoDonnees(Convention convention, Utilisateur utilisateur) {
+        // Validation automatique de l'établissement d'accueil, le service d'accueil et du tuteur de stage à la validation de la convention
+        if (
+                convention.getValidationPedagogique() != null && convention.getValidationPedagogique()
+                && convention.getVerificationAdministrative() != null && convention.getValidationPedagogique()
+                && convention.getValidationConvention() != null && convention.getValidationConvention()
+        ) {
+            Structure structure = convention.getStructure();
+            if (structure != null) {
+                structure.setEstValidee(true);
+                structure.setDateValidation(new Date());
+                structure.setLoginValidation(utilisateur.getLogin());
+                structure.setInfosAJour(new Date());
+                structure.setLoginInfosAJour(utilisateur.getLogin());
+                structureJpaRepository.save(structure);
+            }
+            Service service = convention.getService();
+            if (service != null) {
+                service.setInfosAJour(new Date());
+                service.setLoginInfosAJour(utilisateur.getLogin());
+                serviceJpaRepository.save(service);
+            }
+            Contact tuteurPro = convention.getContact();
+            if (tuteurPro != null) {
+                tuteurPro.setInfosAJour(new Date());
+                tuteurPro.setLoginInfosAJour(utilisateur.getLogin());
+                contactJpaRepository.save(tuteurPro);
+            }
+        }
     }
 
     private void setValeurNomenclature(Convention convention) {

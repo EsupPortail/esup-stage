@@ -99,6 +99,7 @@ import { CKEditorModule } from "@ckeditor/ckeditor5-angular";
 import { TemplateConventionComponent } from './components/admin/template-convention/template-convention.component';
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { InterruptionsFormComponent } from './components/convention/stage/interruptions-form/interruptions-form.component';
+import { MatBadgeModule } from "@angular/material/badge";
 
 registerLocaleData(localeFr, 'fr');
 
@@ -195,6 +196,7 @@ registerLocaleData(localeFr, 'fr');
     DragDropModule,
     CKEditorModule,
     MatSnackBarModule,
+    MatBadgeModule,
   ],
   providers: [
     CookieService,

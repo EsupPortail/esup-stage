@@ -51,6 +51,7 @@ export class AppComponent {
       libelle: 'Créer une convention',
       path: 'conventions/create',
       icon: 'fa-file-contract',
+      alerte: false,
       canView: () => {
         return this.authService.checkRights({fonction: AppFonction.CONVENTION, droits: [Droit.CREATION]})
       }
@@ -112,7 +113,12 @@ export class AppComponent {
     },
   ]
 
-  constructor(public menuService: MenuService, private authService: AuthService, private configService: ConfigService, private el: ElementRef) {
+  constructor(
+    public menuService: MenuService,
+    private authService: AuthService,
+    private configService: ConfigService,
+    private el: ElementRef,
+  ) {
     this.configService.getConfigTheme();
     this.configService.themeModified.subscribe((config: any) => {
       if (this.favicon !== null && config.favicon) {

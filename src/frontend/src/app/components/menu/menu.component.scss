@@ -18,3 +18,14 @@ mat-icon {
 .material-icons, .mat-list-icon {
   font-size: 20px !important;
 }
+
+.badge-alerte::after {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  content: '';
+  margin-left: 5px;
+  margin-bottom: 5px;
+  background-color: var(--dangerColor);
+  border-radius: 50%;
+}

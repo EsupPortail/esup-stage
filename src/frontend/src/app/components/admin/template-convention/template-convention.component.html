@@ -28,10 +28,16 @@
           Les paramètres doivent être saisis sous la forme ${{ '{' }}...{{ '}' }}. Par exemple : ${{ '{' }}convention.dateDebut{{ '}' }}
         </div>
         <form [formGroup]="form" (submit)="save()">
-          <div class="row">
+          <div class="row mb-4">
             <div class="col-12">
-              <label class="required">Texte</label>
+              <label class="text-title required">Template PDF de la convention</label>
               <ckeditor [editor]="Editor" formControlName="texte" (ready)="onReady($event)"></ckeditor>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="col-12">
+              <label class="text-title required">Template PDF de l'avenant</label>
+              <ckeditor [editor]="Editor" formControlName="texteAvenant" (ready)="onReady($event)"></ckeditor>
             </div>
           </div>
 

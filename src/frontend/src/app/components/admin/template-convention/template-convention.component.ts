@@ -50,6 +50,7 @@ export class TemplateConventionComponent implements OnInit {
       typeConvention: [null, [Validators.required]],
       langueConvention: [null, [Validators.required]],
       texte: [null],
+      texteAvenant: [null],
     });
     this.form.get('typeConvention')?.disable();
     this.form.get('langueConvention')?.disable();
@@ -71,7 +72,7 @@ export class TemplateConventionComponent implements OnInit {
 
   edit(row: any): void {
     this.data = row;
-    this.form.setValue({
+    this.form.patchValue({
       typeConvention: this.data.typeConvention,
       langueConvention: this.data.langueConvention,
       texte: this.data.texte,

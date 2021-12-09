@@ -6,7 +6,7 @@
     <mat-icon *ngIf="item.icon && !item.children" matListIcon fontSet="fa" [fontIcon]="item.icon" color="primary"></mat-icon>
     <mat-icon *ngIf="item.children" [@indicatorRotate]="expanded ? 'expanded': 'collapsed'" color="primary">expand_less</mat-icon>
   </ng-container>
-  {{item.libelle}}
+  <span [class.badge-alerte]="item.alerte">{{item.libelle}}</span>
 </a>
 <div *ngIf="expanded">
   <app-menu *ngFor="let child of item.children" [item]="child" [depth]="depth+1"></app-menu>

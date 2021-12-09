@@ -3,6 +3,7 @@ import { AuthService } from "../../services/auth.service";
 import { Router } from "@angular/router";
 import { animate, state, style, transition, trigger } from "@angular/animations";
 import { MenuService } from "../../services/menu.service";
+import { ConventionService } from "../../services/convention.service";
 
 @Component({
   selector: 'app-menu',
@@ -25,13 +26,25 @@ export class MenuComponent implements OnInit {
   @Input() item: any;
   @Input() depth: number = 0;
 
-  constructor(private menuService: MenuService, public router: Router) { }
+  constructor(
+    private menuService: MenuService,
+    public router: Router,
+    private authService: AuthService,
+    private conventionService: ConventionService,
+  ) { }
 
   ngOnInit() {
     this.setExpanded(this.router.url);
     this.menuService.currentUrl.subscribe((url: string) => {
       this.setExpanded(url);
     });
+    if (this.authService.isEtudiant() && this.item.path === 'conventions/create') {
+      this.conventionService.getBrouillon().subscribe((response: any) => {
+        if (response.id) {
+          this.item.alerte = true;
+        }
+      });
+    }
   }
 
   setExpanded(url: string): void {
