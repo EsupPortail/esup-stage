@@ -76,6 +76,7 @@ export class TemplateConventionComponent implements OnInit {
       typeConvention: this.data.typeConvention,
       langueConvention: this.data.langueConvention,
       texte: this.data.texte,
+      texteAvenant: this.data.texteAvenant
     });
     if (this.tabs) {
       this.tabs.selectedIndex = this.editTabIndex;
@@ -87,7 +88,7 @@ export class TemplateConventionComponent implements OnInit {
       const data = {...this.form.value};
       delete data.typeConvention;
       delete data.langueConvention;
-      this.templateConventionService.update(this.data.id, data.texte).subscribe((response: any) => {
+      this.templateConventionService.update(this.data.id, data).subscribe((response: any) => {
         this.data = response;
         this.messageService.setSuccess('Template convention modifié');
         this.appTable?.update();

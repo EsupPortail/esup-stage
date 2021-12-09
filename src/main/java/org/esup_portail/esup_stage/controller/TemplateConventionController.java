@@ -1,6 +1,7 @@
 package org.esup_portail.esup_stage.controller;
 
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
+import org.esup_portail.esup_stage.dto.TemplateConventionDto;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
@@ -44,25 +45,32 @@ public class TemplateConventionController {
 
     @PutMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.MODIFICATION})
-    public TemplateConvention update(@PathVariable("id") int id, @Valid @RequestBody String texte) {
-        checkTemplateConvention(texte);
+    public TemplateConvention update(@PathVariable("id") int id, @Valid @RequestBody TemplateConventionDto templateConventionDto) {
+        checkTemplateConvention(templateConventionDto);
 
         TemplateConvention templateConvention = templateConventionJpaRepository.findById(id);
         if (templateConvention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Template convention non trouvé");
         }
 
-        templateConvention.setTexte(texte);
+        templateConvention.setTexte(templateConventionDto.getTexte());
+        templateConvention.setTexteAvenant(templateConventionDto.getTexteAvenant());
         templateConvention = templateConventionJpaRepository.saveAndFlush(templateConvention);
         return templateConvention;
     }
 
-    private void checkTemplateConvention(String texte) {
+    private void checkTemplateConvention(TemplateConventionDto templateConventionDto) {
         // récupération des champs personnalisés existants
         List<ParamConvention> champs = paramConventionJpaRepository.findAll();
 
         // vérification des champs personnalisés du texte
-        List<String> liste = extractChamps(texte);
+        List<String> liste = extractChamps(templateConventionDto.getTexte());
+        for (String champ : liste) {
+            checkChamp(champs, champ);
+        }
+
+        // vérification des champs personnalisés du texte avenant
+        liste = extractChamps(templateConventionDto.getTexteAvenant());
         for (String champ : liste) {
             checkChamp(champs, champ);
         }

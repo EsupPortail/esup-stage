@@ -58,3 +58,13 @@ databaseChangeLog:
         columnNames: idTypeConvention, codeLangueConvention
         constraintName: index_idTypeConvention_codeLangueConvention
         tableName: TemplateConvention
+- changeSet:
+    id: templateConvention-texteAvenant
+    author: jwang
+    changes:
+    - addColumn:
+        tableName: TemplateConvention
+        columns:
+        - column:
+            name: texteAvenant
+            type: TEXT

@@ -26,6 +26,10 @@ public class TemplateConvention extends ObjetMetier {
     @Column
     private String texte;
 
+    @Lob
+    @Column
+    private String texteAvenant;
+
     public int getId() {
         return id;
     }
@@ -56,5 +60,13 @@ public class TemplateConvention extends ObjetMetier {
 
     public void setTexte(String texte) {
         this.texte = texte;
+    }
+
+    public String getTexteAvenant() {
+        return texteAvenant;
+    }
+
+    public void setTexteAvenant(String texteAvenant) {
+        this.texteAvenant = texteAvenant;
     }
 }

@@ -11,9 +11,13 @@ import com.itextpdf.layout.element.Image;
 import freemarker.template.Template;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
 import org.esup_portail.esup_stage.exception.AppException;
+import org.esup_portail.esup_stage.model.CentreGestion;
 import org.esup_portail.esup_stage.model.Convention;
+import org.esup_portail.esup_stage.model.Fichier;
 import org.esup_portail.esup_stage.model.TemplateConvention;
+import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateConventionJpaRepository;
 import org.esup_portail.esup_stage.service.impression.context.ImpressionContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +35,15 @@ public class ImpressionService {
     TemplateConventionJpaRepository templateConventionJpaRepository;
 
     @Autowired
+    CentreGestionJpaRepository centreGestionJpaRepository;
+
+    @Autowired
     FreeMarkerConfigurer freeMarkerConfigurer;
 
-    public void generateConventionPDF(Convention convention, ByteArrayOutputStream ou) {
+    @Autowired
+    ApplicationBootstrap applicationBootstrap;
+
+    public void generateConventionAvenantPDF(Convention convention, ByteArrayOutputStream ou, boolean isAvenant) {
         TemplateConvention templateConvention = templateConventionJpaRepository.findByTypeAndLangue(convention.getTypeConvention().getId(), convention.getLangueConvention().getCode());
         if (templateConvention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Template convention " + convention.getTypeConvention().getLibelle() + "-" + convention.getLangueConvention().getCode() + " non trouvé");
@@ -43,22 +53,37 @@ public class ImpressionService {
 
         try {
             // Dans le cas où le texte du template est vide, on utilise celui d'un template par défaut
-            String htmlTexte = templateConvention.getTexte() != null ? templateConvention.getTexte() : this.getDefaultText();
+            String htmlTexte = isAvenant ? templateConvention.getTexteAvenant() : templateConvention.getTexte();
 
             Template template = new Template("template_convention_texte" + templateConvention.getId(), htmlTexte, freeMarkerConfigurer.getConfiguration());
             StringWriter texte = new StringWriter();
             template.process(impressionContext, texte);
 
-            String filename = "convention_" + convention.getId() + "_" + convention.getEtudiant().getPrenom() + "_" + convention.getEtudiant().getNom() + ".pdf";
+            String filename = isAvenant ? "avenant_" : "convention_";
+            filename += convention.getId() + "_" + convention.getEtudiant().getPrenom() + "_" + convention.getEtudiant().getNom() + ".pdf";
 
-            this.generatePDF(texte.toString(), filename, ou);
+            // récupération du logo du centre gestion
+            String logoname;
+            Fichier fichier = convention.getCentreGestion().getFichier();
+            ImageData imageData;
+
+            // si le centre de gestion n'a pas de logo, on prend celui du centre établissement
+            if (fichier == null) {
+                CentreGestion centreEtablissement = centreGestionJpaRepository.getCentreEtablissement();
+                fichier = centreEtablissement.getFichier();
+            }
+
+            logoname = this.getNomFichier(fichier.getId(), fichier.getNom());
+            imageData = ImageDataFactory.create(this.getLogoFilePath(logoname));
+
+            this.generatePDF(texte.toString(), filename, imageData, ou);
         } catch (Exception e) {
             logger.error("Une erreur est survenue lors de la génération du PDF", e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
         }
     }
 
-    public void generatePDF(String texte, String filename, ByteArrayOutputStream ou) {
+    public void generatePDF(String texte, String filename, ImageData imageData, ByteArrayOutputStream ou) {
         String tempFilePath = this.getClass().getResource("/templates").getPath();
         String tempFile = tempFilePath + "temp_" + filename;
         FileOutputStream fop = null;
@@ -68,8 +93,7 @@ public class ImpressionService {
             PdfDocument pdfDoc = new PdfDocument(new PdfReader(tempFile), new PdfWriter(ou));
             Document document=new Document(pdfDoc);
 
-            ImageData data = ImageDataFactory.create("logo_dauphine.png");
-            Image img = new Image(data);
+            Image img = new Image(imageData);
             if (img.getImageWidth()>240) img.setWidth(240);
             document.add(img);
             document.close();
@@ -103,6 +127,13 @@ public class ImpressionService {
         } catch (Exception e) {
             throw new AppException(HttpStatus.NOT_FOUND, "Template par défaut non trouvé");
         }
+    }
 
+    private String getLogoFilePath(String filename) {
+        return applicationBootstrap.getAppConfig().getDataDir() + "/centregestion/logos/" + filename;
+    }
+
+    private String getNomFichier(int idFichier, String nomFichier) {
+        return idFichier + "_" + nomFichier;
     }
 }

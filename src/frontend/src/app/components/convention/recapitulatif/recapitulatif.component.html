@@ -3,9 +3,14 @@
     <div class="col-sm-12 text-center">
       <mat-card-actions>
         <button mat-button mat-flat-button color="primary" (click)="printConvention()"
-                *ngIf="convention.validationPedagogique
+                *ngIf="convention.validationPedagogique && convention.validationCreation
                   && (!convention.centreGestion.verificationAdministrative || (convention.centreGestion.verificationAdministrative && convention.verificationAdministrative))">
           Imprimer la convention
+        </button>
+        <button mat-button mat-flat-button color="primary" (click)="printAvenant()"
+                *ngIf="convention.validationPedagogique
+                  && (!convention.centreGestion.verificationAdministrative || (convention.centreGestion.verificationAdministrative && convention.verificationAdministrative))">
+          Imprimer l'avenant
         </button>
       </mat-card-actions>
     </div>
@@ -200,6 +205,11 @@
                   *ngIf="convention.validationPedagogique
                   && (!convention.centreGestion.verificationAdministrative || (convention.centreGestion.verificationAdministrative && convention.verificationAdministrative))">
             Imprimer la convention
+          </button>
+          <button mat-button mat-flat-button color="primary" (click)="printAvenant()"
+                  *ngIf="convention.validationPedagogique && convention.validationCreation
+                  && (!convention.centreGestion.verificationAdministrative || (convention.centreGestion.verificationAdministrative && convention.verificationAdministrative))">
+            Imprimer l'avenant
           </button>
         </mat-card-actions>
       </div>

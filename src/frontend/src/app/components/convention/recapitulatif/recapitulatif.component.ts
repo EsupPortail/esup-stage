@@ -50,4 +50,12 @@ export class RecapitulatifComponent implements OnInit {
     });
   }
 
+  printAvenant() : void {
+    this.conventionService.getAvenantPDF(this.convention.id).subscribe((response: any) => {
+      var blob = new Blob([response as BlobPart], {type: "application/pdf"});
+      let filename = 'avenant_' + this.convention.id + '_' + this.convention.etudiant.prenom + '_' + this.convention.etudiant.nom + '.pdf';
+      FileSaver.saveAs(blob, filename);
+    });
+  }
+
 }
