@@ -273,6 +273,19 @@ public class ConventionController {
         return count;
     }
 
+    @GetMapping("/validation-creation/{id}")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.MODIFICATION})
+    public Convention validationCreation(@PathVariable("id") int id) {
+        Convention convention = conventionJpaRepository.findById(id);
+
+        if (convention == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        }
+        convention.setValidationCreation(true);
+        convention = conventionJpaRepository.saveAndFlush(convention);
+        return convention;
+    }
+
     @PostMapping("/validation-administrative")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.VALIDATION})
     public int validationAdministrativeMultiple(@RequestBody IdsListDto idsListDto) {

@@ -1,6 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { PeriodeInterruptionStageService } from "../../../services/periode-interruption-stage.service";
 import { ConventionService } from "../../../services/convention.service";
+import { MessageService } from "../../../services/message.service";
+import { Router } from "@angular/router";
 import * as FileSaver from 'file-saver';
 
 @Component({
@@ -14,7 +16,10 @@ export class RecapitulatifComponent implements OnInit {
   interruptionsStage: any[] = [];
   isValide: boolean = false;
 
-  constructor(private periodeInterruptionStageService: PeriodeInterruptionStageService, private conventionService: ConventionService) {
+  constructor(private periodeInterruptionStageService: PeriodeInterruptionStageService,
+              private conventionService: ConventionService,
+              private messageService: MessageService,
+              private router: Router) {
   }
 
   ngOnInit(): void {
@@ -31,7 +36,10 @@ export class RecapitulatifComponent implements OnInit {
   }
 
   validate(): void {
-    //TODO send mail
+    this.conventionService.validationCreation(this.convention.id).subscribe((response: any) => {
+      this.messageService.setSuccess('Convention créée avec succès');
+      this.router.navigate([`/conventions/${this.convention.id}`], )
+    });
   }
 
   printConvention() : void {
