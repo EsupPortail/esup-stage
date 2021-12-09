@@ -1,0 +1,422 @@
+databaseChangeLog:
+- changeSet:
+    id: init-data-effectif
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM Effectif
+    changes:
+    - sqlFile:
+        path: init-insert/effectif.sql
+        relativeToChangelogFile: true
+- changeSet:
+    id: init-data-typestructure
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM TypeStructure
+    changes:
+    - sqlFile:
+        path: init-insert/typestructure.sql
+        relativeToChangelogFile: true
+- changeSet:
+    id: init-data-statutjuridique
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM StatutJuridique
+    changes:
+    - sqlFile:
+        path: init-insert/statutjuridique.sql
+        relativeToChangelogFile: true
+- changeSet:
+    id: init-data-civilite
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM Civilite
+    changes:
+    - sqlFile:
+        path: init-insert/civilite.sql
+        relativeToChangelogFile: true
+- changeSet:
+    id: init-data-niveaucentre
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM NiveauCentre
+    changes:
+    - sqlFile:
+        path: init-insert/niveaucentre.sql
+        relativeToChangelogFile: true
+- changeSet:
+    id: init-data-confidentialite
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM Confidentialite
+    changes:
+    - sqlFile:
+        path: init-insert/confidentialite.sql
+        relativeToChangelogFile: true
+- changeSet:
+    id: init-data-uniteduree
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM UniteDuree
+    changes:
+    - sqlFile:
+        path: init-insert/uniteduree.sql
+        relativeToChangelogFile: true
+- changeSet:
+    id: init-data-tempstravail
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM TempsTravail
+    changes:
+    - sqlFile:
+        path: init-insert/tempstravail.sql
+        relativeToChangelogFile: true
+- changeSet:
+    id: init-data-niveauformation
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM NiveauFormation
+    changes:
+    - sqlFile:
+        path: init-insert/niveauformation.sql
+        relativeToChangelogFile: true
+- changeSet:
+    id: init-data-typeoffre
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM TypeOffre
+    changes:
+    - sqlFile:
+        path: init-insert/typeoffre.sql
+        relativeToChangelogFile: true
+- changeSet:
+    id: init-data-contratoffre
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM ContratOffre
+    changes:
+    - sqlFile:
+        path: init-insert/contratoffre.sql
+        relativeToChangelogFile: true
+- changeSet:
+    id: init-data-droitadministration
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM DroitAdministration
+    changes:
+    - sqlFile:
+        path: init-insert/droitadministration.sql
+        relativeToChangelogFile: true
+- changeSet:
+    id: init-data-affectation
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM Affectation
+    changes:
+    - sqlFile:
+        path: init-insert/affectation.sql
+        relativeToChangelogFile: true
+- changeSet:
+    id: init-data-fap_qualificationsimplifiee
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM FAP_QualificationSimplifiee
+    changes:
+    - sqlFile:
+        path: init-insert/fap_qualificationsimplifiee.sql
+        relativeToChangelogFile: true
+- changeSet:
+    id: init-data-modecandidature
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM ModeCandidature
+    changes:
+    - sqlFile:
+        path: init-insert/modecandidature.sql
+        relativeToChangelogFile: true
+- changeSet:
+    id: init-data-typeconvention
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM TypeConvention
+    changes:
+    - sqlFile:
+        path: init-insert/typeconvention.sql
+        relativeToChangelogFile: true
+- changeSet:
+    id: init-data-langueconvention
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM LangueConvention
+    changes:
+    - sqlFile:
+        path: init-insert/langueconvention.sql
+        relativeToChangelogFile: true
+- changeSet:
+    id: init-data-theme
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM Theme
+    changes:
+    - sqlFile:
+        path: init-insert/theme.sql
+        relativeToChangelogFile: true
+- changeSet:
+    id: init-data-indemnisation
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM Indemnisation
+    changes:
+    - sqlFile:
+        path: init-insert/indemnisation.sql
+        relativeToChangelogFile: true
+- changeSet:
+    id: init-data-modeversgratification
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM ModeVersGratification
+    changes:
+    - sqlFile:
+        path: init-insert/modeversgratification.sql
+        relativeToChangelogFile: true
+- changeSet:
+    id: init-data-naturetravail
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM NatureTravail
+    changes:
+    - sqlFile:
+        path: init-insert/naturetravail.sql
+        relativeToChangelogFile: true
+- changeSet:
+    id: init-data-modevalidationstage
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM ModeValidationStage
+    changes:
+    - sqlFile:
+        path: init-insert/modevalidationstage.sql
+        relativeToChangelogFile: true
+- changeSet:
+    id: init-data-unitegratification
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM UniteGratification
+    changes:
+    - sqlFile:
+        path: init-insert/unitegratification.sql
+        relativeToChangelogFile: true
+- changeSet:
+    id: init-data-assurance
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM Assurance
+    changes:
+    - sqlFile:
+        path: init-insert/assurance.sql
+        relativeToChangelogFile: true
+- changeSet:
+    id: init-data-caisseregime
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM CaisseRegime
+    changes:
+    - sqlFile:
+        path: init-insert/caisseregime.sql
+        relativeToChangelogFile: true
+- changeSet:
+    id: init-data-originestage
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM OrigineStage
+    changes:
+    - sqlFile:
+        path: init-insert/originestage.sql
+        relativeToChangelogFile: true
+- changeSet:
+    id: init-data-dureediffusion
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM DureeDiffusion
+    changes:
+    - sqlFile:
+        path: init-insert/dureediffusion.sql
+        relativeToChangelogFile: true
+- changeSet:
+    id: init-data-fap_n1
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM FAP_N1
+    changes:
+    - sqlFile:
+        path: init-insert/fap_n1.sql
+        relativeToChangelogFile: true
+- changeSet:
+    id: init-data-fap_n2
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM FAP_N2
+    changes:
+    - sqlFile:
+        path: init-insert/fap_n2.sql
+        relativeToChangelogFile: true
+- changeSet:
+    id: init-data-fap_n3
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM FAP_N3
+    changes:
+    - sqlFile:
+        path: init-insert/fap_n3.sql
+        relativeToChangelogFile: true
+- changeSet:
+    id: init-data-naf_n1
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM NAF_N1
+    changes:
+    - sqlFile:
+        path: init-insert/naf_n1.sql
+        relativeToChangelogFile: true
+- changeSet:
+    id: init-data-naf_n5
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM NAF_N5
+    changes:
+    - sqlFile:
+        path: init-insert/naf_n5.sql
+        relativeToChangelogFile: true
+- changeSet:
+    id: init-data-pays
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM Pays
+    changes:
+    - sqlFile:
+        path: init-insert/pays.sql
+        relativeToChangelogFile: true
+- changeSet:
+    id: templateConvention-insert
+    author: jwang
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 1
+            sql: SELECT COUNT(*) FROM TypeConvention WHERE libelleTypeConvention = 'Formation Initiale'
+        - sqlCheck:
+            expectedResult: 1
+            sql: SELECT COUNT(*) FROM LangueConvention WHERE codeLangueConvention = 'fr'
+        - sqlCheck:
+            expectedResult: 1
+            sql: SELECT COUNT(*) FROM LangueConvention WHERE codeLangueConvention = 'en'
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM TemplateConvention WHERE idTypeConvention = (SELECT idTypeConvention FROM TypeConvention WHERE libelleTypeConvention = 'Formation Initiale') AND codeLangueConvention = 'fr'
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM TemplateConvention WHERE idTypeConvention = (SELECT idTypeConvention FROM TypeConvention WHERE libelleTypeConvention = 'Formation Initiale') AND codeLangueConvention = 'en'
+    changes:
+        - sql:
+            sql: INSERT INTO TemplateConvention VALUES (default, (SELECT idTypeConvention FROM TypeConvention WHERE libelleTypeConvention = 'Formation Initiale'), 'fr', '', NOW(), 'liquibase', null, null)
+        - sql:
+            sql: INSERT INTO TemplateConvention VALUES (default, (SELECT idTypeConvention FROM TypeConvention WHERE libelleTypeConvention = 'Formation Initiale'), 'en', '', NOW(), 'liquibase', null, null)

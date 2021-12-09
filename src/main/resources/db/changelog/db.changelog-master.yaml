@@ -56,3 +56,6 @@ databaseChangeLog:
   - include:
       file: 1.0.0-periode-interruption-avenant.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 1.0.0-init-data.yaml
+      relativeToChangelogFile: true

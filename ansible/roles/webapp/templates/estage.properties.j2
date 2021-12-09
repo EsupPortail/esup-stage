@@ -35,5 +35,6 @@ appli.mailer.from={{ ESTAGE_ENVIRONMENT.MAILER.from }}
 appli.mailer.disable_delivery={{ ESTAGE_ENVIRONMENT.MAILER.disable_delivery | default('false',true) }}
 appli.mailer.delivery_address={{ ESTAGE_ENVIRONMENT.MAILER.delivery_address | default('null',true) }}
 
-# chemin vers le dossier contenant les logos des centres de gestion
+# chemin vers le dossier contenant les uploads
+# pour les logos des centres de gestion il faut que le dossier ${appli.data_dir}/centregestion/logos soit existant sur le serveur
 appli.data_dir={{ ESTAGE_ENVIRONMENT.appli_data_dir }}
