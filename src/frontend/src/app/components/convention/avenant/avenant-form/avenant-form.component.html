@@ -399,7 +399,7 @@
       </span>
     </div>
     <div class="col-sm-4 text-center">
-      <button mat-button mat-flat-button type="button" color="primary" (click)="validate()" *ngIf="isGestionnaire() && avenant.id">Valider</button>
+      <button mat-button mat-flat-button type="button" color="primary" (click)="validate()" *ngIf="isGestionnaire() && avenant.id">Valider l'avenant</button>
     </div>
     <div class="col-sm-4 text-right">
       <button mat-button mat-flat-button color="primary" [disabled]="!customValidForm">{{avenant.id?'Modifier':'Créer'}}</button>

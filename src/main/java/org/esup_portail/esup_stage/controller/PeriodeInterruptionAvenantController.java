@@ -96,6 +96,17 @@ public class PeriodeInterruptionAvenantController {
         return true;
     }
 
+    @DeleteMapping("/deleteAll/{id}")
+    @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.SUPPRESSION})
+    public boolean deleteAll(@PathVariable("id") int id) {
+        List<PeriodeInterruptionAvenant> periodeInterruptionAvenants = periodeInterruptionAvenantJpaRepository.findByAvenant(id);
+        for(PeriodeInterruptionAvenant periodeInterruptionAvenant : periodeInterruptionAvenants){
+            periodeInterruptionAvenantJpaRepository.delete(periodeInterruptionAvenant);
+            periodeInterruptionAvenantJpaRepository.flush();
+        }
+        return true;
+    }
+
     private void setPeriodeInterruptionAvenantData(PeriodeInterruptionAvenant periodeInterruptionAvenant, PeriodeInterruptionAvenantDto periodeInterruptionAvenantDto) {
 
         Avenant avenant = avenantJpaRepository.findById(periodeInterruptionAvenantDto.getIdAvenant());

@@ -30,4 +30,8 @@ export class PeriodeInterruptionAvenantService implements PaginatedService {
   delete(id: number): Observable<any> {
     return this.http.delete(environment.apiUrl + "/periode-interruption-avenant/" + id);
   }
+
+  deleteAll(id: number): Observable<any> {
+    return this.http.delete(environment.apiUrl + "/periode-interruption-avenant/deleteAll/" + id);
+  }
 }

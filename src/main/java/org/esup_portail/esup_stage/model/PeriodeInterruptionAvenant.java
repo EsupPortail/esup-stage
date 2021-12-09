@@ -28,6 +28,7 @@ public class PeriodeInterruptionAvenant {
     @Column(nullable = false)
     private Boolean isModif;
 
+    @JsonView(Views.List.class)
     @ManyToOne
     @JoinColumn(name = "idPeriodeInterruptionStage")
     private PeriodeInterruptionStage periodeInterruptionStage;
