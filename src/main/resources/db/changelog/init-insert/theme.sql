@@ -1,0 +1,11 @@
+INSERT INTO `Theme` (`idTheme`, `libelleTheme`, `temEnServTheme`) VALUES (1, 'AMENAGEMENT/URBANISME/ENVIRONNEMENT', 'O');
+INSERT INTO `Theme` (`idTheme`, `libelleTheme`, `temEnServTheme`) VALUES (2, 'ART/PATRIMOINE', 'O');
+INSERT INTO `Theme` (`idTheme`, `libelleTheme`, `temEnServTheme`) VALUES (3, 'COMMERCE INTERNATIONAL/MARKETING', 'O');
+INSERT INTO `Theme` (`idTheme`, `libelleTheme`, `temEnServTheme`) VALUES (4, 'EDUCATION/FORMATION', 'O');
+INSERT INTO `Theme` (`idTheme`, `libelleTheme`, `temEnServTheme`) VALUES (5, 'RESSOURCES HUMAINES', 'O');
+INSERT INTO `Theme` (`idTheme`, `libelleTheme`, `temEnServTheme`) VALUES (6, 'SPORT', 'O');
+INSERT INTO `Theme` (`idTheme`, `libelleTheme`, `temEnServTheme`) VALUES (7, 'TRADUCTION', 'O');
+INSERT INTO `Theme` (`idTheme`, `libelleTheme`, `temEnServTheme`) VALUES (8, 'ECONOMIE/GESTION', 'O');
+INSERT INTO `Theme` (`idTheme`, `libelleTheme`, `temEnServTheme`) VALUES (9, 'INFORMATION/COMMUNICATION', 'O');
+INSERT INTO `Theme` (`idTheme`, `libelleTheme`, `temEnServTheme`) VALUES (10, 'SANTE/SOCIAL', 'O');
+INSERT INTO `Theme` (`idTheme`, `libelleTheme`, `temEnServTheme`) VALUES (11, 'STATISTIQUE', 'O');

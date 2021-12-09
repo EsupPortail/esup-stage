@@ -58,22 +58,3 @@ databaseChangeLog:
         columnNames: idTypeConvention, codeLangueConvention
         constraintName: index_idTypeConvention_codeLangueConvention
         tableName: TemplateConvention
-- changeSet:
-    id: templateConvention-insert
-    author: jwang
-    preConditions:
-        - onFail: MARK_RAN
-        - sqlCheck:
-            expectedResult: 1
-            sql: SELECT COUNT(*) FROM TypeConvention WHERE libelleTypeConvention = 'Formation Initiale'
-        - sqlCheck:
-            expectedResult: 1
-            sql: SELECT COUNT(*) FROM LangueConvention WHERE codeLangueConvention = 'fr'
-        - sqlCheck:
-            expectedResult: 1
-            sql: SELECT COUNT(*) FROM LangueConvention WHERE codeLangueConvention = 'en'
-    changes:
-    - sql:
-        sql: INSERT INTO TemplateConvention VALUES (default, (SELECT idTypeConvention FROM TypeConvention WHERE libelleTypeConvention = 'Formation Initiale'), 'fr', '', NOW(), 'liquibase', null, null)
-    - sql:
-        sql: INSERT INTO TemplateConvention VALUES (default, (SELECT idTypeConvention FROM TypeConvention WHERE libelleTypeConvention = 'Formation Initiale'), 'en', '', NOW(), 'liquibase', null, null)
