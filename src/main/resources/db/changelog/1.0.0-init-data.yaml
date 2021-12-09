@@ -168,6 +168,18 @@ databaseChangeLog:
         path: init-insert/fap_qualificationsimplifiee.sql
         relativeToChangelogFile: true
 - changeSet:
+    id: init-data-fap_qualification
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM FAP_Qualification
+    changes:
+    - sqlFile:
+        path: init-insert/fap_qualification.sql
+        relativeToChangelogFile: true
+- changeSet:
     id: init-data-modecandidature
     author: ssound
     preConditions:
