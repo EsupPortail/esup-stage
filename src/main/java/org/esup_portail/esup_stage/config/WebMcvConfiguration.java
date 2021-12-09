@@ -19,6 +19,7 @@ public class WebMcvConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
+        registry.addViewController("/").setViewName("redirect:/frontend");
         registry.addViewController("/frontend").setViewName("redirect:/frontend/");
         registry.addViewController("/frontend/").setViewName("forward:/frontend/index.html");
     }
