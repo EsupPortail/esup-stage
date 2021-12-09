@@ -28,8 +28,6 @@ import { InterruptionsFormComponent } from './interruptions-form/interruptions-f
 export class StageComponent implements OnInit {
 
   fieldValidators : any = {
-      'dateDebutInterruption': [Validators.required],
-      'dateFinInterruption': [Validators.required],
       'nbHeuresHebdo': [Validators.required, Validators.pattern('[0-9]{1,2}([,.][0-9]{1,2})?')],
       'quotiteTravail': [Validators.required, Validators.pattern('[0-9]+')],
       'montantGratification': [Validators.required, Validators.pattern('[0-9]{1,10}([,.][0-9]{1,2})?')],
@@ -59,6 +57,7 @@ export class StageComponent implements OnInit {
 
   form: FormGroup;
 
+  periodesInterruptionsValid:boolean = false;
   minDateDebutStage: Date;
   maxDateDebutStage: Date;
   minDateFinStage: Date;
@@ -129,8 +128,6 @@ export class StageComponent implements OnInit {
       this.modeValidationStages = response.data;
     });
 
-    this.loadInterruptionsStage();
-
     this.form = this.fb.group({
       // - Modèle de la convention
       codeLangueConvention: [this.convention.langueConvention ? this.convention.langueConvention.code : null, [Validators.required]],
@@ -146,9 +143,6 @@ export class StageComponent implements OnInit {
       dateDebutStage: [this.convention.dateDebutStage, [Validators.required]],
       dateFinStage: [this.convention.dateFinStage, [Validators.required]],
       interruptionStage: [this.convention.interruptionStage, [Validators.required]],
-      //TODO validation périodes d'interruption multiple
-      dateDebutInterruption: [this.convention.dateDebutInterruption, this.fieldValidators['dateDebutInterruption']],
-      dateFinInterruption: [this.convention.dateFinInterruption, this.fieldValidators['dateFinInterruption']],
       horairesReguliers: [this.convention.horairesReguliers, [Validators.required]],
       nbHeuresHebdo: [this.convention.nbHeuresHebdo, this.fieldValidators['nbHeuresHebdo']],
       quotiteTravail: [this.convention.quotiteTravail, this.fieldValidators['quotiteTravail']],
@@ -186,13 +180,10 @@ export class StageComponent implements OnInit {
       this.form.get('confidentiel')?.setValue(false);
     }
     //Update validators that depends on booleans
-    this.toggleValidators(['dateDebutInterruption','dateFinInterruption'],this.convention.interruptionStage);
     this.toggleValidators(['nbHeuresHebdo',],this.convention.horairesReguliers);
     this.toggleValidators(['montantGratification','idUniteGratification','idUniteDuree','idDevise','idModeVersGratification'],this.convention.gratificationStage);
 
-    if (this.form.valid) {
-      this.validated.emit(2);
-    }
+    this.loadInterruptionsStage();
 
     this.previousValues={...this.form.value}
     this.form.valueChanges.pipe(debounceTime(500)).subscribe(res=>{
@@ -231,7 +222,11 @@ export class StageComponent implements OnInit {
       };
       this.updateField.emit(data);
     }
-    if (this.form.valid) {
+    this.validateForm();
+  }
+
+  validateForm() : void{
+    if (this.form.valid && this.periodesInterruptionsValid) {
       this.validated.emit(2);
     }else{
       this.validated.emit(0);
@@ -249,8 +244,18 @@ export class StageComponent implements OnInit {
     });
   }
 
-  setInterruptionStageFormControls(event : any): void {
-    this.toggleValidators(['dateDebutInterruption','dateFinInterruption'],event.value);
+  checkInterruptionsPeriodesValid():void {
+    if (this.form.get('interruptionStage')?.value){
+      if (this.interruptionsStage.length >= 1){
+        this.periodesInterruptionsValid = true;
+      }else{
+        this.periodesInterruptionsValid = false;
+      }
+    }else{
+      this.periodesInterruptionsValid = true;
+    }
+    this.validateForm();
+
   }
 
   setHorairesReguliersFormControls(event : any): void {
@@ -299,6 +304,7 @@ export class StageComponent implements OnInit {
   loadInterruptionsStage() : void{
     this.periodeInterruptionStageService.getByConvention(this.convention.id).subscribe((response: any) => {
       this.interruptionsStage = response;
+      this.checkInterruptionsPeriodesValid();
     });
   }
 
@@ -306,6 +312,7 @@ export class StageComponent implements OnInit {
     this.periodeInterruptionStageService.getByConvention(this.convention.id).subscribe((response: any) => {
       this.interruptionsStage = response;
       this.updateHeuresTravail();
+      this.checkInterruptionsPeriodesValid();
     });
   }
 

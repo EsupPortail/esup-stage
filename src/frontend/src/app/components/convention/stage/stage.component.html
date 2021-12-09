@@ -86,7 +86,7 @@
 
           <div class="col-sm-12 col-md-12 mb-2">
             <div class="mb-2">Interruption au cours du stage ?</div>
-            <mat-radio-group formControlName="interruptionStage" (change)="setInterruptionStageFormControls($event)">
+            <mat-radio-group formControlName="interruptionStage" (change)="checkInterruptionsPeriodesValid()">
               <mat-radio-button [value]="true">Oui</mat-radio-button>
               <mat-radio-button [value]="false">Non</mat-radio-button>
             </mat-radio-group>
