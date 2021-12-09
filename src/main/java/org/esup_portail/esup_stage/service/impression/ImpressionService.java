@@ -33,7 +33,7 @@ public class ImpressionService {
     @Autowired
     FreeMarkerConfigurer freeMarkerConfigurer;
 
-    public void generateConventionPDF(Convention convention) {
+    public void generateConventionPDF(Convention convention, ByteArrayOutputStream ou) {
         TemplateConvention templateConvention = templateConventionJpaRepository.findByTypeAndLangue(convention.getTypeConvention().getId(), convention.getLangueConvention().getCode());
         if (templateConvention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Template convention " + convention.getTypeConvention().getLibelle() + "-" + convention.getLangueConvention().getCode() + " non trouvé");
@@ -51,18 +51,21 @@ public class ImpressionService {
 
             String filename = "convention_" + convention.getId() + "_" + convention.getEtudiant().getPrenom() + "_" + convention.getEtudiant().getNom() + ".pdf";
 
-            this.generatePDF(texte.toString(), filename);
+            this.generatePDF(texte.toString(), filename, ou);
         } catch (Exception e) {
             logger.error("Une erreur est survenue lors de la génération du PDF", e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
         }
     }
 
-    public void generatePDF(String texte, String filename) {
-        String tempFile = "temp_convention.pdf";
+    public void generatePDF(String texte, String filename, ByteArrayOutputStream ou) {
+        String tempFilePath = this.getClass().getResource("/templates").getPath();
+        String tempFile = tempFilePath + "temp_" + filename;
+        FileOutputStream fop = null;
         try {
-            HtmlConverter.convertToPdf(texte, new FileOutputStream(tempFile));
-            PdfDocument pdfDoc = new PdfDocument(new PdfReader(tempFile), new PdfWriter(filename));
+            fop = new FileOutputStream(tempFile);
+            HtmlConverter.convertToPdf(texte, fop);
+            PdfDocument pdfDoc = new PdfDocument(new PdfReader(tempFile), new PdfWriter(ou));
             Document document=new Document(pdfDoc);
 
             ImageData data = ImageDataFactory.create("logo_dauphine.png");
@@ -72,6 +75,17 @@ public class ImpressionService {
             document.close();
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (fop != null) {
+                    File file = new File(tempFile);
+                    fop.close();
+                    file.delete();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         }
     }
 

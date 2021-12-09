@@ -19,10 +19,12 @@ import org.esup_portail.esup_stage.service.impression.ImpressionService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.ByteArrayOutputStream;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -348,13 +350,16 @@ public class ConventionController {
 
     @GetMapping("/{id}/pdf-convention")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
-    public void getConventionPDF(@PathVariable("id") int id) {
+    public ResponseEntity<byte[]> getConventionPDF(@PathVariable("id") int id) {
         Convention convention = conventionJpaRepository.findById(id);
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
+        ByteArrayOutputStream ou = new ByteArrayOutputStream();
+        impressionService.generateConventionPDF(convention, ou);
 
-        impressionService.generateConventionPDF(convention);
+        byte[] pdf = ou.toByteArray();
+        return ResponseEntity.ok().body(pdf);
     }
 
     private void setConventionData(Convention convention, ConventionFormDto conventionFormDto) {

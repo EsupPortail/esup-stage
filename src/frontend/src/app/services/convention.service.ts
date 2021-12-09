@@ -60,7 +60,7 @@ export class ConventionService implements PaginatedService {
   }
 
   getConventionPDF(id: number): Observable<any> {
-    return this.http.get(`${environment.apiUrl}/conventions/${id}/pdf-convention`);
+    return this.http.get(`${environment.apiUrl}/conventions/${id}/pdf-convention`, { responseType: 'blob'});
   }
 
 }
