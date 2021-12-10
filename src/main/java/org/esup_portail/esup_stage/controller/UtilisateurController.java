@@ -5,7 +5,9 @@ import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
+import org.esup_portail.esup_stage.model.Role;
 import org.esup_portail.esup_stage.model.Utilisateur;
+import org.esup_portail.esup_stage.repository.RoleJpaRepository;
 import org.esup_portail.esup_stage.repository.UtilisateurJpaRepository;
 import org.esup_portail.esup_stage.repository.UtilisateurRepository;
 import org.esup_portail.esup_stage.security.ServiceContext;
@@ -15,6 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @ApiController
@@ -26,6 +30,9 @@ public class UtilisateurController {
 
     @Autowired
     UtilisateurJpaRepository utilisateurJpaRepository;
+
+    @Autowired
+    RoleJpaRepository roleJpaRepository;
 
     @GetMapping("/connected")
     @Secure()
@@ -49,13 +56,17 @@ public class UtilisateurController {
     @PutMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.MODIFICATION})
     public Utilisateur update(@PathVariable("id") int id, @RequestBody Utilisateur requestUtilisateur) {
-        Utilisateur utilisateur = utilisateurJpaRepository.findByIdActif(id);
+        Utilisateur utilisateur = utilisateurJpaRepository.findById(id);
         if (utilisateur == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Utilisateur non trouvé");
         }
         utilisateur.setNom(requestUtilisateur.getNom());
         utilisateur.setPrenom(requestUtilisateur.getPrenom());
-        utilisateur.setRoles(requestUtilisateur.getRoles());
+        List<Role> dbRoles = new ArrayList<>();
+        for (Role role : requestUtilisateur.getRoles()) {
+            dbRoles.add(roleJpaRepository.findById(role.getId()));
+        }
+        utilisateur.setRoles(dbRoles);
         if (requestUtilisateur.isActif() != null) {
             utilisateur.setActif(requestUtilisateur.isActif());
         }
@@ -70,6 +81,14 @@ public class UtilisateurController {
         if (utilisateur != null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Utilisateur déjà existant");
         }
+        if (requestUtilisateur.isActif() == null) {
+            requestUtilisateur.setActif(false);
+        }
+        List<Role> dbRoles = new ArrayList<>();
+        for (Role role : requestUtilisateur.getRoles()) {
+            dbRoles.add(roleJpaRepository.findById(role.getId()));
+        }
+        requestUtilisateur.setRoles(dbRoles);
         requestUtilisateur = utilisateurJpaRepository.saveAndFlush(requestUtilisateur);
         return requestUtilisateur;
     }

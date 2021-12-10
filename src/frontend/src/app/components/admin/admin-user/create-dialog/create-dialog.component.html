@@ -22,7 +22,7 @@
     <div class="row">
       <mat-form-field class="col-sm-12" appearance="fill">
         <mat-label>Rôles</mat-label>
-        <mat-select formControlName="roles" multiple [compareWith]="data.compareRole">
+        <mat-select formControlName="roles" multiple [compareWith]="data.compareRoles">
           <mat-option *ngFor="let role of data.roles" [value]="role">{{role|roleLibelle}}</mat-option>
         </mat-select>
       </mat-form-field>

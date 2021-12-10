@@ -33,7 +33,7 @@ public class Utilisateur {
     @Column(nullable = false)
     private Date dateCreation;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST})
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
     @JoinTable(
             name = "UtilisateurRole",
             joinColumns = @JoinColumn(name = "idUtilisateur"),
