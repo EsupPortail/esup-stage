@@ -203,16 +203,26 @@ export class StageComponent implements OnInit {
     }
 
     this.loadJoursFeries();
-    //TODO pas de control pour les gestionnaires
-    this.minDateDebutStage = new Date(new Date().getTime() + (1000 * 60 * 60 * 24));
-    //TODO annee universitaire
-    //this.maxDateDebutStage = new Date(new Date().getFullYear()+1, 9, 1);
-    if (this.convention.dateDebutStage){
-      this.updateDateFinBounds(new Date(this.convention.dateDebutStage));
-    }else{
-      this.minDateFinStage = new Date(new Date().getFullYear()-1, 0, 2);
-      this.maxDateFinStage = new Date(new Date().getFullYear()+2, 0, 1);
+
+    //controles uniquement pour les non gestionnaires
+    if(!this.isGestionnaire){
+      this.minDateDebutStage = new Date(new Date().getTime() + (1000 * 60 * 60 * 24));
+      this.maxDateDebutStage = new Date(new Date().getFullYear()+1, 7, 31);
+      if (this.convention.dateDebutStage){
+        this.updateDateFinBounds(new Date(this.convention.dateDebutStage));
+      }else{
+        this.minDateFinStage = new Date(new Date().getFullYear()-1, 0, 2);
+        this.maxDateFinStage = new Date(new Date().getFullYear()+2, 0, 1);
+      }
     }
+  }
+
+  isEtudiant(): boolean {
+    return this.authService.isEtudiant();
+  }
+
+  isGestionnaire(): boolean {
+    return this.authService.isGestionnaire();
   }
 
   updateSingleField(key: string,value: any): void {
@@ -273,10 +283,13 @@ export class StageComponent implements OnInit {
   }
 
   updateDateFinBounds(dateDebut: Date): void {
-    this.minDateFinStage = new Date(dateDebut.getTime() + (1000 * 60 * 60 * 24));
-    this.maxDateFinStage = new Date(dateDebut.getTime() + (1000 * 60 * 60 * 24 * 365));
-    this.form.get('dateFinStage')!.markAsTouched();
-    this.form.get('dateFinStage')!.updateValueAndValidity();
+    //controles uniquement pour les non gestionnaires
+    if(!this.isGestionnaire){
+      this.minDateFinStage = new Date(dateDebut.getTime() + (1000 * 60 * 60 * 24));
+      this.maxDateFinStage = new Date(dateDebut.getTime() + (1000 * 60 * 60 * 24 * 365));
+      this.form.get('dateFinStage')!.markAsTouched();
+      this.form.get('dateFinStage')!.updateValueAndValidity();
+    }
   }
 
   openInterruptionsCreateFormModal(): void {
