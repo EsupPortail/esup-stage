@@ -49,17 +49,25 @@ export class ConventionComponent implements OnInit {
         this.conventionService.getById(pathId).subscribe((response: any) => {
           this.convention = response;
           this.majStatus();
-          // Si la convention est validée administrativement, elle n'est plus modifiable par de gestionnaire
-          if (this.authService.isEnseignant() && this.convention.validationPedagogique) {
-            this.modifiable = false;
-          }
-          // Si la convention est validée pédagogiquement, elle n'est plus modifiable par l'enseignant
-          if (this.authService.isGestionnaire() && this.convention.validationConvention) {
-            this.modifiable = false;
-          }
-          // Une convention n'est plus modifiable par l'étudiant dès qu'il y a eu au moins une validation
-          if (this.isEtudiant() && (this.convention.validationPedagogique || this.convention.validationConvention)) {
-            this.modifiable = false;
+          // un admin a tout le temps les droits de modifications
+          if (this.authService.isAdmin()) {
+            this.modifiable = true;
+          } else {
+            if (this.authService.isGestionnaire()) {
+              this.modifiable = !this.convention.validationConvention;
+            }
+            // Un enseignant n'a pas les droits de modifications d'une convention
+            else if (this.authService.isEnseignant()) {
+              this.modifiable = false;
+            }
+            // Un étudiant n'a plus de droit de modifier dès qu'il a valider sa création
+            else if (this.authService.isEtudiant()) {
+              this.modifiable = !this.convention.validationCreation;
+            }
+            // les utilisateurs sans profil pré-défini ont les mêmes droits que le gestionnaire
+            else {
+              this.modifiable = !this.convention.validationConvention;
+            }
           }
         });
       }

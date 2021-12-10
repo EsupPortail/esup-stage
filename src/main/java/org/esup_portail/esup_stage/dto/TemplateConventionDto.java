@@ -5,6 +5,14 @@ public class TemplateConventionDto {
     private String texte;
     private String texteAvenant;
 
+    public TemplateConventionDto() {
+    }
+
+    public TemplateConventionDto(String texte, String texteAvenant) {
+        this.texte = texte;
+        this.texteAvenant = texteAvenant;
+    }
+
     public String getTexte() {
         return texte;
     }

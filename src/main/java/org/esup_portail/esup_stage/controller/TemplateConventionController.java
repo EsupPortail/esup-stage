@@ -16,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -43,6 +45,20 @@ public class TemplateConventionController {
         return paginatedResponse;
     }
 
+    @PostMapping
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.CREATION})
+    public TemplateConvention create(@RequestBody TemplateConvention templateConvention) {
+        if (templateConventionJpaRepository.findByTypeAndLangue(templateConvention.getTypeConvention().getId(), templateConvention.getLangueConvention().getCode()) != null) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Un template avec ce type et cette langue existe déjà");
+        }
+
+        TemplateConventionDto templateConventionDto = new TemplateConventionDto(templateConvention.getTexte(), templateConvention.getTexteAvenant());
+        checkTemplateConvention(templateConventionDto);
+
+        templateConvention = templateConventionJpaRepository.saveAndFlush(templateConvention);
+        return templateConvention;
+    }
+
     @PutMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.MODIFICATION})
     public TemplateConvention update(@PathVariable("id") int id, @Valid @RequestBody TemplateConventionDto templateConventionDto) {
@@ -57,6 +73,35 @@ public class TemplateConventionController {
         templateConvention.setTexteAvenant(templateConventionDto.getTexteAvenant());
         templateConvention = templateConventionJpaRepository.saveAndFlush(templateConvention);
         return templateConvention;
+    }
+
+    @GetMapping("/default-convention")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
+    public String getDefaultTemplateConvention() {
+        return this.getDefaultText(true);
+    }
+
+    @GetMapping("/default-avenant")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
+    public String getDefaultTemplateAvenant() {
+        return this.getDefaultText(false);
+    }
+
+    private String getDefaultText(boolean isConvention) {
+        StringBuilder sb = new StringBuilder();
+        String str;
+        try {
+            String templateName = isConvention ? "/templates/template_default_convention.html" : "/templates/template_default_avenant.html";
+            BufferedReader in = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(templateName)));
+            while ((str = in.readLine()) != null) {
+                sb.append(str);
+            }
+            in.close();
+
+            return sb.toString();
+        } catch (Exception e) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Template par défaut non trouvé");
+        }
     }
 
     private void checkTemplateConvention(TemplateConventionDto templateConventionDto) {

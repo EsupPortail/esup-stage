@@ -3,6 +3,8 @@ import { TableComponent } from "../../table/table.component";
 import { TemplateConventionService } from "../../../services/template-convention.service";
 import { ParamConventionService } from "../../../services/param-convention.service";
 import { MessageService } from "../../../services/message.service";
+import { TypeConventionService } from "../../../services/type-convention.service";
+import { LangueConventionService } from "../../../services/langue-convention.service";
 import { AppFonction } from "../../../constants/app-fonction";
 import { Droit } from "../../../constants/droit";
 import { AuthService } from "../../../services/auth.service";
@@ -31,9 +33,15 @@ export class TemplateConventionComponent implements OnInit {
   paramColumns = ['code', 'libelle', 'exemple'];
   paramSortColumn = 'code';
 
-  editTabIndex = 1;
+  createTabIndex = 1
+  editTabIndex = 2;
   data: any = {};
   form: FormGroup;
+
+  typesConvention: any;
+  languesConvention: any;
+  defaultConvention: any;
+  defaultAvenant: any;
 
   @ViewChild('tableList') appTable: TableComponent | undefined;
   @ViewChild('paramTableList') appParamTable: TableComponent | undefined;
@@ -42,7 +50,9 @@ export class TemplateConventionComponent implements OnInit {
   constructor(
     public templateConventionService: TemplateConventionService,
     public paramConventionService: ParamConventionService,
-    public messageService: MessageService,
+    private messageService: MessageService,
+    private typeConventionService: TypeConventionService,
+    private langueConventionService: LangueConventionService,
     private authService: AuthService,
     private fb: FormBuilder,
   ) {
@@ -52,17 +62,36 @@ export class TemplateConventionComponent implements OnInit {
       texte: [null],
       texteAvenant: [null],
     });
-    this.form.get('typeConvention')?.disable();
-    this.form.get('langueConvention')?.disable();
   }
 
   ngOnInit(): void {
+    this.typeConventionService.getListActive().subscribe((response: any) => {
+      this.typesConvention = response.data;
+    });
+    this.langueConventionService.getListActive().subscribe((response: any) => {
+      this.languesConvention = response.data;
+    });
+    this.templateConventionService.getDefaultTemplateConvention().subscribe((response: any) => {
+      this.defaultConvention = response;
+    });
+    this.templateConventionService.getDefaultTemplateAvenant().subscribe((response: any) => {
+      this.defaultAvenant = response;
+    });
   }
 
   tabChanged(event: MatTabChangeEvent): void {
     if (event.index !== this.editTabIndex) {
       this.data = {};
       this.form.reset();
+      this.form.get('typeConvention')?.enable();
+      this.form.get('langueConvention')?.enable();
+      this.form.patchValue({
+        texte: this.defaultConvention,
+        texteAvenant: this.defaultAvenant
+      });
+    } else {
+      this.form.get('typeConvention')?.disable();
+      this.form.get('langueConvention')?.disable();
     }
   }
 
@@ -86,14 +115,41 @@ export class TemplateConventionComponent implements OnInit {
   save(): void {
     if (this.form.valid) {
       const data = {...this.form.value};
-      delete data.typeConvention;
-      delete data.langueConvention;
-      this.templateConventionService.update(this.data.id, data).subscribe((response: any) => {
-        this.data = response;
-        this.messageService.setSuccess('Template convention modifié');
-        this.appTable?.update();
-      });
+      if (this.data.id) {
+        delete data.typeConvention;
+        delete data.langueConvention;
+        this.templateConventionService.update(this.data.id, data).subscribe((response: any) => {
+          this.data = response;
+          this.messageService.setSuccess('Template convention modifié');
+          this.appTable?.update();
+        });
+      } else {
+        this.templateConventionService.create(data).subscribe((response: any) => {
+          this.messageService.setSuccess('Template convention créé');
+          this.appTable?.update();
+          if (this.tabs) {
+            this.tabs.selectedIndex = 0;
+          }
+        });
+      }
+
+    } else {
+      this.messageService.setError("Veuillez remplir les champs obligatoires");
     }
+  }
+
+  compare(option: any, value: any): boolean {
+    if (option && value) {
+      return option.id === value.id;
+    }
+    return false;
+  }
+
+  compareCode(option: any, value: any): boolean {
+    if (option && value) {
+      return option.code === value.code;
+    }
+    return false;
   }
 
 }

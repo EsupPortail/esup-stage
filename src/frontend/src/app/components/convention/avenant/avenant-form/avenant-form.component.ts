@@ -430,7 +430,7 @@ export class AvenantFormComponent implements OnInit {
   }
 
   isGestionnaire(): boolean {
-    return this.authService.isGestionnaire();
+    return this.authService.isGestionnaire() || this.authService.isAdmin();
   }
 
   dateDebutChanged(event: any): void {

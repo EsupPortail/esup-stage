@@ -191,8 +191,9 @@ public class ConventionController {
     public Convention getById(@PathVariable("id") int id) {
         Convention convention = conventionJpaRepository.findById(id);
         if (convention == null) {
-            convention = new Convention();
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
+        canViewEditConvention(convention, ServiceContext.getServiceContext().getUtilisateur());
         return convention;
     }
 
@@ -212,10 +213,6 @@ public class ConventionController {
     public Convention update(@PathVariable("id") int id, @Valid @RequestBody ConventionFormDto conventionFormDto) {
         Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
         Convention convention = conventionJpaRepository.findById(id);
-        // Cas étudiant : on interdit la modification d'une convention qui ne lui est pas associé
-        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && convention != null && convention.getEtudiant() != null && !convention.getEtudiant().getIdentEtudiant().equalsIgnoreCase(utilisateur.getLogin())) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
-        }
         setConventionData(convention, conventionFormDto);
         convention = conventionJpaRepository.saveAndFlush(convention);
 
@@ -330,6 +327,10 @@ public class ConventionController {
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.VALIDATION})
     public int validationAdministrativeMultiple(@RequestBody IdsListDto idsListDto) {
         ContextDto contextDto = ServiceContext.getServiceContext();
+        // Un enseignant n'a les droits que sur la validation pédagogique
+        if (UtilisateurHelper.isRole(contextDto.getUtilisateur(), Role.ENS)) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Type de validation inconnu");
+        }
         if (idsListDto.getIds().size() == 0) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La liste est vide");
         }
@@ -354,6 +355,10 @@ public class ConventionController {
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
+        // Un enseignant n'a les droits que sur la validation pédagogique
+        if (UtilisateurHelper.isRole(ServiceContext.getServiceContext().getUtilisateur(), Role.ENS) && !type.equals("validationPedagogique")) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Type de validation inconnu");
+        }
         switch (type) {
             case "validationPedagogique":
                 validationPedagogique(convention, appConfigService.getConfigAlerteMail(), ServiceContext.getServiceContext().getUtilisateur(), true);
@@ -377,6 +382,10 @@ public class ConventionController {
         Convention convention = conventionJpaRepository.findById(id);
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        }
+        // Un enseignant n'a les droits que sur la validation pédagogique
+        if (UtilisateurHelper.isRole(ServiceContext.getServiceContext().getUtilisateur(), Role.ENS) && !type.equals("validationPedagogique")) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Type de validation inconnu");
         }
         switch (type) {
             case "validationPedagogique":
@@ -429,6 +438,37 @@ public class ConventionController {
         return ResponseEntity.ok().body(pdf);
     }
 
+    private void canViewEditConvention(Convention convention, Utilisateur utilisateur) {
+        if (!UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
+            if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
+                if (convention.getEtudiant() == null || !convention.getEtudiant().getIdentEtudiant().equalsIgnoreCase(utilisateur.getLogin())) {
+                    throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+                }
+            } else if (UtilisateurHelper.isRole(utilisateur, Role.ENS)) {
+                if (convention.getEnseignant() == null || !convention.getEnseignant().getUidEnseignant().equalsIgnoreCase(utilisateur.getLogin())) {
+                    throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+                }
+            } else { // cas gestionnaire, responsable gestionnaire et profil non défini
+                if (convention.getCentreGestion() == null || convention.getCentreGestion().getPersonnels() == null || convention.getCentreGestion().getPersonnels().stream().noneMatch(p -> p.getUidPersonnel().equalsIgnoreCase(utilisateur.getLogin()))) {
+                    throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+                }
+            }
+        }
+    }
+
+    private boolean isConventionModifiable(Convention convention, Utilisateur utilisateur) {
+        if (!UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
+            if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
+                return !convention.isValidationCreation();
+            } else if (UtilisateurHelper.isRole(utilisateur, Role.ENS)) {
+                return false;
+            } else { // cas gestionnaire, responsable gestionnaire et profil non défini
+                return convention.getValidationConvention() == null || !convention.getValidationConvention();
+            }
+        }
+        return true;
+    }
+
     private void setConventionData(Convention convention, ConventionFormDto conventionFormDto) {
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
@@ -475,12 +515,9 @@ public class ConventionController {
         if (centreGestion == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion non trouvé");
         }
-        // la convention est modifiable si la dernière validation n'est pas faite : ie toutes les validations à true
-        if (
-                (convention.getValidationPedagogique() != null && convention.getValidationPedagogique())
-                && (convention.getVerificationAdministrative() != null && convention.getVerificationAdministrative())
-                && (convention.getValidationConvention() != null && convention.getValidationConvention())
-        ) {
+
+        canViewEditConvention(convention, ServiceContext.getServiceContext().getUtilisateur());
+        if (!isConventionModifiable(convention, ServiceContext.getServiceContext().getUtilisateur())) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La convention n'est plus modifiable");
         }
 
@@ -521,12 +558,8 @@ public class ConventionController {
     }
 
     private void setSingleFieldData(Convention convention, ConventionSingleFieldDto conventionSingleFieldDto) {
-        // la convention est modifiable si la dernière validation n'est pas faite : ie toutes les validations à true
-        if (
-                (convention.getValidationPedagogique() != null && convention.getValidationPedagogique())
-                        && (convention.getVerificationAdministrative() != null && convention.getVerificationAdministrative())
-                        && (convention.getValidationConvention() != null && convention.getValidationConvention())
-        ) {
+        canViewEditConvention(convention, ServiceContext.getServiceContext().getUtilisateur());
+        if (!isConventionModifiable(convention, ServiceContext.getServiceContext().getUtilisateur())) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La convention n'est plus modifiable");
         }
         if (Objects.equals(conventionSingleFieldDto.getField(), "codeLangueConvention")){

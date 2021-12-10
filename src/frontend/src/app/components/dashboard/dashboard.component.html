@@ -1,4 +1,4 @@
-<mat-card *ngIf="isEnseignant() || isGestionnaire()" class="dashboard-summary">
+<mat-card *ngIf="typeDashboard === 2 || typeDashboard === 1" class="dashboard-summary">
   <mat-card-content>
     <div class="row">
       <div class="col-6">
@@ -17,7 +17,7 @@
 </mat-card>
 
 <ng-template #validAction>
-  <mat-card class="custom-table-buttons" *ngIf="isGestionnaire()">
+  <mat-card class="custom-table-buttons" *ngIf="typeDashboard === 1">
     <mat-card-content>
       <button type="button" mat-button mat-flat-button color="primary" [disabled]="selected.length === 0" (click)="validationAdministrative()">Valider la sélection</button>
     </mat-card-content>
@@ -28,7 +28,7 @@
            matSort [matSortActive]="sortColumn" [matSortDirection]="'desc'" (matSortChange)="appTable ? appTable.sorting($event) : null"
            [noResultText]="'Aucune convention trouvée'" [customTemplateRef]="validAction"
            (onUpdated)="countConvention()" [setAlerte]="true">
-  <ng-container *ngIf="isGestionnaire()" matColumnDef="select">
+  <ng-container *ngIf="typeDashboard === 1" matColumnDef="select">
     <th mat-header-cell *matHeaderCellDef>
       <mat-checkbox (change)="$event ? masterToggle() : null"
                     [checked]="selected.length > 0 && isAllSelected()"
@@ -42,19 +42,19 @@
       </mat-checkbox>
     </td>
   </ng-container>
-  <ng-container *ngIf="isEtudiant() || isGestionnaire()" matColumnDef="enseignant">
+  <ng-container *ngIf="typeDashboard === 3 || typeDashboard === 1" matColumnDef="enseignant">
     <th mat-header-cell *matHeaderCellDef mat-sort-header>Enseignant</th>
     <td mat-cell *matCellDef="let row">{{row.enseignant.nom + ' ' + row.enseignant.prenom}}</td>
   </ng-container>
-  <ng-container *ngIf="isEnseignant()" matColumnDef="sujetStage">
+  <ng-container *ngIf="typeDashboard === 2" matColumnDef="sujetStage">
     <th mat-header-cell *matHeaderCellDef mat-sort-header>Sujet du stage</th>
     <td mat-cell *matCellDef="let row">{{row.sujetStage}}</td>
   </ng-container>
-  <ng-container *ngIf="isEnseignant()" matColumnDef="lieuStage">
+  <ng-container *ngIf="typeDashboard === 2" matColumnDef="lieuStage">
     <th mat-header-cell *matHeaderCellDef mat-sort-header>Lieu du stage</th>
     <td mat-cell *matCellDef="let row">{{row.lieuStage}}</td>
   </ng-container>
-  <ng-container *ngIf="isEnseignant()" matColumnDef="etatValidation">
+  <ng-container *ngIf="typeDashboard === 2 || typeDashboard === 1" matColumnDef="etatValidation">
     <th mat-header-cell *matHeaderCellDef mat-sort-header>État de validation de la convention</th>
     <td mat-cell *matCellDef="let row" class="dashboard-validation">
       <i class="fa fa-graduation-cap" [class.activate]="row.validationPedagogique" matTooltip="{{row.validationPedagogique ? validationLibelles.validationPedagogique + ' effectuée' : 'en attente ' + validationLibelles.validationPedagogique}}"></i>
@@ -65,7 +65,7 @@
     <th mat-header-cell *matHeaderCellDef mat-sort-header>N°</th>
     <td mat-cell *matCellDef="let row">{{row.id}}</td>
   </ng-container>
-  <ng-container matColumnDef="etudiant" *ngIf="!isEtudiant()">
+  <ng-container matColumnDef="etudiant" *ngIf="typeDashboard !== 3">
     <th mat-header-cell *matHeaderCellDef>Étudiant</th>
     <td mat-cell *matCellDef="let row">{{row.etudiant.prenom + ' ' + row.etudiant.nom}}</td>
   </ng-container>
@@ -89,21 +89,21 @@
     <th mat-header-cell *matHeaderCellDef mat-sort-header>Étape d'étude</th>
     <td mat-cell *matCellDef="let row">{{row.etape ? row.etape.libelle : ''}}</td>
   </ng-container>
-  <ng-container *ngIf="isEtudiant()" matColumnDef="validationPedagogique">
+  <ng-container *ngIf="typeDashboard === 3" matColumnDef="validationPedagogique">
     <th mat-header-cell *matHeaderCellDef mat-sort-header>{{validationLibelles.validationPedagogique}}</th>
     <td mat-cell *matCellDef="let row">{{row.validationPedagogique|boolean}}</td>
   </ng-container>
-  <ng-container *ngIf="isEtudiant()" matColumnDef="validationConvention">
+  <ng-container *ngIf="typeDashboard === 3" matColumnDef="validationConvention">
     <th mat-header-cell *matHeaderCellDef mat-sort-header>{{validationLibelles.validationConvention}}</th>
     <td mat-cell *matCellDef="let row">{{row.validationConvention|boolean}}</td>
   </ng-container>
-  <ng-container *ngIf="isEtudiant() || isEnseignant()" matColumnDef="avenant">
+  <ng-container *ngIf="typeDashboard === 3 || typeDashboard === 2" matColumnDef="avenant">
     <th mat-header-cell *matHeaderCellDef mat-sort-header>Avenant</th>
     <td mat-cell *matCellDef="let row">
       <span *ngFor="let avenant of row.avenants">{{avenant.id}}<br/></span>
     </td>
   </ng-container>
-  <ng-container *ngIf="isEtudiant()" matColumnDef="annee">
+  <ng-container *ngIf="typeDashboard === 3" matColumnDef="annee">
     <th mat-header-cell *matHeaderCellDef mat-sort-header>Année univ.</th>
     <td mat-cell *matCellDef="let row">{{row.annee}}</td>
   </ng-container>

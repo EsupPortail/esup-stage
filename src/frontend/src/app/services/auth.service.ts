@@ -72,11 +72,15 @@ export class AuthService {
   }
 
   isGestionnaire(): boolean {
-    return this.userConnected && this.userConnected.roles.find((r: any) => [Role.ADM, Role.GES, Role.RESP_GES].indexOf(r.code) > -1) !== undefined;
+    return this.userConnected && this.userConnected.roles.find((r: any) => [Role.GES, Role.RESP_GES].indexOf(r.code) > -1) !== undefined;
   }
 
   isEnseignant(): boolean {
     return this.userConnected && this.userConnected.roles.find((r: any) => [Role.ENS].indexOf(r.code) > -1) !== undefined;
+  }
+
+  isAdmin(): boolean {
+    return this.userConnected && this.userConnected.roles.find((r: any) => [Role.ADM].indexOf(r.code) > -1) !== undefined;
   }
 
 }
