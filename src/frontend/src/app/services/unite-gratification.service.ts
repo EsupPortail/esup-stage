@@ -15,6 +15,10 @@ export class UniteGratificationService implements PaginatedService {
     return this.http.get(environment.apiUrl + "/unite-gratification", {params: {page, perPage, predicate, sortOrder, filters}});
   }
 
+  exportData(format: string, headers: string, predicate: string, sortOrder: string, filters: string): Observable<any> {
+    return this.http.get(environment.apiUrl + `/unite-gratification/export/${format}`, {params: {headers, predicate, sortOrder, filters}, responseType: 'blob'});
+  }
+
   create(data: any): Observable<any> {
     return this.http.post(environment.apiUrl + "/unite-gratification", data);
   }

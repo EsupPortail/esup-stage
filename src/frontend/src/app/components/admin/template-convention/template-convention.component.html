@@ -1,6 +1,6 @@
 <mat-tab-group #tabs (selectedTabChange)="tabChanged($event)">
   <mat-tab label="Liste">
-    <app-table #tableList [service]="templateConventionService" [columns]="columns" [sortColumn]="sortColumn"
+    <app-table #tableList [service]="templateConventionService" [columns]="columns" [sortColumn]="sortColumn" [exportColumns]="exportColumns"
                matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'" (matSortChange)="appTable ? appTable.sorting($event) : null">
       <ng-container matColumnDef="typeConvention.libelle">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Type convention</th>

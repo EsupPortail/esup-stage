@@ -26,6 +26,12 @@ export class TemplateMailComponent implements OnInit {
     { id: 'texte', libelle: 'Texte' },
   ];
   params: any[] = [];
+  exportColumns = {
+    code: { title: 'Code' },
+    libelle: { title: 'Libellé' },
+    objet: { title: 'Objet' },
+    texte: { title: 'Texte' },
+  };
 
   editTabIndex = 1;
   data: any = {};

@@ -21,6 +21,10 @@ export class ContenuComponent implements OnInit {
     { id: 'code', libelle: 'Code' },
     { id: 'texte', libelle: 'Texte' },
   ];
+  exportColumns = {
+    code: { title: 'Code' },
+    texte: { title: 'Texte' },
+  };
 
   formTabIndex = 1;
   data: any;

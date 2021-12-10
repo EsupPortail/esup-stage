@@ -11,6 +11,8 @@ import org.esup_portail.esup_stage.repository.ModeValidationStageRepository;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -35,6 +37,20 @@ public class ModeValidationStageController {
         paginatedResponse.setTotal(modeValidationStageRepository.count(filters));
         paginatedResponse.setData(modeValidationStageRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
         return paginatedResponse;
+    }
+
+    @GetMapping(value = "/export/excel", produces = "application/vnd.ms-excel")
+    @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
+    public ResponseEntity<byte[]> exportExcel(@RequestParam(name = "headers", defaultValue = "{}") String headers, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
+        byte[] bytes = modeValidationStageRepository.exportExcel(headers, predicate, sortOrder, filters);
+        return ResponseEntity.ok().body(bytes);
+    }
+
+    @GetMapping(value = "/export/csv", produces = MediaType.TEXT_PLAIN_VALUE)
+    @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
+    public ResponseEntity<String> exportCsv(@RequestParam(name = "headers", defaultValue = "{}") String headers, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
+        StringBuilder csv = modeValidationStageRepository.exportCsv(headers, predicate, sortOrder, filters);
+        return ResponseEntity.ok().body(csv.toString());
     }
 
     @PostMapping

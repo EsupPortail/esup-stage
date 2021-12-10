@@ -72,14 +72,21 @@
   </mat-card-content>
 </mat-card>
 
-<ng-container [ngTemplateOutlet]="customTemplateRef" *ngIf="customTemplateRef"></ng-container>
 
-<mat-paginator #paginatorTop *ngIf="pagination"
-               [pageSizeOptions]="[10, 25, 50, 100]"
-               [pageSize]="pageSize"
-               [length]="total"
-               [showFirstLastButtons]="true"
-               (page)="changePaginator($event); paginatorBottom.pageIndex = $event.pageIndex"></mat-paginator>
+<div class="custom-table-button-paginator no-margin">
+  <mat-card *ngIf="customTemplateRef">
+    <mat-card-content>
+      <ng-container [ngTemplateOutlet]="customTemplateRef"></ng-container>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-paginator #paginatorTop *ngIf="pagination"
+                 [pageSizeOptions]="[10, 25, 50, 100]"
+                 [pageSize]="pageSize"
+                 [length]="total"
+                 [showFirstLastButtons]="true"
+                 (page)="changePaginator($event); paginatorBottom.pageIndex = $event.pageIndex"></mat-paginator>
+</div>
 
 <div class="app-table">
   <table mat-table [dataSource]="data">
@@ -95,9 +102,23 @@
   </table>
 </div>
 
-<mat-paginator #paginatorBottom *ngIf="pagination"
-               [pageSizeOptions]="[10, 25, 50, 100]"
-               [pageSize]="pageSize"
-               [length]="total"
-               [showFirstLastButtons]="true"
-               (page)="changePaginator($event); paginatorTop.pageIndex = $event.pageIndex"></mat-paginator>
+<div class="custom-table-button-paginator">
+  <mat-card>
+    <mat-card-content>
+      <ng-container *ngIf="!isEtudiant() && exportColumns">
+        <button mat-button mat-flat-button color="primary" [matMenuTriggerFor]="exportMenu">Exporter</button>
+        <mat-menu #exportMenu="matMenu">
+          <button mat-menu-item (click)="export('csv')">CSV</button>
+          <button mat-menu-item (click)="export('excel')">Excel (xls)</button>
+        </mat-menu>
+      </ng-container>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-paginator #paginatorBottom *ngIf="pagination"
+                 [pageSizeOptions]="[10, 25, 50, 100]"
+                 [pageSize]="pageSize"
+                 [length]="total"
+                 [showFirstLastButtons]="true"
+                 (page)="changePaginator($event); paginatorTop.pageIndex = $event.pageIndex"></mat-paginator>
+</div>

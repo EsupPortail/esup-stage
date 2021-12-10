@@ -15,6 +15,10 @@ export class UserService implements PaginatedService {
     return this.http.get(environment.apiUrl + "/users", {params: {page, perPage, predicate, sortOrder, filters}});
   }
 
+  exportData(format: string, headers: string, predicate: string, sortOrder: string, filters: string): Observable<any> {
+    return this.http.get(environment.apiUrl + `/users/export/${format}`, {params: {headers, predicate, sortOrder, filters}, responseType: 'blob'});
+  }
+
   update(id: number, data: any): Observable<any> {
     return this.http.put(environment.apiUrl + '/users/' + id, data);
   }

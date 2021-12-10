@@ -5,7 +5,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "Service")
-public class Service extends ObjetMetier {
+public class Service extends ObjetMetier implements Exportable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -141,5 +141,10 @@ public class Service extends ObjetMetier {
 
     public void setPays(Pays pays) {
         this.pays = pays;
+    }
+
+    @Override
+    public String getExportValue(String key) {
+        return null;
     }
 }

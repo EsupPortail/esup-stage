@@ -3,11 +3,14 @@ package org.esup_portail.esup_stage.model;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.esup_portail.esup_stage.dto.view.Views;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "Etape")
-public class Etape {
+public class Etape implements Exportable {
 
     @JsonView(Views.List.class)
     @EmbeddedId
@@ -31,5 +34,10 @@ public class Etape {
 
     public void setLibelle(String libelle) {
         this.libelle = libelle;
+    }
+
+    @Override
+    public String getExportValue(String key) {
+        return null;
     }
 }

@@ -20,7 +20,7 @@ public class UtilisateurRepository extends PaginationRepository<Utilisateur> {
     }
 
     @Override
-    protected void addSpecificParemeter(String key, JSONObject parameter, List<String> clauses) {
+    protected void addSpecificParameter(String key, JSONObject parameter, List<String> clauses) {
         if (key.equals("utilisateur")) {
             clauses.add("(LOWER(u.login) LIKE :" + key.replace(".", "") + " OR LOWER(u.nom) LIKE :" + key.replace(".", "") + " OR LOWER(u.prenom) LIKE :" + key.replace(".", "") + ")");
         }
@@ -31,7 +31,7 @@ public class UtilisateurRepository extends PaginationRepository<Utilisateur> {
     }
 
     @Override
-    protected void setSpecificParemeterValue(String key, JSONObject parameter, Query query) {
+    protected void setSpecificParameterValue(String key, JSONObject parameter, Query query) {
         if (key.equals("utilisateur")) {
             query.setParameter(key.replace(".", ""), "%" + parameter.getString("value").toLowerCase() + "%");
         }

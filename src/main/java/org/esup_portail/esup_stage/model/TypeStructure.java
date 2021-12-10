@@ -7,7 +7,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "TypeStructure")
-public class TypeStructure {
+public class TypeStructure implements Exportable {
 
     @JsonView(Views.List.class)
     @Id
@@ -65,5 +65,21 @@ public class TypeStructure {
 
     public void setModifiable(Boolean modifiable) {
         this.modifiable = modifiable;
+    }
+
+    @Override
+    public String getExportValue(String key) {
+        String value = "";
+        switch (key) {
+            case "libelle":
+                value = getLibelle();
+                break;
+            case "actif":
+                value = getTemEnServ().equals("O") ? "Oui" : "Non";
+                break;
+            default:
+                break;
+        }
+        return value;
     }
 }

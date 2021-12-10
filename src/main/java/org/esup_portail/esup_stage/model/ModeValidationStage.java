@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "ModeValidationStage")
-public class ModeValidationStage {
+public class ModeValidationStage implements Exportable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,5 +49,21 @@ public class ModeValidationStage {
 
     public void setModifiable(Boolean modifiable) {
         this.modifiable = modifiable;
+    }
+
+    @Override
+    public String getExportValue(String key) {
+        String value = "";
+        switch (key) {
+            case "libelle":
+                value = getLibelle();
+                break;
+            case "actif":
+                value = getTemEnServ().equals("O") ? "Oui" : "Non";
+                break;
+            default:
+                break;
+        }
+        return value;
     }
 }

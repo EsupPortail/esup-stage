@@ -14,4 +14,8 @@ export class NafN1Service implements PaginatedService {
   getPaginated(page: number, perPage: number, predicate: string, sortOrder: string, filters: string): Observable<any> {
     return this.http.get(`${environment.apiUrl}/nafn1`, {params: {page, perPage, predicate, sortOrder, filters}});
   }
+
+  exportData(format: string, headers: string, predicate: string, sortOrder: string, filters: string): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/nafn1/export/${format}`, {params: {headers, predicate, sortOrder, filters}, responseType: 'blob'});
+  }
 }

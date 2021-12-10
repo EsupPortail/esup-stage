@@ -22,3 +22,27 @@ input.mat-chip-input {
   margin-bottom: -2px;
   margin-left: 0;
 }
+
+button:focus {
+  outline: none;
+}
+
+.custom-table-button-paginator {
+  display: flex;
+
+  mat-card {
+    padding: 10px 20px;
+  }
+
+  mat-paginator {
+    flex-basis: 100%;
+    height: fit-content;
+  }
+}
+
+.custom-table-button-paginator.no-margin {
+  mat-card {
+    margin: 0;
+  }
+}
+

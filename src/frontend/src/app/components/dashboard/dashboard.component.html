@@ -17,17 +17,13 @@
 </mat-card>
 
 <ng-template #validAction>
-  <mat-card class="custom-table-buttons" *ngIf="typeDashboard === 1">
-    <mat-card-content>
-      <button type="button" mat-button mat-flat-button color="primary" [disabled]="selected.length === 0" (click)="validationAdministrative()">Valider la sélection</button>
-    </mat-card-content>
-  </mat-card>
+  <button *ngIf="typeDashboard === 1" type="button" mat-button mat-flat-button color="primary" [disabled]="selected.length === 0" (click)="validationAdministrative()">Valider la sélection</button>
 </ng-template>
 
-<app-table [service]="conventionService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters" [sortOrder]="'desc'"
+<app-table *ngIf="tableCanLoad" [service]="conventionService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters" [sortOrder]="'desc'"
            matSort [matSortActive]="sortColumn" [matSortDirection]="'desc'" (matSortChange)="appTable ? appTable.sorting($event) : null"
            [noResultText]="'Aucune convention trouvée'" [customTemplateRef]="validAction"
-           (onUpdated)="countConvention()" [setAlerte]="true">
+           (onUpdated)="countConvention()" [setAlerte]="true" [exportColumns]="exportColumns">
   <ng-container *ngIf="typeDashboard === 1" matColumnDef="select">
     <th mat-header-cell *matHeaderCellDef>
       <mat-checkbox (change)="$event ? masterToggle() : null"

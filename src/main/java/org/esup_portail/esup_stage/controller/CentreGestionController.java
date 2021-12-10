@@ -101,6 +101,20 @@ public class CentreGestionController {
         return paginatedResponse;
     }
 
+    @GetMapping(value = "/export/excel", produces = "application/vnd.ms-excel")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
+    public ResponseEntity<byte[]> exportExcel(@RequestParam(name = "headers", defaultValue = "{}") String headers, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
+        byte[] bytes = centreGestionRepository.exportExcel(headers, predicate, sortOrder, filters);
+        return ResponseEntity.ok().body(bytes);
+    }
+
+    @GetMapping(value = "/export/csv", produces = MediaType.TEXT_PLAIN_VALUE)
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
+    public ResponseEntity<String> exportCsv(@RequestParam(name = "headers", defaultValue = "{}") String headers, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
+        StringBuilder csv = centreGestionRepository.exportCsv(headers, predicate, sortOrder, filters);
+        return ResponseEntity.ok().body(csv.toString());
+    }
+
     @GetMapping("/creation-brouillon")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.CREATION})
     public CentreGestion getBrouillonByLogin() {

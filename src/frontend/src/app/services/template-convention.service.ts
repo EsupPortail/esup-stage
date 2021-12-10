@@ -19,6 +19,10 @@ export class TemplateConventionService implements PaginatedService {
     return this.http.post(`${environment.apiUrl}/template-convention`, data);
   }
 
+  exportData(format: string, headers: string, predicate: string, sortOrder: string, filters: string): Observable<any> {
+    return this.http.get(environment.apiUrl + `/template-convention/export/${format}`, {params: {headers, predicate, sortOrder, filters}, responseType: 'blob'});
+  }
+
   update(id: number, data: any): Observable<any> {
     return this.http.put(`${environment.apiUrl}/template-convention/${id}`, data);
   }

@@ -15,6 +15,10 @@ export class NatureTravailService implements PaginatedService {
     return this.http.get(environment.apiUrl + "/nature-travail", {params: {page, perPage, predicate, sortOrder, filters}});
   }
 
+  exportData(format: string, headers: string, predicate: string, sortOrder: string, filters: string): Observable<any> {
+    return this.http.get(environment.apiUrl + `/nature-travail/export/${format}`, {params: {headers, predicate, sortOrder, filters}, responseType: 'blob'});
+  }
+
   create(data: any): Observable<any> {
     return this.http.post(environment.apiUrl + "/nature-travail", data);
   }

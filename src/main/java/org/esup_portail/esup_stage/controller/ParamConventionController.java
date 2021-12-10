@@ -7,9 +7,13 @@ import org.esup_portail.esup_stage.model.ParamConvention;
 import org.esup_portail.esup_stage.repository.ParamConventionRepository;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import javax.servlet.http.HttpServletResponse;
 
 @ApiController
 @RequestMapping("/param-convention")
@@ -25,5 +29,19 @@ public class ParamConventionController {
         paginatedResponse.setTotal(paramConventionRepository.count(filters));
         paginatedResponse.setData(paramConventionRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
         return paginatedResponse;
+    }
+
+    @GetMapping(value = "/export/excel", produces = "application/vnd.ms-excel")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
+    public ResponseEntity<byte[]> exportExcel(@RequestParam(name = "headers", defaultValue = "{}") String headers, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
+        byte[] bytes = paramConventionRepository.exportExcel(headers, predicate, sortOrder, filters);
+        return ResponseEntity.ok().body(bytes);
+    }
+
+    @GetMapping(value = "/export/csv", produces = MediaType.TEXT_PLAIN_VALUE)
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
+    public ResponseEntity<String> exportCsv(@RequestParam(name = "headers", defaultValue = "{}") String headers, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
+        StringBuilder csv = paramConventionRepository.exportCsv(headers, predicate, sortOrder, filters);
+        return ResponseEntity.ok().body(csv.toString());
     }
 }

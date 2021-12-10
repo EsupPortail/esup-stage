@@ -7,7 +7,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "ParamConvention")
-public class ParamConvention {
+public class ParamConvention implements Exportable {
 
     @Id
     @Column(nullable = false, length = 50)
@@ -41,5 +41,24 @@ public class ParamConvention {
 
     public void setExemple(String exemple) {
         this.exemple = exemple;
+    }
+
+    @Override
+    public String getExportValue(String key) {
+        String value = "";
+        switch (key) {
+            case "code":
+                value = getCode();
+                break;
+            case "libelle":
+                value = getLibelle();
+                break;
+            case "exemple":
+                value = getExemple();
+                break;
+            default:
+                break;
+        }
+        return value;
     }
 }

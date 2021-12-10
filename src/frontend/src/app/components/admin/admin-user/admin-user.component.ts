@@ -29,6 +29,13 @@ export class AdminUserComponent implements OnInit {
     { id: 'roles', libelle: 'Rôle', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
     { id: 'actif', libelle: 'Actif', type: 'boolean' },
   ];
+  exportColumns = {
+    login: { title: 'Login' },
+    nom: { title: 'Nom' },
+    prenom: { title: 'Prénom' },
+    roles: { title: 'Rôles' },
+    actif: { title: 'Actif' },
+  };
 
   ldapUsers: any[] = [];
   searchedLogin: string = '';

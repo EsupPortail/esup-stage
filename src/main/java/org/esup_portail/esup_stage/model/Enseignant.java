@@ -11,7 +11,7 @@ import javax.persistence.*;
                 @UniqueConstraint(name = "index_uidEnseignant_codeUniversite", columnNames = {"uidEnseignant", "codeUniversite"})
         }
 )
-public class Enseignant extends ObjetMetier {
+public class Enseignant extends ObjetMetier implements Exportable {
 
     @JsonView(Views.List.class)
     @Id
@@ -163,5 +163,10 @@ public class Enseignant extends ObjetMetier {
 
     public void setAffectation(Affectation affectation) {
         this.affectation = affectation;
+    }
+
+    @Override
+    public String getExportValue(String key) {
+        return null;
     }
 }

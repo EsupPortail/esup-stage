@@ -8,6 +8,8 @@ import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -15,7 +17,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "Convention")
-public class Convention extends ObjetMetier {
+public class Convention extends ObjetMetier implements Exportable {
 
     @JsonView(Views.List.class)
     @Id
@@ -1154,5 +1156,75 @@ public class Convention extends ObjetMetier {
             }
         }
         return false;
+    }
+
+    @Override
+    public String getExportValue(String key) {
+        DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+        String value = "";
+        switch (key) {
+            case "id":
+                value = String.valueOf(getId());
+                break;
+            case "etudiant":
+                if (getEtudiant() != null) {
+                    value = getEtudiant().getPrenom() + " " + getEtudiant().getNom();
+                }
+                break;
+            case "structure":
+                if (getStructure() != null) {
+                    value = getStructure().getRaisonSociale();
+                }
+                break;
+            case "dateDebutStage":
+                if (getDateDebutStage() != null) {
+                    value = df.format(getDateDebutStage());
+                }
+                break;
+            case "dateFinStage":
+                if (getDateFinStage() != null) {
+                    value = df.format(getDateFinStage());
+                }
+                break;
+            case "ufr":
+                if (getUfr() != null) {
+                    value = getUfr().getLibelle();
+                }
+                break;
+            case "etape":
+                if (getEtape() != null) {
+                    value = getEtape().getLibelle();
+                }
+                break;
+            case "enseignant":
+                if (getEnseignant() != null) {
+                    value = getEnseignant().getPrenom() + " " + getEnseignant().getNom();
+                }
+                break;
+            case "validationPedadogique":
+                value = getValidationPedagogique() != null && getValidationPedagogique() ? "Oui" : "Non";
+                break;
+            case "verificationAdministrative":
+                value = getVerificationAdministrative() != null && getVerificationAdministrative() ? "Oui" : "Non";
+                break;
+            case "validationConvention":
+                value = getValidationConvention() != null && getValidationConvention() ? "Oui" : "Non";
+                break;
+            case "avenant":
+                value = getAvenants().size() == 0 ? "Non" : "Oui";
+                break;
+            case "annee":
+                value = getAnnee();
+                break;
+            case "sujetStage":
+                value = getSujetStage();
+                break;
+            case "lieuStage":
+                value = getLieuStage();
+                break;
+            default:
+                break;
+        }
+        return value;
     }
 }

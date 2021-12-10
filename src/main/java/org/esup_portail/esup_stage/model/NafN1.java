@@ -3,11 +3,14 @@ package org.esup_portail.esup_stage.model;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.esup_portail.esup_stage.dto.view.Views;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "NAF_N1")
-public class NafN1 {
+public class NafN1 implements Exportable {
 
     @JsonView(Views.List.class)
     @Id
@@ -43,5 +46,10 @@ public class NafN1 {
 
     public void setTemEnServ(String temEnServ) {
         this.temEnServ = temEnServ;
+    }
+
+    @Override
+    public String getExportValue(String key) {
+        return null;
     }
 }

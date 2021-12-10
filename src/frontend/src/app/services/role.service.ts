@@ -19,6 +19,10 @@ export class RoleService implements PaginatedService {
     return this.http.get(environment.apiUrl + "/roles", {params: {page, perPage, predicate, sortOrder, filters}});
   }
 
+  exportData(format: string, headers: string, predicate: string, sortOrder: string, filters: string): Observable<any> {
+    return this.http.get(environment.apiUrl + `/roles/export/${format}`, {params: {headers, predicate, sortOrder, filters}, responseType: 'blob'});
+  }
+
   findById(id: number): Observable<any> {
     return this.http.get(environment.apiUrl + "/roles/" + id);
   }

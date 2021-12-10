@@ -1,7 +1,6 @@
-import { Component, OnInit, ViewChild, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { MatTable } from "@angular/material/table";
 import { AuthService } from "../../../services/auth.service";
 import { TypeConventionService } from "../../../services/type-convention.service";
 import { LangueConventionService } from "../../../services/langue-convention.service";
@@ -36,6 +35,15 @@ export class AdminNomenclaturesComponent implements OnInit {
 
   columns = ['libelle', 'action'];
   columnsCodeCtrl = ['codeCtrl', 'libelle', 'action'];
+  exportColumns = {
+    libelle: { title: 'Libellé' },
+    actif: { title: 'Actif' },
+  };
+  exportColumnsCodeCtrl = {
+    codeCtrl: { title: 'Code' },
+    libelle: { title: 'Libellé' },
+    actif: { title: 'Actif' },
+  };
   sortColumn = 'libelle';
 
   filters = [

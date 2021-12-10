@@ -15,6 +15,10 @@ export class PersonnelCentreService implements PaginatedService {
     return this.http.get(`${environment.apiUrl}/personnel-centre`, {params: {page, perPage, predicate, sortOrder, filters}});
   }
 
+  exportData(format: string, headers: string, predicate: string, sortOrder: string, filters: string): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/personnel-centre/export/${format}`, {params: {headers, predicate, sortOrder, filters}, responseType: 'blob'});
+  }
+
   create(data: any, idCentre: number): Observable<any> {
     return this.http.post(`${environment.apiUrl}/personnel-centre/${idCentre}`, data);
   }

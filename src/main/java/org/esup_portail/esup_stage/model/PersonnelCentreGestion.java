@@ -3,10 +3,12 @@ package org.esup_portail.esup_stage.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "PersonnelCentreGestion")
-public class PersonnelCentreGestion extends ObjetMetier {
+public class PersonnelCentreGestion extends ObjetMetier implements Exportable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -358,5 +360,41 @@ public class PersonnelCentreGestion extends ObjetMetier {
 
     public void setValidationAvenant(Boolean validationAvenant) {
         this.validationAvenant = validationAvenant;
+    }
+
+    @Override
+    public String getExportValue(String key) {
+        String value = "";
+        switch (key) {
+            case "civilite":
+                if (getCivilite() != null) {
+                    value = getCivilite().getLibelle();
+                }
+                break;
+            case "nom":
+                value = getNom();
+                break;
+            case "prenom":
+                value = getPrenom();
+                break;
+            case "droitAdministration":
+                if (getDroitAdministration() != null) {
+                    value = getDroitAdministration().getLibelle();
+                }
+                break;
+            case "alertesMail":
+                value = getAlertesMail() != null && getAlertesMail() ? "Oui" : "Non";
+                break;
+            case "droitsEvaluation":
+                List<String> droits = new ArrayList<>();
+                if (getDroitEvaluationEtudiant() != null && getDroitEvaluationEtudiant()) droits.add("Étudiant");
+                if (getDroitEvaluationEnseignant() != null && getDroitEvaluationEnseignant()) droits.add("Enseignant");
+                if (getDroitEvaluationEntreprise() != null && getDroitEvaluationEntreprise()) droits.add("Entreprise");
+                value = String.join(", ", droits);
+                break;
+            default:
+                break;
+        }
+        return value;
     }
 }

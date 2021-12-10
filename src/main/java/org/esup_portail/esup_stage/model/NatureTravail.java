@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "NatureTravail")
-public class NatureTravail {
+public class NatureTravail implements Exportable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,5 +39,21 @@ public class NatureTravail {
 
     public void setTemEnServ(String temEnServ) {
         this.temEnServ = temEnServ;
+    }
+
+    @Override
+    public String getExportValue(String key) {
+        String value = "";
+        switch (key) {
+            case "libelle":
+                value = getLibelle();
+                break;
+            case "actif":
+                value = getTemEnServ().equals("O") ? "Oui" : "Non";
+                break;
+            default:
+                break;
+        }
+        return value;
     }
 }

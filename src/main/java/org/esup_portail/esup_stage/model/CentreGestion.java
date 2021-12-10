@@ -11,7 +11,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "CentreGestion")
-public class CentreGestion extends ObjetMetier {
+public class CentreGestion extends ObjetMetier implements Exportable {
 
     @JsonView(Views.List.class)
     @Id
@@ -456,5 +456,34 @@ public class CentreGestion extends ObjetMetier {
 
     public void setDelaiAlerteConvention(Integer delaiAlerteConvention) {
         this.delaiAlerteConvention = delaiAlerteConvention;
+    }
+
+    @Override
+    public String getExportValue(String key) {
+        String value = "";
+        switch (key) {
+            case "id":
+                value = String.valueOf(getId());
+                break;
+            case "nomCentre":
+                value = getNomCentre();
+                break;
+            case "niveauCentre":
+                if (getNiveauCentre() != null) {
+                    value = getNiveauCentre().getLibelle();
+                }
+                break;
+            case "validationPedagogique":
+                value = getValidationPedagogique() != null && getValidationPedagogique() ? "Oui" : "Non";
+                break;
+            case "codeConfidentialite":
+                if (getCodeConfidentialite() != null) {
+                    value = getCodeConfidentialite().getLibelle();
+                }
+                break;
+            default:
+                break;
+        }
+        return value;
     }
 }

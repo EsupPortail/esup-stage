@@ -15,6 +15,10 @@ export class ThemeService implements PaginatedService {
     return this.http.get(environment.apiUrl + "/theme", {params: {page, perPage, predicate, sortOrder, filters}});
   }
 
+  exportData(format: string, headers: string, predicate: string, sortOrder: string, filters: string): Observable<any> {
+    return this.http.get(environment.apiUrl + `/theme/export/${format}`, {params: {headers, predicate, sortOrder, filters}, responseType: 'blob'});
+  }
+
   create(data: any): Observable<any> {
     return this.http.post(environment.apiUrl + "/theme", data);
   }

@@ -8,7 +8,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "Contact")
-public class Contact extends ObjetMetier {
+public class Contact extends ObjetMetier implements Exportable {
 
     @JsonView(Views.List.class)
     @Id
@@ -203,5 +203,10 @@ public class Contact extends ObjetMetier {
 
     public void setLoginInfosAJour(String loginInfosAJour) {
         this.loginInfosAJour = loginInfosAJour;
+    }
+
+    @Override
+    public String getExportValue(String key) {
+        return null;
     }
 }

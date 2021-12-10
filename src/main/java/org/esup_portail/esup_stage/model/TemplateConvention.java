@@ -8,7 +8,7 @@ import javax.persistence.*;
                 @UniqueConstraint(name = "index_idTypeConvention_codeLangueConvention", columnNames = {"idTypeConvention", "codeLangueConvention"})
         }
 )
-public class TemplateConvention extends ObjetMetier {
+public class TemplateConvention extends ObjetMetier implements Exportable {
 
     @Id
     @Column(nullable = false)
@@ -68,5 +68,21 @@ public class TemplateConvention extends ObjetMetier {
 
     public void setTexteAvenant(String texteAvenant) {
         this.texteAvenant = texteAvenant;
+    }
+
+    @Override
+    public String getExportValue(String key) {
+        String value = "";
+        switch (key) {
+            case "typeConvention":
+                value = getTypeConvention().getLibelle();
+                break;
+            case "langueConvention":
+                value = getLangueConvention().getLibelle();
+                break;
+            default:
+                break;
+        }
+        return value;
     }
 }

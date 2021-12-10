@@ -15,6 +15,10 @@ export class ConventionService implements PaginatedService {
     return this.http.get(environment.apiUrl + "/conventions", {params: {page, perPage, predicate, sortOrder, filters}});
   }
 
+  exportData(format: string, headers: string, predicate: string, sortOrder: string, filters: string): Observable<any> {
+    return this.http.get(environment.apiUrl + `/conventions/export/${format}`, {params: {headers, predicate, sortOrder, filters}, responseType: 'blob'});
+  }
+
   getBrouillon(): Observable<any> {
     return this.http.get(`${environment.apiUrl}/conventions/brouillon`);
   }

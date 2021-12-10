@@ -26,6 +26,8 @@ export class DashboardComponent implements OnInit {
     { id: 'nonValidationPedagogique', libelle: 'Non validée pédagogiquement' },
     { id: 'nonValidationConvention', libelle: 'Non validée administrativement' },
   ];
+  exportColumns = {};
+  tableCanLoad = false;
 
   nbConventionsEnAttente: number|undefined;
   anneeEnCours: any|undefined;
@@ -54,65 +56,98 @@ export class DashboardComponent implements OnInit {
     this.configService.getConfigGenerale().subscribe((response: any) => {
       this.validationLibelles.validationPedagogique = response.validationPedagogiqueLibelle;
       this.validationLibelles.validationConvention = response.validationAdministrativeLibelle;
-    });
-    if (this.authService.isGestionnaire()) {
-      this.typeDashboard = 1;
-      this.setDataGestionnaire();
-    } else if (this.authService.isEnseignant()) {
-      this.typeDashboard = 2;
-      this.columns = ['id', 'etudiant', 'ufr', 'etape',  'dateDebutStage', 'dateFinStage', 'structure', 'sujetStage', 'lieuStage', 'etatValidation', 'avenant', 'action'];
-      this.filters = [
-        { id: 'id', libelle: 'N° de la convention', type: 'int' },
-        { id: 'etudiant', libelle: 'Étudiant', specific: true },
-        { id: 'ufr.id', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
-        { id: 'etape.id', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
-        { id: 'dateDebutStage', libelle: 'Date début du stage', type: 'date-min' },
-        { id: 'dateFinStage', libelle: 'Date fin du stage', type: 'date-max' },
-        { id: 'structure.id', libelle: 'Établissement d\'accueil', type: 'autocomplete', autocompleteService: this.structureService, keyLibelle: 'raisonSociale', keyId: 'id', value: [] },
-        { id: 'sujetStage', libelle: 'Sujet du stage' },
-        { id: 'lieuStage', libelle: 'Lieu du stage' },
-        { id: 'etatValidation', libelle: 'État de validation de la convention', type: 'list', options: this.validationsOptions, keyLibelle: 'libelle', keyId: 'id', value: ['nonValidationPedagogique', 'nonValidationConvention'], specific: true },
-        { id: 'avenant', libelle: 'Avenant', specific: true },
-      ];
-    } else if (this.authService.isEtudiant()) {
-      this.typeDashboard = 3;
-      this.columns = ['id', 'structure', 'dateDebutStage', 'dateFinStage', 'ufr', 'etape', 'enseignant', 'validationPedagogique', 'validationConvention', 'avenant', 'annee', 'action'];
-      this.filters = [
-        { id: 'id', libelle: 'N° de la convention', type: 'int' },
-        { id: 'structure.id', libelle: 'Établissement d\'accueil', type: 'autocomplete', autocompleteService: this.structureService, keyLibelle: 'raisonSociale', keyId: 'id', value: [] },
-        { id: 'dateDebutStage', libelle: 'Date début du stage', type: 'date' },
-        { id: 'dateFinStage', libelle: 'Date fin du stage', type: 'date' },
-        { id: 'ufr.id', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
-        { id: 'etape.id', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
-        { id: 'enseignant', libelle: 'Enseignant', specific: true },
-        { id: 'validationPedagogique', libelle: this.validationLibelles.validationPedagogique, type: 'boolean' },
-        { id: 'validationConvention', libelle: this.validationLibelles.validationConvention, type: 'boolean' },
-        { id: 'avenant', libelle: 'Avenant', specific: true },
-        { id: 'annee', libelle: 'Année', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'libelle', value: [] },
-      ];
-    } else {
-      this.typeDashboard = 1;
-      this.setDataGestionnaire();
-    }
-    this.filters.push({ id: 'validationCreation', type: 'boolean', value: true, hidden: true });
 
-    this.ufrService.getPaginated(1, 0, 'libelle', 'asc', '{}').subscribe((response: any) => {
-      this.appTable?.setFilterOption('ufr.id', response.data);
-    });
+      if (this.authService.isGestionnaire()) {
+        this.typeDashboard = 1;
+        this.setDataGestionnaire();
+      } else if (this.authService.isEnseignant()) {
+        this.typeDashboard = 2;
+        this.columns = ['id', 'etudiant', 'ufr', 'etape',  'dateDebutStage', 'dateFinStage', 'structure', 'sujetStage', 'lieuStage', 'etatValidation', 'avenant', 'action'];
+        this.filters = [
+          { id: 'id', libelle: 'N° de la convention', type: 'int' },
+          { id: 'etudiant', libelle: 'Étudiant', specific: true },
+          { id: 'ufr.id', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
+          { id: 'etape.id', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
+          { id: 'dateDebutStage', libelle: 'Date début du stage', type: 'date-min' },
+          { id: 'dateFinStage', libelle: 'Date fin du stage', type: 'date-max' },
+          { id: 'structure.id', libelle: 'Établissement d\'accueil', type: 'autocomplete', autocompleteService: this.structureService, keyLibelle: 'raisonSociale', keyId: 'id', value: [] },
+          { id: 'sujetStage', libelle: 'Sujet du stage' },
+          { id: 'lieuStage', libelle: 'Lieu du stage' },
+          { id: 'etatValidation', libelle: 'État de validation de la convention', type: 'list', options: this.validationsOptions, keyLibelle: 'libelle', keyId: 'id', value: ['nonValidationPedagogique', 'nonValidationConvention'], specific: true },
+          { id: 'avenant', libelle: 'Avenant', specific: true },
+        ];
 
-    this.etapeService.getPaginated(1, 0, 'libelle', 'asc', '{}').subscribe((response: any) => {
-      this.appTable?.setFilterOption('etape.id', response.data);
-    });
+        this.exportColumns = {
+          id: { title: 'N° de la convention' },
+          etudiant: { title: 'Étudiant' },
+          ufr: { title: 'Composante' },
+          etape: { title: 'Étape' },
+          dateDebutStage: { title: 'Date début du stage' },
+          dateFinStage: { title: 'Date fin du stage' },
+          structure: { title: 'Établissement d\'accueil' },
+          sujetStage: { title: 'Sujet du stage' },
+          lieuStage: { title: 'Sujet du stage' },
+          validationPedagogique: { title: this.validationLibelles.validationPedagogique },
+          validationConvention: { title: this.validationLibelles.validationConvention },
+          avenant: { title: 'Avenant' },
+        };
+      } else if (this.authService.isEtudiant()) {
+        this.typeDashboard = 3;
+        this.columns = ['id', 'structure', 'dateDebutStage', 'dateFinStage', 'ufr', 'etape', 'enseignant', 'validationPedagogique', 'validationConvention', 'avenant', 'annee', 'action'];
+        this.filters = [
+          { id: 'id', libelle: 'N° de la convention', type: 'int' },
+          { id: 'structure.id', libelle: 'Établissement d\'accueil', type: 'autocomplete', autocompleteService: this.structureService, keyLibelle: 'raisonSociale', keyId: 'id', value: [] },
+          { id: 'dateDebutStage', libelle: 'Date début du stage', type: 'date' },
+          { id: 'dateFinStage', libelle: 'Date fin du stage', type: 'date' },
+          { id: 'ufr.id', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
+          { id: 'etape.id', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
+          { id: 'enseignant', libelle: 'Enseignant', specific: true },
+          { id: 'validationPedagogique', libelle: this.validationLibelles.validationPedagogique, type: 'boolean' },
+          { id: 'validationConvention', libelle: this.validationLibelles.validationConvention, type: 'boolean' },
+          { id: 'avenant', libelle: 'Avenant', specific: true },
+          { id: 'annee', libelle: 'Année', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'libelle', value: [] },
+        ];
 
-    this.conventionService.getListAnnee().subscribe((response: any) => {
-      this.annees = response;
-      this.anneeEnCours = this.annees.find((a: any) => { return a.anneeEnCours === true });
-      if (!this.authService.isEtudiant()) {
-        this.changeAnnee();
+        this.exportColumns = {
+          id: { title: 'N° de la convention' },
+          etudiant: { title: 'Étudiant', specific: true },
+          structure: { title: 'Établissement d\'accueil' },
+          dateDebutStage: { title: 'Date début du stage' },
+          dateFinStage: { title: 'Date fin du stage' },
+          ufr: { title: 'Composante', specific: true },
+          etape: { title: 'Étape', specific: true },
+          enseignant: { title: 'Enseignant', specific: true },
+          validationPedagogique: { title: this.validationLibelles.validationPedagogique },
+          validationConvention: { title: this.validationLibelles.validationConvention },
+          avenant: { title: 'Avenant', specific: true },
+          annee: { title: 'Année' },
+        };
       } else {
-        this.appTable?.setFilterOption('annee', this.annees);
-        this.appTable?.setFilterValue('annee', [this.anneeEnCours.libelle]);
+        this.typeDashboard = 1;
+        this.setDataGestionnaire();
       }
+      this.filters.push({ id: 'validationCreation', type: 'boolean', value: true, hidden: true });
+
+      this.ufrService.getPaginated(1, 0, 'libelle', 'asc', '{}').subscribe((response: any) => {
+        this.appTable?.setFilterOption('ufr.id', response.data);
+      });
+
+      this.etapeService.getPaginated(1, 0, 'libelle', 'asc', '{}').subscribe((response: any) => {
+        this.appTable?.setFilterOption('etape.id', response.data);
+      });
+
+      this.conventionService.getListAnnee().subscribe((response: any) => {
+        this.annees = response;
+        this.anneeEnCours = this.annees.find((a: any) => { return a.anneeEnCours === true });
+        if (!this.authService.isEtudiant()) {
+          this.changeAnnee();
+        } else {
+          this.appTable?.setFilterOption('annee', this.annees);
+          this.appTable?.setFilterValue('annee', [this.anneeEnCours.libelle]);
+        }
+      });
+
+      this.tableCanLoad = true;
     });
   }
 
@@ -129,6 +164,19 @@ export class DashboardComponent implements OnInit {
       { id: 'enseignant', libelle: 'Enseignant', specific: true },
       { id: 'etatValidation', libelle: 'État de validation de la convention', type: 'list', options: this.validationsOptions, keyLibelle: 'libelle', keyId: 'id', value: ['validationPedagogique', 'nonValidationConvention'], specific: true },
     ];
+
+    this.exportColumns = {
+      id: { title: 'N° de la convention' },
+      etudiant: { title: 'Étudiant' },
+      structure: { title: 'Établissement d\'accueil' },
+      dateDebutStage: { title: 'Date début du stage' },
+      dateFinStage: { title: 'Date fin du stage' },
+      ufr: { title: 'Composante' },
+      etape: { title: 'Étape' },
+      enseignant: { title: 'Enseignant' },
+      validationPedagogique: { title: this.validationLibelles.validationPedagogique },
+      validationConvention: { title: this.validationLibelles.validationConvention },
+    };
   }
 
   changeAnnee(): void {

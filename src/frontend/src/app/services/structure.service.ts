@@ -16,6 +16,10 @@ export class StructureService implements PaginatedService, AutocompleteService {
     return this.http.get(`${environment.apiUrl}/structures`, {params: {page, perPage, predicate, sortOrder, filters}});
   }
 
+  exportData(format: string, headers: string, predicate: string, sortOrder: string, filters: string): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/structures/export/${format}`, {params: {headers, predicate, sortOrder, filters}, responseType: 'blob'});
+  }
+
   getById(id: number): Observable<any> {
     return this.http.get(`${environment.apiUrl}/structures/${id}`);
   }

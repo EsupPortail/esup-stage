@@ -8,7 +8,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "TypeConvention")
-public class TypeConvention {
+public class TypeConvention implements Exportable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -76,5 +76,24 @@ public class TypeConvention {
 
     public void setTemplates(List<TemplateConvention> templates) {
         this.templates = templates;
+    }
+
+    @Override
+    public String getExportValue(String key) {
+        String value = "";
+        switch (key) {
+            case "codeCtrl":
+                value = getCodeCtrl();
+                break;
+            case "libelle":
+                value = getLibelle();
+                break;
+            case "actif":
+                value = getTemEnServ().equals("O") ? "Oui" : "Non";
+                break;
+            default:
+                break;
+        }
+        return value;
     }
 }

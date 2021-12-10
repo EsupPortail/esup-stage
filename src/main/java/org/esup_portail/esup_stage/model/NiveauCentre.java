@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "NiveauCentre")
-public class NiveauCentre {
+public class NiveauCentre implements Exportable {
 
     public static final String UFR = "UFR";
     public static final String ETAPE = "ETAPE";
@@ -42,5 +42,10 @@ public class NiveauCentre {
 
     public void setTemEnServ(String temEnServ) {
         this.temEnServ = temEnServ;
+    }
+
+    @Override
+    public String getExportValue(String key) {
+        return null;
     }
 }

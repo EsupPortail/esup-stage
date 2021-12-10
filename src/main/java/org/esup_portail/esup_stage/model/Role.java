@@ -8,7 +8,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "Role")
-public class Role {
+public class Role implements Exportable {
 
     public static final String ADM = "ADM";
     public static final String RESP_GES = "RESP_GES";
@@ -68,5 +68,21 @@ public class Role {
                 roleAppFonction.setRole(this);
             }
         }
+    }
+
+    @Override
+    public String getExportValue(String key) {
+        String value = "";
+        switch (key) {
+            case "code":
+                value = getCode();
+                break;
+            case "libelle":
+                value = getLibelle();
+                break;
+            default:
+                break;
+        }
+        return value;
     }
 }

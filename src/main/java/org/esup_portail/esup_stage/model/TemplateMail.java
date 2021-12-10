@@ -6,7 +6,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "TemplateMail")
-public class TemplateMail extends ObjetMetier implements TemplateMailInterface {
+public class TemplateMail extends ObjetMetier implements TemplateMailInterface, Exportable {
 
     public static final String CODE_AVENANT_VALIDATION = "AVENANT_VALIDATION";
     public static final String CODE_CONVENTION_VALID_ADMINISTRATIVE = "CONVENTION_VALID_ADMINISTRATIVE";
@@ -79,5 +79,27 @@ public class TemplateMail extends ObjetMetier implements TemplateMailInterface {
 
     public void setTexte(String texte) {
         this.texte = texte;
+    }
+
+    @Override
+    public String getExportValue(String key) {
+        String value = "";
+        switch (key) {
+            case "code":
+                value = getCode();
+                break;
+            case "libelle":
+                value = getLibelle();
+                break;
+            case "objet":
+                value = getObjet();
+                break;
+            case "texte":
+                value = getTexte();
+                break;
+            default:
+                break;
+        }
+        return value;
     }
 }

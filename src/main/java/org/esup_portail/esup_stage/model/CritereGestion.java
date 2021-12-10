@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "CritereGestion")
-public class CritereGestion {
+public class CritereGestion implements Exportable {
 
     @EmbeddedId
     private CritereGestionId id;
@@ -38,5 +38,10 @@ public class CritereGestion {
 
     public void setCentreGestion(CentreGestion centreGestion) {
         this.centreGestion = centreGestion;
+    }
+
+    @Override
+    public String getExportValue(String key) {
+        return null;
     }
 }

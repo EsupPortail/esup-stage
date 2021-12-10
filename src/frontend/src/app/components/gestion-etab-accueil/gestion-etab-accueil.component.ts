@@ -32,6 +32,15 @@ export class GestionEtabAccueilComponent implements OnInit {
   filters: any[] = [];
   countries: any[] = [];
   civilites: any[] = [];
+  exportColumns = {
+    raisonSociale: { title: 'Raison sociale' },
+    numeroSiret: { title: 'SIRET' },
+    nafN5: { title: 'Activité' },
+    pays: { title: 'Pays' },
+    commune: { title: 'Commune' },
+    typeStructure: { title: 'Type d\'organisme' },
+    statutJuridique: { title: 'Forme juridique' },
+  };
 
   formTabIndex = 1;
   data: any = {};

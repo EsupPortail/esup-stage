@@ -8,7 +8,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "LangueConvention")
-public class LangueConvention {
+public class LangueConvention implements Exportable {
 
     @Id
     @Column(name = "codeLangueConvention", nullable = false)
@@ -54,5 +54,21 @@ public class LangueConvention {
 
     public void setTemplates(List<TemplateConvention> templates) {
         this.templates = templates;
+    }
+
+    @Override
+    public String getExportValue(String key) {
+        String value = "";
+        switch (key) {
+            case "libelle":
+                value = getLibelle();
+                break;
+            case "actif":
+                value = getTemEnServ().equals("O") ? "Oui" : "Non";
+                break;
+            default:
+                break;
+        }
+        return value;
     }
 }

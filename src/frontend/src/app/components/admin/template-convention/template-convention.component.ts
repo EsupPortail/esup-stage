@@ -29,9 +29,19 @@ export class TemplateConventionComponent implements OnInit {
 
   columns = ['typeConvention.libelle', 'langueConvention.code', 'action'];
   sortColumn = 'typeConvention.libelle';
+  exportColumns = {
+    typeConvention: { title: 'Type de convention' },
+    langueConvention: { title: 'Langue de la convnention' },
+  };
 
   paramColumns = ['code', 'libelle', 'exemple'];
   paramSortColumn = 'code';
+  // TODO export de la liste des paramètres
+  exportColumnsParams = {
+    code: { title: 'Code' },
+    libelle: { title: 'Libelle' },
+    exemple: { title: 'Exemple' },
+  };
 
   createTabIndex = 1
   editTabIndex = 2;

@@ -11,7 +11,14 @@ import { Router } from "@angular/router";
 })
 export class CentreGestionSearchComponent implements OnInit {
 
-  columns = ['personnels', 'id', 'nomCentre', 'niveauCentre.libelle', 'validationPedagogique', 'codeConfidentialite', 'action']
+  columns = ['personnels', 'id', 'nomCentre', 'niveauCentre.libelle', 'validationPedagogique', 'codeConfidentialite', 'action'];
+  exportColumns = {
+    id: { title: 'Id' },
+    nomCentre: { title: 'Nom du centre' },
+    niveauCentre: { title: 'Type' },
+    validationPedagogique: { title: 'Validation pédagogique' },
+    codeConfidentialite: { title: 'Confidentialité' },
+  };
   sortColumn = 'id';
   filters = [
     { id: 'nomCentre', libelle: 'Nom du centre de gestion' }

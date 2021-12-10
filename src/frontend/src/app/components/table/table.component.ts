@@ -16,6 +16,7 @@ import { debounceTime } from "rxjs/operators";
 import * as _ from "lodash";
 import { MatAutocompleteSelectedEvent } from "@angular/material/autocomplete";
 import { AuthService } from "../../services/auth.service";
+import * as FileSaver from "file-saver";
 
 @Component({
   selector: 'app-table',
@@ -36,6 +37,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   @Input() noResultText: string = 'Aucun élément trouvé';
   @Input() customTemplateRef: TemplateRef<any>|undefined;
   @Input() setAlerte: boolean = false;
+  @Input() exportColumns: any;
 
   @Output() onUpdated = new EventEmitter<any>();
 
@@ -49,6 +51,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   page: number = 1;
   pageSize: number = 50;
   filterValues: any = [];
+  filterValuesToSend: any = [];
   filterChanged = new Subject();
   autocmpleteChanged: any = [];
   autocompleteData: any = [];
@@ -68,6 +71,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
         });
       }
 
+      this.filterValuesToSend = filters;
       this.service.getPaginated(this.page, this.pageSize, this.sortColumn, this.sortOrder, JSON.stringify(filters)).subscribe((results: any) => {
         this.total = results.total;
         this.data = results.data;
@@ -209,6 +213,19 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
     }
 
     return f;
+  }
+
+  isEtudiant(): boolean {
+    return this.authService.isEtudiant();
+  }
+
+  export(format: string): void {
+    this.service.exportData(format, JSON.stringify(this.exportColumns), this.sortColumn, this.sortOrder, JSON.stringify(this.filterValuesToSend)).subscribe((response: any) => {
+      const type = format === 'excel' ? 'application/vnd.ms-excel' : 'text/csv';
+      var blob = new Blob([response as BlobPart], {type: type});
+      let filename = 'export_' + (new Date()).getTime() + '.' + (format === 'excel' ? 'xls' : 'csv');
+      FileSaver.saveAs(blob, filename);
+    });
   }
 
 }

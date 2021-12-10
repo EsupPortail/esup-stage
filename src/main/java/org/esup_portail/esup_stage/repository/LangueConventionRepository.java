@@ -35,14 +35,14 @@ public class LangueConventionRepository extends PaginationRepository<LangueConve
     }
 
     @Override
-    protected void addSpecificParemeter(String key, JSONObject parameter, List<String> clauses) {
+    protected void addSpecificParameter(String key, JSONObject parameter, List<String> clauses) {
         if (key.equals("typeConventionTemplate")) {
             clauses.add("template.typeConvention.id = :" + key.replace(".", ""));
         }
     }
 
     @Override
-    protected void setSpecificParemeterValue(String key, JSONObject parameter, Query query) {
+    protected void setSpecificParameterValue(String key, JSONObject parameter, Query query) {
         if (key.equals("typeConventionTemplate")) {
             query.setParameter(key.replace(".", ""), parameter.getInt("value"));
         }

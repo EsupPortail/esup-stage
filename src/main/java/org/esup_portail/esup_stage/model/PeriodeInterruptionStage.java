@@ -8,7 +8,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "PeriodeInterruptionStage")
-public class PeriodeInterruptionStage {
+public class PeriodeInterruptionStage implements Exportable {
 
     @JsonView(Views.List.class)
     @Id
@@ -60,5 +60,10 @@ public class PeriodeInterruptionStage {
 
     public void setConvention(Convention convention) {
         this.convention = convention;
+    }
+
+    @Override
+    public String getExportValue(String key) {
+        return null;
     }
 }

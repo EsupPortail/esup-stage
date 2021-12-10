@@ -1,6 +1,6 @@
 <mat-tab-group #tabs (selectedTabChange)="tabChanged($event)">
   <mat-tab label="Liste">
-    <app-table #tableList *ngIf="roles" [service]="userService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters"
+    <app-table #tableList *ngIf="roles" [service]="userService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters" [exportColumns]="exportColumns"
                matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'" (matSortChange)="appTable ? appTable.sorting($event) : null">
       <ng-container matColumnDef="login">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Login</th>

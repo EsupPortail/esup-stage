@@ -7,7 +7,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "Pays")
-public class Pays {
+public class Pays implements Exportable {
 
     @JsonView(Views.List.class)
     @Id
@@ -107,5 +107,10 @@ public class Pays {
 
     public void setTemEnServPays(String temEnServPays) {
         this.temEnServPays = temEnServPays;
+    }
+
+    @Override
+    public String getExportValue(String key) {
+        return null;
     }
 }

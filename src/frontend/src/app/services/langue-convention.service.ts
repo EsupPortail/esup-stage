@@ -15,6 +15,10 @@ export class LangueConventionService implements PaginatedService {
     return this.http.get(environment.apiUrl + "/langue-convention", {params: {page, perPage, predicate, sortOrder, filters}});
   }
 
+  exportData(format: string, headers: string, predicate: string, sortOrder: string, filters: string): Observable<any> {
+    return this.http.get(environment.apiUrl + `/langue-convention/export/${format}`, {params: {headers, predicate, sortOrder, filters}, responseType: 'blob'});
+  }
+
   getListActive(): Observable<any> {
     const filters = {
       temEnServ: {value: 'O', type: 'text'},

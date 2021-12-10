@@ -15,6 +15,10 @@ export class OrigineStageService implements PaginatedService {
     return this.http.get(environment.apiUrl + "/origine-stage", {params: {page, perPage, predicate, sortOrder, filters}});
   }
 
+  exportData(format: string, headers: string, predicate: string, sortOrder: string, filters: string): Observable<any> {
+    return this.http.get(environment.apiUrl + `/origine-stage/export/${format}`, {params: {headers, predicate, sortOrder, filters}, responseType: 'blob'});
+  }
+
   create(data: any): Observable<any> {
     return this.http.post(environment.apiUrl + "/origine-stage", data);
   }

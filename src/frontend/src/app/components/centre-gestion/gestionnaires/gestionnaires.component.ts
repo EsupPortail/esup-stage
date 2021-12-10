@@ -31,6 +31,14 @@ export class GestionnairesComponent implements OnInit {
     { id: 'nom', libelle: 'Nom'},
     { id: 'prenom', libelle: 'Prénom'},
   ];
+  exportColumns = {
+    civilite: { title: 'Civilité' },
+    nom: { title: 'Nom' },
+    prenom: { title: 'Prénom' },
+    droitAdministration: { title: 'Droit d\'accès aux conventions' },
+    alertesMail: { title: 'Alertes mail' },
+    droitsEvaluation: { title: 'Droits évaluation' },
+  };
 
   searchColumns = ['nomprenom', 'mail', 'departement', 'action'];
   gestionnaires: any[] = [];

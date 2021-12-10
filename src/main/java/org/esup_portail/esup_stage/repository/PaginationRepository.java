@@ -1,21 +1,31 @@
 package org.esup_portail.esup_stage.repository;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.esup_portail.esup_stage.exception.AppException;
+import org.esup_portail.esup_stage.model.Exportable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Parameter;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class PaginationRepository<T> {
+public class PaginationRepository<T extends Exportable> {
 
     private static final Logger logger = LoggerFactory.getLogger(UtilisateurRepository.class);
 
@@ -25,6 +35,7 @@ public class PaginationRepository<T> {
     protected final String alias;
     protected List<String> predicateWhitelist = new ArrayList<>(); // whitelist pour éviter l'injection sql au niveau du order by
     protected List<String> joins = new ArrayList<>();
+    protected JSONObject headers;
 
     public PaginationRepository(EntityManager em, Class<T> typeClass, String alias) {
         this.em = em;
@@ -102,7 +113,7 @@ public class PaginationRepository<T> {
             String column = alias + "." + key;
             JSONObject condition = filters.getJSONObject(key);
             if (condition.has("specific") && condition.getBoolean("specific")) {
-                addSpecificParemeter(key, condition, clauses);
+                addSpecificParameter(key, condition, clauses);
             } else {
                 String op;
                 switch (condition.getString("type")) {
@@ -137,7 +148,7 @@ public class PaginationRepository<T> {
             String key = filters.names().getString(i);
             JSONObject condition = filters.getJSONObject(key);
             if (condition.has("specific") && condition.getBoolean("specific")) {
-                setSpecificParemeterValue(key, condition, query);
+                setSpecificParameterValue(key, condition, query);
             } else {
                 switch (condition.getString("type")) {
                     case "int":
@@ -180,6 +191,81 @@ public class PaginationRepository<T> {
         return results.stream().anyMatch(i -> i != id);
     }
 
-    protected void addSpecificParemeter(String key, JSONObject parameter, List<String> clauses) {}
-    protected void setSpecificParemeterValue(String key, JSONObject parameter, Query query) {}
+    protected void addSpecificParameter(String key, JSONObject parameter, List<String> clauses) {}
+    protected void setSpecificParameterValue(String key, JSONObject parameter, Query query) {}
+
+    protected void formatHeaders(String headerString) {
+        headers = new JSONObject(headerString);
+    }
+
+    public byte[] exportExcel(String headerString, String predicate, String sortOrder, String filters) {
+        List<T> data = findPaginated(1, 0, predicate, sortOrder, filters);
+        Workbook wb = new HSSFWorkbook();
+        Sheet sheet = wb.createSheet("Export");
+        int rowNum = 0;
+        int columnNum = 0;
+
+        formatHeaders(headerString);
+
+        // Ajout du header
+        Row row = sheet.createRow(rowNum);
+        for (int i = 0; i < headers.length(); ++ i) {
+            String key = headers.names().getString(i);
+            JSONObject header = headers.getJSONObject(key);
+            row.createCell(columnNum).setCellValue(header.getString("title"));
+            columnNum++;
+        }
+
+        // Ajout des lignes
+        rowNum++;
+        for (T entity : data) {
+            columnNum = 0;
+            row = sheet.createRow(rowNum);
+            for (int i = 0; i < headers.length(); ++ i) {
+                Cell cell = row.createCell(columnNum);
+                String key = headers.names().getString(i);
+                cell.setCellValue(entity.getExportValue(key));
+                columnNum++;
+            }
+            rowNum++;
+        }
+
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+            wb.write(bos);
+            bos.close();
+            return bos.toByteArray();
+        } catch (IOException e) {
+            logger.error("Erreur génération fichier excel", e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de la génération du fichier excel");
+        }
+    }
+
+    public StringBuilder exportCsv(String headerString, String predicate, String sortOrder, String filters) {
+        List<T> data = findPaginated(1, 0, predicate, sortOrder, filters);
+        String newLine = System.lineSeparator();
+        formatHeaders(headerString);
+        StringBuilder sb = new StringBuilder();
+
+        // Ajout du header
+        for (int i = 0; i < headers.length(); ++ i) {
+            String key = headers.names().getString(i);
+            JSONObject header = headers.getJSONObject(key);
+            sb.append("\"").append(header.getString("title")).append("\"").append(";");
+        }
+        sb.append(newLine);
+
+        for (T entity : data) {
+            for (int i = 0; i < headers.length(); ++ i) {
+                String key = headers.names().getString(i);
+                String value = entity.getExportValue(key);
+                if (value != null) {
+                    value = value.replaceAll("\n", "").replaceAll("\r", "");
+                }
+                sb.append("\"").append(value).append("\"").append(";");
+            }
+            sb.append(";").append(newLine);
+        }
+
+        return sb;
+    }
 }

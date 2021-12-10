@@ -31,7 +31,7 @@ public class ConventionRepository extends PaginationRepository<Convention> {
     }
 
     @Override
-    protected void addSpecificParemeter(String key, JSONObject parameter, List<String> clauses) {
+    protected void addSpecificParameter(String key, JSONObject parameter, List<String> clauses) {
         if (key.equals("centreGestion.personnels")) {
             clauses.add("personnel.uidPersonnel = :" + key.replace(".", ""));
         }
@@ -102,7 +102,7 @@ public class ConventionRepository extends PaginationRepository<Convention> {
     }
 
     @Override
-    protected void setSpecificParemeterValue(String key, JSONObject parameter, Query query) {
+    protected void setSpecificParameterValue(String key, JSONObject parameter, Query query) {
         if (key.equals("centreGestion.personnels")) {
             query.setParameter(key.replace(".", ""), parameter.getString("value"));
         }

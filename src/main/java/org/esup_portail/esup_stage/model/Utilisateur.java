@@ -4,10 +4,11 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "Utilisateur")
-public class Utilisateur {
+public class Utilisateur implements Exportable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -108,5 +109,32 @@ public class Utilisateur {
     @PrePersist
     public void prePersist() {
         setDateCreation(new Date());
+    }
+
+    @Override
+    public String getExportValue(String key) {
+        String value = "";
+        switch (key) {
+            case "login":
+                value = getLogin();
+                break;
+            case "nom":
+                value = getNom();
+                break;
+            case "prenom":
+                value = getPrenom();
+                break;
+            case "roles":
+                if (getRoles() != null) {
+                    value = getRoles().stream().map(Role::getLibelle).collect(Collectors.joining(", "));
+                }
+                break;
+            case "actif":
+                value = isActif() != null && isActif() ? "Oui" : "Non";
+                break;
+            default:
+                break;
+        }
+        return value;
     }
 }

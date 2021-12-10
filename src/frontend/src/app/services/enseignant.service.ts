@@ -15,6 +15,10 @@ export class EnseignantService implements PaginatedService {
     return this.http.get(environment.apiUrl + "/enseignant", {params: {page, perPage, predicate, sortOrder, filters}});
   }
 
+  exportData(format: string, headers: string, predicate: string, sortOrder: string, filters: string): Observable<any> {
+    return this.http.get(environment.apiUrl + "/enseignant/export/${format}", {params: {headers, predicate, sortOrder, filters}, responseType: 'blob'});
+  }
+
   getByUid(uid: string): Observable<any> {
     return this.http.get(`${environment.apiUrl}/enseignant/getByUid/${uid}`);
   }

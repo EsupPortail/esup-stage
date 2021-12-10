@@ -7,7 +7,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "StatutJuridique")
-public class StatutJuridique {
+public class StatutJuridique implements Exportable {
 
     @JsonView(Views.List.class)
     @Id
@@ -66,5 +66,21 @@ public class StatutJuridique {
 
     public void setModifiable(Boolean modifiable) {
         this.modifiable = modifiable;
+    }
+
+    @Override
+    public String getExportValue(String key) {
+        String value = "";
+        switch (key) {
+            case "libelle":
+                value = getLibelle();
+                break;
+            case "actif":
+                value = getTemEnServ().equals("O") ? "Oui" : "Non";
+                break;
+            default:
+                break;
+        }
+        return value;
     }
 }

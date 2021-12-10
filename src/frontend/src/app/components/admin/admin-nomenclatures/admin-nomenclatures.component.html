@@ -2,6 +2,7 @@
   <mat-tab #tab *ngFor="let nomenclature of nomenclatures">
     <ng-template mat-tab-label>{{nomenclature.label}}</ng-template>
     <app-table *ngIf="tab.isActive || nomenclature.init" [service]="nomenclature.service" [columns]="nomenclature.codeCtrl ? columnsCodeCtrl : columns" [sortColumn]="sortColumn" [filters]="nomenclature.codeCtrl ? filtersCodeCtrl : filters"
+               [exportColumns]="nomenclature.codeCtrl ? exportColumnsCodeCtrl : exportColumns"
                matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'" (matSortChange)="appTables ? appTables.toArray()[nomenclature.tableIndex].sorting($event) : null"
                [actionButton]="createButton" [hideDeleteFilters]="true">
       <ng-container matColumnDef="codeCtrl" *ngIf="nomenclature.codeCtrl">

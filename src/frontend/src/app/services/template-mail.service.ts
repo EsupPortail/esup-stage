@@ -15,6 +15,10 @@ export class TemplateMailService implements PaginatedService {
     return this.http.get(`${environment.apiUrl}/template-mails`, {params: {page, perPage, predicate, sortOrder, filters}});
   }
 
+  exportData(format: string, headers: string, predicate: string, sortOrder: string, filters: string): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/template-mails/export/${format}`, {params: {headers, predicate, sortOrder, filters}, responseType: 'blob'});
+  }
+
   getById(id: number): Observable<any> {
     return this.http.get(`${environment.apiUrl}/template-mails/${id}`);
   }

@@ -8,7 +8,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "PeriodeInterruptionAvenant")
-public class PeriodeInterruptionAvenant {
+public class PeriodeInterruptionAvenant implements Exportable {
 
     @JsonView(Views.List.class)
     @Id
@@ -83,5 +83,10 @@ public class PeriodeInterruptionAvenant {
 
     public void setAvenant(Avenant avenant) {
         this.avenant = avenant;
+    }
+
+    @Override
+    public String getExportValue(String key) {
+        return null;
     }
 }

@@ -15,6 +15,10 @@ export class AvenantService implements PaginatedService {
     return this.http.get(environment.apiUrl + "/avenant", {params: {page, perPage, predicate, sortOrder, filters}});
   }
 
+  exportData(format: string, headers: string, predicate: string, sortOrder: string, filters: string): Observable<any> {
+    return this.http.get(environment.apiUrl + `/avenant/export/${format}`, {params: {headers, predicate, sortOrder, filters}, responseType: 'blob'});
+  }
+
   getByConvention(id: number): Observable<any> {
     return this.http.get(`${environment.apiUrl}/avenant/getByConvention/${id}`);
   }

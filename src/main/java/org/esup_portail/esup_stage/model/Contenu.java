@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "Contenu")
-public class Contenu extends ObjetMetier {
+public class Contenu extends ObjetMetier implements Exportable {
 
     @Id
     @Column(name = "codeContenu", nullable = false)
@@ -39,5 +39,21 @@ public class Contenu extends ObjetMetier {
 
     public void setTexte(String texte) {
         this.texte = texte;
+    }
+
+    @Override
+    public String getExportValue(String key) {
+        String value = "";
+        switch (key) {
+            case "code":
+                value = getCode();
+                break;
+            case "texte":
+                value = getTexte();
+                break;
+            default:
+                break;
+        }
+        return value;
     }
 }

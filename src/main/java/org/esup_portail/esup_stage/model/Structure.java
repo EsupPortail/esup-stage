@@ -8,7 +8,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "Structure")
-public class Structure extends ObjetMetier {
+public class Structure extends ObjetMetier implements Exportable {
 
     @JsonView(Views.List.class)
     @Id
@@ -375,5 +375,44 @@ public class Structure extends ObjetMetier {
 
     public void setPays(Pays pays) {
         this.pays = pays;
+    }
+
+    @Override
+    public String getExportValue(String key) {
+        String value = "";
+        switch (key) {
+            case "raisonSociale":
+                value = getRaisonSociale();
+                break;
+            case "numeroSiret":
+                value = getNumeroSiret();
+                break;
+            case "nafN5":
+                if (getNafN5() != null) {
+                    value = getNafN5().getLibelle();
+                }
+                break;
+            case "pays":
+                if (getPays() != null) {
+                    value = getPays().getLib();
+                }
+                break;
+            case "commune":
+                value = getCommune();
+                break;
+            case "typeStructure":
+                if (getTypeStructure() != null) {
+                    value = getTypeStructure().getLibelle();
+                }
+                break;
+            case "statutJuridique":
+                if (getStatutJuridique() != null) {
+                    value = getStatutJuridique().getLibelle();
+                }
+                break;
+            default:
+                break;
+        }
+        return value;
     }
 }

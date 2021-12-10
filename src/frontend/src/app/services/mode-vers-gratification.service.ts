@@ -15,6 +15,10 @@ export class ModeVersGratificationService implements PaginatedService {
     return this.http.get(environment.apiUrl + "/mode-vers-gratification", {params: {page, perPage, predicate, sortOrder, filters}});
   }
 
+  exportData(format: string, headers: string, predicate: string, sortOrder: string, filters: string): Observable<any> {
+    return this.http.get(environment.apiUrl + `/mode-vers-gratification/export/${format}`, {params: {headers, predicate, sortOrder, filters}, responseType: 'blob'});
+  }
+
   create(data: any): Observable<any> {
     return this.http.post(environment.apiUrl + "/mode-vers-gratification", data);
   }

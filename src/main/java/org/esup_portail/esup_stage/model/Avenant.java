@@ -9,7 +9,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "Avenant")
-public class Avenant extends ObjetMetier {
+public class Avenant extends ObjetMetier implements Exportable {
 
     @JsonView(Views.List.class)
     @Id
@@ -340,5 +340,10 @@ public class Avenant extends ObjetMetier {
 
     public void setUniteDuree(UniteDuree uniteDuree) {
         this.uniteDuree = uniteDuree;
+    }
+
+    @Override
+    public String getExportValue(String key) {
+        return null;
     }
 }
