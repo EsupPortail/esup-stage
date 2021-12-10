@@ -52,6 +52,7 @@ export class StageComponent implements OnInit {
   typeConventions: any[] = [];
   interruptionsStage: any[] = [];
   periodesCalculHeuresStage : any[] = [];
+  joursFeries : any[] = [];
 
   @Input() convention: any;
 
@@ -201,6 +202,7 @@ export class StageComponent implements OnInit {
       this.form.disable();
     }
 
+    this.loadJoursFeries();
     //TODO pas de control pour les gestionnaires
     this.minDateDebutStage = new Date(new Date().getTime() + (1000 * 60 * 60 * 24));
     //TODO annee universitaire
@@ -357,6 +359,12 @@ export class StageComponent implements OnInit {
     });
   }
 
+  loadJoursFeries():void {
+    this.conventionService.getJoursFeries().subscribe((response: any) => {
+      this.joursFeries = Object.keys(response);
+    });
+  }
+
   updateHeuresTravail():void {
 
       if (this.form.get('horairesReguliers')!.value){
@@ -395,7 +403,12 @@ export class StageComponent implements OnInit {
               }
           }
         }
-        //TODO skip jours fériés
+        //skip jours fériés
+        for (const joursFerie of this.joursFeries) {
+            if (loopDate.getTime() === (new Date(joursFerie)).getTime()){
+              valid = false;
+            }
+        }
 
         if (valid){
           heuresTravails = heuresTravails + nbHeuresJournalieres

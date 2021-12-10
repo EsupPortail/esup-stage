@@ -23,6 +23,10 @@ export class ConventionService implements PaginatedService {
     return this.http.get(`${environment.apiUrl}/conventions/${id}`);
   }
 
+  getJoursFeries(): Observable<any> {
+    return this.http.get(`https://calendrier.api.gouv.fr/jours-feries/metropole.json`);
+  }
+
   update(id: number, data: any): Observable<any> {
     return this.http.put(`${environment.apiUrl}/conventions/${id}`, data);
   }
