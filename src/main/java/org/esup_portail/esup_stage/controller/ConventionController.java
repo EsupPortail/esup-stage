@@ -327,6 +327,10 @@ public class ConventionController {
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.VALIDATION})
     public int validationAdministrativeMultiple(@RequestBody IdsListDto idsListDto) {
         ContextDto contextDto = ServiceContext.getServiceContext();
+        // Un enseignant n'a les droits que sur la validation pédagogique
+        if (UtilisateurHelper.isRole(contextDto.getUtilisateur(), Role.ENS)) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Type de validation inconnu");
+        }
         if (idsListDto.getIds().size() == 0) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La liste est vide");
         }
@@ -351,6 +355,10 @@ public class ConventionController {
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
+        // Un enseignant n'a les droits que sur la validation pédagogique
+        if (UtilisateurHelper.isRole(ServiceContext.getServiceContext().getUtilisateur(), Role.ENS) && !type.equals("validationPedagogique")) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Type de validation inconnu");
+        }
         switch (type) {
             case "validationPedagogique":
                 validationPedagogique(convention, appConfigService.getConfigAlerteMail(), ServiceContext.getServiceContext().getUtilisateur(), true);
@@ -374,6 +382,10 @@ public class ConventionController {
         Convention convention = conventionJpaRepository.findById(id);
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        }
+        // Un enseignant n'a les droits que sur la validation pédagogique
+        if (UtilisateurHelper.isRole(ServiceContext.getServiceContext().getUtilisateur(), Role.ENS) && !type.equals("validationPedagogique")) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Type de validation inconnu");
         }
         switch (type) {
             case "validationPedagogique":

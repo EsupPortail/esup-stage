@@ -26,6 +26,10 @@ export class ValidationCardComponent implements OnInit {
   }
 
   canRevertValidation(): boolean {
+    // Un enseignant n'a les droits que sur la validation pédagogique
+    if (this.authService.isEnseignant() && this.validation === 'validationConvention') {
+      return false;
+    }
     const validationOrdre = this.convention.centreGestion[this.validation + 'Ordre'];
     // On peut toujours dévalider la dernière validation
     if (validationOrdre === this.validationsActives.length) {
@@ -36,13 +40,17 @@ export class ValidationCardComponent implements OnInit {
   }
 
   canValidate(): boolean {
+    // Un enseignant n'a les droits que sur la validation pédagogique
+    if (this.authService.isEnseignant() && this.validation === 'validationConvention') {
+      return false;
+    }
     const validationOrdre = this.convention.centreGestion[this.validation + 'Ordre'];
     // On peut toujours valider la 1er validation
     if (validationOrdre === 1) {
       return true;
     }
     // On ne peut pas valider si la validation précédente n'est pas passée
-    return (this.authService.isGestionnaire() || this.authService.isAdmin()) && this.convention[this.validationsActives[validationOrdre - 2]];
+    return this.convention[this.validationsActives[validationOrdre - 2]];
   }
 
   validate(): void {
