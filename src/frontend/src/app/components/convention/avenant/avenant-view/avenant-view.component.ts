@@ -36,7 +36,7 @@ export class AvenantViewComponent implements OnInit {
   }
 
   isGestionnaire(): boolean {
-    return this.authService.isGestionnaire();
+    return this.authService.isGestionnaire() || this.authService.isAdmin();
   }
 
   cancelValidation(): void {

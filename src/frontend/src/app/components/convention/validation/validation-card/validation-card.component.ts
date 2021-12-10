@@ -42,7 +42,7 @@ export class ValidationCardComponent implements OnInit {
       return true;
     }
     // On ne peut pas valider si la validation précédente n'est pas passée
-    return this.authService.isGestionnaire() && this.convention[this.validationsActives[validationOrdre - 2]];
+    return (this.authService.isGestionnaire() || this.authService.isAdmin()) && this.convention[this.validationsActives[validationOrdre - 2]];
   }
 
   validate(): void {

@@ -30,6 +30,7 @@ export class DashboardComponent implements OnInit {
   nbConventionsEnAttente: number|undefined;
   anneeEnCours: any|undefined;
   annees: any[] = [];
+  typeDashboard: number = 1; // Type de tableau de bord à afficher : 1=gestionnaire/responsable/admin/profil non défini ; 2=enseignant ; 3=etudiant
 
   selected: any[] = [];
   validationLibelles: any = {};
@@ -54,9 +55,11 @@ export class DashboardComponent implements OnInit {
       this.validationLibelles.validationPedagogique = response.validationPedagogiqueLibelle;
       this.validationLibelles.validationConvention = response.validationAdministrativeLibelle;
     });
-    if (this.isGestionnaire()) {
+    if (this.authService.isGestionnaire()) {
+      this.typeDashboard = 1;
       this.setDataGestionnaire();
-    } else if (this.isEnseignant()) {
+    } else if (this.authService.isEnseignant()) {
+      this.typeDashboard = 2;
       this.columns = ['id', 'etudiant', 'ufr', 'etape',  'dateDebutStage', 'dateFinStage', 'structure', 'sujetStage', 'lieuStage', 'etatValidation', 'avenant', 'action'];
       this.filters = [
         { id: 'id', libelle: 'N° de la convention', type: 'int' },
@@ -71,7 +74,8 @@ export class DashboardComponent implements OnInit {
         { id: 'etatValidation', libelle: 'État de validation de la convention', type: 'list', options: this.validationsOptions, keyLibelle: 'libelle', keyId: 'id', value: ['nonValidationPedagogique', 'nonValidationConvention'], specific: true },
         { id: 'avenant', libelle: 'Avenant', specific: true },
       ];
-    } else if (this.isEtudiant()) {
+    } else if (this.authService.isEtudiant()) {
+      this.typeDashboard = 3;
       this.columns = ['id', 'structure', 'dateDebutStage', 'dateFinStage', 'ufr', 'etape', 'enseignant', 'validationPedagogique', 'validationConvention', 'avenant', 'annee', 'action'];
       this.filters = [
         { id: 'id', libelle: 'N° de la convention', type: 'int' },
@@ -87,7 +91,7 @@ export class DashboardComponent implements OnInit {
         { id: 'annee', libelle: 'Année', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'libelle', value: [] },
       ];
     } else {
-      this.setDataGestionnaire();
+      this.typeDashboard = 1;
     }
     this.filters.push({ id: 'validationCreation', type: 'boolean', value: true, hidden: true });
 
@@ -102,7 +106,7 @@ export class DashboardComponent implements OnInit {
     this.conventionService.getListAnnee().subscribe((response: any) => {
       this.annees = response;
       this.anneeEnCours = this.annees.find((a: any) => { return a.anneeEnCours === true });
-      if (!this.isEtudiant()) {
+      if (!this.authService.isEtudiant()) {
         this.changeAnnee();
       } else {
         this.appTable?.setFilterOption('annee', this.annees);
@@ -112,7 +116,7 @@ export class DashboardComponent implements OnInit {
   }
 
   setDataGestionnaire(): void {
-    this.columns = ['select', 'id', 'etudiant', 'structure', 'dateDebutStage', 'dateFinStage', 'ufr', 'etape', 'enseignant', 'action'];
+    this.columns = ['select', 'id', 'etudiant', 'structure', 'dateDebutStage', 'dateFinStage', 'ufr', 'etape', 'enseignant', 'etatValidation', 'action'];
     this.filters = [
       { id: 'id', libelle: 'N° de la convention', type: 'int' },
       { id: 'etudiant', libelle: 'Étudiant', specific: true },
@@ -122,20 +126,8 @@ export class DashboardComponent implements OnInit {
       { id: 'ufr.id', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
       { id: 'etape.id', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
       { id: 'enseignant', libelle: 'Enseignant', specific: true },
-      { id: 'etatGestionnaire', libelle: 'État de validation', type: 'boolean', value: true, specific: true, hidden: true },
+      { id: 'etatValidation', libelle: 'État de validation de la convention', type: 'list', options: this.validationsOptions, keyLibelle: 'libelle', keyId: 'id', value: ['validationPedagogique', 'nonValidationConvention'], specific: true },
     ];
-  }
-
-  isEtudiant(): boolean {
-    return this.authService.isEtudiant();
-  }
-
-  isGestionnaire(): boolean {
-    return this.authService.isGestionnaire();
-  }
-
-  isEnseignant(): boolean {
-    return this.authService.isEnseignant();
   }
 
   changeAnnee(): void {
@@ -191,10 +183,8 @@ export class DashboardComponent implements OnInit {
   }
 
   countConvention(): void {
-    if ((this.isGestionnaire() || this.isEnseignant()) && this.appTable) {
+    if (this.typeDashboard !== 3 && this.appTable) {
       const filters = this.appTable.getFilters();
-      if (this.isEnseignant()) filters.etatValidation = {value: ['nonValidationPedagogique'], type: 'list', specific: true};
-      else filters.etatValidation = {value: ['nonValidationConvention'], type: 'list', specific: true};
       this.conventionService.getPaginated(1, 1, '', '', JSON.stringify(filters)).subscribe((response: any) => {
         this.nbConventionsEnAttente = response.total;
       });
