@@ -204,9 +204,12 @@
 </div>
 
 
-<div class="row mt-3" *ngIf="isGestionnaire()">
+<div class="row mt-3">
   <div class="col-sm-12 text-center">
-    <span (confirm)="cancelValidation()" [confirmMessage]="'Êtes-vous sûr de vouloir annuler la validation de cette avenant ?'">
+    <span>
+      <button mat-flat-button type="button" color="primary" (click)="printAvenant()">Imprimer l'avenant</button>
+    </span>
+    <span *ngIf="isGestionnaire()" (confirm)="cancelValidation()" [confirmMessage]="'Êtes-vous sûr de vouloir annuler la validation de cette avenant ?'">
       <button mat-flat-button type="button" color="warn">Annuler la validation</button>
     </span>
   </div>

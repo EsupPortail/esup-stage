@@ -13,10 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
 import org.esup_portail.esup_stage.exception.AppException;
-import org.esup_portail.esup_stage.model.CentreGestion;
-import org.esup_portail.esup_stage.model.Convention;
-import org.esup_portail.esup_stage.model.Fichier;
-import org.esup_portail.esup_stage.model.TemplateConvention;
+import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateConventionJpaRepository;
 import org.esup_portail.esup_stage.service.impression.context.ImpressionContext;
@@ -43,24 +40,23 @@ public class ImpressionService {
     @Autowired
     ApplicationBootstrap applicationBootstrap;
 
-    public void generateConventionAvenantPDF(Convention convention, ByteArrayOutputStream ou, boolean isAvenant) {
+    public void generateConventionAvenantPDF(Convention convention, Avenant avenant, ByteArrayOutputStream ou) {
         TemplateConvention templateConvention = templateConventionJpaRepository.findByTypeAndLangue(convention.getTypeConvention().getId(), convention.getLangueConvention().getCode());
         if (templateConvention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Template convention " + convention.getTypeConvention().getLibelle() + "-" + convention.getLangueConvention().getCode() + " non trouvé");
         }
 
-        ImpressionContext impressionContext = new ImpressionContext(convention);
+        ImpressionContext impressionContext = new ImpressionContext(convention, avenant);
 
         try {
-            // Dans le cas où le texte du template est vide, on utilise celui d'un template par défaut
-            String htmlTexte = isAvenant ? templateConvention.getTexteAvenant() : templateConvention.getTexte();
+            String htmlTexte = avenant != null ? templateConvention.getTexteAvenant() : templateConvention.getTexte();
 
             Template template = new Template("template_convention_texte" + templateConvention.getId(), htmlTexte, freeMarkerConfigurer.getConfiguration());
             StringWriter texte = new StringWriter();
             template.process(impressionContext, texte);
 
-            String filename = isAvenant ? "avenant_" : "convention_";
-            filename += convention.getId() + "_" + convention.getEtudiant().getPrenom() + "_" + convention.getEtudiant().getNom() + ".pdf";
+            String filename = avenant != null ? "avenant_" + avenant.getId() : "convention_" + convention.getId();
+            filename += "_" + convention.getEtudiant().getPrenom() + "_" + convention.getEtudiant().getNom() + ".pdf";
 
             // récupération du logo du centre gestion
             String logoname;
@@ -110,22 +106,6 @@ public class ImpressionService {
                 e.printStackTrace();
             }
 
-        }
-    }
-
-    public String getDefaultText() {
-        StringBuilder sb = new StringBuilder();
-        String str;
-        try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/templates/template_default_convention.html")));
-            while ((str = in.readLine()) != null) {
-                sb.append(str);
-            }
-            in.close();
-
-            return sb.toString();
-        } catch (Exception e) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Template par défaut non trouvé");
         }
     }
 

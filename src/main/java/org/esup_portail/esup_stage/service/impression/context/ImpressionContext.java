@@ -14,11 +14,12 @@ public class ImpressionContext {
     private ServiceContext service = new ServiceContext();
     private SignataireContext signataire = new SignataireContext();
     private StructureContext structure = new StructureContext();
+    private AvenantContext avenant = new AvenantContext();
 
     public ImpressionContext() {
     }
 
-    public ImpressionContext(Convention convention) {
+    public ImpressionContext(Convention convention, Avenant avenant) {
         if (convention != null) {
             this.convention = new ConventionContext(convention);
             this.centreGestion = new CentreGestionContext(convention.getCentreGestion());
@@ -28,6 +29,9 @@ public class ImpressionContext {
             this.service = new ServiceContext(convention.getService());
             this.signataire = new SignataireContext(convention.getSignataire());
             this.structure = new StructureContext(convention.getStructure());
+        }
+        if (avenant != null) {
+            this.avenant = new AvenantContext(avenant);
         }
     }
 
@@ -93,6 +97,14 @@ public class ImpressionContext {
 
     public void setStructure(StructureContext structure) {
         this.structure = structure;
+    }
+
+    public AvenantContext getAvenant() {
+        return avenant;
+    }
+
+    public void setAvenant(AvenantContext avenant) {
+        this.avenant = avenant;
     }
 
     public static class ConventionContext {
@@ -1155,6 +1167,35 @@ public class ImpressionContext {
 
         public void setVoie(String voie) {
             this.voie = voie;
+        }
+    }
+
+    public static class AvenantContext {
+        private String sujetStage;
+        private String motifAvenant;
+
+        public AvenantContext() {
+        }
+
+        public AvenantContext(Avenant avenant) {
+            this.sujetStage = avenant.getSujetStage();
+            this.motifAvenant = avenant.getMotifAvenant();
+        }
+
+        public String getSujetStage() {
+            return sujetStage != null ? sujetStage : "";
+        }
+
+        public void setSujetStage(String sujetStage) {
+            this.sujetStage = sujetStage;
+        }
+
+        public String getMotifAvenant() {
+            return motifAvenant != null ? motifAvenant : "";
+        }
+
+        public void setMotifAvenant(String motifAvenant) {
+            this.motifAvenant = motifAvenant;
         }
     }
 }

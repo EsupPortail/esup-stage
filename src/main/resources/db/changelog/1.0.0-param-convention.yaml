@@ -1221,3 +1221,31 @@ databaseChangeLog:
             name: exemple
             value: FINLANDE
         tableName: ParamConvention
+- changeSet:
+    id: paramConvention-insert-4
+    author: jwang
+    changes:
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: avenant.sujetStage
+        - column:
+            name: libelle
+            value: Sujet stage Avenant
+        - column:
+            name: exemple
+            value: nouveau sujet
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: avenant.motifAvenant
+        - column:
+            name: libelle
+            value: Motif de l'avenant
+        - column:
+            name: exemple
+            value: test nouvel avenant
+        tableName: ParamConvention

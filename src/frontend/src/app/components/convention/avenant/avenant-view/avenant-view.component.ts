@@ -2,8 +2,10 @@ import { Component, Output, EventEmitter, OnInit, Input } from '@angular/core';
 import { AuthService } from "../../../../services/auth.service";
 import { MessageService } from "../../../../services/message.service";
 import { AvenantService } from "../../../../services/avenant.service";
+import { ConventionService } from "../../../../services/convention.service";
 import { PeriodeInterruptionStageService } from "../../../../services/periode-interruption-stage.service";
 import { PeriodeInterruptionAvenantService } from "../../../../services/periode-interruption-avenant.service";
+import * as FileSaver from 'file-saver';
 
 @Component({
   selector: 'app-avenant-view',
@@ -23,6 +25,7 @@ export class AvenantViewComponent implements OnInit {
   constructor(private authService: AuthService,
               private messageService: MessageService,
               private avenantService: AvenantService,
+              private conventionService: ConventionService,
               private periodeInterruptionStageService: PeriodeInterruptionStageService,
               private periodeInterruptionAvenantService: PeriodeInterruptionAvenantService,
   ) { }
@@ -65,6 +68,14 @@ export class AvenantViewComponent implements OnInit {
           this.addedInterruptionsStage.push(interruption);
         }
       }
+    });
+  }
+
+  printAvenant() : void {
+    this.conventionService.getAvenantPDF(this.avenant.id).subscribe((response: any) => {
+      var blob = new Blob([response as BlobPart], {type: "application/pdf"});
+      let filename = 'avenant_' + this.avenant.id + '_' + this.convention.etudiant.prenom + '_' + this.convention.etudiant.nom + '.pdf';
+      FileSaver.saveAs(blob, filename);
     });
   }
 }

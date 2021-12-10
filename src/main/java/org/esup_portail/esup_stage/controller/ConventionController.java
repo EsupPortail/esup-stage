@@ -97,6 +97,9 @@ public class ConventionController {
     HistoriqueValidationJpaRepository historiqueValidationJpaRepository;
 
     @Autowired
+    AvenantJpaRepository avenantJpaRepository;
+
+    @Autowired
     ApogeeService apogeeService;
 
     @Autowired
@@ -433,7 +436,7 @@ public class ConventionController {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
         ByteArrayOutputStream ou = new ByteArrayOutputStream();
-        impressionService.generateConventionAvenantPDF(convention, ou, false);
+        impressionService.generateConventionAvenantPDF(convention, null, ou);
 
         byte[] pdf = ou.toByteArray();
         return ResponseEntity.ok().body(pdf);
@@ -442,12 +445,12 @@ public class ConventionController {
     @GetMapping("/{id}/pdf-avenant")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public ResponseEntity<byte[]> getAvenantPDF(@PathVariable("id") int id) {
-        Convention convention = conventionJpaRepository.findById(id);
-        if (convention == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        Avenant avenant = avenantJpaRepository.findById(id);
+        if (avenant == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvée");
         }
         ByteArrayOutputStream ou = new ByteArrayOutputStream();
-        impressionService.generateConventionAvenantPDF(convention, ou, true);
+        impressionService.generateConventionAvenantPDF(avenant.getConvention(), avenant, ou);
 
         byte[] pdf = ou.toByteArray();
         return ResponseEntity.ok().body(pdf);
