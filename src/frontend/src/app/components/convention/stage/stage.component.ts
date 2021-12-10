@@ -373,9 +373,45 @@ export class StageComponent implements OnInit {
   }
 
   loadJoursFeries():void {
-    this.conventionService.getJoursFeries().subscribe((response: any) => {
-      this.joursFeries = Object.keys(response);
-    });
+      const currentYear = new Date().getFullYear();
+      const nextYear = currentYear+1;
+
+      this.joursFeries = this.getJoursFeries(currentYear);
+      const nexYearJoursFeries = this.getJoursFeries(currentYear);
+
+      this.joursFeries.push(...nexYearJoursFeries);
+  }
+
+  getJoursFeries(annee: number){
+
+    let JourAn = new Date(annee, 0, 1);
+    let FeteTravail = new Date(annee, 4, 1);
+    let Victoire1945 = new Date(annee, 4, 8);
+    let FeteNationale = new Date(annee,6, 14);
+    let Assomption = new Date(annee, 7, 15);
+    let Toussaint = new Date(annee, 10, 1);
+    let Armistice = new Date(annee, 10, 11);
+    let Noel = new Date(annee, 11, 25);
+    //**let SaintEtienne = new Date(annee, 11, 26);**//
+
+    let G = annee%19;
+    let C = Math.floor(annee/100);
+    let H = (C - Math.floor(C/4) - Math.floor((8*C+13)/25) + 19*G + 15)%30;
+    let I = H - Math.floor(H/28)*(1 - Math.floor(H/28)*Math.floor(29/(H + 1))*Math.floor((21 - G)/11));
+    let J = (annee*1 + Math.floor(annee/4) + I + 2 - C + Math.floor(C/4))%7;
+    let L = I - J;
+    let MoisPaques = 3 + Math.floor((L + 40)/44);
+    let JourPaques = L + 28 - 31*Math.floor(MoisPaques/4);
+    let Paques = new Date(annee, MoisPaques-1, JourPaques);
+    //**let VendrediSaint = new Date(annee, MoisPaques-1, JourPaques-2);**//
+    let LundiPaques = new Date(annee, MoisPaques-1, JourPaques+1);
+    let Ascension = new Date(annee, MoisPaques-1, JourPaques+39);
+    let Pentecote = new Date(annee, MoisPaques-1, JourPaques+49);
+    let LundiPentecote = new Date(annee, MoisPaques-1, JourPaques+50);
+
+    //**SaintEtienne et Vendredi Saint sont des fetes exclusivement**//
+    //**alscacienne. On les ignore dans notre cas.**//
+    return new Array(JourAn, Paques, LundiPaques, FeteTravail, Victoire1945, Ascension, Pentecote, LundiPentecote, FeteNationale, Assomption, Toussaint, Armistice, Noel);
   }
 
   updateHeuresTravail():void {
