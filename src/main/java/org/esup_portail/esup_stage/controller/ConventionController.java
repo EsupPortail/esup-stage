@@ -218,6 +218,25 @@ public class ConventionController {
         }
         setConventionData(convention, conventionFormDto);
         convention = conventionJpaRepository.saveAndFlush(convention);
+
+        if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
+            ConfigAlerteMailDto configAlerteMailDto = appConfigService.getConfigAlerteMail();
+            boolean sendMailEtudiant = configAlerteMailDto.getAlerteEtudiant().isModificationConventionEtudiant();
+            boolean sendMailGestionnaire = configAlerteMailDto.getAlerteGestionnaire().isModificationConventionEtudiant();
+            boolean sendMailResGes = configAlerteMailDto.getAlerteRespGestionnaire().isModificationConventionEtudiant();
+            boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isModificationConventionEtudiant();
+            sendValidationMail(convention, utilisateur,TemplateMail.CODE_ETU_MODIF_CONVENTION,
+                    sendMailEtudiant, sendMailGestionnaire, sendMailResGes, sendMailEnseignant);
+        }
+        if (UtilisateurHelper.isRole(utilisateur, Role.GES)) {
+            ConfigAlerteMailDto configAlerteMailDto = appConfigService.getConfigAlerteMail();
+            boolean sendMailEtudiant = configAlerteMailDto.getAlerteEtudiant().isModificationConventionGestionnaire();
+            boolean sendMailGestionnaire = configAlerteMailDto.getAlerteGestionnaire().isModificationConventionGestionnaire();
+            boolean sendMailResGes = configAlerteMailDto.getAlerteRespGestionnaire().isModificationConventionGestionnaire();
+            boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isModificationConventionGestionnaire();
+            sendValidationMail(convention, utilisateur,TemplateMail.CODE_GES_MODIF_CONVENTION,
+                    sendMailEtudiant, sendMailGestionnaire, sendMailResGes, sendMailEnseignant);
+        }
         return convention;
     }
 
@@ -283,6 +302,27 @@ public class ConventionController {
         }
         convention.setValidationCreation(true);
         convention = conventionJpaRepository.saveAndFlush(convention);
+
+        ContextDto contexteDto = ServiceContext.getServiceContext();
+        Utilisateur utilisateur = contexteDto.getUtilisateur();
+        if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
+            ConfigAlerteMailDto configAlerteMailDto = appConfigService.getConfigAlerteMail();
+            boolean sendMailEtudiant = configAlerteMailDto.getAlerteEtudiant().isCreationConventionEtudiant();
+            boolean sendMailGestionnaire = configAlerteMailDto.getAlerteGestionnaire().isCreationConventionEtudiant();
+            boolean sendMailResGes = configAlerteMailDto.getAlerteRespGestionnaire().isCreationConventionEtudiant();
+            boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isCreationConventionEtudiant();
+            sendValidationMail(convention, utilisateur,TemplateMail.CODE_ETU_CREA_CONVENTION,
+                    sendMailEtudiant, sendMailGestionnaire, sendMailResGes, sendMailEnseignant);
+        }
+        if (UtilisateurHelper.isRole(utilisateur, Role.GES)) {
+            ConfigAlerteMailDto configAlerteMailDto = appConfigService.getConfigAlerteMail();
+            boolean sendMailEtudiant = configAlerteMailDto.getAlerteEtudiant().isCreationConventionGestionnaire();
+            boolean sendMailGestionnaire = configAlerteMailDto.getAlerteGestionnaire().isCreationConventionGestionnaire();
+            boolean sendMailResGes = configAlerteMailDto.getAlerteRespGestionnaire().isCreationConventionGestionnaire();
+            boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isCreationConventionGestionnaire();
+            sendValidationMail(convention, utilisateur,TemplateMail.CODE_GES_CREA_CONVENTION,
+                    sendMailEtudiant, sendMailGestionnaire, sendMailResGes, sendMailEnseignant);
+        }
         return convention;
     }
 
@@ -798,7 +838,7 @@ public class ConventionController {
         convention.setNomenclature(conventionNomenclature);
     }
 
-    private void sendValidationMail(Convention convention, Utilisateur utilisateurContext, String templateMailCode, boolean sendMailEtudiant, boolean sendMailGestionnaire, boolean sendMailResGes, boolean sendMailEnseignant) {
+    public void sendValidationMail(Convention convention, Utilisateur utilisateurContext, String templateMailCode, boolean sendMailEtudiant, boolean sendMailGestionnaire, boolean sendMailResGes, boolean sendMailEnseignant) {
         // Récupération du personnel du centre de gestion de la convention avec alertMail=1
         List<PersonnelCentreGestion> personnels = convention.getCentreGestion().getPersonnels();
         personnels = personnels.stream().filter(PersonnelCentreGestion::getAlertesMail).collect(Collectors.toList());
