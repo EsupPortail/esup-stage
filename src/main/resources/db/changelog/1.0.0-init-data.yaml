@@ -429,6 +429,6 @@ databaseChangeLog:
             sql: SELECT COUNT(*) FROM TemplateConvention WHERE idTypeConvention = (SELECT idTypeConvention FROM TypeConvention WHERE libelleTypeConvention = 'Formation Initiale') AND codeLangueConvention = 'en'
     changes:
         - sql:
-            sql: INSERT INTO TemplateConvention VALUES (default, (SELECT idTypeConvention FROM TypeConvention WHERE libelleTypeConvention = 'Formation Initiale'), 'fr', '', NOW(), 'liquibase', null, null)
+            sql: INSERT INTO TemplateConvention (idTypeConvention, codeLangueConvention, dateCreation, loginCreation) VALUES ((SELECT idTypeConvention FROM TypeConvention WHERE libelleTypeConvention = 'Formation Initiale'), 'fr', NOW(), 'liquibase')
         - sql:
-            sql: INSERT INTO TemplateConvention VALUES (default, (SELECT idTypeConvention FROM TypeConvention WHERE libelleTypeConvention = 'Formation Initiale'), 'en', '', NOW(), 'liquibase', null, null)
+            sql: INSERT INTO TemplateConvention (idTypeConvention, codeLangueConvention, dateCreation, loginCreation) VALUES ((SELECT idTypeConvention FROM TypeConvention WHERE libelleTypeConvention = 'Formation Initiale'), 'en', NOW(), 'liquibase')
