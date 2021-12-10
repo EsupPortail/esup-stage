@@ -64,7 +64,7 @@
     enabled: no
 - name: estage.datadir
   ansible.builtin.file:
-    path: {{ ESTAGE_ENVIRONMENT.appli_data_dir }}/centregestion/logos
+    path: "{{ ESTAGE_ENVIRONMENT.appli_data_dir }}/centregestion/logos"
     state: directory
     recurse: yes
     owner: tomcat
