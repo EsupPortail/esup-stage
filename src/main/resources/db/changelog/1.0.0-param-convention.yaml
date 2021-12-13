@@ -1249,3 +1249,28 @@ databaseChangeLog:
             name: exemple
             value: test nouvel avenant
         tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: avenant.id
+        - column:
+            name: libelle
+            value: Numéro Avenant
+        - column:
+            name: exemple
+            value: 17612
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.id
+        - column:
+            name: libelle
+            value: Numéro de convention
+        - column:
+            name: exemple
+            value: 36015
+        tableName: ParamConvention
+    
