@@ -103,16 +103,14 @@
           </div>
         </div>
         <div class="row">
+          <div class="col-sm-3 font-weight-bold">Nombre d'heures hebdomadaires</div>
+          <div class="col-sm-9">{{convention.nbHeuresHebdo}}</div>
           <div class="col-sm-3 font-weight-bold">Durée effective du stage</div>
-          <div class="col-sm-9">{{convention.dureeStage}}</div>
-          <div class="col-sm-3 font-weight-bold">Jours de travail hebdo</div>
-          <div class="col-sm-9">TODO convention_nbJoursHebdo_libelle</div>
+          <div class="col-sm-9">{{convention.quotiteTravail}} heures</div>
           <div class="col-sm-3 font-weight-bold">Temps de travail</div>
           <div class="col-sm-9">{{isValide ? convention.nomenclature.tempsTravail : convention.tempsTravail.libelle}}</div>
           <div class="col-sm-3 font-weight-bold">Commentaire tps travail</div>
           <div class="col-sm-9">{{convention.commentaireDureeTravail}}</div>
-          <div class="col-sm-3 font-weight-bold">Nombre d'heures hebdomadaires</div>
-          <div class="col-sm-9">{{convention.nbHeuresHebdo}}</div>
           <div class="col-sm-3 font-weight-bold">Nombre de jours de congés autorisés</div>
           <div class="col-sm-9">{{convention.nbConges}}</div>
         </div>
