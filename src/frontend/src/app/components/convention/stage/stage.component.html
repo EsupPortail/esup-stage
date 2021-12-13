@@ -177,6 +177,8 @@
             </mat-radio-group>
           </div>
         </div>
+        <div class="alert alert-info text-center" [innerHTML]="texteLimiteRenumeration" *ngIf="form.value.gratificationStage">
+        </div>
         <div class="row" *ngIf="form.value.gratificationStage">
           <mat-form-field class="col-sm-6 col-md-6 mb-2" appearance="fill">
             <mat-label>Montant de la gratification</mat-label>
