@@ -108,6 +108,7 @@ public class ImpressionContext {
     }
 
     public static class ConventionContext {
+        private String id;
         private String adresseEtabRef;
         private String adresseEtudiant;
         private String annee;
@@ -161,6 +162,7 @@ public class ImpressionContext {
         public ConventionContext(Convention convention) {
             DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
 
+            this.id = String.valueOf(convention.getId());
             this.adresseEtabRef = convention.getAdresseEtabRef();
             this.adresseEtudiant = convention.getAdresseEtudiant();
             this.annee = convention.getAnnee();
@@ -208,6 +210,14 @@ public class ImpressionContext {
             this.ufrLibelle = convention.getUfr() != null ? convention.getUfr().getLibelle() : null;
             this.uniteGratificationLibelle = convention.getNomenclature() != null ? convention.getNomenclature().getUniteGratification() : null;
             this.villeEtudiant = convention.getVilleEtudiant();
+        }
+
+        public String getId() {
+            return id != null ? id : "";
+        }
+
+        public void setId(String id) {
+            this.id = id;
         }
 
         public String getAdresseEtabRef() {
@@ -1171,6 +1181,7 @@ public class ImpressionContext {
     }
 
     public static class AvenantContext {
+        private String id;
         private String sujetStage;
         private String motifAvenant;
 
@@ -1178,8 +1189,17 @@ public class ImpressionContext {
         }
 
         public AvenantContext(Avenant avenant) {
+            this.id = String.valueOf(avenant.getId());
             this.sujetStage = avenant.getSujetStage();
             this.motifAvenant = avenant.getMotifAvenant();
+        }
+
+        public String getId() {
+            return id != null ? id : "";
+        }
+
+        public void setId(String id) {
+            this.id = id;
         }
 
         public String getSujetStage() {
