@@ -326,7 +326,6 @@ export class AvenantFormComponent implements OnInit {
   }
 
   delete(): void {
-  //TODO check si déjà valider
     this.avenantService.delete(this.avenant.id).subscribe((response: any) => {
       this.avenant = response;
       this.messageService.setSuccess('Avenant supprimé avec succès');
