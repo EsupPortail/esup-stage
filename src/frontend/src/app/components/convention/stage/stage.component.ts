@@ -15,6 +15,7 @@ import { ModeValidationStageService } from "../../../services/mode-validation-st
 import { TypeConventionService } from "../../../services/type-convention.service";
 import { PeriodeInterruptionStageService } from "../../../services/periode-interruption-stage.service";
 import { AuthService } from "../../../services/auth.service";
+import { ContenuService } from "../../../services/contenu.service";
 import { ConventionService } from "../../../services/convention.service";
 import { pairwise,debounceTime,startWith }from 'rxjs/operators'
 import { CalendrierComponent } from './calendrier/calendrier.component';
@@ -58,6 +59,8 @@ export class StageComponent implements OnInit {
 
   form: FormGroup;
 
+  texteLimiteRenumeration: string = '';
+
   periodesInterruptionsValid:boolean = false;
   minDateDebutStage: Date;
   maxDateDebutStage: Date;
@@ -75,6 +78,7 @@ export class StageComponent implements OnInit {
   constructor(public conventionService: ConventionService,
               private fb: FormBuilder,
               private authService: AuthService,
+              private contenuService: ContenuService,
               private paysService: PaysService,
               private themeService: ThemeService,
               private langueConventionService: LangueConventionService,
@@ -205,6 +209,10 @@ export class StageComponent implements OnInit {
     }
 
     this.loadJoursFeries();
+
+    this.contenuService.get('TEXTE_LIMITE_RENUMERATION').subscribe((response: any) => {
+      this.texteLimiteRenumeration = response.texte;
+    })
 
     //controles uniquement pour les non gestionnaires
     if(!this.isGestionnaire){

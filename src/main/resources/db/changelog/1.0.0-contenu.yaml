@@ -115,3 +115,25 @@ databaseChangeLog:
             name: dateCreation
             value: now()
         tableName: Contenu
+- changeSet:
+    id: contenu-init
+    author: tjubera
+    changes:
+        - insert:
+            columns:
+                - column:
+                    name: codeContenu
+                    value: TEXTE_LIMITE_RENUMERATION
+                - column:
+                    name: libelle
+                    valueBoolean: false
+                - column:
+                    name: texte
+                    value: La limite basse de rémunération à ne pas dépasser est $limite
+                - column:
+                    name: loginCreation
+                    value: liquibase
+                - column:
+                    name: dateCreation
+                    value: now()
+            tableName: Contenu
