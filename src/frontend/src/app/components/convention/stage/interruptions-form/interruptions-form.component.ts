@@ -49,9 +49,6 @@ export class InterruptionsFormComponent implements OnInit  {
     this.interruptionsDateFilter = (d: Date | null): boolean => {
         const date = (d || new Date());
 
-        //fix problème de décalage d'une heure
-        date.setTime(date.getTime() + (1*60*60*1000));
-
         let disable = false;
 
         //disable dates already chosen
@@ -61,17 +58,24 @@ export class InterruptionsFormComponent implements OnInit  {
             }
         }
         for (const periode of this.interruptionsStage) {
-            if (date >= new Date(periode.dateDebutInterruption) && date <= new Date(periode.dateFinInterruption)){
+            if (date >= this.dateFromBackend(periode.dateDebutInterruption) && date <= this.dateFromBackend(periode.dateFinInterruption)){
               disable = true;
             }
         }
         //disable dates not within stage period
-        if (date < new Date(this.convention.dateDebutStage) || date > new Date(this.convention.dateFinStage)){
+        if (date < this.dateFromBackend(this.convention.dateDebutStage) || date > this.dateFromBackend(this.convention.dateFinStage)){
           disable = true;
         }
         return !disable;
     };
 
+  }
+
+  //fix new date('2021-02-02') != new date(2021,2,2)
+  dateFromBackend(dateString: string):Date{
+    let date = new Date(dateString)
+    date = new Date(date.getFullYear(),date.getMonth(),date.getDate());
+    return date;
   }
 
   addPeriode(): void {

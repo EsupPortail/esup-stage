@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Input, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, OnChanges, Input, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { PaysService } from "../../../services/pays.service";
@@ -64,6 +64,8 @@ export class StageComponent implements OnInit {
   minDateFinStage: Date;
   maxDateFinStage: Date;
   previousValues: any;
+  singleFieldUpdateLock: boolean = false;
+  singleFieldUpdateQueue : any[] = [];
 
   @Output() validated = new EventEmitter<number>();
   @Output() updateField = new EventEmitter<any>();
@@ -217,6 +219,14 @@ export class StageComponent implements OnInit {
     }
   }
 
+  ngOnChanges(): void{
+    this.singleFieldUpdateLock = false;
+    if(this.singleFieldUpdateQueue.length > 0){
+      const data = this.singleFieldUpdateQueue.pop();
+      this.updateSingleField(data.field,data.value);
+    }
+  }
+
   isEtudiant(): boolean {
     return this.authService.isEtudiant();
   }
@@ -232,7 +242,12 @@ export class StageComponent implements OnInit {
         "field":key,
         "value":value,
       };
-      this.updateField.emit(data);
+      if (!this.singleFieldUpdateLock){
+        this.singleFieldUpdateLock = true;
+        this.updateField.emit(data);
+      }else{
+        this.singleFieldUpdateQueue.push(data);
+      }
     }
     this.validateForm();
   }
@@ -377,7 +392,7 @@ export class StageComponent implements OnInit {
       const nextYear = currentYear+1;
 
       this.joursFeries = this.getJoursFeries(currentYear);
-      const nexYearJoursFeries = this.getJoursFeries(currentYear);
+      const nexYearJoursFeries = this.getJoursFeries(nextYear);
 
       this.joursFeries.push(...nexYearJoursFeries);
   }
@@ -414,12 +429,19 @@ export class StageComponent implements OnInit {
     return new Array(JourAn, Paques, LundiPaques, FeteTravail, Victoire1945, Ascension, Pentecote, LundiPentecote, FeteNationale, Assomption, Toussaint, Armistice, Noel);
   }
 
+  //fix new date('2021-02-02') != new date(2021,2,2)
+  dateFromBackend(dateString: string):Date{
+    let date = new Date(dateString)
+    date = new Date(date.getFullYear(),date.getMonth(),date.getDate());
+    return date;
+  }
+
   updateHeuresTravail():void {
 
       if (this.form.get('horairesReguliers')!.value){
 
-        const dateDebutStage = new Date(this.form.get('dateDebutStage')!.value)
-        const dateFinStage = new Date(this.form.get('dateFinStage')!.value)
+        const dateDebutStage = this.dateFromBackend(this.form.get('dateDebutStage')!.value);
+        const dateFinStage = this.dateFromBackend(this.form.get('dateFinStage')!.value);
         const nbHeuresJournalieres = this.form.get('nbHeuresHebdo')!.value/5;
 
         const periodes = [{'dateDebut':dateDebutStage,'dateFin':dateFinStage,'nbHeuresJournalieres':nbHeuresJournalieres}];
@@ -447,14 +469,14 @@ export class StageComponent implements OnInit {
         //skip périodes d'interruptions
         if (this.form.get('interruptionStage')!.value){
           for (const interruptionStage of this.interruptionsStage) {
-              if (loopDate >= new Date(interruptionStage.dateDebutInterruption) && loopDate <= new Date(interruptionStage.dateFinInterruption)){
+              if (loopDate >= this.dateFromBackend(interruptionStage.dateDebutInterruption) && loopDate <= this.dateFromBackend(interruptionStage.dateFinInterruption)){
                 valid = false;
               }
           }
         }
         //skip jours fériés
         for (const joursFerie of this.joursFeries) {
-            if (loopDate.getTime() === (new Date(joursFerie)).getTime()){
+            if (loopDate.getTime() === joursFerie.getTime()){
               valid = false;
             }
         }

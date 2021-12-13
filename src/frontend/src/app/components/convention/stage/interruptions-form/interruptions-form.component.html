@@ -1,10 +1,11 @@
 <form [formGroup]="periodesForm" novalidate>
-  <div class="text-title"  *ngIf="!interruptionStage" >Ajouter des nouvelles périodes d'interruptions</div>
+  <div class="text-title"  *ngIf="!interruptionStage">Ajouter des nouvelles périodes d'interruptions</div>
   <div class="text-title"  *ngIf="interruptionStage">Modifier une période d'interruption</div>
   <mat-divider class="mb-3"></mat-divider>
   <div class="row">
     <mat-form-field class="col-6" appearance="fill">
-      <mat-label>Ajoutez une nouvelle période</mat-label>
+      <mat-label *ngIf="!interruptionStage">Ajoutez une nouvelle période</mat-label>
+      <mat-label *ngIf="interruptionStage">Nouvelle période</mat-label>
       <mat-date-range-input [dateFilter]="interruptionsDateFilter" [rangePicker]="interruptionsPicker">
         <input matStartDate formControlName="dateDebutInterruption" placeholder="Date de début">
         <input matEndDate formControlName="dateFinInterruption" placeholder="Date de fin">
@@ -36,6 +37,6 @@
     <button type="button" mat-button mat-stroked-button color="warn" (click)="close()">{{'BOUTON_ANNULER'|contenu}}</button>
   </div>
   <div class="col-sm-6 text-right">
-    <button mat-button mat-flat-button color="primary" (click)="save()" [disabled]="periodes.length === 0 && initialPeriodesLength === 0 ">{{'BOUTON_VALIDER'|contenu}}</button>
+    <button mat-button mat-flat-button color="primary" (click)="save()" [disabled]="periodes.length === 0 && initialPeriodesLength === 0 && !interruptionStage">{{'BOUTON_VALIDER'|contenu}}</button>
   </div>
 </div>
