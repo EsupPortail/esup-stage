@@ -1273,4 +1273,62 @@ databaseChangeLog:
             name: exemple
             value: 36015
         tableName: ParamConvention
-    
+- changeSet:
+    id: paramConvention-insert-5
+    author: jwang
+    changes:
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: avenant.dateDebutStage
+        - column:
+            name: libelle
+            value: Date de début de stage Avenant
+        - column:
+            name: exemple
+            value: 20/05/2011
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: avenant.dateFinStage
+        - column:
+            name: libelle
+            value: Date de fin de stage Avenant
+        - column:
+            name: exemple
+            value: 20/05/2011
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: enseignant.mail
+        - column:
+            name: libelle
+            value: Mail de l'enseignant
+        - column:
+            name: exemple
+            value: martin.jules@free.fr
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.volumeHoraireFormation
+        - column:
+            name: libelle
+            value: Nombre d'heures total du stage
+        - column:
+            name: exemple
+            value: 924
+        tableName: ParamConvention
+    - update:
+        columns:
+        - column:
+            name: code
+            value: contact.civiliteLibelle
+        tableName: ParamConvention
+        where: code='contact.CiviliteLibelle'
