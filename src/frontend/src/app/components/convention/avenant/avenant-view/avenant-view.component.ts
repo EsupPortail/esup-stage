@@ -62,7 +62,6 @@ export class AvenantViewComponent implements OnInit {
     this.periodeInterruptionAvenantService.getByAvenant(this.avenant.id).subscribe((response: any) => {
       for(let interruption of response){
         if (interruption.isModif){
-          console.log('interruption : ' + JSON.stringify(interruption, null, 2));
           this.modifiedInterruptionsStage.push(interruption);
         }else{
           this.addedInterruptionsStage.push(interruption);

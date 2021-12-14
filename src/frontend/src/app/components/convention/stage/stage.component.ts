@@ -261,7 +261,7 @@ export class StageComponent implements OnInit {
   }
 
   validateForm() : void{
-    if (this.form.valid && this.periodesInterruptionsValid) {
+    if ((this.form.valid && this.periodesInterruptionsValid) || this.form.disabled) {
       this.validated.emit(2);
     }else{
       this.validated.emit(0);

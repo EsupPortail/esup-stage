@@ -14,6 +14,7 @@ import { DeviseService } from "../../../../services/devise.service";
 import { CiviliteService } from "../../../../services/civilite.service";
 import { PaysService } from "../../../../services/pays.service";
 import { AvenantService } from "../../../../services/avenant.service";
+import { ContenuService } from "../../../../services/contenu.service";
 import { PeriodeInterruptionStageService } from "../../../../services/periode-interruption-stage.service";
 import { PeriodeInterruptionAvenantService } from "../../../../services/periode-interruption-avenant.service";
 import { TableComponent } from "../../../table/table.component";
@@ -37,6 +38,7 @@ export class AvenantFormComponent implements OnInit {
        'modificationEnseignant', 'modificationMontantGratification', 'modificationAutre'];
 
   periodeStageFields : any = ['dateDebutStage', 'dateFinStage'];
+  montantGratificationFields : any = ['montantGratification', 'idUniteGratification','idUniteDuree', 'idModeVersGratification','idDevise'];
 
   modeVersGratifications: any[] = [];
   uniteDurees: any[] = [];
@@ -67,6 +69,8 @@ export class AvenantFormComponent implements OnInit {
   form: FormGroup;
   enseignantSearchForm: FormGroup;
 
+  texteLimiteRenumeration: string = '';
+
   minDateDebutStage: Date;
   maxDateDebutStage: Date;
   minDateFinStage: Date;
@@ -93,6 +97,7 @@ export class AvenantFormComponent implements OnInit {
               private periodeInterruptionStageService: PeriodeInterruptionStageService,
               private periodeInterruptionAvenantService: PeriodeInterruptionAvenantService,
               private authService: AuthService,
+              private contenuService: ContenuService,
               private fb: FormBuilder,
               private messageService: MessageService,
               public matDialog: MatDialog,
@@ -166,7 +171,6 @@ export class AvenantFormComponent implements OnInit {
         modificationEnseignant: [this.avenant.modificationEnseignant],
         modificationMontantGratification: [this.avenant.modificationMontantGratification],
         montantGratification: [this.avenant.montantGratification, [Validators.maxLength(7)]],
-        //TODO bandeau montant
         idUniteGratification: [this.avenant.uniteGratification?this.avenant.uniteGratification.id:null],
         idUniteDuree: [this.avenant.uniteDuree?this.avenant.uniteDuree.id:null],
         idModeVersGratification: [this.avenant.modeVersGratification?this.avenant.modeVersGratification.id:null],
@@ -224,6 +228,10 @@ export class AvenantFormComponent implements OnInit {
       this.minDateFinStage = new Date(new Date().getFullYear()-1, 0, 2);
       this.maxDateFinStage = new Date(new Date().getFullYear()+2, 0, 1);
     }
+
+    this.contenuService.get('TEXTE_LIMITE_RENUMERATION').subscribe((response: any) => {
+      this.texteLimiteRenumeration = response.texte;
+    })
   }
 
   createOrEdit(): void {
@@ -302,6 +310,16 @@ export class AvenantFormComponent implements OnInit {
         }
       });
       valid = valid && (periodeStageValid || this.addedInterruptionsStage.length > 0);
+    }
+
+    if (this.form.get('modificationMontantGratification')!.value){
+      let montantGratificationValid = false;
+      this.montantGratificationFields.forEach((field: string) => {
+        if (this.form.get(field)!.value){
+          montantGratificationValid = true;
+        }
+      });
+      valid = valid && montantGratificationValid;
     }
     if (this.form.get('modificationLieu')!.value){
       if(this.service.id === this.convention.service.id){

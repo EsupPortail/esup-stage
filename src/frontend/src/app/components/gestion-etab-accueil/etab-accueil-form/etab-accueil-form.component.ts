@@ -97,7 +97,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges {
   save(): void {
     if (this.form.valid) {
       // Contrôle code APE ou activité principale renseignée
-      if (!this.form.get('nafN5')?.value && !this.form.get('activitePrincipale')?.value) {
+      if (!this.form.get('codeNafN5')?.value && !this.form.get('activitePrincipale')?.value) {
         this.messageService.setError('Une de ces deux informations doivent être renseignée : Code APE, Activité principale');
         return;
       }
