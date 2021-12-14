@@ -49,7 +49,7 @@ public class ImpressionService {
         ImpressionContext impressionContext = new ImpressionContext(convention, avenant);
 
         try {
-            String htmlTexte = avenant != null ? templateConvention.getTexteAvenant() : templateConvention.getTexte();
+            String htmlTexte = avenant != null ? this.getHtmlText(templateConvention.getTexteAvenant()) : this.getHtmlText(templateConvention.getTexte());
 
             Template template = new Template("template_convention_texte" + templateConvention.getId(), htmlTexte, freeMarkerConfigurer.getConfiguration());
             StringWriter texte = new StringWriter();
@@ -107,6 +107,22 @@ public class ImpressionService {
             }
 
         }
+    }
+
+    private String getHtmlText(String texte) {
+        // Style par défaut des tables dans les templates
+        String htmlTexte = "<style>table { table-layout: fixed; width: 100%; overflow-wrap: break-word; border-spacing: 0px; }</style>";
+        htmlTexte += texte;
+
+        // Remplacement de tags et styles générés par l'éditeur qui ne sont pas convertis correctement
+        htmlTexte = htmlTexte.replace("<figure", "<div");
+        htmlTexte = htmlTexte.replace("</figure>", "</div>");
+        htmlTexte = htmlTexte.replace("class=\"text-tiny\"", "style=\"font-size: 11px\"");
+        htmlTexte = htmlTexte.replace("class=\"text-small\"", "style=\"font-size: 13px\"");
+        htmlTexte = htmlTexte.replace("class=\"text-big\"", "style=\"font-size: 21px\"");
+        htmlTexte = htmlTexte.replace("class=\"text-huge\"", "style=\"font-size: 23px\"");
+
+        return htmlTexte;
     }
 
     private String getLogoFilePath(String filename) {

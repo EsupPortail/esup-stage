@@ -156,6 +156,7 @@ public class ImpressionContext {
         private String ufrLibelle;
         private String uniteGratificationLibelle;
         private String villeEtudiant;
+        private String volumeHoraireFormation;
 
         public ConventionContext() { }
 
@@ -210,6 +211,7 @@ public class ImpressionContext {
             this.ufrLibelle = convention.getUfr() != null ? convention.getUfr().getLibelle() : null;
             this.uniteGratificationLibelle = convention.getNomenclature() != null ? convention.getNomenclature().getUniteGratification() : null;
             this.villeEtudiant = convention.getVilleEtudiant();
+            this.volumeHoraireFormation = convention.getVolumeHoraireFormation();
         }
 
         public String getId() {
@@ -595,6 +597,14 @@ public class ImpressionContext {
         public void setVilleEtudiant(String villeEtudiant) {
             this.villeEtudiant = villeEtudiant;
         }
+
+        public String getVolumeHoraireFormation() {
+            return volumeHoraireFormation != null ? volumeHoraireFormation : "";
+        }
+
+        public void setVolumeHoraireFormation(String volumeHoraireFormation) {
+            this.volumeHoraireFormation = volumeHoraireFormation;
+        }
     }
 
     public static class CentreGestionContext {
@@ -706,7 +716,7 @@ public class ImpressionContext {
     }
 
     public static class ContactContext {
-        private String CiviliteLibelle;
+        private String civiliteLibelle;
         private String fonction;
         private String mail;
         private String nom;
@@ -716,7 +726,7 @@ public class ImpressionContext {
         public ContactContext() { }
 
         public ContactContext(Contact contact) {
-            this.CiviliteLibelle = contact.getCivilite() != null ? contact.getCivilite().getLibelle() : null;
+            this.civiliteLibelle = contact.getCivilite() != null ? contact.getCivilite().getLibelle() : null;
             this.fonction = contact.getFonction();
             this.mail = contact.getMail();
             this.nom = contact.getNom();
@@ -725,11 +735,11 @@ public class ImpressionContext {
         }
 
         public String getCiviliteLibelle() {
-            return CiviliteLibelle != null ? CiviliteLibelle : "";
+            return civiliteLibelle != null ? civiliteLibelle : "";
         }
 
         public void setCiviliteLibelle(String civiliteLibelle) {
-            CiviliteLibelle = civiliteLibelle;
+            civiliteLibelle = civiliteLibelle;
         }
 
         public String getFonction() {
@@ -779,6 +789,7 @@ public class ImpressionContext {
         private String nom;
         private String prenom;
         private String tel;
+        private String mail;
 
         public EnseignantContext() {
         }
@@ -789,6 +800,7 @@ public class ImpressionContext {
             this.nom = enseignant.getNom();
             this.prenom = enseignant.getPrenom();
             this.tel = enseignant.getTel();
+            this.mail = enseignant.getMail();
         }
 
         public String getAffectationLibelle() {
@@ -829,6 +841,14 @@ public class ImpressionContext {
 
         public void setTel(String tel) {
             this.tel = tel;
+        }
+
+        public String getMail() {
+            return mail != null ? mail : "";
+        }
+
+        public void setMail(String mail) {
+            this.mail = mail;
         }
     }
 
@@ -1184,14 +1204,20 @@ public class ImpressionContext {
         private String id;
         private String sujetStage;
         private String motifAvenant;
+        private String dateDebutStage;
+        private String dateFinStage;
 
         public AvenantContext() {
         }
 
         public AvenantContext(Avenant avenant) {
+            DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+
             this.id = String.valueOf(avenant.getId());
             this.sujetStage = avenant.getSujetStage();
             this.motifAvenant = avenant.getMotifAvenant();
+            this.dateDebutStage = avenant.getDateDebutStage() != null ? df.format(avenant.getDateDebutStage()) : "";
+            this.dateFinStage = avenant.getDateFinStage() != null ? df.format(avenant.getDateFinStage()) : "";
         }
 
         public String getId() {
@@ -1216,6 +1242,22 @@ public class ImpressionContext {
 
         public void setMotifAvenant(String motifAvenant) {
             this.motifAvenant = motifAvenant;
+        }
+
+        public String getDateDebutStage() {
+            return dateDebutStage != null ? dateDebutStage : "";
+        }
+
+        public void setDateDebutStage(String dateDebutStage) {
+            this.dateDebutStage = dateDebutStage;
+        }
+
+        public String getDateFinStage() {
+            return dateFinStage != null ? dateFinStage : "";
+        }
+
+        public void setDateFinStage(String dateFinStage) {
+            this.dateFinStage = dateFinStage;
         }
     }
 }
