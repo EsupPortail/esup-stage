@@ -133,7 +133,7 @@ public class StructureController {
             throw new AppException(HttpStatus.NOT_FOUND, "Statut juridique non trouvé");
         }
         NafN5 nafN5 = null;
-        if (structureFormDto.getCodeNafN5() != null) {
+        if (structureFormDto.getCodeNafN5() != null && !structureFormDto.getCodeNafN5().isEmpty()) {
             nafN5 = nafN5JpaRepository.findByCode(structureFormDto.getCodeNafN5());
             if (nafN5 == null) {
                 throw new AppException(HttpStatus.NOT_FOUND, "Code non trouvé");
