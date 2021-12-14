@@ -38,6 +38,7 @@ export class AvenantFormComponent implements OnInit {
        'modificationEnseignant', 'modificationMontantGratification', 'modificationAutre'];
 
   periodeStageFields : any = ['dateDebutStage', 'dateFinStage'];
+  montantGratificationFields : any = ['montantGratification', 'idUniteGratification','idUniteDuree', 'idModeVersGratification','idDevise'];
 
   modeVersGratifications: any[] = [];
   uniteDurees: any[] = [];
@@ -309,6 +310,16 @@ export class AvenantFormComponent implements OnInit {
         }
       });
       valid = valid && (periodeStageValid || this.addedInterruptionsStage.length > 0);
+    }
+
+    if (this.form.get('modificationMontantGratification')!.value){
+      let montantGratificationValid = false;
+      this.montantGratificationFields.forEach((field: string) => {
+        if (this.form.get(field)!.value){
+          montantGratificationValid = true;
+        }
+      });
+      valid = valid && montantGratificationValid;
     }
     if (this.form.get('modificationLieu')!.value){
       if(this.service.id === this.convention.service.id){

@@ -139,31 +139,31 @@
     <div class="row mt-3 mb-3">
       <mat-form-field class="col-sm-6 col-md-6 mb-2" appearance="fill">
         <mat-label>Nouveau montant de la gratification</mat-label>
-        <input matInput formControlName="montantGratification" required />
+        <input matInput formControlName="montantGratification" />
         <mat-error><app-form-error [field]="form.get('montantGratification')"></app-form-error></mat-error>
       </mat-form-field>
       <mat-form-field class="col-sm-3 col-md-3 mb-2" appearance="fill">
-        <mat-select formControlName="idUniteGratification" required>
+        <mat-select formControlName="idUniteGratification">
           <mat-option *ngFor="let uniteGratification of uniteGratifications" [value]="uniteGratification.id">{{uniteGratification.libelle}}</mat-option>
         </mat-select>
         <mat-error><app-form-error [field]="form.get('idUniteGratification')"></app-form-error></mat-error>
       </mat-form-field>
       <mat-form-field class="col-sm-3 col-md-3 mb-2" appearance="fill">
-        <mat-select formControlName="idUniteDuree" required>
+        <mat-select formControlName="idUniteDuree">
           <mat-option *ngFor="let uniteDuree of uniteDurees" [value]="uniteDuree.id">{{uniteDuree.libelle}}</mat-option>
         </mat-select>
         <mat-error><app-form-error [field]="form.get('idUniteDuree')"></app-form-error></mat-error>
       </mat-form-field>
       <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
         <mat-label>Nouvelle monnaie utilisée pour le paiement</mat-label>
-        <mat-select formControlName="idDevise" required>
+        <mat-select formControlName="idDevise">
           <mat-option *ngFor="let devise of devises" [value]="devise.id">{{devise.libelle}}</mat-option>
         </mat-select>
         <mat-error><app-form-error [field]="form.get('idDevise')"></app-form-error></mat-error>
       </mat-form-field>
       <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
         <mat-label>Nouvelle modalité de versement de la gratification</mat-label>
-        <mat-select formControlName="idModeVersGratification" required>
+        <mat-select formControlName="idModeVersGratification">
           <mat-option *ngFor="let modeVersGratification of modeVersGratifications" [value]="modeVersGratification.id">{{modeVersGratification.libelle}}</mat-option>
         </mat-select>
         <mat-error><app-form-error [field]="form.get('idModeVersGratification')"></app-form-error></mat-error>
