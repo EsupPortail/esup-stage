@@ -526,7 +526,12 @@ export class AvenantFormComponent implements OnInit {
   openInterruptionsCreateFormModal(): void {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.width = '1000px';
-    dialogConfig.data = {convention: this.convention,interruptionsStage: [],interruptionStage: null,periodes:this.addedInterruptionsStage};
+    const convention = {
+      'id':this.convention.id,
+      'dateDebutStage':this.form.get('dateDebutStage')!.value?this.form.get('dateDebutStage')!.value:this.convention.dateDebutStage,
+      'dateFinStage':this.form.get('dateFinStage')!.value?this.form.get('dateFinStage')!.value:this.convention.dateFinStage
+    }
+    dialogConfig.data = {convention: convention,interruptionsStage: [],interruptionStage: null,periodes:this.addedInterruptionsStage};
     const modalDialog = this.matDialog.open(InterruptionsFormComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse) {
