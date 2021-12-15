@@ -97,6 +97,7 @@ public class PaginationRepository<T extends Exportable> {
     }
 
     protected void formatFilters(String jsonString) {
+        joins = new ArrayList<>();
         filters = new JSONObject(jsonString);
     }
 
