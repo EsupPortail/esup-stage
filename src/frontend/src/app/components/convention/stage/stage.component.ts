@@ -215,7 +215,7 @@ export class StageComponent implements OnInit {
     })
 
     //controles uniquement pour les non gestionnaires
-    if(!this.isGestionnaire){
+    if(!this.isGestionnaire()){
       this.minDateDebutStage = new Date(new Date().getTime() + (1000 * 60 * 60 * 24));
       this.maxDateDebutStage = new Date(new Date().getFullYear()+1, 7, 31);
       if (this.convention.dateDebutStage){
@@ -240,7 +240,7 @@ export class StageComponent implements OnInit {
   }
 
   isGestionnaire(): boolean {
-    return this.authService.isGestionnaire();
+    return this.authService.isGestionnaire() || this.authService.isAdmin();
   }
 
   updateSingleField(key: string,value: any): void {
@@ -307,7 +307,7 @@ export class StageComponent implements OnInit {
 
   updateDateFinBounds(dateDebut: Date): void {
     //controles uniquement pour les non gestionnaires
-    if(!this.isGestionnaire){
+    if(!this.isGestionnaire()){
       this.minDateFinStage = new Date(dateDebut.getTime() + (1000 * 60 * 60 * 24));
       this.maxDateFinStage = new Date(dateDebut.getTime() + (1000 * 60 * 60 * 24 * 365));
       this.form.get('dateFinStage')!.markAsTouched();

@@ -220,12 +220,11 @@ export class AvenantFormComponent implements OnInit {
       this.search();
     });
 
-    this.minDateDebutStage = new Date(new Date().getFullYear()-1, 0, 1);
-    this.maxDateDebutStage = new Date(new Date().getFullYear()+1, 0, 1);
-    if (this.convention.dateDebutStage){
-      this.updateDateFinBounds(new Date(this.convention.dateDebutStage));
-    }else{
-      this.minDateFinStage = new Date(new Date().getFullYear()-1, 0, 2);
+    //controles uniquement pour les non gestionnaires
+    if(!this.isGestionnaire()){
+      this.minDateDebutStage = new Date(new Date().getTime() + (1000 * 60 * 60 * 24));
+      this.maxDateDebutStage = new Date(new Date().getFullYear()+1, 7, 31);
+      this.minDateFinStage = new Date(new Date().getTime() + (1000 * 60 * 60 * 24));
       this.maxDateFinStage = new Date(new Date().getFullYear()+2, 0, 1);
     }
 
