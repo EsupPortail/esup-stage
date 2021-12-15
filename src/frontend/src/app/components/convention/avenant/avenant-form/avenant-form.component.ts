@@ -394,7 +394,7 @@ export class AvenantFormComponent implements OnInit {
   openContactFormModal(contact: any) {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.width = '1000px';
-    dialogConfig.data = {contact: contact, service: this.convention.service, civilites: this.civilites};
+    dialogConfig.data = {contact: contact, service: this.convention.service, civilites: this.civilites, idCentreGestion: this.convention.centreGestion.id};
     const modalDialog = this.matDialog.open(ContactFormComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse) {

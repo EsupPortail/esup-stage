@@ -41,8 +41,7 @@ public class ContactFormDto {
     @NotNull
     private int idService;
 
-    @NotNull
-    private int idCentreGestion;
+    private Integer idCentreGestion;
 
     public String getNom() {
         return nom;
@@ -108,11 +107,11 @@ public class ContactFormDto {
         this.idService = idService;
     }
 
-    public int getIdCentreGestion() {
+    public Integer getIdCentreGestion() {
         return idCentreGestion;
     }
 
-    public void setIdCentreGestion(int idCentreGestion) {
+    public void setIdCentreGestion(Integer idCentreGestion) {
         this.idCentreGestion = idCentreGestion;
     }
 }

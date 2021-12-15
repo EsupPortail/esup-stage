@@ -1,4 +1,13 @@
 <form [formGroup]="form" novalidate (submit)="save()">
+  <div class="row" *ngIf="!idCentreGestion">
+    <mat-form-field class="col-sm-12 col-md-12 mb-2" appearance="fill">
+      <mat-label>Centre des gestion</mat-label>
+      <mat-select formControlName="idCentreGestion">
+        <mat-option *ngFor="let centreGestion of centreGestions" [value]="centreGestion.id">{{centreGestion.nomCentre}}</mat-option>
+      </mat-select>
+      <mat-error><app-form-error [field]="form.get('idCentreGestion')"></app-form-error></mat-error>
+    </mat-form-field>
+  </div>
   <div class="row">
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Nom</mat-label>

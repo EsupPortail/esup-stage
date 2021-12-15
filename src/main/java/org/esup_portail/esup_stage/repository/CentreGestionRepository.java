@@ -1,9 +1,11 @@
 package org.esup_portail.esup_stage.repository;
 
 import org.esup_portail.esup_stage.model.CentreGestion;
+import org.json.JSONObject;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.Arrays;
 import java.util.List;
@@ -21,5 +23,27 @@ public class CentreGestionRepository extends PaginationRepository<CentreGestion>
         TypedQuery<Integer> query = em.createQuery(queryString, Integer.class);
         List<Integer> results = query.getResultList();
         return results.size() > 0;
+    }
+
+    @Override
+    protected void formatFilters(String jsonString) {
+        super.formatFilters(jsonString);
+        if (filters.has("personnel")) {
+            addJoins("JOIN cg.personnels personnel");
+        }
+    }
+
+    @Override
+    protected void addSpecificParameter(String key, JSONObject parameter, List<String> clauses) {
+        if (key.equals("personnel")) {
+            clauses.add("personnel.uidPersonnel = :" + key.replace(".", ""));
+        }
+    }
+
+    @Override
+    protected void setSpecificParameterValue(String key, JSONObject parameter, Query query) {
+        if (key.equals("personnel")) {
+            query.setParameter(key.replace(".", ""), parameter.getString("value"));
+        }
     }
 }

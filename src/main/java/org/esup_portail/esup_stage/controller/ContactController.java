@@ -77,7 +77,13 @@ public class ContactController {
         if (service == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Service non trouvé");
         }
-        CentreGestion centreGestion = centreGestionJpaRepository.findById(contactFormDto.getIdCentreGestion());
+        CentreGestion centreGestion;
+        if (contactFormDto.getIdCentreGestion() != null) {
+            int idCentre = contactFormDto.getIdCentreGestion();
+            centreGestion = centreGestionJpaRepository.findById(idCentre);
+        } else {
+            centreGestion = centreGestionJpaRepository.getCentreEtablissement();
+        }
         if (centreGestion == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "CentreGestion non trouvé");
         }
