@@ -87,7 +87,10 @@ export class CentreGestionComponent implements OnInit {
     }
 
     if (this.centreGestion.validationConvention == true || this.centreGestion.validationPedagogique == true) {
-      this.setStatus(1, 2);
+      if (this.invalidOrdresValidations())
+        this.setStatus(1, 0);
+      else
+        this.setStatus(1, 2);
     } else {
       this.setStatus(1, 0);
     }
@@ -263,4 +266,12 @@ export class CentreGestionComponent implements OnInit {
     this.centreGestion.delaiAlerteConvention = this.paramCentreForm.get('delaiAlerteConvention')?.value;
   }
 
+  invalidOrdresValidations() {
+    // Les ordres de validations doivent être 1, 2 ou 3, et on ne peut pas avoir le même ordre
+    let ordres = [1, 2, 3, null];
+    return (!ordres.some(o => o === this.centreGestion.validationPedagogiqueOrdre)
+          || !ordres.some(o => o === this.centreGestion.validationConventionOrdre)
+          || !ordres.some(o => o === this.centreGestion.verificationAdministrativeOrdre)
+    )
+  }
 }

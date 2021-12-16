@@ -163,14 +163,14 @@ public class CentreGestionController {
     public CentreGestion update(@Valid @RequestBody CentreGestion centreGestion) {
         // Les ordres de validations doivent être 1, 2 ou 3, et on ne peut pas avoir le même ordre
         List<Integer> ordres = Arrays.asList(1, 2, 3);
-        if (
+        /*if (
                 !ordres.contains(centreGestion.getValidationPedagogiqueOrdre())
                 || !ordres.contains(centreGestion.getValidationConventionOrdre())
                 || !ordres.contains(centreGestion.getVerificationAdministrativeOrdre())
                 || !(!Objects.equals(centreGestion.getValidationPedagogiqueOrdre(), centreGestion.getValidationConventionOrdre()) && !Objects.equals(centreGestion.getValidationPedagogiqueOrdre(), centreGestion.getVerificationAdministrativeOrdre()) && !Objects.equals(centreGestion.getValidationConventionOrdre(), centreGestion.getVerificationAdministrativeOrdre()))
         ) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Les ordres de validations doivent être 1, 2 ou 3, et être différentes pour chaque types de validation");
-        }
+        }*/
         return centreGestionJpaRepository.saveAndFlush(centreGestion);
     }
 
