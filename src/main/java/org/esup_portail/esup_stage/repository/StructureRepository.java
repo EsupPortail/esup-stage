@@ -1,5 +1,6 @@
 package org.esup_portail.esup_stage.repository;
 
+import org.esup_portail.esup_stage.model.Pays;
 import org.esup_portail.esup_stage.model.Structure;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,5 +37,17 @@ public class StructureRepository extends PaginationRepository<Structure> {
             }
             query.setParameter(key.replace(".", ""), values);
         }
+    }
+
+    public boolean existsSiret(Structure structure, String siret) {
+        String queryString = "SELECT id FROM Structure WHERE LOWER(numeroSiret) = LOWER(:siret)";
+        TypedQuery<Integer> query = em.createQuery(queryString, Integer.class);
+        query.setParameter("siret", siret);
+        List<Integer> results = query.getResultList();
+        if (structure.getId() == 0 && results.size() > 0) {
+            return true;
+        }
+
+        return results.stream().anyMatch(i -> i != structure.getId());
     }
 }

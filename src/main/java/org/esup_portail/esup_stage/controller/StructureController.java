@@ -120,6 +120,10 @@ public class StructureController {
         if (structure == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Structure non trouvée");
         }
+        // Contrôle SIRET non déjà existant
+        if (structureFormDto.getNumeroSiret() != null && structureRepository.existsSiret(structure, structureFormDto.getNumeroSiret())) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Le numéro SIRET existe déjà");
+        }
         Effectif effectif = effectifJpaRepository.findById(structureFormDto.getIdEffectif());
         if (effectif == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Effectif non trouvé");
