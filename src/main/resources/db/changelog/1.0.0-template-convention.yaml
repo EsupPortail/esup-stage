@@ -68,3 +68,15 @@ databaseChangeLog:
         - column:
             name: texteAvenant
             type: TEXT
+- changeSet:
+    id: templateConvention-modifyTextType
+    author: jwang
+    changes:
+    - modifyDataType:
+        columnName: texte
+        newDataType: MEDIUMTEXT
+        tableName: TemplateConvention
+    - modifyDataType:
+        columnName: texteAvenant
+        newDataType: MEDIUMTEXT
+        tableName: TemplateConvention
