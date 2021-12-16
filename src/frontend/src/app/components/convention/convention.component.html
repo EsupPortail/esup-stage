@@ -25,7 +25,7 @@
       Tuteur professionnel
       <mat-progress-bar mode="determinate" [value]="getProgressValue(3)" [ngClass]="{editing: tabs[3].statut === 1, done: tabs[3].statut === 2}"></mat-progress-bar>
     </ng-template>
-    <app-tuteur-pro *ngIf="tuteurProTab.isActive || tabs[3].init" (validated)="updateTuteurPro($event)" [centreGestion]="convention.centreGestion" [contact]="convention.contact" [service]="convention.service" [modifiable]="modifiable"></app-tuteur-pro>
+    <app-tuteur-pro *ngIf="tuteurProTab.isActive || tabs[3].init" (validated)="updateTuteurPro($event)" [etab]="convention.structure" [centreGestion]="convention.centreGestion" [contact]="convention.contact" [service]="convention.service" [modifiable]="modifiable"></app-tuteur-pro>
   </mat-tab>
   <mat-tab #stageTab [disabled]="!convention.id" *ngIf="!isConventionValide()">
     <ng-template mat-tab-label>

@@ -21,7 +21,7 @@ export class MailTesterComponent implements OnInit {
     private messageService: MessageService,
   ) {
     this.form = this.fb.group({
-      email: [null, [Validators.required, Validators.email]],
+      email: [null, [Validators.required, Validators.pattern('[^@ ]+@[^@. ]+\\.[^@. ]+')]],
     });
   }
 

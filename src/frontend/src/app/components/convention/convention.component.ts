@@ -31,11 +31,17 @@ export class ConventionComponent implements OnInit {
 
   @ViewChild("tabGroup") tabGroup: MatTabGroup;
 
-  constructor(private activatedRoute: ActivatedRoute, private conventionService: ConventionService, private titleService: TitleService, private authService: AuthService) { }
+  constructor(private activatedRoute: ActivatedRoute,
+              private conventionService: ConventionService,
+              private titleService: TitleService,
+              private authService: AuthService) { }
 
   ngOnInit(): void {
     this.activatedRoute.params.subscribe((param: any) => {
       const pathId = param.id;
+      if(this.tabGroup){
+        this.tabGroup.selectedIndex = 0;
+      }
       if (pathId === 'create') {
         this.titleService.title = 'Création d\'une convention';
         // Récupération de la convention au mode brouillon
@@ -194,5 +200,4 @@ export class ConventionComponent implements OnInit {
       }
     }
   }
-
 }
