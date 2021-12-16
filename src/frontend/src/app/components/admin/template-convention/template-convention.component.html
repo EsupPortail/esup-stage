@@ -102,13 +102,18 @@
               <ckeditor [editor]="Editor" formControlName="texte" (ready)="onReady($event)"></ckeditor>
             </div>
           </div>
+          <div class="row mt-3">
+            <div class="col-12 text-right">
+              <button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
+            </div>
+          </div>
+
           <div class="row mb-4">
             <div class="col-12">
               <label class="text-title required">Template PDF de l'avenant</label>
               <ckeditor [editor]="Editor" formControlName="texteAvenant" (ready)="onReady($event)"></ckeditor>
             </div>
           </div>
-
           <div class="row mt-3">
             <div class="col-12 text-right">
               <button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
