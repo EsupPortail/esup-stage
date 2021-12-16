@@ -21,6 +21,7 @@ export class TuteurProComponent implements OnInit, OnChanges {
   data: any;
 
   @Input() service: any;
+  @Input() etab: any;
   @Input() centreGestion: any;
 
   @Input() contact: any;
