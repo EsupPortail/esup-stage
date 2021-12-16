@@ -69,6 +69,13 @@
     recurse: yes
     owner: tomcat
     group: tomcat
+- name: estage.datadir.consignedocs
+  ansible.builtin.file:
+    path: "{{ ESTAGE_ENVIRONMENT.appli_data_dir }}/centregestion/consigne-documents"
+    state: directory
+    recurse: yes
+    owner: tomcat
+    group: tomcat
   notify: redeploy.webapp
 - name: dnf_install.estage
   dnf: 

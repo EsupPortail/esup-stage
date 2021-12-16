@@ -6,6 +6,9 @@ import { Droit } from "../../../constants/droit";
 import { AuthService } from "../../../services/auth.service";
 import { MessageService } from "../../../services/message.service";
 import { Color } from "@angular-material-components/color-picker";
+import * as Editor from '../../../../custom-ck5/ckeditor';
+import { ConsigneService } from "../../../services/consigne.service";
+import * as FileSaver from "file-saver";
 
 @Component({
   selector: 'app-config-generale',
@@ -13,6 +16,14 @@ import { Color } from "@angular-material-components/color-picker";
   styleUrls: ['./config-generale.component.scss']
 })
 export class ConfigGeneraleComponent implements OnInit {
+
+  public Editor = Editor;
+  public onReady(editor: any) {
+    editor.ui.getEditableElement().parentElement.insertBefore(
+      editor.ui.view.toolbar.element,
+      editor.ui.getEditableElement()
+    );
+  }
 
   configGenerale: any;
   configAlerte: any;
@@ -42,7 +53,16 @@ export class ConfigGeneraleComponent implements OnInit {
   logoFile: File|undefined;
   faviconFile: File|undefined;
 
-  constructor(private configService: ConfigService, private fb: FormBuilder, private authService: AuthService, private messageService: MessageService) {
+  formConsigne: FormGroup;
+  consigne: any;
+
+  constructor(
+    private configService: ConfigService,
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private messageService: MessageService,
+    private consigneService: ConsigneService,
+  ) {
     this.formGenerale = this.fb.group({
       codeUniversite: [null, [Validators.required]],
       anneeBasculeJour: [null, [Validators.required, Validators.min(1), Validators.max(31)]],
@@ -56,7 +76,7 @@ export class ConfigGeneraleComponent implements OnInit {
       autoriserElementPedagogiqueFacultatif: [null, [Validators.required]],
       validationPedagogiqueLibelle: [null, [Validators.required]],
       validationAdministrativeLibelle: [null, [Validators.required]],
-    })
+    });
     this.formTheme = this.fb.group({
       logo: [null, [Validators.required]],
       favicon: [null, [Validators.required]],
@@ -67,7 +87,10 @@ export class ConfigGeneraleComponent implements OnInit {
       dangerColor: [null, [Validators.required]],
       warningColor: [null, [Validators.required]],
       successColor: [null, [Validators.required]],
-    })
+    });
+    this.formConsigne = this.fb.group({
+      texte: [null, [Validators.required]],
+    });
   }
 
   ngOnInit(): void {
@@ -86,6 +109,10 @@ export class ConfigGeneraleComponent implements OnInit {
     this.configService.getConfigTheme().then((response: any) => {
       this.configTheme = response;
       this.setFormThemeValue();
+    });
+    this.consigneService.getConsigneByCentre(null).subscribe((response: any) => {
+      this.consigne = response;
+      this.formConsigne.get('texte')?.setValue(this.consigne.texte);
     });
   }
 
@@ -186,6 +213,50 @@ export class ConfigGeneraleComponent implements OnInit {
       this.faviconFile = undefined;
       return;
     }
+  }
+
+  saveConsigne(): void {
+    if (this.formConsigne.valid) {
+      this.consigneService.updateConsigne(this.consigne.id, this.formConsigne.value).subscribe((response: any) => {
+        this.consigne = response;
+        this.messageService.setSuccess('Consigne modifée');
+      });
+    }
+  }
+
+  downloadDoc(event: any, doc: any): void {
+    event.preventDefault();
+    event.stopPropagation();
+    let mimetype = 'applicaton/pdf';
+    if (doc.nomReel.endsWith('.doc')) mimetype = 'application/msword';
+    if (doc.nomReel.endsWith('.docx')) mimetype = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+    this.consigneService.getDocument(this.consigne.id, doc.id).subscribe((response: any) => {
+      var blob = new Blob([response as BlobPart], {type: mimetype});
+      FileSaver.saveAs(blob, doc.nomReel);
+    });
+  }
+
+  addDoc(event: any): void {
+    const doc = event.target.files.item(0);
+    if (doc) {
+      if (['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'].indexOf(doc?.type) === -1) {
+        this.messageService.setError("Le fichier doit être au format pdf, doc ou docx");
+        return;
+      }
+      const formData = new FormData();
+      formData.append('doc', doc, doc.name);
+      this.consigneService.addDoc(this.consigne.id, formData).subscribe((response: any) => {
+        this.consigne = response;
+        this.messageService.setSuccess('Document ajouté');
+      });
+    }
+  }
+
+  deleteDoc(idDoc: number): void {
+    this.consigneService.deleteDoc(this.consigne.id, idDoc).subscribe((response: any) => {
+      this.consigne = response;
+      this.messageService.setSuccess('Document supprimé');
+    });
   }
 
 }

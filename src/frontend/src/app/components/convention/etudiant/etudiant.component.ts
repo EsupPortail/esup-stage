@@ -12,6 +12,8 @@ import { CentreGestionService } from "../../../services/centre-gestion.service";
 import { ConventionService } from "../../../services/convention.service";
 import { debounceTime } from "rxjs/operators";
 import { ConfigService } from "../../../services/config.service";
+import { ConsigneService } from "../../../services/consigne.service";
+import * as FileSaver from "file-saver";
 
 @Component({
   selector: 'app-convention-etudiant',
@@ -37,6 +39,8 @@ export class EtudiantComponent implements OnInit, OnChanges {
   typeConventions: any[] = [];
   langueConventions: any[] = [];
 
+  consigneEtablissement: any;
+
   @Input() convention: any;
   @Input() modifiable: boolean;
   @Output() validated = new EventEmitter<any>();
@@ -54,6 +58,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
     private centreGestionService: CentreGestionService,
     private conventionService: ConventionService,
     private configService: ConfigService,
+    private consigneService: ConsigneService,
   ) {
     this.form = this.fb.group({
       id: [null, []],
@@ -64,6 +69,10 @@ export class EtudiantComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.isEtudiant = this.authService.isEtudiant();
+
+    this.consigneService.getConsigneByCentre(null).subscribe((response: any) => {
+      this.consigneEtablissement = response;
+    });
 
     this.configService.getConfigGenerale().subscribe((response: any) => {
       this.formConvention = this.fb.group({
@@ -224,6 +233,18 @@ export class EtudiantComponent implements OnInit, OnChanges {
         });
       }
     }
+  }
+
+  downloadDoc(event: any, doc: any): void {
+    event.preventDefault();
+    event.stopPropagation();
+    let mimetype = 'applicaton/pdf';
+    if (doc.nomReel.endsWith('.doc')) mimetype = 'application/msword';
+    if (doc.nomReel.endsWith('.docx')) mimetype = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+    this.consigneService.getDocument(this.consigneEtablissement.id, doc.id).subscribe((response: any) => {
+      var blob = new Blob([response as BlobPart], {type: mimetype});
+      FileSaver.saveAs(blob, doc.nomReel);
+    });
   }
 
 }

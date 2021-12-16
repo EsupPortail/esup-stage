@@ -1,0 +1,112 @@
+databaseChangeLog:
+- changeSet:
+    id: consigne
+    author: ssound
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+                nullable: false
+                primaryKey: true
+            name: idConsigne
+            type: INT
+        - column:
+            constraints:
+                unique: true
+            name: idCentreGestion
+            type: INT
+        - column:
+            constraints:
+                nullable: false
+            name: texte
+            type: TEXT
+        - column:
+            constraints:
+                nullable: false
+            name: loginCreation
+            type: VARCHAR(50)
+        - column:
+            constraints:
+                nullable: false
+            name: dateCreation
+            type: datetime
+        - column:
+            name: loginModif
+            type: VARCHAR(50)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateModif
+            type: datetime
+        tableName: Consigne
+- changeSet:
+    id: consigne-etablissement
+    author: ssound
+    changes:
+    - insert:
+        columns:
+        - column:
+            name: texte
+            value: Consignes de l'établissement
+        - column:
+            name: loginCreation
+            value: liquibase
+        - column:
+            name: dateCreation
+            value: now()
+        tableName: Consigne
+- changeSet:
+    id: consigne-centres
+    author: ssound
+    changes:
+    - sql:
+          sql: INSERT INTO Consigne (idCentreGestion, texte, loginCreation, dateCreation) SELECT idCentreGestion, 'Consigne du centre', 'liquibase', now() FROM CentreGestion
+- changeSet:
+    id: consigneDocument
+    author: ssound
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+                nullable: false
+                primaryKey: true
+            name: idConsigneDocument
+            type: INT
+        - column:
+            constraints:
+                nullable: false
+                foreignKeyName: fk_ConsigneDocument_Consigne1
+                references: Consigne(idConsigne)
+            name: idConsigne
+            type: INT
+        - column:
+            constraints:
+                nullable: false
+            name: nomDocument
+            type: VARCHAR(255)
+        - column:
+            constraints:
+                nullable: false
+            name: nomReel
+            type: VARCHAR(255)
+        - column:
+            constraints:
+                nullable: false
+            name: loginCreation
+            type: VARCHAR(50)
+        - column:
+            constraints:
+                nullable: false
+            name: dateCreation
+            type: datetime
+        - column:
+            name: loginModif
+            type: VARCHAR(50)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateModif
+            type: datetime
+        tableName: ConsigneDocument

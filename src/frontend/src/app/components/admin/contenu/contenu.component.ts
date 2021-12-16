@@ -7,6 +7,7 @@ import { Droit } from "../../../constants/droit";
 import { AuthService } from "../../../services/auth.service";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MessageService } from "../../../services/message.service";
+import * as Editor from '../../../../custom-ck5/ckeditor';
 
 @Component({
   selector: 'app-contenu',
@@ -14,6 +15,14 @@ import { MessageService } from "../../../services/message.service";
   styleUrls: ['./contenu.component.scss']
 })
 export class ContenuComponent implements OnInit {
+
+  public Editor = Editor;
+  public onReady(editor: any) {
+    editor.ui.getEditableElement().parentElement.insertBefore(
+      editor.ui.view.toolbar.element,
+      editor.ui.getEditableElement()
+    );
+  }
 
   columns = ['code', 'texte', 'action'];
   sortColumn = 'code';
