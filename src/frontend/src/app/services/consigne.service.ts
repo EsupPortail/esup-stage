@@ -14,6 +14,10 @@ export class ConsigneService {
     return this.http.get(`${environment.apiUrl}/consignes/${idCentreGestion ? 'centres/' + idCentreGestion : 'etablissement'}`);
   }
 
+  createConsigne(data: any): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/consignes`, data);
+  }
+
   updateConsigne(idConsigne: number, data: any): Observable<any> {
     return this.http.patch(`${environment.apiUrl}/consignes/${idConsigne}`, data);
   }

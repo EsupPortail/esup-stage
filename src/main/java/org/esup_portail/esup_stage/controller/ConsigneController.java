@@ -64,8 +64,17 @@ public class ConsigneController {
         return consigne;
     }
 
+    @PostMapping
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL, AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.CREATION})
+    public Consigne create(@Valid @RequestBody ConsigneFormDto consigneFormDto) {
+        Consigne consigne = new Consigne();
+        consigne.setTexte(consigneFormDto.getTexte());
+        consigne = consigneJpaRepository.saveAndFlush(consigne);
+        return consigne;
+    }
+
     @PatchMapping("/{idConsigne}")
-    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.MODIFICATION})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL, AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.MODIFICATION})
     public Consigne update(@PathVariable("idConsigne") int idConsigne, @Valid @RequestBody ConsigneFormDto consigneFormDto) {
         Consigne consigne = consigneJpaRepository.findById(idConsigne);
         if (consigne == null) {
@@ -77,7 +86,7 @@ public class ConsigneController {
     }
 
     @PostMapping("/{idConsigne}/add-doc")
-    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.MODIFICATION})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL, AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.MODIFICATION})
     public Consigne addDocument(@PathVariable("idConsigne") int idConsigne, @RequestParam MultipartFile doc) {
         Consigne consigne = consigneJpaRepository.findById(idConsigne);
         if (consigne == null) {
@@ -110,7 +119,7 @@ public class ConsigneController {
     }
 
     @DeleteMapping("/{idConsigne}/documents/{idDoc}")
-    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.SUPPRESSION})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL, AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.SUPPRESSION})
     public Consigne deleteDoc(@PathVariable("idConsigne") int idConsigne, @PathVariable("idDoc") int idDoc) {
         ConsigneDocument consigneDocument = consigneDocumentJpaRepository.findById(idDoc);
         if (consigneDocument == null) {

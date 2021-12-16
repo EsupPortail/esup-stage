@@ -74,6 +74,9 @@ public class CentreGestionController {
     @Autowired
     ApplicationBootstrap applicationBootstrap;
 
+    @Autowired
+    ConsigneJpaRepository consigneJpaRepository;
+
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<CentreGestion> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
@@ -147,7 +150,12 @@ public class CentreGestionController {
         if (etablissement != null) {
             centreGestion.setCodeConfidentialite(etablissement.getCodeConfidentialite());
         }
-        return centreGestionJpaRepository.saveAndFlush(centreGestion);
+        centreGestion = centreGestionJpaRepository.saveAndFlush(centreGestion);
+        Consigne consigne = new Consigne();
+        consigne.setCentreGestion(centreGestion);
+        consigne.setTexte("");
+        consigneJpaRepository.saveAndFlush(consigne);
+        return centreGestion;
     }
 
     @PutMapping

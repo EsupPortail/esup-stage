@@ -1,0 +1,40 @@
+<mat-card>
+  <mat-card-content>
+    <form [formGroup]="form" novalidate (submit)="saveConsigne()">
+      <div class="row mb-3">
+        <div class="col-sm-12 col-md-8">
+          <label class="req">Consigne sur la création d'une convention</label>
+          <ckeditor [editor]="Editor" formControlName="texte" (ready)="onReady($event)"></ckeditor>
+        </div>
+        <div class="col-sm-12 col-md-4">
+          <div class="mb-2 text-title"><i class="fa fa-paperclip"></i> Documents associés</div>
+          <mat-divider></mat-divider>
+
+          <div *ngIf="consigne; else notCreated">
+            <div class="mt-3 alert alert-info" *ngIf="consigne.documents.length === 0">Aucun document associé</div>
+            <div class="row" *ngFor="let doc of consigne.documents">
+              <div class="col-12 mt-2">
+                <a href (click)="downloadDoc($event, doc)">{{doc.nomReel}}</a>
+                <i class="fa fa-trash-alt delete-icon" matTooltip="supprimer" (confirm)="deleteDoc(doc.id)" [confirmMessage]="'Êtes-vous sûr de vouloir supprimer le document ' + doc.nomReel + ' ?'"></i>
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-12">
+                <button type="button" mat-stroked-button color="primary" (click)="addDocInput.click()">
+                  <span>Ajouter un document</span>
+                  <input #addDocInput type="file" (change)="addDoc($event)" accept="application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display:none">
+                </button><br/>
+                <mat-hint>Format accepté : pdf, doc et docx</mat-hint>
+              </div>
+            </div>
+          </div>
+          <ng-template #notCreated>L'ajout de document sera possible après création de la consigne.</ng-template>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <button mat-flat-button color="primary">{{(consigne ? 'BOUTON_VALIDER' : 'Créer')|contenu}}</button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

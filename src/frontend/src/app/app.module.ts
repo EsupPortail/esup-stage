@@ -100,6 +100,7 @@ import { TemplateConventionComponent } from './components/admin/template-convent
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { InterruptionsFormComponent } from './components/convention/stage/interruptions-form/interruptions-form.component';
 import { MatBadgeModule } from "@angular/material/badge";
+import { ConsigneComponent } from './components/consigne/consigne.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -156,6 +157,7 @@ registerLocaleData(localeFr, 'fr');
     CalendrierComponent,
     TemplateConventionComponent,
     InterruptionsFormComponent,
+    ConsigneComponent,
   ],
   imports: [
     BrowserModule,

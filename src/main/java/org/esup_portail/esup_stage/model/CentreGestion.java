@@ -139,7 +139,7 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     private Integer delaiAlerteConvention = 0;
 
     @OneToMany(mappedBy = "centreGestion", fetch = FetchType.EAGER)
-    private List<Consigne> consignes;
+    private List<Consigne> consignes = new ArrayList<>();
 
     public int getId() {
         return id;

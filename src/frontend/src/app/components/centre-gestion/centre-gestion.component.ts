@@ -6,6 +6,7 @@ import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { debounceTime } from 'rxjs/operators';
 import { Router } from "@angular/router";
+import { ConsigneService } from "../../services/consigne.service";
 
 @Component({
   selector: 'app-centre-gestion',
@@ -40,10 +41,11 @@ export class CentreGestionComponent implements OnInit {
 
   coordCentreForm: FormGroup;
   paramCentreForm: FormGroup;
+  consigneCentre: any;
 
   @ViewChild('matTabs') matTabs: MatTabGroup | undefined;
 
-  constructor(private activatedRoute: ActivatedRoute, private centreGestionService: CentreGestionService, private messageService: MessageService, private fb: FormBuilder, private router: Router) {
+  constructor(private activatedRoute: ActivatedRoute, private centreGestionService: CentreGestionService, private messageService: MessageService, private fb: FormBuilder, private router: Router, private consigneService: ConsigneService) {
     this.setCoordCentreForm();
     this.setParamCentreForm();
   }
@@ -55,6 +57,7 @@ export class CentreGestionComponent implements OnInit {
         this.isCreate = true;
         this.centreGestionService.getBrouillonByLogin().subscribe((response: any) => {
           this.centreGestion = response;
+          this.consigneCentre = this.centreGestion.consignes.length === 1 ? this.centreGestion.consignes[0] : null;
           this.centreGestionInited = true;
           if (this.centreGestion.id) {
             this.updateOnChanges();
@@ -65,6 +68,7 @@ export class CentreGestionComponent implements OnInit {
         this.isCreate = false;
         this.centreGestionService.getById(this.pathId).subscribe((response: any) => {
           this.centreGestion = response;
+          this.consigneCentre = this.centreGestion.consignes.length === 1 ? this.centreGestion.consignes[0] : null;
           this.centreGestionInited = true;
           if (this.centreGestion.id) {
             this.updateOnChanges();
@@ -99,6 +103,13 @@ export class CentreGestionComponent implements OnInit {
     } else {
       this.setStatus(3, 0);
     }
+
+    if (this.consigneCentre) {
+      if (this.consigneCentre.texte) this.setStatus(4, 2);
+      else this.setStatus(4, 1);
+    } else {
+      this.setStatus(4, 0);
+    }
   }
 
   tabChanged(event: MatTabChangeEvent): void {
@@ -127,7 +138,10 @@ export class CentreGestionComponent implements OnInit {
 
   refreshCentreGestion(value: any): void {
     this.centreGestion = value;
-    this.majStatus();
+    this.consigneService.getConsigneByCentre(this.centreGestion.id).subscribe((response: any) => {
+      this.consigneCentre = response;
+      this.majStatus();
+    });
     this.updateOnChanges();
   }
 
