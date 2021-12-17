@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 @Service
 public class ImpressionService {
@@ -49,7 +51,7 @@ public class ImpressionService {
         ImpressionContext impressionContext = new ImpressionContext(convention, avenant);
 
         try {
-            String htmlTexte = avenant != null ? this.getHtmlText(templateConvention.getTexteAvenant()) : this.getHtmlText(templateConvention.getTexte());
+            String htmlTexte = avenant != null ? this.getHtmlText(templateConvention.getTexteAvenant(), false) : this.getHtmlText(templateConvention.getTexte(), true);
 
             Template template = new Template("template_convention_texte" + templateConvention.getId(), htmlTexte, freeMarkerConfigurer.getConfiguration());
             StringWriter texte = new StringWriter();
@@ -61,7 +63,7 @@ public class ImpressionService {
             // récupération du logo du centre gestion
             String logoname;
             Fichier fichier = convention.getCentreGestion().getFichier();
-            ImageData imageData;
+            ImageData imageData = null;
 
             // si le centre de gestion n'a pas de logo, on prend celui du centre établissement
             if (fichier == null) {
@@ -70,7 +72,9 @@ public class ImpressionService {
             }
 
             logoname = this.getNomFichier(fichier.getId(), fichier.getNom());
-            imageData = ImageDataFactory.create(this.getLogoFilePath(logoname));
+            if (Files.exists(Paths.get(logoname))) {
+                imageData = ImageDataFactory.create(this.getLogoFilePath(logoname));
+            }
 
             this.generatePDF(texte.toString(), filename, imageData, ou);
         } catch (Exception e) {
@@ -89,9 +93,11 @@ public class ImpressionService {
             PdfDocument pdfDoc = new PdfDocument(new PdfReader(tempFile), new PdfWriter(ou));
             Document document=new Document(pdfDoc);
 
-            Image img = new Image(imageData);
-            if (img.getImageWidth()>240) img.setWidth(240);
-            document.add(img);
+            if (imageData != null) {
+                Image img = new Image(imageData);
+                if (img.getImageWidth()>240) img.setWidth(240);
+                document.add(img);
+            }
             document.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -109,7 +115,27 @@ public class ImpressionService {
         }
     }
 
-    private String getHtmlText(String texte) {
+    public String getDefaultText(boolean isConvention) {
+        StringBuilder sb = new StringBuilder();
+        String str;
+        try {
+            String templateName = isConvention ? "/templates/template_default_convention.html" : "/templates/template_default_avenant.html";
+            BufferedReader in = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(templateName)));
+            while ((str = in.readLine()) != null) {
+                sb.append(str);
+            }
+            in.close();
+
+            return sb.toString();
+        } catch (Exception e) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Template par défaut non trouvé");
+        }
+    }
+
+    private String getHtmlText(String texte, boolean isConvention) {
+        if (texte == null) {
+            texte = getDefaultText(isConvention);
+        }
         // Style par défaut des tables dans les templates
         String htmlTexte = "<style>table { table-layout: fixed; width: 100%; overflow-wrap: break-word; border-spacing: 0px; }</style>";
         htmlTexte += texte;

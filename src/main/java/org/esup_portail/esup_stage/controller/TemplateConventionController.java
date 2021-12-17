@@ -11,6 +11,7 @@ import org.esup_portail.esup_stage.repository.ParamConventionJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateConventionJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateConventionRepository;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
+import org.esup_portail.esup_stage.service.impression.ImpressionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -38,6 +39,9 @@ public class TemplateConventionController {
 
     @Autowired
     ParamConventionJpaRepository paramConventionJpaRepository;
+
+    @Autowired
+    ImpressionService impressionService;
 
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
@@ -95,30 +99,13 @@ public class TemplateConventionController {
     @GetMapping("/default-convention")
     @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public String getDefaultTemplateConvention() {
-        return this.getDefaultText(true);
+        return impressionService.getDefaultText(true);
     }
 
     @GetMapping("/default-avenant")
     @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public String getDefaultTemplateAvenant() {
-        return this.getDefaultText(false);
-    }
-
-    private String getDefaultText(boolean isConvention) {
-        StringBuilder sb = new StringBuilder();
-        String str;
-        try {
-            String templateName = isConvention ? "/templates/template_default_convention.html" : "/templates/template_default_avenant.html";
-            BufferedReader in = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(templateName)));
-            while ((str = in.readLine()) != null) {
-                sb.append(str);
-            }
-            in.close();
-
-            return sb.toString();
-        } catch (Exception e) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Template par défaut non trouvé");
-        }
+        return impressionService.getDefaultText(false);
     }
 
     private void checkTemplateConvention(TemplateConventionDto templateConventionDto) {

@@ -432,3 +432,15 @@ databaseChangeLog:
             sql: INSERT INTO TemplateConvention (idTypeConvention, codeLangueConvention, dateCreation, loginCreation) VALUES ((SELECT idTypeConvention FROM TypeConvention WHERE libelleTypeConvention = 'Formation Initiale'), 'fr', NOW(), 'liquibase')
         - sql:
             sql: INSERT INTO TemplateConvention (idTypeConvention, codeLangueConvention, dateCreation, loginCreation) VALUES ((SELECT idTypeConvention FROM TypeConvention WHERE libelleTypeConvention = 'Formation Initiale'), 'en', NOW(), 'liquibase')
+- changeSet:
+    id: templateConvention-reset
+    author: ssound
+    changes:
+    - sql:
+        sql: DELETE FROM TemplateConvention
+- changeSet:
+    id: templateConvention-reinsert
+    author: ssound
+    changes:
+    - sql:
+        sql: INSERT INTO TemplateConvention (idTypeConvention, codeLangueConvention, dateCreation, loginCreation) SELECT idTypeConvention, codeLangueConvention, NOW(), 'liquibase' FROM TypeConvention, LangueConvention WHERE temEnServTypeConvention = 'O' AND temEnServLangue = 'O'

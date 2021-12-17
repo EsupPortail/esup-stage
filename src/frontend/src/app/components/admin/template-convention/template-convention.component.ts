@@ -114,8 +114,8 @@ export class TemplateConventionComponent implements OnInit {
     this.form.patchValue({
       typeConvention: this.data.typeConvention,
       langueConvention: this.data.langueConvention,
-      texte: this.data.texte,
-      texteAvenant: this.data.texteAvenant
+      texte: this.data.texte ?? this.defaultConvention,
+      texteAvenant: this.data.texteAvenant ?? this.defaultAvenant,
     });
     if (this.tabs) {
       this.tabs.selectedIndex = this.editTabIndex;
