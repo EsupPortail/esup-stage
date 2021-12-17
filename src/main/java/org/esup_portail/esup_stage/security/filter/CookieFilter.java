@@ -40,7 +40,6 @@ public class CookieFilter implements Filter {
         HttpServletResponse resp = (HttpServletResponse) response;
         Cookie tokenCookie = new Cookie("idsToken", "");
         tokenCookie.setValue(TokenFactory.create(req));
-        tokenCookie.setHttpOnly(true);
         tokenCookie.setSecure(req.getRequestURL().toString().startsWith("https"));
         resp.addCookie(tokenCookie);
         chain.doFilter(request, response);
