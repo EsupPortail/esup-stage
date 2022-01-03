@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { FormBuilder, FormGroup, FormControl, Validators } from "@angular/forms";
 import { TypeStructureService } from "../../../../services/type-structure.service";
 import { TypeOffreService } from "../../../../services/type-offre.service";
 
@@ -28,12 +28,12 @@ export class AdminNomenclaturesCreationComponent implements OnInit {
     this.labelTable = data.labelTable;
     if (data.creationFormType == 1) {
       this.form = this.fb.group({
-        libelle: [null, [Validators.required, Validators.maxLength(150)]],
+        libelle: [null, [this.emptyStringValidator, Validators.maxLength(150)]],
       });
     } else if (data.creationFormType == 2) {
       this.form = this.fb.group({
-        libelle: [null, [Validators.required, Validators.maxLength(150)]],
-        codeCtrl: [null, [Validators.required, Validators.maxLength(20)]],
+        libelle: [null, [this.emptyStringValidator, Validators.maxLength(150)]],
+        codeCtrl: [null, [this.emptyStringValidator, Validators.maxLength(20)]],
       });
     } else {
       switch(this.labelTable) {
@@ -62,21 +62,21 @@ export class AdminNomenclaturesCreationComponent implements OnInit {
 
   setLangueConventionForm() {
     this.form = this.fb.group({
-      code: [null, [Validators.required, Validators.maxLength(2)]],
-      libelle: [null, [Validators.required, Validators.maxLength(150)]],
+      code: [null, [this.emptyStringValidator, Validators.maxLength(2)]],
+      libelle: [null, [this.emptyStringValidator, Validators.maxLength(150)]],
     });
   }
 
   setTypeStructureForm() {
     this.form = this.fb.group({
-      libelle: [null, [Validators.required, Validators.maxLength(100)]],
+      libelle: [null, [this.emptyStringValidator, Validators.maxLength(100)]],
       siretObligatoire: [false, [Validators.required]],
     });
   }
 
   setStatutJuridiqueForm() {
     this.form = this.fb.group({
-      libelle: [null, [Validators.required, Validators.maxLength(100)]],
+      libelle: [null, [this.emptyStringValidator, Validators.maxLength(100)]],
       typeStructure: [null, [Validators.required]],
     });
     this.typeStructureService.getPaginated(1, 0, 'libelle', 'asc', '').subscribe((response: any) => {
@@ -86,8 +86,8 @@ export class AdminNomenclaturesCreationComponent implements OnInit {
 
   setContratOffreForm() {
     this.form = this.fb.group({
-      libelle: [null, [Validators.required, Validators.maxLength(100)]],
-      codeCtrl: [null, [Validators.required, Validators.maxLength(20)]],
+      libelle: [null, [this.emptyStringValidator, Validators.maxLength(100)]],
+      codeCtrl: [null, [this.emptyStringValidator, Validators.maxLength(20)]],
       typeOffre: [null, [Validators.required]],
     });
     this.typeOffreService.getPaginated(1, 0, 'libelle', 'asc', '').subscribe((response: any) => {
@@ -108,6 +108,11 @@ export class AdminNomenclaturesCreationComponent implements OnInit {
       return option.code === value.code;
     }
     return false;
+  }
+
+  emptyStringValidator(control: FormControl) {
+    const isEmpty = (control.value || '').trim().length == 0;
+    return isEmpty ? { 'empty': true } : null;
   }
 
 }

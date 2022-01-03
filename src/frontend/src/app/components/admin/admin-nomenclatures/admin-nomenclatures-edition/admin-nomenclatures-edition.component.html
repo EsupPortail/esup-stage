@@ -6,6 +6,7 @@
         <mat-form-field appearance="fill" style="width: 100%">
           <mat-label>Libellé</mat-label>
           <input matInput formControlName="libelle">
+          <mat-error><app-form-error [field]="form.get('libelle')"></app-form-error></mat-error>
         </mat-form-field>
       </div>
       <mat-dialog-actions>

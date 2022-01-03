@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { FormBuilder, FormGroup, FormControl, Validators } from "@angular/forms";
 
 @Component({
   selector: 'app-admin-nomenclatures-edition',
@@ -21,7 +21,7 @@ export class AdminNomenclaturesEditionComponent implements OnInit {
     this.service = data.service;
     this.data = data.data;
     this.form = this.fb.group({
-      libelle: [null, [Validators.maxLength(100)]],
+      libelle: [null, [this.emptyStringValidator, Validators.maxLength(100)]],
     });
     this.setFormData();
   }
@@ -53,6 +53,11 @@ export class AdminNomenclaturesEditionComponent implements OnInit {
         this.dialogRef.close(true);
       });
     }
+  }
+
+  emptyStringValidator(control: FormControl) {
+    const isEmpty = (control.value || '').trim().length == 0;
+    return isEmpty ? { 'empty': true } : null;
   }
 
 }

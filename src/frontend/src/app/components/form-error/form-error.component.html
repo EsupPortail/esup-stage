@@ -3,4 +3,5 @@
   <div *ngIf="field.hasError('maxlength')">Ce champ est trop long</div>
   <div *ngIf="field.hasError('minlength')">Ce champ est trop court</div>
   <div *ngIf="field.hasError('email') || field.hasError('pattern')">Ce champ est invalide</div>
+  <div *ngIf="field.hasError('empty')">Ce champ est vide</div>
 </ng-container>

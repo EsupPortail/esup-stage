@@ -7,6 +7,7 @@
           <mat-form-field appearance="fill" style="width: 100%">
             <mat-label>Libellé</mat-label>
             <input matInput formControlName="libelle">
+            <mat-error><app-form-error [field]="form.get('libelle')"></app-form-error></mat-error>
           </mat-form-field>
         </div>
       </div>
@@ -15,12 +16,14 @@
           <mat-form-field appearance="fill">
             <mat-label>Code</mat-label>
             <input matInput formControlName="code">
+            <mat-error><app-form-error [field]="form.get('code')"></app-form-error></mat-error>
           </mat-form-field>
         </div>
         <div class="col-sm-6" *ngIf="form.get('codeCtrl')">
           <mat-form-field appearance="fill">
             <mat-label>Saisir un code unique</mat-label>
             <input matInput oninput="this.value = this.value.toUpperCase()" formControlName="codeCtrl">
+            <mat-error><app-form-error [field]="form.get('codeCtrl')"></app-form-error></mat-error>
           </mat-form-field>
         </div>
       </div>
