@@ -36,7 +36,7 @@
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Statut juridique</mat-label>
       <mat-select formControlName="idStatutJuridique" required>
-        <mat-option *ngFor="let statutJuridique of statutJuridiques" [value]="statutJuridique.id">{{statutJuridique.libelle}}</mat-option>
+        <mat-option *ngFor="let statutJuridique of statutJuridiques" (click)="setTypeStructure(statutJuridique)" [value]="statutJuridique.id">{{statutJuridique.libelle}}</mat-option>
       </mat-select>
       <mat-error><app-form-error [field]="form.get('idStatutJuridique')"></app-form-error></mat-error>
     </mat-form-field>

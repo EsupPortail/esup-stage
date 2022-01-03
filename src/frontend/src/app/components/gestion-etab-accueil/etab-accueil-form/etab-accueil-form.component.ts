@@ -80,6 +80,8 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges {
       fax: [this.etab.fax, [Validators.maxLength(20)]],
     });
 
+    this.form.get('idTypeStructure')?.disable();
+
     if (this.etab.nafN5) {
       this.selectedNafN5 = this.etab.nafN5;
     }
@@ -101,7 +103,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges {
         this.messageService.setError('Une de ces deux informations doivent être renseignée : Code APE, Activité principale');
         return;
       }
-      const data = {...this.form.value};
+      const data = {...this.form.getRawValue()};
       data.nafN5 = this.selectedNafN5;
       if (this.etab.id) {
         this.structureService.update(this.etab.id, data).subscribe((response: any) => {
@@ -121,6 +123,10 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges {
 
   cancelEdit(): void {
     this.canceled.emit(true);
+  }
+
+  setTypeStructure(statutJuridique: any) {
+    this.form.get('idTypeStructure')?.setValue(statutJuridique.typeStructure.id);
   }
 
 }
