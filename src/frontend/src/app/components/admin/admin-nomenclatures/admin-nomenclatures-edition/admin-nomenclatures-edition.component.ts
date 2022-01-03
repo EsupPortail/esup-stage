@@ -37,6 +37,7 @@ export class AdminNomenclaturesEditionComponent implements OnInit {
     delete data.temEnServ;
     delete data.modifiable;
     delete data.siretObligatoire;
+    delete data.typeStructure;
     this.form.setValue(data);
   }
 
