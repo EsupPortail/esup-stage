@@ -5,6 +5,7 @@ import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.NatureTravail;
+import org.esup_portail.esup_stage.repository.ContenuJpaRepository;
 import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
 import org.esup_portail.esup_stage.repository.NatureTravailJpaRepository;
 import org.esup_portail.esup_stage.repository.NatureTravailRepository;
@@ -29,6 +30,9 @@ public class NatureTravailController {
 
     @Autowired
     ConventionJpaRepository conventionJpaRepository;
+
+    @Autowired
+    ContenuJpaRepository contenuJpaRepository;
 
     @GetMapping
     @Secure
@@ -57,7 +61,7 @@ public class NatureTravailController {
     @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.CREATION})
     public NatureTravail create(@RequestBody NatureTravail natureTravail) {
         if (natureTravailRepository.exists(natureTravail.getLibelle(), natureTravail.getId())) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Libellé déjà existant");
+            throw new AppException(HttpStatus.BAD_REQUEST, contenuJpaRepository.findByCode("NOMENCLATURE_LIBELLE_EXISTANT").getTexte());
         }
         natureTravail.setTemEnServ("O");
         natureTravail = natureTravailJpaRepository.saveAndFlush(natureTravail);

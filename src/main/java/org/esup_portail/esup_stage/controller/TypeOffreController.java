@@ -5,6 +5,7 @@ import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.TypeOffre;
+import org.esup_portail.esup_stage.repository.ContenuJpaRepository;
 import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
 import org.esup_portail.esup_stage.repository.TypeOffreJpaRepository;
 import org.esup_portail.esup_stage.repository.TypeOffreRepository;
@@ -29,6 +30,9 @@ public class TypeOffreController {
 
     @Autowired
     ConventionJpaRepository conventionJpaRepository;
+
+    @Autowired
+    ContenuJpaRepository contenuJpaRepository;
 
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
@@ -57,7 +61,7 @@ public class TypeOffreController {
     @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.CREATION})
     public TypeOffre create(@RequestBody TypeOffre typeOffre) {
         if (typeOffreRepository.exists(typeOffre.getCodeCtrl(), typeOffre.getId())) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Code déjà existant");
+            throw new AppException(HttpStatus.BAD_REQUEST, contenuJpaRepository.findByCode("NOMENCLATURE_CODE_EXISTANT").getTexte());
         }
         typeOffre.setTemEnServ("O");
         typeOffre.setModifiable(true);

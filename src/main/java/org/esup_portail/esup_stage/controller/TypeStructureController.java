@@ -5,6 +5,7 @@ import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.TypeStructure;
+import org.esup_portail.esup_stage.repository.ContenuJpaRepository;
 import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
 import org.esup_portail.esup_stage.repository.TypeStructureJpaRepository;
 import org.esup_portail.esup_stage.repository.TypeStructureRepository;
@@ -29,6 +30,9 @@ public class TypeStructureController {
 
     @Autowired
     ConventionJpaRepository conventionJpaRepository;
+
+    @Autowired
+    ContenuJpaRepository contenuJpaRepository;
 
     @GetMapping
     @Secure()
@@ -57,7 +61,7 @@ public class TypeStructureController {
     @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.CREATION})
     public TypeStructure create(@RequestBody TypeStructure typeStructure) {
         if (typeStructureRepository.exists(typeStructure.getLibelle(), typeStructure.getId())) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Libellé déjà existant");
+            throw new AppException(HttpStatus.BAD_REQUEST, contenuJpaRepository.findByCode("NOMENCLATURE_LIBELLE_EXISTANT").getTexte());
         }
         typeStructure.setTemEnServ("O");
         typeStructure.setModifiable(true);

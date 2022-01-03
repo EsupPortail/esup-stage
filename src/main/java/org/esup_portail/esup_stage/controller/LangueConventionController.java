@@ -5,6 +5,7 @@ import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.LangueConvention;
+import org.esup_portail.esup_stage.repository.ContenuJpaRepository;
 import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
 import org.esup_portail.esup_stage.repository.LangueConventionJpaRepository;
 import org.esup_portail.esup_stage.repository.LangueConventionRepository;
@@ -29,6 +30,9 @@ public class LangueConventionController {
 
     @Autowired
     ConventionJpaRepository conventionJpaRepository;
+
+    @Autowired
+    ContenuJpaRepository contenuJpaRepository;
 
     @GetMapping
     @Secure
@@ -57,7 +61,7 @@ public class LangueConventionController {
     @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.CREATION})
     public LangueConvention create(@RequestBody LangueConvention langueConvention) {
         if (langueConventionRepository.exists(langueConvention)) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Libellé déjà existant");
+            throw new AppException(HttpStatus.BAD_REQUEST, contenuJpaRepository.findByCode("NOMENCLATURE_CODE_EXISTANT").getTexte());
         }
         langueConvention.setTemEnServ("O");
         langueConvention = langueConventionJpaRepository.saveAndFlush(langueConvention);

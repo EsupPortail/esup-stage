@@ -5,6 +5,7 @@ import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.ModeVersGratification;
+import org.esup_portail.esup_stage.repository.ContenuJpaRepository;
 import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
 import org.esup_portail.esup_stage.repository.ModeVersGratificationJpaRepository;
 import org.esup_portail.esup_stage.repository.ModeVersGratificationRepository;
@@ -29,6 +30,9 @@ public class ModeVersGratificationController {
 
     @Autowired
     ConventionJpaRepository conventionJpaRepository;
+
+    @Autowired
+    ContenuJpaRepository contenuJpaRepository;
 
     @GetMapping
     @Secure
@@ -57,7 +61,7 @@ public class ModeVersGratificationController {
     @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.CREATION})
     public ModeVersGratification create(@RequestBody ModeVersGratification modeVersGratification) {
         if (modeVersGratificationRepository.exists(modeVersGratification.getLibelle(), modeVersGratification.getId())) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Libellé déjà existant");
+            throw new AppException(HttpStatus.BAD_REQUEST, contenuJpaRepository.findByCode("NOMENCLATURE_LIBELLE_EXISTANT").getTexte());
         }
         modeVersGratification.setTemEnServ("O");
         modeVersGratification = modeVersGratificationJpaRepository.saveAndFlush(modeVersGratification);

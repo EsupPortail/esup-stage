@@ -5,6 +5,7 @@ import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.TypeConvention;
+import org.esup_portail.esup_stage.repository.ContenuJpaRepository;
 import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
 import org.esup_portail.esup_stage.repository.TypeConventionJpaRepository;
 import org.esup_portail.esup_stage.repository.TypeConventionRepository;
@@ -29,6 +30,9 @@ public class TypeConventionController {
 
     @Autowired
     ConventionJpaRepository conventionJpaRepository;
+
+    @Autowired
+    ContenuJpaRepository contenuJpaRepository;
 
     @GetMapping
     @Secure
@@ -57,7 +61,7 @@ public class TypeConventionController {
     @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.CREATION})
     public TypeConvention create(@RequestBody TypeConvention typeConvention) {
         if (typeConventionRepository.exists(typeConvention.getCodeCtrl(), typeConvention.getId())) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Code déjà existant");
+            throw new AppException(HttpStatus.BAD_REQUEST, contenuJpaRepository.findByCode("NOMENCLATURE_CODE_EXISTANT").getTexte());
         }
         typeConvention.setTemEnServ("O");
         typeConvention.setModifiable(true);

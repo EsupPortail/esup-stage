@@ -5,6 +5,7 @@ import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.ContratOffre;
+import org.esup_portail.esup_stage.repository.ContenuJpaRepository;
 import org.esup_portail.esup_stage.repository.ContratOffreJpaRepository;
 import org.esup_portail.esup_stage.repository.ContratOffreRepository;
 import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
@@ -29,6 +30,9 @@ public class ContratOffreController {
 
     @Autowired
     ConventionJpaRepository conventionJpaRepository;
+
+    @Autowired
+    ContenuJpaRepository contenuJpaRepository;
 
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
@@ -57,7 +61,7 @@ public class ContratOffreController {
     @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.CREATION})
     public ContratOffre create(@RequestBody ContratOffre contratOffre) {
         if (contratOffreRepository.exists(contratOffre.getCodeCtrl(), contratOffre.getId())) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Code déjà existant");
+            throw new AppException(HttpStatus.BAD_REQUEST, contenuJpaRepository.findByCode("NOMENCLATURE_CODE_EXISTANT").getTexte());
         }
         contratOffre.setTemEnServ("O");
         contratOffre.setModifiable(true);

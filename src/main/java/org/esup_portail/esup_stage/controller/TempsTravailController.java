@@ -5,6 +5,7 @@ import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.TempsTravail;
+import org.esup_portail.esup_stage.repository.ContenuJpaRepository;
 import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
 import org.esup_portail.esup_stage.repository.TempsTravailJpaRepository;
 import org.esup_portail.esup_stage.repository.TempsTravailRepository;
@@ -29,6 +30,9 @@ public class TempsTravailController {
 
     @Autowired
     ConventionJpaRepository conventionJpaRepository;
+
+    @Autowired
+    ContenuJpaRepository contenuJpaRepository;
 
     @GetMapping
     @Secure
@@ -57,7 +61,7 @@ public class TempsTravailController {
     @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.CREATION})
     public TempsTravail create(@RequestBody TempsTravail tempsTravail) {
         if (tempsTravailRepository.exists(tempsTravail.getCodeCtrl(), tempsTravail.getId())) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Code déjà existant");
+            throw new AppException(HttpStatus.BAD_REQUEST, contenuJpaRepository.findByCode("NOMENCLATURE_CODE_EXISTANT").getTexte());
         }
         tempsTravail.setTemEnServ("O");
         tempsTravail.setModifiable(true);

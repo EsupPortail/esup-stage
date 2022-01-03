@@ -8,6 +8,7 @@ import org.esup_portail.esup_stage.model.Effectif;
 import org.esup_portail.esup_stage.model.Role;
 import org.esup_portail.esup_stage.model.Utilisateur;
 import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
+import org.esup_portail.esup_stage.repository.ContenuJpaRepository;
 import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
 import org.esup_portail.esup_stage.repository.EffectifJpaRepository;
 import org.esup_portail.esup_stage.repository.EffectifRepository;
@@ -34,6 +35,9 @@ public class EffectifController {
 
     @Autowired
     ConventionJpaRepository conventionJpaRepository;
+
+    @Autowired
+    ContenuJpaRepository contenuJpaRepository;
 
     @GetMapping
     @Secure
@@ -72,7 +76,7 @@ public class EffectifController {
     @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.CREATION})
     public Effectif create(@RequestBody Effectif effectif) {
         if (effectifRepository.exists(effectif.getLibelle(), effectif.getId())) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Libellé déjà existant");
+            throw new AppException(HttpStatus.BAD_REQUEST, contenuJpaRepository.findByCode("NOMENCLATURE_LIBELLE_EXISTANT").getTexte());
         }
         effectif.setTemEnServ("O");
         effectif.setModifiable(true);

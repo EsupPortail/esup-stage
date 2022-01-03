@@ -137,3 +137,43 @@ databaseChangeLog:
                     name: dateCreation
                     value: now()
             tableName: Contenu
+- changeSet:
+    id: contenu-insert
+    author: jwang
+    changes:
+        - insert:
+            columns:
+                - column:
+                    name: codeContenu
+                    value: NOMENCLATURE_LIBELLE_EXISTANT
+                - column:
+                    name: libelle
+                    valueBoolean: true
+                - column:
+                    name: texte
+                    value: Libellé déjà existant
+                - column:
+                    name: loginCreation
+                    value: liquibase
+                - column:
+                    name: dateCreation
+                    value: now()
+            tableName: Contenu
+        - insert:
+            columns:
+                - column:
+                    name: codeContenu
+                    value: NOMENCLATURE_CODE_EXISTANT
+                - column:
+                    name: libelle
+                    valueBoolean: true
+                - column:
+                    name: texte
+                    value: Code déjà existant
+                - column:
+                    name: loginCreation
+                    value: liquibase
+                - column:
+                    name: dateCreation
+                    value: now()
+            tableName: Contenu
