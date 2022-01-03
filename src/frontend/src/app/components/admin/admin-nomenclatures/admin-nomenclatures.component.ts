@@ -122,6 +122,14 @@ export class AdminNomenclaturesComponent implements OnInit {
   tabChanged(event: MatTabChangeEvent): void {
     if (this.appTables) {
       this.nomenclatures[event.index].tableIndex = this.appTables.toArray().findIndex(t => t.service == this.nomenclatures[event.index].service);
+
+      // mise à jour de l'index des tables déjà initialisées
+      this.nomenclatures.forEach((nomenclature: any) => {
+        if (nomenclature.tableIndex !== undefined) {
+          if (this.appTables)
+            nomenclature.tableIndex = this.appTables.toArray().findIndex(t => t.service == nomenclature.service);
+        }
+      });
     }
     this.createButton.service = this.nomenclatures[event.index].service;
     this.createButton.tableIndex = this.nomenclatures[event.index].tableIndex;
@@ -147,8 +155,10 @@ export class AdminNomenclaturesComponent implements OnInit {
   openCreationModal() {
     let service = this.createButton.service;
     let tableIndex = this.createButton.tableIndex;
-    let labelTable = this.nomenclatures[tableIndex].label;
+    let nomenclature = this.nomenclatures.find((n: any) => n.tableIndex == tableIndex);
+    let labelTable = nomenclature.label;
     let creationFormType = this.createButton.creationFormType;
+
     const dialogConfig = new MatDialogConfig();
     dialogConfig.width = '500px';
     dialogConfig.data = {service: service, creationFormType: creationFormType, labelTable: labelTable};
