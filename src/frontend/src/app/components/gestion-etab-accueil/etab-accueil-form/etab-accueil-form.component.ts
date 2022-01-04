@@ -135,10 +135,23 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges {
   numeroSiretRequired() {
     let idTypeStructure = this.form.get('idTypeStructure')?.value;
     if (idTypeStructure) {
-      return this.typeStructures.find(type => type.id === idTypeStructure).siretObligatoire;
+      let typeStructure = this.typeStructures.find(type => type.id === idTypeStructure);
+      if (typeStructure)
+        return typeStructure.siretObligatoire;
     }
 
     return false;
+  }
+
+  isFr() {
+    let idPays = this.form.get('idPays')?.value;
+    if (idPays) {
+      let pays = this.countries.find(c => c.id === idPays);
+      if (pays)
+        return pays.libelle === 'FRANCE';
+    }
+
+    return true;
   }
 
 }
