@@ -12,8 +12,6 @@ public class StructureFormDto {
     @Size(max = 20)
     private String libCedex;
 
-    @NotNull
-    @NotEmpty
     @Size(min = 14, max = 14)
     private String numeroSiret;
 

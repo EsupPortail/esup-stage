@@ -103,6 +103,9 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges {
         this.messageService.setError('Une de ces deux informations doivent être renseignée : Code APE, Activité principale');
         return;
       }
+      if (this.form.get('numeroSiret')?.value === "") {
+        this.form.get('numeroSiret')?.setValue(null);
+      }
       const data = {...this.form.getRawValue()};
       data.nafN5 = this.selectedNafN5;
       if (this.etab.id) {
@@ -127,6 +130,15 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges {
 
   setTypeStructure(statutJuridique: any) {
     this.form.get('idTypeStructure')?.setValue(statutJuridique.typeStructure.id);
+  }
+
+  numeroSiretRequired() {
+    let idTypeStructure = this.form.get('idTypeStructure')?.value;
+    if (idTypeStructure) {
+      return this.typeStructures.find(type => type.id === idTypeStructure).siretObligatoire;
+    }
+
+    return false;
   }
 
 }

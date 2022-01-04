@@ -10,7 +10,7 @@
     </mat-form-field>
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Numéro Siret</mat-label>
-      <input matInput formControlName="numeroSiret" required />
+      <input matInput formControlName="numeroSiret" [required]="numeroSiretRequired()" />
       <mat-icon matSuffix class="icon-help" matTooltip="Code INSEE à demander à votre établissement d'accueil ou consultable sur des sites de référencement d'entreprises. Correspond à l'identifiant géographique de l'établissement. (format : 14 chiffres consécutifs sans espace - ex: 12345678912345)">help</mat-icon>
       <mat-error><app-form-error [field]="form.get('numeroSiret')"></app-form-error></mat-error>
     </mat-form-field>
