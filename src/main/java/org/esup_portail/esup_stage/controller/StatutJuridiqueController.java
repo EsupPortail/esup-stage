@@ -75,6 +75,7 @@ public class StatutJuridiqueController {
         StatutJuridique statutJuridique = statutJuridiqueJpaRepository.findById(id);
 
         statutJuridique.setLibelle(requestStatutJuridique.getLibelle());
+        statutJuridique.setTypeStructure(requestStatutJuridique.getTypeStructure());
         if (requestStatutJuridique.getTemEnServ() != null) {
             statutJuridique.setTemEnServ(requestStatutJuridique.getTemEnServ());
         }

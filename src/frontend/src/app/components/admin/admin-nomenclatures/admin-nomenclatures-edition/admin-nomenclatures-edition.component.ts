@@ -1,6 +1,8 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, FormControl, Validators } from "@angular/forms";
+import { TypeStructureService } from "../../../../services/type-structure.service";
+import { TypeOffreService } from "../../../../services/type-offre.service";
 
 @Component({
   selector: 'app-admin-nomenclatures-edition',
@@ -12,32 +14,54 @@ export class AdminNomenclaturesEditionComponent implements OnInit {
   form: FormGroup;
   service: any;
   data: any;
+  labelTable: string;
+  typeStructures: any;
+  typeOffres: any;
 
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<AdminNomenclaturesEditionComponent>,
+    private typeStructureService: TypeStructureService,
+    private typeOffreService: TypeOffreService,
     @Inject(MAT_DIALOG_DATA) data: any
   ) {
     this.service = data.service;
     this.data = data.data;
-    this.form = this.fb.group({
-      libelle: [null, [this.emptyStringValidator, Validators.maxLength(100)]],
-    });
-    this.setFormData();
+    this.labelTable = data.labelTable;
+    switch(this.labelTable) {
+      case 'Type de structure':
+        this.setTypeStructureForm();
+        break;
+      case 'Statut juridique':
+        this.setStatutJuridiqueForm();
+        break;
+      case 'Contrat du stage':
+        this.setContratOffreForm();
+        break;
+      default:
+        this.setDefaultForm();
+        break;
+    }
+    this.setFormData(this.labelTable);
   }
 
   ngOnInit(): void {
   }
 
-  setFormData(): void {
+  setFormData(labelTable: string): void {
     const data = {...this.data};
     delete data.id;
     delete data.code;
     delete data.codeCtrl;
     delete data.temEnServ;
     delete data.modifiable;
-    delete data.siretObligatoire;
-    delete data.typeStructure;
+
+    if (labelTable !== 'Type de structure')
+      delete data.siretObligatoire;
+    if (labelTable !== 'Statut juridique')
+      delete data.typeStructure;
+    if (labelTable !== 'Contrat du stage')
+      delete data.typeOffre;
     this.form.setValue(data);
   }
 
@@ -45,15 +69,55 @@ export class AdminNomenclaturesEditionComponent implements OnInit {
     this.dialogRef.close(false);
   }
 
+  setDefaultForm() {
+    this.form = this.fb.group({
+      libelle: [null, [this.emptyStringValidator, Validators.maxLength(100)]],
+    });
+  }
+
+  setTypeStructureForm() {
+    this.form = this.fb.group({
+      libelle: [null, [this.emptyStringValidator, Validators.maxLength(100)]],
+      siretObligatoire: [false, [Validators.required]],
+    });
+  }
+
+  setStatutJuridiqueForm() {
+    this.form = this.fb.group({
+      libelle: [null, [this.emptyStringValidator, Validators.maxLength(100)]],
+      typeStructure: [null, [Validators.required]],
+    });
+    this.typeStructureService.getPaginated(1, 0, 'libelle', 'asc', '').subscribe((response: any) => {
+      this.typeStructures = response.data;
+    });
+  }
+
+  setContratOffreForm() {
+    this.form = this.fb.group({
+      libelle: [null, [this.emptyStringValidator, Validators.maxLength(100)]],
+      typeOffre: [null, [Validators.required]],
+    });
+    this.typeOffreService.getPaginated(1, 0, 'libelle', 'asc', '').subscribe((response: any) => {
+      this.typeOffres = response.data;
+    });
+  }
+
   save(): void {
     if (this.form.valid) {
       let key = this.data.id ? this.data.id : this.data.code;
       this.service.update(key, this.form.value).subscribe((response: any) => {
         this.data = response;
-        this.setFormData();
+        this.setFormData(this.labelTable);
         this.dialogRef.close(true);
       });
     }
+  }
+
+  compare(option: any, value: any): boolean {
+    if (option && value) {
+      return option.id === value.id;
+    }
+    return false;
   }
 
   emptyStringValidator(control: FormControl) {

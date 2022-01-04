@@ -75,6 +75,7 @@ public class ContratOffreController {
         ContratOffre contratOffre = contratOffreJpaRepository.findById(id);
 
         contratOffre.setLibelle(requestContratOffre.getLibelle());
+        contratOffre.setTypeOffre(requestContratOffre.getTypeOffre());
         if (requestContratOffre.getTemEnServ() != null) {
             contratOffre.setTemEnServ(requestContratOffre.getTemEnServ());
         }

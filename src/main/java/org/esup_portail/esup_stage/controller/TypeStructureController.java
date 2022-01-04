@@ -75,6 +75,7 @@ public class TypeStructureController {
         TypeStructure typeStructure = typeStructureJpaRepository.findById(id);
 
         typeStructure.setLibelle(requestTypeStructure.getLibelle());
+        typeStructure.setSiretObligatoire(requestTypeStructure.isSiretObligatoire());
         if (requestTypeStructure.getTemEnServ() != null) {
             typeStructure.setTemEnServ(requestTypeStructure.getTemEnServ());
         }

@@ -137,11 +137,11 @@ export class AdminNomenclaturesComponent implements OnInit {
     this.nomenclatures[event.index].init = true;
   }
 
-  openEditionModal(service: any, data: any, tableIndex: number) {
+  openEditionModal(service: any, data: any, tableIndex: number, labelTable: string) {
     this.data = data;
     const dialogConfig = new MatDialogConfig();
     dialogConfig.width = '500px';
-    dialogConfig.data = {service: service, data: this.data};
+    dialogConfig.data = {service: service, data: this.data, labelTable: labelTable};
     const modalDialog = this.matDialog.open(AdminNomenclaturesEditionComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse == true) {
