@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.List;
+
 @ApiController
 @RequestMapping("/nafn5")
 public class NafN5Controller {
@@ -19,5 +21,11 @@ public class NafN5Controller {
     @Secure
     public NafN5 getByCode(@PathVariable("code") String code) {
         return nafN5JpaRepository.findByCode(code);
+    }
+
+    @GetMapping("/all")
+    @Secure
+    public List<NafN5> findAll() {
+        return nafN5JpaRepository.findAll();
     }
 }

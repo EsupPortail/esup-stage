@@ -13,4 +13,8 @@ export class NafN5Service {
   getByCode(code: string): Observable<any> {
     return this.http.get(`${environment.apiUrl}/nafn5/${code}`);
   }
+
+  findAll(): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/nafn5/all`);
+  }
 }

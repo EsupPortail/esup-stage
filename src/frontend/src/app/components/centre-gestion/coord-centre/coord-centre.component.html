@@ -30,7 +30,9 @@
       <mat-form-field class="col-sm-12 col-md-12" appearance="fill">
         <mat-label>Etapes</mat-label>
         <mat-select [(ngModel)]="selectedValues" multiple #multiSelect [compareWith]="compareCode">
-          <ngx-mat-select-search [formControl]="etapeFilterCtrl" placeholderLabel="Filtrer par code ou libellé VET" noEntriesFoundLabel="Aucune étape trouvée"></ngx-mat-select-search>
+          <mat-option>
+            <ngx-mat-select-search [formControl]="etapeFilterCtrl" placeholderLabel="Filtrer par code ou libellé VET" noEntriesFoundLabel="Aucune étape trouvée"></ngx-mat-select-search>
+          </mat-option>
           <mat-option #matOption *ngFor="let etape of filteredEtapes | async" [value]="etape" (click)="etapesChange(etape, matOption.selected)">{{etape.code}};{{etape.codeVrsEtp}} - {{etape.libelle}}</mat-option>
         </mat-select>
       </mat-form-field>

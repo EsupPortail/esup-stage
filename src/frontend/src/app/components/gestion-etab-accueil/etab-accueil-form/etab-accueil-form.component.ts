@@ -1,5 +1,5 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { FormBuilder, Validators } from "@angular/forms";
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, OnDestroy } from '@angular/core';
+import { FormBuilder, FormControl, Validators } from "@angular/forms";
 import { StructureService } from "../../../services/structure.service";
 import { PaysService } from "../../../services/pays.service";
 import { TypeStructureService } from "../../../services/type-structure.service";
@@ -8,6 +8,8 @@ import { NafN5Service } from "../../../services/naf-n5.service";
 import { StatutJuridiqueService } from "../../../services/statut-juridique.service";
 import { EffectifService } from "../../../services/effectif.service";
 import { MessageService } from "../../../services/message.service";
+import { ReplaySubject, Subject } from 'rxjs';
+import { take, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-etab-accueil-form',
@@ -26,6 +28,11 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges {
   statutJuridiques: any[] = [];
   effectifs: any[] = [];
   selectedNafN5: any;
+  nafN5List: any[] = [];
+
+  nafN5FilterCtrl: FormControl = new FormControl();
+  filteredNafN5List: ReplaySubject<any> = new ReplaySubject<any>(1);
+  _onDestroy = new Subject<void>();
 
   form: any;
 
@@ -57,6 +64,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges {
     this.effectifService.getAll().subscribe((response: any) => {
       this.effectifs =  response;
     });
+    this.getNafN5List();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -87,13 +95,38 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges {
     }
   }
 
-  getNafN5(): void {
-    const nafN5Code = this.form.get('codeNafN5')?.value;
-    if (nafN5Code) {
-      this.nafN5Service.getByCode(nafN5Code).subscribe((response: any) => {
-        this.selectedNafN5 = response;
-      });
+  getNafN5List(): void {
+    this.nafN5Service.findAll().subscribe((response: any) => {
+      this.nafN5List = response;
+      this.filteredNafN5List.next(this.nafN5List.slice());
+      this.nafN5FilterCtrl.valueChanges
+        .pipe(takeUntil(this._onDestroy))
+        .subscribe(() => {
+          this.filterNafN5List();
+        });
+    });
+  }
+
+  filterNafN5List() {
+    if (!this.nafN5List) {
+      return;
     }
+
+    let search = this.nafN5FilterCtrl.value;
+    if (!search) {
+      this.filteredNafN5List.next(this.nafN5List.slice());
+      return;
+    } else {
+      search = search.toLowerCase();
+    }
+
+    this.filteredNafN5List.next(
+      this.nafN5List.filter(nafN5 => nafN5.code.toLowerCase().indexOf(search) > -1)
+    );
+  }
+
+  setSelectedNafN5(nafN5: any): void {
+    this.selectedNafN5 = nafN5;
   }
 
   save(): void {
