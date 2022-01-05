@@ -50,7 +50,7 @@
   <div class="row">
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Code APE</mat-label>
-      <input matInput formControlName="codeNafN5" (change)="getNafN5()" />
+      <input matInput formControlName="codeNafN5" (change)="getNafN5()" required/>
       <mat-icon matSuffix class="icon-help" matTooltip="Code à demander directement à votre établissement d'accueil ou consultable sur un site de référencement d'entreprises. Composé de quatre chiffres et une lettre (ex: 01.10Z) faisant référence à la nomenclature d'activité françaises (NAF).">help</mat-icon>
       <mat-hint>
         <ng-container *ngIf="selectedNafN5; else invalidNafN5">
@@ -62,8 +62,9 @@
       </mat-hint>
     </mat-form-field>
     <div class="col-sm-12 col-md-6 mb-2">
-      <label>Activité principale</label>
+      <label>Activité principale *</label>
       <quill-editor formControlName="activitePrincipale"></quill-editor>
+      <mat-error><app-form-error [field]="form.get('activitePrincipale')"></app-form-error></mat-error>
     </div>
   </div>
 

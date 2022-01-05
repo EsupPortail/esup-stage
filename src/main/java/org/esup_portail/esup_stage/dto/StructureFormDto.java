@@ -15,6 +15,8 @@ public class StructureFormDto {
     @Size(min = 14, max = 14)
     private String numeroSiret;
 
+    @NotNull
+    @NotEmpty
     @Size(max = 6)
     private String codeNafN5;
 
@@ -23,6 +25,8 @@ public class StructureFormDto {
     @Size(max = 150)
     private String raisonSociale;
 
+    @NotNull
+    @NotEmpty
     private String activitePrincipale;
 
     @NotNull
