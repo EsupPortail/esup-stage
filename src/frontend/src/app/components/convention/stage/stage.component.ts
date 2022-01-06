@@ -215,15 +215,13 @@ export class StageComponent implements OnInit {
     })
 
     //controles uniquement pour les non gestionnaires
-    if(!this.isGestionnaire()){
-      this.minDateDebutStage = new Date(new Date().getTime() + (1000 * 60 * 60 * 24));
-      this.maxDateDebutStage = new Date(new Date().getFullYear()+1, 7, 31);
-      if (this.convention.dateDebutStage){
-        this.updateDateFinBounds(new Date(this.convention.dateDebutStage));
-      }else{
-        this.minDateFinStage = new Date(new Date().getFullYear()-1, 0, 2);
-        this.maxDateFinStage = new Date(new Date().getFullYear()+2, 0, 1);
-      }
+    this.minDateDebutStage = new Date(new Date().getTime() + (1000 * 60 * 60 * 24));
+    this.maxDateDebutStage = new Date(new Date().getFullYear()+1, 7, 31);
+    if (this.convention.dateDebutStage){
+      this.updateDateFinBounds(new Date(this.convention.dateDebutStage));
+    }else{
+      this.minDateFinStage = new Date(new Date().getFullYear()-1, 0, 2);
+      this.maxDateFinStage = new Date(new Date().getFullYear()+2, 0, 1);
     }
   }
 
@@ -307,12 +305,10 @@ export class StageComponent implements OnInit {
 
   updateDateFinBounds(dateDebut: Date): void {
     //controles uniquement pour les non gestionnaires
-    if(!this.isGestionnaire()){
-      this.minDateFinStage = new Date(dateDebut.getTime() + (1000 * 60 * 60 * 24));
-      this.maxDateFinStage = new Date(dateDebut.getTime() + (1000 * 60 * 60 * 24 * 365));
-      this.form.get('dateFinStage')!.markAsTouched();
-      this.form.get('dateFinStage')!.updateValueAndValidity();
-    }
+    this.minDateFinStage = new Date(dateDebut.getTime() + (1000 * 60 * 60 * 24));
+    this.maxDateFinStage = new Date(dateDebut.getTime() + (1000 * 60 * 60 * 24 * 365));
+    this.form.get('dateFinStage')!.markAsTouched();
+    this.form.get('dateFinStage')!.updateValueAndValidity();
   }
 
   openInterruptionsCreateFormModal(): void {
