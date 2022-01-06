@@ -491,6 +491,6 @@ export class StageComponent implements OnInit {
         loopDate = new Date(loopDate.getTime() + (1000 * 60 * 60 * 24));
       }
     }
-    return heuresTravails;
+    return Math.ceil(heuresTravails);
   }
 }
