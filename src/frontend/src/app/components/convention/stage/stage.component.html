@@ -96,6 +96,7 @@
         <div class="row" *ngIf="form.value.interruptionStage">
           <div class="col-6 mb-3">
             <button mat-button mat-flat-button type="button" color="primary" (click)="openInterruptionsCreateFormModal()">Ajouter des nouvelles périodes d'interruptions</button>
+            <mat-error *ngIf="!periodesInterruptionsValid">Veuillez ajouter une période d'interruption</mat-error>
           </div>
           <div class="col-md-12 mb-3" *ngIf="interruptionsStage.length > 0">
             <div class="text-title">Périodes d'interruptions actuelles :</div>
