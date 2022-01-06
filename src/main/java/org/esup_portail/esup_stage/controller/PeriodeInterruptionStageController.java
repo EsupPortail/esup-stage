@@ -93,6 +93,14 @@ public class PeriodeInterruptionStageController {
         return true;
     }
 
+    @DeleteMapping("/delete-by-convention/{idConvention}")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.SUPPRESSION})
+    public boolean deleteByConvention(@PathVariable("idConvention") int idConvention) {
+        periodeInterruptionStageJpaRepository.deleteByConvention(idConvention);
+        periodeInterruptionStageJpaRepository.flush();
+        return true;
+    }
+
     private void setPeriodeInterruptionStageData(PeriodeInterruptionStage periodeInterruptionStage, PeriodeInterruptionStageDto periodeInterruptionStageDto) {
 
         Convention convention = conventionJpaRepository.findById(periodeInterruptionStageDto.getIdConvention());

@@ -374,6 +374,14 @@ export class StageComponent implements OnInit {
     });
   }
 
+  deleteInterruptionStageByConvention(): void {
+    if (this.interruptionsStage.length >= 1) {
+      this.periodeInterruptionStageService.deleteByConvention(this.convention.id).subscribe((response: any) => {
+        this.refreshInterruptionsStage();
+      });
+    }
+  }
+
   openCalendar(): void {
     this.openCalendarModal();
   }

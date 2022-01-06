@@ -34,4 +34,8 @@ export class PeriodeInterruptionStageService implements PaginatedService {
   delete(id: number): Observable<any> {
     return this.http.delete(environment.apiUrl + "/periode-interruption-stage/" + id);
   }
+
+  deleteByConvention(idConvention: number): Observable<any> {
+    return this.http.delete(environment.apiUrl + "/periode-interruption-stage/delete-by-convention/" + idConvention);
+  }
 }
