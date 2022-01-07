@@ -180,38 +180,48 @@
         </div>
         <div class="alert alert-info text-center" [innerHTML]="texteLimiteRenumeration" *ngIf="form.value.gratificationStage">
         </div>
-        <div class="row" *ngIf="form.value.gratificationStage">
-          <mat-form-field class="col-sm-6 col-md-6 mb-2" appearance="fill">
-            <mat-label>Montant de la gratification</mat-label>
-            <input matInput formControlName="montantGratification" required />
-            <mat-error><app-form-error [field]="form.get('montantGratification')"></app-form-error></mat-error>
-          </mat-form-field>
-          <mat-form-field class="col-sm-3 col-md-3 mb-2" appearance="fill">
-            <mat-select formControlName="idUniteGratification" required>
-              <mat-option *ngFor="let uniteGratification of uniteGratifications" [value]="uniteGratification.id">{{uniteGratification.libelle}}</mat-option>
-            </mat-select>
-            <mat-error><app-form-error [field]="form.get('idUniteGratification')"></app-form-error></mat-error>
-          </mat-form-field>
-          <mat-form-field class="col-sm-3 col-md-3 mb-2" appearance="fill">
-            <mat-select formControlName="idUniteDuree" required>
-              <mat-option *ngFor="let uniteDuree of uniteDurees" [value]="uniteDuree.id">{{uniteDuree.libelle}}</mat-option>
-            </mat-select>
-            <mat-error><app-form-error [field]="form.get('idUniteDuree')"></app-form-error></mat-error>
-          </mat-form-field>
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Monnaie utilisée pour le paiement</mat-label>
-            <mat-select formControlName="idDevise" required>
-              <mat-option *ngFor="let devise of devises" [value]="devise.id">{{devise.libelle}}</mat-option>
-            </mat-select>
-            <mat-error><app-form-error [field]="form.get('idDevise')"></app-form-error></mat-error>
-          </mat-form-field>
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Modalité de versement de la gratification</mat-label>
-            <mat-select formControlName="idModeVersGratification" required>
-              <mat-option *ngFor="let modeVersGratification of modeVersGratifications" [value]="modeVersGratification.id">{{modeVersGratification.libelle}}</mat-option>
-            </mat-select>
-            <mat-error><app-form-error [field]="form.get('idModeVersGratification')"></app-form-error></mat-error>
-          </mat-form-field>
+        <div *ngIf="form.value.gratificationStage">
+          <div class="text-title">Montant de la gratification</div>
+        </div>
+        <div *ngIf="form.value.gratificationStage">
+          <div class="row" style="align-items: baseline">
+            <mat-form-field class="col-sm-3 col-md-3 mb-2" appearance="fill">
+              <mat-label>Montant de la gratification</mat-label>
+              <input matInput formControlName="montantGratification" required />
+              <mat-error><app-form-error [field]="form.get('montantGratification')"></app-form-error></mat-error>
+            </mat-form-field>
+            <mat-form-field class="col-sm-2 col-md-2 mb-2" appearance="fill">
+              <mat-label>Type de gratification</mat-label>
+              <mat-select formControlName="idUniteGratification" required>
+                <mat-option *ngFor="let uniteGratification of uniteGratifications" [value]="uniteGratification.id">{{uniteGratification.libelle}}</mat-option>
+              </mat-select>
+              <mat-error><app-form-error [field]="form.get('idUniteGratification')"></app-form-error></mat-error>
+            </mat-form-field>
+            <mat-label>par</mat-label>
+            <mat-form-field class="col-sm-2 col-md-2 mb-2" appearance="fill">
+              <mat-label>Durée</mat-label>
+              <mat-select formControlName="idUniteDuree" required>
+                <mat-option *ngFor="let uniteDuree of uniteDurees" [value]="uniteDuree.id">{{uniteDuree.libelle}}</mat-option>
+              </mat-select>
+              <mat-error><app-form-error [field]="form.get('idUniteDuree')"></app-form-error></mat-error>
+            </mat-form-field>
+          </div>
+          <div class="row">
+            <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+              <mat-label>Monnaie utilisée pour le paiement</mat-label>
+              <mat-select formControlName="idDevise" required>
+                <mat-option *ngFor="let devise of devises" [value]="devise.id">{{devise.libelle}}</mat-option>
+              </mat-select>
+              <mat-error><app-form-error [field]="form.get('idDevise')"></app-form-error></mat-error>
+            </mat-form-field>
+            <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+              <mat-label>Modalité de versement de la gratification</mat-label>
+              <mat-select formControlName="idModeVersGratification" required>
+                <mat-option *ngFor="let modeVersGratification of modeVersGratifications" [value]="modeVersGratification.id">{{modeVersGratification.libelle}}</mat-option>
+              </mat-select>
+              <mat-error><app-form-error [field]="form.get('idModeVersGratification')"></app-form-error></mat-error>
+            </mat-form-field>
+          </div>
         </div>
 
         <div class="text-title">Divers</div>
