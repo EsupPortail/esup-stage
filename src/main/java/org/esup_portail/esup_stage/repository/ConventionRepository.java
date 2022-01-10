@@ -64,28 +64,28 @@ public class ConventionRepository extends PaginationRepository<Convention> {
         }
         if (key.equals("etatValidation")) {
             JSONArray jsonArray = parameter.getJSONArray("value");
-            List<String> clauseOr = new ArrayList<>();
+            List<String> clauseAnd = new ArrayList<>();
             for (int i = 0 ; i < jsonArray.length(); ++i) {
                 String code = jsonArray.getString(i);
                 switch (code) {
                     case "validationPedagogique":
-                        clauseOr.add("c.validationPedagogique = TRUE");
+                        clauseAnd.add("c.validationPedagogique = TRUE");
                         break;
                     case "validationConvention":
-                        clauseOr.add("c.validationConvention = TRUE");
+                        clauseAnd.add("c.validationConvention = TRUE");
                         break;
                     case "nonValidationPedagogique":
-                        clauseOr.add("c.validationPedagogique = FALSE");
+                        clauseAnd.add("c.validationPedagogique = FALSE");
                         break;
                     case "nonValidationConvention":
-                        clauseOr.add("c.validationConvention = FALSE");
+                        clauseAnd.add("c.validationConvention = FALSE");
                         break;
                     default:
                         break;
                 }
             }
-            if (clauseOr.size() > 0) {
-                clauses.add("(" + String.join(" OR ", clauseOr) + ")");
+            if (clauseAnd.size() > 0) {
+                clauses.add("(" + String.join(" AND ", clauseAnd) + ")");
             }
         }
         if (key.equals("etatGestionnaire")) {
