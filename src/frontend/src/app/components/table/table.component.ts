@@ -165,6 +165,11 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
     this.filterValues[id].value = value;
   }
 
+  getFilterValues(): any {
+    let f = {...this.filterValues};
+    return f;
+  }
+
   setFilterOption(id: string, options: any[]): void {
     const filter = this.filters.find((f: any) => { return f.id === id; });
     if (filter) {

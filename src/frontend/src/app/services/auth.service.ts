@@ -28,6 +28,7 @@ export class AuthService {
     this.userConnected = undefined;
     this.tokenService.logout();
     window.location.href = environment.logoutUrl;
+    sessionStorage.clear();
   }
 
   async secure(right: any) {

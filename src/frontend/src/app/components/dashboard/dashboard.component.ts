@@ -28,6 +28,7 @@ export class DashboardComponent implements OnInit {
   ];
   exportColumns = {};
   tableCanLoad = false;
+  savedFilters: any[] = [];
 
   nbConventionsEnAttente: number|undefined;
   anneeEnCours: any|undefined;
@@ -54,6 +55,8 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.configService.getConfigGenerale().subscribe((response: any) => {
+      let filtersString: any = sessionStorage.getItem('dashboard-filters');
+      this.savedFilters = JSON.parse(filtersString);
       this.validationLibelles.validationPedagogique = response.validationPedagogiqueLibelle;
       this.validationLibelles.validationConvention = response.validationAdministrativeLibelle;
 
@@ -144,6 +147,9 @@ export class DashboardComponent implements OnInit {
         } else {
           this.appTable?.setFilterOption('annee', this.annees);
           this.appTable?.setFilterValue('annee', [this.anneeEnCours.libelle]);
+        }
+        if (this.savedFilters) {
+          this.restoreFilters();
         }
       });
 
@@ -238,6 +244,10 @@ export class DashboardComponent implements OnInit {
         this.nbConventionsEnAttente = response.total;
       });
     }
+    if (this.appTable) {
+      const filters = this.appTable?.getFilterValues();
+      sessionStorage.setItem('dashboard-filters', JSON.stringify(filters));
+    }
   }
 
   goToConvention(id: number): void {
@@ -252,6 +262,18 @@ export class DashboardComponent implements OnInit {
       this.countConvention();
       this.appTable?.update();
     });
+  }
+
+  restoreFilters() {
+    if (this.savedFilters) {
+      Object.keys(this.savedFilters).forEach((key: any) => {
+        if (this.savedFilters[key].type === 'date' && this.savedFilters[key].value) {
+          this.appTable?.setFilterValue(key, new Date(this.savedFilters[key].value));
+        }
+        else if (this.savedFilters[key].value)
+          this.appTable?.setFilterValue(key, this.savedFilters[key].value);
+      });
+    }
   }
 }
 
