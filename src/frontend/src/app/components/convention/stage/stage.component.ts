@@ -20,6 +20,7 @@ import { ConventionService } from "../../../services/convention.service";
 import { pairwise,debounceTime,startWith }from 'rxjs/operators'
 import { CalendrierComponent } from './calendrier/calendrier.component';
 import { InterruptionsFormComponent } from './interruptions-form/interruptions-form.component';
+import { intervalToDuration } from 'date-fns';
 
 @Component({
   selector: 'app-stage',
@@ -54,6 +55,7 @@ export class StageComponent implements OnInit {
   interruptionsStage: any[] = [];
   periodesCalculHeuresStage : any[] = [];
   joursFeries : any[] = [];
+  moisJoursTravail: any;
 
   @Input() convention: any;
 
@@ -223,6 +225,12 @@ export class StageComponent implements OnInit {
       this.minDateFinStage = new Date(new Date().getFullYear()-1, 0, 2);
       this.maxDateFinStage = new Date(new Date().getFullYear()+2, 0, 1);
     }
+
+    //calcul mois, jours, heures de travail effectif
+    if (this.form.get('quotiteTravail')?.value) {
+      this.calculMoisJoursTravails(this.form.get('quotiteTravail')?.value);
+    }
+
   }
 
   ngOnChanges(): void{
@@ -499,6 +507,14 @@ export class StageComponent implements OnInit {
         loopDate = new Date(loopDate.getTime() + (1000 * 60 * 60 * 24));
       }
     }
+
+    this.calculMoisJoursTravails(Math.ceil(heuresTravails));
     return Math.ceil(heuresTravails);
+  }
+
+  calculMoisJoursTravails(heures: any) {
+    const nbHeuresJournalieres = this.form.get('nbHeuresHebdo')!.value/5;
+    const joursTravails = heures/nbHeuresJournalieres;
+    this.moisJoursTravail = intervalToDuration({start: 0, end: joursTravails * 24 * 60 * 60 * 1000});
   }
 }

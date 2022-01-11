@@ -145,12 +145,15 @@
             <button mat-button mat-flat-button type="button" color="primary" (click)="openCalendar()">Calcul du nombre d'heures de stages</button>
           </div>
         </div>
-        <div class="row">
+        <div class="row" style="align-items: baseline">
           <mat-form-field class="col-6 mb-2" appearance="fill">
             <mat-label>Durée effective du stage en nombre d'heures</mat-label>
             <input type="number" matInput formControlName="quotiteTravail" required />
             <mat-error><app-form-error [field]="form.get('quotiteTravail')"></app-form-error></mat-error>
           </mat-form-field>
+          <mat-label>{{moisJoursTravail ? moisJoursTravail.months + ' mois '
+            + moisJoursTravail.days + ' jour(s) '
+            + moisJoursTravail.hours + ' heure(s) ' : ''}}</mat-label>
         </div>
         <div class="row">
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
