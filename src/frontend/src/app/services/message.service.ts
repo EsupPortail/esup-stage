@@ -30,7 +30,7 @@ export class MessageService {
     }
     this.message = message;
     if (!keep) {
-      setTimeout(() => this.close(), 5000 );
+      setTimeout(() => this.close(), 1000 );
     }
     this.open();
   }
