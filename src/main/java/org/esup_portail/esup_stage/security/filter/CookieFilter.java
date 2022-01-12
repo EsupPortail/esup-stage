@@ -36,12 +36,12 @@ public class CookieFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         logger.info("CookieFilter.doFilter");
 
-        HttpServletRequest req = (HttpServletRequest) request;
-        HttpServletResponse resp = (HttpServletResponse) response;
-        Cookie tokenCookie = new Cookie("idsToken", "");
-        tokenCookie.setValue(TokenFactory.create(req));
-        tokenCookie.setSecure(req.getRequestURL().toString().startsWith("https"));
-        resp.addCookie(tokenCookie);
+//        HttpServletRequest req = (HttpServletRequest) request;
+//        HttpServletResponse resp = (HttpServletResponse) response;
+//        Cookie tokenCookie = new Cookie("idsToken", "");
+//        tokenCookie.setValue(TokenFactory.create(req));
+//        tokenCookie.setSecure(req.getRequestURL().toString().startsWith("https"));
+//        resp.addCookie(tokenCookie);
         chain.doFilter(request, response);
     }
 }
