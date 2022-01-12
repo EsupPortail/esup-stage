@@ -55,13 +55,11 @@
                 <div class="row">
                   <div class="col-sm-6"><b>Prénom du viseur</b> &nbsp; {{form.get('prenomViseur')?.value}}</div>
                 </div>
-                <div class="row">
-                  <div class="col-sm-6">
-                    <b>Qualité du viseur</b>
-                    <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
-                      <input matInput formControlName="qualiteViseur">
-                    </mat-form-field>
-                  </div>
+                <div>
+                  <mat-form-field class="col-sm-12 col-md-12" appearance="fill" style="margin-left: -15px">
+                    <mat-label>Qualité du viseur</mat-label>
+                    <input matInput formControlName="qualiteViseur">
+                  </mat-form-field>
                 </div>
                 <mat-dialog-actions>
                   <button mat-flat-button color="warn" (click)="resetViseur()">Retirer ce viseur</button>
