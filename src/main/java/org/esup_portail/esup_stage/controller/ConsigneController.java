@@ -44,16 +44,6 @@ public class ConsigneController {
     @Autowired
     ConsigneDocumentJpaRepository consigneDocumentJpaRepository;
 
-    @GetMapping("/etablissement")
-    @Secure
-    public Consigne getConsigneEtablissement() {
-        Consigne consigne = consigneJpaRepository.findConsigneEtablissement();
-        if (consigne == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Consigne non trouvée");
-        }
-        return consigne;
-    }
-
     @GetMapping("/centres/{idCentreGestion}")
     @Secure
     public Consigne getByCentreGestion(@PathVariable("idCentreGestion") int idCentreGestion) {

@@ -7,6 +7,7 @@ import { AuthService } from "../../../services/auth.service";
 import { MessageService } from "../../../services/message.service";
 import { Color } from "@angular-material-components/color-picker";
 import { ConsigneService } from "../../../services/consigne.service";
+import { CentreGestionService } from "../../../services/centre-gestion.service";
 
 @Component({
   selector: 'app-config-generale',
@@ -43,6 +44,7 @@ export class ConfigGeneraleComponent implements OnInit {
   logoFile: File|undefined;
   faviconFile: File|undefined;
 
+  centreGestion: any;
   consigne: any;
 
   constructor(
@@ -51,6 +53,7 @@ export class ConfigGeneraleComponent implements OnInit {
     private authService: AuthService,
     private messageService: MessageService,
     private consigneService: ConsigneService,
+    private centreGestionService: CentreGestionService,
   ) {
     this.formGenerale = this.fb.group({
       codeUniversite: [null, [Validators.required]],
@@ -96,8 +99,13 @@ export class ConfigGeneraleComponent implements OnInit {
       this.configTheme = response;
       this.setFormThemeValue();
     });
-    this.consigneService.getConsigneByCentre(null).subscribe((response: any) => {
-      this.consigne = response;
+    this.centreGestionService.getCentreEtablissement().subscribe((response: any) => {
+      this.centreGestion = response;
+      if (this.centreGestion) {
+        this.consigneService.getConsigneByCentre(this.centreGestion.id).subscribe((responseConsigne: any) => {
+          this.consigne = responseConsigne;
+        });
+      }
     });
   }
 

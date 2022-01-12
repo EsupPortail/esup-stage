@@ -32,7 +32,7 @@
       Consigne
       <mat-progress-bar mode="determinate" [value]="getProgressValue(4)" [ngClass]="{editing: tabs[4].statut === 1, done: tabs[4].statut === 2}"></mat-progress-bar>
     </ng-template>
-    <app-consigne *ngIf="centreGestionInited && (consigneCentreTab.isActive || tabs[0].init)" [consigne]="consigneCentre" (sumitted)="consigneCentre = $event; majStatus()"></app-consigne>
+    <app-consigne *ngIf="centreGestionInited && (consigneCentreTab.isActive || tabs[0].init)" [consigne]="consigneCentre" [idCentreGestion]="centreGestion.id" (sumitted)="consigneCentre = $event; majStatus()"></app-consigne>
   </mat-tab>
   <mat-tab [disabled]="centreGestion && !centreGestion.id" *ngIf="centreGestion && !centreGestion.validationCreation">
     <ng-template mat-tab-label>

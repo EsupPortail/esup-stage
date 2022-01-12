@@ -10,8 +10,8 @@ export class ConsigneService {
 
   constructor(private http: HttpClient) { }
 
-  getConsigneByCentre(idCentreGestion: number|null): Observable<any> {
-    return this.http.get(`${environment.apiUrl}/consignes/${idCentreGestion ? 'centres/' + idCentreGestion : 'etablissement'}`);
+  getConsigneByCentre(idCentreGestion: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/consignes/centres/${idCentreGestion}`);
   }
 
   createConsigne(data: any): Observable<any> {

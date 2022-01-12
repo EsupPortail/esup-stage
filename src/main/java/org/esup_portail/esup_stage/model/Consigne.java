@@ -17,7 +17,7 @@ public class Consigne extends ObjetMetier {
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "idCentreGestion", unique = true)
+    @JoinColumn(name = "idCentreGestion", unique = true, nullable = false)
     private CentreGestion centreGestion;
 
     @Lob

@@ -11,9 +11,6 @@ public interface ConsigneJpaRepository extends JpaRepository<Consigne, Integer> 
 
     Consigne findById(int id);
 
-    @Query("SELECT c FROM Consigne c WHERE c.centreGestion IS NULL")
-    Consigne findConsigneEtablissement();
-
     @Query("SELECT c FROM Consigne c WHERE c.centreGestion.id = :idCentre")
     Consigne findByIdCentreGestion(int idCentre);
 }

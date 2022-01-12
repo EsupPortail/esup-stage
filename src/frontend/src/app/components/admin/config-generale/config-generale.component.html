@@ -225,6 +225,6 @@
     </mat-card>
   </mat-tab>
   <mat-tab label="Consigne">
-    <app-consigne *ngIf="consigne" [consigne]="consigne"></app-consigne>
+    <app-consigne *ngIf="consigne" [consigne]="consigne" [idCentreGestion]="centreGestion.id"></app-consigne>
   </mat-tab>
 </mat-tab-group>
