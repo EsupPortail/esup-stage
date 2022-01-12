@@ -5,11 +5,13 @@ import org.esup_portail.esup_stage.dto.ConfigAlerteMailDto.Alerte;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
+import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -71,6 +73,12 @@ public class PersonnelCentreGestionController {
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.CREATION})
     public PersonnelCentreGestion create(@PathVariable("idCentre") int idCentre, @Valid @RequestBody PersonnelCentreGestion personnelCentreGestion) {
         CentreGestion centreGestion = centreGestionJpaRepository.findById(idCentre);
+        List<PersonnelCentreGestion> personnels = centreGestion.getPersonnels();
+
+        if (personnels.stream().anyMatch(p -> p.getUidPersonnel().equalsIgnoreCase(personnelCentreGestion.getUidPersonnel()))) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Ce gestionnaire est déjà rattaché à ce centre");
+        }
+
         Utilisateur utilisateur = utilisateurJpaRepository.findOneByLogin(personnelCentreGestion.getUidPersonnel());
         ConfigAlerteMailDto configAlerteMailDto = appConfigService.getConfigAlerteMail();
         Alerte alerte;
