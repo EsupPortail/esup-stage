@@ -8,11 +8,11 @@
       <div class="row">
         <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
           <mat-label>Nom du centre</mat-label>
-          <input matInput formControlName="nomCentre">
+          <input matInput formControlName="nomCentre" required>
         </mat-form-field>
         <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
           <mat-label>Type de centre</mat-label>
-          <mat-select formControlName="niveauCentre" [compareWith]="compare">
+          <mat-select formControlName="niveauCentre" [compareWith]="compare" required>
             <mat-option *ngFor="let niveauCentre of niveauxCentre" [value]="niveauCentre">{{niveauCentre.libelle}}</mat-option>
           </mat-select>
         </mat-form-field>
@@ -73,11 +73,11 @@
       <div class="row">
         <mat-form-field class="col-sm12 col-md-6" appearance="fill">
           <mat-label>Voie</mat-label>
-          <input matInput formControlName="voie">
+          <input matInput formControlName="voie" required>
         </mat-form-field>
         <mat-form-field class="col-sm12 col-md-6" appearance="fill">
           <mat-label>Code postal</mat-label>
-          <input matInput formControlName="codePostal">
+          <input matInput formControlName="codePostal" required>
         </mat-form-field>
       </div>
       <div class="row">
@@ -87,17 +87,17 @@
         </mat-form-field>
         <mat-form-field class="col-sm12 col-md-6" appearance="fill">
           <mat-label>Commune</mat-label>
-          <input matInput formControlName="commune">
+          <input matInput formControlName="commune" required>
         </mat-form-field>
       </div>
       <div class="row">
         <mat-form-field class="col-sm12 col-md-6" appearance="fill">
           <mat-label>Adresse mail</mat-label>
-          <input matInput formControlName="mail">
+          <input matInput formControlName="mail" required>
         </mat-form-field>
         <mat-form-field class="col-sm12 col-md-6" appearance="fill">
           <mat-label>Téléphone</mat-label>
-          <input matInput formControlName="telephone">
+          <input matInput formControlName="telephone" required>
         </mat-form-field>
       </div>
       <div class="row">
