@@ -191,6 +191,8 @@ export class EtudiantComponent implements OnInit, OnChanges {
             });
             this.formConvention.get('inscriptionElp')?.setValue(inscriptionElp);
           }
+        } else if (this.inscriptions.length > 1) {
+          this.formConvention.get('inscription')?.reset();
         }
       }
     });
