@@ -90,4 +90,8 @@ export class CentreGestionService implements PaginatedService {
   resizeLogoCentre(id: number, data: any): Observable<any> {
     return this.http.post(`${environment.apiUrl}/centre-gestion/${id}/resize-logo`, data)
   }
+
+  getCentreEtablissement(): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/centre-gestion/etablissement`)
+  }
 }

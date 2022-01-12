@@ -21,6 +21,7 @@ export class ConsigneComponent implements OnInit, OnChanges {
   }
 
   @Input() consigne: any;
+  @Input() idCentreGestion: number;
   @Output() sumitted = new EventEmitter<any>();
 
   form: FormGroup;
@@ -35,6 +36,7 @@ export class ConsigneComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.form = this.fb.group({
       texte: [this.consigne ? this.consigne.texte : null, [Validators.required]],
+      idCentreGestion: [this.idCentreGestion, [Validators.required]],
     });
   }
 

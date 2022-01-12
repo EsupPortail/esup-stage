@@ -39,6 +39,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
   typeConventions: any[] = [];
   langueConventions: any[] = [];
 
+  centreGestionEtablissement: any;
   consigneEtablissement: any;
 
   @Input() convention: any;
@@ -70,8 +71,13 @@ export class EtudiantComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.isEtudiant = this.authService.isEtudiant();
 
-    this.consigneService.getConsigneByCentre(null).subscribe((response: any) => {
-      this.consigneEtablissement = response;
+    this.centreGestionService.getCentreEtablissement().subscribe((response: any) => {
+      this.centreGestionEtablissement = response;
+      if (this.centreGestionEtablissement) {
+        this.consigneService.getConsigneByCentre(this.centreGestionEtablissement.id).subscribe((response: any) => {
+          this.consigneEtablissement = response;
+        });
+      }
     });
 
     this.configService.getConfigGenerale().subscribe((response: any) => {

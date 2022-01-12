@@ -14,18 +14,6 @@ export class TechnicalInterceptor implements HttpInterceptor {
 
   constructor(private tokenService: TokenService, private messageService: MessageService, private loaderService: LoaderService) {}
 
-  addToken(req: HttpRequest<any>, token: string): HttpRequest<any> {
-    if (req.url.indexOf(environment.apiUrl) > -1) {
-      if (token != null) {
-        var char = (req.url.indexOf("?") > -1) ? "&" : "?";
-        let headers = req.headers;
-        return req.clone({url: req.url + char + "token=" + token});
-      }
-    }
-
-    return req;
-  }
-
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     const activeElement = document.activeElement;
     const inputs = ['input', 'select', 'button', 'textarea'];
@@ -34,28 +22,22 @@ export class TechnicalInterceptor implements HttpInterceptor {
     }
     this.loaderService.show();
     this.nbRequests++;
-    if (this.tokenService.getToken()) {
-      return next.handle(this.addToken(request, this.tokenService.getToken()))
-        .pipe(
-          catchError(error => this.handleError(error))
-        )
-        .pipe(
-          finalize(() => {
-            this.nbRequests--;
-            if (this.nbRequests === 0) {
-              if (activeElement instanceof HTMLElement && inputs.indexOf(activeElement.tagName.toLowerCase()) > -1) {
-                activeElement.focus();
-              }
-              this.loaderService.hide();
+    return next.handle(request)
+      .pipe(
+        catchError(error => this.handleError(error))
+      )
+      .pipe(
+        finalize(() => {
+          this.nbRequests--;
+          if (this.nbRequests === 0) {
+            if (activeElement instanceof HTMLElement && inputs.indexOf(activeElement.tagName.toLowerCase()) > -1) {
+              activeElement.focus();
             }
-          })
-        )
-      ;
-    }
-
-    return next.handle(request).pipe(
-      catchError(error => this.handleError(error))
-    );
+            this.loaderService.hide();
+          }
+        })
+      )
+    ;
   }
 
   handleError(error: any): ObservableInput<any> {

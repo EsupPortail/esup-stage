@@ -131,6 +131,16 @@ public class CentreGestionController {
         return centreGestion;
     }
 
+    @GetMapping("/etablissement")
+    @Secure
+    public CentreGestion getCentreEtablissement() {
+        CentreGestion centreGestion = centreGestionJpaRepository.getCentreEtablissement();
+        if (centreGestion == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion de niveau établissement non trouvé");
+        }
+        return centreGestion;
+    }
+
     @GetMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public CentreGestion getById(@PathVariable("id") int id) {

@@ -41,27 +41,23 @@ databaseChangeLog:
             type: datetime
         tableName: Consigne
 - changeSet:
-    id: consigne-etablissement
-    author: ssound
-    changes:
-    - insert:
-        columns:
-        - column:
-            name: texte
-            value: Consignes de l'établissement
-        - column:
-            name: loginCreation
-            value: liquibase
-        - column:
-            name: dateCreation
-            value: now()
-        tableName: Consigne
-- changeSet:
     id: consigne-centres
     author: ssound
     changes:
     - sql:
           sql: INSERT INTO Consigne (idCentreGestion, texte, loginCreation, dateCreation) SELECT idCentreGestion, 'Consigne du centre', 'liquibase', now() FROM CentreGestion
+- changeSet:
+    id: consigne-centres-nonnullable
+    author: ssound
+    changes:
+    - sql:
+        sql: DELETE FROM ConsigneDocument WHERE idConsigne IN (SELECT idConsigne FROM Consigne WHERE idCentreGestion IS NULL)
+    - sql:
+        sql: DELETE FROM Consigne WHERE idCentreGestion IS NULL
+    - addNotNullConstraint:
+        columnName: idCentreGestion
+        columnDataType: INT
+        tableName: Consigne
 - changeSet:
     id: consigneDocument
     author: ssound

@@ -13,6 +13,6 @@ export class TokenService {
   }
 
   logout() {
-    this.cookieService.delete('idsToken');
+    this.cookieService.deleteAll();
   }
 }
