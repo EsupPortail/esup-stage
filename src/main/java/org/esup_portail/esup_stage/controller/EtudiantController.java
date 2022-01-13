@@ -8,14 +8,12 @@ import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
 import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.CritereGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.EtudiantJpaRepository;
+import org.esup_portail.esup_stage.repository.TypeConventionJpaRepository;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.apogee.ApogeeService;
-import org.esup_portail.esup_stage.service.apogee.model.ApogeeMap;
-import org.esup_portail.esup_stage.service.apogee.model.ElementPedagogique;
-import org.esup_portail.esup_stage.service.apogee.model.EtapeInscription;
-import org.esup_portail.esup_stage.service.apogee.model.EtudiantRef;
+import org.esup_portail.esup_stage.service.apogee.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,6 +45,9 @@ public class EtudiantController {
     @Autowired
     CentreGestionJpaRepository centreGestionJpaRepository;
 
+    @Autowired
+    TypeConventionJpaRepository typeConventionJpaRepository;
+
     @GetMapping("/{numEtudiant}/apogee-data")
     @Secure
     public EtudiantRef getApogeeData(@PathVariable("numEtudiant") String numEtudiant) {
@@ -70,10 +71,16 @@ public class EtudiantController {
         anneeInscriptions.retainAll(annees);
         for (String annee : anneeInscriptions) {
             ApogeeMap apogeeMap = apogeeService.getEtudiantEtapesInscription(numEtudiant, annee);
+            RegimeInscription regIns = apogeeMap.getRegimeInscription().stream().filter(r -> r.getAnnee().equals(annee)).findAny().orElse(null);
+            TypeConvention typeConvention = null;
+            if (regIns != null) {
+                typeConvention = typeConventionJpaRepository.findByCodeCtrl(regIns.getLicRegIns());
+            }
             for (EtapeInscription etapeInscription : apogeeMap.getListeEtapeInscriptions()) {
                 ConventionFormationDto conventionFormationDto = new ConventionFormationDto();
                 conventionFormationDto.setEtapeInscription(etapeInscription);
                 conventionFormationDto.setAnnee(annee);
+                conventionFormationDto.setTypeConvention(typeConvention);
                 CentreGestion centreGestion = null;
                 // Recherche du centre de gestion par codeEtape/versionEtape
                 CritereGestion critereGestion = critereGestionJpaRepository.findEtapeById(etapeInscription.getCodeEtp(), etapeInscription.getCodVrsVet());

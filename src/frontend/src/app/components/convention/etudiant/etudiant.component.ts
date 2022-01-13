@@ -103,6 +103,12 @@ export class EtudiantComponent implements OnInit, OnChanges {
         if (inscription) {
           this.centreGestion = inscription.centreGestion;
           this.formConvention.get('inscriptionElp')?.setValue(null);
+          if (inscription.typeConvention) {
+            this.formConvention.get('idTypeConvention')?.setValue(inscription.typeConvention.id);
+            this.formConvention.get('idTypeConvention')?.disable();
+          } else {
+            this.formConvention.get('idTypeConvention')?.enable();
+          }
         }
       });
 
@@ -214,7 +220,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
 
   validate(): void {
     if (this.formConvention.valid) {
-      const data = {...this.formConvention.value};
+      const data = {...this.formConvention.getRawValue()};
       delete data.isncription;
       data.numEtudiant = this.selectedNumEtudiant;
       data.codeComposante = this.formConvention.value.inscription.etapeInscription.codeComposante;

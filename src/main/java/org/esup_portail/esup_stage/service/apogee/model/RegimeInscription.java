@@ -4,6 +4,8 @@ public class RegimeInscription {
     private String regimeIns;
     private String libRg;
     private String annee;
+    private String codRegIns;
+    private String licRegIns;
 
     public String getRegimeIns() {
         return regimeIns;
@@ -27,5 +29,21 @@ public class RegimeInscription {
 
     public void setAnnee(String annee) {
         this.annee = annee;
+    }
+
+    public String getCodRegIns() {
+        return codRegIns;
+    }
+
+    public void setCodRegIns(String codRegIns) {
+        this.codRegIns = codRegIns;
+    }
+
+    public String getLicRegIns() {
+        return licRegIns;
+    }
+
+    public void setLicRegIns(String licRegIns) {
+        this.licRegIns = licRegIns;
     }
 }

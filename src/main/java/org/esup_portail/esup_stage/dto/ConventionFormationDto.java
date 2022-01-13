@@ -1,6 +1,7 @@
 package org.esup_portail.esup_stage.dto;
 
 import org.esup_portail.esup_stage.model.CentreGestion;
+import org.esup_portail.esup_stage.model.TypeConvention;
 import org.esup_portail.esup_stage.service.apogee.model.ElementPedagogique;
 import org.esup_portail.esup_stage.service.apogee.model.EtapeInscription;
 
@@ -12,6 +13,8 @@ public class ConventionFormationDto {
     private String annee;
     private List<ElementPedagogique> elementPedagogiques = new ArrayList<>();
     private CentreGestion centreGestion;
+    private TypeConvention typeConvention;
+
 
     public EtapeInscription getEtapeInscription() {
         return etapeInscription;
@@ -43,5 +46,13 @@ public class ConventionFormationDto {
 
     public void setCentreGestion(CentreGestion centreGestion) {
         this.centreGestion = centreGestion;
+    }
+
+    public TypeConvention getTypeConvention() {
+        return typeConvention;
+    }
+
+    public void setTypeConvention(TypeConvention typeConvention) {
+        this.typeConvention = typeConvention;
     }
 }
