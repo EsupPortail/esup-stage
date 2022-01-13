@@ -1,6 +1,7 @@
 package org.esup_portail.esup_stage.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import org.esup_portail.esup_stage.dto.ContextDto;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.dto.ContactFormDto;
 import org.esup_portail.esup_stage.dto.view.Views;
@@ -8,7 +9,9 @@ import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
+import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
 import org.esup_portail.esup_stage.repository.*;
+import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
+import java.util.ArrayList;
 
 @ApiController
 @RequestMapping("/contacts")
@@ -60,11 +64,33 @@ public class ContactController {
     @GetMapping("/getByService/{id}")
     @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.LECTURE})
     public List<Contact> getByService(@PathVariable("id") int id) {
-        List<Contact> contact = contactJpaRepository.findByService(id);
-        if (contact == null) {
+        List<Contact> contacts = contactJpaRepository.findByService(id);
+
+        if (contacts == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Contact non trouvé");
         }
-        return contact;
+
+        ContextDto contexteDto = ServiceContext.getServiceContext();
+        Utilisateur utilisateur = contexteDto.getUtilisateur();
+        /* Pour les utilisateurs gestionnaires, on ne renvoit que les contacts qui sont rattachés au même centre de gestion ou
+         qui ont un centre de gestion avec code confidentialité égale à 0 ou au centre de gestion de type établissement
+        */
+        if (UtilisateurHelper.isRole(utilisateur, Role.GES) || UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)) {
+            CentreGestion centreGestion = centreGestionJpaRepository.getByGestionnaireLogin(utilisateur.getLogin());
+            if (centreGestion == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "CentreGestion non trouvé");
+            }
+            List<Contact> filteredContacts = new ArrayList<Contact>();
+            for(Contact contact : contacts){
+                if (contact.getCentreGestion().getCodeConfidentialite().getCode().equals("0") || contact.getCentreGestion().getId() == centreGestion.getId() ||
+                        contact.getCentreGestion().getNiveauCentre().getLibelle().equals("ETABLISSEMENT")){
+                    filteredContacts.add(contact);
+                }
+            }
+            return filteredContacts;
+        }
+
+        return contacts;
     }
 
     @PostMapping
@@ -77,10 +103,13 @@ public class ContactController {
         if (service == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Service non trouvé");
         }
+
+        ContextDto contexteDto = ServiceContext.getServiceContext();
+        Utilisateur utilisateur = contexteDto.getUtilisateur();
         CentreGestion centreGestion;
-        if (contactFormDto.getIdCentreGestion() != null) {
-            int idCentre = contactFormDto.getIdCentreGestion();
-            centreGestion = centreGestionJpaRepository.findById(idCentre);
+        //Ajoute le centreGestion de l'utilisateur qui a créé le contact pour les utilisateurs gestionnaires.
+        if (UtilisateurHelper.isRole(utilisateur, Role.GES) || UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)) {
+            centreGestion = centreGestionJpaRepository.getByGestionnaireLogin(utilisateur.getLogin());
         } else {
             centreGestion = centreGestionJpaRepository.getCentreEtablissement();
         }

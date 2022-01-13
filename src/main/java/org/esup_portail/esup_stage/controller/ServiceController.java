@@ -1,14 +1,15 @@
 package org.esup_portail.esup_stage.controller;
 
+import org.esup_portail.esup_stage.dto.ContextDto;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.dto.ServiceFormDto;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
-import org.esup_portail.esup_stage.model.Pays;
-import org.esup_portail.esup_stage.model.Service;
-import org.esup_portail.esup_stage.model.Structure;
+import org.esup_portail.esup_stage.model.*;
+import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
 import org.esup_portail.esup_stage.repository.*;
+import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 @ApiController
@@ -30,6 +32,9 @@ public class ServiceController {
 
     @Autowired
     ContactJpaRepository contactJpaRepository;
+
+    @Autowired
+    CentreGestionJpaRepository centreGestionJpaRepository;
 
     @Autowired
     StructureJpaRepository structureJpaRepository;
@@ -60,11 +65,33 @@ public class ServiceController {
     @GetMapping("/getByStructure/{id}")
     @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.LECTURE})
     public List<Service> getByStructure(@PathVariable("id") int id) {
-        List<Service> service = serviceJpaRepository.findByStructure(id);
-        if (service == null) {
+        List<Service> services = serviceJpaRepository.findByStructure(id);
+        if (services == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Service non trouvée");
         }
-        return service;
+
+        ContextDto contexteDto = ServiceContext.getServiceContext();
+        Utilisateur utilisateur = contexteDto.getUtilisateur();
+        /* Pour les utilisateurs gestionnaires, on ne renvoit que les services qui sont rattachés au même centre de gestion ou
+         qui ont un centre de gestion avec code confidentialité égale à 0 ou au centre de gestion de type établissement
+        */
+        if (UtilisateurHelper.isRole(utilisateur, Role.GES) || UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)) {
+            CentreGestion centreGestion = centreGestionJpaRepository.getByGestionnaireLogin(utilisateur.getLogin());
+            if (centreGestion == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "CentreGestion non trouvé");
+            }
+            List<Service> filteredservices = new ArrayList<Service>();
+            for(Service service : services){
+                if (service.getCentreGestion().getCodeConfidentialite().getCode().equals("0") || service.getCentreGestion().getId() == centreGestion.getId() ||
+                        service.getCentreGestion().getNiveauCentre().getLibelle().equals("ETABLISSEMENT")){
+                    filteredservices.add(service);
+                }
+            }
+            return filteredservices;
+        }
+
+
+        return services;
     }
 
     @PostMapping
@@ -77,6 +104,21 @@ public class ServiceController {
         if (structure == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Service non trouvée");
         }
+
+        ContextDto contexteDto = ServiceContext.getServiceContext();
+        Utilisateur utilisateur = contexteDto.getUtilisateur();
+        CentreGestion centreGestion;
+        //Ajoute le centreGestion de l'utilisateur qui a créé le contact pour les utilisateurs gestionnaires.
+        if (UtilisateurHelper.isRole(utilisateur, Role.GES) || UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)) {
+            centreGestion = centreGestionJpaRepository.getByGestionnaireLogin(utilisateur.getLogin());
+        } else {
+            centreGestion = centreGestionJpaRepository.getCentreEtablissement();
+        }
+        if (centreGestion == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "CentreGestion non trouvé");
+        }
+
+        service.setCentreGestion(centreGestion);
         service.setStructure(structure);
 
         return serviceJpaRepository.saveAndFlush(service);

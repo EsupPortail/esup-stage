@@ -1,0 +1,16 @@
+databaseChangeLog:
+- changeSet:
+    id: service-idCentreGestion-v2
+    author: tjubera
+    changes:
+    - addColumn:
+        tableName: Service
+        columns:
+        - column:
+            defaultValue: 1
+            constraints:
+                nullable: false
+                foreignKeyName: fk_Service_CentreGestion1
+                references: CentreGestion(idCentreGestion)
+            name: idCentreGestion
+            type: INT

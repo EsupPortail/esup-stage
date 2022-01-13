@@ -195,9 +195,6 @@ export class SignataireComponent implements OnInit, OnChanges {
         });
       } else {
 
-        //ajoute idCentreGestion à l'objet contact
-        data.idCentreGestion = this.convention.centreGestion.id;
-
         //ajoute idService à l'objet contact
         data.idService = this.service.id;
 

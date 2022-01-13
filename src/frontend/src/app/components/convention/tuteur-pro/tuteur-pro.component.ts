@@ -22,7 +22,6 @@ export class TuteurProComponent implements OnInit, OnChanges {
 
   @Input() service: any;
   @Input() etab: any;
-  @Input() centreGestion: any;
 
   @Input() contact: any;
   contacts:any[] = [];
@@ -140,9 +139,6 @@ export class TuteurProComponent implements OnInit, OnChanges {
           this.modif = false;
         });
       } else {
-
-        //ajoute idCentreGestion à l'objet contact
-        data.idCentreGestion = this.centreGestion.id;
 
         //ajoute idService à l'objet contact
         data.idService = this.service.id;

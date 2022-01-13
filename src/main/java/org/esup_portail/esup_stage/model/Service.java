@@ -47,6 +47,10 @@ public class Service extends ObjetMetier implements Exportable {
     @JoinColumn(name = "idPays", nullable = false)
     private Pays pays;
 
+    @ManyToOne
+    @JoinColumn(name = "idCentreGestion", nullable = false)
+    private CentreGestion centreGestion;
+
     public int getId() {
         return id;
     }
@@ -141,6 +145,14 @@ public class Service extends ObjetMetier implements Exportable {
 
     public void setPays(Pays pays) {
         this.pays = pays;
+    }
+
+    public CentreGestion getCentreGestion() {
+        return centreGestion;
+    }
+
+    public void setCentreGestion(CentreGestion centreGestion) {
+        this.centreGestion = centreGestion;
     }
 
     @Override
