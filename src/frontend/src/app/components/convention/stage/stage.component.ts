@@ -141,7 +141,6 @@ export class StageComponent implements OnInit {
       // - Modèle de la convention
       codeLangueConvention: [this.convention.langueConvention ? this.convention.langueConvention.code : null, [Validators.required]],
       idPays: [this.convention.paysConvention ? this.convention.paysConvention.id : null, [Validators.required]],
-      idTypeConvention: [this.convention.typeConvention ? this.convention.typeConvention.id : null, [Validators.required]],
       // - Description du stage
       idTheme: [this.convention.theme ? this.convention.theme.id : null, [Validators.required]],
       sujetStage: [this.convention.sujetStage, [Validators.required]],

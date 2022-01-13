@@ -444,3 +444,16 @@ databaseChangeLog:
     changes:
     - sql:
         sql: INSERT INTO TemplateConvention (idTypeConvention, codeLangueConvention, dateCreation, loginCreation) SELECT idTypeConvention, codeLangueConvention, NOW(), 'liquibase' FROM TypeConvention, LangueConvention WHERE temEnServTypeConvention = 'O' AND temEnServLangue = 'O'
+- changeSet:
+    id: init-data-typeconvention-apogee
+    author: jwang
+    changes:
+    - sqlFile:
+        path: init-insert/typeconventionapogee.sql
+        relativeToChangelogFile: true
+- changeSet:
+    id: templateConvention-insert-typeConventionApogee
+    author: ssound
+    changes:
+    - sql:
+        sql: INSERT INTO TemplateConvention (idTypeConvention, codeLangueConvention, dateCreation, loginCreation) SELECT idTypeConvention, codeLangueConvention, NOW(), 'liquibase' FROM TypeConvention, LangueConvention WHERE temEnServTypeConvention = 'O' AND temEnServLangue = 'O' AND idTypeConvention NOT IN (SELECT idTypeConvention FROM TemplateConvention)
