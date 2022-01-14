@@ -50,7 +50,7 @@ export class TuteurProComponent implements OnInit, OnChanges {
       idCivilite: [null, []],
       fonction: [null, [Validators.maxLength(100)]],
       tel: [null, [Validators.required, Validators.maxLength(50)]],
-      mail: [null, [Validators.required, Validators.pattern('[^@ ]+@[^@. ]+\\.[^@. ]+'), Validators.maxLength(50)]],
+      mail: [null, [Validators.required, Validators.pattern('[^@ ]+@[^@. ]+\\.[^@ ]+'), Validators.maxLength(50)]],
       fax: [null, [Validators.maxLength(50)]],
     });
   }
