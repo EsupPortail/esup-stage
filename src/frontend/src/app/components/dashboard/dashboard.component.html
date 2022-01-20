@@ -40,7 +40,7 @@
   </ng-container>
   <ng-container *ngIf="typeDashboard === 3 || typeDashboard === 1" matColumnDef="enseignant">
     <th mat-header-cell *matHeaderCellDef mat-sort-header>Enseignant</th>
-    <td mat-cell *matCellDef="let row">{{row.enseignant.nom + ' ' + row.enseignant.prenom}}</td>
+    <td mat-cell *matCellDef="let row">{{row.enseignant ? row.enseignant.nom + ' ' + row.enseignant.prenom : ''}}</td>
   </ng-container>
   <ng-container *ngIf="typeDashboard === 2" matColumnDef="sujetStage">
     <th mat-header-cell *matHeaderCellDef mat-sort-header>Sujet du stage</th>
