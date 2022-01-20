@@ -266,7 +266,7 @@ export class StageComponent implements OnInit {
   }
 
   validateForm() : void{
-    if ((this.form.valid && this.periodesInterruptionsValid) || this.form.disabled) {
+    if ((this.checkRequiredFieldsFilled() && this.periodesInterruptionsValid) || this.form.disabled) {
       this.validated.emit(2);
     }else{
       this.validated.emit(0);
@@ -515,5 +515,16 @@ export class StageComponent implements OnInit {
     const nbHeuresJournalieres = this.form.get('nbHeuresHebdo')!.value/5;
     const joursTravails = heures/nbHeuresJournalieres;
     this.moisJoursTravail = intervalToDuration({start: 0, end: joursTravails * 24 * 60 * 60 * 1000});
+  }
+
+  checkRequiredFieldsFilled() {
+    let filled = true;
+    Object.keys(this.form.controls).forEach(key => {
+      if (this.form.get(key)?.hasError('required')) {
+        filled = false;
+      }
+    });
+
+    return filled;
   }
 }
