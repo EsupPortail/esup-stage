@@ -99,6 +99,9 @@ public class ConventionRepository extends PaginationRepository<Convention> {
             clauseOr.add("LOWER(c.service.pays.lib) = :lieuStage");
             clauses.add("(" + String.join(" OR ", clauseOr) + ")");
         }
+        if (key.equals("structure")) {
+            clauses.add("(LOWER(c.structure.raisonSociale) LIKE :structure OR LOWER(c.structure.numeroSiret) LIKE :structure)");
+        }
     }
 
     @Override
@@ -134,6 +137,9 @@ public class ConventionRepository extends PaginationRepository<Convention> {
         }
         if (key.equals("lieuStage")) {
             query.setParameter("lieuStage", "%" + parameter.getString("value").toLowerCase() + "%");
+        }
+        if (key.equals("structure")) {
+            query.setParameter("structure", "%" + parameter.getString("value").toLowerCase() + "%");
         }
     }
 }

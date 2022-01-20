@@ -76,7 +76,7 @@ export class DashboardComponent implements OnInit {
           { id: 'etape.id', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
           { id: 'dateDebutStage', libelle: 'Date début du stage', type: 'date-min' },
           { id: 'dateFinStage', libelle: 'Date fin du stage', type: 'date-max' },
-          { id: 'structure.id', libelle: 'Établissement d\'accueil', type: 'autocomplete', autocompleteService: this.structureService, keyLibelle: 'raisonSociale', keyId: 'id', value: [] },
+          { id: 'structure', libelle: 'Établissement d\'accueil', specific: true },
           { id: 'sujetStage', libelle: 'Sujet du stage' },
           { id: 'lieuStage', libelle: 'Lieu du stage' },
           { id: 'etatValidation', libelle: 'État de validation de la convention', type: 'list', options: this.validationsOptions, keyLibelle: 'libelle', keyId: 'id', value: ['nonValidationPedagogique', 'nonValidationConvention'], specific: true },
@@ -102,7 +102,7 @@ export class DashboardComponent implements OnInit {
         this.columns = ['id', 'structure', 'dateDebutStage', 'dateFinStage', 'ufr', 'etape', 'enseignant', 'validationPedagogique', 'validationConvention', 'avenant', 'annee', 'action'];
         this.filters = [
           { id: 'id', libelle: 'N° de la convention', type: 'int' },
-          { id: 'structure.id', libelle: 'Établissement d\'accueil', type: 'autocomplete', autocompleteService: this.structureService, keyLibelle: 'raisonSociale', keyId: 'id', value: [] },
+          { id: 'structure', libelle: 'Établissement d\'accueil', specific: true },
           { id: 'dateDebutStage', libelle: 'Date début du stage', type: 'date' },
           { id: 'dateFinStage', libelle: 'Date fin du stage', type: 'date' },
           { id: 'ufr.id', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
@@ -171,7 +171,7 @@ export class DashboardComponent implements OnInit {
     this.filters = [
       { id: 'id', libelle: 'N° de la convention', type: 'int' },
       { id: 'etudiant', libelle: 'Étudiant', specific: true },
-      { id: 'structure.id', libelle: 'Établissement d\'accueil', type: 'autocomplete', autocompleteService: this.structureService, keyLibelle: 'raisonSociale', keyId: 'id', value: [] },
+      { id: 'structure', libelle: 'Établissement d\'accueil', specific: true },
       { id: 'dateDebutStage', libelle: 'Date début du stage', type: 'date' },
       { id: 'dateFinStage', libelle: 'Date fin du stage', type: 'date' },
       { id: 'ufr.id', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
