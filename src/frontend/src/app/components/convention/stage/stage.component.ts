@@ -461,11 +461,13 @@ export class StageComponent implements OnInit {
 
         const dateDebutStage = this.dateFromBackend(this.form.get('dateDebutStage')!.value);
         const dateFinStage = this.dateFromBackend(this.form.get('dateFinStage')!.value);
-        const nbHeuresJournalieres = this.form.get('nbHeuresHebdo')!.value/5;
+        if (this.form.get('nbHeuresHebdo')?.valid) {
+          const nbHeuresJournalieres = this.form.get('nbHeuresHebdo')!.value/5;
 
-        const periodes = [{'dateDebut':dateDebutStage,'dateFin':dateFinStage,'nbHeuresJournalieres':nbHeuresJournalieres}];
+          const periodes = [{'dateDebut':dateDebutStage,'dateFin':dateFinStage,'nbHeuresJournalieres':nbHeuresJournalieres}];
 
-        this.form.get('quotiteTravail')?.setValue(this.calculHeuresTravails(periodes));
+          this.form.get('quotiteTravail')?.setValue(this.calculHeuresTravails(periodes));
+        }
 
       }else{
         this.form.get('quotiteTravail')?.setValue(this.calculHeuresTravails(this.periodesCalculHeuresStage));
@@ -513,7 +515,7 @@ export class StageComponent implements OnInit {
 
   calculMoisJoursTravails(heures: any) {
     const nbHeuresJournalieres = this.form.get('nbHeuresHebdo')!.value/5;
-    const joursTravails = heures/nbHeuresJournalieres;
+    const joursTravails = heures > 0 ? heures/nbHeuresJournalieres : 0;
     this.moisJoursTravail = intervalToDuration({start: 0, end: joursTravails * 24 * 60 * 60 * 1000});
   }
 
