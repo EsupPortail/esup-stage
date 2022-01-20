@@ -9,6 +9,7 @@ import { EtapeService } from "../../services/etape.service";
 import { MessageService } from "../../services/message.service";
 import { ConfigService } from "../../services/config.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
@@ -33,6 +34,8 @@ export class DashboardComponent implements OnInit {
   nbConventionsEnAttente: number|undefined;
   anneeEnCours: any|undefined;
   annees: any[] = [];
+  ufrList: any[] = [];
+  etapeList: any[] = [];
   typeDashboard: number = 1; // Type de tableau de bord à afficher : 1=gestionnaire/responsable/admin/profil non défini ; 2=enseignant ; 3=etudiant
 
   selected: any[] = [];
@@ -131,16 +134,21 @@ export class DashboardComponent implements OnInit {
       }
       this.filters.push({ id: 'validationCreation', type: 'boolean', value: true, hidden: true });
 
-      this.ufrService.getPaginated(1, 0, 'libelle', 'asc', '{}').subscribe((response: any) => {
-        this.appTable?.setFilterOption('ufr.id', response.data);
-      });
+      forkJoin(
+        this.ufrService.getPaginated(1, 0, 'libelle', 'asc', '{}'),
+        this.etapeService.getPaginated(1, 0, 'libelle', 'asc', '{}'),
+        this.conventionService.getListAnnee(),
+      ).subscribe(([ufrData, etapeData, listAnneeData]) => {
+        // ufr
+        this.ufrList = ufrData.data;
+        this.appTable?.setFilterOption('ufr.id', this.ufrList);
 
-      this.etapeService.getPaginated(1, 0, 'libelle', 'asc', '{}').subscribe((response: any) => {
-        this.appTable?.setFilterOption('etape.id', response.data);
-      });
+        // etape
+        this.etapeList = etapeData.data;
+        this.appTable?.setFilterOption('etape.id', this.etapeList);
 
-      this.conventionService.getListAnnee().subscribe((response: any) => {
-        this.annees = response;
+        // annees
+        this.annees = listAnneeData;
         this.anneeEnCours = this.annees.find((a: any) => { return a.anneeEnCours === true });
         if (!this.authService.isEtudiant()) {
           this.changeAnnee();
@@ -148,6 +156,7 @@ export class DashboardComponent implements OnInit {
           this.appTable?.setFilterOption('annee', this.annees);
           this.appTable?.setFilterValue('annee', [this.anneeEnCours.libelle]);
         }
+
         if (this.savedFilters) {
           this.restoreFilters();
         }
@@ -269,6 +278,26 @@ export class DashboardComponent implements OnInit {
       Object.keys(this.savedFilters).forEach((key: any) => {
         if (this.savedFilters[key].type === 'date' && this.savedFilters[key].value) {
           this.appTable?.setFilterValue(key, new Date(this.savedFilters[key].value));
+        }
+        else if (key === 'annee' && this.savedFilters[key].value) {
+          this.anneeEnCours = this.annees.find((a: any) => { return a.libelle === this.savedFilters[key].value });
+          this.changeAnnee();
+        }
+        else if (key === 'ufr.id' && this.savedFilters[key].value) {
+          let ufrSelectedList: any[] = [];
+          this.savedFilters[key].value.forEach((value: any) => {
+            let ufrSelected = this.ufrList.find((ufr: any) => ufr.id.code === value.code);
+            ufrSelectedList.push(ufrSelected.id);
+          });
+          this.appTable?.setFilterValue(key, ufrSelectedList);
+        }
+        else if (key === 'etape.id' && this.savedFilters[key].value) {
+          let etapeSelectedList: any[] = [];
+          this.savedFilters[key].value.forEach((value: any) => {
+            let etapeSelected = this.etapeList.find((etape: any) => etape.id.code === value.code);
+            etapeSelectedList.push(etapeSelected.id);
+          });
+          this.appTable?.setFilterValue(key, etapeSelectedList);
         }
         else if (this.savedFilters[key].value)
           this.appTable?.setFilterValue(key, this.savedFilters[key].value);
