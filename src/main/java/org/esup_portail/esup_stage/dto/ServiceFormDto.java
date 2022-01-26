@@ -38,6 +38,8 @@ public class ServiceFormDto {
     @NotNull
     private int idPays;
 
+    private Integer idCentreGestion;
+
     public String getNom() {
         return nom;
     }
@@ -100,5 +102,13 @@ public class ServiceFormDto {
 
     public void setIdPays(int idPays) {
         this.idPays = idPays;
+    }
+
+    public Integer getIdCentreGestion() {
+        return idCentreGestion;
+    }
+
+    public void setIdCentreGestion(Integer idCentreGestion) {
+        this.idCentreGestion = idCentreGestion;
     }
 }

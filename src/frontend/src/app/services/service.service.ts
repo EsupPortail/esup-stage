@@ -23,8 +23,8 @@ export class ServiceService implements PaginatedService {
     return this.http.get(`${environment.apiUrl}/services/${id}`);
   }
 
-  getByStructure(id: number): Observable<any> {
-    return this.http.get(`${environment.apiUrl}/services/getByStructure/${id}`);
+  getByStructure(id: number, idCentreGestion: any): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/services/getByStructure/${id}`, {params: {idCentreGestion}});
   }
 
   update(id: number, data: any): Observable<any> {

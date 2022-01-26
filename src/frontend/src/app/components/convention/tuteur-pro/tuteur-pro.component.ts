@@ -22,6 +22,7 @@ export class TuteurProComponent implements OnInit, OnChanges {
 
   @Input() service: any;
   @Input() etab: any;
+  @Input() centreGestion: any;
 
   @Input() contact: any;
   contacts:any[] = [];
@@ -70,7 +71,7 @@ export class TuteurProComponent implements OnInit, OnChanges {
 
   refreshContacts(): void{
     if (this.service){
-      this.contactService.getByService(this.service.id).subscribe((response: any) => {
+      this.contactService.getByService(this.service.id, this.centreGestion.id).subscribe((response: any) => {
         this.contacts = response;
       });
     }
@@ -143,6 +144,8 @@ export class TuteurProComponent implements OnInit, OnChanges {
         //ajoute idService à l'objet contact
         data.idService = this.service.id;
 
+        //ajout idCentreGestion à l'objet contact
+        data.idCentreGestion = this.centreGestion.id;
         this.contactService.create(data).subscribe((response: any) => {
           this.messageService.setSuccess('Contact créé');
           this.contact = response;

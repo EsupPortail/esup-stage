@@ -20,6 +20,8 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
 
   data: any;
 
+  @Input() centreGestion: any;
+
   @Input() etab: any;
   services:any[] = [];
 
@@ -67,7 +69,7 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
   }
 
   refreshServices(): void{
-    this.serviceService.getByStructure(this.etab.id).subscribe((response: any) => {
+    this.serviceService.getByStructure(this.etab.id, this.centreGestion.id).subscribe((response: any) => {
       this.services = response;
     });
   }
@@ -139,6 +141,9 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
       } else {
         //ajoute idStructure à l'objet service
         data.idStructure = this.etab.id;
+
+        // ajout idCentreGestion à l'objet service
+        data.idCentreGestion = this.centreGestion.id;
         this.serviceService.create(data).subscribe((response: any) => {
           this.messageService.setSuccess('Service créé');
           this.service = response;

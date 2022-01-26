@@ -23,8 +23,8 @@ export class ContactService implements PaginatedService {
     return this.http.get(`${environment.apiUrl}/contacts/${id}`);
   }
 
-  getByService(id: number): Observable<any> {
-    return this.http.get(`${environment.apiUrl}/contacts/getByService/${id}`);
+  getByService(id: number, idCentreGestion: any): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/contacts/getByService/${id}`, {params: {idCentreGestion}});
   }
 
   update(id: number, data: any): Observable<any> {

@@ -86,14 +86,14 @@ export class SignataireComponent implements OnInit, OnChanges {
   }
 
   refreshServices(): void {
-    this.serviceService.getByStructure(this.etab.id).subscribe((response: any) => {
+    this.serviceService.getByStructure(this.etab.id, this.convention.centreGestion.id).subscribe((response: any) => {
       this.services = response;
     });
   }
 
   refreshContacts(): void {
     if (this.service){
-      this.contactService.getByService(this.service.id).subscribe((response: any) => {
+      this.contactService.getByService(this.service.id, this.convention.centreGestion.id).subscribe((response: any) => {
         this.contacts = response;
       });
     }

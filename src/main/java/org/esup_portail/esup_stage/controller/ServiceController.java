@@ -64,7 +64,7 @@ public class ServiceController {
 
     @GetMapping("/getByStructure/{id}")
     @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.LECTURE})
-    public List<Service> getByStructure(@PathVariable("id") int id) {
+    public List<Service> getByStructure(@PathVariable("id") int id, @RequestParam(value = "idCentreGestion", required = false, defaultValue = "-1") Integer idCentreGestion) {
         List<Service> services = serviceJpaRepository.findByStructure(id);
         if (services == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Service non trouvée");
@@ -72,11 +72,14 @@ public class ServiceController {
 
         ContextDto contexteDto = ServiceContext.getServiceContext();
         Utilisateur utilisateur = contexteDto.getUtilisateur();
-        /* Pour les utilisateurs gestionnaires, on ne renvoit que les services qui sont rattachés au même centre de gestion ou
-         qui ont un centre de gestion avec code confidentialité égale à 0 ou au centre de gestion de type établissement
-        */
-        if (UtilisateurHelper.isRole(utilisateur, Role.GES) || UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)) {
-            CentreGestion centreGestion = centreGestionJpaRepository.getByGestionnaireLogin(utilisateur.getLogin());
+        /*
+        * Si idCentreGestion != -1, on est dans le cadre d'une convention
+        *
+        * Dans ce cas pour les utilisateurs gestionnaires, on ne renvoit que les services qui sont rattachés au centre de la convention ou
+          qui ont un centre de gestion avec code confidentialité égale à 0 ou au centre de gestion de type établissement
+        * */
+        if ((UtilisateurHelper.isRole(utilisateur, Role.GES) || UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)) && idCentreGestion != -1) {
+            CentreGestion centreGestion = centreGestionJpaRepository.findById(idCentreGestion.intValue());
             if (centreGestion == null) {
                 throw new AppException(HttpStatus.NOT_FOUND, "CentreGestion non trouvé");
             }
@@ -110,7 +113,11 @@ public class ServiceController {
         CentreGestion centreGestion;
         //Ajoute le centreGestion de l'utilisateur qui a créé le contact pour les utilisateurs gestionnaires.
         if (UtilisateurHelper.isRole(utilisateur, Role.GES) || UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)) {
-            centreGestion = centreGestionJpaRepository.getByGestionnaireLogin(utilisateur.getLogin());
+            if (serviceFormDto.getIdCentreGestion() != null) {
+                centreGestion = centreGestionJpaRepository.findById(serviceFormDto.getIdCentreGestion().intValue());
+            } else {
+                centreGestion = centreGestionJpaRepository.getCentreEtablissement();
+            }
         } else {
             centreGestion = centreGestionJpaRepository.getCentreEtablissement();
         }
