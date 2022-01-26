@@ -61,6 +61,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   ) {
     this.filterChanged.pipe(debounceTime(500)).subscribe(() => {
       const filters = this.getFilters();
+      this.resetPage();
 
       for (const key of Object.keys(this.autocmpleteChanged)) {
         this.autocmpleteChanged[key].pipe(debounceTime(500)).subscribe(async (event: any) => {
@@ -72,25 +73,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
       }
 
       this.filterValuesToSend = filters;
-      this.service.getPaginated(this.page, this.pageSize, this.sortColumn, this.sortOrder, JSON.stringify(filters)).subscribe((results: any) => {
-        this.total = results.total;
-        this.data = results.data;
-
-        if (this.setAlerte) {
-          this.data.forEach((row: any) => {
-            let depasse = false;
-            if (row.depasseDelaiValidation) {
-              const ordreValidation = this.authService.isEnseignant() ? row.centreGestion.validationPedagogiqueOrdre : row.centreGestion.validationConventionOrdre;
-              if (ordreValidation === 1) depasse = true;
-              if (row.centreGestion.validationPedagogiqueOrdre <= (ordreValidation - 1) && row.validationPedagogique) depasse = true;
-              if (row.centreGestion.verificationAdministrativeOrdre <= (ordreValidation - 1) && row.verificationAdministrative) depasse = true;
-              if (row.centreGestion.validationConventionOrdre <= (ordreValidation - 1) && row.validationConvention) depasse = true;
-            }
-            row.depasseDelaiValidation = depasse;
-          });
-        }
-        this.onUpdated.emit(results);
-      });
+      this.getPaginated();
     });
   }
 
@@ -115,14 +98,40 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
   }
 
+  getPaginated(): void {
+    this.service.getPaginated(this.page, this.pageSize, this.sortColumn, this.sortOrder, JSON.stringify(this.filterValuesToSend)).subscribe((results: any) => {
+      this.total = results.total;
+      this.data = results.data;
+
+      if (this.setAlerte) {
+        this.data.forEach((row: any) => {
+          let depasse = false;
+          if (row.depasseDelaiValidation) {
+            const ordreValidation = this.authService.isEnseignant() ? row.centreGestion.validationPedagogiqueOrdre : row.centreGestion.validationConventionOrdre;
+            if (ordreValidation === 1) depasse = true;
+            if (row.centreGestion.validationPedagogiqueOrdre <= (ordreValidation - 1) && row.validationPedagogique) depasse = true;
+            if (row.centreGestion.verificationAdministrativeOrdre <= (ordreValidation - 1) && row.verificationAdministrative) depasse = true;
+            if (row.centreGestion.validationConventionOrdre <= (ordreValidation - 1) && row.validationConvention) depasse = true;
+          }
+          row.depasseDelaiValidation = depasse;
+        });
+      }
+      this.onUpdated.emit(results);
+    });
+  }
+
   update(): void {
     this.filterChanged.next();
   }
 
   changePaginator(event: PageEvent): void {
+    if (this.pageSize == event.pageSize) {
+      this.page = event.pageIndex + 1;
+    } else {
+      this.resetPage();
+    }
     this.pageSize = event.pageSize;
-    this.page = event.pageIndex + 1;
-    this.update();
+    this.getPaginated();
   }
 
   sorting(event: Sort): void {
@@ -231,6 +240,12 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
       let filename = 'export_' + (new Date()).getTime() + '.' + (format === 'excel' ? 'xls' : 'csv');
       FileSaver.saveAs(blob, filename);
     });
+  }
+
+  resetPage(): void {
+    this.page = 1;
+    this.paginatorBottom.pageIndex = this.page - 1;
+    this.paginatorTop.pageIndex = this.page - 1;
   }
 
 }
