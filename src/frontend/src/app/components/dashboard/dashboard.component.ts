@@ -132,7 +132,7 @@ export class DashboardComponent implements OnInit {
         this.typeDashboard = 1;
         this.setDataGestionnaire();
       }
-      this.filters.push({ id: 'validationCreation', type: 'boolean', value: true, hidden: true });
+      this.filters.push({ id: 'validationCreation', type: 'boolean', value: true, hidden: true, permanent: true });
 
       forkJoin(
         this.ufrService.getPaginated(1, 0, 'libelle', 'asc', '{}'),

@@ -144,7 +144,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
     for (const filter of this.filters) {
       this.filterValues[filter.id] = {
         type: filter.type ?? 'text',
-        value: emptyValues ? undefined : filter.value,
+        value: (emptyValues && !filter.permanent) ? undefined : filter.value,
         specific: filter.specific
       }
       if (filter.type === 'autocomplete') {
