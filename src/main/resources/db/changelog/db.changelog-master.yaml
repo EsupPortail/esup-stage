@@ -63,5 +63,8 @@ databaseChangeLog:
       file: 1.0.0-consigne.yaml
       relativeToChangelogFile: true
   - include:
+      file: 1.0.0-consigne-nonnullable.yaml
+      relativeToChangelogFile: true
+  - include:
       file: 1.0.0-service.yaml
       relativeToChangelogFile: true
