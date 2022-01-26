@@ -10,6 +10,7 @@ import java.util.Date;
 public class HistoriqueValidation {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idHistoriqueValidation", nullable = false)
     private int id;
 
