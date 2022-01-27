@@ -148,6 +148,7 @@ public class StructureController {
             throw new AppException(HttpStatus.NOT_FOUND, "Pays non trouvé");
         }
 
+        check(structureFormDto);
         structure.setRaisonSociale(structureFormDto.getRaisonSociale());
         structure.setNumeroSiret(structureFormDto.getNumeroSiret());
         structure.setEffectif(effectif);

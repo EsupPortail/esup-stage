@@ -48,28 +48,32 @@
     Une de ces deux informations doit être renseignée.
   </div>
   <div class="row">
-    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-      <mat-label>Code APE</mat-label>
-      <mat-select formControlName="codeNafN5" required>
-        <mat-option>
-          <ngx-mat-select-search [formControl]="nafN5FilterCtrl" placeholderLabel="Filtrer par code APE" noEntriesFoundLabel="Aucun code trouvé"></ngx-mat-select-search>
-        </mat-option>
-        <mat-option *ngFor="let nafN5 of filteredNafN5List | async" [value]="nafN5.code" (click)="setSelectedNafN5(nafN5)">{{nafN5.code}}</mat-option>
-      </mat-select>
-      <mat-icon matSuffix class="icon-help" matTooltip="Code à demander directement à votre établissement d'accueil ou consultable sur un site de référencement d'entreprises. Composé de quatre chiffres et une lettre (ex: 01.10Z) faisant référence à la nomenclature d'activité françaises (NAF).">help</mat-icon>
-      <mat-hint>
-        <ng-container *ngIf="selectedNafN5; else invalidNafN5">
-          <span class="text-success"><i class="fa fa-check"></i> {{selectedNafN5.libelle}}</span>
-        </ng-container>
-        <ng-template #invalidNafN5>
-          <span class="text-danger" *ngIf="selectedNafN5 !== undefined">Ce code est invalide</span>
-        </ng-template>
-      </mat-hint>
-    </mat-form-field>
     <div class="col-sm-12 col-md-6 mb-2">
-      <label>Activité principale *</label>
+      <label>Code APE</label>
+      <mat-form-field appearance="fill" style="display: block">
+        <mat-label>Code APE</mat-label>
+        <mat-select formControlName="codeNafN5">
+          <mat-option>
+            <ngx-mat-select-search [formControl]="nafN5FilterCtrl" placeholderLabel="Filtrer par code APE" noEntriesFoundLabel="Aucun code trouvé"></ngx-mat-select-search>
+          </mat-option>
+          <mat-option *ngFor="let nafN5 of filteredNafN5List | async" [value]="nafN5.code" (click)="setSelectedNafN5(nafN5)">{{nafN5.code}}</mat-option>
+        </mat-select>
+        <mat-icon matSuffix class="icon-help" matTooltip="Code à demander directement à votre établissement d'accueil ou consultable sur un site de référencement d'entreprises. Composé de quatre chiffres et une lettre (ex: 01.10Z) faisant référence à la nomenclature d'activité françaises (NAF).">help</mat-icon>
+        <mat-hint>
+          <ng-container *ngIf="selectedNafN5; else invalidNafN5">
+            <span class="text-success"><i class="fa fa-check"></i> {{selectedNafN5.libelle}}</span>
+          </ng-container>
+          <ng-template #invalidNafN5>
+            <span class="text-danger" *ngIf="selectedNafN5 !== undefined">Ce code est invalide</span>
+          </ng-template>
+        </mat-hint>
+      </mat-form-field>
+    </div>
+
+    <div class="col-sm-12 col-md-6 mb-2">
+      <label>Activité principale</label>
       <quill-editor formControlName="activitePrincipale"></quill-editor>
-      <mat-error><app-form-error [field]="form.get('activitePrincipale')"></app-form-error></mat-error>
+      <mat-error><div *ngIf="!form.get('activitePrincipale')?.value && !form.get('codeNafN5')?.value">Le code APE ou l'activité principale doit être renseigné</div></mat-error>
     </div>
   </div>
 

@@ -74,8 +74,8 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges {
       idEffectif: [this.etab.effectif ? this.etab.effectif.id : null, [Validators.required]],
       idTypeStructure: [this.etab.typeStructure ? this.etab.typeStructure.id : null, [Validators.required]],
       idStatutJuridique: [this.etab.statutJuridique ? this.etab.statutJuridique.id : null, [Validators.required]],
-      codeNafN5: [this.etab.nafN5 ? this.etab.nafN5.code : null, [Validators.required]],
-      activitePrincipale: [this.etab.activitePrincipale, [Validators.required]],
+      codeNafN5: [this.etab.nafN5 ? this.etab.nafN5.code : null, []],
+      activitePrincipale: [this.etab.activitePrincipale, []],
       voie: [this.etab.voie, [Validators.required, Validators.maxLength(200)]],
       codePostal: [this.etab.codePostal, [Validators.required, Validators.maxLength(10)]],
       batimentResidence: [this.etab.batimentResidence, [Validators.maxLength(200)]],
@@ -131,6 +131,12 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges {
 
   save(): void {
     if (this.form.valid) {
+      // Contrôle code APE ou activité principale renseignée
+      if (!this.form.get('codeNafN5')?.value && !this.form.get('activitePrincipale')?.value) {
+        this.messageService.setError('Une de ces deux informations doivent être renseignée : Code APE, Activité principale');
+        return;
+      }
+
       if (this.form.get('numeroSiret')?.value === "") {
         this.form.get('numeroSiret')?.setValue(null);
       }
