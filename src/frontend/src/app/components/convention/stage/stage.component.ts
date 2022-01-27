@@ -408,7 +408,8 @@ export class StageComponent implements OnInit {
   }
 
   loadJoursFeries():void {
-      const currentYear = new Date().getFullYear();
+      let anneeUniversitaire = this.convention.annee;
+      const currentYear = (anneeUniversitaire != null && anneeUniversitaire !== '') ? parseInt(anneeUniversitaire.split('/')[0]) : new Date().getFullYear();
       const nextYear = currentYear+1;
 
       this.joursFeries = this.getJoursFeries(currentYear);
@@ -506,7 +507,7 @@ export class StageComponent implements OnInit {
         if (valid){
           heuresTravails = heuresTravails + nbHeuresJournalieres
         }
-        loopDate = new Date(loopDate.getTime() + (1000 * 60 * 60 * 24));
+        loopDate.setDate(loopDate.getDate() + 1);
       }
     }
 
