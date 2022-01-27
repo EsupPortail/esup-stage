@@ -891,8 +891,9 @@ public class ConventionController {
 
     public void sendValidationMail(Convention convention, Utilisateur utilisateurContext, String templateMailCode, boolean sendMailEtudiant, boolean sendMailGestionnaire, boolean sendMailResGes, boolean sendMailEnseignant) {
         // Récupération du personnel du centre de gestion de la convention avec alertMail=1
+        // todo ? : s'appuyer sur les booléens d'alertes creationConventionEtudiant, modificationConventionEtudiant... du personnel
         List<PersonnelCentreGestion> personnels = convention.getCentreGestion().getPersonnels();
-        personnels = personnels.stream().filter(PersonnelCentreGestion::getAlertesMail).collect(Collectors.toList());
+        personnels = personnels.stream().filter(p -> p.getAlertesMail() != null && p.getAlertesMail()).collect(Collectors.toList());
 
         // Récupération de la fiche utilisateur des personnels
         List<Utilisateur> utilisateurPersonnels = utilisateurJpaRepository.findByLogins(personnels.stream().map(PersonnelCentreGestion::getUidPersonnel).collect(Collectors.toList()));
