@@ -68,7 +68,7 @@ export class DashboardComponent implements OnInit {
         this.setDataGestionnaire();
       } else if (this.authService.isEnseignant()) {
         this.typeDashboard = 2;
-        this.columns = ['id', 'etudiant', 'ufr', 'etape',  'dateDebutStage', 'dateFinStage', 'structure', 'sujetStage', 'lieuStage', 'etatValidation', 'avenant', 'action'];
+        this.columns = ['id', 'etudiant.prenom', 'ufr.libelle', 'etape.libelle',  'dateDebutStage', 'dateFinStage', 'structure.raisonSociale', 'sujetStage', 'lieuStage', 'etatValidation', 'avenant', 'action'];
         this.filters = [
           { id: 'id', libelle: 'N° de la convention', type: 'int' },
           { id: 'etudiant', libelle: 'Étudiant', specific: true },
@@ -99,7 +99,7 @@ export class DashboardComponent implements OnInit {
         };
       } else if (this.authService.isEtudiant()) {
         this.typeDashboard = 3;
-        this.columns = ['id', 'structure', 'dateDebutStage', 'dateFinStage', 'ufr', 'etape', 'enseignant', 'validationPedagogique', 'validationConvention', 'avenant', 'annee', 'action'];
+        this.columns = ['id', 'structure.raisonSociale', 'dateDebutStage', 'dateFinStage', 'ufr.libelle', 'etape.libelle', 'enseignant.prenom', 'validationPedagogique', 'validationConvention', 'avenant', 'annee', 'action'];
         this.filters = [
           { id: 'id', libelle: 'N° de la convention', type: 'int' },
           { id: 'structure', libelle: 'Établissement d\'accueil', specific: true },
@@ -167,7 +167,7 @@ export class DashboardComponent implements OnInit {
   }
 
   setDataGestionnaire(): void {
-    this.columns = ['select', 'id', 'etudiant', 'structure', 'dateDebutStage', 'dateFinStage', 'ufr', 'etape', 'enseignant', 'etatValidation', 'action'];
+    this.columns = ['select', 'id', 'etudiant.prenom', 'structure.raisonSociale', 'dateDebutStage', 'dateFinStage', 'ufr.libelle', 'etape.libelle', 'enseignant.prenom', 'etatValidation', 'action'];
     this.filters = [
       { id: 'id', libelle: 'N° de la convention', type: 'int' },
       { id: 'etudiant', libelle: 'Étudiant', specific: true },

@@ -16,7 +16,7 @@ public class ConventionRepository extends PaginationRepository<Convention> {
 
     public ConventionRepository(EntityManager em) {
         super(em, Convention.class, "c");
-        this.predicateWhitelist = Arrays.asList("id");
+        this.predicateWhitelist = Arrays.asList("id", "etudiant.prenom", "structure.raisonSociale", "dateDebutStage", "dateFinStage", "ufr.libelle", "etape.libelle", "enseignant.prenom", "sujetStage", "lieuStage", "annee");
     }
 
     @Override
