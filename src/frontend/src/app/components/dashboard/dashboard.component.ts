@@ -79,7 +79,7 @@ export class DashboardComponent implements OnInit {
           { id: 'structure', libelle: 'Établissement d\'accueil', specific: true },
           { id: 'sujetStage', libelle: 'Sujet du stage' },
           { id: 'lieuStage', libelle: 'Lieu du stage' },
-          { id: 'etatValidation', libelle: 'État de validation de la convention', type: 'list', options: this.validationsOptions, keyLibelle: 'libelle', keyId: 'id', value: ['nonValidationPedagogique', 'nonValidationConvention'], specific: true },
+          { id: 'etatValidation', libelle: 'État de validation de la convention', type: 'list', options: this.validationsOptions, keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
           { id: 'avenant', libelle: 'Avenant', specific: true },
         ];
 
@@ -177,7 +177,7 @@ export class DashboardComponent implements OnInit {
       { id: 'ufr.id', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
       { id: 'etape.id', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
       { id: 'enseignant', libelle: 'Enseignant', specific: true },
-      { id: 'etatValidation', libelle: 'État de validation de la convention', type: 'list', options: this.validationsOptions, keyLibelle: 'libelle', keyId: 'id', value: ['validationPedagogique', 'nonValidationConvention'], specific: true },
+      { id: 'etatValidation', libelle: 'État de validation de la convention', type: 'list', options: this.validationsOptions, keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
     ];
 
     this.exportColumns = {
