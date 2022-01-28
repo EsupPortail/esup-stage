@@ -46,6 +46,7 @@
                 <mat-form-field class="col-sm-12 col-md-12" appearance="fill" style="margin-left: -15px">
                   <mat-label>Nombre de jours avant le début du stage pour l'affichage de l'alerte de validation d'une convention</mat-label>
                   <input type="number" matInput formControlName="delaiAlerteConvention" required>
+                  <mat-error><app-form-error [field]="form.get('delaiAlerteConvention')"></app-form-error></mat-error>
                 </mat-form-field>
               </div>
               <div *ngIf="form.get('nomViseur')?.value">
