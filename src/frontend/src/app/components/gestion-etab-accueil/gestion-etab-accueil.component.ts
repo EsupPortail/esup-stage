@@ -25,7 +25,7 @@ import { ContactFormComponent } from './contact-form/contact-form.component';
 })
 export class GestionEtabAccueilComponent implements OnInit {
 
-  columns = ['raisonSociale', 'numeroSiret', 'nafN5', 'pays', 'commune', 'typeStructure', 'statutJuridique', 'action'];
+  columns = ['raisonSociale', 'numeroSiret', 'nafN5.nafN1.libelle', 'pays.lib', 'commune', 'typeStructure.libelle', 'statutJuridique.libelle', 'action'];
   sortColumn = 'raisonSociale';
   serviceTableColumns = ['nom', 'voie', 'codePostal','batimentResidence', 'commune', 'pays', 'telephone',  'actions'];
   contactTableColumns = ['centreGestionnaire', 'civilite', 'nom','prenom', 'telephone', 'mail', 'fax',  'actions'];
