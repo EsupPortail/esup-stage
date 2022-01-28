@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { ConventionService } from "../../services/convention.service";
 import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
 import { TitleService } from "../../services/title.service";
@@ -34,7 +34,11 @@ export class ConventionComponent implements OnInit {
   constructor(private activatedRoute: ActivatedRoute,
               private conventionService: ConventionService,
               private titleService: TitleService,
-              private authService: AuthService) { }
+              private authService: AuthService,
+              private router: Router) {
+
+    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+  }
 
   ngOnInit(): void {
     this.activatedRoute.params.subscribe((param: any) => {

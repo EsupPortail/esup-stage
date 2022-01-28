@@ -1,11 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { CentreGestionService } from "../../services/centre-gestion.service";
 import { MessageService } from "../../services/message.service";
 import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { debounceTime } from 'rxjs/operators';
-import { Router } from "@angular/router";
 import { ConsigneService } from "../../services/consigne.service";
 
 @Component({
@@ -48,6 +47,7 @@ export class CentreGestionComponent implements OnInit {
   constructor(private activatedRoute: ActivatedRoute, private centreGestionService: CentreGestionService, private messageService: MessageService, private fb: FormBuilder, private router: Router, private consigneService: ConsigneService) {
     this.setCoordCentreForm();
     this.setParamCentreForm();
+    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
   }
 
   ngOnInit(): void {
