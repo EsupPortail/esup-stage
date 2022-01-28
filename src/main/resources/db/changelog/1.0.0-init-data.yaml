@@ -457,3 +457,9 @@ databaseChangeLog:
     changes:
     - sql:
         sql: INSERT INTO TemplateConvention (idTypeConvention, codeLangueConvention, dateCreation, loginCreation) SELECT idTypeConvention, codeLangueConvention, NOW(), 'liquibase' FROM TypeConvention, LangueConvention WHERE temEnServTypeConvention = 'O' AND temEnServLangue = 'O' AND idTypeConvention NOT IN (SELECT idTypeConvention FROM TemplateConvention)
+- changeSet:
+    id: convention-init-idPays-france
+    author: jwang
+    changes:
+    - sql:
+        sql: UPDATE Convention SET idPays = (SELECT idPays FROM Pays WHERE lib = 'FRANCE') WHERE LOWER(paysEtudiant) = 'france' AND idPays IS NULL
