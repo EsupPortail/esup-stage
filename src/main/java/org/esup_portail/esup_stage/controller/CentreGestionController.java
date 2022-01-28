@@ -16,7 +16,7 @@ import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.apogee.ApogeeService;
 import org.esup_portail.esup_stage.service.apogee.model.Composante;
-import org.esup_portail.esup_stage.service.apogee.model.Etape;
+import org.esup_portail.esup_stage.service.apogee.model.EtapeApogee;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -64,6 +64,9 @@ public class CentreGestionController {
 
     @Autowired
     FichierJpaRepository fichierJpaRepository;
+
+    @Autowired
+    EtapeJpaRepository etapeJpaRepository;
 
     @Autowired
     AppConfigService appConfigService;
@@ -254,48 +257,63 @@ public class CentreGestionController {
 
     @GetMapping("/{id}/etapes")
     @Secure()
-    public List<Etape> getEtapes(@PathVariable("id") int id) {
-        List<Etape> etapes = apogeeService.getListEtape();
+    public List<EtapeApogee> getEtapes(@PathVariable("id") int id) {
+        List<EtapeApogee> etapeApogees = apogeeService.getListEtape();
         List<CritereGestion> critereGestionsEtapes = critereGestionJpaRepository.findEtapes();
-        etapes = etapes.stream().filter(e -> critereGestionsEtapes.stream().noneMatch(cg -> cg.getId().getCode().equalsIgnoreCase(e.getCode()) && cg.getCentreGestion().getId() != id)).collect(Collectors.toList());
-        etapes.sort(Comparator.comparing(Etape::getCodeVrsEtp).thenComparing(Etape::getCode));
-        return etapes;
+        etapeApogees = etapeApogees.stream().filter(e -> critereGestionsEtapes.stream().noneMatch(cg -> cg.getId().getCode().equalsIgnoreCase(e.getCode()) && cg.getCentreGestion().getId() != id)).collect(Collectors.toList());
+        etapeApogees.sort(Comparator.comparing(EtapeApogee::getCodeVrsEtp).thenComparing(EtapeApogee::getCode));
+        return etapeApogees;
     }
 
     @GetMapping("/{id}/centre-etapes")
     @Secure()
-    public List<Etape> getCentreEtapes(@PathVariable("id") int id) {
+    public List<EtapeApogee> getCentreEtapes(@PathVariable("id") int id) {
         List<CritereGestion> critereGestionsEtapes = critereGestionJpaRepository.findEtapesByCentreId(id);
-        List<Etape> etapes = new ArrayList<>();
+        List<EtapeApogee> etapeApogees = new ArrayList<>();
 
         for (CritereGestion cg : critereGestionsEtapes) {
             if (cg != null) {
-                Etape etape = new Etape();
-                etape.setCode(cg.getId().getCode());
-                etape.setCodeVrsEtp(cg.getId().getCodeVersionEtape());
-                etape.setLibelle(cg.getLibelle());
-                etapes.add(etape);
+                EtapeApogee etapeApogee = new EtapeApogee();
+                etapeApogee.setCode(cg.getId().getCode());
+                etapeApogee.setCodeVrsEtp(cg.getId().getCodeVersionEtape());
+                etapeApogee.setLibelle(cg.getLibelle());
+                etapeApogees.add(etapeApogee);
             }
         }
 
-        return etapes;
+        return etapeApogees;
     }
 
     @PostMapping("/{id}/add-etape")
     @Secure()
-    public Etape addEtape(@PathVariable("id") int id, @RequestBody Etape _etape) {
+    public EtapeApogee addEtape(@PathVariable("id") int id, @RequestBody EtapeApogee _etapeApogee) {
+        Etape etape = etapeJpaRepository.findById(_etapeApogee.getCode(), _etapeApogee.getCodeVrsEtp(), appConfigService.getConfigGenerale().getCodeUniversite());
+
+        // alimentation de la table Etape avec celles remontées depuis Apogée
+        if (etape == null) {
+            EtapeId etapeId = new EtapeId();
+            etapeId.setCode(_etapeApogee.getCode());
+            etapeId.setCodeVersionEtape(_etapeApogee.getCodeVrsEtp());
+            etapeId.setCodeUniversite(appConfigService.getConfigGenerale().getCodeUniversite());
+
+            etape = new Etape();
+            etape.setId(etapeId);
+            etape.setLibelle(_etapeApogee.getLibelle());
+            etapeJpaRepository.saveAndFlush(etape);
+        }
+
         CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
         CritereGestionId critereGestionId = new CritereGestionId();
-        critereGestionId.setCode(_etape.getCode());
-        critereGestionId.setCodeVersionEtape(_etape.getCodeVrsEtp());
+        critereGestionId.setCode(_etapeApogee.getCode());
+        critereGestionId.setCodeVersionEtape(_etapeApogee.getCodeVrsEtp());
 
         CritereGestion critereGestion = new CritereGestion();
         critereGestion.setId(critereGestionId);
-        critereGestion.setLibelle(_etape.getLibelle());
+        critereGestion.setLibelle(_etapeApogee.getLibelle());
         critereGestion.setCentreGestion(centreGestion);
         critereGestionJpaRepository.saveAndFlush(critereGestion);
 
-        return _etape;
+        return _etapeApogee;
     }
 
     @DeleteMapping("/delete-etape/{codeEtape}/{codeVersion}")

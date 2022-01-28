@@ -6,7 +6,7 @@ import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.service.apogee.model.ApogeeMap;
 import org.esup_portail.esup_stage.service.apogee.model.Composante;
-import org.esup_portail.esup_stage.service.apogee.model.Etape;
+import org.esup_portail.esup_stage.service.apogee.model.EtapeApogee;
 import org.esup_portail.esup_stage.service.apogee.model.EtudiantRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,8 +101,8 @@ public class ApogeeService {
         }
     }
 
-    public List<Etape> getListEtape() {
-        List<Etape> list = new ArrayList<>();
+    public List<EtapeApogee> getListEtape() {
+        List<EtapeApogee> list = new ArrayList<>();
         Map<String, String> params = new HashMap<>();
         String response = call("/etapesReference", params);
         try {
@@ -111,11 +111,11 @@ public class ApogeeService {
             for (Map.Entry<String, Object> entry : map.entrySet()) {
                 // 0: code Etape, 1: code version Etape
                 String[] codes = entry.getKey().split(";");
-                Etape etape = new Etape();
-                etape.setCode(codes[0]);
-                etape.setCodeVrsEtp(codes[1]);
-                etape.setLibelle(entry.getValue().toString());
-                list.add(etape);
+                EtapeApogee etapeApogee = new EtapeApogee();
+                etapeApogee.setCode(codes[0]);
+                etapeApogee.setCodeVrsEtp(codes[1]);
+                etapeApogee.setLibelle(entry.getValue().toString());
+                list.add(etapeApogee);
             }
             return list;
         } catch (JsonParseException e) {

@@ -1,6 +1,6 @@
 package org.esup_portail.esup_stage.service.apogee.model;
 
-public class Etape {
+public class EtapeApogee {
     private String code;
     private String codeVrsEtp;
     private String libelle;

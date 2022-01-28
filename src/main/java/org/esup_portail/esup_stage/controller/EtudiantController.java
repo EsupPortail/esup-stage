@@ -5,10 +5,7 @@ import org.esup_portail.esup_stage.dto.ConventionFormationDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
-import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
-import org.esup_portail.esup_stage.repository.CritereGestionJpaRepository;
-import org.esup_portail.esup_stage.repository.EtudiantJpaRepository;
-import org.esup_portail.esup_stage.repository.TypeConventionJpaRepository;
+import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
@@ -48,6 +45,9 @@ public class EtudiantController {
     @Autowired
     TypeConventionJpaRepository typeConventionJpaRepository;
 
+    @Autowired
+    EtapeJpaRepository etapeJpaRepository;
+
     @GetMapping("/{numEtudiant}/apogee-data")
     @Secure
     public EtudiantRef getApogeeData(@PathVariable("numEtudiant") String numEtudiant) {
@@ -77,6 +77,20 @@ public class EtudiantController {
                 typeConvention = typeConventionJpaRepository.findByCodeCtrl(regIns.getLicRegIns());
             }
             for (EtapeInscription etapeInscription : apogeeMap.getListeEtapeInscriptions()) {
+                Etape etape = etapeJpaRepository.findById(etapeInscription.getCodeEtp(), etapeInscription.getCodVrsVet(), appConfigService.getConfigGenerale().getCodeUniversite());
+
+                // alimentation de la table Etape avec celles remontées depuis Apogée
+                if (etape == null) {
+                    EtapeId etapeId = new EtapeId();
+                    etapeId.setCode(etapeInscription.getCodeEtp());
+                    etapeId.setCodeVersionEtape(etapeInscription.getCodVrsVet());
+                    etapeId.setCodeUniversite(appConfigService.getConfigGenerale().getCodeUniversite());
+
+                    etape = new Etape();
+                    etape.setId(etapeId);
+                    etape.setLibelle(etapeInscription.getLibWebVet());
+                    etapeJpaRepository.saveAndFlush(etape);
+                }
                 ConventionFormationDto conventionFormationDto = new ConventionFormationDto();
                 conventionFormationDto.setEtapeInscription(etapeInscription);
                 conventionFormationDto.setAnnee(annee);
