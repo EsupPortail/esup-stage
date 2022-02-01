@@ -34,6 +34,7 @@ import { Droit } from "../../../constants/droit";
 export class AdminNomenclaturesComponent implements OnInit {
 
   columns = ['libelle', 'action'];
+  columnsCode = ['code', 'libelle', 'action'];
   columnsCodeCtrl = ['codeCtrl', 'libelle', 'action'];
   exportColumns = {
     libelle: { title: 'Libellé' },
@@ -44,6 +45,11 @@ export class AdminNomenclaturesComponent implements OnInit {
     libelle: { title: 'Libellé' },
     actif: { title: 'Actif' },
   };
+  exportColumnsCode = {
+    code: { title: 'Code' },
+    libelle: {title: 'Libellé' },
+    actif: {title: 'Actif' },
+  }
   sortColumn = 'libelle';
 
   filters = [
@@ -53,6 +59,11 @@ export class AdminNomenclaturesComponent implements OnInit {
   filtersCodeCtrl = [
     { id: 'libelle', libelle: 'Libellé' },
     { id: 'codeCtrl', libelle: 'Code'},
+    { id: 'temEnServ', libelle: 'Valeurs actives', type: 'temEnServ' }
+  ];
+  filtersCode = [
+    { id: 'libelle', libelle: 'Libellé' },
+    { id: 'code', libelle: 'Code'},
     { id: 'temEnServ', libelle: 'Valeurs actives', type: 'temEnServ' }
   ];
 
