@@ -194,7 +194,7 @@ export class StageComponent implements OnInit {
     this.loadInterruptionsStage();
 
     this.previousValues={...this.form.value}
-    this.form.valueChanges.pipe(debounceTime(500)).subscribe(res=>{
+    this.form.valueChanges.pipe(debounceTime(1000)).subscribe(res=>{
       const keys=Object.keys(res).filter(k=>res[k]!=this.previousValues[k])
       this.previousValues={...this.form.value}
       keys.forEach((key: string) => {

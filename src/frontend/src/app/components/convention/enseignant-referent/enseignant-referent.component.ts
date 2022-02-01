@@ -42,7 +42,7 @@ export class EnseignantReferentComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.form.valueChanges.pipe(debounceTime(500)).subscribe(() => {
+    this.form.valueChanges.pipe(debounceTime(1000)).subscribe(() => {
       this.search();
     });
   }

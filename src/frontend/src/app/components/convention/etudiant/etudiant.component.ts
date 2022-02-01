@@ -146,7 +146,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
       this.typeConventions = response.data;
     });
 
-    this.form.valueChanges.pipe(debounceTime(500)).subscribe(() => {
+    this.form.valueChanges.pipe(debounceTime(1000)).subscribe(() => {
       this.search();
     });
   }
