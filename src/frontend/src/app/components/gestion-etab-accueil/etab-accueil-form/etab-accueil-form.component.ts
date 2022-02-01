@@ -121,7 +121,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges {
     }
 
     this.filteredNafN5List.next(
-      this.nafN5List.filter(nafN5 => nafN5.code.toLowerCase().indexOf(search) > -1)
+      this.nafN5List.filter(nafN5 => nafN5.code.toLowerCase().indexOf(search) > -1 || nafN5.libelle.toLowerCase().indexOf(search) > -1)
     );
   }
 

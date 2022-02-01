@@ -56,7 +56,7 @@
           <mat-option>
             <ngx-mat-select-search [formControl]="nafN5FilterCtrl" placeholderLabel="Filtrer par code APE" noEntriesFoundLabel="Aucun code trouvé"></ngx-mat-select-search>
           </mat-option>
-          <mat-option *ngFor="let nafN5 of filteredNafN5List | async" [value]="nafN5.code" (click)="setSelectedNafN5(nafN5)">{{nafN5.code}}</mat-option>
+          <mat-option *ngFor="let nafN5 of filteredNafN5List | async" [value]="nafN5.code" (click)="setSelectedNafN5(nafN5)">{{nafN5.code}} - {{nafN5.libelle}}</mat-option>
         </mat-select>
         <mat-icon matSuffix class="icon-help" matTooltip="Code à demander directement à votre établissement d'accueil ou consultable sur un site de référencement d'entreprises. Composé de quatre chiffres et une lettre (ex: 01.10Z) faisant référence à la nomenclature d'activité françaises (NAF).">help</mat-icon>
         <mat-hint>
