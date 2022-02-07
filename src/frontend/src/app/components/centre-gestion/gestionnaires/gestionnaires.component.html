@@ -1,53 +1,4 @@
 <mat-accordion>
-  <mat-expansion-panel [expanded]="true">
-    <mat-expansion-panel-header>
-      <mat-panel-title>Liste des gestionnaires rattachés</mat-panel-title>
-    </mat-expansion-panel-header>
-
-    <app-table [service]="personnelCentreService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters" [exportColumns]="exportColumns"
-               matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'" (matSortChange)="appTable ? appTable.sorting($event) : null" [hideDeleteFilters]="true">
-
-      <ng-container matColumnDef="civilite.libelle">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Civilité</th>
-        <td mat-cell *matCellDef="let row"> {{row.civilite ? row.civilite.libelle : ''}}</td>
-      </ng-container>
-      <ng-container matColumnDef="nom">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Nom</th>
-        <td mat-cell *matCellDef="let row"> {{row.nom}}</td>
-      </ng-container>
-      <ng-container matColumnDef="prenom">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Prénom</th>
-        <td mat-cell *matCellDef="let row"> {{row.prenom}}</td>
-      </ng-container>
-      <ng-container matColumnDef="droitAdministration.libelle">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Droits d'accès aux conventions</th>
-        <td mat-cell *matCellDef="let row"> {{row.droitAdministration.libelle}}</td>
-      </ng-container>
-      <ng-container matColumnDef="alertesMail">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Alertes Mail</th>
-        <td mat-cell *matCellDef="let row"> {{row.alertesMail ? 'Oui' : 'Non'}}</td>
-      </ng-container>
-      <ng-container matColumnDef="droitsEvaluation">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Droits Evaluation</th>
-        <td mat-cell *matCellDef="let row">
-          <span style="display: block" *ngIf="row.droitEvaluationEtudiant">Etudiants</span>
-          <span style="display: block" *ngIf="row.droitEvaluationEnseignant">Enseignant</span>
-          <span style="display: block" *ngIf="row.droitEvaluationEntreprise">Entreprise</span>
-        </td>
-      </ng-container>
-      <ng-container matColumnDef="action">
-        <th mat-header-cell *matHeaderCellDef>Actions</th>
-        <td mat-cell *matCellDef="let row">
-          <span>
-            <button mat-icon-button matTooltip="Modifier" color="primary" (click)="edit(row)"><i class="fa fa-pen"></i></button>
-          </span>
-          <span (confirm)="delete(row.id)" [confirmMessage]="'Voulez-vous supprimer ce gestionnaire de ce centre ?'">
-            <button mat-icon-button matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
-          </span>
-        </td>
-      </ng-container>
-    </app-table>
-  </mat-expansion-panel>
   <mat-expansion-panel>
     <mat-expansion-panel-header>
       <mat-panel-title>Choix d'un gestionnaire à rattacher</mat-panel-title>
@@ -99,7 +50,7 @@
       <tr mat-row *matRowDef="let row; columns: searchColumns;"></tr>
     </table>
   </mat-expansion-panel>
-  <mat-expansion-panel [disabled]="!gestionnaire">
+  <mat-expansion-panel [disabled]="!gestionnaire" [expanded]="gestionnaire">
     <mat-expansion-panel-header>
       Détail du gestionnaire
     </mat-expansion-panel-header>
@@ -170,5 +121,54 @@
         <button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
       </mat-dialog-actions>
     </form>
+  </mat-expansion-panel>
+  <mat-expansion-panel [expanded]="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title>Liste des gestionnaires rattachés</mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <app-table [service]="personnelCentreService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters" [exportColumns]="exportColumns"
+               matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'" (matSortChange)="appTable ? appTable.sorting($event) : null" [hideDeleteFilters]="true">
+
+      <ng-container matColumnDef="civilite.libelle">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Civilité</th>
+        <td mat-cell *matCellDef="let row"> {{row.civilite ? row.civilite.libelle : ''}}</td>
+      </ng-container>
+      <ng-container matColumnDef="nom">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Nom</th>
+        <td mat-cell *matCellDef="let row"> {{row.nom}}</td>
+      </ng-container>
+      <ng-container matColumnDef="prenom">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Prénom</th>
+        <td mat-cell *matCellDef="let row"> {{row.prenom}}</td>
+      </ng-container>
+      <ng-container matColumnDef="droitAdministration.libelle">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Droits d'accès aux conventions</th>
+        <td mat-cell *matCellDef="let row"> {{row.droitAdministration.libelle}}</td>
+      </ng-container>
+      <ng-container matColumnDef="alertesMail">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Alertes Mail</th>
+        <td mat-cell *matCellDef="let row"> {{row.alertesMail ? 'Oui' : 'Non'}}</td>
+      </ng-container>
+      <ng-container matColumnDef="droitsEvaluation">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Droits Evaluation</th>
+        <td mat-cell *matCellDef="let row">
+          <span style="display: block" *ngIf="row.droitEvaluationEtudiant">Etudiants</span>
+          <span style="display: block" *ngIf="row.droitEvaluationEnseignant">Enseignant</span>
+          <span style="display: block" *ngIf="row.droitEvaluationEntreprise">Entreprise</span>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let row">
+          <span>
+            <button mat-icon-button matTooltip="Modifier" color="primary" (click)="edit(row)"><i class="fa fa-pen"></i></button>
+          </span>
+          <span (confirm)="delete(row.id)" [confirmMessage]="'Voulez-vous supprimer ce gestionnaire de ce centre ?'">
+            <button mat-icon-button matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
+          </span>
+        </td>
+      </ng-container>
+    </app-table>
   </mat-expansion-panel>
 </mat-accordion>

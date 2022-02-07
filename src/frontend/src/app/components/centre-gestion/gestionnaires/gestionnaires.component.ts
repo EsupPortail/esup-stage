@@ -139,9 +139,6 @@ export class GestionnairesComponent implements OnInit {
   }
 
   choose(row: any): void {
-    if (this.pannels) {
-      this.pannels.last.open();
-    }
     this.gestionnaire = row;
     this.form.reset();
     this.setData(this.gestionnaire);
@@ -202,7 +199,7 @@ export class GestionnairesComponent implements OnInit {
       this.personnelCentreService.update(data, this.gestionnaire.id).subscribe((response: any) => {
         this.messageService.setSuccess("Personnel mis à jour");
         if (this.pannels) {
-          this.pannels.first.open();
+          this.pannels.last.open();
         }
         this.gestionnaire = undefined;
         this.refreshPersonnelsCentre.emit();
@@ -213,7 +210,7 @@ export class GestionnairesComponent implements OnInit {
       this.personnelCentreService.create(data, this.centreGestion.id).subscribe((response: any) => {
         this.messageService.setSuccess("Personnel rattaché");
         if (this.pannels) {
-          this.pannels.first.open();
+          this.pannels.last.open();
         }
         this.gestionnaire = undefined;
         this.refreshPersonnelsCentre.emit();
