@@ -54,7 +54,7 @@
     </ng-template>
     <app-recapitulatif *ngIf="recapTab.isActive && convention.id" [convention]="convention"></app-recapitulatif>
   </mat-tab>
-  <mat-tab #validationTab [disabled]="!convention.id" *ngIf="convention.validationCreation && !isEtudiant()">
+  <mat-tab #validationTab [disabled]="!convention.id || !allValid" *ngIf="convention.validationCreation && !isEtudiant()">
     <ng-template mat-tab-label>
       Validation
     </ng-template>
