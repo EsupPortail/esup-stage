@@ -1201,7 +1201,7 @@ public class Convention extends ObjetMetier implements Exportable {
                     value = getEnseignant().getPrenom() + " " + getEnseignant().getNom();
                 }
                 break;
-            case "validationPedadogique":
+            case "validationPedagogique":
                 value = getValidationPedagogique() != null && getValidationPedagogique() ? "Oui" : "Non";
                 break;
             case "verificationAdministrative":
