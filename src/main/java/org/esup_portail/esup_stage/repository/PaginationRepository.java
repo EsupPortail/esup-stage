@@ -1,5 +1,7 @@
 package org.esup_portail.esup_stage.repository;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -19,11 +21,9 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
+import com.google.gson.Gson;
 
 public class PaginationRepository<T extends Exportable> {
 
@@ -35,7 +35,7 @@ public class PaginationRepository<T extends Exportable> {
     protected final String alias;
     protected List<String> predicateWhitelist = new ArrayList<>(); // whitelist pour éviter l'injection sql au niveau du order by
     protected List<String> joins = new ArrayList<>();
-    protected JSONObject headers;
+    protected JsonObject headers;
 
     public PaginationRepository(EntityManager em, Class<T> typeClass, String alias) {
         this.em = em;
@@ -196,7 +196,7 @@ public class PaginationRepository<T extends Exportable> {
     protected void setSpecificParameterValue(String key, JSONObject parameter, Query query) {}
 
     protected void formatHeaders(String headerString) {
-        headers = new JSONObject(headerString);
+        headers = new Gson().fromJson(headerString, JsonObject.class);
     }
 
     public byte[] exportExcel(String headerString, String predicate, String sortOrder, String filters) {
@@ -207,13 +207,13 @@ public class PaginationRepository<T extends Exportable> {
         int columnNum = 0;
 
         formatHeaders(headerString);
+        Set<Map.Entry<String, JsonElement>> entrySet = headers.entrySet();
 
         // Ajout du header
         Row row = sheet.createRow(rowNum);
-        for (int i = 0; i < headers.length(); ++ i) {
-            String key = headers.names().getString(i);
-            JSONObject header = headers.getJSONObject(key);
-            row.createCell(columnNum).setCellValue(header.getString("title"));
+        for (Map.Entry<String, JsonElement> entry : entrySet) {
+            JsonObject header = entry.getValue().getAsJsonObject();
+            row.createCell(columnNum).setCellValue(header.get("title").getAsString());
             columnNum++;
         }
 
@@ -222,10 +222,10 @@ public class PaginationRepository<T extends Exportable> {
         for (T entity : data) {
             columnNum = 0;
             row = sheet.createRow(rowNum);
-            for (int i = 0; i < headers.length(); ++ i) {
+
+            for (Map.Entry<String, JsonElement> entry : entrySet) {
                 Cell cell = row.createCell(columnNum);
-                String key = headers.names().getString(i);
-                cell.setCellValue(entity.getExportValue(key));
+                cell.setCellValue(entity.getExportValue(entry.getKey()));
                 columnNum++;
             }
             rowNum++;
@@ -245,20 +245,19 @@ public class PaginationRepository<T extends Exportable> {
         List<T> data = findPaginated(1, 0, predicate, sortOrder, filters);
         String newLine = System.lineSeparator();
         formatHeaders(headerString);
+        Set<Map.Entry<String, JsonElement>> entrySet = headers.entrySet();
         StringBuilder sb = new StringBuilder();
 
         // Ajout du header
-        for (int i = 0; i < headers.length(); ++ i) {
-            String key = headers.names().getString(i);
-            JSONObject header = headers.getJSONObject(key);
-            sb.append("\"").append(header.getString("title")).append("\"").append(";");
+        for (Map.Entry<String, JsonElement> entry : entrySet) {
+            JsonObject header = entry.getValue().getAsJsonObject();
+            sb.append("\"").append(header.get("title").getAsString()).append("\"").append(";");
         }
         sb.append(newLine);
 
         for (T entity : data) {
-            for (int i = 0; i < headers.length(); ++ i) {
-                String key = headers.names().getString(i);
-                String value = entity.getExportValue(key);
+            for (Map.Entry<String, JsonElement> entry : entrySet) {
+                String value = entity.getExportValue(entry.getKey());
                 if (value != null) {
                     value = value.replaceAll("\n", "").replaceAll("\r", "");
                 }
