@@ -46,6 +46,12 @@ public class UtilisateurController {
         return null;
     }
 
+    @GetMapping("/{login}")
+    @Secure()
+    public Utilisateur findOneByLogin(@PathVariable("login") String login) {
+        return utilisateurJpaRepository.findOneByLogin(login);
+    }
+
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<Utilisateur> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {

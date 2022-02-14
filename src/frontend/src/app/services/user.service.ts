@@ -26,4 +26,8 @@ export class UserService implements PaginatedService {
   create(data: any): Observable<any> {
     return this.http.post(environment.apiUrl + '/users', data);
   }
+
+  findOneByLogin(login: string) {
+    return this.http.get(environment.apiUrl + '/users/' + login);
+  }
 }

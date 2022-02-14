@@ -7,6 +7,7 @@ import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
+import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
 import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
@@ -80,8 +81,6 @@ public class PersonnelCentreGestionController {
         }
 
         Utilisateur utilisateur = utilisateurJpaRepository.findOneByLogin(personnelCentreGestion.getUidPersonnel());
-        ConfigAlerteMailDto configAlerteMailDto = appConfigService.getConfigAlerteMail();
-        Alerte alerte;
 
         if (utilisateur == null) {
             List<Role> roles = new ArrayList<>();
@@ -93,30 +92,20 @@ public class PersonnelCentreGestionController {
             utilisateur.setActif(true);
             utilisateur.setRoles(roles);
             utilisateurJpaRepository.saveAndFlush(utilisateur);
-
-            alerte = configAlerteMailDto.getAlerteGestionnaire();
         }
         else {
             List<Role> roles = utilisateur.getRoles();
             // si utilisateur existe en base, check s'il est GES ou resp GES
-            if (roles.stream().anyMatch(r -> r.getCode().equalsIgnoreCase(Role.RESP_GES))) {
-                alerte = configAlerteMailDto.getAlerteRespGestionnaire();
-            }
-            else if (roles.stream().anyMatch(r -> r.getCode().equalsIgnoreCase(Role.GES))) {
-                alerte = configAlerteMailDto.getAlerteGestionnaire();
-            }
-            else {
+            if (!UtilisateurHelper.isRole(utilisateur, Role.RESP_GES) && !UtilisateurHelper.isRole(utilisateur, Role.GES)) {
                 roles.add(roleJpaRepository.findOneByCode(Role.GES));
                 utilisateur.setRoles(roles);
                 utilisateurJpaRepository.saveAndFlush(utilisateur);
-                alerte = configAlerteMailDto.getAlerteGestionnaire();
             }
         }
 
         personnelCentreGestion.setCodeUniversite(appConfigService.getConfigGenerale().getCodeUniversite());
         personnelCentreGestion.setCodeUniversiteAffectation(appConfigService.getConfigGenerale().getCodeUniversite());
         personnelCentreGestion.setCentreGestion(centreGestion);
-        this.initAlertesMail(personnelCentreGestion, alerte);
         return personnelCentreGestionJpaRepository.saveAndFlush(personnelCentreGestion);
     }
 
@@ -165,19 +154,5 @@ public class PersonnelCentreGestionController {
         personnelCentreGestion.setValidationPedagogiqueConvention(requestPersonnelCentreGestion.getValidationPedagogiqueConvention());
         personnelCentreGestion.setValidationAdministrativeConvention(requestPersonnelCentreGestion.getValidationAdministrativeConvention());
         personnelCentreGestion.setValidationAvenant(requestPersonnelCentreGestion.getValidationAvenant());
-    }
-
-    private void initAlertesMail(PersonnelCentreGestion personnelCentreGestion, Alerte alerte) {
-        personnelCentreGestion.setCreationConventionEtudiant(alerte.isCreationConventionEtudiant());
-        personnelCentreGestion.setModificationConventionEtudiant(alerte.isModificationConventionEtudiant());
-        personnelCentreGestion.setCreationConventionGestionnaire(alerte.isCreationConventionGestionnaire());
-        personnelCentreGestion.setModificationConventionGestionnaire(alerte.isModificationConventionGestionnaire());
-        personnelCentreGestion.setCreationAvenantEtudiant(alerte.isCreationAvenantEtudiant());
-        personnelCentreGestion.setModificationAvenantEtudiant(alerte.isModificationAvenantEtudiant());
-        personnelCentreGestion.setCreationAvenantGestionnaire(alerte.isCreationAvenantGestionnaire());
-        personnelCentreGestion.setModificationAvenantGestionnaire(alerte.isModificationAvenantGestionnaire());
-        personnelCentreGestion.setValidationPedagogiqueConvention(alerte.isValidationPedagogiqueConvention());
-        personnelCentreGestion.setValidationAdministrativeConvention(alerte.isValidationAdministrativeConvention());
-        personnelCentreGestion.setValidationAvenant(alerte.isValidationAvenant());
     }
 }

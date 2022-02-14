@@ -5,6 +5,8 @@ import { CiviliteService } from "../../../services/civilite.service";
 import { MessageService } from "../../../services/message.service";
 import { LdapService } from "../../../services/ldap.service";
 import { EnseignantService } from "../../../services/enseignant.service";
+import { ConfigService } from "../../../services/config.service";
+import { UserService } from "../../../services/user.service";
 import { MatExpansionPanel } from "@angular/material/expansion";
 import { TableComponent } from "../../table/table.component";
 import { debounceTime } from "rxjs/operators";
@@ -58,6 +60,8 @@ export class GestionnairesComponent implements OnInit {
     {id: 'validationAvenant', libelle: 'Validation d\'un avenant '},
   ];
 
+  configAlertes: any;
+  selectedConfig: any;
   toggleAlertes = true;
 
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
@@ -69,7 +73,9 @@ export class GestionnairesComponent implements OnInit {
     private messageService: MessageService,
     private ldapService: LdapService,
     private enseignantService: EnseignantService,
-    private civiliteService: CiviliteService
+    private civiliteService: CiviliteService,
+    private configService: ConfigService,
+    private userService: UserService
   ) {
     this.form = this.fb.group({
       nom: [null, []],
@@ -116,6 +122,9 @@ export class GestionnairesComponent implements OnInit {
     this.civiliteService.getPaginated(1, 0, 'libelle', 'asc','').subscribe((response: any) => {
       this.civilites = response;
     });
+    this.configService.getConfigAlerteMail().subscribe((response: any) => {
+      this.configAlertes = response;
+    });
     if (this.centreGestion.id) {
       this.filters.push({id: 'centreGestion.id', value: this.centreGestion.id, type: 'int', hidden: true});
     }
@@ -139,9 +148,23 @@ export class GestionnairesComponent implements OnInit {
   }
 
   choose(row: any): void {
+    let selectedUser;
     this.gestionnaire = row;
     this.form.reset();
     this.setData(this.gestionnaire);
+    this.userService.findOneByLogin(this.gestionnaire.supannAliasLogin).subscribe((response: any) => {
+      selectedUser = response;
+      if (selectedUser != null) {
+        if (selectedUser.roles.some((r: any) => r.code === "RESP_GES")) {
+          this.selectedConfig = this.configAlertes.alerteRespGestionnaire;
+        } else {
+          this.selectedConfig = this.configAlertes.alerteGestionnaire;
+        }
+      } else {
+        this.selectedConfig = this.configAlertes.alerteGestionnaire;
+      }
+      this.form.patchValue(this.selectedConfig)
+    });
   }
 
   setData(gestionnaire: any) {
@@ -242,6 +265,23 @@ export class GestionnairesComponent implements OnInit {
       this.form.get(alerte.id)?.setValue(this.toggleAlertes);
     }
     this.toggleAlertes = !this.toggleAlertes;
+  }
+
+  hasAlertesMail(gestionnaire: any) {
+    if (gestionnaire.creationConventionEtudiant == true
+    || gestionnaire.modificationConventionEtudiant == true
+    || gestionnaire.creationConventionGestionnaire == true
+    || gestionnaire.modificationConventionGestionnaire == true
+    || gestionnaire.creationAvenantEtudiant == true
+    || gestionnaire.modificationAvenantEtudiant == true
+    || gestionnaire.creationAvenantGestionnaire == true
+    || gestionnaire.modificationAvenantGestionnaire == true
+    || gestionnaire.validationPedagogiqueConvention == true
+    || gestionnaire.validationAdministrativeConvention == true
+    || gestionnaire.validationAvenant == true) {
+      return true;
+    }
+    return false;
   }
 
 }
