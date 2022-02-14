@@ -387,7 +387,7 @@ public class CentreGestionController {
                 image = FileUtils.readFileToByteArray(new File(this.getFilePath(filename)));
                 return ResponseEntity.ok().body(image);
             } catch (IOException e) {
-                throw new AppException(HttpStatus.NOT_FOUND, "Erreur lors de la récupération du fichier");
+                throw new AppException(HttpStatus.NOT_FOUND, "Logo non trouvé. Veuillez insérer de nouveau le fichier");
             }
         }
 

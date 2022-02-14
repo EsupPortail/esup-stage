@@ -41,7 +41,13 @@ export class TechnicalInterceptor implements HttpInterceptor {
   }
 
   handleError(error: any): ObservableInput<any> {
-    if (error.error && error.error.message) {
+    if (error.error instanceof Blob) {
+      error.error.text().then((data: any) => {
+        const message = JSON.parse(data).message;
+        this.messageService.setError(message);
+      })
+    }
+    else if (error.error && error.error.message) {
       this.messageService.setError(error.error.message);
     } else {
       switch (error.status) {
