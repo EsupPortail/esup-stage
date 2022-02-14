@@ -12,4 +12,7 @@ public interface TemplateConventionJpaRepository extends JpaRepository<TemplateC
 
     @Query("SELECT tc FROM TemplateConvention tc where tc.typeConvention.id = :id AND tc.langueConvention.code = :code")
     TemplateConvention findByTypeAndLangue(int id, String code);
+
+    @Query("SELECT COUNT(tc.id) FROM TemplateConvention tc WHERE tc.typeConvention.id = :idTypeConvention")
+    Long countTemplateWithTypeConvention(int idTypeConvention);
 }

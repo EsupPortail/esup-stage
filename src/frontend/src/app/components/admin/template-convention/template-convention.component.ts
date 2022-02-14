@@ -148,6 +148,13 @@ export class TemplateConventionComponent implements OnInit {
     }
   }
 
+  delete(id: number) {
+    this.templateConventionService.delete(id).subscribe((response: any) => {
+      this.appTable?.update();
+      this.messageService.setSuccess("Suppressions effectuée");
+    });
+  }
+
   compare(option: any, value: any): boolean {
     if (option && value) {
       return option.id === value.id;

@@ -96,6 +96,13 @@ public class TemplateConventionController {
         return templateConvention;
     }
 
+    @DeleteMapping("/{id}")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.SUPPRESSION})
+    public void delete(@PathVariable("id") int id) {
+        templateConventionJpaRepository.deleteById(id);
+        templateConventionJpaRepository.flush();
+    }
+
     @GetMapping("/default-convention")
     @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public String getDefaultTemplateConvention() {

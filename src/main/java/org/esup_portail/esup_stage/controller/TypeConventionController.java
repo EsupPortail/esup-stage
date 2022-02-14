@@ -5,10 +5,7 @@ import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.TypeConvention;
-import org.esup_portail.esup_stage.repository.ContenuJpaRepository;
-import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
-import org.esup_portail.esup_stage.repository.TypeConventionJpaRepository;
-import org.esup_portail.esup_stage.repository.TypeConventionRepository;
+import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,6 +30,9 @@ public class TypeConventionController {
 
     @Autowired
     ContenuJpaRepository contenuJpaRepository;
+
+    @Autowired
+    TemplateConventionJpaRepository templateConventionJpaRepository;
 
     @GetMapping
     @Secure
@@ -85,9 +85,13 @@ public class TypeConventionController {
     @DeleteMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.MODIFICATION, DroitEnum.SUPPRESSION})
     public void delete(@PathVariable("id") int id) {
-        Long count = conventionJpaRepository.countConventionWithTypeConvention(id);
-        if (count > 0) {
+        Long countConvention = conventionJpaRepository.countConventionWithTypeConvention(id);
+        if (countConvention > 0) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Des conventions ont déjà été créées avec ce libellé, vous ne pouvez pas le supprimer");
+        }
+        Long countTemplateConvention = templateConventionJpaRepository.countTemplateWithTypeConvention(id);
+        if (countTemplateConvention > 0) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Des templates de convention ont déjà été créés avec ce libellé, vous ne pouvez pas le supprimer");
         }
         typeConventionJpaRepository.deleteById(id);
         typeConventionJpaRepository.flush();

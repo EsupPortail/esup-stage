@@ -27,6 +27,10 @@ export class TemplateConventionService implements PaginatedService {
     return this.http.put(`${environment.apiUrl}/template-convention/${id}`, data);
   }
 
+  delete(id: number): Observable<any> {
+    return this.http.delete(`${environment.apiUrl}/template-convention/${id}`);
+  }
+
   getDefaultTemplateConvention(): Observable<any> {
     return this.http.get(`${environment.apiUrl}/template-convention/default-convention`, { responseType: 'text' });
   }
