@@ -33,6 +33,10 @@
     </th>
     <td mat-cell *matCellDef="let row">
       <mat-checkbox [checked]="isSelected(row)"
+                    [disabled]="row.validationConvention"
+                    matTooltip="{{'CONVENTION_DEJA_VALIDEE_ADMIN'|contenu}}"
+                    matTooltipPosition="above"
+                    [matTooltipDisabled]="!row.validationConvention"
                     (change)="$event ? toggleSelected(row) : null"
                     (click)="$event.stopPropagation()">
       </mat-checkbox>

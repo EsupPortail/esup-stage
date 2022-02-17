@@ -356,7 +356,8 @@ public class ConventionController {
         int count = 0;
         for (int id : idsListDto.getIds()) {
             Convention convention = conventionJpaRepository.findById(id);
-            if (convention == null) {
+            // On ne traite pas les convention déjà validée administrativement
+            if (convention == null || (convention.getValidationConvention() != null && convention.getValidationConvention())) {
                 continue;
             }
             validationAdministrative(convention, configAlerteMailDto, contextDto.getUtilisateur(), true);

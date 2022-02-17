@@ -229,7 +229,7 @@ export class DashboardComponent implements OnInit {
     }
     this.appTable?.data.forEach((d: any) => {
       const index = this.selected.findIndex((s: any) => s.id === d.id);
-      if (index === -1) {
+      if (index === -1 && !d.validationConvention) {
         this.selected.push(d);
       }
     });
@@ -239,7 +239,7 @@ export class DashboardComponent implements OnInit {
     let allSelected = true;
     this.appTable?.data.forEach((data: any) => {
       const index = this.selected.findIndex((r: any) => {return r.id === data.id});
-      if (index === -1) {
+      if (index === -1 && !data.validationConvention) {
          allSelected = false;
       }
     });

@@ -177,3 +177,25 @@ databaseChangeLog:
                     name: dateCreation
                     value: now()
             tableName: Contenu
+- changeSet:
+    id: contenu-insert-valid-disable
+    author: ssound
+    changes:
+        - insert:
+            columns:
+                - column:
+                    name: codeContenu
+                    value: CONVENTION_DEJA_VALIDEE_ADMIN
+                - column:
+                    name: libelle
+                    valueBoolean: true
+                - column:
+                    name: texte
+                    value: Convention déjà validée administrativement
+                - column:
+                    name: loginCreation
+                    value: liquibase
+                - column:
+                    name: dateCreation
+                    value: now()
+            tableName: Contenu
