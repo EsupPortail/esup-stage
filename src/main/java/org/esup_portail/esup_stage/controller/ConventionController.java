@@ -402,6 +402,9 @@ public class ConventionController {
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
+        if (convention.getAvenants().size() > 0) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "La convention comporte des avenants. Veuillez les supprimer avant de dévalider.");
+        }
         // Un enseignant n'a les droits que sur la validation pédagogique
         if (UtilisateurHelper.isRole(ServiceContext.getServiceContext().getUtilisateur(), Role.ENS) && !type.equals("validationPedagogique")) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Type de validation inconnu");

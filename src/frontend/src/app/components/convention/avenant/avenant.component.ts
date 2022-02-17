@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, Output, EventEmitter } from '@angular/core';
 import { AvenantService } from "../../../services/avenant.service";
 import { MatExpansionPanel } from "@angular/material/expansion";
 
@@ -14,6 +14,8 @@ export class AvenantComponent implements OnInit {
   @Input() convention: any;
   @ViewChild(MatExpansionPanel) firstPanel: MatExpansionPanel|undefined;
 
+  @Output() avenantChanged = new EventEmitter<any>();
+
   constructor(private avenantService: AvenantService,
   ) {
   }
@@ -28,6 +30,7 @@ export class AvenantComponent implements OnInit {
       if (this.firstPanel && this.avenants.length > 0) {
         this.firstPanel.expanded = false;
       }
+      this.avenantChanged.emit(this.avenants);
     });
   }
 

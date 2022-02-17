@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { ConventionService } from "../../../services/convention.service";
 import { ConfigService } from "../../../services/config.service";
 
@@ -7,7 +7,7 @@ import { ConfigService } from "../../../services/config.service";
   templateUrl: './validation.component.html',
   styleUrls: ['./validation.component.scss']
 })
-export class ValidationComponent implements OnInit {
+export class ValidationComponent implements OnInit, OnChanges {
 
   @Input() convention: any;
   @Output() conventionChanged = new EventEmitter<any>();
@@ -21,6 +21,8 @@ export class ValidationComponent implements OnInit {
     private configService: ConfigService,
     private conventionService: ConventionService,
   ) { }
+
+  ngOnChanges(): void { }
 
   ngOnInit(): void {
     for (let validation of ['validationPedagogique', 'verificationAdministrative', 'validationConvention']) {
