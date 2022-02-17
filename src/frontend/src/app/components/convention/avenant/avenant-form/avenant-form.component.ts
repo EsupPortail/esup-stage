@@ -132,9 +132,7 @@ export class AvenantFormComponent implements OnInit {
         { id: 'service.id', libelle: 'Service', type: 'int',value:this.convention.service.id, hidden : true},
     ];
 
-    if(this.convention.interruptionStage){
-      this.loadInterruptionsStage();
-    }
+    this.loadInterruptionsStage();
 
     if (this.avenant.modificationLieu){
       this.service = this.avenant.service;
@@ -536,6 +534,7 @@ export class AvenantFormComponent implements OnInit {
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse) {
         this.addedInterruptionsStage = dialogResponse;
+        this.customFormValidation();
       }
     });
   }

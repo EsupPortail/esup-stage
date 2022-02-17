@@ -60,9 +60,9 @@
     <mat-divider></mat-divider>
     <div class="row mt-3">
       <div class="col-sm-3 font-weight-bold">Date de début du stage</div>
-      <div class="col-sm-9">{{convention.dateDebutStage}}</div>
+      <div class="col-sm-9">{{convention.dateDebutStage|date:'shortDate'}}</div>
       <div class="col-sm-3 font-weight-bold">Date de fin du stage</div>
-      <div class="col-sm-9">{{convention.dateFinStage}}</div>
+      <div class="col-sm-9">{{convention.dateFinStage|date:'shortDate'}}</div>
       <div class="col-sm-3 font-weight-bold">Interruption au cours du stage</div>
       <div class="col-sm-9">{{convention.interruptionStage ? 'Oui' : 'Non'}}</div>
     </div>
