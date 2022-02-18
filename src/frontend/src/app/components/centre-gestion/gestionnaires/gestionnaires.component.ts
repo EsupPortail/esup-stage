@@ -93,7 +93,7 @@ export class GestionnairesComponent implements OnInit {
       batiment: [null, []],
       bureau: [null, []],
       codeAffectation: [null, []],
-      alerteMail: [null, []],
+      alertesMail: [null, []],
       droitEvaluationEtudiant: [null, []],
       droitEvaluationEnseignant: [null, []],
       droitEvaluationEntreprise: [null, []],
@@ -218,6 +218,8 @@ export class GestionnairesComponent implements OnInit {
       this.messageService.setError("Veuillez remplir les champs obligatoires");
       return;
     }
+    // On met alerteMail à true si au moins une alerte est activée
+    data.alertesMail = this.hasAlertesMail(data);
     if (this.gestionnaire.id) {
       this.personnelCentreService.update(data, this.gestionnaire.id).subscribe((response: any) => {
         this.messageService.setSuccess("Personnel mis à jour");

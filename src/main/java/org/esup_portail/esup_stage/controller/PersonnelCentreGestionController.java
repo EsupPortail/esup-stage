@@ -143,6 +143,7 @@ public class PersonnelCentreGestionController {
         personnelCentreGestion.setDroitEvaluationEnseignant(requestPersonnelCentreGestion.getDroitEvaluationEnseignant());
         personnelCentreGestion.setDroitEvaluationEntreprise(requestPersonnelCentreGestion.getDroitEvaluationEntreprise());
 
+        personnelCentreGestion.setAlertesMail(requestPersonnelCentreGestion.getAlertesMail());
         personnelCentreGestion.setCreationConventionEtudiant(requestPersonnelCentreGestion.getCreationConventionEtudiant());
         personnelCentreGestion.setModificationConventionEtudiant(requestPersonnelCentreGestion.getModificationConventionEtudiant());
         personnelCentreGestion.setCreationConventionGestionnaire(requestPersonnelCentreGestion.getCreationConventionGestionnaire());

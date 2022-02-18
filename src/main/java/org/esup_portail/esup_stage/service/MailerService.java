@@ -99,6 +99,35 @@ public class MailerService {
         }
     }
 
+    public boolean isAlerteActif(PersonnelCentreGestion personnel, String templateCode) {
+        switch (templateCode) {
+            case TemplateMail.CODE_AVENANT_VALIDATION:
+                return personnel.getValidationAvenant() != null && personnel.getValidationAvenant();
+            case TemplateMail.CODE_CONVENTION_VALID_ADMINISTRATIVE:
+                return personnel.getValidationAdministrativeConvention() != null && personnel.getValidationAdministrativeConvention();
+            case TemplateMail.CODE_CONVENTION_VALID_PEDAGOGIQUE:
+                return personnel.getValidationPedagogiqueConvention() != null && personnel.getValidationPedagogiqueConvention();
+            case TemplateMail.CODE_ETU_CREA_AVENANT:
+                return personnel.getCreationAvenantEtudiant() != null && personnel.getCreationAvenantEtudiant();
+            case TemplateMail.CODE_ETU_CREA_CONVENTION:
+                return personnel.getCreationConventionEtudiant() != null && personnel.getCreationConventionEtudiant();
+            case TemplateMail.CODE_ETU_MODIF_AVENANT:
+                return personnel.getModificationAvenantEtudiant() != null && personnel.getModificationAvenantEtudiant();
+            case TemplateMail.CODE_ETU_MODIF_CONVENTION:
+                return personnel.getModificationConventionEtudiant() != null && personnel.getModificationConventionEtudiant();
+            case TemplateMail.CODE_GES_CREA_AVENANT:
+                return personnel.getCreationAvenantGestionnaire() != null && personnel.getCreationAvenantGestionnaire();
+            case TemplateMail.CODE_GES_CREA_CONVENTION:
+                return personnel.getCreationConventionGestionnaire() != null && personnel.getCreationConventionGestionnaire();
+            case TemplateMail.CODE_GES_MODIF_AVENANT:
+                return personnel.getModificationAvenantGestionnaire() != null && personnel.getModificationAvenantGestionnaire();
+            case TemplateMail.CODE_GES_MODIF_CONVENTION:
+                return personnel.getModificationConventionGestionnaire() != null && personnel.getModificationConventionGestionnaire();
+            default:
+                return false;
+        }
+    }
+
     public static class MailContext {
         private ConventionContext convention = new ConventionContext();
         private TuteurProContext tuteurPro = new TuteurProContext();
