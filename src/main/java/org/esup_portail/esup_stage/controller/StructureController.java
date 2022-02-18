@@ -1,6 +1,7 @@
 package org.esup_portail.esup_stage.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import org.apache.commons.validator.routines.checkdigit.LuhnCheckDigit;
 import org.esup_portail.esup_stage.dto.ContextDto;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.dto.StructureFormDto;
@@ -123,6 +124,28 @@ public class StructureController {
         // Contrôle SIRET non déjà existant
         if (structureFormDto.getNumeroSiret() != null && structureRepository.existsSiret(structure, structureFormDto.getNumeroSiret())) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Le numéro SIRET existe déjà");
+        }
+        // Contrôle de la validité du SIRET
+        // - cas de La Poste (SIREN commençant par 356000000) : la somme des 14 chiffres du SIRET doit être un multiple de 5
+        // - cas classique : algorithme de Luhn
+        if (structureFormDto.getNumeroSiret() != null) {
+            if (structureFormDto.getNumeroSiret().startsWith("356000000")) {
+                int total = 0;
+                for (int i = 0 ; i < structureFormDto.getNumeroSiret().length(); ++i) {
+                    try {
+                        total += Integer.parseInt(String.valueOf(structureFormDto.getNumeroSiret().charAt(i)));
+                    } catch (NumberFormatException e) {
+                        throw new AppException(HttpStatus.BAD_REQUEST, "Le numéro SIRET est invalide");
+                    }
+                }
+                if (total % 5 != 0) {
+                    throw new AppException(HttpStatus.BAD_REQUEST, "Le numéro SIRET est invalide");
+                }
+            } else {
+                if (!LuhnCheckDigit.LUHN_CHECK_DIGIT.isValid(structureFormDto.getNumeroSiret())) {
+                    throw new AppException(HttpStatus.BAD_REQUEST, "Le numéro SIRET est invalide");
+                }
+            }
         }
         Effectif effectif = effectifJpaRepository.findById(structureFormDto.getIdEffectif());
         if (effectif == null) {
