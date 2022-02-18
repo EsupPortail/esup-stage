@@ -101,6 +101,7 @@ import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { InterruptionsFormComponent } from './components/convention/stage/interruptions-form/interruptions-form.component';
 import { MatBadgeModule } from "@angular/material/badge";
 import { ConsigneComponent } from './components/consigne/consigne.component';
+import { RetourListeComponent } from './components/retour-liste/retour-liste.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -158,6 +159,7 @@ registerLocaleData(localeFr, 'fr');
     TemplateConventionComponent,
     InterruptionsFormComponent,
     ConsigneComponent,
+    RetourListeComponent,
   ],
   imports: [
     BrowserModule,

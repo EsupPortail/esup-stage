@@ -1,3 +1,4 @@
+<app-retour-liste *ngIf="convention && convention.validationCreation" [path]="'tableau-de-bord'"></app-retour-liste>
 <mat-tab-group #tabGroup class="convention" *ngIf="convention" (selectedTabChange)="tabChanged($event)">
   <mat-tab #etudiantTab *ngIf="!isConventionValide()">
     <ng-template mat-tab-label>

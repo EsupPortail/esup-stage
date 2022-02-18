@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { TableComponent } from "../table/table.component";
 import { ConventionService } from "../../services/convention.service";
 import { AuthService } from "../../services/auth.service";
@@ -10,16 +10,18 @@ import { MessageService } from "../../services/message.service";
 import { ConfigService } from "../../services/config.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { forkJoin } from 'rxjs';
+import { SortDirection } from "@angular/material/sort";
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
 
   columns: string[] = [];
   sortColumn = 'id';
+  sortDirection: SortDirection = 'desc';
   filters: any[] = [];
   validationsOptions: any[] = [
     { id: 'validationPedagogique', libelle: 'Validée pédagogiquement' },
@@ -303,6 +305,18 @@ export class DashboardComponent implements OnInit {
           this.appTable?.setFilterValue(key, this.savedFilters[key].value);
       });
     }
+    const pagingString: string|null = sessionStorage.getItem('dashboard-paging');
+    if (pagingString) {
+      const pagingConfig = JSON.parse(pagingString);
+      this.sortColumn = pagingConfig.sortColumn;
+      this.sortDirection = pagingConfig.sortOrder;
+      this.appTable?.setBackConfig(pagingConfig);
+    }
+  }
+
+  ngOnDestroy(): void {
+    sessionStorage.setItem('dashboard-paging', JSON.stringify({page: this.appTable?.page, pageSize: this.appTable?.pageSize, sortColumn: this.appTable?.sortColumn, sortOrder: this.appTable?.sortOrder}));
+    sessionStorage.setItem('dashboard-filters', JSON.stringify(this.appTable?.getFilterValues()))
   }
 }
 

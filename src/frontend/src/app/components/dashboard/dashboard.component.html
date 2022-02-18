@@ -20,7 +20,7 @@
   <button *ngIf="typeDashboard === 1" type="button" mat-button mat-flat-button color="primary" [disabled]="selected.length === 0" (click)="validationAdministrative()">Valider la sélection</button>
 </ng-template>
 
-<app-table *ngIf="tableCanLoad" [service]="conventionService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters" [sortOrder]="'desc'"
+<app-table *ngIf="tableCanLoad" [service]="conventionService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters" [sortOrder]="sortDirection"
            matSort [matSortActive]="sortColumn" [matSortDirection]="'desc'" (matSortChange)="appTable ? appTable.sorting($event) : null"
            [noResultText]="'Aucune convention trouvée'" [customTemplateRef]="validAction"
            (onUpdated)="countConvention()" [setAlerte]="true" [exportColumns]="exportColumns">

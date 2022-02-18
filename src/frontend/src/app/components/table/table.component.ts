@@ -55,13 +55,23 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   filterChanged = new Subject();
   autocmpleteChanged: any = [];
   autocompleteData: any = [];
+  backConfig: any;
 
   constructor(
     private authService: AuthService,
   ) {
     this.filterChanged.pipe(debounceTime(500)).subscribe(() => {
       const filters = this.getFilters();
-      this.resetPage();
+      if (this.backConfig) {
+        this.page = this.backConfig.page;
+        this.pageSize = this.backConfig.pageSize;
+        this.sortColumn = this.backConfig.sortColumn;
+        this.sortOrder = this.backConfig.sortOrder;
+        this.paginatorTop.pageIndex = this.page - 1;
+        this.paginatorBottom.pageIndex = this.page - 1;
+      } else {
+        this.resetPage();
+      }
 
       for (const key of Object.keys(this.autocmpleteChanged)) {
         this.autocmpleteChanged[key].pipe(debounceTime(500)).subscribe(async (event: any) => {
@@ -116,6 +126,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
           row.depasseDelaiValidation = depasse;
         });
       }
+      this.backConfig = undefined;
       this.onUpdated.emit(results);
     });
   }
@@ -246,6 +257,10 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
     this.page = 1;
     this.paginatorBottom.pageIndex = this.page - 1;
     this.paginatorTop.pageIndex = this.page - 1;
+  }
+
+  setBackConfig(config: any): void {
+    this.backConfig = config;
   }
 
 }
