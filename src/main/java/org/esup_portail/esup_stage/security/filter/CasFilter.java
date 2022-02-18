@@ -166,6 +166,7 @@ public class CasFilter implements Filter {
                 httpServletResponse.sendRedirect(newURL);
             }
         } else {
+            httpServletResponse.setHeader("Cache-Control", "private, no-store, no-cache, must-revalidate");
             chain.doFilter(httpServletRequest, httpServletResponse);
         }
     }
