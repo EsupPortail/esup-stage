@@ -10,8 +10,8 @@
           <div class="row">
             <div class="col-sm-12 col-md-8">
               <div>
-                <span>Critère de gestion de la confidentialité :</span>
-                <mat-form-field class="col-sm-12 col-md-2">
+                <span>Critère de gestion de la confidentialité : </span>
+                <mat-form-field>
                   <mat-select formControlName="codeConfidentialite" [compareWith]="compareCode">
                     <mat-option *ngFor="let confidentialite of confidentialites" [value]="confidentialite">{{confidentialite.libelle}}</mat-option>
                   </mat-select>
@@ -30,7 +30,6 @@
                 <span><i>Limité à une durée de</i></span>
                 <mat-form-field class="col-sm-12 col-md-2">
                   <mat-select formControlName="dureeRecupInscriptionAnterieure">
-                    <mat-option></mat-option>
                     <mat-option *ngFor="let duree of dureeRecupList" [value]="duree">{{duree}} Mois</mat-option>
                   </mat-select>
                 </mat-form-field>

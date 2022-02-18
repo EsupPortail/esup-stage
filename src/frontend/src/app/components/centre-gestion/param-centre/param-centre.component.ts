@@ -119,7 +119,7 @@ export class ParamCentreComponent implements OnInit {
 
   toggleRecupInscription(): void {
     if (!this.form.get('recupInscriptionAnterieure')?.value) {
-      this.form.get('dureeRecupInscriptionAnterieure')?.reset();
+      this.form.get('dureeRecupInscriptionAnterieure')?.setValue(1); // Limite de durée par défaut à 1 mois
     }
   }
 
