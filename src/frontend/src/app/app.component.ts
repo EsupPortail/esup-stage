@@ -21,6 +21,7 @@ export class AppComponent {
       libelle: 'Tableau de bord',
       path: 'tableau-de-bord',
       icon: 'fa-columns',
+      filterKey: 'dashboard',
       canView: () => {
         return this.authService.checkRights({fonction: AppFonction.CONVENTION, droits: [Droit.LECTURE]})
       }
@@ -36,6 +37,7 @@ export class AppComponent {
           libelle: 'Liste des centres de gestion',
           path: 'centre-gestion/search',
           icon: 'fa-list',
+          filterKey: 'centregestion',
         },
         {
           libelle: 'Ajouter un centre de gestion',

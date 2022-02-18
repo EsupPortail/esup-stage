@@ -56,6 +56,11 @@ export class MenuComponent implements OnInit {
 
   onItemSelected(item: any) {
     if (!item.children || !item.children.length) {
+      // Suppression des filtres sur le clique du menu
+      if (item.filterKey) {
+        sessionStorage.removeItem(item.filterKey + '-filters');
+        sessionStorage.removeItem(item.filterKey + '-paging');
+      }
       this.router.navigate([item.path]);
     }
     if (item.children && item.children.length) {

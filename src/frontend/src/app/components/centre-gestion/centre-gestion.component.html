@@ -1,3 +1,4 @@
+<app-retour-liste *ngIf="centreGestion && centreGestion.validationCreation" [path]="'centre-gestion/search'"></app-retour-liste>
 <mat-tab-group class="centre-gestion" #matTabs (selectedTabChange)="tabChanged($event)">
   <mat-tab #coordCentreTab>
     <ng-template mat-tab-label>
