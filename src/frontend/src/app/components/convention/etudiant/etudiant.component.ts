@@ -14,6 +14,7 @@ import { debounceTime } from "rxjs/operators";
 import { ConfigService } from "../../../services/config.service";
 import { ConsigneService } from "../../../services/consigne.service";
 import * as FileSaver from "file-saver";
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'app-convention-etudiant',
@@ -60,6 +61,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
     private conventionService: ConventionService,
     private configService: ConfigService,
     private consigneService: ConsigneService,
+    private router: Router,
   ) {
     this.form = this.fb.group({
       id: [null, []],
@@ -258,6 +260,14 @@ export class EtudiantComponent implements OnInit, OnChanges {
     this.consigneService.getDocument(this.consigneEtablissement.id, doc.id).subscribe((response: any) => {
       var blob = new Blob([response as BlobPart], {type: mimetype});
       FileSaver.saveAs(blob, doc.nomReel);
+    });
+  }
+
+  deleteConventionBrouillon(): void {
+    this.conventionService.deleteConventionBrouillon().subscribe((response: any) => {
+      this.messageService.setSuccess('Création de la convention réinitialisée');
+      this.router.onSameUrlNavigation = 'reload';
+      this.router.navigate([this.router.url]);
     });
   }
 

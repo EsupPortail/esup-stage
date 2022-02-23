@@ -75,4 +75,8 @@ export class ConventionService implements PaginatedService {
     return this.http.get(`${environment.apiUrl}/conventions/${id}/pdf-avenant`, { responseType: 'blob'});
   }
 
+  deleteConventionBrouillon(): Observable<any> {
+    return this.http.delete(`${environment.apiUrl}/conventions/brouillon`);
+  }
+
 }

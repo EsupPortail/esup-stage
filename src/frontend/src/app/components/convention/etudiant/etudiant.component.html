@@ -199,6 +199,9 @@
         </mat-card>
       </div>
       <div class="mt-3 text-right">
+        <span *ngIf="!convention.validationCreation" (confirm)="deleteConventionBrouillon()" [confirmMessage]="'Voulez-vous réinitialiser la création de la convention ?'" class="mr-2">
+          <button type="button" mat-flat-button color="warn">Supprimer</button>
+        </span>
         <button mat-flat-button color="primary" [disabled]="!centreGestion || inscriptions.length === 0 || !selectedInscription">{{'BOUTON_VALIDER'|contenu}}</button>
       </div>
     </form>

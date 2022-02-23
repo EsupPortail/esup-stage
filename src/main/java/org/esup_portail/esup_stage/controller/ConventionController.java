@@ -448,6 +448,16 @@ public class ConventionController {
         return ResponseEntity.ok().body(pdf);
     }
 
+    @DeleteMapping("/brouillon")
+    @Secure
+    public void deleteBrouillon() {
+        Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
+        Convention brouillon = conventionJpaRepository.findBrouillon(utilisateur.getLogin());
+        if (brouillon != null) {
+            conventionJpaRepository.delete(brouillon);
+        }
+    }
+
     private void canViewEditConvention(Convention convention, Utilisateur utilisateur) {
         if (!UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
             if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
