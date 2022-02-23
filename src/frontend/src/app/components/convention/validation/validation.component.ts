@@ -25,8 +25,8 @@ export class ValidationComponent implements OnInit, OnChanges {
   ngOnChanges(): void { }
 
   ngOnInit(): void {
-    for (let validation of ['validationPedagogique', 'verificationAdministrative', 'validationConvention']) {
-      for (let ordre of [1, 2, 3]) {
+    for (let ordre of [1, 2, 3]) {
+      for (let validation of ['validationPedagogique', 'verificationAdministrative', 'validationConvention']) {
         if (this.convention.centreGestion[validation] && this.convention.centreGestion[validation + 'Ordre'] === ordre) {
           this.validations.push(validation);
         }
