@@ -420,6 +420,8 @@ export class AvenantFormComponent implements OnInit {
         this.customFormValidation();
         if (this.enseignant == null){
           this.createEnseignant(row);
+        } else {
+          this.updateEnseignant(this.enseignant.id, row);
         }
       });
   }
@@ -432,9 +434,26 @@ export class AvenantFormComponent implements OnInit {
       "mail": row.mail,
       "typePersonne": row.eduPersonPrimaryAffiliation,
       "uidEnseignant": row.supannAliasLogin,
+      "tel": row.telephoneNumber,
     };
 
     this.enseignantService.create(data).subscribe((response: any) => {
+      this.enseignant = response;
+    });
+  }
+
+  updateEnseignant(id: number, row: any): void {
+    const displayName = row.displayName.split(/(\s+)/);
+    const data = {
+      nom: displayName[2],
+      prenom: displayName[0],
+      mail: row.mail,
+      typePersonne: row.eduPersonPrimaryAffiliation,
+      uidEnseignant: row.supannAliasLogin,
+      tel: row.telephoneNumber,
+    };
+
+    this.enseignantService.update(id, data).subscribe((response: any) => {
       this.enseignant = response;
     });
   }

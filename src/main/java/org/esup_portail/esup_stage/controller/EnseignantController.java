@@ -103,12 +103,7 @@ public class EnseignantController {
         enseignant.setPrenom(enseignantDto.getPrenom());
         enseignant.setMail(enseignantDto.getMail());
         enseignant.setTel(enseignantDto.getTel());
-        enseignant.setFax(enseignantDto.getFax());
-        enseignant.setCodeUniversite(codeUniversite);
         enseignant.setTypePersonne(enseignantDto.getTypePersonne());
         enseignant.setUidEnseignant(enseignantDto.getUidEnseignant());
-        enseignant.setCampus(enseignantDto.getCampus());
-        enseignant.setBureau(enseignantDto.getBureau());
-        enseignant.setBatiment(enseignantDto.getBatiment());
     }
 }

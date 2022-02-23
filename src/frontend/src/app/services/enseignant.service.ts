@@ -28,7 +28,7 @@ export class EnseignantService implements PaginatedService {
   }
 
   update(id: number, data: any): Observable<any> {
-    return this.http.put(environment.apiUrl + "/enseignant" + id, data);
+    return this.http.put(`${environment.apiUrl}/enseignant/${id}`, data);
   }
 
   delete(id: number): Observable<any> {

@@ -14,6 +14,7 @@ public class LdapUser {
     private String displayName;
     private String eduPersonPrimaryAffiliation;
     private List<String> eduPersonAffiliation = new ArrayList<>();
+    private String telephoneNumber;
 
     public String getUid() {
         return uid;
@@ -93,5 +94,13 @@ public class LdapUser {
 
     public void setEduPersonAffiliation(List<String> eduPersonAffiliation) {
         this.eduPersonAffiliation = eduPersonAffiliation;
+    }
+
+    public String getTelephoneNumber() {
+        return telephoneNumber;
+    }
+
+    public void setTelephoneNumber(String telephoneNumber) {
+        this.telephoneNumber = telephoneNumber;
     }
 }
