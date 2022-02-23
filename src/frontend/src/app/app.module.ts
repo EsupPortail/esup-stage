@@ -205,6 +205,7 @@ registerLocaleData(localeFr, 'fr');
   providers: [
     CookieService,
     ContenuService,
+    ContenuPipe,
     { provide: LOCALE_ID, useValue: 'fr' },
     { provide: HTTP_INTERCEPTORS, useClass: TechnicalInterceptor, multi: true },
     { provide: MAT_COLOR_FORMATS, useValue: NGX_MAT_COLOR_FORMATS },

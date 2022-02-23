@@ -9,7 +9,7 @@ export class ContenuPipe implements PipeTransform {
 
   constructor(private contenuService: ContenuService) {}
 
-  transform(value: any): unknown {
+  transform(value: any): string {
     const contenu = this.contenuService.contenus.find((c: any) => c.code === value);
     return contenu ? contenu.texte : value;
   }

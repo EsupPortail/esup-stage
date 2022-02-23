@@ -11,6 +11,7 @@ import { ConfigService } from "../../services/config.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { forkJoin } from 'rxjs';
 import { SortDirection } from "@angular/material/sort";
+import { ContenuPipe } from "../../pipes/contenu.pipe";
 
 @Component({
   selector: 'app-dashboard',
@@ -55,6 +56,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private messageService: MessageService,
     private configService: ConfigService,
     private snackBar: MatSnackBar,
+    private contenuPipe: ContenuPipe,
   ) {
   }
 
@@ -231,7 +233,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
     this.appTable?.data.forEach((d: any) => {
       const index = this.selected.findIndex((s: any) => s.id === d.id);
-      if (index === -1 && !d.validationConvention) {
+      if (index === -1) {
         this.selected.push(d);
       }
     });
@@ -241,7 +243,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     let allSelected = true;
     this.appTable?.data.forEach((data: any) => {
       const index = this.selected.findIndex((r: any) => {return r.id === data.id});
-      if (index === -1 && !data.validationConvention) {
+      if (index === -1) {
          allSelected = false;
       }
     });
@@ -266,6 +268,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   validationAdministrative(): void {
+    // Message d'erreur si au moins une convention est validée administrativement
+    if (this.selected.filter((c: any) => c.validationConvention).length > 0) {
+      this.messageService.setError(this.contenuPipe.transform('CONVENTION_DEJA_VALIDEE_ADMIN'));
+      return;
+    }
     const ids = this.selected.map((s: any) => s.id);
     this.conventionService.validationAdministrative(ids).subscribe((response: any) => {
       this.messageService.setSuccess(`${response} convention(s) validée(s)`);
