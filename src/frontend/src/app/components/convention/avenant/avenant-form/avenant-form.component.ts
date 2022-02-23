@@ -537,6 +537,7 @@ export class AvenantFormComponent implements OnInit {
   clearAndAddInterruptionsAvenant(avenantId: number) : void{
     this.periodeInterruptionAvenantService.deleteAll(avenantId).subscribe((response: any) => {
       this.addInterruptionsAvenant(avenantId);
+      this.updated.emit();
     });
   }
 
