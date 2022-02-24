@@ -33,7 +33,7 @@ public class EnseignantController {
     AppConfigService appConfigService;
 
     @GetMapping
-    @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<Enseignant> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         PaginatedResponse<Enseignant> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(enseignantRepository.count(filters));
@@ -77,7 +77,7 @@ public class EnseignantController {
     }
 
     @DeleteMapping("/{id}")
-    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.SUPPRESSION})
+    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.SUPPRESSION})
     public boolean delete(@PathVariable("id") int id) {
         Enseignant enseignant = enseignantJpaRepository.findById(id);
         if (enseignant == null) {

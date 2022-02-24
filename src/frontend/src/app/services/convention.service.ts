@@ -48,7 +48,7 @@ export class ConventionService implements PaginatedService {
   }
 
   validationCreation(id: number): Observable<any> {
-    return this.http.get(`${environment.apiUrl}/conventions/validation-creation/${id}`);
+    return this.http.patch(`${environment.apiUrl}/conventions/validation-creation/${id}`, {});
   }
 
   validationAdministrative(ids: number[]): Observable<any> {

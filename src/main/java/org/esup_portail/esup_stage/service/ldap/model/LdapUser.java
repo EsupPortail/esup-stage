@@ -5,7 +5,9 @@ import java.util.List;
 
 public class LdapUser {
     private String uid;
+    private String supannAliasLogin;
     private String codEtu;
+    private String supannEtuId;
     private List<String> sn = new ArrayList<>();
     private String mail;
     private String supannAutreMail;
@@ -14,6 +16,9 @@ public class LdapUser {
     private String displayName;
     private String eduPersonPrimaryAffiliation;
     private List<String> eduPersonAffiliation = new ArrayList<>();
+    private List<String> supannEntiteAffectation = new ArrayList<>();
+    private String supannEntiteAffectationPrincipale;
+    private String supannCivilite;
     private String telephoneNumber;
 
     public String getUid() {
@@ -24,12 +29,28 @@ public class LdapUser {
         this.uid = uid;
     }
 
+    public String getSupannAliasLogin() {
+        return supannAliasLogin;
+    }
+
+    public void setSupannAliasLogin(String supannAliasLogin) {
+        this.supannAliasLogin = supannAliasLogin;
+    }
+
     public String getCodEtu() {
         return codEtu;
     }
 
     public void setCodEtu(String codEtu) {
         this.codEtu = codEtu;
+    }
+
+    public String getSupannEtuId() {
+        return supannEtuId;
+    }
+
+    public void setSupannEtuId(String supannEtuId) {
+        this.supannEtuId = supannEtuId;
     }
 
     public List<String> getSn() {
@@ -94,6 +115,30 @@ public class LdapUser {
 
     public void setEduPersonAffiliation(List<String> eduPersonAffiliation) {
         this.eduPersonAffiliation = eduPersonAffiliation;
+    }
+
+    public List<String> getSupannEntiteAffectation() {
+        return supannEntiteAffectation;
+    }
+
+    public void setSupannEntiteAffectation(List<String> supannEntiteAffectation) {
+        this.supannEntiteAffectation = supannEntiteAffectation;
+    }
+
+    public String getSupannEntiteAffectationPrincipale() {
+        return supannEntiteAffectationPrincipale;
+    }
+
+    public void setSupannEntiteAffectationPrincipale(String supannEntiteAffectationPrincipale) {
+        this.supannEntiteAffectationPrincipale = supannEntiteAffectationPrincipale;
+    }
+
+    public String getSupannCivilite() {
+        return supannCivilite;
+    }
+
+    public void setSupannCivilite(String supannCivilite) {
+        this.supannCivilite = supannCivilite;
     }
 
     public String getTelephoneNumber() {

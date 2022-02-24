@@ -208,7 +208,7 @@ public class CentreGestionController {
     }
 
     @GetMapping("/{id}/composantes")
-    @Secure()
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public List<Composante> getComposantes(@PathVariable("id") int id) {
         List<Composante> composantes = apogeeService.getListComposante();
         List<CritereGestion> critereGestionsComposantes = critereGestionJpaRepository.findComposantes();
@@ -219,7 +219,7 @@ public class CentreGestionController {
     }
 
     @GetMapping("/{id}/composante")
-    @Secure()
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public Composante getCentreComposante(@PathVariable("id") int id) {
         CritereGestion critereGestion = critereGestionJpaRepository.findByCentreId(id);
         Composante composante = new Composante();
@@ -231,7 +231,7 @@ public class CentreGestionController {
     }
 
     @PutMapping("/{id}/set-composante")
-    @Secure()
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.MODIFICATION})
     public Composante setComposante(@PathVariable("id") int id, @RequestBody Composante _composante) {
         CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
         CritereGestion critereGestion = critereGestionJpaRepository.findByCentreId(id);
@@ -256,7 +256,7 @@ public class CentreGestionController {
     }
 
     @GetMapping("/{id}/etapes")
-    @Secure()
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public List<EtapeApogee> getEtapes(@PathVariable("id") int id) {
         List<EtapeApogee> etapeApogees = apogeeService.getListEtape();
         List<CritereGestion> critereGestionsEtapes = critereGestionJpaRepository.findEtapes();
@@ -266,7 +266,7 @@ public class CentreGestionController {
     }
 
     @GetMapping("/{id}/centre-etapes")
-    @Secure()
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public List<EtapeApogee> getCentreEtapes(@PathVariable("id") int id) {
         List<CritereGestion> critereGestionsEtapes = critereGestionJpaRepository.findEtapesByCentreId(id);
         List<EtapeApogee> etapeApogees = new ArrayList<>();
@@ -285,7 +285,7 @@ public class CentreGestionController {
     }
 
     @PostMapping("/{id}/add-etape")
-    @Secure()
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.CREATION})
     public EtapeApogee addEtape(@PathVariable("id") int id, @RequestBody EtapeApogee _etapeApogee) {
         Etape etape = etapeJpaRepository.findById(_etapeApogee.getCode(), _etapeApogee.getCodeVrsEtp(), appConfigService.getConfigGenerale().getCodeUniversite());
 
@@ -317,7 +317,7 @@ public class CentreGestionController {
     }
 
     @DeleteMapping("/delete-etape/{codeEtape}/{codeVersion}")
-    @Secure()
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.SUPPRESSION})
     public void deleteEtape(@PathVariable("codeEtape") String codeEtape, @PathVariable("codeVersion") String codeVersion) {
         CritereGestion critereGestion = critereGestionJpaRepository.findEtapeById(codeEtape, codeVersion);
         int idCentreGestion = critereGestion.getCentreGestion().getId();
@@ -331,13 +331,13 @@ public class CentreGestionController {
     }
 
     @GetMapping("/confidentialite")
-    @Secure()
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public List<Confidentialite> getConfidentialites() {
         return confidentialiteJpaRepository.findAll();
     }
 
-    @GetMapping("etablissement-confidentialite")
-    @Secure()
+    @GetMapping("/etablissement-confidentialite")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public Confidentialite getEtablissementConfidentialite() {
         CentreGestion centreGestion = centreGestionJpaRepository.getCentreEtablissement();
         return centreGestion.getCodeConfidentialite();
@@ -377,7 +377,7 @@ public class CentreGestionController {
     }
 
     @GetMapping(value = "/{id}/logo-centre", produces = MediaType.IMAGE_PNG_VALUE)
-    @Secure()
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public ResponseEntity<byte[]> getLogoCentre(@PathVariable("id") int id) {
         CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
         if (centreGestion.getFichier() != null) {
@@ -395,7 +395,7 @@ public class CentreGestionController {
     }
 
     @PostMapping("/{id}/resize-logo")
-    @Secure()
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.MODIFICATION})
     public void resizeLogoCentre(@PathVariable("id") int id, @RequestBody List<Integer> dimensions) {
         CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
         if (centreGestion.getFichier() != null) {

@@ -79,7 +79,7 @@ public class LdapService {
         String response = call(api, "POST", ldapSearchDto);
         try {
             ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(response, List.class);
+            return Arrays.asList(mapper.readValue(response, LdapUser[].class));
         } catch (JsonProcessingException e) {
             LOGGER.error("Erreur lors de la lecture de la réponse sur l'api " + api + ": " + e.getMessage(), e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
@@ -92,7 +92,7 @@ public class LdapService {
         String response = call("/byFilter", "GET", params);
         try {
             ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(response, List.class);
+            return Arrays.asList(mapper.readValue(response, LdapUser[].class));
         } catch (JsonProcessingException e) {
             LOGGER.error("Erreur lors de la lecture de la réponse sur l'api byFilter: " + e.getMessage(), e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
@@ -118,7 +118,7 @@ public class LdapService {
         String response = call("/byFilter", "GET", params);
         try {
             ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(response, List.class);
+            return Arrays.asList(mapper.readValue(response, LdapUser[].class));
         } catch (JsonProcessingException e) {
             LOGGER.error("Erreur lors de la lecture de la réponse sur l'api byFilter: " + e.getMessage(), e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
@@ -131,7 +131,7 @@ public class LdapService {
         String response = call("/byFilter", "GET", params);
         try {
             ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(response, List.class);
+            return Arrays.asList(mapper.readValue(response, LdapUser[].class));
         } catch (JsonProcessingException e) {
             LOGGER.error("Erreur lors de la lecture de la réponse sur l'api byFilter: " + e.getMessage(), e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");

@@ -1,6 +1,8 @@
 package org.esup_portail.esup_stage.controller;
 
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
+import org.esup_portail.esup_stage.enums.AppFonctionEnum;
+import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.model.CritereGestion;
 import org.esup_portail.esup_stage.repository.CritereGestionRepository;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
@@ -19,7 +21,7 @@ public class CritereGestionController {
     CritereGestionRepository critereGestionRepository;
 
     @GetMapping("/centre-etapes-paginated")
-    @Secure()
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<CritereGestion> getCentreEtapesPaginated(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         PaginatedResponse<CritereGestion> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(critereGestionRepository.count(filters));

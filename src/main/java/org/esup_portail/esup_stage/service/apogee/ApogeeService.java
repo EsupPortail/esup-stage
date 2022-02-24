@@ -130,7 +130,7 @@ public class ApogeeService {
         String response = call("/anneesIa", params);
         try {
             ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(response, List.class);
+            return Arrays.asList(mapper.readValue(response, String[].class));
         } catch (JsonProcessingException e) {
             LOGGER.error("Erreur lors de la lecture de la réponse sur l'api anneesla: " + e.getMessage(), e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");

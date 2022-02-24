@@ -115,27 +115,7 @@ public class ConventionController {
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<Convention> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
-        ContextDto contexteDto = ServiceContext.getServiceContext();
-        Utilisateur utilisateur = contexteDto.getUtilisateur();
-        if (!UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
-            JSONObject jsonFilters = new JSONObject(filters);
-            Map<String, Object> currentUser = new HashMap<>();
-            currentUser.put("type", "text");
-            currentUser.put("value", utilisateur.getLogin());
-            if (UtilisateurHelper.isRole(utilisateur, Role.RESP_GES) || UtilisateurHelper.isRole(utilisateur, Role.GES)) {
-                Map<String, Object> ges = new HashMap<>();
-                ges.put("type", "text");
-                ges.put("value", utilisateur.getLogin());
-                ges.put("specific", true);
-                jsonFilters.put("centreGestion.personnels", ges);
-            } else if (UtilisateurHelper.isRole(utilisateur, Role.ENS)) {
-                jsonFilters.put("enseignant.uidEnseignant", currentUser);
-            } else if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
-                jsonFilters.put("etudiant.identEtudiant", currentUser);
-            }
-
-            filters = jsonFilters.toString();
-        }
+        filters = addUserContextFilter(filters);
 
         PaginatedResponse<Convention> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(conventionRepository.count(filters));
@@ -146,6 +126,7 @@ public class ConventionController {
     @GetMapping(value = "/export/excel", produces = "application/vnd.ms-excel")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public ResponseEntity<byte[]> exportExcel(@RequestParam(name = "headers", defaultValue = "{}") String headers, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
+        filters = addUserContextFilter(filters);
         byte[] bytes = conventionRepository.exportExcel(headers, predicate, sortOrder, filters);
         return ResponseEntity.ok().body(bytes);
     }
@@ -153,6 +134,7 @@ public class ConventionController {
     @GetMapping(value = "/export/csv", produces = MediaType.TEXT_PLAIN_VALUE)
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public ResponseEntity<String> exportCsv(@RequestParam(name = "headers", defaultValue = "{}") String headers, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
+        filters = addUserContextFilter(filters);
         StringBuilder csv = conventionRepository.exportCsv(headers, predicate, sortOrder, filters);
         return ResponseEntity.ok().body(csv.toString());
     }
@@ -211,6 +193,11 @@ public class ConventionController {
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
+        // Pour les étudiants on vérifie que c'est une de ses conventions
+        Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
+        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(convention.getEtudiant().getIdentEtudiant())) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        }
         canViewEditConvention(convention, ServiceContext.getServiceContext().getUtilisateur());
         return convention;
     }
@@ -253,13 +240,18 @@ public class ConventionController {
     @Secure(fonctions = AppFonctionEnum.CONVENTION, droits = {DroitEnum.MODIFICATION})
     public Convention singleFieldUpdate(@PathVariable("id") int id, @Valid @RequestBody ConventionSingleFieldDto conventionSingleFieldDto) {
         Convention convention = conventionJpaRepository.findById(id);
+        // Pour les étudiants on vérifie que c'est une de ses conventions
+        Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
+        if (convention == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(convention.getEtudiant().getIdentEtudiant()))) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        }
         setSingleFieldData(convention, conventionSingleFieldDto);
         convention = conventionJpaRepository.saveAndFlush(convention);
         return convention;
     }
 
     @GetMapping("/{annee}/en-attente-validation-alerte")
-    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE}, forbiddenEtu = true)
     public int countConventionEnAttente(@PathVariable("annee") String annee) {
         ContextDto contexteDto = ServiceContext.getServiceContext();
         Utilisateur utilisateur = contexteDto.getUtilisateur();
@@ -301,7 +293,7 @@ public class ConventionController {
         return count;
     }
 
-    @GetMapping("/validation-creation/{id}")
+    @PatchMapping("/validation-creation/{id}")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.MODIFICATION})
     public Convention validationCreation(@PathVariable("id") int id) {
         Convention convention = conventionJpaRepository.findById(id);
@@ -309,11 +301,15 @@ public class ConventionController {
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
+        ContextDto contexteDto = ServiceContext.getServiceContext();
+        Utilisateur utilisateur = contexteDto.getUtilisateur();
+        // Pour les étudiants on vérifie que c'est une de ses conventions
+        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(convention.getEtudiant().getIdentEtudiant())) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        }
         convention.setValidationCreation(true);
         convention = conventionJpaRepository.saveAndFlush(convention);
 
-        ContextDto contexteDto = ServiceContext.getServiceContext();
-        Utilisateur utilisateur = contexteDto.getUtilisateur();
         if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
             ConfigAlerteMailDto configAlerteMailDto = appConfigService.getConfigAlerteMail();
             boolean sendMailEtudiant = configAlerteMailDto.getAlerteEtudiant().isCreationConventionEtudiant();
@@ -490,6 +486,11 @@ public class ConventionController {
     }
 
     private void setConventionData(Convention convention, ConventionFormDto conventionFormDto) {
+        // Pour les étudiants on vérifie que c'est une de ses conventions
+        Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
+        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(conventionFormDto.getEtudiantLogin())) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        }
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
@@ -545,10 +546,11 @@ public class ConventionController {
             etudiant.setPrenom(etudiantRef.getPrenom());
             etudiant.setMail(etudiantRef.getMail());
             etudiant.setCodeUniversite(appConfigService.getConfigGenerale().getCodeUniversite());
-            etudiant.setCodeSexe(etudiantRef.getCodeSexe());
-            etudiant.setDateNais(etudiantRef.getDateNais());
-            etudiant = etudiantJpaRepository.saveAndFlush(etudiant);
         }
+        etudiant.setCodeSexe(etudiantRef.getCodeSexe());
+        etudiant.setDateNais(etudiantRef.getDateNais());
+        etudiant = etudiantJpaRepository.saveAndFlush(etudiant);
+
         convention.setEtudiant(etudiant);
         convention.setAdresseEtudiant(conventionFormDto.getAdresseEtudiant());
         convention.setCodePostalEtudiant(conventionFormDto.getCodePostalEtudiant());
@@ -919,5 +921,30 @@ public class ConventionController {
             }
         }
         if (sendMailEnseignant) mailerService.sendAlerteValidation(convention.getEnseignant().getMail(), convention, utilisateurContext, templateMailCode);
+    }
+
+    private String addUserContextFilter(String filters) {
+        ContextDto contexteDto = ServiceContext.getServiceContext();
+        Utilisateur utilisateur = contexteDto.getUtilisateur();
+        if (!UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
+            JSONObject jsonFilters = new JSONObject(filters);
+            Map<String, Object> currentUser = new HashMap<>();
+            currentUser.put("type", "text");
+            currentUser.put("value", utilisateur.getLogin());
+            if (UtilisateurHelper.isRole(utilisateur, Role.RESP_GES) || UtilisateurHelper.isRole(utilisateur, Role.GES)) {
+                Map<String, Object> ges = new HashMap<>();
+                ges.put("type", "text");
+                ges.put("value", utilisateur.getLogin());
+                ges.put("specific", true);
+                jsonFilters.put("centreGestion.personnels", ges);
+            } else if (UtilisateurHelper.isRole(utilisateur, Role.ENS)) {
+                jsonFilters.put("enseignant.uidEnseignant", currentUser);
+            } else if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
+                jsonFilters.put("etudiant.identEtudiant", currentUser);
+            }
+
+            filters = jsonFilters.toString();
+        }
+        return filters;
     }
 }

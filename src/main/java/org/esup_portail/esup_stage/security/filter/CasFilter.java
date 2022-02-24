@@ -3,8 +3,11 @@ package org.esup_portail.esup_stage.security.filter;
 import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
 import org.esup_portail.esup_stage.dto.LdapSearchDto;
 import org.esup_portail.esup_stage.exception.ApplicationClientException;
+import org.esup_portail.esup_stage.model.Etudiant;
 import org.esup_portail.esup_stage.model.Role;
 import org.esup_portail.esup_stage.model.Utilisateur;
+import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
+import org.esup_portail.esup_stage.repository.EtudiantJpaRepository;
 import org.esup_portail.esup_stage.repository.PersonnelCentreGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.RoleJpaRepository;
 import org.esup_portail.esup_stage.repository.UtilisateurJpaRepository;
@@ -41,6 +44,9 @@ public class CasFilter implements Filter {
 
     @Autowired
     PersonnelCentreGestionJpaRepository personnelCentreGestionJpaRepository;
+
+    @Autowired
+    EtudiantJpaRepository etudiantJpaRepository;
 
     @Autowired
     AppConfigService appConfigService;
@@ -111,13 +117,13 @@ public class CasFilter implements Filter {
 
                 // Recherche de l'utilisateur
                 Utilisateur utilisateur = utilisateurJpaRepository.findOneByLogin(casUser.getLogin());
+                LdapSearchDto ldapSearchDto = new LdapSearchDto();
+                ldapSearchDto.setSupannAliasLogin(casUser.getLogin());
+                List<LdapUser> users = ldapService.search("/etudiant", ldapSearchDto);
 
                 // création de l'utilisateur avec le rôle correspondant (ETU, ENS : à rechercher dans le LDAP) s'il n'existe pas en base
                 if (utilisateur == null) {
                     String role = Role.ETU;
-                    LdapSearchDto ldapSearchDto = new LdapSearchDto();
-                    ldapSearchDto.setSupannAliasLogin(casUser.getLogin());
-                    List<LdapUser> users = ldapService.search("/etudiant", ldapSearchDto);
                     if (users.size() == 0) {
                         String filter = appConfigService.getConfigGenerale().getLdapFiltreEnseignant() + "(&(supannAliasLogin=" + casUser.getLogin() + "))";
                         users = ldapService.searchByFilter(filter);
@@ -147,6 +153,22 @@ public class CasFilter implements Filter {
 
                 // éventuel mise à jour de son nom/prénom si non existant
                 if (utilisateur != null) {
+                    // Si c'est un étudiant on lui créé une ligne dans la table Etudiant s'il n'existe pas
+                    if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
+                        Etudiant etudiant = etudiantJpaRepository.findByNumEtudiant(users.get(0).getCodEtu());
+                        if (etudiant == null) {
+                            etudiant = new Etudiant();
+                            etudiant.setIdentEtudiant(casUser.getLogin());
+                            etudiant.setNumEtudiant(users.get(0).getCodEtu());
+                            etudiant.setNom(casUser.getNom());
+                            etudiant.setPrenom(casUser.getPrenom());
+                            etudiant.setMail(users.get(0).getMail());
+                            etudiant.setCodeUniversite(appConfigService.getConfigGenerale().getCodeUniversite());
+                            etudiant.setLoginCreation(casUser.getLogin());
+                            etudiantJpaRepository.saveAndFlush(etudiant);
+                        }
+                    }
+
                     boolean update = false;
                     if (utilisateur.getNom() == null) {
                         utilisateur.setNom(casUser.getNom());

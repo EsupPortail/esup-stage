@@ -2,22 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { environment } from "../../environments/environment";
-import { PaginatedService } from "./paginated.service";
 
 @Injectable({
   providedIn: 'root'
 })
-export class AvenantService implements PaginatedService {
+export class AvenantService {
 
   constructor(private http: HttpClient) { }
-
-  getPaginated(page: number, perPage: number, predicate: string, sortOrder: string, filters: string): Observable<any> {
-    return this.http.get(environment.apiUrl + "/avenant", {params: {page, perPage, predicate, sortOrder, filters}});
-  }
-
-  exportData(format: string, headers: string, predicate: string, sortOrder: string, filters: string): Observable<any> {
-    return this.http.get(environment.apiUrl + `/avenant/export/${format}`, {params: {headers, predicate, sortOrder, filters}, responseType: 'blob'});
-  }
 
   getByConvention(id: number): Observable<any> {
     return this.http.get(`${environment.apiUrl}/avenant/getByConvention/${id}`);

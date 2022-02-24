@@ -51,6 +51,11 @@ public class EtudiantController {
     @GetMapping("/{numEtudiant}/apogee-data")
     @Secure
     public EtudiantRef getApogeeData(@PathVariable("numEtudiant") String numEtudiant) {
+        Etudiant etudiant = etudiantJpaRepository.findByNumEtudiant(numEtudiant);
+        Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
+        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && (etudiant == null || !utilisateur.getLogin().equals(etudiant.getIdentEtudiant()))) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Étudiant non trouvé");
+        }
         return apogeeService.getInfoApogee(numEtudiant, appConfigService.getAnneeUniv());
     }
 
@@ -59,6 +64,10 @@ public class EtudiantController {
     public List<ConventionFormationDto> getFormationInscriptions(@PathVariable("numEtudiant") String numEtudiant) {
         ContextDto contextDto = ServiceContext.getServiceContext();
         Utilisateur utilisateur = contextDto.getUtilisateur();
+        Etudiant etudiant = etudiantJpaRepository.findByNumEtudiant(numEtudiant);
+        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && (etudiant == null || !utilisateur.getLogin().equals(etudiant.getIdentEtudiant()))) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Étudiant non trouvé");
+        }
         List<String> annees = new ArrayList<>();
         String anneeEnCours = appConfigService.getAnneeUniv();
         String anneePrecedente = String.valueOf(Integer.parseInt(anneeEnCours) - 1);
@@ -68,7 +77,6 @@ public class EtudiantController {
         Calendar dateBascule = appConfigService.getDateBascule(Integer.parseInt(anneeEnCours));
         List<ConventionFormationDto> inscriptions = new ArrayList<>();
         List<String> anneeInscriptions = apogeeService.getAnneeInscriptions(numEtudiant);
-        anneeInscriptions.retainAll(annees);
         for (String annee : anneeInscriptions) {
             ApogeeMap apogeeMap = apogeeService.getEtudiantEtapesInscription(numEtudiant, annee);
             RegimeInscription regIns = apogeeMap.getRegimeInscription().stream().filter(r -> r.getAnnee().equals(annee)).findAny().orElse(null);
@@ -156,8 +164,9 @@ public class EtudiantController {
     @GetMapping("/by-login/{login}")
     @Secure
     public Etudiant getByLogin(@PathVariable("login") String login) {
+        Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
         Etudiant etudiant = etudiantJpaRepository.findByLogin(login);
-        if (etudiant == null) {
+        if (etudiant == null || UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(etudiant.getIdentEtudiant())) {
             throw new AppException(HttpStatus.NOT_FOUND, "Etudiant non trouvé");
         }
         return etudiant;

@@ -57,7 +57,9 @@ public abstract class ObjetMetier {
     @PrePersist
     public void prePersist() {
         setDateCreation(new Date());
-        setLoginCreation(getUtilisateurLogin());
+        if (getLoginCreation() == null) {
+            setLoginCreation(getUtilisateurLogin());
+        }
     }
 
     @PreUpdate

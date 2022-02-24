@@ -140,7 +140,7 @@ public class ContactController {
     }
 
     @DeleteMapping("/{id}")
-    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.SUPPRESSION})
+    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.SUPPRESSION})
     public boolean delete(@PathVariable("id") int id) {
         Contact contact = contactJpaRepository.findById(id);
         if (contact == null) {

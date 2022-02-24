@@ -57,20 +57,16 @@ public class AvenantController {
     @Autowired
     ConventionController conventionController;
 
-    @GetMapping
-    @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.LECTURE})
-    public PaginatedResponse<Avenant> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
-        PaginatedResponse<Avenant> paginatedResponse = new PaginatedResponse<>();
-        paginatedResponse.setTotal(avenantRepository.count(filters));
-        paginatedResponse.setData(avenantRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
-        return paginatedResponse;
-    }
-
     @GetMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.LECTURE})
     public Avenant getById(@PathVariable("id") int id) {
         Avenant avenant = avenantJpaRepository.findById(id);
         if (avenant == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvée");
+        }
+        // Pour les étudiants, on vérifie que c'est bien un avenant d'une de ses covnentions
+        Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
+        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(avenant.getConvention().getEtudiant().getIdentEtudiant())) {
             throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvée");
         }
         return avenant;
@@ -79,6 +75,14 @@ public class AvenantController {
     @GetMapping("/getByConvention/{id}")
     @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.LECTURE})
     public List<Avenant> getByConvention(@PathVariable("id") int id) {
+        // Pour les étudiants, on vérifie que c'est bien un avenant d'une de ses convention
+        Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
+        if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
+            Convention convention = conventionJpaRepository.getById(id);
+            if (!utilisateur.getLogin().equals(convention.getEtudiant().getIdentEtudiant())) {
+                throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvée");
+            }
+        }
         List<Avenant> avenant = avenantJpaRepository.findByConvention(id);
         if (avenant == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvée");
@@ -180,6 +184,11 @@ public class AvenantController {
 
         Convention convention = conventionJpaRepository.findById(avenantDto.getIdConvention());
         if (convention == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvé");
+        }
+        // Pour les étudiants, on vérifie que c'est bien un avenant d'une de ses convention
+        Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
+        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(convention.getEtudiant().getIdentEtudiant())) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvé");
         }
 
