@@ -29,6 +29,23 @@ Cette execution passe par le fichier de configuration "src/main/resources-filter
 ...
 ~~~
 
+## Pré-requis
+
+* la variable appli.data_dir dans estage.properties pointe sur le dossier d'upload du projet. Ce dossier doit contenir la structure suivante :
+  * `centregestion`
+    * `consigne-documents`
+    * `logos`
+
+Par exemple si `appli.data_dir=/etc/eStage/uploads` on aura :
+```
+/etc
+|_/eStage
+   |_/uploads
+     |_/centregestion
+       |_/consigne-documents
+       |_/logos
+```
+
 ## Procédure d'installation en environnement de dev
 
 * ajouter un fichier src/main/resources/estage.properties basé sur le fichier src/main/resources/estage-example.properties : les mots de passe seront à demander au chef de projet
