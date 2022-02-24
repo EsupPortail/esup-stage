@@ -102,7 +102,7 @@
             <button type="button" #matMenuTrigger mat-raised-button color="primary"[matMenuTriggerFor]="menu">Paramétrer les alertes mail</button>
             <mat-menu #menu="matMenu">
               <button #menuItems class="toggle-all" type="button" mat-raised-button color="primary" style="margin: 8px" (click)="$event.stopPropagation(); toggleAll()">Activer/Désactiver toutes les alertes</button>
-              <mat-checkbox #menuItems *ngFor="let alerte of alertesMail" formControlName="{{alerte.id}}"
+              <mat-checkbox #menuItems *ngFor="let alerte of alertesMail" formControlName="{{alerte.id}}" class="checkbox-alertes"
                             (click)="$event.stopPropagation()" style="padding: 8px">
                 {{ alerte.libelle }}
               </mat-checkbox>
