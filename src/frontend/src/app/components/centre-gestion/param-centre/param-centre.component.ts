@@ -108,7 +108,7 @@ export class ParamCentreComponent implements OnInit {
       verificationAdministrativeOrdre: this.centreGestion.verificationAdministrativeOrdre,
       validationConventionOrdre: this.centreGestion.validationConventionOrdre,
       recupInscriptionAnterieure: this.centreGestion.recupInscriptionAnterieure,
-      dureeRecupInscriptionAnterieure: this.centreGestion.dureeRecupInscriptionAnterieure,
+      dureeRecupInscriptionAnterieure: this.centreGestion.dureeRecupInscriptionAnterieure ?? 1,
       urlPageInstruction: this.centreGestion.urlPageInstruction,
       nomViseur: this.centreGestion.nomViseur,
       prenomViseur: this.centreGestion.prenomViseur,
