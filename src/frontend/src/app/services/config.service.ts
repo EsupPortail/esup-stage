@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { Observable, Subject } from "rxjs";
 import { environment } from "../../environments/environment";
+import { AuthService } from "./auth.service";
 
 @Injectable({
   providedIn: 'root'
@@ -12,9 +13,12 @@ export class ConfigService {
   themeModified = this.themeSubject.asObservable();
   configTheme: any = undefined;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private authService: AuthService) { }
 
   getConfigGenerale(): Observable<any> {
+    if (this.authService.isEtudiant()) {
+      return this.http.get(environment.apiUrl + "/config/generale/etu");
+    }
     return this.http.get(environment.apiUrl + "/config/generale");
   }
 

@@ -124,15 +124,23 @@ export class SignataireComponent implements OnInit, OnChanges {
   }
 
   createService(): void {
-    this.openServiceFormModal(null);
+    if (this.canCreate()) {
+      this.openServiceFormModal(null);
+    }
   }
 
   editService(row: any): void {
-    this.openServiceFormModal(row);
+    if (this.canEdit()) {
+      this.openServiceFormModal(row);
+    }
   }
 
   canCreate(): boolean {
-    return this.modifiable && this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.CREATION]});
+    let hasRight =  this.modifiable && this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.CREATION]});
+    if (this.authService.isEtudiant() && !this.autorisationModification) {
+      hasRight = false;
+    }
+    return this.modifiable && hasRight;
   }
 
   canEdit(): boolean {

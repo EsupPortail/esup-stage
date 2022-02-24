@@ -4,6 +4,7 @@ import org.esup_portail.esup_stage.dto.ContextDto;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
+import org.esup_portail.esup_stage.model.Role;
 import org.esup_portail.esup_stage.model.Utilisateur;
 import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
 import org.esup_portail.esup_stage.repository.AppConfigJpaRepository;
@@ -56,6 +57,7 @@ public class SecureInterceptor {
         Secure authorized = methodSignature.getMethod().getAnnotation(Secure.class);
         AppFonctionEnum[] fonctions = authorized.fonctions();
         DroitEnum[] droits = authorized.droits();
+        boolean forbiddenEtu = authorized.forbiddenEtu();
 
         // validation du token
         String token = null;
@@ -128,6 +130,12 @@ public class SecureInterceptor {
                 }
             }
         }
+
+        // On n'a pas les droits si le rôle fait partie de ceux interdit
+        if (forbiddenEtu && UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
+            hasRight = false;
+        }
+
         if (!hasRight) {
             throw new AppException(HttpStatus.FORBIDDEN, "Votre rôle de donne pas accès à cette ressource");
         }

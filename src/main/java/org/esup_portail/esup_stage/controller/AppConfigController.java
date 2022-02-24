@@ -1,10 +1,12 @@
 package org.esup_portail.esup_stage.controller;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.esup_portail.esup_stage.dto.ConfigAlerteMailDto;
 import org.esup_portail.esup_stage.dto.ConfigGeneraleDto;
 import org.esup_portail.esup_stage.dto.ConfigThemeDto;
+import org.esup_portail.esup_stage.dto.view.Views;
 import org.esup_portail.esup_stage.enums.AppConfigCodeEnum;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
@@ -34,14 +36,21 @@ public class AppConfigController {
     @Autowired
     AppConfigService appConfigService;
 
-    @GetMapping("/generale")
+    @JsonView(Views.Etu.class)
+    @GetMapping("/generale/etu")
     @Secure
+    public ConfigGeneraleDto getConfigGeneraleEtu() {
+        return appConfigService.getConfigGenerale();
+    }
+
+    @GetMapping("/generale")
+    @Secure(forbiddenEtu = true)
     public ConfigGeneraleDto getConfigGenerale() {
         return appConfigService.getConfigGenerale();
     }
 
     @PostMapping("/generale")
-    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.MODIFICATION})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.MODIFICATION}, forbiddenEtu = true)
     public ConfigGeneraleDto updateGenerale(@RequestBody ConfigGeneraleDto configGeneraleDto) throws JsonProcessingException {
         AppConfig appConfig = appConfigJpaRepository.findByCode(AppConfigCodeEnum.GENERAL);
         if (appConfig == null) {
@@ -58,13 +67,13 @@ public class AppConfigController {
     }
 
     @GetMapping("/alerte-mail")
-    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE}, forbiddenEtu = true)
     public ConfigAlerteMailDto getConfigAlerteMail() {
         return appConfigService.getConfigAlerteMail();
     }
 
     @PostMapping("/alerte-mail")
-    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.MODIFICATION})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.MODIFICATION}, forbiddenEtu = true)
     public ConfigAlerteMailDto updateAlerteMail(@RequestBody ConfigAlerteMailDto configAlerteMailDto) throws JsonProcessingException {
         AppConfig appConfig = appConfigJpaRepository.findByCode(AppConfigCodeEnum.ALERTE);
         if (appConfig == null) {
@@ -84,7 +93,7 @@ public class AppConfigController {
     }
 
     @PostMapping("/theme")
-    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.MODIFICATION})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.MODIFICATION}, forbiddenEtu = true)
     public ConfigThemeDto updateTheme(@RequestParam String data, @RequestParam(required = false) MultipartFile logo, @RequestParam(required = false) MultipartFile favicon) throws IOException, URISyntaxException {
         ObjectMapper mapper = new ObjectMapper();
         ConfigThemeDto configThemeDto = mapper.readValue(data, ConfigThemeDto.class);
@@ -131,7 +140,7 @@ public class AppConfigController {
     }
 
     @DeleteMapping("/theme")
-    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.SUPPRESSION})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.SUPPRESSION}, forbiddenEtu = true)
     public ConfigThemeDto rollbackTheme() throws IOException, URISyntaxException {
         AppConfig appConfig = appConfigJpaRepository.findByCode(AppConfigCodeEnum.THEME);
         if (appConfig != null) {

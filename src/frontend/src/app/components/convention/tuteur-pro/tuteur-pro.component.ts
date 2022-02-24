@@ -78,7 +78,11 @@ export class TuteurProComponent implements OnInit, OnChanges {
   }
 
   canCreate(): boolean {
-    return this.modifiable && this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.CREATION]});
+    let hasRight = this.modifiable && this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.CREATION]});
+    if (this.authService.isEtudiant() && !this.autorisationModification) {
+      hasRight = false;
+    }
+    return this.modifiable && hasRight;
   }
 
   canEdit(): boolean {

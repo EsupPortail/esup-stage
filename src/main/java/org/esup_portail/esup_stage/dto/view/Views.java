@@ -4,4 +4,6 @@ public class Views {
     public static class List { }
 
     public static class Item extends List { }
+
+    public static class Etu { }
 }

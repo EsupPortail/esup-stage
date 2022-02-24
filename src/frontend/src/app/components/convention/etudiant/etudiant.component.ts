@@ -223,7 +223,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
   validate(): void {
     if (this.formConvention.valid) {
       const data = {...this.formConvention.getRawValue()};
-      delete data.isncription;
+      delete data.inscription;
       data.numEtudiant = this.selectedNumEtudiant;
       data.codeComposante = this.formConvention.value.inscription.etapeInscription.codeComposante;
       data.codeEtape = this.formConvention.value.inscription.etapeInscription.codeEtp;

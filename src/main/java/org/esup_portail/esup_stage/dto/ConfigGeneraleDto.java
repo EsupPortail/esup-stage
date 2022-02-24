@@ -1,5 +1,7 @@
 package org.esup_portail.esup_stage.dto;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import org.esup_portail.esup_stage.dto.view.Views;
 import org.esup_portail.esup_stage.enums.TypeCentreEnum;
 
 public class ConfigGeneraleDto {
@@ -9,11 +11,20 @@ public class ConfigGeneraleDto {
     private boolean autoriserConventionsOrphelines = false;
     private TypeCentreEnum typeCentre = null;
     private boolean autoriserCentresBloquerImpressionConvention = false;
+
+    @JsonView(Views.Etu.class)
     private boolean autoriserEtudiantAModifierEntreprise = false;
+
     private boolean autoriserValidationAutoOrgaAccCreaEtu = false;
     private String ldapFiltreEnseignant = "(|(eduPersonAffiliation=teacher)(eduPersonAffiliation=faculty)";
+
+    @JsonView(Views.Etu.class)
     private boolean autoriserElementPedagogiqueFacultatif = false;
+
+    @JsonView(Views.Etu.class)
     private String validationPedagogiqueLibelle = "validation pédagogique";
+
+    @JsonView(Views.Etu.class)
     private String validationAdministrativeLibelle = "validation administrative";
 
     public String getCodeUniversite() {

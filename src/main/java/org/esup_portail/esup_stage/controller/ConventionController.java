@@ -536,11 +536,6 @@ public class ConventionController {
             throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion non trouvé");
         }
 
-        canViewEditConvention(convention, ServiceContext.getServiceContext().getUtilisateur());
-        if (!isConventionModifiable(convention, ServiceContext.getServiceContext().getUtilisateur())) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "La convention n'est plus modifiable");
-        }
-
         Etudiant etudiant = etudiantJpaRepository.findByNumEtudiant(conventionFormDto.getNumEtudiant());
         if (etudiant == null) {
             etudiant = new Etudiant();
@@ -575,6 +570,11 @@ public class ConventionController {
         convention.setValidationConvention(!centreGestion.getValidationConvention());
         convention.setValidationPedagogique(!centreGestion.getValidationPedagogique());
         convention.setVerificationAdministrative(!centreGestion.getVerificationAdministrative());
+
+        canViewEditConvention(convention, ServiceContext.getServiceContext().getUtilisateur());
+        if (!isConventionModifiable(convention, ServiceContext.getServiceContext().getUtilisateur())) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "La convention n'est plus modifiable");
+        }
     }
 
     private void setSingleFieldData(Convention convention, ConventionSingleFieldDto conventionSingleFieldDto) {
