@@ -125,7 +125,7 @@ export class ConventionComponent implements OnInit {
   majAllValid(): void {
     this.allValid = true;
     for (let key in this.tabs) {
-        if (key != '7' && key != '8' && this.tabs[key].statut == 0) {
+        if (key != '7' && key != '8' && this.tabs[key].statut !== 2) {
           this.allValid = false;
         }
     }

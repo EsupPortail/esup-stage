@@ -270,7 +270,7 @@ export class StageComponent implements OnInit {
   validateForm() : void{
     let status = 0;
     if (Object.keys(this.form.value).some(k => !!this.form.value[k])) status = 1;
-    if (this.form.valid && this.periodesInterruptionsValid) status = 2;
+    if ((this.form.valid || this.form.disabled) && this.periodesInterruptionsValid) status = 2;
     this.validated.emit(status);
   }
 
