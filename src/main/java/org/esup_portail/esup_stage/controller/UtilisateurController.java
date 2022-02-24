@@ -47,7 +47,7 @@ public class UtilisateurController {
     }
 
     @GetMapping("/{login}")
-    @Secure()
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public Utilisateur findOneByLogin(@PathVariable("login") String login) {
         return utilisateurJpaRepository.findOneByLogin(login);
     }

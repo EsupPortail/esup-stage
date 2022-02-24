@@ -1,6 +1,8 @@
 package org.esup_portail.esup_stage.controller;
 
 import org.esup_portail.esup_stage.dto.ConfigGeneraleDto;
+import org.esup_portail.esup_stage.enums.AppFonctionEnum;
+import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.model.NiveauCentre;
 import org.esup_portail.esup_stage.repository.CentreGestionRepository;
 import org.esup_portail.esup_stage.repository.NiveauCentreJpaRepository;
@@ -27,14 +29,8 @@ public class NiveauCentreController {
     @Autowired
     AppConfigService appConfigService;
 
-    @GetMapping
-    @Secure()
-    public List<NiveauCentre> findAll() {
-        return niveauCentreJpaRepository.findAll();
-    }
-
     @GetMapping("/centre-gestion-list")
-    @Secure()
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public List<NiveauCentre> findList() {
         ConfigGeneraleDto configGeneraleDto = appConfigService.getConfigGenerale();
         List<NiveauCentre> list = new ArrayList<>();

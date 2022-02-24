@@ -23,7 +23,7 @@ public class LdapController {
     LdapService ldapService;
 
     @PostMapping("/etudiants")
-    @Secure
+    @Secure(forbiddenEtu = true)
     public List<LdapUser> getLdapUsers(@RequestBody LdapSearchDto ldapSearchDto) {
         if (ldapSearchDto.getId() == null && ldapSearchDto.getNom() == null && ldapSearchDto.getPrenom() == null && ldapSearchDto.getMail() == null && ldapSearchDto.getPrimaryAffiliation() == null && ldapSearchDto.getAffiliation() == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Veuillez renseigner au moins un des filtres");
@@ -41,7 +41,7 @@ public class LdapController {
     }
 
     @GetMapping("/search-by-name")
-    @Secure
+    @Secure(forbiddenEtu = true)
     public List<LdapUser> searchLdapUserByName(@RequestParam("nom") String nom, @RequestParam("prenom") String prenom) {
         if (nom == null && prenom == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Veuillez renseigner au moins un des filtres");

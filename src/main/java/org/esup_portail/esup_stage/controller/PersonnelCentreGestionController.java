@@ -126,7 +126,7 @@ public class PersonnelCentreGestionController {
     }
 
     @GetMapping("/droits-admin")
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public List<DroitAdministration> findAll() {
         return droitAdministrationJpaRepository.findAll();
     }
