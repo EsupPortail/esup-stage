@@ -181,7 +181,7 @@ export class AvenantFormComponent implements OnInit {
       this.form = this.fb.group({
         titreAvenant: [null],
         rupture: [null],
-        dateRupture: [null],
+        dateRupture: [null, [Validators.required]],
         commentaireRupture: [null],
         modificationPeriode: [null],
         dateDebutStage: [null],
@@ -191,7 +191,7 @@ export class AvenantFormComponent implements OnInit {
         dateFinInterruption: [null],
         modificationLieu: [null],
         modificationSujet: [null],
-        sujetStage: [null],
+        sujetStage: [null, [Validators.required]],
         modificationSalarie: [false],
         modificationEnseignant: [null],
         modificationMontantGratification: [null],
@@ -202,7 +202,7 @@ export class AvenantFormComponent implements OnInit {
         idDevise: [null],
         validationAvenant: [null],
         modificationAutre: [null],
-        motifAvenant: [null],
+        motifAvenant: [null, [Validators.required]],
       });
     }
 
@@ -211,7 +211,15 @@ export class AvenantFormComponent implements OnInit {
       prenom: [null, []],
     });
 
-    this.form.valueChanges.subscribe(() => {
+    this.form.valueChanges.subscribe((values: any) => {
+      if (!values.rupture) this.form.get('dateRupture')?.disable({emitEvent: false});
+      else this.form.get('dateRupture')?.enable({emitEvent: false});
+
+      if (!values.modificationSujet) this.form.get('sujetStage')?.disable({emitEvent: false});
+      else this.form.get('sujetStage')?.enable({emitEvent: false});
+
+      if (!values.modificationAutre) this.form.get('motifAvenant')?.disable({emitEvent: false});
+      else this.form.get('motifAvenant')?.enable({emitEvent: false});
       this.customFormValidation();
     });
     this.enseignantSearchForm.valueChanges.pipe(debounceTime(500)).subscribe(() => {
@@ -471,8 +479,10 @@ export class AvenantFormComponent implements OnInit {
   }
 
   updateDateFinBounds(dateDebut: Date): void {
-    this.minDateFinStage = new Date(dateDebut.getTime() + (1000 * 60 * 60 * 24));
-    this.maxDateFinStage = new Date(dateDebut.getTime() + (1000 * 60 * 60 * 24 * 365));
+    if (dateDebut) {
+      this.minDateFinStage = new Date(dateDebut.getTime() + (1000 * 60 * 60 * 24));
+      this.maxDateFinStage = new Date(dateDebut.getTime() + (1000 * 60 * 60 * 24 * 365));
+    }
   }
 
   loadInterruptionsStage() : void{
