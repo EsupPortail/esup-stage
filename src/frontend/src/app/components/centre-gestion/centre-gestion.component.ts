@@ -28,6 +28,7 @@ export class CentreGestionComponent implements OnInit {
     2: { statut: 0, init: false },
     3: { statut: 0, init: false },
     4: { statut: 0, init: false },
+    5: { statut: 2, init: false },
   }
 
   allValid = false;
