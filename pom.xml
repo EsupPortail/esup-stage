@@ -249,7 +249,7 @@
 							<goal>npm</goal>
 						</goals>
 						<configuration>
-							<arguments>install</arguments>
+							<arguments>install --unsafe-perm=true</arguments>
 						</configuration>
 					</execution>
 					<execution>
