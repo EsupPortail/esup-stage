@@ -7,7 +7,9 @@ import org.esup_portail.esup_stage.dto.ConfigGeneraleDto;
 import org.esup_portail.esup_stage.dto.ConfigThemeDto;
 import org.esup_portail.esup_stage.enums.AppConfigCodeEnum;
 import org.esup_portail.esup_stage.exception.AppException;
+import org.esup_portail.esup_stage.model.Affectation;
 import org.esup_portail.esup_stage.model.AppConfig;
+import org.esup_portail.esup_stage.repository.AffectationRepository;
 import org.esup_portail.esup_stage.repository.AppConfigJpaRepository;
 import org.esup_portail.esup_stage.security.ApplicationStartUp;
 import org.apache.logging.log4j.LogManager;
@@ -29,6 +31,9 @@ public class AppConfigService {
     @Autowired
     AppConfigJpaRepository appConfigJpaRepository;
 
+    @Autowired
+    AffectationRepository affectationRepository;
+
     public ConfigGeneraleDto getConfigGenerale() {
         AppConfig appConfig = appConfigJpaRepository.findByCode(AppConfigCodeEnum.GENERAL);
         if (appConfig == null) {
@@ -36,7 +41,15 @@ public class AppConfigService {
         }
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            return objectMapper.readValue(appConfig.getParametres(), ConfigGeneraleDto.class);
+            ConfigGeneraleDto configGeneraleDto = objectMapper.readValue(appConfig.getParametres(), ConfigGeneraleDto.class);
+            // Initialisation du code université si non renseigné
+            if (configGeneraleDto.getCodeUniversite() == null || configGeneraleDto.getCodeUniversite().isEmpty()) {
+                Affectation affectation = affectationRepository.getOneNotNullCodeUniversite();
+                if (affectation != null) {
+                    configGeneraleDto.setCodeUniversite(affectation.getId().getCodeUniversite());
+                }
+            }
+            return configGeneraleDto;
         } catch (JsonProcessingException e) {
             logger.error(e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "ConfigGeneraleDto::getConfigGenerale ERROR: JsonProcessingException");
