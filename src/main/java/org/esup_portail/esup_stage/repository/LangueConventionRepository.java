@@ -29,9 +29,7 @@ public class LangueConventionRepository extends PaginationRepository<LangueConve
     @Override
     protected void formatFilters(String jsonString) {
         super.formatFilters(jsonString);
-        if (filters.has("typeConventionTemplate")) {
-            addJoins("JOIN lc.templates template");
-        }
+        addJoins("LEFT JOIN lc.templates template");
     }
 
     @Override
