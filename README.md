@@ -55,3 +55,7 @@ Par exemple si `appli.data_dir=/etc/eStage/uploads` on aura :
 * pour lancer le frontend dev, lancer la commande `ng serve --host localhost.dauphine.fr` au niveau du dossier frontend (node devra être installé)
 * lancer chrome avec les options `--disable-web-security --user-data-dir=chemin d'un dossier` pour désactiver le CORS
 * aller sur l'application à l'adresse http://localhost:8080/frontend/#/ et se connecter une première fois
+
+## Procédure d'installation
+
+https://github.com/EsupPortail/esup-stage/wiki/Installation
