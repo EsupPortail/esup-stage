@@ -1,6 +1,6 @@
 # eStage
 
-Produit de remplacant "pstage" mais je ne sais pas ce que ça fait exactement
+Produit de remplacant "pstage"
 
 ## Techno
 
