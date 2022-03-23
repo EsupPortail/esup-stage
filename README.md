@@ -58,4 +58,4 @@ Par exemple si `appli.data_dir=/etc/eStage/uploads` on aura :
 
 ## Procédure d'installation
 
-https://github.com/EsupPortail/esup-stage/wiki/Installation
+https://github.com/EsupPortail/esup-stage/wiki
