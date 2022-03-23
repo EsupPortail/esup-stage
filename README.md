@@ -1,6 +1,6 @@
 # ESUP Stage
 
-Evolution de l'application pStage 
+ESUP STAGE est la refonte de l'application pStage. L'application a été complètement réécrite pour reprendre et améliorer les grandes et fonctionnalités : produire une convention de stage et ses avenants dans le cadre d'un processus de validation adapté. 
 
 ## Techno
 
