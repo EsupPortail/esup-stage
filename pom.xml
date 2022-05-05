@@ -240,7 +240,8 @@
 							<goal>install-node-and-npm</goal>
 						</goals>
 						<configuration>
-							<nodeVersion>v14.17.3</nodeVersion>
+							<nodeVersion>v16.15.0</nodeVersion>
+							<npmVersion>8.5.5</npmVersion>
 						</configuration>
 					</execution>
 					<execution>
@@ -249,7 +250,7 @@
 							<goal>npm</goal>
 						</goals>
 						<configuration>
-							<arguments>install --unsafe-perm=true</arguments>
+							<arguments>install</arguments>
 						</configuration>
 					</execution>
 					<execution>

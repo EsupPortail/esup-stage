@@ -132,7 +132,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   }
 
   update(): void {
-    this.filterChanged.next();
+    this.filterChanged.next(this.filterValues);
   }
 
   changePaginator(event: PageEvent): void {
@@ -204,14 +204,14 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   autocompleteSelected(filter: any, event: MatAutocompleteSelectedEvent): void {
     this.filterValues[filter.id].value.push({...event.option.value});
     this.filterValues[filter.id].autocomplete = null;
-    this.filterChanged.next();
+    this.filterChanged.next(this.filterValues);
   }
 
   removeAutocomplete(filter: any, value: any): void {
     const index = this.filterValues[filter.id].value.findIndex((v: any) => { return v[filter.keyId] === value[filter.keyId]; });
     if (index > -1) {
       this.filterValues[filter.id].value.splice(index, 1);
-      this.filterChanged.next();
+      this.filterChanged.next(this.filterValues);
     }
   }
 

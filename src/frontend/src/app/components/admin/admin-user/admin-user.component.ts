@@ -158,7 +158,7 @@ export class AdminUserComponent implements OnInit {
 
   search(): void {
     if (this.searchedLogin) {
-      this.searchedLoginChanged.next();
+      this.searchedLoginChanged.next(this.searchedLogin);
     }
   }
 

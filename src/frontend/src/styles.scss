@@ -1,4 +1,4 @@
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 
 /* You can add global styles to this file, and also import other style files */
 @import "~@fortawesome/fontawesome-free/css/all.css";
@@ -9,26 +9,38 @@
 @include mat.core();
 
 $my-primary-palette: (
+  100: var(--primaryColor),
   500: var(--primaryColor),
+  700: var(--primaryColor),
   contrast: (
+    100: white,
     500: white,
+    700: white,
   )
 );
 $my-accent-palette: (
+  100: var(--secondaryColor),
   500: var(--secondaryColor),
+  700: var(--secondaryColor),
   contrast: (
+    100: white,
     500: white,
+    700: white,
   )
 );
 $my-warn-palette: (
+  100: var(--dangerColor),
   500: var(--dangerColor),
+  700: var(--dangerColor),
   contrast: (
+    100: white,
     500: white,
+    700: white,
   )
 );
-$my-primary: mat.define-palette($my-primary-palette, 500);
-$my-accent: mat.define-palette($my-accent-palette, 500);
-$my-warn: mat.define-palette($my-warn-palette, 500);
+$my-primary: mat.define-palette($my-primary-palette, 100, 500, 700);
+$my-accent: mat.define-palette($my-accent-palette, 100, 500, 700);
+$my-warn: mat.define-palette($my-warn-palette, 100, 500, 700);
 $my-theme: mat.define-light-theme((
   color: (
     primary: $my-primary,
