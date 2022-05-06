@@ -194,6 +194,7 @@ databaseChangeLog:
 - changeSet:
     id: init-data-typeconvention
     author: ssound
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -447,6 +448,7 @@ databaseChangeLog:
 - changeSet:
     id: init-data-typeconvention-apogee
     author: jwang
+    validCheckSum: ANY
     changes:
     - sqlFile:
         path: init-insert/typeconventionapogee.sql

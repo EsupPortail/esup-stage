@@ -1,9 +1,9 @@
-INSERT INTO `TypeConvention` (`idTypeConvention`, `libelleTypeConvention`, `codeCtrl`, `temEnServTypeConvention`, `modifiable`) VALUES (6, 'AUDITEUR LIBRE', 'AUD. LIBRE', 'O', true);
-INSERT INTO `TypeConvention` (`idTypeConvention`, `libelleTypeConvention`, `codeCtrl`, `temEnServTypeConvention`, `modifiable`) VALUES (7, 'FORMATION INITIALE', 'INITIALE', 'O', true);
-INSERT INTO `TypeConvention` (`idTypeConvention`, `libelleTypeConvention`, `codeCtrl`, `temEnServTypeConvention`, `modifiable`) VALUES (8, 'FORMATION CONT. REPRISE D''ETU. FINANCEES', 'CONTINUE', 'O', true);
-INSERT INTO `TypeConvention` (`idTypeConvention`, `libelleTypeConvention`, `codeCtrl`, `temEnServTypeConvention`, `modifiable`) VALUES (9, 'REPRISE D''ETUDES NON FINANCEES', 'PERMANENTE', 'O', true);
-INSERT INTO `TypeConvention` (`idTypeConvention`, `libelleTypeConvention`, `codeCtrl`, `temEnServTypeConvention`, `modifiable`) VALUES (10, 'FORMATION PAR APPRENTISSAGE DIPLOMANTE', 'APPRENTI', 'O', true);
-INSERT INTO `TypeConvention` (`idTypeConvention`, `libelleTypeConvention`, `codeCtrl`, `temEnServTypeConvention`, `modifiable`) VALUES (11, 'CONTRAT DE PROFESSIONALISATION', 'CONTR. PRO', 'O', true);
-INSERT INTO `TypeConvention` (`idTypeConvention`, `libelleTypeConvention`, `codeCtrl`, `temEnServTypeConvention`, `modifiable`) VALUES (12, 'HEBERGE', 'HEBERGE', 'O', true);
-INSERT INTO `TypeConvention` (`idTypeConvention`, `libelleTypeConvention`, `codeCtrl`, `temEnServTypeConvention`, `modifiable`) VALUES (13, 'FLE ETRANGER', 'REFUGIE', 'O', true);
-INSERT INTO `TypeConvention` (`idTypeConvention`, `libelleTypeConvention`, `codeCtrl`, `temEnServTypeConvention`, `modifiable`) VALUES (14, 'STAGIAIRE DE LA FORMATION PROFESSIONELLE', 'SFP', 'O', true);
+INSERT INTO `TypeConvention` (`libelleTypeConvention`, `codeCtrl`, `temEnServTypeConvention`, `modifiable`) VALUES ('AUDITEUR LIBRE', 'AUD. LIBRE', 'O', true);
+INSERT INTO `TypeConvention` (`libelleTypeConvention`, `codeCtrl`, `temEnServTypeConvention`, `modifiable`) VALUES ('FORMATION INITIALE', 'INITIALE', 'O', true);
+INSERT INTO `TypeConvention` (`libelleTypeConvention`, `codeCtrl`, `temEnServTypeConvention`, `modifiable`) VALUES ('FORMATION CONT. REPRISE D''ETU. FINANCEES', 'CONTINUE', 'O', true);
+INSERT INTO `TypeConvention` (`libelleTypeConvention`, `codeCtrl`, `temEnServTypeConvention`, `modifiable`) VALUES ('REPRISE D''ETUDES NON FINANCEES', 'PERMANENTE', 'O', true);
+INSERT INTO `TypeConvention` (`libelleTypeConvention`, `codeCtrl`, `temEnServTypeConvention`, `modifiable`) VALUES ('FORMATION PAR APPRENTISSAGE DIPLOMANTE', 'APPRENTI', 'O', true);
+INSERT INTO `TypeConvention` (`libelleTypeConvention`, `codeCtrl`, `temEnServTypeConvention`, `modifiable`) VALUES ('CONTRAT DE PROFESSIONALISATION', 'CONTR. PRO', 'O', true);
+INSERT INTO `TypeConvention` (`libelleTypeConvention`, `codeCtrl`, `temEnServTypeConvention`, `modifiable`) VALUES ('HEBERGE', 'HEBERGE', 'O', true);
+INSERT INTO `TypeConvention` (`libelleTypeConvention`, `codeCtrl`, `temEnServTypeConvention`, `modifiable`) VALUES ('FLE ETRANGER', 'REFUGIE', 'O', true);
+INSERT INTO `TypeConvention` (`libelleTypeConvention`, `codeCtrl`, `temEnServTypeConvention`, `modifiable`) VALUES ('STAGIAIRE DE LA FORMATION PROFESSIONELLE', 'SFP', 'O', true);
