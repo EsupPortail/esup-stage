@@ -15,7 +15,7 @@ public class TypeConvention implements Exportable {
     @Column(name = "idTypeConvention", nullable = false)
     private int id;
 
-    @Column(name = "libelleTypeConvention", nullable = false, length = 100)
+    @Column(name = "libelleTypeConvention", nullable = false, length = 60)
     private String libelle;
 
     @Column(nullable = false, length = 20)

@@ -38,6 +38,9 @@ export class AdminNomenclaturesEditionComponent implements OnInit {
       case 'Contrat du stage':
         this.setContratOffreForm();
         break;
+      case 'Type Convention':
+        this.setTypeConventionForm();
+        break;
       default:
         this.setDefaultForm();
         break;
@@ -99,6 +102,12 @@ export class AdminNomenclaturesEditionComponent implements OnInit {
     });
     this.typeOffreService.getPaginated(1, 0, 'libelle', 'asc', '').subscribe((response: any) => {
       this.typeOffres = response.data;
+    });
+  }
+
+  setTypeConventionForm() {
+    this.form = this.fb.group({
+      libelle: [null, [this.emptyStringValidator, Validators.maxLength(60)]],
     });
   }
 

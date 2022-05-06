@@ -1,0 +1,13 @@
+databaseChangeLog:
+- changeSet:
+    id: fix-type-convention-libelle
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: libelleTypeConvention
+        newDataType: VARCHAR(60)
+        tableName: TypeConvention
+    - modifyDataType:
+        columnName: typeConvention
+        newDataType: VARCHAR(60)
+        tableName: ConventionNomenclature

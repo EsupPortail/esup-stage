@@ -40,7 +40,7 @@ public class ConventionNomenclature {
     @Column(length = 50)
     private String theme;
 
-    @Column(length = 50)
+    @Column(length = 60)
     private String typeConvention;
 
     @Column(length = 100)

@@ -76,7 +76,7 @@ export class AdminNomenclaturesComponent implements OnInit {
   }
 
   nomenclatures: any = [
-    { key: 'id', label: 'Type Convention', codeCtrl: true, service: this.typeConventionService, tableIndex: undefined, creationFormType: 2, init: false },
+    { key: 'id', label: 'Type Convention', codeCtrl: true, service: this.typeConventionService, tableIndex: undefined, creationFormType: 3, init: false },
     { key: 'code', label: 'Langue Convention', service: this.langueConventionService, tableIndex: undefined, creationFormType: 3, init: false },
     { key: 'id', label: 'Thème', service: this.themeService, tableIndex: undefined, creationFormType: 1, init: false },
     { key: 'id', label: 'Temps Travail', codeCtrl: true, service: this.tempsTravailService, tableIndex: undefined, creationFormType: 2, init: false },
@@ -128,6 +128,9 @@ export class AdminNomenclaturesComponent implements OnInit {
   ngOnInit(): void {
     this.nomenclatures[0].init = true;
     this.nomenclatures[0].tableIndex = 0;
+    this.createButton.service = this.nomenclatures[0].service;
+    this.createButton.tableIndex = this.nomenclatures[0].tableIndex;
+    this.createButton.creationFormType = this.nomenclatures[0].creationFormType;
   }
 
   tabChanged(event: MatTabChangeEvent): void {
