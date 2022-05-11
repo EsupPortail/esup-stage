@@ -102,6 +102,7 @@ import { InterruptionsFormComponent } from './components/convention/stage/interr
 import { MatBadgeModule } from "@angular/material/badge";
 import { ConsigneComponent } from './components/consigne/consigne.component';
 import { RetourListeComponent } from './components/retour-liste/retour-liste.component';
+import { FicheEvaluationComponent } from './components/centre-gestion/fiche-evaluation/fiche-evaluation.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -160,6 +161,7 @@ registerLocaleData(localeFr, 'fr');
     InterruptionsFormComponent,
     ConsigneComponent,
     RetourListeComponent,
+    FicheEvaluationComponent,
   ],
   imports: [
     BrowserModule,

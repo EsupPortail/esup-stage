@@ -4,14 +4,14 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "FicheEvaluation")
-public class FicheEvaluation {
+public class FicheEvaluation implements Exportable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idFicheEvaluation", nullable = false)
     private int id;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "idCentreGestion", nullable = false)
     private CentreGestion centreGestion;
 
@@ -630,5 +630,10 @@ public class FicheEvaluation {
 
     public void setQuestionEnsII11(Boolean questionEnsII11) {
         this.questionEnsII11 = questionEnsII11;
+    }
+
+    @Override
+    public String getExportValue(String key) {
+        return null;
     }
 }
