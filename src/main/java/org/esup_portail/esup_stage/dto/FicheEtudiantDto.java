@@ -1,99 +1,68 @@
 package org.esup_portail.esup_stage.dto;
 
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-public class FicheEvaluationDto {
+public class FicheEtudiantDto {
 
     @NotNull
-    @NotEmpty
     private boolean questionEtuI1;
     @NotNull
-    @NotEmpty
     private boolean questionEtuI2;
     @NotNull
-    @NotEmpty
     private boolean questionEtuI3;
     @NotNull
-    @NotEmpty
     private boolean questionEtuI4;
     @NotNull
-    @NotEmpty
     private boolean questionEtuI5;
     @NotNull
-    @NotEmpty
     private boolean questionEtuI6;
     @NotNull
-    @NotEmpty
     private boolean questionEtuI7;
     @NotNull
-    @NotEmpty
     private boolean questionEtuI8;
     @NotNull
-    @NotEmpty
     private boolean questionEtuII1;
     @NotNull
-    @NotEmpty
     private boolean questionEtuII2;
     @NotNull
-    @NotEmpty
     private boolean questionEtuII3;
     @NotNull
-    @NotEmpty
     private boolean questionEtuII4;
     @NotNull
-    @NotEmpty
     private boolean questionEtuII5;
     @NotNull
-    @NotEmpty
     private boolean questionEtuII6;
     @NotNull
-    @NotEmpty
     private boolean questionEtuIII1;
     @NotNull
-    @NotEmpty
     private boolean questionEtuIII2;
     @NotNull
-    @NotEmpty
     private boolean questionEtuIII3;
     @NotNull
-    @NotEmpty
     private boolean questionEtuIII4;
     @NotNull
-    @NotEmpty
     private boolean questionEtuIII5;
     @NotNull
-    @NotEmpty
     private boolean questionEtuIII6;
     @NotNull
-    @NotEmpty
     private boolean questionEtuIII7;
     @NotNull
-    @NotEmpty
     private boolean questionEtuIII8;
     @NotNull
-    @NotEmpty
     private boolean questionEtuIII9;
     @NotNull
-    @NotEmpty
     private boolean questionEtuIII10;
     @NotNull
-    @NotEmpty
     private boolean questionEtuIII11;
     @NotNull
-    @NotEmpty
     private boolean questionEtuIII12;
     @NotNull
-    @NotEmpty
     private boolean questionEtuIII13;
     @NotNull
-    @NotEmpty
     private boolean questionEtuIII14;
     @NotNull
-    @NotEmpty
     private boolean questionEtuIII15;
     @NotNull
-    @NotEmpty
     private boolean questionEtuIII16;
 
     public boolean isQuestionEtuI1() {

@@ -19,15 +19,19 @@ export class FicheEvaluationService {
     return this.http.get(`${environment.apiUrl}/ficheEvaluation/getByCentreGestion/${id}`);
   }
 
-  create(data: any): Observable<any> {
-    return this.http.post(environment.apiUrl + "/ficheEvaluation", data);
-  }
-
-  update(id: number, data: any): Observable<any> {
-    return this.http.put(`${environment.apiUrl}/ficheEvaluation/${id}`, data);
-  }
-
   delete(id: number): Observable<any> {
     return this.http.delete(environment.apiUrl + "/ficheEvaluation" + id);
+  }
+
+  saveAndValidateFicheEtudiant(id: number, data: any): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/ficheEvaluation/saveAndValidateFicheEtudiant/${id}`, data);
+  }
+
+  saveAndValidateFicheEnseignant(id: number, data: any): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/ficheEvaluation/saveAndValidateFicheEnseignant/${id}`, data);
+  }
+
+  saveAndValidateFicheEntreprise(id: number, data: any): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/ficheEvaluation/saveAndValidateFicheEntreprise/${id}`, data);
   }
 }
