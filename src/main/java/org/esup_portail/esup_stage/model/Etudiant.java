@@ -44,9 +44,6 @@ public class Etudiant extends ObjetMetier {
     @Column(nullable = false, length = 20)
     private String numEtudiant;
 
-    @Column(length = 15)
-    private String numSS;
-
     @Column(length = 1)
     private String codeSexe;
 
@@ -115,14 +112,6 @@ public class Etudiant extends ObjetMetier {
 
     public void setNumEtudiant(String numEtudiant) {
         this.numEtudiant = numEtudiant;
-    }
-
-    public String getNumSS() {
-        return numSS;
-    }
-
-    public void setNumSS(String numSS) {
-        this.numSS = numSS;
     }
 
     public String getCodeSexe() {

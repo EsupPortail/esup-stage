@@ -74,3 +74,6 @@ databaseChangeLog:
   - include:
       file: 1.0.1-fix-taille-nomenclature.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 1.0.1-drop-columns.yaml
+      relativeToChangelogFile: true

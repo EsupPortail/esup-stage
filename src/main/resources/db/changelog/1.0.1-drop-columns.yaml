@@ -1,0 +1,25 @@
+databaseChangeLog:
+- changeSet:
+    id: drop-etudiant-numss
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - columnExists:
+              tableName: Etudiant
+              columnName: numSS
+    changes:
+    - dropColumn:
+        columnName: numSS
+        tableName: Etudiant
+- changeSet:
+    id: drop-convention-insee
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - columnExists:
+              tableName: Convention
+              columnName: insee
+    changes:
+    - dropColumn:
+        columnName: insee
+        tableName: Convention
