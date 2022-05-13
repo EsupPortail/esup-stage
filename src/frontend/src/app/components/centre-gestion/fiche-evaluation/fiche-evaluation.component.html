@@ -47,6 +47,35 @@
                 </div>
                 <mat-divider class="mt-2 mb-2"></mat-divider>
               </div>
+              <div *ngIf="questionsSupplementaires && questionsSupplementaires[0].length > 0">
+                <div class="mt-5 mb-3">
+                  <h5>Liste des questions ajoutées à cette section :</h5>
+                </div>
+                <div class="mt-3 mb-3">
+                  <div class="row">
+                    <div class="col-sm-2">Type Question</div>
+                    <div class="col-sm-8">Question</div>
+                    <div class="col-sm-2">Actions</div>
+                  </div>
+                  <mat-divider class="mt-2 mb-2"></mat-divider>
+                </div>
+                <div class="mt-2 mb-2" *ngFor="let questionSupplementaire of questionsSupplementaires[0]">
+                  <div class="row">
+                    <div class="col-sm-2">{{getTypeQuestionLibelle(questionSupplementaire.typeQuestion)}}</div>
+                    <div class="col-sm-8">{{questionSupplementaire.question}}</div>
+                    <div class="col-sm-2">
+                      <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(0,questionSupplementaire)" color="primary"><i class="fa fa-pen"></i></button>
+                      <span (confirm)="deleteQuestionSupplementaire(questionSupplementaire.id)" [confirmMessage]="'Etes-vous sûr de vouloir supprimer cette question ?'">
+                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
+                    </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-3">
+                <button mat-flat-button color="primary" type='button' (click)="openQuestionSupplementaireFormModal(0,null)">Ajouter une question à cette section</button>
+              </div>
+
             </mat-expansion-panel>
 
             <mat-expansion-panel [expanded]="false">
@@ -75,6 +104,35 @@
                 </div>
                 <mat-divider class="mt-2 mb-2"></mat-divider>
               </div>
+              <div *ngIf="questionsSupplementaires && questionsSupplementaires[1].length > 0">
+                <div class="mt-5 mb-3">
+                  <h5>Liste des questions ajoutées à cette section :</h5>
+                </div>
+                <div class="mt-3 mb-3">
+                  <div class="row">
+                    <div class="col-sm-2">Type Question</div>
+                    <div class="col-sm-8">Question</div>
+                    <div class="col-sm-2">Actions</div>
+                  </div>
+                  <mat-divider class="mt-2 mb-2"></mat-divider>
+                </div>
+                <div class="mt-2 mb-2" *ngFor="let questionSupplementaire of questionsSupplementaires[1]">
+                  <div class="row">
+                    <div class="col-sm-2">{{getTypeQuestionLibelle(questionSupplementaire.typeQuestion)}}</div>
+                    <div class="col-sm-8">{{questionSupplementaire.question}}</div>
+                    <div class="col-sm-2">
+                      <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(1,questionSupplementaire)" color="primary"><i class="fa fa-pen"></i></button>
+                      <span (confirm)="deleteQuestionSupplementaire(questionSupplementaire.id)" [confirmMessage]="'Etes-vous sûr de vouloir supprimer cette question ?'">
+                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
+                    </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-3">
+                <button mat-flat-button color="primary" type='button' (click)="openQuestionSupplementaireFormModal(1,null)">Ajouter une question à cette section</button>
+              </div>
+
             </mat-expansion-panel>
 
             <mat-expansion-panel [expanded]="false">
@@ -103,6 +161,35 @@
                 </div>
                 <mat-divider class="mt-2 mb-2"></mat-divider>
               </div>
+              <div *ngIf="questionsSupplementaires && questionsSupplementaires[2].length > 0">
+                <div class="mt-5 mb-3">
+                  <h5>Liste des questions ajoutées à cette section :</h5>
+                </div>
+                <div class="mt-3 mb-3">
+                  <div class="row">
+                    <div class="col-sm-2">Type Question</div>
+                    <div class="col-sm-8">Question</div>
+                    <div class="col-sm-2">Actions</div>
+                  </div>
+                  <mat-divider class="mt-2 mb-2"></mat-divider>
+                </div>
+                <div class="mt-2 mb-2" *ngFor="let questionSupplementaire of questionsSupplementaires[2]">
+                  <div class="row">
+                    <div class="col-sm-2">{{getTypeQuestionLibelle(questionSupplementaire.typeQuestion)}}</div>
+                    <div class="col-sm-8">{{questionSupplementaire.question}}</div>
+                    <div class="col-sm-2">
+                      <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(2,questionSupplementaire)" color="primary"><i class="fa fa-pen"></i></button>
+                      <span (confirm)="deleteQuestionSupplementaire(questionSupplementaire.id)" [confirmMessage]="'Etes-vous sûr de vouloir supprimer cette question ?'">
+                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
+                    </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-3">
+                <button mat-flat-button color="primary" type='button' (click)="openQuestionSupplementaireFormModal(2,null)">Ajouter une question à cette section</button>
+              </div>
+
             </mat-expansion-panel>
 
             <div class="mt-3">
@@ -148,6 +235,35 @@
               </div>
               <mat-divider class="mt-2 mb-2"></mat-divider>
             </div>
+            <div *ngIf="questionsSupplementaires && questionsSupplementaires[3].length > 0">
+              <div class="mt-5 mb-3">
+                <h5>Liste des questions ajoutées à cette section :</h5>
+              </div>
+              <div class="mt-3 mb-3">
+                <div class="row">
+                  <div class="col-sm-2">Type Question</div>
+                  <div class="col-sm-8">Question</div>
+                  <div class="col-sm-2">Actions</div>
+                </div>
+                <mat-divider class="mt-2 mb-2"></mat-divider>
+              </div>
+              <div class="mt-2 mb-2" *ngFor="let questionSupplementaire of questionsSupplementaires[3]">
+                <div class="row">
+                  <div class="col-sm-2">{{getTypeQuestionLibelle(questionSupplementaire.typeQuestion)}}</div>
+                  <div class="col-sm-8">{{questionSupplementaire.question}}</div>
+                  <div class="col-sm-2">
+                    <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(3,questionSupplementaire)" color="primary"><i class="fa fa-pen"></i></button>
+                    <span (confirm)="deleteQuestionSupplementaire(questionSupplementaire.id)" [confirmMessage]="'Etes-vous sûr de vouloir supprimer cette question ?'">
+                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-3">
+              <button mat-flat-button color="primary" type='button' (click)="openQuestionSupplementaireFormModal(3,null)">Ajouter une question à cette section</button>
+            </div>
+
           </mat-expansion-panel>
 
           <mat-expansion-panel [expanded]="false">
@@ -176,6 +292,35 @@
               </div>
               <mat-divider class="mt-2 mb-2"></mat-divider>
             </div>
+            <div *ngIf="questionsSupplementaires && questionsSupplementaires[4].length > 0">
+              <div class="mt-5 mb-3">
+                <h5>Liste des questions ajoutées à cette section :</h5>
+              </div>
+              <div class="mt-3 mb-3">
+                <div class="row">
+                  <div class="col-sm-2">Type Question</div>
+                  <div class="col-sm-8">Question</div>
+                  <div class="col-sm-2">Actions</div>
+                </div>
+                <mat-divider class="mt-2 mb-2"></mat-divider>
+              </div>
+              <div class="mt-2 mb-2" *ngFor="let questionSupplementaire of questionsSupplementaires[4]">
+                <div class="row">
+                  <div class="col-sm-2">{{getTypeQuestionLibelle(questionSupplementaire.typeQuestion)}}</div>
+                  <div class="col-sm-8">{{questionSupplementaire.question}}</div>
+                  <div class="col-sm-2">
+                    <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(4,questionSupplementaire)" color="primary"><i class="fa fa-pen"></i></button>
+                    <span (confirm)="deleteQuestionSupplementaire(questionSupplementaire.id)" [confirmMessage]="'Etes-vous sûr de vouloir supprimer cette question ?'">
+                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-3">
+              <button mat-flat-button color="primary" type='button' (click)="openQuestionSupplementaireFormModal(4,null)">Ajouter une question à cette section</button>
+            </div>
+
           </mat-expansion-panel>
 
           <div class="mt-3">
@@ -220,6 +365,35 @@
               </div>
               <mat-divider class="mt-2 mb-2"></mat-divider>
             </div>
+            <div *ngIf="questionsSupplementaires && questionsSupplementaires[5].length > 0">
+              <div class="mt-5 mb-3">
+                <h5>Liste des questions ajoutées à cette section :</h5>
+              </div>
+              <div class="mt-3 mb-3">
+                <div class="row">
+                  <div class="col-sm-2">Type Question</div>
+                  <div class="col-sm-8">Question</div>
+                  <div class="col-sm-2">Actions</div>
+                </div>
+                <mat-divider class="mt-2 mb-2"></mat-divider>
+              </div>
+              <div class="mt-2 mb-2" *ngFor="let questionSupplementaire of questionsSupplementaires[5]">
+                <div class="row">
+                  <div class="col-sm-2">{{getTypeQuestionLibelle(questionSupplementaire.typeQuestion)}}</div>
+                  <div class="col-sm-8">{{questionSupplementaire.question}}</div>
+                  <div class="col-sm-2">
+                    <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(5,questionSupplementaire)" color="primary"><i class="fa fa-pen"></i></button>
+                    <span (confirm)="deleteQuestionSupplementaire(questionSupplementaire.id)" [confirmMessage]="'Etes-vous sûr de vouloir supprimer cette question ?'">
+                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-3">
+              <button mat-flat-button color="primary" type='button' (click)="openQuestionSupplementaireFormModal(5,null)">Ajouter une question à cette section</button>
+            </div>
+
           </mat-expansion-panel>
 
           <mat-expansion-panel [expanded]="false">
@@ -248,6 +422,36 @@
               </div>
               <mat-divider class="mt-2 mb-2"></mat-divider>
             </div>
+
+            <div *ngIf="questionsSupplementaires && questionsSupplementaires[6].length > 0">
+              <div class="mt-5 mb-3">
+                <h5>Liste des questions ajoutées à cette section :</h5>
+              </div>
+              <div class="mt-3 mb-3">
+                <div class="row">
+                  <div class="col-sm-2">Type Question</div>
+                  <div class="col-sm-8">Question</div>
+                  <div class="col-sm-2">Actions</div>
+                </div>
+                <mat-divider class="mt-2 mb-2"></mat-divider>
+              </div>
+              <div class="mt-2 mb-2" *ngFor="let questionSupplementaire of questionsSupplementaires[6]">
+                <div class="row">
+                  <div class="col-sm-2">{{getTypeQuestionLibelle(questionSupplementaire.typeQuestion)}}</div>
+                  <div class="col-sm-8">{{questionSupplementaire.question}}</div>
+                  <div class="col-sm-2">
+                    <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(6,questionSupplementaire)" color="primary"><i class="fa fa-pen"></i></button>
+                    <span (confirm)="deleteQuestionSupplementaire(questionSupplementaire.id)" [confirmMessage]="'Etes-vous sûr de vouloir supprimer cette question ?'">
+                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-3">
+              <button mat-flat-button color="primary" type='button' (click)="openQuestionSupplementaireFormModal(6,null)">Ajouter une question à cette section</button>
+            </div>
+
           </mat-expansion-panel>
 
           <mat-expansion-panel [expanded]="false">
@@ -276,6 +480,35 @@
               </div>
               <mat-divider class="mt-2 mb-2"></mat-divider>
             </div>
+            <div *ngIf="questionsSupplementaires && questionsSupplementaires[7].length > 0">
+              <div class="mt-5 mb-3">
+                <h5>Liste des questions ajoutées à cette section :</h5>
+              </div>
+              <div class="mt-3 mb-3">
+                <div class="row">
+                  <div class="col-sm-2">Type Question</div>
+                  <div class="col-sm-8">Question</div>
+                  <div class="col-sm-2">Actions</div>
+                </div>
+                <mat-divider class="mt-2 mb-2"></mat-divider>
+              </div>
+              <div class="mt-2 mb-2" *ngFor="let questionSupplementaire of questionsSupplementaires[7]">
+                <div class="row">
+                  <div class="col-sm-2">{{getTypeQuestionLibelle(questionSupplementaire.typeQuestion)}}</div>
+                  <div class="col-sm-8">{{questionSupplementaire.question}}</div>
+                  <div class="col-sm-2">
+                    <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(7,questionSupplementaire)" color="primary"><i class="fa fa-pen"></i></button>
+                    <span (confirm)="deleteQuestionSupplementaire(questionSupplementaire.id)" [confirmMessage]="'Etes-vous sûr de vouloir supprimer cette question ?'">
+                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-3">
+              <button mat-flat-button color="primary" type='button' (click)="openQuestionSupplementaireFormModal(7,null)">Ajouter une question à cette section</button>
+            </div>
+
           </mat-expansion-panel>
 
           <div class="mt-3">

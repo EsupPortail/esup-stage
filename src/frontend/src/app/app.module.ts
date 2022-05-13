@@ -103,6 +103,7 @@ import { MatBadgeModule } from "@angular/material/badge";
 import { ConsigneComponent } from './components/consigne/consigne.component';
 import { RetourListeComponent } from './components/retour-liste/retour-liste.component';
 import { FicheEvaluationComponent } from './components/centre-gestion/fiche-evaluation/fiche-evaluation.component';
+import { QuestionSupplementaireFormComponent } from './components/centre-gestion/fiche-evaluation/question-supplementaire-form/question-supplementaire-form.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -162,6 +163,7 @@ registerLocaleData(localeFr, 'fr');
     ConsigneComponent,
     RetourListeComponent,
     FicheEvaluationComponent,
+    QuestionSupplementaireFormComponent,
   ],
   imports: [
     BrowserModule,

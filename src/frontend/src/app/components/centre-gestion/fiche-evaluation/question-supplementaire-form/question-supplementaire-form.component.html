@@ -1,0 +1,24 @@
+<form [formGroup]="form" novalidate (submit)="save()">
+  <div class="row">
+    <mat-form-field class="col-sm-12 col-md-12 mb-2" appearance="fill">
+      <mat-label>Lbellé de la question</mat-label>
+      <textarea matInput formControlName="question" required></textarea>
+      <mat-error><app-form-error [field]="form.get('question')"></app-form-error></mat-error>
+    </mat-form-field>
+    <mat-form-field class="col-sm-12 col-md-12 mb-2" appearance="fill">
+      <mat-label>Type de la réponse demandée</mat-label>
+      <mat-select formControlName="typeQuestion">
+        <mat-option *ngFor="let typeQuestion of typeQuestions" [value]="typeQuestion.code">{{typeQuestion.libelle}}</mat-option>
+      </mat-select>
+      <mat-error><app-form-error [field]="form.get('civilite')"></app-form-error></mat-error>
+    </mat-form-field>
+  </div>
+  <div class="row mt-3">
+    <div class="col-sm-6">
+      <button type="button" mat-button mat-stroked-button color="warn" (click)="close()">{{'BOUTON_ANNULER'|contenu}}</button>
+    </div>
+    <div class="col-sm-6 text-right">
+      <button mat-button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
+    </div>
+  </div>
+</form>

@@ -20,7 +20,7 @@ export class FicheEvaluationService {
   }
 
   delete(id: number): Observable<any> {
-    return this.http.delete(environment.apiUrl + "/ficheEvaluation" + id);
+    return this.http.delete(environment.apiUrl + "/ficheEvaluation/" + id);
   }
 
   saveAndValidateFicheEtudiant(id: number, data: any): Observable<any> {
@@ -33,5 +33,21 @@ export class FicheEvaluationService {
 
   saveAndValidateFicheEntreprise(id: number, data: any): Observable<any> {
     return this.http.put(`${environment.apiUrl}/ficheEvaluation/saveAndValidateFicheEntreprise/${id}`, data);
+  }
+
+  getQuestionsSupplementaires(id: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/ficheEvaluation/getQuestionsSupplementaires/${id}`);
+  }
+
+  addQuestionSupplementaire(id: number, data: any): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/ficheEvaluation/addQuestionSupplementaire/${id}`, data);
+  }
+
+  editQuestionSupplementaire(id: number, data: any): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/ficheEvaluation/editQuestionSupplementaire/${id}`, data);
+  }
+
+  deleteQuestionSupplementaire(id: number): Observable<any> {
+    return this.http.delete(environment.apiUrl + "/ficheEvaluation/deleteQuestionSupplementaire/" + id);
   }
 }

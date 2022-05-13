@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { FicheEvaluationService } from "../../../services/fiche-evaluation.service";
 import { MessageService } from "../../../services/message.service";
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { QuestionSupplementaireFormComponent } from './question-supplementaire-form/question-supplementaire-form.component';
 
 @Component({
   selector: 'app-fiche-evaluation',
@@ -12,6 +13,14 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 export class FicheEvaluationComponent implements OnInit {
 
   ficheEvaluation: any;
+  questionsSupplementaires: any;
+
+  typeQuestions: any = [
+    {code: "txt", libelle: "Champ de texte libre"},
+    {code: "not", libelle: "Notation"},
+    {code: "yn", libelle: "Oui/Non"},
+  ]
+
   ficheEtudiantForm: FormGroup;
   ficheEnseignantForm: FormGroup;
   ficheEntrepriseForm: FormGroup;
@@ -655,8 +664,8 @@ export class FicheEvaluationComponent implements OnInit {
 
   constructor(private fb: FormBuilder,
               private ficheEvaluationService: FicheEvaluationService,
-              public matDialog: MatDialog,
               private messageService: MessageService,
+              public matDialog: MatDialog,
   ) {
     this.ficheEtudiantForm = this.fb.group({
       questionEtuI1: [null],
@@ -733,6 +742,9 @@ export class FicheEvaluationComponent implements OnInit {
 
     this.ficheEvaluationService.getByCentreGestion(this.idCentreGestion).subscribe((response: any) => {
       this.ficheEvaluation = response;
+
+      this.getQuestionSupplementaire();
+
       this.ficheEtudiantForm.setValue({
         questionEtuI1: this.ficheEvaluation.questionEtuI1,
         questionEtuI2: this.ficheEvaluation.questionEtuI2,
@@ -810,7 +822,6 @@ export class FicheEvaluationComponent implements OnInit {
   saveAndValidateFicheEtudiant(): void {
     this.ficheEvaluationService.saveAndValidateFicheEtudiant(this.ficheEvaluation.id,this.ficheEtudiantForm.value).subscribe((response: any) => {
       this.messageService.setSuccess("Fiche Etudiant enregistrée avec succès");
-      console.log('response : ' + JSON.stringify(response, null, 2));
       this.ficheEvaluation = response;
     });
   }
@@ -818,7 +829,6 @@ export class FicheEvaluationComponent implements OnInit {
   saveAndValidateFicheEnseignant(): void {
     this.ficheEvaluationService.saveAndValidateFicheEnseignant(this.ficheEvaluation.id,this.ficheEnseignantForm.value).subscribe((response: any) => {
       this.messageService.setSuccess("Fiche Enseignant enregistrée avec succès");
-      console.log('response : ' + JSON.stringify(response, null, 2));
       this.ficheEvaluation = response;
     });
   }
@@ -826,8 +836,64 @@ export class FicheEvaluationComponent implements OnInit {
   saveAndValidateFicheEntreprise(): void {
     this.ficheEvaluationService.saveAndValidateFicheEntreprise(this.ficheEvaluation.id,this.ficheEntrepriseForm.value).subscribe((response: any) => {
       this.messageService.setSuccess("Fiche Entreprise enregistrée avec succès");
-      console.log('response : ' + JSON.stringify(response, null, 2));
       this.ficheEvaluation = response;
+    });
+  }
+
+  getTypeQuestionLibelle(code: string) : string {
+    return this.typeQuestions.find((tq: any) => tq.code == code).libelle;
+  }
+
+  getQuestionSupplementaire(): void {
+    this.ficheEvaluationService.getQuestionsSupplementaires(this.ficheEvaluation.id).subscribe((response: any) => {
+      this.questionsSupplementaires = [];
+      this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 0));
+      this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 1));
+      this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 2));
+      this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 3));
+      this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 4));
+      this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 5));
+      this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 6));
+      this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 7));
+    });
+  }
+
+  openQuestionSupplementaireFormModal(idPlacement: number, question: any) {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.width = '600px';
+    let isModif = question?true:false
+    dialogConfig.data = {question: question, isModif: isModif};
+    const modalDialog = this.matDialog.open(QuestionSupplementaireFormComponent, dialogConfig);
+    modalDialog.afterClosed().subscribe(data => {
+      if (data) {
+        data.idPlacement = idPlacement;
+        if (isModif) {
+          this.editQuestionSupplementaire(question.id,data);
+        }else{
+          this.addQuestionSupplementaire(data);
+        }
+      }
+    });
+  }
+
+  addQuestionSupplementaire(data: any): void {
+    this.ficheEvaluationService.addQuestionSupplementaire(this.ficheEvaluation.id,data).subscribe((response: any) => {
+      this.messageService.setSuccess("QuestionSupplementaire ajoutée avec succès");
+      this.getQuestionSupplementaire();
+    });
+  }
+
+  editQuestionSupplementaire(id: number, data: any): void {
+    this.ficheEvaluationService.editQuestionSupplementaire(id,data).subscribe((response: any) => {
+      this.messageService.setSuccess("QuestionSupplementaire éditée avec succès");
+      this.getQuestionSupplementaire();
+    });
+  }
+
+  deleteQuestionSupplementaire(id: number): void {
+    this.ficheEvaluationService.deleteQuestionSupplementaire(id).subscribe((response: any) => {
+      this.messageService.setSuccess("QuestionSupplementaire supprimée avec succès");
+      this.getQuestionSupplementaire();
     });
   }
 }

@@ -1,9 +1,6 @@
 package org.esup_portail.esup_stage.controller;
 
-import org.esup_portail.esup_stage.dto.FicheEnseignantDto;
-import org.esup_portail.esup_stage.dto.FicheEntrepriseDto;
-import org.esup_portail.esup_stage.dto.PaginatedResponse;
-import org.esup_portail.esup_stage.dto.FicheEtudiantDto;
+import org.esup_portail.esup_stage.dto.*;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
@@ -11,6 +8,7 @@ import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.FicheEvaluationJpaRepository;
 import org.esup_portail.esup_stage.repository.FicheEvaluationRepository;
+import org.esup_portail.esup_stage.repository.QuestionSupplementaireJpaRepository;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.util.List;
 
 @ApiController
 @RequestMapping("/ficheEvaluation")
@@ -28,6 +27,9 @@ public class FicheEvaluationController {
 
     @Autowired
     FicheEvaluationJpaRepository ficheEvaluationJpaRepository;
+
+    @Autowired
+    QuestionSupplementaireJpaRepository questionSupplementaireJpaRepository;
 
     @Autowired
     CentreGestionJpaRepository centreGestionJpaRepository;
@@ -101,6 +103,49 @@ public class FicheEvaluationController {
         ficheEvaluation.setValidationEntreprise(true);
         return ficheEvaluationJpaRepository.saveAndFlush(ficheEvaluation);
     }
+
+    @GetMapping("/getQuestionsSupplementaires/{id}")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
+    public List<QuestionSupplementaire> getQuestionsSupplementaires(@PathVariable("id") int id) {
+        return questionSupplementaireJpaRepository.findByFicheEvaluation(id);
+    }
+
+    @PutMapping("/addQuestionSupplementaire/{id}")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.MODIFICATION})
+    public QuestionSupplementaire addQuestionSupplementaire(@PathVariable("id") int id, @Valid @RequestBody QuestionSupplementaireDto questionSupplementaireDto) {
+        FicheEvaluation ficheEvaluation = ficheEvaluationJpaRepository.findById(id);
+        if (ficheEvaluation == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "FicheEvaluation non trouvée");
+        }
+        QuestionSupplementaire questionSupplementaire = new QuestionSupplementaire();
+        questionSupplementaire.setFicheEvaluation(ficheEvaluation);
+        setQuestionSupplementaireData(questionSupplementaire, questionSupplementaireDto);
+        return questionSupplementaireJpaRepository.saveAndFlush(questionSupplementaire);
+    }
+
+    @PutMapping("/editQuestionSupplementaire/{id}")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.MODIFICATION})
+    public QuestionSupplementaire editQuestionSupplementaire(@PathVariable("id") int id, @Valid @RequestBody QuestionSupplementaireDto questionSupplementaireDto) {
+        QuestionSupplementaire questionSupplementaire = questionSupplementaireJpaRepository.findById(id);
+        if (questionSupplementaire == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "QuestionSupplementaire non trouvée");
+        }
+        setQuestionSupplementaireData(questionSupplementaire, questionSupplementaireDto);
+        return questionSupplementaireJpaRepository.saveAndFlush(questionSupplementaire);
+    }
+
+    @DeleteMapping("/deleteQuestionSupplementaire/{id}")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.MODIFICATION})
+    public boolean deleteQuestionSupplementaire(@PathVariable("id") int id) {
+        QuestionSupplementaire questionSupplementaire = questionSupplementaireJpaRepository.findById(id);
+        if (questionSupplementaire == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "QuestionSupplementaire non trouvée");
+        }
+        questionSupplementaireJpaRepository.delete(questionSupplementaire);
+        questionSupplementaireJpaRepository.flush();
+        return true;
+    }
+
     @DeleteMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.SUPPRESSION})
     public boolean delete(@PathVariable("id") int id) {
@@ -186,6 +231,12 @@ public class FicheEvaluationController {
         ficheEvaluation.setQuestionEnt17(ficheEntreprisetDto.isQuestionEnt17());
         ficheEvaluation.setQuestionEnt18(ficheEntreprisetDto.isQuestionEnt18());
         ficheEvaluation.setQuestionEnt19(ficheEntreprisetDto.isQuestionEnt19());
+    }
+
+    private void setQuestionSupplementaireData(QuestionSupplementaire questionSupplementaire, QuestionSupplementaireDto questionSupplementairedto) {
+        questionSupplementaire.setQuestion(questionSupplementairedto.getQuestion());
+        questionSupplementaire.setTypeQuestion(questionSupplementairedto.getTypeQuestion());
+        questionSupplementaire.setIdPlacement(questionSupplementairedto.getIdPlacement());
     }
 
 }
