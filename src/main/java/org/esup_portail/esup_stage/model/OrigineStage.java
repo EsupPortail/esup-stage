@@ -11,7 +11,7 @@ public class OrigineStage implements Exportable {
     @Column(name = "idOrigineStage", nullable = false)
     private int id;
 
-    @Column(name = "libelleOrigineStage", nullable = false, length = 100)
+    @Column(name = "libelleOrigineStage", nullable = false)
     private String libelle;
 
     @Column(name = "temEnServOrigineStage", nullable = false, length = 1)

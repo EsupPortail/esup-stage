@@ -14,7 +14,7 @@ public class LangueConvention implements Exportable {
     @Column(name = "codeLangueConvention", nullable = false)
     private String code;
 
-    @Column(name = "libelleLangueConvention", nullable = false, length = 100)
+    @Column(name = "libelleLangueConvention", nullable = false)
     private String libelle;
 
     @Column(name = "temEnServLangue", length = 1)

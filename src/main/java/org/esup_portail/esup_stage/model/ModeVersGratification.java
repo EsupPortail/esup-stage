@@ -11,7 +11,7 @@ public class ModeVersGratification implements Exportable {
     @Column(name = "idModeVersGratification", nullable = false)
     private int id;
 
-    @Column(name = "libelleModeVersGratification", nullable = false, length = 100)
+    @Column(name = "libelleModeVersGratification", nullable = false)
     private String libelle;
 
     @Column(name = "temEnServModeVersGrat", nullable = false, length = 1)

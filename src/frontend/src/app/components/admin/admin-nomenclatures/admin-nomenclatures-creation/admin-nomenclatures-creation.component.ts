@@ -11,7 +11,7 @@ import { TypeOffreService } from "../../../../services/type-offre.service";
 })
 export class AdminNomenclaturesCreationComponent implements OnInit {
 
-  form: FormGroup;
+  form!: FormGroup;
   service: any;
   labelTable: string;
   typeStructures: any;
@@ -28,11 +28,11 @@ export class AdminNomenclaturesCreationComponent implements OnInit {
     this.labelTable = data.labelTable;
     if (data.creationFormType == 1) {
       this.form = this.fb.group({
-        libelle: [null, [this.emptyStringValidator, Validators.maxLength(150)]],
+        libelle: [null, [this.emptyStringValidator, Validators.maxLength(255)]],
       });
     } else if (data.creationFormType == 2) {
       this.form = this.fb.group({
-        libelle: [null, [this.emptyStringValidator, Validators.maxLength(150)]],
+        libelle: [null, [this.emptyStringValidator, Validators.maxLength(255)]],
         codeCtrl: [null, [this.emptyStringValidator, Validators.maxLength(20)]],
       });
     } else {
@@ -49,9 +49,6 @@ export class AdminNomenclaturesCreationComponent implements OnInit {
         case 'Contrat du stage':
           this.setContratOffreForm();
           break;
-        case 'Type Convention':
-          this.setTypeConventionForm();
-          break;
       }
     }
   }
@@ -66,20 +63,20 @@ export class AdminNomenclaturesCreationComponent implements OnInit {
   setLangueConventionForm() {
     this.form = this.fb.group({
       code: [null, [this.emptyStringValidator, Validators.maxLength(2)]],
-      libelle: [null, [this.emptyStringValidator, Validators.maxLength(150)]],
+      libelle: [null, [this.emptyStringValidator, Validators.maxLength(255)]],
     });
   }
 
   setTypeStructureForm() {
     this.form = this.fb.group({
-      libelle: [null, [this.emptyStringValidator, Validators.maxLength(100)]],
+      libelle: [null, [this.emptyStringValidator, Validators.maxLength(255)]],
       siretObligatoire: [false, [Validators.required]],
     });
   }
 
   setStatutJuridiqueForm() {
     this.form = this.fb.group({
-      libelle: [null, [this.emptyStringValidator, Validators.maxLength(100)]],
+      libelle: [null, [this.emptyStringValidator, Validators.maxLength(255)]],
       typeStructure: [null, [Validators.required]],
     });
     this.typeStructureService.getPaginated(1, 0, 'libelle', 'asc', '').subscribe((response: any) => {
@@ -89,19 +86,12 @@ export class AdminNomenclaturesCreationComponent implements OnInit {
 
   setContratOffreForm() {
     this.form = this.fb.group({
-      libelle: [null, [this.emptyStringValidator, Validators.maxLength(100)]],
+      libelle: [null, [this.emptyStringValidator, Validators.maxLength(255)]],
       codeCtrl: [null, [this.emptyStringValidator, Validators.maxLength(20)]],
       typeOffre: [null, [Validators.required]],
     });
     this.typeOffreService.getPaginated(1, 0, 'libelle', 'asc', '').subscribe((response: any) => {
       this.typeOffres = response.data;
-    });
-  }
-
-  setTypeConventionForm() {
-    this.form = this.fb.group({
-      libelle: [null, [this.emptyStringValidator, Validators.maxLength(60)]],
-      codeCtrl: [null, [this.emptyStringValidator, Validators.maxLength(20)]],
     });
   }
 

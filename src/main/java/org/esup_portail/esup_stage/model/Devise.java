@@ -11,7 +11,7 @@ public class Devise implements Exportable {
     @Column(name = "idDevise", nullable = false)
     private int id;
 
-    @Column(name = "libelleDevise", nullable = false, length = 50)
+    @Column(name = "libelleDevise", nullable = false)
     private String libelle;
 
     @Column(name = "temEnServDevise", nullable = false, length = 1)

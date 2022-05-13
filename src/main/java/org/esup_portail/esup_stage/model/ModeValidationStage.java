@@ -11,7 +11,7 @@ public class ModeValidationStage implements Exportable {
     @Column(name = "idModeValidationStage", nullable = false)
     private int id;
 
-    @Column(name = "libelleModeValidationStage", nullable = false, length = 150)
+    @Column(name = "libelleModeValidationStage", nullable = false)
     private String libelle;
 
     @Column(name = "temEnServModeValid", nullable = false, length = 1)

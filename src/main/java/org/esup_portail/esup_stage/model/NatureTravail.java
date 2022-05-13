@@ -11,7 +11,7 @@ public class NatureTravail implements Exportable {
     @Column(name = "idNatureTravail", nullable = false)
     private int id;
 
-    @Column(name = "libelleNatureTravail", nullable = false, length = 100)
+    @Column(name = "libelleNatureTravail", nullable = false)
     private String libelle;
 
     @Column(name = "temEnServNatTrav", nullable = false, length = 1)
