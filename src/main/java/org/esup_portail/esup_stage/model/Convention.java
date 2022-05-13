@@ -187,9 +187,6 @@ public class Convention extends ObjetMetier implements Exportable {
     @NotFound(action=NotFoundAction.IGNORE)
     private Assurance assurance;
 
-    @Column(length = 15)
-    private String insee;
-
     @Column(length = 5)
     private String codeCaisse;
 
@@ -698,14 +695,6 @@ public class Convention extends ObjetMetier implements Exportable {
 
     public void setAssurance(Assurance assurance) {
         this.assurance = assurance;
-    }
-
-    public String getInsee() {
-        return insee;
-    }
-
-    public void setInsee(String insee) {
-        this.insee = insee;
     }
 
     public String getCodeCaisse() {

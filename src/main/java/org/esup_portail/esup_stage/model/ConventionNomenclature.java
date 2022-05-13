@@ -16,40 +16,40 @@ public class ConventionNomenclature {
     @JoinColumn(name = "idConvention", unique = true)
     private Convention convention;
 
-    @Column(length = 100)
+    @Column
     private String langueConvention;
 
-    @Column(length = 50)
+    @Column
     private String devise;
 
-    @Column(length = 150)
+    @Column
     private String modeValidationStage;
 
-    @Column(length = 50)
+    @Column
     private String modeVersGratification;
 
-    @Column(length = 150)
+    @Column
     private String natureTravail;
 
-    @Column(length = 45)
+    @Column
     private String origineStage;
 
-    @Column(length = 200)
+    @Column
     private String tempsTravail;
 
-    @Column(length = 50)
+    @Column
     private String theme;
 
-    @Column(length = 60)
+    @Column
     private String typeConvention;
 
-    @Column(length = 100)
+    @Column
     private String uniteDureeExceptionnelle;
 
-    @Column(length = 100)
+    @Column
     private String uniteDureeGratification;
 
-    @Column(length = 50)
+    @Column
     private String uniteGratification;
 
     public int getId() {

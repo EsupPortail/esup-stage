@@ -130,7 +130,6 @@ public class ImpressionContext {
         private String dureeStage;
         private String etapeLibelle;
         private String fonctionsEtTaches;
-        private String insee;
         private String interruptionStage;
         private String libelleCPAM;
         private String libelleFinalite;
@@ -185,7 +184,6 @@ public class ImpressionContext {
             this.dureeStage = String.valueOf(convention.getDureeStage());
             this.etapeLibelle = convention.getEtape() != null ? convention.getEtape().getLibelle() : null;
             this.fonctionsEtTaches = convention.getFonctionsEtTaches();
-            this.insee = convention.getInsee();
             this.interruptionStage = (convention.getInterruptionStage() != null && convention.getInterruptionStage())  ? "Oui" : "Non";
             this.libelleCPAM = convention.getLibelleCPAM();
             this.libelleFinalite = convention.getLibelleFinalite();
@@ -388,14 +386,6 @@ public class ImpressionContext {
 
         public void setFonctionsEtTaches(String fonctionsEtTaches) {
             this.fonctionsEtTaches = fonctionsEtTaches;
-        }
-
-        public String getInsee() {
-            return insee != null ? insee : "";
-        }
-
-        public void setInsee(String insee) {
-            this.insee = insee;
         }
 
         public String getInterruptionStage() {
@@ -859,7 +849,6 @@ public class ImpressionContext {
         private String mail;
         private String nom;
         private String numEtudiant;
-        private String numSS;
         private String prenom;
 
         public EtudiantContext() {
@@ -874,7 +863,6 @@ public class ImpressionContext {
             this.mail = etudiant.getMail();
             this.nom = etudiant.getNom();
             this.numEtudiant = etudiant.getNumEtudiant();
-            this.numSS = etudiant.getNumSS();
             this.prenom = etudiant.getPrenom();
         }
 
@@ -924,14 +912,6 @@ public class ImpressionContext {
 
         public void setNumEtudiant(String numEtudiant) {
             this.numEtudiant = numEtudiant;
-        }
-
-        public String getNumSS() {
-            return numSS != null ? numSS : "";
-        }
-
-        public void setNumSS(String numSS) {
-            this.numSS = numSS;
         }
 
         public String getPrenom() {

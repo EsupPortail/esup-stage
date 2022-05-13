@@ -11,7 +11,7 @@ public class TempsTravail implements Exportable {
     @Column(name = "idTempsTravail", nullable = false)
     private int id;
 
-    @Column(name = "libelleTempsTravail", nullable = false, length = 100)
+    @Column(name = "libelleTempsTravail", nullable = false)
     private String libelle;
 
     @Column(nullable = false, length = 20)

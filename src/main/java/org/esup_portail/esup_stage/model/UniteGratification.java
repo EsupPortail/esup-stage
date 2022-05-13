@@ -11,7 +11,7 @@ public class UniteGratification implements Exportable {
     @Column(name = "idUniteGratification", nullable = false)
     private int id;
 
-    @Column(name = "libelleUniteGratification", nullable = false, length = 100)
+    @Column(name = "libelleUniteGratification", nullable = false)
     private String libelle;
 
     @Column(name = "temEnServGrat", nullable = false, length = 1)

@@ -11,7 +11,7 @@ import { TypeOffreService } from "../../../../services/type-offre.service";
 })
 export class AdminNomenclaturesEditionComponent implements OnInit {
 
-  form: FormGroup;
+  form!: FormGroup;
   service: any;
   data: any;
   labelTable: string;
@@ -37,9 +37,6 @@ export class AdminNomenclaturesEditionComponent implements OnInit {
         break;
       case 'Contrat du stage':
         this.setContratOffreForm();
-        break;
-      case 'Type Convention':
-        this.setTypeConventionForm();
         break;
       default:
         this.setDefaultForm();
@@ -74,20 +71,20 @@ export class AdminNomenclaturesEditionComponent implements OnInit {
 
   setDefaultForm() {
     this.form = this.fb.group({
-      libelle: [null, [this.emptyStringValidator, Validators.maxLength(100)]],
+      libelle: [null, [this.emptyStringValidator, Validators.maxLength(255)]],
     });
   }
 
   setTypeStructureForm() {
     this.form = this.fb.group({
-      libelle: [null, [this.emptyStringValidator, Validators.maxLength(100)]],
+      libelle: [null, [this.emptyStringValidator, Validators.maxLength(255)]],
       siretObligatoire: [false, [Validators.required]],
     });
   }
 
   setStatutJuridiqueForm() {
     this.form = this.fb.group({
-      libelle: [null, [this.emptyStringValidator, Validators.maxLength(100)]],
+      libelle: [null, [this.emptyStringValidator, Validators.maxLength(255)]],
       typeStructure: [null, [Validators.required]],
     });
     this.typeStructureService.getPaginated(1, 0, 'libelle', 'asc', '').subscribe((response: any) => {
@@ -97,17 +94,11 @@ export class AdminNomenclaturesEditionComponent implements OnInit {
 
   setContratOffreForm() {
     this.form = this.fb.group({
-      libelle: [null, [this.emptyStringValidator, Validators.maxLength(100)]],
+      libelle: [null, [this.emptyStringValidator, Validators.maxLength(255)]],
       typeOffre: [null, [Validators.required]],
     });
     this.typeOffreService.getPaginated(1, 0, 'libelle', 'asc', '').subscribe((response: any) => {
       this.typeOffres = response.data;
-    });
-  }
-
-  setTypeConventionForm() {
-    this.form = this.fb.group({
-      libelle: [null, [this.emptyStringValidator, Validators.maxLength(60)]],
     });
   }
 

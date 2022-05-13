@@ -11,7 +11,7 @@ public class Theme implements Exportable {
     @Column(name = "idTheme", nullable = false)
     private int id;
 
-    @Column(name = "libelleTheme", nullable = false, length = 100)
+    @Column(name = "libelleTheme", nullable = false)
     private String libelle;
 
     @Column(name = "temEnServTheme", length = 1)
