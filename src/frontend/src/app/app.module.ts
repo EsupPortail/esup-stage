@@ -104,6 +104,7 @@ import { ConsigneComponent } from './components/consigne/consigne.component';
 import { RetourListeComponent } from './components/retour-liste/retour-liste.component';
 import { FicheEvaluationComponent } from './components/centre-gestion/fiche-evaluation/fiche-evaluation.component';
 import { QuestionSupplementaireFormComponent } from './components/centre-gestion/fiche-evaluation/question-supplementaire-form/question-supplementaire-form.component';
+import { EvalStageComponent } from './components/eval-stage/eval-stage.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -164,6 +165,7 @@ registerLocaleData(localeFr, 'fr');
     RetourListeComponent,
     FicheEvaluationComponent,
     QuestionSupplementaireFormComponent,
+    EvalStageComponent,
   ],
   imports: [
     BrowserModule,

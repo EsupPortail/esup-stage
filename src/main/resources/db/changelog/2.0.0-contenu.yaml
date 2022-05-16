@@ -1,0 +1,34 @@
+databaseChangeLog:
+- changeSet:
+      id: contenu-insert-alterte-fiche
+      author: tjubera
+      changes:
+          - insert:
+                columns:
+                    - column:
+                          name: codeContenu
+                          value: TEXTE_ALERTE_FICHE
+                    - column:
+                          name: libelle
+                          valueBoolean: false
+                    - column:
+                          name: texte
+                          value: Les données sur la convention de stage et les questionnaires faisant l’objet d’un traitement informatique, la loi du 6 janvier 1978 relative à l’informatique, aux fichiers, et aux libertés, donne aux individus impliqués un droit d’accès et de rectification sur les données les concernant. Pour ce faire, la personne peut s’adresser au service gestionnaire des stages de l’université. Concernant le questionnaire d’évaluation de l’étudiant en particulier, il est rappelé que le document ne doit pas être pris en compte dans l’évaluation de l’étudiant ou dans l'obtention de son diplôme (article L. 612-14. de la Loi n° 2013-660 du 22 juillet 2013 relative à l'enseignement supérieur et à la recherche). Soyez également alerté que les nouvelles informations personnelles demandées via les fiches d'évaluation doivent être portées à la connaissance de votre correspondant informatique et liberté.
+                    - column:
+                          name: loginCreation
+                          value: liquibase
+                    - column:
+                          name: dateCreation
+                          value: now()
+                tableName: Contenu
+- changeSet:
+      id: contenu-insert-alterte-fiche-fix
+      author: tjubera
+      changes:
+          - update:
+              columns:
+                  - column:
+                      name: libelle
+                      valueBoolean: true
+              tableName: Contenu
+              where: codeContenu='TEXTE_ALERTE_FICHE'

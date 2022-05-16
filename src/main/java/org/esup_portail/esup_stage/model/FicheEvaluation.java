@@ -1,5 +1,7 @@
 package org.esup_portail.esup_stage.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 @Entity
@@ -11,6 +13,7 @@ public class FicheEvaluation implements Exportable {
     @Column(name = "idFicheEvaluation", nullable = false)
     private int id;
 
+    @JsonIgnore
     @OneToOne
     @JoinColumn(name = "idCentreGestion", nullable = false)
     private CentreGestion centreGestion;

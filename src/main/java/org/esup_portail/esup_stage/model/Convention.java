@@ -1,5 +1,6 @@
 package org.esup_portail.esup_stage.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.esup_portail.esup_stage.dto.view.Views;
 import org.esup_portail.esup_stage.enums.NbJoursHebdoEnum;
@@ -336,6 +337,10 @@ public class Convention extends ObjetMetier implements Exportable {
 
     @OneToOne(mappedBy = "convention", cascade = {CascadeType.MERGE, CascadeType.REMOVE, CascadeType.PERSIST})
     private ConventionNomenclature nomenclature;
+
+    @JsonView(Views.List.class)
+    @OneToOne(mappedBy = "convention", cascade = {CascadeType.MERGE, CascadeType.REMOVE, CascadeType.PERSIST},fetch = FetchType.LAZY)
+    private ReponseEvaluation reponseEvaluation;
 
     @JsonView(Views.List.class)
     @Transient
@@ -1104,6 +1109,14 @@ public class Convention extends ObjetMetier implements Exportable {
     public void setNomenclature(ConventionNomenclature nomenclature) {
         this.nomenclature = nomenclature;
         this.nomenclature.setConvention(this);
+    }
+
+    public ReponseEvaluation getReponseEvaluation() {
+        return reponseEvaluation;
+    }
+
+    public void setReponseEvaluation(ReponseEvaluation reponseEvaluation) {
+        this.reponseEvaluation = reponseEvaluation;
     }
 
     public String getLieuStage() {

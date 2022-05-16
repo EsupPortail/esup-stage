@@ -17,6 +17,7 @@ import { CentreGestionComponent } from "./components/centre-gestion/centre-gesti
 import { TemplateMailComponent } from "./components/admin/template-mail/template-mail.component";
 import { GestionEtabAccueilComponent } from "./components/gestion-etab-accueil/gestion-etab-accueil.component";
 import { TemplateConventionComponent } from "./components/admin/template-convention/template-convention.component";
+import { EvalStageComponent } from './components/eval-stage/eval-stage.component';
 
 const routes: Routes = [
   {path: '', component: HomeComponent, canActivate: [AuthGuard], data: {role: {}, title: 'Accueil'}},
@@ -55,6 +56,24 @@ const routes: Routes = [
     component: TemplateConventionComponent,
     canActivate: [AuthGuard],
     data: {role: {fonction: AppFonction.PARAM_GLOBAL}, droits: [Droit.LECTURE], title: 'Templates de convention'}
+  },
+  {
+    path: 'eval-stages/gestionnaires',
+    component: EvalStageComponent,
+    canActivate: [AuthGuard],
+    data: {role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.LECTURE]}, title: 'Rechercher une évaluation'}
+  },
+  {
+    path: 'eval-stages/etudiants',
+    component: EvalStageComponent,
+    canActivate: [AuthGuard],
+    data: {role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.LECTURE]}, title: 'Visualiser mes fiches d’évaluation'}
+  },
+  {
+    path: 'eval-stages/enseignants',
+    component: EvalStageComponent,
+    canActivate: [AuthGuard],
+    data: {role: {fonction: AppFonction.PARAM_GLOBAL}, droits: [Droit.LECTURE], title: 'Visualiser mes fiches d’évaluation'}
   },
   {
     path: 'etab-accueils',

@@ -106,6 +106,36 @@ export class AppComponent {
       }
     },
     {
+      libelle: 'Évaluation des stages',
+      path: 'eval-stages',
+      children: [
+        {
+          libelle: 'Rechercher une évaluation',
+          path: 'eval-stages/gestionnaires',
+          icon: 'fa-columns',
+          canView: () => {
+            return !this.authService.isEtudiant() && !this.authService.isEnseignant();
+          },
+        },
+        {
+          libelle: 'Visualiser mes fiches d’évaluation',
+          path: 'eval-stages/etudiants',
+          icon: 'fa-columns',
+          canView: () => {
+            return this.authService.isEtudiant()
+          },
+        },
+        {
+          libelle: 'Visualiser mes fiches d’évaluation',
+          path: 'eval-stages/enseignants',
+          icon: 'fa-columns',
+          canView: () => {
+            return this.authService.isEnseignant()
+          },
+        },
+      ]
+    },
+    {
       libelle: 'Tables des nomenclatures',
       path: 'nomenclatures',
       icon: 'fa-table',
