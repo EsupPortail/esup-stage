@@ -124,9 +124,6 @@ public class ConventionFormDto {
 
     private int idAssurance;
 
-    @Size(max = 15)
-    private String insee;
-
     @Size(max = 5)
     private String codeCaisse;
 
@@ -582,14 +579,6 @@ public class ConventionFormDto {
 
     public void setIdAssurance(int idAssurance) {
         this.idAssurance = idAssurance;
-    }
-
-    public String getInsee() {
-        return insee;
-    }
-
-    public void setInsee(String insee) {
-        this.insee = insee;
     }
 
     public String getCodeCaisse() {
