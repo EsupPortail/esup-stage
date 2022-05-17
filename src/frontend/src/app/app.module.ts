@@ -105,6 +105,7 @@ import { RetourListeComponent } from './components/retour-liste/retour-liste.com
 import { FicheEvaluationComponent } from './components/centre-gestion/fiche-evaluation/fiche-evaluation.component';
 import { QuestionSupplementaireFormComponent } from './components/centre-gestion/fiche-evaluation/question-supplementaire-form/question-supplementaire-form.component';
 import { EvalStageComponent } from './components/eval-stage/eval-stage.component';
+import { EvaluationStageComponent } from './components/convention/evaluation-stage/evaluation-stage.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -166,6 +167,7 @@ registerLocaleData(localeFr, 'fr');
     FicheEvaluationComponent,
     QuestionSupplementaireFormComponent,
     EvalStageComponent,
+    EvaluationStageComponent,
   ],
   imports: [
     BrowserModule,
