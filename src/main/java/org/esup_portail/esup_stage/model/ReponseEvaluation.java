@@ -89,18 +89,18 @@ public class ReponseEvaluation {
     private String reponseEtuI1bis;
     private Integer reponseEtuI2;
     private Integer reponseEtuI3;
-    private Integer reponseEtuI4a;
-    private Integer reponseEtuI4b;
-    private Integer reponseEtuI4c;
-    private Integer reponseEtuI4d;
+    private Boolean reponseEtuI4a;
+    private Boolean reponseEtuI4b;
+    private Boolean reponseEtuI4c;
+    private Boolean reponseEtuI4d;
     private Integer reponseEtuI5;
     private Integer reponseEtuI6;
-    private Integer reponseEtuI7;
+    private Boolean reponseEtuI7;
     private Integer reponseEtuI7bis1;
     private Integer reponseEtuI7bis1a;
     private Integer reponseEtuI7bis1b;
     private Integer reponseEtuI7bis2;
-    private Integer reponseEtuI8;
+    private Boolean reponseEtuI8;
 
     private Integer reponseEtuII1;
     @Lob
@@ -570,35 +570,35 @@ public class ReponseEvaluation {
         this.reponseEtuI3 = reponseEtuI3;
     }
 
-    public Integer getReponseEtuI4a() {
+    public Boolean getReponseEtuI4a() {
         return reponseEtuI4a;
     }
 
-    public void setReponseEtuI4a(Integer reponseEtuI4a) {
+    public void setReponseEtuI4a(Boolean reponseEtuI4a) {
         this.reponseEtuI4a = reponseEtuI4a;
     }
 
-    public Integer getReponseEtuI4b() {
+    public Boolean getReponseEtuI4b() {
         return reponseEtuI4b;
     }
 
-    public void setReponseEtuI4b(Integer reponseEtuI4b) {
+    public void setReponseEtuI4b(Boolean reponseEtuI4b) {
         this.reponseEtuI4b = reponseEtuI4b;
     }
 
-    public Integer getReponseEtuI4c() {
+    public Boolean getReponseEtuI4c() {
         return reponseEtuI4c;
     }
 
-    public void setReponseEtuI4c(Integer reponseEtuI4c) {
+    public void setReponseEtuI4c(Boolean reponseEtuI4c) {
         this.reponseEtuI4c = reponseEtuI4c;
     }
 
-    public Integer getReponseEtuI4d() {
+    public Boolean getReponseEtuI4d() {
         return reponseEtuI4d;
     }
 
-    public void setReponseEtuI4d(Integer reponseEtuI4d) {
+    public void setReponseEtuI4d(Boolean reponseEtuI4d) {
         this.reponseEtuI4d = reponseEtuI4d;
     }
 
@@ -618,11 +618,11 @@ public class ReponseEvaluation {
         this.reponseEtuI6 = reponseEtuI6;
     }
 
-    public Integer getReponseEtuI7() {
+    public Boolean getReponseEtuI7() {
         return reponseEtuI7;
     }
 
-    public void setReponseEtuI7(Integer reponseEtuI7) {
+    public void setReponseEtuI7(Boolean reponseEtuI7) {
         this.reponseEtuI7 = reponseEtuI7;
     }
 
@@ -658,11 +658,11 @@ public class ReponseEvaluation {
         this.reponseEtuI7bis2 = reponseEtuI7bis2;
     }
 
-    public Integer getReponseEtuI8() {
+    public Boolean getReponseEtuI8() {
         return reponseEtuI8;
     }
 
-    public void setReponseEtuI8(Integer reponseEtuI8) {
+    public void setReponseEtuI8(Boolean reponseEtuI8) {
         this.reponseEtuI8 = reponseEtuI8;
     }
 

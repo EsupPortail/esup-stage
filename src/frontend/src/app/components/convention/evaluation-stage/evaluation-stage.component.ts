@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { FormBuilder, FormGroup, FormControl, Validators } from "@angular/forms";
 import { ReponseEvaluationService } from "../../../services/reponse-evaluation.service";
+import { FicheEvaluationService } from "../../../services/fiche-evaluation.service";
 import { MessageService } from "../../../services/message.service";
 import { MatExpansionPanel } from "@angular/material/expansion";
 import { AppFonction } from "../../../constants/app-fonction";
@@ -14,11 +15,14 @@ import { AuthService } from "../../../services/auth.service";
 })
 export class EvaluationStageComponent implements OnInit {
 
+  ficheEvaluation: any;
   reponseEvaluation: any;
   questionsSupplementaires: any;
   @Input() convention: any;
 
   reponseEtudiantForm: FormGroup;
+
+  reponseSupplementaireEtudiantForm: FormGroup;
 
   edit: boolean = false;
   editEtu: boolean = false;
@@ -70,6 +74,7 @@ export class EvaluationStageComponent implements OnInit {
               "Mail",
               "Téléphone",
               "Courrier",
+              "Prospection directe",
              ],
       controlName: "EtuI4",
     },
@@ -99,18 +104,13 @@ export class EvaluationStageComponent implements OnInit {
       title: "Avez-vous été accompagné(e) dans vos démarches ?",
       type: "EtuI7",
       texte: [
-              "Oui / Non",
-              " ",
-              "Si oui, par qui ?",
-              "    Par votre réseau personnel",
-              "    Au sein de votre formation",
-              "    Par le service d'Information, d'Orientation et d'Insertion Professionnelle",
-              "    Par le Bureau d'Aide à l'Insertion Professionnelle",
-              "    Autre",
-              " ",
-              "Si non, pourquoi ?",
-              "    Par choix",
-              "    Par méconnaissance des dispositifs proposés par votre université",
+              "Par votre réseau personnel",
+              "Au sein de votre formation",
+              "Par le service d'Information, d'Orientation et d'Insertion Professionnelle",
+              "Par le Bureau d'Aide à l'Insertion Professionnelle",
+              "Autre",
+              "Par choix",
+              "Par méconnaissance des dispositifs proposés par votre université",
              ],
       controlName: "EtuI7",
     },
@@ -692,7 +692,8 @@ export class EvaluationStageComponent implements OnInit {
     },
   ]
 
-  constructor(public reponseEvaluationService: ReponseEvaluationService,
+  constructor(private reponseEvaluationService: ReponseEvaluationService,
+              private ficheEvaluationService: FicheEvaluationService,
               private fb: FormBuilder,
               private messageService: MessageService,
               private authService: AuthService,
@@ -754,95 +755,131 @@ export class EvaluationStageComponent implements OnInit {
       reponseEtuIII16: [null],
       reponseEtuIII16bis: [null],
     });
+
+    this.reponseSupplementaireEtudiantForm = this.fb.group({});
   }
 
   ngOnInit(): void {
+    this.ficheEvaluationService.getByCentreGestion(this.convention.centreGestion.id).subscribe((response: any) => {
 
-    this.reponseEvaluationService.getByConvention(this.convention.id).subscribe((response: any) => {
-      this.reponseEvaluation = response;
+      this.ficheEvaluation = response;
 
-      this.getQuestionSupplementaire();
+      if(this.ficheEvaluation){
+        this.reponseEvaluationService.getByConvention(this.convention.id).subscribe((response2: any) => {
+          this.reponseEvaluation = response2;
 
-      this.reponseEtudiantForm.setValue({
-        reponseEtuI1: this.reponseEvaluation.reponseEtuI1,
-        reponseEtuI1bis: this.reponseEvaluation.reponseEtuI1bis,
-        reponseEtuI2: this.reponseEvaluation.reponseEtuI2,
-        reponseEtuI3: this.reponseEvaluation.reponseEtuI3,
-        reponseEtuI4a: this.reponseEvaluation.reponseEtuI4a,
-        reponseEtuI4b: this.reponseEvaluation.reponseEtuI4b,
-        reponseEtuI4c: this.reponseEvaluation.reponseEtuI4c,
-        reponseEtuI4d: this.reponseEvaluation.reponseEtuI4d,
-        reponseEtuI5: this.reponseEvaluation.reponseEtuI5,
-        reponseEtuI6: this.reponseEvaluation.reponseEtuI6,
-        reponseEtuI7: this.reponseEvaluation.reponseEtuI7,
-        reponseEtuI7bis1: this.reponseEvaluation.reponseEtuI7bis1,
-        reponseEtuI7bis1a: this.reponseEvaluation.reponseEtuI7bis1a,
-        reponseEtuI7bis1b: this.reponseEvaluation.reponseEtuI7bis1b,
-        reponseEtuI7bis2: this.reponseEvaluation.reponseEtuI7bis2,
-        reponseEtuI8: this.reponseEvaluation.reponseEtuI8,
-        reponseEtuII1: this.reponseEvaluation.reponseEtuII1,
-        reponseEtuII1bis: this.reponseEvaluation.reponseEtuII1bis,
-        reponseEtuII2: this.reponseEvaluation.reponseEtuII2,
-        reponseEtuII2bis: this.reponseEvaluation.reponseEtuII2bis,
-        reponseEtuII3: this.reponseEvaluation.reponseEtuII3,
-        reponseEtuII3bis: this.reponseEvaluation.reponseEtuII3bis,
-        reponseEtuII4: this.reponseEvaluation.reponseEtuII4,
-        reponseEtuII5: this.reponseEvaluation.reponseEtuII5,
-        reponseEtuII5a: this.reponseEvaluation.reponseEtuII5a,
-        reponseEtuII5b: this.reponseEvaluation.reponseEtuII5b,
-        reponseEtuII6: this.reponseEvaluation.reponseEtuII6,
-        reponseEtuIII1: this.reponseEvaluation.reponseEtuIII1,
-        reponseEtuIII1bis: this.reponseEvaluation.reponseEtuIII1bis,
-        reponseEtuIII2: this.reponseEvaluation.reponseEtuIII2,
-        reponseEtuIII2bis: this.reponseEvaluation.reponseEtuIII2bis,
-        reponseEtuIII3: this.reponseEvaluation.reponseEtuIII3,
-        reponseEtuIII3bis: this.reponseEvaluation.reponseEtuIII3bis,
-        reponseEtuIII4: this.reponseEvaluation.reponseEtuIII4,
-        reponseEtuIII5a: this.reponseEvaluation.reponseEtuIII5a,
-        reponseEtuIII5b: this.reponseEvaluation.reponseEtuIII5b,
-        reponseEtuIII5c: this.reponseEvaluation.reponseEtuIII5c,
-        reponseEtuIII5bis: this.reponseEvaluation.reponseEtuIII5bis,
-        reponseEtuIII6: this.reponseEvaluation.reponseEtuIII6,
-        reponseEtuIII6bis: this.reponseEvaluation.reponseEtuIII6bis,
-        reponseEtuIII7: this.reponseEvaluation.reponseEtuIII7,
-        reponseEtuIII7bis: this.reponseEvaluation.reponseEtuIII7bis,
-        reponseEtuIII8: this.reponseEvaluation.reponseEtuIII8,
-        reponseEtuIII8bis: this.reponseEvaluation.reponseEtuIII8bis,
-        reponseEtuIII9: this.reponseEvaluation.reponseEtuIII9,
-        reponseEtuIII9bis: this.reponseEvaluation.reponseEtuIII9bis,
-        reponseEtuIII10: this.reponseEvaluation.reponseEtuIII10,
-        reponseEtuIII11: this.reponseEvaluation.reponseEtuIII11,
-        reponseEtuIII12: this.reponseEvaluation.reponseEtuIII12,
-        reponseEtuIII13: this.reponseEvaluation.reponseEtuIII13,
-        reponseEtuIII14: this.reponseEvaluation.reponseEtuIII14,
-        reponseEtuIII15: this.reponseEvaluation.reponseEtuIII15,
-        reponseEtuIII15bis: this.reponseEvaluation.reponseEtuIII15bis,
-        reponseEtuIII16: this.reponseEvaluation.reponseEtuIII16,
-        reponseEtuIII16bis: this.reponseEvaluation.reponseEtuIII16bis,
-      });
+          if(this.reponseEvaluation){
+            this.getQuestionSupplementaire();
 
+            this.reponseEtudiantForm.setValue({
+              reponseEtuI1: this.reponseEvaluation.reponseEtuI1,
+              reponseEtuI1bis: this.reponseEvaluation.reponseEtuI1bis,
+              reponseEtuI2: this.reponseEvaluation.reponseEtuI2,
+              reponseEtuI3: this.reponseEvaluation.reponseEtuI3,
+              reponseEtuI4a: this.reponseEvaluation.reponseEtuI4a,
+              reponseEtuI4b: this.reponseEvaluation.reponseEtuI4b,
+              reponseEtuI4c: this.reponseEvaluation.reponseEtuI4c,
+              reponseEtuI4d: this.reponseEvaluation.reponseEtuI4d,
+              reponseEtuI5: this.reponseEvaluation.reponseEtuI5,
+              reponseEtuI6: this.reponseEvaluation.reponseEtuI6,
+              reponseEtuI7: this.reponseEvaluation.reponseEtuI7,
+              reponseEtuI7bis1: this.reponseEvaluation.reponseEtuI7bis1,
+              reponseEtuI7bis1a: this.reponseEvaluation.reponseEtuI7bis1a,
+              reponseEtuI7bis1b: this.reponseEvaluation.reponseEtuI7bis1b,
+              reponseEtuI7bis2: this.reponseEvaluation.reponseEtuI7bis2,
+              reponseEtuI8: this.reponseEvaluation.reponseEtuI8,
+              reponseEtuII1: this.reponseEvaluation.reponseEtuII1,
+              reponseEtuII1bis: this.reponseEvaluation.reponseEtuII1bis,
+              reponseEtuII2: this.reponseEvaluation.reponseEtuII2,
+              reponseEtuII2bis: this.reponseEvaluation.reponseEtuII2bis,
+              reponseEtuII3: this.reponseEvaluation.reponseEtuII3,
+              reponseEtuII3bis: this.reponseEvaluation.reponseEtuII3bis,
+              reponseEtuII4: this.reponseEvaluation.reponseEtuII4,
+              reponseEtuII5: this.reponseEvaluation.reponseEtuII5,
+              reponseEtuII5a: this.reponseEvaluation.reponseEtuII5a,
+              reponseEtuII5b: this.reponseEvaluation.reponseEtuII5b,
+              reponseEtuII6: this.reponseEvaluation.reponseEtuII6,
+              reponseEtuIII1: this.reponseEvaluation.reponseEtuIII1,
+              reponseEtuIII1bis: this.reponseEvaluation.reponseEtuIII1bis,
+              reponseEtuIII2: this.reponseEvaluation.reponseEtuIII2,
+              reponseEtuIII2bis: this.reponseEvaluation.reponseEtuIII2bis,
+              reponseEtuIII3: this.reponseEvaluation.reponseEtuIII3,
+              reponseEtuIII3bis: this.reponseEvaluation.reponseEtuIII3bis,
+              reponseEtuIII4: this.reponseEvaluation.reponseEtuIII4,
+              reponseEtuIII5a: this.reponseEvaluation.reponseEtuIII5a,
+              reponseEtuIII5b: this.reponseEvaluation.reponseEtuIII5b,
+              reponseEtuIII5c: this.reponseEvaluation.reponseEtuIII5c,
+              reponseEtuIII5bis: this.reponseEvaluation.reponseEtuIII5bis,
+              reponseEtuIII6: this.reponseEvaluation.reponseEtuIII6,
+              reponseEtuIII6bis: this.reponseEvaluation.reponseEtuIII6bis,
+              reponseEtuIII7: this.reponseEvaluation.reponseEtuIII7,
+              reponseEtuIII7bis: this.reponseEvaluation.reponseEtuIII7bis,
+              reponseEtuIII8: this.reponseEvaluation.reponseEtuIII8,
+              reponseEtuIII8bis: this.reponseEvaluation.reponseEtuIII8bis,
+              reponseEtuIII9: this.reponseEvaluation.reponseEtuIII9,
+              reponseEtuIII9bis: this.reponseEvaluation.reponseEtuIII9bis,
+              reponseEtuIII10: this.reponseEvaluation.reponseEtuIII10,
+              reponseEtuIII11: this.reponseEvaluation.reponseEtuIII11,
+              reponseEtuIII12: this.reponseEvaluation.reponseEtuIII12,
+              reponseEtuIII13: this.reponseEvaluation.reponseEtuIII13,
+              reponseEtuIII14: this.reponseEvaluation.reponseEtuIII14,
+              reponseEtuIII15: this.reponseEvaluation.reponseEtuIII15,
+              reponseEtuIII15bis: this.reponseEvaluation.reponseEtuIII15bis,
+              reponseEtuIII16: this.reponseEvaluation.reponseEtuIII16,
+              reponseEtuIII16bis: this.reponseEvaluation.reponseEtuIII16bis,
+            });
+          }
+        });
+      }
     });
   }
 
   getQuestionSupplementaire(): void {
-    //this.ficheEvaluationService.getQuestionsSupplementaires(this.reponseEvaluation.ficheEvaluation.id).subscribe((response: any) => {
-    //  this.questionsSupplementaires = [];
-    //  this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 0));
-    //  this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 1));
-    //  this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 2));
-    //  this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 3));
-    //  this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 4));
-    //  this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 5));
-    //  this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 6));
-    //  this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 7));
-    //});
-  }
 
-  choose(row: any): void {
-    this.edit = false;
-    if (this.firstPanel) {
-      this.firstPanel.expanded = false;
-    }
+    this.ficheEvaluationService.getQuestionsSupplementaires(this.ficheEvaluation.id).subscribe((response: any) => {
+
+      let questionsSupplementaires = response;
+
+      for(let questionSupplementaire of questionsSupplementaires){
+
+        let form = this.fb.group({});
+
+        if(questionSupplementaire.idPlacement == 0 || questionSupplementaire.idPlacement == 1 || questionSupplementaire.idPlacement == 2){
+          form = this.reponseSupplementaireEtudiantForm;
+        }
+
+        const questionSupplementaireFormControlName = 'questionSupplementaire' + questionSupplementaire.id
+        form.addControl(questionSupplementaireFormControlName,new FormControl(null));
+        questionSupplementaire.formControlName = questionSupplementaireFormControlName
+
+        this.reponseEvaluationService.getReponseSupplementaire(this.convention.id, questionSupplementaire.id).subscribe((response2: any) => {
+
+          questionSupplementaire.reponse = false;
+          if (response2){
+            questionSupplementaire.reponse = true;
+            if(questionSupplementaire.typeQuestion == 'txt'){
+              form.get(questionSupplementaireFormControlName)!.setValue(response2.reponseTxt);
+            }
+            if(questionSupplementaire.typeQuestion == 'not'){
+              form.get(questionSupplementaireFormControlName)!.setValue(response2.reponseInt);
+            }
+            if(questionSupplementaire.typeQuestion == 'yn'){
+              form.get(questionSupplementaireFormControlName)!.setValue(response2.reponseBool);
+            }
+          }
+        });
+      }
+
+      this.questionsSupplementaires = [];
+      this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 0));
+      this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 1));
+      this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 2));
+      this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 3));
+      this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 4));
+      this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 5));
+      this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 6));
+      this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 7));
+    });
   }
 
   editFicheEtudiant(): void {
@@ -855,6 +892,7 @@ export class EvaluationStageComponent implements OnInit {
     this.editEtu = false;
     this.editEns = false;
     this.editEnt = false;
+    this.firstPanel!.expanded = true;
   }
 
   compare(option: any, value: any): boolean {
@@ -865,10 +903,48 @@ export class EvaluationStageComponent implements OnInit {
   }
 
   saveReponseEtudiant(): void {
-    if (this.reponseEtudiantForm.valid) {
+    if (this.reponseEtudiantForm.valid && this.reponseSupplementaireEtudiantForm.valid) {
 
       const data = {...this.reponseEtudiantForm.value};
 
+      for(let questionSupplementaire of this.questionsSupplementaires[0].concat(this.questionsSupplementaires[1]).concat(this.questionsSupplementaires[2])){
+
+        let reponseSupplementaireData = {'reponseTxt':null,'reponseInt':null,'reponseBool':null,};
+
+        if(questionSupplementaire.typeQuestion == 'txt'){
+          reponseSupplementaireData.reponseTxt = this.reponseSupplementaireEtudiantForm.get(questionSupplementaire.formControlName)!.value;
+        }
+        if(questionSupplementaire.typeQuestion == 'not'){
+          reponseSupplementaireData.reponseInt = this.reponseSupplementaireEtudiantForm.get(questionSupplementaire.formControlName)!.value;
+        }
+        if(questionSupplementaire.typeQuestion == 'yn'){
+          reponseSupplementaireData.reponseBool = this.reponseSupplementaireEtudiantForm.get(questionSupplementaire.formControlName)!.value;
+        }
+
+        console.log('questionSupplementaire : ' + JSON.stringify(questionSupplementaire, null, 2))
+        console.log('reponseSupplementaireData : ' + JSON.stringify(reponseSupplementaireData, null, 2))
+
+        if(questionSupplementaire.reponse){
+          this.reponseEvaluationService.updateReponseSupplementaire(this.convention.id, questionSupplementaire.id, reponseSupplementaireData).subscribe((response: any) => {
+            console.log('response : ' + JSON.stringify(response, null, 2))
+          });
+        }else{
+          this.reponseEvaluationService.createReponseSupplementaire(this.convention.id, questionSupplementaire.id, reponseSupplementaireData).subscribe((response: any) => {
+          });
+        }
+      }
+
+      if(this.reponseEvaluation){
+        this.reponseEvaluationService.updateReponseEtudiant(this.convention.id, data).subscribe((response: any) => {
+          this.reponseEvaluation = response;
+          this.messageService.setSuccess('Evaluation editée avec succès');
+        });
+      }else{
+        this.reponseEvaluationService.createReponseEtudiant(this.convention.id, data).subscribe((response: any) => {
+          this.reponseEvaluation = response;
+          this.messageService.setSuccess('Evaluation editée avec succès');
+        });
+      }
     }
   }
 

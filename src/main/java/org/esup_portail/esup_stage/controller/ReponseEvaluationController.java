@@ -1,12 +1,14 @@
 package org.esup_portail.esup_stage.controller;
 
 import org.esup_portail.esup_stage.dto.ReponseEtudiantFormDto;
+import org.esup_portail.esup_stage.dto.ReponseSupplementaireFormDto;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
-import org.esup_portail.esup_stage.model.Convention;
-import org.esup_portail.esup_stage.model.ReponseEvaluation;
+import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
+import org.esup_portail.esup_stage.repository.QuestionSupplementaireJpaRepository;
+import org.esup_portail.esup_stage.repository.ReponseSupplementaireJpaRepository;
 import org.esup_portail.esup_stage.repository.ReponseEvaluationJpaRepository;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,54 +27,45 @@ public class ReponseEvaluationController {
     @Autowired
     ConventionJpaRepository conventionJpaRepository;
 
-    @GetMapping("/{id}")
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.LECTURE})
-    public ReponseEvaluation getById(@PathVariable("id") int id) {
-        ReponseEvaluation reponseEvaluation = reponseEvaluationJpaRepository.findById(id);
-        if (reponseEvaluation == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "ReponseEvaluation non trouvée");
-        }
+    @Autowired
+    FicheEvaluationController ficheEvaluationController;
+
+    @Autowired
+    ReponseSupplementaireJpaRepository reponseSupplementaireJpaRepository;
+
+    @Autowired
+    QuestionSupplementaireJpaRepository questionSupplementaireJpaRepository;
+
+    @GetMapping("/getByConvention/{id}")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
+    public ReponseEvaluation getByConvention(@PathVariable("id") int id) {
+        ReponseEvaluation reponseEvaluation = reponseEvaluationJpaRepository.findByConvention(id);
         return reponseEvaluation;
     }
 
-    @GetMapping("/getByConvention/{id}")
-    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
-    public ReponseEvaluation getByConvention(@PathVariable("id") int id) {
-        ReponseEvaluation reponseEvaluation = reponseEvaluationJpaRepository.findByConvention(id);
-        //if (reponseEvaluation == null) {
-        //    reponseEvaluation = new ReponseEvaluation();
-        //    Convention convention = conventionJpaRepository.findById(id);
-        //    if (convention == null) {
-        //        throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
-        //    }
-        //    reponseEvaluation.setConvention(convention);
-        //    return reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
-        //}
-        //return reponseEvaluation;
-        return new ReponseEvaluation();
-    }
-
-    @PostMapping
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.CREATION})
-    public ReponseEvaluation create(@Valid @RequestBody ReponseEtudiantFormDto reponseEtudiantFormDto) {
-        ReponseEvaluation reponseEvaluation = new ReponseEvaluation();
-        setReponseEvaluationData(reponseEvaluation, reponseEtudiantFormDto);
+    @PostMapping("/etudiant/{id}")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.CREATION})
+    public ReponseEvaluation createReponseEtudiant(@PathVariable("id") int id, @Valid @RequestBody ReponseEtudiantFormDto reponseEtudiantFormDto) {
+        ReponseEvaluation reponseEvaluation = initReponseEvaluation(id);
+        reponseEvaluation.setValidationEtudiant(true);
+        setReponseEvaluationEtudiantData(reponseEvaluation, reponseEtudiantFormDto);
         return reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
     }
 
-    @PutMapping("/{id}")
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.MODIFICATION})
-    public ReponseEvaluation update(@PathVariable("id") int id, @Valid @RequestBody ReponseEtudiantFormDto reponseEtudiantFormDto) {
-        ReponseEvaluation reponseEvaluation = reponseEvaluationJpaRepository.findById(id);
+    @PutMapping("/etudiant/{id}")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.MODIFICATION})
+    public ReponseEvaluation updateReponseEtudiant(@PathVariable("id") int id, @Valid @RequestBody ReponseEtudiantFormDto reponseEtudiantFormDto) {
+        ReponseEvaluation reponseEvaluation = reponseEvaluationJpaRepository.findByConvention(id);
         if (reponseEvaluation == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "ReponseEvaluation non trouvé");
         }
-        setReponseEvaluationData(reponseEvaluation, reponseEtudiantFormDto);
+        setReponseEvaluationEtudiantData(reponseEvaluation, reponseEtudiantFormDto);
+        reponseEvaluation.setValidationEtudiant(true);
         return reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
     }
 
     @DeleteMapping("/{id}")
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.SUPPRESSION})
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.SUPPRESSION})
     public boolean delete(@PathVariable("id") int id) {
         ReponseEvaluation reponseEvaluation = reponseEvaluationJpaRepository.findById(id);
         if (reponseEvaluation == null) {
@@ -83,7 +76,81 @@ public class ReponseEvaluationController {
         return true;
     }
 
-    private void setReponseEvaluationData(ReponseEvaluation reponseEvaluation, ReponseEtudiantFormDto reponseEtudiantFormDto) {
+    @GetMapping("/{idConvention}/reponseSupplementaire/{idQestion}")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
+    public ReponseSupplementaire getReponseSupplementaire(@PathVariable("idConvention") int idConvention, @PathVariable("idQestion") int idQestion) {
+        return reponseSupplementaireJpaRepository.findByQuestionAndConvention(idConvention,idQestion);
+    }
+
+    @PostMapping("/{idConvention}/reponseSupplementaire/{idQestion}")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.CREATION})
+    public ReponseSupplementaire createReponseSupplementaire(@PathVariable("idConvention") int idConvention, @PathVariable("idQestion") int idQestion, @Valid @RequestBody ReponseSupplementaireFormDto reponseSupplementaireFormDto) {
+        ReponseSupplementaire reponseSupplementaire = initReponseSupplementaire(idConvention,idQestion);
+        setReponseSupplementaireData(reponseSupplementaire, reponseSupplementaireFormDto);
+        return reponseSupplementaireJpaRepository.saveAndFlush(reponseSupplementaire);
+    }
+
+    @PutMapping("/{idConvention}/reponseSupplementaire/{idQestion}")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.MODIFICATION})
+    public ReponseSupplementaire updateReponseSupplementaire(@PathVariable("idConvention") int idConvention, @PathVariable("idQestion") int idQestion, @Valid @RequestBody ReponseSupplementaireFormDto reponseSupplementaireFormDto) {
+        ReponseSupplementaire reponseSupplementaire = reponseSupplementaireJpaRepository.findByQuestionAndConvention(idConvention,idQestion);
+        if (reponseSupplementaire == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "ReponseSupplementaire non trouvé");
+        }
+        setReponseSupplementaireData(reponseSupplementaire, reponseSupplementaireFormDto);
+        return reponseSupplementaireJpaRepository.saveAndFlush(reponseSupplementaire);
+    }
+
+    private ReponseEvaluation initReponseEvaluation(int id) {
+
+        Convention convention = conventionJpaRepository.findById(id);
+        if (convention == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        }
+        FicheEvaluation ficheEvaluation = ficheEvaluationController.getByCentreGestion(convention.getCentreGestion().getId());
+
+        if (ficheEvaluation == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "FicheEvaluation non trouvée");
+        }
+
+        ReponseEvaluation reponseEvaluation = new ReponseEvaluation();
+
+        ReponseEvaluationId reponseEvaluationId = new ReponseEvaluationId();
+        reponseEvaluationId.setIdConvention(convention.getId());
+        reponseEvaluationId.setIdFicheEvaluation(ficheEvaluation.getId());
+
+        reponseEvaluation.setReponseEvaluationId(reponseEvaluationId);
+        reponseEvaluation.setFicheEvaluation(ficheEvaluation);
+        reponseEvaluation.setConvention(convention);
+
+        return reponseEvaluation;
+    }
+    private ReponseSupplementaire initReponseSupplementaire(int idConvention,int idQestion) {
+
+        Convention convention = conventionJpaRepository.findById(idConvention);
+        if (convention == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        }
+        QuestionSupplementaire questionSupplementaire = questionSupplementaireJpaRepository.findById(idQestion);
+
+        if (questionSupplementaire == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "QuestionSupplementaire non trouvée");
+        }
+
+        ReponseSupplementaire reponseSupplementaire = new ReponseSupplementaire();
+
+        ReponseSupplementaireId reponseSupplementaireId = new ReponseSupplementaireId();
+        reponseSupplementaireId.setIdConvention(convention.getId());
+        reponseSupplementaireId.setIdQuestionSupplementaire(questionSupplementaire.getId());
+
+        reponseSupplementaire.setId(reponseSupplementaireId);
+        reponseSupplementaire.setQuestionSupplementaire(questionSupplementaire);
+        reponseSupplementaire.setConvention(convention);
+
+        return reponseSupplementaire;
+    }
+
+    private void setReponseEvaluationEtudiantData(ReponseEvaluation reponseEvaluation, ReponseEtudiantFormDto reponseEtudiantFormDto) {
 
         reponseEvaluation.setReponseEtuI1(reponseEtudiantFormDto.getReponseEtuI1());
         reponseEvaluation.setReponseEtuI1bis(reponseEtudiantFormDto.getReponseEtuI1bis());
@@ -140,5 +207,10 @@ public class ReponseEvaluationController {
         reponseEvaluation.setReponseEtuIII15bis(reponseEtudiantFormDto.getReponseEtuIII15bis());
         reponseEvaluation.setReponseEtuIII16(reponseEtudiantFormDto.getReponseEtuIII16());
         reponseEvaluation.setReponseEtuIII16bis(reponseEtudiantFormDto.getReponseEtuIII16bis());
+    }
+    private void setReponseSupplementaireData(ReponseSupplementaire reponseSupplementaire, ReponseSupplementaireFormDto reponseSupplementaireFormDto) {
+        reponseSupplementaire.setReponseTxt(reponseSupplementaireFormDto.getReponseTxt());
+        reponseSupplementaire.setReponseBool(reponseSupplementaireFormDto.getReponseBool());
+        reponseSupplementaire.setReponseInt(reponseSupplementaireFormDto.getReponseInt());
     }
 }

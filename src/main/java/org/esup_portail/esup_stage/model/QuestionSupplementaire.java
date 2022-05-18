@@ -1,5 +1,7 @@
 package org.esup_portail.esup_stage.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 @Entity
@@ -11,6 +13,7 @@ public class QuestionSupplementaire {
     @Column(name = "idQuestionSupplementaire", nullable = false)
     private int id;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "idFicheEvaluation", nullable = false)
     private FicheEvaluation ficheEvaluation;

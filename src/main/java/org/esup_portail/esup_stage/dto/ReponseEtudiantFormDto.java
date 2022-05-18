@@ -4,115 +4,114 @@ import javax.validation.constraints.NotNull;
 
 public class ReponseEtudiantFormDto {
 
-    @NotNull
     private Integer reponseEtuI1;
-    @NotNull
+    
     private String reponseEtuI1bis;
-    @NotNull
+    
     private Integer reponseEtuI2;
-    @NotNull
+    
     private Integer reponseEtuI3;
-    @NotNull
-    private Integer reponseEtuI4a;
-    @NotNull
-    private Integer reponseEtuI4b;
-    @NotNull
-    private Integer reponseEtuI4c;
-    @NotNull
-    private Integer reponseEtuI4d;
-    @NotNull
+    
+    private Boolean reponseEtuI4a;
+    
+    private Boolean reponseEtuI4b;
+    
+    private Boolean reponseEtuI4c;
+    
+    private Boolean reponseEtuI4d;
+    
     private Integer reponseEtuI5;
-    @NotNull
+    
     private Integer reponseEtuI6;
-    @NotNull
-    private Integer reponseEtuI7;
-    @NotNull
+    
+    private Boolean reponseEtuI7;
+    
     private Integer reponseEtuI7bis1;
-    @NotNull
+    
     private Integer reponseEtuI7bis1a;
-    @NotNull
+    
     private Integer reponseEtuI7bis1b;
-    @NotNull
+    
     private Integer reponseEtuI7bis2;
-    @NotNull
-    private Integer reponseEtuI8;
-    @NotNull
+    
+    private Boolean reponseEtuI8;
+    
     private Integer reponseEtuII1;
-    @NotNull
+    
     private String reponseEtuII1bis;
-    @NotNull
+    
     private Integer reponseEtuII2;
-    @NotNull
+    
     private String reponseEtuII2bis;
-    @NotNull
+    
     private Integer reponseEtuII3;
-    @NotNull
+    
     private String reponseEtuII3bis;
-    @NotNull
+    
     private Integer reponseEtuII4;
-    @NotNull
+    
     private Boolean reponseEtuII5;
-    @NotNull
+    
     private Integer reponseEtuII5a;
-    @NotNull
+    
     private Boolean reponseEtuII5b;
-    @NotNull
+    
     private Boolean reponseEtuII6;
-    @NotNull
+    
     private Boolean reponseEtuIII1;
-    @NotNull
+    
     private String reponseEtuIII1bis;
-    @NotNull
+    
     private Boolean reponseEtuIII2;
-    @NotNull
+    
     private String reponseEtuIII2bis;
-    @NotNull
+    
     private Boolean reponseEtuIII3;
-    @NotNull
+    
     private String reponseEtuIII3bis;
-    @NotNull
+    
     private Integer reponseEtuIII4;
-    @NotNull
+    
     private Boolean reponseEtuIII5a;
-    @NotNull
+    
     private Boolean reponseEtuIII5b;
-    @NotNull
+    
     private Boolean reponseEtuIII5c;
-    @NotNull
+    
     private String reponseEtuIII5bis;
-    @NotNull
+    
     private Integer reponseEtuIII6;
-    @NotNull
+    
     private String reponseEtuIII6bis;
-    @NotNull
+    
     private Integer reponseEtuIII7;
-    @NotNull
+    
     private String reponseEtuIII7bis;
-    @NotNull
+    
     private Boolean reponseEtuIII8;
-    @NotNull
+    
     private String reponseEtuIII8bis;
-    @NotNull
+    
     private Boolean reponseEtuIII9;
-    @NotNull
+    
     private String reponseEtuIII9bis;
-    @NotNull
+    
     private Boolean reponseEtuIII10;
-    @NotNull
+    
     private Boolean reponseEtuIII11;
-    @NotNull
+    
     private Boolean reponseEtuIII12;
-    @NotNull
+    
     private Boolean reponseEtuIII13;
-    @NotNull
+    
     private Boolean reponseEtuIII14;
-    @NotNull
+    
     private Integer reponseEtuIII15;
-    @NotNull
+    
     private String reponseEtuIII15bis;
-    @NotNull
+    
     private Integer reponseEtuIII16;
-    @NotNull
+    
     private String reponseEtuIII16bis;
 
     public Integer getReponseEtuI1() {
@@ -147,35 +146,35 @@ public class ReponseEtudiantFormDto {
         this.reponseEtuI3 = reponseEtuI3;
     }
 
-    public Integer getReponseEtuI4a() {
+    public Boolean getReponseEtuI4a() {
         return reponseEtuI4a;
     }
 
-    public void setReponseEtuI4a(Integer reponseEtuI4a) {
+    public void setReponseEtuI4a(Boolean reponseEtuI4a) {
         this.reponseEtuI4a = reponseEtuI4a;
     }
 
-    public Integer getReponseEtuI4b() {
+    public Boolean getReponseEtuI4b() {
         return reponseEtuI4b;
     }
 
-    public void setReponseEtuI4b(Integer reponseEtuI4b) {
+    public void setReponseEtuI4b(Boolean reponseEtuI4b) {
         this.reponseEtuI4b = reponseEtuI4b;
     }
 
-    public Integer getReponseEtuI4c() {
+    public Boolean getReponseEtuI4c() {
         return reponseEtuI4c;
     }
 
-    public void setReponseEtuI4c(Integer reponseEtuI4c) {
+    public void setReponseEtuI4c(Boolean reponseEtuI4c) {
         this.reponseEtuI4c = reponseEtuI4c;
     }
 
-    public Integer getReponseEtuI4d() {
+    public Boolean getReponseEtuI4d() {
         return reponseEtuI4d;
     }
 
-    public void setReponseEtuI4d(Integer reponseEtuI4d) {
+    public void setReponseEtuI4d(Boolean reponseEtuI4d) {
         this.reponseEtuI4d = reponseEtuI4d;
     }
 
@@ -195,11 +194,11 @@ public class ReponseEtudiantFormDto {
         this.reponseEtuI6 = reponseEtuI6;
     }
 
-    public Integer getReponseEtuI7() {
+    public Boolean getReponseEtuI7() {
         return reponseEtuI7;
     }
 
-    public void setReponseEtuI7(Integer reponseEtuI7) {
+    public void setReponseEtuI7(Boolean reponseEtuI7) {
         this.reponseEtuI7 = reponseEtuI7;
     }
 
@@ -235,11 +234,11 @@ public class ReponseEtudiantFormDto {
         this.reponseEtuI7bis2 = reponseEtuI7bis2;
     }
 
-    public Integer getReponseEtuI8() {
+    public Boolean getReponseEtuI8() {
         return reponseEtuI8;
     }
 
-    public void setReponseEtuI8(Integer reponseEtuI8) {
+    public void setReponseEtuI8(Boolean reponseEtuI8) {
         this.reponseEtuI8 = reponseEtuI8;
     }
 

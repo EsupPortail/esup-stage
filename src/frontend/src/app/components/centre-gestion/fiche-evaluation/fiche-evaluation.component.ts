@@ -62,6 +62,7 @@ export class FicheEvaluationComponent implements OnInit {
               "Mail Oui / Non",
               "Téléphone Oui / Non",
               "Courrier Oui / Non",
+              "Prospection directe Oui / Non",
              ],
       controlName: "questionEtuI4",
     },

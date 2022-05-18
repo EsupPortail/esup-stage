@@ -15,15 +15,27 @@ export class ReponseEvaluationService {
     return this.http.get(`${environment.apiUrl}/reponseEvaluation/getByConvention/${id}`);
   }
 
-  create(data: any): Observable<any> {
-    return this.http.post(environment.apiUrl + "/reponseEvaluation", data);
+  createReponseEtudiant(id: number, data: any): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/reponseEvaluation/etudiant/${id}`, data);
   }
 
-  update(id: number, data: any): Observable<any> {
-    return this.http.put(`${environment.apiUrl}/reponseEvaluation/${id}`, data);
+  updateReponseEtudiant(id: number, data: any): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/reponseEvaluation/etudiant/${id}`, data);
   }
 
   delete(id: number): Observable<any> {
     return this.http.delete(environment.apiUrl + "/reponseEvaluation" + id);
+  }
+
+  getReponseSupplementaire(idConvention: number,idQestion: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/reponseEvaluation/${idConvention}/reponseSupplementaire/${idQestion}`)
+  }
+
+  createReponseSupplementaire(idConvention: number,idQestion: number, data: any): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/reponseEvaluation/${idConvention}/reponseSupplementaire/${idQestion}`, data);
+  }
+
+  updateReponseSupplementaire(idConvention: number,idQestion: number, data: any): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/reponseEvaluation/${idConvention}/reponseSupplementaire/${idQestion}`, data);
   }
 }
