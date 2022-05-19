@@ -97,12 +97,13 @@ export class EtudiantComponent implements OnInit, OnChanges {
         codeLangueConvention: [this.convention.langueConvention ? this.convention.langueConvention.code : null, [Validators.required]],
       });
       this.sansElp = response.autoriserElementPedagogiqueFacultatif;
-      if (!this.sansElp) {
-        this.formConvention.get('inscriptionElp')?.setValidators([Validators.required]);
-      }
 
       this.formConvention.get('inscription')?.valueChanges.subscribe((inscription: any) => {
         if (inscription) {
+          this.sansElp = this.sansElp || !inscription.elementPedagogiques || inscription.elementPedagogiques.length == 0;
+          if (!this.sansElp) {
+            this.formConvention.get('inscriptionElp')?.setValidators([Validators.required]);
+          }
           this.centreGestion = inscription.centreGestion;
           this.formConvention.get('inscriptionElp')?.setValue(null);
           if (inscription.typeConvention) {
