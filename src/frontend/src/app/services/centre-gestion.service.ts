@@ -39,6 +39,18 @@ export class CentreGestionService implements PaginatedService {
     return this.http.put(`${environment.apiUrl}/centre-gestion/${id}`, null);
   }
 
+  countConventionWithCentre(id: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/centre-gestion/countConventionWithCentre/${id}`);
+  }
+
+  countContactWithCentre(id: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/centre-gestion/countContactWithCentre/${id}`);
+  }
+
+  countCritereWithCentre(id: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/centre-gestion/countCritereWithCentre/${id}`);
+  }
+
   delete(id: number): Observable<any> {
     return this.http.delete(`${environment.apiUrl}/centre-gestion/${id}`);
   }

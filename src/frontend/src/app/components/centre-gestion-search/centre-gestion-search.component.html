@@ -33,7 +33,7 @@
     <th mat-header-cell *matHeaderCellDef>Actions</th>
     <td mat-cell *matCellDef="let row">
       <button type="button" mat-icon-button matTooltip="Modifier" color="primary" (click)="editCentre(row.id)"><i class="fa fa-pen"></i></button>
-      <button mat-icon-button matTooltip="Supprimer (todo)" color="warn"><i class="fa fa-trash"></i></button>
+      <button type="button" mat-icon-button matTooltip="Supprimer" color="warn" (click)="openDeleteFormModal(row.id)"><i class="fa fa-trash"></i></button>
     </td>
   </ng-container>
 </app-table>

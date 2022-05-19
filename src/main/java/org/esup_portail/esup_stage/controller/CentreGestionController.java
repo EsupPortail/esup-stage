@@ -57,6 +57,9 @@ public class CentreGestionController {
     ConventionJpaRepository conventionJpaRepository;
 
     @Autowired
+    ContactJpaRepository contactJpaRepository;
+
+    @Autowired
     ConfidentialiteJpaRepository confidentialiteJpaRepository;
 
     @Autowired
@@ -194,6 +197,25 @@ public class CentreGestionController {
         centreGestion.setValidationCreation(true);
 
         return centreGestionJpaRepository.saveAndFlush(centreGestion);
+    }
+
+    @GetMapping("/countConventionWithCentre/{id}")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
+    public Long countConventionWithCentre(@PathVariable("id") int id) {
+        return conventionJpaRepository.countConventionWithCentreGestion(id);
+    }
+
+    @GetMapping("/countContactWithCentre/{id}")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
+    public Long countContactWithCentre(@PathVariable("id") int id) {
+        return contactJpaRepository.countContactWithCentreGestion(id);
+    }
+
+    @GetMapping("/countCritereWithCentre/{id}")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
+    public int countCritereWithCentre(@PathVariable("id") int id) {
+        CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
+        return centreGestion.getCriteres().size();
     }
 
     @DeleteMapping("/{id}")

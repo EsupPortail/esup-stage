@@ -1,9 +1,12 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { TableComponent } from "../table/table.component";
 import { CentreGestionService } from "../../services/centre-gestion.service";
+import { MessageService } from "../../services/message.service";
 import { AuthService } from "../../services/auth.service";
 import { Router } from "@angular/router";
 import { SortDirection } from "@angular/material/sort";
+import { ConfirmDeleteCentreComponent } from './confirm-delete-centre/confirm-delete-centre.component';
 
 @Component({
   selector: 'app-centre-gestion-search',
@@ -34,6 +37,8 @@ export class CentreGestionSearchComponent implements OnInit, OnDestroy, AfterVie
   constructor(
     public centreGestionService: CentreGestionService,
     public authService: AuthService,
+    private messageService: MessageService,
+    public matDialog: MatDialog,
     private router: Router) { }
 
   ngOnInit(): void {
@@ -67,6 +72,26 @@ export class CentreGestionSearchComponent implements OnInit, OnDestroy, AfterVie
 
   editCentre(id: number): void {
     this.router.navigate([`/centre-gestion/${id}`], )
+  }
+
+
+  openDeleteFormModal(id: number) {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.width = '1000px';
+    dialogConfig.data = {centreGestionId: id};
+    const modalDialog = this.matDialog.open(ConfirmDeleteCentreComponent, dialogConfig);
+    modalDialog.afterClosed().subscribe(dialogResponse => {
+      if (dialogResponse) {
+        this.delete(id);
+      }
+    });
+  }
+
+  delete(id: number): void {
+    this.centreGestionService.delete(id).subscribe(response => {
+        this.messageService.setSuccess('Le centre de gestion a été supprimé avec succès');
+        this.appTable?.update();
+    });
   }
 
   ngOnDestroy(): void {

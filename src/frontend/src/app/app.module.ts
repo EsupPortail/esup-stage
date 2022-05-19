@@ -102,6 +102,7 @@ import { InterruptionsFormComponent } from './components/convention/stage/interr
 import { MatBadgeModule } from "@angular/material/badge";
 import { ConsigneComponent } from './components/consigne/consigne.component';
 import { RetourListeComponent } from './components/retour-liste/retour-liste.component';
+import { ConfirmDeleteCentreComponent } from './components/centre-gestion-search/confirm-delete-centre/confirm-delete-centre.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -160,6 +161,7 @@ registerLocaleData(localeFr, 'fr');
     InterruptionsFormComponent,
     ConsigneComponent,
     RetourListeComponent,
+    ConfirmDeleteCentreComponent,
   ],
   imports: [
     BrowserModule,
