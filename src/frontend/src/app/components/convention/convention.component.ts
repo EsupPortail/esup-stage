@@ -14,6 +14,8 @@ export class ConventionComponent implements OnInit {
 
   convention: any;
 
+  conventionTabIndex: number = 0;
+
   tabs: any = {
     0: { statut: 0, init: true },
     1: { statut: 0, init: false },
@@ -43,9 +45,7 @@ export class ConventionComponent implements OnInit {
   ngOnInit(): void {
     this.activatedRoute.params.subscribe((param: any) => {
       const pathId = param.id;
-      if(this.tabGroup){
-        this.tabGroup.selectedIndex = 0;
-      }
+      this.conventionTabIndex = this.conventionService.getGoToOnglet()??0;
       if (pathId === 'create') {
         this.titleService.title = 'Création d\'une convention';
         // Récupération de la convention au mode brouillon

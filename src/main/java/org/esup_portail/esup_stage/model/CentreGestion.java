@@ -141,6 +141,10 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     @OneToMany(mappedBy = "centreGestion", fetch = FetchType.EAGER)
     private List<Consigne> consignes = new ArrayList<>();
 
+    @JsonView(Views.List.class)
+    @OneToOne(mappedBy = "centreGestion", cascade = {CascadeType.MERGE, CascadeType.REMOVE, CascadeType.PERSIST},fetch = FetchType.LAZY)
+    private FicheEvaluation ficheEvaluation;
+
     public int getId() {
         return id;
     }
@@ -467,6 +471,14 @@ public class CentreGestion extends ObjetMetier implements Exportable {
 
     public void setConsignes(List<Consigne> consignes) {
         this.consignes = consignes;
+    }
+
+    public FicheEvaluation getFicheEvaluation() {
+        return ficheEvaluation;
+    }
+
+    public void setFicheEvaluation(FicheEvaluation ficheEvaluation) {
+        this.ficheEvaluation = ficheEvaluation;
     }
 
     @Override

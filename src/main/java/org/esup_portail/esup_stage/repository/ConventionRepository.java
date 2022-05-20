@@ -102,6 +102,9 @@ public class ConventionRepository extends PaginationRepository<Convention> {
         if (key.equals("structure")) {
             clauses.add("(LOWER(c.structure.raisonSociale) LIKE :structure OR LOWER(c.structure.numeroSiret) LIKE :structure)");
         }
+        if (key.equals("stageTermine")) {
+            clauses.add("((FALSE = :stageTermine) OR c.dateFinStage < CURDATE())");
+        }
     }
 
     @Override
@@ -140,6 +143,9 @@ public class ConventionRepository extends PaginationRepository<Convention> {
         }
         if (key.equals("structure")) {
             query.setParameter("structure", "%" + parameter.getString("value").toLowerCase() + "%");
+        }
+        if (key.equals("stageTermine")) {
+            query.setParameter("stageTermine", parameter.getBoolean("value"));
         }
     }
 }

@@ -79,4 +79,15 @@ export class ConventionService implements PaginatedService {
     return this.http.delete(`${environment.apiUrl}/conventions/brouillon`);
   }
 
+  goToOnglet: number | null = null;
+
+  setGoToOnglet(onglet:number): void {
+    this.goToOnglet = onglet;
+  }
+
+  getGoToOnglet(): number | null  {
+    const onglet = this.goToOnglet;
+    this.goToOnglet = null;
+    return onglet;
+  }
 }

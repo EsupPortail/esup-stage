@@ -1,6 +1,8 @@
 package org.esup_portail.esup_stage.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+import org.esup_portail.esup_stage.dto.view.Views;
 
 import javax.persistence.*;
 
@@ -23,11 +25,17 @@ public class ReponseEvaluation {
     @JoinColumn(name="idConvention")
     private Convention convention;
 
+    @JsonView(Views.List.class)
     private Boolean validationEtudiant;
+    @JsonView(Views.List.class)
     private Boolean validationEnseignant;
+    @JsonView(Views.List.class)
     private Boolean validationEntreprise;
+    @JsonView(Views.List.class)
     private Boolean impressionEtudiant;
+    @JsonView(Views.List.class)
     private Boolean impressionEnseignant;
+    @JsonView(Views.List.class)
     private Boolean impressionEntreprise;
 
     private Integer reponseEnt1;

@@ -25,13 +25,12 @@ export class EvalStageComponent implements OnInit {
   sortDirection: SortDirection = 'desc';
   filters: any[] = [];
 
-  tableCanLoad = false;
-  savedFilters: any[] = [];
-
   anneeEnCours: any|undefined;
   annees: any[] = [];
 
-  selected: any[] = [];
+  isEtudiant:boolean = false;
+  isEnseignant:boolean = false;
+  isGestionnaireOrAdmin:boolean = false;
 
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
 
@@ -45,28 +44,44 @@ export class EvalStageComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.isEtudiant = this.authService.isEtudiant();
+    this.isEnseignant= this.authService.isEnseignant();
+    this.isGestionnaireOrAdmin = this.authService.isGestionnaire() || this.authService.isAdmin() ;
+    const login = this.authService.getUserConnectedLogin();
 
-    this.columns = ['id', 'etudiant.prenom', 'structure.raisonSociale', 'dateDebutStage', 'dateFinStage', 'ufr.libelle', 'etape.libelle', 'annee','reponseEvaluation.validationEtudiant', 'action'];
 
-    this.filters = [
-      { id: 'annee', libelle: 'Année', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'libelle', value: [] },
-    ];
+    this.filters = [];
 
-    this.conventionService.getListAnnee().subscribe(response => {
-      this.annees = response;
-      this.anneeEnCours = this.annees.find((a: any) => { return a.anneeEnCours === true });
-      this.appTable?.setFilterOption('annee', this.annees);
-      this.appTable?.setFilterValue('annee', [this.anneeEnCours.libelle]);
-      this.appTable?.update();
-    });
+    if(this.isGestionnaireOrAdmin){
+      this.columns = ['id', 'etudiant.prenom', 'structure.raisonSociale', 'dateDebutStage', 'dateFinStage', 'ufr.libelle',
+     'etape.libelle', 'annee','reponseEvaluationEtudiant','reponseEvaluationEnseignant','reponseEvaluationEntreprise', 'action'];
 
+      this.filters.push({ id: 'annee', libelle: 'Année', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'libelle', value: [] });
+      this.filters.push({ id: 'centreGestion.nomCentre', libelle: 'Centre de gestion'},);
+      this.filters.push({ id: 'stageTermine', libelle: 'N\'afficher que les stages terminés ?', type: 'boolean', specific: true });
+
+      this.conventionService.getListAnnee().subscribe(response => {
+        this.annees = response;
+        this.anneeEnCours = this.annees.find((a: any) => { return a.anneeEnCours === true });
+        this.appTable?.setFilterOption('annee', this.annees);
+        this.appTable?.setFilterValue('annee', [this.anneeEnCours.libelle]);
+        this.appTable?.update();
+      });
+    } else if (this.isEtudiant){
+      this.columns = ['id', 'structure.raisonSociale', 'dateDebutStage', 'dateFinStage', 'ufr.libelle',
+     'etape.libelle', 'annee','reponseEvaluationEtudiant', 'action'];
+
+      this.filters.push({ id: 'etudiant.identEtudiant', type: 'string', value: login, hidden: true, permanent: true });
+    } else if (this.isEnseignant){
+      this.columns = ['id', 'etudiant.prenom', 'structure.raisonSociale', 'dateDebutStage', 'dateFinStage', 'ufr.libelle',
+     'etape.libelle', 'annee','reponseEvaluationEnseignant', 'action'];
+
+      this.filters.push({ id: 'enseignant.uidEnseignant', type: 'string', value: login, hidden: true, permanent: true });
+    }
   }
-
-  setDataGestionnaire(): void {
-  }
-
 
   goToConvention(id: number): void {
+    this.conventionService.setGoToOnglet(8)
     this.router.navigate([`/conventions/${id}`], )
   }
 

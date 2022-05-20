@@ -52,8 +52,8 @@ public class FicheEvaluationController {
         }
         return ficheEvaluation;
     }
+
     @GetMapping("/getByCentreGestion/{id}")
-    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public FicheEvaluation getByCentreGestion(@PathVariable("id") int id) {
         FicheEvaluation ficheEvaluation = ficheEvaluationJpaRepository.findByCentreGestion(id);
         if (ficheEvaluation == null) {

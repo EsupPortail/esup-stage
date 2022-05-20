@@ -1,6 +1,8 @@
 package org.esup_portail.esup_stage.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+import org.esup_portail.esup_stage.dto.view.Views;
 
 import javax.persistence.*;
 
@@ -18,8 +20,11 @@ public class FicheEvaluation implements Exportable {
     @JoinColumn(name = "idCentreGestion", nullable = false)
     private CentreGestion centreGestion;
 
+    @JsonView(Views.List.class)
     private Boolean validationEtudiant;
+    @JsonView(Views.List.class)
     private Boolean validationEnseignant;
+    @JsonView(Views.List.class)
     private Boolean validationEntreprise;
 
     private Boolean questionEnt1;

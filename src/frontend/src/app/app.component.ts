@@ -118,7 +118,7 @@ export class AppComponent {
           },
         },
         {
-          libelle: 'Visualiser mes fiches d’évaluation',
+          libelle: 'Visualiser mes évaluations',
           path: 'eval-stages/etudiants',
           icon: 'fa-columns',
           canView: () => {
@@ -126,7 +126,7 @@ export class AppComponent {
           },
         },
         {
-          libelle: 'Visualiser mes fiches d’évaluation',
+          libelle: 'Visualiser mes évaluations',
           path: 'eval-stages/enseignants',
           icon: 'fa-columns',
           canView: () => {
