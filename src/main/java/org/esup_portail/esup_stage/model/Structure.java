@@ -16,14 +16,14 @@ public class Structure extends ObjetMetier implements Exportable {
     @Column(name = "idStructure", nullable = false)
     private int id;
 
-    @Column(length = 20)
+    @Column
     private String libCedex;
 
-    @Column(length = 20)
+    @Column
     private String codeEtab;
 
     @JsonView(Views.List.class)
-    @Column(length = 14)
+    @Column
     private String numeroSiret;
 
     @JsonView(Views.List.class)
@@ -32,40 +32,40 @@ public class Structure extends ObjetMetier implements Exportable {
     private NafN5 nafN5;
 
     @JsonView(Views.List.class)
-    @Column(nullable = false, length = 150)
+    @Column(nullable = false)
     private String raisonSociale;
 
     @Lob
     private String activitePrincipale;
 
-    @Column(length = 20)
+    @Column
     private String telephone;
 
-    @Column(length = 20)
+    @Column
     private String fax;
 
-    @Column(length = 50)
+    @Column
     private String mail;
 
-    @Column(length = 200)
+    @Column
     private String siteWeb;
 
-    @Column(length = 50)
+    @Column
     private String groupe;
 
-    @Column(length = 200)
+    @Column
     private String logo;
 
     @Column(nullable = false)
     private boolean estValidee;
 
-    @Column(length = 50)
+    @Column
     private String loginValidation;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateValidation;
 
-    @Column(length = 50)
+    @Column
     private String loginStopValidation;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -74,7 +74,7 @@ public class Structure extends ObjetMetier implements Exportable {
     @Temporal(TemporalType.DATE)
     private Date infosAJour;
 
-    @Column(length = 50)
+    @Column
     private String loginInfosAJour;
 
     @ManyToOne
@@ -91,29 +91,29 @@ public class Structure extends ObjetMetier implements Exportable {
     @JoinColumn(name = "idTypeStructure", nullable = false)
     private TypeStructure typeStructure;
 
-    @Column(length = 50)
+    @Column
     private String nomDirigeant;
 
-    @Column(length = 50)
+    @Column
     private String prenomDirigeant;
 
     @Column(length = 1)
     private String temEnServStructure;
 
-    @Column(length = 200)
+    @Column
     private String batimentResidence;
 
-    @Column(nullable = false, length = 200)
+    @Column(nullable = false)
     private String voie;
 
     @JsonView(Views.List.class)
-    @Column(length = 200)
+    @Column
     private String commune;
 
-    @Column(length = 10)
+    @Column
     private String codePostal;
 
-    @Column(length = 10)
+    @Column
     private String codeCommune;
 
     @JsonView(Views.List.class)

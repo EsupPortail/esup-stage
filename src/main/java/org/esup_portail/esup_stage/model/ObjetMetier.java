@@ -8,14 +8,14 @@ import java.util.Date;
 @MappedSuperclass
 public abstract class ObjetMetier {
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
     private String loginCreation;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
     private Date dateCreation;
 
-    @Column(length = 50)
+    @Column
     private String loginModif;
 
     @Temporal(TemporalType.TIMESTAMP)

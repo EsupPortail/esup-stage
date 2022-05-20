@@ -11,7 +11,7 @@ public class Indemnisation {
     @Column(name = "idIndemnisation", nullable = false)
     private int id;
 
-    @Column(name = "libelleIndemnisation", nullable = false, length = 100)
+    @Column(name = "libelleIndemnisation", nullable = false)
     private String libelle;
 
     @Column(name = "temEnServIndem", nullable = false, length = 1)

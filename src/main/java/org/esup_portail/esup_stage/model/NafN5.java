@@ -11,11 +11,11 @@ public class NafN5 {
 
     @JsonView(Views.List.class)
     @Id
-    @Column(name = "codeNAF_N5", nullable = false, length = 6)
+    @Column(name = "codeNAF_N5", nullable = false)
     private String code;
 
     @JsonView(Views.List.class)
-    @Column(name = "libelleNAF_N5", length = 150)
+    @Column(name = "libelleNAF_N5")
     private String libelle;
 
     @Column(name = "temEnServNAF_N5", length = 1)

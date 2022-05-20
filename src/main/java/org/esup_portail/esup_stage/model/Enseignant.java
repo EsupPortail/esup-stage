@@ -20,38 +20,38 @@ public class Enseignant extends ObjetMetier implements Exportable {
     private int id;
 
     @JsonView(Views.List.class)
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
     private String nom;
 
     @JsonView(Views.List.class)
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
     private String prenom;
 
-    @Column(length = 50)
+    @Column
     private String mail;
 
-    @Column(name = "telephone", length = 30)
+    @Column(name = "telephone")
     private String tel;
 
-    @Column(length = 50)
+    @Column
     private String fax;
 
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false)
     private String codeUniversite;
 
-    @Column(length = 50)
+    @Column
     private String typePersonne;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
     private String uidEnseignant;
 
-    @Column(length = 250)
+    @Column
     private String campus;
 
-    @Column(length = 20)
+    @Column
     private String bureau;
 
-    @Column(length = 45)
+    @Column
     private String batiment;
 
     @ManyToOne

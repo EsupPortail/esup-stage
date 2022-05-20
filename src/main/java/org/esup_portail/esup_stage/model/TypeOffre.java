@@ -11,10 +11,10 @@ public class TypeOffre implements Exportable {
     @Column(name = "idTypeOffre", nullable = false)
     private int id;
 
-    @Column(name = "libelleType", nullable = false, length = 100)
+    @Column(name = "libelleType", nullable = false)
     private String libelle;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false)
     private String codeCtrl;
 
     @Column(name = "temEnServTypeOffre", nullable = false, length = 1)

@@ -12,13 +12,13 @@ public class AdminStructure extends ObjetMetier {
     @Column(name = "idAdminStructure", nullable = false)
     private int id;
 
-    @Column(length = 50)
+    @Column
     private String nom;
 
-    @Column(length = 50)
+    @Column
     private String prenom;
 
-    @Column(length = 50)
+    @Column
     private String mail;
 
     @ManyToOne
@@ -31,13 +31,13 @@ public class AdminStructure extends ObjetMetier {
     @Temporal(TemporalType.TIMESTAMP)
     private Date avantDerniereConnexion;
 
-    @Column(length = 50)
+    @Column
     private String login;
 
-    @Column(length = 50)
+    @Column
     private String eppn;
 
-    @Column(length = 200)
+    @Column
     private String mdp;
 
     public int getId() {

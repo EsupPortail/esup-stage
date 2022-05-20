@@ -10,7 +10,7 @@ public class Confidentialite {
     @Column(name = "codeConfidentialite", nullable = false)
     private String code;
 
-    @Column(name = "libelleConfidentialite", nullable = false, length = 50)
+    @Column(name = "libelleConfidentialite", nullable = false)
     private String libelle;
 
     @Column(name = "temEnServConfid", nullable = false, length = 1)

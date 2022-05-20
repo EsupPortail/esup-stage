@@ -17,7 +17,7 @@ public class HistoriqueValidation {
     @Column(name = "loginModification", nullable = false)
     private String login;
 
-    @Column(name = "typeValidation", nullable = false, length = 50)
+    @Column(name = "typeValidation", nullable = false)
     private String type;
 
     private Boolean valeurAvant;

@@ -11,7 +11,7 @@ public class DroitAdministration {
     @Column(name = "idDroitAdministration", nullable = false)
     private int id;
 
-    @Column(name = "libelleDroitAdministration", nullable = false, length = 100)
+    @Column(name = "libelleDroitAdministration", nullable = false)
     private String libelle;
 
     @Column(name = "temEnServDroitAdmin", nullable = false, length = 1)

@@ -12,35 +12,35 @@ public class Service extends ObjetMetier implements Exportable {
     @Column(name = "idService", nullable = false)
     private int id;
 
-    @Column(nullable = false, length = 70)
+    @Column(nullable = false)
     private String nom;
 
     @Temporal(TemporalType.DATE)
     private Date infosAJour;
 
-    @Column(length = 50)
+    @Column
     private String loginInfosAJour;
 
     @ManyToOne
     @JoinColumn(name = "idStructure", nullable = false)
     private Structure structure;
 
-    @Column(length = 20)
+    @Column
     private String telephone;
 
-    @Column(length = 200)
+    @Column
     private String batimentResidence;
 
-    @Column(nullable = false, length = 200)
+    @Column(nullable = false)
     private String voie;
 
-    @Column(length = 200)
+    @Column
     private String commune;
 
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false)
     private String codePostal;
 
-    @Column(length = 10)
+    @Column
     private String codeCommune;
 
     @ManyToOne

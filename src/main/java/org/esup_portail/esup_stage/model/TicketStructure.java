@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class TicketStructure {
 
     @Id
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
     private String ticket;
 
     @ManyToOne

@@ -11,7 +11,7 @@ public class NiveauFormation implements Exportable {
     @Column(name = "idNiveauFormation", nullable = false)
     private int id;
 
-    @Column(name = "libelleNiveauFormation", nullable = false, length = 100)
+    @Column(name = "libelleNiveauFormation", nullable = false)
     private String libelle;
 
     @Column(name = "temEnServNiveauForm", nullable = false, length = 1)

@@ -13,13 +13,13 @@ public class ModeCandidature {
     @Column(name = "idModeCandidature", nullable = false)
     private int id;
 
-    @Column(name = "libelleModeCandidature", nullable = false, length = 100)
+    @Column(name = "libelleModeCandidature", nullable = false)
     private String libelle;
 
     @Column(name = "temEnServModeCandidature", nullable = false, length = 1)
     private String temEnServ;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false)
     private String codeCtrl;
 
     @ManyToMany(mappedBy = "modeCandidatures")

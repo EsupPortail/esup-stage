@@ -9,7 +9,7 @@ public class CritereGestion implements Exportable {
     @EmbeddedId
     private CritereGestionId id;
 
-    @Column(name = "libelleCritere", nullable = false, length = 200)
+    @Column(name = "libelleCritere", nullable = false)
     private String libelle;
 
     @ManyToOne

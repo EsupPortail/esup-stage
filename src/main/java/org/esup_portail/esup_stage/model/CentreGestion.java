@@ -20,23 +20,23 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     private int id;
 
     @JsonView(Views.List.class)
-    @Column(length = 100)
+    @Column
     private String nomCentre;
 
     @ManyToOne
     @JoinColumn(name = "idNiveauCentre", nullable = false)
     private NiveauCentre niveauCentre;
 
-    @Column(length = 50)
+    @Column
     private String siteWeb;
 
-    @Column(length = 50)
+    @Column
     private String mail;
 
-    @Column(length = 20)
+    @Column
     private String telephone;
 
-    @Column(length = 20)
+    @Column
     private String fax;
 
     @Lob
@@ -51,22 +51,22 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     @Column()
     private boolean saisieTuteurProParEtudiant;
 
-    @Column()
+    @Column
     private boolean depotAnonyme;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
     private String codeUniversite;
 
-    @Column(length = 50)
+    @Column
     private String nomViseur;
 
-    @Column(length = 50)
+    @Column
     private String prenomViseur;
 
-    @Column(length = 100)
+    @Column
     private String qualiteViseur;
 
-    @Column(length = 200)
+    @Column
     private String urlPageInstruction;
 
     @ManyToOne
@@ -112,16 +112,16 @@ public class CentreGestion extends ObjetMetier implements Exportable {
 
     private Integer dureeRecupInscriptionAnterieure;
 
-    @Column(length = 200)
+    @Column
     private String adresse;
 
-    @Column(length = 200)
+    @Column
     private String voie;
 
-    @Column(length = 200)
+    @Column
     private String commune;
 
-    @Column(length = 10)
+    @Column
     private String codePostal;
 
     @OneToMany(mappedBy = "centreGestion")

@@ -10,13 +10,13 @@ public class CaisseRegime {
     @Column(name = "codeCaisse", nullable = false)
     private String code;
 
-    @Column(name = "libelleCaisse", nullable = false, length = 100)
+    @Column(name = "libelleCaisse", nullable = false)
     private String libelle;
 
     @Column(name = "temEnServCaisse", nullable = false, length = 1)
     private String temEnServ;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false)
     private String infoCaisse;
 
     private Boolean modifiable;

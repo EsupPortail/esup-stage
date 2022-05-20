@@ -14,7 +14,7 @@ public class Contenu extends ObjetMetier implements Exportable {
     private boolean libelle = true;
 
     @Lob
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false)
     private String texte;
 
     public String getCode() {

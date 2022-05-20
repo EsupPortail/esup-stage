@@ -10,13 +10,13 @@ import javax.persistence.Table;
 public class ParamMail {
 
     @Id
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
     private String code;
 
-    @Column(length = 150)
+    @Column
     private String libelle;
 
-    @Column(length = 200)
+    @Column
     private String exemple;
 
     public String getCode() {

@@ -11,7 +11,7 @@ public class Civilite implements Exportable {
     @Column(name = "idCivilite", nullable = false)
     private int id;
 
-    @Column(name = "libelleCivilite", nullable = false, length = 50)
+    @Column(name = "libelleCivilite", nullable = false)
     private String libelle;
 
     public int getId() {

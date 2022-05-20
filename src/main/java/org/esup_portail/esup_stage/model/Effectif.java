@@ -11,7 +11,7 @@ public class Effectif implements Exportable {
     @Column(name = "idEffectif", nullable = false)
     private int id;
 
-    @Column(name = "libelleEffectif", nullable = false, length = 100)
+    @Column(name = "libelleEffectif", nullable = false)
     private String libelle;
 
     @Column(name = "temEnServEffectif", nullable = false, length = 1)

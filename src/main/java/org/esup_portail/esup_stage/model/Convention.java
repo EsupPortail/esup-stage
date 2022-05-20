@@ -52,7 +52,7 @@ public class Convention extends ObjetMetier implements Exportable {
     })
     private Etape etape;
 
-    @Column(length = 10)
+    @Column
     private String codeDepartement;
 
     @JsonView(Views.List.class)
@@ -146,32 +146,32 @@ public class Convention extends ObjetMetier implements Exportable {
 
     private String commentaireStage;
 
-    @Column(length = 200)
+    @Column
     private String adresseEtudiant;
 
-    @Column(length = 10)
+    @Column
     private String codePostalEtudiant;
 
-    @Column(length = 80)
+    @Column
     private String villeEtudiant;
 
-    @Column(length = 50)
+    @Column
     private String paysEtudiant;
 
-    @Column(length = 100)
+    @Column
     private String courrielPersoEtudiant;
 
-    @Column(length = 20)
+    @Column
     private String telEtudiant;
 
-    @Column(length = 20)
+    @Column
     private String telPortableEtudiant;
 
     @ManyToOne
     @JoinColumn(name = "idIndemnisation")
     private Indemnisation indemnisation;
 
-    @Column(length = 15)
+    @Column
     private String montantGratification;
 
     private String fonctionsEtTaches;
@@ -179,7 +179,7 @@ public class Convention extends ObjetMetier implements Exportable {
     private String details;
 
     @JsonView(Views.List.class)
-    @Column(length = 10)
+    @Column
     private String annee;
 
     @ManyToOne
@@ -187,13 +187,13 @@ public class Convention extends ObjetMetier implements Exportable {
     @NotFound(action=NotFoundAction.IGNORE)
     private Assurance assurance;
 
-    @Column(length = 5)
+    @Column
     private String codeCaisse;
 
-    @Column(length = 1)
+    @Column
     private String temConfSujetTeme;
 
-    @Column(length = 5)
+    @Column
     private String nbHeuresHebdo;
 
     private Integer quotiteTravail;
@@ -214,10 +214,10 @@ public class Convention extends ObjetMetier implements Exportable {
     @JoinColumn(name = "idModeValidationStage")
     private ModeValidationStage modeValidationStage;
 
-    @Column(length = 8)
+    @Column
     private String codeElp;
 
-    @Column(length = 60)
+    @Column
     private String libelleELP;
 
     private BigDecimal creditECTS;
@@ -227,22 +227,22 @@ public class Convention extends ObjetMetier implements Exportable {
     @Column()
     private Integer dureeStage;
 
-    @Column(length = 100)
+    @Column
     private String nomEtabRef;
 
-    @Column(length = 200)
+    @Column
     private String adresseEtabRef;
 
-    @Column(length = 30)
+    @Column
     private String nomSignataireComposante;
 
-    @Column(length = 60)
+    @Column
     private String qualiteSignataire;
 
-    @Column(length = 100)
+    @Column
     private String libelleCPAM;
 
-    @Column(length = 4)
+    @Column
     private String dureeExceptionnelle;
 
     @ManyToOne
@@ -253,27 +253,27 @@ public class Convention extends ObjetMetier implements Exportable {
     @JoinColumn(name = "idUniteGratification")
     private UniteGratification uniteGratification;
 
-    @Column(length = 3)
+    @Column
     private String codeFinalite;
 
-    @Column(length = 60)
+    @Column
     private String libelleFinalite;
 
-    @Column(length = 1)
+    @Column
     private String codeCursusLMD;
 
     private Boolean priseEnChargeFraisMission;
 
-    @Column(length = 1)
+    @Column
     private String codeRGI;
 
-    @Column(length = 50)
+    @Column
     private String loginValidation;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateValidation;
 
-    @Column(length = 50)
+    @Column
     private String loginSignature;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -301,13 +301,13 @@ public class Convention extends ObjetMetier implements Exportable {
     @JoinColumn(name = "idUniteDureeGratification")
     private UniteDuree uniteDureeGratification;
 
-    @Column(length = 50)
+    @Column
     private String monnaieGratification;
 
-    @Column(length = 10)
+    @Column
     private String volumeHoraireFormation;
 
-    @Column(length = 30)
+    @Column
     private String typePresence;
 
     @ManyToOne

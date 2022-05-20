@@ -79,7 +79,7 @@ public class Avenant extends ObjetMetier implements Exportable {
     @JoinColumn(name = "idEnseignant")
     private Enseignant enseignant;
 
-    @Column(length = 7)
+    @Column
     private String montantGratification;
 
     @ManyToOne
@@ -103,7 +103,7 @@ public class Avenant extends ObjetMetier implements Exportable {
     @Lob
     private String commentaireRupture;
 
-    @Column(length = 50)
+    @Column
     private String monnaieGratification;
 
     @ManyToOne

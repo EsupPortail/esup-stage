@@ -16,7 +16,7 @@ public class StatutJuridique implements Exportable {
     private int id;
 
     @JsonView(Views.List.class)
-    @Column(name = "libelleStatutJuridique", nullable = false, length = 100)
+    @Column(name = "libelleStatutJuridique", nullable = false)
     private String libelle;
 
     @Column(name = "temEnServStatut", nullable = false, length = 1)

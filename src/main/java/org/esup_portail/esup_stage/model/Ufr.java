@@ -17,7 +17,7 @@ public class Ufr implements Exportable {
     private UfrId id;
 
     @JsonView(Views.List.class)
-    @Column(name = "libelleUFR", nullable = false, length = 100)
+    @Column(name = "libelleUFR", nullable = false)
     private String libelle;
 
     public UfrId getId() {

@@ -22,29 +22,29 @@ public class Etudiant extends ObjetMetier {
     private int id;
 
     @JsonView(Views.List.class)
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
     private String nom;
 
     @JsonView(Views.List.class)
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
     private String prenom;
 
-    @Column(length = 50)
+    @Column
     private String mail;
 
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false)
     private String codeUniversite;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
     private String identEtudiant;
 
-    @Column(length = 50)
+    @Column
     private String nomMarital;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false)
     private String numEtudiant;
 
-    @Column(length = 1)
+    @Column
     private String codeSexe;
 
     @Temporal(TemporalType.DATE)

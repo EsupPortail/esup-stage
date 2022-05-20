@@ -10,10 +10,10 @@ public class EtapeId implements Serializable {
     @Column(name = "codeEtape", nullable = false)
     private String code;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
     private String codeUniversite;
 
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false)
     private String codeVersionEtape;
 
     public String getCode() {

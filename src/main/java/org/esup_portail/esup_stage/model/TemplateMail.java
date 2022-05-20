@@ -28,13 +28,13 @@ public class TemplateMail extends ObjetMetier implements TemplateMailInterface, 
     @Column(nullable = false)
     private int id;
 
-    @Column(nullable = false, length = 150, unique = true)
+    @Column(nullable = false, unique = true)
     private String code;
 
-    @Column(nullable = false, length = 150)
+    @Column(nullable = false)
     private String libelle;
 
-    @Column(nullable = false, length = 250)
+    @Column(nullable = false)
     private String objet;
 
     @Lob

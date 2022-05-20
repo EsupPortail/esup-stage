@@ -14,7 +14,7 @@ public class AppFonction {
     private int id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "codeAppFonction", nullable = false, unique = true, length = 10)
+    @Column(name = "codeAppFonction", nullable = false, unique = true)
     private AppFonctionEnum code;
 
     @Column(name = "libelleAppFonction", nullable = false, unique = true)
