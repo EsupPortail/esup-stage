@@ -23,6 +23,7 @@ public class TemplateMail extends ObjetMetier implements TemplateMailInterface, 
     public static final String CODE_GES_CREA_CONVENTION = "GES_CREA_CONVENTION";
     public static final String CODE_GES_MODIF_AVENANT = "GES_MODIF_AVENANT";
     public static final String CODE_GES_MODIF_CONVENTION = "GES_MODIF_CONVENTION";
+    public static final String CODE_FICHE_EVAL = "FICHE_EVAL";
 
     @Id
     @Column(nullable = false)

@@ -1,5 +1,6 @@
 package org.esup_portail.esup_stage.controller;
 
+import org.esup_portail.esup_stage.dto.ContextDto;
 import org.esup_portail.esup_stage.dto.ReponseEtudiantFormDto;
 import org.esup_portail.esup_stage.dto.ReponseSupplementaireFormDto;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
@@ -10,12 +11,17 @@ import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
 import org.esup_portail.esup_stage.repository.QuestionSupplementaireJpaRepository;
 import org.esup_portail.esup_stage.repository.ReponseSupplementaireJpaRepository;
 import org.esup_portail.esup_stage.repository.ReponseEvaluationJpaRepository;
+import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
+import org.esup_portail.esup_stage.service.MailerService;
+import org.esup_portail.esup_stage.service.impression.ImpressionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.ByteArrayOutputStream;
 
 @ApiController
 @RequestMapping("/reponseEvaluation")
@@ -35,6 +41,12 @@ public class ReponseEvaluationController {
 
     @Autowired
     QuestionSupplementaireJpaRepository questionSupplementaireJpaRepository;
+
+    @Autowired
+    ImpressionService impressionService;
+
+    @Autowired
+    MailerService mailerService;
 
     @GetMapping("/getByConvention/{id}")
     public ReponseEvaluation getByConvention(@PathVariable("id") int id) {
@@ -59,6 +71,45 @@ public class ReponseEvaluationController {
         setReponseEvaluationEtudiantData(reponseEvaluation, reponseEtudiantFormDto);
         reponseEvaluation.setValidationEtudiant(true);
         return reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
+    }
+
+    @GetMapping("/{id}/getFicheEtudiantPDF/typeFiche/{typeFiche}")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
+    public ResponseEntity<byte[]> getFicheEtudiantPDF(@PathVariable("id") int id,@PathVariable("typeFiche") int typeFiche) {
+        ReponseEvaluation reponseEvaluation = reponseEvaluationJpaRepository.findByConvention(id);
+        if (reponseEvaluation == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "ReponseEvaluation non trouvé");
+        }
+        ByteArrayOutputStream ou = new ByteArrayOutputStream();
+
+        if(typeFiche == 0)
+            impressionService.generateFicheEtudiantPDF(reponseEvaluation, ou);
+        if(typeFiche == 1)
+            impressionService.generateFicheEtudiantPDF(reponseEvaluation, ou);
+        if(typeFiche == 2)
+            impressionService.generateFicheEtudiantPDF(reponseEvaluation, ou);
+
+        byte[] pdf = ou.toByteArray();
+        return ResponseEntity.ok().body(pdf);
+    }
+
+    @GetMapping("/{id}/sendMailEvaluation/typeFiche/{typeFiche}")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.MODIFICATION})
+    public void sendMailEvaluation(@PathVariable("id") int id,@PathVariable("typeFiche") int typeFiche) {
+        Convention convention = conventionJpaRepository.findById(id);
+        if (convention == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        }
+        ContextDto contexteDto = ServiceContext.getServiceContext();
+        Utilisateur utilisateur = contexteDto.getUtilisateur();
+
+        if(typeFiche == 0)
+            mailerService.sendAlerteValidation(convention.getEtudiant().getMail(), convention, utilisateur, TemplateMail.CODE_FICHE_EVAL);
+        else if(typeFiche == 1){
+            mailerService.sendAlerteValidation(convention.getEnseignant().getMail(), convention, utilisateur, TemplateMail.CODE_FICHE_EVAL);
+        }else if(typeFiche == 2){
+            mailerService.sendAlerteValidation(convention.getContact().getMail(), convention, utilisateur, TemplateMail.CODE_FICHE_EVAL);
+        }
     }
 
     @DeleteMapping("/{id}")

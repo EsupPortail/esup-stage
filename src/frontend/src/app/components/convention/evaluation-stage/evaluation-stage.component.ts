@@ -7,6 +7,7 @@ import { MatExpansionPanel } from "@angular/material/expansion";
 import { AppFonction } from "../../../constants/app-fonction";
 import { Droit } from "../../../constants/droit";
 import { AuthService } from "../../../services/auth.service";
+import * as FileSaver from 'file-saver';
 
 @Component({
   selector: 'app-evaluation-stage',
@@ -28,6 +29,10 @@ export class EvaluationStageComponent implements OnInit {
   editEtu: boolean = false;
   editEns: boolean = false;
   editEnt: boolean = false;
+
+  isEtudiant:boolean = false;
+  isEnseignant:boolean = false;
+  isGestionnaireOrAdmin:boolean = false;
 
   @ViewChild(MatExpansionPanel) firstPanel: MatExpansionPanel|undefined;
 
@@ -760,6 +765,11 @@ export class EvaluationStageComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
+    this.isEtudiant = this.authService.isEtudiant();
+    this.isEnseignant= this.authService.isEnseignant();
+    this.isGestionnaireOrAdmin = this.authService.isGestionnaire() || this.authService.isAdmin() ;
+
     this.ficheEvaluationService.getByCentreGestion(this.convention.centreGestion.id).subscribe((response: any) => {
 
       this.ficheEvaluation = response;
@@ -767,9 +777,8 @@ export class EvaluationStageComponent implements OnInit {
       if(this.ficheEvaluation){
         this.reponseEvaluationService.getByConvention(this.convention.id).subscribe((response2: any) => {
           this.reponseEvaluation = response2;
-
+          this.getQuestionSupplementaire();
           if(this.reponseEvaluation){
-            this.getQuestionSupplementaire();
 
             this.reponseEtudiantForm.setValue({
               reponseEtuI1: this.reponseEvaluation.reponseEtuI1,
@@ -852,22 +861,24 @@ export class EvaluationStageComponent implements OnInit {
         form.addControl(questionSupplementaireFormControlName,new FormControl(null));
         questionSupplementaire.formControlName = questionSupplementaireFormControlName
 
-        this.reponseEvaluationService.getReponseSupplementaire(this.convention.id, questionSupplementaire.id).subscribe((response2: any) => {
+         if(this.reponseEvaluation){
+          this.reponseEvaluationService.getReponseSupplementaire(this.convention.id, questionSupplementaire.id).subscribe((response2: any) => {
 
-          questionSupplementaire.reponse = false;
-          if (response2){
-            questionSupplementaire.reponse = true;
-            if(questionSupplementaire.typeQuestion == 'txt'){
-              form.get(questionSupplementaireFormControlName)!.setValue(response2.reponseTxt);
+            questionSupplementaire.reponse = false;
+            if (response2){
+              questionSupplementaire.reponse = true;
+              if(questionSupplementaire.typeQuestion == 'txt'){
+                form.get(questionSupplementaireFormControlName)!.setValue(response2.reponseTxt);
+              }
+              if(questionSupplementaire.typeQuestion == 'not'){
+                form.get(questionSupplementaireFormControlName)!.setValue(response2.reponseInt);
+              }
+              if(questionSupplementaire.typeQuestion == 'yn'){
+                form.get(questionSupplementaireFormControlName)!.setValue(response2.reponseBool);
+              }
             }
-            if(questionSupplementaire.typeQuestion == 'not'){
-              form.get(questionSupplementaireFormControlName)!.setValue(response2.reponseInt);
-            }
-            if(questionSupplementaire.typeQuestion == 'yn'){
-              form.get(questionSupplementaireFormControlName)!.setValue(response2.reponseBool);
-            }
-          }
-        });
+          });
+        }
       }
 
       this.questionsSupplementaires = [];
@@ -921,12 +932,8 @@ export class EvaluationStageComponent implements OnInit {
           reponseSupplementaireData.reponseBool = this.reponseSupplementaireEtudiantForm.get(questionSupplementaire.formControlName)!.value;
         }
 
-        console.log('questionSupplementaire : ' + JSON.stringify(questionSupplementaire, null, 2))
-        console.log('reponseSupplementaireData : ' + JSON.stringify(reponseSupplementaireData, null, 2))
-
         if(questionSupplementaire.reponse){
           this.reponseEvaluationService.updateReponseSupplementaire(this.convention.id, questionSupplementaire.id, reponseSupplementaireData).subscribe((response: any) => {
-            console.log('response : ' + JSON.stringify(response, null, 2))
           });
         }else{
           this.reponseEvaluationService.createReponseSupplementaire(this.convention.id, questionSupplementaire.id, reponseSupplementaireData).subscribe((response: any) => {
@@ -946,6 +953,20 @@ export class EvaluationStageComponent implements OnInit {
         });
       }
     }
+  }
+
+  printFicheEtudiant(): void {
+    this.reponseEvaluationService.getFicheEtudiantPDF(this.convention.id, 0).subscribe((response: any) => {
+      var blob = new Blob([response as BlobPart], {type: "application/pdf"});
+      let filename = 'FicheEtudiant_' + this.convention.id + '.pdf';
+      FileSaver.saveAs(blob, filename);
+    });
+  }
+
+  envoiMailEvaluationEtudiant(): void {
+    this.reponseEvaluationService.sendMailEvaluation(this.convention.id, 0).subscribe((response: any) => {
+      this.messageService.setSuccess('Mail envoyé avec succès');
+    });
   }
 
 }

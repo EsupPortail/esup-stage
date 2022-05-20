@@ -3,30 +3,38 @@
     <mat-expansion-panel-header>
       <mat-panel-title>Évaluation du stage</mat-panel-title>
     </mat-expansion-panel-header>
-    <div class="mt-3">
-      <div class="text-title">Évaluation par l'étudiant</div>
-      <mat-divider class="mb-2"></mat-divider>
+    <div class="mt-3" *ngIf="!isEnseignant">
+      <div *ngIf="isGestionnaireOrAdmin">
+        <div class="text-title">Évaluation par l'étudiant</div>
+        <mat-divider class="mb-2"></mat-divider>
+      </div>
 
       <div class="mt-3 mb-2 danger-color" *ngIf="!ficheEvaluation || !ficheEvaluation.validationEtudiant">
         <i class="fa fa-times"></i>&nbsp;Cette évaluation n'a pas encore été validée par le centre de gestion.
       </div>
-
       <div class="mt-3 mb-2 danger-color" *ngIf="ficheEvaluation && ficheEvaluation.validationEtudiant && !reponseEvaluation">
         <i class="fa fa-times"></i>&nbsp;Cette évaluation n'est pas encore renseignée.
       </div>
+      <div class="mt-3 mb-2 success-color" *ngIf="ficheEvaluation && ficheEvaluation.validationEtudiant && reponseEvaluation">
+        <i class="fa fa-check"></i>&nbsp;Cette évaluation a bien été renseignée.
+      </div>
+      <div class="mt-2">
+        <button mat-button mat-stroked-button color="primary" (click)="editFicheEtudiant()" [disabled]="!ficheEvaluation ||!ficheEvaluation.validationEtudiant">Éditer la fiche</button>
+        <button mat-button mat-stroked-button color="primary" (click)="printFicheEtudiant()" *ngIf="ficheEvaluation && ficheEvaluation.validationEtudiant && reponseEvaluation">Imprimer</button>
+      </div>
+      <div *ngIf="isGestionnaireOrAdmin">
+        <mat-divider class="mt-2 mb-2"></mat-divider>
+        <div class="mt-3 mb-2 danger">Cliquez sur le bouton ci-dessous afin d'envoyer un mail prévenant l'étudiant ({{convention.etudiant.mail}}) qu'il peut remplir sa fiche.</div>
+        <button class="mb-2" mat-button mat-stroked-button color="primary" (click)="envoiMailEvaluationEtudiant()"><i style="vertical-align: initial;" class="fa fa-envelope"></i>&nbsp;Envoyer</button>
+      </div>
 
-      <button class="mt-2" mat-button mat-stroked-button color="primary" (click)="editFicheEtudiant()" [disabled]="!ficheEvaluation ||!ficheEvaluation.validationEtudiant">Éditer la fiche</button>
-
-      <mat-divider class="mt-2 mb-2"></mat-divider>
-      <div class="mt-3 mb-2 danger">Cliquez sur le bouton ci-dessous afin d'envoyer un mail prévenant l'étudiant ({{convention.etudiant.mail}}) qu'il peut remplir sa fiche.</div>
-      <button class="mb-2" mat-button mat-stroked-button color="primary" (click)="editFicheEtudiant()"><i style="vertical-align: initial;" class="fa fa-envelope"></i>&nbsp;Envoyer</button>
-
-      <mat-divider class="mt-2 mb-2"></mat-divider>
-
-      <div class="text-title">Évaluation par l'enseignant référent</div>
+    </div>
+    <div class="mt-3" *ngIf="!isEtudiant">
+      <div class="text-title" *ngIf="isGestionnaireOrAdmin">Évaluation par l'enseignant référent</div>
       <mat-divider class="mb-2"></mat-divider>
+    </div>
 
-      <mat-divider class="mt-2 mb-2"></mat-divider>
+    <div class="mt-3" *ngIf="isGestionnaireOrAdmin">
       <div class="text-title">Appréciation du tuteur professionnel</div>
       <mat-divider class="mb-2"></mat-divider>
     </div>

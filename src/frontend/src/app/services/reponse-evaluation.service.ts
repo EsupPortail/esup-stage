@@ -38,4 +38,12 @@ export class ReponseEvaluationService {
   updateReponseSupplementaire(idConvention: number,idQestion: number, data: any): Observable<any> {
     return this.http.put(`${environment.apiUrl}/reponseEvaluation/${idConvention}/reponseSupplementaire/${idQestion}`, data);
   }
+
+  getFicheEtudiantPDF(id: number,typeFiche: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/reponseEvaluation/${id}/getFicheEtudiantPDF/typeFiche/${typeFiche}`, { responseType: 'blob'});
+  }
+
+  sendMailEvaluation(id: number,typeFiche: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/reponseEvaluation/${id}/sendMailEvaluation/typeFiche/${typeFiche}`);
+  }
 }

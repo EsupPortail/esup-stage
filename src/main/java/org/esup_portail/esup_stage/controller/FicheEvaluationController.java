@@ -105,7 +105,6 @@ public class FicheEvaluationController {
     }
 
     @GetMapping("/getQuestionsSupplementaires/{id}")
-    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public List<QuestionSupplementaire> getQuestionsSupplementaires(@PathVariable("id") int id) {
         return questionSupplementaireJpaRepository.findByFicheEvaluation(id);
     }

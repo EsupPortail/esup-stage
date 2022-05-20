@@ -190,6 +190,10 @@ export class ConventionComponent implements OnInit {
     return this.convention && this.convention.validationPedagogique && this.convention.validationConvention;
   }
 
+  isStageOver(): boolean {
+    return new Date(this.convention.dateFinStage) < new Date();
+  }
+
   isEtudiant(): boolean {
     return this.authService.isEtudiant();
   }
