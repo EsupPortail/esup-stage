@@ -488,7 +488,7 @@ export class FicheEvaluationComponent implements OnInit {
       controlName: "questionEnt3",
     },
     {
-      title: "ntérêt pour l'établissement, les services, et les métiers :",
+      title: "Intérêt pour l'établissement, les services, et les métiers :",
       texte: [
               "Excellent",
               "Très bien",

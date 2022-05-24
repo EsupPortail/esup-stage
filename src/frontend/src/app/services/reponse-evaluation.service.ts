@@ -15,12 +15,12 @@ export class ReponseEvaluationService {
     return this.http.get(`${environment.apiUrl}/reponseEvaluation/getByConvention/${id}`);
   }
 
-  createReponseEtudiant(id: number, data: any): Observable<any> {
-    return this.http.post(`${environment.apiUrl}/reponseEvaluation/etudiant/${id}`, data);
+  createReponse(id: number,typeFiche: number, valid:boolean, data: any): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/reponseEvaluation/${id}/typeFiche/${typeFiche}/valid/${valid}`, data);
   }
 
-  updateReponseEtudiant(id: number, data: any): Observable<any> {
-    return this.http.put(`${environment.apiUrl}/reponseEvaluation/etudiant/${id}`, data);
+  updateReponse(id: number,typeFiche: number, valid:boolean, data: any): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/reponseEvaluation/${id}/typeFiche/${typeFiche}/valid/${valid}`, data);
   }
 
   delete(id: number): Observable<any> {
@@ -39,8 +39,8 @@ export class ReponseEvaluationService {
     return this.http.put(`${environment.apiUrl}/reponseEvaluation/${idConvention}/reponseSupplementaire/${idQestion}`, data);
   }
 
-  getFicheEtudiantPDF(id: number,typeFiche: number): Observable<any> {
-    return this.http.get(`${environment.apiUrl}/reponseEvaluation/${id}/getFicheEtudiantPDF/typeFiche/${typeFiche}`, { responseType: 'blob'});
+  getFichePDF(id: number,typeFiche: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/reponseEvaluation/${id}/getFichePDF/typeFiche/${typeFiche}`, { responseType: 'blob'});
   }
 
   sendMailEvaluation(id: number,typeFiche: number): Observable<any> {

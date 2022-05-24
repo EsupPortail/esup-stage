@@ -54,28 +54,38 @@ public class ReponseEvaluationController {
         return reponseEvaluation;
     }
 
-    @PostMapping("/etudiant/{id}")
-    public ReponseEvaluation createReponseEtudiant(@PathVariable("id") int id, @Valid @RequestBody ReponseEtudiantFormDto reponseEtudiantFormDto) {
+    @PostMapping("/{id}/typeFiche/{typeFiche}/valid/{valid}")
+    public ReponseEvaluation createReponse(@PathVariable("id") int id,@PathVariable("typeFiche") int typeFiche,@PathVariable("valid") boolean valid, @Valid @RequestBody ReponseEtudiantFormDto reponseEtudiantFormDto) {
         ReponseEvaluation reponseEvaluation = initReponseEvaluation(id);
-        reponseEvaluation.setValidationEtudiant(true);
+        if(typeFiche == 0)
+            reponseEvaluation.setValidationEtudiant(valid);
+        if(typeFiche == 1)
+            reponseEvaluation.setValidationEnseignant(valid);
+        if(typeFiche == 2)
+            reponseEvaluation.setValidationEntreprise(valid);
         setReponseEvaluationEtudiantData(reponseEvaluation, reponseEtudiantFormDto);
         return reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
     }
 
-    @PutMapping("/etudiant/{id}")
-    public ReponseEvaluation updateReponseEtudiant(@PathVariable("id") int id, @Valid @RequestBody ReponseEtudiantFormDto reponseEtudiantFormDto) {
+    @PutMapping("/{id}/typeFiche/{typeFiche}/valid/{valid}")
+    public ReponseEvaluation updateReponse(@PathVariable("id") int id,@PathVariable("typeFiche") int typeFiche,@PathVariable("valid") boolean valid, @Valid @RequestBody ReponseEtudiantFormDto reponseEtudiantFormDto) {
         ReponseEvaluation reponseEvaluation = reponseEvaluationJpaRepository.findByConvention(id);
         if (reponseEvaluation == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "ReponseEvaluation non trouvé");
         }
         setReponseEvaluationEtudiantData(reponseEvaluation, reponseEtudiantFormDto);
-        reponseEvaluation.setValidationEtudiant(true);
+        if(typeFiche == 0)
+            reponseEvaluation.setValidationEtudiant(valid);
+        if(typeFiche == 1)
+            reponseEvaluation.setValidationEnseignant(valid);
+        if(typeFiche == 2)
+            reponseEvaluation.setValidationEntreprise(valid);
         return reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
     }
 
-    @GetMapping("/{id}/getFicheEtudiantPDF/typeFiche/{typeFiche}")
+    @GetMapping("/{id}/getFichePDF/typeFiche/{typeFiche}")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
-    public ResponseEntity<byte[]> getFicheEtudiantPDF(@PathVariable("id") int id,@PathVariable("typeFiche") int typeFiche) {
+    public ResponseEntity<byte[]> getFichePDF(@PathVariable("id") int id,@PathVariable("typeFiche") int typeFiche) {
         ReponseEvaluation reponseEvaluation = reponseEvaluationJpaRepository.findByConvention(id);
         if (reponseEvaluation == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "ReponseEvaluation non trouvé");

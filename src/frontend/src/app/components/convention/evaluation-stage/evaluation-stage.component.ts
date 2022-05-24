@@ -22,8 +22,12 @@ export class EvaluationStageComponent implements OnInit {
   @Input() convention: any;
 
   reponseEtudiantForm: FormGroup;
+  reponseEnseignantForm: FormGroup;
+  reponseEntrepriseForm: FormGroup;
 
   reponseSupplementaireEtudiantForm: FormGroup;
+  reponseSupplementaireEnseignantForm: FormGroup;
+  reponseSupplementaireEntrepriseForm: FormGroup;
 
   edit: boolean = false;
   editEtu: boolean = false;
@@ -35,7 +39,6 @@ export class EvaluationStageComponent implements OnInit {
   isGestionnaireOrAdmin:boolean = false;
 
   @ViewChild(MatExpansionPanel) firstPanel: MatExpansionPanel|undefined;
-
 
   controlsIndexToLetter:any = ['a','b','c','d','e','f','g','h']
   FicheEtudiantIQuestions: any = [
@@ -140,6 +143,7 @@ export class EvaluationStageComponent implements OnInit {
               "Satisfaisant",
               "Insuffisant",
              ],
+      bisQuestion:"Pour quelles raisons ?",
       controlName: "EtuII1",
     },
     {
@@ -152,6 +156,7 @@ export class EvaluationStageComponent implements OnInit {
               "Satisfaisant",
               "Insuffisant",
              ],
+      bisQuestion:"Pour quelles raisons ?",
       controlName: "EtuII2",
     },
     {
@@ -164,6 +169,7 @@ export class EvaluationStageComponent implements OnInit {
               "Satisfaisant",
               "Insuffisant",
              ],
+      bisQuestion:"Pour quelles raisons ?",
       controlName: "EtuII3",
     },
     {
@@ -181,15 +187,9 @@ export class EvaluationStageComponent implements OnInit {
       title: "Avez-vous exercé des responsabilités ?",
       type: "EtuII5",
       texte: [
-              "Oui / Non",
-              " ",
-              "Si oui : a) de quel ordre ?",
-              "    Très importantes",
-              "    Importantes",
-              "    Peu importantes",
-              " ",
-              "b) avec autonomie ?",
-              "    Oui / Non",
+              "Très importantes",
+              "Importantes",
+              "Peu importantes",
              ],
       controlName: "EtuII5",
     },
@@ -210,6 +210,7 @@ export class EvaluationStageComponent implements OnInit {
       texte: [
               "Oui / Non",
              ],
+      bisQuestionTrue:"Quel a été le nouveau sujet ?",
       controlName: "EtuIII1",
     },
     {
@@ -218,6 +219,7 @@ export class EvaluationStageComponent implements OnInit {
       texte: [
               "Oui / Non",
              ],
+      bisQuestionFalse:"Commentaire:",
       controlName: "EtuIII2",
     },
     {
@@ -231,7 +233,7 @@ export class EvaluationStageComponent implements OnInit {
               "Très au-dessus de vos compétences",
               "Inatteignables",
              ],
-      controlName: "EtuIII3",
+      controlName: "EtuIII4",
     },
     {
       title: "Ce stage vous a-t-il permis d'acquérir :",
@@ -241,7 +243,7 @@ export class EvaluationStageComponent implements OnInit {
               "Nouvelles méthodologies Oui / Non",
               "Nouvelles connaissances théoriques Oui / Non",
              ],
-      controlName: "EtuIII4",
+      controlName: "EtuIII5",
     },
     {
       title: "Ce stage vous a permis de progresser dans la construction de votre projet personnel et professionnel :",
@@ -253,7 +255,8 @@ export class EvaluationStageComponent implements OnInit {
               "Plutôt pas d'accord",
               "Pas du tout d'accord",
              ],
-      controlName: "EtuIII5",
+      bisQuestion:"Pour quelles raisons ?",
+      controlName: "EtuIII6",
     },
     {
       title: "Ce stage vous paraît déterminant à cette étape de votre formation :",
@@ -265,7 +268,8 @@ export class EvaluationStageComponent implements OnInit {
               "Plutôt pas d'accord",
               "Pas du tout d'accord",
              ],
-      controlName: "EtuIII6",
+      bisQuestion:"Pour quelles raisons ?",
+      controlName: "EtuIII7",
     },
     {
       title: "Votre travail a-t-il abouti à une réorganisation du travail ?",
@@ -273,7 +277,8 @@ export class EvaluationStageComponent implements OnInit {
       texte: [
               "Oui / Non",
              ],
-      controlName: "EtuIII7",
+      bisQuestionTrue:"Pouvez-vous en quelques lignes spécifier ce changement ?",
+      controlName: "EtuIII8",
     },
     {
       title: "Allez-vous valoriser cette expérience dans une prochaine recherche d'emploi/stage ?",
@@ -281,7 +286,8 @@ export class EvaluationStageComponent implements OnInit {
       texte: [
               "Oui / Non",
              ],
-      controlName: "EtuIII8",
+      bisQuestionFalse:"Commentaire:",
+      controlName: "EtuIII9",
     },
     {
       title: "Votre travail va-t-il donner lieu à un dépôt de brevet ?",
@@ -289,7 +295,7 @@ export class EvaluationStageComponent implements OnInit {
       texte: [
               "Oui / Non",
              ],
-      controlName: "EtuIII9",
+      controlName: "EtuIII10",
     },
     {
       title: "Avez-vous reçu une attestation de stage ?",
@@ -297,7 +303,7 @@ export class EvaluationStageComponent implements OnInit {
       texte: [
               "Oui / Non",
              ],
-      controlName: "EtuIII10",
+      controlName: "EtuIII11",
     },
     {
       title: "Avez-vous rencontré des difficultés à percevoir votre gratification ?",
@@ -305,7 +311,7 @@ export class EvaluationStageComponent implements OnInit {
       texte: [
               "Oui / Non",
              ],
-      controlName: "EtuIII11",
+      controlName: "EtuIII12",
     },
     {
       title: "Ce stage a-t-il donné lieu à une proposition d'emploi ou d'alternance ?",
@@ -313,7 +319,7 @@ export class EvaluationStageComponent implements OnInit {
       texte: [
               "Oui / Non",
              ],
-      controlName: "EtuIII12",
+      controlName: "EtuIII13",
     },
     {
       title: "Conseilleriez-vous cet établissement d'accueil à un autre étudiant ?",
@@ -325,7 +331,8 @@ export class EvaluationStageComponent implements OnInit {
               "Plutôt pas d'accord",
               "Pas du tout d'accord",
              ],
-      controlName: "EtuIII13",
+      bisQuestion:"Pour quelles raisons ?",
+      controlName: "EtuIII15",
     },
     {
       title: "Indiquez votre appréciation générale sur le stage :",
@@ -337,7 +344,8 @@ export class EvaluationStageComponent implements OnInit {
               "Satisfaisant",
               "Insuffisant",
              ],
-      controlName: "EtuIII14",
+      bisQuestion:"Pour quelles raisons ?",
+      controlName: "EtuIII16",
     },
   ];
 
@@ -524,7 +532,7 @@ export class EvaluationStageComponent implements OnInit {
       controlName: "Ent3",
     },
     {
-      title: "ntérêt pour l'établissement, les services, et les métiers :",
+      title: "Intérêt pour l'établissement, les services, et les métiers :",
       texte: [
               "Excellent",
               "Très bien",
@@ -735,8 +743,6 @@ export class EvaluationStageComponent implements OnInit {
       reponseEtuIII1bis: [null],
       reponseEtuIII2: [null],
       reponseEtuIII2bis: [null],
-      reponseEtuIII3: [null],
-      reponseEtuIII3bis: [null],
       reponseEtuIII4: [null],
       reponseEtuIII5a: [null],
       reponseEtuIII5b: [null],
@@ -754,14 +760,23 @@ export class EvaluationStageComponent implements OnInit {
       reponseEtuIII11: [null],
       reponseEtuIII12: [null],
       reponseEtuIII13: [null],
-      reponseEtuIII14: [null],
       reponseEtuIII15: [null],
       reponseEtuIII15bis: [null],
       reponseEtuIII16: [null],
       reponseEtuIII16bis: [null],
     });
 
+    this.reponseEnseignantForm = this.fb.group({
+      reponseEnsI1: [null],
+    });
+
+    this.reponseEntrepriseForm = this.fb.group({
+      reponseEntI1: [null],
+    });
+
     this.reponseSupplementaireEtudiantForm = this.fb.group({});
+    this.reponseSupplementaireEnseignantForm = this.fb.group({});
+    this.reponseSupplementaireEntrepriseForm = this.fb.group({});
   }
 
   ngOnInit(): void {
@@ -812,8 +827,6 @@ export class EvaluationStageComponent implements OnInit {
               reponseEtuIII1bis: this.reponseEvaluation.reponseEtuIII1bis,
               reponseEtuIII2: this.reponseEvaluation.reponseEtuIII2,
               reponseEtuIII2bis: this.reponseEvaluation.reponseEtuIII2bis,
-              reponseEtuIII3: this.reponseEvaluation.reponseEtuIII3,
-              reponseEtuIII3bis: this.reponseEvaluation.reponseEtuIII3bis,
               reponseEtuIII4: this.reponseEvaluation.reponseEtuIII4,
               reponseEtuIII5a: this.reponseEvaluation.reponseEtuIII5a,
               reponseEtuIII5b: this.reponseEvaluation.reponseEtuIII5b,
@@ -831,11 +844,20 @@ export class EvaluationStageComponent implements OnInit {
               reponseEtuIII11: this.reponseEvaluation.reponseEtuIII11,
               reponseEtuIII12: this.reponseEvaluation.reponseEtuIII12,
               reponseEtuIII13: this.reponseEvaluation.reponseEtuIII13,
-              reponseEtuIII14: this.reponseEvaluation.reponseEtuIII14,
               reponseEtuIII15: this.reponseEvaluation.reponseEtuIII15,
               reponseEtuIII15bis: this.reponseEvaluation.reponseEtuIII15bis,
               reponseEtuIII16: this.reponseEvaluation.reponseEtuIII16,
               reponseEtuIII16bis: this.reponseEvaluation.reponseEtuIII16bis,
+            });
+
+
+            this.reponseEtudiantForm.setValue({
+              reponseEnsI1: this.reponseEvaluation.reponseEnsI1,
+            });
+
+
+            this.reponseEtudiantForm.setValue({
+              reponseEntI1: this.reponseEvaluation.reponseEntI1,
             });
           }
         });
@@ -857,6 +879,13 @@ export class EvaluationStageComponent implements OnInit {
           form = this.reponseSupplementaireEtudiantForm;
         }
 
+        if(questionSupplementaire.idPlacement == 3 || questionSupplementaire.idPlacement == 4){
+          form = this.reponseSupplementaireEnseignantForm;
+        }
+
+        if(questionSupplementaire.idPlacement == 5 || questionSupplementaire.idPlacement == 6 || questionSupplementaire.idPlacement == 7){
+          form = this.reponseSupplementaireEntrepriseForm;
+        }
         const questionSupplementaireFormControlName = 'questionSupplementaire' + questionSupplementaire.id
         form.addControl(questionSupplementaireFormControlName,new FormControl(null));
         questionSupplementaire.formControlName = questionSupplementaireFormControlName
@@ -896,6 +925,19 @@ export class EvaluationStageComponent implements OnInit {
   editFicheEtudiant(): void {
     this.edit = true;
     this.editEtu = true;
+    this.firstPanel!.expanded = false;
+  }
+
+  editFicheEnseignant(): void {
+    this.edit = true;
+    this.editEns = true;
+    this.firstPanel!.expanded = false;
+  }
+
+  editFicheEntreprise(): void {
+    this.edit = true;
+    this.editEnt = true;
+    this.firstPanel!.expanded = false;
   }
 
   cancelEdit(): void {
@@ -913,58 +955,93 @@ export class EvaluationStageComponent implements OnInit {
     return false;
   }
 
-  saveReponseEtudiant(): void {
-    if (this.reponseEtudiantForm.valid && this.reponseSupplementaireEtudiantForm.valid) {
+  saveReponse(typeFiche: number): void {
 
-      const data = {...this.reponseEtudiantForm.value};
+    let reponseForm = this.fb.group({});
+    let reponseSupplementaireForm = this.fb.group({});
+    let questionsSupplementaires = [];
 
-      for(let questionSupplementaire of this.questionsSupplementaires[0].concat(this.questionsSupplementaires[1]).concat(this.questionsSupplementaires[2])){
+    if(typeFiche == 0){
+      reponseForm = this.reponseEtudiantForm;
+      reponseSupplementaireForm = this.reponseSupplementaireEtudiantForm;
+      questionsSupplementaires = this.questionsSupplementaires[0].concat(this.questionsSupplementaires[1]).concat(this.questionsSupplementaires[2]);
+    }
 
-        let reponseSupplementaireData = {'reponseTxt':null,'reponseInt':null,'reponseBool':null,};
+    if(typeFiche == 1){
+      reponseForm = this.reponseEtudiantForm;
+      reponseSupplementaireForm = this.reponseSupplementaireEtudiantForm;
+      questionsSupplementaires = this.questionsSupplementaires[3].concat(this.questionsSupplementaires[4]);
+    }
 
-        if(questionSupplementaire.typeQuestion == 'txt'){
-          reponseSupplementaireData.reponseTxt = this.reponseSupplementaireEtudiantForm.get(questionSupplementaire.formControlName)!.value;
-        }
-        if(questionSupplementaire.typeQuestion == 'not'){
-          reponseSupplementaireData.reponseInt = this.reponseSupplementaireEtudiantForm.get(questionSupplementaire.formControlName)!.value;
-        }
-        if(questionSupplementaire.typeQuestion == 'yn'){
-          reponseSupplementaireData.reponseBool = this.reponseSupplementaireEtudiantForm.get(questionSupplementaire.formControlName)!.value;
-        }
+    if(typeFiche == 2){
+      reponseForm = this.reponseEtudiantForm;
+      reponseSupplementaireForm = this.reponseSupplementaireEtudiantForm;
+      questionsSupplementaires = this.questionsSupplementaires[5].concat(this.questionsSupplementaires[6]).concat(this.questionsSupplementaires[7]);
+    }
 
-        if(questionSupplementaire.reponse){
-          this.reponseEvaluationService.updateReponseSupplementaire(this.convention.id, questionSupplementaire.id, reponseSupplementaireData).subscribe((response: any) => {
-          });
-        }else{
-          this.reponseEvaluationService.createReponseSupplementaire(this.convention.id, questionSupplementaire.id, reponseSupplementaireData).subscribe((response: any) => {
-          });
-        }
+    const valid = reponseForm.valid && reponseSupplementaireForm.valid
+
+    const data = {...reponseForm.value};
+
+    for(let questionSupplementaire of questionsSupplementaires){
+      let reponseSupplementaireData = {'reponseTxt':null,'reponseInt':null,'reponseBool':null,};
+      if(questionSupplementaire.typeQuestion == 'txt'){
+        reponseSupplementaireData.reponseTxt = reponseSupplementaireForm.get(questionSupplementaire.formControlName)!.value;
       }
-
-      if(this.reponseEvaluation){
-        this.reponseEvaluationService.updateReponseEtudiant(this.convention.id, data).subscribe((response: any) => {
-          this.reponseEvaluation = response;
-          this.messageService.setSuccess('Evaluation editée avec succès');
+      if(questionSupplementaire.typeQuestion == 'not'){
+        reponseSupplementaireData.reponseInt = reponseSupplementaireForm.get(questionSupplementaire.formControlName)!.value;
+      }
+      if(questionSupplementaire.typeQuestion == 'yn'){
+        reponseSupplementaireData.reponseBool = reponseSupplementaireForm.get(questionSupplementaire.formControlName)!.value;
+      }
+      if(questionSupplementaire.reponse){
+        this.reponseEvaluationService.updateReponseSupplementaire(this.convention.id, questionSupplementaire.id, reponseSupplementaireData).subscribe((response: any) => {
         });
       }else{
-        this.reponseEvaluationService.createReponseEtudiant(this.convention.id, data).subscribe((response: any) => {
-          this.reponseEvaluation = response;
-          this.messageService.setSuccess('Evaluation editée avec succès');
+        this.reponseEvaluationService.createReponseSupplementaire(this.convention.id, questionSupplementaire.id, reponseSupplementaireData).subscribe((response: any) => {
         });
       }
     }
+    if(this.reponseEvaluation){
+      this.reponseEvaluationService.updateReponse(this.convention.id,typeFiche,valid, data).subscribe((response: any) => {
+        this.reponseEvaluation = response;
+        if(valid){
+          this.messageService.setSuccess('Evaluation enregistrée avec succès');
+        }else{
+          this.messageService.setWarning('Evaluation enregistrée avec succès, mais certains champs restent à remplir');
+        }
+      });
+    }else{
+      this.reponseEvaluationService.createReponse(this.convention.id,typeFiche,valid, data).subscribe((response: any) => {
+        this.reponseEvaluation = response;
+        if(valid){
+          this.messageService.setSuccess('Evaluation enregistrée avec succès');
+        }else{
+          this.messageService.setWarning('Evaluation enregistrée avec succès, mais certains champs restent à remplir');
+        }
+      });
+    }
   }
 
-  printFicheEtudiant(): void {
-    this.reponseEvaluationService.getFicheEtudiantPDF(this.convention.id, 0).subscribe((response: any) => {
+  printFiche(typeFiche: number): void {
+    this.reponseEvaluationService.getFichePDF(this.convention.id, typeFiche).subscribe((response: any) => {
       var blob = new Blob([response as BlobPart], {type: "application/pdf"});
-      let filename = 'FicheEtudiant_' + this.convention.id + '.pdf';
+      let filename;
+      if (typeFiche==0){
+        filename = 'FicheEtudiant_' + this.convention.id + '.pdf';
+      }
+      if (typeFiche==1){
+        filename = 'FicheEnseignant_' + this.convention.id + '.pdf';
+      }
+      if (typeFiche==2){
+        filename = 'FicheEntreprise_' + this.convention.id + '.pdf';
+      }
       FileSaver.saveAs(blob, filename);
     });
   }
 
-  envoiMailEvaluationEtudiant(): void {
-    this.reponseEvaluationService.sendMailEvaluation(this.convention.id, 0).subscribe((response: any) => {
+  envoiMailEvaluation(typeFiche: number): void {
+    this.reponseEvaluationService.sendMailEvaluation(this.convention.id, typeFiche).subscribe((response: any) => {
       this.messageService.setSuccess('Mail envoyé avec succès');
     });
   }
