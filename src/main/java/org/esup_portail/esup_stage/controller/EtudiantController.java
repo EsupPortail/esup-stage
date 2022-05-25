@@ -1,7 +1,8 @@
 package org.esup_portail.esup_stage.controller;
 
-import org.esup_portail.esup_stage.dto.ContextDto;
+import com.fasterxml.jackson.annotation.JsonView;import org.esup_portail.esup_stage.dto.ContextDto;
 import org.esup_portail.esup_stage.dto.ConventionFormationDto;
+import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
@@ -16,7 +17,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -34,6 +37,9 @@ public class EtudiantController {
     AppConfigService appConfigService;
 
     @Autowired
+    EtudiantRepository etudiantRepository;
+
+    @Autowired
     EtudiantJpaRepository etudiantJpaRepository;
 
     @Autowired
@@ -47,6 +53,16 @@ public class EtudiantController {
 
     @Autowired
     EtapeJpaRepository etapeJpaRepository;
+
+    @GetMapping
+    @Secure
+    public PaginatedResponse<Etudiant> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
+
+        PaginatedResponse<Etudiant> paginatedResponse = new PaginatedResponse<>();
+        paginatedResponse.setTotal(etudiantRepository.count(filters));
+        paginatedResponse.setData(etudiantRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
+        return paginatedResponse;
+    }
 
     @GetMapping("/{numEtudiant}/apogee-data")
     @Secure

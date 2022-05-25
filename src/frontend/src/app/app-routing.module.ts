@@ -18,6 +18,7 @@ import { TemplateMailComponent } from "./components/admin/template-mail/template
 import { GestionEtabAccueilComponent } from "./components/gestion-etab-accueil/gestion-etab-accueil.component";
 import { TemplateConventionComponent } from "./components/admin/template-convention/template-convention.component";
 import { EvalStageComponent } from './components/eval-stage/eval-stage.component';
+import { ConventionCreateEnMasseComponent } from './components/convention-create-en-masse/convention-create-en-masse.component';
 
 const routes: Routes = [
   {path: '', component: HomeComponent, canActivate: [AuthGuard], data: {role: {}, title: 'Accueil'}},
@@ -103,6 +104,15 @@ const routes: Routes = [
     data: {
       role: {fonction: AppFonction.CONVENTION, droits: [Droit.CREATION, Droit.VALIDATION, Droit.LECTURE, Droit.MODIFICATION]},
       title: 'Création d\'une convention'
+    }
+  },
+  {
+    path: 'cnvention-create-en-masse',
+    component: ConventionCreateEnMasseComponent,
+    canActivate: [AuthGuard],
+    data: {
+      role: {fonction: AppFonction.PARAM_CENTRE, droits: [Droit.LECTURE]},
+      title: 'Création des conventions en masse'
     }
   },
   {

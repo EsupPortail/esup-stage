@@ -59,6 +59,15 @@ export class AppComponent {
       }
     },
     {
+      libelle: 'Créer des conventions en masse',
+      path: 'cnvention-create-en-masse',
+      icon: 'fa-file-contract',
+      alerte: false,
+      canView: () => {
+        return this.authService.checkRights({fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.LECTURE]})
+      }
+    },
+    {
       libelle: 'Paramétrage de l\'application',
       path: 'param-global',
       canView: () => {

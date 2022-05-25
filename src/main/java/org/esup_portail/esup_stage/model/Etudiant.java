@@ -13,7 +13,7 @@ import java.util.Date;
                 @UniqueConstraint(name = "index_ident_etudiant_code_universite", columnNames = {"identEtudiant", "codeUniversite"})
         }
 )
-public class Etudiant extends ObjetMetier {
+public class Etudiant extends ObjetMetier implements Exportable {
 
     @JsonView(Views.List.class)
     @Id
@@ -128,5 +128,10 @@ public class Etudiant extends ObjetMetier {
 
     public void setDateNais(Date dateNais) {
         this.dateNais = dateNais;
+    }
+
+    @Override
+    public String getExportValue(String key) {
+        return null;
     }
 }

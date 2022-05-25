@@ -113,6 +113,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
       this.total = results.total;
       this.data = results.data;
 
+      console.log('results : ' + JSON.stringify(results, null, 2))
       if (this.setAlerte) {
         this.data.forEach((row: any) => {
           let depasse = false;

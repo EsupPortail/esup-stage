@@ -106,6 +106,7 @@ import { FicheEvaluationComponent } from './components/centre-gestion/fiche-eval
 import { QuestionSupplementaireFormComponent } from './components/centre-gestion/fiche-evaluation/question-supplementaire-form/question-supplementaire-form.component';
 import { EvalStageComponent } from './components/eval-stage/eval-stage.component';
 import { EvaluationStageComponent } from './components/convention/evaluation-stage/evaluation-stage.component';
+import { ConventionCreateEnMasseComponent } from './components/convention-create-en-masse/convention-create-en-masse.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -168,6 +169,7 @@ registerLocaleData(localeFr, 'fr');
     QuestionSupplementaireFormComponent,
     EvalStageComponent,
     EvaluationStageComponent,
+    ConventionCreateEnMasseComponent,
   ],
   imports: [
     BrowserModule,
