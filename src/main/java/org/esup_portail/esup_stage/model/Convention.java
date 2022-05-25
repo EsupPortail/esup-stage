@@ -280,18 +280,24 @@ public class Convention extends ObjetMetier implements Exportable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateSignature;
 
+    @JsonView(Views.List.class)
     private Boolean envoiMailEtudiant;
 
+    @JsonView(Views.List.class)
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateEnvoiMailEtudiant;
 
+    @JsonView(Views.List.class)
     private Boolean envoiMailTuteurPedago;
 
+    @JsonView(Views.List.class)
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateEnvoiMailTuteurPedago;
 
+    @JsonView(Views.List.class)
     private Boolean envoiMailTuteurPro;
 
+    @JsonView(Views.List.class)
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateEnvoiMailTuteurPro;
 

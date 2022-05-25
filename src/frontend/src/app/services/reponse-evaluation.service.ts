@@ -15,14 +15,29 @@ export class ReponseEvaluationService {
     return this.http.get(`${environment.apiUrl}/reponseEvaluation/getByConvention/${id}`);
   }
 
-  createReponse(id: number,typeFiche: number, valid:boolean, data: any): Observable<any> {
-    return this.http.post(`${environment.apiUrl}/reponseEvaluation/${id}/typeFiche/${typeFiche}/valid/${valid}`, data);
+  createReponseEtudiant(id: number, valid:boolean, data: any): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/reponseEvaluation/${id}/etudiant/valid/${valid}`, data);
   }
 
-  updateReponse(id: number,typeFiche: number, valid:boolean, data: any): Observable<any> {
-    return this.http.put(`${environment.apiUrl}/reponseEvaluation/${id}/typeFiche/${typeFiche}/valid/${valid}`, data);
+  updateReponseEtudiant(id: number, valid:boolean, data: any): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/reponseEvaluation/${id}/etudiant/valid/${valid}`, data);
   }
 
+  createReponseEnseignant(id: number, valid:boolean, data: any): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/reponseEvaluation/${id}/enseignant/valid/${valid}`, data);
+  }
+
+  updateReponseEnseignant(id: number, valid:boolean, data: any): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/reponseEvaluation/${id}/enseignant/valid/${valid}`, data);
+  }
+
+  createReponseEntreprise(id: number, valid:boolean, data: any): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/reponseEvaluation/${id}/entreprise/valid/${valid}`, data);
+  }
+
+  updateReponseEntreprise(id: number, valid:boolean, data: any): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/reponseEvaluation/${id}/entreprise/valid/${valid}`, data);
+  }
   delete(id: number): Observable<any> {
     return this.http.delete(environment.apiUrl + "/reponseEvaluation" + id);
   }

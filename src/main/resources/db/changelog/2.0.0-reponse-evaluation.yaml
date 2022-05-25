@@ -1,0 +1,13 @@
+databaseChangeLog:
+- changeSet:
+    id: fix-type-reponse-evaluation
+    author: tjubera
+    changes:
+    - modifyDataType:
+        columnName: reponseEnt17
+        newDataType: TEXT
+        tableName: ReponseEvaluation
+    - modifyDataType:
+        columnName: reponseEnt19
+        newDataType: BIT
+        tableName: ReponseEvaluation

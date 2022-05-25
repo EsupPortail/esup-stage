@@ -143,7 +143,7 @@ export class EvaluationStageComponent implements OnInit {
               "Satisfaisant",
               "Insuffisant",
              ],
-      bisQuestion:"Pour quelles raisons ?",
+      bisQuestionLowNotation:"Pour quelles raisons ?",
       controlName: "EtuII1",
     },
     {
@@ -156,7 +156,7 @@ export class EvaluationStageComponent implements OnInit {
               "Satisfaisant",
               "Insuffisant",
              ],
-      bisQuestion:"Pour quelles raisons ?",
+      bisQuestionLowNotation:"Pour quelles raisons ?",
       controlName: "EtuII2",
     },
     {
@@ -169,7 +169,7 @@ export class EvaluationStageComponent implements OnInit {
               "Satisfaisant",
               "Insuffisant",
              ],
-      bisQuestion:"Pour quelles raisons ?",
+      bisQuestionLowNotation:"Pour quelles raisons ?",
       controlName: "EtuII3",
     },
     {
@@ -205,7 +205,7 @@ export class EvaluationStageComponent implements OnInit {
 
   FicheEtudiantIIIQuestions: any = [
     {
-      title: "Votre sujet de stage était à l'origine : (récuperation du sujet depuis la convention). L'avez-vous modifié ?",
+      title: "Votre sujet de stage était à l'origine : (récuperation du sujet depuis la convention).",
       type: "EtuIII1",
       texte: [
               "Oui / Non",
@@ -239,9 +239,9 @@ export class EvaluationStageComponent implements OnInit {
       title: "Ce stage vous a-t-il permis d'acquérir :",
       type: "multiple-boolean",
       texte: [
-              "Compétences techniques Oui / Non",
-              "Nouvelles méthodologies Oui / Non",
-              "Nouvelles connaissances théoriques Oui / Non",
+              "Compétences techniques",
+              "Nouvelles méthodologies",
+              "Nouvelles connaissances théoriques",
              ],
       controlName: "EtuIII5",
     },
@@ -255,7 +255,7 @@ export class EvaluationStageComponent implements OnInit {
               "Plutôt pas d'accord",
               "Pas du tout d'accord",
              ],
-      bisQuestion:"Pour quelles raisons ?",
+      bisQuestionLowNotation:"Pour quelles raisons ?",
       controlName: "EtuIII6",
     },
     {
@@ -268,7 +268,7 @@ export class EvaluationStageComponent implements OnInit {
               "Plutôt pas d'accord",
               "Pas du tout d'accord",
              ],
-      bisQuestion:"Pour quelles raisons ?",
+      bisQuestionLowNotation:"Pour quelles raisons ?",
       controlName: "EtuIII7",
     },
     {
@@ -331,7 +331,7 @@ export class EvaluationStageComponent implements OnInit {
               "Plutôt pas d'accord",
               "Pas du tout d'accord",
              ],
-      bisQuestion:"Pour quelles raisons ?",
+      bisQuestionLowNotation:"Pour quelles raisons ?",
       controlName: "EtuIII15",
     },
     {
@@ -344,7 +344,7 @@ export class EvaluationStageComponent implements OnInit {
               "Satisfaisant",
               "Insuffisant",
              ],
-      bisQuestion:"Pour quelles raisons ?",
+      bisQuestionLowNotation:"Pour quelles raisons ?",
       controlName: "EtuIII16",
     },
   ];
@@ -352,24 +352,27 @@ export class EvaluationStageComponent implements OnInit {
   FicheEnseignantIQuestions: any = [
     {
       title: "Modalité(s) d’échange(s) avec le stagiaire :",
+      type: "multiple-boolean",
       texte: [
-              "Téléphone Oui / Non",
-              "Mail Oui / Non",
-              "Rencontre Oui / Non",
+              "Téléphone",
+              "Mail",
+              "Rencontre",
              ],
       controlName: "EnsI1",
     },
     {
       title: "Modalité(s) d’échange(s) avec le tuteur professionnel :",
+      type: "multiple-boolean",
       texte: [
-              "Téléphone Oui / Non",
-              "Mail Oui / Non",
-              "Rencontre Oui / Non",
+              "Téléphone",
+              "Mail",
+              "Rencontre",
              ],
       controlName: "EnsI2",
     },
     {
       title: "Commentaire(s) :",
+      type: "texte",
       texte: [
               "Champ de texte libre",
              ],
@@ -380,6 +383,7 @@ export class EvaluationStageComponent implements OnInit {
   FicheEnseignantIIQuestions: any = [
     {
       title: "Impression générale et présentation de l’étudiant :",
+      type: "multiple-choice",
       texte: [
               "Excellent",
               "Très bien",
@@ -391,6 +395,7 @@ export class EvaluationStageComponent implements OnInit {
     },
     {
       title: "Aptitude à cerner et situer le projet :",
+      type: "multiple-choice",
       texte: [
               "Excellent",
               "Très bien",
@@ -402,6 +407,7 @@ export class EvaluationStageComponent implements OnInit {
     },
     {
       title: "Aptitude à appliquer ses connaissances :",
+      type: "multiple-choice",
       texte: [
               "Excellent",
               "Très bien",
@@ -413,6 +419,7 @@ export class EvaluationStageComponent implements OnInit {
     },
     {
       title: "Maîtrise du sujet, argumentation, analyse :",
+      type: "multiple-choice",
       texte: [
               "Excellent",
               "Très bien",
@@ -424,6 +431,7 @@ export class EvaluationStageComponent implements OnInit {
     },
     {
       title: "Mise en évidence des éléments importants de l’étude :",
+      type: "multiple-choice",
       texte: [
               "Excellent",
               "Très bien",
@@ -435,6 +443,7 @@ export class EvaluationStageComponent implements OnInit {
     },
     {
       title: "Utilisation des moyens de communication :",
+      type: "multiple-choice",
       texte: [
               "Excellent",
               "Très bien",
@@ -446,6 +455,7 @@ export class EvaluationStageComponent implements OnInit {
     },
     {
       title: "Qualité de l’expression orale :",
+      type: "multiple-choice",
       texte: [
               "Excellent",
               "Très bien",
@@ -457,6 +467,7 @@ export class EvaluationStageComponent implements OnInit {
     },
     {
       title: "Capacité à intéresser l’auditoire :",
+      type: "multiple-choice",
       texte: [
               "Excellent",
               "Très bien",
@@ -468,6 +479,7 @@ export class EvaluationStageComponent implements OnInit {
     },
     {
       title: "Pertinence des réponses :",
+      type: "multiple-choice",
       texte: [
               "Excellent",
               "Très bien",
@@ -479,6 +491,7 @@ export class EvaluationStageComponent implements OnInit {
     },
     {
       title: "Respect du temps alloué :",
+      type: "multiple-choice",
       texte: [
               "Excellent",
               "Très bien",
@@ -489,7 +502,8 @@ export class EvaluationStageComponent implements OnInit {
       controlName: "EnsII10",
     },
     {
-      title: "Commentaires :",
+      title: "Commentaire(s) :",
+      type: "texte",
       texte: [
               "Champ de texte libre",
              ],
@@ -500,6 +514,7 @@ export class EvaluationStageComponent implements OnInit {
   FicheEntrepriseIQuestions: any = [
     {
       title: "Adaptation au milieu professionnel :",
+      type: "multiple-choice",
       texte: [
               "Excellent",
               "Très bien",
@@ -507,10 +522,12 @@ export class EvaluationStageComponent implements OnInit {
               "Satisfaisant",
               "Insuffisant",
              ],
+      bisQuestion:"Commentaire (facultatif)",
       controlName: "Ent1",
     },
     {
       title: "Intégration au groupe de travail :",
+      type: "multiple-choice",
       texte: [
               "Excellent",
               "Très bien",
@@ -518,10 +535,12 @@ export class EvaluationStageComponent implements OnInit {
               "Satisfaisant",
               "Insuffisant",
              ],
+      bisQuestion:"Commentaire (facultatif)",
       controlName: "Ent2",
     },
     {
       title: "Assiduité - ponctualité :",
+      type: "multiple-choice",
       texte: [
               "Excellent",
               "Très bien",
@@ -533,6 +552,7 @@ export class EvaluationStageComponent implements OnInit {
     },
     {
       title: "Intérêt pour l'établissement, les services, et les métiers :",
+      type: "multiple-choice",
       texte: [
               "Excellent",
               "Très bien",
@@ -540,10 +560,12 @@ export class EvaluationStageComponent implements OnInit {
               "Satisfaisant",
               "Insuffisant",
              ],
+      bisQuestion:"Commentaire (facultatif)",
       controlName: "Ent4",
     },
     {
       title: "Sens de l'organisation :",
+      type: "multiple-choice",
       texte: [
               "Excellent",
               "Très bien",
@@ -551,10 +573,12 @@ export class EvaluationStageComponent implements OnInit {
               "Satisfaisant",
               "Insuffisant",
              ],
+      bisQuestion:"Commentaire (facultatif)",
       controlName: "Ent5",
     },
     {
       title: "Capacité d'autonomie :",
+      type: "multiple-choice",
       texte: [
               "Excellent",
               "Très bien",
@@ -562,10 +586,12 @@ export class EvaluationStageComponent implements OnInit {
               "Satisfaisant",
               "Insuffisant",
              ],
+      bisQuestion:"Commentaire (facultatif)",
       controlName: "Ent6",
     },
     {
       title: "Initiative personnelle :",
+      type: "multiple-choice",
       texte: [
               "Excellent",
               "Très bien",
@@ -573,10 +599,12 @@ export class EvaluationStageComponent implements OnInit {
               "Satisfaisant",
               "Insuffisant",
              ],
+      bisQuestion:"Commentaire (facultatif)",
       controlName: "Ent7",
     },
     {
       title: "Implication :",
+      type: "multiple-choice",
       texte: [
               "Excellent",
               "Très bien",
@@ -584,10 +612,12 @@ export class EvaluationStageComponent implements OnInit {
               "Satisfaisant",
               "Insuffisant",
              ],
+      bisQuestion:"Commentaire (facultatif)",
       controlName: "Ent8",
     },
     {
       title: "Rigueur et précision dans le travail :",
+      type: "multiple-choice",
       texte: [
               "Excellent",
               "Très bien",
@@ -595,6 +625,7 @@ export class EvaluationStageComponent implements OnInit {
               "Satisfaisant",
               "Insuffisant",
              ],
+      bisQuestion:"Commentaire (facultatif)",
       controlName: "Ent9",
     },
   ]
@@ -602,6 +633,7 @@ export class EvaluationStageComponent implements OnInit {
   FicheEntrepriseIIQuestions: any = [
     {
       title: "Aptitude à cerner et situer le projet :",
+      type: "multiple-choice",
       texte: [
               "Excellent",
               "Très bien",
@@ -609,10 +641,12 @@ export class EvaluationStageComponent implements OnInit {
               "Satisfaisant",
               "Insuffisant",
              ],
+      bisQuestion:"Commentaire (facultatif)",
       controlName: "Ent10",
     },
     {
       title: "Aptitude à appliquer ses connaissances :",
+      type: "multiple-choice",
       texte: [
               "Excellent",
               "Très bien",
@@ -620,10 +654,12 @@ export class EvaluationStageComponent implements OnInit {
               "Satisfaisant",
               "Insuffisant",
              ],
+      bisQuestion:"Commentaire (facultatif)",
       controlName: "Ent11",
     },
     {
       title: "Esprit d'observation et pertinence des remarques :",
+      type: "multiple-choice",
       texte: [
               "Excellent",
               "Très bien",
@@ -631,10 +667,12 @@ export class EvaluationStageComponent implements OnInit {
               "Satisfaisant",
               "Insuffisant",
              ],
+      bisQuestion:"Commentaire (facultatif)",
       controlName: "Ent12",
     },
     {
       title: "Esprit de synthèse :",
+      type: "multiple-choice",
       texte: [
               "Excellent",
               "Très bien",
@@ -642,10 +680,12 @@ export class EvaluationStageComponent implements OnInit {
               "Satisfaisant",
               "Insuffisant",
              ],
+      bisQuestion:"Commentaire (facultatif)",
       controlName: "Ent13",
     },
     {
       title: "Aptitude à la communication :",
+      type: "multiple-choice",
       texte: [
               "Excellent",
               "Très bien",
@@ -653,6 +693,7 @@ export class EvaluationStageComponent implements OnInit {
               "Satisfaisant",
               "Insuffisant",
              ],
+      bisQuestion:"Commentaire (facultatif)",
       controlName: "Ent14",
     },
   ]
@@ -660,48 +701,54 @@ export class EvaluationStageComponent implements OnInit {
   FicheEntrepriseIIIQuestions: any = [
     {
       title: "Les objectifs ont-ils été atteints ?",
+      type: "multiple-choice",
       texte: [
-              "Non, il est automatiquement",
-              "Non, je l’ai trouvé assez f",
-              "Oui j’ai eu des difficultés",
+              "Tout à fait d'accord",
+              "Plutôt d'accord",
+              "Sans avis",
+              "Plutôt pas d'accord",
+              "Pas du tout d'accord",
              ],
+      bisQuestion:"Commentaire (facultatif)",
       controlName: "Ent15",
     },
     {
       title: "Indiquez votre appréciation générale de ce stage :",
+      type: "multiple-choice",
       texte: [
-              "Non, il est automatiquement",
-              "Non, je l’ai trouvé assez f",
-              "Oui j’ai eu des difficultés",
+              "Excellent",
+              "Très bien",
+              "Bien",
+              "Satisfaisant",
+              "Insuffisant",
              ],
+      bisQuestionLowNotation:"Pour quelles raisons ?",
       controlName: "Ent16",
     },
     {
       title: "Observations :",
+      type: "texte",
       texte: [
-              "Non, il est automatiquement",
-              "Non, je l’ai trouvé assez f",
-              "Oui j’ai eu des difficultés",
+              "Champ de texte libre",
              ],
       controlName: "Ent17",
     },
     {
       title: "Avez-vous remis au stagiaire une attestation de stage ?",
+      type: "boolean",
       texte: [
-              "Non, il est automatiquement",
-              "Non, je l’ai trouvé assez f",
-              "Oui j’ai eu des difficultés",
+              "Oui / Non",
              ],
-      controlName: "Ent18",
+      controlName: "Ent19",
     },
     {
       title: "Accepteriez-vous de reprendre un de nos étudiants en stage ?",
+      type: "boolean",
       texte: [
-              "Non, il est automatiquement",
-              "Non, je l’ai trouvé assez f",
-              "Oui j’ai eu des difficultés",
+              "Oui / Non",
              ],
-      controlName: "Ent19",
+      bisQuestionTrue:"Pour quelles raisons ?",
+      controlName: "Ent18",
     },
   ]
 
@@ -767,11 +814,63 @@ export class EvaluationStageComponent implements OnInit {
     });
 
     this.reponseEnseignantForm = this.fb.group({
-      reponseEnsI1: [null],
+      reponseEnsI1a: [null],
+      reponseEnsI1b: [null],
+      reponseEnsI1c: [null],
+      reponseEnsI2a: [null],
+      reponseEnsI2b: [null],
+      reponseEnsI2c: [null],
+      reponseEnsI3: [null],
+      reponseEnsII1: [null],
+      reponseEnsII2: [null],
+      reponseEnsII3: [null],
+      reponseEnsII4: [null],
+      reponseEnsII5: [null],
+      reponseEnsII6: [null],
+      reponseEnsII7: [null],
+      reponseEnsII8: [null],
+      reponseEnsII9: [null],
+      reponseEnsII10: [null],
+      reponseEnsII11: [null],
     });
 
     this.reponseEntrepriseForm = this.fb.group({
-      reponseEntI1: [null],
+      reponseEnt1: [null],
+      reponseEnt1bis: [null],
+      reponseEnt2: [null],
+      reponseEnt2bis: [null],
+      reponseEnt3: [null],
+      reponseEnt4: [null],
+      reponseEnt4bis: [null],
+      reponseEnt5: [null],
+      reponseEnt5bis: [null],
+      reponseEnt6: [null],
+      reponseEnt6bis: [null],
+      reponseEnt7: [null],
+      reponseEnt7bis: [null],
+      reponseEnt8: [null],
+      reponseEnt8bis: [null],
+      reponseEnt9: [null],
+      reponseEnt9bis: [null],
+      reponseEnt10: [null],
+      reponseEnt10bis: [null],
+      reponseEnt11: [null],
+      reponseEnt11bis: [null],
+      reponseEnt12: [null],
+      reponseEnt12bis: [null],
+      reponseEnt13: [null],
+      reponseEnt13bis: [null],
+      reponseEnt14: [null],
+      reponseEnt14bis: [null],
+      reponseEnt15: [null],
+      reponseEnt15bis: [null],
+      reponseEnt16: [null],
+      reponseEnt16bis: [null],
+      reponseEnt17: [null],
+      reponseEnt17bis: [null],
+      reponseEnt18: [null],
+      reponseEnt18bis: [null],
+      reponseEnt19: [null],
     });
 
     this.reponseSupplementaireEtudiantForm = this.fb.group({});
@@ -850,14 +949,64 @@ export class EvaluationStageComponent implements OnInit {
               reponseEtuIII16bis: this.reponseEvaluation.reponseEtuIII16bis,
             });
 
-
-            this.reponseEtudiantForm.setValue({
-              reponseEnsI1: this.reponseEvaluation.reponseEnsI1,
+            this.reponseEnseignantForm.setValue({
+              reponseEnsI1a: this.reponseEvaluation.reponseEnsI1a,
+              reponseEnsI1b: this.reponseEvaluation.reponseEnsI1b,
+              reponseEnsI1c: this.reponseEvaluation.reponseEnsI1c,
+              reponseEnsI2a: this.reponseEvaluation.reponseEnsI2a,
+              reponseEnsI2b: this.reponseEvaluation.reponseEnsI2b,
+              reponseEnsI2c: this.reponseEvaluation.reponseEnsI2c,
+              reponseEnsI3: this.reponseEvaluation.reponseEnsI3,
+              reponseEnsII1: this.reponseEvaluation.reponseEnsII1,
+              reponseEnsII2: this.reponseEvaluation.reponseEnsII2,
+              reponseEnsII3: this.reponseEvaluation.reponseEnsII3,
+              reponseEnsII4: this.reponseEvaluation.reponseEnsII4,
+              reponseEnsII5: this.reponseEvaluation.reponseEnsII5,
+              reponseEnsII6: this.reponseEvaluation.reponseEnsII6,
+              reponseEnsII7: this.reponseEvaluation.reponseEnsII7,
+              reponseEnsII8: this.reponseEvaluation.reponseEnsII8,
+              reponseEnsII9: this.reponseEvaluation.reponseEnsII9,
+              reponseEnsII10: this.reponseEvaluation.reponseEnsII10,
+              reponseEnsII11: this.reponseEvaluation.reponseEnsII11,
             });
 
-
-            this.reponseEtudiantForm.setValue({
-              reponseEntI1: this.reponseEvaluation.reponseEntI1,
+            this.reponseEntrepriseForm.setValue({
+              reponseEnt1: this.reponseEvaluation.reponseEnt1,
+              reponseEnt1bis: this.reponseEvaluation.reponseEnt1bis,
+              reponseEnt2: this.reponseEvaluation.reponseEnt2,
+              reponseEnt2bis: this.reponseEvaluation.reponseEnt2bis,
+              reponseEnt3: this.reponseEvaluation.reponseEnt3,
+              reponseEnt4: this.reponseEvaluation.reponseEnt4,
+              reponseEnt4bis: this.reponseEvaluation.reponseEnt4bis,
+              reponseEnt5: this.reponseEvaluation.reponseEnt5,
+              reponseEnt5bis: this.reponseEvaluation.reponseEnt5bis,
+              reponseEnt6: this.reponseEvaluation.reponseEnt6,
+              reponseEnt6bis: this.reponseEvaluation.reponseEnt6bis,
+              reponseEnt7: this.reponseEvaluation.reponseEnt7,
+              reponseEnt7bis: this.reponseEvaluation.reponseEnt7bis,
+              reponseEnt8: this.reponseEvaluation.reponseEnt8,
+              reponseEnt8bis: this.reponseEvaluation.reponseEnt8bis,
+              reponseEnt9: this.reponseEvaluation.reponseEnt9,
+              reponseEnt9bis: this.reponseEvaluation.reponseEnt9bis,
+              reponseEnt10: this.reponseEvaluation.reponseEnt10,
+              reponseEnt10bis: this.reponseEvaluation.reponseEnt10bis,
+              reponseEnt11: this.reponseEvaluation.reponseEnt11,
+              reponseEnt11bis: this.reponseEvaluation.reponseEnt11bis,
+              reponseEnt12: this.reponseEvaluation.reponseEnt12,
+              reponseEnt12bis: this.reponseEvaluation.reponseEnt12bis,
+              reponseEnt13: this.reponseEvaluation.reponseEnt13,
+              reponseEnt13bis: this.reponseEvaluation.reponseEnt13bis,
+              reponseEnt14: this.reponseEvaluation.reponseEnt14,
+              reponseEnt14bis: this.reponseEvaluation.reponseEnt14bis,
+              reponseEnt15: this.reponseEvaluation.reponseEnt15,
+              reponseEnt15bis: this.reponseEvaluation.reponseEnt15bis,
+              reponseEnt16: this.reponseEvaluation.reponseEnt16,
+              reponseEnt16bis: this.reponseEvaluation.reponseEnt16bis,
+              reponseEnt17: this.reponseEvaluation.reponseEnt17,
+              reponseEnt17bis: this.reponseEvaluation.reponseEnt17bis,
+              reponseEnt18: this.reponseEvaluation.reponseEnt18,
+              reponseEnt18bis: this.reponseEvaluation.reponseEnt18bis,
+              reponseEnt19: this.reponseEvaluation.reponseEnt19,
             });
           }
         });
@@ -968,14 +1117,14 @@ export class EvaluationStageComponent implements OnInit {
     }
 
     if(typeFiche == 1){
-      reponseForm = this.reponseEtudiantForm;
-      reponseSupplementaireForm = this.reponseSupplementaireEtudiantForm;
+      reponseForm = this.reponseEnseignantForm;
+      reponseSupplementaireForm = this.reponseSupplementaireEnseignantForm;
       questionsSupplementaires = this.questionsSupplementaires[3].concat(this.questionsSupplementaires[4]);
     }
 
     if(typeFiche == 2){
-      reponseForm = this.reponseEtudiantForm;
-      reponseSupplementaireForm = this.reponseSupplementaireEtudiantForm;
+      reponseForm = this.reponseEntrepriseForm;
+      reponseSupplementaireForm = this.reponseSupplementaireEntrepriseForm;
       questionsSupplementaires = this.questionsSupplementaires[5].concat(this.questionsSupplementaires[6]).concat(this.questionsSupplementaires[7]);
     }
 
@@ -1002,25 +1151,73 @@ export class EvaluationStageComponent implements OnInit {
         });
       }
     }
-    if(this.reponseEvaluation){
-      this.reponseEvaluationService.updateReponse(this.convention.id,typeFiche,valid, data).subscribe((response: any) => {
-        this.reponseEvaluation = response;
-        if(valid){
-          this.messageService.setSuccess('Evaluation enregistrée avec succès');
-        }else{
-          this.messageService.setWarning('Evaluation enregistrée avec succès, mais certains champs restent à remplir');
-        }
-      });
-    }else{
-      this.reponseEvaluationService.createReponse(this.convention.id,typeFiche,valid, data).subscribe((response: any) => {
-        this.reponseEvaluation = response;
-        if(valid){
-          this.messageService.setSuccess('Evaluation enregistrée avec succès');
-        }else{
-          this.messageService.setWarning('Evaluation enregistrée avec succès, mais certains champs restent à remplir');
-        }
-      });
+
+    if(typeFiche == 0){
+      if(this.reponseEvaluation){
+        this.reponseEvaluationService.updateReponseEtudiant(this.convention.id,valid, data).subscribe((response: any) => {
+          this.reponseEvaluation = response;
+          if(valid){
+            this.messageService.setSuccess('Evaluation enregistrée avec succès');
+          }else{
+            this.messageService.setWarning('Evaluation enregistrée avec succès, mais certains champs restent à remplir');
+          }
+        });
+      }else{
+        this.reponseEvaluationService.createReponseEtudiant(this.convention.id,valid, data).subscribe((response: any) => {
+          this.reponseEvaluation = response;
+          if(valid){
+            this.messageService.setSuccess('Evaluation enregistrée avec succès');
+          }else{
+            this.messageService.setWarning('Evaluation enregistrée avec succès, mais certains champs restent à remplir');
+          }
+        });
+      }
     }
+
+    if(typeFiche == 1){
+      if(this.reponseEvaluation){
+        this.reponseEvaluationService.updateReponseEnseignant(this.convention.id,valid, data).subscribe((response: any) => {
+          this.reponseEvaluation = response;
+          if(valid){
+            this.messageService.setSuccess('Evaluation enregistrée avec succès');
+          }else{
+            this.messageService.setWarning('Evaluation enregistrée avec succès, mais certains champs restent à remplir');
+          }
+        });
+      }else{
+        this.reponseEvaluationService.createReponseEnseignant(this.convention.id,valid, data).subscribe((response: any) => {
+          this.reponseEvaluation = response;
+          if(valid){
+            this.messageService.setSuccess('Evaluation enregistrée avec succès');
+          }else{
+            this.messageService.setWarning('Evaluation enregistrée avec succès, mais certains champs restent à remplir');
+          }
+        });
+      }
+    }
+
+    if(typeFiche == 2){
+      if(this.reponseEvaluation){
+        this.reponseEvaluationService.updateReponseEntreprise(this.convention.id,valid, data).subscribe((response: any) => {
+          this.reponseEvaluation = response;
+          if(valid){
+            this.messageService.setSuccess('Evaluation enregistrée avec succès');
+          }else{
+            this.messageService.setWarning('Evaluation enregistrée avec succès, mais certains champs restent à remplir');
+          }
+        });
+      }else{
+        this.reponseEvaluationService.createReponseEntreprise(this.convention.id,valid, data).subscribe((response: any) => {
+          this.reponseEvaluation = response;
+          if(valid){
+            this.messageService.setSuccess('Evaluation enregistrée avec succès');
+          }else{
+            this.messageService.setWarning('Evaluation enregistrée avec succès, mais certains champs restent à remplir');
+          }
+        });
+      }
+    }
+
   }
 
   printFiche(typeFiche: number): void {

@@ -56,10 +56,10 @@
   <ng-container matColumnDef="reponseEvaluationEnseignant" *ngIf="!isEtudiant">
     <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Évaluation par l'enseignant</th>
     <td mat-cell *matCellDef="let row">
-      <div class="text-center" *ngIf="!row.centreGestion.ficheEvaluation || !row.centreGestion.ficheEvaluation.validationEnnseignant">
+      <div class="text-center" *ngIf="!row.centreGestion.ficheEvaluation || !row.centreGestion.ficheEvaluation.validationEnseignant">
         <span style="display:block;">Modèle non créé par le centre de gestion</span>
       </div>
-      <div class="text-center" *ngIf="row.centreGestion.ficheEvaluation && row.centreGestion.ficheEvaluation.validationEnnseignant && !row.validationConvention">
+      <div class="text-center" *ngIf="row.centreGestion.ficheEvaluation && row.centreGestion.ficheEvaluation.validationEnseignant && !row.validationConvention">
         <span style="display:block;">Convention non validée</span>
       </div>
       <div class="text-center" *ngIf="row.centreGestion.ficheEvaluation && row.centreGestion.ficheEvaluation.validationEnseignant && row.validationConvention">

@@ -1,8 +1,6 @@
 package org.esup_portail.esup_stage.controller;
 
-import org.esup_portail.esup_stage.dto.ContextDto;
-import org.esup_portail.esup_stage.dto.ReponseEtudiantFormDto;
-import org.esup_portail.esup_stage.dto.ReponseSupplementaireFormDto;
+import org.esup_portail.esup_stage.dto.*;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
@@ -22,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.io.ByteArrayOutputStream;
+import java.util.Date;
 
 @ApiController
 @RequestMapping("/reponseEvaluation")
@@ -54,35 +53,62 @@ public class ReponseEvaluationController {
         return reponseEvaluation;
     }
 
-    @PostMapping("/{id}/typeFiche/{typeFiche}/valid/{valid}")
-    public ReponseEvaluation createReponse(@PathVariable("id") int id,@PathVariable("typeFiche") int typeFiche,@PathVariable("valid") boolean valid, @Valid @RequestBody ReponseEtudiantFormDto reponseEtudiantFormDto) {
+    @PostMapping("/{id}/etudiant/valid/{valid}")
+    public ReponseEvaluation createReponseEtudiant(@PathVariable("id") int id,@PathVariable("valid") boolean valid, @Valid @RequestBody ReponseEtudiantFormDto reponseEtudiantFormDto) {
         ReponseEvaluation reponseEvaluation = initReponseEvaluation(id);
-        if(typeFiche == 0)
-            reponseEvaluation.setValidationEtudiant(valid);
-        if(typeFiche == 1)
-            reponseEvaluation.setValidationEnseignant(valid);
-        if(typeFiche == 2)
-            reponseEvaluation.setValidationEntreprise(valid);
+        reponseEvaluation.setValidationEtudiant(valid);
         setReponseEvaluationEtudiantData(reponseEvaluation, reponseEtudiantFormDto);
         return reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
     }
 
-    @PutMapping("/{id}/typeFiche/{typeFiche}/valid/{valid}")
-    public ReponseEvaluation updateReponse(@PathVariable("id") int id,@PathVariable("typeFiche") int typeFiche,@PathVariable("valid") boolean valid, @Valid @RequestBody ReponseEtudiantFormDto reponseEtudiantFormDto) {
+    @PutMapping("/{id}/etudiant/valid/{valid}")
+    public ReponseEvaluation updateReponseEtudiant(@PathVariable("id") int id,@PathVariable("valid") boolean valid, @Valid @RequestBody ReponseEtudiantFormDto reponseEtudiantFormDto) {
         ReponseEvaluation reponseEvaluation = reponseEvaluationJpaRepository.findByConvention(id);
         if (reponseEvaluation == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "ReponseEvaluation non trouvé");
         }
+        reponseEvaluation.setValidationEtudiant(valid);
         setReponseEvaluationEtudiantData(reponseEvaluation, reponseEtudiantFormDto);
-        if(typeFiche == 0)
-            reponseEvaluation.setValidationEtudiant(valid);
-        if(typeFiche == 1)
-            reponseEvaluation.setValidationEnseignant(valid);
-        if(typeFiche == 2)
-            reponseEvaluation.setValidationEntreprise(valid);
         return reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
     }
 
+    @PostMapping("/{id}/enseignant/valid/{valid}")
+    public ReponseEvaluation createReponseEnseignant(@PathVariable("id") int id,@PathVariable("valid") boolean valid, @Valid @RequestBody ReponseEnseignantFormDto reponseEnseignantFormDto) {
+        ReponseEvaluation reponseEvaluation = initReponseEvaluation(id);
+        reponseEvaluation.setValidationEnseignant(valid);
+        setReponseEvaluationEnseignantData(reponseEvaluation, reponseEnseignantFormDto);
+        return reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
+    }
+
+    @PutMapping("/{id}/enseignant/valid/{valid}")
+    public ReponseEvaluation updateReponseEnseignant(@PathVariable("id") int id,@PathVariable("valid") boolean valid, @Valid @RequestBody ReponseEnseignantFormDto reponseEnseignantFormDto) {
+        ReponseEvaluation reponseEvaluation = reponseEvaluationJpaRepository.findByConvention(id);
+        if (reponseEvaluation == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "ReponseEvaluation non trouvé");
+        }
+        reponseEvaluation.setValidationEnseignant(valid);
+        setReponseEvaluationEnseignantData(reponseEvaluation, reponseEnseignantFormDto);
+        return reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
+    }
+
+    @PostMapping("/{id}/entreprise/valid/{valid}")
+    public ReponseEvaluation createReponseEntreprise(@PathVariable("id") int id,@PathVariable("valid") boolean valid, @Valid @RequestBody ReponseEntrepriseFormDto reponseEntrepriseFormDto) {
+        ReponseEvaluation reponseEvaluation = initReponseEvaluation(id);
+        reponseEvaluation.setValidationEntreprise(valid);
+        setReponseEvaluationEntrepriseData(reponseEvaluation, reponseEntrepriseFormDto);
+        return reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
+    }
+
+    @PutMapping("/{id}/entreprise/valid/{valid}")
+    public ReponseEvaluation updateReponseEntreprise(@PathVariable("id") int id,@PathVariable("valid") boolean valid, @Valid @RequestBody ReponseEntrepriseFormDto reponseEntrepriseFormDto) {
+        ReponseEvaluation reponseEvaluation = reponseEvaluationJpaRepository.findByConvention(id);
+        if (reponseEvaluation == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "ReponseEvaluation non trouvé");
+        }
+        reponseEvaluation.setValidationEntreprise(valid);
+        setReponseEvaluationEntrepriseData(reponseEvaluation, reponseEntrepriseFormDto);
+        return reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
+    }
     @GetMapping("/{id}/getFichePDF/typeFiche/{typeFiche}")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public ResponseEntity<byte[]> getFichePDF(@PathVariable("id") int id,@PathVariable("typeFiche") int typeFiche) {
@@ -92,12 +118,19 @@ public class ReponseEvaluationController {
         }
         ByteArrayOutputStream ou = new ByteArrayOutputStream();
 
-        if(typeFiche == 0)
+        if(typeFiche == 0) {
             impressionService.generateFicheEtudiantPDF(reponseEvaluation, ou);
-        if(typeFiche == 1)
+            reponseEvaluation.setImpressionEtudiant(true);
+        }
+        if(typeFiche == 1) {
             impressionService.generateFicheEtudiantPDF(reponseEvaluation, ou);
-        if(typeFiche == 2)
+            reponseEvaluation.setImpressionEnseignant(true);
+        }
+        if(typeFiche == 2) {
             impressionService.generateFicheEtudiantPDF(reponseEvaluation, ou);
+            reponseEvaluation.setImpressionEntreprise(true);
+        }
+        reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
 
         byte[] pdf = ou.toByteArray();
         return ResponseEntity.ok().body(pdf);
@@ -113,13 +146,20 @@ public class ReponseEvaluationController {
         ContextDto contexteDto = ServiceContext.getServiceContext();
         Utilisateur utilisateur = contexteDto.getUtilisateur();
 
-        if(typeFiche == 0)
+        if(typeFiche == 0) {
             mailerService.sendAlerteValidation(convention.getEtudiant().getMail(), convention, utilisateur, TemplateMail.CODE_FICHE_EVAL);
-        else if(typeFiche == 1){
+            convention.setEnvoiMailEtudiant(true);
+            convention.setDateEnvoiMailEtudiant(new Date());
+        }else if(typeFiche == 1){
             mailerService.sendAlerteValidation(convention.getEnseignant().getMail(), convention, utilisateur, TemplateMail.CODE_FICHE_EVAL);
+            convention.setEnvoiMailTuteurPedago(true);
+            convention.setDateEnvoiMailTuteurPedago(new Date());
         }else if(typeFiche == 2){
             mailerService.sendAlerteValidation(convention.getContact().getMail(), convention, utilisateur, TemplateMail.CODE_FICHE_EVAL);
+            convention.setEnvoiMailTuteurPro(true);
+            convention.setDateEnvoiMailTuteurPro(new Date());
         }
+        conventionJpaRepository.saveAndFlush(convention);
     }
 
     @DeleteMapping("/{id}")
@@ -261,6 +301,67 @@ public class ReponseEvaluationController {
         reponseEvaluation.setReponseEtuIII15bis(reponseEtudiantFormDto.getReponseEtuIII15bis());
         reponseEvaluation.setReponseEtuIII16(reponseEtudiantFormDto.getReponseEtuIII16());
         reponseEvaluation.setReponseEtuIII16bis(reponseEtudiantFormDto.getReponseEtuIII16bis());
+    }
+
+    private void setReponseEvaluationEnseignantData(ReponseEvaluation reponseEvaluation, ReponseEnseignantFormDto reponseEnseignantFormDto) {
+
+        reponseEvaluation.setReponseEnsI1a(reponseEnseignantFormDto.getReponseEnsI1a());
+        reponseEvaluation.setReponseEnsI1b(reponseEnseignantFormDto.getReponseEnsI1b());
+        reponseEvaluation.setReponseEnsI1c(reponseEnseignantFormDto.getReponseEnsI1c());
+        reponseEvaluation.setReponseEnsI2a(reponseEnseignantFormDto.getReponseEnsI2a());
+        reponseEvaluation.setReponseEnsI2b(reponseEnseignantFormDto.getReponseEnsI2b());
+        reponseEvaluation.setReponseEnsI2c(reponseEnseignantFormDto.getReponseEnsI2c());
+        reponseEvaluation.setReponseEnsI3(reponseEnseignantFormDto.getReponseEnsI3());
+        reponseEvaluation.setReponseEnsII1(reponseEnseignantFormDto.getReponseEnsII1());
+        reponseEvaluation.setReponseEnsII2(reponseEnseignantFormDto.getReponseEnsII2());
+        reponseEvaluation.setReponseEnsII3(reponseEnseignantFormDto.getReponseEnsII3());
+        reponseEvaluation.setReponseEnsII4(reponseEnseignantFormDto.getReponseEnsII4());
+        reponseEvaluation.setReponseEnsII5(reponseEnseignantFormDto.getReponseEnsII5());
+        reponseEvaluation.setReponseEnsII6(reponseEnseignantFormDto.getReponseEnsII6());
+        reponseEvaluation.setReponseEnsII7(reponseEnseignantFormDto.getReponseEnsII7());
+        reponseEvaluation.setReponseEnsII8(reponseEnseignantFormDto.getReponseEnsII8());
+        reponseEvaluation.setReponseEnsII9(reponseEnseignantFormDto.getReponseEnsII9());
+        reponseEvaluation.setReponseEnsII10(reponseEnseignantFormDto.getReponseEnsII10());
+        reponseEvaluation.setReponseEnsII11(reponseEnseignantFormDto.getReponseEnsII11());
+    }
+
+    private void setReponseEvaluationEntrepriseData(ReponseEvaluation reponseEvaluation, ReponseEntrepriseFormDto reponseEntrepriseFormDto) {
+        reponseEvaluation.setReponseEnt1(reponseEntrepriseFormDto.getReponseEnt1());
+        reponseEvaluation.setReponseEnt1bis(reponseEntrepriseFormDto.getReponseEnt1bis());
+        reponseEvaluation.setReponseEnt2(reponseEntrepriseFormDto.getReponseEnt2());
+        reponseEvaluation.setReponseEnt2bis(reponseEntrepriseFormDto.getReponseEnt2bis());
+        reponseEvaluation.setReponseEnt3(reponseEntrepriseFormDto.getReponseEnt3());
+        reponseEvaluation.setReponseEnt4(reponseEntrepriseFormDto.getReponseEnt4());
+        reponseEvaluation.setReponseEnt4bis(reponseEntrepriseFormDto.getReponseEnt4bis());
+        reponseEvaluation.setReponseEnt5(reponseEntrepriseFormDto.getReponseEnt5());
+        reponseEvaluation.setReponseEnt5bis(reponseEntrepriseFormDto.getReponseEnt5bis());
+        reponseEvaluation.setReponseEnt6(reponseEntrepriseFormDto.getReponseEnt6());
+        reponseEvaluation.setReponseEnt6bis(reponseEntrepriseFormDto.getReponseEnt6bis());
+        reponseEvaluation.setReponseEnt7(reponseEntrepriseFormDto.getReponseEnt7());
+        reponseEvaluation.setReponseEnt7bis(reponseEntrepriseFormDto.getReponseEnt7bis());
+        reponseEvaluation.setReponseEnt8(reponseEntrepriseFormDto.getReponseEnt8());
+        reponseEvaluation.setReponseEnt8bis(reponseEntrepriseFormDto.getReponseEnt8bis());
+        reponseEvaluation.setReponseEnt9(reponseEntrepriseFormDto.getReponseEnt9());
+        reponseEvaluation.setReponseEnt9bis(reponseEntrepriseFormDto.getReponseEnt9bis());
+        reponseEvaluation.setReponseEnt10(reponseEntrepriseFormDto.getReponseEnt10());
+        reponseEvaluation.setReponseEnt10bis(reponseEntrepriseFormDto.getReponseEnt10bis());
+        reponseEvaluation.setReponseEnt11(reponseEntrepriseFormDto.getReponseEnt11());
+        reponseEvaluation.setReponseEnt11bis(reponseEntrepriseFormDto.getReponseEnt11bis());
+        reponseEvaluation.setReponseEnt12(reponseEntrepriseFormDto.getReponseEnt12());
+        reponseEvaluation.setReponseEnt12bis(reponseEntrepriseFormDto.getReponseEnt12bis());
+        reponseEvaluation.setReponseEnt13(reponseEntrepriseFormDto.getReponseEnt13());
+        reponseEvaluation.setReponseEnt13bis(reponseEntrepriseFormDto.getReponseEnt13bis());
+        reponseEvaluation.setReponseEnt14(reponseEntrepriseFormDto.getReponseEnt14());
+        reponseEvaluation.setReponseEnt14bis(reponseEntrepriseFormDto.getReponseEnt14bis());
+        reponseEvaluation.setReponseEnt15(reponseEntrepriseFormDto.getReponseEnt15());
+        reponseEvaluation.setReponseEnt15bis(reponseEntrepriseFormDto.getReponseEnt15bis());
+        reponseEvaluation.setReponseEnt16(reponseEntrepriseFormDto.getReponseEnt16());
+        reponseEvaluation.setReponseEnt16bis(reponseEntrepriseFormDto.getReponseEnt16bis());
+        reponseEvaluation.setReponseEnt17(reponseEntrepriseFormDto.getReponseEnt17());
+        reponseEvaluation.setReponseEnt17bis(reponseEntrepriseFormDto.getReponseEnt17bis());
+        reponseEvaluation.setReponseEnt18(reponseEntrepriseFormDto.getReponseEnt18());
+        reponseEvaluation.setReponseEnt18bis(reponseEntrepriseFormDto.getReponseEnt18bis());
+        reponseEvaluation.setReponseEnt19(reponseEntrepriseFormDto.getReponseEnt19());
     }
     private void setReponseSupplementaireData(ReponseSupplementaire reponseSupplementaire, ReponseSupplementaireFormDto reponseSupplementaireFormDto) {
         reponseSupplementaire.setReponseTxt(reponseSupplementaireFormDto.getReponseTxt());

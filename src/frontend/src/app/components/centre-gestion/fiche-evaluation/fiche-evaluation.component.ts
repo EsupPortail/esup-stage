@@ -206,7 +206,7 @@ export class FicheEvaluationComponent implements OnInit {
               "Très au-dessus de vos compétences",
               "Inatteignables",
              ],
-      controlName: "questionEtuIII3",
+      controlName: "questionEtuIII4",
     },
     {
       title: "Ce stage vous a-t-il permis d'acquérir :",
@@ -215,7 +215,7 @@ export class FicheEvaluationComponent implements OnInit {
               "Nouvelles méthodologies Oui / Non",
               "Nouvelles connaissances théoriques Oui / Non",
              ],
-      controlName: "questionEtuIII4",
+      controlName: "questionEtuIII5",
     },
     {
       title: "Ce stage vous a permis de progresser dans la construction de votre projet personnel et professionnel :",
@@ -226,7 +226,7 @@ export class FicheEvaluationComponent implements OnInit {
               "Plutôt pas d'accord",
               "Pas du tout d'accord",
              ],
-      controlName: "questionEtuIII5",
+      controlName: "questionEtuIII6",
     },
     {
       title: "Ce stage vous paraît déterminant à cette étape de votre formation :",
@@ -237,49 +237,49 @@ export class FicheEvaluationComponent implements OnInit {
               "Plutôt pas d'accord",
               "Pas du tout d'accord",
              ],
-      controlName: "questionEtuIII6",
+      controlName: "questionEtuIII7",
     },
     {
       title: "Votre travail a-t-il abouti à une réorganisation du travail ?",
       texte: [
               "Oui / Non",
              ],
-      controlName: "questionEtuIII7",
+      controlName: "questionEtuIII8",
     },
     {
       title: "Allez-vous valoriser cette expérience dans une prochaine recherche d'emploi/stage ?",
       texte: [
               "Oui / Non",
              ],
-      controlName: "questionEtuIII8",
+      controlName: "questionEtuIII9",
     },
     {
       title: "Votre travail va-t-il donner lieu à un dépôt de brevet ?",
       texte: [
               "Oui / Non",
              ],
-      controlName: "questionEtuIII9",
+      controlName: "questionEtuIII10",
     },
     {
       title: "Avez-vous reçu une attestation de stage ?",
       texte: [
               "Oui / Non",
              ],
-      controlName: "questionEtuIII10",
+      controlName: "questionEtuIII11",
     },
     {
       title: "Avez-vous rencontré des difficultés à percevoir votre gratification ?",
       texte: [
               "Oui / Non",
              ],
-      controlName: "questionEtuIII11",
+      controlName: "questionEtuIII12",
     },
     {
       title: "Ce stage a-t-il donné lieu à une proposition d'emploi ou d'alternance ?",
       texte: [
               "Oui / Non",
              ],
-      controlName: "questionEtuIII12",
+      controlName: "questionEtuIII13",
     },
     {
       title: "Conseilleriez-vous cet établissement d'accueil à un autre étudiant ?",
@@ -290,7 +290,7 @@ export class FicheEvaluationComponent implements OnInit {
               "Plutôt pas d'accord",
               "Pas du tout d'accord",
              ],
-      controlName: "questionEtuIII13",
+      controlName: "questionEtuIII15",
     },
     {
       title: "Indiquez votre appréciation générale sur le stage :",
@@ -301,7 +301,7 @@ export class FicheEvaluationComponent implements OnInit {
               "Satisfaisant",
               "Insuffisant",
              ],
-      controlName: "questionEtuIII14",
+      controlName: "questionEtuIII16",
     },
   ];
 
@@ -445,7 +445,7 @@ export class FicheEvaluationComponent implements OnInit {
       controlName: "questionEnsII10",
     },
     {
-      title: "Commentaires :",
+      title: "Commentaire(s) :",
       texte: [
               "Champ de texte libre",
              ],
@@ -617,47 +617,45 @@ export class FicheEvaluationComponent implements OnInit {
     {
       title: "Les objectifs ont-ils été atteints ?",
       texte: [
-              "Non, il est automatiquement",
-              "Non, je l’ai trouvé assez f",
-              "Oui j’ai eu des difficultés",
+              "Tout à fait d'accord",
+              "Plutôt d'accord",
+              "Sans avis",
+              "Plutôt pas d'accord",
+              "Pas du tout d'accord",
              ],
       controlName: "questionEnt15",
     },
     {
       title: "Indiquez votre appréciation générale de ce stage :",
       texte: [
-              "Non, il est automatiquement",
-              "Non, je l’ai trouvé assez f",
-              "Oui j’ai eu des difficultés",
+              "Excellent",
+              "Très bien",
+              "Bien",
+              "Satisfaisant",
+              "Insuffisant",
              ],
       controlName: "questionEnt16",
     },
     {
       title: "Observations :",
       texte: [
-              "Non, il est automatiquement",
-              "Non, je l’ai trouvé assez f",
-              "Oui j’ai eu des difficultés",
+              "Champ de texte libre",
              ],
       controlName: "questionEnt17",
     },
     {
       title: "Avez-vous remis au stagiaire une attestation de stage ?",
       texte: [
-              "Non, il est automatiquement",
-              "Non, je l’ai trouvé assez f",
-              "Oui j’ai eu des difficultés",
+              "Oui / Non",
              ],
-      controlName: "questionEnt18",
+      controlName: "questionEnt19",
     },
     {
       title: "Accepteriez-vous de reprendre un de nos étudiants en stage ?",
       texte: [
-              "Non, il est automatiquement",
-              "Non, je l’ai trouvé assez f",
-              "Oui j’ai eu des difficultés",
+              "Oui / Non",
              ],
-      controlName: "questionEnt19",
+      controlName: "questionEnt18",
     },
   ]
 

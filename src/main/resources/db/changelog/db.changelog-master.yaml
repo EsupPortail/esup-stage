@@ -83,3 +83,6 @@ databaseChangeLog:
   - include:
       file: 2.0.0-template-mail.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 2.0.0-reponse-evaluation.yaml
+      relativeToChangelogFile: true
