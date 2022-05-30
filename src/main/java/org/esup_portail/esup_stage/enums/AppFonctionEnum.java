@@ -7,4 +7,5 @@ public enum AppFonctionEnum {
     AVENANT,
     ORGA_ACC,
     NOMENCLATURE,
+    CREATION_EN_MASSE_CONVENTION,
 }

@@ -60,11 +60,11 @@ export class AppComponent {
     },
     {
       libelle: 'Créer des conventions en masse',
-      path: 'cnvention-create-en-masse',
+      path: 'convention-create-en-masse',
       icon: 'fa-file-contract',
       alerte: false,
       canView: () => {
-        return this.authService.checkRights({fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.LECTURE]})
+        return this.authService.checkRights({fonction: AppFonction.CREATION_EN_MASSE_CONVENTION, droits: [Droit.CREATION, Droit.LECTURE]})
       }
     },
     {

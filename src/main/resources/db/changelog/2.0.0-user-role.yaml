@@ -1,0 +1,138 @@
+databaseChangeLog:
+    - changeSet:
+        id: appFonction-creationEnMasseConvention
+        author: tjubera
+        changes:
+            - insert:
+                columns:
+                  - column:
+                      name: codeAppFonction
+                      value: CREATION_EN_MASSE_CONVENTION
+                  - column:
+                      name: libelleAppFonction
+                      value: Création en masse d’une convention
+                tableName: AppFonction
+    - changeSet:
+          id: userRole-appFonction-creationEnMasseConvention
+          author: tjubera
+          changes:
+              - insert:
+                    columns:
+                        - column:
+                              name: idRole
+                              valueComputed: (SELECT idRole FROM Role WHERE code = 'ADM')
+                        - column:
+                              name: idAppFonction
+                              valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'CREATION_EN_MASSE_CONVENTION')
+                        - column:
+                              name: lecture
+                              valueBoolean: true
+                        - column:
+                              name: creation
+                              valueBoolean: true
+                        - column:
+                              name: modification
+                              valueBoolean: true
+                        - column:
+                              name: suppression
+                              valueBoolean: true
+                        - column:
+                              name: validation
+                              valueBoolean: true
+                    tableName: RoleAppFonction
+              - insert:
+                    columns:
+                        - column:
+                              name: idRole
+                              valueComputed: (SELECT idRole FROM Role WHERE code = 'RESP_GES')
+                        - column:
+                              name: idAppFonction
+                              valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'CREATION_EN_MASSE_CONVENTION')
+                        - column:
+                              name: lecture
+                              valueBoolean: true
+                        - column:
+                              name: creation
+                              valueBoolean: true
+                        - column:
+                              name: modification
+                              valueBoolean: true
+                        - column:
+                              name: suppression
+                              valueBoolean: true
+                        - column:
+                              name: validation
+                              valueBoolean: true
+                    tableName: RoleAppFonction
+              - insert:
+                    columns:
+                        - column:
+                              name: idRole
+                              valueComputed: (SELECT idRole FROM Role WHERE code = 'GES')
+                        - column:
+                              name: idAppFonction
+                              valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'CREATION_EN_MASSE_CONVENTION')
+                        - column:
+                              name: lecture
+                              valueBoolean: true
+                        - column:
+                              name: creation
+                              valueBoolean: true
+                        - column:
+                              name: modification
+                              valueBoolean: true
+                        - column:
+                              name: suppression
+                              valueBoolean: true
+                        - column:
+                              name: validation
+                              valueBoolean: true
+                    tableName: RoleAppFonction
+              - insert:
+                    columns:
+                        - column:
+                              name: idRole
+                              valueComputed: (SELECT idRole FROM Role WHERE code = 'ENS')
+                        - column:
+                              name: idAppFonction
+                              valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'CREATION_EN_MASSE_CONVENTION')
+                        - column:
+                              name: lecture
+                              valueBoolean: false
+                        - column:
+                              name: creation
+                              valueBoolean: false
+                        - column:
+                              name: modification
+                              valueBoolean: false
+                        - column:
+                              name: suppression
+                              valueBoolean: false
+                        - column:
+                              name: validation
+                              valueBoolean: false
+                    tableName: RoleAppFonction
+              - insert:
+                    columns:
+                        - column:
+                              name: idRole
+                              valueComputed: (SELECT idRole FROM Role WHERE code = 'ETU')
+                        - column:
+                              name: idAppFonction
+                              valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'CREATION_EN_MASSE_CONVENTION')
+                        - column:
+                              name: lecture
+                              valueBoolean: false
+                        - column:
+                              name: creation
+                              valueBoolean: false
+                        - column:
+                              name: modification
+                              valueBoolean: false
+                        - column:
+                              name: suppression
+                              valueBoolean: false
+                        - column:
+                              name: validation
+                              valueBoolean: false
+                    tableName: RoleAppFonction

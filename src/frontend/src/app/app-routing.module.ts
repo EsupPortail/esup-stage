@@ -107,11 +107,11 @@ const routes: Routes = [
     }
   },
   {
-    path: 'cnvention-create-en-masse',
+    path: 'convention-create-en-masse',
     component: ConventionCreateEnMasseComponent,
     canActivate: [AuthGuard],
     data: {
-      role: {fonction: AppFonction.PARAM_CENTRE, droits: [Droit.LECTURE]},
+      role: {fonction: AppFonction.CREATION_EN_MASSE_CONVENTION, droits: [Droit.CREATION, Droit.LECTURE]},
       title: 'Création des conventions en masse'
     }
   },
