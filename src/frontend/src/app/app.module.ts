@@ -107,6 +107,7 @@ import { QuestionSupplementaireFormComponent } from './components/centre-gestion
 import { EvalStageComponent } from './components/eval-stage/eval-stage.component';
 import { EvaluationStageComponent } from './components/convention/evaluation-stage/evaluation-stage.component';
 import { ConventionCreateEnMasseComponent } from './components/convention-create-en-masse/convention-create-en-masse.component';
+import { SelectionGroupeEtuComponent } from './components/convention-create-en-masse/selection-groupe-etu/selection-groupe-etu.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -170,6 +171,7 @@ registerLocaleData(localeFr, 'fr');
     EvalStageComponent,
     EvaluationStageComponent,
     ConventionCreateEnMasseComponent,
+    SelectionGroupeEtuComponent,
   ],
   imports: [
     BrowserModule,

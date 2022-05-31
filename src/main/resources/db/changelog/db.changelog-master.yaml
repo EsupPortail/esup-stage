@@ -89,3 +89,6 @@ databaseChangeLog:
   - include:
       file: 2.0.0-user-role.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 2.0.0-groupe-etudiant.yaml
+      relativeToChangelogFile: true

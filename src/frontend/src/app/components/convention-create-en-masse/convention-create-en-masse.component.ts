@@ -1,15 +1,8 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { TableComponent } from "../table/table.component";
-import { ConventionService } from "../../services/convention.service";
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router } from "@angular/router";
+import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
+import { TitleService } from "../../services/title.service";
 import { AuthService } from "../../services/auth.service";
-import { Router } from "@angular/router";
-import { StructureService } from "../../services/structure.service";
-import { UfrService } from "../../services/ufr.service";
-import { EtapeService } from "../../services/etape.service";
-import { EtudiantService } from "../../services/etudiant.service";
-import { MessageService } from "../../services/message.service";
-import { ConfigService } from "../../services/config.service";
-import { SortDirection } from "@angular/material/sort";
 
 @Component({
   selector: 'app-convention-create-en-masse',
@@ -18,73 +11,28 @@ import { SortDirection } from "@angular/material/sort";
 })
 export class ConventionCreateEnMasseComponent implements OnInit {
 
-  columns: string[] = [];
-  sortColumn = 'prenom';
-  sortDirection: SortDirection = 'desc';
-  filters: any[] = [];
-  selected: any[] = [];
+  conventionTabIndex: number = 0;
 
-  anneeEnCours: any|undefined;
-  annees: any[] = [];
+  tabs: any = {
+    0: { statut: 0, init: true },
+  }
 
-  @ViewChild(TableComponent) appTable: TableComponent | undefined;
-
-  constructor(
-    public conventionService: ConventionService,
-    public etudiantService: EtudiantService,
-    private authService: AuthService,
-    private router: Router,
-    private messageService: MessageService,
-    private configService: ConfigService,
-  ) {
+  constructor(private activatedRoute: ActivatedRoute,
+              private titleService: TitleService,
+              private authService: AuthService,
+              private router: Router) {
   }
 
   ngOnInit(): void {
-
-    this.columns = ['select','numEtudiant','nom', 'prenom', 'mail'];
-    this.filters = [
-      { id: 'nom', libelle: 'Nom'},
-      { id: 'prenom', libelle: 'Prénom'},
-      { id: 'numEtudiant', libelle: 'N° étudiant'},
-    ];
   }
 
-
-  isSelected(data: any): boolean {
-    return this.selected.find((r: any) => {return r.id === data.id}) !== undefined;
+  tabChanged(event: MatTabChangeEvent): void {
+    this.tabs[event.index].init = true;
   }
 
-  toggleSelected(data: any): void {
-    const index = this.selected.findIndex((r: any) => {return r.id === data.id});
-    if (index > -1) {
-      this.selected.splice(index, 1);
-    } else {
-      this.selected.push(data);
-    }
+  getProgressValue(key: number): number {
+    if (this.tabs[key].statut === 1) return 66;
+    if (this.tabs[key].statut === 2) return 100;
+    return 33;
   }
-
-  masterToggle(): void {
-    if (this.isAllSelected()) {
-      this.selected = [];
-      return;
-    }
-    this.appTable?.data.forEach((d: any) => {
-      const index = this.selected.findIndex((s: any) => s.id === d.id);
-      if (index === -1) {
-        this.selected.push(d);
-      }
-    });
-  }
-
-  isAllSelected(): boolean {
-    let allSelected = true;
-    this.appTable?.data.forEach((data: any) => {
-      const index = this.selected.findIndex((r: any) => {return r.id === data.id});
-      if (index === -1) {
-         allSelected = false;
-      }
-    });
-    return allSelected;
-  }
-
 }

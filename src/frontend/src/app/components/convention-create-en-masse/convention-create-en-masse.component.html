@@ -1,39 +1,9 @@
-<app-table [service]="etudiantService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters" [sortOrder]="sortDirection"
-           matSort [matSortActive]="sortColumn" [matSortDirection]="'desc'" (matSortChange)="appTable ? appTable.sorting($event) : null"
-           [noResultText]="'Aucun étudiant trouvé'">
-
-  <ng-container matColumnDef="select">
-    <th mat-header-cell *matHeaderCellDef>
-      <mat-checkbox (change)="$event ? masterToggle() : null"
-                    [checked]="selected.length > 0 && isAllSelected()"
-                    [indeterminate]="selected.length > 0 && !isAllSelected()">
-      </mat-checkbox>
-    </th>
-    <td mat-cell *matCellDef="let row">
-      <mat-checkbox [checked]="isSelected(row)"
-                    (change)="$event ? toggleSelected(row) : null"
-                    (click)="$event.stopPropagation()">
-      </mat-checkbox>
-    </td>
-  </ng-container>
-
-  <ng-container matColumnDef="numEtudiant">
-    <th mat-header-cell *matHeaderCellDef>N° étudiant</th>
-    <td mat-cell *matCellDef="let row">{{row.numEtudiant}}</td>
-  </ng-container>
-
-  <ng-container matColumnDef="nom">
-    <th mat-header-cell *matHeaderCellDef>Nom</th>
-    <td mat-cell *matCellDef="let row">{{row.nom}}</td>
-  </ng-container>
-
-  <ng-container matColumnDef="prenom">
-    <th mat-header-cell *matHeaderCellDef>Prénom</th>
-    <td mat-cell *matCellDef="let row">{{row.prenom}}</td>
-  </ng-container>
-
-  <ng-container matColumnDef="mail">
-    <th mat-header-cell *matHeaderCellDef>Mail</th>
-    <td mat-cell *matCellDef="let row">{{row.mail}}</td>
-  </ng-container>
-</app-table>
+<mat-tab-group #tabGroup class="convention" (selectedTabChange)="tabChanged($event)" [(selectedIndex)]="conventionTabIndex">
+  <mat-tab #selectEtuTab>
+    <ng-template mat-tab-label>
+      selection d'un groupe d'étudiants
+      <mat-progress-bar mode="determinate" [value]="getProgressValue(0)" [ngClass]="{editing: tabs[0].statut === 1, done: tabs[0].statut === 2}"></mat-progress-bar>
+    </ng-template>
+    <app-selection-groupe-etu></app-selection-groupe-etu>
+  </mat-tab>
+</mat-tab-group>

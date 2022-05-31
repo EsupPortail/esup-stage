@@ -1,0 +1,136 @@
+databaseChangeLog:
+  - changeSet:
+      id: groupe-etudiant-create
+      author: tjubera
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                  name: idGroupeEtudiant
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: nom
+                  type: VARCHAR(100)
+              - column:
+                  constraints:
+                    unique: true
+                    nullable: false
+                  name: idConvention
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: dateCreation
+                  type: datetime
+              - column:
+                  constraints:
+                    nullable: false
+                  name: loginCreation
+                  type: VARCHAR(50)
+              - column:
+                  defaultValueComputed: 'NULL'
+                  name: dateModif
+                  type: datetime
+              - column:
+                  name: loginModif
+                  type: VARCHAR(50)
+            tableName: GroupeEtudiant
+        - addForeignKeyConstraint:
+            baseColumnNames: idConvention
+            baseTableName: GroupeEtudiant
+            constraintName: fk_GroupeEtudiant_Convention1
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: NO ACTION
+            referencedColumnNames: idConvention
+            referencedTableName: Convention
+            validate: true
+        - createIndex:
+            columns:
+              - column:
+                  name: idConvention
+            indexName: fk_GroupeEtudiant_Convention1
+            tableName: GroupeEtudiant
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                  name: idEtudiantGroupeEtudiant
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: idEtudiant
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: idGroupeEtudiant
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: idConvention
+                  type: INT
+            tableName: EtudiantGroupeEtudiant
+        - addForeignKeyConstraint:
+            baseColumnNames: idConvention
+            baseTableName: EtudiantGroupeEtudiant
+            constraintName: fk_EtudiantGroupeEtudiant_Convention1
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: NO ACTION
+            referencedColumnNames: idConvention
+            referencedTableName: Convention
+            validate: true
+        - createIndex:
+            columns:
+              - column:
+                  name: idConvention
+            indexName: fk_EtudiantGroupeEtudiant_Convention1
+            tableName: EtudiantGroupeEtudiant
+        - addForeignKeyConstraint:
+            baseColumnNames: idEtudiant
+            baseTableName: EtudiantGroupeEtudiant
+            constraintName: FK_EtudiantGroupeEtudiant_Etudiant
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: NO ACTION
+            referencedColumnNames: idEtudiant
+            referencedTableName: Etudiant
+            validate: true
+        - addForeignKeyConstraint:
+            baseColumnNames: idGroupeEtudiant
+            baseTableName: EtudiantGroupeEtudiant
+            constraintName: FK_EtudiantGroupeEtudiant_GroupeEtudiant
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: NO ACTION
+            referencedColumnNames: idGroupeEtudiant
+            referencedTableName: GroupeEtudiant
+            validate: true
+        - addUniqueConstraint:
+            columnNames: idEtudiant, idGroupeEtudiant
+            constraintName: uniq_EtudiantGroupeEtudiant_Etudiant_GroupeEtudiant
+            tableName: EtudiantGroupeEtudiant
+  - changeSet:
+      id: change-collation
+      author: tjubera
+      changes:
+      - sql:
+          sql: ALTER TABLE GroupeEtudiant CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci
+      - sql:
+          sql: ALTER TABLE EtudiantGroupeEtudiant CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci
