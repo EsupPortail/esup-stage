@@ -1,5 +1,7 @@
 package org.esup_portail.esup_stage.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 @Entity
@@ -15,11 +17,12 @@ public class EtudiantGroupeEtudiant {
     @JoinColumn(name = "idEtudiant", nullable = false)
     private Etudiant etudiant;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "idGroupeEtudiant", nullable = false)
     private GroupeEtudiant groupeEtudiant;
 
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.REMOVE}, orphanRemoval = true)
     @JoinColumn(name = "idConvention", nullable = false)
     private Convention convention;
 

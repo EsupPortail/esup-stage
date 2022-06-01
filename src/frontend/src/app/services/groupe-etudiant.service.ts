@@ -11,6 +11,10 @@ export class GroupeEtudiantService {
 
   constructor(private http: HttpClient) { }
 
+  getBrouillon(): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/groupeEtudiant/brouillon`);
+  }
+
   create(data: any): Observable<any> {
     return this.http.post(environment.apiUrl + "/groupeEtudiant", data);
   }

@@ -18,7 +18,7 @@ public class GroupeEtudiant extends ObjetMetier {
     @OneToMany(mappedBy = "groupeEtudiant", fetch = FetchType.EAGER, cascade = {CascadeType.MERGE}, orphanRemoval = true)
     private List<EtudiantGroupeEtudiant> etudiantGroupeEtudiants;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "idConvention", nullable = false)
     private Convention convention;
 
