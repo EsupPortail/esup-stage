@@ -6,7 +6,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "EtudiantGroupeEtudiant", uniqueConstraints = {@UniqueConstraint(name = "uniq_EtudiantGroupeEtudiant_Etudiant_GroupeEtudiant", columnNames = {"idEtudiant", "idGroupeEtudiant"})})
-public class EtudiantGroupeEtudiant {
+public class EtudiantGroupeEtudiant implements Exportable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,4 +58,8 @@ public class EtudiantGroupeEtudiant {
         this.convention = convention;
     }
 
+    @Override
+    public String getExportValue(String key) {
+        return null;
+    }
 }

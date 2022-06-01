@@ -1,0 +1,47 @@
+<mat-card>
+  <mat-card-content>
+    <div class="mb-3">
+      <div class="text-title">Selection d'un groupe d'étudiants</div>
+      <mat-divider class="mb-2"></mat-divider>
+      <app-table [service]="etudiantGroupeEtudiantService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters" [sortOrder]="sortDirection"
+                 matSort [matSortActive]="sortColumn" [matSortDirection]="'desc'" (matSortChange)="appTable ? appTable.sorting($event) : null"
+                 [noResultText]="'Aucun étudiant trouvé'">
+
+        <ng-container matColumnDef="select">
+          <th mat-header-cell *matHeaderCellDef>
+            <mat-checkbox (change)="$event ? masterToggle() : null"
+                          [checked]="selected.length > 0 && isAllSelected()"
+                          [indeterminate]="selected.length > 0 && !isAllSelected()">
+            </mat-checkbox>
+          </th>
+          <td mat-cell *matCellDef="let row">
+            <mat-checkbox [checked]="isSelected(row)"
+                          (change)="$event ? toggleSelected(row) : null"
+                          (click)="$event.stopPropagation()">
+            </mat-checkbox>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="numEtudiant">
+          <th mat-header-cell *matHeaderCellDef>N° étudiant</th>
+          <td mat-cell *matCellDef="let row">{{row.numEtudiant}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="nom">
+          <th mat-header-cell *matHeaderCellDef>Nom</th>
+          <td mat-cell *matCellDef="let row">{{row.nom}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="prenom">
+          <th mat-header-cell *matHeaderCellDef>Prénom</th>
+          <td mat-cell *matCellDef="let row">{{row.prenom}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="mail">
+          <th mat-header-cell *matHeaderCellDef>Mail</th>
+          <td mat-cell *matCellDef="let row">{{row.mail}}</td>
+        </ng-container>
+      </app-table>
+    </div>
+  </mat-card-content>
+</mat-card>

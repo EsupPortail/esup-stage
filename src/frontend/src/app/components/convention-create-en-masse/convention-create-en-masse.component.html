@@ -6,4 +6,18 @@
     </ng-template>
     <app-selection-groupe-etu (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant"></app-selection-groupe-etu>
   </mat-tab>
+  <mat-tab #infosStageTab [disabled]="!groupeEtudiant">
+    <ng-template mat-tab-label>
+      informations relatives au stage
+      <mat-progress-bar mode="determinate" [value]="getProgressValue(1)" [ngClass]="{editing: tabs[1].statut === 1, done: tabs[1].statut === 2}"></mat-progress-bar>
+    </ng-template>
+    <app-cadre-stage (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant"></app-cadre-stage>
+  </mat-tab>
+  <mat-tab #cadreStageTab [disabled]="!groupeEtudiant">
+    <ng-template mat-tab-label>
+      cadre du stage
+      <mat-progress-bar mode="determinate" [value]="getProgressValue(2)" [ngClass]="{editing: tabs[2].statut === 1, done: tabs[2].statut === 2}"></mat-progress-bar>
+    </ng-template>
+    <app-cadre-stage (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant"></app-cadre-stage>
+  </mat-tab>
 </mat-tab-group>

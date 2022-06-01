@@ -1,0 +1,14 @@
+databaseChangeLog:
+- changeSet:
+    id: convention-creationEnMasse
+    author: tjubera
+    changes:
+    - addColumn:
+        tableName: Convention
+        columns:
+        - column:
+            defaultValueBoolean: false
+            constraints:
+                nullable: false
+            name: creationEnMasse
+            type: BIT

@@ -1,0 +1,56 @@
+<mat-card>
+  <mat-card-content>
+    <div class="mb-3">
+      <app-table [service]="etudiantGroupeEtudiantService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters" [sortOrder]="sortDirection"
+                 matSort [matSortActive]="sortColumn" [matSortDirection]="'desc'" (matSortChange)="appTable ? appTable.sorting($event) : null"
+                 [noResultText]="'Aucun étudiant trouvé'">
+
+        this.columns = ['numEtudiant','nom', 'adresse', 'codePostal', 'commune', 'pays', 'tel', 'telPortable', 'mail'];
+        <ng-container matColumnDef="numEtudiant">
+          <th mat-header-cell *matHeaderCellDef>N° étudiant</th>
+          <td mat-cell *matCellDef="let row">{{row.etudiant.numEtudiant}}</td>
+        </ng-container>
+        <ng-container matColumnDef="nom">
+          <th mat-header-cell *matHeaderCellDef>Nom, Prénom</th>
+          <td mat-cell *matCellDef="let row">{{row.etudiant.nom + ' ' + row.etudiant.prenom}}</td>
+        </ng-container>
+        <ng-container matColumnDef="adresse">
+          <th mat-header-cell *matHeaderCellDef>Adresse</th>
+          <td mat-cell *matCellDef="let row">
+            {{row.etudiant.prenom}}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="codePostal">
+          <th mat-header-cell *matHeaderCellDef>Code postal</th>
+          <td mat-cell *matCellDef="let row">
+            {{row.etudiant.mail}}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="commune">
+          <th mat-header-cell *matHeaderCellDef>Commune</th>
+          <td mat-cell *matCellDef="let row">{{row.etudiant.mail}}</td>
+        </ng-container>
+        <ng-container matColumnDef="pays">
+          <th mat-header-cell *matHeaderCellDef>Pays</th>
+          <td mat-cell *matCellDef="let row">{{row.etudiant.mail}}</td>
+        </ng-container>
+        <ng-container matColumnDef="tel">
+          <th mat-header-cell *matHeaderCellDef>Téléphone</th>
+          <td mat-cell *matCellDef="let row">{{row.etudiant.mail}}</td>
+        </ng-container>
+        <ng-container matColumnDef="telPortable">
+          <th mat-header-cell *matHeaderCellDef>Téléphone portable</th>
+          <td mat-cell *matCellDef="let row">{{row.etudiant.mail}}</td>
+        </ng-container>
+        <ng-container matColumnDef="mail">
+          <th mat-header-cell *matHeaderCellDef>Mail institutionnel</th>
+          <td mat-cell *matCellDef="let row">{{row.etudiant.mail}}</td>
+        </ng-container>
+        <ng-container matColumnDef="mailPerso">
+          <th mat-header-cell *matHeaderCellDef>Mail personnel</th>
+          <td mat-cell *matCellDef="let row">{{row.etudiant.mail}}</td>
+        </ng-container>
+      </app-table>
+    </div>
+  </mat-card-content>
+</mat-card>

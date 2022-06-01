@@ -19,6 +19,8 @@ export class ConventionCreateEnMasseComponent implements OnInit {
 
   tabs: any = {
     0: { statut: 0, init: true },
+    1: { statut: 0, init: true },
+    2: { statut: 0, init: true },
   }
 
   constructor(private activatedRoute: ActivatedRoute,

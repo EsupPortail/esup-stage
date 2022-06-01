@@ -66,7 +66,7 @@ public interface ConventionJpaRepository extends JpaRepository<Convention, Integ
     @Query("SELECT COUNT(c.id) FROM Convention c WHERE c.natureTravail.id = :idNatureTravail")
     Long countConventionWithNatureTravail(int idNatureTravail);
 
-    @Query("SELECT c FROM Convention c WHERE c.loginCreation = :login AND c.validationCreation = FALSE")
+    @Query("SELECT c FROM Convention c WHERE c.loginCreation = :login AND c.validationCreation = FALSE AND c.creationEnMasse = FALSE")
     Convention findBrouillon(String login);
 
     @Query("SELECT c FROM Convention c WHERE c.annee = :annee AND c.validationCreation = TRUE AND c.validationConvention = FALSE")
@@ -84,15 +84,15 @@ public interface ConventionJpaRepository extends JpaRepository<Convention, Integ
     @Query("SELECT COUNT(c.id) FROM Convention c WHERE c.centreGestion.id = :idCentreGestion AND c.etape.id.code = :codeEtape AND c.etape.id.codeVersionEtape = :codeVersionEtape")
     Long countConventionRattacheEtape(int idCentreGestion, String codeEtape, String codeVersionEtape);
 
-    @Query("SELECT DISTINCT(c.annee) FROM Convention c JOIN c.centreGestion cg JOIN cg.personnels p WHERE p.uidPersonnel = :login ORDER BY c.annee")
+    @Query("SELECT DISTINCT(c.annee) FROM Convention c JOIN c.centreGestion cg JOIN cg.personnels p WHERE p.uidPersonnel = :login AND c.creationEnMasse = FALSE ORDER BY c.annee")
     List<String> getGestionnaireAnnees(String login);
 
-    @Query("SELECT DISTINCT(c.annee) FROM Convention c WHERE c.enseignant.uidEnseignant = :login ORDER BY c.annee")
+    @Query("SELECT DISTINCT(c.annee) FROM Convention c WHERE c.enseignant.uidEnseignant = :login AND c.creationEnMasse = FALSE ORDER BY c.annee")
     List<String> getEnseignantAnnees(String login);
 
-    @Query("SELECT DISTINCT(c.annee) FROM Convention c WHERE c.etudiant.identEtudiant = :login ORDER BY c.annee")
+    @Query("SELECT DISTINCT(c.annee) FROM Convention c WHERE c.etudiant.identEtudiant = :login AND c.creationEnMasse = FALSE ORDER BY c.annee")
     List<String> getEtudiantAnnees(String login);
 
-    @Query("SELECT DISTINCT(c.annee) FROM Convention c ORDER BY c.annee")
+    @Query("SELECT DISTINCT(c.annee) FROM Convention c WHERE c.creationEnMasse = FALSE ORDER BY c.annee")
     List<String> getAnnees(String login);
 }

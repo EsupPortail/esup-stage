@@ -169,6 +169,7 @@ public class GroupeEtudiantController {
         Convention convention = new Convention();
         convention.setEtudiant(etudiant);
         convention.setTypeConvention(typeConvention);
+        convention.setCreationEnMasse(true);
         return conventionJpaRepository.save(convention);
     }
 

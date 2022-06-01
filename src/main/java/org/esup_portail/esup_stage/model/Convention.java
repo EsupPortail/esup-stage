@@ -324,6 +324,10 @@ public class Convention extends ObjetMetier implements Exportable {
     @Column(nullable = false)
     private boolean validationCreation = false;
 
+    @JsonIgnore
+    @Column(nullable = false)
+    private boolean creationEnMasse = false;
+
     @ManyToOne
     @JoinColumn(name = "idPays")
     private Pays paysConvention;
@@ -1066,6 +1070,14 @@ public class Convention extends ObjetMetier implements Exportable {
 
     public void setValidationCreation(boolean validationCreation) {
         this.validationCreation = validationCreation;
+    }
+
+    public boolean isCreationEnMasse() {
+        return creationEnMasse;
+    }
+
+    public void setCreationEnMasse(boolean creationEnMasse) {
+        this.creationEnMasse = creationEnMasse;
     }
 
     public Pays getPaysConvention() {

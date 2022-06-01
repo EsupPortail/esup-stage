@@ -92,3 +92,6 @@ databaseChangeLog:
   - include:
       file: 2.0.0-groupe-etudiant.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 2.0.0-convention.yaml
+      relativeToChangelogFile: true
