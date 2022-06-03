@@ -20,4 +20,18 @@
     </ng-template>
     <app-cadre-stage (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant"></app-cadre-stage>
   </mat-tab>
+  <mat-tab #etabAccueilTab [disabled]="!groupeEtudiant">
+    <ng-template mat-tab-label>
+      structure d'accueil
+      <mat-progress-bar mode="determinate" [value]="getProgressValue(3)" [ngClass]="{editing: tabs[3].statut === 1, done: tabs[3].statut === 2}"></mat-progress-bar>
+    </ng-template>
+    <app-etab-accueil-groupe (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant"></app-etab-accueil-groupe>
+  </mat-tab>
+  <mat-tab #serviceAccueilTab [disabled]="!groupeEtudiant || !groupeEtudiant.convention.structure">
+    <ng-template mat-tab-label>
+      service d'accueil
+      <mat-progress-bar mode="determinate" [value]="getProgressValue(4)" [ngClass]="{editing: tabs[4].statut === 1, done: tabs[4].statut === 2}"></mat-progress-bar>
+    </ng-template>
+    <app-service-accueil-groupe (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant"></app-service-accueil-groupe>
+  </mat-tab>
 </mat-tab-group>

@@ -1,0 +1,8 @@
+<div class="row mt-3">
+  <mat-form-field class="col-md-12" appearance="fill" [hidden]="services.length == 0">
+    <mat-label>Selectionez un service :</mat-label>
+    <mat-select [(value)]="service" (selectionChange)="choose($event.value)">
+      <mat-option *ngFor="let service of services" [value]="service">{{service.nom}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>

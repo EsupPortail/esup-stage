@@ -19,8 +19,12 @@ export class ConventionCreateEnMasseComponent implements OnInit {
 
   tabs: any = {
     0: { statut: 0, init: true },
-    1: { statut: 0, init: true },
-    2: { statut: 0, init: true },
+    1: { statut: 0, init: false },
+    2: { statut: 0, init: false },
+    3: { statut: 0, init: false },
+    4: { statut: 0, init: false },
+    5: { statut: 0, init: false },
+    6: { statut: 0, init: false },
   }
 
   constructor(private activatedRoute: ActivatedRoute,
@@ -32,8 +36,6 @@ export class ConventionCreateEnMasseComponent implements OnInit {
 
   ngOnInit(): void {
     this.groupeEtudiantService.getBrouillon().subscribe((response: any) => {
-
-      console.log('response : ' + JSON.stringify(response, null, 2))
       this.groupeEtudiant = response;
       this.majStatus();
     });
@@ -44,6 +46,11 @@ export class ConventionCreateEnMasseComponent implements OnInit {
       this.setStatus(0,2);
     }else{
       this.setStatus(0,0);
+    }
+    if (this.groupeEtudiant.convention.structure){
+      this.setStatus(3,2);
+    }else{
+      this.setStatus(3,0);
     }
   }
 

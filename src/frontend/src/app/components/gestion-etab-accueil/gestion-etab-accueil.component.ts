@@ -84,6 +84,7 @@ export class GestionEtabAccueilComponent implements OnInit {
       if (filter) {
         filter.options = response.data;
       }
+      console.log('this.appTable? : ' + JSON.stringify(this.appTable?.filters, null, 2))
     });
     this.typeStructureService.getPaginated(1, 0, 'libelle', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
       const filter = this.filters.find((f: any) => f.id === 'typeStructure.id');

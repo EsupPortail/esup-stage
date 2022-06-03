@@ -110,6 +110,10 @@ import { ConventionCreateEnMasseComponent } from './components/convention-create
 import { SelectionGroupeEtuComponent } from './components/convention-create-en-masse/selection-groupe-etu/selection-groupe-etu.component';
 import { CadreStageComponent } from './components/convention-create-en-masse/cadre-stage/cadre-stage.component';
 import { InfosStageComponent } from './components/convention-create-en-masse/infos-stage/infos-stage.component';
+import { EtabAccueilGroupeComponent } from './components/convention-create-en-masse/etab-accueil-groupe/etab-accueil-groupe.component';
+import { EtabAccueilGroupeModalComponent } from './components/convention-create-en-masse/etab-accueil-groupe/etab-accueil-groupe-modal/etab-accueil-groupe-modal.component';
+import { ServiceAccueilGroupeComponent } from './components/convention-create-en-masse/service-accueil-groupe/service-accueil-groupe.component';
+import { ServiceAccueilGroupeModalComponent } from './components/convention-create-en-masse/service-accueil-groupe/service-accueil-groupe-modal/service-accueil-groupe-modal.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -176,6 +180,10 @@ registerLocaleData(localeFr, 'fr');
     SelectionGroupeEtuComponent,
     CadreStageComponent,
     InfosStageComponent,
+    EtabAccueilGroupeComponent,
+    EtabAccueilGroupeModalComponent,
+    ServiceAccueilGroupeComponent,
+    ServiceAccueilGroupeModalComponent,
   ],
   imports: [
     BrowserModule,

@@ -1,23 +1,25 @@
 import { Component, EventEmitter, Input, Output, OnChanges, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { TableComponent } from "../../table/table.component";
 import { GroupeEtudiantService } from "../../../services/groupe-etudiant.service";
+import { ConventionService } from "../../../services/convention.service";
 import { AuthService } from "../../../services/auth.service";
 import { Router } from "@angular/router";
 import { StructureService } from "../../../services/structure.service";
 import { UfrService } from "../../../services/ufr.service";
 import { EtapeService } from "../../../services/etape.service";
-import { EtudiantService } from "../../../services/etudiant.service";
+import { EtudiantGroupeEtudiantService } from "../../../services/etudiant-groupe-etudiant.service";
 import { MessageService } from "../../../services/message.service";
 import { ConfigService } from "../../../services/config.service";
 import { SortDirection } from "@angular/material/sort";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { EtabAccueilGroupeModalComponent } from './etab-accueil-groupe-modal/etab-accueil-groupe-modal.component';
 
 @Component({
-  selector: 'app-selection-groupe-etu',
-  templateUrl: './selection-groupe-etu.component.html',
-  styleUrls: ['./selection-groupe-etu.component.scss']
+  selector: 'app-etab-accueil-groupe',
+  templateUrl: './etab-accueil-groupe.component.html',
+  styleUrls: ['./etab-accueil-groupe.component.scss']
 })
-export class SelectionGroupeEtuComponent implements OnInit {
+export class EtabAccueilGroupeComponent implements OnInit {
 
   columns: string[] = [];
   sortColumn = 'prenom';
@@ -28,7 +30,6 @@ export class SelectionGroupeEtuComponent implements OnInit {
   anneeEnCours: any|undefined;
   annees: any[] = [];
 
-  form: FormGroup;
 
   @Input() groupeEtudiant: any;
   @Output() validated = new EventEmitter<any>();
@@ -37,34 +38,27 @@ export class SelectionGroupeEtuComponent implements OnInit {
 
   constructor(
     public groupeEtudiantService: GroupeEtudiantService,
-    public etudiantService: EtudiantService,
+    public etudiantGroupeEtudiantService: EtudiantGroupeEtudiantService,
+    private conventionService: ConventionService,
     private authService: AuthService,
     private router: Router,
     private messageService: MessageService,
     private configService: ConfigService,
-    private fb: FormBuilder,
+    public matDialog: MatDialog,
   ) {
-    this.form = this.fb.group({
-      nomGroupe: [null, [Validators.required, Validators.maxLength(100)]],
-    });
   }
 
   ngOnInit(): void {
-    this.columns = ['select','numEtudiant','nom', 'prenom', 'mail'];
+    this.columns = ['select','numEtudiant','nom', 'prenom', 'mail', 'etab'];
     this.filters = [
-      { id: 'nom', libelle: 'Nom'},
-      { id: 'prenom', libelle: 'Prénom'},
-      { id: 'numEtudiant', libelle: 'N° étudiant'},
+        { id: 'etudiant.nom', libelle: 'Nom'},
+        { id: 'etudiant.prenom', libelle: 'Prénom'},
+        { id: 'etudiant.numEtudiant', libelle: 'N° étudiant'},
     ];
   }
 
   ngOnChanges(): void{
-    this.form.setValue({
-      nomGroupe: this.groupeEtudiant?this.groupeEtudiant.nom:null,
-    });
-    if(this.groupeEtudiant){
-      this.selected = this.groupeEtudiant.etudiantGroupeEtudiants.map((ege: any) => ege.etudiant);
-    }
+      this.appTable?.update();
   }
 
   isSelected(data: any): boolean {
@@ -106,24 +100,47 @@ export class SelectionGroupeEtuComponent implements OnInit {
     return allSelected;
   }
 
-  validate(): void {
-      if (this.form.valid) {
-        const selected = this.selected.map((s: any) => s.id);
+  selectForGroup(): void {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.width = '1200px';
+    dialogConfig.height = '1000px';
+    dialogConfig.data = {};
+    const modalDialog = this.matDialog.open(EtabAccueilGroupeModalComponent, dialogConfig);
+    modalDialog.afterClosed().subscribe(dialogResponse => {
+      if (dialogResponse) {
+        this.updateEtab(this.groupeEtudiant.convention.id,dialogResponse)
+      }
+    });
+  }
 
-        let data = {...this.form.value};
-        data.etudiantIds = selected;
-
-        if (!this.groupeEtudiant) {
-          this.groupeEtudiantService.create(data).subscribe((response: any) => {
-            this.messageService.setSuccess('Groupe créé avec succès');
-            this.validated.emit(response);
-          });
-        } else {
-          this.groupeEtudiantService.update(this.groupeEtudiant.id, data).subscribe((response: any) => {
-            this.messageService.setSuccess('Groupe modifié avec succès');
-            this.validated.emit(response);
-          });
+  selectForSelected(): void {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.width = '1200px';
+    dialogConfig.height = '1000px';
+    dialogConfig.data = {};
+    const modalDialog = this.matDialog.open(EtabAccueilGroupeModalComponent, dialogConfig);
+    modalDialog.afterClosed().subscribe(dialogResponse => {
+      if (dialogResponse) {
+        for(const etu of this.selected){
+          this.updateEtab(etu.convention.id,dialogResponse);
         }
       }
+    });
+  }
+
+  importCsv(): void {
+  }
+
+  updateEtab(conventionId: number, etabId: number): void {
+    const data = {
+      "field":'idStructure',
+      "value":etabId,
+    };
+    this.conventionService.patch(conventionId, data).subscribe((response: any) => {
+        this.messageService.setSuccess('Structure d\'accueil affectée au groupe avec succès');
+        this.groupeEtudiantService.getById(this.groupeEtudiant.id).subscribe((response: any) => {
+          this.validated.emit(response);
+        });
+    });
   }
 }

@@ -52,9 +52,9 @@ export class InfosStageComponent implements OnInit {
   ngOnInit(): void {
     this.columns = ['select','numEtudiant','nom', 'prenom', 'mail'];
     this.filters = [
-      { id: 'nom', libelle: 'Nom'},
-      { id: 'prenom', libelle: 'Prénom'},
-      { id: 'numEtudiant', libelle: 'N° étudiant'},
+        { id: 'etudiant.nom', libelle: 'Nom'},
+        { id: 'etudiant.prenom', libelle: 'Prénom'},
+        { id: 'etudiant.numEtudiant', libelle: 'N° étudiant'},
     ];
   }
 
@@ -113,7 +113,6 @@ export class InfosStageComponent implements OnInit {
         let data = {...this.form.value};
         data.etudiantIds = selected;
 
-        console.log('data : ' + JSON.stringify(data, null, 2))
         if (!this.groupeEtudiant) {
           this.groupeEtudiantService.create(data).subscribe((response: any) => {
             this.validated.emit(response);
