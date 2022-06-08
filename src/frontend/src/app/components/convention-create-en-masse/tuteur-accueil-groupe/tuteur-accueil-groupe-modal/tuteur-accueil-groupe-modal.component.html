@@ -1,0 +1,9 @@
+<div class="row mt-3">
+  <mat-form-field class="col-md-12" appearance="fill" [hidden]="contacts.length == 0">
+    <mat-label>Selectionez un tuteur existant :</mat-label>
+    <mat-select [(value)]="contact" (selectionChange)="choose($event.value)">
+      <mat-option *ngFor="let contact of contacts" [value]="contact">{{contact.nom+' '+contact.prenom}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <span *ngIf="contacts.length == 0">Aucun contact n'existe pour ce service</span>
+</div>

@@ -114,6 +114,13 @@ import { EtabAccueilGroupeComponent } from './components/convention-create-en-ma
 import { EtabAccueilGroupeModalComponent } from './components/convention-create-en-masse/etab-accueil-groupe/etab-accueil-groupe-modal/etab-accueil-groupe-modal.component';
 import { ServiceAccueilGroupeComponent } from './components/convention-create-en-masse/service-accueil-groupe/service-accueil-groupe.component';
 import { ServiceAccueilGroupeModalComponent } from './components/convention-create-en-masse/service-accueil-groupe/service-accueil-groupe-modal/service-accueil-groupe-modal.component';
+import { TuteurAccueilGroupeComponent } from './components/convention-create-en-masse/tuteur-accueil-groupe/tuteur-accueil-groupe.component';
+import { TuteurAccueilGroupeModalComponent } from './components/convention-create-en-masse/tuteur-accueil-groupe/tuteur-accueil-groupe-modal/tuteur-accueil-groupe-modal.component';
+import { EnseignantGroupeComponent } from './components/convention-create-en-masse/enseignant-groupe/enseignant-groupe.component';
+import { EnseignantGroupeModalComponent } from './components/convention-create-en-masse/enseignant-groupe/enseignant-groupe-modal/enseignant-groupe-modal.component';
+import { SignataireGroupeComponent } from './components/convention-create-en-masse/signataire-groupe/signataire-groupe.component';
+import { SignataireGroupeModalComponent } from './components/convention-create-en-masse/signataire-groupe/signataire-groupe-modal/signataire-groupe-modal.component';
+import { InfosStageModalComponent } from './components/convention-create-en-masse/infos-stage/infos-stage-modal/infos-stage-modal.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -184,6 +191,13 @@ registerLocaleData(localeFr, 'fr');
     EtabAccueilGroupeModalComponent,
     ServiceAccueilGroupeComponent,
     ServiceAccueilGroupeModalComponent,
+    TuteurAccueilGroupeComponent,
+    TuteurAccueilGroupeModalComponent,
+    EnseignantGroupeComponent,
+    EnseignantGroupeModalComponent,
+    SignataireGroupeComponent,
+    SignataireGroupeModalComponent,
+    InfosStageModalComponent,
   ],
   imports: [
     BrowserModule,

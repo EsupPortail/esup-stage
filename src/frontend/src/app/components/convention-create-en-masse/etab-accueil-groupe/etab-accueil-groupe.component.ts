@@ -59,6 +59,7 @@ export class EtabAccueilGroupeComponent implements OnInit {
 
   ngOnChanges(): void{
       this.appTable?.update();
+      this.selected = [];
   }
 
   isSelected(data: any): boolean {

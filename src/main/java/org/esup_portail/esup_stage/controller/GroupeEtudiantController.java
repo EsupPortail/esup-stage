@@ -106,7 +106,7 @@ public class GroupeEtudiantController {
         TypeConvention typeConvention = typeConventionJpaRepository.findAll().get(0);
         groupeEtudiant.setNom(groupeEtudiantDto.getNomGroupe());
 
-        List<Integer> oldEtudiants = groupeEtudiant.getEtudiantGroupeEtudiants().stream().map(EtudiantGroupeEtudiant::getId).collect(Collectors.toList());
+        List<Integer> oldEtudiants = groupeEtudiant.getEtudiantGroupeEtudiants().stream().map(EtudiantGroupeEtudiant::getEtudiantId).collect(Collectors.toList());
         List<Integer> newEtudiants = groupeEtudiantDto.getEtudiantIds();
 
         List<Integer> addedEtudiants = new ArrayList<>();
@@ -123,7 +123,7 @@ public class GroupeEtudiantController {
         Iterator<EtudiantGroupeEtudiant> it = etudiantGroupeEtudiants.iterator();
         while(it.hasNext()) {
             EtudiantGroupeEtudiant etudiantGroupeEtudiant = it.next();
-            if(!newEtudiants.contains(etudiantGroupeEtudiant.getId())){
+            if(!newEtudiants.contains(etudiantGroupeEtudiant.getEtudiantId())){
                 it.remove();
                 etudiantGroupeEtudiantJpaRepository.delete(etudiantGroupeEtudiant);
             }

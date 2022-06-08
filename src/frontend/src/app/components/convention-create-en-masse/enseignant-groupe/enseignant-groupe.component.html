@@ -1,7 +1,7 @@
 <mat-card>
   <mat-card-content>
     <div class="mb-3">
-      <div class="text-title" *ngIf="groupeEtudiant">Choix du service d'accueil</div>
+      <div class="text-title" *ngIf="groupeEtudiant">Choix de l'enseignant</div>
       <mat-divider class="mb-3"></mat-divider>
       <div class="mb-2">
         <button mat-flat-button style="margin-right:5px" color="primary" (click)="selectForGroup()">pour le groupe d'étudiant</button>
@@ -39,7 +39,7 @@
         <ng-container matColumnDef="nom">
           <th mat-header-cell *matHeaderCellDef>Nom</th>
           <td mat-cell *matCellDef="let row">{{row.etudiant.nom}}</td>
-        </ng-container>e
+        </ng-container>
 
         <ng-container matColumnDef="prenom">
           <th mat-header-cell *matHeaderCellDef>Prénom</th>
@@ -50,16 +50,12 @@
           <th mat-header-cell *matHeaderCellDef>Mail</th>
           <td mat-cell *matCellDef="let row">{{row.etudiant.mail}}</td>
         </ng-container>
-        <ng-container matColumnDef="etab">
-          <th mat-header-cell *matHeaderCellDef>Etab. d'accueil</th>
-          <td mat-cell *matCellDef="let row">{{row.convention.structure?row.convention.structure.raisonSociale:(groupeEtudiant.convention.structure?groupeEtudiant.convention.structure.raisonSociale:'Structure non Sélectionée')}}</td>
-        </ng-container>
-        <ng-container matColumnDef="service">
-          <th mat-header-cell *matHeaderCellDef>Service d'accueil</th>
-          <td mat-cell *matCellDef="let row">
-            {{row.convention.service?row.convention.service.nom:((!row.convention.structure && groupeEtudiant.convention.service)?
-            groupeEtudiant.convention.service.nom:'Service non Sélectioné')}}
-          </td>
+
+        <ng-container matColumnDef="enseignant">
+          <th mat-header-cell *matHeaderCellDef>Enseignant</th>
+          <td mat-cell *matCellDef="let row">{{row.convention.enseignant?(row.convention.enseignant.prenom + ' ' + row.convention.enseignant.nom):
+            (groupeEtudiant.convention.enseignant?(groupeEtudiant.convention.enseignant.nom + ' ' + groupeEtudiant.convention.enseignant.prenom):
+            'Enseignant non Sélectioné')}}</td>
         </ng-container>
       </app-table>
     </div>

@@ -9,14 +9,14 @@ import { MessageService } from "../../../services/message.service";
 import { ConfigService } from "../../../services/config.service";
 import { SortDirection } from "@angular/material/sort";
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { InfosStageModalComponent } from './infos-stage-modal/infos-stage-modal.component';
+import { EnseignantGroupeModalComponent } from './enseignant-groupe-modal/enseignant-groupe-modal.component';
 
 @Component({
-  selector: 'app-infos-stage',
-  templateUrl: './infos-stage.component.html',
-  styleUrls: ['./infos-stage.component.scss']
+  selector: 'app-enseignant-groupe',
+  templateUrl: './enseignant-groupe.component.html',
+  styleUrls: ['./enseignant-groupe.component.scss']
 })
-export class InfosStageComponent implements OnInit {
+export class EnseignantGroupeComponent implements OnInit {
 
   columns: string[] = [];
   sortColumn = 'prenom';
@@ -42,7 +42,7 @@ export class InfosStageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.columns = ['select','numEtudiant','nom', 'prenom', 'mail'];
+    this.columns = ['select','numEtudiant','nom', 'prenom', 'mail', 'enseignant'];
     this.filters = [
         { id: 'etudiant.nom', libelle: 'Nom'},
         { id: 'etudiant.prenom', libelle: 'Prénom'},
@@ -98,7 +98,7 @@ export class InfosStageComponent implements OnInit {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.width = '1000px';
     dialogConfig.data = {};
-    const modalDialog = this.matDialog.open(InfosStageModalComponent, dialogConfig);
+    const modalDialog = this.matDialog.open(EnseignantGroupeModalComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse) {
         this.updateService(this.groupeEtudiant.convention.id,dialogResponse)
@@ -110,7 +110,7 @@ export class InfosStageComponent implements OnInit {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.width = '1000px';
     dialogConfig.data = {};
-    const modalDialog = this.matDialog.open(InfosStageModalComponent, dialogConfig);
+    const modalDialog = this.matDialog.open(EnseignantGroupeModalComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse) {
         for(const etu of this.selected){

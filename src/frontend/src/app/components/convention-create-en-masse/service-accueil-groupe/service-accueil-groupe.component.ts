@@ -4,9 +4,6 @@ import { GroupeEtudiantService } from "../../../services/groupe-etudiant.service
 import { ConventionService } from "../../../services/convention.service";
 import { AuthService } from "../../../services/auth.service";
 import { Router } from "@angular/router";
-import { ServiceService } from "../../../services/service.service";
-import { UfrService } from "../../../services/ufr.service";
-import { EtapeService } from "../../../services/etape.service";
 import { EtudiantGroupeEtudiantService } from "../../../services/etudiant-groupe-etudiant.service";
 import { MessageService } from "../../../services/message.service";
 import { ConfigService } from "../../../services/config.service";
@@ -58,12 +55,13 @@ export class ServiceAccueilGroupeComponent implements OnInit {
   }
 
   ngOnChanges(): void{
-      if(this.groupeEtudiant){
+      if(this.groupeEtudiant && this.groupeEtudiant.convention.structure){
         this.structures = this.groupeEtudiant.etudiantGroupeEtudiants.map((e: any) => e.convention.structure??this.groupeEtudiant.convention.structure);
         this.structures = [...new Map(this.structures.map(e => [e.id, {id:e.id,raisonSociale:e.raisonSociale}])).values()]
         this.appTable?.setFilterOption('convention.structure.id', this.structures);
       }
       this.appTable?.update();
+      this.selected = [];
   }
 
   isSelected(data: any): boolean {
@@ -119,7 +117,6 @@ export class ServiceAccueilGroupeComponent implements OnInit {
   }
 
   selectForSelected(): void {
-    const filters = this.appTable?.getFilters();
     this.structures = this.selected.map((e: any) => e.convention.structure??this.groupeEtudiant.convention.structure);
     this.structures = [...new Map(this.structures.map(e => [e.id, {id:e.id,raisonSociale:e.raisonSociale}])).values()]
     if(this.structures.length == 1){
@@ -138,9 +135,6 @@ export class ServiceAccueilGroupeComponent implements OnInit {
     }else{
         this.messageService.setError('Il faut selectionner des étudiants ayant la même structure');
     }
-  }
-
-  importCsv(): void {
   }
 
   updateService(conventionId: number, serviceId: number): void {

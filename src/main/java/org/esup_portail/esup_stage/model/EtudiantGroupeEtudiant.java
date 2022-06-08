@@ -30,6 +30,10 @@ public class EtudiantGroupeEtudiant implements Exportable {
         return id;
     }
 
+    public int getEtudiantId() {
+        return etudiant.getId();
+    }
+
     public void setId(int id) {
         this.id = id;
     }

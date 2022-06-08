@@ -9,20 +9,23 @@ import { MessageService } from "../../../services/message.service";
 import { ConfigService } from "../../../services/config.service";
 import { SortDirection } from "@angular/material/sort";
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { InfosStageModalComponent } from './infos-stage-modal/infos-stage-modal.component';
+import { SignataireGroupeModalComponent } from './signataire-groupe-modal/signataire-groupe-modal.component';
 
 @Component({
-  selector: 'app-infos-stage',
-  templateUrl: './infos-stage.component.html',
-  styleUrls: ['./infos-stage.component.scss']
+  selector: 'app-signataire-groupe',
+  templateUrl: './signataire-groupe.component.html',
+  styleUrls: ['./signataire-groupe.component.scss']
 })
-export class InfosStageComponent implements OnInit {
+export class SignataireGroupeComponent implements OnInit {
 
   columns: string[] = [];
   sortColumn = 'prenom';
   sortDirection: SortDirection = 'desc';
   filters: any[] = [];
   selected: any[] = [];
+
+  structures: any[] = [];
+
 
   @Input() groupeEtudiant: any;
   @Output() validated = new EventEmitter<any>();
@@ -42,15 +45,21 @@ export class InfosStageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.columns = ['select','numEtudiant','nom', 'prenom', 'mail'];
+    this.columns = ['select','numEtudiant','nom', 'prenom', 'mail', 'etab', 'service'];
     this.filters = [
         { id: 'etudiant.nom', libelle: 'Nom'},
         { id: 'etudiant.prenom', libelle: 'Prénom'},
         { id: 'etudiant.numEtudiant', libelle: 'N° étudiant'},
+        { id: 'convention.structure.id', libelle: 'Structure d\'accueil', type: 'list', options: [], keyLibelle: 'raisonSociale', keyId: 'id'},
     ];
   }
 
   ngOnChanges(): void{
+      if(this.groupeEtudiant && this.groupeEtudiant.convention.structure){
+        this.structures = this.groupeEtudiant.etudiantGroupeEtudiants.map((e: any) => e.convention.structure??this.groupeEtudiant.convention.structure);
+        this.structures = [...new Map(this.structures.map(e => [e.id, {id:e.id,raisonSociale:e.raisonSociale}])).values()]
+        this.appTable?.setFilterOption('convention.structure.id', this.structures);
+      }
       this.appTable?.update();
       this.selected = [];
   }
@@ -97,8 +106,9 @@ export class InfosStageComponent implements OnInit {
   selectForGroup(): void {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.width = '1000px';
-    dialogConfig.data = {};
-    const modalDialog = this.matDialog.open(InfosStageModalComponent, dialogConfig);
+    dialogConfig.height = '200px';
+    dialogConfig.data = {etabId: this.groupeEtudiant.convention.structure.id};
+    const modalDialog = this.matDialog.open(SignataireGroupeModalComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse) {
         this.updateService(this.groupeEtudiant.convention.id,dialogResponse)
@@ -107,17 +117,27 @@ export class InfosStageComponent implements OnInit {
   }
 
   selectForSelected(): void {
-    const dialogConfig = new MatDialogConfig();
-    dialogConfig.width = '1000px';
-    dialogConfig.data = {};
-    const modalDialog = this.matDialog.open(InfosStageModalComponent, dialogConfig);
-    modalDialog.afterClosed().subscribe(dialogResponse => {
-      if (dialogResponse) {
-        for(const etu of this.selected){
-          this.updateService(etu.convention.id,dialogResponse);
+    this.structures = this.selected.map((e: any) => e.convention.structure??this.groupeEtudiant.convention.structure);
+    this.structures = [...new Map(this.structures.map(e => [e.id, {id:e.id,raisonSociale:e.raisonSociale}])).values()]
+    if(this.structures.length == 1){
+      const dialogConfig = new MatDialogConfig();
+      dialogConfig.width = '1000px';
+      dialogConfig.height = '200px';
+      dialogConfig.data = {etabId: this.structures[0].id};
+      const modalDialog = this.matDialog.open(SignataireGroupeModalComponent, dialogConfig);
+      modalDialog.afterClosed().subscribe(dialogResponse => {
+        if (dialogResponse) {
+          for(const etu of this.selected){
+            this.updateService(etu.convention.id,dialogResponse);
+          }
         }
-      }
-    });
+      });
+    }else{
+        this.messageService.setError('Il faut selectionner des étudiants ayant la même structure');
+    }
+  }
+
+  importCsv(): void {
   }
 
   updateService(conventionId: number, serviceId: number): void {

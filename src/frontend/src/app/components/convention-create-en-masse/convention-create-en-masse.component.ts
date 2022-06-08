@@ -25,6 +25,7 @@ export class ConventionCreateEnMasseComponent implements OnInit {
     4: { statut: 0, init: false },
     5: { statut: 0, init: false },
     6: { statut: 0, init: false },
+    7: { statut: 0, init: false },
   }
 
   constructor(private activatedRoute: ActivatedRoute,
@@ -47,10 +48,30 @@ export class ConventionCreateEnMasseComponent implements OnInit {
     }else{
       this.setStatus(0,0);
     }
-    if (this.groupeEtudiant.convention.structure){
+    if (this.groupeEtudiant && this.groupeEtudiant.convention.structure){
       this.setStatus(3,2);
     }else{
       this.setStatus(3,0);
+    }
+    if (this.groupeEtudiant && this.groupeEtudiant.convention.service){
+      this.setStatus(4,2);
+    }else{
+      this.setStatus(4,0);
+    }
+    if (this.groupeEtudiant && this.groupeEtudiant.convention.contact){
+      this.setStatus(5,2);
+    }else{
+      this.setStatus(5,0);
+    }
+    if (this.groupeEtudiant && this.groupeEtudiant.convention.enseignant){
+      this.setStatus(6,2);
+    }else{
+      this.setStatus(6,0);
+    }
+    if (this.groupeEtudiant && this.groupeEtudiant.convention.signataire){
+      this.setStatus(7,2);
+    }else{
+      this.setStatus(7,0);
     }
   }
 
@@ -80,5 +101,6 @@ export class ConventionCreateEnMasseComponent implements OnInit {
 
   updateGroupeEtudiant(data: any): void {
     this.groupeEtudiant = data;
+    this.majStatus();
   }
 }

@@ -1,37 +1,58 @@
 <mat-tab-group #tabGroup class="convention" (selectedTabChange)="tabChanged($event)" [(selectedIndex)]="conventionTabIndex">
   <mat-tab #selectEtuTab>
     <ng-template mat-tab-label>
-      selection d'un groupe d'étudiants
+      Selection d'un groupe d'étudiants
       <mat-progress-bar mode="determinate" [value]="getProgressValue(0)" [ngClass]="{editing: tabs[0].statut === 1, done: tabs[0].statut === 2}"></mat-progress-bar>
     </ng-template>
     <app-selection-groupe-etu (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant"></app-selection-groupe-etu>
   </mat-tab>
   <mat-tab #infosStageTab [disabled]="!groupeEtudiant">
     <ng-template mat-tab-label>
-      informations relatives au stage
+      Informations relatives au stage
       <mat-progress-bar mode="determinate" [value]="getProgressValue(1)" [ngClass]="{editing: tabs[1].statut === 1, done: tabs[1].statut === 2}"></mat-progress-bar>
     </ng-template>
-    <app-cadre-stage (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant"></app-cadre-stage>
+    <app-infos-stage (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant"></app-infos-stage>
   </mat-tab>
   <mat-tab #cadreStageTab [disabled]="!groupeEtudiant">
     <ng-template mat-tab-label>
-      cadre du stage
+      Cadre du stage
       <mat-progress-bar mode="determinate" [value]="getProgressValue(2)" [ngClass]="{editing: tabs[2].statut === 1, done: tabs[2].statut === 2}"></mat-progress-bar>
     </ng-template>
     <app-cadre-stage (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant"></app-cadre-stage>
   </mat-tab>
   <mat-tab #etabAccueilTab [disabled]="!groupeEtudiant">
     <ng-template mat-tab-label>
-      structure d'accueil
+      Etab. d'accueil
       <mat-progress-bar mode="determinate" [value]="getProgressValue(3)" [ngClass]="{editing: tabs[3].statut === 1, done: tabs[3].statut === 2}"></mat-progress-bar>
     </ng-template>
     <app-etab-accueil-groupe (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant"></app-etab-accueil-groupe>
   </mat-tab>
   <mat-tab #serviceAccueilTab [disabled]="!groupeEtudiant || !groupeEtudiant.convention.structure">
     <ng-template mat-tab-label>
-      service d'accueil
+      Service d'accueil
       <mat-progress-bar mode="determinate" [value]="getProgressValue(4)" [ngClass]="{editing: tabs[4].statut === 1, done: tabs[4].statut === 2}"></mat-progress-bar>
     </ng-template>
     <app-service-accueil-groupe (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant"></app-service-accueil-groupe>
+  </mat-tab>
+  <mat-tab #tuteurAccueilTab [disabled]="!groupeEtudiant || !groupeEtudiant.convention.structure || !groupeEtudiant.convention.service">
+    <ng-template mat-tab-label>
+      Tuteur professionnel
+      <mat-progress-bar mode="determinate" [value]="getProgressValue(5)" [ngClass]="{editing: tabs[5].statut === 1, done: tabs[5].statut === 2}"></mat-progress-bar>
+    </ng-template>
+    <app-tuteur-accueil-groupe (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant"></app-tuteur-accueil-groupe>
+  </mat-tab>
+  <mat-tab #enseignantTab [disabled]="!groupeEtudiant || !groupeEtudiant.convention.structure">
+    <ng-template mat-tab-label>
+      Enseignant
+      <mat-progress-bar mode="determinate" [value]="getProgressValue(6)" [ngClass]="{editing: tabs[6].statut === 1, done: tabs[6].statut === 2}"></mat-progress-bar>
+    </ng-template>
+    <app-enseignant-groupe (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant"></app-enseignant-groupe>
+  </mat-tab>
+  <mat-tab #signataireTab [disabled]="!groupeEtudiant || !groupeEtudiant.convention.structure">
+    <ng-template mat-tab-label>
+      Signataire
+      <mat-progress-bar mode="determinate" [value]="getProgressValue(7)" [ngClass]="{editing: tabs[7].statut === 1, done: tabs[7].statut === 2}"></mat-progress-bar>
+    </ng-template>
+    <app-signataire-groupe (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant"></app-signataire-groupe>
   </mat-tab>
 </mat-tab-group>
