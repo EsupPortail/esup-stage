@@ -138,7 +138,7 @@ export class EtabAccueilGroupeComponent implements OnInit {
       "value":etabId,
     };
     this.conventionService.patch(conventionId, data).subscribe((response: any) => {
-        this.messageService.setSuccess('Structure d\'accueil affectée au groupe avec succès');
+        this.messageService.setSuccess('Structure d\'accueil affectée avec succès');
         this.groupeEtudiantService.getById(this.groupeEtudiant.id).subscribe((response: any) => {
           this.validated.emit(response);
         });

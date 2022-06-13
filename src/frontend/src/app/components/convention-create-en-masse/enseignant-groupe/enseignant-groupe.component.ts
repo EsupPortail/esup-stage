@@ -126,7 +126,7 @@ export class EnseignantGroupeComponent implements OnInit {
       "value":serviceId,
     };
     this.conventionService.patch(conventionId, data).subscribe((response: any) => {
-        this.messageService.setSuccess('Service d\'accueil affectée au groupe avec succès');
+        this.messageService.setSuccess('Enseignant affecté avec succès');
         this.groupeEtudiantService.getById(this.groupeEtudiant.id).subscribe((response: any) => {
           this.validated.emit(response);
         });

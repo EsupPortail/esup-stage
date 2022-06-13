@@ -158,7 +158,7 @@ export class TuteurAccueilGroupeComponent implements OnInit {
       "value":tuteurId,
     };
     this.conventionService.patch(conventionId, data).subscribe((response: any) => {
-        this.messageService.setSuccess('Tuteur professionel affecté au groupe avec succès');
+        this.messageService.setSuccess('Tuteur professionel affecté avec succès');
         this.groupeEtudiantService.getById(this.groupeEtudiant.id).subscribe((response: any) => {
           this.validated.emit(response);
         });

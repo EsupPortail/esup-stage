@@ -97,39 +97,33 @@ export class InfosStageComponent implements OnInit {
   selectForGroup(): void {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.width = '1000px';
-    dialogConfig.data = {};
+    dialogConfig.height = '1000px';
+    dialogConfig.data = {convention:this.groupeEtudiant.convention};
     const modalDialog = this.matDialog.open(InfosStageModalComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
-      if (dialogResponse) {
-        this.updateService(this.groupeEtudiant.convention.id,dialogResponse)
-      }
+      this.updateConvention(dialogResponse);
     });
   }
 
   selectForSelected(): void {
-    const dialogConfig = new MatDialogConfig();
-    dialogConfig.width = '1000px';
-    dialogConfig.data = {};
-    const modalDialog = this.matDialog.open(InfosStageModalComponent, dialogConfig);
-    modalDialog.afterClosed().subscribe(dialogResponse => {
-      if (dialogResponse) {
-        for(const etu of this.selected){
-          this.updateService(etu.convention.id,dialogResponse);
-        }
-      }
-    });
+    if(this.selected.length == 1){
+      const dialogConfig = new MatDialogConfig();
+      dialogConfig.width = '1000px';
+    dialogConfig.height = '1000px';
+      const etu = this.selected[0];
+      dialogConfig.data = {convention:etu.convention};
+      const modalDialog = this.matDialog.open(InfosStageModalComponent, dialogConfig);
+      modalDialog.afterClosed().subscribe(dialogResponse => {
+        this.updateConvention(dialogResponse);
+      });
+    }else{
+        this.messageService.setError('Veuillez selectionner un unique étudiant.');
+    }
   }
 
-  updateService(conventionId: number, serviceId: number): void {
-    const data = {
-      "field":'idService',
-      "value":serviceId,
-    };
-    this.conventionService.patch(conventionId, data).subscribe((response: any) => {
-        this.messageService.setSuccess('Service d\'accueil affectée au groupe avec succès');
-        this.groupeEtudiantService.getById(this.groupeEtudiant.id).subscribe((response: any) => {
-          this.validated.emit(response);
-        });
+  updateConvention(dialogResponse: any): void {
+    this.groupeEtudiantService.getById(this.groupeEtudiant.id).subscribe((response: any) => {
+      this.validated.emit(response);
     });
   }
 }

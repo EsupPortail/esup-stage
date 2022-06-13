@@ -1,7 +1,7 @@
-<mat-card>
+<mat-card *ngIf="groupeEtudiant">
   <mat-card-content>
     <div class="mb-3">
-      <div class="text-title" *ngIf="groupeEtudiant">Choix du service d'accueil</div>
+      <div class="text-title">Choix du service d'accueil</div>
       <mat-divider class="mb-3"></mat-divider>
       <div class="mb-2">
         <button mat-flat-button style="margin-right:5px" color="primary" (click)="selectForGroup()">pour le groupe d'étudiant</button>
