@@ -38,7 +38,7 @@ export class EvaluationStageComponent implements OnInit {
   isEnseignant:boolean = false;
   isGestionnaireOrAdmin:boolean = false;
 
-  @ViewChild(MatExpansionPanel) firstPanel: MatExpansionPanel|undefined;
+  @ViewChild("generalPanel") generalPanel: MatExpansionPanel|undefined;
 
   controlsIndexToLetter:any = ['a','b','c','d','e','f','g','h']
   FicheEtudiantIQuestions: any = [
@@ -759,123 +759,196 @@ export class EvaluationStageComponent implements OnInit {
               private authService: AuthService,
   ) {
     this.reponseEtudiantForm = this.fb.group({
-      reponseEtuI1: [null],
+      reponseEtuI1: [null, [Validators.required]],
       reponseEtuI1bis: [null],
-      reponseEtuI2: [null],
-      reponseEtuI3: [null],
-      reponseEtuI4a: [null],
-      reponseEtuI4b: [null],
-      reponseEtuI4c: [null],
-      reponseEtuI4d: [null],
+      reponseEtuI2: [null, [Validators.required]],
+      reponseEtuI3: [null, [Validators.required]],
+      reponseEtuI4a: [null, [Validators.required]],
+      reponseEtuI4b: [null, [Validators.required]],
+      reponseEtuI4c: [null, [Validators.required]],
+      reponseEtuI4d: [null, [Validators.required]],
       reponseEtuI5: [null],
-      reponseEtuI6: [null],
-      reponseEtuI7: [null],
+      reponseEtuI6: [null, [Validators.required]],
+      reponseEtuI7: [null, [Validators.required]],
       reponseEtuI7bis1: [null],
       reponseEtuI7bis1a: [null],
       reponseEtuI7bis1b: [null],
       reponseEtuI7bis2: [null],
-      reponseEtuI8: [null],
-      reponseEtuII1: [null],
-      reponseEtuII1bis: [null],
-      reponseEtuII2: [null],
-      reponseEtuII2bis: [null],
-      reponseEtuII3: [null],
-      reponseEtuII3bis: [null],
-      reponseEtuII4: [null],
-      reponseEtuII5: [null],
-      reponseEtuII5a: [null],
-      reponseEtuII5b: [null],
-      reponseEtuII6: [null],
-      reponseEtuIII1: [null],
+      reponseEtuI8: [null, [Validators.required]],
+      reponseEtuII1: [null, [Validators.required]],
+      reponseEtuII1bis: [null, [Validators.required]],
+      reponseEtuII2: [null, [Validators.required]],
+      reponseEtuII2bis: [null, [Validators.required]],
+      reponseEtuII3: [null, [Validators.required]],
+      reponseEtuII3bis: [null, [Validators.required]],
+      reponseEtuII4: [null, [Validators.required]],
+      reponseEtuII5: [null, [Validators.required]],
+      reponseEtuII5a: [null, [Validators.required]],
+      reponseEtuII5b: [null, [Validators.required]],
+      reponseEtuII6: [null, [Validators.required]],
+      reponseEtuIII1: [null, [Validators.required]],
       reponseEtuIII1bis: [null],
-      reponseEtuIII2: [null],
+      reponseEtuIII2: [null, [Validators.required]],
       reponseEtuIII2bis: [null],
-      reponseEtuIII4: [null],
-      reponseEtuIII5a: [null],
-      reponseEtuIII5b: [null],
-      reponseEtuIII5c: [null],
+      reponseEtuIII4: [null, [Validators.required]],
+      reponseEtuIII5a: [null, [Validators.required]],
+      reponseEtuIII5b: [null, [Validators.required]],
+      reponseEtuIII5c: [null, [Validators.required]],
       reponseEtuIII5bis: [null],
-      reponseEtuIII6: [null],
+      reponseEtuIII6: [null, [Validators.required]],
       reponseEtuIII6bis: [null],
-      reponseEtuIII7: [null],
+      reponseEtuIII7: [null, [Validators.required]],
       reponseEtuIII7bis: [null],
-      reponseEtuIII8: [null],
+      reponseEtuIII8: [null, [Validators.required]],
       reponseEtuIII8bis: [null],
-      reponseEtuIII9: [null],
+      reponseEtuIII9: [null, [Validators.required]],
       reponseEtuIII9bis: [null],
-      reponseEtuIII10: [null],
-      reponseEtuIII11: [null],
-      reponseEtuIII12: [null],
-      reponseEtuIII13: [null],
-      reponseEtuIII15: [null],
+      reponseEtuIII10: [null, [Validators.required]],
+      reponseEtuIII11: [null, [Validators.required]],
+      reponseEtuIII12: [null, [Validators.required]],
+      reponseEtuIII13: [null, [Validators.required]],
+      reponseEtuIII15: [null, [Validators.required]],
       reponseEtuIII15bis: [null],
-      reponseEtuIII16: [null],
-      reponseEtuIII16bis: [null],
+      reponseEtuIII16: [null, [Validators.required]],
+      reponseEtuIII16bis: [null, [Validators.required]],
     });
 
     this.reponseEnseignantForm = this.fb.group({
-      reponseEnsI1a: [null],
-      reponseEnsI1b: [null],
-      reponseEnsI1c: [null],
-      reponseEnsI2a: [null],
-      reponseEnsI2b: [null],
-      reponseEnsI2c: [null],
-      reponseEnsI3: [null],
-      reponseEnsII1: [null],
-      reponseEnsII2: [null],
-      reponseEnsII3: [null],
-      reponseEnsII4: [null],
-      reponseEnsII5: [null],
-      reponseEnsII6: [null],
-      reponseEnsII7: [null],
-      reponseEnsII8: [null],
-      reponseEnsII9: [null],
-      reponseEnsII10: [null],
-      reponseEnsII11: [null],
+      reponseEnsI1a: [null, [Validators.required]],
+      reponseEnsI1b: [null, [Validators.required]],
+      reponseEnsI1c: [null, [Validators.required]],
+      reponseEnsI2a: [null, [Validators.required]],
+      reponseEnsI2b: [null, [Validators.required]],
+      reponseEnsI2c: [null, [Validators.required]],
+      reponseEnsI3: [null, [Validators.required]],
+      reponseEnsII1: [null, [Validators.required]],
+      reponseEnsII2: [null, [Validators.required]],
+      reponseEnsII3: [null, [Validators.required]],
+      reponseEnsII4: [null, [Validators.required]],
+      reponseEnsII5: [null, [Validators.required]],
+      reponseEnsII6: [null, [Validators.required]],
+      reponseEnsII7: [null, [Validators.required]],
+      reponseEnsII8: [null, [Validators.required]],
+      reponseEnsII9: [null, [Validators.required]],
+      reponseEnsII10: [null, [Validators.required]],
+      reponseEnsII11: [null, [Validators.required]],
     });
 
     this.reponseEntrepriseForm = this.fb.group({
-      reponseEnt1: [null],
+      reponseEnt1: [null, [Validators.required]],
       reponseEnt1bis: [null],
-      reponseEnt2: [null],
+      reponseEnt2: [null, [Validators.required]],
       reponseEnt2bis: [null],
-      reponseEnt3: [null],
-      reponseEnt4: [null],
+      reponseEnt3: [null, [Validators.required]],
+      reponseEnt4: [null, [Validators.required]],
       reponseEnt4bis: [null],
-      reponseEnt5: [null],
+      reponseEnt5: [null, [Validators.required]],
       reponseEnt5bis: [null],
-      reponseEnt6: [null],
+      reponseEnt6: [null, [Validators.required]],
       reponseEnt6bis: [null],
-      reponseEnt7: [null],
+      reponseEnt7: [null, [Validators.required]],
       reponseEnt7bis: [null],
-      reponseEnt8: [null],
+      reponseEnt8: [null, [Validators.required]],
       reponseEnt8bis: [null],
-      reponseEnt9: [null],
+      reponseEnt9: [null, [Validators.required]],
       reponseEnt9bis: [null],
-      reponseEnt10: [null],
+      reponseEnt10: [null, [Validators.required]],
       reponseEnt10bis: [null],
-      reponseEnt11: [null],
+      reponseEnt11: [null, [Validators.required]],
       reponseEnt11bis: [null],
-      reponseEnt12: [null],
+      reponseEnt12: [null, [Validators.required]],
       reponseEnt12bis: [null],
-      reponseEnt13: [null],
+      reponseEnt13: [null, [Validators.required]],
       reponseEnt13bis: [null],
-      reponseEnt14: [null],
+      reponseEnt14: [null, [Validators.required]],
       reponseEnt14bis: [null],
-      reponseEnt15: [null],
+      reponseEnt15: [null, [Validators.required]],
       reponseEnt15bis: [null],
-      reponseEnt16: [null],
+      reponseEnt16: [null, [Validators.required]],
       reponseEnt16bis: [null],
-      reponseEnt17: [null],
+      reponseEnt17: [null, [Validators.required]],
       reponseEnt17bis: [null],
-      reponseEnt18: [null],
+      reponseEnt18: [null, [Validators.required]],
       reponseEnt18bis: [null],
-      reponseEnt19: [null],
+      reponseEnt19: [null, [Validators.required]],
     });
+
+    //gestion des champs required conditionnels
+    for(let question of this.FicheEtudiantIQuestions.concat(this.FicheEtudiantIIQuestions).concat(this.FicheEtudiantIIIQuestions)){
+      if(question.bisQuestionLowNotation || question.bisQuestionTrue || question.bisQuestionFalse ||
+      question.controlName == 'EtuI7'){
+        let key = 'reponse' + question.controlName;
+        let bisKey = key + 'bis';
+        this.reponseEtudiantForm.get(key)?.valueChanges.subscribe(val => {
+          if((question.bisQuestionLowNotation && val>=3) || (question.bisQuestionTrue && val) || (question.bisQuestionFalse && !val) ){
+            this.toggleValidators(this.reponseEtudiantForm,[bisKey],true);
+          }else if(question.controlName == 'EtuI7'){
+            let bisKey1 = key + 'bis1';
+            let bisKey2 = key + 'bis2';
+            if(val){
+              this.toggleValidators(this.reponseEtudiantForm,[bisKey1],true);
+              this.toggleValidators(this.reponseEtudiantForm,[bisKey2],false);
+            }else{
+              this.toggleValidators(this.reponseEtudiantForm,[bisKey2],true);
+              this.toggleValidators(this.reponseEtudiantForm,[bisKey1],false);
+            }
+          }else if(question.controlName == 'EtuII5'){
+            let bisKey1 = key + 'a';
+            let bisKey2 = key + 'b';
+            if(val){
+              this.toggleValidators(this.reponseEtudiantForm,[bisKey1],true);
+              this.toggleValidators(this.reponseEtudiantForm,[bisKey2],true);
+            }else{
+              this.toggleValidators(this.reponseEtudiantForm,[bisKey1],false);
+              this.toggleValidators(this.reponseEtudiantForm,[bisKey2],false);
+            }
+          }else{
+            this.toggleValidators(this.reponseEtudiantForm,[bisKey],false);
+          }
+        });
+      }
+    }
+    for(let question of this.FicheEnseignantIQuestions.concat(this.FicheEnseignantIIQuestions)){
+      if(question.bisQuestionLowNotation || question.bisQuestionTrue || question.bisQuestionFalse){
+        let key = 'reponse' + question.controlName;
+        let bisKey = key + 'bis';
+        this.reponseEnseignantForm.get(key)?.valueChanges.subscribe(val => {
+          if((question.bisQuestionLowNotation && val>=3) || (question.bisQuestionTrue && val) || (question.bisQuestionFalse && !val) ){
+            this.toggleValidators(this.reponseEnseignantForm,[bisKey],true);
+          }else{
+            this.toggleValidators(this.reponseEnseignantForm,[bisKey],false);
+          }
+        });
+      }
+    }
+    for(let question of this.FicheEntrepriseIQuestions.concat(this.FicheEntrepriseIIQuestions).concat(this.FicheEntrepriseIIIQuestions)){
+      if(question.bisQuestionLowNotation || question.bisQuestionTrue || question.bisQuestionFalse){
+        let key = 'reponse' + question.controlName;
+        let bisKey = key + 'bis';
+        this.reponseEntrepriseForm.get(key)?.valueChanges.subscribe(val => {
+          if((question.bisQuestionLowNotation && val>=3) || (question.bisQuestionTrue && val) || (question.bisQuestionFalse && !val) ){
+            this.toggleValidators(this.reponseEntrepriseForm,[bisKey],true);
+          }else{
+            this.toggleValidators(this.reponseEntrepriseForm,[bisKey],false);
+          }
+        });
+      }
+    }
 
     this.reponseSupplementaireEtudiantForm = this.fb.group({});
     this.reponseSupplementaireEnseignantForm = this.fb.group({});
     this.reponseSupplementaireEntrepriseForm = this.fb.group({});
+  }
+
+  toggleValidators(form: FormGroup, keys: string[],toggle: boolean): void {
+    keys.forEach((key: string) => {
+      if (toggle){
+        form.get(key)!.addValidators(Validators.required);
+      }else{
+        form.get(key)!.clearValidators();
+      }
+      form.get(key)!.updateValueAndValidity();
+    });
   }
 
   ngOnInit(): void {
@@ -1036,7 +1109,7 @@ export class EvaluationStageComponent implements OnInit {
           form = this.reponseSupplementaireEntrepriseForm;
         }
         const questionSupplementaireFormControlName = 'questionSupplementaire' + questionSupplementaire.id
-        form.addControl(questionSupplementaireFormControlName,new FormControl(null));
+        form.addControl(questionSupplementaireFormControlName,new FormControl(null, Validators.required));
         questionSupplementaire.formControlName = questionSupplementaireFormControlName
 
          if(this.reponseEvaluation){
@@ -1074,19 +1147,19 @@ export class EvaluationStageComponent implements OnInit {
   editFicheEtudiant(): void {
     this.edit = true;
     this.editEtu = true;
-    this.firstPanel!.expanded = false;
+    this.generalPanel!.expanded = false;
   }
 
   editFicheEnseignant(): void {
     this.edit = true;
     this.editEns = true;
-    this.firstPanel!.expanded = false;
+    this.generalPanel!.expanded = false;
   }
 
   editFicheEntreprise(): void {
     this.edit = true;
     this.editEnt = true;
-    this.firstPanel!.expanded = false;
+    this.generalPanel!.expanded = false;
   }
 
   cancelEdit(): void {
@@ -1094,7 +1167,7 @@ export class EvaluationStageComponent implements OnInit {
     this.editEtu = false;
     this.editEns = false;
     this.editEnt = false;
-    this.firstPanel!.expanded = true;
+    this.generalPanel!.expanded = true;
   }
 
   compare(option: any, value: any): boolean {
@@ -1128,6 +1201,10 @@ export class EvaluationStageComponent implements OnInit {
       questionsSupplementaires = this.questionsSupplementaires[5].concat(this.questionsSupplementaires[6]).concat(this.questionsSupplementaires[7]);
     }
 
+    for (const name in reponseForm.controls) {
+        if (reponseForm.controls[name].invalid) {
+        }
+    }
     const valid = reponseForm.valid && reponseSupplementaireForm.valid
 
     const data = {...reponseForm.value};
@@ -1217,7 +1294,6 @@ export class EvaluationStageComponent implements OnInit {
         });
       }
     }
-
   }
 
   printFiche(typeFiche: number): void {

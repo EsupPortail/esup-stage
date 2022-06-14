@@ -1,5 +1,5 @@
 <mat-accordion>
-  <mat-expansion-panel [expanded]="!edit">
+  <mat-expansion-panel #generalPanel [expanded]="!edit">
     <mat-expansion-panel-header>
       <mat-panel-title>Évaluation du stage</mat-panel-title>
     </mat-expansion-panel-header>
@@ -83,7 +83,7 @@
 
   </mat-expansion-panel>
 
-  <mat-expansion-panel [expanded]="editEtu" [disabled]="!ficheEvaluation ||!ficheEvaluation.validationEtudiant" *ngIf="isEtudiant || isGestionnaireOrAdmin">
+  <mat-expansion-panel #etuPanel [expanded]="editEtu" [disabled]="!ficheEvaluation ||!ficheEvaluation.validationEtudiant" *ngIf="isEtudiant || isGestionnaireOrAdmin">
     <mat-expansion-panel-header>
       <mat-panel-title>Évaluation par l'étudiant</mat-panel-title>
       <mat-panel-description>
@@ -95,7 +95,7 @@
 
     <mat-accordion *ngIf="ficheEvaluation && ficheEvaluation.validationEtudiant">
       <form [formGroup]="reponseEtudiantForm" novalidate (submit)="saveReponse(0)">
-        <mat-expansion-panel [expanded]="false">
+        <mat-expansion-panel #etuTab1Panel [expanded]="false">
           <mat-expansion-panel-header>
             <mat-panel-title>Avant le départ en stage</mat-panel-title>
           </mat-expansion-panel-header>
@@ -226,7 +226,7 @@
           </div>
         </mat-expansion-panel>
 
-        <mat-expansion-panel [expanded]="false">
+        <mat-expansion-panel #etuTab2Panel [expanded]="false">
           <mat-expansion-panel-header>
             <mat-panel-title>Pendant le stage</mat-panel-title>
           </mat-expansion-panel-header>
@@ -350,7 +350,7 @@
           </div>
         </mat-expansion-panel>
 
-        <mat-expansion-panel [expanded]="false">
+        <mat-expansion-panel #etuTab3Panel [expanded]="false">
           <mat-expansion-panel-header>
             <mat-panel-title>Après le stage</mat-panel-title>
           </mat-expansion-panel-header>
@@ -432,6 +432,9 @@
                   <div class="mb-2"><b>{{question.title}}</b></div>
                   <div class="mb-2">{{convention.sujetStage}}</div>
                 </div>
+                <div class="col-md-12">
+                  <div class="mb-2"><b>L'avez-vous modifié ?</b></div>
+                </div>
                 <div class="col-sm-12">
                   <mat-radio-group formControlName="{{'reponse' + question.controlName}}">
                     <mat-radio-button [value]="true">Oui</mat-radio-button>
@@ -486,7 +489,7 @@
     </mat-accordion>
   </mat-expansion-panel>
 
-  <mat-expansion-panel [expanded]="editEns" [disabled]="!ficheEvaluation ||!ficheEvaluation.validationEnseignant" *ngIf="isEnseignant || isGestionnaireOrAdmin">
+  <mat-expansion-panel #ensPanel [expanded]="editEns" [disabled]="!ficheEvaluation ||!ficheEvaluation.validationEnseignant" *ngIf="isEnseignant || isGestionnaireOrAdmin">
     <mat-expansion-panel-header>
       <mat-panel-title>Évaluation par l'enseignant</mat-panel-title>
       <mat-panel-description>
@@ -498,7 +501,7 @@
 
     <mat-accordion *ngIf="ficheEvaluation && ficheEvaluation.validationEnseignant">
       <form [formGroup]="reponseEnseignantForm" novalidate (submit)="saveReponse(1)">
-        <mat-expansion-panel [expanded]="false">
+        <mat-expansion-panel #ensTab1Panel [expanded]="false">
           <mat-expansion-panel-header>
             <mat-panel-title>Suivi du stagiaire pendant son stage</mat-panel-title>
           </mat-expansion-panel-header>
@@ -602,7 +605,7 @@
           </div>
         </mat-expansion-panel>
 
-        <mat-expansion-panel [expanded]="false">
+        <mat-expansion-panel #ensTab2Panel [expanded]="false">
           <mat-expansion-panel-header>
             <mat-panel-title>Evaluation du stagiaire</mat-panel-title>
           </mat-expansion-panel-header>
@@ -718,7 +721,7 @@
     </mat-accordion>
   </mat-expansion-panel>
 
-  <mat-expansion-panel [expanded]="editEnt" [disabled]="!ficheEvaluation ||!ficheEvaluation.validationEntreprise" *ngIf="isGestionnaireOrAdmin">
+  <mat-expansion-panel #entPanel [expanded]="editEnt" [disabled]="!ficheEvaluation ||!ficheEvaluation.validationEntreprise" *ngIf="isGestionnaireOrAdmin">
     <mat-expansion-panel-header>
       <mat-panel-title>Appréciation du tuteur professionnel</mat-panel-title>
       <mat-panel-description>
@@ -730,7 +733,7 @@
 
     <mat-accordion *ngIf="ficheEvaluation && ficheEvaluation.validationEntreprise">
       <form [formGroup]="reponseEntrepriseForm" novalidate (submit)="saveReponse(2)">
-        <mat-expansion-panel [expanded]="false">
+        <mat-expansion-panel #entTab1Panel [expanded]="false">
           <mat-expansion-panel-header>
             <mat-panel-title>Savoir être du stagiaire</mat-panel-title>
           </mat-expansion-panel-header>
@@ -834,7 +837,7 @@
           </div>
         </mat-expansion-panel>
 
-        <mat-expansion-panel [expanded]="false">
+        <mat-expansion-panel #entTab2Panel [expanded]="false">
           <mat-expansion-panel-header>
             <mat-panel-title>Savoir faire du stagiaire</mat-panel-title>
           </mat-expansion-panel-header>
@@ -938,7 +941,7 @@
           </div>
         </mat-expansion-panel>
 
-        <mat-expansion-panel [expanded]="false">
+        <mat-expansion-panel #entTab3Panel [expanded]="false">
           <mat-expansion-panel-header>
             <mat-panel-title>Appréciation générale du stage</mat-panel-title>
           </mat-expansion-panel-header>
