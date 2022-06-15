@@ -1296,8 +1296,121 @@ export class EvaluationStageComponent implements OnInit {
     }
   }
 
+  getQestionTexte(question: any): string {
+
+    let htmlTexte = "";
+
+    htmlTexte += "<p style=\"margin-left: 16px\"><span class=\"text-small\"><strong> - "+question.title+"</strong></span></p>";
+
+    if(question.type == 'boolean'){
+      if(this.reponseEvaluation['reponse' + question.controlName]){
+        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">Oui</span></p>";
+      }else{
+        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">Non</span></p>";
+      }
+    }
+    if(question.type == 'multiple-choice'){
+      let line = question.texte[this.reponseEvaluation['reponse' + question.controlName]];
+      htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+line+"</span></p>";
+
+      if(question.bisQuestionLowNotation &&
+      (this.reponseEtudiantForm.get('reponse' + question.controlName)?.value !== null) &&
+      (this.reponseEtudiantForm.get('reponse' + question.controlName)?.value >= 3)){
+        let line = question.bisQuestionLowNotation;
+        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\"><strong> - "+line+"</strong>";
+        let formControlName = "reponse" + question.controlName + 'bis';
+        line = this.reponseEvaluation[formControlName];
+        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+line+"</span></p>";
+      }
+      if(question.bisQuestion){
+        let line = question.bisQuestion;
+        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\"><strong> - "+line+"</strong>";
+        let formControlName = "reponse" + question.controlName + 'bis';
+        line = this.reponseEvaluation[formControlName];
+        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+line??'/'+"</span></p>";
+      }
+    }
+    if(question.type == 'multiple-boolean'){
+      for (var i = 0; i < question.texte.length; i++) {
+        let line = question.texte[i];
+        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\"><strong> - "+line+" : </strong>";
+        let formControlName = "reponse" + question.controlName + this.controlsIndexToLetter[i];
+        if(this.reponseEvaluation[formControlName]){
+          htmlTexte += "Oui</span></p>";
+        }else{
+          htmlTexte += "Non</span></p>";
+        }
+      }
+    }
+    if(question.type == 'texte'){
+      let line = question.texte[this.reponseEvaluation['reponse' + question.controlName]];
+      htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+line+"</span></p>";
+    }
+    if(question.type == 'EtuI5'){
+        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+this.convention.origineStage.libelle+"</span></p>";
+    }
+    if(question.type == 'EtuI7'){
+      if(this.reponseEvaluation['reponse' + question.controlName]){
+        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">Oui</span></p>";
+        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\"><strong>- Si oui, par qui ?</strong></span></p>";
+        let line = question.texte[this.reponseEvaluation['reponseEtuI7bis1']];
+        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+line+"</span></p>";
+      }else{
+        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">Non</span></p>";
+        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\"><strong>- Si non, pourquoi ?</strong></span></p>";
+        let line = question.texte[this.reponseEvaluation['reponseEtuI7bis2']];
+        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+line+"</span></p>";
+      }
+    }
+    if(question.type == 'EtuII5'){
+      if(this.reponseEvaluation['reponse' + question.controlName]){
+        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">Oui</span></p>";
+        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\"><strong>- Si oui : a) De quel ordre ?</strong></span></p>";
+        let line = question.texte[this.reponseEvaluation['reponseEtuII5a']];
+        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+line+"</span></p>";
+        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\"><strong>b) Avec autonomie ?</strong></span></p>";
+        if(this.reponseEvaluation['reponseEtuII5b']){
+          htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">Oui</span></p>";
+        }else{
+          htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">Non</span></p>";
+        }
+      }
+    }
+    if(question.type == 'EtuIII1'){
+        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+this.convention.sujetStage+"</span></p>";
+    }
+
+    return htmlTexte;
+  }
+
   printFiche(typeFiche: number): void {
-    this.reponseEvaluationService.getFichePDF(this.convention.id, typeFiche).subscribe((response: any) => {
+
+    let htmlTexte = "";
+
+    if (typeFiche==0){
+      htmlTexte += "<p style=\"text-align:center;\"><span class=\"text-huge\"><strong>Evaluation du stage par le tuteur pédagogique</strong></span></p>";
+      htmlTexte += "<p style=\"text-align:center;\"><span class=\"text-small\"><strong>Convention de stage n°"+this.convention.id+"</strong></span></p>";
+      htmlTexte += "<p><span class=\"text-small\"><strong>I. <u>Avant le départ en stage</u></strong></span></p>";
+      for(let question of this.FicheEtudiantIQuestions){
+        if(this.ficheEvaluation['question' + question.controlName]){
+          htmlTexte += this.getQestionTexte(question);
+        }
+      }
+      htmlTexte += "<p><span class=\"text-small\"><strong>II. <u>Pendant le stage</u></strong></span></p>";
+      for(let question of this.FicheEtudiantIIQuestions){
+        if(this.ficheEvaluation['question' + question.controlName]){
+          htmlTexte += this.getQestionTexte(question);
+        }
+      }
+      htmlTexte += "<p><span class=\"text-small\"><strong>III. <u>Après le stage</u></strong></span></p>";
+      for(let question of this.FicheEtudiantIIIQuestions){
+        if(this.ficheEvaluation['question' + question.controlName]){
+          htmlTexte += this.getQestionTexte(question);
+        }
+      }
+    }
+
+    this.reponseEvaluationService.getFichePDF(this.convention.id, typeFiche, htmlTexte).subscribe((response: any) => {
       var blob = new Blob([response as BlobPart], {type: "application/pdf"});
       let filename;
       if (typeFiche==0){

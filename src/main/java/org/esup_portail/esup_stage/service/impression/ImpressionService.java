@@ -83,17 +83,10 @@ public class ImpressionService {
         }
     }
 
-    public void generateFicheEtudiantPDF(ReponseEvaluation reponseEvaluation, ByteArrayOutputStream ou) {
+    public void generateFichePDF(String htmlTexte, ByteArrayOutputStream ou) {
         try {
-            String htmlTexte = "TODO";
-
-            Template template = new Template("template_FicheEtudiant_texte" + reponseEvaluation.getConvention().getId(), htmlTexte, freeMarkerConfigurer.getConfiguration());
-            StringWriter texte = new StringWriter();
-            template.process(reponseEvaluation, texte);
-
-            String filename = "FicheEtudiant" + reponseEvaluation.getConvention().getId() + ".pdf";
-
-            this.generatePDF(texte.toString(), filename, null, ou);
+            String filename = "FicheEtudiant.pdf";
+            this.generatePDF(htmlTexte, filename, null, ou);
         } catch (Exception e) {
             logger.error("Une erreur est survenue lors de la génération du PDF", e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");

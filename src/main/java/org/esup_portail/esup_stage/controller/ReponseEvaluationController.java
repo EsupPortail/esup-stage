@@ -109,9 +109,9 @@ public class ReponseEvaluationController {
         setReponseEvaluationEntrepriseData(reponseEvaluation, reponseEntrepriseFormDto);
         return reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
     }
-    @GetMapping("/{id}/getFichePDF/typeFiche/{typeFiche}")
+    @PostMapping("/{id}/getFichePDF/typeFiche/{typeFiche}")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
-    public ResponseEntity<byte[]> getFichePDF(@PathVariable("id") int id,@PathVariable("typeFiche") int typeFiche) {
+    public ResponseEntity<byte[]> getFichePDF(@PathVariable("id") int id,@PathVariable("typeFiche") int typeFiche,@RequestBody String htmlTexte) {
         ReponseEvaluation reponseEvaluation = reponseEvaluationJpaRepository.findByConvention(id);
         if (reponseEvaluation == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "ReponseEvaluation non trouvé");
@@ -119,15 +119,15 @@ public class ReponseEvaluationController {
         ByteArrayOutputStream ou = new ByteArrayOutputStream();
 
         if(typeFiche == 0) {
-            impressionService.generateFicheEtudiantPDF(reponseEvaluation, ou);
+            impressionService.generateFichePDF(htmlTexte, ou);
             reponseEvaluation.setImpressionEtudiant(true);
         }
         if(typeFiche == 1) {
-            impressionService.generateFicheEtudiantPDF(reponseEvaluation, ou);
+            impressionService.generateFichePDF(htmlTexte, ou);
             reponseEvaluation.setImpressionEnseignant(true);
         }
         if(typeFiche == 2) {
-            impressionService.generateFicheEtudiantPDF(reponseEvaluation, ou);
+            impressionService.generateFichePDF(htmlTexte, ou);
             reponseEvaluation.setImpressionEntreprise(true);
         }
         reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
