@@ -1201,10 +1201,6 @@ export class EvaluationStageComponent implements OnInit {
       questionsSupplementaires = this.questionsSupplementaires[5].concat(this.questionsSupplementaires[6]).concat(this.questionsSupplementaires[7]);
     }
 
-    for (const name in reponseForm.controls) {
-        if (reponseForm.controls[name].invalid) {
-        }
-    }
     const valid = reponseForm.valid && reponseSupplementaireForm.valid
 
     const data = {...reponseForm.value};
@@ -1310,12 +1306,14 @@ export class EvaluationStageComponent implements OnInit {
       }
     }
     if(question.type == 'multiple-choice'){
-      let line = question.texte[this.reponseEvaluation['reponse' + question.controlName]];
+      let formControlName = 'reponse' + question.controlName;
+
+      let line = question.texte[this.reponseEvaluation[formControlName]];
       htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+line+"</span></p>";
 
       if(question.bisQuestionLowNotation &&
-      (this.reponseEtudiantForm.get('reponse' + question.controlName)?.value !== null) &&
-      (this.reponseEtudiantForm.get('reponse' + question.controlName)?.value >= 3)){
+      (this.reponseEvaluation[formControlName] !== null) &&
+      (this.reponseEvaluation[formControlName] >= 3)){
         let line = question.bisQuestionLowNotation;
         htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\"><strong> - "+line+"</strong>";
         let formControlName = "reponse" + question.controlName + 'bis';
@@ -1323,11 +1321,13 @@ export class EvaluationStageComponent implements OnInit {
         htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+line+"</span></p>";
       }
       if(question.bisQuestion){
-        let line = question.bisQuestion;
-        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\"><strong> - "+line+"</strong>";
         let formControlName = "reponse" + question.controlName + 'bis';
-        line = this.reponseEvaluation[formControlName];
-        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+line??'/'+"</span></p>";
+        let bisLine = this.reponseEvaluation[formControlName];
+        if(bisLine && bisLine !== null){
+          let line = question.bisQuestion;
+          htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\"><strong> - "+line+"</strong>";
+          htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+bisLine+"</span></p>";
+        }
       }
     }
     if(question.type == 'multiple-boolean'){
@@ -1343,7 +1343,7 @@ export class EvaluationStageComponent implements OnInit {
       }
     }
     if(question.type == 'texte'){
-      let line = question.texte[this.reponseEvaluation['reponse' + question.controlName]];
+      let line = this.reponseEvaluation['reponse' + question.controlName];
       htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+line+"</span></p>";
     }
     if(question.type == 'EtuI5'){
@@ -1383,12 +1383,38 @@ export class EvaluationStageComponent implements OnInit {
     return htmlTexte;
   }
 
+  getQuestionSupplementaireTexte(reponseSupplementaireForm:any, questionSupplementaire: any): string {
+
+    let htmlTexte = "";
+
+    let line = questionSupplementaire.question;
+    htmlTexte += "<p style=\"margin-left: 16px\"><span class=\"text-small\"><strong> - "+line+"</strong></span></p>";
+
+    if(questionSupplementaire.typeQuestion == 'txt'){
+      line = reponseSupplementaireForm.get(questionSupplementaire.formControlName)!.value;
+    }
+    if(questionSupplementaire.typeQuestion == 'not'){
+      let notation = reponseSupplementaireForm.get(questionSupplementaire.formControlName)!.value;
+      if(notation === 0)line = 'Excellent';
+      if(notation === 1)line = 'Très bien';
+      if(notation === 2)line = 'Bien';
+      if(notation === 3)line = 'Satisfaisant';
+      if(notation === 4)line = 'Insuffisant';
+    }
+    if(questionSupplementaire.typeQuestion == 'yn'){
+      line = (reponseSupplementaireForm.get(questionSupplementaire.formControlName)!.value === true)?'Oui':'Non';
+    }
+    htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+line+"</span></p>";
+
+    return htmlTexte;
+  }
+
   printFiche(typeFiche: number): void {
 
     let htmlTexte = "";
 
     if (typeFiche==0){
-      htmlTexte += "<p style=\"text-align:center;\"><span class=\"text-huge\"><strong>Evaluation du stage par le tuteur pédagogique</strong></span></p>";
+      htmlTexte += "<p style=\"text-align:center;\"><span class=\"text-huge\"><strong>Evaluation du stage par l'étudiant</strong></span></p>";
       htmlTexte += "<p style=\"text-align:center;\"><span class=\"text-small\"><strong>Convention de stage n°"+this.convention.id+"</strong></span></p>";
       htmlTexte += "<p><span class=\"text-small\"><strong>I. <u>Avant le départ en stage</u></strong></span></p>";
       for(let question of this.FicheEtudiantIQuestions){
@@ -1396,17 +1422,89 @@ export class EvaluationStageComponent implements OnInit {
           htmlTexte += this.getQestionTexte(question);
         }
       }
+      let questionsSupplementaires = this.questionsSupplementaires[0];
+      for(let questionSupplementaire of questionsSupplementaires){
+        htmlTexte += this.getQuestionSupplementaireTexte(this.reponseSupplementaireEtudiantForm,questionSupplementaire);
+      }
       htmlTexte += "<p><span class=\"text-small\"><strong>II. <u>Pendant le stage</u></strong></span></p>";
       for(let question of this.FicheEtudiantIIQuestions){
         if(this.ficheEvaluation['question' + question.controlName]){
           htmlTexte += this.getQestionTexte(question);
         }
       }
+      questionsSupplementaires = this.questionsSupplementaires[1];
+      for(let questionSupplementaire of questionsSupplementaires){
+        htmlTexte += this.getQuestionSupplementaireTexte(this.reponseSupplementaireEtudiantForm,questionSupplementaire);
+      }
       htmlTexte += "<p><span class=\"text-small\"><strong>III. <u>Après le stage</u></strong></span></p>";
       for(let question of this.FicheEtudiantIIIQuestions){
         if(this.ficheEvaluation['question' + question.controlName]){
           htmlTexte += this.getQestionTexte(question);
         }
+      }
+      questionsSupplementaires = this.questionsSupplementaires[2];
+      for(let questionSupplementaire of questionsSupplementaires){
+        htmlTexte += this.getQuestionSupplementaireTexte(this.reponseSupplementaireEtudiantForm,questionSupplementaire);
+      }
+    }
+
+    if (typeFiche==1){
+      htmlTexte += "<p style=\"text-align:center;\"><span class=\"text-huge\"><strong>Evaluation du stage par l'enseignant</strong></span></p>";
+      htmlTexte += "<p style=\"text-align:center;\"><span class=\"text-small\"><strong>Convention de stage n°"+this.convention.id+"</strong></span></p>";
+      htmlTexte += "<p><span class=\"text-small\"><strong>I. <u>Suivi du stagiaire pendant son stage</u></strong></span></p>";
+      for(let question of this.FicheEnseignantIQuestions){
+        if(this.ficheEvaluation['question' + question.controlName]){
+          htmlTexte += this.getQestionTexte(question);
+        }
+      }
+      let questionsSupplementaires = this.questionsSupplementaires[3];
+      for(let questionSupplementaire of questionsSupplementaires){
+        htmlTexte += this.getQuestionSupplementaireTexte(this.reponseSupplementaireEnseignantForm,questionSupplementaire);
+      }
+      htmlTexte += "<p><span class=\"text-small\"><strong>II. <u>Evaluation du stagiaire</u></strong></span></p>";
+      for(let question of this.FicheEnseignantIIQuestions){
+        if(this.ficheEvaluation['question' + question.controlName]){
+          htmlTexte += this.getQestionTexte(question);
+        }
+      }
+      questionsSupplementaires = this.questionsSupplementaires[4];
+      for(let questionSupplementaire of questionsSupplementaires){
+        htmlTexte += this.getQuestionSupplementaireTexte(this.reponseSupplementaireEnseignantForm,questionSupplementaire);
+      }
+    }
+
+    if (typeFiche==2){
+      htmlTexte += "<p style=\"text-align:center;\"><span class=\"text-huge\"><strong>Evaluation du stage par le tuteur pédagogique</strong></span></p>";
+      htmlTexte += "<p style=\"text-align:center;\"><span class=\"text-small\"><strong>Convention de stage n°"+this.convention.id+"</strong></span></p>";
+      htmlTexte += "<p><span class=\"text-small\"><strong>I. <u>Savoir être du stagiaire</u></strong></span></p>";
+      for(let question of this.FicheEntrepriseIQuestions){
+        if(this.ficheEvaluation['question' + question.controlName]){
+          htmlTexte += this.getQestionTexte(question);
+        }
+      }
+      let questionsSupplementaires = this.questionsSupplementaires[5];
+      for(let questionSupplementaire of questionsSupplementaires){
+        htmlTexte += this.getQuestionSupplementaireTexte(this.reponseSupplementaireEntrepriseForm,questionSupplementaire);
+      }
+      htmlTexte += "<p><span class=\"text-small\"><strong>II. <u>>Savoir faire du stagiaire</u></strong></span></p>";
+      for(let question of this.FicheEntrepriseIIQuestions){
+        if(this.ficheEvaluation['question' + question.controlName]){
+          htmlTexte += this.getQestionTexte(question);
+        }
+      }
+      questionsSupplementaires = this.questionsSupplementaires[6];
+      for(let questionSupplementaire of questionsSupplementaires){
+        htmlTexte += this.getQuestionSupplementaireTexte(this.reponseSupplementaireEntrepriseForm,questionSupplementaire);
+      }
+      htmlTexte += "<p><span class=\"text-small\"><strong>III. <u>Appréciation générale du stage</u></strong></span></p>";
+      for(let question of this.FicheEntrepriseIIIQuestions){
+        if(this.ficheEvaluation['question' + question.controlName]){
+          htmlTexte += this.getQestionTexte(question);
+        }
+      }
+      questionsSupplementaires = this.questionsSupplementaires[7];
+      for(let questionSupplementaire of questionsSupplementaires){
+        htmlTexte += this.getQuestionSupplementaireTexte(this.reponseSupplementaireEntrepriseForm,questionSupplementaire);
       }
     }
 
