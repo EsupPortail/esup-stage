@@ -25,6 +25,7 @@ export class SignataireGroupeComponent implements OnInit {
   selected: any[] = [];
 
   structures: any[] = [];
+  services: any[] = [];
 
 
   @Input() groupeEtudiant: any;
@@ -45,12 +46,13 @@ export class SignataireGroupeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.columns = ['select','numEtudiant','nom', 'prenom', 'mail', 'etab', 'service'];
+    this.columns = ['select','numEtudiant','nom', 'prenom', 'mail', 'etab', 'service', 'signataire'];
     this.filters = [
         { id: 'etudiant.nom', libelle: 'Nom'},
         { id: 'etudiant.prenom', libelle: 'Prénom'},
         { id: 'etudiant.numEtudiant', libelle: 'N° étudiant'},
         { id: 'convention.structure.id', libelle: 'Structure d\'accueil', type: 'list', options: [], keyLibelle: 'raisonSociale', keyId: 'id'},
+        { id: 'convention.service.id', libelle: 'Service d\'accueil', type: 'list', options: [], keyLibelle: 'nom', keyId: 'id'},
     ];
   }
 
@@ -62,6 +64,14 @@ export class SignataireGroupeComponent implements OnInit {
       }
       this.appTable?.update();
       this.selected = [];
+  }
+
+  reloadServiceFilters(): void {
+    if(this.groupeEtudiant && this.groupeEtudiant.convention.structure && this.groupeEtudiant.convention.service && this.appTable?.data){
+      this.services = this.appTable?.data.map((e: any) => e.convention.service??this.groupeEtudiant.convention.service);
+      this.services = [...new Map(this.services.map(e => [e.id, {id:e.id,nom:e.nom}])).values()]
+      this.appTable?.setFilterOption('convention.service.id', this.services);
+    }
   }
 
   isSelected(data: any): boolean {
@@ -111,7 +121,7 @@ export class SignataireGroupeComponent implements OnInit {
     const modalDialog = this.matDialog.open(SignataireGroupeModalComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse) {
-        this.updateService(this.groupeEtudiant.convention.id,dialogResponse)
+        this.updateSignataire(this.groupeEtudiant.convention.id,dialogResponse)
       }
     });
   }
@@ -128,7 +138,7 @@ export class SignataireGroupeComponent implements OnInit {
       modalDialog.afterClosed().subscribe(dialogResponse => {
         if (dialogResponse) {
           for(const etu of this.selected){
-            this.updateService(etu.convention.id,dialogResponse);
+            this.updateSignataire(etu.convention.id,dialogResponse);
           }
         }
       });
@@ -137,13 +147,10 @@ export class SignataireGroupeComponent implements OnInit {
     }
   }
 
-  importCsv(): void {
-  }
-
-  updateService(conventionId: number, serviceId: number): void {
+  updateSignataire(conventionId: number, signataireId: number): void {
     const data = {
-      "field":'idService',
-      "value":serviceId,
+      "field":'idSignataire',
+      "value":signataireId,
     };
     this.conventionService.patch(conventionId, data).subscribe((response: any) => {
         this.messageService.setSuccess('Signataire affecté avec succès');

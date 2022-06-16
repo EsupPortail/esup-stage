@@ -5,7 +5,17 @@
                  matSort [matSortActive]="sortColumn" [matSortDirection]="'desc'" (matSortChange)="appTable ? appTable.sorting($event) : null"
                  [noResultText]="'Aucun étudiant trouvé'">
 
-        this.columns = ['numEtudiant','nom', 'adresse', 'codePostal', 'commune', 'pays', 'tel', 'telPortable', 'mail'];
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef>Action</th>
+          <td mat-cell *matCellDef="let row">
+            <button mat-button mat-stroked-button (click)="edit(row)" color="primary">
+              <span *ngIf="true"><i class="fa fa-pen"></i> Modifier</span>
+              <ng-template #notSelected>
+                <i class="fa fa-check-circle"></i> Sélectionner
+              </ng-template>
+            </button>
+          </td>
+        </ng-container>
         <ng-container matColumnDef="numEtudiant">
           <th mat-header-cell *matHeaderCellDef>N° étudiant</th>
           <td mat-cell *matCellDef="let row">{{row.etudiant.numEtudiant}}</td>
@@ -14,43 +24,44 @@
           <th mat-header-cell *matHeaderCellDef>Nom, Prénom</th>
           <td mat-cell *matCellDef="let row">{{row.etudiant.nom + ' ' + row.etudiant.prenom}}</td>
         </ng-container>
-        <ng-container matColumnDef="adresse">
-          <th mat-header-cell *matHeaderCellDef>Adresse</th>
-          <td mat-cell *matCellDef="let row">
-            {{row.etudiant.prenom}}
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="codePostal">
-          <th mat-header-cell *matHeaderCellDef>Code postal</th>
-          <td mat-cell *matCellDef="let row">
-            {{row.etudiant.mail}}
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="commune">
-          <th mat-header-cell *matHeaderCellDef>Commune</th>
-          <td mat-cell *matCellDef="let row">{{row.etudiant.mail}}</td>
-        </ng-container>
-        <ng-container matColumnDef="pays">
-          <th mat-header-cell *matHeaderCellDef>Pays</th>
-          <td mat-cell *matCellDef="let row">{{row.etudiant.mail}}</td>
-        </ng-container>
-        <ng-container matColumnDef="tel">
-          <th mat-header-cell *matHeaderCellDef>Téléphone</th>
-          <td mat-cell *matCellDef="let row">{{row.etudiant.mail}}</td>
-        </ng-container>
-        <ng-container matColumnDef="telPortable">
-          <th mat-header-cell *matHeaderCellDef>Téléphone portable</th>
-          <td mat-cell *matCellDef="let row">{{row.etudiant.mail}}</td>
-        </ng-container>
         <ng-container matColumnDef="mail">
           <th mat-header-cell *matHeaderCellDef>Mail institutionnel</th>
           <td mat-cell *matCellDef="let row">{{row.etudiant.mail}}</td>
         </ng-container>
         <ng-container matColumnDef="mailPerso">
           <th mat-header-cell *matHeaderCellDef>Mail personnel</th>
-          <td mat-cell *matCellDef="let row">{{row.etudiant.mail}}</td>
+          <td mat-cell *matCellDef="let row">{{row.convention.courrielPersoEtudiant??'/'}}</td>
+        </ng-container>
+        <ng-container matColumnDef="adresse">
+          <th mat-header-cell *matHeaderCellDef>Adresse</th>
+          <td mat-cell *matCellDef="let row">
+            {{row.convention.adresseEtudiant??'/'}}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="codePostal">
+          <th mat-header-cell *matHeaderCellDef>Code postal</th>
+          <td mat-cell *matCellDef="let row">
+            {{row.convention.codePostalEtudiant??'/'}}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="commune">
+          <th mat-header-cell *matHeaderCellDef>Commune</th>
+          <td mat-cell *matCellDef="let row">{{row.convention.villeEtudiant??'/'}}</td>
+        </ng-container>
+        <ng-container matColumnDef="pays">
+          <th mat-header-cell *matHeaderCellDef>Pays</th>
+          <td mat-cell *matCellDef="let row">{{row.convention.paysEtudiant??'/'}}</td>
+        </ng-container>
+        <ng-container matColumnDef="tel">
+          <th mat-header-cell *matHeaderCellDef>Téléphone</th>
+          <td mat-cell *matCellDef="let row">{{row.convention.telEtudiant??'/'}}</td>
+        </ng-container>
+        <ng-container matColumnDef="telPortable">
+          <th mat-header-cell *matHeaderCellDef>Téléphone portable</th>
+          <td mat-cell *matCellDef="let row">{{row.convention.telPortableEtudiant??'/'}}</td>
         </ng-container>
       </app-table>
+
     </div>
   </mat-card-content>
 </mat-card>

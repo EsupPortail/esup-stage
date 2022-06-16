@@ -101,7 +101,7 @@ export class EnseignantGroupeComponent implements OnInit {
     const modalDialog = this.matDialog.open(EnseignantGroupeModalComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse) {
-        this.updateService(this.groupeEtudiant.convention.id,dialogResponse)
+        this.updateEnseignant(this.groupeEtudiant.convention.id,dialogResponse)
       }
     });
   }
@@ -114,16 +114,16 @@ export class EnseignantGroupeComponent implements OnInit {
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse) {
         for(const etu of this.selected){
-          this.updateService(etu.convention.id,dialogResponse);
+          this.updateEnseignant(etu.convention.id,dialogResponse);
         }
       }
     });
   }
 
-  updateService(conventionId: number, serviceId: number): void {
+  updateEnseignant(conventionId: number, enseignantId: number): void {
     const data = {
-      "field":'idService',
-      "value":serviceId,
+      "field":'idEnseignant',
+      "value":enseignantId,
     };
     this.conventionService.patch(conventionId, data).subscribe((response: any) => {
         this.messageService.setSuccess('Enseignant affecté avec succès');

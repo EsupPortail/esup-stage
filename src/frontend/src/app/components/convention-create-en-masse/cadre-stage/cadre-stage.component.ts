@@ -4,13 +4,11 @@ import { GroupeEtudiantService } from "../../../services/groupe-etudiant.service
 import { EtudiantGroupeEtudiantService } from "../../../services/etudiant-groupe-etudiant.service";
 import { AuthService } from "../../../services/auth.service";
 import { Router } from "@angular/router";
-import { StructureService } from "../../../services/structure.service";
-import { UfrService } from "../../../services/ufr.service";
-import { EtapeService } from "../../../services/etape.service";
 import { MessageService } from "../../../services/message.service";
 import { ConfigService } from "../../../services/config.service";
 import { SortDirection } from "@angular/material/sort";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { CadreStageModalComponent } from './cadre-stage-modal/cadre-stage-modal.component';
 
 @Component({
   selector: 'app-cadre-stage',
@@ -36,12 +34,12 @@ export class CadreStageComponent implements OnInit {
     private router: Router,
     private messageService: MessageService,
     private configService: ConfigService,
-    private fb: FormBuilder,
+    public matDialog: MatDialog,
   ) {
   }
 
   ngOnInit(): void {
-      this.columns = ['numEtudiant','nom', 'adresse', 'codePostal', 'commune', 'pays', 'tel', 'telPortable', 'mail', 'mailPerso'];
+      this.columns = ['action','numEtudiant','nom', 'mail', 'mailPerso', 'adresse', 'codePostal', 'commune', 'pays', 'tel', 'telPortable'];
       this.filters = [
         { id: 'etudiant.nom', libelle: 'Nom'},
         { id: 'etudiant.prenom', libelle: 'Prénom'},
@@ -53,6 +51,22 @@ export class CadreStageComponent implements OnInit {
     if(this.groupeEtudiant){
       this.filters.push({ id: 'groupeEtudiant.id', type: 'int', value: this.groupeEtudiant.id, hidden: true, permanent: true })
     }
+      this.appTable?.update();
   }
 
+  edit(row: any): void{
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.width = '1000px';
+    dialogConfig.height = '1000px';
+    dialogConfig.data = {convention: row.convention};
+    const modalDialog = this.matDialog.open(CadreStageModalComponent, dialogConfig);
+    modalDialog.afterClosed().subscribe(dialogResponse => {
+      if (dialogResponse) {
+        this.messageService.setSuccess('Cadre du stage édité avec succès');
+        this.groupeEtudiantService.getById(this.groupeEtudiant.id).subscribe((response: any) => {
+          this.validated.emit(response);
+        });
+      }
+    });
+  }
 }

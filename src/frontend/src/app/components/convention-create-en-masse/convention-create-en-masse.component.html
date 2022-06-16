@@ -55,4 +55,10 @@
     </ng-template>
     <app-signataire-groupe (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant"></app-signataire-groupe>
   </mat-tab>
+  <mat-tab #validationCreationTab [disabled]="(!groupeEtudiant || !allValid)">
+    <ng-template mat-tab-label>
+      Valider la création
+    </ng-template>
+    <app-validation-creation [groupeEtudiant]="groupeEtudiant"></app-validation-creation>
+  </mat-tab>
 </mat-tab-group>

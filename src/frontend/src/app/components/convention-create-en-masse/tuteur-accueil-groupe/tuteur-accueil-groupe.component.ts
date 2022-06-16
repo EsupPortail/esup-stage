@@ -149,9 +149,6 @@ export class TuteurAccueilGroupeComponent implements OnInit {
     }
   }
 
-  importCsv(): void {
-  }
-
   updateTuteur(conventionId: number, tuteurId: number): void {
     const data = {
       "field":'idContact',

@@ -1,0 +1,154 @@
+<form *ngIf="etudiant && formConvention" [formGroup]="formConvention" novalidate (submit)="validate()">
+  <div class="convention-etudiant-details">
+    <mat-card>
+      <mat-card-content>
+        <div class="text-title"><i class="fa fa-user"></i> Étudiant</div>
+        <mat-divider></mat-divider>
+        <div class="mt-3 mb-3">
+          <div class="row">
+            <div class="col-sm-6 font-weight-bold">N° étudiant</div>
+            <div class="col-sm-6">{{selectedNumEtudiant}}</div>
+          </div>
+          <div class="row">
+            <div class="col-sm-6 font-weight-bold">Nom</div>
+            <div class="col-sm-6">{{etudiant.nompatro}}</div>
+          </div>
+          <div class="row">
+            <div class="col-sm-6 font-weight-bold">Prénom</div>
+            <div class="col-sm-6">{{etudiant.prenom}}</div>
+          </div>
+          <div class="row">
+            <div class="col-sm-6 font-weight-bold">Mail institutionnel</div>
+            <div class="col-sm-6">{{etudiant.mail}}</div>
+          </div>
+        </div>
+
+        <div class="text-title"><i class="fa fa-star"></i> Vérifiez les coordonnées</div>
+        <mat-divider></mat-divider>
+        <div class="mt-3 mb-3">
+          <div class="row">
+            <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+              <mat-label>Adresse</mat-label>
+              <input matInput formControlName="adresseEtudiant" required />
+              <mat-error><app-form-error [field]="formConvention.get('adresseEtudiant')"></app-form-error></mat-error>
+            </mat-form-field>
+            <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+              <mat-label>Code postal</mat-label>
+              <input matInput formControlName="codePostalEtudiant" required />
+              <mat-error><app-form-error [field]="formConvention.get('codePostalEtudiant')"></app-form-error></mat-error>
+            </mat-form-field>
+            <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+              <mat-label>Commune</mat-label>
+              <input matInput formControlName="villeEtudiant" required />
+              <mat-error><app-form-error [field]="formConvention.get('villeEtudiant')"></app-form-error></mat-error>
+            </mat-form-field>
+            <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+              <mat-label>Pays</mat-label>
+              <input matInput formControlName="paysEtudiant" required />
+              <mat-error><app-form-error [field]="formConvention.get('paysEtudiant')"></app-form-error></mat-error>
+            </mat-form-field>
+            <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+              <mat-label>Téléphone</mat-label>
+              <input matInput formControlName="telEtudiant" />
+              <mat-error><app-form-error [field]="formConvention.get('telEtudiant')"></app-form-error></mat-error>
+            </mat-form-field>
+            <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+              <mat-label>Téléphone portable</mat-label>
+              <input matInput formControlName="telPortableEtudiant" />
+              <mat-error><app-form-error [field]="formConvention.get('telPortableEtudiant')"></app-form-error></mat-error>
+            </mat-form-field>
+            <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+              <mat-label>Mail personnel</mat-label>
+              <input matInput type="email" formControlName="courrielPersoEtudiant" required />
+              <mat-error><app-form-error [field]="formConvention.get('courrielPersoEtudiant')"></app-form-error></mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+    <mat-card>
+      <mat-card-content>
+        <div class="text-title"><i class="fa fa-graduation-cap"></i> Choisissez le cadre du stage</div>
+        <mat-divider></mat-divider>
+        <div class="mt-3 mb-3">
+          <ng-container *ngIf="inscriptions.length === 0; else hasInscriptions">
+            <div class="alert alert-danger">
+              Vous n'êtes inscrit à aucune formation éligible.
+            </div>
+          </ng-container>
+          <ng-template #hasInscriptions>
+            <ng-container *ngIf="inscriptions.length > 1">
+              <div class="row">
+                <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                  <mat-label>Formation</mat-label>
+                  <mat-select formControlName="inscription" required>
+                    <mat-option *ngFor="let inscription of inscriptions" [value]="inscription">{{inscription.etapeInscription.codeEtp + ' - ' + inscription.etapeInscription.libComposante}}</mat-option>
+                  </mat-select>
+                  <mat-error><app-form-error [field]="formConvention.get('inscription')"></app-form-error></mat-error>
+                </mat-form-field>
+              </div>
+            </ng-container>
+            <div *ngIf="selectedInscription">
+              <div class="row">
+                <div class="col-sm-4 font-weight-bold">Année inscription</div>
+                <div class="col-sm-8">{{selectedInscription.annee}}</div>
+              </div>
+              <div class="row mb-2">
+                <div class="col-sm-4 font-weight-bold">Formation</div>
+                <div class="col-sm-8">{{selectedInscription.etapeInscription.codeEtp + ' - ' + selectedInscription.etapeInscription.libComposante}}</div>
+              </div>
+              <div class="row" *ngIf="selectedInscription.elementPedagogiques.length > 0">
+                <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                  <mat-label>Élément pédagogique</mat-label>
+                  <mat-select formControlName="inscriptionElp" [required]="!sansElp">
+                    <mat-option *ngFor="let elp of selectedInscription.elementPedagogiques" [value]="elp">{{elp.codElp + ' - ' + elp.libElp + ' : ' + elp.nbrCrdElp}}</mat-option>
+                  </mat-select>
+                  <mat-error><app-form-error [field]="formConvention.get('inscriptionElp')"></app-form-error></mat-error>
+                </mat-form-field>
+              </div>
+              <div class="row">
+                <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                  <mat-label>Type de convention</mat-label>
+                  <mat-select formControlName="idTypeConvention" required>
+                    <mat-option *ngFor="let typeConvention of typeConventions" [value]="typeConvention.id">{{typeConvention.libelle}}</mat-option>
+                  </mat-select>
+                  <mat-error><app-form-error [field]="formConvention.get('idTypeConvention')"></app-form-error></mat-error>
+                </mat-form-field>
+                <mat-form-field class="col-sm-12 mb-2" appearance="fill" *ngIf="langueConventions.length > 0">
+                  <mat-label>Langue de la convention</mat-label>
+                  <mat-select formControlName="codeLangueConvention" required>
+                    <mat-option *ngFor="let langueConvention of langueConventions" [value]="langueConvention.code">{{langueConvention.libelle}}</mat-option>
+                  </mat-select>
+                  <mat-error><app-form-error [field]="formConvention.get('codeLangueConvention')"></app-form-error></mat-error>
+                </mat-form-field>
+              </div>
+            </div>
+          </ng-template>
+        </div>
+
+        <div *ngIf="selectedInscription">
+          <div class="text-title"><i class="fa fa-book-open"></i> Consignes</div>
+          <mat-divider></mat-divider>
+          <div class="mt-2" [innerHTML]="consigneEtablissement.texte"></div>
+          <div *ngFor="let doc of consigneEtablissement.documents">
+            <a href (click)="downloadDoc($event, doc)"><i class="fa fa-paperclip"></i> {{doc.nomReel}}</a>
+          </div>
+          <div class="mt-3" *ngIf="centreGestion && centreGestion.niveauCentre.libelle !== 'ETABLISSEMENT' && centreGestion.consignes.length === 1">
+            <div [innerHTML]="centreGestion.consignes[0].texte"></div>
+            <div *ngFor="let doc of centreGestion.consignes[0].documents">
+              <a href (click)="downloadDoc($event, doc)"><i class="fa fa-paperclip"></i> {{doc.nomReel}}</a>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <div class="row mt-3">
+    <div class="col-sm-6">
+      <button type="button" mat-button mat-stroked-button color="warn" (click)="cancel()">{{'BOUTON_ANNULER'|contenu}}</button>
+    </div>
+    <div class="col-sm-6 text-right">
+      <button mat-button mat-flat-button color="primary" [disabled]="!centreGestion || inscriptions.length === 0 || !selectedInscription">{{'BOUTON_VALIDER'|contenu}}</button>
+    </div>
+  </div>
+</form>
