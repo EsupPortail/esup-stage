@@ -19,7 +19,7 @@ public class EtudiantGroupeEtudiantController {
     EtudiantGroupeEtudiantRepository etudiantGroupeEtudiantRepository;
 
     @GetMapping
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.CREATION_EN_MASSE_CONVENTION}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<EtudiantGroupeEtudiant> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         PaginatedResponse<EtudiantGroupeEtudiant> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(etudiantGroupeEtudiantRepository.count(filters));

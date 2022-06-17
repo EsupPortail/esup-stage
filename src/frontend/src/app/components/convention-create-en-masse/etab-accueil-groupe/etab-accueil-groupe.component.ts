@@ -129,7 +129,11 @@ export class EtabAccueilGroupeComponent implements OnInit {
     });
   }
 
-  importCsv(): void {
+  importCsv(event: any): void {
+    console.log('event : ' + JSON.stringify(event.target, null, 2))
+    this.groupeEtudiantService.import(event.target.files[0]).subscribe((response: any) => {
+      this.messageService.setSuccess('Structures d\'accueil importées avec succès');
+    });
   }
 
   updateEtab(conventionId: number, etabId: number): void {

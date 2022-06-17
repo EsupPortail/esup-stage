@@ -6,7 +6,8 @@
       <div class="mb-2">
         <button mat-flat-button style="margin-right:5px" color="primary" (click)="selectForGroup()">pour le groupe d'étudiant</button>
         <button mat-flat-button style="margin-right:5px" color="primary" (click)="selectForSelected()" [disabled]="selected.length === 0">pour les étudiants selectionnés</button>
-        <button mat-flat-button style="margin-right:5px" color="primary" (click)="importCsv()">importer depuis un fichier csv</button>
+        <button mat-flat-button style="margin-right:5px" color="primary" (click)="importer.click()">importer depuis un fichier csv</button>
+        <input #importer hidden type="file" name="file" accept="text/csv" (change)="importCsv($event)">
       </div>
     </div>
 

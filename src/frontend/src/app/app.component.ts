@@ -59,13 +59,29 @@ export class AppComponent {
       }
     },
     {
-      libelle: 'Créer des conventions en masse',
+      libelle: 'Création des conventions en masse',
       path: 'convention-create-en-masse',
-      icon: 'fa-file-contract',
-      alerte: false,
       canView: () => {
-        return this.authService.checkRights({fonction: AppFonction.CREATION_EN_MASSE_CONVENTION, droits: [Droit.CREATION, Droit.LECTURE]})
-      }
+        return this.authService.checkRights({fonction: AppFonction.CREATION_EN_MASSE_CONVENTION, droits: [Droit.LECTURE]})
+      },
+      children: [
+        {
+          libelle: 'Créer des conventions en masse',
+          path: 'convention-create-en-masse/create',
+          icon: 'fa-file-contract',
+          canView: () => {
+            return this.authService.checkRights({fonction: AppFonction.CREATION_EN_MASSE_CONVENTION, droits: [Droit.LECTURE]})
+          },
+        },
+        {
+          libelle: 'Gestion des groupes',
+          path: 'convention-create-en-masse/groupes',
+          icon: 'fa-file-contract',
+          canView: () => {
+            return this.authService.checkRights({fonction: AppFonction.CREATION_EN_MASSE_CONVENTION, droits: [Droit.LECTURE]})
+          },
+        }
+      ]
     },
     {
       libelle: 'Paramétrage de l\'application',

@@ -107,7 +107,7 @@ const routes: Routes = [
     }
   },
   {
-    path: 'convention-create-en-masse',
+    path: 'convention-create-en-masse/create',
     component: ConventionCreateEnMasseComponent,
     canActivate: [AuthGuard],
     data: {

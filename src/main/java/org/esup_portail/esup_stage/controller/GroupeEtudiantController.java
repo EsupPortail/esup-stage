@@ -1,5 +1,7 @@
 package org.esup_portail.esup_stage.controller;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.dto.ContextDto;
 import org.esup_portail.esup_stage.dto.GroupeEtudiantDto;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
@@ -11,9 +13,14 @@ import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -22,6 +29,8 @@ import java.util.stream.Collectors;
 @ApiController
 @RequestMapping("/groupeEtudiant")
 public class GroupeEtudiantController {
+
+    private static final Logger logger	= LogManager.getLogger(ConsigneController.class);
 
     @Autowired
     GroupeEtudiantJpaRepository groupeEtudiantJpaRepository;
@@ -93,6 +102,27 @@ public class GroupeEtudiantController {
         }
         groupeEtudiant.setEtudiantGroupeEtudiants(etudiantGroupeEtudiants);
         return groupeEtudiantJpaRepository.saveAndFlush(groupeEtudiant);
+    }
+
+    @PostMapping(value = "/import", consumes ="text/csv")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.MODIFICATION})
+    public void importStructures(InputStream inputStream) {
+
+        logger.info("import start");
+
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
+            String line = "";
+            String dataType = "";
+            String separator = ";";
+            boolean isHeader = false;
+
+            while ((line = br.readLine()) != null) {
+
+                logger.info("line : " + line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @PutMapping("/{id}")

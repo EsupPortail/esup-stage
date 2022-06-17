@@ -30,4 +30,8 @@ export class GroupeEtudiantService {
   delete(id: number): Observable<any> {
     return this.http.delete(environment.apiUrl + "/groupeEtudiant" + id);
   }
+
+  import(file: any): Observable<any> {
+    return this.http.post(environment.apiUrl + "/groupeEtudiant/import", file);
+  }
 }
