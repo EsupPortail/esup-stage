@@ -45,6 +45,9 @@ public class GroupeEtudiantController {
     EtudiantGroupeEtudiantJpaRepository etudiantGroupeEtudiantJpaRepository;
 
     @Autowired
+    CentreGestionJpaRepository centreGestionJpaRepository;
+
+    @Autowired
     TypeConventionJpaRepository typeConventionJpaRepository;
 
     @GetMapping("/{id}")
@@ -200,6 +203,8 @@ public class GroupeEtudiantController {
         convention.setEtudiant(etudiant);
         convention.setTypeConvention(typeConvention);
         convention.setCreationEnMasse(true);
+        CentreGestion centreGestion = centreGestionJpaRepository.getCentreEtablissement();
+        convention.setCentreGestion(centreGestion);
         return conventionJpaRepository.save(convention);
     }
 

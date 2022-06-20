@@ -1,9 +1,3 @@
-<div class="row mt-3">
-  <mat-form-field class="col-md-12" appearance="fill" [hidden]="services.length == 0">
-    <mat-label>Selectionez un service :</mat-label>
-    <mat-select [(value)]="service" (selectionChange)="choose($event.value)">
-      <mat-option *ngFor="let service of services" [value]="service">{{service.nom}}</mat-option>
-    </mat-select>
-  </mat-form-field>
-  <div *ngIf="services.length == 0">Aucun service n'existe pour cette structure</div>
-</div>
+<app-service-accueil (validated)="updateService($event)"
+                     [etab]="convention.structure" [service]="convention.service"
+                     [centreGestion]="convention.centreGestion" [modifiable]="true"></app-service-accueil>

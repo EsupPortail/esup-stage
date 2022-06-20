@@ -106,8 +106,8 @@ export class ServiceAccueilGroupeComponent implements OnInit {
   selectForGroup(): void {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.width = '1000px';
-    dialogConfig.height = '200px';
-    dialogConfig.data = {etabId: this.groupeEtudiant.convention.structure.id};
+    dialogConfig.height = '1000px';
+    dialogConfig.data = {convention: this.groupeEtudiant.convention};
     const modalDialog = this.matDialog.open(ServiceAccueilGroupeModalComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse) {
@@ -122,8 +122,13 @@ export class ServiceAccueilGroupeComponent implements OnInit {
     if(this.structures.length == 1){
       const dialogConfig = new MatDialogConfig();
       dialogConfig.width = '1000px';
-      dialogConfig.height = '200px';
-      dialogConfig.data = {etabId: this.structures[0].id};
+      dialogConfig.height = '1000px';
+      let convention = this.selected[0].convention;
+      if (convention.etab){
+        dialogConfig.data = {convention: convention};
+      }else{
+        dialogConfig.data = {convention: this.groupeEtudiant.convention};
+      }
       const modalDialog = this.matDialog.open(ServiceAccueilGroupeModalComponent, dialogConfig);
       modalDialog.afterClosed().subscribe(dialogResponse => {
         if (dialogResponse) {
