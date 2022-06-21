@@ -105,7 +105,7 @@ export class EtabAccueilGroupeComponent implements OnInit {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.width = '1200px';
     dialogConfig.height = '1000px';
-    dialogConfig.data = {};
+    dialogConfig.data = {etab: this.groupeEtudiant.convention.structure};
     const modalDialog = this.matDialog.open(EtabAccueilGroupeModalComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse) {
@@ -118,7 +118,7 @@ export class EtabAccueilGroupeComponent implements OnInit {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.width = '1200px';
     dialogConfig.height = '1000px';
-    dialogConfig.data = {};
+    dialogConfig.data = {etab: null};
     const modalDialog = this.matDialog.open(EtabAccueilGroupeModalComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse) {

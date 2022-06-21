@@ -10,6 +10,6 @@ public interface GroupeEtudiantJpaRepository extends JpaRepository<GroupeEtudian
 
     GroupeEtudiant findById(int id);
 
-    @Query("SELECT ge FROM GroupeEtudiant ge WHERE ge.loginCreation = :login")
+    @Query("SELECT ge FROM GroupeEtudiant ge WHERE ge.loginCreation = :login AND ge.validationCreation = FALSE")
     GroupeEtudiant findBrouillon(String login);
 }

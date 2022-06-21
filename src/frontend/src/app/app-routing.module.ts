@@ -109,15 +109,6 @@ const routes: Routes = [
     }
   },
   {
-    path: 'convention-create-en-masse/create',
-    component: ConventionCreateEnMasseComponent,
-    canActivate: [AuthGuard],
-    data: {
-      role: {fonction: AppFonction.CREATION_EN_MASSE_CONVENTION, droits: [Droit.CREATION, Droit.LECTURE]},
-      title: 'Création des conventions en masse'
-    }
-  },
-  {
     path: 'convention-create-en-masse/groupes',
     component: GestionGroupeComponent,
     canActivate: [AuthGuard],
@@ -133,6 +124,15 @@ const routes: Routes = [
     data: {
       role: {fonction: AppFonction.CREATION_EN_MASSE_CONVENTION, droits: [Droit.CREATION, Droit.LECTURE]},
       title: 'Template de mails'
+    }
+  },
+  {
+    path: 'convention-create-en-masse/:id',
+    component: ConventionCreateEnMasseComponent,
+    canActivate: [AuthGuard],
+    data: {
+      role: {fonction: AppFonction.CREATION_EN_MASSE_CONVENTION, droits: [Droit.CREATION, Droit.LECTURE]},
+      title: 'Création des conventions en masse'
     }
   },
   {

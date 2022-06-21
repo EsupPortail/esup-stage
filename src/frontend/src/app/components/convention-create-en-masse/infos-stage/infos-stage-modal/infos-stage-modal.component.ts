@@ -164,15 +164,8 @@ export class InfosStageModalComponent implements OnInit {
       idUniteDuree: [this.convention.uniteDureeGratification ? this.convention.uniteDureeGratification.id : null, this.fieldValidators['idUniteDuree']],
       idDevise: [this.convention.devise ? this.convention.devise.id : null, this.fieldValidators['idDevise']],
       idModeVersGratification: [this.convention.modeVersGratification ? this.convention.modeVersGratification.id : null, this.fieldValidators['idModeVersGratification']],
-      //TODO un bandeau doit permettre de mettre un message à l’attention de l’étudiant
       // - Partie Divers
-      idOrigineStage: [this.convention.origineStage ? this.convention.origineStage.id : null, [Validators.required]],
-      confidentiel: [this.convention.confidentiel, [Validators.required]],
-      idNatureTravail: [this.convention.natureTravail ? this.convention.natureTravail.id : null, [Validators.required]],
-      idModeValidationStage: [this.convention.modeValidationStage ? this.convention.modeValidationStage.id : null, [Validators.required]],
       modeEncadreSuivi: [this.convention.modeEncadreSuivi],
-      avantagesNature: [this.convention.avantagesNature],
-      travailNuitFerie: [this.convention.travailNuitFerie],
     });
 
     //Set default value for booleans
@@ -184,9 +177,6 @@ export class InfosStageModalComponent implements OnInit {
     }
     if (this.convention.gratificationStage == null){
       this.form.get('gratificationStage')?.setValue(false);
-    }
-    if (this.convention.confidentiel == null){
-      this.form.get('confidentiel')?.setValue(false);
     }
     //Update validators that depends on booleans
     this.toggleValidators(['nbHeuresHebdo',],this.convention.horairesReguliers);
@@ -275,7 +265,7 @@ export class InfosStageModalComponent implements OnInit {
     if ((this.form.valid || this.form.disabled) && this.periodesInterruptionsValid) status = 2;
 
     if (status == 2){
-      this.dialogRef.close(status);
+      this.dialogRef.close(true);
     }
   }
 

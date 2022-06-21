@@ -1,1 +1,9 @@
-<p>gestion-groupe works!</p>
+<app-table [service]="groupeEtudiantService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters" [sortOrder]="sortDirection"
+           matSort [matSortActive]="sortColumn" [matSortDirection]="'desc'" (matSortChange)="appTable ? appTable.sorting($event) : null"
+           [noResultText]="'Aucun groupe trouvé'">
+
+  <ng-container matColumnDef="nom">
+    <th mat-header-cell *matHeaderCellDef>Nom</th>
+    <td mat-cell *matCellDef="let row">{{row.nom}}</td>
+  </ng-container>
+</app-table>

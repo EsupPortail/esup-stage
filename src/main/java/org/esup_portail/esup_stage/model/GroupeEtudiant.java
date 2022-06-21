@@ -1,11 +1,13 @@
 package org.esup_portail.esup_stage.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
 @Table(name = "GroupeEtudiant")
-public class GroupeEtudiant extends ObjetMetier {
+public class GroupeEtudiant extends ObjetMetier implements Exportable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,6 +23,13 @@ public class GroupeEtudiant extends ObjetMetier {
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "idConvention", nullable = false)
     private Convention convention;
+
+    @Column(nullable = false)
+    private boolean validationCreation = false;
+
+    @Column(nullable = false)
+    private boolean infosStageValid = false;
+
 
     public int getId() {
         return id;
@@ -52,5 +61,26 @@ public class GroupeEtudiant extends ObjetMetier {
 
     public void setConvention(Convention convention) {
         this.convention = convention;
+    }
+
+    public boolean isValidationCreation() {
+        return validationCreation;
+    }
+
+    public void setValidationCreation(boolean validationCreation) {
+        this.validationCreation = validationCreation;
+    }
+
+    public boolean isInfosStageValid() {
+        return infosStageValid;
+    }
+
+    public void setInfosStageValid(boolean infosStageValid) {
+        this.infosStageValid = infosStageValid;
+    }
+
+    @Override
+    public String getExportValue(String key) {
+        return null;
     }
 }

@@ -97,7 +97,7 @@ export class EnseignantGroupeComponent implements OnInit {
   selectForGroup(): void {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.width = '1000px';
-    dialogConfig.data = {};
+    dialogConfig.data = {enseignant: this.groupeEtudiant.enseignant};
     const modalDialog = this.matDialog.open(EnseignantGroupeModalComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse) {
@@ -109,7 +109,7 @@ export class EnseignantGroupeComponent implements OnInit {
   selectForSelected(): void {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.width = '1000px';
-    dialogConfig.data = {};
+    dialogConfig.data = {enseignant: null};
     const modalDialog = this.matDialog.open(EnseignantGroupeModalComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse) {

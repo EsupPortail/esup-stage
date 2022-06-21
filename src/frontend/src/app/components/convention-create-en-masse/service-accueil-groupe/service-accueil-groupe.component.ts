@@ -105,9 +105,11 @@ export class ServiceAccueilGroupeComponent implements OnInit {
 
   selectForGroup(): void {
     const dialogConfig = new MatDialogConfig();
-    dialogConfig.width = '1000px';
+    dialogConfig.width = '1200px';
     dialogConfig.height = '1000px';
-    dialogConfig.data = {convention: this.groupeEtudiant.convention};
+    dialogConfig.data = {etab: this.groupeEtudiant.convention.structure,
+                         service: this.groupeEtudiant.convention.service,
+                         centreGestion: this.groupeEtudiant.convention.centreGestion};
     const modalDialog = this.matDialog.open(ServiceAccueilGroupeModalComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse) {
@@ -121,14 +123,12 @@ export class ServiceAccueilGroupeComponent implements OnInit {
     this.structures = [...new Map(this.structures.map(e => [e.id, {id:e.id,raisonSociale:e.raisonSociale}])).values()]
     if(this.structures.length == 1){
       const dialogConfig = new MatDialogConfig();
-      dialogConfig.width = '1000px';
+      dialogConfig.width = '1200px';
       dialogConfig.height = '1000px';
       let convention = this.selected[0].convention;
-      if (convention.etab){
-        dialogConfig.data = {convention: convention};
-      }else{
-        dialogConfig.data = {convention: this.groupeEtudiant.convention};
-      }
+      dialogConfig.data = {etab: convention.structure,
+                           service: null,
+                           centreGestion: this.groupeEtudiant.convention.centreGestion};
       const modalDialog = this.matDialog.open(ServiceAccueilGroupeModalComponent, dialogConfig);
       modalDialog.afterClosed().subscribe(dialogResponse => {
         if (dialogResponse) {

@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.dto.ContextDto;
 import org.esup_portail.esup_stage.dto.GroupeEtudiantDto;
+import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
@@ -13,9 +14,9 @@ import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,6 +32,9 @@ import java.util.stream.Collectors;
 public class GroupeEtudiantController {
 
     private static final Logger logger	= LogManager.getLogger(ConsigneController.class);
+
+    @Autowired
+    GroupeEtudiantRepository groupeEtudiantRepository;
 
     @Autowired
     GroupeEtudiantJpaRepository groupeEtudiantJpaRepository;
@@ -50,6 +54,16 @@ public class GroupeEtudiantController {
     @Autowired
     TypeConventionJpaRepository typeConventionJpaRepository;
 
+    @GetMapping
+    @Secure
+    public PaginatedResponse<GroupeEtudiant> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
+
+        PaginatedResponse<GroupeEtudiant> paginatedResponse = new PaginatedResponse<>();
+        paginatedResponse.setTotal(groupeEtudiantRepository.count(filters));
+        paginatedResponse.setData(groupeEtudiantRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
+        return paginatedResponse;
+    }
+
     @GetMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.CREATION_EN_MASSE_CONVENTION}, droits = {DroitEnum.LECTURE})
     public GroupeEtudiant getById(@PathVariable("id") int id) {
@@ -60,6 +74,16 @@ public class GroupeEtudiantController {
         return groupeEtudiant;
     }
 
+    @GetMapping("/{id}/setInfosStageValid/{valid}")
+    @Secure(fonctions = {AppFonctionEnum.CREATION_EN_MASSE_CONVENTION}, droits = {DroitEnum.MODIFICATION})
+    public GroupeEtudiant setInfosStageValid(@PathVariable("id") int id,@PathVariable("valid") boolean valid) {
+        GroupeEtudiant groupeEtudiant = groupeEtudiantJpaRepository.findById(id);
+        if (groupeEtudiant == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "GroupeEtudiant non trouvée");
+        }
+        groupeEtudiant.setInfosStageValid(valid);
+        return groupeEtudiantJpaRepository.saveAndFlush(groupeEtudiant);
+    }
 
     @GetMapping("/brouillon")
     @Secure(fonctions = {AppFonctionEnum.CREATION_EN_MASSE_CONVENTION}, droits = {DroitEnum.LECTURE})
@@ -201,6 +225,7 @@ public class GroupeEtudiantController {
     private Convention createNewConvention(Etudiant etudiant,TypeConvention typeConvention) {
         Convention convention = new Convention();
         convention.setEtudiant(etudiant);
+        convention.setValidationCreation(false);
         convention.setTypeConvention(typeConvention);
         convention.setCreationEnMasse(true);
         CentreGestion centreGestion = centreGestionJpaRepository.getCentreEtablissement();

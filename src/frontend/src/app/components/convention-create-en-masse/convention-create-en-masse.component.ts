@@ -20,7 +20,7 @@ export class ConventionCreateEnMasseComponent implements OnInit {
   tabs: any = {
     0: { statut: 0, init: true },
     1: { statut: 0, init: false },
-    2: { statut: 0, init: false },
+    2: { statut: 2, init: false },
     3: { statut: 0, init: false },
     4: { statut: 0, init: false },
     5: { statut: 0, init: false },
@@ -36,9 +36,24 @@ export class ConventionCreateEnMasseComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.groupeEtudiantService.getBrouillon().subscribe((response: any) => {
-      this.groupeEtudiant = response;
-      this.majStatus();
+    this.activatedRoute.params.subscribe((param: any) => {
+      const pathId = param.id;
+      console.log('pathId : ' + pathId);
+      if (pathId === 'create') {
+        this.titleService.title = 'Création de conventions en masse';
+        // Récupération de la convention au mode brouillon
+        this.groupeEtudiantService.getBrouillon().subscribe((response: any) => {
+          this.groupeEtudiant = response;
+          this.majStatus();
+        });
+      } else {
+        this.titleService.title = 'Gestion du groupe';
+        // Récupération de la convention correspondant à l'id
+        this.groupeEtudiantService.getById(pathId).subscribe((response: any) => {
+          this.groupeEtudiant = response;
+          this.majStatus();
+        });
+      }
     });
   }
 
@@ -47,6 +62,11 @@ export class ConventionCreateEnMasseComponent implements OnInit {
       this.setStatus(0,2);
     }else{
       this.setStatus(0,0);
+    }
+    if (this.groupeEtudiant.infosStageValid){
+      this.setStatus(1,2);
+    }else{
+      this.setStatus(1,0);
     }
     if (this.groupeEtudiant && this.groupeEtudiant.convention.structure){
       this.setStatus(3,2);

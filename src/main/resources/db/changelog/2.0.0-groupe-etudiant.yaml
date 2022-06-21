@@ -134,3 +134,29 @@ databaseChangeLog:
           sql: ALTER TABLE GroupeEtudiant CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci
       - sql:
           sql: ALTER TABLE EtudiantGroupeEtudiant CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci
+  - changeSet:
+      id: groupe-validationCreation
+      author: tjubera
+      changes:
+        - addColumn:
+            tableName: GroupeEtudiant
+            columns:
+              - column:
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+                  name: validationCreation
+                  type: BIT
+  - changeSet:
+      id: groupe-infosStageValid
+      author: tjubera
+      changes:
+        - addColumn:
+            tableName: GroupeEtudiant
+            columns:
+              - column:
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+                  name: infosStageValid
+                  type: BIT

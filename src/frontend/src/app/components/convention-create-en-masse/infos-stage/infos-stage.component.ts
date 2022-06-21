@@ -101,7 +101,13 @@ export class InfosStageComponent implements OnInit {
     dialogConfig.data = {convention:this.groupeEtudiant.convention};
     const modalDialog = this.matDialog.open(InfosStageModalComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
-      this.updateConvention(dialogResponse);
+      if(dialogResponse){
+        this.groupeEtudiantService.setInfosStageValid(this.groupeEtudiant.id, true).subscribe((response: any) => {
+          this.validated.emit(response);
+        });
+      }else{
+        this.refreshGroupeEtudiant(dialogResponse);
+      }
     });
   }
 
@@ -114,14 +120,14 @@ export class InfosStageComponent implements OnInit {
       dialogConfig.data = {convention:etu.convention};
       const modalDialog = this.matDialog.open(InfosStageModalComponent, dialogConfig);
       modalDialog.afterClosed().subscribe(dialogResponse => {
-        this.updateConvention(dialogResponse);
+        this.refreshGroupeEtudiant(dialogResponse);
       });
     }else{
         this.messageService.setError('Veuillez selectionner un unique étudiant.');
     }
   }
 
-  updateConvention(dialogResponse: any): void {
+  refreshGroupeEtudiant(dialogResponse: any): void {
     this.groupeEtudiantService.getById(this.groupeEtudiant.id).subscribe((response: any) => {
       this.validated.emit(response);
     });

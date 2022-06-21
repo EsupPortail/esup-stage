@@ -8,12 +8,16 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 })
 export class ServiceAccueilGroupeModalComponent implements OnInit {
 
-  convention: any;
+  etab: any;
+  service: any;
+  centreGestion: any;
 
   constructor(private dialogRef: MatDialogRef<ServiceAccueilGroupeModalComponent>,
               @Inject(MAT_DIALOG_DATA) data: any
   ) {
-    this.convention = data.convention;
+    this.etab = data.etab;
+    this.service = data.service;
+    this.centreGestion = data.centreGestion;
   }
 
   ngOnInit(): void {

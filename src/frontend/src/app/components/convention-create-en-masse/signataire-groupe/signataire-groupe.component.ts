@@ -115,9 +115,9 @@ export class SignataireGroupeComponent implements OnInit {
 
   selectForGroup(): void {
     const dialogConfig = new MatDialogConfig();
-    dialogConfig.width = '1000px';
-    dialogConfig.height = '200px';
-    dialogConfig.data = {etabId: this.groupeEtudiant.convention.structure.id};
+    dialogConfig.width = '1200px';
+    dialogConfig.height = '1000px';
+    dialogConfig.data = {convention: this.groupeEtudiant.convention};
     const modalDialog = this.matDialog.open(SignataireGroupeModalComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse) {
@@ -131,9 +131,10 @@ export class SignataireGroupeComponent implements OnInit {
     this.structures = [...new Map(this.structures.map(e => [e.id, {id:e.id,raisonSociale:e.raisonSociale}])).values()]
     if(this.structures.length == 1){
       const dialogConfig = new MatDialogConfig();
-      dialogConfig.width = '1000px';
-      dialogConfig.height = '200px';
-      dialogConfig.data = {etabId: this.structures[0].id};
+      dialogConfig.width = '1200px';
+      dialogConfig.height = '1000px';
+      let convention = this.selected[0].convention;
+      dialogConfig.data = {convention: convention};
       const modalDialog = this.matDialog.open(SignataireGroupeModalComponent, dialogConfig);
       modalDialog.afterClosed().subscribe(dialogResponse => {
         if (dialogResponse) {

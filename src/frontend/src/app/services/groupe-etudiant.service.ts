@@ -7,9 +7,17 @@ import { PaginatedService } from "./paginated.service";
 @Injectable({
   providedIn: 'root'
 })
-export class GroupeEtudiantService {
+export class GroupeEtudiantService implements PaginatedService {
 
   constructor(private http: HttpClient) { }
+
+  getPaginated(page: number, perPage: number, predicate: string, sortOrder: string, filters: string): Observable<any> {
+    return this.http.get(environment.apiUrl + "/groupeEtudiant", {params: {page, perPage, predicate, sortOrder, filters}});
+  }
+
+  exportData(format: string, headers: string, predicate: string, sortOrder: string, filters: string): Observable<any> {
+    return this.http.get(environment.apiUrl + `/groupeEtudiant/export/${format}`, {params: {headers, predicate, sortOrder, filters}, responseType: 'blob'});
+  }
 
   getBrouillon(): Observable<any> {
     return this.http.get(`${environment.apiUrl}/groupeEtudiant/brouillon`);
@@ -17,6 +25,10 @@ export class GroupeEtudiantService {
 
   getById(id: number): Observable<any> {
     return this.http.get(`${environment.apiUrl}/groupeEtudiant/${id}`);
+  }
+
+  setInfosStageValid(id: number, valid: boolean): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/groupeEtudiant/${id}/setInfosStageValid/${valid}`);
   }
 
   create(data: any): Observable<any> {
