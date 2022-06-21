@@ -1,0 +1,78 @@
+databaseChangeLog:
+- changeSet:
+    id: templateMailGroupe-structure
+    author: tjubera
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+                nullable: false
+                primaryKey: true
+            name: id
+            type: INT
+        - column:
+            constraints:
+                unique: true
+                nullable: false
+            name: code
+            type: VARCHAR(150)
+        - column:
+            constraints:
+                nullable: false
+            name: libelle
+            type: VARCHAR(150)
+        - column:
+            constraints:
+                nullable: false
+            name: objet
+            type: VARCHAR(250)
+        - column:
+            constraints:
+                nullable: false
+            name: texte
+            type: TEXT
+        - column:
+            constraints:
+                nullable: false
+            name: dateCreation
+            type: datetime
+        - column:
+            constraints:
+                nullable: false
+            name: loginCreation
+            type: VARCHAR(50)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: dateModif
+            type: datetime
+        - column:
+            name: loginModif
+            type: VARCHAR(50)
+        tableName: TemplateMailGroupe
+- changeSet:
+    id: templateMail-insert
+    author: tjubera
+    changes:
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: DEFAULT
+        - column:
+            name: libelle
+            value: Template par Défault
+        - column:
+            name: objet
+            value: Création de convention en masse
+        - column:
+            name: texte
+            value: Texte à modifier
+        - column:
+            name: dateCreation
+            value: now()
+        - column:
+            name: loginCreation
+            value: liquibase
+        tableName: TemplateMailGroupe

@@ -123,6 +123,8 @@ import { SignataireGroupeModalComponent } from './components/convention-create-e
 import { InfosStageModalComponent } from './components/convention-create-en-masse/infos-stage/infos-stage-modal/infos-stage-modal.component';
 import { CadreStageModalComponent } from './components/convention-create-en-masse/cadre-stage/cadre-stage-modal/cadre-stage-modal.component';
 import { ValidationCreationComponent } from './components/convention-create-en-masse/validation-creation/validation-creation.component';
+import { GestionGroupeComponent } from './components/convention-create-en-masse/gestion-groupe/gestion-groupe.component';
+import { TemplateMailGroupeComponent } from './components/convention-create-en-masse/template-mail-groupe/template-mail-groupe.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -202,6 +204,8 @@ registerLocaleData(localeFr, 'fr');
     InfosStageModalComponent,
     CadreStageModalComponent,
     ValidationCreationComponent,
+    GestionGroupeComponent,
+    TemplateMailGroupeComponent,
   ],
   imports: [
     BrowserModule,

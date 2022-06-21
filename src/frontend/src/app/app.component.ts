@@ -80,6 +80,14 @@ export class AppComponent {
           canView: () => {
             return this.authService.checkRights({fonction: AppFonction.CREATION_EN_MASSE_CONVENTION, droits: [Droit.LECTURE]})
           },
+        },
+        {
+          libelle: 'Template de mails',
+          path: 'convention-create-en-masse/mails',
+          icon: 'fa-envelope',
+          canView: () => {
+            return this.authService.checkRights({fonction: AppFonction.CREATION_EN_MASSE_CONVENTION, droits: [Droit.LECTURE]})
+          },
         }
       ]
     },

@@ -19,6 +19,8 @@ import { GestionEtabAccueilComponent } from "./components/gestion-etab-accueil/g
 import { TemplateConventionComponent } from "./components/admin/template-convention/template-convention.component";
 import { EvalStageComponent } from './components/eval-stage/eval-stage.component';
 import { ConventionCreateEnMasseComponent } from './components/convention-create-en-masse/convention-create-en-masse.component';
+import { GestionGroupeComponent } from './components/convention-create-en-masse/gestion-groupe/gestion-groupe.component';
+import { TemplateMailGroupeComponent } from './components/convention-create-en-masse/template-mail-groupe/template-mail-groupe.component';
 
 const routes: Routes = [
   {path: '', component: HomeComponent, canActivate: [AuthGuard], data: {role: {}, title: 'Accueil'}},
@@ -113,6 +115,24 @@ const routes: Routes = [
     data: {
       role: {fonction: AppFonction.CREATION_EN_MASSE_CONVENTION, droits: [Droit.CREATION, Droit.LECTURE]},
       title: 'Création des conventions en masse'
+    }
+  },
+  {
+    path: 'convention-create-en-masse/groupes',
+    component: GestionGroupeComponent,
+    canActivate: [AuthGuard],
+    data: {
+      role: {fonction: AppFonction.CREATION_EN_MASSE_CONVENTION, droits: [Droit.CREATION, Droit.LECTURE]},
+      title: 'Gestion des groupes'
+    }
+  },
+  {
+    path: 'convention-create-en-masse/mails',
+    component: TemplateMailGroupeComponent,
+    canActivate: [AuthGuard],
+    data: {
+      role: {fonction: AppFonction.CREATION_EN_MASSE_CONVENTION, droits: [Droit.CREATION, Droit.LECTURE]},
+      title: 'Template de mails'
     }
   },
   {
