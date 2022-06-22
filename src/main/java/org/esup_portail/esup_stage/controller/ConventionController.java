@@ -837,7 +837,7 @@ public class ConventionController {
         sendValidationMail(convention, utilisateurContext, valider ? TemplateMail.CODE_CONVENTION_VALID_ADMINISTRATIVE : TemplateMail.CODE_CONVENTION_DEVALID_ADMINISTRATIVE, sendMailEtudiant, sendMailEnseignant);
     }
 
-    private void validationAutoDonnees(Convention convention, Utilisateur utilisateur) {
+    public void validationAutoDonnees(Convention convention, Utilisateur utilisateur) {
         // Validation automatique de l'établissement d'accueil, le service d'accueil et du tuteur de stage à la validation de la convention
         if (
                 convention.getValidationPedagogique() != null && convention.getValidationPedagogique()

@@ -76,7 +76,7 @@ export class AppComponent {
         {
           libelle: 'Gestion des groupes',
           path: 'convention-create-en-masse/groupes',
-          icon: 'fa-file-contract',
+          icon: 'fa-users',
           canView: () => {
             return this.authService.checkRights({fonction: AppFonction.CREATION_EN_MASSE_CONVENTION, droits: [Droit.LECTURE]})
           },

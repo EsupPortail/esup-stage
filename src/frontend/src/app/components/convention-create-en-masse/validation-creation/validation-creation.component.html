@@ -1,1 +1,5 @@
-<p>validation-creation works!</p>
+<mat-card *ngIf="groupeEtudiant">
+  <mat-card-content>
+    <button type="button" mat-button mat-flat-button color="primary" (click)="validate()">Valider la création des conventions</button>
+  </mat-card-content>
+</mat-card>

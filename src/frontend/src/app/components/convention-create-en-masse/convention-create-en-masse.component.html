@@ -59,6 +59,6 @@
     <ng-template mat-tab-label>
       Valider la création
     </ng-template>
-    <app-validation-creation [groupeEtudiant]="groupeEtudiant"></app-validation-creation>
+    <app-validation-creation (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant"></app-validation-creation>
   </mat-tab>
 </mat-tab-group>

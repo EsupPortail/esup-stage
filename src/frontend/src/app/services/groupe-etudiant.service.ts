@@ -27,8 +27,16 @@ export class GroupeEtudiantService implements PaginatedService {
     return this.http.get(`${environment.apiUrl}/groupeEtudiant/${id}`);
   }
 
+  duplicate(id: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/groupeEtudiant/duplicate/${id}`);
+  }
+
   setInfosStageValid(id: number, valid: boolean): Observable<any> {
-    return this.http.get(`${environment.apiUrl}/groupeEtudiant/${id}/setInfosStageValid/${valid}`);
+    return this.http.patch(`${environment.apiUrl}/groupeEtudiant/${id}/setInfosStageValid/${valid}`, {});
+  }
+
+  validate(id: number): Observable<any> {
+    return this.http.patch(`${environment.apiUrl}/groupeEtudiant/${id}/valider`, {});
   }
 
   create(data: any): Observable<any> {

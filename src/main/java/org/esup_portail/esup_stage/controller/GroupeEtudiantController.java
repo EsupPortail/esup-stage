@@ -22,6 +22,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -44,6 +45,9 @@ public class GroupeEtudiantController {
 
     @Autowired
     ConventionJpaRepository conventionJpaRepository;
+
+    @Autowired
+    ConventionController conventionController;
 
     @Autowired
     EtudiantGroupeEtudiantJpaRepository etudiantGroupeEtudiantJpaRepository;
@@ -74,7 +78,7 @@ public class GroupeEtudiantController {
         return groupeEtudiant;
     }
 
-    @GetMapping("/{id}/setInfosStageValid/{valid}")
+    @PatchMapping("/{id}/setInfosStageValid/{valid}")
     @Secure(fonctions = {AppFonctionEnum.CREATION_EN_MASSE_CONVENTION}, droits = {DroitEnum.MODIFICATION})
     public GroupeEtudiant setInfosStageValid(@PathVariable("id") int id,@PathVariable("valid") boolean valid) {
         GroupeEtudiant groupeEtudiant = groupeEtudiantJpaRepository.findById(id);
@@ -83,6 +87,50 @@ public class GroupeEtudiantController {
         }
         groupeEtudiant.setInfosStageValid(valid);
         return groupeEtudiantJpaRepository.saveAndFlush(groupeEtudiant);
+    }
+
+    @PatchMapping("/{id}/valider")
+    @Secure(fonctions = {AppFonctionEnum.CREATION_EN_MASSE_CONVENTION}, droits = {DroitEnum.VALIDATION})
+    public GroupeEtudiant validate(@PathVariable("id") int id) {
+        GroupeEtudiant groupeEtudiant = groupeEtudiantJpaRepository.findById(id);
+        if (groupeEtudiant == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "GroupeEtudiant non trouvée");
+        }
+        Convention groupeConvention = groupeEtudiant.getConvention();
+        for (EtudiantGroupeEtudiant etudiant : groupeEtudiant.getEtudiantGroupeEtudiants()){
+
+            Convention etudiantConvention = etudiant.getConvention();
+            try {
+                //appplications des champs par défaults du groupe aux conventions de chaque étudiant quand ils n'ont pas de valeurs spécifiques pour ces champs
+                etudiantConvention = mergeObjects(etudiantConvention, groupeConvention);
+            } catch (Exception e) {
+                throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur création des conventions en masse");
+            }
+            etudiantConvention.setValidationCreation(true);
+            etudiantConvention.setValidationPedagogique(true);
+            etudiantConvention.setVerificationAdministrative(true);
+            etudiantConvention.setValidationConvention(true);
+            etudiantConvention.setLoginValidation(ServiceContext.getServiceContext().getUtilisateur().getLogin());
+            conventionController.validationAutoDonnees(etudiantConvention, ServiceContext.getServiceContext().getUtilisateur());
+
+            conventionJpaRepository.save(etudiantConvention);
+        }
+        groupeEtudiant.setValidationCreation(true);
+        return groupeEtudiantJpaRepository.saveAndFlush(groupeEtudiant);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T mergeObjects(T first, T second) throws IllegalAccessException, InstantiationException {
+        Class<?> clazz = first.getClass();
+        Field[] fields = clazz.getDeclaredFields();
+        for (Field field : fields) {
+            field.setAccessible(true);
+            Object value1 = field.get(first);
+            Object value2 = field.get(second);
+            Object value = (value1 != null) ? value1 : value2;
+            field.set(first, value);
+        }
+        return first;
     }
 
     @GetMapping("/brouillon")

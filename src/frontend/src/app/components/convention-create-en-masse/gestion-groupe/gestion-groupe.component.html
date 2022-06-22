@@ -1,9 +1,159 @@
-<app-table [service]="groupeEtudiantService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters" [sortOrder]="sortDirection"
-           matSort [matSortActive]="sortColumn" [matSortDirection]="'desc'" (matSortChange)="appTable ? appTable.sorting($event) : null"
+<mat-tab-group #tabs (selectedTabChange)="tabChanged($event)">
+  <mat-tab label="Liste">
+    <app-table [service]="groupeEtudiantService" [columns]="groupeColumns" [sortColumn]="groupeSortColumn" [filters]="groupeFilters" [sortOrder]="groupeSortDirection"
+           matSort [matSortActive]="groupeSortColumn" [matSortDirection]="'desc'" (matSortChange)="appTable ? appTable.sorting($event) : null"
            [noResultText]="'Aucun groupe trouvé'">
+
+  <ng-container matColumnDef="code">
+    <th mat-header-cell *matHeaderCellDef>Code</th>
+    <td mat-cell *matCellDef="let row">{{row.code}}</td>
+  </ng-container>
 
   <ng-container matColumnDef="nom">
     <th mat-header-cell *matHeaderCellDef>Nom</th>
     <td mat-cell *matCellDef="let row">{{row.nom}}</td>
   </ng-container>
+
+  <ng-container matColumnDef="loginCreation">
+    <th mat-header-cell *matHeaderCellDef>loginCreation</th>
+    <td mat-cell *matCellDef="let row">{{row.loginCreation}}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="dateCreation">
+    <th mat-header-cell *matHeaderCellDef>dateCreation</th>
+    <td mat-cell *matCellDef="let row">{{row.dateCreation|date:'shortDate'}}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="periodStage">
+    <th mat-header-cell *matHeaderCellDef>periode du Stage</th>
+    <td mat-cell *matCellDef="let row">{{'Du ' + (row.convention.dateDebutStage|date:'shortDate') + ' au ' + (row.convention.dateFinStage|date:'shortDate')}}</td>
+  </ng-container>
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef>Actions</th>
+    <td mat-cell *matCellDef="let row">
+      <ng-container>
+        <button mat-icon-button matTooltip="Dupliquer le groupe" (click)="duplicate(row)" color="primary"><i class="fa fa-copy"></i></button>
+        <button mat-icon-button matTooltip="Envoie de mail" (click)="sendMail(row)" color="primary"><i class="fa fa-envelope"></i></button>
+        <button mat-icon-button matTooltip="Export pdf" (click)="print(row)" color="primary"><i class="fa fa-file-contract"></i></button>
+      </ng-container>
+    </td>
+  </ng-container>
+
 </app-table>
+  </mat-tab>
+
+  <mat-tab *ngIf="data.id" label="Envoie des mails">
+    <mat-card>
+      <div class="mb-3">
+        <div class="text-title">Envoie des mails</div>
+        <mat-divider class="mb-3"></mat-divider>
+        <div class="mb-2">
+          <button mat-flat-button style="margin-right:5px" color="primary" (click)="sendMailForGroup()">En masse</button>
+          <button mat-flat-button style="margin-right:5px" color="primary" (click)="sendMailForSelected()" [disabled]="selected.length === 0">pour les étudiants selectionnés</button>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <div class="text-title">Selection des étudiants du groupe</div>
+        <mat-divider class="mb-2"></mat-divider>
+        <app-table [service]="etudiantGroupeEtudiantService" [columns]="mailColumns" [sortColumn]="mailSortColumn" [filters]="mailFilters" [sortOrder]="mailSortDirection"
+                   matSort [matSortActive]="mailSortColumn" [matSortDirection]="'desc'" (matSortChange)="appTable ? appTable.sorting($event) : null"
+                   [noResultText]="'Aucun étudiant trouvé'">
+
+          <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef>
+              <mat-checkbox (change)="$event ? masterToggle() : null"
+                            [checked]="selected.length > 0 && isAllSelected()"
+                            [indeterminate]="selected.length > 0 && !isAllSelected()">
+              </mat-checkbox>
+            </th>
+            <td mat-cell *matCellDef="let row">
+              <mat-checkbox [checked]="isSelected(row)"
+                            (change)="$event ? toggleSelected(row) : null"
+                            (click)="$event.stopPropagation()">
+              </mat-checkbox>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="numEtudiant">
+            <th mat-header-cell *matHeaderCellDef>N° étudiant</th>
+            <td mat-cell *matCellDef="let row">{{row.etudiant.numEtudiant}}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="nom">
+            <th mat-header-cell *matHeaderCellDef>Nom</th>
+            <td mat-cell *matCellDef="let row">{{row.etudiant.nom}}</td>
+          </ng-container>e
+
+          <ng-container matColumnDef="prenom">
+            <th mat-header-cell *matHeaderCellDef>Prénom</th>
+            <td mat-cell *matCellDef="let row">{{row.etudiant.prenom}}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="mail">
+            <th mat-header-cell *matHeaderCellDef>Mail</th>
+            <td mat-cell *matCellDef="let row">{{row.etudiant.mail}}</td>
+          </ng-container>
+        </app-table>
+      </div>
+    </mat-card>
+  </mat-tab>
+
+  <mat-tab *ngIf="data.id" label="Impression PDF">
+    <mat-card>
+      <div class="mb-3">
+        <div class="text-title">Impression des conventions</div>
+        <mat-divider class="mb-3"></mat-divider>
+        <div class="mb-2">
+          <button mat-flat-button style="margin-right:5px" color="primary" (click)="sendMailForGroup()">En masse</button>
+          <button mat-flat-button style="margin-right:5px" color="primary" (click)="sendMailForSelected()" [disabled]="selected.length === 0">pour les étudiants selectionnés</button>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <div class="text-title">Selection des étudiants du groupe</div>
+        <mat-divider class="mb-2"></mat-divider>
+        <app-table [service]="etudiantGroupeEtudiantService" [columns]="mailColumns" [sortColumn]="mailSortColumn" [filters]="mailFilters" [sortOrder]="mailSortDirection"
+                   matSort [matSortActive]="mailSortColumn" [matSortDirection]="'desc'" (matSortChange)="appTable ? appTable.sorting($event) : null"
+                   [noResultText]="'Aucun étudiant trouvé'">
+
+          <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef>
+              <mat-checkbox (change)="$event ? masterToggle() : null"
+                            [checked]="selected.length > 0 && isAllSelected()"
+                            [indeterminate]="selected.length > 0 && !isAllSelected()">
+              </mat-checkbox>
+            </th>
+            <td mat-cell *matCellDef="let row">
+              <mat-checkbox [checked]="isSelected(row)"
+                            (change)="$event ? toggleSelected(row) : null"
+                            (click)="$event.stopPropagation()">
+              </mat-checkbox>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="numEtudiant">
+            <th mat-header-cell *matHeaderCellDef>N° étudiant</th>
+            <td mat-cell *matCellDef="let row">{{row.etudiant.numEtudiant}}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="nom">
+            <th mat-header-cell *matHeaderCellDef>Nom</th>
+            <td mat-cell *matCellDef="let row">{{row.etudiant.nom}}</td>
+          </ng-container>e
+
+          <ng-container matColumnDef="prenom">
+            <th mat-header-cell *matHeaderCellDef>Prénom</th>
+            <td mat-cell *matCellDef="let row">{{row.etudiant.prenom}}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="mail">
+            <th mat-header-cell *matHeaderCellDef>Mail</th>
+            <td mat-cell *matCellDef="let row">{{row.etudiant.mail}}</td>
+          </ng-container>
+        </app-table>
+      </div>
+    </mat-card>
+  </mat-tab>
+
+</mat-tab-group>
