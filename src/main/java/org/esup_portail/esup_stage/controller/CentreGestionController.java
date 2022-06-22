@@ -3,6 +3,8 @@ package org.esup_portail.esup_stage.controller;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
 import org.esup_portail.esup_stage.dto.ContextDto;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
@@ -43,6 +45,7 @@ import java.util.stream.Collectors;
 @ApiController
 @RequestMapping("/centre-gestion")
 public class CentreGestionController {
+    private static final Logger logger	= LogManager.getLogger(CentreGestionController.class);
 
     @Autowired
     CentreGestionRepository centreGestionRepository;
@@ -391,6 +394,7 @@ public class CentreGestionController {
             Path uploadLocation = Paths.get(this.getFilePath(filename));
             Files.copy(logo.getInputStream(), uploadLocation, StandardCopyOption.REPLACE_EXISTING);
         } catch (Exception e) {
+            logger.error(e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de l'insertion du fichier : " + e.getMessage());
         }
 

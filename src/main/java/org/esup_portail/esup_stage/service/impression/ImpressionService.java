@@ -65,15 +65,23 @@ public class ImpressionService {
             Fichier fichier = convention.getCentreGestion().getFichier();
             ImageData imageData = null;
 
-            // si le centre de gestion n'a pas de logo, on prend celui du centre établissement
-            if (fichier == null) {
-                CentreGestion centreEtablissement = centreGestionJpaRepository.getCentreEtablissement();
-                fichier = centreEtablissement.getFichier();
+            if (fichier != null) {
+                logoname = this.getLogoFilePath(this.getNomFichier(fichier.getId(), fichier.getNom()));
+                if (Files.exists(Paths.get(logoname))) {
+                    imageData = ImageDataFactory.create(logoname);
+                }
             }
 
-            logoname = this.getNomFichier(fichier.getId(), fichier.getNom());
-            if (Files.exists(Paths.get(logoname))) {
-                imageData = ImageDataFactory.create(this.getLogoFilePath(logoname));
+            // si le centre de gestion n'a pas de logo ou qu'il n'existe pas physiquement, on prend celui du centre établissement
+            if (imageData == null) {
+                CentreGestion centreEtablissement = centreGestionJpaRepository.getCentreEtablissement();
+                fichier = centreEtablissement.getFichier();
+                if (fichier != null) {
+                    logoname = this.getLogoFilePath(this.getNomFichier(fichier.getId(), fichier.getNom()));
+                    if (Files.exists(Paths.get(logoname))) {
+                        imageData = ImageDataFactory.create(logoname);
+                    }
+                }
             }
 
             this.generatePDF(texte.toString(), filename, imageData, ou);
