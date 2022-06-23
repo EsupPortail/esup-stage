@@ -54,7 +54,7 @@ const routes: Routes = [
     path: 'param-global/conventions',
     component: TemplateConventionComponent,
     canActivate: [AuthGuard],
-    data: {role: {fonction: AppFonction.PARAM_GLOBAL}, droits: [Droit.LECTURE], title: 'Templates de convention'}
+    data: {role: {fonction: AppFonction.PARAM_GLOBAL}, droits: [Droit.LECTURE]}
   },
   {
     path: 'etab-accueils',
