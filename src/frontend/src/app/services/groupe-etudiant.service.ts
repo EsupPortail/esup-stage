@@ -54,4 +54,8 @@ export class GroupeEtudiantService implements PaginatedService {
   import(file: any): Observable<any> {
     return this.http.post(environment.apiUrl + "/groupeEtudiant/import", file);
   }
+
+  sendMail(data: any): Observable<any> {
+    return this.http.post(environment.apiUrl + "/groupeEtudiant/sendMail", data);
+  }
 }

@@ -7,6 +7,7 @@ import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
 import org.esup_portail.esup_stage.dto.SendMailTestDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
+import org.esup_portail.esup_stage.repository.TemplateMailGroupeJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateMailJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,8 +37,11 @@ public class MailerService {
     @Autowired
     TemplateMailJpaRepository templateMailJpaRepository;
 
+    @Autowired
+    TemplateMailGroupeJpaRepository templateMailGroupeJpaRepository;
+
     private void sendMail(String to, TemplateMail templateMail, MailContext mailContext) {
-        sendMail(to, templateMail, mailContext, false);
+        sendMail(to,templateMail.getId(),templateMail.getObjet(),templateMail.getTexte(),templateMail.getCode(), mailContext, false);
     }
 
     /**
@@ -52,7 +56,16 @@ public class MailerService {
             throw new AppException(HttpStatus.NOT_FOUND, "Template mail " + templateMailCode + " non trouvé");
         }
         MailContext mailContext = new MailContext(applicationBootstrap, convention, null, userModif);
-        sendMail(to, templateMail, mailContext, false);
+        sendMail(to, templateMail.getId(),templateMail.getObjet(),templateMail.getTexte(),templateMail.getCode(), mailContext, false);
+    }
+
+    public void sendMailGroupe(String to, Convention convention, Utilisateur userModif, String templateMailCode) {
+        TemplateMailGroupe templateMailGroupe = templateMailGroupeJpaRepository.findByCode(templateMailCode);
+        if (templateMailGroupe == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Template mail " + templateMailCode + " non trouvé");
+        }
+        MailContext mailContext = new MailContext(applicationBootstrap, convention, null, userModif);
+        sendMail(to,templateMailGroupe.getId(),templateMailGroupe.getObjet(),templateMailGroupe.getTexte(),templateMailGroupe.getCode(), mailContext, false);
     }
 
     public void sendTest(SendMailTestDto sendMailTestDto, Utilisateur utilisateur) {
@@ -63,10 +76,10 @@ public class MailerService {
 
         MailContext mailContext = new MailContext();
         mailContext.setModifiePar(new MailContext.ModifieParContext(utilisateur));
-        sendMail(sendMailTestDto.getTo(), templateMail, mailContext, true);
+        sendMail(sendMailTestDto.getTo(),templateMail.getId(),templateMail.getObjet(),templateMail.getTexte(),templateMail.getCode(), mailContext, true);
     }
 
-    private void sendMail(String to, TemplateMail templateMail, MailContext mailContext, boolean forceTo) {
+    private void sendMail(String to, int templateMailId, String templateMailObject, String templateMailTexte, String templateMailCode, MailContext mailContext, boolean forceTo) {
         boolean disableDelivery = applicationBootstrap.getAppConfig().getMailerDisableDelivery();
         if (!disableDelivery) {
             String deliveryAddress = applicationBootstrap.getAppConfig().getMailerDeliveryAddress();
@@ -75,11 +88,11 @@ public class MailerService {
             }
 
             try {
-                Template templateObjet = new Template("template_mail_objet"+templateMail.getId(), templateMail.getObjet(), freeMarkerConfigurer.getConfiguration());
+                Template templateObjet = new Template("template_mail_objet"+templateMailId, templateMailObject, freeMarkerConfigurer.getConfiguration());
                 StringWriter objet = new StringWriter();
                 templateObjet.process(mailContext, objet);
 
-                Template templateText = new Template("template_mail_text"+templateMail.getId(), templateMail.getTexte(), freeMarkerConfigurer.getConfiguration());
+                Template templateText = new Template("template_mail_text"+templateMailId, templateMailTexte, freeMarkerConfigurer.getConfiguration());
                 StringWriter text = new StringWriter();
                 templateText.process(mailContext, text);
 
@@ -95,7 +108,7 @@ public class MailerService {
                 throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
             }
         } else {
-            logger.info("Delivery disabled. Mail was: " + templateMail.getCode());
+            logger.info("Delivery disabled. Mail was: " + templateMailCode);
         }
     }
 

@@ -2,9 +2,7 @@ package org.esup_portail.esup_stage.controller;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.esup_portail.esup_stage.dto.ContextDto;
-import org.esup_portail.esup_stage.dto.GroupeEtudiantDto;
-import org.esup_portail.esup_stage.dto.PaginatedResponse;
+import org.esup_portail.esup_stage.dto.*;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
@@ -12,6 +10,7 @@ import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
+import org.esup_portail.esup_stage.service.MailerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -51,6 +50,9 @@ public class GroupeEtudiantController {
 
     @Autowired
     EtudiantGroupeEtudiantJpaRepository etudiantGroupeEtudiantJpaRepository;
+
+    @Autowired
+    MailerService mailerService;
 
     @Autowired
     CentreGestionJpaRepository centreGestionJpaRepository;
@@ -177,6 +179,18 @@ public class GroupeEtudiantController {
         }
         groupeEtudiant.setEtudiantGroupeEtudiants(etudiantGroupeEtudiants);
         return groupeEtudiantJpaRepository.saveAndFlush(groupeEtudiant);
+    }
+
+    @PostMapping("/sendMail")
+    @Secure(fonctions = {AppFonctionEnum.CREATION_EN_MASSE_CONVENTION}, droits = {DroitEnum.LECTURE})
+    public boolean sendMail(@Valid @RequestBody SendMailGroupeDto sendMailGroupeDto) {
+
+        Convention convention = conventionJpaRepository.findById(sendMailGroupeDto.getConventionId());
+        if (convention == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "convention non trouvée");
+        }
+        mailerService.sendMailGroupe(sendMailGroupeDto.getTo(), convention, ServiceContext.getServiceContext().getUtilisateur(), sendMailGroupeDto.getTemplateMail());
+        return true;
     }
 
     @PostMapping(value = "/import", consumes ="text/csv")

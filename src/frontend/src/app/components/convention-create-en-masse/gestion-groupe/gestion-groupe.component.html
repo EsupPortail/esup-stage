@@ -1,7 +1,7 @@
 <mat-tab-group #tabs (selectedTabChange)="tabChanged($event)">
   <mat-tab label="Liste">
-    <app-table [service]="groupeEtudiantService" [columns]="groupeColumns" [sortColumn]="groupeSortColumn" [filters]="groupeFilters" [sortOrder]="groupeSortDirection"
-           matSort [matSortActive]="groupeSortColumn" [matSortDirection]="'desc'" (matSortChange)="appTable ? appTable.sorting($event) : null"
+    <app-table #tableList [service]="groupeEtudiantService" [columns]="groupeColumns" [sortColumn]="groupeSortColumn" [filters]="groupeFilters" [sortOrder]="groupeSortDirection"
+           matSort [matSortActive]="groupeSortColumn" [matSortDirection]="'desc'" (matSortChange)="tableList ? tableList.sorting($event) : null"
            [noResultText]="'Aucun groupe trouvé'">
 
   <ng-container matColumnDef="code">
@@ -47,17 +47,29 @@
       <div class="mb-3">
         <div class="text-title">Envoie des mails</div>
         <mat-divider class="mb-3"></mat-divider>
-        <div class="mb-2">
-          <button mat-flat-button style="margin-right:5px" color="primary" (click)="sendMailForGroup()">En masse</button>
-          <button mat-flat-button style="margin-right:5px" color="primary" (click)="sendMailForSelected()" [disabled]="selected.length === 0">pour les étudiants selectionnés</button>
-        </div>
+
+        <form [formGroup]="form" novalidate (submit)="save()">
+          <div class="row mb-2">
+            <mat-form-field class="col-md-5" appearance="fill">
+              <mat-label>Selectionez un template de mail</mat-label>
+              <mat-select formControlName="template">
+                <mat-option *ngFor="let template of templates" [value]="template.code">{{template.libelle}}</mat-option>
+              </mat-select>
+              <mat-error><app-form-error [field]="form.get('template')"></app-form-error></mat-error>
+            </mat-form-field>
+          </div>
+          <div class="mb-2">
+            <button mat-flat-button style="margin-right:5px" color="primary" (click)="sendMailForGroup()">En masse</button>
+            <button mat-flat-button style="margin-right:5px" color="primary" (click)="sendMailForSelected()" [disabled]="selected.length === 0">pour les étudiants selectionnés</button>
+          </div>
+        </form>
       </div>
 
       <div class="mb-3">
         <div class="text-title">Selection des étudiants du groupe</div>
         <mat-divider class="mb-2"></mat-divider>
-        <app-table [service]="etudiantGroupeEtudiantService" [columns]="mailColumns" [sortColumn]="mailSortColumn" [filters]="mailFilters" [sortOrder]="mailSortDirection"
-                   matSort [matSortActive]="mailSortColumn" [matSortDirection]="'desc'" (matSortChange)="appTable ? appTable.sorting($event) : null"
+        <app-table #tableMail [service]="etudiantGroupeEtudiantService" [columns]="mailColumns" [sortColumn]="mailSortColumn" [filters]="mailFilters" [sortOrder]="mailSortDirection"
+                   matSort [matSortActive]="mailSortColumn" [matSortDirection]="'desc'" (matSortChange)="tableMail ? tableMail.sorting($event) : null"
                    [noResultText]="'Aucun étudiant trouvé'">
 
           <ng-container matColumnDef="select">
@@ -79,20 +91,39 @@
             <th mat-header-cell *matHeaderCellDef>N° étudiant</th>
             <td mat-cell *matCellDef="let row">{{row.etudiant.numEtudiant}}</td>
           </ng-container>
-
           <ng-container matColumnDef="nom">
             <th mat-header-cell *matHeaderCellDef>Nom</th>
             <td mat-cell *matCellDef="let row">{{row.etudiant.nom}}</td>
-          </ng-container>e
-
+          </ng-container>
           <ng-container matColumnDef="prenom">
             <th mat-header-cell *matHeaderCellDef>Prénom</th>
             <td mat-cell *matCellDef="let row">{{row.etudiant.prenom}}</td>
           </ng-container>
-
           <ng-container matColumnDef="mail">
             <th mat-header-cell *matHeaderCellDef>Mail</th>
             <td mat-cell *matCellDef="let row">{{row.etudiant.mail}}</td>
+          </ng-container>
+          <ng-container matColumnDef="etab">
+            <th mat-header-cell *matHeaderCellDef>Etab. d'accueil</th>
+            <td mat-cell *matCellDef="let row">{{row.convention.structure.raisonSociale}}</td>
+          </ng-container>
+          <ng-container matColumnDef="service">
+            <th mat-header-cell *matHeaderCellDef>Service d'accueil</th>
+            <td mat-cell *matCellDef="let row">
+              {{row.convention.service.nom}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="contact">
+            <th mat-header-cell *matHeaderCellDef>Tuteur professionnel</th>
+            <td mat-cell *matCellDef="let row">
+              {{row.convention.contact.nom + ' ' + row.convention.contact.prenom}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="mailTuteur">
+            <th mat-header-cell *matHeaderCellDef>Mail Tuteur</th>
+            <td mat-cell *matCellDef="let row">
+              {{row.convention.contact.mail}}
+            </td>
           </ng-container>
         </app-table>
       </div>
@@ -113,8 +144,8 @@
       <div class="mb-3">
         <div class="text-title">Selection des étudiants du groupe</div>
         <mat-divider class="mb-2"></mat-divider>
-        <app-table [service]="etudiantGroupeEtudiantService" [columns]="mailColumns" [sortColumn]="mailSortColumn" [filters]="mailFilters" [sortOrder]="mailSortDirection"
-                   matSort [matSortActive]="mailSortColumn" [matSortDirection]="'desc'" (matSortChange)="appTable ? appTable.sorting($event) : null"
+        <app-table #tableExport [service]="etudiantGroupeEtudiantService" [columns]="exportColumns" [sortColumn]="exportSortColumn" [filters]="mailFilters" [sortOrder]="exportSortDirection"
+                   matSort [matSortActive]="exportSortColumn" [matSortDirection]="'desc'" (matSortChange)="tableExport ? tableExport.sorting($event) : null"
                    [noResultText]="'Aucun étudiant trouvé'">
 
           <ng-container matColumnDef="select">
