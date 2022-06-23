@@ -54,7 +54,7 @@ export class ConventionComponent implements OnInit {
           this.majStatus();
         });
       } else {
-        this.titleService.title = 'Gestion d\'une convention';
+        this.titleService.title = 'Gestion de la convention n°' + pathId;
         // Récupération de la convention correspondant à l'id
         this.conventionService.getById(pathId).subscribe((response: any) => {
           this.convention = response;
