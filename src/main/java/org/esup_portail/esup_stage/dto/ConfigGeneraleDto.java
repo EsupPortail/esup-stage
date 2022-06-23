@@ -16,7 +16,7 @@ public class ConfigGeneraleDto {
     private boolean autoriserEtudiantAModifierEntreprise = false;
 
     private boolean autoriserValidationAutoOrgaAccCreaEtu = false;
-    private String ldapFiltreEnseignant = "(|(eduPersonAffiliation=teacher)(eduPersonAffiliation=faculty)";
+    private String ldapFiltreEnseignant = "(|(eduPersonAffiliation=teacher)(eduPersonAffiliation=faculty))";
 
     @JsonView(Views.Etu.class)
     private boolean autoriserElementPedagogiqueFacultatif = false;
