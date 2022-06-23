@@ -1,12 +1,13 @@
 package org.esup_portail.esup_stage.controller;
 
-import org.esup_portail.esup_stage.dto.ConfigAlerteMailDto;
-import org.esup_portail.esup_stage.dto.ConfigAlerteMailDto.Alerte;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
-import org.esup_portail.esup_stage.model.*;
+import org.esup_portail.esup_stage.model.CentreGestion;
+import org.esup_portail.esup_stage.model.PersonnelCentreGestion;
+import org.esup_portail.esup_stage.model.Role;
+import org.esup_portail.esup_stage.model.Utilisateur;
 import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
 import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
@@ -31,9 +32,6 @@ public class PersonnelCentreGestionController {
 
     @Autowired
     PersonnelCentreGestionJpaRepository personnelCentreGestionJpaRepository;
-
-    @Autowired
-    DroitAdministrationJpaRepository droitAdministrationJpaRepository;
 
     @Autowired
     CentreGestionJpaRepository centreGestionJpaRepository;
@@ -125,18 +123,11 @@ public class PersonnelCentreGestionController {
         personnelCentreGestionJpaRepository.flush();
     }
 
-    @GetMapping("/droits-admin")
-    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
-    public List<DroitAdministration> findAll() {
-        return droitAdministrationJpaRepository.findAll();
-    }
-
     private void setPersonnelCentreData(PersonnelCentreGestion personnelCentreGestion, PersonnelCentreGestion requestPersonnelCentreGestion) {
         personnelCentreGestion.setTel(requestPersonnelCentreGestion.getTel());
         personnelCentreGestion.setCampus(requestPersonnelCentreGestion.getCampus());
         personnelCentreGestion.setBatiment(requestPersonnelCentreGestion.getBatiment());
         personnelCentreGestion.setBureau(requestPersonnelCentreGestion.getBureau());
-        personnelCentreGestion.setDroitAdministration(requestPersonnelCentreGestion.getDroitAdministration());
 
         personnelCentreGestion.setImpressionConvention(requestPersonnelCentreGestion.isImpressionConvention());
         personnelCentreGestion.setDroitEvaluationEtudiant(requestPersonnelCentreGestion.getDroitEvaluationEtudiant());

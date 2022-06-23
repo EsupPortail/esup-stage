@@ -91,14 +91,8 @@
             <input matInput formControlName="bureau" />
           </mat-form-field>
         </div>
-        <div class="row">
-          <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
-            <mat-label>Droits</mat-label>
-            <mat-select formControlName="droitAdministration" [compareWith]="compare">
-              <mat-option *ngFor="let droit of droits" [value]="droit">{{droit.libelle}}</mat-option>
-            </mat-select>
-          </mat-form-field>
-          <div class="col-sm-6">
+        <div class="row mb-2">
+          <div class="col-sm-12">
             <button type="button" #matMenuTrigger mat-raised-button color="primary"[matMenuTriggerFor]="menu">Paramétrer les alertes mail</button>
             <mat-menu #menu="matMenu">
               <button #menuItems class="toggle-all" type="button" mat-raised-button color="primary" style="margin: 8px" (click)="$event.stopPropagation(); toggleAll()">Activer/Désactiver toutes les alertes</button>
@@ -141,10 +135,6 @@
       <ng-container matColumnDef="prenom">
         <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Prénom</th>
         <td mat-cell *matCellDef="let row"> {{row.prenom}}</td>
-      </ng-container>
-      <ng-container matColumnDef="droitAdministration.libelle">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Droits d'accès aux conventions</th>
-        <td mat-cell *matCellDef="let row"> {{row.droitAdministration.libelle}}</td>
       </ng-container>
       <ng-container matColumnDef="alertesMail">
         <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Alertes Mail</th>

@@ -1,0 +1,20 @@
+databaseChangeLog:
+- changeSet:
+    id: del-personnelcentregestion-iddroitadministration
+    author: ssound
+    changes:
+    - dropForeignKeyConstraint:
+        baseTableName: PersonnelCentreGestion
+        constraintName: fk_PersonnelCentreGestion_DroitAdministration1
+    - dropIndex:
+          indexName: fk_PersonnelCentreGestion_DroitAdministration1
+          tableName: PersonnelCentreGestion
+    - dropColumn:
+        columnName: idDroitAdministration
+        tableName: PersonnelCentreGestion
+- changeSet:
+    id: del-droit-administration
+    author: ssound
+    changes:
+    - dropTable:
+        tableName: DroitAdministration

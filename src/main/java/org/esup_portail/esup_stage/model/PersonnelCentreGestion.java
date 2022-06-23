@@ -51,10 +51,6 @@ public class PersonnelCentreGestion extends ObjetMetier implements Exportable {
     @Column
     private String fonction;
 
-    @ManyToOne
-    @JoinColumn(name = "idDroitAdministration", nullable = false)
-    private DroitAdministration droitAdministration;
-
     @Column(nullable = false)
     private boolean impressionConvention;
 
@@ -184,14 +180,6 @@ public class PersonnelCentreGestion extends ObjetMetier implements Exportable {
 
     public void setFonction(String fonction) {
         this.fonction = fonction;
-    }
-
-    public DroitAdministration getDroitAdministration() {
-        return droitAdministration;
-    }
-
-    public void setDroitAdministration(DroitAdministration droitAdministration) {
-        this.droitAdministration = droitAdministration;
     }
 
     public boolean isImpressionConvention() {
@@ -376,11 +364,6 @@ public class PersonnelCentreGestion extends ObjetMetier implements Exportable {
                 break;
             case "prenom":
                 value = getPrenom();
-                break;
-            case "droitAdministration":
-                if (getDroitAdministration() != null) {
-                    value = getDroitAdministration().getLibelle();
-                }
                 break;
             case "alertesMail":
                 value = getAlertesMail() != null && getAlertesMail() ? "Oui" : "Non";
