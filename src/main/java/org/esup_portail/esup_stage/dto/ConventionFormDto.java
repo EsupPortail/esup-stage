@@ -130,8 +130,6 @@ public class ConventionFormDto {
     @Size(max = 5)
     private String nbHeuresHebdo;
 
-    private Integer quotiteTravail;
-
     private String modeEncadreSuivi;
 
     private int idModeVersGratification;
@@ -595,14 +593,6 @@ public class ConventionFormDto {
 
     public void setNbHeuresHebdo(String nbHeuresHebdo) {
         this.nbHeuresHebdo = nbHeuresHebdo;
-    }
-
-    public Integer getQuotiteTravail() {
-        return quotiteTravail;
-    }
-
-    public void setQuotiteTravail(Integer quotiteTravail) {
-        this.quotiteTravail = quotiteTravail;
     }
 
     public String getModeEncadreSuivi() {

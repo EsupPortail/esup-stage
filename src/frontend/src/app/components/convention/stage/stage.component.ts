@@ -31,7 +31,7 @@ export class StageComponent implements OnInit {
 
   fieldValidators : any = {
       'nbHeuresHebdo': [Validators.required, Validators.pattern('[0-9]{1,2}([,.][0-9]{1,2})?')],
-      'quotiteTravail': [Validators.required, Validators.pattern('[0-9]+')],
+      'dureeExceptionnelle': [Validators.required, Validators.pattern('[0-9]+')],
       'montantGratification': [Validators.required, Validators.pattern('[0-9]{1,10}([,.][0-9]{1,2})?')],
       'idUniteGratification': [Validators.required],
       'idUniteDuree': [Validators.required],
@@ -153,7 +153,7 @@ export class StageComponent implements OnInit {
       interruptionStage: [this.convention.interruptionStage, [Validators.required]],
       horairesReguliers: [this.convention.horairesReguliers, [Validators.required]],
       nbHeuresHebdo: [this.convention.nbHeuresHebdo, this.fieldValidators['nbHeuresHebdo']],
-      quotiteTravail: [this.convention.quotiteTravail, this.fieldValidators['quotiteTravail']],
+      dureeExceptionnelle: [this.convention.dureeExceptionnelle, this.fieldValidators['dureeExceptionnelle']],
       idTempsTravail: [this.convention.tempsTravail ? this.convention.tempsTravail.id : null, [Validators.required]],
       commentaireDureeTravail: [this.convention.commentaireDureeTravail],
       // - Partie Gratification
@@ -229,8 +229,8 @@ export class StageComponent implements OnInit {
     }
 
     //calcul mois, jours, heures de travail effectif
-    if (this.form.get('quotiteTravail')?.value) {
-      this.calculMoisJoursTravails(this.form.get('quotiteTravail')?.value);
+    if (this.form.get('dureeExceptionnelle')?.value) {
+      this.calculMoisJoursTravails(this.form.get('dureeExceptionnelle')?.value);
     }
 
   }
@@ -467,11 +467,11 @@ export class StageComponent implements OnInit {
 
           const periodes = [{'dateDebut':dateDebutStage,'dateFin':dateFinStage,'nbHeuresJournalieres':nbHeuresJournalieres}];
 
-          this.form.get('quotiteTravail')?.setValue(this.calculHeuresTravails(periodes));
+          this.form.get('dureeExceptionnelle')?.setValue(this.calculHeuresTravails(periodes));
         }
 
       }else{
-        this.form.get('quotiteTravail')?.setValue(this.calculHeuresTravails(this.periodesCalculHeuresStage));
+        this.form.get('dureeExceptionnelle')?.setValue(this.calculHeuresTravails(this.periodesCalculHeuresStage));
       }
   }
 

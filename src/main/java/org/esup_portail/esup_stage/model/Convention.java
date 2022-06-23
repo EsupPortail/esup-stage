@@ -196,8 +196,6 @@ public class Convention extends ObjetMetier implements Exportable {
     @Column
     private String nbHeuresHebdo;
 
-    private Integer quotiteTravail;
-
     private String modeEncadreSuivi;
 
     @ManyToOne
@@ -719,14 +717,6 @@ public class Convention extends ObjetMetier implements Exportable {
 
     public void setNbHeuresHebdo(String nbHeuresHebdo) {
         this.nbHeuresHebdo = nbHeuresHebdo;
-    }
-
-    public Integer getQuotiteTravail() {
-        return quotiteTravail;
-    }
-
-    public void setQuotiteTravail(Integer quotiteTravail) {
-        this.quotiteTravail = quotiteTravail;
     }
 
     public String getModeEncadreSuivi() {

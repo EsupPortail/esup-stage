@@ -126,7 +126,7 @@ public class ImpressionContext {
         private String dateFinInterruption;
         private String dateFinStage;
         private String details;
-        private String dureeExceptionnelle;
+        private String dureeStageHeure;
         private String dureeStage;
         private String etapeLibelle;
         private String fonctionsEtTaches;
@@ -145,7 +145,6 @@ public class ImpressionContext {
         private String origineStageLibelle;
         private String paysEtudiant;
         private String qualiteSignataire;
-        private String quotiteTravail;
         private String sujetStage;
         private String telEtudiant;
         private String telPortableEtudiant;
@@ -180,7 +179,7 @@ public class ImpressionContext {
             this.dateFinInterruption = convention.getDateFinInterruption() != null ? df.format(convention.getDateFinInterruption()) : null;
             this.dateFinStage = convention.getDateFinStage() != null ? df.format(convention.getDateFinStage()) : null;
             this.details = convention.getDetails();
-            this.dureeExceptionnelle = convention.getDureeExceptionnelle();
+            this.dureeStageHeure = convention.getDureeExceptionnelle();
             this.dureeStage = String.valueOf(convention.getDureeStage());
             this.etapeLibelle = convention.getEtape() != null ? convention.getEtape().getLibelle() : null;
             this.fonctionsEtTaches = convention.getFonctionsEtTaches();
@@ -199,7 +198,6 @@ public class ImpressionContext {
             this.origineStageLibelle = convention.getNomenclature() != null ? convention.getNomenclature().getOrigineStage() : null;
             this.paysEtudiant = convention.getPaysEtudiant();
             this.qualiteSignataire = convention.getQualiteSignataire();
-            this.quotiteTravail = String.valueOf(convention.getQuotiteTravail());
             this.sujetStage = convention.getSujetStage();
             this.telEtudiant = convention.getTelEtudiant();
             this.telPortableEtudiant = convention.getTelPortableEtudiant();
@@ -356,12 +354,12 @@ public class ImpressionContext {
             this.details = details;
         }
 
-        public String getDureeExceptionnelle() {
-            return dureeExceptionnelle != null ? dureeExceptionnelle : "";
+        public String getDureeStageHeure() {
+            return dureeStageHeure != null ? dureeStageHeure : "";
         }
 
-        public void setDureeExceptionnelle(String dureeExceptionnelle) {
-            this.dureeExceptionnelle = dureeExceptionnelle;
+        public void setDureeStageHeure(String dureeStageHeure) {
+            this.dureeStageHeure = dureeStageHeure;
         }
 
         public String getDureeStage() {
@@ -506,14 +504,6 @@ public class ImpressionContext {
 
         public void setQualiteSignataire(String qualiteSignataire) {
             this.qualiteSignataire = qualiteSignataire;
-        }
-
-        public String getQuotiteTravail() {
-            return quotiteTravail != null ? quotiteTravail : "";
-        }
-
-        public void setQuotiteTravail(String quotiteTravail) {
-            this.quotiteTravail = quotiteTravail;
         }
 
         public String getSujetStage() {

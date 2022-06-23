@@ -83,3 +83,6 @@ databaseChangeLog:
   - include:
       file: 1.0.3-suppression-droit-administration.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 1.0.3-suppression-convention-quotiteTravail.yaml
+      relativeToChangelogFile: true
