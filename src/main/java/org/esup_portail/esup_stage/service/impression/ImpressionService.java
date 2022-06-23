@@ -48,7 +48,8 @@ public class ImpressionService {
             throw new AppException(HttpStatus.NOT_FOUND, "Template convention " + convention.getTypeConvention().getLibelle() + "-" + convention.getLangueConvention().getCode() + " non trouvé");
         }
 
-        ImpressionContext impressionContext = new ImpressionContext(convention, avenant);
+        CentreGestion centreEtablissement = centreGestionJpaRepository.getCentreEtablissement();
+        ImpressionContext impressionContext = new ImpressionContext(convention, avenant, centreEtablissement);
 
         try {
             String htmlTexte = avenant != null ? this.getHtmlText(templateConvention.getTexteAvenant(), false) : this.getHtmlText(templateConvention.getTexte(), true);
@@ -74,7 +75,6 @@ public class ImpressionService {
 
             // si le centre de gestion n'a pas de logo ou qu'il n'existe pas physiquement, on prend celui du centre établissement
             if (imageData == null) {
-                CentreGestion centreEtablissement = centreGestionJpaRepository.getCentreEtablissement();
                 fichier = centreEtablissement.getFichier();
                 if (fichier != null) {
                     logoname = this.getLogoFilePath(this.getNomFichier(fichier.getId(), fichier.getNom()));

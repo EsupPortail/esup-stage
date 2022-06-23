@@ -77,3 +77,6 @@ databaseChangeLog:
   - include:
       file: 1.0.1-drop-columns.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 1.0.3-param-convention.yaml
+      relativeToChangelogFile: true

@@ -19,10 +19,10 @@ public class ImpressionContext {
     public ImpressionContext() {
     }
 
-    public ImpressionContext(Convention convention, Avenant avenant) {
+    public ImpressionContext(Convention convention, Avenant avenant, CentreGestion centreEtablissement) {
         if (convention != null) {
             this.convention = new ConventionContext(convention);
-            this.centreGestion = new CentreGestionContext(convention.getCentreGestion());
+            this.centreGestion = new CentreGestionContext(convention.getCentreGestion(), centreEtablissement);
             this.contact = new ContactContext(convention.getContact());
             this.enseignant = new EnseignantContext(convention.getEnseignant());
             this.etudiant = new EtudiantContext(convention.getEtudiant());
@@ -608,10 +608,13 @@ public class ImpressionContext {
         private String prenomViseur;
         private String telephone;
         private String voie;
+        private String prenomPresidentEtab;
+        private String nomPresidentEtab;
+        private String qualitePresidentEtab;
 
         public CentreGestionContext() { }
 
-        public CentreGestionContext(CentreGestion centreGestion) {
+        public CentreGestionContext(CentreGestion centreGestion, CentreGestion centreEtablissement) {
             this.adresse = centreGestion.getAdresse();
             this.codePostal = centreGestion.getCodePostal();
             this.codeUniversite = centreGestion.getCodeUniversite();
@@ -622,6 +625,11 @@ public class ImpressionContext {
             this.prenomViseur = centreGestion.getPrenomViseur();
             this.telephone = centreGestion.getTelephone();
             this.voie = centreGestion.getVoie();
+            if (centreEtablissement != null) {
+                this.prenomPresidentEtab = centreEtablissement.getPrenomViseur();
+                this.nomPresidentEtab = centreEtablissement.getNomViseur();
+                this.qualitePresidentEtab = centreEtablissement.getQualiteViseur();
+            }
         }
 
         public String getAdresse() {
@@ -702,6 +710,30 @@ public class ImpressionContext {
 
         public void setVoie(String voie) {
             this.voie = voie;
+        }
+
+        public String getPrenomPresidentEtab() {
+            return prenomPresidentEtab != null ? prenomPresidentEtab : "";
+        }
+
+        public void setPrenomPresidentEtab(String prenomPresidentEtab) {
+            this.prenomPresidentEtab = prenomPresidentEtab;
+        }
+
+        public String getNomPresidentEtab() {
+            return nomPresidentEtab != null ? nomPresidentEtab : "";
+        }
+
+        public void setNomPresidentEtab(String nomPresidentEtab) {
+            this.nomPresidentEtab = nomPresidentEtab;
+        }
+
+        public String getQualitePresidentEtab() {
+            return qualitePresidentEtab != null ? qualitePresidentEtab : "";
+        }
+
+        public void setQualitePresidentEtab(String qualitePresidentEtab) {
+            this.qualitePresidentEtab = qualitePresidentEtab;
         }
     }
 
