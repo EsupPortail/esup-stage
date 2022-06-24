@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,6 +39,9 @@ public class GroupeEtudiantController {
 
     @Autowired
     GroupeEtudiantJpaRepository groupeEtudiantJpaRepository;
+
+    @Autowired
+    HistoriqueMailGroupeJpaRepository historiqueMailGroupeJpaRepository;
 
     @Autowired
     EtudiantJpaRepository etudiantJpaRepository;
@@ -78,6 +82,12 @@ public class GroupeEtudiantController {
             throw new AppException(HttpStatus.NOT_FOUND, "GroupeEtudiant non trouvée");
         }
         return groupeEtudiant;
+    }
+
+    @GetMapping("/historique/{id}")
+    @Secure(fonctions = {AppFonctionEnum.CREATION_EN_MASSE_CONVENTION}, droits = {DroitEnum.LECTURE})
+    public List<HistoriqueMailGroupe> getHistorique(@PathVariable("id") int id) {
+        return historiqueMailGroupeJpaRepository.findByGroupeEtudiant(id);
     }
 
     @PatchMapping("/{id}/setInfosStageValid/{valid}")
@@ -181,9 +191,22 @@ public class GroupeEtudiantController {
         return groupeEtudiantJpaRepository.saveAndFlush(groupeEtudiant);
     }
 
-    @PostMapping("/sendMail")
+    @PostMapping("/sendMail/{id}")
     @Secure(fonctions = {AppFonctionEnum.CREATION_EN_MASSE_CONVENTION}, droits = {DroitEnum.LECTURE})
-    public boolean sendMail(@Valid @RequestBody SendMailGroupeDto sendMailGroupeDto) {
+    public boolean sendMail(@Valid @RequestBody SendMailGroupeDto sendMailGroupeDto,@PathVariable("id") int id) {
+
+        GroupeEtudiant groupeEtudiant = groupeEtudiantJpaRepository.findById(id);
+        if (groupeEtudiant == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "GroupeEtudiant non trouvée");
+        }
+
+        HistoriqueMailGroupe historique = new HistoriqueMailGroupe();
+        historique.setDate(new Date());
+        historique.setMailto(sendMailGroupeDto.getTo());
+        historique.setLogin(ServiceContext.getServiceContext().getUtilisateur().getLogin());
+        historique.setGroupeEtudiant(groupeEtudiant);
+
+        historiqueMailGroupeJpaRepository.saveAndFlush(historique);
 
         Convention convention = conventionJpaRepository.findById(sendMailGroupeDto.getConventionId());
         if (convention == null) {

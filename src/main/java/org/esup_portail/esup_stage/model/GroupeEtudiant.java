@@ -1,7 +1,5 @@
 package org.esup_portail.esup_stage.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javax.persistence.*;
 import java.util.List;
 
@@ -19,6 +17,9 @@ public class GroupeEtudiant extends ObjetMetier implements Exportable {
 
     @OneToMany(mappedBy = "groupeEtudiant", fetch = FetchType.EAGER, cascade = {CascadeType.MERGE}, orphanRemoval = true)
     private List<EtudiantGroupeEtudiant> etudiantGroupeEtudiants;
+
+    @OneToMany(mappedBy = "groupeEtudiant", cascade = {CascadeType.MERGE}, orphanRemoval = true)
+    private List<HistoriqueMailGroupe> historiqueMailGroupes;
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "idConvention", nullable = false)
@@ -77,6 +78,14 @@ public class GroupeEtudiant extends ObjetMetier implements Exportable {
 
     public void setInfosStageValid(boolean infosStageValid) {
         this.infosStageValid = infosStageValid;
+    }
+
+    public List<HistoriqueMailGroupe> getHistoriqueMailGroupe() {
+        return historiqueMailGroupes;
+    }
+
+    public void setHistoriqueMailGroupe(List<HistoriqueMailGroupe> historiqueMailGroupes) {
+        this.historiqueMailGroupes = historiqueMailGroupes;
     }
 
     @Override

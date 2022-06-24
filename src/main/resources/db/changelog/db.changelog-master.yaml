@@ -98,3 +98,6 @@ databaseChangeLog:
   - include:
       file: 2.0.0-template-mail-groupe.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 2.0.0-historique-groupe.yaml
+      relativeToChangelogFile: true

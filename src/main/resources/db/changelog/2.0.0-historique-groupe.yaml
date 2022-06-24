@@ -1,0 +1,49 @@
+databaseChangeLog:
+- changeSet:
+    id: historiqueMailGroupe
+    author: tjubera
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+                nullable: false
+                primaryKey: true
+            name: idHistoriqueMailGroupe
+            type: INT
+        - column:
+            constraints:
+                nullable: false
+            name: loginEnvoi
+            type: VARCHAR(255)
+        - column:
+            constraints:
+                nullable: false
+            name: dateEnvoi
+            type: datetime
+        - column:
+              constraints:
+                  nullable: false
+              name: mailto
+              type: VARCHAR(50)
+        - column:
+            constraints:
+                nullable: false
+                foreignKeyName: fk_HistoriqueMailGroupe_GroupeEtudiant1
+                references: GroupeEtudiant(idGroupeEtudiant)
+            name: idGroupeEtudiant
+            type: INT
+        tableName: historiqueMailGroupe
+- changeSet:
+      id: historiqueMailGroupe-rename
+      author: tjubera
+      changes:
+          - sql:
+                sql: ALTER TABLE historiqueMailGroupe RENAME HistoriqueMailGroupe;
+- changeSet:
+      id: historiqueMailGroupe-change-collation
+      author: tjubera
+      changes:
+          - sql:
+                sql: ALTER TABLE HistoriqueMailGroupe CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci

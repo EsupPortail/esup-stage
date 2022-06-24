@@ -27,6 +27,10 @@ export class GroupeEtudiantService implements PaginatedService {
     return this.http.get(`${environment.apiUrl}/groupeEtudiant/${id}`);
   }
 
+  getHistoriqueGroupeMail(id: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/groupeEtudiant/historique/${id}`);
+  }
+
   duplicate(id: number): Observable<any> {
     return this.http.get(`${environment.apiUrl}/groupeEtudiant/duplicate/${id}`);
   }
@@ -55,7 +59,7 @@ export class GroupeEtudiantService implements PaginatedService {
     return this.http.post(environment.apiUrl + "/groupeEtudiant/import", file);
   }
 
-  sendMail(data: any): Observable<any> {
-    return this.http.post(environment.apiUrl + "/groupeEtudiant/sendMail", data);
+  sendMail(data: any, id: number): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/groupeEtudiant/sendMail/${id}`, data);
   }
 }
