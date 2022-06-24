@@ -44,7 +44,7 @@
   </ng-container>
   <ng-container *ngIf="typeDashboard === 2" matColumnDef="sujetStage">
     <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Sujet du stage</th>
-    <td mat-cell *matCellDef="let row">{{row.sujetStage}}</td>
+    <td mat-cell *matCellDef="let row" [matTooltip]="row.sujetStage">{{row.sujetStage|truncate:50}}</td>
   </ng-container>
   <ng-container *ngIf="typeDashboard === 2" matColumnDef="lieuStage">
     <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Lieu du stage</th>

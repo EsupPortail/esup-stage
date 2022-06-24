@@ -103,6 +103,7 @@ import { MatBadgeModule } from "@angular/material/badge";
 import { ConsigneComponent } from './components/consigne/consigne.component';
 import { RetourListeComponent } from './components/retour-liste/retour-liste.component';
 import { ConfirmDeleteCentreComponent } from './components/centre-gestion-search/confirm-delete-centre/confirm-delete-centre.component';
+import { TruncatePipe } from './pipes/truncate.pipe';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -162,6 +163,7 @@ registerLocaleData(localeFr, 'fr');
     ConsigneComponent,
     RetourListeComponent,
     ConfirmDeleteCentreComponent,
+    TruncatePipe,
   ],
   imports: [
     BrowserModule,
