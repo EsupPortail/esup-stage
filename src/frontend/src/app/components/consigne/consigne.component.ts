@@ -13,12 +13,6 @@ import * as Editor from '../../../custom-ck5/ckeditor';
 export class ConsigneComponent implements OnInit, OnChanges {
 
   public Editor = Editor;
-  public onReady(editor: any) {
-    editor.ui.getEditableElement().parentElement.insertBefore(
-      editor.ui.view.toolbar.element,
-      editor.ui.getEditableElement()
-    );
-  }
 
   @Input() consigne: any;
   @Input() idCentreGestion: number;

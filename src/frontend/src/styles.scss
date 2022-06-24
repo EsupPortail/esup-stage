@@ -177,6 +177,14 @@ ckeditor {
     border: 1px solid var(--ck-color-toolbar-border);
     max-height: 500px;
   }
+
+  .ck-source-editing-area {
+    max-height: 500px;
+
+    textarea {
+      overflow-y: auto;
+    }
+  }
 }
 
 .mat-progress-bar-buffer {

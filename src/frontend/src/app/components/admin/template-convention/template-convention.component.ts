@@ -21,12 +21,6 @@ import { TitleService } from "../../../services/title.service";
 export class TemplateConventionComponent implements OnInit {
 
   public Editor = Editor;
-  public onReady(editor: any) {
-    editor.ui.getEditableElement().parentElement.insertBefore(
-      editor.ui.view.toolbar.element,
-      editor.ui.getEditableElement()
-    );
-  }
 
   columns = ['typeConvention.libelle', 'langueConvention.code', 'action'];
   sortColumn = 'typeConvention.libelle';
