@@ -3,6 +3,7 @@ package org.esup_portail.esup_stage.service.impression;
 import com.itextpdf.html2pdf.HtmlConverter;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
+import com.itextpdf.kernel.events.PdfDocumentEvent;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.PdfWriter;
@@ -25,6 +26,7 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Date;
 
 @Service
 public class ImpressionService {
@@ -95,10 +97,13 @@ public class ImpressionService {
         String tempFilePath = this.getClass().getResource("/templates").getPath();
         String tempFile = tempFilePath + "temp_" + filename;
         FileOutputStream fop = null;
+        Date dateGeneration = new Date();
         try {
             fop = new FileOutputStream(tempFile);
             HtmlConverter.convertToPdf(texte, fop);
             PdfDocument pdfDoc = new PdfDocument(new PdfReader(tempFile), new PdfWriter(ou));
+            FooterPageEvent event = new FooterPageEvent(dateGeneration);
+            pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE, event);
             Document document=new Document(pdfDoc);
 
             if (imageData != null) {
