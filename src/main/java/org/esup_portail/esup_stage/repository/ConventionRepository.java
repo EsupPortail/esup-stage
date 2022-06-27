@@ -54,7 +54,7 @@ public class ConventionRepository extends PaginationRepository<Convention> {
             clauses.add("(" + String.join(" OR ", clauseOr) + ")");
         }
         if (key.equals("etudiant")) {
-            clauses.add("(LOWER(c.etudiant.identEtudiant) LIKE :etudiant OR LOWER(c.etudiant.nom) LIKE :etudiant OR LOWER(c.etudiant.prenom) LIKE :etudiant OR LOWER(c.etudiant.mail) LIKE :etudiant)");
+            clauses.add("(LOWER(c.etudiant.identEtudiant) LIKE :etudiant OR LOWER(c.etudiant.nom) LIKE :etudiant OR LOWER(c.etudiant.prenom) LIKE :etudiant OR LOWER(c.etudiant.mail) LIKE :etudiant OR LOWER(c.etudiant.numEtudiant) LIKE :etudiant)");
         }
         if (key.equals("enseignant")) {
             clauses.add("(LOWER(c.enseignant.uidEnseignant) LIKE :enseignant OR LOWER(c.enseignant.nom) LIKE :enseignant OR LOWER(c.enseignant.prenom) LIKE :enseignant OR LOWER(c.enseignant.mail) LIKE :enseignant)");
