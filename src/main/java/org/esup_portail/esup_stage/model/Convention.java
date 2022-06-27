@@ -3,6 +3,7 @@ package org.esup_portail.esup_stage.model;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.esup_portail.esup_stage.dto.view.Views;
 import org.esup_portail.esup_stage.enums.NbJoursHebdoEnum;
+import org.esup_portail.esup_stage.service.PeriodeService;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
@@ -342,6 +343,9 @@ public class Convention extends ObjetMetier implements Exportable {
     @JsonView(Views.List.class)
     @Transient
     private boolean depasseDelaiValidation = false;
+
+    @Transient
+    private String dureeExceptionnellePeriode;
 
     public int getId() {
         return id;
@@ -1105,6 +1109,17 @@ public class Convention extends ObjetMetier implements Exportable {
 
     public void setLieuStage(String lieuStage) {
         this.lieuStage = lieuStage;
+    }
+
+    public String getDureeExceptionnellePeriode() {
+        if (this.getNbHeuresHebdo() != null) {
+            this.setDureeExceptionnellePeriode(PeriodeService.calculPeriodeOuvree(Float.parseFloat(this.getNbHeuresHebdo()), Integer.parseInt(this.getDureeExceptionnelle())));
+        }
+        return dureeExceptionnellePeriode;
+    }
+
+    public void setDureeExceptionnellePeriode(String dureeExceptionnellePeriode) {
+        this.dureeExceptionnellePeriode = dureeExceptionnellePeriode;
     }
 
     public boolean isDepasseDelaiValidation() {

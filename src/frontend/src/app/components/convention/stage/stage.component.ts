@@ -55,7 +55,6 @@ export class StageComponent implements OnInit {
   interruptionsStage: any[] = [];
   periodesCalculHeuresStage : any[] = [];
   joursFeries : any[] = [];
-  moisJoursTravail: any;
 
   @Input() convention: any;
 
@@ -71,6 +70,7 @@ export class StageComponent implements OnInit {
   previousValues: any;
   singleFieldUpdateLock: boolean = false;
   singleFieldUpdateQueue : any[] = [];
+  updatingPeriode = false;
 
   @Output() validated = new EventEmitter<number>();
   @Output() updateField = new EventEmitter<any>();
@@ -226,11 +226,6 @@ export class StageComponent implements OnInit {
     }else{
       this.minDateFinStage = new Date(new Date().getFullYear()-1, 0, 2);
       this.maxDateFinStage = new Date(new Date().getFullYear()+2, 0, 1);
-    }
-
-    //calcul mois, jours, heures de travail effectif
-    if (this.form.get('dureeExceptionnelle')?.value) {
-      this.calculMoisJoursTravails(this.form.get('dureeExceptionnelle')?.value);
     }
 
   }
@@ -457,7 +452,10 @@ export class StageComponent implements OnInit {
   }
 
   updateHeuresTravail():void {
-
+    this.updatingPeriode = true;
+    setTimeout(() => {
+      this.updatingPeriode = false;
+    }, 2000);
       if (this.form.get('horairesReguliers')!.value){
 
         const dateDebutStage = this.dateFromBackend(this.form.get('dateDebutStage')!.value);
@@ -510,13 +508,6 @@ export class StageComponent implements OnInit {
       }
     }
 
-    this.calculMoisJoursTravails(Math.ceil(heuresTravails));
     return Math.ceil(heuresTravails);
-  }
-
-  calculMoisJoursTravails(heures: any) {
-    const nbHeuresJournalieres = this.form.get('nbHeuresHebdo')!.value/5;
-    const joursTravails = heures > 0 ? heures/nbHeuresJournalieres : 0;
-    this.moisJoursTravail = intervalToDuration({start: 0, end: joursTravails * 24 * 60 * 60 * 1000});
   }
 }

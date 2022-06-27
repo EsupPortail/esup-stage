@@ -143,9 +143,7 @@
             <input type="number" matInput formControlName="dureeExceptionnelle" required />
             <mat-error><app-form-error [field]="form.get('dureeExceptionnelle')"></app-form-error></mat-error>
           </mat-form-field>
-          <mat-label>{{moisJoursTravail ? moisJoursTravail.months + ' mois '
-            + moisJoursTravail.days + ' jour(s) '
-            + moisJoursTravail.hours + ' heure(s) ' : ''}}</mat-label>
+          <mat-label *ngIf="!updatingPeriode">{{convention.dureeExceptionnellePeriode}}</mat-label>
         </div>
         <div class="row">
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">

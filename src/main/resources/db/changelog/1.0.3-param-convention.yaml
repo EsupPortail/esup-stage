@@ -22,7 +22,7 @@ databaseChangeLog:
             value: centreGestion.nomPresidentEtab
         - column:
             name: libelle
-            value: Non du président de l'établissement
+            value: Nom du président de l'établissement
         - column:
             name: exemple
             value: Martin
@@ -38,4 +38,20 @@ databaseChangeLog:
         - column:
             name: exemple
             value: Le Directeur de l'université
+        tableName: ParamConvention
+- changeSet:
+    id: paramConvention-insert-dureeStageHeurePeriode
+    author: ssound
+    changes:
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.dureeStageHeurePeriode
+        - column:
+            name: libelle
+            value: Durée effective du stage en mois/jour/heures
+        - column:
+            name: exemple
+            value: X mois Y jour(s) et Z heure(s)
         tableName: ParamConvention

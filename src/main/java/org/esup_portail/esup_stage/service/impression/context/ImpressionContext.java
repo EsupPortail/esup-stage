@@ -127,6 +127,7 @@ public class ImpressionContext {
         private String dateFinStage;
         private String details;
         private String dureeStageHeure;
+        private String dureeStageHeurePeriode;
         private String dureeStage;
         private String etapeLibelle;
         private String fonctionsEtTaches;
@@ -208,6 +209,7 @@ public class ImpressionContext {
             this.uniteGratificationLibelle = convention.getNomenclature() != null ? convention.getNomenclature().getUniteGratification() : null;
             this.villeEtudiant = convention.getVilleEtudiant();
             this.volumeHoraireFormation = convention.getVolumeHoraireFormation();
+            this.dureeStageHeurePeriode = convention.getDureeExceptionnellePeriode();
         }
 
         public String getId() {
@@ -360,6 +362,14 @@ public class ImpressionContext {
 
         public void setDureeStageHeure(String dureeStageHeure) {
             this.dureeStageHeure = dureeStageHeure;
+        }
+
+        public String getDureeStageHeurePeriode() {
+            return dureeStageHeurePeriode != null ? dureeStageHeurePeriode : "";
+        }
+
+        public void setDureeStageHeurePeriode(String dureeStageHeurePeriode) {
+            this.dureeStageHeurePeriode = dureeStageHeurePeriode;
         }
 
         public String getDureeStage() {
