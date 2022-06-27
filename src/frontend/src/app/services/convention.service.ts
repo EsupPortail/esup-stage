@@ -79,4 +79,8 @@ export class ConventionService implements PaginatedService {
     return this.http.delete(`${environment.apiUrl}/conventions/brouillon`);
   }
 
+  deleteConvention(id: number): Observable<any> {
+    return this.http.delete(`${environment.apiUrl}/conventions/${id}`);
+  }
+
 }

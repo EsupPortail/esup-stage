@@ -1,5 +1,6 @@
 package org.esup_portail.esup_stage.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.esup_portail.esup_stage.dto.view.Views;
 import org.esup_portail.esup_stage.enums.NbJoursHebdoEnum;
@@ -330,11 +331,27 @@ public class Convention extends ObjetMetier implements Exportable {
     private Boolean confidentiel;
 
     @JsonView(Views.List.class)
-    @OneToMany(mappedBy = "convention")
+    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE})
     private List<Avenant> avenants = new ArrayList<>();
 
     @OneToOne(mappedBy = "convention", cascade = {CascadeType.MERGE, CascadeType.REMOVE, CascadeType.PERSIST})
     private ConventionNomenclature nomenclature;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE})
+    private List<HistoriqueValidation> historiqueValidations = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE})
+    private List<PeriodeInterruptionStage> periodeInterruptionStages = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE})
+    private List<ReponseEvaluation> reponseEvaluations = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE})
+    private List<ReponseSupplementaire> reponseSupplementaires = new ArrayList<>();
 
     @JsonView(Views.List.class)
     @Transient
@@ -1120,6 +1137,38 @@ public class Convention extends ObjetMetier implements Exportable {
 
     public void setDureeExceptionnellePeriode(String dureeExceptionnellePeriode) {
         this.dureeExceptionnellePeriode = dureeExceptionnellePeriode;
+    }
+
+    public List<HistoriqueValidation> getHistoriqueValidations() {
+        return historiqueValidations;
+    }
+
+    public void setHistoriqueValidations(List<HistoriqueValidation> historiqueValidations) {
+        this.historiqueValidations = historiqueValidations;
+    }
+
+    public List<PeriodeInterruptionStage> getPeriodeInterruptionStages() {
+        return periodeInterruptionStages;
+    }
+
+    public void setPeriodeInterruptionStages(List<PeriodeInterruptionStage> periodeInterruptionStages) {
+        this.periodeInterruptionStages = periodeInterruptionStages;
+    }
+
+    public List<ReponseEvaluation> getReponseEvaluations() {
+        return reponseEvaluations;
+    }
+
+    public void setReponseEvaluations(List<ReponseEvaluation> reponseEvaluations) {
+        this.reponseEvaluations = reponseEvaluations;
+    }
+
+    public List<ReponseSupplementaire> getReponseSupplementaires() {
+        return reponseSupplementaires;
+    }
+
+    public void setReponseSupplementaires(List<ReponseSupplementaire> reponseSupplementaires) {
+        this.reponseSupplementaires = reponseSupplementaires;
     }
 
     public boolean isDepasseDelaiValidation() {

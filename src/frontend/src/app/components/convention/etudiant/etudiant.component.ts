@@ -272,4 +272,24 @@ export class EtudiantComponent implements OnInit, OnChanges {
     });
   }
 
+  deleteConvention(): void {
+    this.conventionService.deleteConvention(this.convention.id).subscribe((response: any) => {
+      this.messageService.setSuccess('Convention supprimée');
+      this.router.navigate(['tableau-de-bord']);
+    });
+  }
+
+  canDelete(): boolean {
+    if (this.convention.validationCreation) {
+      let hasValidation = false;
+      for (let validation of ['validationPedagogique', 'verificationAdministrative', 'validationConvention']) {
+        if (this.convention.centreGestion[validation] && this.convention[validation]) {
+          hasValidation = true;
+        }
+      }
+      return !hasValidation;
+    }
+    return false;
+  }
+
 }
