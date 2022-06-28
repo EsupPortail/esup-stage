@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>org.esup_portail.esup_stage</groupId>
 	<artifactId>esup-stage</artifactId>
-	<version>1.0.2</version>
+	<version>1.0.3</version>
 	<packaging>war</packaging>
 	<name>estage</name>
 	<description>Application ESUP-Stage</description>
