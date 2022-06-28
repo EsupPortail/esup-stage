@@ -48,11 +48,15 @@ export class EnseignantGroupeComponent implements OnInit {
         { id: 'etudiant.prenom', libelle: 'Prénom'},
         { id: 'etudiant.numEtudiant', libelle: 'N° étudiant'},
     ];
+    this.filters.push({ id: 'groupeEtudiant.id', type: 'int', value: 0, hidden: true, permanent: true });
   }
 
   ngOnChanges(): void{
-      this.appTable?.update();
-      this.selected = [];
+    if(this.groupeEtudiant){
+      this.appTable?.setFilterValue('groupeEtudiant.id', this.groupeEtudiant.id);
+    }
+    this.appTable?.update();
+    this.selected = [];
   }
 
   isSelected(data: any): boolean {

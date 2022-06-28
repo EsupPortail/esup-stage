@@ -45,13 +45,14 @@ export class CadreStageComponent implements OnInit {
         { id: 'etudiant.prenom', libelle: 'Prénom'},
         { id: 'etudiant.numEtudiant', libelle: 'N° étudiant'},
       ];
+    this.filters.push({ id: 'groupeEtudiant.id', type: 'int', value: 0, hidden: true, permanent: true });
   }
 
   ngOnChanges(): void{
     if(this.groupeEtudiant){
-      this.filters.push({ id: 'groupeEtudiant.id', type: 'int', value: this.groupeEtudiant.id, hidden: true, permanent: true })
+      this.appTable?.setFilterValue('groupeEtudiant.id', this.groupeEtudiant.id);
     }
-      this.appTable?.update();
+    this.appTable?.update();
   }
 
   edit(row: any): void{

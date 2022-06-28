@@ -41,14 +41,14 @@ export class ConventionCreateEnMasseComponent implements OnInit {
       console.log('pathId : ' + pathId);
       if (pathId === 'create') {
         this.titleService.title = 'Création de conventions en masse';
-        // Récupération de la convention au mode brouillon
+        // Récupération du groupeEtudiant au mode brouillon
         this.groupeEtudiantService.getBrouillon().subscribe((response: any) => {
           this.groupeEtudiant = response;
           this.majStatus();
         });
       } else {
         this.titleService.title = 'Gestion du groupe';
-        // Récupération de la convention correspondant à l'id
+        // Récupération du groupeEtudiant correspondant à l'id
         this.groupeEtudiantService.getById(pathId).subscribe((response: any) => {
           this.groupeEtudiant = response;
           this.majStatus();
@@ -63,7 +63,7 @@ export class ConventionCreateEnMasseComponent implements OnInit {
     }else{
       this.setStatus(0,0);
     }
-    if (this.groupeEtudiant.infosStageValid){
+    if (this.groupeEtudiant && this.groupeEtudiant.infosStageValid){
       this.setStatus(1,2);
     }else{
       this.setStatus(1,0);

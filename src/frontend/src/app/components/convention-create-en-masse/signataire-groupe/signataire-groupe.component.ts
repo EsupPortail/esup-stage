@@ -54,16 +54,20 @@ export class SignataireGroupeComponent implements OnInit {
         { id: 'convention.structure.id', libelle: 'Structure d\'accueil', type: 'list', options: [], keyLibelle: 'raisonSociale', keyId: 'id'},
         { id: 'convention.service.id', libelle: 'Service d\'accueil', type: 'list', options: [], keyLibelle: 'nom', keyId: 'id'},
     ];
+    this.filters.push({ id: 'groupeEtudiant.id', type: 'int', value: 0, hidden: true, permanent: true });
   }
 
   ngOnChanges(): void{
-      if(this.groupeEtudiant && this.groupeEtudiant.convention.structure){
-        this.structures = this.groupeEtudiant.etudiantGroupeEtudiants.map((e: any) => e.convention.structure??this.groupeEtudiant.convention.structure);
-        this.structures = [...new Map(this.structures.map(e => [e.id, {id:e.id,raisonSociale:e.raisonSociale}])).values()]
-        this.appTable?.setFilterOption('convention.structure.id', this.structures);
-      }
-      this.appTable?.update();
-      this.selected = [];
+    if(this.groupeEtudiant){
+      this.appTable?.setFilterValue('groupeEtudiant.id', this.groupeEtudiant.id);
+    }
+    if(this.groupeEtudiant && this.groupeEtudiant.convention.structure){
+      this.structures = this.groupeEtudiant.etudiantGroupeEtudiants.map((e: any) => e.convention.structure??this.groupeEtudiant.convention.structure);
+      this.structures = [...new Map(this.structures.map(e => [e.id, {id:e.id,raisonSociale:e.raisonSociale}])).values()]
+      this.appTable?.setFilterOption('convention.structure.id', this.structures);
+    }
+    this.appTable?.update();
+    this.selected = [];
   }
 
   reloadServiceFilters(): void {
