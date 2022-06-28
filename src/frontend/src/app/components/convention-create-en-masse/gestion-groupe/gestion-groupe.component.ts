@@ -6,6 +6,7 @@ import { EtudiantGroupeEtudiantService } from "../../../services/etudiant-groupe
 import { TemplateMailGroupeService } from "../../../services/template-mail-groupe.service";
 import { MessageService } from "../../../services/message.service";
 import { SortDirection } from "@angular/material/sort";
+import { Router } from "@angular/router";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
 import * as FileSaver from 'file-saver';
@@ -58,6 +59,7 @@ export class GestionGroupeComponent implements OnInit {
     public templateMailGroupeService: TemplateMailGroupeService,
     private fb: FormBuilder,
     private messageService: MessageService,
+    private router: Router
   ) {
     this.form = this.fb.group({
       template: [null, [Validators.required]],
@@ -108,6 +110,7 @@ export class GestionGroupeComponent implements OnInit {
   duplicate(row: any): void{
     this.groupeEtudiantService.duplicate(row.id).subscribe((response: any) => {
       this.messageService.setSuccess('Groupe dupliqué avec succès');
+      this.router.navigate([`/convention-create-en-masse/create`], )
     });
   }
 

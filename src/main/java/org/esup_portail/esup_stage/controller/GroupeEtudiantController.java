@@ -113,7 +113,7 @@ public class GroupeEtudiantController {
 
             Convention etudiantConvention = etudiant.getConvention();
             try {
-                //appplications des champs par défaults du groupe aux conventions de chaque étudiant quand ils n'ont pas de valeurs spécifiques pour ces champs
+                //applications des champs par défaults du groupe aux conventions de chaque étudiant quand ils n'ont pas de valeurs spécifiques pour ces champs
                 etudiantConvention = mergeObjects(etudiantConvention, groupeConvention);
             } catch (Exception e) {
                 throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur création des conventions en masse");
@@ -152,6 +152,60 @@ public class GroupeEtudiantController {
         Utilisateur utilisateur = contexteDto.getUtilisateur();
         GroupeEtudiant groupeEtudiant = groupeEtudiantJpaRepository.findBrouillon(utilisateur.getLogin());
         return groupeEtudiant;
+    }
+
+    @GetMapping("/duplicate/{id}")
+    @Secure(fonctions = {AppFonctionEnum.CREATION_EN_MASSE_CONVENTION}, droits = {DroitEnum.LECTURE})
+    public GroupeEtudiant duplicate(@PathVariable("id") int id) {
+
+        //Suppression de l'ancien brouilon
+        ContextDto contexteDto = ServiceContext.getServiceContext();
+        Utilisateur utilisateur = contexteDto.getUtilisateur();
+        GroupeEtudiant groupeEtudiantBrouillon = groupeEtudiantJpaRepository.findBrouillon(utilisateur.getLogin());
+        delete(groupeEtudiantBrouillon.getId());
+
+        GroupeEtudiant groupeEtudiant = groupeEtudiantJpaRepository.findById(id);
+        if (groupeEtudiant == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "GroupeEtudiant non trouvée");
+        }
+
+        GroupeEtudiantDto groupeEtudiantDto = new GroupeEtudiantDto();
+        groupeEtudiantDto.setNomGroupe(groupeEtudiant.getNom());
+
+        List<Integer> etudiantIds = groupeEtudiant.getEtudiantGroupeEtudiants().stream().map(EtudiantGroupeEtudiant::getEtudiantId).collect(Collectors.toList());
+
+        groupeEtudiantDto.setEtudiantIds(etudiantIds);
+
+        GroupeEtudiant newGroupeEtudiant = create(groupeEtudiantDto);
+        newGroupeEtudiant.setInfosStageValid(true);
+
+        //Duplication de la convention du groupe
+        Convention oldGroupeConvention = groupeEtudiant.getConvention();
+        Convention newGroupeConvention = newGroupeEtudiant.getConvention();
+        try {
+            newGroupeConvention = mergeObjects(newGroupeConvention, oldGroupeConvention);
+        } catch (Exception e) {
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur création des conventions en masse");
+        }
+        conventionJpaRepository.save(newGroupeConvention);
+
+        //Duplication des conventions des étudiants du groupe
+        //for (EtudiantGroupeEtudiant etudiant : groupeEtudiant.getEtudiantGroupeEtudiants()) {
+        //    Convention oldEtudiantConvention = etudiant.getConvention();
+        //    for (EtudiantGroupeEtudiant newEtudiant : newGroupeEtudiant.getEtudiantGroupeEtudiants()) {
+        //        Convention newEtudiantConvention = newEtudiant.getConvention();
+        //        if(newEtudiantConvention.getId() == oldEtudiantConvention.getId()){
+        //            try {
+        //                newEtudiantConvention = mergeObjects(newEtudiantConvention, oldEtudiantConvention);
+        //            } catch (Exception e) {
+        //                throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur création des conventions en masse");
+        //            }
+        //            conventionJpaRepository.save(newEtudiantConvention);
+        //        }
+        //    }
+        //}
+
+        return groupeEtudiantJpaRepository.saveAndFlush(groupeEtudiant);
     }
 
     @PostMapping

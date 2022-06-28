@@ -21,7 +21,7 @@ public class GroupeEtudiant extends ObjetMetier implements Exportable {
     @OneToMany(mappedBy = "groupeEtudiant", cascade = {CascadeType.MERGE}, orphanRemoval = true)
     private List<HistoriqueMailGroupe> historiqueMailGroupes;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(cascade = {CascadeType.REMOVE}, fetch = FetchType.EAGER)
     @JoinColumn(name = "idConvention", nullable = false)
     private Convention convention;
 
