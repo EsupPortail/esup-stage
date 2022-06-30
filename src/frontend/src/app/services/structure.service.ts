@@ -32,6 +32,10 @@ export class StructureService implements PaginatedService, AutocompleteService {
     return this.http.post(`${environment.apiUrl}/structures`, data);
   }
 
+  import(file: any): Observable<any> {
+    return this.http.post(environment.apiUrl + "/structures/import", file);
+  }
+
   getAutocompleteData(search: string): Observable<any> {
     const filters = {
       raisonSociale: {

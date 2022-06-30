@@ -226,4 +226,10 @@ export class GestionEtabAccueilComponent implements OnInit {
     }
   }
 
+  importCsv(event: any): void {
+    this.structureService.import(event.target.files[0]).subscribe((response: any) => {
+      this.messageService.setSuccess('Etablissements d\'enseignement importés avec succès');
+    });
+  }
+
 }

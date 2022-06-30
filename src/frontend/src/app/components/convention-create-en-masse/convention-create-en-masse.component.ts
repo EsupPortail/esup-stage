@@ -110,7 +110,8 @@ export class ConventionCreateEnMasseComponent implements OnInit {
   }
 
   tabChanged(event: MatTabChangeEvent): void {
-    this.tabs[event.index].init = true;
+    if(this.tabs[event.index])
+      this.tabs[event.index].init = true;
   }
 
   getProgressValue(key: number): number {

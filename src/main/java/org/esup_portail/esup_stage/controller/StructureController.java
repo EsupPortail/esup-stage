@@ -2,6 +2,8 @@ package org.esup_portail.esup_stage.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import org.apache.commons.validator.routines.checkdigit.LuhnCheckDigit;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.dto.ContextDto;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.dto.StructureFormDto;
@@ -23,11 +25,17 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Date;
 
 @ApiController
 @RequestMapping("/structures")
 public class StructureController {
+
+    private static final Logger logger	= LogManager.getLogger(ConsigneController.class);
 
     @Autowired
     StructureRepository structureRepository;
@@ -75,6 +83,27 @@ public class StructureController {
     public ResponseEntity<String> exportCsv(@RequestParam(name = "headers", defaultValue = "{}") String headers, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         StringBuilder csv = structureRepository.exportCsv(headers, predicate, sortOrder, filters);
         return ResponseEntity.ok().body(csv.toString());
+    }
+
+    @PostMapping(value = "/import", consumes ="text/csv")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.MODIFICATION})
+    public void importStructures(InputStream inputStream) {
+
+        logger.info("import start");
+
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
+            String line = "";
+            String dataType = "";
+            String separator = ";";
+            boolean isHeader = false;
+
+            while ((line = br.readLine()) != null) {
+
+                logger.info("line : " + line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @GetMapping("/{id}")
