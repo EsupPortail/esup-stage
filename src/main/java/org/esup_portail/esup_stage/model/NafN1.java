@@ -18,7 +18,7 @@ public class NafN1 implements Exportable {
     private String code;
 
     @JsonView(Views.List.class)
-    @Column(name = "libelleNAF_N1", nullable = false, length = 150)
+    @Column(name = "libelleNAF_N1", nullable = false)
     private String libelle;
 
     @Column(name = "temEnServNAF_N1", length = 1)

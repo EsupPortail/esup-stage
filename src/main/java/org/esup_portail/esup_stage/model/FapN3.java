@@ -7,10 +7,10 @@ import javax.persistence.*;
 public class FapN3 {
 
     @Id
-    @Column(name = "codeFAP_N3", nullable = false, length = 5)
+    @Column(name = "codeFAP_N3", nullable = false)
     private String code;
 
-    @Column(nullable = false, length = 200)
+    @Column(nullable = false)
     private String libelle;
 
     @ManyToOne

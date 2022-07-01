@@ -1,0 +1,29 @@
+databaseChangeLog:
+- changeSet:
+    id: del-convention-quotiteTravail
+    author: ssound
+    changes:
+    - dropColumn:
+        columnName: quotiteTravail
+        tableName: Convention
+- changeSet:
+    id: del-paramconvention-quotiteTravail
+    author: ssound
+    changes:
+    - delete:
+        tableName: ParamConvention
+        where: code='convention.quotiteTravail'
+- changeSet:
+    id: update-paramconvention-dureeExceptionnelle
+    author: ssound
+    changes:
+    - update:
+        columns:
+        - column:
+            name: libelle
+            value: Durée effective du stage en nombre d'heures
+        - column:
+            name: code
+            value: convention.dureeStageHeure
+        tableName: ParamConvention
+        where: code='convention.dureeExceptionnelle'

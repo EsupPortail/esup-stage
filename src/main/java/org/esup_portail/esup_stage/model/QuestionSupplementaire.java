@@ -21,10 +21,10 @@ public class QuestionSupplementaire {
     @Column(nullable = false)
     private int idPlacement;
 
-    @Column(nullable = false, length = 200)
+    @Column(nullable = false)
     private String question;
 
-    @Column(nullable = false, length = 5)
+    @Column(nullable = false)
     private String typeQuestion;
 
     public int getId() {

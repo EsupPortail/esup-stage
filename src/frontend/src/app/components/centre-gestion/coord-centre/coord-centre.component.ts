@@ -1,11 +1,11 @@
-import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ViewChildren, QueryList, OnDestroy, AfterViewInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormControl, Validators } from "@angular/forms";
+import { Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup } from "@angular/forms";
 import { CentreGestionService } from "../../../services/centre-gestion.service";
 import { NiveauCentreService } from "../../../services/niveau-centre.service";
 import { CritereGestionService } from "../../../services/critere-gestion.service";
 import { MessageService } from "../../../services/message.service";
 import { ReplaySubject, Subject } from 'rxjs';
-import { take, takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { MatSelect } from '@angular/material/select';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatExpansionPanel } from '@angular/material/expansion';
@@ -19,7 +19,7 @@ import { TableComponent } from "../../table/table.component";
 export class CoordCentreComponent implements OnInit {
 
   @Input() centreGestion: any;
-  @Input() form: FormGroup;
+  @Input() form!: FormGroup;
 
   @Output() refreshCentreGestion = new EventEmitter<any>();
   @Output() update = new EventEmitter<any>();
@@ -27,7 +27,7 @@ export class CoordCentreComponent implements OnInit {
   etapeFilterCtrl: FormControl = new FormControl();
   filteredEtapes: ReplaySubject<any> = new ReplaySubject<any>(1);
   selectedValues: any[] = [];
-  @ViewChild('multiSelect') multiSelect: MatSelect;
+  @ViewChild('multiSelect') multiSelect!: MatSelect;
 
   _onDestroy = new Subject<void>();
 
@@ -42,7 +42,7 @@ export class CoordCentreComponent implements OnInit {
   selectedComposante: any;
 
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
-  @ViewChildren(MatExpansionPanel) pannels: QueryList<MatExpansionPanel>;
+  @ViewChildren(MatExpansionPanel) pannels!: QueryList<MatExpansionPanel>;
 
   constructor(
     private centreGestionService: CentreGestionService,
@@ -53,6 +53,10 @@ export class CoordCentreComponent implements OnInit {
 
   ngOnInit(): void {
     this.niveauCentreService.findList().subscribe((response: any) => {
+      // Si c'est un centre de type établissement, on ajoute le niveau centre ETABLISSEMENT pour qu'il apparaisse au niveau du select
+      if (this.centreGestion.niveauCentre && this.centreGestion.niveauCentre.libelle === 'ETABLISSEMENT') {
+        response.push(this.centreGestion.niveauCentre);
+      }
       this.niveauxCentre = response;
     });
     if (this.centreGestion.id) {
@@ -66,7 +70,9 @@ export class CoordCentreComponent implements OnInit {
         this.getCentreEtapes();
         this.filters.push({id: 'centreGestion.id', value: this.centreGestion.id, type: 'int', hidden: true});
       }
-      this.form.get('niveauCentre')?.disable();
+      if (this.centreGestion.niveauCentre && this.centreGestion.niveauCentre.libelle === 'ETABLISSEMENT') {
+        this.form.get('niveauCentre')?.disable();
+      }
     }
   }
 
@@ -118,7 +124,9 @@ export class CoordCentreComponent implements OnInit {
         this.messageService.setSuccess("Centre de gestion créé");
         this.centreGestion = response;
         this.refreshCentreGestion.emit(this.centreGestion);
-        this.form.get('niveauCentre')?.disable();
+        if (this.centreGestion.niveauCentre && this.centreGestion.niveauCentre.libelle === 'ETABLISSEMENT') {
+          this.form.get('niveauCentre')?.disable();
+        }
         this.getComposantes();
         this.getEtapes();
         this.getCentreEtapes();

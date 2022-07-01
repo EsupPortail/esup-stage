@@ -97,12 +97,13 @@ export class EtudiantComponent implements OnInit, OnChanges {
         codeLangueConvention: [this.convention.langueConvention ? this.convention.langueConvention.code : null, [Validators.required]],
       });
       this.sansElp = response.autoriserElementPedagogiqueFacultatif;
-      if (!this.sansElp) {
-        this.formConvention.get('inscriptionElp')?.setValidators([Validators.required]);
-      }
 
       this.formConvention.get('inscription')?.valueChanges.subscribe((inscription: any) => {
         if (inscription) {
+          this.sansElp = this.sansElp || !inscription.elementPedagogiques || inscription.elementPedagogiques.length == 0;
+          if (!this.sansElp) {
+            this.formConvention.get('inscriptionElp')?.setValidators([Validators.required]);
+          }
           this.centreGestion = inscription.centreGestion;
           this.formConvention.get('inscriptionElp')?.setValue(null);
           if (inscription.typeConvention) {
@@ -269,6 +270,26 @@ export class EtudiantComponent implements OnInit, OnChanges {
       this.router.onSameUrlNavigation = 'reload';
       this.router.navigate([this.router.url]);
     });
+  }
+
+  deleteConvention(): void {
+    this.conventionService.deleteConvention(this.convention.id).subscribe((response: any) => {
+      this.messageService.setSuccess('Convention supprimée');
+      this.router.navigate(['tableau-de-bord']);
+    });
+  }
+
+  canDelete(): boolean {
+    if (this.convention.validationCreation) {
+      let hasValidation = false;
+      for (let validation of ['validationPedagogique', 'verificationAdministrative', 'validationConvention']) {
+        if (this.convention.centreGestion[validation] && this.convention[validation]) {
+          hasValidation = true;
+        }
+      }
+      return !hasValidation;
+    }
+    return false;
   }
 
 }

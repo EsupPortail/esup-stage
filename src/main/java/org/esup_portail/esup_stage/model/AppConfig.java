@@ -9,7 +9,7 @@ import javax.persistence.*;
 public class AppConfig {
     @Enumerated(EnumType.STRING)
     @Id
-    @Column(name = "codeAppConfig", nullable = false, length = 20)
+    @Column(name = "codeAppConfig", nullable = false)
     private AppConfigCodeEnum code;
 
     @Lob

@@ -22,13 +22,13 @@ public class Offre extends ObjetMetier {
     @JoinColumn(name = "idContratOffre")
     private ContratOffre contratOffre;
 
-    @Column(length = 50)
+    @Column
     private String moisDebut;
 
-    @Column(length = 50)
+    @Column
     private String anneeDebut;
 
-    @Column(length = 200)
+    @Column
     private String precisionDebut;
 
     private Integer duree;
@@ -45,19 +45,19 @@ public class Offre extends ObjetMetier {
     @JoinColumn(name = "codeFAP_N3")
     private FapN3 fapN3;
 
-    @Column(nullable = false, length = 200)
+    @Column(nullable = false)
     private String intitule;
 
     @Column(nullable = false)
     private String description;
 
-    @Column(length = 200)
+    @Column
     private String lieuCommune;
 
-    @Column(length = 10)
+    @Column
     private String codeCommune;
 
-    @Column(length = 10)
+    @Column
     private String lieuCodePostal;
 
     @ManyToOne
@@ -69,10 +69,10 @@ public class Offre extends ObjetMetier {
     private boolean voiture;
     private boolean remuneration;
 
-    @Column(length = 200)
+    @Column
     private String avantages;
 
-    @Column(length = 200)
+    @Column
     private String precisionRemuneration;
 
     @ManyToOne
@@ -81,7 +81,7 @@ public class Offre extends ObjetMetier {
 
     private Integer quotiteTravail;
 
-    @Column(length = 200)
+    @Column
     private String commentaireTempsTravail;
 
     private String observations;
@@ -92,7 +92,7 @@ public class Offre extends ObjetMetier {
 
     private String competences;
 
-    @Column(length = 100)
+    @Column
     private String referenceOffreEtablissement;
 
     @Temporal(TemporalType.DATE)
@@ -101,10 +101,10 @@ public class Offre extends ObjetMetier {
     @Temporal(TemporalType.DATE)
     private Date dateFinDiffusion;
 
-    @Column(length = 50)
+    @Column
     private String loginDiffusion;
 
-    @Column(length = 50)
+    @Column
     private String loginStopDiffusion;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -193,7 +193,7 @@ public class Offre extends ObjetMetier {
     @Column(nullable = false)
     private boolean estPrioERQTH;
 
-    @Column(length = 200)
+    @Column
     private String precisionHandicap;
 
     @Column(nullable = false)
@@ -202,7 +202,7 @@ public class Offre extends ObjetMetier {
     @Column(nullable = false)
     private boolean avecLien;
 
-    @Column(length = 200)
+    @Column
     private String lienAttache;
 
     @ManyToOne
@@ -212,19 +212,19 @@ public class Offre extends ObjetMetier {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateValidation;
 
-    @Column(length = 50)
+    @Column
     private String loginValidation;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateStopValidation;
 
-    @Column(length = 50)
+    @Column
     private String loginStopValidation;
 
-    @Column(length = 50)
+    @Column
     private String loginRejetValidation;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
     private String anneeUniversitaire;
 
     @ManyToMany

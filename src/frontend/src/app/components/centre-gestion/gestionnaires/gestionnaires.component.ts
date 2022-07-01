@@ -24,10 +24,9 @@ export class GestionnairesComponent implements OnInit {
   form: FormGroup;
   searchForm: FormGroup;
 
-  droits: any;
   civilites: any;
 
-  columns = ['civilite.libelle', 'nom', 'prenom', 'droitAdministration.libelle', 'alertesMail', 'droitsEvaluation', 'action'];
+  columns = ['civilite.libelle', 'nom', 'prenom', 'alertesMail', 'droitsEvaluation', 'action'];
   sortColumn = 'nom';
   filters: any[] = [
     { id: 'nom', libelle: 'Nom'},
@@ -37,7 +36,6 @@ export class GestionnairesComponent implements OnInit {
     civilite: { title: 'Civilité' },
     nom: { title: 'Nom' },
     prenom: { title: 'Prénom' },
-    droitAdministration: { title: 'Droit d\'accès aux conventions' },
     alertesMail: { title: 'Alertes mail' },
     droitsEvaluation: { title: 'Droits évaluation' },
   };
@@ -87,7 +85,6 @@ export class GestionnairesComponent implements OnInit {
       typePersonne: [null, []],
       uidPersonnel: [null, []],
       fonction: [null, []],
-      droitAdministration: [null, []],
       impressionConvention: [null, []],
       campus: [null, []],
       batiment: [null, []],
@@ -116,9 +113,6 @@ export class GestionnairesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.personnelCentreService.getDroitsAdmin().subscribe((response: any) => {
-      this.droits = response;
-    });
     this.civiliteService.getPaginated(1, 0, 'libelle', 'asc','').subscribe((response: any) => {
       this.civilites = response;
     });
@@ -182,7 +176,6 @@ export class GestionnairesComponent implements OnInit {
       droitEvaluationEtudiant: false,
       droitEvaluationEnseignant: false,
       droitEvaluationEntreprise: false,
-      droitAdministration: this.droits[0],
     });
   }
 

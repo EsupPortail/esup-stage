@@ -11,13 +11,13 @@ public class Assurance {
     @Column(name = "idAssurance", nullable = false)
     private int id;
 
-    @Column(name = "libelleAssurance", nullable = false, length = 100)
+    @Column(name = "libelleAssurance", nullable = false)
     private String libelle;
 
     @Column(name = "temEnServAss", nullable = false, length = 1)
     private String temEnServ;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false)
     private String codeCtrl;
 
     public int getId() {

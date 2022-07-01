@@ -59,3 +59,53 @@ Par exemple si `appli.data_dir=/etc/eStage/uploads` on aura :
 ## Procédure d'installation
 
 https://github.com/EsupPortail/esup-stage/wiki
+
+## Installation de ckeditor5
+
+* aller sur le site https://ckeditor.com/ckeditor-5/online-builder/ pour générer ckeditor5 avec des plugins personnalisés
+* choisir l'éditeur "Classic" (le plugin "Source code" ne fonctionne actuellement qu'avec l'éditeur Classic)
+* enlever les plugins nécessitants une license PRO
+* ci-dessous la liste des plugins actuelle de l'application (* : obligatoire pour le bon fonctionnement minimal) :
+  * Alignement *
+  * Autoformat
+  * Base64 upload adapter *
+  * Block quote *
+  * Bold *
+  * Find and replace *
+  * Font background color *
+  * Font color * 
+  * Font family *
+  * Font size *
+  * Heading *
+  * Highlight
+  * Horizontal line
+  * Image *
+  * Image caption *
+  * Image resize *
+  * Image style *
+  * Image toolbar *
+  * Image upload *
+  * Indent *
+  * Indent block *
+  * Italic *
+  * Link
+  * List *
+  * List properties *
+  * Media embed
+  * Page break *
+  * Paste front Office
+  * Remove format *
+  * Source editing *
+  * Strikethrough *
+  * Table *
+  * Table cell properties *
+  * Table column resize *
+  * Table properties *
+  * Table toolbar *
+  * Text transformation *
+  * To-do list
+  * Underline *
+* à l'étape suivante, disposer comme voulu les éléments de la barre d'outils de l'éditeur
+* une fois terminé, choisir la langue française et télécharger la librairie
+* supprimer tout le contenu de `src/frontend/src/custom-ck5` pour y mettre celui du dossier `build/` de la librairie téléchargée
+* mettre à jour ou installer si nécessaire la librairie `@ckeditor/ckeditor5-angular` et les builds `@ckeditor/ckeditor5-build-classic` ou autre correspondant au type d'éditeur choisi à la 1ère étape

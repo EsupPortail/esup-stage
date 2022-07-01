@@ -90,9 +90,9 @@
       <div class="mt-3 mb-3">
         <div class="row">
           <div class="col-sm-3 font-weight-bold">Date de début du stage</div>
-          <div class="col-sm-9">{{convention.dateDebutStage}}</div>
+          <div class="col-sm-9">{{convention.dateDebutStage|date:'shortDate'}}</div>
           <div class="col-sm-3 font-weight-bold">Date de fin du stage</div>
-          <div class="col-sm-9">{{convention.dateFinStage}}</div>
+          <div class="col-sm-9">{{convention.dateFinStage|date:'shortDate'}}</div>
           <div class="col-sm-3 font-weight-bold">Interruption au cours du stage</div>
           <div class="col-sm-9">{{convention.interruptionStage ? 'Oui' : 'Non'}}</div>
         </div>
@@ -106,7 +106,9 @@
           <div class="col-sm-3 font-weight-bold">Nombre d'heures hebdomadaires</div>
           <div class="col-sm-9">{{convention.nbHeuresHebdo}}</div>
           <div class="col-sm-3 font-weight-bold">Durée effective du stage</div>
-          <div class="col-sm-9">{{convention.quotiteTravail}} heures</div>
+          <div class="col-sm-9">{{convention.dureeExceptionnelle}} heures</div>
+          <div class="col-sm-3 font-weight-bold">Durée effective du stage en mois/jours/année</div>
+          <div class="col-sm-9">{{convention.dureeExceptionnellePeriode}}</div>
           <div class="col-sm-3 font-weight-bold">Temps de travail</div>
           <div class="col-sm-9">{{isValide ? convention.nomenclature.tempsTravail : convention.tempsTravail.libelle}}</div>
           <div class="col-sm-3 font-weight-bold">Commentaire tps travail</div>

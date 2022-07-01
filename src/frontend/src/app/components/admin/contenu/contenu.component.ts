@@ -17,12 +17,6 @@ import * as Editor from '../../../../custom-ck5/ckeditor';
 export class ContenuComponent implements OnInit {
 
   public Editor = Editor;
-  public onReady(editor: any) {
-    editor.ui.getEditableElement().parentElement.insertBefore(
-      editor.ui.view.toolbar.element,
-      editor.ui.getEditableElement()
-    );
-  }
 
   columns = ['code', 'texte', 'action'];
   sortColumn = 'code';

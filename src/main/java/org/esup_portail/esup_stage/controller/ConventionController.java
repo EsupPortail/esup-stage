@@ -454,6 +454,40 @@ public class ConventionController {
         }
     }
 
+    @DeleteMapping("/{id}")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.MODIFICATION})
+    public Convention delete(@PathVariable("id") int id) {
+        Convention convention = conventionJpaRepository.findById(id);
+        if (convention == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        }
+        // Pour les étudiants on vérifie que c'est une de ses conventions
+        Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
+        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(convention.getEtudiant().getIdentEtudiant())) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        }
+        canViewEditConvention(convention, ServiceContext.getServiceContext().getUtilisateur());
+        // On n'autorise la suppression d'une convention si elle n'a aucune validation
+        boolean hasValidation = false;
+        if (convention.getCentreGestion().getValidationConvention() == true && convention.getValidationConvention() == true) {
+            hasValidation = true;
+        }
+        if (convention.getCentreGestion().getValidationConvention() == true && convention.getValidationConvention() == true) {
+            hasValidation = true;
+        }
+        if (convention.getCentreGestion().getValidationPedagogique() == true && convention.getValidationPedagogique() == true) {
+            hasValidation = true;
+        }
+        if (convention.getCentreGestion().getVerificationAdministrative() == true && convention.getVerificationAdministrative() == true) {
+            hasValidation = true;
+        }
+        if (hasValidation) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "La convention a déjà été validée et ne peut être supprimée");
+        }
+        conventionJpaRepository.delete(convention);
+        return convention;
+    }
+
     private void canViewEditConvention(Convention convention, Utilisateur utilisateur) {
         if (!UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
             if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
@@ -649,8 +683,8 @@ public class ConventionController {
         if (Objects.equals(conventionSingleFieldDto.getField(), "nbHeuresHebdo")){
             convention.setNbHeuresHebdo((String) conventionSingleFieldDto.getValue());
         }
-        if (Objects.equals(conventionSingleFieldDto.getField(), "quotiteTravail")){
-            convention.setQuotiteTravail((Integer) conventionSingleFieldDto.getValue());
+        if (Objects.equals(conventionSingleFieldDto.getField(), "dureeExceptionnelle")){
+            convention.setDureeExceptionnelle(((Integer) conventionSingleFieldDto.getValue()).toString());
         }
         if (Objects.equals(conventionSingleFieldDto.getField(), "idTempsTravail")){
             TempsTravail tempsTravail = tempsTravailJpaRepository.findById((int) conventionSingleFieldDto.getValue());

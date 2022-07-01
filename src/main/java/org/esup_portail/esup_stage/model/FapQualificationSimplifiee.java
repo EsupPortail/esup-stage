@@ -11,7 +11,7 @@ public class FapQualificationSimplifiee {
     @Column(name = "idQualificationSimplifiee", nullable = false)
     private int id;
 
-    @Column(name = "libelleQualification", length = 100)
+    @Column(name = "libelleQualification")
     private String libelle;
 
     public int getId() {

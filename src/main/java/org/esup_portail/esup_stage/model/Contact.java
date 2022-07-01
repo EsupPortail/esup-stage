@@ -17,20 +17,20 @@ public class Contact extends ObjetMetier implements Exportable {
     private int id;
 
     @JsonView(Views.List.class)
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
     private String nom;
 
     @JsonView(Views.List.class)
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
     private String prenom;
 
-    @Column(length = 50)
+    @Column
     private String mail;
 
-    @Column(length = 50)
+    @Column
     private String tel;
 
-    @Column(length = 50)
+    @Column
     private String fax;
 
     @ManyToOne
@@ -51,13 +51,13 @@ public class Contact extends ObjetMetier implements Exportable {
     @JoinColumn(name = "idCentreGestion", nullable = false)
     private CentreGestion centreGestion;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false)
     private String fonction;
 
-    @Column(length = 12)
+    @Column
     private String login;
 
-    @Column(length = 200)
+    @Column
     private String mdp;
 
     @Lob
@@ -66,7 +66,7 @@ public class Contact extends ObjetMetier implements Exportable {
     @Temporal(TemporalType.DATE)
     private Date infosAJour;
 
-    @Column(length = 50)
+    @Column
     private String loginInfosAJour;
 
     public int getId() {

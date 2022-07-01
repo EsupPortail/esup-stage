@@ -17,7 +17,7 @@ public class Etape implements Exportable {
     private EtapeId id;
 
     @JsonView(Views.List.class)
-    @Column(name = "libelleEtape", nullable = false, length = 200)
+    @Column(name = "libelleEtape", nullable = false)
     private String libelle;
 
     public EtapeId getId() {

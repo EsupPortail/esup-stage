@@ -9,7 +9,7 @@ public class Affectation {
     @EmbeddedId
     private AffectationId id;
 
-    @Column(name = "libelleAffectation", length = 150)
+    @Column(name = "libelleAffectation")
     private String libelle;
 
     public AffectationId getId() {

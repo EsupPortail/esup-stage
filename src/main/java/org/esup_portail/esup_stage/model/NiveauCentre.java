@@ -14,7 +14,7 @@ public class NiveauCentre implements Exportable {
     @Column(name = "idNiveauCentre", nullable = false)
     private int id;
 
-    @Column(name = "libelleNiveauCentre", nullable = false, length = 100)
+    @Column(name = "libelleNiveauCentre", nullable = false)
     private String libelle;
 
     @Column(name = "temEnServNiveauCentre", nullable = false, length = 1)

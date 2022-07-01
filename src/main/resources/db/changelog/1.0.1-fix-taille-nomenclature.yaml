@@ -95,3 +95,1525 @@ databaseChangeLog:
         columnName: uniteGratification
         newDataType: VARCHAR(255)
         tableName: ConventionNomenclature
+- changeSet:
+    id: drop-fk_Enseignant_Affectation1
+    author: ssound
+    changes:
+    - dropForeignKeyConstraint:
+        baseTableName: Enseignant
+        constraintName: fk_Enseignant_Affectation1
+- changeSet:
+    id: drop-fk_CentreGestion_Confidentialite1
+    author: ssound
+    changes:
+    - dropForeignKeyConstraint:
+        baseTableName: CentreGestion
+        constraintName: fk_CentreGestion_Confidentialite1
+- changeSet:
+    id: drop-fk_Convention_Ufr1
+    author: ssound
+    changes:
+    - dropForeignKeyConstraint:
+        baseTableName: Convention
+        constraintName: fk_Convention_Ufr1
+- changeSet:
+    id: drop-fk_Convention_Etape1
+    author: ssound
+    changes:
+    - dropForeignKeyConstraint:
+        baseTableName: Convention
+        constraintName: fk_Convention_Etape1
+- changeSet:
+    id: drop-fk_Convention_LangueConvention1
+    author: ssound
+    changes:
+    - dropForeignKeyConstraint:
+        baseTableName: Convention
+        constraintName: fk_Convention_LangueConvention1
+- changeSet:
+    id: drop-fk_FAP_N2_FAP_N11
+    author: ssound
+    changes:
+    - dropForeignKeyConstraint:
+        baseTableName: FAP_N2
+        constraintName: fk_FAP_N2_FAP_N11
+- changeSet:
+    id: drop-fk_FAP_N3_FAP_N21
+    author: ssound
+    changes:
+    - dropForeignKeyConstraint:
+        baseTableName: FAP_N3
+        constraintName: fk_FAP_N3_FAP_N21
+- changeSet:
+    id: drop-fk_Offre_FAP_N11
+    author: ssound
+    changes:
+    - dropForeignKeyConstraint:
+        baseTableName: Offre
+        constraintName: fk_Offre_FAP_N11
+- changeSet:
+    id: drop-fk_TemplateConvention_LangueConvention1
+    author: ssound
+    changes:
+    - dropForeignKeyConstraint:
+        baseTableName: TemplateConvention
+        constraintName: fk_TemplateConvention_LangueConvention1
+- changeSet:
+    id: drop-fk_NAF_N5_NAF_N11
+    author: ssound
+    changes:
+    - dropForeignKeyConstraint:
+        baseTableName: NAF_N5
+        constraintName: fk_NAF_N5_NAF_N11
+- changeSet:
+    id: drop-fk_Structure_NAF_N51
+    author: ssound
+    changes:
+    - dropForeignKeyConstraint:
+        baseTableName: Structure
+        constraintName: fk_Structure_NAF_N51
+- changeSet:
+    id: fix-taille-AccordPartenariat
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: loginCreation
+        newDataType: VARCHAR(255)
+        tableName: AccordPartenariat
+    - modifyDataType:
+        columnName: loginValidation
+        newDataType: VARCHAR(255)
+        tableName: AccordPartenariat
+    - modifyDataType:
+        columnName: loginSuppressionComptes
+        newDataType: VARCHAR(255)
+        tableName: AccordPartenariat
+- changeSet:
+    id: fix-taille-AdminStructure
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: nom
+        newDataType: VARCHAR(255)
+        tableName: AdminStructure
+    - modifyDataType:
+        columnName: prenom
+        newDataType: VARCHAR(255)
+        tableName: AdminStructure
+    - modifyDataType:
+        columnName: mail
+        newDataType: VARCHAR(255)
+        tableName: AdminStructure
+    - modifyDataType:
+        columnName: login
+        newDataType: VARCHAR(255)
+        tableName: AdminStructure
+    - modifyDataType:
+        columnName: eppn
+        newDataType: VARCHAR(255)
+        tableName: AdminStructure
+    - modifyDataType:
+        columnName: mdp
+        newDataType: VARCHAR(255)
+        tableName: AdminStructure
+    - modifyDataType:
+        columnName: loginCreation
+        newDataType: VARCHAR(255)
+        tableName: AdminStructure
+    - modifyDataType:
+        columnName: loginModif
+        newDataType: VARCHAR(255)
+        tableName: AdminStructure
+- changeSet:
+    id: fix-taille-Affectation
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: codeAffectation
+        newDataType: VARCHAR(255)
+        tableName: Affectation
+    - modifyDataType:
+        columnName: libelleAffectation
+        newDataType: VARCHAR(255)
+        tableName: Affectation
+    - modifyDataType:
+        columnName: codeUniversite
+        newDataType: VARCHAR(255)
+        tableName: Affectation
+- changeSet:
+    id: fix-taille-AppConfig
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: codeAppConfig
+        newDataType: VARCHAR(255)
+        tableName: AppConfig
+- changeSet:
+    id: fix-taille-AppFonction
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: codeAppFonction
+        newDataType: VARCHAR(255)
+        tableName: AppFonction
+- changeSet:
+    id: fix-taille-Assurance
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: libelleAssurance
+        newDataType: VARCHAR(255)
+        tableName: Assurance
+    - modifyDataType:
+        columnName: codeCtrl
+        newDataType: VARCHAR(255)
+        tableName: Assurance
+- changeSet:
+    id: fix-taille-Avenant
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: loginCreation
+        newDataType: VARCHAR(255)
+        tableName: Avenant
+    - modifyDataType:
+        columnName: loginModif
+        newDataType: VARCHAR(255)
+        tableName: Avenant
+    - modifyDataType:
+        columnName: monnaieGratification
+        newDataType: VARCHAR(255)
+        tableName: Avenant
+    - modifyDataType:
+        columnName: montantGratification
+        newDataType: VARCHAR(255)
+        tableName: Avenant
+- changeSet:
+    id: fix-taille-CaisseRegime
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: libelleCaisse
+        newDataType: VARCHAR(255)
+        tableName: CaisseRegime
+    - modifyDataType:
+        columnName: infoCaisse
+        newDataType: VARCHAR(255)
+        tableName: CaisseRegime
+    - modifyDataType:
+        columnName: codeCaisse
+        newDataType: VARCHAR(255)
+        tableName: CaisseRegime
+- changeSet:
+    id: fix-taille-CentreGestion
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: codeConfidentialite
+        newDataType: VARCHAR(255)
+        tableName: CentreGestion
+    - modifyDataType:
+        columnName: codePostal
+        newDataType: VARCHAR(255)
+        tableName: CentreGestion
+    - modifyDataType:
+        columnName: nomCentre
+        newDataType: VARCHAR(255)
+        tableName: CentreGestion
+    - modifyDataType:
+        columnName: qualiteViseur
+        newDataType: VARCHAR(255)
+        tableName: CentreGestion
+    - modifyDataType:
+        columnName: telephone
+        newDataType: VARCHAR(255)
+        tableName: CentreGestion
+    - modifyDataType:
+        columnName: fax
+        newDataType: VARCHAR(255)
+        tableName: CentreGestion
+    - modifyDataType:
+        columnName: adresse
+        newDataType: VARCHAR(255)
+        tableName: CentreGestion
+    - modifyDataType:
+        columnName: voie
+        newDataType: VARCHAR(255)
+        tableName: CentreGestion
+    - modifyDataType:
+        columnName: commune
+        newDataType: VARCHAR(255)
+        tableName: CentreGestion
+    - modifyDataType:
+        columnName: urlPageInstruction
+        newDataType: VARCHAR(255)
+        tableName: CentreGestion
+    - modifyDataType:
+        columnName: siteWeb
+        newDataType: VARCHAR(255)
+        tableName: CentreGestion
+    - modifyDataType:
+        columnName: mail
+        newDataType: VARCHAR(255)
+        tableName: CentreGestion
+    - modifyDataType:
+        columnName: codeUniversite
+        newDataType: VARCHAR(255)
+        tableName: CentreGestion
+    - modifyDataType:
+        columnName: loginCreation
+        newDataType: VARCHAR(255)
+        tableName: CentreGestion
+    - modifyDataType:
+        columnName: loginModif
+        newDataType: VARCHAR(255)
+        tableName: CentreGestion
+    - modifyDataType:
+        columnName: nomViseur
+        newDataType: VARCHAR(255)
+        tableName: CentreGestion
+    - modifyDataType:
+        columnName: prenomViseur
+        newDataType: VARCHAR(255)
+        tableName: CentreGestion
+- changeSet:
+    id: fix-taille-CentreGestionSuperViseur
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: nomCentreSuperViseur
+        newDataType: VARCHAR(255)
+        tableName: CentreGestionSuperViseur
+- changeSet:
+    id: fix-taille-Civilite
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: libelleCivilite
+        newDataType: VARCHAR(255)
+        tableName: Civilite
+- changeSet:
+    id: fix-taille-Confidentialite
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: codeConfidentialite
+        newDataType: VARCHAR(255)
+        tableName: Confidentialite
+    - modifyDataType:
+        columnName: libelleConfidentialite
+        newDataType: VARCHAR(255)
+        tableName: Confidentialite
+- changeSet:
+    id: fix-taille-Consigne
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: loginCreation
+        newDataType: VARCHAR(255)
+        tableName: Consigne
+    - modifyDataType:
+        columnName: loginModif
+        newDataType: VARCHAR(255)
+        tableName: Consigne
+- changeSet:
+    id: fix-taille-ConsigneDocument
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: loginCreation
+        newDataType: VARCHAR(255)
+        tableName: ConsigneDocument
+    - modifyDataType:
+        columnName: loginModif
+        newDataType: VARCHAR(255)
+        tableName: ConsigneDocument
+- changeSet:
+    id: fix-taille-Contact
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: fonction
+        newDataType: VARCHAR(255)
+        tableName: Contact
+    - modifyDataType:
+        columnName: login
+        newDataType: VARCHAR(255)
+        tableName: Contact
+    - modifyDataType:
+        columnName: mdp
+        newDataType: VARCHAR(255)
+        tableName: Contact
+    - modifyDataType:
+        columnName: nom
+        newDataType: VARCHAR(255)
+        tableName: Contact
+    - modifyDataType:
+        columnName: prenom
+        newDataType: VARCHAR(255)
+        tableName: Contact
+    - modifyDataType:
+        columnName: mail
+        newDataType: VARCHAR(255)
+        tableName: Contact
+    - modifyDataType:
+        columnName: tel
+        newDataType: VARCHAR(255)
+        tableName: Contact
+    - modifyDataType:
+        columnName: fax
+        newDataType: VARCHAR(255)
+        tableName: Contact
+    - modifyDataType:
+        columnName: loginCreation
+        newDataType: VARCHAR(255)
+        tableName: Contact
+    - modifyDataType:
+        columnName: loginModif
+        newDataType: VARCHAR(255)
+        tableName: Contact
+    - modifyDataType:
+        columnName: loginInfosAJour
+        newDataType: VARCHAR(255)
+        tableName: Contact
+- changeSet:
+    id: fix-taille-Contenu
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: codeContenu
+        newDataType: VARCHAR(255)
+        tableName: Contenu
+    - modifyDataType:
+        columnName: loginCreation
+        newDataType: VARCHAR(255)
+        tableName: Contenu
+    - modifyDataType:
+        columnName: loginModif
+        newDataType: VARCHAR(255)
+        tableName: Contenu
+- changeSet:
+    id: fix-taille-ContratOffre
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: codeCtrl
+        newDataType: VARCHAR(255)
+        tableName: ContratOffre
+    - modifyDataType:
+        columnName: libelleContratOffre
+        newDataType: VARCHAR(255)
+        tableName: ContratOffre
+- changeSet:
+    id: fix-taille-Convention
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: temConfSujetTeme
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: codeCursusLMD
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: codeRGI
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: codeUFR
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: codeEtape
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: codeVersionEtape
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: codeDepartement
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: codePostalEtudiant
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: annee
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: volumeHoraireFormation
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: courrielPersoEtudiant
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: nomEtabRef
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: libelleCPAM
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: montantGratification
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: codeLangueConvention
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: telEtudiant
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: telPortableEtudiant
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: adresseEtudiant
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: adresseEtabRef
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: codeFinalite
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: nomSignataireComposante
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: typePresence
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: dureeExceptionnelle
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: codeCaisse
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: nbHeuresHebdo
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: codeUniversiteUFR
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: codeUniversiteEtape
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: paysEtudiant
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: loginCreation
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: loginModif
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: loginValidation
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: loginSignature
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: monnaieGratification
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: libelleELP
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: qualiteSignataire
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: libelleFinalite
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: codeElp
+        newDataType: VARCHAR(255)
+        tableName: Convention
+    - modifyDataType:
+        columnName: villeEtudiant
+        newDataType: VARCHAR(255)
+        tableName: Convention
+- changeSet:
+    id: fix-taille-Critere
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: valeur
+        newDataType: VARCHAR(255)
+        tableName: Critere
+    - modifyDataType:
+        columnName: clef
+        newDataType: VARCHAR(255)
+        tableName: Critere
+- changeSet:
+    id: fix-taille-CritereGestion
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: codeVersionEtape
+        newDataType: VARCHAR(255)
+        tableName: CritereGestion
+    - modifyDataType:
+        columnName: codeCritere
+        newDataType: VARCHAR(255)
+        tableName: CritereGestion
+    - modifyDataType:
+        columnName: libelleCritere
+        newDataType: VARCHAR(255)
+        tableName: CritereGestion
+- changeSet:
+    id: fix-taille-DroitAdministration
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: libelleDroitAdministration
+        newDataType: VARCHAR(255)
+        tableName: DroitAdministration
+- changeSet:
+    id: fix-taille-DureeDiffusion
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: libelleDureeDiffusion
+        newDataType: VARCHAR(255)
+        tableName: DureeDiffusion
+- changeSet:
+    id: fix-taille-Effectif
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: libelleEffectif
+        newDataType: VARCHAR(255)
+        tableName: Effectif
+- changeSet:
+    id: fix-taille-Enseignant
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: codeUniversite
+        newDataType: VARCHAR(255)
+        tableName: Enseignant
+    - modifyDataType:
+        columnName: codeAffectation
+        newDataType: VARCHAR(255)
+        tableName: Enseignant
+    - modifyDataType:
+        columnName: bureau
+        newDataType: VARCHAR(255)
+        tableName: Enseignant
+    - modifyDataType:
+        columnName: campus
+        newDataType: VARCHAR(255)
+        tableName: Enseignant
+    - modifyDataType:
+        columnName: telephone
+        newDataType: VARCHAR(255)
+        tableName: Enseignant
+    - modifyDataType:
+        columnName: batiment
+        newDataType: VARCHAR(255)
+        tableName: Enseignant
+    - modifyDataType:
+        columnName: uidEnseignant
+        newDataType: VARCHAR(255)
+        tableName: Enseignant
+    - modifyDataType:
+        columnName: nom
+        newDataType: VARCHAR(255)
+        tableName: Enseignant
+    - modifyDataType:
+        columnName: prenom
+        newDataType: VARCHAR(255)
+        tableName: Enseignant
+    - modifyDataType:
+        columnName: mail
+        newDataType: VARCHAR(255)
+        tableName: Enseignant
+    - modifyDataType:
+        columnName: fax
+        newDataType: VARCHAR(255)
+        tableName: Enseignant
+    - modifyDataType:
+        columnName: typePersonne
+        newDataType: VARCHAR(255)
+        tableName: Enseignant
+    - modifyDataType:
+        columnName: loginCreation
+        newDataType: VARCHAR(255)
+        tableName: Enseignant
+    - modifyDataType:
+        columnName: loginModif
+        newDataType: VARCHAR(255)
+        tableName: Enseignant
+    - modifyDataType:
+        columnName: codeUniversiteAffectation
+        newDataType: VARCHAR(255)
+        tableName: Enseignant
+- changeSet:
+    id: fix-taille-Etape
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: codeEtape
+        newDataType: VARCHAR(255)
+        tableName: Etape
+    - modifyDataType:
+        columnName: codeVersionEtape
+        newDataType: VARCHAR(255)
+        tableName: Etape
+    - modifyDataType:
+        columnName: libelleEtape
+        newDataType: VARCHAR(255)
+        tableName: Etape
+    - modifyDataType:
+        columnName: codeUniversite
+        newDataType: VARCHAR(255)
+        tableName: Etape
+- changeSet:
+    id: fix-taille-Etudiant
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: codeSexe
+        newDataType: VARCHAR(255)
+        tableName: Etudiant
+    - modifyDataType:
+        columnName: mail
+        newDataType: VARCHAR(255)
+        tableName: Etudiant
+    - modifyDataType:
+        columnName: numEtudiant
+        newDataType: VARCHAR(255)
+        tableName: Etudiant
+    - modifyDataType:
+        columnName: identEtudiant
+        newDataType: VARCHAR(255)
+        tableName: Etudiant
+    - modifyDataType:
+        columnName: nom
+        newDataType: VARCHAR(255)
+        tableName: Etudiant
+    - modifyDataType:
+        columnName: nomMarital
+        newDataType: VARCHAR(255)
+        tableName: Etudiant
+    - modifyDataType:
+        columnName: prenom
+        newDataType: VARCHAR(255)
+        tableName: Etudiant
+    - modifyDataType:
+        columnName: codeUniversite
+        newDataType: VARCHAR(255)
+        tableName: Etudiant
+    - modifyDataType:
+        columnName: loginCreation
+        newDataType: VARCHAR(255)
+        tableName: Etudiant
+    - modifyDataType:
+        columnName: loginModif
+        newDataType: VARCHAR(255)
+        tableName: Etudiant
+- changeSet:
+    id: fix-taille-FAP_N1
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: codeFAP_N1
+        newDataType: VARCHAR(255)
+        tableName: FAP_N1
+    - modifyDataType:
+        columnName: libelle
+        newDataType: VARCHAR(255)
+        tableName: FAP_N1
+- changeSet:
+    id: fix-taille-FAP_N2
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: codeFAP_N2
+        newDataType: VARCHAR(255)
+        tableName: FAP_N2
+    - modifyDataType:
+        columnName: libelle
+        newDataType: VARCHAR(255)
+        tableName: FAP_N2
+    - modifyDataType:
+        columnName: codeFAP_N1
+        newDataType: VARCHAR(255)
+        tableName: FAP_N2
+- changeSet:
+    id: fix-taille-FAP_N3
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: codeFAP_N3
+        newDataType: VARCHAR(255)
+        tableName: FAP_N3
+    - modifyDataType:
+        columnName: libelle
+        newDataType: VARCHAR(255)
+        tableName: FAP_N3
+    - modifyDataType:
+        columnName: codeFAP_N2
+        newDataType: VARCHAR(255)
+        tableName: FAP_N3
+- changeSet:
+    id: fix-taille-FAP_Qualification
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: libelleQualification
+        newDataType: VARCHAR(255)
+        tableName: FAP_Qualification
+- changeSet:
+    id: fix-taille-FAP_QualificationSimplifiee
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: libelleQualification
+        newDataType: VARCHAR(255)
+        tableName: FAP_QualificationSimplifiee
+- changeSet:
+    id: fix-taille-HistoriqueValidation
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: typeValidation
+        newDataType: VARCHAR(255)
+        tableName: HistoriqueValidation
+- changeSet:
+    id: fix-taille-Indemnisation
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: libelleIndemnisation
+        newDataType: VARCHAR(255)
+        tableName: Indemnisation
+- changeSet:
+    id: fix-taille-LangueConvention
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: codeLangueConvention
+        newDataType: VARCHAR(255)
+        tableName: LangueConvention
+- changeSet:
+    id: fix-taille-ModeCandidature
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: libelleModeCandidature
+        newDataType: VARCHAR(255)
+        tableName: ModeCandidature
+    - modifyDataType:
+        columnName: codeCtrl
+        newDataType: VARCHAR(255)
+        tableName: ModeCandidature
+- changeSet:
+    id: fix-taille-NAF_N1
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: codeNAF_N1
+        newDataType: VARCHAR(255)
+        tableName: NAF_N1
+    - modifyDataType:
+        columnName: libelleNAF_N1
+        newDataType: VARCHAR(255)
+        tableName: NAF_N1
+- changeSet:
+    id: fix-taille-NAF_N5
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: codeNAF_N5
+        newDataType: VARCHAR(255)
+        tableName: NAF_N5
+    - modifyDataType:
+        columnName: libelleNAF_N5
+        newDataType: VARCHAR(255)
+        tableName: NAF_N5
+    - modifyDataType:
+        columnName: codeNAF_N1
+        newDataType: VARCHAR(255)
+        tableName: NAF_N5
+- changeSet:
+    id: fix-taille-NiveauCentre
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: libelleNiveauCentre
+        newDataType: VARCHAR(255)
+        tableName: NiveauCentre
+- changeSet:
+    id: fix-taille-NiveauFormation
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: libelleNiveauFormation
+        newDataType: VARCHAR(255)
+        tableName: NiveauFormation
+- changeSet:
+    id: fix-taille-Offre
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: codeFAP_N3
+        newDataType: VARCHAR(255)
+        tableName: Offre
+    - modifyDataType:
+        columnName: codeCommune
+        newDataType: VARCHAR(255)
+        tableName: Offre
+    - modifyDataType:
+        columnName: lieuCodePostal
+        newDataType: VARCHAR(255)
+        tableName: Offre
+    - modifyDataType:
+        columnName: referenceOffreEtablissement
+        newDataType: VARCHAR(255)
+        tableName: Offre
+    - modifyDataType:
+        columnName: precisionDebut
+        newDataType: VARCHAR(255)
+        tableName: Offre
+    - modifyDataType:
+        columnName: intitule
+        newDataType: VARCHAR(255)
+        tableName: Offre
+    - modifyDataType:
+        columnName: lieuCommune
+        newDataType: VARCHAR(255)
+        tableName: Offre
+    - modifyDataType:
+        columnName: avantages
+        newDataType: VARCHAR(255)
+        tableName: Offre
+    - modifyDataType:
+        columnName: precisionRemuneration
+        newDataType: VARCHAR(255)
+        tableName: Offre
+    - modifyDataType:
+        columnName: commentaireTempsTravail
+        newDataType: VARCHAR(255)
+        tableName: Offre
+    - modifyDataType:
+        columnName: precisionHandicap
+        newDataType: VARCHAR(255)
+        tableName: Offre
+    - modifyDataType:
+        columnName: lienAttache
+        newDataType: VARCHAR(255)
+        tableName: Offre
+    - modifyDataType:
+        columnName: moisDebut
+        newDataType: VARCHAR(255)
+        tableName: Offre
+    - modifyDataType:
+        columnName: anneeDebut
+        newDataType: VARCHAR(255)
+        tableName: Offre
+    - modifyDataType:
+        columnName: loginDiffusion
+        newDataType: VARCHAR(255)
+        tableName: Offre
+    - modifyDataType:
+        columnName: loginStopDiffusion
+        newDataType: VARCHAR(255)
+        tableName: Offre
+    - modifyDataType:
+        columnName: loginCreation
+        newDataType: VARCHAR(255)
+        tableName: Offre
+    - modifyDataType:
+        columnName: loginModif
+        newDataType: VARCHAR(255)
+        tableName: Offre
+    - modifyDataType:
+        columnName: loginValidation
+        newDataType: VARCHAR(255)
+        tableName: Offre
+    - modifyDataType:
+        columnName: loginStopValidation
+        newDataType: VARCHAR(255)
+        tableName: Offre
+    - modifyDataType:
+        columnName: loginRejetValidation
+        newDataType: VARCHAR(255)
+        tableName: Offre
+    - modifyDataType:
+        columnName: anneeUniversitaire
+        newDataType: VARCHAR(255)
+        tableName: Offre
+- changeSet:
+    id: fix-taille-ParamConvention
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: code
+        newDataType: VARCHAR(255)
+        tableName: ParamConvention
+    - modifyDataType:
+        columnName: libelle
+        newDataType: VARCHAR(255)
+        tableName: ParamConvention
+    - modifyDataType:
+        columnName: exemple
+        newDataType: VARCHAR(255)
+        tableName: ParamConvention
+- changeSet:
+    id: fix-taille-ParamMail
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: code
+        newDataType: VARCHAR(255)
+        tableName: ParamMail
+    - modifyDataType:
+        columnName: libelle
+        newDataType: VARCHAR(255)
+        tableName: ParamMail
+    - modifyDataType:
+        columnName: exemple
+        newDataType: VARCHAR(255)
+        tableName: ParamMail
+- changeSet:
+    id: fix-taille-Pays
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: ISO2
+        newDataType: VARCHAR(255)
+        tableName: Pays
+    - modifyDataType:
+        columnName: lib
+        newDataType: VARCHAR(255)
+        tableName: Pays
+- changeSet:
+    id: fix-taille-PersonnelCentreGestion
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: codeAffectation
+        newDataType: VARCHAR(255)
+        tableName: PersonnelCentreGestion
+    - modifyDataType:
+        columnName: uidPersonnel
+        newDataType: VARCHAR(255)
+        tableName: PersonnelCentreGestion
+    - modifyDataType:
+        columnName: nom
+        newDataType: VARCHAR(255)
+        tableName: PersonnelCentreGestion
+    - modifyDataType:
+        columnName: prenom
+        newDataType: VARCHAR(255)
+        tableName: PersonnelCentreGestion
+    - modifyDataType:
+        columnName: mail
+        newDataType: VARCHAR(255)
+        tableName: PersonnelCentreGestion
+    - modifyDataType:
+        columnName: telephone
+        newDataType: VARCHAR(255)
+        tableName: PersonnelCentreGestion
+    - modifyDataType:
+        columnName: fax
+        newDataType: VARCHAR(255)
+        tableName: PersonnelCentreGestion
+    - modifyDataType:
+        columnName: fonction
+        newDataType: VARCHAR(255)
+        tableName: PersonnelCentreGestion
+    - modifyDataType:
+        columnName: codeUniversite
+        newDataType: VARCHAR(255)
+        tableName: PersonnelCentreGestion
+    - modifyDataType:
+        columnName: typePersonne
+        newDataType: VARCHAR(255)
+        tableName: PersonnelCentreGestion
+    - modifyDataType:
+        columnName: campus
+        newDataType: VARCHAR(255)
+        tableName: PersonnelCentreGestion
+    - modifyDataType:
+        columnName: batiment
+        newDataType: VARCHAR(255)
+        tableName: PersonnelCentreGestion
+    - modifyDataType:
+        columnName: bureau
+        newDataType: VARCHAR(255)
+        tableName: PersonnelCentreGestion
+    - modifyDataType:
+        columnName: loginCreation
+        newDataType: VARCHAR(255)
+        tableName: PersonnelCentreGestion
+    - modifyDataType:
+        columnName: loginModif
+        newDataType: VARCHAR(255)
+        tableName: PersonnelCentreGestion
+    - modifyDataType:
+        columnName: codeUniversiteAffectation
+        newDataType: VARCHAR(255)
+        tableName: PersonnelCentreGestion
+- changeSet:
+    id: fix-taille-QuestionSupplementaire
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: question
+        newDataType: VARCHAR(255)
+        tableName: QuestionSupplementaire
+    - modifyDataType:
+        columnName: typeQuestion
+        newDataType: VARCHAR(255)
+        tableName: QuestionSupplementaire
+- changeSet:
+    id: fix-taille-Role
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: code
+        newDataType: VARCHAR(255)
+        tableName: Role
+- changeSet:
+    id: fix-taille-Service
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: codePostal
+        newDataType: VARCHAR(255)
+        tableName: Service
+    - modifyDataType:
+        columnName: codeCommune
+        newDataType: VARCHAR(255)
+        tableName: Service
+    - modifyDataType:
+        columnName: telephone
+        newDataType: VARCHAR(255)
+        tableName: Service
+    - modifyDataType:
+        columnName: batimentResidence
+        newDataType: VARCHAR(255)
+        tableName: Service
+    - modifyDataType:
+        columnName: voie
+        newDataType: VARCHAR(255)
+        tableName: Service
+    - modifyDataType:
+        columnName: commune
+        newDataType: VARCHAR(255)
+        tableName: Service
+    - modifyDataType:
+        columnName: loginCreation
+        newDataType: VARCHAR(255)
+        tableName: Service
+    - modifyDataType:
+        columnName: loginModif
+        newDataType: VARCHAR(255)
+        tableName: Service
+    - modifyDataType:
+        columnName: loginInfosAJour
+        newDataType: VARCHAR(255)
+        tableName: Service
+    - modifyDataType:
+        columnName: nom
+        newDataType: VARCHAR(255)
+        tableName: Service
+- changeSet:
+    id: fix-taille-StatutJuridique
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: libelleStatutJuridique
+        newDataType: VARCHAR(255)
+        tableName: StatutJuridique
+- changeSet:
+    id: fix-taille-Structure
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: codePostal
+        newDataType: VARCHAR(255)
+        tableName: Structure
+    - modifyDataType:
+        columnName: codeCommune
+        newDataType: VARCHAR(255)
+        tableName: Structure
+    - modifyDataType:
+        columnName: numeroSiret
+        newDataType: VARCHAR(255)
+        tableName: Structure
+    - modifyDataType:
+        columnName: raisonSociale
+        newDataType: VARCHAR(255)
+        tableName: Structure
+    - modifyDataType:
+        columnName: codeEtab
+        newDataType: VARCHAR(255)
+        tableName: Structure
+    - modifyDataType:
+        columnName: telephone
+        newDataType: VARCHAR(255)
+        tableName: Structure
+    - modifyDataType:
+        columnName: fax
+        newDataType: VARCHAR(255)
+        tableName: Structure
+    - modifyDataType:
+        columnName: batimentResidence
+        newDataType: VARCHAR(255)
+        tableName: Structure
+    - modifyDataType:
+        columnName: voie
+        newDataType: VARCHAR(255)
+        tableName: Structure
+    - modifyDataType:
+        columnName: commune
+        newDataType: VARCHAR(255)
+        tableName: Structure
+    - modifyDataType:
+        columnName: siteWeb
+        newDataType: VARCHAR(255)
+        tableName: Structure
+    - modifyDataType:
+        columnName: logo
+        newDataType: VARCHAR(255)
+        tableName: Structure
+    - modifyDataType:
+        columnName: libCedex
+        newDataType: VARCHAR(255)
+        tableName: Structure
+    - modifyDataType:
+        columnName: mail
+        newDataType: VARCHAR(255)
+        tableName: Structure
+    - modifyDataType:
+        columnName: groupe
+        newDataType: VARCHAR(255)
+        tableName: Structure
+    - modifyDataType:
+        columnName: loginModif
+        newDataType: VARCHAR(255)
+        tableName: Structure
+    - modifyDataType:
+        columnName: loginValidation
+        newDataType: VARCHAR(255)
+        tableName: Structure
+    - modifyDataType:
+        columnName: loginStopValidation
+        newDataType: VARCHAR(255)
+        tableName: Structure
+    - modifyDataType:
+        columnName: loginCreation
+        newDataType: VARCHAR(255)
+        tableName: Structure
+    - modifyDataType:
+        columnName: loginInfosAJour
+        newDataType: VARCHAR(255)
+        tableName: Structure
+    - modifyDataType:
+        columnName: nomDirigeant
+        newDataType: VARCHAR(255)
+        tableName: Structure
+    - modifyDataType:
+        columnName: prenomDirigeant
+        newDataType: VARCHAR(255)
+        tableName: Structure
+    - modifyDataType:
+        columnName: codeNAF_N5
+        newDataType: VARCHAR(255)
+        tableName: Structure
+- changeSet:
+    id: fix-taille-TemplateConvention
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: codeLangueConvention
+        newDataType: VARCHAR(255)
+        tableName: TemplateConvention
+    - modifyDataType:
+        columnName: loginCreation
+        newDataType: VARCHAR(255)
+        tableName: TemplateConvention
+    - modifyDataType:
+        columnName: loginModif
+        newDataType: VARCHAR(255)
+        tableName: TemplateConvention
+- changeSet:
+    id: fix-taille-TemplateMail
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: code
+        newDataType: VARCHAR(255)
+        tableName: TemplateMail
+    - modifyDataType:
+        columnName: libelle
+        newDataType: VARCHAR(255)
+        tableName: TemplateMail
+    - modifyDataType:
+        columnName: objet
+        newDataType: VARCHAR(255)
+        tableName: TemplateMail
+    - modifyDataType:
+        columnName: loginCreation
+        newDataType: VARCHAR(255)
+        tableName: TemplateMail
+    - modifyDataType:
+        columnName: loginModif
+        newDataType: VARCHAR(255)
+        tableName: TemplateMail
+- changeSet:
+    id: fix-taille-TempsTravail
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: codeCtrl
+        newDataType: VARCHAR(255)
+        tableName: TempsTravail
+- changeSet:
+    id: fix-taille-TicketStructure
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: ticket
+        newDataType: VARCHAR(255)
+        tableName: TicketStructure
+- changeSet:
+    id: fix-taille-TypeConvention
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: codeCtrl
+        newDataType: VARCHAR(255)
+        tableName: TypeConvention
+- changeSet:
+    id: fix-taille-TypeOffre
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: codeCtrl
+        newDataType: VARCHAR(255)
+        tableName: TypeOffre
+    - modifyDataType:
+        columnName: libelleType
+        newDataType: VARCHAR(255)
+        tableName: TypeOffre
+- changeSet:
+    id: fix-taille-TypeStructure
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: libelleTypeStructure
+        newDataType: VARCHAR(255)
+        tableName: TypeStructure
+- changeSet:
+    id: fix-taille-Ufr
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: codeUFR
+        newDataType: VARCHAR(255)
+        tableName: Ufr
+    - modifyDataType:
+        columnName: libelleUFR
+        newDataType: VARCHAR(255)
+        tableName: Ufr
+    - modifyDataType:
+        columnName: codeUniversite
+        newDataType: VARCHAR(255)
+        tableName: Ufr
+- changeSet:
+    id: add-fk_Enseignant_Affectation1
+    author: ssound
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: codeAffectation,codeUniversiteAffectation
+        baseTableName: Enseignant
+        constraintName: fk_Enseignant_Affectation1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: codeAffectation,codeUniversite
+        referencedTableName: Affectation
+        validate: true
+- changeSet:
+    id: add-fk_CentreGestion_Confidentialite1
+    author: ssound
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: codeConfidentialite
+        baseTableName: CentreGestion
+        constraintName: fk_CentreGestion_Confidentialite1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: codeConfidentialite
+        referencedTableName: Confidentialite
+        validate: true
+- changeSet:
+    id: add-fk_Convention_Ufr1
+    author: ssound
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: codeUFR,codeUniversiteUFR
+        baseTableName: Convention
+        constraintName: fk_Convention_Ufr1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: codeUFR,codeUniversite
+        referencedTableName: Ufr
+        validate: true
+- changeSet:
+    id: add-fk_Convention_Etape1
+    author: ssound
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: codeEtape,codeVersionEtape,codeUniversiteEtape
+        baseTableName: Convention
+        constraintName: fk_Convention_Etape1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: codeEtape,codeVersionEtape,codeUniversite
+        referencedTableName: Etape
+        validate: true
+- changeSet:
+    id: add-fk_Convention_LangueConvention1
+    author: ssound
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: codeLangueConvention
+        baseTableName: Convention
+        constraintName: fk_Convention_LangueConvention1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: codeLangueConvention
+        referencedTableName: LangueConvention
+        validate: true
+- changeSet:
+    id: add-fk_FAP_N2_FAP_N11
+    author: ssound
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: codeFAP_N1
+        baseTableName: FAP_N2
+        constraintName: fk_FAP_N2_FAP_N11
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: codeFAP_N1
+        referencedTableName: FAP_N1
+        validate: true
+- changeSet:
+    id: add-fk_FAP_N3_FAP_N21
+    author: ssound
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: codeFAP_N2
+        baseTableName: FAP_N3
+        constraintName: fk_FAP_N3_FAP_N21
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: codeFAP_N2
+        referencedTableName: FAP_N2
+        validate: true
+- changeSet:
+    id: add-fk_Offre_FAP_N11
+    author: ssound
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: codeFAP_N3
+        baseTableName: Offre
+        constraintName: fk_Offre_FAP_N11
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: codeFAP_N1
+        referencedTableName: FAP_N1
+        validate: true
+- changeSet:
+    id: add-fk_TemplateConvention_LangueConvention1
+    author: ssound
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: codeLangueConvention
+        baseTableName: TemplateConvention
+        constraintName: fk_TemplateConvention_LangueConvention1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: codeLangueConvention
+        referencedTableName: LangueConvention
+        validate: true
+- changeSet:
+    id: add-fk_NAF_N5_NAF_N11
+    author: ssound
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: codeNAF_N1
+        baseTableName: NAF_N5
+        constraintName: fk_NAF_N5_NAF_N11
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: codeNAF_N1
+        referencedTableName: NAF_N1
+        validate: true
+- changeSet:
+    id: add-fk_Structure_NAF_N51
+    author: ssound
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: codeNAF_N5
+        baseTableName: Structure
+        constraintName: fk_Structure_NAF_N51
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: codeNAF_N5
+        referencedTableName: NAF_N5
+        validate: true

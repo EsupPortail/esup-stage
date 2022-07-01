@@ -10,10 +10,10 @@ import javax.persistence.Table;
 public class FapN1 {
 
     @Id
-    @Column(name = "codeFAP_N1", nullable = false, length = 1)
+    @Column(name = "codeFAP_N1", nullable = false)
     private String code;
 
-    @Column(nullable = false, length = 200)
+    @Column(nullable = false)
     private String libelle;
 
     public String getCode() {

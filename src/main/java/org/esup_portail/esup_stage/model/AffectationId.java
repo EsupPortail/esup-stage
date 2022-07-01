@@ -10,7 +10,7 @@ public class AffectationId implements Serializable {
     @Column(name = "codeAffectation", nullable = false)
     private String code;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
     private String codeUniversite;
 
     public String getCode() {

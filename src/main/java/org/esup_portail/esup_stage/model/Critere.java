@@ -11,10 +11,10 @@ public class Critere {
     @Column(name = "idCritere", nullable = false)
     private int id;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false)
     private String valeur;
 
-    @Column(nullable = false, length = 15)
+    @Column(nullable = false)
     private String clef;
 
     @ManyToOne

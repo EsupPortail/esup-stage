@@ -19,10 +19,10 @@ public class ImpressionContext {
     public ImpressionContext() {
     }
 
-    public ImpressionContext(Convention convention, Avenant avenant) {
+    public ImpressionContext(Convention convention, Avenant avenant, CentreGestion centreEtablissement) {
         if (convention != null) {
             this.convention = new ConventionContext(convention);
-            this.centreGestion = new CentreGestionContext(convention.getCentreGestion());
+            this.centreGestion = new CentreGestionContext(convention.getCentreGestion(), centreEtablissement);
             this.contact = new ContactContext(convention.getContact());
             this.enseignant = new EnseignantContext(convention.getEnseignant());
             this.etudiant = new EtudiantContext(convention.getEtudiant());
@@ -126,7 +126,8 @@ public class ImpressionContext {
         private String dateFinInterruption;
         private String dateFinStage;
         private String details;
-        private String dureeExceptionnelle;
+        private String dureeStageHeure;
+        private String dureeStageHeurePeriode;
         private String dureeStage;
         private String etapeLibelle;
         private String fonctionsEtTaches;
@@ -145,7 +146,6 @@ public class ImpressionContext {
         private String origineStageLibelle;
         private String paysEtudiant;
         private String qualiteSignataire;
-        private String quotiteTravail;
         private String sujetStage;
         private String telEtudiant;
         private String telPortableEtudiant;
@@ -180,7 +180,7 @@ public class ImpressionContext {
             this.dateFinInterruption = convention.getDateFinInterruption() != null ? df.format(convention.getDateFinInterruption()) : null;
             this.dateFinStage = convention.getDateFinStage() != null ? df.format(convention.getDateFinStage()) : null;
             this.details = convention.getDetails();
-            this.dureeExceptionnelle = convention.getDureeExceptionnelle();
+            this.dureeStageHeure = convention.getDureeExceptionnelle();
             this.dureeStage = String.valueOf(convention.getDureeStage());
             this.etapeLibelle = convention.getEtape() != null ? convention.getEtape().getLibelle() : null;
             this.fonctionsEtTaches = convention.getFonctionsEtTaches();
@@ -199,7 +199,6 @@ public class ImpressionContext {
             this.origineStageLibelle = convention.getNomenclature() != null ? convention.getNomenclature().getOrigineStage() : null;
             this.paysEtudiant = convention.getPaysEtudiant();
             this.qualiteSignataire = convention.getQualiteSignataire();
-            this.quotiteTravail = String.valueOf(convention.getQuotiteTravail());
             this.sujetStage = convention.getSujetStage();
             this.telEtudiant = convention.getTelEtudiant();
             this.telPortableEtudiant = convention.getTelPortableEtudiant();
@@ -210,6 +209,7 @@ public class ImpressionContext {
             this.uniteGratificationLibelle = convention.getNomenclature() != null ? convention.getNomenclature().getUniteGratification() : null;
             this.villeEtudiant = convention.getVilleEtudiant();
             this.volumeHoraireFormation = convention.getVolumeHoraireFormation();
+            this.dureeStageHeurePeriode = convention.getDureeExceptionnellePeriode();
         }
 
         public String getId() {
@@ -356,12 +356,20 @@ public class ImpressionContext {
             this.details = details;
         }
 
-        public String getDureeExceptionnelle() {
-            return dureeExceptionnelle != null ? dureeExceptionnelle : "";
+        public String getDureeStageHeure() {
+            return dureeStageHeure != null ? dureeStageHeure : "";
         }
 
-        public void setDureeExceptionnelle(String dureeExceptionnelle) {
-            this.dureeExceptionnelle = dureeExceptionnelle;
+        public void setDureeStageHeure(String dureeStageHeure) {
+            this.dureeStageHeure = dureeStageHeure;
+        }
+
+        public String getDureeStageHeurePeriode() {
+            return dureeStageHeurePeriode != null ? dureeStageHeurePeriode : "";
+        }
+
+        public void setDureeStageHeurePeriode(String dureeStageHeurePeriode) {
+            this.dureeStageHeurePeriode = dureeStageHeurePeriode;
         }
 
         public String getDureeStage() {
@@ -508,14 +516,6 @@ public class ImpressionContext {
             this.qualiteSignataire = qualiteSignataire;
         }
 
-        public String getQuotiteTravail() {
-            return quotiteTravail != null ? quotiteTravail : "";
-        }
-
-        public void setQuotiteTravail(String quotiteTravail) {
-            this.quotiteTravail = quotiteTravail;
-        }
-
         public String getSujetStage() {
             return sujetStage != null ? sujetStage : "";
         }
@@ -608,10 +608,13 @@ public class ImpressionContext {
         private String prenomViseur;
         private String telephone;
         private String voie;
+        private String prenomPresidentEtab;
+        private String nomPresidentEtab;
+        private String qualitePresidentEtab;
 
         public CentreGestionContext() { }
 
-        public CentreGestionContext(CentreGestion centreGestion) {
+        public CentreGestionContext(CentreGestion centreGestion, CentreGestion centreEtablissement) {
             this.adresse = centreGestion.getAdresse();
             this.codePostal = centreGestion.getCodePostal();
             this.codeUniversite = centreGestion.getCodeUniversite();
@@ -622,6 +625,11 @@ public class ImpressionContext {
             this.prenomViseur = centreGestion.getPrenomViseur();
             this.telephone = centreGestion.getTelephone();
             this.voie = centreGestion.getVoie();
+            if (centreEtablissement != null) {
+                this.prenomPresidentEtab = centreEtablissement.getPrenomViseur();
+                this.nomPresidentEtab = centreEtablissement.getNomViseur();
+                this.qualitePresidentEtab = centreEtablissement.getQualiteViseur();
+            }
         }
 
         public String getAdresse() {
@@ -702,6 +710,30 @@ public class ImpressionContext {
 
         public void setVoie(String voie) {
             this.voie = voie;
+        }
+
+        public String getPrenomPresidentEtab() {
+            return prenomPresidentEtab != null ? prenomPresidentEtab : "";
+        }
+
+        public void setPrenomPresidentEtab(String prenomPresidentEtab) {
+            this.prenomPresidentEtab = prenomPresidentEtab;
+        }
+
+        public String getNomPresidentEtab() {
+            return nomPresidentEtab != null ? nomPresidentEtab : "";
+        }
+
+        public void setNomPresidentEtab(String nomPresidentEtab) {
+            this.nomPresidentEtab = nomPresidentEtab;
+        }
+
+        public String getQualitePresidentEtab() {
+            return qualitePresidentEtab != null ? qualitePresidentEtab : "";
+        }
+
+        public void setQualitePresidentEtab(String qualitePresidentEtab) {
+            this.qualitePresidentEtab = qualitePresidentEtab;
         }
     }
 

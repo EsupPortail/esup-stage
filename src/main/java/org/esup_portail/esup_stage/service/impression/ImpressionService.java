@@ -3,6 +3,7 @@ package org.esup_portail.esup_stage.service.impression;
 import com.itextpdf.html2pdf.HtmlConverter;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
+import com.itextpdf.kernel.events.PdfDocumentEvent;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.PdfWriter;
@@ -25,6 +26,7 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Date;
 
 @Service
 public class ImpressionService {
@@ -48,7 +50,8 @@ public class ImpressionService {
             throw new AppException(HttpStatus.NOT_FOUND, "Template convention " + convention.getTypeConvention().getLibelle() + "-" + convention.getLangueConvention().getCode() + " non trouvé");
         }
 
-        ImpressionContext impressionContext = new ImpressionContext(convention, avenant);
+        CentreGestion centreEtablissement = centreGestionJpaRepository.getCentreEtablissement();
+        ImpressionContext impressionContext = new ImpressionContext(convention, avenant, centreEtablissement);
 
         try {
             String htmlTexte = avenant != null ? this.getHtmlText(templateConvention.getTexteAvenant(), false) : this.getHtmlText(templateConvention.getTexte(), true);
@@ -65,15 +68,22 @@ public class ImpressionService {
             Fichier fichier = convention.getCentreGestion().getFichier();
             ImageData imageData = null;
 
-            // si le centre de gestion n'a pas de logo, on prend celui du centre établissement
-            if (fichier == null) {
-                CentreGestion centreEtablissement = centreGestionJpaRepository.getCentreEtablissement();
-                fichier = centreEtablissement.getFichier();
+            if (fichier != null) {
+                logoname = this.getLogoFilePath(this.getNomFichier(fichier.getId(), fichier.getNom()));
+                if (Files.exists(Paths.get(logoname))) {
+                    imageData = ImageDataFactory.create(logoname);
+                }
             }
 
-            logoname = this.getNomFichier(fichier.getId(), fichier.getNom());
-            if (Files.exists(Paths.get(logoname))) {
-                imageData = ImageDataFactory.create(this.getLogoFilePath(logoname));
+            // si le centre de gestion n'a pas de logo ou qu'il n'existe pas physiquement, on prend celui du centre établissement
+            if (imageData == null) {
+                fichier = centreEtablissement.getFichier();
+                if (fichier != null) {
+                    logoname = this.getLogoFilePath(this.getNomFichier(fichier.getId(), fichier.getNom()));
+                    if (Files.exists(Paths.get(logoname))) {
+                        imageData = ImageDataFactory.create(logoname);
+                    }
+                }
             }
 
             this.generatePDF(texte.toString(), filename, imageData, ou);
@@ -97,10 +107,13 @@ public class ImpressionService {
         String tempFilePath = this.getClass().getResource("/templates").getPath();
         String tempFile = tempFilePath + "temp_" + filename;
         FileOutputStream fop = null;
+        Date dateGeneration = new Date();
         try {
             fop = new FileOutputStream(tempFile);
             HtmlConverter.convertToPdf(texte, fop);
             PdfDocument pdfDoc = new PdfDocument(new PdfReader(tempFile), new PdfWriter(ou));
+            FooterPageEvent event = new FooterPageEvent(dateGeneration);
+            pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE, event);
             Document document=new Document(pdfDoc);
 
             if (imageData != null) {

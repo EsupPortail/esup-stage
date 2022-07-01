@@ -31,7 +31,7 @@ export class StageComponent implements OnInit {
 
   fieldValidators : any = {
       'nbHeuresHebdo': [Validators.required, Validators.pattern('[0-9]{1,2}([,.][0-9]{1,2})?')],
-      'quotiteTravail': [Validators.required, Validators.pattern('[0-9]+')],
+      'dureeExceptionnelle': [Validators.required, Validators.pattern('[0-9]+')],
       'montantGratification': [Validators.required, Validators.pattern('[0-9]{1,10}([,.][0-9]{1,2})?')],
       'idUniteGratification': [Validators.required],
       'idUniteDuree': [Validators.required],
@@ -55,7 +55,6 @@ export class StageComponent implements OnInit {
   interruptionsStage: any[] = [];
   periodesCalculHeuresStage : any[] = [];
   joursFeries : any[] = [];
-  moisJoursTravail: any;
 
   @Input() convention: any;
 
@@ -71,6 +70,7 @@ export class StageComponent implements OnInit {
   previousValues: any;
   singleFieldUpdateLock: boolean = false;
   singleFieldUpdateQueue : any[] = [];
+  updatingPeriode = false;
 
   @Output() validated = new EventEmitter<number>();
   @Output() updateField = new EventEmitter<any>();
@@ -153,7 +153,7 @@ export class StageComponent implements OnInit {
       interruptionStage: [this.convention.interruptionStage, [Validators.required]],
       horairesReguliers: [this.convention.horairesReguliers, [Validators.required]],
       nbHeuresHebdo: [this.convention.nbHeuresHebdo, this.fieldValidators['nbHeuresHebdo']],
-      quotiteTravail: [this.convention.quotiteTravail, this.fieldValidators['quotiteTravail']],
+      dureeExceptionnelle: [this.convention.dureeExceptionnelle, this.fieldValidators['dureeExceptionnelle']],
       idTempsTravail: [this.convention.tempsTravail ? this.convention.tempsTravail.id : null, [Validators.required]],
       commentaireDureeTravail: [this.convention.commentaireDureeTravail],
       // - Partie Gratification
@@ -226,11 +226,6 @@ export class StageComponent implements OnInit {
     }else{
       this.minDateFinStage = new Date(new Date().getFullYear()-1, 0, 2);
       this.maxDateFinStage = new Date(new Date().getFullYear()+2, 0, 1);
-    }
-
-    //calcul mois, jours, heures de travail effectif
-    if (this.form.get('quotiteTravail')?.value) {
-      this.calculMoisJoursTravails(this.form.get('quotiteTravail')?.value);
     }
 
   }
@@ -457,7 +452,10 @@ export class StageComponent implements OnInit {
   }
 
   updateHeuresTravail():void {
-
+    this.updatingPeriode = true;
+    setTimeout(() => {
+      this.updatingPeriode = false;
+    }, 2000);
       if (this.form.get('horairesReguliers')!.value){
 
         const dateDebutStage = this.dateFromBackend(this.form.get('dateDebutStage')!.value);
@@ -467,11 +465,11 @@ export class StageComponent implements OnInit {
 
           const periodes = [{'dateDebut':dateDebutStage,'dateFin':dateFinStage,'nbHeuresJournalieres':nbHeuresJournalieres}];
 
-          this.form.get('quotiteTravail')?.setValue(this.calculHeuresTravails(periodes));
+          this.form.get('dureeExceptionnelle')?.setValue(this.calculHeuresTravails(periodes));
         }
 
       }else{
-        this.form.get('quotiteTravail')?.setValue(this.calculHeuresTravails(this.periodesCalculHeuresStage));
+        this.form.get('dureeExceptionnelle')?.setValue(this.calculHeuresTravails(this.periodesCalculHeuresStage));
       }
   }
 
@@ -510,13 +508,6 @@ export class StageComponent implements OnInit {
       }
     }
 
-    this.calculMoisJoursTravails(Math.ceil(heuresTravails));
     return Math.ceil(heuresTravails);
-  }
-
-  calculMoisJoursTravails(heures: any) {
-    const nbHeuresJournalieres = this.form.get('nbHeuresHebdo')!.value/5;
-    const joursTravails = heures > 0 ? heures/nbHeuresJournalieres : 0;
-    this.moisJoursTravail = intervalToDuration({start: 0, end: joursTravails * 24 * 60 * 60 * 1000});
   }
 }

@@ -1,0 +1,57 @@
+databaseChangeLog:
+- changeSet:
+    id: paramConvention-insert-president
+    author: ssound
+    changes:
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: centreGestion.prenomPresidentEtab
+        - column:
+            name: libelle
+            value: Prénom du président de l'établissement
+        - column:
+            name: exemple
+            value: Pierre
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: centreGestion.nomPresidentEtab
+        - column:
+            name: libelle
+            value: Nom du président de l'établissement
+        - column:
+            name: exemple
+            value: Martin
+        tableName: ParamConvention
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: centreGestion.qualitePresidentEtab
+        - column:
+            name: libelle
+            value: Qualité du président de l'établissement
+        - column:
+            name: exemple
+            value: Le Directeur de l'université
+        tableName: ParamConvention
+- changeSet:
+    id: paramConvention-insert-dureeStageHeurePeriode
+    author: ssound
+    changes:
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.dureeStageHeurePeriode
+        - column:
+            name: libelle
+            value: Durée effective du stage en mois/jour/heures
+        - column:
+            name: exemple
+            value: X mois Y jour(s) et Z heure(s)
+        tableName: ParamConvention

@@ -15,29 +15,29 @@ public class PersonnelCentreGestion extends ObjetMetier implements Exportable {
     @Column(name = "idPersonnelCentreGestion", nullable = false)
     private int id;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
     private String nom;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
     private String prenom;
 
-    @Column(length = 50)
+    @Column
     private String mail;
 
-    @Column(name = "telephone", length = 50)
+    @Column(name = "telephone")
     private String tel;
 
-    @Column(length = 50)
+    @Column
     private String fax;
 
     @ManyToOne
     @JoinColumn(name = "idCivilite")
     private Civilite civilite;
 
-    @Column(length = 50)
+    @Column
     private String codeUniversite;
 
-    @Column(length = 50)
+    @Column
     private String typePersonne;
 
     @ManyToOne
@@ -45,32 +45,28 @@ public class PersonnelCentreGestion extends ObjetMetier implements Exportable {
     @JsonBackReference
     private CentreGestion centreGestion;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
     private String uidPersonnel;
 
-    @Column(length = 50)
+    @Column
     private String fonction;
-
-    @ManyToOne
-    @JoinColumn(name = "idDroitAdministration", nullable = false)
-    private DroitAdministration droitAdministration;
 
     @Column(nullable = false)
     private boolean impressionConvention;
 
-    @Column(length = 50)
+    @Column
     private String campus;
 
-    @Column(length = 50)
+    @Column
     private String batiment;
 
-    @Column(length = 50)
+    @Column
     private String bureau;
 
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false)
     private String codeAffectation;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
     private String codeUniversiteAffectation;
 
     private Boolean alertesMail;
@@ -184,14 +180,6 @@ public class PersonnelCentreGestion extends ObjetMetier implements Exportable {
 
     public void setFonction(String fonction) {
         this.fonction = fonction;
-    }
-
-    public DroitAdministration getDroitAdministration() {
-        return droitAdministration;
-    }
-
-    public void setDroitAdministration(DroitAdministration droitAdministration) {
-        this.droitAdministration = droitAdministration;
     }
 
     public boolean isImpressionConvention() {
@@ -376,11 +364,6 @@ public class PersonnelCentreGestion extends ObjetMetier implements Exportable {
                 break;
             case "prenom":
                 value = getPrenom();
-                break;
-            case "droitAdministration":
-                if (getDroitAdministration() != null) {
-                    value = getDroitAdministration().getLibelle();
-                }
                 break;
             case "alertesMail":
                 value = getAlertesMail() != null && getAlertesMail() ? "Oui" : "Non";

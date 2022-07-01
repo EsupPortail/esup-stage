@@ -22,7 +22,7 @@ public class AccordPartenariat {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateValidation;
 
-    @Column(length = 50)
+    @Column
     private String loginValidation;
 
     @Column(nullable = false)
@@ -37,10 +37,10 @@ public class AccordPartenariat {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateSuppressionComptes;
 
-    @Column(length = 50)
+    @Column
     private String loginSuppressionComptes;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
     private String loginCreation;
 
     @Temporal(TemporalType.TIMESTAMP)

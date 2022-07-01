@@ -11,7 +11,7 @@ public class CentreGestionSuperviseur {
     @Column(name = "idCentreGestionSuperViseur", nullable = false)
     private int id;
 
-    @Column(name = "nomCentreSuperViseur", nullable = false, length = 100)
+    @Column(name = "nomCentreSuperViseur", nullable = false)
     private String nom;
 
     public int getId() {

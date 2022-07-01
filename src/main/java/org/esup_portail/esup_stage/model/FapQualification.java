@@ -10,7 +10,7 @@ public class FapQualification {
     @Column(name = "numFAP_Qualification", nullable = false)
     private int id;
 
-    @Column(name = "libelleQualification", nullable = false, length = 100)
+    @Column(name = "libelleQualification", nullable = false)
     private String libelle;
 
     @ManyToOne

@@ -90,4 +90,8 @@ export class ConventionService implements PaginatedService {
     this.goToOnglet = null;
     return onglet;
   }
+  deleteConvention(id: number): Observable<any> {
+    return this.http.delete(`${environment.apiUrl}/conventions/${id}`);
+  }
+
 }

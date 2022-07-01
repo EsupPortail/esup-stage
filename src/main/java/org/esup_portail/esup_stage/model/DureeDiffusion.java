@@ -11,7 +11,7 @@ public class DureeDiffusion {
     @Column(name = "idDureeDiffusion", nullable = false)
     private int id;
 
-    @Column(name = "libelleDureeDiffusion", nullable = false, length = 100)
+    @Column(name = "libelleDureeDiffusion", nullable = false)
     private String libelle;
 
     @Column(nullable = false)

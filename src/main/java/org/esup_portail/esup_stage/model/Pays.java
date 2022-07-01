@@ -32,11 +32,11 @@ public class Pays implements Exportable {
     private Integer crpay;
 
     @JsonView(Views.List.class)
-    @Column(nullable = false, length = 75)
+    @Column(nullable = false)
     private String lib;
 
     @JsonView(Views.List.class)
-    @Column(name = "ISO2", length = 2)
+    @Column(name = "ISO2")
     private String iso2;
 
     @Column(nullable = false)

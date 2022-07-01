@@ -11,6 +11,7 @@ import { AuthService } from "../../../services/auth.service";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
 import * as Editor from '../../../../custom-ck5/ckeditor';
+import { TitleService } from "../../../services/title.service";
 
 @Component({
   selector: 'app-template-convention',
@@ -20,12 +21,6 @@ import * as Editor from '../../../../custom-ck5/ckeditor';
 export class TemplateConventionComponent implements OnInit {
 
   public Editor = Editor;
-  public onReady(editor: any) {
-    editor.ui.getEditableElement().parentElement.insertBefore(
-      editor.ui.view.toolbar.element,
-      editor.ui.getEditableElement()
-    );
-  }
 
   columns = ['typeConvention.libelle', 'langueConvention.code', 'action'];
   sortColumn = 'typeConvention.libelle';
@@ -65,6 +60,7 @@ export class TemplateConventionComponent implements OnInit {
     private langueConventionService: LangueConventionService,
     private authService: AuthService,
     private fb: FormBuilder,
+    private titleService: TitleService,
   ) {
     this.form = this.fb.group({
       typeConvention: [null, [Validators.required]],
@@ -75,6 +71,7 @@ export class TemplateConventionComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.resetTitle();
     this.typeConventionService.getListActive().subscribe((response: any) => {
       this.typesConvention = response.data;
     });
@@ -89,8 +86,13 @@ export class TemplateConventionComponent implements OnInit {
     });
   }
 
+  resetTitle(): void {
+    this.titleService.title = 'Templates de convention';
+  }
+
   tabChanged(event: MatTabChangeEvent): void {
     if (event.index !== this.editTabIndex) {
+      this.resetTitle();
       this.data = {};
       this.form.reset();
       this.form.get('typeConvention')?.enable();
@@ -119,6 +121,7 @@ export class TemplateConventionComponent implements OnInit {
     });
     if (this.tabs) {
       this.tabs.selectedIndex = this.editTabIndex;
+      this.titleService.title = `${this.data.typeConvention.libelle} - ${this.data.langueConvention.code}`;
     }
   }
 

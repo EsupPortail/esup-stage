@@ -124,16 +124,11 @@ public class ConventionFormDto {
 
     private int idAssurance;
 
-    @Size(max = 15)
-    private String insee;
-
     @Size(max = 5)
     private String codeCaisse;
 
     @Size(max = 5)
     private String nbHeuresHebdo;
-
-    private Integer quotiteTravail;
 
     private String modeEncadreSuivi;
 
@@ -584,14 +579,6 @@ public class ConventionFormDto {
         this.idAssurance = idAssurance;
     }
 
-    public String getInsee() {
-        return insee;
-    }
-
-    public void setInsee(String insee) {
-        this.insee = insee;
-    }
-
     public String getCodeCaisse() {
         return codeCaisse;
     }
@@ -606,14 +593,6 @@ public class ConventionFormDto {
 
     public void setNbHeuresHebdo(String nbHeuresHebdo) {
         this.nbHeuresHebdo = nbHeuresHebdo;
-    }
-
-    public Integer getQuotiteTravail() {
-        return quotiteTravail;
-    }
-
-    public void setQuotiteTravail(Integer quotiteTravail) {
-        this.quotiteTravail = quotiteTravail;
     }
 
     public String getModeEncadreSuivi() {

@@ -23,7 +23,7 @@ public class Role implements Exportable {
     private int id;
 
     @JsonView(Views.List.class)
-    @Column(nullable = false, unique = true, length = 50)
+    @Column(nullable = false, unique = true)
     private String code;
 
     @JsonView(Views.List.class)

@@ -10,7 +10,7 @@ public class CritereGestionId implements Serializable {
     @Column(name = "codeCritere", nullable = false)
     private String code;
 
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false)
     private String codeVersionEtape;
 
     public String getCode() {

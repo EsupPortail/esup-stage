@@ -1,0 +1,31 @@
+<h2 mat-dialog-title>Suppression d'un centre</h2>
+<mat-dialog-content *ngIf="centreGestion">
+  <div class="text-title">{{centreGestion.nomCentre}}</div>
+  <mat-divider></mat-divider>
+  <div class="mt-2 mb-2 row">
+      <div class="col-sm-8">{{centreGestion.voie}}</div>
+  </div>
+  <div class="mt-2 mb-2 row">
+    <div class="col-sm-8">{{centreGestion.codePostal + ' ' +centreGestion.commune }}</div>
+  </div>
+  <div class="mt-2 mb-2 row">
+    <div class="col-sm-3">{{criteresCount}} critère(s)</div>
+    <div class="col-sm-3">{{personnelsCount}} personnel(s)</div>
+  </div>
+  <div class="mt-2 mb-2 row">
+    <div class="col-sm-3">{{conventionsCount}} convention(s)</div>
+    <div class="col-sm-3">{{contactsCount}} contact(s)</div>
+  </div>
+  <div class="alert alert-danger">
+    <i class="fa fa-exclamation-triangle"></i>
+    La suppression d'un centre de gestion ne sera possible que s'il n'est pas référencé dans une convention, une offre ou un contact.
+    Les critères et les personnels rattachés au centre de gestion seront également supprimés
+  </div>
+  <div>
+    <b>Confirmer la suppression de ce centre de gestion ?</b>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-flat-button color="warn" (click)="cancel()">{{'BOUTON_ANNULER'|contenu}}</button>
+  <button mat-flat-button color="primary" (click)="valid()" [disabled]="conventionsCount + contactsCount > 0">{{'BOUTON_VALIDER'|contenu}}</button>
+</mat-dialog-actions>

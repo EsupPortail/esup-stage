@@ -10,7 +10,7 @@ public class UfrId implements Serializable {
     @Column(name = "codeUFR", nullable = false)
     private String code;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
     private String codeUniversite;
 
     public String getCode() {

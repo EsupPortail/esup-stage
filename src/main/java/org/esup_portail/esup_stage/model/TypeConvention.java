@@ -18,7 +18,7 @@ public class TypeConvention implements Exportable {
     @Column(name = "libelleTypeConvention", nullable = false)
     private String libelle;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false)
     private String codeCtrl;
 
     @Column(name = "temEnServTypeConvention", nullable = false, length = 1)

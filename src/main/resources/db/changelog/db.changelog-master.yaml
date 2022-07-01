@@ -78,6 +78,15 @@ databaseChangeLog:
       file: 1.0.1-drop-columns.yaml
       relativeToChangelogFile: true
   - include:
+      file: 1.0.3-param-convention.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 1.0.3-suppression-droit-administration.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 1.0.3-suppression-convention-quotiteTravail.yaml
+      relativeToChangelogFile: true
+  - include:
       file: 2.0.0-contenu.yaml
       relativeToChangelogFile: true
   - include:
