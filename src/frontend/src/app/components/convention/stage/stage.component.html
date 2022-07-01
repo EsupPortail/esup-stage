@@ -219,7 +219,7 @@
 
         <div class="text-title">Divers</div>
         <mat-divider class="mb-2"></mat-divider>
-        <div class="row">
+        <div class="row" *ngIf="!enMasse">
           <div class="row col-sm-12 col-md-6">
             <mat-form-field class="col-12 mb-2" appearance="fill">
               <mat-label>Comment le stage a-t-il été trouvé ?</mat-label>
@@ -267,6 +267,14 @@
               <mat-error><app-form-error [field]="form.get('travailNuitFerie')"></app-form-error></mat-error>
             </mat-form-field>
           </div>
+        </div>
+
+        <div class="row" *ngIf="enMasse">
+          <mat-form-field class="col-6 mb-2" appearance="fill">
+            <mat-label>Modalité de suivi du stagiaire</mat-label>
+            <textarea matInput formControlName="modeEncadreSuivi"></textarea>
+            <mat-error><app-form-error [field]="form.get('modeEncadreSuivi')"></app-form-error></mat-error>
+          </mat-form-field>
         </div>
 
       </div>

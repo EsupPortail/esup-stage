@@ -42,6 +42,7 @@ export class SelectionGroupeEtuComponent implements OnInit {
     private fb: FormBuilder,
   ) {
     this.form = this.fb.group({
+      codeGroupe: [null, [Validators.required, Validators.maxLength(100)]],
       nomGroupe: [null, [Validators.required, Validators.maxLength(100)]],
     });
   }
@@ -57,6 +58,7 @@ export class SelectionGroupeEtuComponent implements OnInit {
 
   ngOnChanges(): void{
     this.form.setValue({
+      codeGroupe: this.groupeEtudiant?this.groupeEtudiant.code:null,
       nomGroupe: this.groupeEtudiant?this.groupeEtudiant.nom:null,
     });
     if(this.groupeEtudiant){

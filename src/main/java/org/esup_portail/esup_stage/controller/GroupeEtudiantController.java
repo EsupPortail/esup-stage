@@ -170,6 +170,7 @@ public class GroupeEtudiantController {
         }
 
         GroupeEtudiantDto groupeEtudiantDto = new GroupeEtudiantDto();
+        groupeEtudiantDto.setCodeGroupe(groupeEtudiant.getCode());
         groupeEtudiantDto.setNomGroupe(groupeEtudiant.getNom());
 
         List<Integer> etudiantIds = groupeEtudiant.getEtudiantGroupeEtudiants().stream().map(EtudiantGroupeEtudiant::getEtudiantId).collect(Collectors.toList());
@@ -225,6 +226,7 @@ public class GroupeEtudiantController {
         Convention convention = createNewConvention(e,typeConvention);
 
         groupeEtudiant.setConvention(convention);
+        groupeEtudiant.setCode(groupeEtudiantDto.getCodeGroupe());
         groupeEtudiant.setNom(groupeEtudiantDto.getNomGroupe());
 
         groupeEtudiant = groupeEtudiantJpaRepository.save(groupeEtudiant);
@@ -301,6 +303,7 @@ public class GroupeEtudiantController {
         //le premier typeConvention est utilisé par valeur par défault (tentative)
         TypeConvention typeConvention = typeConventionJpaRepository.findAll().get(0);
         groupeEtudiant.setNom(groupeEtudiantDto.getNomGroupe());
+        groupeEtudiant.setCode(groupeEtudiantDto.getCodeGroupe());
 
         List<Integer> oldEtudiants = groupeEtudiant.getEtudiantGroupeEtudiants().stream().map(EtudiantGroupeEtudiant::getEtudiantId).collect(Collectors.toList());
         List<Integer> newEtudiants = groupeEtudiantDto.getEtudiantIds();

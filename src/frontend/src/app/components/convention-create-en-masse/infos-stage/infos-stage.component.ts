@@ -102,16 +102,10 @@ export class InfosStageComponent implements OnInit {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.width = '1000px';
     dialogConfig.height = '1000px';
-    dialogConfig.data = {convention:this.groupeEtudiant.convention};
+    dialogConfig.data = {convention:this.groupeEtudiant.convention,groupeEtudiant:this.groupeEtudiant};
     const modalDialog = this.matDialog.open(InfosStageModalComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
-      if(dialogResponse){
-        this.groupeEtudiantService.setInfosStageValid(this.groupeEtudiant.id, true).subscribe((response: any) => {
-          this.validated.emit(response);
-        });
-      }else{
-        this.refreshGroupeEtudiant(dialogResponse);
-      }
+      this.refreshGroupeEtudiant(dialogResponse);
     });
   }
 
@@ -121,7 +115,7 @@ export class InfosStageComponent implements OnInit {
       dialogConfig.width = '1000px';
     dialogConfig.height = '1000px';
       const etu = this.selected[0];
-      dialogConfig.data = {convention:etu.convention};
+      dialogConfig.data = {convention:etu.convention,groupeEtudiant:null};
       const modalDialog = this.matDialog.open(InfosStageModalComponent, dialogConfig);
       modalDialog.afterClosed().subscribe(dialogResponse => {
         this.refreshGroupeEtudiant(dialogResponse);

@@ -160,3 +160,15 @@ databaseChangeLog:
                     nullable: false
                   name: infosStageValid
                   type: BIT
+  - changeSet:
+      id: groupe-code
+      author: tjubera
+      changes:
+        - addColumn:
+            tableName: GroupeEtudiant
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                  name: code
+                  type: VARCHAR(100)

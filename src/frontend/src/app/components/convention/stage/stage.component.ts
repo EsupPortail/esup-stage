@@ -37,6 +37,10 @@ export class StageComponent implements OnInit {
       'idUniteDuree': [Validators.required],
       'idDevise': [Validators.required],
       'idModeVersGratification': [Validators.required],
+      'idOrigineStage': [Validators.required],
+      'confidentiel': [Validators.required],
+      'idNatureTravail': [Validators.required],
+      'idModeValidationStage': [Validators.required],
   }
   interruptionsStageTableColumns = ['dateDebutInterruption', 'dateFinInterruption', 'actions'];
 
@@ -76,6 +80,7 @@ export class StageComponent implements OnInit {
   @Output() updateField = new EventEmitter<any>();
 
   @Input() modifiable: boolean;
+  @Input() enMasse: boolean;
 
   constructor(public conventionService: ConventionService,
               private fb: FormBuilder,
@@ -165,10 +170,10 @@ export class StageComponent implements OnInit {
       idModeVersGratification: [this.convention.modeVersGratification ? this.convention.modeVersGratification.id : null, this.fieldValidators['idModeVersGratification']],
       //TODO un bandeau doit permettre de mettre un message à l’attention de l’étudiant
       // - Partie Divers
-      idOrigineStage: [this.convention.origineStage ? this.convention.origineStage.id : null, [Validators.required]],
-      confidentiel: [this.convention.confidentiel, [Validators.required]],
-      idNatureTravail: [this.convention.natureTravail ? this.convention.natureTravail.id : null, [Validators.required]],
-      idModeValidationStage: [this.convention.modeValidationStage ? this.convention.modeValidationStage.id : null, [Validators.required]],
+      idOrigineStage: [this.convention.origineStage ? this.convention.origineStage.id : null],
+      confidentiel: [this.convention.confidentiel],
+      idNatureTravail: [this.convention.natureTravail ? this.convention.natureTravail.id : null],
+      idModeValidationStage: [this.convention.modeValidationStage ? this.convention.modeValidationStage.id : null],
       modeEncadreSuivi: [this.convention.modeEncadreSuivi],
       avantagesNature: [this.convention.avantagesNature],
       travailNuitFerie: [this.convention.travailNuitFerie],
@@ -190,6 +195,7 @@ export class StageComponent implements OnInit {
     //Update validators that depends on booleans
     this.toggleValidators(['nbHeuresHebdo',],this.convention.horairesReguliers);
     this.toggleValidators(['montantGratification','idUniteGratification','idUniteDuree','idDevise','idModeVersGratification'],this.convention.gratificationStage);
+    this.toggleValidators(['idOrigineStage','confidentiel','idNatureTravail','idModeValidationStage'],!this.enMasse);
 
     this.loadInterruptionsStage();
 

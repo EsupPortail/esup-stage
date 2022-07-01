@@ -12,6 +12,9 @@ public class GroupeEtudiant extends ObjetMetier implements Exportable {
     @Column(name = "idGroupeEtudiant", nullable = false)
     private int id;
 
+    @Column(name = "code",nullable = false, length = 100)
+    private String code;
+
     @Column(name = "nom",nullable = false, length = 100)
     private String nom;
 
@@ -38,6 +41,14 @@ public class GroupeEtudiant extends ObjetMetier implements Exportable {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getNom() {

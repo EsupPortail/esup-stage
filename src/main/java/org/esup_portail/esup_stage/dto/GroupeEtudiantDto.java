@@ -11,10 +11,23 @@ public class GroupeEtudiantDto {
     @NotEmpty
     @NotNull
     @Size(max = 100)
+    private String codeGroupe;
+
+    @NotEmpty
+    @NotNull
+    @Size(max = 100)
     private String nomGroupe;
 
     @NotNull
     private List<Integer> etudiantIds = new ArrayList<>();
+
+    public String getCodeGroupe() {
+        return codeGroupe;
+    }
+
+    public void setCodeGroupe(String codeGroupe) {
+        this.codeGroupe = codeGroupe;
+    }
 
     public String getNomGroupe() {
         return nomGroupe;
