@@ -8,4 +8,7 @@ public interface StructureJpaRepository extends JpaRepository<Structure, Integer
 
     @Query("SELECT s FROM Structure s WHERE s.id = :id")
     Structure findById(int id);
+
+    @Query("SELECT s FROM Structure s WHERE s.numeroRNE = :rne")
+    Structure findByRNE(String rne);
 }

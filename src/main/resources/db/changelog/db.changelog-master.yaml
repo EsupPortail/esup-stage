@@ -101,3 +101,6 @@ databaseChangeLog:
   - include:
       file: 2.0.0-historique-groupe.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 2.0.0-etablissement-enseignement.yaml
+      relativeToChangelogFile: true

@@ -121,6 +121,9 @@ public class Structure extends ObjetMetier implements Exportable {
     @JoinColumn(name = "idPays", nullable = false)
     private Pays pays;
 
+    @Column(length = 8)
+    private String numeroRNE;
+
     public int getId() {
         return id;
     }
@@ -375,6 +378,14 @@ public class Structure extends ObjetMetier implements Exportable {
 
     public void setPays(Pays pays) {
         this.pays = pays;
+    }
+
+    public String getNumeroRNE() {
+        return numeroRNE;
+    }
+
+    public void setNumeroRNE(String numeroRNE) {
+        this.numeroRNE = numeroRNE;
     }
 
     @Override

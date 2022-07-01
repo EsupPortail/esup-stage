@@ -13,5 +13,8 @@ public interface EffectifJpaRepository extends JpaRepository<Effectif, Integer> 
     @Query("SELECT e FROM Effectif e WHERE e.temEnServ = 'O'")
     List<Effectif> findAllActif();
 
+    @Query("SELECT e FROM Effectif e WHERE e.libelle = :lib")
+    Effectif findByLibelle(String lib);
+
     Effectif findById(int id);
 }

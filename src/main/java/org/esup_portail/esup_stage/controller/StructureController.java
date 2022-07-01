@@ -91,19 +91,109 @@ public class StructureController {
 
         logger.info("import start");
 
+        int indexNumeroRNE = 0;
+        int indexRaisonSociale = 1;
+        int indexNumeroSiret = 39;
+        int indexActivitePrincipale = 62;
+        int indexVoie = 4;
+        int indexCodePostal = 7;
+        int indexCommune = 10;
+        int indexTelephone = 19;
+        int indexFax = 20;
+        int indexSiteWeb = 21;
+        int indexMail = 22;
+
+        Effectif effectif = effectifJpaRepository.findByLibelle("Inconnu");
+        if (effectif == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Effectif non trouvé");
+        }
+        TypeStructure typeStructure = typeStructureJpaRepository.findByLibelle("Etablissement d'enseignement");
+        if (typeStructure == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Type de structure non trouvé");
+        }
+        StatutJuridique statutJuridique = statutJuridiqueJpaRepository.findByLibelle("public");
+        if (statutJuridique == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Statut juridique non trouvé");
+        }
+        NafN5 nafN5 = nafN5JpaRepository.findByCode("85.59B");
+        if (nafN5 == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Code non trouvé");
+        }
+
+        Pays pays = paysJpaRepository.findByLibelle("France");
+        if (pays == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Pays non trouvé");
+        }
+
         try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
             String line = "";
-            String dataType = "";
             String separator = ";";
-            boolean isHeader = false;
+            boolean isHeader = true;
 
             while ((line = br.readLine()) != null) {
+                if(isHeader){
+                    isHeader = false;
+                }else{
+                    Structure structure = new Structure();
 
-                logger.info("line : " + line);
+                    structure.setNafN5(nafN5);
+                    structure.setEffectif(effectif);
+                    structure.setStatutJuridique(statutJuridique);
+                    structure.setTypeStructure(typeStructure);
+                    structure.setPays(pays);
+
+                    String[] columns = line.split(separator);
+                    for(int i = 0;i< columns.length;i++){
+
+                        if(i==indexNumeroRNE){
+                            structure.setNumeroRNE(columns[indexNumeroRNE]);
+                        }
+                        if(i==indexRaisonSociale){
+                            structure.setRaisonSociale(columns[indexRaisonSociale]);
+                        }
+                        if(i==indexNumeroSiret){
+                            structure.setNumeroSiret(columns[indexNumeroSiret]);
+                        }
+                        if(i==indexActivitePrincipale){
+                            structure.setActivitePrincipale(columns[indexActivitePrincipale]);
+                        }
+                        if(i==indexVoie){
+                            structure.setVoie(columns[indexVoie]);
+                        }
+                        if(i==indexCodePostal){
+                            structure.setCodePostal(columns[indexCodePostal]);
+                        }
+                        if(i==indexCommune){
+                            structure.setCommune(columns[indexCommune]);
+                        }
+                        if(i==indexMail){
+                            structure.setMail(columns[indexMail]);
+                        }
+                        if(i==indexTelephone){
+                            structure.setTelephone(columns[indexTelephone]);
+                        }
+                        if(i==indexSiteWeb){
+                            structure.setSiteWeb(columns[indexSiteWeb]);
+                        }
+                        if(i==indexFax){
+                            structure.setFax(columns[indexFax]);
+                        }
+                    }
+
+                    Structure existant = structureJpaRepository.findByRNE(structure.getNumeroRNE());
+
+                    if (existant == null) {
+                        structureJpaRepository.save(structure);
+                    }else{
+                        logger.info("skipped existing structure with RNE : " + existant.getNumeroRNE());
+                    }
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+        structureJpaRepository.flush();
+        logger.info("import end");
     }
 
     @GetMapping("/{id}")
