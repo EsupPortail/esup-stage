@@ -134,7 +134,7 @@ export class EtabAccueilGroupeComponent implements OnInit {
   }
 
   importCsv(event: any): void {
-    this.groupeEtudiantService.import(event.target.files[0]).subscribe((response: any) => {
+    this.groupeEtudiantService.import(event.target.files[0], this.groupeEtudiant.id).subscribe((response: any) => {
       this.messageService.setSuccess('Structures d\'accueil importées avec succès');
     });
   }

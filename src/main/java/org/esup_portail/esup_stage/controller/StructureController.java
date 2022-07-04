@@ -142,7 +142,7 @@ public class StructureController {
                     structure.setTypeStructure(typeStructure);
                     structure.setPays(pays);
 
-                    String[] columns = line.split(separator);
+                    String[] columns = line.split(separator, -1);
                     for(int i = 0;i< columns.length;i++){
 
                         if(i==indexNumeroRNE){

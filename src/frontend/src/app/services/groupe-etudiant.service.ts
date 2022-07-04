@@ -52,11 +52,11 @@ export class GroupeEtudiantService implements PaginatedService {
   }
 
   delete(id: number): Observable<any> {
-    return this.http.delete(environment.apiUrl + "/groupeEtudiant" + id);
+    return this.http.delete(environment.apiUrl + "/groupeEtudiant/" + id);
   }
 
-  import(file: any): Observable<any> {
-    return this.http.post(environment.apiUrl + "/groupeEtudiant/import", file);
+  import(file: any, id: number): Observable<any> {
+    return this.http.post(environment.apiUrl + "/groupeEtudiant/import/" + id, file);
   }
 
   sendMail(data: any, id: number): Observable<any> {

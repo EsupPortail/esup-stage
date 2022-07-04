@@ -64,6 +64,9 @@ public class GroupeEtudiantController {
     @Autowired
     TypeConventionJpaRepository typeConventionJpaRepository;
 
+    @Autowired
+    StructureJpaRepository structureJpaRepository;
+
     @GetMapping
     @Secure
     public PaginatedResponse<GroupeEtudiant> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
@@ -272,22 +275,71 @@ public class GroupeEtudiantController {
         return true;
     }
 
-    @PostMapping(value = "/import", consumes ="text/csv")
+    @PostMapping(value = "/import/{id}", consumes ="text/csv")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.MODIFICATION})
-    public void importStructures(InputStream inputStream) {
+    public void importStructures(InputStream inputStream,@PathVariable("id") int groupeId) {
 
         logger.info("import start");
 
+        int indexNumEtu = 0;
+        int indexNom = 1;
+        int indexPrenom = 2;
+        int indexRNE = 3;
+        int indexSIRET = 4;
+
         try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
             String line = "";
-            String dataType = "";
             String separator = ";";
-            boolean isHeader = false;
+            boolean isHeader = true;
+            int lineno = 0;
 
             while ((line = br.readLine()) != null) {
+                lineno++;
+                if(isHeader){
+                    isHeader = false;
+                }else{
 
-                logger.info("line : " + line);
+                    Structure structure;
+
+                    String[] columns = line.split(separator, -1);
+                    String RNE = columns[indexRNE];
+                    if(!RNE.isEmpty()){
+                        structure = structureJpaRepository.findByRNE(RNE);
+                        if (structure == null) {
+                            logger.info("Aucune structure trouvée pour le RNE fournit : " + RNE + ", à la line : " + lineno);
+                            continue;
+                        }
+                    }else{
+                        String SIRET = columns[indexSIRET];
+                        if(!SIRET.isEmpty()){
+                            structure = structureJpaRepository.findBySiret(SIRET);
+                            if (structure == null) {
+                                logger.info("Aucune structure trouvée pour le SIRET fournit : " + RNE + ", à la line : " + lineno);
+                                continue;
+                            }
+                        }else{
+                            logger.info("Aucun numéro SIRET ou RNE fournit pour la line : " + lineno);
+                            continue;
+                        }
+                    }
+                    String numEtu = columns[indexNumEtu];
+                    Etudiant etudiant = etudiantJpaRepository.findByNumEtudiant(numEtu);
+                    if (etudiant == null) {
+                        logger.info("Aucune etudiant trouvé pour le numero etudiant fournit : " + numEtu + ", à la line : " + lineno);
+                        continue;
+                    }
+
+                    EtudiantGroupeEtudiant ege = etudiantGroupeEtudiantJpaRepository.findByEtudiantAndGroupe(etudiant.getId(),groupeId);
+                    if (ege == null) {
+                        logger.info("Aucune etudiant trouvé dans le groupe pour le numero etudiant fournit : " + numEtu + ", à la line : " + lineno);
+                        continue;
+                    }
+                    Convention convention = ege.getConvention();
+                    convention.setStructure(structure);
+                    conventionJpaRepository.save(convention);
+                }
             }
+            conventionJpaRepository.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }

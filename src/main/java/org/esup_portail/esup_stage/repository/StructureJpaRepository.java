@@ -11,4 +11,7 @@ public interface StructureJpaRepository extends JpaRepository<Structure, Integer
 
     @Query("SELECT s FROM Structure s WHERE s.numeroRNE = :rne")
     Structure findByRNE(String rne);
+
+    @Query("SELECT s FROM Structure s WHERE s.numeroSiret = :siret")
+    Structure findBySiret(String siret);
 }
