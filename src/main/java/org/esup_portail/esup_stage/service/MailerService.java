@@ -10,6 +10,7 @@ import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.TemplateMailGroupeJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateMailJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -41,7 +42,7 @@ public class MailerService {
     TemplateMailGroupeJpaRepository templateMailGroupeJpaRepository;
 
     private void sendMail(String to, TemplateMail templateMail, MailContext mailContext) {
-        sendMail(to,templateMail.getId(),templateMail.getObjet(),templateMail.getTexte(),templateMail.getCode(), mailContext, false);
+        sendMail(to,templateMail.getId(),templateMail.getObjet(),templateMail.getTexte(),templateMail.getCode(), mailContext, false,null,null);
     }
 
     /**
@@ -56,16 +57,17 @@ public class MailerService {
             throw new AppException(HttpStatus.NOT_FOUND, "Template mail " + templateMailCode + " non trouvé");
         }
         MailContext mailContext = new MailContext(applicationBootstrap, convention, null, userModif);
-        sendMail(to, templateMail.getId(),templateMail.getObjet(),templateMail.getTexte(),templateMail.getCode(), mailContext, false);
+        sendMail(to, templateMail.getId(),templateMail.getObjet(),templateMail.getTexte(),templateMail.getCode(), mailContext, false,null,null);
     }
 
-    public void sendMailGroupe(String to, Convention convention, Utilisateur userModif, String templateMailCode) {
+    public void sendMailGroupe(String to, Convention convention, Utilisateur userModif, String templateMailCode,byte[] archive) {
         TemplateMailGroupe templateMailGroupe = templateMailGroupeJpaRepository.findByCode(templateMailCode);
         if (templateMailGroupe == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Template mail " + templateMailCode + " non trouvé");
         }
         MailContext mailContext = new MailContext(applicationBootstrap, convention, null, userModif);
-        sendMail(to,templateMailGroupe.getId(),templateMailGroupe.getObjet(),templateMailGroupe.getTexte(),templateMailGroupe.getCode(), mailContext, false);
+        sendMail(to,templateMailGroupe.getId(),templateMailGroupe.getObjet(),templateMailGroupe.getTexte(),templateMailGroupe.getCode(),
+                mailContext, false,"conventions.zip",archive);
     }
 
     public void sendTest(SendMailTestDto sendMailTestDto, Utilisateur utilisateur) {
@@ -76,10 +78,11 @@ public class MailerService {
 
         MailContext mailContext = new MailContext();
         mailContext.setModifiePar(new MailContext.ModifieParContext(utilisateur));
-        sendMail(sendMailTestDto.getTo(),templateMail.getId(),templateMail.getObjet(),templateMail.getTexte(),templateMail.getCode(), mailContext, true);
+        sendMail(sendMailTestDto.getTo(),templateMail.getId(),templateMail.getObjet(),templateMail.getTexte(),templateMail.getCode(), mailContext, true,null,null);
     }
 
-    private void sendMail(String to, int templateMailId, String templateMailObject, String templateMailTexte, String templateMailCode, MailContext mailContext, boolean forceTo) {
+    private void sendMail(String to, int templateMailId, String templateMailObject, String templateMailTexte, String templateMailCode,
+                          MailContext mailContext, boolean forceTo, String attachmentLibelle,byte[] attachment) {
         boolean disableDelivery = applicationBootstrap.getAppConfig().getMailerDisableDelivery();
         if (!disableDelivery) {
             String deliveryAddress = applicationBootstrap.getAppConfig().getMailerDeliveryAddress();
@@ -97,11 +100,15 @@ public class MailerService {
                 templateText.process(mailContext, text);
 
                 MimeMessage message = javaMailSender.createMimeMessage();
-                MimeMessageHelper helper = new MimeMessageHelper(message, "utf-8");
+                boolean multipart = attachment != null;
+                MimeMessageHelper helper = new MimeMessageHelper(message, multipart, "utf-8");
                 helper.setTo(to);
                 helper.setFrom(applicationBootstrap.getAppConfig().getMailerFrom());
                 helper.setSubject(objet.toString());
                 helper.setText(text.toString(), true);
+                if(attachment != null){
+                    helper.addAttachment(attachmentLibelle, new ByteArrayResource(attachment));
+                }
                 javaMailSender.send(message);
             } catch (Exception e) {
                 logger.error("Une erreur est survenue lors de l'envoi d'un email", e);

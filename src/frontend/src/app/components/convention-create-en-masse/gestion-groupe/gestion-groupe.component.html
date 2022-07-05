@@ -33,8 +33,8 @@
     <td mat-cell *matCellDef="let row">
       <ng-container>
         <button mat-icon-button matTooltip="Dupliquer le groupe" (click)="duplicate(row)" color="primary"><i class="fa fa-copy"></i></button>
-        <button mat-icon-button matTooltip="Envoie de mail" (click)="sendMail(row)" color="primary"><i class="fa fa-envelope"></i></button>
-        <button mat-icon-button matTooltip="Export pdf" (click)="print(row)" color="primary"><i class="fa fa-file-contract"></i></button>
+        <button mat-icon-button matTooltip="Envoie de mail" (click)="sendMailTab(row)" color="primary"><i class="fa fa-envelope"></i></button>
+        <button mat-icon-button matTooltip="Export pdf" (click)="printTab(row)" color="primary"><i class="fa fa-file-contract"></i></button>
       </ng-container>
     </td>
   </ng-container>

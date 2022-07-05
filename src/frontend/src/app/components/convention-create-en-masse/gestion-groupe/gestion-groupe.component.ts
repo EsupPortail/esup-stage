@@ -127,14 +127,14 @@ export class GestionGroupeComponent implements OnInit {
   save(): void {
   }
 
-  print(row: any): void{
+  printTab(row: any): void{
     this.groupeEtudiant = row;
     if (this.tabs) {
       this.tabs.selectedIndex = this.printTabIndex;
     }
   }
 
-  sendMail(row: any): void{
+  sendMailTab(row: any): void{
     this.groupeEtudiant = row;
     if (this.tabs) {
       this.tabs.selectedIndex = this.mailTabIndex;
@@ -142,57 +142,40 @@ export class GestionGroupeComponent implements OnInit {
   }
 
   sendMailForGroup(): void{
-    if (this.form.valid) {
-      const size = this.tableMail?.data.length;
-      let i = 0;
-      for (const etu of this.tableMail?.data){
-        const data = {
-          templateMail: this.form.get('template')?.value,
-          conventionId: etu.convention.id,
-          to: etu.convention.contact.mail,
-        }
-        this.groupeEtudiantService.sendMail(data,this.groupeEtudiant.id).subscribe((response: any) => {
-          i++;
-          if(i === size){
-            this.messageService.setSuccess('Mails envoyés avec succès');
-            this.refreshHistorique();
-          }
-        });
-      }
-    }
+    const data = {ids: this.groupeEtudiant.etudiantGroupeEtudiants.map((ege: any) => ege.id)};
+    this.sendMail(data);
   }
 
   sendMailForSelected(): void{
+    const data = {ids: this.selected.map((ege: any) => ege.id)};
+    this.sendMail(data);
+  }
+
+  sendMail(data: any){
     if (this.form.valid) {
-      const size = this.selected.length;
-      let i = 0;
-      for (const etu of this.selected){
-        const data = {
-          templateMail: this.form.get('template')?.value,
-          conventionId: etu.convention.id,
-          to: etu.convention.contact.mail,
-        }
-        this.groupeEtudiantService.sendMail(data,this.groupeEtudiant.id).subscribe((response: any) => {
-          i++;
-          if(i === size){
-            this.messageService.setSuccess('Mails envoyés avec succès');
-            this.refreshHistorique();
-          }
-        });
-      }
+      this.groupeEtudiantService.sendMail(this.groupeEtudiant.id,this.form.get('template')?.value, data).subscribe((response: any) => {
+        this.messageService.setSuccess('Mails envoyés avec succès');
+        this.refreshHistorique();
+      });
     }
   }
 
   printForGroup(): void{
-  const convention = this.groupeEtudiant.convention;
-    this.conventionService.getConventionPDF(convention.id).subscribe((response: any) => {
-      var blob = new Blob([response as BlobPart], {type: "application/pdf"});
-      let filename = 'convention_' + convention.id + '_' + convention.prenom + '_' + convention.nom + '.pdf';
-      FileSaver.saveAs(blob, filename);
-    });
+    const data = {ids: this.groupeEtudiant.etudiantGroupeEtudiants.map((ege: any) => ege.convention.id)};
+    this.print(data);
   }
 
   printForSelected(): void{
+    const data = {ids: this.selected.map((ege: any) => ege.convention.id)};
+    this.print(data);
+  }
+
+  print(data: any): void{
+    this.groupeEtudiantService.getConventionPDF(data).subscribe((response: any) => {
+      var blob = new Blob([response as BlobPart], {type: "application/zip"});
+      let filename = 'conventions.zip';
+      FileSaver.saveAs(blob, filename);
+    });
   }
 
   isSelected(data: any): boolean {

@@ -11,22 +11,20 @@ import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.MailerService;
+import org.esup_portail.esup_stage.service.impression.ImpressionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @ApiController
 @RequestMapping("/groupeEtudiant")
@@ -66,6 +64,9 @@ public class GroupeEtudiantController {
 
     @Autowired
     StructureJpaRepository structureJpaRepository;
+
+    @Autowired
+    ImpressionService impressionService;
 
     @GetMapping
     @Secure
@@ -250,28 +251,97 @@ public class GroupeEtudiantController {
         return groupeEtudiantJpaRepository.saveAndFlush(groupeEtudiant);
     }
 
-    @PostMapping("/sendMail/{id}")
+
+    @PostMapping("/pdf-convention")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
+    public ResponseEntity<byte[]> getConventionPDF(@Valid @RequestBody IdsListDto idsListDto) {
+        ByteArrayOutputStream archiveOutputStream = new ByteArrayOutputStream();
+        ZipOutputStream zos = new ZipOutputStream(archiveOutputStream);
+        try {
+            for(int conventionId : idsListDto.getIds()){
+
+                Convention convention = conventionJpaRepository.findById(conventionId);
+                if (convention == null) {
+                    throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+                }
+
+                ByteArrayOutputStream pdfOutputStream = new ByteArrayOutputStream();
+                impressionService.generateConventionAvenantPDF(convention, null, pdfOutputStream);
+
+                byte[] pdf = pdfOutputStream.toByteArray();
+                String filename = "Convention_" + convention.getEtudiant().getNom() + "_" +convention.getEtudiant().getPrenom() + ".pdf";
+                ZipEntry entry = new ZipEntry(filename);
+                zos.putNextEntry(entry);
+                zos.write(pdf);
+                zos.closeEntry();
+            }
+            zos.close();
+        } catch (IOException e) {
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de la création de l'achive zip");
+        }
+
+        byte[] archive = archiveOutputStream.toByteArray();
+        return ResponseEntity.ok().body(archive);
+    }
+
+    @PostMapping("/sendMail/{id}/templateMail/{template}")
     @Secure(fonctions = {AppFonctionEnum.CREATION_EN_MASSE_CONVENTION}, droits = {DroitEnum.LECTURE})
-    public boolean sendMail(@Valid @RequestBody SendMailGroupeDto sendMailGroupeDto,@PathVariable("id") int id) {
+    public boolean sendMail(@PathVariable("id") int id,@PathVariable("template") String template,@Valid @RequestBody IdsListDto idsListDto) {
 
         GroupeEtudiant groupeEtudiant = groupeEtudiantJpaRepository.findById(id);
         if (groupeEtudiant == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "GroupeEtudiant non trouvée");
         }
 
-        HistoriqueMailGroupe historique = new HistoriqueMailGroupe();
-        historique.setDate(new Date());
-        historique.setMailto(sendMailGroupeDto.getTo());
-        historique.setLogin(ServiceContext.getServiceContext().getUtilisateur().getLogin());
-        historique.setGroupeEtudiant(groupeEtudiant);
+        HashMap<Structure,ArrayList<EtudiantGroupeEtudiant>> etudiantsByStructure = new HashMap<>();
 
-        historiqueMailGroupeJpaRepository.saveAndFlush(historique);
-
-        Convention convention = conventionJpaRepository.findById(sendMailGroupeDto.getConventionId());
-        if (convention == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "convention non trouvée");
+        for(EtudiantGroupeEtudiant ege : groupeEtudiant.getEtudiantGroupeEtudiants()){
+            if(idsListDto.getIds().contains(ege.getId())){
+                Structure structure = ege.getConvention().getStructure();
+                if(!etudiantsByStructure.containsKey(structure)){
+                    etudiantsByStructure.put(structure,new ArrayList<>());
+                }
+                etudiantsByStructure.get(structure).add(ege);
+            }
         }
-        mailerService.sendMailGroupe(sendMailGroupeDto.getTo(), convention, ServiceContext.getServiceContext().getUtilisateur(), sendMailGroupeDto.getTemplateMail());
+
+        for(Structure structure : etudiantsByStructure.keySet()){
+
+            String mailto = structure.getMail();
+
+            try {
+                ByteArrayOutputStream archiveOutputStream = new ByteArrayOutputStream();
+                ZipOutputStream zos = new ZipOutputStream(archiveOutputStream);
+                for(EtudiantGroupeEtudiant ege : etudiantsByStructure.get(structure)){
+
+                    Convention convention = ege.getConvention();
+
+                    ByteArrayOutputStream pdfOutputStream = new ByteArrayOutputStream();
+                    impressionService.generateConventionAvenantPDF(convention, null, pdfOutputStream);
+
+                    byte[] pdf = pdfOutputStream.toByteArray();
+                    String filename = "Convention_" + ege.getEtudiant().getNom() + "_" +ege.getEtudiant().getPrenom() + ".pdf";
+                    ZipEntry entry = new ZipEntry(filename);
+                    zos.putNextEntry(entry);
+                    zos.write(pdf);
+                    zos.closeEntry();
+                }
+                zos.close();
+                byte[] archive = archiveOutputStream.toByteArray();
+                mailerService.sendMailGroupe(mailto, groupeEtudiant.getEtudiantGroupeEtudiants().get(0).getConvention(), ServiceContext.getServiceContext().getUtilisateur(), template, archive);
+            } catch (IOException e) {
+                throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de la création de l'achive zip");
+            }
+
+            HistoriqueMailGroupe historique = new HistoriqueMailGroupe();
+            historique.setDate(new Date());
+            historique.setMailto(mailto);
+            historique.setLogin(ServiceContext.getServiceContext().getUtilisateur().getLogin());
+            historique.setGroupeEtudiant(groupeEtudiant);
+
+            historiqueMailGroupeJpaRepository.saveAndFlush(historique);
+        }
+
         return true;
     }
 
@@ -306,33 +376,32 @@ public class GroupeEtudiantController {
                     if(!RNE.isEmpty()){
                         structure = structureJpaRepository.findByRNE(RNE);
                         if (structure == null) {
-                            logger.info("Aucune structure trouvée pour le RNE fournit : " + RNE + ", à la line : " + lineno);
-                            continue;
+                            throw new AppException(HttpStatus.NOT_FOUND, "Aucune structure trouvée pour le RNE fournit : " +
+                                    RNE + ", à la line : " + lineno);
                         }
                     }else{
                         String SIRET = columns[indexSIRET];
                         if(!SIRET.isEmpty()){
                             structure = structureJpaRepository.findBySiret(SIRET);
                             if (structure == null) {
-                                logger.info("Aucune structure trouvée pour le SIRET fournit : " + RNE + ", à la line : " + lineno);
-                                continue;
+                                throw new AppException(HttpStatus.NOT_FOUND, "Aucune structure trouvée pour le SIRET fournit : " +
+                                        RNE + ", à la line : " + lineno);
                             }
                         }else{
-                            logger.info("Aucun numéro SIRET ou RNE fournit pour la line : " + lineno);
-                            continue;
+                            throw new AppException(HttpStatus.NOT_FOUND, "Aucun numéro SIRET ou RNE fournit pour la line : " + lineno);
                         }
                     }
                     String numEtu = columns[indexNumEtu];
                     Etudiant etudiant = etudiantJpaRepository.findByNumEtudiant(numEtu);
                     if (etudiant == null) {
-                        logger.info("Aucune etudiant trouvé pour le numero etudiant fournit : " + numEtu + ", à la line : " + lineno);
-                        continue;
+                        throw new AppException(HttpStatus.NOT_FOUND, "Aucune etudiant trouvé pour le numero etudiant fournit : " +
+                                numEtu + ", à la line : " + lineno);
                     }
 
                     EtudiantGroupeEtudiant ege = etudiantGroupeEtudiantJpaRepository.findByEtudiantAndGroupe(etudiant.getId(),groupeId);
                     if (ege == null) {
-                        logger.info("Aucune etudiant trouvé dans le groupe pour le numero etudiant fournit : " + numEtu + ", à la line : " + lineno);
-                        continue;
+                        throw new AppException(HttpStatus.NOT_FOUND, "Aucune etudiant trouvé dans le groupe pour le numero " +
+                                "etudiant fournit : " + numEtu + ", à la line : " + lineno);
                     }
                     Convention convention = ege.getConvention();
                     convention.setStructure(structure);

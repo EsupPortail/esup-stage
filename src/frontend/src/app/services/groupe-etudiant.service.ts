@@ -59,7 +59,11 @@ export class GroupeEtudiantService implements PaginatedService {
     return this.http.post(environment.apiUrl + "/groupeEtudiant/import/" + id, file);
   }
 
-  sendMail(data: any, id: number): Observable<any> {
-    return this.http.post(`${environment.apiUrl}/groupeEtudiant/sendMail/${id}`, data);
+  sendMail(id: number, template: string, data: any): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/groupeEtudiant/sendMail/${id}/templateMail/${template}`,data);
+  }
+
+  getConventionPDF(data: any): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/groupeEtudiant/pdf-convention`,data , { responseType: 'blob'});
   }
 }

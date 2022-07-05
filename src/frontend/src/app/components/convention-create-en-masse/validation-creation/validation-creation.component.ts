@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 import { GroupeEtudiantService } from "../../../services/groupe-etudiant.service";
 import { MessageService } from "../../../services/message.service";
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'app-validation-creation',
@@ -14,6 +15,7 @@ export class ValidationCreationComponent implements OnInit {
 
   constructor(public groupeEtudiantService: GroupeEtudiantService,
               private messageService: MessageService,
+              private router: Router
               ) { }
 
   ngOnInit(): void {
@@ -22,8 +24,7 @@ export class ValidationCreationComponent implements OnInit {
   validate(): void {
     this.groupeEtudiantService.validate(this.groupeEtudiant.id).subscribe((response: any) => {
       this.messageService.setSuccess('Les conventions ont étés validées avec succès');
-      this.groupeEtudiant = response;
-      this.validated.emit(this.groupeEtudiant);
+      this.router.navigate([`/convention-create-en-masse/groupes`], )
     });
   }
 
