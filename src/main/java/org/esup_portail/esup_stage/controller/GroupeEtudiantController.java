@@ -11,6 +11,7 @@ import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.MailerService;
+import org.esup_portail.esup_stage.service.apogee.model.EtapeInscription;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -45,6 +46,9 @@ public class GroupeEtudiantController {
     EtudiantJpaRepository etudiantJpaRepository;
 
     @Autowired
+    EtudiantController etudiantController;
+
+    @Autowired
     ConventionJpaRepository conventionJpaRepository;
 
     @Autowired
@@ -57,10 +61,7 @@ public class GroupeEtudiantController {
     MailerService mailerService;
 
     @Autowired
-    CentreGestionJpaRepository centreGestionJpaRepository;
-
-    @Autowired
-    TypeConventionJpaRepository typeConventionJpaRepository;
+    LangueConventionJpaRepository langueConventionJpaRepository;
 
     @Autowired
     StructureJpaRepository structureJpaRepository;
@@ -218,16 +219,13 @@ public class GroupeEtudiantController {
     public GroupeEtudiant create(@Valid @RequestBody GroupeEtudiantDto groupeEtudiantDto) {
         GroupeEtudiant groupeEtudiant = new GroupeEtudiant();
 
-        //le premier typeConvention est utilisé par valeur par défault (tentative)
-        TypeConvention typeConvention = typeConventionJpaRepository.findAll().get(0);
-
         //le premier étudiant de la liste est affecté à la convention du groue d'étudiant (tentative)
         int id = groupeEtudiantDto.getEtudiantIds().get(0);
         Etudiant e = etudiantJpaRepository.findById(id);
         if (e == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Etudiant non trouvé");
         }
-        Convention convention = createNewConvention(e,typeConvention);
+        Convention convention = createNewConvention(e);
 
         groupeEtudiant.setConvention(convention);
         groupeEtudiant.setCode(groupeEtudiantDto.getCodeGroupe());
@@ -244,7 +242,7 @@ public class GroupeEtudiantController {
                 throw new AppException(HttpStatus.NOT_FOUND, "Etudiant non trouvé");
             }
 
-            EtudiantGroupeEtudiant etudiantGroupeEtudiant = createNewEtudiantGroupeEtudiant(groupeEtudiant,etudiant,typeConvention);
+            EtudiantGroupeEtudiant etudiantGroupeEtudiant = createNewEtudiantGroupeEtudiant(groupeEtudiant,etudiant);
             etudiantGroupeEtudiants.add(etudiantGroupeEtudiant);
         }
         groupeEtudiant.setEtudiantGroupeEtudiants(etudiantGroupeEtudiants);
@@ -421,8 +419,6 @@ public class GroupeEtudiantController {
         if (groupeEtudiant == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "GroupeEtudiant non trouvé");
         }
-        //le premier typeConvention est utilisé par valeur par défault (tentative)
-        TypeConvention typeConvention = typeConventionJpaRepository.findAll().get(0);
         groupeEtudiant.setNom(groupeEtudiantDto.getNomGroupe());
         groupeEtudiant.setCode(groupeEtudiantDto.getCodeGroupe());
 
@@ -457,7 +453,7 @@ public class GroupeEtudiantController {
                 throw new AppException(HttpStatus.NOT_FOUND, "Etudiant non trouvé");
             }
 
-            EtudiantGroupeEtudiant etudiantGroupeEtudiant = createNewEtudiantGroupeEtudiant(groupeEtudiant,etudiant,typeConvention);
+            EtudiantGroupeEtudiant etudiantGroupeEtudiant = createNewEtudiantGroupeEtudiant(groupeEtudiant,etudiant);
             etudiantGroupeEtudiants.add(etudiantGroupeEtudiant);
         }
 
@@ -476,8 +472,8 @@ public class GroupeEtudiantController {
         return true;
     }
 
-    private EtudiantGroupeEtudiant createNewEtudiantGroupeEtudiant(GroupeEtudiant groupeEtudiant, Etudiant etudiant,TypeConvention typeConvention) {
-        Convention convention = createNewConvention(etudiant,typeConvention);
+    private EtudiantGroupeEtudiant createNewEtudiantGroupeEtudiant(GroupeEtudiant groupeEtudiant, Etudiant etudiant) {
+        Convention convention = createNewConvention(etudiant);
         EtudiantGroupeEtudiant etudiantGroupeEtudiant = new EtudiantGroupeEtudiant();
         etudiantGroupeEtudiant.setEtudiant(etudiant);
         etudiantGroupeEtudiant.setConvention(convention);
@@ -485,14 +481,27 @@ public class GroupeEtudiantController {
         return etudiantGroupeEtudiantJpaRepository.save(etudiantGroupeEtudiant);
     }
 
-    private Convention createNewConvention(Etudiant etudiant,TypeConvention typeConvention) {
+    private Convention createNewConvention(Etudiant etudiant) {
+
+        List<ConventionFormationDto> inscriptions = etudiantController.getFormationInscriptions(etudiant.getNumEtudiant());
+        EtapeInscription etapeInscription = inscriptions.get(0).getEtapeInscription();
+
+        ConventionFormDto conventionFormDto = new ConventionFormDto();
+
+        LangueConvention langueConvention = langueConventionJpaRepository.findAll().get(0);
+
+        conventionFormDto.setIdTypeConvention(inscriptions.get(0).getTypeConvention().getId());
+        conventionFormDto.setCodeLangueConvention(langueConvention.getCode());
+        conventionFormDto.setCodeComposante(etapeInscription.getCodeComposante());
+        conventionFormDto.setCodeEtape(etapeInscription.getCodeEtp());
+        conventionFormDto.setCodeVerionEtape(etapeInscription.getCodVrsVet());
+        conventionFormDto.setAnnee(inscriptions.get(0).getAnnee());
+        conventionFormDto.setEtudiantLogin(etudiant.getIdentEtudiant());
+
         Convention convention = new Convention();
-        convention.setEtudiant(etudiant);
         convention.setValidationCreation(false);
-        convention.setTypeConvention(typeConvention);
         convention.setCreationEnMasse(true);
-        CentreGestion centreGestion = centreGestionJpaRepository.getCentreEtablissement();
-        convention.setCentreGestion(centreGestion);
+        conventionController.setConventionData(convention,conventionFormDto);
         return conventionJpaRepository.save(convention);
     }
 

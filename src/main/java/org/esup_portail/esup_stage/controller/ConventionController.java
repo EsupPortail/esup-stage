@@ -519,7 +519,7 @@ public class ConventionController {
         return true;
     }
 
-    private void setConventionData(Convention convention, ConventionFormDto conventionFormDto) {
+    public void setConventionData(Convention convention, ConventionFormDto conventionFormDto) {
         // Pour les étudiants on vérifie que c'est une de ses conventions
         Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
         if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(conventionFormDto.getEtudiantLogin())) {

@@ -106,23 +106,23 @@ export class SelectionGroupeEtuComponent implements OnInit {
   }
 
   validate(): void {
-      if (this.form.valid) {
-        const selected = this.selected.map((s: any) => s.id);
+    if (this.form.valid) {
+      const selected = this.selected.map((s: any) => s.id);
 
-        let data = {...this.form.value};
-        data.etudiantIds = selected;
+      let data = {...this.form.value};
+      data.etudiantIds = selected;
 
-        if (!this.groupeEtudiant) {
-          this.groupeEtudiantService.create(data).subscribe((response: any) => {
-            this.messageService.setSuccess('Groupe créé avec succès');
-            this.validated.emit(response);
-          });
-        } else {
-          this.groupeEtudiantService.update(this.groupeEtudiant.id, data).subscribe((response: any) => {
-            this.messageService.setSuccess('Groupe modifié avec succès');
-            this.validated.emit(response);
-          });
-        }
+      if (!this.groupeEtudiant) {
+        this.groupeEtudiantService.create(data).subscribe((response: any) => {
+          this.messageService.setSuccess('Groupe créé avec succès');
+          this.validated.emit(response);
+        });
+      } else {
+        this.groupeEtudiantService.update(this.groupeEtudiant.id, data).subscribe((response: any) => {
+          this.messageService.setSuccess('Groupe modifié avec succès');
+          this.validated.emit(response);
+        });
       }
+    }
   }
 }

@@ -62,10 +62,6 @@ public class EtudiantGroupeEtudiant implements Exportable {
         this.convention = convention;
     }
 
-    public int getStructureId() {
-        return convention.getStructure().getId();
-    }
-
     @Override
     public String getExportValue(String key) {
         return null;
