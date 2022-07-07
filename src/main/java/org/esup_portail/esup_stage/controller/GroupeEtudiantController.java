@@ -167,7 +167,10 @@ public class GroupeEtudiantController {
         ContextDto contexteDto = ServiceContext.getServiceContext();
         Utilisateur utilisateur = contexteDto.getUtilisateur();
         GroupeEtudiant groupeEtudiantBrouillon = groupeEtudiantJpaRepository.findBrouillon(utilisateur.getLogin());
-        delete(groupeEtudiantBrouillon.getId());
+
+        if (groupeEtudiantBrouillon != null) {
+            delete(groupeEtudiantBrouillon.getId());
+        }
 
         GroupeEtudiant groupeEtudiant = groupeEtudiantJpaRepository.findById(id);
         if (groupeEtudiant == null) {
@@ -219,7 +222,7 @@ public class GroupeEtudiantController {
     public GroupeEtudiant create(@Valid @RequestBody GroupeEtudiantDto groupeEtudiantDto) {
         GroupeEtudiant groupeEtudiant = new GroupeEtudiant();
 
-        //le premier étudiant de la liste est affecté à la convention du groue d'étudiant (tentative)
+        //le premier étudiant de la liste est affecté à la convention du groupe d'étudiant (tentative)
         int id = groupeEtudiantDto.getEtudiantIds().get(0);
         Etudiant e = etudiantJpaRepository.findById(id);
         if (e == null) {
@@ -483,7 +486,16 @@ public class GroupeEtudiantController {
 
     private Convention createNewConvention(Etudiant etudiant) {
 
+        ContextDto contexteDto = ServiceContext.getServiceContext();
+
         List<ConventionFormationDto> inscriptions = etudiantController.getFormationInscriptions(etudiant.getNumEtudiant());
+
+        //fix serviceContext being cleaned up after calling another controller
+        ServiceContext.initialize(contexteDto);
+
+        if (inscriptions.size() == 0) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Aucunes inscriptions trouvées dans apogée pour l'étudiant : " + etudiant.getNom() + " " + etudiant.getPrenom());
+        }
         EtapeInscription etapeInscription = inscriptions.get(0).getEtapeInscription();
 
         ConventionFormDto conventionFormDto = new ConventionFormDto();
@@ -496,12 +508,15 @@ public class GroupeEtudiantController {
         conventionFormDto.setCodeEtape(etapeInscription.getCodeEtp());
         conventionFormDto.setCodeVerionEtape(etapeInscription.getCodVrsVet());
         conventionFormDto.setAnnee(inscriptions.get(0).getAnnee());
+        conventionFormDto.setNumEtudiant(etudiant.getNumEtudiant());
         conventionFormDto.setEtudiantLogin(etudiant.getIdentEtudiant());
 
         Convention convention = new Convention();
         convention.setValidationCreation(false);
         convention.setCreationEnMasse(true);
         conventionController.setConventionData(convention,conventionFormDto);
+        //fix serviceContext being cleaned up after calling another controller
+        ServiceContext.initialize(contexteDto);
         return conventionJpaRepository.save(convention);
     }
 

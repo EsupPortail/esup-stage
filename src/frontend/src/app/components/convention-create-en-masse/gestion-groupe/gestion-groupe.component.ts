@@ -118,9 +118,10 @@ export class GestionGroupeComponent implements OnInit {
     this.selected = [];
     if (event.index == 0) {
       this.groupeEtudiant = {};
+    }else{
+      this.refreshFilters();
+      this.refreshHistorique();
     }
-    this.refreshFilters();
-    this.refreshHistorique();
   }
 
 
