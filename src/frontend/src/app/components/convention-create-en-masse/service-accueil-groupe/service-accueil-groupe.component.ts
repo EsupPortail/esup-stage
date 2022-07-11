@@ -26,7 +26,7 @@ export class ServiceAccueilGroupeComponent implements OnInit {
 
   structures: any[] = [];
 
-
+  @Input() sharedData: any;
   @Input() groupeEtudiant: any;
   @Output() validated = new EventEmitter<any>();
 
@@ -45,27 +45,35 @@ export class ServiceAccueilGroupeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.columns = ['select','numEtudiant','nom', 'prenom', 'mail', 'etab', 'service'];
-    this.filters = [
-        { id: 'etudiant.nom', libelle: 'Nom'},
-        { id: 'etudiant.prenom', libelle: 'Prénom'},
-        { id: 'etudiant.numEtudiant', libelle: 'N° étudiant'},
-        { id: 'convention.structure.id', libelle: 'Structure d\'accueil', type: 'list', options: [], keyLibelle: 'raisonSociale', keyId: 'id'},
-    ];
-    this.filters.push({ id: 'groupeEtudiant.id', type: 'int', value: 0, hidden: true, permanent: true });
+    this.columns = this.sharedData.columns;
+    this.columns.push('etab');
+    this.columns.push('service')
+    this.filters = this.sharedData.filters;
+    this.filters.push({ id: 'convention.structure.id', libelle: 'Structure d\'accueil', type: 'list', options: [], keyLibelle: 'raisonSociale', keyId: 'id'});
   }
 
   ngOnChanges(): void{
-    if(this.groupeEtudiant){
+    this.initStructureFilter();
+    this.appTable?.update();
+    this.selected = [];
+  }
+
+  ngAfterViewInit(): void {
       this.appTable?.setFilterValue('groupeEtudiant.id', this.groupeEtudiant.id);
-    }
+      this.appTable?.setFilterOption('ufr.id', this.sharedData.ufrList);
+      this.appTable?.setFilterOption('etape.id', this.sharedData.etapeList);
+      this.appTable?.setFilterOption('convention.annee', this.sharedData.annees);
+      this.initStructureFilter();
+      this.appTable?.update();
+      this.selected = [];
+  }
+
+  initStructureFilter(): void {
     if(this.groupeEtudiant && this.groupeEtudiant.convention.structure){
       this.structures = this.groupeEtudiant.etudiantGroupeEtudiants.map((e: any) => e.convention.structure??this.groupeEtudiant.convention.structure);
       this.structures = [...new Map(this.structures.map(e => [e.id, {id:e.id,raisonSociale:e.raisonSociale}])).values()]
       this.appTable?.setFilterOption('convention.structure.id', this.structures);
     }
-    this.appTable?.update();
-    this.selected = [];
   }
 
   isSelected(data: any): boolean {

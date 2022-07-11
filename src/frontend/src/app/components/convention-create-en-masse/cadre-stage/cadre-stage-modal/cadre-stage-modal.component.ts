@@ -129,6 +129,16 @@ export class CadreStageModalComponent implements OnInit {
   }
 
   choose(row: any): void {
+    this.etudiantService.getApogeeData(row.codEtu).subscribe((response: any) => {
+      this.etudiant = response;
+      this.formConvention.get('adresseEtudiant')?.setValue(this.etudiant.mainAddress);
+      this.formConvention.get('codePostalEtudiant')?.setValue(this.etudiant.postalCode);
+      this.formConvention.get('villeEtudiant')?.setValue(this.etudiant.town);
+      this.formConvention.get('paysEtudiant')?.setValue(this.etudiant.country);
+      this.formConvention.get('telEtudiant')?.setValue(this.etudiant.phone);
+      this.formConvention.get('telPortableEtudiant')?.setValue(this.etudiant.portablePhone);
+      this.formConvention.get('courrielPersoEtudiant')?.setValue(this.etudiant.mailPerso);
+    });
     this.etudiantService.getApogeeInscriptions(row.codEtu).subscribe((response: any) => {
       this.inscriptions = response;
       if (this.inscriptions.length === 1) {

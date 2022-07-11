@@ -1,6 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from "@angular/router";
 import { GroupeEtudiantService } from "../../services/groupe-etudiant.service";
+import { UfrService } from "../../services/ufr.service";
+import { EtapeService } from "../../services/etape.service";
+import { forkJoin } from 'rxjs';
+import { ConventionService } from "../../services/convention.service";
 import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
 import { TitleService } from "../../services/title.service";
 import { AuthService } from "../../services/auth.service";
@@ -14,6 +18,7 @@ export class ConventionCreateEnMasseComponent implements OnInit {
 
   conventionTabIndex: number = 0;
 
+  sharedData: any = {};
   groupeEtudiant: any;
   allValid = false;
 
@@ -26,10 +31,14 @@ export class ConventionCreateEnMasseComponent implements OnInit {
     5: { statut: 0, init: false },
     6: { statut: 0, init: false },
     7: { statut: 0, init: false },
+    8: { statut: 0, init: false },
   }
 
   constructor(private activatedRoute: ActivatedRoute,
               public groupeEtudiantService: GroupeEtudiantService,
+              private conventionService: ConventionService,
+              private ufrService: UfrService,
+              private etapeService: EtapeService,
               private titleService: TitleService,
               private authService: AuthService,
               private router: Router) {
@@ -38,7 +47,6 @@ export class ConventionCreateEnMasseComponent implements OnInit {
   ngOnInit(): void {
     this.activatedRoute.params.subscribe((param: any) => {
       const pathId = param.id;
-      console.log('pathId : ' + pathId);
       if (pathId === 'create') {
         this.titleService.title = 'Création de conventions en masse';
         // Récupération du groupeEtudiant au mode brouillon
@@ -54,6 +62,31 @@ export class ConventionCreateEnMasseComponent implements OnInit {
           this.majStatus();
         });
       }
+    });
+
+    this.initSharedData();
+  }
+
+  initSharedData(): void {
+    this.sharedData.columns = ['select','numEtudiant','nom', 'prenom', 'mail'];
+    this.sharedData.filters = [
+        { id: 'ufr.id', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
+        { id: 'etape.id', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
+        { id: 'convention.annee', libelle: 'Année', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'libelle', value: [] },
+        { id: 'etudiant.nom', libelle: 'Nom'},
+        { id: 'etudiant.prenom', libelle: 'Prénom'},
+        { id: 'etudiant.numEtudiant', libelle: 'N° étudiant'},
+    ];
+    this.sharedData.filters.push({ id: 'groupeEtudiant.id', type: 'int', value: 0, hidden: true, permanent: true });
+
+    forkJoin(
+      this.ufrService.getPaginated(1, 0, 'libelle', 'asc', '{}'),
+      this.etapeService.getPaginated(1, 0, 'libelle', 'asc', '{}'),
+      this.conventionService.getListAnnee(),
+    ).subscribe(([ufrData, etapeData, listAnneeData]) => {
+      this.sharedData.ufrList = ufrData.data;
+      this.sharedData.etapeList = etapeData.data;
+      this.sharedData.annees = listAnneeData;
     });
   }
 
