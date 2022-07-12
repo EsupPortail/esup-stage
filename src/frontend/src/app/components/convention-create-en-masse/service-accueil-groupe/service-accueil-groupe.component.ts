@@ -45,10 +45,10 @@ export class ServiceAccueilGroupeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.columns = this.sharedData.columns;
+    this.columns = [...this.sharedData.columns];
     this.columns.push('etab');
     this.columns.push('service')
-    this.filters = this.sharedData.filters;
+    this.filters = [...this.sharedData.filters];
     this.filters.push({ id: 'convention.structure.id', libelle: 'Structure d\'accueil', type: 'list', options: [], keyLibelle: 'raisonSociale', keyId: 'id'});
   }
 

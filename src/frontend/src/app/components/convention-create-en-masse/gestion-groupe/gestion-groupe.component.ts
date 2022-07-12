@@ -1,6 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { TableComponent } from "../../table/table.component";
 import { GroupeEtudiantService } from "../../../services/groupe-etudiant.service";
+import { UfrService } from "../../../services/ufr.service";
+import { EtapeService } from "../../../services/etape.service";
+import { forkJoin } from 'rxjs';
 import { ConventionService } from "../../../services/convention.service";
 import { EtudiantGroupeEtudiantService } from "../../../services/etudiant-groupe-etudiant.service";
 import { TemplateMailGroupeService } from "../../../services/template-mail-groupe.service";
@@ -38,6 +41,9 @@ export class GestionGroupeComponent implements OnInit {
   groupeEtudiant: any = {};
 
   templates: any[] = [];
+  ufrList: any[] = [];
+  etapeList: any[] = [];
+  annees: any[] = [];
 
   historiques: any[] = [];
   columnsHisto = ['modifiePar', 'date', 'destinataire'];
@@ -56,6 +62,8 @@ export class GestionGroupeComponent implements OnInit {
     public groupeEtudiantService: GroupeEtudiantService,
     public etudiantGroupeEtudiantService: EtudiantGroupeEtudiantService,
     public conventionService: ConventionService,
+              private ufrService: UfrService,
+              private etapeService: EtapeService,
     public templateMailGroupeService: TemplateMailGroupeService,
     private fb: FormBuilder,
     private messageService: MessageService,
@@ -69,22 +77,31 @@ export class GestionGroupeComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.groupeColumns = ['code','nom','loginCreation','dateCreation','periodStage','actions'];
+    this.groupeColumns = ['code','nom','annee','loginCreation','dateCreation','periodStage','actions'];
     this.groupeFilters = [
+      { id: 'code', libelle: 'Code'},
       { id: 'nom', libelle: 'Nom'},
+      { id: 'convention.annee', libelle: 'Année', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'libelle', value: [] },
+      { id: 'loginCreation', libelle: 'loginCreation'},
     ];
     this.groupeFilters.push({ id: 'validationCreation', type: 'boolean', value: true, hidden: true, permanent: true });
 
-    this.mailColumns = ['select','numEtudiant','nom', 'prenom', 'mail', 'etab', 'service', 'contact', 'mailTuteur'];
+    this.mailColumns = ['select','numEtudiant','nom', 'prenom', 'mail', 'ufr.libelle', 'etape.libelle', 'annee', 'etab', 'service', 'contact', 'mailTuteur'];
     this.mailFilters = [
+        { id: 'ufr.id', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
+        { id: 'etape.id', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
+        { id: 'convention.annee', libelle: 'Année', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'libelle', value: [] },
         { id: 'etudiant.nom', libelle: 'Nom'},
         { id: 'etudiant.prenom', libelle: 'Prénom'},
         { id: 'etudiant.numEtudiant', libelle: 'N° étudiant'},
     ];
     this.mailFilters.push({ id: 'groupeEtudiant.id', type: 'int', value: 0, hidden: true, permanent: true });
 
-    this.exportColumns = ['select','numEtudiant','nom', 'prenom', 'mail'];
+    this.exportColumns = ['select','numEtudiant','nom', 'prenom', 'mail', 'ufr.libelle', 'etape.libelle', 'annee'];
     this.exportFilters = [
+        { id: 'ufr.id', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
+        { id: 'etape.id', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
+        { id: 'convention.annee', libelle: 'Année', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'libelle', value: [] },
         { id: 'etudiant.nom', libelle: 'Nom'},
         { id: 'etudiant.prenom', libelle: 'Prénom'},
         { id: 'etudiant.numEtudiant', libelle: 'N° étudiant'},
@@ -94,6 +111,18 @@ export class GestionGroupeComponent implements OnInit {
     this.templateMailGroupeService.getPaginated(1, 0, 'lib', 'asc', "").subscribe((response: any) => {
       this.templates = response.data;
     });
+
+    forkJoin(
+      this.ufrService.getPaginated(1, 0, 'libelle', 'asc', '{}'),
+      this.etapeService.getPaginated(1, 0, 'libelle', 'asc', '{}'),
+      this.conventionService.getListAnnee(),
+    ).subscribe(([ufrData, etapeData, listAnneeData]) => {
+      this.ufrList = ufrData.data;
+      this.etapeList = etapeData.data;
+      this.annees = listAnneeData;
+      this.tableList?.setFilterOption('convention.annee', this.annees);
+    });
+
   }
 
   refreshHistorique(): void{
@@ -105,6 +134,12 @@ export class GestionGroupeComponent implements OnInit {
   refreshFilters(): void{
    this.tableMail?.setFilterValue('groupeEtudiant.id', this.groupeEtudiant.id);
    this.tableExport?.setFilterValue('groupeEtudiant.id', this.groupeEtudiant.id);
+   this.tableMail?.setFilterOption('ufr.id', this.ufrList);
+   this.tableMail?.setFilterOption('etape.id', this.etapeList);
+   this.tableMail?.setFilterOption('convention.annee', this.annees);
+   this.tableExport?.setFilterOption('ufr.id', this.ufrList);
+   this.tableExport?.setFilterOption('etape.id', this.etapeList);
+   this.tableExport?.setFilterOption('convention.annee', this.annees);
   }
 
   duplicate(row: any): void{

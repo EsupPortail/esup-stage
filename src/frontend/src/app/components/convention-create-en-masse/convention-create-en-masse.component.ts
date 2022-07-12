@@ -31,7 +31,6 @@ export class ConventionCreateEnMasseComponent implements OnInit {
     5: { statut: 0, init: false },
     6: { statut: 0, init: false },
     7: { statut: 0, init: false },
-    8: { statut: 0, init: false },
   }
 
   constructor(private activatedRoute: ActivatedRoute,
@@ -68,7 +67,7 @@ export class ConventionCreateEnMasseComponent implements OnInit {
   }
 
   initSharedData(): void {
-    this.sharedData.columns = ['select','numEtudiant','nom', 'prenom', 'mail'];
+    this.sharedData.columns = ['select','numEtudiant','nom', 'prenom', 'mail', 'ufr.libelle', 'etape.libelle', 'annee'];
     this.sharedData.filters = [
         { id: 'ufr.id', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
         { id: 'etape.id', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },

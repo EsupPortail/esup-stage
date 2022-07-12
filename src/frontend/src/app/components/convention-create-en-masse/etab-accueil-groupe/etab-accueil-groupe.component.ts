@@ -46,9 +46,9 @@ export class EtabAccueilGroupeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.columns = this.sharedData.columns;
+    this.columns = [...this.sharedData.columns];
     this.columns.push('etab');
-    this.filters = this.sharedData.filters;
+    this.filters = [...this.sharedData.filters];
   }
 
   ngOnChanges(): void{

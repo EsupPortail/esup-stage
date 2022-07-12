@@ -43,8 +43,8 @@ export class InfosStageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.columns = ['select','numEtudiant','nom', 'prenom', 'mail'];
-    this.filters = this.sharedData.filters;
+    this.columns = [...this.sharedData.columns];
+    this.filters = [...this.sharedData.filters];
   }
 
   ngOnChanges(): void{

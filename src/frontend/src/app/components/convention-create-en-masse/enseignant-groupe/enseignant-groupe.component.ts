@@ -24,6 +24,7 @@ export class EnseignantGroupeComponent implements OnInit {
   filters: any[] = [];
   selected: any[] = [];
 
+  @Input() sharedData: any;
   @Input() groupeEtudiant: any;
   @Output() validated = new EventEmitter<any>();
 
@@ -42,21 +43,22 @@ export class EnseignantGroupeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.columns = ['select','numEtudiant','nom', 'prenom', 'mail', 'enseignant'];
-    this.filters = [
-        { id: 'etudiant.nom', libelle: 'Nom'},
-        { id: 'etudiant.prenom', libelle: 'Prénom'},
-        { id: 'etudiant.numEtudiant', libelle: 'N° étudiant'},
-    ];
-    this.filters.push({ id: 'groupeEtudiant.id', type: 'int', value: 0, hidden: true, permanent: true });
+    this.columns = [...this.sharedData.columns];
+    this.filters = [...this.sharedData.filters];
   }
 
   ngOnChanges(): void{
-    if(this.groupeEtudiant){
-      this.appTable?.setFilterValue('groupeEtudiant.id', this.groupeEtudiant.id);
-    }
     this.appTable?.update();
     this.selected = [];
+  }
+
+  ngAfterViewInit(): void {
+      this.appTable?.setFilterValue('groupeEtudiant.id', this.groupeEtudiant.id);
+      this.appTable?.setFilterOption('ufr.id', this.sharedData.ufrList);
+      this.appTable?.setFilterOption('etape.id', this.sharedData.etapeList);
+      this.appTable?.setFilterOption('convention.annee', this.sharedData.annees);
+      this.appTable?.update();
+      this.selected = [];
   }
 
   isSelected(data: any): boolean {
