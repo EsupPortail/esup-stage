@@ -12,6 +12,7 @@ import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.MailerService;
 import org.esup_portail.esup_stage.service.apogee.model.EtapeInscription;
+import org.esup_portail.esup_stage.service.apogee.model.EtudiantRef;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -488,6 +489,11 @@ public class GroupeEtudiantController {
 
         ContextDto contexteDto = ServiceContext.getServiceContext();
 
+        EtudiantRef etudiantRef = etudiantController.getApogeeData(etudiant.getNumEtudiant());
+
+        //fix serviceContext being cleaned up after calling another controller
+        ServiceContext.initialize(contexteDto);
+
         List<ConventionFormationDto> inscriptions = etudiantController.getFormationInscriptions(etudiant.getNumEtudiant());
 
         //fix serviceContext being cleaned up after calling another controller
@@ -510,6 +516,14 @@ public class GroupeEtudiantController {
         conventionFormDto.setAnnee(inscriptions.get(0).getAnnee());
         conventionFormDto.setNumEtudiant(etudiant.getNumEtudiant());
         conventionFormDto.setEtudiantLogin(etudiant.getIdentEtudiant());
+
+        conventionFormDto.setAdresseEtudiant(etudiantRef.getMainAddress());
+        conventionFormDto.setCodePostalEtudiant(etudiantRef.getPostalCode());
+        conventionFormDto.setVilleEtudiant(etudiantRef.getTown());
+        conventionFormDto.setPaysEtudiant(etudiantRef.getCountry());
+        conventionFormDto.setTelEtudiant(etudiantRef.getPhone());
+        conventionFormDto.setTelPortableEtudiant(etudiantRef.getPortablePhone());
+        conventionFormDto.setCourrielPersoEtudiant(etudiantRef.getMailPerso());
 
         Convention convention = new Convention();
         convention.setValidationCreation(false);
