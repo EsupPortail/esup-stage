@@ -31,3 +31,19 @@ databaseChangeLog:
             name: exemple
             value: Connaissances, capacités etc
         tableName: ParamConvention
+- changeSet:
+    id: paramConvention-insert-devisegratification
+    author: ssound
+    changes:
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.deviseGratification
+        - column:
+            name: libelle
+            value: Devise de la gratification
+        - column:
+            name: exemple
+            value: euros
+        tableName: ParamConvention

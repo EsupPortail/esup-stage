@@ -138,6 +138,7 @@ public class ImpressionContext {
         private String modeValidationStageLibelle;
         private String modeVersGratificationLibelle;
         private String montantGratification;
+        private String deviseGratification;
         private String natureTravailLibelle;
         private String nbHeuresHebdo;
         private String nbJoursHebdo;
@@ -190,8 +191,12 @@ public class ImpressionContext {
             this.libelleFinalite = convention.getLibelleFinalite();
             this.modeEncadreSuivi = convention.getModeEncadreSuivi();
             this.modeValidationStageLibelle = convention.getNomenclature() != null ? convention.getNomenclature().getModeValidationStage() : null;
-            this.modeVersGratificationLibelle = convention.getNomenclature() != null ? convention.getNomenclature().getModeVersGratification() : null;
-            this.montantGratification = convention.getMontantGratification();
+            if (convention.getGratificationStage() != null && convention.getGratificationStage() == true) {
+                this.modeVersGratificationLibelle = convention.getNomenclature() != null ? convention.getNomenclature().getModeVersGratification() : null;
+                this.montantGratification = convention.getMontantGratification();
+                this.uniteGratificationLibelle = convention.getNomenclature() != null ? convention.getNomenclature().getUniteGratification() : null;
+                this.deviseGratification = convention.getDetails() != null ? convention.getDevise().getLibelle() : null;
+            }
             this.natureTravailLibelle = convention.getNomenclature() != null ? convention.getNomenclature().getNatureTravail() : null;
             this.nbHeuresHebdo = convention.getNbHeuresHebdo();
             this.nbJoursHebdo = convention.getNbJoursHebdo() != null ? convention.getNbJoursHebdo().getValue() : null;
@@ -207,7 +212,6 @@ public class ImpressionContext {
             this.themeLibelle = convention.getNomenclature() != null ? convention.getNomenclature().getTheme() : null;
             this.travailNuitFerie = convention.getTravailNuitFerie();
             this.ufrLibelle = convention.getUfr() != null ? convention.getUfr().getLibelle() : null;
-            this.uniteGratificationLibelle = convention.getNomenclature() != null ? convention.getNomenclature().getUniteGratification() : null;
             this.villeEtudiant = convention.getVilleEtudiant();
             this.volumeHoraireFormation = convention.getVolumeHoraireFormation();
             this.dureeStageHeurePeriode = convention.getDureeExceptionnellePeriode();
@@ -452,6 +456,14 @@ public class ImpressionContext {
 
         public void setMontantGratification(String montantGratification) {
             this.montantGratification = montantGratification;
+        }
+
+        public String getDeviseGratification() {
+            return deviseGratification != null ? deviseGratification : "";
+        }
+
+        public void setDeviseGratification(String deviseGratification) {
+            this.deviseGratification = deviseGratification;
         }
 
         public String getNatureTravailLibelle() {
