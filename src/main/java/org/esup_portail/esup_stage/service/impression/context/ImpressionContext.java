@@ -156,6 +156,7 @@ public class ImpressionContext {
         private String uniteGratificationLibelle;
         private String villeEtudiant;
         private String volumeHoraireFormation;
+        private String competences;
 
         public ConventionContext() { }
 
@@ -210,6 +211,7 @@ public class ImpressionContext {
             this.villeEtudiant = convention.getVilleEtudiant();
             this.volumeHoraireFormation = convention.getVolumeHoraireFormation();
             this.dureeStageHeurePeriode = convention.getDureeExceptionnellePeriode();
+            this.competences = convention.getCompetences();
         }
 
         public String getId() {
@@ -594,6 +596,14 @@ public class ImpressionContext {
 
         public void setVolumeHoraireFormation(String volumeHoraireFormation) {
             this.volumeHoraireFormation = volumeHoraireFormation;
+        }
+
+        public String getCompetences() {
+            return competences != null ? competences : "";
+        }
+
+        public void setCompetences(String competences) {
+            this.competences = competences;
         }
     }
 
