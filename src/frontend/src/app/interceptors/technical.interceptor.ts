@@ -11,14 +11,15 @@ import { LoaderService } from "../services/loader.service";
 export class TechnicalInterceptor implements HttpInterceptor {
 
   private nbRequests: number = 0;
+  private currentActiveElement :any;
 
   constructor(private tokenService: TokenService, private messageService: MessageService, private loaderService: LoaderService) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    const activeElement = document.activeElement;
     const inputs = ['input', 'select', 'button', 'textarea'];
-    if (activeElement instanceof HTMLElement && inputs.indexOf(activeElement.tagName.toLowerCase()) > -1) {
-      activeElement.blur();
+    if (document.activeElement instanceof HTMLElement && inputs.indexOf(document.activeElement.tagName.toLowerCase()) > -1) {
+      this.currentActiveElement = document.activeElement;
+      this.currentActiveElement.blur();
     }
     this.loaderService.show();
     this.nbRequests++;
@@ -30,8 +31,9 @@ export class TechnicalInterceptor implements HttpInterceptor {
         finalize(() => {
           this.nbRequests--;
           if (this.nbRequests === 0) {
-            if (activeElement instanceof HTMLElement && inputs.indexOf(activeElement.tagName.toLowerCase()) > -1) {
-              activeElement.focus();
+            if (this.currentActiveElement) {
+              this.currentActiveElement.focus();
+              this.currentActiveElement = undefined;
             }
             this.loaderService.hide();
           }
