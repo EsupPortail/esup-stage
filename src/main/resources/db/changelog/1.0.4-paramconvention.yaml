@@ -1,0 +1,17 @@
+databaseChangeLog:
+- changeSet:
+    id: paramConvention-insert-qualiteviseur
+    author: ssound
+    changes:
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: centreGestion.qualiteViseur
+        - column:
+            name: libelle
+            value: Qualité du viseur
+        - column:
+            name: exemple
+            value: Le Directeur de l'université
+        tableName: ParamConvention

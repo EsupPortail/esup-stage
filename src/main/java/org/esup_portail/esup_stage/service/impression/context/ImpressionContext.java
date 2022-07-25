@@ -606,6 +606,7 @@ public class ImpressionContext {
         private String nomCentre;
         private String nomViseur;
         private String prenomViseur;
+        private String qualiteViseur;
         private String telephone;
         private String voie;
         private String prenomPresidentEtab;
@@ -623,6 +624,7 @@ public class ImpressionContext {
             this.nomCentre = centreGestion.getNomCentre();
             this.nomViseur = centreGestion.getNomViseur();
             this.prenomViseur = centreGestion.getPrenomViseur();
+            this.qualiteViseur = centreGestion.getQualiteViseur();
             this.telephone = centreGestion.getTelephone();
             this.voie = centreGestion.getVoie();
             if (centreEtablissement != null) {
@@ -694,6 +696,14 @@ public class ImpressionContext {
 
         public void setPrenomViseur(String prenomViseur) {
             this.prenomViseur = prenomViseur;
+        }
+
+        public String getQualiteViseur() {
+            return qualiteViseur != null ? qualiteViseur : "";
+        }
+
+        public void setQualiteViseur(String qualiteViseur) {
+            this.qualiteViseur = qualiteViseur;
         }
 
         public String getTelephone() {

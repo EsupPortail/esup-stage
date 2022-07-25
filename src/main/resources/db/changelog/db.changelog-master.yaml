@@ -86,3 +86,6 @@ databaseChangeLog:
   - include:
       file: 1.0.3-suppression-convention-quotiteTravail.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 1.0.4-paramconvention.yaml
+      relativeToChangelogFile: true
