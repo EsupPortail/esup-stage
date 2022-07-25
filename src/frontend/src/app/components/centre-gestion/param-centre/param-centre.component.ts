@@ -57,7 +57,7 @@ export class ParamCentreComponent implements OnInit {
         this.setFormData();
       }
     });
-    this.viseurForm.valueChanges.pipe(debounceTime(500)).subscribe(() => {
+    this.viseurForm.valueChanges.pipe(debounceTime(1000)).subscribe(() => {
       this.search();
     });
     this.getConfidentialites();

@@ -85,7 +85,7 @@ export class AdminUserComponent implements OnInit {
       }
     });
 
-    this.searchedLoginChanged.pipe(debounceTime(500)).subscribe(() => {
+    this.searchedLoginChanged.pipe(debounceTime(1000)).subscribe(() => {
       this.ldapService.searchUsers(this.searchedLogin).subscribe((response: any) => {
         this.ldapUsers = response;
       });

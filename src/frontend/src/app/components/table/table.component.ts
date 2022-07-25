@@ -60,7 +60,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   constructor(
     private authService: AuthService,
   ) {
-    this.filterChanged.pipe(debounceTime(500)).subscribe(() => {
+    this.filterChanged.pipe(debounceTime(1000)).subscribe(() => {
       const filters = this.getFilters();
       if (this.backConfig) {
         this.page = this.backConfig.page;
@@ -74,7 +74,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
       }
 
       for (const key of Object.keys(this.autocmpleteChanged)) {
-        this.autocmpleteChanged[key].pipe(debounceTime(500)).subscribe(async (event: any) => {
+        this.autocmpleteChanged[key].pipe(debounceTime(1000)).subscribe(async (event: any) => {
           if (event.value.length >= 2) {
             this.autocompleteData[event.filter.id] = await event.filter.autocompleteService.getAutocompleteData(event.value).toPromise();
             this.autocompleteData[event.filter.id] = this.autocompleteData[event.filter.id].data;

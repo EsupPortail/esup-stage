@@ -122,7 +122,7 @@ export class GestionnairesComponent implements OnInit {
     if (this.centreGestion.id) {
       this.filters.push({id: 'centreGestion.id', value: this.centreGestion.id, type: 'int', hidden: true});
     }
-    this.searchForm.valueChanges.pipe(debounceTime(500)).subscribe(() => {
+    this.searchForm.valueChanges.pipe(debounceTime(1000)).subscribe(() => {
       this.search();
     });
   }
