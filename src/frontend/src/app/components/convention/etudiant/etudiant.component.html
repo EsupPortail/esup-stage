@@ -137,7 +137,7 @@
                     <mat-form-field class="col-sm-12 mb-2" appearance="fill">
                       <mat-label>Formation</mat-label>
                       <mat-select formControlName="inscription" required>
-                        <mat-option *ngFor="let inscription of inscriptions" [value]="inscription">{{inscription.etapeInscription.codeEtp + ' - ' + inscription.etapeInscription.libComposante}}</mat-option>
+                        <mat-option *ngFor="let inscription of inscriptions" [value]="inscription">{{inscription.etapeInscription.codeEtp + ' - ' + inscription.etapeInscription.libWebVet}}<span class="option-composante">({{inscription.etapeInscription.codeComposante}})</span></mat-option>
                       </mat-select>
                       <mat-error><app-form-error [field]="formConvention.get('inscription')"></app-form-error></mat-error>
                     </mat-form-field>
