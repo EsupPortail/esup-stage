@@ -144,18 +144,22 @@ public class EtudiantController {
             inscriptions = inscriptions.stream().filter(i -> {
                 CentreGestion centreGestion = i.getCentreGestion();
                 Boolean autorisationAnneePrecedente = centreGestion.getRecupInscriptionAnterieure();
-                if (i.getAnnee().equals(anneeEnCours)) {
+                // On autorise la création de convention sur l'année en cours et les années suivantes
+                int anneeEnCoursInt = Integer.parseInt(anneeEnCours);
+                int anneeInt = Integer.parseInt(i.getAnnee());
+                if (i.getAnnee().equals(anneeEnCours) || anneeInt > anneeEnCoursInt) {
                     return true;
                 }
                 if (!autorisationAnneePrecedente) {
                     return false;
+                } else {
+                    // On autorise uniquement les gestionnaires pour l'année précédentes (et pas toutes les années précédentes)
+                    if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
+                        return false;
+                    } else {
+                        return (anneeEnCoursInt - 1) == anneeInt;
+                    }
                 }
-                Integer mois = centreGestion.getDureeRecupInscriptionAnterieure();
-                if (mois != null) {
-                    dateBascule.add(Calendar.MONTH, mois);
-                    return currentDate.before(dateBascule.getTime());
-                }
-                return false;
             }).collect(Collectors.toList());
         }
         return inscriptions;
