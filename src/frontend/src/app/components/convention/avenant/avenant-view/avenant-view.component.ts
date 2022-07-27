@@ -73,7 +73,7 @@ export class AvenantViewComponent implements OnInit {
   printAvenant() : void {
     this.conventionService.getAvenantPDF(this.avenant.id).subscribe((response: any) => {
       var blob = new Blob([response as BlobPart], {type: "application/pdf"});
-      let filename = 'avenant_' + this.avenant.id + '_' + this.convention.etudiant.prenom + '_' + this.convention.etudiant.nom + '.pdf';
+      let filename = 'Avenant_' + this.convention.id + '_' + this.convention.etudiant.prenom + '_' + this.convention.etudiant.nom + '.pdf';
       FileSaver.saveAs(blob, filename);
     });
   }
