@@ -1,0 +1,15 @@
+version: '3.7'
+services:
+  frontend:
+    container_name: ESUP_STAGE
+    image: esup/esup-stage:dev
+    build:
+      context: ./
+      dockerfile: dev.Dockerfile
+    command: serve --host 0.0.0.0 --disable-host-check
+    ports:
+      - 8700:4200
+    volumes:
+      - ./:/home/node/app
+    expose:
+      - "4200"
