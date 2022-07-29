@@ -12,6 +12,8 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { forkJoin } from 'rxjs';
 import { SortDirection } from "@angular/material/sort";
 import { ContenuPipe } from "../../pipes/contenu.pipe";
+import { TypeConventionService } from "../../services/type-convention.service";
+import { LangueConventionService } from "../../services/langue-convention.service";
 
 @Component({
   selector: 'app-dashboard',
@@ -40,6 +42,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ufrList: any[] = [];
   etapeList: any[] = [];
   typeDashboard: number = 1; // Type de tableau de bord à afficher : 1=gestionnaire/responsable/admin/profil non défini ; 2=enseignant ; 3=etudiant
+  langueConventionList: any[] = [];
+  typeConventionList: any[] = [];
 
   selected: any[] = [];
   validationLibelles: any = {};
@@ -57,6 +61,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private configService: ConfigService,
     private snackBar: MatSnackBar,
     private contenuPipe: ContenuPipe,
+    private langueConventionService: LangueConventionService,
+    private typeConventionService: TypeConventionService,
   ) {
   }
 
@@ -85,6 +91,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
           { id: 'lieuStage', libelle: 'Lieu du stage' },
           { id: 'avenant', libelle: 'Avenant', type: 'boolean', specific: true },
           { id: 'etatValidation', libelle: 'État de validation de la convention', type: 'list', options: this.validationsOptions, keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
+          { id: 'langueConvention.code', libelle: 'Langue de convention', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'code', value: [] },
+          { id: 'typeConvention.id', libelle: 'Type de convention', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
         ];
 
         this.exportColumns = {
@@ -100,6 +108,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
           avenant: { title: 'Avenant' },
           validationPedagogique: { title: this.validationLibelles.validationPedagogique },
           validationConvention: { title: this.validationLibelles.validationConvention },
+          langueConvention: { title: 'Langue de convetion' },
+          typeConvention: { title: 'Type de convetion' },
         };
       } else if (this.authService.isEtudiant()) {
         this.typeDashboard = 3;
@@ -142,7 +152,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.ufrService.getPaginated(1, 0, 'libelle', 'asc', '{}'),
         this.etapeService.getPaginated(1, 0, 'libelle', 'asc', '{}'),
         this.conventionService.getListAnnee(),
-      ).subscribe(([ufrData, etapeData, listAnneeData]) => {
+        this.langueConventionService.getPaginated(1, 0, 'libelle', 'asc', '{}'),
+        this.typeConventionService.getPaginated(1, 0, 'libelle', 'asc', '{}'),
+      ).subscribe(([ufrData, etapeData, listAnneeData, langueConventionList, typeConventionList]) => {
         // ufr
         this.ufrList = ufrData.data;
         this.appTable?.setFilterOption('ufr.id', this.ufrList);
@@ -160,6 +172,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.appTable?.setFilterOption('annee', this.annees);
           this.appTable?.setFilterValue('annee', [this.anneeEnCours.libelle]);
         }
+
+        // langue convention
+        this.langueConventionList = langueConventionList.data;
+        this.appTable?.setFilterOption('langueConvention.code', this.langueConventionList);
+
+        // type convention
+        this.typeConventionList = typeConventionList.data;
+        this.appTable?.setFilterOption('typeConvention.id', this.typeConventionList);
 
         if (this.savedFilters) {
           this.restoreFilters();
@@ -183,6 +203,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
       { id: 'enseignant', libelle: 'Enseignant', specific: true },
       { id: 'avenant', libelle: 'Avenant', type: 'boolean', specific: true },
       { id: 'etatValidation', libelle: 'État de validation de la convention', type: 'list', options: this.validationsOptions, keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
+      { id: 'langueConvention.code', libelle: 'Langue de convention', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'code', value: [] },
+      { id: 'typeConvention.id', libelle: 'Type de convention', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
     ];
 
     this.exportColumns = {
@@ -197,6 +219,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
       avenant: { title: 'Avenant' },
       validationPedagogique: { title: this.validationLibelles.validationPedagogique },
       validationConvention: { title: this.validationLibelles.validationConvention },
+      langueConvention: { title: 'Langue de convetion' },
+      typeConvention: { title: 'Type de convetion' },
     };
   }
 
