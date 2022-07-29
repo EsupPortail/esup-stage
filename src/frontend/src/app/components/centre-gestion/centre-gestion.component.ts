@@ -171,11 +171,11 @@ export class CentreGestionComponent implements OnInit {
   }
 
   updateOnChanges(): void {
-    this.coordCentreForm.valueChanges.pipe(debounceTime(500)).subscribe(val => {
+    this.coordCentreForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
       this.setCentreGestionCoordCentre();
       this.update();
     });
-    this.paramCentreForm.valueChanges.pipe(debounceTime(500)).subscribe(val => {
+    this.paramCentreForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
       this.setCentreGestionParamCentre();
       this.update();
     });

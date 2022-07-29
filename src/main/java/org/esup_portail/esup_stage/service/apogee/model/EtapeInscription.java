@@ -5,7 +5,7 @@ public class EtapeInscription {
     private String libComposante;
     private String codeEtp;
     private String codVrsVet;
-    private String LibWebVet;
+    private String libWebVet;
     private String typeIns;
     private String codeDiplome;
     private String versionDiplome;
@@ -48,11 +48,11 @@ public class EtapeInscription {
     }
 
     public String getLibWebVet() {
-        return LibWebVet;
+        return libWebVet;
     }
 
     public void setLibWebVet(String libWebVet) {
-        LibWebVet = libWebVet;
+        this.libWebVet = libWebVet;
     }
 
     public String getTypeIns() {

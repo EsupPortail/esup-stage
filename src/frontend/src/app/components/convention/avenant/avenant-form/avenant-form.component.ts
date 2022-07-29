@@ -222,7 +222,7 @@ export class AvenantFormComponent implements OnInit {
       else this.form.get('motifAvenant')?.enable({emitEvent: false});
       this.customFormValidation();
     });
-    this.enseignantSearchForm.valueChanges.pipe(debounceTime(500)).subscribe(() => {
+    this.enseignantSearchForm.valueChanges.pipe(debounceTime(1000)).subscribe(() => {
       this.search();
     });
 

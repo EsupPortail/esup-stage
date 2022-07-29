@@ -263,7 +263,7 @@ public class PaginationRepository<T extends Exportable> {
                 }
                 sb.append("\"").append(value).append("\"").append(";");
             }
-            sb.append(";").append(newLine);
+            sb.append(newLine);
         }
 
         return sb;

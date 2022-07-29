@@ -86,7 +86,7 @@ export class LogoCentreComponent implements OnInit {
   }
 
   resizeLogoOnChange() {
-    this.form.valueChanges.pipe(debounceTime(500)).subscribe(val => {
+    this.form.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
       if (this.height != null && this.width != null) {
         this.dimensions.push(this.width)
         this.dimensions.push(this.height)

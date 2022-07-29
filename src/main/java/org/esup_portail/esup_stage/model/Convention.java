@@ -1274,6 +1274,9 @@ public class Convention extends ObjetMetier implements Exportable {
                     value = getEnseignant().getPrenom() + " " + getEnseignant().getNom();
                 }
                 break;
+            case "avenant":
+                value = getAvenants().size() == 0 ? "Non" : "Oui";
+                break;
             case "validationPedagogique":
                 value = getValidationPedagogique() != null && getValidationPedagogique() ? "Oui" : "Non";
                 break;
@@ -1282,9 +1285,6 @@ public class Convention extends ObjetMetier implements Exportable {
                 break;
             case "validationConvention":
                 value = getValidationConvention() != null && getValidationConvention() ? "Oui" : "Non";
-                break;
-            case "avenant":
-                value = getAvenants().size() == 0 ? "Non" : "Oui";
                 break;
             case "annee":
                 value = getAnnee();

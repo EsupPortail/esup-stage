@@ -21,8 +21,8 @@ public class FooterPageEvent implements IEventHandler {
 
     protected PdfFormXObject placeholder;
     protected float side = 20;
-    protected float x = 560;
-    protected float y = 20;
+    protected float x = 330;
+    protected float y = 10;
     protected float space = 4.5f;
     protected float descent = 3;
 
@@ -41,7 +41,7 @@ public class FooterPageEvent implements IEventHandler {
         PdfCanvas pdfCanvas = new PdfCanvas(page.getLastContentStream(), page.getResources(), pdf);
         Canvas canvas = new Canvas(pdfCanvas, pageSize);
         Paragraph p = new Paragraph();
-        p.setFontSize(10).add(simpleDateFormat.format(dateGeneration));
+        p.setFontSize(8).add(simpleDateFormat.format(dateGeneration));
         canvas.showTextAligned(p, x, y, TextAlignment.RIGHT);
         pdfCanvas.addXObjectAt(placeholder, x + space, y - descent);
         pdfCanvas.release();

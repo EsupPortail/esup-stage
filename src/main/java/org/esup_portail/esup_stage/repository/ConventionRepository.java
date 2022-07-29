@@ -26,7 +26,7 @@ public class ConventionRepository extends PaginationRepository<Convention> {
             addJoins("JOIN c.centreGestion.personnels personnel");
         }
         if (filters.has("avenant")) {
-            addJoins("JOIN c.avenants avenant");
+            addJoins("LEFT JOIN c.avenants avenant");
         }
     }
 
@@ -60,7 +60,11 @@ public class ConventionRepository extends PaginationRepository<Convention> {
             clauses.add("(LOWER(c.enseignant.uidEnseignant) LIKE :enseignant OR LOWER(c.enseignant.nom) LIKE :enseignant OR LOWER(c.enseignant.prenom) LIKE :enseignant OR LOWER(c.enseignant.mail) LIKE :enseignant)");
         }
         if (key.equals("avenant")) {
-            clauses.add("(CAST(avenant.id AS string) LIKE :avenant OR LOWER(avenant.titreAvenant) LIKE :avenant)");
+            if (parameter.getBoolean("value")) {
+                clauses.add("(avenant.id IS NOT NULL)");
+            } else {
+                clauses.add("(avenant.id IS NULL)");
+            }
         }
         if (key.equals("etatValidation")) {
             JSONArray jsonArray = parameter.getJSONArray("value");
@@ -134,9 +138,6 @@ public class ConventionRepository extends PaginationRepository<Convention> {
         }
         if (key.equals("enseignant")) {
             query.setParameter("enseignant", "%" + parameter.getString("value").toLowerCase() + "%");
-        }
-        if (key.equals("avenant")) {
-            query.setParameter("avenant", "%" + parameter.getString("value").toLowerCase() + "%");
         }
         if (key.equals("lieuStage")) {
             query.setParameter("lieuStage", "%" + parameter.getString("value").toLowerCase() + "%");
