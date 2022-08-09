@@ -34,6 +34,7 @@ import { Droit } from "../../../constants/droit";
 export class AdminNomenclaturesComponent implements OnInit {
 
   columns = ['libelle', 'action'];
+  columnsTypeStructure = ['libelle', 'siretObligatoire', 'action'];
   columnsCode = ['code', 'libelle', 'action'];
   columnsCodeCtrl = ['codeCtrl', 'libelle', 'action'];
   exportColumns = {
