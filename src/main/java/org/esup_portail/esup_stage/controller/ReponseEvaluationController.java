@@ -11,6 +11,7 @@ import org.esup_portail.esup_stage.repository.ReponseSupplementaireJpaRepository
 import org.esup_portail.esup_stage.repository.ReponseEvaluationJpaRepository;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
+import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.MailerService;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,9 @@ public class ReponseEvaluationController {
 
     @Autowired
     MailerService mailerService;
+
+    @Autowired
+    AppConfigService appConfigService;
 
     @GetMapping("/getByConvention/{id}")
     public ReponseEvaluation getByConvention(@PathVariable("id") int id) {
@@ -146,8 +150,12 @@ public class ReponseEvaluationController {
         ContextDto contexteDto = ServiceContext.getServiceContext();
         Utilisateur utilisateur = contexteDto.getUtilisateur();
 
+        String mailEtudiant = convention.getCourrielPersoEtudiant();
+        if(mailEtudiant == null || appConfigService.getConfigGenerale().isUtiliserMailPersoEtudiant())
+            mailEtudiant = convention.getEtudiant().getMail();
+
         if(typeFiche == 0) {
-            mailerService.sendAlerteValidation(convention.getEtudiant().getMail(), convention, utilisateur, TemplateMail.CODE_FICHE_EVAL);
+            mailerService.sendAlerteValidation(mailEtudiant, convention, utilisateur, TemplateMail.CODE_FICHE_EVAL);
             convention.setEnvoiMailEtudiant(true);
             convention.setDateEnvoiMailEtudiant(new Date());
         }else if(typeFiche == 1){

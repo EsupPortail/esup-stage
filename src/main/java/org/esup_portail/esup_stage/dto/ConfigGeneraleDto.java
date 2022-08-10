@@ -27,6 +27,8 @@ public class ConfigGeneraleDto {
     @JsonView(Views.Etu.class)
     private String validationAdministrativeLibelle = "validation administrative";
 
+    private boolean utiliserMailPersoEtudiant = false;
+
     public String getCodeUniversite() {
         return codeUniversite;
     }
@@ -121,5 +123,13 @@ public class ConfigGeneraleDto {
 
     public void setValidationAdministrativeLibelle(String validationAdministrativeLibelle) {
         this.validationAdministrativeLibelle = validationAdministrativeLibelle;
+    }
+
+    public boolean isUtiliserMailPersoEtudiant() {
+        return utiliserMailPersoEtudiant;
+    }
+
+    public void setUtiliserMailPersoEtudiant(boolean utiliserMailPersoEtudiant) {
+        this.utiliserMailPersoEtudiant = utiliserMailPersoEtudiant;
     }
 }

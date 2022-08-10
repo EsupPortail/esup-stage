@@ -91,6 +91,15 @@
               <input matInput formControlName="validationAdministrativeLibelle" />
             </mat-form-field>
           </div>
+          <div class="row mb-2">
+            <div class="col-md-12">
+              <div class="mb-2">Email de correspondance avec l’étudiant</div>
+              <mat-radio-group formControlName="utiliserMailPersoEtudiant">
+                <mat-radio-button [value]="false">Mail institutionnel de l’étudiant</mat-radio-button>
+                <mat-radio-button [value]="true">Mail personnel de l’étudiant</mat-radio-button>
+              </mat-radio-group>
+            </div>
+          </div>
           <div class="mt-3" *ngIf="canEdit()">
             <button mat-flat-button color="primary">Valider</button>
           </div>
