@@ -1,0 +1,32 @@
+databaseChangeLog:
+- changeSet:
+    id: commune-create
+    author: tjubera
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+                nullable: false
+                primaryKey: true
+            name: idCommune
+            type: INT
+        - column:
+            constraints:
+                nullable: false
+            name: libelleCommune
+            type: VARCHAR(100)
+        tableName: Commune
+- changeSet:
+    id: commune-init
+    author: tjubera
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+              expectedResult: 0
+              sql: SELECT COUNT(*) FROM Commune
+    changes:
+        - sqlFile:
+              path: init-insert/commune.sql
+              relativeToChangelogFile: true

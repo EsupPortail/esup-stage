@@ -1,0 +1,32 @@
+package org.esup_portail.esup_stage.model;
+
+import javax.persistence.*;
+
+@Entity
+@Table(name = "Commune")
+public class Commune {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "idCommune", nullable = false)
+    private int id;
+
+    @Column(name = "libelleCommune", nullable = false)
+    private String libelle;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getLibelle() {
+        return libelle;
+    }
+
+    public void setLibelle(String libelle) {
+        this.libelle = libelle;
+    }
+}

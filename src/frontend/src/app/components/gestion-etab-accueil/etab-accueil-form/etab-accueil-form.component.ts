@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, OnDestroy } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from "@angular/forms";
 import { StructureService } from "../../../services/structure.service";
+import { CommuneService } from "../../../services/commune.service";
+import { CodePostalService } from "../../../services/codePostal.service";
 import { PaysService } from "../../../services/pays.service";
 import { TypeStructureService } from "../../../services/type-structure.service";
 import { NafN1Service } from "../../../services/naf-n1.service";
@@ -8,8 +10,8 @@ import { NafN5Service } from "../../../services/naf-n5.service";
 import { StatutJuridiqueService } from "../../../services/statut-juridique.service";
 import { EffectifService } from "../../../services/effectif.service";
 import { MessageService } from "../../../services/message.service";
-import { ReplaySubject, Subject } from 'rxjs';
-import { take, takeUntil } from 'rxjs/operators';
+import { ReplaySubject, Subject, Observable } from 'rxjs';
+import { take, takeUntil, map, startWith } from 'rxjs/operators';
 
 @Component({
   selector: 'app-etab-accueil-form',
@@ -21,6 +23,11 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges {
   @Input() etab: any;
   @Output() submitted = new EventEmitter<any>();
   @Output() canceled = new EventEmitter<boolean>();
+
+  communes: any[] = [];
+  codePostals: any[] = [];
+  filteredCodePostals: Observable<string[]>;
+  filteredCommunes: Observable<string[]>;
 
   countries: any[] = [];
   typeStructures: any[] = [];
@@ -39,6 +46,8 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges {
   constructor(
     public structureService: StructureService,
     private paysService: PaysService,
+    private codePostalService: CodePostalService,
+    private communeService: CommuneService,
     private typeStructureService: TypeStructureService,
     private nafN1Service: NafN1Service,
     private nafN5Service: NafN5Service,
@@ -49,6 +58,12 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit(): void {
+    this.codePostalService.findAll().subscribe((response: any) => {
+      this.codePostals = response;
+    });
+    this.communeService.findAll().subscribe((response: any) => {
+      this.communes = response;
+    });
     this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServPays: {value: 'O', type: 'text'}})).subscribe((response: any) => {
       this.countries = response.data;
     });
@@ -89,6 +104,16 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges {
     });
 
     this.form.get('idTypeStructure')?.disable();
+
+    this.filteredCodePostals = this.form.get('codePostal').valueChanges.pipe(
+      startWith(''),
+      map((value: string) => this._filterStartWith(value || '', this.codePostals)),
+    );
+
+    this.filteredCommunes = this.form.get('commune').valueChanges.pipe(
+      startWith(''),
+      map((value: string) => this._filter(value || '', this.communes)),
+    );
 
     if (this.etab.nafN5) {
       this.selectedNafN5 = this.etab.nafN5;
@@ -188,4 +213,17 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges {
     return true;
   }
 
+  private _filter(value: string, options : any[]): string[] {
+    const filterValue = value.toLowerCase();
+    const maxSize = 200;
+
+    return options.filter(option => option.libelle.toLowerCase().includes(filterValue)).slice(0, maxSize);
+  }
+
+  private _filterStartWith(value: string, options : any[]): string[] {
+    const filterValue = value.toLowerCase();
+    const maxSize = 200;
+
+    return options.filter(option => option.libelle.toLowerCase().startsWith(filterValue)).slice(0, maxSize);
+  }
 }

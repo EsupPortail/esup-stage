@@ -1,0 +1,32 @@
+databaseChangeLog:
+- changeSet:
+    id: codePostal-create
+    author: tjubera
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+                nullable: false
+                primaryKey: true
+            name: idCodePostal
+            type: INT
+        - column:
+            constraints:
+                nullable: false
+            name: libelleCodePostal
+            type: VARCHAR(5)
+        tableName: CodePostal
+- changeSet:
+    id: codePostal-init
+    author: tjubera
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+              expectedResult: 0
+              sql: SELECT COUNT(*) FROM CodePostal
+    changes:
+        - sqlFile:
+              path: init-insert/codePostal.sql
+              relativeToChangelogFile: true

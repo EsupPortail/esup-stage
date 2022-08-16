@@ -116,3 +116,9 @@ databaseChangeLog:
   - include:
       file: 2.0.0-etablissement-enseignement.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 2.0.0-commune.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 2.0.0-codePostal.yaml
+      relativeToChangelogFile: true
