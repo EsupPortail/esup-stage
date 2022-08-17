@@ -127,6 +127,7 @@ import { GestionGroupeComponent } from './components/convention-create-en-masse/
 import { TemplateMailGroupeComponent } from './components/convention-create-en-masse/template-mail-groupe/template-mail-groupe.component';
 import { ConfirmDeleteCentreComponent } from './components/centre-gestion-search/confirm-delete-centre/confirm-delete-centre.component';
 import { TruncatePipe } from './pipes/truncate.pipe';
+import { FormAutocompleteFieldComponent } from './components/form-autocomplete-field/form-autocomplete-field.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -210,6 +211,7 @@ registerLocaleData(localeFr, 'fr');
     TemplateMailGroupeComponent,
     ConfirmDeleteCentreComponent,
     TruncatePipe,
+    FormAutocompleteFieldComponent,
   ],
   imports: [
     BrowserModule,

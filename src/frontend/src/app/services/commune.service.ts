@@ -7,11 +7,15 @@ import { PaginatedService } from "./paginated.service";
 @Injectable({
   providedIn: 'root'
 })
-export class CommuneService {
+export class CommuneService implements PaginatedService {
 
   constructor(private http: HttpClient) { }
 
-  findAll(): Observable<any> {
+  getPaginated(page: number, perPage: number, predicate: string, sortOrder: string, filters: string): Observable<any> {
+    return this.http.get(environment.apiUrl + "/commune/");
+  }
+
+  exportData(format: string, headers: string, predicate: string, sortOrder: string, filters: string): Observable<any> {
     return this.http.get(environment.apiUrl + "/commune/");
   }
 }

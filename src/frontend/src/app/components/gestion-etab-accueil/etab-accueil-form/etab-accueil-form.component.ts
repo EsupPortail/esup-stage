@@ -24,11 +24,6 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges {
   @Output() submitted = new EventEmitter<any>();
   @Output() canceled = new EventEmitter<boolean>();
 
-  communes: any[] = [];
-  codePostals: any[] = [];
-  filteredCodePostals: Observable<string[]>;
-  filteredCommunes: Observable<string[]>;
-
   countries: any[] = [];
   typeStructures: any[] = [];
   secteurs: any[] = [];
@@ -46,8 +41,8 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges {
   constructor(
     public structureService: StructureService,
     private paysService: PaysService,
-    private codePostalService: CodePostalService,
-    private communeService: CommuneService,
+    public codePostalService: CodePostalService,
+    public communeService: CommuneService,
     private typeStructureService: TypeStructureService,
     private nafN1Service: NafN1Service,
     private nafN5Service: NafN5Service,
@@ -58,12 +53,6 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit(): void {
-    this.codePostalService.findAll().subscribe((response: any) => {
-      this.codePostals = response;
-    });
-    this.communeService.findAll().subscribe((response: any) => {
-      this.communes = response;
-    });
     this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServPays: {value: 'O', type: 'text'}})).subscribe((response: any) => {
       this.countries = response.data;
     });
@@ -104,16 +93,6 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges {
     });
 
     this.form.get('idTypeStructure')?.disable();
-
-    this.filteredCodePostals = this.form.get('codePostal').valueChanges.pipe(
-      startWith(''),
-      map((value: string) => this._filterStartWith(value || '', this.codePostals)),
-    );
-
-    this.filteredCommunes = this.form.get('commune').valueChanges.pipe(
-      startWith(''),
-      map((value: string) => this._filter(value || '', this.communes)),
-    );
 
     if (this.etab.nafN5) {
       this.selectedNafN5 = this.etab.nafN5;
@@ -211,19 +190,5 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges {
     }
 
     return true;
-  }
-
-  private _filter(value: string, options : any[]): string[] {
-    const filterValue = value.toLowerCase();
-    const maxSize = 200;
-
-    return options.filter(option => option.libelle.toLowerCase().includes(filterValue)).slice(0, maxSize);
-  }
-
-  private _filterStartWith(value: string, options : any[]): string[] {
-    const filterValue = value.toLowerCase();
-    const maxSize = 200;
-
-    return options.filter(option => option.libelle.toLowerCase().startsWith(filterValue)).slice(0, maxSize);
   }
 }

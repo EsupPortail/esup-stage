@@ -83,32 +83,18 @@
       <input matInput formControlName="voie" required />
       <mat-error><app-form-error [field]="form.get('voie')"></app-form-error></mat-error>
     </mat-form-field>
-    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-      <mat-label>Code postals</mat-label>
-      <input matInput formControlName="codePostal" [matAutocomplete]="auto" required />
-      <mat-autocomplete #auto="matAutocomplete">
-        <mat-option *ngFor="let codePostal of filteredCodePostals | async" [value]="codePostal.libelle">
-          {{codePostal.libelle}}
-        </mat-option>
-      </mat-autocomplete>
-      <mat-error><app-form-error [field]="form.get('codePostal')"></app-form-error></mat-error>
-    </mat-form-field>
+    <div class="col-sm-12 col-md-6 mb-2">
+      <app-form-autocomplete-field [service]="codePostalService" [field]="form.get('codePostal')" [fieldLabel]="'Code postal'" [startWith]="true" ></app-form-autocomplete-field>
+    </div>
   </div>
   <div class="row">
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Bâtiment / Résidence / Z.I</mat-label>
       <input matInput formControlName="batimentResidence" />
     </mat-form-field>
-    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-      <mat-label>Commune</mat-label>
-      <input matInput formControlName="commune" [matAutocomplete]="autoCommune" required />
-      <mat-autocomplete #autoCommune="matAutocomplete">
-        <mat-option *ngFor="let commune of filteredCommunes | async" [value]="commune.libelle">
-          {{commune.libelle}}
-        </mat-option>
-      </mat-autocomplete>
-      <mat-error><app-form-error [field]="form.get('commune')"></app-form-error></mat-error>
-    </mat-form-field>
+    <div class="col-sm-12 col-md-6 mb-2">
+      <app-form-autocomplete-field [service]="communeService" [field]="form.get('commune')" [fieldLabel]="'Commune'" [startWith]="false" ></app-form-autocomplete-field>
+    </div>
   </div>
   <div class="row">
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
