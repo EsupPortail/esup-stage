@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { PeriodeInterruptionStageService } from "../../../services/periode-interruption-stage.service";
 import { ConventionService } from "../../../services/convention.service";
 import { MessageService } from "../../../services/message.service";
+import { AuthService } from "../../../services/auth.service";
 import { Router } from "@angular/router";
 import * as FileSaver from 'file-saver';
 
@@ -15,10 +16,12 @@ export class RecapitulatifComponent implements OnInit {
   @Input() convention: any;
   interruptionsStage: any[] = [];
   isValide: boolean = false;
+  canPrint: boolean = true;
 
   constructor(private periodeInterruptionStageService: PeriodeInterruptionStageService,
               private conventionService: ConventionService,
               private messageService: MessageService,
+              private authService: AuthService,
               private router: Router) {
   }
 
@@ -26,6 +29,25 @@ export class RecapitulatifComponent implements OnInit {
     this.isValide = this.convention.validationPedagogique && this.convention.validationConvention;
     if(this.convention.interruptionStage){
       this.loadInterruptionsStage();
+    }
+
+    if(this.authService.isEtudiant()){
+      this.canPrint = false;
+      const centreGestion : any = this.convention.centreGestion;
+      if(centreGestion.autoriserImpressionConvention){
+        if(centreGestion.conditionValidationImpression == 0){
+          this.canPrint = true;
+        }
+        if(centreGestion.conditionValidationImpression == 1 && this.convention.validationPedagogique){
+          this.canPrint = true;
+        }
+        if(centreGestion.conditionValidationImpression == 2 && this.convention.verificationAdministrative){
+          this.canPrint = true;
+        }
+        if(centreGestion.conditionValidationImpression == 3 && this.convention.validationPedagogique && this.convention.verificationAdministrative){
+          this.canPrint = true;
+        }
+      }
     }
   }
 

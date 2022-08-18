@@ -190,6 +190,7 @@ public class CentreGestionController {
         ) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Les ordres de validations doivent être 1, 2 ou 3, et être différentes pour chaque types de validation");
         }*/
+        centreGestion.setFicheEvaluation(null);
         return centreGestionJpaRepository.saveAndFlush(centreGestion);
     }
 

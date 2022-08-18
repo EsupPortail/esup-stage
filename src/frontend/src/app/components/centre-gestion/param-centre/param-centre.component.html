@@ -21,6 +21,18 @@
                 <mat-checkbox formControlName="saisieTuteurProParEtudiant">Autoriser les étudiants à saisir leur tuteur professionnel</mat-checkbox>
               </div>
               <div>
+                <mat-checkbox formControlName="autoriserImpressionConvention">Autoriser les étudiants à imprimer leur(s) convention(s)</mat-checkbox>
+              </div>
+              <div *ngIf="form.get('autoriserImpressionConvention')?.value">
+                <div class="mb-2">Sous Conditions : </div>
+                <mat-radio-group style="display: grid" formControlName="conditionValidationImpression">
+                  <mat-radio-button style="margin-left: 10px" [value]="0">Aucune condition (l’étudiant pourra imprimer sa convention, validée ou pas)</mat-radio-button>
+                  <mat-radio-button style="margin-left: 10px" [value]="1">Uniquement sous réserve de validation pédagogique</mat-radio-button>
+                  <mat-radio-button style="margin-left: 10px" [value]="2">Uniquement sous réserve de validation administrative</mat-radio-button>
+                  <mat-radio-button style="margin-left: 10px" [value]="3">Uniquement sous réserve de validation pédagogique et administrative</mat-radio-button>
+                </mat-radio-group>
+              </div>
+              <div>
                 <mat-checkbox formControlName="autorisationEtudiantCreationConvention">Autoriser les étudiants à créer des conventions</mat-checkbox>
               </div>
               <div>

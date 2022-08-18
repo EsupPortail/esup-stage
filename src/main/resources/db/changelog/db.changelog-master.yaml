@@ -122,3 +122,6 @@ databaseChangeLog:
   - include:
       file: 2.0.0-codePostal.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 2.0.0-centre-gestion.yaml
+      relativeToChangelogFile: true
