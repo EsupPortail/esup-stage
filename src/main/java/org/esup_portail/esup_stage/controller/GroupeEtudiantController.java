@@ -506,7 +506,7 @@ public class GroupeEtudiantController {
 
         ConventionFormDto conventionFormDto = new ConventionFormDto();
 
-        LangueConvention langueConvention = langueConventionJpaRepository.findAll().get(0);
+        LangueConvention langueConvention = langueConventionJpaRepository.findByCode("fr");
 
         conventionFormDto.setIdTypeConvention(inscriptions.get(0).getTypeConvention().getId());
         conventionFormDto.setCodeLangueConvention(langueConvention.getCode());
