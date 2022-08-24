@@ -1,0 +1,12 @@
+databaseChangeLog:
+- changeSet:
+    id: centre-gestion-conditionValidationImpression
+    author: tjubera
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            name: conditionValidationImpression
+            defaultValue: 0
+            type: INT
+        tableName: CentreGestion

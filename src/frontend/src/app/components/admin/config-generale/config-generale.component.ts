@@ -58,7 +58,6 @@ export class ConfigGeneraleComponent implements OnInit {
       anneeBasculeMois: [null, [Validators.required, Validators.min(1), Validators.max(12)]],
       autoriserConventionsOrphelines: [null, [Validators.required]],
       typeCentre: [null, [Validators.required]],
-      autoriserCentresBloquerImpressionConvention: [null, [Validators.required]],
       autoriserEtudiantAModifierEntreprise: [null, [Validators.required]],
       autoriserValidationAutoOrgaAccCreaEtu: [null, [Validators.required]],
       utiliserMailPersoEtudiant: [null, [Validators.required]],

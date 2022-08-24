@@ -100,6 +100,8 @@ export class ParamCentreComponent implements OnInit {
     this.form.setValue({
       codeConfidentialite: this.centreGestion.codeConfidentialite,
       saisieTuteurProParEtudiant: this.centreGestion.saisieTuteurProParEtudiant,
+      autoriserImpressionConvention: this.centreGestion.autoriserImpressionConvention,
+      conditionValidationImpression: this.centreGestion.conditionValidationImpression,
       autorisationEtudiantCreationConvention: this.centreGestion.autorisationEtudiantCreationConvention,
       validationPedagogique: this.centreGestion.validationPedagogique,
       verificationAdministrative: this.centreGestion.verificationAdministrative,

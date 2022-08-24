@@ -80,6 +80,9 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     @Column()
     private boolean autoriserImpressionConvention;
 
+    @Column
+    private Integer conditionValidationImpression;
+
     @ManyToOne
     @JoinColumn(name = "idFichier")
     private Fichier fichier;
@@ -303,6 +306,14 @@ public class CentreGestion extends ObjetMetier implements Exportable {
 
     public void setAutoriserImpressionConvention(boolean autoriserImpressionConvention) {
         this.autoriserImpressionConvention = autoriserImpressionConvention;
+    }
+
+    public Integer getConditionValidationImpression() {
+        return conditionValidationImpression;
+    }
+
+    public void setConditionValidationImpression(Integer conditionValidationImpression) {
+        this.conditionValidationImpression = conditionValidationImpression;
     }
 
     public Fichier getFichier() {

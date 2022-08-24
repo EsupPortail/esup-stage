@@ -231,6 +231,8 @@ export class CentreGestionComponent implements OnInit {
     this.paramCentreForm = this.fb.group({
       codeConfidentialite: [null],
       saisieTuteurProParEtudiant: [null],
+      autoriserImpressionConvention: [null],
+      conditionValidationImpression: [null],
       autorisationEtudiantCreationConvention: [null],
       validationPedagogique: [null],
       verificationAdministrative: [null],
@@ -251,6 +253,8 @@ export class CentreGestionComponent implements OnInit {
   setCentreGestionParamCentre() {
     this.centreGestion.codeConfidentialite = this.paramCentreForm.get('codeConfidentialite')?.value;
     this.centreGestion.saisieTuteurProParEtudiant = this.paramCentreForm.get('saisieTuteurProParEtudiant')?.value;
+    this.centreGestion.autoriserImpressionConvention = this.paramCentreForm.get('autoriserImpressionConvention')?.value;
+    this.centreGestion.conditionValidationImpression = this.paramCentreForm.get('conditionValidationImpression')?.value;
     this.centreGestion.autorisationEtudiantCreationConvention = this.paramCentreForm.get('autorisationEtudiantCreationConvention')?.value;
     this.centreGestion.validationPedagogique = this.paramCentreForm.get('validationPedagogique')?.value;
     this.centreGestion.verificationAdministrative = this.paramCentreForm.get('verificationAdministrative')?.value;

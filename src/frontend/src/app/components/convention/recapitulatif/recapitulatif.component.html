@@ -3,8 +3,7 @@
     <div class="col-sm-12 text-center">
       <mat-card-actions>
         <button mat-button mat-flat-button color="primary" (click)="printConvention()"
-                *ngIf="convention.validationPedagogique
-                  && (!convention.centreGestion.verificationAdministrative || (convention.centreGestion.verificationAdministrative && convention.verificationAdministrative))">
+                *ngIf="canPrint">
           Imprimer la convention
         </button>
       </mat-card-actions>
