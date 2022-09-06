@@ -15,3 +15,15 @@ a {
   height: 40px;
   margin-left: 10px;
 }
+
+@media (max-width: 767px) {
+  #app-logo {
+    display: block;
+    margin-top: 8px;
+  }
+
+  #app-toolbar {
+    height: 80px;
+    font-size: 0.8rem;
+  }
+}
