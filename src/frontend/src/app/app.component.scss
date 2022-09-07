@@ -56,3 +56,9 @@ mat-nav-list {
   padding: 10px 0;
   background-color: #f2f2f2;
 }
+
+@media (max-width: 767px) {
+  mat-sidenav-content {
+    margin-left: 0px !important;
+  }
+}
