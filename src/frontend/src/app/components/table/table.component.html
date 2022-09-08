@@ -1,74 +1,87 @@
 <mat-card *ngIf="filters.length > 0" class="table-filters">
   <mat-card-content>
-    <form>
-      <div class="row">
-        <ng-container *ngFor="let filter of filters">
-          <mat-form-field class="col-md-3" appearance="fill" *ngIf="!filter.hidden">
-            <mat-label>{{filter.libelle}}</mat-label>
-            <ng-container [ngSwitch]="filter.type">
-              <ng-container *ngSwitchCase="'boolean'">
-                <mat-select [name]="filter.id" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()">
-                  <mat-option></mat-option>
-                  <mat-option [value]="true">Oui</mat-option>
-                  <mat-option [value]="false">Non</mat-option>
-                </mat-select>
-              </ng-container>
-              <ng-container *ngSwitchCase="'list'">
-                <mat-select [name]="filter.id" multiple [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()">
-                  <mat-option *ngFor="let option of filter.options" [value]="option[filter.keyId]">{{option[filter.keyLibelle]}}</mat-option>
-                </mat-select>
-              </ng-container>
-              <ng-container *ngSwitchCase="'temEnServ'">
-                <mat-select [name]="filter.id" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()">
-                  <mat-option></mat-option>
-                  <mat-option [value]="'O'">Oui</mat-option>
-                  <mat-option [value]="'N'">Non</mat-option>
-                </mat-select>
-              </ng-container>
-              <ng-container *ngSwitchCase="'date'">
-                <input matInput [name]="filter.id" [matDatepicker]="datepicker" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()" />
-              </ng-container>
-              <ng-container *ngSwitchCase="'date-min'">
-                <input matInput [name]="filter.id" [matDatepicker]="datepicker" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()" />
-              </ng-container>
-              <ng-container *ngSwitchCase="'date-max'">
-                <input matInput [name]="filter.id" [matDatepicker]="datepicker" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()" />
-              </ng-container>
-              <ng-container *ngSwitchCase="'autocomplete'">
-                <mat-chip-list #chipList>
-                  <mat-chip *ngFor="let v of filterValues[filter.id].value" [selectable]="true" [removable]="true" (removed)="removeAutocomplete(filter, v)">
-                    {{v[filter.keyLibelle]}}
-                    <span matChipRemove>
+
+    <mat-expansion-panel *ngIf="isMobile" [expanded]="false">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Filtres</mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <ng-template [ngTemplateOutlet]="tplFilter"></ng-template>
+    </mat-expansion-panel>
+
+    <ng-template *ngIf="!isMobile" [ngTemplateOutlet]="tplFilter"></ng-template>
+
+    <ng-template #tplFilter>
+      <form>
+        <div class="row">
+          <ng-container *ngFor="let filter of filters">
+            <mat-form-field class="col-md-3" appearance="fill" *ngIf="!filter.hidden">
+              <mat-label>{{filter.libelle}}</mat-label>
+              <ng-container [ngSwitch]="filter.type">
+                <ng-container *ngSwitchCase="'boolean'">
+                  <mat-select [name]="filter.id" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()">
+                    <mat-option></mat-option>
+                    <mat-option [value]="true">Oui</mat-option>
+                    <mat-option [value]="false">Non</mat-option>
+                  </mat-select>
+                </ng-container>
+                <ng-container *ngSwitchCase="'list'">
+                  <mat-select [name]="filter.id" multiple [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()">
+                    <mat-option *ngFor="let option of filter.options" [value]="option[filter.keyId]">{{option[filter.keyLibelle]}}</mat-option>
+                  </mat-select>
+                </ng-container>
+                <ng-container *ngSwitchCase="'temEnServ'">
+                  <mat-select [name]="filter.id" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()">
+                    <mat-option></mat-option>
+                    <mat-option [value]="'O'">Oui</mat-option>
+                    <mat-option [value]="'N'">Non</mat-option>
+                  </mat-select>
+                </ng-container>
+                <ng-container *ngSwitchCase="'date'">
+                  <input matInput [name]="filter.id" [matDatepicker]="datepicker" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()" />
+                </ng-container>
+                <ng-container *ngSwitchCase="'date-min'">
+                  <input matInput [name]="filter.id" [matDatepicker]="datepicker" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()" />
+                </ng-container>
+                <ng-container *ngSwitchCase="'date-max'">
+                  <input matInput [name]="filter.id" [matDatepicker]="datepicker" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()" />
+                </ng-container>
+                <ng-container *ngSwitchCase="'autocomplete'">
+                  <mat-chip-list #chipList>
+                    <mat-chip *ngFor="let v of filterValues[filter.id].value" [selectable]="true" [removable]="true" (removed)="removeAutocomplete(filter, v)">
+                      {{v[filter.keyLibelle]}}
+                      <span matChipRemove>
                       <mat-icon>cancel</mat-icon>
                     </span>
-                  </mat-chip>
-                </mat-chip-list>
-                <input [name]="filter.id + '-autocomplete'" [(ngModel)]="filterValues[filter.id].autocomplete" (ngModelChange)="searchAutocomplete(filter, $event)"
-                       [matAutocomplete]="auto" [matChipInputFor]="chipList" />
-                <mat-autocomplete #auto="matAutocomplete" (optionSelected)="autocompleteSelected(filter, $event)">
-                  <mat-option *ngFor="let v of autocompleteData[filter.id]" [value]="v">
-                    {{v[filter.keyLibelle]}}
-                  </mat-option>
-                </mat-autocomplete>
+                    </mat-chip>
+                  </mat-chip-list>
+                  <input [name]="filter.id + '-autocomplete'" [(ngModel)]="filterValues[filter.id].autocomplete" (ngModelChange)="searchAutocomplete(filter, $event)"
+                         [matAutocomplete]="auto" [matChipInputFor]="chipList" />
+                  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="autocompleteSelected(filter, $event)">
+                    <mat-option *ngFor="let v of autocompleteData[filter.id]" [value]="v">
+                      {{v[filter.keyLibelle]}}
+                    </mat-option>
+                  </mat-autocomplete>
+                </ng-container>
+                <ng-container *ngSwitchDefault>
+                  <input matInput [name]="filter.id" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()" />
+                </ng-container>
               </ng-container>
-              <ng-container *ngSwitchDefault>
-                <input matInput [name]="filter.id" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()" />
-              </ng-container>
-            </ng-container>
-            <mat-datepicker-toggle matSuffix [for]="datepicker" [style.display]="['date', 'date-min', 'date-max'].indexOf(filter.type) === -1 ? 'none' : ''"></mat-datepicker-toggle>
-            <mat-datepicker #datepicker></mat-datepicker>
-          </mat-form-field>
-        </ng-container>
-      </div>
-      <div class="row">
-        <div class="col-sm-12 col-md-6">
-          <button type="button" mat-button mat-flat-button color="primary" *ngIf="actionButton" (click)="actionButton.action()">{{actionButton.libelle}}</button>
+              <mat-datepicker-toggle matSuffix [for]="datepicker" [style.display]="['date', 'date-min', 'date-max'].indexOf(filter.type) === -1 ? 'none' : ''"></mat-datepicker-toggle>
+              <mat-datepicker #datepicker></mat-datepicker>
+            </mat-form-field>
+          </ng-container>
         </div>
-        <div class="col-sm-12 col-md-6 text-right" [hidden]="hideDeleteFilters">
-          <button type="button" mat-button mat-stroked-button (click)="reset()">Supprimer les filtres</button>
+        <div class="row">
+          <div class="col-sm-12 col-md-6">
+            <button type="button" mat-button mat-flat-button color="primary" *ngIf="actionButton" (click)="actionButton.action()">{{actionButton.libelle}}</button>
+          </div>
+          <div class="col-sm-12 col-md-6 text-right" [hidden]="hideDeleteFilters">
+            <button type="button" mat-button mat-stroked-button (click)="reset()">Supprimer les filtres</button>
+          </div>
         </div>
-      </div>
-    </form>
+      </form>
+    </ng-template>
   </mat-card-content>
 </mat-card>
 

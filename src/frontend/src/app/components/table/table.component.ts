@@ -56,6 +56,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   autocmpleteChanged: any = [];
   autocompleteData: any = [];
   backConfig: any;
+  isMobile: boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -88,6 +89,9 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   }
 
   ngOnInit(): void {
+    if (window.screen.width < 768) {
+      this.isMobile = true;
+    }
     if (!this.pagination) {
       this.pageSize = 0;
     }
