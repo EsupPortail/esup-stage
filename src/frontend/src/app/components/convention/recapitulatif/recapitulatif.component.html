@@ -155,6 +155,8 @@
           <div class="col-sm-9">{{isValide ? convention.nomenclature.modeValidationStage : convention.modeValidationStage.libelle}}</div>
           <div class="col-sm-3 font-weight-bold">Cas particuliers</div>
           <div class="col-sm-9">{{convention.travailNuitFerie}}</div>
+          <div class="col-sm-3 font-weight-bold">Date de création de la convention </div>
+          <div class="col-sm-9">{{convention.dateValidationCreation |date:'shortDate'}}</div>
         </div>
       </div>
 

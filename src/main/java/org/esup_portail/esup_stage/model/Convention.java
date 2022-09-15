@@ -317,6 +317,9 @@ public class Convention extends ObjetMetier implements Exportable {
     @Column(nullable = false)
     private boolean validationCreation = false;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateValidationCreation;
+
     @ManyToOne
     @JoinColumn(name = "idPays")
     private Pays paysConvention;
@@ -1066,6 +1069,14 @@ public class Convention extends ObjetMetier implements Exportable {
 
     public void setValidationCreation(boolean validationCreation) {
         this.validationCreation = validationCreation;
+    }
+
+    public Date getDateValidationCreation() {
+        return dateValidationCreation;
+    }
+
+    public void setDateValidationCreation(Date dateValidationCreation) {
+        this.dateValidationCreation = dateValidationCreation;
     }
 
     public Pays getPaysConvention() {

@@ -308,6 +308,7 @@ public class ConventionController {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
         convention.setValidationCreation(true);
+        convention.setDateValidationCreation(new Date());
         convention = conventionJpaRepository.saveAndFlush(convention);
 
         if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
