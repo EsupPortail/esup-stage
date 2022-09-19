@@ -191,8 +191,8 @@
             (convention.contact.tel? ' - Tel : ' + convention.contact.tel : '')+
             (convention.contact.fax? ' - Fax : ' + convention.contact.fax : '')}}</div>
           <div class="col-sm-3 font-weight-bold">Signataire</div>
-          <div class="col-sm-9">{{(convention.signataire.civilite ? convention.signataire.civilite.libelle + ' ' : '') +convention.signataire.nom + ' ' +convention.signataire.prenom +
-            (convention.signataire.fonction ? ', ' + convention.signataire.fonction : '')}}</div>
+          <div class="col-sm-9">{{convention.signataire ? (convention.signataire.civilite ? convention.signataire.civilite.libelle + ' ' : '') +convention.signataire.nom + ' ' +convention.signataire.prenom +
+            (convention.signataire.fonction ? ', ' + convention.signataire.fonction : '') : ''}}</div>
         </div>
       </div>
     </div>
