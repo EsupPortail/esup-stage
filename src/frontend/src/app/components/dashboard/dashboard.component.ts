@@ -155,6 +155,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.annees = listAnneeData;
         this.anneeEnCours = this.annees.find((a: any) => { return a.anneeEnCours === true });
         if (!this.authService.isEtudiant()) {
+          this.annees.push({
+            "annee": "any",
+            "libelle": "Toutes les années",
+            "anneeEnCours": false,
+            "any": true
+          })
           this.changeAnnee();
         } else {
           this.appTable?.setFilterOption('annee', this.annees);
@@ -201,18 +207,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   changeAnnee(): void {
-    this.appTable?.setFilter({id: 'annee', type: 'text', value: this.anneeEnCours.libelle, specific: false});
+    this.appTable?.setFilter({id: 'annee', type: 'text', value: this.anneeEnCours.any?"":this.anneeEnCours.libelle, specific: false});
     this.appTable?.update();
     this.countConvention();
-    // Compte le nombre de conventions dont la date de validation se rapproche ou dépasse la date de début du stage
-    this.conventionService.countConventionEnAttenteAlerte(this.anneeEnCours.annee).subscribe((response: number) => {
-      if (response > 0) {
-        this.snackBar.open(`${response} convention(s) à valider dont la date de validation se rapproche ou dépasse la date de début du stage`, 'Fermer', {
-          horizontalPosition: 'center',
-          verticalPosition: 'top',
-        });
-      }
-    });
+    if(!this.anneeEnCours.any){
+      // Compte le nombre de conventions dont la date de validation se rapproche ou dépasse la date de début du stage
+      this.conventionService.countConventionEnAttenteAlerte(this.anneeEnCours.annee).subscribe((response: number) => {
+        if (response > 0) {
+          this.snackBar.open(`${response} convention(s) à valider dont la date de validation se rapproche ou dépasse la date de début du stage`, 'Fermer', {
+            horizontalPosition: 'center',
+            verticalPosition: 'top',
+          });
+        }
+      });
+    }
   }
 
   isSelected(data: any): boolean {
