@@ -3,7 +3,7 @@
     <form>
       <div class="row">
         <ng-container *ngFor="let filter of filters">
-          <mat-form-field class="col-md-3" appearance="fill" *ngIf="!filter.hidden">
+          <mat-form-field class="col-md-{{filter.colSpan ?? 3}}" appearance="fill" *ngIf="!filter.hidden">
             <mat-label>{{filter.libelle}}</mat-label>
             <ng-container [ngSwitch]="filter.type">
               <ng-container *ngSwitchCase="'boolean'">

@@ -178,11 +178,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
       { id: 'structure', libelle: 'Établissement d\'accueil', specific: true },
       { id: 'dateDebutStage', libelle: 'Date début du stage', type: 'date' },
       { id: 'dateFinStage', libelle: 'Date fin du stage', type: 'date' },
-      { id: 'ufr.id', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
-      { id: 'etape.id', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
       { id: 'enseignant', libelle: 'Enseignant', specific: true },
       { id: 'avenant', libelle: 'Avenant', type: 'boolean', specific: true },
       { id: 'etatValidation', libelle: 'État de validation de la convention', type: 'list', options: this.validationsOptions, keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
+      { id: 'ufr.id', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
+      { id: 'etape.id', libelle: 'Étape', type: 'autocomplete', autocompleteService: this.etapeService, options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true, colSpan: 9 },
     ];
 
     this.exportColumns = {
@@ -305,8 +305,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
         else if (key === 'etape.id' && this.savedFilters[key].value) {
           let etapeSelectedList: any[] = [];
           this.savedFilters[key].value.forEach((value: any) => {
-            let etapeSelected = this.etapeList.find((etape: any) => etape.id.code === value.code);
-            etapeSelectedList.push(etapeSelected.id);
+            let etapeSelected = this.etapeList.find((etape: any) => etape.id.code === value.id.code);
+            etapeSelectedList.push(etapeSelected);
           });
           this.appTable?.setFilterValue(key, etapeSelectedList);
         }
