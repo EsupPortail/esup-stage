@@ -736,7 +736,7 @@ public class Convention extends ObjetMetier implements Exportable {
     }
 
     public String getNbHeuresHebdo() {
-        return nbHeuresHebdo;
+        return nbHeuresHebdo.replaceAll("[a-zA-Z ]*", "");
     }
 
     public void setNbHeuresHebdo(String nbHeuresHebdo) {
