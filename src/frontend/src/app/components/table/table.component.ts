@@ -117,11 +117,9 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
         this.data.forEach((row: any) => {
           let depasse = false;
           if (row.depasseDelaiValidation) {
-            const ordreValidation = this.authService.isEnseignant() ? row.centreGestion.validationPedagogiqueOrdre : row.centreGestion.validationConventionOrdre;
-            if (ordreValidation === 1) depasse = true;
-            if (row.centreGestion.validationPedagogiqueOrdre <= (ordreValidation - 1) && row.validationPedagogique) depasse = true;
-            if (row.centreGestion.verificationAdministrativeOrdre <= (ordreValidation - 1) && row.verificationAdministrative) depasse = true;
-            if (row.centreGestion.validationConventionOrdre <= (ordreValidation - 1) && row.validationConvention) depasse = true;
+            depasse = (this.authService.isEnseignant() && row.centreGestion.validationPedagogique && !row.validationPedagogique) ||
+            (!this.authService.isEnseignant() && row.centreGestion.verificationAdministrative && !row.verificationAdministrative) ||
+            (!this.authService.isEnseignant() && row.centreGestion.validationConvention && !row.validationConvention)
           }
           row.depasseDelaiValidation = depasse;
         });
