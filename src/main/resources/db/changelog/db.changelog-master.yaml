@@ -95,3 +95,9 @@ databaseChangeLog:
   - include:
       file: 1.0.5-template-mail.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 1.0.5-periode-interruption-stage.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 1.0.5-periode-interruption-avenant.yaml
+      relativeToChangelogFile: true
