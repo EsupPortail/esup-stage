@@ -1,0 +1,9 @@
+databaseChangeLog:
+- changeSet:
+    id: increase-template-mail-libelle
+    author: ssound
+    changes:
+    - modifyDataType:
+        columnName: libelle
+        newDataType: VARCHAR(500)
+        tableName: TemplateMail

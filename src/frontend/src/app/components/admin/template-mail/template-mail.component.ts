@@ -49,7 +49,7 @@ export class TemplateMailComponent implements OnInit {
   ) {
     this.form = this.fb.group({
       code: [null, [Validators.required, Validators.maxLength(150)]],
-      libelle: [null, [Validators.required, Validators.maxLength(150)]],
+      libelle: [null, [Validators.required, Validators.maxLength(500)]],
       objet: [null, [Validators.required, Validators.maxLength(250)]],
       texte: [null, [Validators.required]],
     });
