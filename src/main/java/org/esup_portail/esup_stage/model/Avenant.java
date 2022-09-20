@@ -110,6 +110,9 @@ public class Avenant extends ObjetMetier implements Exportable {
     @JoinColumn(name = "idUniteDureeGratification")
     private UniteDuree uniteDuree;
 
+    @Transient
+    private String listeMotifsAvenant;
+
     public int getId() {
         return id;
     }
@@ -136,6 +139,27 @@ public class Avenant extends ObjetMetier implements Exportable {
 
     public String getMotifAvenant() {
         return motifAvenant;
+    }
+
+    public String getListeMotifsAvenant() {
+        String listeMotifsAvenant = "";
+        if(rupture)
+            listeMotifsAvenant += " - Rupture de stage<br>";
+        if(modificationSujet)
+            listeMotifsAvenant += " - Modification du sujet de stage<br>";
+        if(modificationPeriode)
+            listeMotifsAvenant += " - Modification de la période de stage<br>";
+        if(modificationMontantGratification)
+            listeMotifsAvenant += " - Modification du montant de la gratification<br>";
+        if(modificationLieu)
+            listeMotifsAvenant += " - Modification du lieu de stage<br>";
+        if(modificationSalarie)
+            listeMotifsAvenant += " - Modification du tuteur professionnel<br>";
+        if(modificationEnseignant)
+            listeMotifsAvenant += " - Modification de l'enseignant référant<br>";
+        if(!motifAvenant.isEmpty())
+            listeMotifsAvenant += " - Autre modification : '"+motifAvenant +"'<br>";
+        return listeMotifsAvenant;
     }
 
     public void setMotifAvenant(String motifAvenant) {
