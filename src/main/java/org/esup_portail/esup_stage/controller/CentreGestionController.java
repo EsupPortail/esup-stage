@@ -180,16 +180,10 @@ public class CentreGestionController {
     @PutMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.MODIFICATION})
     public CentreGestion update(@Valid @RequestBody CentreGestion centreGestion) {
-        // Les ordres de validations doivent être 1, 2 ou 3, et on ne peut pas avoir le même ordre
-        List<Integer> ordres = Arrays.asList(1, 2, 3);
-        /*if (
-                !ordres.contains(centreGestion.getValidationPedagogiqueOrdre())
-                || !ordres.contains(centreGestion.getValidationConventionOrdre())
-                || !ordres.contains(centreGestion.getVerificationAdministrativeOrdre())
-                || !(!Objects.equals(centreGestion.getValidationPedagogiqueOrdre(), centreGestion.getValidationConventionOrdre()) && !Objects.equals(centreGestion.getValidationPedagogiqueOrdre(), centreGestion.getVerificationAdministrativeOrdre()) && !Objects.equals(centreGestion.getValidationConventionOrdre(), centreGestion.getVerificationAdministrativeOrdre()))
-        ) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Les ordres de validations doivent être 1, 2 ou 3, et être différentes pour chaque types de validation");
-        }*/
+        // On passe verificationAdministrative=1 pour toutes les conventions liées au centre dont validationAdministrative et validationPedagogique sont à 1
+        if (centreGestion.getVerificationAdministrative() != null && centreGestion.getVerificationAdministrative()) {
+            conventionJpaRepository.updateVerificationAdministrative(centreGestion.getId());
+        }
         return centreGestionJpaRepository.saveAndFlush(centreGestion);
     }
 

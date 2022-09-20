@@ -603,10 +603,6 @@ public class ConventionController {
         convention.setCodeElp(conventionFormDto.getCodeElp());
         convention.setLibelleELP(conventionFormDto.getLibelleELP());
         convention.setCreditECTS(conventionFormDto.getCreditECTS());
-        // mis à TRUE les validations non prises en compte dans le centre de gestion
-        convention.setValidationConvention(!centreGestion.getValidationConvention());
-        convention.setValidationPedagogique(!centreGestion.getValidationPedagogique());
-        convention.setVerificationAdministrative(!centreGestion.getVerificationAdministrative());
 
         canViewEditConvention(convention, ServiceContext.getServiceContext().getUtilisateur());
         if (!isConventionModifiable(convention, ServiceContext.getServiceContext().getUtilisateur())) {

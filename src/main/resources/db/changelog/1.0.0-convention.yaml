@@ -164,13 +164,3 @@ databaseChangeLog:
             defaultValueBoolean: false
             name: verificationAdministrative
             type: BIT
-- changeSet:
-    id: convention-verificationAdministrative-init
-    author: ssound
-    changes:
-    - update:
-        tableName: Convention
-        columns:
-        - column:
-            name: verificationAdministrative
-            valueBoolean: true
