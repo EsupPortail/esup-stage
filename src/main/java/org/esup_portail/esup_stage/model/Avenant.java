@@ -157,7 +157,7 @@ public class Avenant extends ObjetMetier implements Exportable {
             listeMotifsAvenant += " - Modification du tuteur professionnel<br>";
         if(modificationEnseignant)
             listeMotifsAvenant += " - Modification de l'enseignant référant<br>";
-        if(!motifAvenant.isEmpty())
+        if(motifAvenant != null && !motifAvenant.isEmpty())
             listeMotifsAvenant += " - Autre modification : '"+motifAvenant +"'<br>";
         return listeMotifsAvenant;
     }
