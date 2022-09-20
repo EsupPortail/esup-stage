@@ -1259,7 +1259,7 @@ public class ImpressionContext {
 
             this.id = String.valueOf(avenant.getId());
             this.sujetStage = avenant.getSujetStage();
-            this.motifAvenant = avenant.getMotifAvenant();
+            this.motifAvenant = avenant.getListeMotifsAvenant();
             this.dateDebutStage = avenant.getDateDebutStage() != null ? df.format(avenant.getDateDebutStage()) : "";
             this.dateFinStage = avenant.getDateFinStage() != null ? df.format(avenant.getDateFinStage()) : "";
         }
