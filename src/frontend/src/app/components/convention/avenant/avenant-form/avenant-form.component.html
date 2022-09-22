@@ -390,9 +390,9 @@
     <div class="text-title">Autre modification</div>
     <mat-divider></mat-divider>
     <div class="row mt-3 mb-3">
-      <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+      <mat-form-field class="col mb-2" appearance="fill">
         <mat-label>Motif de la modification</mat-label>
-        <textarea matInput formControlName="motifAvenant" required ></textarea>
+        <textarea matInput rows="10" formControlName="motifAvenant" required></textarea>
         <mat-error><app-form-error [field]="form.get('motifAvenant')"></app-form-error></mat-error>
       </mat-form-field>
     </div>
