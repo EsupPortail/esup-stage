@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, OnChanges, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { PaysService } from "../../../services/pays.service";
@@ -17,10 +17,9 @@ import { PeriodeInterruptionStageService } from "../../../services/periode-inter
 import { AuthService } from "../../../services/auth.service";
 import { ContenuService } from "../../../services/contenu.service";
 import { ConventionService } from "../../../services/convention.service";
-import { pairwise,debounceTime,startWith }from 'rxjs/operators'
+import { debounceTime } from 'rxjs/operators'
 import { CalendrierComponent } from './calendrier/calendrier.component';
 import { InterruptionsFormComponent } from './interruptions-form/interruptions-form.component';
-import { intervalToDuration } from 'date-fns';
 
 @Component({
   selector: 'app-stage',
@@ -198,10 +197,22 @@ export class StageComponent implements OnInit {
       const keys=Object.keys(res).filter(k=>res[k]!=this.previousValues[k])
       this.previousValues={...this.form.value}
       keys.forEach((key: string) => {
-        if (['dateDebutStage','dateFinStage','interruptionStage','horairesReguliers','nbHeuresHebdo'].includes(key)){
+        if (['interruptionStage','horairesReguliers','nbHeuresHebdo'].includes(key)){
           this.updateHeuresTravail();
         }
-        this.updateSingleField(key,res[key]);
+        // controle du chevauchement avant mise à jour
+        if (['dateDebutStage','dateFinStage'].includes(key)) {
+          this.conventionService.controleChevauchement(this.convention.id, this.form.get('dateDebutStage')!.value, this.form.get('dateFinStage')!.value).subscribe((response) => {
+              if (!response) {
+                this.updateHeuresTravail();
+                this.updateSingleField(key,res[key]);
+              } else {
+                this.form.get(key)!.setErrors({dateStageChevauchement: true});
+              }
+            });
+        } else {
+          this.updateSingleField(key,res[key]);
+        }
       });
     })
 

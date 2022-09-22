@@ -83,4 +83,8 @@ export class ConventionService implements PaginatedService {
     return this.http.delete(`${environment.apiUrl}/conventions/${id}`);
   }
 
+  controleChevauchement(id: number, dateDebut: Date|null, dateFin: Date|null): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/conventions/${id}/controle-chevauchement`, {dateDebut, dateFin});
+  }
+
 }
