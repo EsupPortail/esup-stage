@@ -23,7 +23,7 @@ export class RecapitulatifComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.isValide = this.convention.validationPedagogique && this.convention.validationConvention;
+    this.isValide = this.convention.validationPedagogique && this.convention.validationConvention && this.convention.nomenclature;
     if(this.convention.interruptionStage){
       this.loadInterruptionsStage();
     }
