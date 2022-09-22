@@ -1,6 +1,6 @@
 databaseChangeLog:
 - changeSet:
-    id: init-periode-interruption-stage
+    id: init-periode-interruption-avenant
     author: ssound
     changes:
     - sqlFile:

@@ -1,4 +1,4 @@
 INSERT INTO `PeriodeInterruptionStage` (`idConvention`, `dateDebutInterruption`, `dateFinInterruption`)
-SELECT `idConvention`, `dateDebutInterruption`, `dateFinInterruption`
-FROM `Convention`
-WHERE `interruptionStage` = 1 AND `dateDebutInterruption` IS NOT NULL AND `dateFinInterruption` IS NOT NULL;
+SELECT `Convention`.`idConvention`, `Convention`.`dateDebutInterruption`, `Convention`.`dateFinInterruption`
+FROM `Convention` LEFT JOIN `PeriodeInterruptionStage` ON `PeriodeInterruptionStage`.`idConvention` = `Convention`.`idConvention`
+WHERE `Convention`.`interruptionStage` = 1 AND `Convention`.`dateDebutInterruption` IS NOT NULL AND `Convention`.`dateFinInterruption` IS NOT NULL AND `PeriodeInterruptionStage`.`idConvention` IS NULL;
