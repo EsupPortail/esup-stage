@@ -115,13 +115,12 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
 
       if (this.setAlerte) {
         this.data.forEach((row: any) => {
-          let depasse = false;
-          if (row.depasseDelaiValidation) {
-            depasse = (this.authService.isEnseignant() && row.centreGestion.validationPedagogique && !row.validationPedagogique) ||
-            (!this.authService.isEnseignant() && row.centreGestion.verificationAdministrative && !row.verificationAdministrative) ||
-            (!this.authService.isEnseignant() && row.centreGestion.validationConvention && !row.validationConvention)
+          row.depasseDelaiValidation = false;
+          if (!this.isEtudiant()) {
+            row.depasseDelaiValidation = (row.centreGestion.validationPedagogique && !row.validationPedagogique) ||
+              (row.centreGestion.verificationAdministrative && !row.verificationAdministrative) ||
+              (row.centreGestion.validationConvention && !row.validationConvention)
           }
-          row.depasseDelaiValidation = depasse;
         });
       }
       this.backConfig = undefined;
