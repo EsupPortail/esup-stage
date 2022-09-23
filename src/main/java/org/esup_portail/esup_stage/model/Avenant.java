@@ -116,6 +116,9 @@ public class Avenant extends ObjetMetier implements Exportable {
     @OneToMany(mappedBy = "avenant")
     private List<PeriodeInterruptionAvenant> periodeInterruptionAvenants = new ArrayList<>();
 
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateValidation;
+
     public int getId() {
         return id;
     }
@@ -354,6 +357,14 @@ public class Avenant extends ObjetMetier implements Exportable {
 
     public void setPeriodeInterruptionAvenants(List<PeriodeInterruptionAvenant> periodeInterruptionAvenants) {
         this.periodeInterruptionAvenants = periodeInterruptionAvenants;
+    }
+
+    public Date getDateValidation() {
+        return dateValidation;
+    }
+
+    public void setDateValidation(Date dateValidation) {
+        this.dateValidation = dateValidation;
     }
 
     @Override

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.util.Date;
 import java.util.List;
 
 @ApiController
@@ -98,6 +99,7 @@ public class AvenantController {
             throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvée");
         }
         avenant.setValidationAvenant(true);
+        avenant.setDateValidation(new Date());
         return avenantJpaRepository.saveAndFlush(avenant);
     }
 
@@ -109,6 +111,7 @@ public class AvenantController {
             throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvée");
         }
         avenant.setValidationAvenant(false);
+        avenant.setDateValidation(null);
         return avenantJpaRepository.saveAndFlush(avenant);
     }
 
