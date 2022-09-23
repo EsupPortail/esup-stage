@@ -5,7 +5,9 @@ import com.fasterxml.jackson.annotation.JsonView;
 import org.esup_portail.esup_stage.dto.view.Views;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "Avenant")
@@ -110,8 +112,9 @@ public class Avenant extends ObjetMetier implements Exportable {
     @JoinColumn(name = "idUniteDureeGratification")
     private UniteDuree uniteDuree;
 
-    @Transient
-    private String listeMotifsAvenant;
+    @JsonIgnore
+    @OneToMany(mappedBy = "avenant")
+    private List<PeriodeInterruptionAvenant> periodeInterruptionAvenants = new ArrayList<>();
 
     public int getId() {
         return id;
@@ -139,27 +142,6 @@ public class Avenant extends ObjetMetier implements Exportable {
 
     public String getMotifAvenant() {
         return motifAvenant;
-    }
-
-    public String getListeMotifsAvenant() {
-        String listeMotifsAvenant = "";
-        if(rupture)
-            listeMotifsAvenant += " - Rupture de stage<br>";
-        if(modificationSujet)
-            listeMotifsAvenant += " - Modification du sujet de stage<br>";
-        if(modificationPeriode)
-            listeMotifsAvenant += " - Modification de la période de stage<br>";
-        if(modificationMontantGratification)
-            listeMotifsAvenant += " - Modification du montant de la gratification<br>";
-        if(modificationLieu)
-            listeMotifsAvenant += " - Modification du lieu de stage<br>";
-        if(modificationSalarie)
-            listeMotifsAvenant += " - Modification du tuteur professionnel<br>";
-        if(modificationEnseignant)
-            listeMotifsAvenant += " - Modification de l'enseignant référant<br>";
-        if(motifAvenant != null && !motifAvenant.isEmpty())
-            listeMotifsAvenant += " - Autre modification : '"+motifAvenant +"'<br>";
-        return listeMotifsAvenant;
     }
 
     public void setMotifAvenant(String motifAvenant) {
@@ -364,6 +346,14 @@ public class Avenant extends ObjetMetier implements Exportable {
 
     public void setUniteDuree(UniteDuree uniteDuree) {
         this.uniteDuree = uniteDuree;
+    }
+
+    public List<PeriodeInterruptionAvenant> getPeriodeInterruptionAvenants() {
+        return periodeInterruptionAvenants;
+    }
+
+    public void setPeriodeInterruptionAvenants(List<PeriodeInterruptionAvenant> periodeInterruptionAvenants) {
+        this.periodeInterruptionAvenants = periodeInterruptionAvenants;
     }
 
     @Override

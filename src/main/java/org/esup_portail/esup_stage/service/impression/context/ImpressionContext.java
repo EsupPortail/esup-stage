@@ -4,6 +4,8 @@ import org.esup_portail.esup_stage.model.*;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ImpressionContext {
     private ConventionContext convention = new ConventionContext();
@@ -155,9 +157,11 @@ public class ImpressionContext {
         private String travailNuitFerie;
         private String ufrLibelle;
         private String uniteGratificationLibelle;
+        private String uniteDureeGratificationLibelle;
         private String villeEtudiant;
         private String volumeHoraireFormation;
         private String competences;
+        private List<PeriodeInterruptionContext> periodesInterruptions = new ArrayList<>();
 
         public ConventionContext() { }
 
@@ -195,7 +199,8 @@ public class ImpressionContext {
                 this.modeVersGratificationLibelle = convention.getNomenclature() != null ? convention.getNomenclature().getModeVersGratification() : null;
                 this.montantGratification = convention.getMontantGratification();
                 this.uniteGratificationLibelle = convention.getNomenclature() != null ? convention.getNomenclature().getUniteGratification() : null;
-                this.deviseGratification = convention.getDetails() != null ? convention.getDevise().getLibelle() : null;
+                this.uniteDureeGratificationLibelle = convention.getNomenclature() != null ? convention.getNomenclature().getUniteDureeGratification() : null;
+                this.deviseGratification = convention.getDevise() != null ? convention.getDevise().getLibelle() : null;
             }
             this.natureTravailLibelle = convention.getNomenclature() != null ? convention.getNomenclature().getNatureTravail() : null;
             this.nbHeuresHebdo = convention.getNbHeuresHebdo();
@@ -216,6 +221,9 @@ public class ImpressionContext {
             this.volumeHoraireFormation = convention.getVolumeHoraireFormation();
             this.dureeStageHeurePeriode = convention.getDureeExceptionnellePeriode();
             this.competences = convention.getCompetences();
+            for (PeriodeInterruptionStage periode : convention.getPeriodeInterruptionStages()) {
+                this.periodesInterruptions.add(new PeriodeInterruptionContext(df.format(periode.getDateDebutInterruption()), df.format(periode.getDateFinInterruption())));
+            }
         }
 
         public String getId() {
@@ -594,6 +602,14 @@ public class ImpressionContext {
             this.uniteGratificationLibelle = uniteGratificationLibelle;
         }
 
+        public String getUniteDureeGratificationLibelle() {
+            return uniteDureeGratificationLibelle != null ? uniteDureeGratificationLibelle : "";
+        }
+
+        public void setUniteDureeGratificationLibelle(String uniteDureeGratificationLibelle) {
+            this.uniteDureeGratificationLibelle = uniteDureeGratificationLibelle;
+        }
+
         public String getVilleEtudiant() {
             return villeEtudiant != null ? villeEtudiant : "";
         }
@@ -616,6 +632,14 @@ public class ImpressionContext {
 
         public void setCompetences(String competences) {
             this.competences = competences;
+        }
+
+        public List<PeriodeInterruptionContext> getPeriodesInterruptions() {
+            return periodesInterruptions;
+        }
+
+        public void setPeriodesInterruptions(List<PeriodeInterruptionContext> periodesInterruptions) {
+            this.periodesInterruptions = periodesInterruptions;
         }
     }
 
@@ -844,6 +868,7 @@ public class ImpressionContext {
         private String prenom;
         private String tel;
         private String mail;
+        private String fonction;
 
         public EnseignantContext() {
         }
@@ -855,6 +880,7 @@ public class ImpressionContext {
             this.prenom = enseignant.getPrenom();
             this.tel = enseignant.getTel();
             this.mail = enseignant.getMail();
+            this.fonction = enseignant.getTypePersonne();
         }
 
         public String getAffectationLibelle() {
@@ -903,6 +929,14 @@ public class ImpressionContext {
 
         public void setMail(String mail) {
             this.mail = mail;
+        }
+
+        public String getFonction() {
+            return fonction != null ? fonction : "";
+        }
+
+        public void setFonction(String fonction) {
+            this.fonction = fonction;
         }
     }
 
@@ -1250,6 +1284,24 @@ public class ImpressionContext {
         private String motifAvenant;
         private String dateDebutStage;
         private String dateFinStage;
+        private boolean rupture;
+        private String dateRupture;
+        private String commentaireRupture;
+        private boolean modificationSujet;
+        private boolean modificationPeriode;
+        private List<PeriodeInterruptionContext> periodesInterruptions = new ArrayList<>();
+        private boolean modificationMontantGratification;
+        private String montantGratification;
+        private String uniteGratificationLibelle;
+        private String uniteDureeGratificationLibelle;
+        private String deviseGratification;
+        private String modeVersGratificationLibelle;
+        private boolean modificationLieu;
+        private ServiceContext service;
+        private boolean modificationSalarie;
+        private ContactContext contact;
+        private boolean modificationEnseignant;
+        private EnseignantContext enseignant;
 
         public AvenantContext() {
         }
@@ -1259,9 +1311,37 @@ public class ImpressionContext {
 
             this.id = String.valueOf(avenant.getId());
             this.sujetStage = avenant.getSujetStage();
-            this.motifAvenant = avenant.getListeMotifsAvenant();
+            this.motifAvenant = avenant.getMotifAvenant();
             this.dateDebutStage = avenant.getDateDebutStage() != null ? df.format(avenant.getDateDebutStage()) : "";
             this.dateFinStage = avenant.getDateFinStage() != null ? df.format(avenant.getDateFinStage()) : "";
+            this.rupture = avenant.isRupture();
+            this.dateRupture = avenant.getDateRupture() != null ? df.format(avenant.getDateRupture()) : "";
+            this.commentaireRupture = avenant.getCommentaireRupture();
+            this.modificationSujet = avenant.isModificationSujet();
+            this.modificationPeriode = avenant.isModificationPeriode();
+            for (PeriodeInterruptionAvenant periode : avenant.getPeriodeInterruptionAvenants()) {
+                this.periodesInterruptions.add(new PeriodeInterruptionContext(df.format(periode.getDateDebutInterruption()), df.format(periode.getDateFinInterruption())));
+            }
+            this.modificationMontantGratification = avenant.isModificationMontantGratification();
+            if (this.modificationMontantGratification) {
+                this.montantGratification = avenant.getMontantGratification();
+                this.uniteGratificationLibelle = avenant.getUniteGratification() != null ? avenant.getUniteGratification().getLibelle() : null;
+                this.uniteDureeGratificationLibelle = avenant.getUniteDuree() != null ? avenant.getUniteDuree().getLibelle() : null;
+                this.deviseGratification = avenant.getDevise() != null ? avenant.getDevise().getLibelle() : null;
+                this.modeVersGratificationLibelle = avenant.getModeVersGratification() != null ? avenant.getModeVersGratification().getLibelle() : null;
+            }
+            this.modificationLieu = avenant.getModificationLieu() != null && avenant.getModificationLieu();
+            if (this.modificationLieu) {
+                this.service = new ServiceContext(avenant.getService());
+            }
+            this.modificationSalarie = avenant.isModificationSalarie();
+            if (this.modificationSalarie) {
+                this.contact = new ContactContext(avenant.getContact());
+            }
+            this.modificationEnseignant = avenant.isModificationEnseignant();
+            if (this.modificationEnseignant) {
+                this.enseignant = new EnseignantContext(avenant.getEnseignant());
+            }
         }
 
         public String getId() {
@@ -1302,6 +1382,180 @@ public class ImpressionContext {
 
         public void setDateFinStage(String dateFinStage) {
             this.dateFinStage = dateFinStage;
+        }
+
+        public boolean isRupture() {
+            return rupture;
+        }
+
+        public void setRupture(boolean rupture) {
+            this.rupture = rupture;
+        }
+
+        public String getDateRupture() {
+            return dateRupture != null ? dateRupture : "";
+        }
+
+        public void setDateRupture(String dateRupture) {
+            this.dateRupture = dateRupture;
+        }
+
+        public String getCommentaireRupture() {
+            return commentaireRupture != null ? commentaireRupture : "";
+        }
+
+        public void setCommentaireRupture(String commentaireRupture) {
+            this.commentaireRupture = commentaireRupture;
+        }
+
+        public boolean isModificationSujet() {
+            return modificationSujet;
+        }
+
+        public void setModificationSujet(boolean modificationSujet) {
+            this.modificationSujet = modificationSujet;
+        }
+
+        public boolean isModificationPeriode() {
+            return modificationPeriode;
+        }
+
+        public void setModificationPeriode(boolean modificationPeriode) {
+            this.modificationPeriode = modificationPeriode;
+        }
+
+        public List<PeriodeInterruptionContext> getPeriodesInterruptions() {
+            return periodesInterruptions;
+        }
+
+        public void setPeriodesInterruptions(List<PeriodeInterruptionContext> periodesInterruptions) {
+            this.periodesInterruptions = periodesInterruptions;
+        }
+
+        public boolean isModificationMontantGratification() {
+            return modificationMontantGratification;
+        }
+
+        public void setModificationMontantGratification(boolean modificationMontantGratification) {
+            this.modificationMontantGratification = modificationMontantGratification;
+        }
+
+        public String getMontantGratification() {
+            return montantGratification != null ? montantGratification : "";
+        }
+
+        public void setMontantGratification(String montantGratification) {
+            this.montantGratification = montantGratification;
+        }
+
+        public String getUniteGratificationLibelle() {
+            return uniteGratificationLibelle != null ? uniteGratificationLibelle : "";
+        }
+
+        public void setUniteGratificationLibelle(String uniteGratificationLibelle) {
+            this.uniteGratificationLibelle = uniteGratificationLibelle;
+        }
+
+        public String getUniteDureeGratificationLibelle() {
+            return uniteDureeGratificationLibelle != null ? uniteDureeGratificationLibelle : "";
+        }
+
+        public void setUniteDureeGratificationLibelle(String uniteDureeGratificationLibelle) {
+            this.uniteDureeGratificationLibelle = uniteDureeGratificationLibelle;
+        }
+
+        public String getDeviseGratification() {
+            return deviseGratification != null ? deviseGratification : "";
+        }
+
+        public void setDeviseGratification(String deviseGratification) {
+            this.deviseGratification = deviseGratification;
+        }
+
+        public String getModeVersGratificationLibelle() {
+            return modeVersGratificationLibelle != null ? modeVersGratificationLibelle : "";
+        }
+
+        public void setModeVersGratificationLibelle(String modeVersGratificationLibelle) {
+            this.modeVersGratificationLibelle = modeVersGratificationLibelle;
+        }
+
+        public boolean isModificationLieu() {
+            return modificationLieu;
+        }
+
+        public void setModificationLieu(boolean modificationLieu) {
+            this.modificationLieu = modificationLieu;
+        }
+
+        public ServiceContext getService() {
+            return service;
+        }
+
+        public void setService(ServiceContext service) {
+            this.service = service;
+        }
+
+        public boolean isModificationSalarie() {
+            return modificationSalarie;
+        }
+
+        public void setModificationSalarie(boolean modificationSalarie) {
+            this.modificationSalarie = modificationSalarie;
+        }
+
+        public ContactContext getContact() {
+            return contact;
+        }
+
+        public void setContact(ContactContext contact) {
+            this.contact = contact;
+        }
+
+        public boolean isModificationEnseignant() {
+            return modificationEnseignant;
+        }
+
+        public void setModificationEnseignant(boolean modificationEnseignant) {
+            this.modificationEnseignant = modificationEnseignant;
+        }
+
+        public EnseignantContext getEnseignant() {
+            return enseignant;
+        }
+
+        public void setEnseignant(EnseignantContext enseignant) {
+            this.enseignant = enseignant;
+        }
+    }
+
+    public static class PeriodeInterruptionContext {
+        private String dateDebutInterruption;
+        private String dateFinInterruption;
+
+        public PeriodeInterruptionContext() {
+
+        }
+
+        public PeriodeInterruptionContext(String dateDebutInterruption, String dateFinInterruption) {
+            this.dateDebutInterruption = dateDebutInterruption;
+            this.dateFinInterruption = dateFinInterruption;
+        }
+
+        public String getDateDebutInterruption() {
+            return dateDebutInterruption != null ? dateDebutInterruption : "";
+        }
+
+        public void setDateDebutInterruption(String dateDebutInterruption) {
+            this.dateDebutInterruption = dateDebutInterruption;
+        }
+
+        public String getDateFinInterruption() {
+            return dateFinInterruption != null ? dateFinInterruption : "";
+        }
+
+        public void setDateFinInterruption(String dateFinInterruption) {
+            this.dateFinInterruption = dateFinInterruption;
         }
     }
 }

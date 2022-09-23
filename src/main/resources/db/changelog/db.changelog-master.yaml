@@ -101,3 +101,6 @@ databaseChangeLog:
   - include:
       file: 1.0.5-periode-interruption-avenant.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 1.0.5-param-convention.yaml
+      relativeToChangelogFile: true
