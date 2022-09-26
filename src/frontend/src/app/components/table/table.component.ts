@@ -228,6 +228,9 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
             f[key].value = f[key].value.map((v: any) => { return v[filter.keyId]; });
           }
         }
+        if (f[key].value !== undefined && (f[key].value instanceof String || typeof f[key].value === 'string')) {
+          f[key].value = f[key].value.trim();
+        }
         if (f[key].specific === undefined) {
           delete f[key].specific;
         }
