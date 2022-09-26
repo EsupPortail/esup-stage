@@ -107,6 +107,6 @@ public interface ConventionJpaRepository extends JpaRepository<Convention, Integ
     @Query("UPDATE Convention c SET c.verificationAdministrative = TRUE WHERE c.centreGestion.id = :idCentreGestion AND c.validationPedagogique = TRUE AND c.validationConvention = TRUE")
     void updateVerificationAdministrative(int idCentreGestion);
 
-    @Query("SELECT c.id FROM Convention c WHERE c.id != :conventionId AND c.etudiant.identEtudiant = :login AND ((c.dateDebutStage >= :dateDebut AND c.dateFinStage <= :dateFin) OR (c.dateDebutStage <= :dateDebut AND c.dateFinStage >= :dateDebut) OR (c.dateDebutStage <= :dateFin AND c.dateFinStage >= :dateFin))")
+    @Query("SELECT c.id FROM Convention c WHERE c.id != :conventionId AND c.etudiant.identEtudiant = :login AND c.validationCreation = TRUE AND ((c.dateDebutStage >= :dateDebut AND c.dateFinStage <= :dateFin) OR (c.dateDebutStage <= :dateDebut AND c.dateFinStage >= :dateDebut) OR (c.dateDebutStage <= :dateFin AND c.dateFinStage >= :dateFin))")
     List<Integer> findDatesChevauchent(String login, int conventionId, Date dateDebut, Date dateFin);
 }
