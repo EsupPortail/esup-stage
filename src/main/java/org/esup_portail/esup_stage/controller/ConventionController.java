@@ -762,25 +762,31 @@ public class ConventionController {
         }
 
         if (Objects.equals(conventionSingleFieldDto.getField(), "idStructure")){
+            int oldIdStructure = convention.getStructure() != null ? convention.getStructure().getId() : 0;
             Structure structure = structureJpaRepository.findById((int) conventionSingleFieldDto.getValue());
             if (structure == null) {
                 throw new AppException(HttpStatus.NOT_FOUND, "Structure non trouvé");
             }
             convention.setStructure(structure);
             //Cascade structure change to relevant fields
-            convention.setService(null);
-            convention.setContact(null);
-            convention.setSignataire(null);
+            if (oldIdStructure != structure.getId()) {
+                convention.setService(null);
+                convention.setContact(null);
+                convention.setSignataire(null);
+            }
         }
         if (Objects.equals(conventionSingleFieldDto.getField(), "idService")){
+            int oldIdService = convention.getService() != null ? convention.getService().getId() : 0;
             Service service = serviceJpaRepository.findById((int) conventionSingleFieldDto.getValue());
             if (service == null) {
                 throw new AppException(HttpStatus.NOT_FOUND, "Service non trouvé");
             }
             convention.setService(service);
             //Cascade service change to relevant fields
-            convention.setContact(null);
-            convention.setSignataire(null);
+            if (oldIdService != service.getId()) {
+                convention.setContact(null);
+                convention.setSignataire(null);
+            }
         }
         if (Objects.equals(conventionSingleFieldDto.getField(), "idContact")){
             Contact contact = contactJpaRepository.findById((int) conventionSingleFieldDto.getValue());
