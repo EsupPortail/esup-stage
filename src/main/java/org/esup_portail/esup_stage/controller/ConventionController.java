@@ -221,17 +221,19 @@ public class ConventionController {
         setConventionData(convention, conventionFormDto);
         convention = conventionJpaRepository.saveAndFlush(convention);
 
-        if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
-            ConfigAlerteMailDto configAlerteMailDto = appConfigService.getConfigAlerteMail();
-            boolean sendMailEtudiant = configAlerteMailDto.getAlerteEtudiant().isModificationConventionEtudiant();
-            boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isModificationConventionEtudiant();
-            sendValidationMail(convention, utilisateur,TemplateMail.CODE_ETU_MODIF_CONVENTION, sendMailEtudiant, sendMailEnseignant);
-        }
-        if (UtilisateurHelper.isRole(utilisateur, Role.GES)) {
-            ConfigAlerteMailDto configAlerteMailDto = appConfigService.getConfigAlerteMail();
-            boolean sendMailEtudiant = configAlerteMailDto.getAlerteEtudiant().isModificationConventionGestionnaire();
-            boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isModificationConventionGestionnaire();
-            sendValidationMail(convention, utilisateur,TemplateMail.CODE_GES_MODIF_CONVENTION, sendMailEtudiant, sendMailEnseignant);
+        if (convention.isValidationCreation()) {
+            if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
+                ConfigAlerteMailDto configAlerteMailDto = appConfigService.getConfigAlerteMail();
+                boolean sendMailEtudiant = configAlerteMailDto.getAlerteEtudiant().isModificationConventionEtudiant();
+                boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isModificationConventionEtudiant();
+                sendValidationMail(convention, utilisateur,TemplateMail.CODE_ETU_MODIF_CONVENTION, sendMailEtudiant, sendMailEnseignant);
+            }
+            if (UtilisateurHelper.isRole(utilisateur, Role.GES)) {
+                ConfigAlerteMailDto configAlerteMailDto = appConfigService.getConfigAlerteMail();
+                boolean sendMailEtudiant = configAlerteMailDto.getAlerteEtudiant().isModificationConventionGestionnaire();
+                boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isModificationConventionGestionnaire();
+                sendValidationMail(convention, utilisateur,TemplateMail.CODE_GES_MODIF_CONVENTION, sendMailEtudiant, sendMailEnseignant);
+            }
         }
         return convention;
     }
