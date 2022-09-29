@@ -430,6 +430,16 @@ public class ConventionController {
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
+        if (convention.getNomEtabRef() == null || convention.getAdresseEtabRef() == null) {
+            CentreGestion centreGestionEtab = centreGestionJpaRepository.getCentreEtablissement();
+            // Erreur si le centre de type etablissement est null
+            if (centreGestionEtab == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion de type établissement non trouvé");
+            }
+            convention.setNomEtabRef(centreGestionEtab.getNomCentre());
+            convention.setAdresseEtabRef(centreGestionEtab.getAdresseComplete());
+            conventionJpaRepository.saveAndFlush(convention);
+        }
         ByteArrayOutputStream ou = new ByteArrayOutputStream();
         impressionService.generateConventionAvenantPDF(convention, null, ou);
 
@@ -555,6 +565,11 @@ public class ConventionController {
         if (ufr == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "UFR non trouvée");
         }
+        CentreGestion centreGestionEtab = centreGestionJpaRepository.getCentreEtablissement();
+        // Erreur si le centre de type etablissement est null
+        if (centreGestionEtab == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion de type établissement non trouvé");
+        }
         CentreGestion centreGestion = null;
         // Recherche du centre de gestion par codeEtape/versionEtape
         CritereGestion critereGestion = critereGestionJpaRepository.findEtapeById(conventionFormDto.getCodeEtape(), conventionFormDto.getCodeVerionEtape());
@@ -569,7 +584,7 @@ public class ConventionController {
                 throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion non trouvé");
             }
             // Sinon on prend le centre de type établissement
-            centreGestion = centreGestionJpaRepository.getCentreEtablissement();
+            centreGestion = centreGestionEtab;
         } else {
             centreGestion = critereGestion.getCentreGestion();
         }
@@ -609,6 +624,8 @@ public class ConventionController {
         convention.setCodeElp(conventionFormDto.getCodeElp());
         convention.setLibelleELP(conventionFormDto.getLibelleELP());
         convention.setCreditECTS(conventionFormDto.getCreditECTS());
+        convention.setNomEtabRef(centreGestionEtab.getNomCentre());
+        convention.setAdresseEtabRef(centreGestionEtab.getAdresseComplete());
 
         canViewEditConvention(convention, ServiceContext.getServiceContext().getUtilisateur());
         if (!isConventionModifiable(convention, ServiceContext.getServiceContext().getUtilisateur())) {

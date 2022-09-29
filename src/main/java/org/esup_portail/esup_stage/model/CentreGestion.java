@@ -472,6 +472,11 @@ public class CentreGestion extends ObjetMetier implements Exportable {
         this.consignes = consignes;
     }
 
+    @Transient
+    public String getAdresseComplete() {
+        return getVoie() + " " + getCodePostal() + " " + getCommune();
+    }
+
     @Override
     public String getExportValue(String key) {
         String value = "";

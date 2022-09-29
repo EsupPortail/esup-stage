@@ -23,7 +23,7 @@ public class ImpressionContext {
 
     public ImpressionContext(Convention convention, Avenant avenant, CentreGestion centreEtablissement) {
         if (convention != null) {
-            this.convention = new ConventionContext(convention);
+            this.convention = new ConventionContext(convention, centreEtablissement);
             this.centreGestion = new CentreGestionContext(convention.getCentreGestion(), centreEtablissement);
             this.contact = new ContactContext(convention.getContact());
             this.enseignant = new EnseignantContext(convention.getEnseignant());
@@ -165,11 +165,11 @@ public class ImpressionContext {
 
         public ConventionContext() { }
 
-        public ConventionContext(Convention convention) {
+        public ConventionContext(Convention convention, CentreGestion centreEtablissement) {
             DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
 
             this.id = String.valueOf(convention.getId());
-            this.adresseEtabRef = convention.getAdresseEtabRef();
+            this.adresseEtabRef = convention.getAdresseEtabRef() != null ? convention.getAdresseEtabRef() : centreEtablissement.getAdresseComplete();
             this.adresseEtudiant = convention.getAdresseEtudiant();
             this.annee = convention.getAnnee();
             this.assuranceLibelle = convention.getAssurance() != null ? convention.getAssurance().getLibelle() : null;
@@ -205,7 +205,7 @@ public class ImpressionContext {
             this.natureTravailLibelle = convention.getNomenclature() != null ? convention.getNomenclature().getNatureTravail() : null;
             this.nbHeuresHebdo = convention.getNbHeuresHebdo();
             this.nbJoursHebdo = convention.getNbJoursHebdo() != null ? convention.getNbJoursHebdo().getValue() : null;
-            this.nomEtabRef = convention.getNomEtabRef();
+            this.nomEtabRef = convention.getNomEtabRef() != null ? convention.getNomEtabRef() : centreEtablissement.getNomCentre();
             this.nomSignataireComposante = convention.getNomSignataireComposante();
             this.origineStageLibelle = convention.getNomenclature() != null ? convention.getNomenclature().getOrigineStage() : null;
             this.paysEtudiant = convention.getPaysEtudiant();
