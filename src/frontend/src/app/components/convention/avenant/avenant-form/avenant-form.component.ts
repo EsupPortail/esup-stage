@@ -435,10 +435,9 @@ export class AvenantFormComponent implements OnInit {
   }
 
   createEnseignant(row: any): void {
-    const displayName = row.displayName.split(/(\s+)/);
     const data = {
-      "nom": displayName[2],
-      "prenom": displayName[0],
+      "nom": row.sn.join(' '),
+      "prenom": row.givenName.join(' '),
       "mail": row.mail,
       "typePersonne": row.eduPersonPrimaryAffiliation,
       "uidEnseignant": row.supannAliasLogin,
@@ -451,10 +450,9 @@ export class AvenantFormComponent implements OnInit {
   }
 
   updateEnseignant(id: number, row: any): void {
-    const displayName = row.displayName.split(/(\s+)/);
     const data = {
-      nom: displayName[2],
-      prenom: displayName[0],
+      nom: row.sn.join(' '),
+      prenom: row.givenName.join(' '),
       mail: row.mail,
       typePersonne: row.eduPersonPrimaryAffiliation,
       uidEnseignant: row.supannAliasLogin,

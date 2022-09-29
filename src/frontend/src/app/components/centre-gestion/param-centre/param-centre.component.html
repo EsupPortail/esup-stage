@@ -119,7 +119,7 @@
       </tr>
       <ng-container matColumnDef="nomprenom">
         <th mat-header-cell *matHeaderCellDef>Nom / Prénom</th>
-        <td mat-cell *matCellDef="let row">{{row.displayName}}</td>
+        <td mat-cell *matCellDef="let row">{{row.sn.join(' ')}} {{row.givenName.join(' ')}}</td>
       </ng-container>
       <ng-container matColumnDef="mail">
         <th mat-header-cell *matHeaderCellDef>Mail</th>
