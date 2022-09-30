@@ -87,10 +87,13 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     @JoinColumn(name = "idFichier")
     private Fichier fichier;
 
+    @JsonView(Views.List.class)
     private Boolean validationPedagogique;
 
+    @JsonView(Views.List.class)
     private Boolean validationConvention;
 
+    @JsonView(Views.List.class)
     private Boolean verificationAdministrative;
 
     @JsonView(Views.List.class)
@@ -490,6 +493,11 @@ public class CentreGestion extends ObjetMetier implements Exportable {
 
     public void setFicheEvaluation(FicheEvaluation ficheEvaluation) {
         this.ficheEvaluation = ficheEvaluation;
+    }
+
+    @Transient
+    public String getAdresseComplete() {
+        return getVoie() + " " + getCodePostal() + " " + getCommune();
     }
 
     @Override

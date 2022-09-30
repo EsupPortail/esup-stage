@@ -71,6 +71,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       let filtersString: any = sessionStorage.getItem('dashboard-filters');
       this.savedFilters = JSON.parse(filtersString);
       this.validationLibelles.validationPedagogique = response.validationPedagogiqueLibelle;
+      this.validationLibelles.verificationAdministrative = 'vérification administrative';
       this.validationLibelles.validationConvention = response.validationAdministrativeLibelle;
 
       if (this.authService.isGestionnaire()) {
@@ -167,6 +168,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.annees = listAnneeData;
         this.anneeEnCours = this.annees.find((a: any) => { return a.anneeEnCours === true });
         if (!this.authService.isEtudiant()) {
+          this.annees.push({
+            "annee": "any",
+            "libelle": "Toutes les années",
+            "anneeEnCours": false,
+            "any": true
+          })
           this.changeAnnee();
         } else {
           this.appTable?.setFilterOption('annee', this.annees);
@@ -198,11 +205,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
       { id: 'structure', libelle: 'Établissement d\'accueil', specific: true },
       { id: 'dateDebutStage', libelle: 'Date début du stage', type: 'date' },
       { id: 'dateFinStage', libelle: 'Date fin du stage', type: 'date' },
-      { id: 'ufr.id', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
-      { id: 'etape.id', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
       { id: 'enseignant', libelle: 'Enseignant', specific: true },
       { id: 'avenant', libelle: 'Avenant', type: 'boolean', specific: true },
       { id: 'etatValidation', libelle: 'État de validation de la convention', type: 'list', options: this.validationsOptions, keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
+      { id: 'ufr.id', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
+      { id: 'etape.id', libelle: 'Étape', type: 'autocomplete', autocompleteService: this.etapeService, options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true, colSpan: 9 },
       { id: 'langueConvention.code', libelle: 'Langue de convention', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'code', value: [] },
       { id: 'typeConvention.id', libelle: 'Type de convention', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
     ];
@@ -225,18 +232,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   changeAnnee(): void {
-    this.appTable?.setFilter({id: 'annee', type: 'text', value: this.anneeEnCours.libelle, specific: false});
+    this.appTable?.setFilter({id: 'annee', type: 'text', value: this.anneeEnCours.any?"":this.anneeEnCours.libelle, specific: false});
     this.appTable?.update();
     this.countConvention();
-    // Compte le nombre de conventions dont la date de validation se rapproche ou dépasse la date de début du stage
-    this.conventionService.countConventionEnAttenteAlerte(this.anneeEnCours.annee).subscribe((response: number) => {
-      if (response > 0) {
-        this.snackBar.open(`${response} convention(s) à valider dont la date de validation se rapproche ou dépasse la date de début du stage`, 'Fermer', {
-          horizontalPosition: 'center',
-          verticalPosition: 'top',
-        });
-      }
-    });
+    if(!this.anneeEnCours.any){
+      // Compte le nombre de conventions dont la date de validation se rapproche ou dépasse la date de début du stage
+      this.conventionService.countConventionEnAttenteAlerte(this.anneeEnCours.annee).subscribe((response: number) => {
+        if (response > 0) {
+          this.snackBar.open(`${response} convention(s) à valider dont la date de validation se rapproche ou dépasse la date de début du stage`, 'Fermer', {
+            horizontalPosition: 'center',
+            verticalPosition: 'top',
+          });
+        }
+      });
+    }
   }
 
   isSelected(data: any): boolean {
@@ -329,8 +338,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
         else if (key === 'etape.id' && this.savedFilters[key].value) {
           let etapeSelectedList: any[] = [];
           this.savedFilters[key].value.forEach((value: any) => {
-            let etapeSelected = this.etapeList.find((etape: any) => etape.id.code === value.code);
-            etapeSelectedList.push(etapeSelected.id);
+            let etapeSelected = this.etapeList.find((etape: any) => etape.id.code === value.id.code);
+            etapeSelectedList.push(etapeSelected);
           });
           this.appTable?.setFilterValue(key, etapeSelectedList);
         }

@@ -21,8 +21,11 @@
     <mat-accordion>
       <mat-expansion-panel *ngFor="let avenant of avenants" [expanded]="false">
         <mat-expansion-panel-header>
-          <mat-panel-title *ngIf="avenant.validationAvenant">{{avenant.titreAvenant + ' - '}}<span class="success">&nbsp;Validé</span></mat-panel-title>
-          <mat-panel-title *ngIf="!avenant.validationAvenant">{{avenant.titreAvenant + ' - '}}<span class="danger">&nbsp;Non validé</span></mat-panel-title>
+          <mat-panel-title>
+            Avenant n°{{avenant.id}} - {{avenant.titreAvenant + ' - '}}
+            <span *ngIf="avenant.validationAvenant" class="success">&nbsp;Validé<span *ngIf="avenant.dateValidation"> le {{avenant.dateValidation|date:'shortDate'}}</span></span>
+            <span *ngIf="!avenant.validationAvenant" class="danger">&nbsp;Non validé</span>
+          </mat-panel-title>
         </mat-expansion-panel-header>
         <app-avenant-form [convention]="convention" [avenant]="avenant" (updated)="updateAvenants()" *ngIf="!avenant.validationAvenant"></app-avenant-form>
         <app-avenant-view [convention]="convention" [avenant]="avenant" (updated)="updateAvenants()"  *ngIf="avenant.validationAvenant"></app-avenant-view>

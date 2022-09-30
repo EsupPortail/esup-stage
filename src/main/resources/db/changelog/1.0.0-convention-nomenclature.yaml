@@ -2,6 +2,7 @@ databaseChangeLog:
 - changeSet:
     id: convention-nomenclature
     author: ssound
+    validCheckSum: 8:337a0585898b3068a833ebe5ae551f9e
     changes:
     - createTable:
         columns:
@@ -43,7 +44,7 @@ databaseChangeLog:
             type: VARCHAR(200)
         - column:
             name: theme
-            type: VARCHAR(50)
+            type: VARCHAR(255)
         - column:
             name: typeConvention
             type: VARCHAR(50)

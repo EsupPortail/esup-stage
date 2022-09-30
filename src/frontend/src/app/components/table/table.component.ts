@@ -118,15 +118,12 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
       this.data = results.data;
       if (this.setAlerte) {
         this.data.forEach((row: any) => {
-          let depasse = false;
-          if (row.depasseDelaiValidation) {
-            const ordreValidation = this.authService.isEnseignant() ? row.centreGestion.validationPedagogiqueOrdre : row.centreGestion.validationConventionOrdre;
-            if (ordreValidation === 1) depasse = true;
-            if (row.centreGestion.validationPedagogiqueOrdre <= (ordreValidation - 1) && row.validationPedagogique) depasse = true;
-            if (row.centreGestion.verificationAdministrativeOrdre <= (ordreValidation - 1) && row.verificationAdministrative) depasse = true;
-            if (row.centreGestion.validationConventionOrdre <= (ordreValidation - 1) && row.validationConvention) depasse = true;
+          row.depasseDelaiValidation = false;
+          if (!this.isEtudiant()) {
+            row.depasseDelaiValidation = (row.centreGestion.validationPedagogique && !row.validationPedagogique) ||
+              (row.centreGestion.verificationAdministrative && !row.verificationAdministrative) ||
+              (row.centreGestion.validationConvention && !row.validationConvention)
           }
-          row.depasseDelaiValidation = depasse;
         });
       }
       this.backConfig = undefined;
@@ -233,6 +230,9 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
           if (filter) {
             f[key].value = f[key].value.map((v: any) => { return v[filter.keyId]; });
           }
+        }
+        if (f[key].value !== undefined && (f[key].value instanceof String || typeof f[key].value === 'string')) {
+          f[key].value = f[key].value.trim();
         }
         if (f[key].specific === undefined) {
           delete f[key].specific;

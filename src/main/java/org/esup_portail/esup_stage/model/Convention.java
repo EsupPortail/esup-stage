@@ -323,6 +323,9 @@ public class Convention extends ObjetMetier implements Exportable {
     @Column(nullable = false)
     private boolean validationCreation = false;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateValidationCreation;
+
     @JsonIgnore
     @Column(nullable = false)
     private boolean creationEnMasse = false;
@@ -747,7 +750,7 @@ public class Convention extends ObjetMetier implements Exportable {
     }
 
     public String getNbHeuresHebdo() {
-        return nbHeuresHebdo;
+        return nbHeuresHebdo != null ? nbHeuresHebdo.replaceAll("[a-zA-Z ]*", "") : null;
     }
 
     public void setNbHeuresHebdo(String nbHeuresHebdo) {
@@ -1080,6 +1083,14 @@ public class Convention extends ObjetMetier implements Exportable {
 
     public void setValidationCreation(boolean validationCreation) {
         this.validationCreation = validationCreation;
+    }
+
+    public Date getDateValidationCreation() {
+        return dateValidationCreation;
+    }
+
+    public void setDateValidationCreation(Date dateValidationCreation) {
+        this.dateValidationCreation = dateValidationCreation;
     }
 
     public boolean isCreationEnMasse() {

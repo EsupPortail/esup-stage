@@ -54,7 +54,10 @@ public class ConventionRepository extends PaginationRepository<Convention> {
             clauses.add("(" + String.join(" OR ", clauseOr) + ")");
         }
         if (key.equals("etudiant")) {
-            clauses.add("(LOWER(c.etudiant.identEtudiant) LIKE :etudiant OR LOWER(c.etudiant.nom) LIKE :etudiant OR LOWER(c.etudiant.prenom) LIKE :etudiant OR LOWER(c.etudiant.mail) LIKE :etudiant OR LOWER(c.etudiant.numEtudiant) LIKE :etudiant)");
+            clauses.add("(LOWER(c.etudiant.identEtudiant) LIKE :etudiant OR LOWER(c.etudiant.nom) LIKE :etudiant OR LOWER(c.etudiant.prenom) LIKE :etudiant OR" +
+                    " LOWER(c.etudiant.mail) LIKE :etudiant OR LOWER(c.etudiant.numEtudiant) LIKE :etudiant OR" +
+                    " (LOWER(c.etudiant.nom) LIKE :etudiantSplit1 AND LOWER(c.etudiant.prenom) LIKE :etudiantSplit2) OR" +
+                    " (LOWER(c.etudiant.prenom) LIKE :etudiantSplit1 AND LOWER(c.etudiant.nom) LIKE :etudiantSplit2))");
         }
         if (key.equals("enseignant")) {
             clauses.add("(LOWER(c.enseignant.uidEnseignant) LIKE :enseignant OR LOWER(c.enseignant.nom) LIKE :enseignant OR LOWER(c.enseignant.prenom) LIKE :enseignant OR LOWER(c.enseignant.mail) LIKE :enseignant)");
@@ -134,7 +137,16 @@ public class ConventionRepository extends PaginationRepository<Convention> {
             }
         }
         if (key.equals("etudiant")) {
-            query.setParameter("etudiant", "%" + parameter.getString("value").toLowerCase() + "%");
+            String value = parameter.getString("value").toLowerCase();
+            query.setParameter("etudiant", "%" + value + "%");
+            String[] parts = value.split(" ", 2);
+            if(parts.length > 1){
+                query.setParameter("etudiantSplit1", "%" + parts[0] + "%");
+                query.setParameter("etudiantSplit2", "%" + parts[1] + "%");
+            }else{
+                query.setParameter("etudiantSplit1", "%" + value + "%");
+                query.setParameter("etudiantSplit2", "%" + value + "%");
+            }
         }
         if (key.equals("enseignant")) {
             query.setParameter("enseignant", "%" + parameter.getString("value").toLowerCase() + "%");

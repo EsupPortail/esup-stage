@@ -139,10 +139,14 @@ public class ImpressionService {
     }
 
     public String getDefaultText(boolean isConvention) {
+        String templateName = isConvention ? "/templates/template_default_convention.html" : "/templates/template_default_avenant.html";
+        return getDefaultText(templateName);
+    }
+
+    public String getDefaultText(String templateName) {
         StringBuilder sb = new StringBuilder();
         String str;
         try {
-            String templateName = isConvention ? "/templates/template_default_convention.html" : "/templates/template_default_avenant.html";
             BufferedReader in = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(templateName)));
             while ((str = in.readLine()) != null) {
                 sb.append(str);
@@ -159,6 +163,11 @@ public class ImpressionService {
         if (texte == null) {
             texte = getDefaultText(isConvention);
         }
+
+        // Remplacement ${avenant.motifs} par le template html contenant tous les motifs
+        String motifTexte = getDefaultText("/templates/template_avenant_motifs.html");
+        texte = texte.replace("${avenant.motifs}", motifTexte);
+
         // Style par défaut des tables dans les templates
         String htmlTexte = "<style>table { table-layout: fixed; width: 100%; overflow-wrap: break-word; border-spacing: 0px; }</style>";
         htmlTexte += texte;

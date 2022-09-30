@@ -221,17 +221,19 @@ public class ConventionController {
         setConventionData(convention, conventionFormDto);
         convention = conventionJpaRepository.saveAndFlush(convention);
 
-        if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
-            ConfigAlerteMailDto configAlerteMailDto = appConfigService.getConfigAlerteMail();
-            boolean sendMailEtudiant = configAlerteMailDto.getAlerteEtudiant().isModificationConventionEtudiant();
-            boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isModificationConventionEtudiant();
-            sendValidationMail(convention, utilisateur,TemplateMail.CODE_ETU_MODIF_CONVENTION, sendMailEtudiant, sendMailEnseignant);
-        }
-        if (UtilisateurHelper.isRole(utilisateur, Role.GES)) {
-            ConfigAlerteMailDto configAlerteMailDto = appConfigService.getConfigAlerteMail();
-            boolean sendMailEtudiant = configAlerteMailDto.getAlerteEtudiant().isModificationConventionGestionnaire();
-            boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isModificationConventionGestionnaire();
-            sendValidationMail(convention, utilisateur,TemplateMail.CODE_GES_MODIF_CONVENTION, sendMailEtudiant, sendMailEnseignant);
+        if (convention.isValidationCreation()) {
+            if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
+                ConfigAlerteMailDto configAlerteMailDto = appConfigService.getConfigAlerteMail();
+                boolean sendMailEtudiant = configAlerteMailDto.getAlerteEtudiant().isModificationConventionEtudiant();
+                boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isModificationConventionEtudiant();
+                sendValidationMail(convention, utilisateur,TemplateMail.CODE_ETU_MODIF_CONVENTION, sendMailEtudiant, sendMailEnseignant);
+            }
+            if (UtilisateurHelper.isRole(utilisateur, Role.GES)) {
+                ConfigAlerteMailDto configAlerteMailDto = appConfigService.getConfigAlerteMail();
+                boolean sendMailEtudiant = configAlerteMailDto.getAlerteEtudiant().isModificationConventionGestionnaire();
+                boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isModificationConventionGestionnaire();
+                sendValidationMail(convention, utilisateur,TemplateMail.CODE_GES_MODIF_CONVENTION, sendMailEtudiant, sendMailEnseignant);
+            }
         }
         return convention;
     }
@@ -307,7 +309,14 @@ public class ConventionController {
         if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(convention.getEtudiant().getIdentEtudiant())) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
+
+        // Contrôle chevauchement de dates
+        if (convention.getDateDebutStage() != null && convention.getDateFinStage() != null && conventionJpaRepository.findDatesChevauchent(convention.getEtudiant().getIdentEtudiant(), convention.getId(), convention.getDateDebutStage(), convention.getDateFinStage()).size() > 0) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Les dates de début et fin de stage se chevauchent avec une de vos conventions");
+        }
+
         convention.setValidationCreation(true);
+        convention.setDateValidationCreation(new Date());
         convention = conventionJpaRepository.saveAndFlush(convention);
 
         if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
@@ -422,6 +431,16 @@ public class ConventionController {
         Convention convention = conventionJpaRepository.findById(id);
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        }
+        if (convention.getNomEtabRef() == null || convention.getAdresseEtabRef() == null) {
+            CentreGestion centreGestionEtab = centreGestionJpaRepository.getCentreEtablissement();
+            // Erreur si le centre de type etablissement est null
+            if (centreGestionEtab == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion de type établissement non trouvé");
+            }
+            convention.setNomEtabRef(centreGestionEtab.getNomCentre());
+            convention.setAdresseEtabRef(centreGestionEtab.getAdresseComplete());
+            conventionJpaRepository.saveAndFlush(convention);
         }
         ByteArrayOutputStream ou = new ByteArrayOutputStream();
         impressionService.generateConventionAvenantPDF(convention, null, ou);
@@ -548,6 +567,11 @@ public class ConventionController {
         if (ufr == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "UFR non trouvée");
         }
+        CentreGestion centreGestionEtab = centreGestionJpaRepository.getCentreEtablissement();
+        // Erreur si le centre de type etablissement est null
+        if (centreGestionEtab == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion de type établissement non trouvé");
+        }
         CentreGestion centreGestion = null;
         // Recherche du centre de gestion par codeEtape/versionEtape
         CritereGestion critereGestion = critereGestionJpaRepository.findEtapeById(conventionFormDto.getCodeEtape(), conventionFormDto.getCodeVerionEtape());
@@ -562,7 +586,7 @@ public class ConventionController {
                 throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion non trouvé");
             }
             // Sinon on prend le centre de type établissement
-            centreGestion = centreGestionJpaRepository.getCentreEtablissement();
+            centreGestion = centreGestionEtab;
         } else {
             centreGestion = critereGestion.getCentreGestion();
         }
@@ -602,10 +626,8 @@ public class ConventionController {
         convention.setCodeElp(conventionFormDto.getCodeElp());
         convention.setLibelleELP(conventionFormDto.getLibelleELP());
         convention.setCreditECTS(conventionFormDto.getCreditECTS());
-        // mis à TRUE les validations non prises en compte dans le centre de gestion
-        convention.setValidationConvention(!centreGestion.getValidationConvention());
-        convention.setValidationPedagogique(!centreGestion.getValidationPedagogique());
-        convention.setVerificationAdministrative(!centreGestion.getVerificationAdministrative());
+        convention.setNomEtabRef(centreGestionEtab.getNomCentre());
+        convention.setAdresseEtabRef(centreGestionEtab.getAdresseComplete());
 
         canViewEditConvention(convention, ServiceContext.getServiceContext().getUtilisateur());
         if (!isConventionModifiable(convention, ServiceContext.getServiceContext().getUtilisateur())) {
@@ -765,25 +787,31 @@ public class ConventionController {
         }
 
         if (Objects.equals(conventionSingleFieldDto.getField(), "idStructure")){
+            int oldIdStructure = convention.getStructure() != null ? convention.getStructure().getId() : 0;
             Structure structure = structureJpaRepository.findById((int) conventionSingleFieldDto.getValue());
             if (structure == null) {
                 throw new AppException(HttpStatus.NOT_FOUND, "Structure non trouvé");
             }
             convention.setStructure(structure);
             //Cascade structure change to relevant fields
-            convention.setService(null);
-            convention.setContact(null);
-            convention.setSignataire(null);
+            if (oldIdStructure != structure.getId()) {
+                convention.setService(null);
+                convention.setContact(null);
+                convention.setSignataire(null);
+            }
         }
         if (Objects.equals(conventionSingleFieldDto.getField(), "idService")){
+            int oldIdService = convention.getService() != null ? convention.getService().getId() : 0;
             Service service = serviceJpaRepository.findById((int) conventionSingleFieldDto.getValue());
             if (service == null) {
                 throw new AppException(HttpStatus.NOT_FOUND, "Service non trouvé");
             }
             convention.setService(service);
             //Cascade service change to relevant fields
-            convention.setContact(null);
-            convention.setSignataire(null);
+            if (oldIdService != service.getId()) {
+                convention.setContact(null);
+                convention.setSignataire(null);
+            }
         }
         if (Objects.equals(conventionSingleFieldDto.getField(), "idContact")){
             Contact contact = contactJpaRepository.findById((int) conventionSingleFieldDto.getValue());
@@ -807,6 +835,32 @@ public class ConventionController {
             convention.setSignataire(signataire);
         }
 
+        // Contrôle chevauchement de dates
+        if (convention.getDateDebutStage() != null && convention.getDateFinStage() != null && conventionJpaRepository.findDatesChevauchent(convention.getEtudiant().getIdentEtudiant(), convention.getId(), convention.getDateDebutStage(), convention.getDateFinStage()).size() > 0) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Les dates de début et fin de stage se chevauchent avec une de vos conventions");
+        }
+
+    }
+
+    @PostMapping("/{id}/controle-chevauchement")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.MODIFICATION})
+    public boolean isChevauchement(@PathVariable("id") int id, @RequestBody DateStageDto dateStageDto) {
+        Convention convention = conventionJpaRepository.findById(id);
+        if (convention == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        }
+        // Pour les étudiants on vérifie que c'est une de ses conventions
+        Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
+        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(convention.getEtudiant().getIdentEtudiant())) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        }
+        canViewEditConvention(convention, ServiceContext.getServiceContext().getUtilisateur());
+
+        // Contrôle chevauchement de dates
+        if (dateStageDto.getDateDebut() != null && dateStageDto.getDateFin() != null && conventionJpaRepository.findDatesChevauchent(convention.getEtudiant().getIdentEtudiant(), convention.getId(), dateStageDto.getDateDebut(), dateStageDto.getDateFin()).size() > 0) {
+            return true;
+        }
+        return false;
     }
 
     private void validationPedagogique(Convention convention, ConfigAlerteMailDto configAlerteMailDto, Utilisateur utilisateurContext, boolean valider) {

@@ -1,0 +1,23 @@
+databaseChangeLog:
+    - changeSet:
+        id: convention-dateValidationCreation
+        author: tjubera
+        changes:
+            - addColumn:
+                tableName: Convention
+                columns:
+                    - column:
+                        defaultValueComputed: 'NULL'
+                        name: dateValidationCreation
+                        type: datetime
+    - changeSet:
+        id: convention-update-gratificationStage
+        author: ssound
+        changes:
+            - update:
+                tableName: Convention
+                columns:
+                    - column:
+                        name: gratificationStage
+                        valueBoolean: true
+                where: montantGratification IS NOT NULL

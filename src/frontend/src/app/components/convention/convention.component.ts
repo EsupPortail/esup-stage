@@ -70,9 +70,15 @@ export class ConventionComponent implements OnInit {
             else if (this.authService.isEnseignant()) {
               this.modifiable = false;
             }
-            // Un étudiant n'a plus de droit de modifier dès qu'il a valider sa création
+            // Une convention n'est plus modifiable par l'étudiant dès qu'il y a eu au moins une validation
             else if (this.authService.isEtudiant()) {
-              this.modifiable = !this.convention.validationCreation;
+              let validee = false;
+              if (this.convention.centreGestion) {
+                if (this.convention.centreGestion.verificationAdministrative && this.convention.verificationAdministrative) validee = true;
+                if (this.convention.centreGestion.validationPedagogique && this.convention.validationPedagogique) validee = true;
+                if (this.convention.centreGestion.validationConvention && this.convention.validationConvention) validee = true;
+              }
+              this.modifiable = !validee;
             }
             // les utilisateurs sans profil pré-défini ont les mêmes droits que le gestionnaire
             else {

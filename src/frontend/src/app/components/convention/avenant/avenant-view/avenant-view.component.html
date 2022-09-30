@@ -86,7 +86,7 @@
     <div class="col-sm-3 font-weight-bold">Nouvelle monnaie utilisée pour le paiement</div>
     <div class="col-sm-9">{{avenant.devise?avenant.devise.libelle:convention.devise.libelle}}</div>
     <div class="col-sm-3 font-weight-bold">Nouveau modalité de versement de la gratification</div>
-    <div class="col-sm-9">{{avenant.modeVersGratification?avenant.modeVersGratification.libelle:convention.modeVersGratification.libelle}}</div>
+    <div class="col-sm-9">{{avenant.modeVersGratification?avenant.modeVersGratification.libelle:(convention.modeVersGratification ? convention.modeVersGratification.libelle : '')}}</div>
   </div>
 </div>
 
@@ -207,7 +207,7 @@
 
 <div class="row mt-3">
   <div class="col-sm-12 text-center">
-    <span>
+    <span style="margin-right: 5px;">
       <button mat-flat-button type="button" color="primary" (click)="printAvenant()">Imprimer l'avenant</button>
     </span>
     <span *ngIf="isGestionnaire()" (confirm)="cancelValidation()" [confirmMessage]="'Êtes-vous sûr de vouloir annuler la validation de cette avenant ?'">

@@ -90,6 +90,24 @@ databaseChangeLog:
       file: 1.0.4-paramconvention.yaml
       relativeToChangelogFile: true
   - include:
+      file: 1.0.5-convention.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 1.0.5-template-mail.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 1.0.5-periode-interruption-stage.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 1.0.5-periode-interruption-avenant.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 1.0.5-param-convention.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 1.0.5-avenant.yaml
+      relativeToChangelogFile: true
+  - include:
       file: 2.0.0-contenu.yaml
       relativeToChangelogFile: true
   - include:

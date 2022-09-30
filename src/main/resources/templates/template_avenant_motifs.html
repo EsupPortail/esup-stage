@@ -1,0 +1,367 @@
+<#if avenant.rupture>
+<figure class="table">
+    <table style="border:1px solid hsl(0, 0%, 0%);">
+        <colgroup><col style="width:50%;"><col style="width:50%;"></colgroup>
+        <tbody>
+        <tr>
+            <td style="text-align:center;border:1px solid hsl(0, 0%, 0%);">Rupture de stage</td>
+        </tr>
+        <tr>
+            <td style="border:1px solid hsl(0, 0%, 0%);vertical-align:top;">
+                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>Nouvelles valeurs :</u></span>
+                <p>
+                    <span class="text-small"><strong>Date de rupture : </strong>${avenant.dateRupture}</span><br/>
+                    <span class="text-small"><strong>Commentaire : </strong>${avenant.commentaireRupture}</span>
+                </p>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</figure>
+</#if>
+
+<figure class="table" style="height:10px;">
+    <table>
+        <colgroup><col style="width:100%;"></colgroup>
+        <tbody>
+        <tr>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</figure>
+
+<#if avenant.modificationSujet>
+<figure class="table">
+    <table style="border:1px solid hsl(0, 0%, 0%);">
+        <colgroup><col style="width:50%;"><col style="width:50%;"></colgroup>
+        <tbody>
+        <tr>
+            <td style="text-align:center;border:1px solid hsl(0, 0%, 0%);" colspan="2">Modification du sujet de stage</td>
+        </tr>
+        <tr>
+            <td style="border:1px solid hsl(0, 0%, 0%);vertical-align:top;">
+                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>Anciennes valeurs :</u></span>
+                <p>
+                    <span class="text-small"><strong>Sujet : </strong>${convention.sujetStage}</span>
+                </p>
+            </td>
+            <td style="border:1px solid hsl(0, 0%, 0%);vertical-align:top;">
+                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>Nouvelles valeurs :</u></span>
+                <p>
+                    <span class="text-small"><strong>Sujet : </strong>${avenant.sujetStage}</span>
+                </p>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</figure>
+</#if>
+
+<figure class="table" style="height:10px;">
+    <table>
+        <colgroup><col style="width:100%;"></colgroup>
+        <tbody>
+        <tr>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</figure>
+
+<#if avenant.modificationPeriode>
+<figure class="table">
+    <table style="border:1px solid hsl(0, 0%, 0%);">
+        <colgroup><col style="width:50%;"><col style="width:50%;"></colgroup>
+        <tbody>
+        <tr>
+            <td style="text-align:center;border:1px solid hsl(0, 0%, 0%);" colspan="2">Modification de la période de stage</td>
+        </tr>
+        <tr>
+            <td style="border:1px solid hsl(0, 0%, 0%);vertical-align:top;">
+                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>Anciennes valeurs :</u></span>
+                <p>
+                    <span class="text-small"><strong>Date début du stage : </strong>${convention.dateDebutStage}</span><br/>
+                    <span class="text-small"><strong>Date fin du stage : </strong>${convention.dateFinStage}</span>
+                </p>
+                <#if convention.periodesInterruptions?size gt 0>
+                <p>
+                    <span class="text-small"><strong>Périodes d'interruptions :</strong></span>
+                </p>
+                <ul>
+                    <#list convention.periodesInterruptions as periode>
+                    <li>du ${periode.dateDebutInterruption} au ${periode.dateFinInterruption}</li>
+                    </#list>
+                </ul>
+                </#if>
+            </td>
+            <td style="border:1px solid hsl(0, 0%, 0%);vertical-align:top;">
+                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>Nouvelles valeurs :</u></span>
+                <p>
+                    <#if avenant.dateDebutStage != ''>
+                        <span class="text-small"><strong>Date début du stage : </strong>${avenant.dateDebutStage}</span>
+                    </#if>
+                    <#if avenant.dateFinStage != ''>
+                        <span class="text-small"><strong>Date fin du stage : </strong>${avenant.dateFinStage}</span>
+                    </#if>
+                </p>
+                <#if avenant.periodesInterruptions?size gt 0>
+                <p>
+                    <span class="text-small"><strong>Périodes d'interruptions :</strong></span>
+                </p>
+                <ul>
+                    <#list avenant.periodesInterruptions as periode>
+                    <li>du ${periode.dateDebutInterruption} au ${periode.dateFinInterruption}</li>
+                    </#list>
+                </ul>
+                </#if>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</figure>
+</#if>
+
+<figure class="table" style="height:10px;">
+    <table>
+        <colgroup><col style="width:100%;"></colgroup>
+        <tbody>
+        <tr>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</figure>
+
+<#if avenant.modificationMontantGratification>
+<figure class="table">
+    <table style="border:1px solid hsl(0, 0%, 0%);">
+        <colgroup><col style="width:50%;"><col style="width:50%;"></colgroup>
+        <tbody>
+        <tr>
+            <td style="text-align:center;border:1px solid hsl(0, 0%, 0%);" colspan="2">Modification du montant de la gratification</td>
+        </tr>
+        <tr>
+            <td style="border:1px solid hsl(0, 0%, 0%);vertical-align:top;">
+                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>Anciennes valeurs :</u></span>
+                <p>
+                    <span class="text-small"><strong>Montant : </strong>${convention.montantGratification} ${convention.uniteGratificationLibelle} ${convention.uniteDureeGratificationLibelle}</span><br/>
+                    <span class="text-small"><strong>Monnaie utilisée pour le paiement : </strong>${convention.deviseGratification}</span><br/>
+                    <span class="text-small"><strong>Modalité de versement de la gratification : </strong>${convention.modeVersGratificationLibelle}</span>
+                </p>
+            </td>
+            <td style="border:1px solid hsl(0, 0%, 0%);vertical-align:top;">
+                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>Nouvelles valeurs :</u></span>
+                <p>
+                    <#if avenant.montantGratification != ''>
+                        <span class="text-small"><strong>Montant : </strong>${avenant.montantGratification} ${avenant.uniteGratificationLibelle} ${avenant.uniteDureeGratificationLibelle}</span>
+                    </#if>
+                    <#if avenant.deviseGratification != ''>
+                        <span class="text-small"><strong>Monnaie utilisée pour le paiement : </strong>${avenant.deviseGratification}</span>
+                    </#if>
+                    <#if avenant.modeVersGratificationLibelle != ''>
+                        <span class="text-small"><strong>Modalité de versement de la gratification : </strong>${avenant.modeVersGratificationLibelle}</span>
+                    </#if>
+                </p>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</figure>
+</#if>
+
+<figure class="table" style="height:10px;">
+    <table>
+        <colgroup><col style="width:100%;"></colgroup>
+        <tbody>
+        <tr>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</figure>
+
+<#if avenant.modificationLieu>
+<figure class="table">
+    <table style="border:1px solid hsl(0, 0%, 0%);">
+        <colgroup><col style="width:50%;"><col style="width:50%;"></colgroup>
+        <tbody>
+        <tr>
+            <td style="text-align:center;border:1px solid hsl(0, 0%, 0%);" colspan="2">Modification du lieu de stage</td>
+        </tr>
+        <tr>
+            <td style="border:1px solid hsl(0, 0%, 0%);vertical-align:top;">
+                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>Anciennes valeurs :</u></span>
+                <p>
+                    <span class="text-small"><strong>Nom : </strong>${service.nom}</span><br/>
+                    <span class="text-small"><strong>Voie : </strong>${service.voie}</span><br/>
+                    <span class="text-small"><strong>Code postal : </strong>${service.codePostal}</span><br/>
+                    <span class="text-small"><strong>Commune : </strong>${service.commune}</span><br/>
+                    <span class="text-small"><strong>Pays : </strong>${service.paysLibelle}</span>
+                </p>
+            </td>
+            <td style="border:1px solid hsl(0, 0%, 0%);vertical-align:top;">
+                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>Nouvelles valeurs :</u></span>
+                <p>
+                    <span class="text-small"><strong>Nom : </strong>${avenant.service.nom}</span><br/>
+                    <span class="text-small"><strong>Voie : </strong>${avenant.service.voie}</span><br/>
+                    <span class="text-small"><strong>Code postal : </strong>${avenant.service.codePostal}</span><br/>
+                    <span class="text-small"><strong>Commune : </strong>${avenant.service.commune}</span><br/>
+                    <span class="text-small"><strong>Pays : </strong>${avenant.service.paysLibelle}</span>
+                </p>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</figure>
+</#if>
+
+<figure class="table" style="height:10px;">
+    <table>
+        <colgroup><col style="width:100%;"></colgroup>
+        <tbody>
+        <tr>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</figure>
+
+<#if avenant.modificationSalarie>
+<figure class="table">
+    <table style="border:1px solid hsl(0, 0%, 0%);">
+        <colgroup><col style="width:50%;"><col style="width:50%;"></colgroup>
+        <tbody>
+        <tr>
+            <td style="text-align:center;border:1px solid hsl(0, 0%, 0%);" colspan="2">Modification du tuteur professionnel</td>
+        </tr>
+        <tr>
+            <td style="border:1px solid hsl(0, 0%, 0%);vertical-align:top;">
+                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>Anciennes valeurs :</u></span>
+                <p>
+                    <span class="text-small"><strong>Nom : </strong>${contact.nom}</span><br/>
+                    <span class="text-small"><strong>Prénom : </strong>${contact.prenom}</span><br/>
+                    <span class="text-small"><strong>Civilité : </strong>${contact.civiliteLibelle}</span><br/>
+                    <span class="text-small"><strong>Fonction : </strong>${contact.fonction}</span><br/>
+                    <span class="text-small"><strong>Téléphone : </strong>${contact.tel}</span><br/>
+                    <span class="text-small"><strong>Email : </strong>${contact.mail}</span>
+                </p>
+            </td>
+            <td style="border:1px solid hsl(0, 0%, 0%);vertical-align:top;">
+                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>Nouvelles valeurs :</u></span>
+                <p>
+                    <span class="text-small"><strong>Nom : </strong>${avenant.contact.nom}</span><br/>
+                    <span class="text-small"><strong>Prénom : </strong>${avenant.contact.prenom}</span><br/>
+                    <span class="text-small"><strong>Civilité : </strong>${avenant.contact.civiliteLibelle}</span><br/>
+                    <span class="text-small"><strong>Fonction : </strong>${avenant.contact.fonction}</span><br/>
+                    <span class="text-small"><strong>Téléphone : </strong>${avenant.contact.tel}</span><br/>
+                    <span class="text-small"><strong>Email : </strong>${avenant.contact.mail}</span>
+                </p>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</figure>
+</#if>
+
+<figure class="table" style="height:10px;">
+    <table>
+        <colgroup><col style="width:100%;"></colgroup>
+        <tbody>
+        <tr>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</figure>
+
+<#if avenant.modificationEnseignant>
+<figure class="table">
+    <table style="border:1px solid hsl(0, 0%, 0%);">
+        <colgroup><col style="width:50%;"><col style="width:50%;"></colgroup>
+        <tbody>
+        <tr>
+            <td style="text-align:center;border:1px solid hsl(0, 0%, 0%);" colspan="2">Modification de l’enseignant référent</td>
+        </tr>
+        <tr>
+            <td style="border:1px solid hsl(0, 0%, 0%);vertical-align:top;">
+                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>Anciennes valeurs :</u></span>
+                <p>
+                    <span class="text-small"><strong>Nom / Prénom : </strong>${enseignant.nom} ${enseignant.prenom}</span><br/>
+                    <span class="text-small"><strong>Fonction : </strong>${enseignant.fonction}</span><br/>
+                    <span class="text-small"><strong>Téléphone : </strong>${enseignant.tel}</span><br/>
+                    <span class="text-small"><strong>Email : </strong>${enseignant.mail}</span>
+                </p>
+            </td>
+            <td style="border:1px solid hsl(0, 0%, 0%);vertical-align:top;">
+                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>Nouvelles valeurs :</u></span>
+                <p>
+                    <span class="text-small"><strong>Nom / Prénom : </strong>${avenant.enseignant.nom} ${avenant.enseignant.prenom}</span><br/>
+                    <span class="text-small"><strong>Fonction : </strong>${avenant.enseignant.fonction}</span><br/>
+                    <span class="text-small"><strong>Téléphone : </strong>${avenant.enseignant.tel}</span><br/>
+                    <span class="text-small"><strong>Email : </strong>${avenant.enseignant.mail}</span>
+                </p>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</figure>
+</#if>
+
+<figure class="table" style="height:10px;">
+    <table>
+        <colgroup><col style="width:100%;"></colgroup>
+        <tbody>
+        <tr>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</figure>
+
+<#if avenant.motifAvenant != ''>
+<figure class="table">
+    <table style="border:1px solid hsl(0, 0%, 0%);">
+        <colgroup><col style="width:50%;"><col style="width:50%;"></colgroup>
+        <tbody>
+        <tr>
+            <td style="text-align:center;border:1px solid hsl(0, 0%, 0%);">Autre modification</td>
+        </tr>
+        <tr>
+            <td style="border:1px solid hsl(0, 0%, 0%);vertical-align:top;">
+                <p>
+                    <span class="text-small"><strong>Motif : </strong>${avenant.motifAvenant}</span>
+                </p>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</figure>
+</#if>
+
+<figure class="table" style="height:10px;">
+    <table>
+        <colgroup><col style="width:100%;"></colgroup>
+        <tbody>
+        <tr>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</figure>

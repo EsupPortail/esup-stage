@@ -1,0 +1,8 @@
+databaseChangeLog:
+- changeSet:
+    id: init-periode-interruption-avenant
+    author: ssound
+    changes:
+    - sqlFile:
+        path: init-insert/periodeinterruptionavenant.sql
+        relativeToChangelogFile: true

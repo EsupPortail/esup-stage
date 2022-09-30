@@ -1,0 +1,17 @@
+databaseChangeLog:
+- changeSet:
+    id: paramConvention-insert-avenant-motifs
+    author: ssound
+    changes:
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: avenant.motifs
+        - column:
+            name: libelle
+            value: Liste des motifs de l'avenant
+        - column:
+            name: exemple
+            value: Sous forme de tableau avec en titre la raison, à droites les anciennes valeurs et à gauche les nouvelles
+        tableName: ParamConvention

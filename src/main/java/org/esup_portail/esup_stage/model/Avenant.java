@@ -5,7 +5,9 @@ import com.fasterxml.jackson.annotation.JsonView;
 import org.esup_portail.esup_stage.dto.view.Views;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "Avenant")
@@ -109,6 +111,13 @@ public class Avenant extends ObjetMetier implements Exportable {
     @ManyToOne
     @JoinColumn(name = "idUniteDureeGratification")
     private UniteDuree uniteDuree;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "avenant")
+    private List<PeriodeInterruptionAvenant> periodeInterruptionAvenants = new ArrayList<>();
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateValidation;
 
     public int getId() {
         return id;
@@ -340,6 +349,22 @@ public class Avenant extends ObjetMetier implements Exportable {
 
     public void setUniteDuree(UniteDuree uniteDuree) {
         this.uniteDuree = uniteDuree;
+    }
+
+    public List<PeriodeInterruptionAvenant> getPeriodeInterruptionAvenants() {
+        return periodeInterruptionAvenants;
+    }
+
+    public void setPeriodeInterruptionAvenants(List<PeriodeInterruptionAvenant> periodeInterruptionAvenants) {
+        this.periodeInterruptionAvenants = periodeInterruptionAvenants;
+    }
+
+    public Date getDateValidation() {
+        return dateValidation;
+    }
+
+    public void setDateValidation(Date dateValidation) {
+        this.dateValidation = dateValidation;
     }
 
     @Override

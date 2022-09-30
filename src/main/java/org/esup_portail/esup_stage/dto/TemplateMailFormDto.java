@@ -8,7 +8,7 @@ public class TemplateMailFormDto implements TemplateMailInterface {
 
     @NotNull
     @NotEmpty
-    @Size(max = 150)
+    @Size(max = 500)
     private String libelle;
 
     @NotNull

@@ -162,11 +162,10 @@ export class GestionnairesComponent implements OnInit {
   }
 
   setData(gestionnaire: any) {
-    const displayName = gestionnaire.displayName.split(/(\s+)/);
     let civiliteGest = this.setCivilite(gestionnaire.supannCivilite);
     this.form.patchValue({
-      nom: displayName[2],
-      prenom: displayName[0],
+      nom: gestionnaire.sn.join(' '),
+      prenom: gestionnaire.givenName.join(' '),
       mail: gestionnaire.mail,
       civilite: civiliteGest,
       typePersonne: gestionnaire.eduPersonPrimaryAffiliation,
