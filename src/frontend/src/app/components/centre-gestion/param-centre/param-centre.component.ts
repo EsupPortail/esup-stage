@@ -114,7 +114,19 @@ export class ParamCentreComponent implements OnInit {
       prenomViseur: this.centreGestion.prenomViseur,
       qualiteViseur: this.centreGestion.qualiteViseur,
       delaiAlerteConvention: this.centreGestion.delaiAlerteConvention,
+    }, {
+      emitEvent: false,
     });
+    for (let validation of ['validationPedagogique', 'verificationAdministrative', 'validationConvention']) {
+      if (this.centreGestion[validation]) {
+        this.validationsActives.push({ id: validation, ordre: this.centreGestion[validation + 'Ordre'], libelle: this.validationLibelles[validation] ?? 'vérification administrative'})
+      }
+    }
+    if (this.validationsActives.length > 1) {
+      this.validationsActives.sort((a, b) => {
+        return a.ordre - b.ordre;
+      });
+    }
   }
 
   toggleRecupInscription(): void {
@@ -229,6 +241,7 @@ export class ParamCentreComponent implements OnInit {
       lastOrdre = Math.max.apply(Math, ordres);
     }
     this.validationsActives.push({ id: validation, ordre: lastOrdre + 1, libelle: this.validationLibelles[validation] ?? 'vérification administrative'})
+    this.reorderValidations();
   }
 
   removeValidation(validation: string): void {
