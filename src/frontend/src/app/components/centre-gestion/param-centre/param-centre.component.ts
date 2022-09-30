@@ -170,7 +170,7 @@ export class ParamCentreComponent implements OnInit {
   updateEnseignant(id: number, row: any): void {
     const data = {
       nom: row.sn.join(' '),
-      prenom: row.displayName.join(' '),
+      prenom: row.givenName.join(' '),
       mail: row.mail,
       typePersonne: row.eduPersonPrimaryAffiliation,
       uidEnseignant: row.supannAliasLogin,
