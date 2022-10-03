@@ -21,9 +21,9 @@
       </div>
     </form>
     <div class="row" *ngIf="centreGestion.id && form.get('niveauCentre')?.value.libelle == 'UFR'">
-      <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
+      <mat-form-field class="col-sm-12 col-md-12" appearance="fill">
         <mat-label>Composante</mat-label>
-        <mat-select [(ngModel)]="selectedComposante" (selectionChange)="composanteChange($event.value)" [compareWith]="compareCode">
+        <mat-select multiple [(ngModel)]="selectedComposante" (selectionChange)="composanteChange($event.value)" [compareWith]="compareCode">
           <mat-option *ngFor="let composante of composantes" [value]="composante">{{composante.code}} - {{composante.libelle}}</mat-option>
         </mat-select>
       </mat-form-field>

@@ -239,39 +239,49 @@ public class CentreGestionController {
 
     @GetMapping("/{id}/composante")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
-    public Composante getCentreComposante(@PathVariable("id") int id) {
-        CritereGestion critereGestion = critereGestionJpaRepository.findByCentreId(id);
-        Composante composante = new Composante();
-        if (critereGestion != null) {
+    public List<Composante> getCentreComposante(@PathVariable("id") int id) {
+        List<CritereGestion> critereGestions = critereGestionJpaRepository.findByCentreId(id);
+        List<Composante> composantes = new ArrayList<>();
+        for (CritereGestion critereGestion : critereGestions) {
+            Composante composante = new Composante();
             composante.setCode(critereGestion.getId().getCode());
             composante.setLibelle(critereGestion.getLibelle());
+            composantes.add(composante);
         }
-        return composante;
+        return composantes;
     }
 
     @PutMapping("/{id}/set-composante")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.MODIFICATION})
-    public Composante setComposante(@PathVariable("id") int id, @RequestBody Composante _composante) {
+    public List<Composante> setComposante(@PathVariable("id") int id, @RequestBody List<Composante> _composantes) {
         CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
-        CritereGestion critereGestion = critereGestionJpaRepository.findByCentreId(id);
-        CritereGestionId critereGestionId = new CritereGestionId();
-        critereGestionId.setCode(_composante.getCode());
-        critereGestionId.setCodeVersionEtape("");
+        List<CritereGestion> critereGestions = critereGestionJpaRepository.findByCentreId(id);
 
-        if (critereGestion != null) {
-            if (conventionJpaRepository.countConventionRattacheUfr(critereGestion.getCentreGestion().getId(), _composante.getCode()) > 0) {
-                throw new AppException(HttpStatus.FORBIDDEN, "Une convention est déjà rattachée à cette composante");
+        // Gestion des suppressions
+        for (CritereGestion critereGestion : critereGestions) {
+            if (_composantes.stream().noneMatch(c -> c.getCode().equals(critereGestion.getId().getCode()) && critereGestion.getId().getCodeVersionEtape().equals(""))) {
+                if (conventionJpaRepository.countConventionRattacheUfr(critereGestion.getCentreGestion().getId(), critereGestion.getId().getCode()) > 0) {
+                    throw new AppException(HttpStatus.FORBIDDEN, "Une convention est déjà rattachée à cette composante");
+                }
+                critereGestionJpaRepository.delete(critereGestion);
             }
-
-            critereGestionJpaRepository.delete(critereGestion);
         }
 
-        critereGestion = new CritereGestion();
-        critereGestion.setId(critereGestionId);
-        critereGestion.setLibelle(_composante.getLibelle());
-        critereGestion.setCentreGestion(centreGestion);
-        critereGestionJpaRepository.saveAndFlush(critereGestion);
-        return _composante;
+        // Gestion des ajouts
+        for (Composante _composante : _composantes) {
+            if (critereGestions.stream().noneMatch(c -> c.getId().getCode().equals(_composante.getCode()) && c.getId().getCodeVersionEtape().equals(""))) {
+                CritereGestionId critereGestionId = new CritereGestionId();
+                critereGestionId.setCode(_composante.getCode());
+                critereGestionId.setCodeVersionEtape("");
+                CritereGestion critereGestion = new CritereGestion();
+                critereGestion.setId(critereGestionId);
+                critereGestion.setLibelle(_composante.getLibelle());
+                critereGestion.setCentreGestion(centreGestion);
+                critereGestionJpaRepository.save(critereGestion);
+            }
+        }
+
+        return _composantes;
     }
 
     @GetMapping("/{id}/etapes")
