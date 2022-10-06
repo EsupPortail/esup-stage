@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from "@angular/forms";
 import { CentreGestionService } from "../../../services/centre-gestion.service";
+import { CommuneService } from "../../../services/commune.service";
 import { NiveauCentreService } from "../../../services/niveau-centre.service";
 import { CritereGestionService } from "../../../services/critere-gestion.service";
 import { MessageService } from "../../../services/message.service";
@@ -34,6 +35,7 @@ export class CoordCentreComponent implements OnInit {
   niveauxCentre: any[] = [];
   composantes: any[] = [];
   etapes: any[] = [];
+  communes: any[] = [];
 
   displayedEtapesColumns = ['id.code', 'id.codeVersionEtape', 'libelle', 'action'];
   sortColumn = 'id.code';
@@ -46,12 +48,16 @@ export class CoordCentreComponent implements OnInit {
 
   constructor(
     private centreGestionService: CentreGestionService,
+    public communeService: CommuneService,
     private niveauCentreService: NiveauCentreService,
     public critereGestionService: CritereGestionService,
     private messageService: MessageService,
     private fb: FormBuilder) { }
 
   ngOnInit(): void {
+    this.communeService.getPaginated(1, 0, 'lib', 'asc', "").subscribe((response: any) => {
+      this.communes = response;
+    });
     this.niveauCentreService.findList().subscribe((response: any) => {
       // Si c'est un centre de type établissement, on ajoute le niveau centre ETABLISSEMENT pour qu'il apparaisse au niveau du select
       if (this.centreGestion.niveauCentre && this.centreGestion.niveauCentre.libelle === 'ETABLISSEMENT') {
@@ -218,4 +224,28 @@ export class CoordCentreComponent implements OnInit {
     );
   }
 
+  updateCommune(commune : any): void {
+    this.form.get('commune')?.setValue(commune.split(' - ')[0]);
+    this.form.get('codePostal')?.setValue(commune.split(' - ')[1]);
+  }
+
+  isCodePostalValid() {
+    let codePostal = this.form.get('codePostal')?.value;
+    if (codePostal) {
+      let commune = this.communes.find(c => c.codePostal === codePostal);
+      if (commune)
+        return true;
+    }
+    return false;
+  }
+
+  isCommuneValid() {
+    let commune = this.form.get('commune')?.value;
+    if (commune) {
+      let c = this.communes.find(c => c.libelle === commune);
+      if (c)
+        return true;
+    }
+    return false;
+  }
 }

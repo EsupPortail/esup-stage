@@ -87,8 +87,11 @@
                   <input matInput formControlName="adresseEtudiant" required />
                   <mat-error><app-form-error [field]="formConvention.get('adresseEtudiant')"></app-form-error></mat-error>
                 </mat-form-field>
-                <mat-form-field class="col-sm-12 mb-2" appearance="fill">
-                  <mat-label>Code postal</mat-label>
+                <div class="col-sm-12 mb-2" *ngIf="isFr()">
+                  <app-form-autocomplete-field [service]="communeService" [field]="formConvention.get('codePostalEtudiant')" [fieldLabel]="'Code postal'" (updated)="updateCommune($event)" [startWith]="false"></app-form-autocomplete-field>
+                </div>
+                <mat-form-field class="col-sm-12 mb-2" appearance="fill" *ngIf="!isFr()">
+                  <mat-label>code Postal</mat-label>
                   <input matInput formControlName="codePostalEtudiant" required />
                   <mat-error><app-form-error [field]="formConvention.get('codePostalEtudiant')"></app-form-error></mat-error>
                 </mat-form-field>

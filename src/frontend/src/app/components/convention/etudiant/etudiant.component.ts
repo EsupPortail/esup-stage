@@ -3,6 +3,7 @@ import { AuthService } from "../../../services/auth.service";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MessageService } from "../../../services/message.service";
 import { EtudiantService } from "../../../services/etudiant.service";
+import { CommuneService } from "../../../services/commune.service";
 import { MatExpansionPanel } from "@angular/material/expansion";
 import { LdapService } from "../../../services/ldap.service";
 import { TypeConventionService } from "../../../services/type-convention.service";
@@ -52,6 +53,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
   constructor(
     private authService: AuthService,
     private etudiantService: EtudiantService,
+    public communeService: CommuneService,
     private fb: FormBuilder,
     private messageService: MessageService,
     private ldapService: LdapService,
@@ -292,4 +294,13 @@ export class EtudiantComponent implements OnInit, OnChanges {
     return false;
   }
 
+  updateCommune(commune : any): void {
+    this.formConvention.get('villeEtudiant')?.setValue(commune.split(' - ')[0]);
+    this.formConvention.get('codePostalEtudiant')?.setValue(commune.split(' - ')[1]);
+  }
+
+  isFr() {
+    let pays = this.formConvention.get('paysEtudiant')?.value;
+    return pays.toLowerCase() === 'france';
+  }
 }

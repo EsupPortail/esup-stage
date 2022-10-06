@@ -2,6 +2,7 @@ import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, Validators } from "@angular/forms";
 import { ServiceService } from "../../../services/service.service";
+import { CommuneService } from "../../../services/commune.service";
 import { MessageService } from "../../../services/message.service";
 
 @Component({
@@ -15,10 +16,13 @@ export class ServiceAccueilFormComponent {
   etab: any;
 
   countries: any[] = [];
+  communes: any[] = [];
 
   form: any;
 
   constructor(public serviceService: ServiceService,
+              public communeService: CommuneService,
+              private messageService: MessageService,
               private dialogRef: MatDialogRef<ServiceAccueilFormComponent>,
               private fb: FormBuilder,
               @Inject(MAT_DIALOG_DATA) data: any
@@ -47,6 +51,18 @@ export class ServiceAccueilFormComponent {
         telephone: [this.etab.telephone, [Validators.maxLength(20)]],
       });
     }
+    this.communeService.getPaginated(1, 0, 'lib', 'asc', "").subscribe((response: any) => {
+      this.communes = response;
+      this.initForm();
+    });
+  }
+
+  initForm(): void {
+    this.toggleCommune();
+    this.form.get('idPays')?.valueChanges.subscribe((idPays: any) => {
+      this.toggleCommune();
+      this.clearCommune();
+    });
   }
 
   close(): void {
@@ -56,7 +72,13 @@ export class ServiceAccueilFormComponent {
   save(): void {
     if (this.form.valid) {
 
-      const data = {...this.form.value};
+      // Contrôle code postal commune
+      if (this.isFr() && !this.isCodePostalValid()) {
+        this.messageService.setError('Code postal inconnu');
+        return;
+      }
+
+      const data = {...this.form.getRawValue()};
 
       if (this.service) {
         this.serviceService.update(this.service.id, data).subscribe((response: any) => {
@@ -74,5 +96,56 @@ export class ServiceAccueilFormComponent {
     }
   }
 
+  clearCommune(): void {
+      this.form.get('commune')?.setValue('');
+      this.form.get('codePostal')?.setValue('');
+      this.form.get('commune')?.markAsPristine();
+      this.form.get('codePostal')?.markAsPristine();
+  }
+  toggleCommune(): void {
+      if (!this.isPaysSet()) {
+        this.form.get('commune')?.disable();
+        this.form.get('codePostal')?.disable();
+      }else{
+        if (this.isFr()) {
+          this.form.get('commune')?.disable();
+          this.form.get('codePostal')?.enable();
+        }else{
+          this.form.get('commune')?.enable();
+          this.form.get('codePostal')?.enable();
+        }
+      }
+  }
 
+  updateCommune(commune : any): void {
+    this.form.get('commune')?.setValue(commune.split(' - ')[0]);
+    this.form.get('codePostal')?.setValue(commune.split(' - ')[1]);
+  }
+
+  isPaysSet() {
+    let idPays = this.form.get('idPays')?.value;
+    if (idPays)
+      return true;
+    return false;
+  }
+
+  isFr() {
+    let idPays = this.form.get('idPays')?.value;
+    if (idPays) {
+      let pays = this.countries.find(c => c.id === idPays);
+      if (pays)
+        return pays.libelle === 'FRANCE';
+    }
+    return true;
+  }
+
+  isCodePostalValid() {
+    let codePostal = this.form.get('codePostal')?.value;
+    if (codePostal) {
+      let commune = this.communes.find(c => c.codePostal === codePostal);
+      if (commune)
+        return true;
+    }
+    return false;
+  }
 }
