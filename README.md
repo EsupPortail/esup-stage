@@ -45,6 +45,7 @@ Par exemple si `appli.data_dir=/etc/eStage/uploads` on aura :
      |_/centregestion
        |_/consigne-documents
        |_/logos
+     |_/images
 ```
 
 ## Procédure d'installation en environnement de dev
