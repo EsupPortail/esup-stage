@@ -132,6 +132,7 @@ public class AppConfigController {
             configThemeDto.setFavicon(configThemeDtoOrigin.getFavicon());
         }
 
+        appConfigService.writeImageIntoFile(configThemeDto);
         appConfig.setParametres(mapper.writeValueAsString(configThemeDto));
         appConfigJpaRepository.saveAndFlush(appConfig);
         appConfigService.updateTheme();
