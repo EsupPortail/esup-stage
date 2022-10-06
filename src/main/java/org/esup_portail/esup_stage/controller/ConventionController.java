@@ -528,7 +528,18 @@ public class ConventionController {
     private boolean isConventionModifiable(Convention convention, Utilisateur utilisateur) {
         if (!UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
             if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
-                return !convention.isValidationCreation();
+                boolean modifiable = true;
+                CentreGestion centreGestion = convention.getCentreGestion();
+                if (centreGestion.getValidationConvention() != null && centreGestion.getValidationConvention() && convention.getValidationConvention() != null && convention.getValidationConvention()) {
+                    modifiable = false;
+                }
+                if (centreGestion.getVerificationAdministrative() != null && centreGestion.getVerificationAdministrative() && convention.getVerificationAdministrative() != null && convention.getVerificationAdministrative()) {
+                    modifiable = false;
+                }
+                if (centreGestion.getValidationPedagogique() != null && centreGestion.getValidationPedagogique() && convention.getValidationPedagogique() != null && convention.getValidationPedagogique()) {
+                    modifiable = false;
+                }
+                return modifiable;
             } else if (UtilisateurHelper.isRole(utilisateur, Role.ENS)) {
                 return false;
             } else { // cas gestionnaire, responsable gestionnaire et profil non défini
@@ -850,7 +861,6 @@ public class ConventionController {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
         // Pour les étudiants on vérifie que c'est une de ses conventions
-        Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
         if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(convention.getEtudiant().getIdentEtudiant())) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
