@@ -1,9 +1,9 @@
 <mat-form-field style="width: 100%;" appearance="fill">
   <mat-label>{{fieldLabel}}</mat-label>
   <input matInput [formControl]="field" [matAutocomplete]="auto" required />
-  <mat-autocomplete #auto="matAutocomplete">
-    <mat-option *ngFor="let item of filteredItems | async" [value]="item.libelle">
-      {{item.libelle}}
+  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
+    <mat-option *ngFor="let item of filteredItems | async" [value]="item.libelle + ' - ' + item.codePostal">
+      {{item.libelle + ' - ' + item.codePostal}}
     </mat-option>
   </mat-autocomplete>
   <mat-error><app-form-error [field]="field"></app-form-error></mat-error>

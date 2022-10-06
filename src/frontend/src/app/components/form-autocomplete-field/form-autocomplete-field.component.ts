@@ -1,4 +1,4 @@
-import { Component,Input, OnInit, OnChanges } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit, OnChanges } from '@angular/core';
 import { PaginatedService } from "../../services/paginated.service";
 import { FormGroup } from "@angular/forms";
 import { Observable } from 'rxjs';
@@ -15,6 +15,7 @@ export class FormAutocompleteFieldComponent implements OnInit {
   @Input() field: any;
   @Input() fieldLabel: any;
   @Input() startWith: boolean;
+  @Output() updated = new EventEmitter<string>();
 
   filteredItems: Observable<string[]>;
   items: any[] = [];
@@ -41,17 +42,20 @@ export class FormAutocompleteFieldComponent implements OnInit {
     }
   }
 
+  selected(event : any): void {
+    this.updated.emit(event.option.value);
+  }
   private _filter(value: string, options : any[]): string[] {
     const filterValue = value.toLowerCase();
     const maxSize = 200;
 
-    return options.filter(option => option.libelle.toLowerCase().includes(filterValue)).slice(0, maxSize);
+    return options.filter(option => (option.libelle + ' - ' + option.codePostal).toLowerCase().includes(filterValue)).slice(0, maxSize);
   }
 
   private _filterStartWith(value: string, options : any[]): string[] {
     const filterValue = value.toLowerCase();
     const maxSize = 200;
 
-    return options.filter(option => option.libelle.toLowerCase().startsWith(filterValue)).slice(0, maxSize);
+    return options.filter(option => option.codePostal.startsWith(filterValue)).slice(0, maxSize);
   }
 }

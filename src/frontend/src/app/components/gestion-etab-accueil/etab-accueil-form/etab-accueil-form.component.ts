@@ -2,7 +2,6 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange
 import { FormBuilder, FormControl, Validators } from "@angular/forms";
 import { StructureService } from "../../../services/structure.service";
 import { CommuneService } from "../../../services/commune.service";
-import { CodePostalService } from "../../../services/codePostal.service";
 import { PaysService } from "../../../services/pays.service";
 import { TypeStructureService } from "../../../services/type-structure.service";
 import { NafN1Service } from "../../../services/naf-n1.service";
@@ -25,6 +24,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges {
   @Output() canceled = new EventEmitter<boolean>();
 
   countries: any[] = [];
+  communes: any[] = [];
   typeStructures: any[] = [];
   secteurs: any[] = [];
   statutJuridiques: any[] = [];
@@ -40,9 +40,8 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges {
 
   constructor(
     public structureService: StructureService,
-    private paysService: PaysService,
-    public codePostalService: CodePostalService,
     public communeService: CommuneService,
+    private paysService: PaysService,
     private typeStructureService: TypeStructureService,
     private nafN1Service: NafN1Service,
     private nafN5Service: NafN5Service,
@@ -55,6 +54,9 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServPays: {value: 'O', type: 'text'}})).subscribe((response: any) => {
       this.countries = response.data;
+    });
+    this.communeService.getPaginated(1, 0, 'lib', 'asc', "").subscribe((response: any) => {
+      this.communes = response;
     });
     this.typeStructureService.getPaginated(1, 0, 'libelle', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
       this.typeStructures = response.data;
@@ -93,6 +95,12 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges {
     });
 
     this.form.get('idTypeStructure')?.disable();
+
+    this.toggleCommune();
+    this.form.get('idPays')?.valueChanges.subscribe((idPays: any) => {
+      this.toggleCommune();
+      this.clearCommune();
+    });
 
     if (this.etab.nafN5) {
       this.selectedNafN5 = this.etab.nafN5;
@@ -141,6 +149,12 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges {
         return;
       }
 
+      // Contrôle code postal commune
+      if (this.isFr() && !this.isCodePostalValid()) {
+        this.messageService.setError('Code postal inconnu');
+        return;
+      }
+
       if (this.form.get('numeroSiret')?.value === "") {
         this.form.get('numeroSiret')?.setValue(null);
       }
@@ -181,6 +195,39 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges {
     return false;
   }
 
+  clearCommune(): void {
+      this.form.get('commune')?.setValue('');
+      this.form.get('codePostal')?.setValue('');
+      this.form.get('commune')?.markAsPristine();
+      this.form.get('codePostal')?.markAsPristine();
+  }
+  toggleCommune(): void {
+      if (!this.isPaysSet()) {
+        this.form.get('commune')?.disable();
+        this.form.get('codePostal')?.disable();
+      }else{
+        if (this.isFr()) {
+          this.form.get('commune')?.disable();
+          this.form.get('codePostal')?.enable();
+        }else{
+          this.form.get('commune')?.enable();
+          this.form.get('codePostal')?.enable();
+        }
+      }
+  }
+
+  updateCommune(commune : any): void {
+    this.form.get('commune')?.setValue(commune.split(' - ')[0]);
+    this.form.get('codePostal')?.setValue(commune.split(' - ')[1]);
+  }
+
+  isPaysSet() {
+    let idPays = this.form.get('idPays')?.value;
+    if (idPays)
+      return true;
+    return false;
+  }
+
   isFr() {
     let idPays = this.form.get('idPays')?.value;
     if (idPays) {
@@ -188,7 +235,16 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges {
       if (pays)
         return pays.libelle === 'FRANCE';
     }
-
     return true;
+  }
+
+  isCodePostalValid() {
+    let codePostal = this.form.get('codePostal')?.value;
+    if (codePostal) {
+      let commune = this.communes.find(c => c.codePostal === codePostal);
+      if (commune)
+        return true;
+    }
+    return false;
   }
 }

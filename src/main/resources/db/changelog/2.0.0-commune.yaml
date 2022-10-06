@@ -17,6 +17,11 @@ databaseChangeLog:
                 nullable: false
             name: libelleCommune
             type: VARCHAR(100)
+        - column:
+            constraints:
+              nullable: false
+            name: codePostal
+            type: VARCHAR(5)
         tableName: Commune
 - changeSet:
     id: commune-init

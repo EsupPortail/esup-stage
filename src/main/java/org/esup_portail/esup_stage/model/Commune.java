@@ -14,6 +14,9 @@ public class Commune {
     @Column(name = "libelleCommune", nullable = false)
     private String libelle;
 
+    @Column(name = "codePostal", nullable = false)
+    private String codePostal;
+
     public int getId() {
         return id;
     }
@@ -28,5 +31,13 @@ public class Commune {
 
     public void setLibelle(String libelle) {
         this.libelle = libelle;
+    }
+
+    public String getCodePostal() {
+        return codePostal;
+    }
+
+    public void setCodePostal(String codePostal) {
+        this.codePostal = codePostal;
     }
 }

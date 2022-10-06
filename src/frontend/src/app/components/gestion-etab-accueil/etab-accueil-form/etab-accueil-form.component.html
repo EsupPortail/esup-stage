@@ -83,18 +83,10 @@
       <input matInput formControlName="voie" required />
       <mat-error><app-form-error [field]="form.get('voie')"></app-form-error></mat-error>
     </mat-form-field>
-    <div class="col-sm-12 col-md-6 mb-2">
-      <app-form-autocomplete-field [service]="codePostalService" [field]="form.get('codePostal')" [fieldLabel]="'Code postal'" [startWith]="true" ></app-form-autocomplete-field>
-    </div>
-  </div>
-  <div class="row">
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Bâtiment / Résidence / Z.I</mat-label>
       <input matInput formControlName="batimentResidence" />
     </mat-form-field>
-    <div class="col-sm-12 col-md-6 mb-2">
-      <app-form-autocomplete-field [service]="communeService" [field]="form.get('commune')" [fieldLabel]="'Commune'" [startWith]="false" ></app-form-autocomplete-field>
-    </div>
   </div>
   <div class="row">
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
@@ -107,6 +99,21 @@
         <mat-option *ngFor="let country of countries" [value]="country.id">{{country.libelle}}</mat-option>
       </mat-select>
       <mat-error><app-form-error [field]="form.get('idPays')"></app-form-error></mat-error>
+    </mat-form-field>
+  </div>
+  <div class="row">
+    <div class="col-sm-12 col-md-6 mb-2" *ngIf="isFr()">
+      <app-form-autocomplete-field [service]="communeService" [field]="form.get('codePostal')" [fieldLabel]="'Code postal'" (updated)="updateCommune($event)" [startWith]="false"></app-form-autocomplete-field>
+    </div>
+    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill" *ngIf="!isFr()">
+      <mat-label>code Postal</mat-label>
+      <input matInput formControlName="codePostal" required />
+      <mat-error><app-form-error [field]="form.get('codePostal')"></app-form-error></mat-error>
+    </mat-form-field>
+    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+      <mat-label>Commune</mat-label>
+      <input matInput formControlName="commune" required />
+      <mat-error><app-form-error [field]="form.get('commune')"></app-form-error></mat-error>
     </mat-form-field>
   </div>
   <div class="row">

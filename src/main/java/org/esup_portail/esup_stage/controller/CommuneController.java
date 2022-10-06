@@ -18,7 +18,7 @@ public class CommuneController {
     CommuneJpaRepository communeJpaRepository;
 
     @GetMapping("/")
-    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public List<Commune> getCommunes() {
         return communeJpaRepository.findAll();
     }
