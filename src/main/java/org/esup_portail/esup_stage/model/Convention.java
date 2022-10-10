@@ -1250,14 +1250,51 @@ public class Convention extends ObjetMetier implements Exportable {
             case "id":
                 value = String.valueOf(getId());
                 break;
+            case "numEtudiant":
+                if (getEtudiant() != null) {
+                    value = getEtudiant().getNumEtudiant();
+                }
+                break;
             case "etudiant":
                 if (getEtudiant() != null) {
                     value = getEtudiant().getPrenom() + " " + getEtudiant().getNom();
                 }
                 break;
-            case "structure":
-                if (getStructure() != null) {
-                    value = getStructure().getRaisonSociale();
+            case "courrielPersoEtudiant":
+                value = getCourrielPersoEtudiant();
+                break;
+            case "mailUniEtudiant":
+                if (getEtudiant() != null) {
+                    value = getEtudiant().getMail();
+                }
+                break;
+            case "telEtudiant":
+                value = getTelEtudiant();
+                break;
+            case "telPortableEtudiant":
+                value = getTelPortableEtudiant();
+                break;
+            case "codeUFR":
+                if (getUfr() != null) {
+                    value = getUfr().getId().getCode();
+                }
+                break;
+            case "ufr":
+                if (getUfr() != null) {
+                    value = getUfr().getLibelle();
+                }
+                break;
+            case "codeDepartement":
+                value = getCodeDepartement();
+                break;
+            case "codeEtape":
+                if (getEtape() != null) {
+                    value = getEtape().getId().getCode();
+                }
+                break;
+            case "etape":
+                if (getEtape() != null) {
+                    value = getEtape().getLibelle();
                 }
                 break;
             case "dateDebutStage":
@@ -1270,23 +1307,55 @@ public class Convention extends ObjetMetier implements Exportable {
                     value = df.format(getDateFinStage());
                 }
                 break;
-            case "ufr":
-                if (getUfr() != null) {
-                    value = getUfr().getLibelle();
+            case "interruptionStage":
+                if (getInterruptionStage() != null) {
+                    value = getInterruptionStage()?"Oui":"Non";
                 }
                 break;
-            case "etape":
-                if (getEtape() != null) {
-                    value = getEtape().getLibelle();
+            case "dateDebutInterruption":
+                if (getDateDebutInterruption() != null) {
+                    value = df.format(getDateDebutInterruption());
                 }
                 break;
-            case "enseignant":
-                if (getEnseignant() != null) {
-                    value = getEnseignant().getPrenom() + " " + getEnseignant().getNom();
+            case "dateFinInterruption":
+                if (getDateFinInterruption() != null) {
+                    value = df.format(getDateFinInterruption());
                 }
                 break;
-            case "avenant":
-                value = getAvenants().size() == 0 ? "Non" : "Oui";
+            case "theme":
+                if (getTheme() != null) {
+                    value = getTheme().getLibelle();
+                }
+                break;
+            case "sujetStage":
+                value = getSujetStage();
+                break;
+            case "fonctionsEtTaches":
+                value = getFonctionsEtTaches();
+                break;
+            case "details":
+                value = getDetails();
+                break;
+            case "dureeExceptionnelle":
+                value = getDureeExceptionnelle();
+                break;
+            case "nbJoursHebdo":
+                if (getNbJoursHebdo() != null) {
+                    value = getNbJoursHebdo().getValue();
+                }
+                break;
+            case "nbHeuresHebdo":
+                value = getNbHeuresHebdo();
+                break;
+            case "gratification":
+                if (getUniteGratification() != null) {
+                    value = getMontantGratification() + " " + getUniteGratification().getLibelle();
+                }
+                break;
+            case "uniteDuree":
+                if (getUniteDureeGratification() != null) {
+                    value = getUniteDureeGratification().getLibelle();
+                }
                 break;
             case "validationPedagogique":
                 value = getValidationPedagogique() != null && getValidationPedagogique() ? "Oui" : "Non";
@@ -1297,11 +1366,207 @@ public class Convention extends ObjetMetier implements Exportable {
             case "validationConvention":
                 value = getValidationConvention() != null && getValidationConvention() ? "Oui" : "Non";
                 break;
+            case "enseignant":
+                if (getEnseignant() != null) {
+                    value = getEnseignant().getPrenom() + " " + getEnseignant().getNom();
+                }
+                break;
+            case "mailEnseignant":
+                if (getEnseignant() != null) {
+                    value = getEnseignant().getMail();
+                }
+                break;
+            case "signataire":
+                if (getSignataire() != null) {
+                    value = getSignataire().getPrenom() + " " + getSignataire().getNom();
+                }
+                break;
+            case "mailSignataire":
+                if (getSignataire() != null) {
+                    value = getSignataire().getMail();
+                }
+                break;
+            case "fonctionSignataire":
+                if (getSignataire() != null) {
+                    value = getSignataire().getFonction();
+                }
+                break;
             case "annee":
                 value = getAnnee();
                 break;
-            case "sujetStage":
-                value = getSujetStage();
+            case "typeConvention":
+                if (getTypeConvention() != null) {
+                    value = getTypeConvention().getLibelle();
+                }
+                break;
+            case "commentaireStage":
+                value = getCommentaireStage();
+                break;
+            case "commentaireDureeTravail":
+                value = getCommentaireDureeTravail();
+                break;
+            case "codeElp":
+                value = getCodeElp();
+                break;
+            case "libelleELP":
+                value = getLibelleELP();
+                break;
+            case "codeSexeEtu":
+                if (getEtudiant() != null) {
+                    value = getEtudiant().getCodeSexe();
+                }
+                break;
+            case "avantageNature":
+                value = getAvantagesNature();
+                break;
+            case "adresseEtudiant":
+                value = getAdresseEtudiant();
+                break;
+            case "codePostalEtudiant":
+                value = getCodePostalEtudiant();
+                break;
+            case "paysEtudiant":
+                value = getPaysEtudiant();
+                break;
+            case "villeEtudiant":
+                value = getVilleEtudiant();
+                break;
+            case "avenant":
+                if (getAvenants() != null) {
+                    value = getAvenants().isEmpty() ? "Non" : "Oui";
+                break;
+                }
+            case "dateCreation":
+                if (getDateCreation() != null) {
+                    value = df.format(getDateCreation());
+                }
+                break;
+            case "dateModif":
+                if (getDateModif() != null) {
+                    value = df.format(getDateModif());
+                }
+                break;
+            case "structure":
+                if (getStructure() != null) {
+                    value = getStructure().getRaisonSociale();
+                }
+                break;
+            case "structureSiret":
+                if (getStructure() != null) {
+                    value = getStructure().getNumeroSiret();
+                }
+                break;
+            case "structureAdresse":
+                if (getStructure() != null) {
+                    value = getStructure().getVoie();
+                }
+                break;
+            case "structureCP":
+                if (getStructure() != null) {
+                    value = getStructure().getCodePostal();
+                }
+                break;
+            case "structureCommune":
+                if (getStructure() != null) {
+                    value = getStructure().getCommune();
+                }
+                break;
+            case "structurePays":
+                if (getStructure() != null) {
+                    if (getStructure().getPays() != null) {
+                        value = getStructure().getPays().getLib();
+                    }
+                }
+                break;
+            case "structureStatutJuridique":
+                if (getStructure() != null) {
+                    if (getStructure().getStatutJuridique() != null) {
+                        value = getStructure().getStatutJuridique().getLibelle();
+                    }
+                }
+                break;
+            case "structureType":
+                if (getStructure() != null) {
+                    if (getStructure().getTypeStructure() != null) {
+                        value = getStructure().getTypeStructure().getLibelle();
+                    }
+                }
+                break;
+            case "structureEffectif":
+                if (getStructure() != null) {
+                    if (getStructure().getEffectif() != null) {
+                        value = getStructure().getEffectif().getLibelle();
+                    }
+                }
+                break;
+            case "structureNAF":
+                if (getStructure() != null) {
+                    if (getStructure().getNafN5() != null) {
+                        value = getStructure().getNafN5().getLibelle();
+                    }
+                }
+                break;
+            case "structurePhone":
+                if (getStructure() != null) {
+                    value = getStructure().getTelephone();
+                }
+                break;
+            case "structureMail":
+                if (getStructure() != null) {
+                    value = getStructure().getMail();
+                }
+                break;
+            case "structureSiteWeb":
+                if (getStructure() != null) {
+                    value = getStructure().getSiteWeb();
+                }
+                break;
+            case "service":
+                if (getService() != null) {
+                    value = getService().getNom();
+                }
+                break;
+            case "serviceAdresse":
+                if (getService() != null) {
+                    value = getService().getVoie();
+                }
+                break;
+            case "serviceCP":
+                if (getService() != null) {
+                    value = getService().getCodePostal();
+                }
+                break;
+            case "serviceCommune":
+                if (getService() != null) {
+                    value = getService().getCommune();
+                }
+                break;
+            case "servicePays":
+                if (getService() != null) {
+                    if (getService().getPays() != null) {
+                        value = getService().getPays().getLib();
+                    }
+                }
+                break;
+            case "tuteur":
+                if (getContact() != null) {
+                    value = getContact().getNom() + " " + getContact().getPrenom();
+                }
+                break;
+            case "tuteurMail":
+                if (getContact() != null) {
+                    value = getContact().getMail();
+                }
+                break;
+            case "tuteurPhone":
+                if (getContact() != null) {
+                    value = getContact().getTel();
+                }
+                break;
+            case "tuteurFonction":
+                if (getContact() != null) {
+                    value = getContact().getFonction();
+                }
                 break;
             case "lieuStage":
                 value = getLieuStage();

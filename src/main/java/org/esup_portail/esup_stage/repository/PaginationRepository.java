@@ -1,5 +1,6 @@
 package org.esup_portail.esup_stage.repository;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -202,12 +203,42 @@ public class PaginationRepository<T extends Exportable> {
     public byte[] exportExcel(String headerString, String predicate, String sortOrder, String filters) {
         List<T> data = findPaginated(1, 0, predicate, sortOrder, filters);
         Workbook wb = new HSSFWorkbook();
-        Sheet sheet = wb.createSheet("Export");
-        int rowNum = 0;
-        int columnNum = 0;
 
         formatHeaders(headerString);
-        Set<Map.Entry<String, JsonElement>> entrySet = headers.entrySet();
+
+        if (headers.has("multipleExcelSheets")){
+            JsonArray sheets = headers.getAsJsonArray("multipleExcelSheets");
+            for(int i = 0; i < sheets.size(); i++)
+            {
+                JsonObject object = sheets.get(i).getAsJsonObject();
+                String title = object.get("title").getAsString();
+                JsonObject columns = object.get("columns").getAsJsonObject();
+                Set<Map.Entry<String, JsonElement>> entrySet = columns.entrySet();
+
+                createSheet(wb,data,title,entrySet);
+            }
+        }else{
+            String title = "Export";
+            JsonObject columns = headers;
+            Set<Map.Entry<String, JsonElement>> entrySet = columns.entrySet();
+            createSheet(wb,data,title,entrySet);
+        }
+
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+            wb.write(bos);
+            bos.close();
+            return bos.toByteArray();
+        } catch (IOException e) {
+            logger.error("Erreur génération fichier excel", e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de la génération du fichier excel");
+        }
+    }
+
+    public void createSheet(Workbook wb,List<T> data, String title, Set<Map.Entry<String, JsonElement>> entrySet) {
+
+        Sheet sheet = wb.createSheet(title);
+        int rowNum = 0;
+        int columnNum = 0;
 
         // Ajout du header
         Row row = sheet.createRow(rowNum);
@@ -230,22 +261,36 @@ public class PaginationRepository<T extends Exportable> {
             }
             rowNum++;
         }
-
-        try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-            wb.write(bos);
-            bos.close();
-            return bos.toByteArray();
-        } catch (IOException e) {
-            logger.error("Erreur génération fichier excel", e);
-            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de la génération du fichier excel");
-        }
     }
 
     public StringBuilder exportCsv(String headerString, String predicate, String sortOrder, String filters) {
         List<T> data = findPaginated(1, 0, predicate, sortOrder, filters);
         String newLine = System.lineSeparator();
         formatHeaders(headerString);
-        Set<Map.Entry<String, JsonElement>> entrySet = headers.entrySet();
+
+        JsonObject columns = null;
+        if (headers.has("multipleExcelSheets")){
+            JsonArray sheets = headers.getAsJsonArray("multipleExcelSheets");
+            for(int i = 0; i < sheets.size(); i++)
+            {
+                JsonObject object = sheets.get(i).getAsJsonObject();
+                if(columns == null)
+                    columns = object.get("columns").getAsJsonObject();
+                else{
+                    JsonObject newColumns = object.get("columns").getAsJsonObject();
+                    for(String key : newColumns.keySet())
+                    {
+                        if(!columns.has(key))
+                            columns.add(key,newColumns.get(key));
+                    }
+                }
+            }
+        }else{
+            columns = headers;
+        }
+
+        Set<Map.Entry<String, JsonElement>> entrySet = columns.entrySet();
+
         StringBuilder sb = new StringBuilder();
 
         // Ajout du header
