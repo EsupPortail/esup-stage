@@ -40,7 +40,7 @@
       Fiches d'évaluation
       <mat-progress-bar mode="determinate" [value]="getProgressValue(5)" [ngClass]="{editing: tabs[5].statut === 1, done: tabs[5].statut === 2}"></mat-progress-bar>
     </ng-template>
-    <app-fiche-evaluation *ngIf="centreGestionInited && (fichesEvalCentreTab.isActive || tabs[0].init)" [idCentreGestion]="centreGestion.id"></app-fiche-evaluation>
+    <app-fiche-evaluation *ngIf="centreGestionInited && centreGestion.id && (fichesEvalCentreTab.isActive || tabs[0].init)" [idCentreGestion]="centreGestion.id"></app-fiche-evaluation>
   </mat-tab>
   <mat-tab [disabled]="centreGestion && !centreGestion.id" *ngIf="centreGestion && !centreGestion.validationCreation">
     <ng-template mat-tab-label>
