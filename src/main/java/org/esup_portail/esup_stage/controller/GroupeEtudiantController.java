@@ -7,10 +7,14 @@ import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
+import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
 import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
+import org.esup_portail.esup_stage.service.AppConfigService;
+import org.esup_portail.esup_stage.service.ConventionService;
 import org.esup_portail.esup_stage.service.MailerService;
+import org.esup_portail.esup_stage.service.apogee.ApogeeService;
 import org.esup_portail.esup_stage.service.apogee.model.EtapeInscription;
 import org.esup_portail.esup_stage.service.apogee.model.EtudiantRef;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
@@ -47,13 +51,7 @@ public class GroupeEtudiantController {
     EtudiantJpaRepository etudiantJpaRepository;
 
     @Autowired
-    EtudiantController etudiantController;
-
-    @Autowired
     ConventionJpaRepository conventionJpaRepository;
-
-    @Autowired
-    ConventionController conventionController;
 
     @Autowired
     EtudiantGroupeEtudiantJpaRepository etudiantGroupeEtudiantJpaRepository;
@@ -69,6 +67,15 @@ public class GroupeEtudiantController {
 
     @Autowired
     ImpressionService impressionService;
+
+    @Autowired
+    ApogeeService apogeeService;
+
+    @Autowired
+    AppConfigService appConfigService;
+
+    @Autowired
+    ConventionService conventionService;
 
     @GetMapping
     @Secure
@@ -128,8 +135,8 @@ public class GroupeEtudiantController {
             etudiantConvention.setValidationPedagogique(true);
             etudiantConvention.setVerificationAdministrative(true);
             etudiantConvention.setValidationConvention(true);
-            etudiantConvention.setLoginValidation(ServiceContext.getServiceContext().getUtilisateur().getLogin());
-            conventionController.validationAutoDonnees(etudiantConvention, ServiceContext.getServiceContext().getUtilisateur());
+            etudiantConvention.setLoginValidation(ServiceContext.getUtilisateur().getLogin());
+            conventionService.validationAutoDonnees(etudiantConvention, ServiceContext.getUtilisateur());
 
             conventionJpaRepository.save(etudiantConvention);
         }
@@ -154,8 +161,7 @@ public class GroupeEtudiantController {
     @GetMapping("/brouillon")
     @Secure(fonctions = {AppFonctionEnum.CREATION_EN_MASSE_CONVENTION}, droits = {DroitEnum.LECTURE})
     public GroupeEtudiant getBrouillon() {
-        ContextDto contexteDto = ServiceContext.getServiceContext();
-        Utilisateur utilisateur = contexteDto.getUtilisateur();
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
         GroupeEtudiant groupeEtudiant = groupeEtudiantJpaRepository.findBrouillon(utilisateur.getLogin());
         return groupeEtudiant;
     }
@@ -165,8 +171,7 @@ public class GroupeEtudiantController {
     public GroupeEtudiant duplicate(@PathVariable("id") int id) {
 
         //Suppression de l'ancien brouilon
-        ContextDto contexteDto = ServiceContext.getServiceContext();
-        Utilisateur utilisateur = contexteDto.getUtilisateur();
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
         GroupeEtudiant groupeEtudiantBrouillon = groupeEtudiantJpaRepository.findBrouillon(utilisateur.getLogin());
 
         if (groupeEtudiantBrouillon != null) {
@@ -330,7 +335,7 @@ public class GroupeEtudiantController {
                 }
                 zos.close();
                 byte[] archive = archiveOutputStream.toByteArray();
-                mailerService.sendMailGroupe(mailto, groupeEtudiant.getEtudiantGroupeEtudiants().get(0).getConvention(), ServiceContext.getServiceContext().getUtilisateur(), template, archive);
+                mailerService.sendMailGroupe(mailto, groupeEtudiant.getEtudiantGroupeEtudiants().get(0).getConvention(), ServiceContext.getUtilisateur(), template, archive);
             } catch (IOException e) {
                 throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de la création de l'achive zip");
             }
@@ -338,7 +343,7 @@ public class GroupeEtudiantController {
             HistoriqueMailGroupe historique = new HistoriqueMailGroupe();
             historique.setDate(new Date());
             historique.setMailto(mailto);
-            historique.setLogin(ServiceContext.getServiceContext().getUtilisateur().getLogin());
+            historique.setLogin(ServiceContext.getUtilisateur().getLogin());
             historique.setGroupeEtudiant(groupeEtudiant);
 
             historiqueMailGroupeJpaRepository.saveAndFlush(historique);
@@ -486,18 +491,14 @@ public class GroupeEtudiantController {
     }
 
     private Convention createNewConvention(Etudiant etudiant) {
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
 
-        ContextDto contexteDto = ServiceContext.getServiceContext();
+        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && (etudiant == null || !utilisateur.getLogin().equals(etudiant.getIdentEtudiant()))) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Étudiant non trouvé");
+        }
 
-        EtudiantRef etudiantRef = etudiantController.getApogeeData(etudiant.getNumEtudiant());
-
-        //fix serviceContext being cleaned up after calling another controller
-        ServiceContext.initialize(contexteDto);
-
-        List<ConventionFormationDto> inscriptions = etudiantController.getFormationInscriptions(etudiant.getNumEtudiant());
-
-        //fix serviceContext being cleaned up after calling another controller
-        ServiceContext.initialize(contexteDto);
+        EtudiantRef etudiantRef = apogeeService.getInfoApogee(etudiant.getNumEtudiant(), appConfigService.getAnneeUniv());
+        List<ConventionFormationDto> inscriptions = apogeeService.getInscriptions(utilisateur, etudiant);
 
         if (inscriptions.size() == 0) {
             throw new AppException(HttpStatus.NOT_FOUND, "Aucunes inscriptions trouvées dans apogée pour l'étudiant : " + etudiant.getNom() + " " + etudiant.getPrenom());
@@ -528,9 +529,8 @@ public class GroupeEtudiantController {
         Convention convention = new Convention();
         convention.setValidationCreation(false);
         convention.setCreationEnMasse(true);
-        conventionController.setConventionData(convention,conventionFormDto);
-        //fix serviceContext being cleaned up after calling another controller
-        ServiceContext.initialize(contexteDto);
+        conventionService.setConventionData(convention,conventionFormDto);
+
         return conventionJpaRepository.save(convention);
     }
 

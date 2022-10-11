@@ -151,7 +151,7 @@ public class TemplateMailGroupeController {
     @PostMapping("/send-test")
     @Secure(fonctions = {AppFonctionEnum.CREATION_EN_MASSE_CONVENTION}, droits = {DroitEnum.LECTURE})
     public boolean testSendMail(@Valid @RequestBody SendMailTestDto sendMailTestDto) {
-        mailerService.sendTest(sendMailTestDto, ServiceContext.getServiceContext().getUtilisateur());
+        mailerService.sendTest(sendMailTestDto, ServiceContext.getUtilisateur());
         return true;
     }
 

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 import org.apache.commons.validator.routines.checkdigit.LuhnCheckDigit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.esup_portail.esup_stage.dto.ContextDto;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.dto.StructureFormDto;
 import org.esup_portail.esup_stage.dto.view.Views;
@@ -211,8 +210,7 @@ public class StructureController {
     public Structure create(@Valid @RequestBody StructureFormDto structureFormDto) {
         Structure structure = new Structure();
         setStructureData(structure, structureFormDto);
-        ContextDto contextDto = ServiceContext.getServiceContext();
-        Utilisateur utilisateur = contextDto.getUtilisateur();
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
         if (!UtilisateurHelper.isRole(utilisateur, Role.ETU) || appConfigService.getConfigGenerale().isAutoriserValidationAutoOrgaAccCreaEtu()) {
             structure.setLoginValidation(utilisateur.getLogin());
             structure.setEstValidee(true);

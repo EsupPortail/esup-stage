@@ -1,6 +1,5 @@
 package org.esup_portail.esup_stage.controller;
 
-import org.esup_portail.esup_stage.dto.ContextDto;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
@@ -39,11 +38,7 @@ public class UtilisateurController {
     @GetMapping("/connected")
     @Secure()
     public Utilisateur getUserConnected() {
-        ContextDto contexteDto = ServiceContext.getServiceContext();
-        if (contexteDto != null) {
-            return contexteDto.getUtilisateur();
-        }
-        return null;
+        return ServiceContext.getUtilisateur();
     }
 
     @GetMapping("/{login}")

@@ -147,8 +147,7 @@ public class ReponseEvaluationController {
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
-        ContextDto contexteDto = ServiceContext.getServiceContext();
-        Utilisateur utilisateur = contexteDto.getUtilisateur();
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
 
         String mailEtudiant = convention.getCourrielPersoEtudiant();
         if(mailEtudiant == null || appConfigService.getConfigGenerale().isUtiliserMailPersoEtudiant())

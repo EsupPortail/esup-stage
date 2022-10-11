@@ -2,8 +2,6 @@ package org.esup_portail.esup_stage.controller;
 
 import org.esup_portail.esup_stage.dto.AvenantDto;
 import org.esup_portail.esup_stage.dto.ConfigAlerteMailDto;
-import org.esup_portail.esup_stage.dto.ContextDto;
-import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
@@ -17,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.Date;
 import java.util.List;
@@ -66,7 +63,7 @@ public class AvenantController {
             throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvée");
         }
         // Pour les étudiants, on vérifie que c'est bien un avenant d'une de ses covnentions
-        Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
         if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(avenant.getConvention().getEtudiant().getIdentEtudiant())) {
             throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvée");
         }
@@ -77,7 +74,7 @@ public class AvenantController {
     @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.LECTURE})
     public List<Avenant> getByConvention(@PathVariable("id") int id) {
         // Pour les étudiants, on vérifie que c'est bien un avenant d'une de ses convention
-        Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
         if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
             Convention convention = conventionJpaRepository.getById(id);
             if (!utilisateur.getLogin().equals(convention.getEtudiant().getIdentEtudiant())) {
@@ -122,8 +119,7 @@ public class AvenantController {
         setAvenantData(avenant, avenantDto);
         avenant = avenantJpaRepository.saveAndFlush(avenant);
 
-        ContextDto contexteDto = ServiceContext.getServiceContext();
-        Utilisateur utilisateur = contexteDto.getUtilisateur();
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
         if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
             ConfigAlerteMailDto configAlerteMailDto = appConfigService.getConfigAlerteMail();
             boolean sendMailEtudiant = configAlerteMailDto.getAlerteEtudiant().isCreationAvenantEtudiant();
@@ -149,8 +145,7 @@ public class AvenantController {
         setAvenantData(avenant, avenantDto);
         avenant = avenantJpaRepository.saveAndFlush(avenant);
 
-        ContextDto contexteDto = ServiceContext.getServiceContext();
-        Utilisateur utilisateur = contexteDto.getUtilisateur();
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
         if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
             ConfigAlerteMailDto configAlerteMailDto = appConfigService.getConfigAlerteMail();
             boolean sendMailEtudiant = configAlerteMailDto.getAlerteEtudiant().isModificationAvenantEtudiant();
@@ -190,7 +185,7 @@ public class AvenantController {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvé");
         }
         // Pour les étudiants, on vérifie que c'est bien un avenant d'une de ses convention
-        Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
         if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(convention.getEtudiant().getIdentEtudiant())) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvé");
         }

@@ -69,8 +69,8 @@ public abstract class ObjetMetier {
     }
 
     private static String getUtilisateurLogin() {
-        if (ServiceContext.getServiceContext()!=null) {
-            return ServiceContext.getServiceContext().getUtilisateur().getLogin();
+        if (ServiceContext.getUtilisateur() != null) {
+            return ServiceContext.getUtilisateur().getLogin();
         } else {
             return null;
         }

@@ -43,7 +43,7 @@ public class PeriodeInterruptionStageController {
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<PeriodeInterruptionStage> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
-        Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
         PaginatedResponse<PeriodeInterruptionStage> paginatedResponse = new PaginatedResponse<>();
         if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
             JSONObject jsonFilters = new JSONObject(filters);
@@ -62,7 +62,7 @@ public class PeriodeInterruptionStageController {
     @GetMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public PeriodeInterruptionStage getById(@PathVariable("id") int id) {
-        Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
         PeriodeInterruptionStage periodeInterruptionStage = periodeInterruptionStageJpaRepository.findById(id);
         if (periodeInterruptionStage == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(periodeInterruptionStage.getConvention().getEtudiant().getIdentEtudiant()))) {
             throw new AppException(HttpStatus.NOT_FOUND, "PeriodeInterruptionStage non trouvée");
@@ -74,7 +74,7 @@ public class PeriodeInterruptionStageController {
     @GetMapping("/getByConvention/{id}")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public List<PeriodeInterruptionStage> getByConvention(@PathVariable("id") int id) {
-        Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
         Convention convention = conventionJpaRepository.findById(id);
         if (convention == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(convention.getEtudiant().getIdentEtudiant()))) {
             return new ArrayList<>();
@@ -85,7 +85,7 @@ public class PeriodeInterruptionStageController {
     @PostMapping
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.CREATION})
     public PeriodeInterruptionStage create(@Valid @RequestBody PeriodeInterruptionStageDto periodeInterruptionStageDto) {
-        Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
         Convention convention = conventionJpaRepository.findById(periodeInterruptionStageDto.getIdConvention());
         if (convention == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(convention.getEtudiant().getIdentEtudiant()))) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvéz");
@@ -98,7 +98,7 @@ public class PeriodeInterruptionStageController {
     @PutMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.MODIFICATION})
     public PeriodeInterruptionStage update(@PathVariable("id") int id, @Valid @RequestBody PeriodeInterruptionStageDto periodeInterruptionStageDto) {
-        Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
         PeriodeInterruptionStage periodeInterruptionStage = periodeInterruptionStageJpaRepository.findById(id);
         if (periodeInterruptionStage == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(periodeInterruptionStage.getConvention().getEtudiant().getIdentEtudiant()))) {
             throw new AppException(HttpStatus.NOT_FOUND, "PeriodeInterruptionStage non trouvée");
@@ -110,7 +110,7 @@ public class PeriodeInterruptionStageController {
     @DeleteMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.SUPPRESSION})
     public boolean delete(@PathVariable("id") int id) {
-        Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
         PeriodeInterruptionStage periodeInterruptionStage = periodeInterruptionStageJpaRepository.findById(id);
         if (periodeInterruptionStage == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(periodeInterruptionStage.getConvention().getEtudiant().getIdentEtudiant()))) {
             throw new AppException(HttpStatus.NOT_FOUND, "PeriodeInterruptionStage non trouvé");
@@ -123,7 +123,7 @@ public class PeriodeInterruptionStageController {
     @DeleteMapping("/delete-by-convention/{idConvention}")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.SUPPRESSION})
     public boolean deleteByConvention(@PathVariable("idConvention") int idConvention) {
-        Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
         Convention convention = conventionJpaRepository.findById(idConvention);
         if (convention == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(convention.getEtudiant().getIdentEtudiant()))) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");

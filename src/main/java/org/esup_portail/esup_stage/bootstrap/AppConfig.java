@@ -13,6 +13,7 @@ public class AppConfig {
     private String datasourceUsername;
     private String datasourcePassword;
     private String datasourceDriver;
+    private String prefix;
     private String url;
     private List<String> adminTechs = new ArrayList<>();
     private String referentielWsLogin;
@@ -84,6 +85,14 @@ public class AppConfig {
 
     public void setDatasourceDriver(String datasourceDriver) {
         this.datasourceDriver = datasourceDriver;
+    }
+
+    public String getPrefix() {
+        return prefix;
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
     }
 
     public String getUrl() {
@@ -224,6 +233,7 @@ public class AppConfig {
         this.datasourcePassword = props.getProperty(prefixeProps+"datasource.password");
         this.datasourceDriver = props.getProperty(prefixeProps+"datasource.driver");
 
+        this.prefix = props.getProperty(prefixeProps+"prefix");
         this.url = props.getProperty(prefixeProps+"url");
         if (props.containsKey(prefixeProps+"admin_technique")) {
             this.adminTechs = Arrays.asList(props.getProperty(prefixeProps+"admin_technique").split(";"));

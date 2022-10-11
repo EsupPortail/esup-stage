@@ -3,11 +3,16 @@ package org.esup_portail.esup_stage.service.apogee;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
+import org.esup_portail.esup_stage.dto.ConventionFormationDto;
 import org.esup_portail.esup_stage.exception.AppException;
-import org.esup_portail.esup_stage.service.apogee.model.ApogeeMap;
-import org.esup_portail.esup_stage.service.apogee.model.Composante;
-import org.esup_portail.esup_stage.service.apogee.model.EtapeApogee;
-import org.esup_portail.esup_stage.service.apogee.model.EtudiantRef;
+import org.esup_portail.esup_stage.model.*;
+import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
+import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
+import org.esup_portail.esup_stage.repository.CritereGestionJpaRepository;
+import org.esup_portail.esup_stage.repository.EtapeJpaRepository;
+import org.esup_portail.esup_stage.repository.TypeConventionJpaRepository;
+import org.esup_portail.esup_stage.service.AppConfigService;
+import org.esup_portail.esup_stage.service.apogee.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +29,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ApogeeService {
@@ -31,6 +37,21 @@ public class ApogeeService {
 
     @Autowired
     ApplicationBootstrap applicationBootstrap;
+
+    @Autowired
+    AppConfigService appConfigService;
+
+    @Autowired
+    TypeConventionJpaRepository typeConventionJpaRepository;
+
+    @Autowired
+    EtapeJpaRepository etapeJpaRepository;
+
+    @Autowired
+    CritereGestionJpaRepository critereGestionJpaRepository;
+
+    @Autowired
+    CentreGestionJpaRepository centreGestionJpaRepository;
 
     private String call(String api, Map<String, String> params) {
         HttpURLConnection con;
@@ -149,5 +170,106 @@ public class ApogeeService {
             LOGGER.error("Erreur lors de la lecture de la réponse sur l'api etapesByEtudiantAndAnnee: " + e.getMessage(), e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
         }
+    }
+
+    public List<ConventionFormationDto> getInscriptions(Utilisateur utilisateur, Etudiant etudiant) {
+        String numEtudiant = etudiant.getNumEtudiant();
+
+        List<String> annees = new ArrayList<>();
+        String anneeEnCours = appConfigService.getAnneeUniv();
+        String anneePrecedente = String.valueOf(Integer.parseInt(anneeEnCours) - 1);
+        annees.add(anneePrecedente); // Ajout de l'année précédente
+        annees.add(anneeEnCours); // Ajout de l'année en cours
+        Date currentDate = new Date();
+        Calendar dateBascule = appConfigService.getDateBascule(Integer.parseInt(anneeEnCours));
+        List<ConventionFormationDto> inscriptions = new ArrayList<>();
+        List<String> anneeInscriptions = getAnneeInscriptions(numEtudiant);
+        for (String annee : anneeInscriptions) {
+            ApogeeMap apogeeMap = getEtudiantEtapesInscription(numEtudiant, annee);
+            RegimeInscription regIns = apogeeMap.getRegimeInscription().stream().filter(r -> r.getAnnee().equals(annee)).findAny().orElse(null);
+            TypeConvention typeConvention = null;
+            if (regIns != null) {
+                typeConvention = typeConventionJpaRepository.findByCodeCtrl(regIns.getLicRegIns());
+            }
+            for (EtapeInscription etapeInscription : apogeeMap.getListeEtapeInscriptions()) {
+                Etape etape = etapeJpaRepository.findById(etapeInscription.getCodeEtp(), etapeInscription.getCodVrsVet(), appConfigService.getConfigGenerale().getCodeUniversite());
+
+                // alimentation de la table Etape avec celles remontées depuis Apogée
+                if (etape == null) {
+                    EtapeId etapeId = new EtapeId();
+                    etapeId.setCode(etapeInscription.getCodeEtp());
+                    etapeId.setCodeVersionEtape(etapeInscription.getCodVrsVet());
+                    etapeId.setCodeUniversite(appConfigService.getConfigGenerale().getCodeUniversite());
+
+                    etape = new Etape();
+                    etape.setId(etapeId);
+                    etape.setLibelle(etapeInscription.getLibWebVet());
+                    etapeJpaRepository.saveAndFlush(etape);
+                }
+                ConventionFormationDto conventionFormationDto = new ConventionFormationDto();
+                conventionFormationDto.setEtapeInscription(etapeInscription);
+                conventionFormationDto.setAnnee(annee);
+                conventionFormationDto.setTypeConvention(typeConvention);
+                CentreGestion centreGestion = null;
+                // Recherche du centre de gestion par codeEtape/versionEtape
+                CritereGestion critereGestion = critereGestionJpaRepository.findEtapeById(etapeInscription.getCodeEtp(), etapeInscription.getCodVrsVet());
+                // Si non trouvé, recherche par code composante et version = ""
+                if (critereGestion == null) {
+                    critereGestion = critereGestionJpaRepository.findEtapeById(etapeInscription.getCodeComposante(), "");
+                }
+                // Si non trouvé on vérifie l'autorisation de création de convention non liée à un centre
+                if (critereGestion == null) {
+                    // récupération du centre de gestion établissement si autorisation de création d'une convention non rattachée à un centre
+                    if (appConfigService.getConfigGenerale().isAutoriserConventionsOrphelines()) {
+                        centreGestion = centreGestionJpaRepository.getCentreEtablissement();
+                    }
+                } else {
+                    centreGestion = critereGestion.getCentreGestion();
+                }
+                if (centreGestion != null) {
+                    conventionFormationDto.setCentreGestion(centreGestion);
+                    inscriptions.add(conventionFormationDto);
+                }
+            }
+            for (ElementPedagogique elementPedagogique : apogeeMap.getListeELPs()) {
+                ConventionFormationDto conventionFormationDto = inscriptions.stream().filter(i -> i.getEtapeInscription().getCodeEtp().equals(elementPedagogique.getCodEtp()) && i.getEtapeInscription().getCodVrsVet().equals(elementPedagogique.getCodVrsVet())).findAny().orElse(null);
+                if (conventionFormationDto != null) {
+                    conventionFormationDto.getElementPedagogiques().add(elementPedagogique);
+                }
+            }
+        }
+        // On supprime les formations sans ELP si la config n'autorise pas la création de convention sans ELP
+        if (!appConfigService.getConfigGenerale().isAutoriserElementPedagogiqueFacultatif()) {
+            inscriptions = inscriptions.stream().filter(i -> i.getElementPedagogiques().size() > 0).collect(Collectors.toList());
+        }
+        if (!UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
+            if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
+                // On garde les formations dont le centre de gestion autorise la création d'une convention
+                inscriptions = inscriptions.stream().filter(i -> i.getCentreGestion().isAutorisationEtudiantCreationConvention()).collect(Collectors.toList());
+            }
+            // Si ce n'est pas un utilisateur admin, on doit afficher les formations de l'année précédente seulement si le centre l'autorise
+            inscriptions = inscriptions.stream().filter(i -> {
+                CentreGestion centreGestion = i.getCentreGestion();
+                Boolean autorisationAnneePrecedente = centreGestion.getRecupInscriptionAnterieure();
+                // On autorise la création de convention sur l'année en cours et les années suivantes
+                int anneeEnCoursInt = Integer.parseInt(anneeEnCours);
+                int anneeInt = Integer.parseInt(i.getAnnee());
+                if (i.getAnnee().equals(anneeEnCours) || anneeInt > anneeEnCoursInt) {
+                    return true;
+                }
+                if (!autorisationAnneePrecedente) {
+                    return false;
+                } else {
+                    // On autorise uniquement les gestionnaires pour l'année précédentes (et pas toutes les années précédentes)
+                    if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
+                        return false;
+                    } else {
+                        return (anneeEnCoursInt - 1) == anneeInt;
+                    }
+                }
+            }).collect(Collectors.toList());
+        }
+
+        return inscriptions;
     }
 }

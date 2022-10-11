@@ -6,7 +6,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
-import org.esup_portail.esup_stage.dto.ContextDto;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
@@ -100,8 +99,7 @@ public class CentreGestionController {
         paginatedResponse.setData(centreGestionRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
 
         if (predicate.equals("personnels")) {
-            ContextDto contexteDto = ServiceContext.getServiceContext();
-            Utilisateur currentUser = contexteDto.getUtilisateur();
+            Utilisateur currentUser = ServiceContext.getUtilisateur();
             List<CentreGestion> list =  paginatedResponse.getData();
             Predicate<PersonnelCentreGestion> condition = value -> value.getUidPersonnel().equals(currentUser.getLogin());
             list.sort((a, b) -> Boolean.compare(a.getPersonnels().stream().anyMatch(condition), b.getPersonnels().stream().anyMatch(condition)));
@@ -130,8 +128,7 @@ public class CentreGestionController {
     @GetMapping("/creation-brouillon")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.CREATION})
     public CentreGestion getBrouillonByLogin() {
-        ContextDto contexteDto = ServiceContext.getServiceContext();
-        Utilisateur utilisateur = contexteDto.getUtilisateur();
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
         CentreGestion centreGestion = centreGestionJpaRepository.findBrouillon(utilisateur.getLogin());
         if (centreGestion == null) {
             centreGestion = new CentreGestion();

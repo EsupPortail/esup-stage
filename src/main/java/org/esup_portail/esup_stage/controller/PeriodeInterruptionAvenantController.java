@@ -46,7 +46,7 @@ public class PeriodeInterruptionAvenantController {
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<PeriodeInterruptionAvenant> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
-        Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
         PaginatedResponse<PeriodeInterruptionAvenant> paginatedResponse = new PaginatedResponse<>();
         if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
             JSONObject jsonFilters = new JSONObject(filters);
@@ -64,7 +64,7 @@ public class PeriodeInterruptionAvenantController {
     @GetMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.LECTURE})
     public PeriodeInterruptionAvenant getById(@PathVariable("id") int id) {
-        Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
         PeriodeInterruptionAvenant periodeInterruptionAvenant = periodeInterruptionAvenantJpaRepository.findById(id);
         if (periodeInterruptionAvenant == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(periodeInterruptionAvenant.getAvenant().getConvention().getEtudiant().getIdentEtudiant()))) {
             throw new AppException(HttpStatus.NOT_FOUND, "PeriodeInterruptionAvenant non trouvée");
@@ -76,7 +76,7 @@ public class PeriodeInterruptionAvenantController {
     @GetMapping("/getByAvenant/{id}")
     @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.LECTURE})
     public List<PeriodeInterruptionAvenant> getByAvenant(@PathVariable("id") int id) {
-        Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
         Avenant avenant = avenantJpaRepository.findById(id);
         if (avenant == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(avenant.getConvention().getEtudiant().getIdentEtudiant()))) {
             return new ArrayList<>();
@@ -87,7 +87,7 @@ public class PeriodeInterruptionAvenantController {
     @PostMapping
     @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.CREATION})
     public PeriodeInterruptionAvenant create(@Valid @RequestBody PeriodeInterruptionAvenantDto periodeInterruptionAvenantDto) {
-        Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
         Avenant avenant = avenantJpaRepository.findById(periodeInterruptionAvenantDto.getIdAvenant());
         if (avenant == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(avenant.getConvention().getEtudiant().getIdentEtudiant()))) {
             throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvé");
@@ -100,7 +100,7 @@ public class PeriodeInterruptionAvenantController {
     @PutMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.MODIFICATION})
     public PeriodeInterruptionAvenant update(@PathVariable("id") int id, @Valid @RequestBody PeriodeInterruptionAvenantDto periodeInterruptionAvenantDto) {
-        Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
         PeriodeInterruptionAvenant periodeInterruptionAvenant = periodeInterruptionAvenantJpaRepository.findById(id);
         if (periodeInterruptionAvenant == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(periodeInterruptionAvenant.getAvenant().getConvention().getEtudiant().getIdentEtudiant()))) {
             throw new AppException(HttpStatus.NOT_FOUND, "PeriodeInterruptionAvenant non trouvé");
@@ -112,7 +112,7 @@ public class PeriodeInterruptionAvenantController {
     @DeleteMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.SUPPRESSION})
     public boolean delete(@PathVariable("id") int id) {
-        Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
         PeriodeInterruptionAvenant periodeInterruptionAvenant = periodeInterruptionAvenantJpaRepository.findById(id);
         if (periodeInterruptionAvenant == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(periodeInterruptionAvenant.getAvenant().getConvention().getEtudiant().getIdentEtudiant()))) {
             throw new AppException(HttpStatus.NOT_FOUND, "PeriodeInterruptionAvenant non trouvé");
@@ -125,7 +125,7 @@ public class PeriodeInterruptionAvenantController {
     @DeleteMapping("/deleteAll/{id}")
     @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.SUPPRESSION})
     public boolean deleteAll(@PathVariable("id") int id) {
-        Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
         Avenant avenant = avenantJpaRepository.findById(id);
         if (avenant == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(avenant.getConvention().getEtudiant().getIdentEtudiant()))) {
             throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvé");

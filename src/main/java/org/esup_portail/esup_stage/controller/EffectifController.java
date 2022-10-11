@@ -42,7 +42,7 @@ public class EffectifController {
     @GetMapping
     @Secure
     public List<Effectif> getAll(@RequestParam(value = "actif", required = false) boolean onlyActif) {
-        Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
         if (onlyActif || UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
             return effectifJpaRepository.findAllActif();
         }

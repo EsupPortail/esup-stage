@@ -1,6 +1,5 @@
 package org.esup_portail.esup_stage.controller;
 
-import org.esup_portail.esup_stage.dto.ContextDto;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.dto.ServiceFormDto;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
@@ -70,8 +69,7 @@ public class ServiceController {
             throw new AppException(HttpStatus.NOT_FOUND, "Service non trouvée");
         }
 
-        ContextDto contexteDto = ServiceContext.getServiceContext();
-        Utilisateur utilisateur = contexteDto.getUtilisateur();
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
         /*
         * Si idCentreGestion != -1, on est dans le cadre d'une convention
         *
@@ -108,8 +106,7 @@ public class ServiceController {
             throw new AppException(HttpStatus.NOT_FOUND, "Service non trouvée");
         }
 
-        ContextDto contexteDto = ServiceContext.getServiceContext();
-        Utilisateur utilisateur = contexteDto.getUtilisateur();
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
         CentreGestion centreGestion;
         //Ajoute le centreGestion de l'utilisateur qui a créé le contact pour les utilisateurs gestionnaires.
         if (UtilisateurHelper.isRole(utilisateur, Role.GES) || UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)) {
