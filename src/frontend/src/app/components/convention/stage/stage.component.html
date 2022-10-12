@@ -131,6 +131,12 @@
             <input matInput formControlName="nbHeuresHebdo" required />
             <mat-error><app-form-error [field]="form.get('nbHeuresHebdo')"></app-form-error></mat-error>
           </mat-form-field>
+          <mat-form-field class="col-sm-6 col-md-6 mb-2" appearance="fill">
+            <mat-label>Nombre de jours de congés autorisés</mat-label>
+            <input matInput formControlName="nbConges" />
+            <mat-hint>ou modalités des congés et autorisations d'absence durant le stage</mat-hint>
+            <mat-error><app-form-error [field]="form.get('nbConges')"></app-form-error></mat-error>
+          </mat-form-field>
         </div>
         <div class="row" *ngIf="!form.value.horairesReguliers && modifiable">
           <div class="col-6 mb-3">

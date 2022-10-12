@@ -13,7 +13,7 @@ import java.util.List;
 public interface CritereGestionJpaRepository extends JpaRepository<CritereGestion, Integer> {
 
     @Query("SELECT cg FROM CritereGestion cg WHERE cg.centreGestion.id = :id")
-    CritereGestion findByCentreId(int id);
+    List<CritereGestion> findByCentreId(int id);
 
     @Query("SELECT cg FROM CritereGestion cg WHERE cg.id.codeVersionEtape = ''")
     List<CritereGestion> findComposantes();

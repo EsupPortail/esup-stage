@@ -2,6 +2,8 @@ package org.esup_portail.esup_stage.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.FileUtils;
+import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
 import org.esup_portail.esup_stage.dto.ConfigAlerteMailDto;
 import org.esup_portail.esup_stage.dto.ConfigGeneraleDto;
 import org.esup_portail.esup_stage.dto.ConfigThemeDto;
@@ -18,9 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.net.URISyntaxException;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -33,6 +35,9 @@ public class AppConfigService {
 
     @Autowired
     AffectationRepository affectationRepository;
+
+    @Autowired
+    ApplicationBootstrap applicationBootstrap;
 
     public ConfigGeneraleDto getConfigGenerale() {
         AppConfig appConfig = appConfigJpaRepository.findByCode(AppConfigCodeEnum.GENERAL);
@@ -77,8 +82,21 @@ public class AppConfigService {
         }
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            return objectMapper.readValue(appConfig.getParametres(), ConfigThemeDto.class);
-        } catch (JsonProcessingException e) {
+            ConfigThemeDto configThemeDto = objectMapper.readValue(appConfig.getParametres(), ConfigThemeDto.class);
+            if (configThemeDto.getLogo() != null && configThemeDto.getLogo().getContentType() != null) {
+                File file = new File(applicationBootstrap.getAppConfig().getDataDir() + "/images/" + getFilename("logo", configThemeDto.getLogo().getContentType()));
+                if (file.exists()) {
+                    configThemeDto.getLogo().setBase64(Base64.getEncoder().encodeToString(FileUtils.readFileToByteArray(file)));
+                }
+            }
+            if (configThemeDto.getFavicon() != null && configThemeDto.getFavicon().getContentType() != null) {
+                File file = new File(applicationBootstrap.getAppConfig().getDataDir() + "/images/" + getFilename("favicon", configThemeDto.getFavicon().getContentType()));
+                if (file.exists()) {
+                    configThemeDto.getFavicon().setBase64(Base64.getEncoder().encodeToString(FileUtils.readFileToByteArray(file)));
+                }
+            }
+            return configThemeDto;
+        } catch (IOException e) {
             logger.error(e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "ConfigGeneraleDto::getConfigGenerale ERROR: JsonProcessingException");
         }
@@ -99,6 +117,8 @@ public class AppConfigService {
             sb.append("  --successColor: ").append(configThemeDto.getSuccessColor()).append(";\n");
             sb.append("}");
             file.write(sb.toString());
+
+            writeImageIntoFile(configThemeDto);
         } finally {
             file.flush();
             file.close();
@@ -136,5 +156,61 @@ public class AppConfigService {
         bascule.set(year, (moisBascule - 1), jourBascule, 0, 0);
         bascule.clear(Calendar.MILLISECOND);
         return bascule;
+    }
+
+    public void writeImageIntoFile(ConfigThemeDto configThemeDto) throws IOException {
+        if (configThemeDto.getLogo() != null || configThemeDto.getFavicon() != null) {
+            AppConfig appConfig = appConfigJpaRepository.findByCode(AppConfigCodeEnum.THEME);
+            ObjectMapper mapper = new ObjectMapper();
+            if (configThemeDto.getLogo() != null && configThemeDto.getLogo().getBase64() != null) {
+                try (FileOutputStream outputStream = new FileOutputStream(applicationBootstrap.getAppConfig().getDataDir() + "/images/" + getFilename("logo", configThemeDto.getLogo().getContentType()))) {
+                    outputStream.write(Base64.getDecoder().decode(configThemeDto.getLogo().getBase64()));
+                    configThemeDto.getLogo().setBase64(null);
+                    appConfig.setParametres(mapper.writeValueAsString(configThemeDto));
+                    appConfigJpaRepository.save(appConfig);
+                }
+            }
+            if (configThemeDto.getFavicon() != null && configThemeDto.getFavicon().getBase64() != null) {
+                try (FileOutputStream outputStream = new FileOutputStream(applicationBootstrap.getAppConfig().getDataDir() + "/images/" + getFilename("favicon", configThemeDto.getFavicon().getContentType()))) {
+                    outputStream.write(Base64.getDecoder().decode(configThemeDto.getFavicon().getBase64()));
+                    configThemeDto.getFavicon().setBase64(null);
+                    appConfig.setParametres(mapper.writeValueAsString(configThemeDto));
+                    appConfigJpaRepository.save(appConfig);
+                }
+            }
+        }
+    }
+
+    private String getFilename(String type, String contentType) {
+        String extension = "";
+        switch (contentType) {
+            case "image/bmp":
+                extension = ".bmp";
+                break;
+            case "image/gif":
+                extension = ".gif";
+                break;
+            case "image/x-icon":
+                extension = ".ico";
+                break;
+            case "image/jpeg":
+                extension = ".jpeg";
+                break;
+            case "image/png":
+                extension = ".png";
+                break;
+            case "image/svg+xml":
+                extension = ".svg";
+                break;
+            case "image/tiff":
+                extension = ".tiff";
+                break;
+            case "image/webp":
+                extension = ".webp";
+                break;
+            default:
+                break;
+        }
+        return type + extension;
     }
 }

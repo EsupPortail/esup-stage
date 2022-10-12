@@ -108,6 +108,9 @@ databaseChangeLog:
       file: 1.0.5-avenant.yaml
       relativeToChangelogFile: true
   - include:
+      file: 1.0.6-param-convention.yaml
+      relativeToChangelogFile: true
+  - include:
       file: 2.0.0-contenu.yaml
       relativeToChangelogFile: true
   - include:

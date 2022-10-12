@@ -157,6 +157,7 @@ export class StageComponent implements OnInit {
       interruptionStage: [this.convention.interruptionStage, [Validators.required]],
       horairesReguliers: [this.convention.horairesReguliers, [Validators.required]],
       nbHeuresHebdo: [this.convention.nbHeuresHebdo, this.fieldValidators['nbHeuresHebdo']],
+      nbConges: [this.convention.nbConges],
       dureeExceptionnelle: [this.convention.dureeExceptionnelle, this.fieldValidators['dureeExceptionnelle']],
       idTempsTravail: [this.convention.tempsTravail ? this.convention.tempsTravail.id : null, [Validators.required]],
       commentaireDureeTravail: [this.convention.commentaireDureeTravail],

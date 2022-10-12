@@ -35,6 +35,7 @@ Cette execution passe par le fichier de configuration "src/main/resources-filter
   * `centregestion`
     * `consigne-documents`
     * `logos`
+  * `images`
 
 Par exemple si `appli.data_dir=/etc/eStage/uploads` on aura :
 ```
@@ -44,6 +45,7 @@ Par exemple si `appli.data_dir=/etc/eStage/uploads` on aura :
      |_/centregestion
        |_/consigne-documents
        |_/logos
+     |_/images
 ```
 
 ## Procédure d'installation en environnement de dev
