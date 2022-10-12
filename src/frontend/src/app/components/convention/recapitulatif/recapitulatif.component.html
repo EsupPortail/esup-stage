@@ -128,7 +128,7 @@
         </div>
         <div class="row" *ngIf="convention.gratificationStage">
           <div class="col-sm-3 font-weight-bold">Montant de la gratification</div>
-          <div class="col-sm-9">{{convention.montantGratification + ' ' + (isValide ? convention.nomenclature.uniteGratifications : convention.uniteGratification.libelle) + ' ' + (isValide ? convention.nomenclature.uniteDureeGratification : convention.uniteDureeGratification.libelle)}}</div>
+          <div class="col-sm-9">{{convention.montantGratification + ' ' + (isValide ? convention.nomenclature.uniteGratification : convention.uniteGratification.libelle) + ' ' + (isValide ? convention.nomenclature.uniteDureeGratification : convention.uniteDureeGratification.libelle)}}</div>
           <div class="col-sm-3 font-weight-bold">Monnaie utilisée pour le paiement</div>
           <div class="col-sm-9">{{isValide ? convention.nomenclature.devise : convention.devise.libelle}}</div>
           <div class="col-sm-3 font-weight-bold">Modalité de versement de la gratification</div>
