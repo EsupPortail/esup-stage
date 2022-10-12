@@ -143,6 +143,7 @@ public class ImpressionContext {
         private String deviseGratification;
         private String natureTravailLibelle;
         private String nbHeuresHebdo;
+        private String nbConges;
         private String nbJoursHebdo;
         private String nomEtabRef;
         private String nomSignataireComposante;
@@ -204,6 +205,7 @@ public class ImpressionContext {
             }
             this.natureTravailLibelle = convention.getNomenclature() != null ? convention.getNomenclature().getNatureTravail() : null;
             this.nbHeuresHebdo = convention.getNbHeuresHebdo();
+            this.nbConges = convention.getNbConges();
             this.nbJoursHebdo = convention.getNbJoursHebdo() != null ? convention.getNbJoursHebdo().getValue() : null;
             this.nomEtabRef = convention.getNomEtabRef() != null ? convention.getNomEtabRef() : centreEtablissement.getNomCentre();
             this.nomSignataireComposante = convention.getNomSignataireComposante();
@@ -488,6 +490,14 @@ public class ImpressionContext {
 
         public void setNbHeuresHebdo(String nbHeuresHebdo) {
             this.nbHeuresHebdo = nbHeuresHebdo;
+        }
+
+        public String getNbConges() {
+            return nbConges != null ? nbConges : "";
+        }
+
+        public void setNbConges(String nbConges) {
+            this.nbConges = nbConges;
         }
 
         public String getNbJoursHebdo() {
