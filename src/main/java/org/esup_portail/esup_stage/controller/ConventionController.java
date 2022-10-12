@@ -718,6 +718,9 @@ public class ConventionController {
         if (Objects.equals(conventionSingleFieldDto.getField(), "nbHeuresHebdo")){
             convention.setNbHeuresHebdo((String) conventionSingleFieldDto.getValue());
         }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "nbConges")){
+            convention.setNbConges((String) conventionSingleFieldDto.getValue());
+        }
         if (Objects.equals(conventionSingleFieldDto.getField(), "dureeExceptionnelle")){
             convention.setDureeExceptionnelle(((Integer) conventionSingleFieldDto.getValue()).toString());
         }

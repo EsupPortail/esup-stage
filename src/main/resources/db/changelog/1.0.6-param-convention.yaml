@@ -1,0 +1,17 @@
+databaseChangeLog:
+- changeSet:
+    id: paramConvention-insert-convention-nbConges
+    author: ssound
+    changes:
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.nbConges
+        - column:
+            name: libelle
+            value: Nombre de jours de congés autorisés
+        - column:
+            name: exemple
+            value: 1 jour par mois
+        tableName: ParamConvention
