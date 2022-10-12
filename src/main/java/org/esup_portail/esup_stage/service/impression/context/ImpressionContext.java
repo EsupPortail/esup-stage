@@ -1182,6 +1182,7 @@ public class ImpressionContext {
         private String telephone;
         private String typeStructureLibelle;
         private String voie;
+        private String batiment;
 
         public StructureContext() {
         }
@@ -1199,6 +1200,7 @@ public class ImpressionContext {
             this.telephone = structure.getTelephone();
             this.typeStructureLibelle = structure.getTypeStructure() != null ? structure.getTypeStructure().getLibelle() : null;
             this.voie = structure.getVoie();
+            this.batiment = structure.getBatimentResidence();
         }
 
         public String getActivitePrincipale() {
@@ -1295,6 +1297,14 @@ public class ImpressionContext {
 
         public void setVoie(String voie) {
             this.voie = voie;
+        }
+
+        public String getBatiment() {
+            return batiment != null ? batiment : "";
+        }
+
+        public void setBatiment(String batiment) {
+            this.batiment = batiment;
         }
     }
 

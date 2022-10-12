@@ -47,3 +47,19 @@ databaseChangeLog:
             name: exemple
             value: Bat. 1
         tableName: ParamConvention
+- changeSet:
+    id: paramConvention-insert-structure-batiment
+    author: ssound
+    changes:
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: structure.batiment
+        - column:
+            name: libelle
+            value: Bâtiment / Résidence / Z.I
+        - column:
+            name: exemple
+            value: Bat. 1
+        tableName: ParamConvention
