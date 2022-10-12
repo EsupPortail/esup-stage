@@ -31,3 +31,19 @@ databaseChangeLog:
             name: exemple
             value: mois
         tableName: ParamConvention
+- changeSet:
+    id: paramConvention-insert-service-batiment
+    author: ssound
+    changes:
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: service.batiment
+        - column:
+            name: libelle
+            value: Bâtiment / Résidence / Z.I
+        - column:
+            name: exemple
+            value: Bat. 1
+        tableName: ParamConvention

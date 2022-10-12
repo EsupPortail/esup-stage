@@ -1037,6 +1037,7 @@ public class ImpressionContext {
         private String nom;
         private String paysLibelle;
         private String voie;
+        private String batiment;
 
         public ServiceContext() {
         }
@@ -1047,6 +1048,7 @@ public class ImpressionContext {
             this.nom = service.getNom();
             this.paysLibelle = service.getPays() != null ? service.getPays().getLib() : null;
             this.voie = service.getVoie();
+            this.batiment = service.getBatimentResidence();
         }
 
         public String getCodePostal() {
@@ -1087,6 +1089,14 @@ public class ImpressionContext {
 
         public void setVoie(String voie) {
             this.voie = voie;
+        }
+
+        public String getBatiment() {
+            return batiment != null ? batiment : "";
+        }
+
+        public void setBatiment(String batiment) {
+            this.batiment = batiment;
         }
     }
 
