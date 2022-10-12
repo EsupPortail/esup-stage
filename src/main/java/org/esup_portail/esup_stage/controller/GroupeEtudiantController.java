@@ -132,6 +132,7 @@ public class GroupeEtudiantController {
                 throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur création des conventions en masse");
             }
             etudiantConvention.setValidationCreation(true);
+            etudiantConvention.setDateValidationCreation(new Date());
             etudiantConvention.setValidationPedagogique(true);
             etudiantConvention.setVerificationAdministrative(true);
             etudiantConvention.setValidationConvention(true);

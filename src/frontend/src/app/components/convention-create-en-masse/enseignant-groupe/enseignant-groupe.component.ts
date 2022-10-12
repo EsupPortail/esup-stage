@@ -44,6 +44,7 @@ export class EnseignantGroupeComponent implements OnInit {
 
   ngOnInit(): void {
     this.columns = [...this.sharedData.columns];
+    this.columns.push('enseignant');
     this.filters = [...this.sharedData.filters];
   }
 

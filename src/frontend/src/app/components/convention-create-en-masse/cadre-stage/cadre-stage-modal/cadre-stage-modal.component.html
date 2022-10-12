@@ -82,7 +82,7 @@
                 <mat-form-field class="col-sm-12 mb-2" appearance="fill">
                   <mat-label>Formation</mat-label>
                   <mat-select formControlName="inscription" required>
-                    <mat-option *ngFor="let inscription of inscriptions" [value]="inscription">{{inscription.etapeInscription.codeEtp + ' - ' + inscription.etapeInscription.libComposante}}</mat-option>
+                    <mat-option *ngFor="let inscription of inscriptions" [value]="inscription">{{inscription.etapeInscription.codeEtp + ' - ' + inscription.etapeInscription.libWebVet + ' ' + inscription.annee + '/' + (+inscription.annee + 1)}}<span class="option-composante">({{inscription.etapeInscription.codeComposante}})</span></mat-option>
                   </mat-select>
                   <mat-error><app-form-error [field]="formConvention.get('inscription')"></app-form-error></mat-error>
                 </mat-form-field>
@@ -91,7 +91,7 @@
             <div *ngIf="selectedInscription">
               <div class="row">
                 <div class="col-sm-4 font-weight-bold">Année inscription</div>
-                <div class="col-sm-8">{{selectedInscription.annee}}</div>
+                <div class="col-sm-8">{{selectedInscription.annee +'/'+ (+selectedInscription.annee + 1)}}</div>
               </div>
               <div class="row mb-2">
                 <div class="col-sm-4 font-weight-bold">Formation</div>
