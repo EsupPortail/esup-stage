@@ -1350,7 +1350,7 @@ public class ImpressionContext {
             this.modificationSujet = avenant.isModificationSujet();
             this.modificationPeriode = avenant.isModificationPeriode();
             for (PeriodeInterruptionAvenant periode : avenant.getPeriodeInterruptionAvenants()) {
-                this.periodesInterruptions.add(new PeriodeInterruptionContext(df.format(periode.getDateDebutInterruption()), df.format(periode.getDateFinInterruption())));
+                this.periodesInterruptions.add(new PeriodeInterruptionContext(periode.getDateDebutInterruption() != null ? df.format(periode.getDateDebutInterruption()) : null, periode.getDateFinInterruption() != null ? df.format(periode.getDateFinInterruption()) : null));
             }
             this.modificationMontantGratification = avenant.isModificationMontantGratification();
             if (this.modificationMontantGratification) {
