@@ -84,6 +84,7 @@ public class PersonnelCentreGestion extends ObjetMetier implements Exportable {
     private Boolean modificationAvenantGestionnaire;
     private Boolean validationPedagogiqueConvention;
     private Boolean validationAdministrativeConvention;
+    private Boolean verificationAdministrativeConvention;
     private Boolean validationAvenant;
 
     public int getId() {
@@ -340,6 +341,14 @@ public class PersonnelCentreGestion extends ObjetMetier implements Exportable {
 
     public void setValidationAdministrativeConvention(Boolean validationAdministrativeConvention) {
         this.validationAdministrativeConvention = validationAdministrativeConvention;
+    }
+
+    public Boolean getVerificationAdministrativeConvention() {
+        return verificationAdministrativeConvention;
+    }
+
+    public void setVerificationAdministrativeConvention(Boolean verificationAdministrativeConvention) {
+        this.verificationAdministrativeConvention = verificationAdministrativeConvention;
     }
 
     public Boolean getValidationAvenant() {

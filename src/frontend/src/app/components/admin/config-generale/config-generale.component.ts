@@ -32,6 +32,7 @@ export class ConfigGeneraleComponent implements OnInit {
     {code: 'modificationAvenantGestionnaire', libelle: 'Modification d\'un avenant par le gestionnaire'},
     {code: 'validationPedagogiqueConvention', libelle: 'Validation pédagogique d\'une convention'},
     {code: 'validationAdministrativeConvention', libelle: 'Validation administrative d\'une convention'},
+    {code: 'verificationAdministrativeConvention', libelle: 'Vérification administrative d\'une convention'},
     {code: 'validationAvenant', libelle: 'Validation d\'un avenant'},
   ];
   alerteColumns = ['alertes', 'alerteEtudiant', 'alerteGestionnaire', 'alerteRespGestionnaire', 'alerteEnseignant'];

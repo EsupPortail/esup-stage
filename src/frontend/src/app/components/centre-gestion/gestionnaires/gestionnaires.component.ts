@@ -55,6 +55,7 @@ export class GestionnairesComponent implements OnInit {
     {id: 'modificationAvenantGestionnaire', libelle: 'Modification d\'un avenant par le gestionnaire'},
     {id: 'validationPedagogiqueConvention', libelle: 'Validation pédagogique d\'une convention'},
     {id: 'validationAdministrativeConvention', libelle: 'Validation administrative d\'une convention'},
+    {id: 'verificationAdministrativeConvention', libelle: 'Vérification administrative d\'une convention'},
     {id: 'validationAvenant', libelle: 'Validation d\'un avenant '},
   ];
 
@@ -104,6 +105,7 @@ export class GestionnairesComponent implements OnInit {
       modificationAvenantGestionnaire: [null, []],
       validationPedagogiqueConvention: [null, []],
       validationAdministrativeConvention: [null, []],
+      verificationAdministrativeConvention: [null, []],
       validationAvenant: [null, []],
     });
     this.searchForm = this.fb.group({
@@ -272,6 +274,7 @@ export class GestionnairesComponent implements OnInit {
     || gestionnaire.modificationAvenantGestionnaire == true
     || gestionnaire.validationPedagogiqueConvention == true
     || gestionnaire.validationAdministrativeConvention == true
+    || gestionnaire.verificationAdministrativeConvention == true
     || gestionnaire.validationAvenant == true) {
       return true;
     }

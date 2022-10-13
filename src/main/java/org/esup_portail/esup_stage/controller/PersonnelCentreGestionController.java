@@ -145,6 +145,7 @@ public class PersonnelCentreGestionController {
         personnelCentreGestion.setModificationAvenantGestionnaire(requestPersonnelCentreGestion.getModificationAvenantGestionnaire());
         personnelCentreGestion.setValidationPedagogiqueConvention(requestPersonnelCentreGestion.getValidationPedagogiqueConvention());
         personnelCentreGestion.setValidationAdministrativeConvention(requestPersonnelCentreGestion.getValidationAdministrativeConvention());
+        personnelCentreGestion.setVerificationAdministrativeConvention(requestPersonnelCentreGestion.getVerificationAdministrativeConvention());
         personnelCentreGestion.setValidationAvenant(requestPersonnelCentreGestion.getValidationAvenant());
     }
 }

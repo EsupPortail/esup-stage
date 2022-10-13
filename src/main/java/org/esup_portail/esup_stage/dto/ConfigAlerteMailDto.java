@@ -2,10 +2,10 @@ package org.esup_portail.esup_stage.dto;
 
 public class ConfigAlerteMailDto {
 
-    private Alerte alerteEtudiant = new Alerte(true, false, true, true, true, false, true, true, true, true, true);
-    private Alerte alerteGestionnaire = new Alerte(true, true, false, false, true, true, false, false, true, false, false);
-    private Alerte alerteRespGestionnaire = new Alerte(false, false, false, false, false, false, false, false, false, false, false);
-    private Alerte alerteEnseignant = new Alerte(false, false, false, false, false, false, false, false, true, false, false);
+    private Alerte alerteEtudiant = new Alerte(true, false, true, true, true, false, true, true, true, true, true, true);
+    private Alerte alerteGestionnaire = new Alerte(true, true, false, false, true, true, false, false, true, false, false, false);
+    private Alerte alerteRespGestionnaire = new Alerte(false, false, false, false, false, false, false, false, false, false, false, false);
+    private Alerte alerteEnseignant = new Alerte(false, false, false, false, false, false, false, false, true, false, false, false);
 
     public Alerte getAlerteEtudiant() {
         return alerteEtudiant;
@@ -50,6 +50,7 @@ public class ConfigAlerteMailDto {
         private boolean modificationAvenantGestionnaire;
         private boolean validationPedagogiqueConvention;
         private boolean validationAdministrativeConvention;
+        private boolean verificationAdministrativeConvention;
         private boolean validationAvenant;
 
         public Alerte() { }
@@ -64,6 +65,7 @@ public class ConfigAlerteMailDto {
                       boolean modificationAvenantGestionnaire,
                       boolean validationPedagogiqueConvention,
                       boolean validationAdministrativeConvention,
+                      boolean verificationAdministrativeConvention,
                       boolean validationAvenant)
         {
             this.creationConventionEtudiant = creationConventionEtudiant;
@@ -76,6 +78,7 @@ public class ConfigAlerteMailDto {
             this.modificationAvenantGestionnaire = modificationAvenantGestionnaire;
             this.validationPedagogiqueConvention = validationPedagogiqueConvention;
             this.validationAdministrativeConvention = validationAdministrativeConvention;
+            this.verificationAdministrativeConvention = verificationAdministrativeConvention;
             this.validationAvenant = validationAvenant;
         }
 
@@ -157,6 +160,14 @@ public class ConfigAlerteMailDto {
 
         public void setValidationAdministrativeConvention(boolean validationAdministrativeConvention) {
             this.validationAdministrativeConvention = validationAdministrativeConvention;
+        }
+
+        public boolean isVerificationAdministrativeConvention() {
+            return verificationAdministrativeConvention;
+        }
+
+        public void setVerificationAdministrativeConvention(boolean verificationAdministrativeConvention) {
+            this.verificationAdministrativeConvention = verificationAdministrativeConvention;
         }
 
         public boolean isValidationAvenant() {

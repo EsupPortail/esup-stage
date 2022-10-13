@@ -127,6 +127,8 @@ public class MailerService {
                 return personnel.getValidationAdministrativeConvention() != null && personnel.getValidationAdministrativeConvention();
             case TemplateMail.CODE_CONVENTION_VALID_PEDAGOGIQUE:
                 return personnel.getValidationPedagogiqueConvention() != null && personnel.getValidationPedagogiqueConvention();
+            case TemplateMail.CODE_CONVENTION_VERIF_ADMINISTRATIVE:
+                return personnel.getVerificationAdministrativeConvention() != null && personnel.getVerificationAdministrativeConvention();
             case TemplateMail.CODE_ETU_CREA_AVENANT:
                 return personnel.getCreationAvenantEtudiant() != null && personnel.getCreationAvenantEtudiant();
             case TemplateMail.CODE_ETU_CREA_CONVENTION:

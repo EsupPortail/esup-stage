@@ -1,0 +1,12 @@
+databaseChangeLog:
+- changeSet:
+    id: personnelcentregestion-add-verification
+    author: ssound
+    changes:
+    - addColumn:
+        tableName: PersonnelCentreGestion
+        columns:
+        - column:
+            defaultValueBoolean: false
+            name: verificationAdministrativeConvention
+            type: BIT

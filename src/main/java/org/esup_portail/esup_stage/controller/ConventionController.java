@@ -360,7 +360,7 @@ public class ConventionController {
                 validationPedagogique(convention, appConfigService.getConfigAlerteMail(), ServiceContext.getUtilisateur(), true);
                 break;
             case "verificationAdministrative":
-                verificationAdministrative(convention, ServiceContext.getUtilisateur(), true);
+                verificationAdministrative(convention, appConfigService.getConfigAlerteMail(), ServiceContext.getUtilisateur(), true);
                 break;
             case "validationConvention":
                 validationAdministrative(convention, appConfigService.getConfigAlerteMail(), ServiceContext.getUtilisateur(), true);
@@ -391,7 +391,7 @@ public class ConventionController {
                 validationPedagogique(convention, appConfigService.getConfigAlerteMail(), ServiceContext.getUtilisateur(), false);
                 break;
             case "verificationAdministrative":
-                verificationAdministrative(convention, ServiceContext.getUtilisateur(), false);
+                verificationAdministrative(convention, appConfigService.getConfigAlerteMail(), ServiceContext.getUtilisateur(), false);
                 break;
             case "validationConvention":
                 validationAdministrative(convention, appConfigService.getConfigAlerteMail(), ServiceContext.getUtilisateur(), false);
@@ -750,7 +750,10 @@ public class ConventionController {
         sendValidationMail(convention, utilisateurContext, valider ? TemplateMail.CODE_CONVENTION_VALID_PEDAGOGIQUE : TemplateMail.CODE_CONVENTION_DEVALID_PEDAGOGIQUE, sendMailEtudiant, sendMailEnseignant);
     }
 
-    private void verificationAdministrative(Convention convention, Utilisateur utilisateurContext, boolean valider) {
+    private void verificationAdministrative(Convention convention, ConfigAlerteMailDto configAlerteMailDto, Utilisateur utilisateurContext, boolean valider) {
+        boolean sendMailEtudiant = configAlerteMailDto.getAlerteEtudiant().isVerificationAdministrativeConvention();
+        boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isVerificationAdministrativeConvention();
+
         HistoriqueValidation historique = new HistoriqueValidation();
         historique.setValeurAvant(convention.getVerificationAdministrative());
         historique.setLogin(utilisateurContext.getLogin());
@@ -764,11 +767,7 @@ public class ConventionController {
         historique.setValeurApres(valider);
         historiqueValidationJpaRepository.saveAndFlush(historique);
 
-        String mailEtudiant = convention.getCourrielPersoEtudiant();
-        if(mailEtudiant == null || appConfigService.getConfigGenerale().isUtiliserMailPersoEtudiant())
-            mailEtudiant = convention.getEtudiant().getMail();
-
-        mailerService.sendAlerteValidation(mailEtudiant, convention, utilisateurContext, valider ? TemplateMail.CODE_CONVENTION_VERIF_ADMINISTRATIVE : TemplateMail.CODE_CONVENTION_DEVERIF_ADMINISTRATIVE);
+        sendValidationMail(convention, utilisateurContext, valider ? TemplateMail.CODE_CONVENTION_VERIF_ADMINISTRATIVE : TemplateMail.CODE_CONVENTION_DEVERIF_ADMINISTRATIVE, sendMailEtudiant, sendMailEnseignant);
     }
 
     private void validationAdministrative(Convention convention, ConfigAlerteMailDto configAlerteMailDto, Utilisateur utilisateurContext, boolean valider) {
