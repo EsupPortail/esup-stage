@@ -40,10 +40,20 @@ public class FooterPageEvent implements IEventHandler {
         Rectangle pageSize = page.getPageSize();
         PdfCanvas pdfCanvas = new PdfCanvas(page.getLastContentStream(), page.getResources(), pdf);
         Canvas canvas = new Canvas(pdfCanvas, pageSize);
+
+        // Ajout de la date d'impression
         Paragraph p = new Paragraph();
         p.setFontSize(8).add(simpleDateFormat.format(dateGeneration));
         canvas.showTextAligned(p, x, y, TextAlignment.RIGHT);
         pdfCanvas.addXObjectAt(placeholder, x + space, y - descent);
+
+        // Ajout du numéro de page
+        int pageNumber = pdf.getPageNumber(page);
+        Paragraph pPage = new Paragraph();
+        pPage.setFontSize(8).add(String.valueOf(pageNumber)).add("/").add(String.valueOf(pdf.getNumberOfPages()));
+        canvas.showTextAligned(pPage, 560, y, TextAlignment.RIGHT);
+        pdfCanvas.addXObjectAt(placeholder, 560 + space, y - descent);
+
         pdfCanvas.release();
     }
 
