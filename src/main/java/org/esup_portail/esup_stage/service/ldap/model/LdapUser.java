@@ -1,8 +1,11 @@
 package org.esup_portail.esup_stage.service.ldap.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class LdapUser {
     private String uid;
     private String supannAliasLogin;

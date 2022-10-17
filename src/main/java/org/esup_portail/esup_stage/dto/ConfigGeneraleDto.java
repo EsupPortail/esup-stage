@@ -1,9 +1,11 @@
 package org.esup_portail.esup_stage.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.esup_portail.esup_stage.dto.view.Views;
 import org.esup_portail.esup_stage.enums.TypeCentreEnum;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ConfigGeneraleDto {
     private String codeUniversite;
     private int anneeBasculeJour = 1;

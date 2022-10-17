@@ -1,7 +1,10 @@
 package org.esup_portail.esup_stage.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.Date;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ConfigThemeDto {
     private File64 logo;
     private File64 favicon;

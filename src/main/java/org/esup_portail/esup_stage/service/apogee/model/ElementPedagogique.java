@@ -1,7 +1,10 @@
 package org.esup_portail.esup_stage.service.apogee.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.math.BigDecimal;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ElementPedagogique {
     private String codEtp;
     private String codVrsVet;
