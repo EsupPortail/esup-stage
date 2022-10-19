@@ -125,8 +125,7 @@ public class CasFilter implements Filter {
                 if (utilisateur == null) {
                     String role = Role.ETU;
                     if (users.size() == 0) {
-                        String filter = appConfigService.getConfigGenerale().getLdapFiltreEnseignant() + "(&(supannAliasLogin=" + casUser.getLogin() + "))";
-                        users = ldapService.searchByFilter(filter);
+                        users = ldapService.search("/tuteur", ldapSearchDto);
                         role = Role.ENS;
                     }
 

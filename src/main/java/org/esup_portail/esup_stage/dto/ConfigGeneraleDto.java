@@ -18,7 +18,6 @@ public class ConfigGeneraleDto {
     private boolean autoriserEtudiantAModifierEntreprise = false;
 
     private boolean autoriserValidationAutoOrgaAccCreaEtu = false;
-    private String ldapFiltreEnseignant = "(|(eduPersonAffiliation=teacher)(eduPersonAffiliation=faculty))";
 
     @JsonView(Views.Etu.class)
     private boolean autoriserElementPedagogiqueFacultatif = false;
@@ -91,14 +90,6 @@ public class ConfigGeneraleDto {
 
     public void setAutoriserValidationAutoOrgaAccCreaEtu(boolean autoriserValidationAutoOrgaAccCreaEtu) {
         this.autoriserValidationAutoOrgaAccCreaEtu = autoriserValidationAutoOrgaAccCreaEtu;
-    }
-
-    public String getLdapFiltreEnseignant() {
-        return ldapFiltreEnseignant;
-    }
-
-    public void setLdapFiltreEnseignant(String ldapFiltreEnseignant) {
-        this.ldapFiltreEnseignant = ldapFiltreEnseignant;
     }
 
     public boolean isAutoriserElementPedagogiqueFacultatif() {
