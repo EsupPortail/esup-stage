@@ -143,6 +143,7 @@ public class ImpressionContext {
         private String deviseGratification;
         private String natureTravailLibelle;
         private String nbHeuresHebdo;
+        private String nbConges;
         private String nbJoursHebdo;
         private String nomEtabRef;
         private String nomSignataireComposante;
@@ -204,6 +205,7 @@ public class ImpressionContext {
             }
             this.natureTravailLibelle = convention.getNomenclature() != null ? convention.getNomenclature().getNatureTravail() : null;
             this.nbHeuresHebdo = convention.getNbHeuresHebdo();
+            this.nbConges = convention.getNbConges();
             this.nbJoursHebdo = convention.getNbJoursHebdo() != null ? convention.getNbJoursHebdo().getValue() : null;
             this.nomEtabRef = convention.getNomEtabRef() != null ? convention.getNomEtabRef() : centreEtablissement.getNomCentre();
             this.nomSignataireComposante = convention.getNomSignataireComposante();
@@ -488,6 +490,14 @@ public class ImpressionContext {
 
         public void setNbHeuresHebdo(String nbHeuresHebdo) {
             this.nbHeuresHebdo = nbHeuresHebdo;
+        }
+
+        public String getNbConges() {
+            return nbConges != null ? nbConges : "";
+        }
+
+        public void setNbConges(String nbConges) {
+            this.nbConges = nbConges;
         }
 
         public String getNbJoursHebdo() {
@@ -1027,6 +1037,7 @@ public class ImpressionContext {
         private String nom;
         private String paysLibelle;
         private String voie;
+        private String batiment;
 
         public ServiceContext() {
         }
@@ -1037,6 +1048,7 @@ public class ImpressionContext {
             this.nom = service.getNom();
             this.paysLibelle = service.getPays() != null ? service.getPays().getLib() : null;
             this.voie = service.getVoie();
+            this.batiment = service.getBatimentResidence();
         }
 
         public String getCodePostal() {
@@ -1077,6 +1089,14 @@ public class ImpressionContext {
 
         public void setVoie(String voie) {
             this.voie = voie;
+        }
+
+        public String getBatiment() {
+            return batiment != null ? batiment : "";
+        }
+
+        public void setBatiment(String batiment) {
+            this.batiment = batiment;
         }
     }
 
@@ -1162,6 +1182,7 @@ public class ImpressionContext {
         private String telephone;
         private String typeStructureLibelle;
         private String voie;
+        private String batiment;
 
         public StructureContext() {
         }
@@ -1179,6 +1200,7 @@ public class ImpressionContext {
             this.telephone = structure.getTelephone();
             this.typeStructureLibelle = structure.getTypeStructure() != null ? structure.getTypeStructure().getLibelle() : null;
             this.voie = structure.getVoie();
+            this.batiment = structure.getBatimentResidence();
         }
 
         public String getActivitePrincipale() {
@@ -1276,6 +1298,14 @@ public class ImpressionContext {
         public void setVoie(String voie) {
             this.voie = voie;
         }
+
+        public String getBatiment() {
+            return batiment != null ? batiment : "";
+        }
+
+        public void setBatiment(String batiment) {
+            this.batiment = batiment;
+        }
     }
 
     public static class AvenantContext {
@@ -1320,7 +1350,7 @@ public class ImpressionContext {
             this.modificationSujet = avenant.isModificationSujet();
             this.modificationPeriode = avenant.isModificationPeriode();
             for (PeriodeInterruptionAvenant periode : avenant.getPeriodeInterruptionAvenants()) {
-                this.periodesInterruptions.add(new PeriodeInterruptionContext(df.format(periode.getDateDebutInterruption()), df.format(periode.getDateFinInterruption())));
+                this.periodesInterruptions.add(new PeriodeInterruptionContext(periode.getDateDebutInterruption() != null ? df.format(periode.getDateDebutInterruption()) : null, periode.getDateFinInterruption() != null ? df.format(periode.getDateFinInterruption()) : null));
             }
             this.modificationMontantGratification = avenant.isModificationMontantGratification();
             if (this.modificationMontantGratification) {

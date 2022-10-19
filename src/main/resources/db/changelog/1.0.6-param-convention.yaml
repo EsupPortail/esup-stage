@@ -15,3 +15,51 @@ databaseChangeLog:
             name: exemple
             value: 1 jour par mois
         tableName: ParamConvention
+- changeSet:
+    id: paramConvention-insert-convention-uniteDureeGratification
+    author: ssound
+    changes:
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: convention.uniteDureeGratificationLibelle
+        - column:
+            name: libelle
+            value: Fréquence de versement de la gratification
+        - column:
+            name: exemple
+            value: mois
+        tableName: ParamConvention
+- changeSet:
+    id: paramConvention-insert-service-batiment
+    author: ssound
+    changes:
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: service.batiment
+        - column:
+            name: libelle
+            value: Bâtiment / Résidence / Z.I
+        - column:
+            name: exemple
+            value: Bat. 1
+        tableName: ParamConvention
+- changeSet:
+    id: paramConvention-insert-structure-batiment
+    author: ssound
+    changes:
+    - insert:
+        columns:
+        - column:
+            name: code
+            value: structure.batiment
+        - column:
+            name: libelle
+            value: Bâtiment / Résidence / Z.I
+        - column:
+            name: exemple
+            value: Bat. 1
+        tableName: ParamConvention

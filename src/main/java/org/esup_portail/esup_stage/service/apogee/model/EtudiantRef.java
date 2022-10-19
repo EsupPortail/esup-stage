@@ -1,12 +1,14 @@
 package org.esup_portail.esup_stage.service.apogee.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class EtudiantRef {
     private Integer cod_ind;
     private String nompatro;

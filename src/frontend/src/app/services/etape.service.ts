@@ -22,10 +22,11 @@ export class EtapeService implements PaginatedService, AutocompleteService {
 
   getAutocompleteData(search: string): Observable<any> {
     const filters = {
-      libelle: {
+      search: {
         value: search,
         type: 'text',
-      }
+        specific: true,
+      },
     };
     return this.getPaginated(1, 0, '', '', JSON.stringify(filters));
   }

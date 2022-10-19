@@ -1,9 +1,11 @@
 package org.esup_portail.esup_stage.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.esup_portail.esup_stage.dto.view.Views;
 import org.esup_portail.esup_stage.enums.TypeCentreEnum;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ConfigGeneraleDto {
     private String codeUniversite;
     private int anneeBasculeJour = 1;
@@ -16,7 +18,6 @@ public class ConfigGeneraleDto {
     private boolean autoriserEtudiantAModifierEntreprise = false;
 
     private boolean autoriserValidationAutoOrgaAccCreaEtu = false;
-    private String ldapFiltreEnseignant = "(|(eduPersonAffiliation=teacher)(eduPersonAffiliation=faculty))";
 
     @JsonView(Views.Etu.class)
     private boolean autoriserElementPedagogiqueFacultatif = false;
@@ -91,14 +92,6 @@ public class ConfigGeneraleDto {
 
     public void setAutoriserValidationAutoOrgaAccCreaEtu(boolean autoriserValidationAutoOrgaAccCreaEtu) {
         this.autoriserValidationAutoOrgaAccCreaEtu = autoriserValidationAutoOrgaAccCreaEtu;
-    }
-
-    public String getLdapFiltreEnseignant() {
-        return ldapFiltreEnseignant;
-    }
-
-    public void setLdapFiltreEnseignant(String ldapFiltreEnseignant) {
-        this.ldapFiltreEnseignant = ldapFiltreEnseignant;
     }
 
     public boolean isAutoriserElementPedagogiqueFacultatif() {

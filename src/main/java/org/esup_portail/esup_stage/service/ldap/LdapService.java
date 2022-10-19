@@ -86,54 +86,18 @@ public class LdapService {
         }
     }
 
-    public List<LdapUser> searchByLogin(String login) {
+    public LdapUser searchByLogin(String login) {
         Map<String, String> params = new HashMap<>();
-        params.put("filter", "(supannAliasLogin=" + login + "*)");
-        String response = call("/byFilter", "GET", params);
+        params.put("login", login);
+        String response = call("/bySupannAliasLogin", "GET", params);
         try {
             ObjectMapper mapper = new ObjectMapper();
-            return Arrays.asList(mapper.readValue(response, LdapUser[].class));
-        } catch (JsonProcessingException e) {
-            LOGGER.error("Erreur lors de la lecture de la réponse sur l'api byFilter: " + e.getMessage(), e);
-            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
-        }
-    }
-
-    public List<LdapUser> searchByName(String nom, String prenom) {
-        Map<String, String> params = new HashMap<>();
-        // construction du filtre
-        String filter = null;
-        if (!nom.equalsIgnoreCase("null")) {
-            filter = "(sn=" + nom + "*)";
-        }
-        if (!prenom.equalsIgnoreCase("null")) {
-            if (filter==null) {
-                filter =  "(givenName=" + prenom + "*)";
-            } else {
-                filter =  "(&(givenName=" + prenom + "*)" + filter + ")";
+            if (!response.isEmpty()) {
+                return mapper.readValue(response, LdapUser.class);
             }
-        }
-
-        params.put("filter", filter);
-        String response = call("/byFilter", "GET", params);
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            return Arrays.asList(mapper.readValue(response, LdapUser[].class));
+            return null;
         } catch (JsonProcessingException e) {
-            LOGGER.error("Erreur lors de la lecture de la réponse sur l'api byFilter: " + e.getMessage(), e);
-            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
-        }
-    }
-
-    public List<LdapUser> searchByFilter(String filter) {
-        Map<String, String> params = new HashMap<>();
-        params.put("filter", filter);
-        String response = call("/byFilter", "GET", params);
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            return Arrays.asList(mapper.readValue(response, LdapUser[].class));
-        } catch (JsonProcessingException e) {
-            LOGGER.error("Erreur lors de la lecture de la réponse sur l'api byFilter: " + e.getMessage(), e);
+            LOGGER.error("Erreur lors de la lecture de la réponse sur l'api bySupannAliasLogin: " + e.getMessage(), e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
         }
     }

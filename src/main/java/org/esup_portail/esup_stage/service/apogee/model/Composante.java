@@ -1,5 +1,8 @@
 package org.esup_portail.esup_stage.service.apogee.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Composante {
     private String code;
     private String libelle;

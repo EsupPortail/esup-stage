@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
+import java.util.ArrayList;
 import java.util.List;
 
 @ApiController
@@ -42,17 +43,22 @@ public class LdapController {
 
     @GetMapping("/search-by-name")
     @Secure(forbiddenEtu = true)
-    public List<LdapUser> searchLdapUserByName(@RequestParam("nom") String nom, @RequestParam("prenom") String prenom) {
-        if (nom == null && prenom == null) {
+    public List<LdapUser> searchLdapUserByName(@RequestBody LdapSearchDto ldapSearchDto) {
+        if (ldapSearchDto.getNom() == null && ldapSearchDto.getPrenom() == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Veuillez renseigner au moins un des filtres");
         }
-        return ldapService.searchByName(nom, prenom);
+        return ldapService.search("/staff", ldapSearchDto);
     }
 
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public List<LdapUser> searchLdapUserByLogin(@Valid @RequestParam("login") @Pattern(regexp = "[A-Za-z0-9]+") String login) {
-        return ldapService.searchByLogin(login);
+        List<LdapUser> response = new ArrayList<>();
+        LdapUser ldapUser = ldapService.searchByLogin(login);
+        if (ldapUser != null) {
+            response.add(ldapUser);
+        }
+        return response;
     }
 
 }

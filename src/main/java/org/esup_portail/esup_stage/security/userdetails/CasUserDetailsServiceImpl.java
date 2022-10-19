@@ -61,8 +61,7 @@ public class CasUserDetailsServiceImpl implements AuthenticationUserDetailsServi
         if (utilisateur == null) {
             String role = Role.ETU;
             if (users.size() == 0) {
-                String filter = appConfigService.getConfigGenerale().getLdapFiltreEnseignant() + "(&(supannAliasLogin=" + username + "))";
-                users = ldapService.searchByFilter(filter);
+                users = ldapService.search("/tuteur", ldapSearchDto);
                 role = Role.ENS;
             }
 

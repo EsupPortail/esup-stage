@@ -1,5 +1,8 @@
 package org.esup_portail.esup_stage.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ConfigAlerteMailDto {
 
     private Alerte alerteEtudiant = new Alerte(true, false, true, true, true, false, true, true, true, true, true, true);

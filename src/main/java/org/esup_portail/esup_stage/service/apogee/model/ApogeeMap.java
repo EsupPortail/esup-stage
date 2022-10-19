@@ -1,8 +1,11 @@
 package org.esup_portail.esup_stage.service.apogee.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.LinkedHashMap;
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ApogeeMap {
     private List<RegimeInscription> regimeInscription;
     private LinkedHashMap<String,String> StudentSteps;
