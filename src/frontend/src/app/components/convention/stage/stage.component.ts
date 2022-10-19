@@ -30,7 +30,7 @@ export class StageComponent implements OnInit {
 
   fieldValidators : any = {
       'nbHeuresHebdo': [Validators.required, Validators.pattern('[0-9]{1,2}([,.][0-9]{1,2})?')],
-      'dureeExceptionnelle': [Validators.required, Validators.pattern('[0-9]+')],
+      'dureeExceptionnelle': [Validators.required, Validators.pattern('[0-9]+([,.][0-9]{1,2})?')],
       'montantGratification': [Validators.required, Validators.pattern('[0-9]{1,10}([,.][0-9]{1,2})?')],
       'idUniteGratification': [Validators.required],
       'idUniteDuree': [Validators.required],
@@ -520,6 +520,6 @@ export class StageComponent implements OnInit {
       }
     }
 
-    return Math.ceil(heuresTravails);
+    return Math.round(heuresTravails * 100) / 100;
   }
 }

@@ -716,13 +716,13 @@ public class ConventionController {
             convention.setHorairesReguliers((Boolean) conventionSingleFieldDto.getValue());
         }
         if (Objects.equals(conventionSingleFieldDto.getField(), "nbHeuresHebdo")){
-            convention.setNbHeuresHebdo((String) conventionSingleFieldDto.getValue());
+            convention.setNbHeuresHebdo(conventionSingleFieldDto.getValue().toString());
         }
         if (Objects.equals(conventionSingleFieldDto.getField(), "nbConges")){
-            convention.setNbConges((String) conventionSingleFieldDto.getValue());
+            convention.setNbConges(conventionSingleFieldDto.getValue().toString());
         }
         if (Objects.equals(conventionSingleFieldDto.getField(), "dureeExceptionnelle")){
-            convention.setDureeExceptionnelle(((Integer) conventionSingleFieldDto.getValue()).toString());
+            convention.setDureeExceptionnelle(conventionSingleFieldDto.getValue().toString());
         }
         if (Objects.equals(conventionSingleFieldDto.getField(), "idTempsTravail")){
             TempsTravail tempsTravail = tempsTravailJpaRepository.findById((int) conventionSingleFieldDto.getValue());

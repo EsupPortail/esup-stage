@@ -1141,7 +1141,7 @@ public class Convention extends ObjetMetier implements Exportable {
 
     public String getDureeExceptionnellePeriode() {
         if (this.getNbHeuresHebdo() != null) {
-            this.setDureeExceptionnellePeriode(PeriodeService.calculPeriodeOuvree(Float.parseFloat(this.getNbHeuresHebdo()), Integer.parseInt(this.getDureeExceptionnelle())));
+            this.setDureeExceptionnellePeriode(PeriodeService.calculPeriodeOuvree(Float.parseFloat(this.getNbHeuresHebdo()), Float.parseFloat(this.getDureeExceptionnelle())));
         }
         return dureeExceptionnellePeriode;
     }
