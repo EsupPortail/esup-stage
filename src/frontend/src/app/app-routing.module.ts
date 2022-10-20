@@ -61,22 +61,10 @@ const routes: Routes = [
     data: {role: {fonction: AppFonction.PARAM_GLOBAL}, droits: [Droit.LECTURE]}
   },
   {
-    path: 'eval-stages/gestionnaires',
+    path: 'eval-stages',
     component: EvalStageComponent,
     canActivate: [AuthGuard],
-    data: {role: {fonction: AppFonction.CONVENTION, droits: [Droit.LECTURE]}, title: 'Rechercher une évaluation'}
-  },
-  {
-    path: 'eval-stages/etudiants',
-    component: EvalStageComponent,
-    canActivate: [AuthGuard],
-    data: {role: {fonction: AppFonction.CONVENTION, droits: [Droit.LECTURE]}, title: 'Visualiser mes fiches d’évaluation'}
-  },
-  {
-    path: 'eval-stages/enseignants',
-    component: EvalStageComponent,
-    canActivate: [AuthGuard],
-    data: {role: {fonction: AppFonction.CONVENTION}, droits: [Droit.LECTURE], title: 'Visualiser mes fiches d’évaluation'}
+    data: {role: {fonction: AppFonction.CONVENTION, droits: [Droit.LECTURE]}}
   },
   {
     path: 'etab-accueils',

@@ -13,6 +13,7 @@ import { AuthService } from "../../services/auth.service";
 export class ConventionComponent implements OnInit {
 
   convention: any;
+  back = 'tableau-de-bord';
 
   conventionTabIndex: number = 0;
 
@@ -43,6 +44,9 @@ export class ConventionComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.activatedRoute.queryParams.subscribe((param: any) => {
+      if (param.back) this.back = param.back;
+    });
     this.activatedRoute.params.subscribe((param: any) => {
       const pathId = param.id;
       this.conventionTabIndex = this.conventionService.getGoToOnglet()??0;

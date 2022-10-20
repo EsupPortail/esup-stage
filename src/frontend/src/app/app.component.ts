@@ -141,32 +141,10 @@ export class AppComponent {
     {
       libelle: 'Évaluation des stages',
       path: 'eval-stages',
-      children: [
-        {
-          libelle: 'Rechercher une évaluation',
-          path: 'eval-stages/gestionnaires',
-          icon: 'fa-columns',
-          canView: () => {
-            return !this.authService.isEtudiant() && !this.authService.isEnseignant();
-          },
-        },
-        {
-          libelle: 'Visualiser mes évaluations',
-          path: 'eval-stages/etudiants',
-          icon: 'fa-columns',
-          canView: () => {
-            return this.authService.isEtudiant()
-          },
-        },
-        {
-          libelle: 'Visualiser mes évaluations',
-          path: 'eval-stages/enseignants',
-          icon: 'fa-columns',
-          canView: () => {
-            return this.authService.isEnseignant()
-          },
-        },
-      ]
+      icon: 'fa-file-circle-question',
+      canView: () => {
+        return this.authService.checkRights({fonction: AppFonction.CONVENTION, droits: [Droit.LECTURE]})
+      }
     },
     {
       libelle: 'Tables des nomenclatures',
