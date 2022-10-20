@@ -783,8 +783,8 @@ export class EvaluationStageComponent implements OnInit {
       reponseEtuII3bis: [null, [Validators.required]],
       reponseEtuII4: [null, [Validators.required]],
       reponseEtuII5: [null, [Validators.required]],
-      reponseEtuII5a: [null, [Validators.required]],
-      reponseEtuII5b: [null, [Validators.required]],
+      reponseEtuII5a: [null],
+      reponseEtuII5b: [null],
       reponseEtuII6: [null, [Validators.required]],
       reponseEtuIII1: [null, [Validators.required]],
       reponseEtuIII1bis: [null],
@@ -876,7 +876,7 @@ export class EvaluationStageComponent implements OnInit {
     //gestion des champs required conditionnels
     for(let question of this.FicheEtudiantIQuestions.concat(this.FicheEtudiantIIQuestions).concat(this.FicheEtudiantIIIQuestions)){
       if(question.bisQuestionLowNotation || question.bisQuestionTrue || question.bisQuestionFalse ||
-      question.controlName == 'EtuI7'){
+      question.controlName == 'EtuI7' || question.controlName == 'EtuII5'){
         let key = 'reponse' + question.controlName;
         let bisKey = key + 'bis';
         this.reponseEtudiantForm.get(key)?.valueChanges.subscribe(val => {
@@ -1142,32 +1142,6 @@ export class EvaluationStageComponent implements OnInit {
       this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 6));
       this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 7));
     });
-  }
-
-  editFicheEtudiant(): void {
-    this.edit = true;
-    this.editEtu = true;
-    this.generalPanel!.expanded = false;
-  }
-
-  editFicheEnseignant(): void {
-    this.edit = true;
-    this.editEns = true;
-    this.generalPanel!.expanded = false;
-  }
-
-  editFicheEntreprise(): void {
-    this.edit = true;
-    this.editEnt = true;
-    this.generalPanel!.expanded = false;
-  }
-
-  cancelEdit(): void {
-    this.edit = false;
-    this.editEtu = false;
-    this.editEns = false;
-    this.editEnt = false;
-    this.generalPanel!.expanded = true;
   }
 
   compare(option: any, value: any): boolean {

@@ -69,7 +69,7 @@
   </mat-tab>
   <mat-tab #evaluationTab *ngIf="isConventionValide() && isStageOver() ">
     <ng-template mat-tab-label>
-      Evaluation du Stage
+      Evaluation du stage
     </ng-template>
     <app-evaluation-stage *ngIf="(evaluationTab.isActive) && convention.id" [convention]="convention"></app-evaluation-stage>
   </mat-tab>
