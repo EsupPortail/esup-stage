@@ -1,17 +1,20 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { FicheEvaluationService } from "../../../services/fiche-evaluation.service";
 import { MessageService } from "../../../services/message.service";
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { QuestionSupplementaireFormComponent } from './question-supplementaire-form/question-supplementaire-form.component';
+import { ContenuService } from "../../../services/contenu.service";
 
 @Component({
   selector: 'app-fiche-evaluation',
   templateUrl: './fiche-evaluation.component.html',
-  styleUrls: ['./fiche-evaluation.component.scss']
+  styleUrls: ['./fiche-evaluation.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class FicheEvaluationComponent implements OnInit {
 
+  texteAlerte: string = '';
   ficheEvaluation: any;
   questionsSupplementaires: any;
 
@@ -665,6 +668,7 @@ export class FicheEvaluationComponent implements OnInit {
               private ficheEvaluationService: FicheEvaluationService,
               private messageService: MessageService,
               public matDialog: MatDialog,
+              public contenuService: ContenuService,
   ) {
     this.ficheEtudiantForm = this.fb.group({
       questionEtuI1: [null],
@@ -738,6 +742,9 @@ export class FicheEvaluationComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.contenuService.get('TEXTE_ALERTE_FICHE').subscribe((response: any) => {
+      this.texteAlerte = response.texte;
+    });
 
     this.ficheEvaluationService.getByCentreGestion(this.idCentreGestion).subscribe((response: any) => {
       this.ficheEvaluation = response;

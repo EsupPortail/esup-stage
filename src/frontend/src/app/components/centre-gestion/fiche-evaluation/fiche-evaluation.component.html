@@ -1,8 +1,8 @@
 <mat-card>
   <mat-card-content>
-    <div class="alert alert-danger">
-      <i class="fa fa-exclamation-triangle"></i>
-      {{'TEXTE_ALERTE_FICHE'|contenu}}
+    <div class="alert alert-danger alert-text text-justify">
+      <div class="icon fa fa-exclamation-triangle"></div>
+      <div class="text" [innerHTML]="texteAlerte"></div>
     </div>
 
     <mat-accordion *ngIf="ficheEvaluation">
@@ -23,18 +23,18 @@
               </mat-expansion-panel-header>
               <div class="mt-3 mb-3">
                 <div class="row">
-                  <div class="col-sm-3">Questions</div>
-                  <div class="col-sm-9">Activation</div>
+                  <div class="col-sm-9">Questions</div>
+                  <div class="col-sm-3">Activation</div>
                 </div>
                 <mat-divider class="mt-2 mb-2"></mat-divider>
               </div>
               <div class="mt-2 mb-2" *ngFor="let question of FicheEtudiantIQuestions">
                 <div class="row">
-                  <div class="col-sm-3">
+                  <div class="col-sm-9">
                     <b>{{question.title}}</b><br>
                     <span *ngFor="let line of question.texte">{{line}}<br></span>
                   </div>
-                  <div class="col-sm-9">
+                  <div class="col-sm-3">
                     <mat-radio-group formControlName="{{question.controlName}}">
                       <mat-radio-button [value]="true">Oui</mat-radio-button>
                       <mat-radio-button [value]="false">Non</mat-radio-button>
@@ -80,18 +80,18 @@
               </mat-expansion-panel-header>
               <div class="mt-3 mb-3">
                 <div class="row">
-                  <div class="col-sm-3">Questions</div>
-                  <div class="col-sm-9">Activation</div>
+                  <div class="col-sm-9">Questions</div>
+                  <div class="col-sm-3">Activation</div>
                 </div>
                 <mat-divider class="mt-2 mb-2"></mat-divider>
               </div>
               <div class="mt-2 mb-2" *ngFor="let question of FicheEtudiantIIQuestions">
                 <div class="row">
-                  <div class="col-sm-3">
+                  <div class="col-sm-9">
                     <b>{{question.title}}</b><br>
                     <span *ngFor="let line of question.texte">{{line}}<br></span>
                   </div>
-                  <div class="col-sm-9">
+                  <div class="col-sm-3">
                     <mat-radio-group formControlName="{{question.controlName}}">
                       <mat-radio-button [value]="true">Oui</mat-radio-button>
                       <mat-radio-button [value]="false">Non</mat-radio-button>
@@ -137,18 +137,18 @@
               </mat-expansion-panel-header>
               <div class="mt-3 mb-3">
                 <div class="row">
-                  <div class="col-sm-3">Questions</div>
-                  <div class="col-sm-9">Activation</div>
+                  <div class="col-sm-9">Questions</div>
+                  <div class="col-sm-3">Activation</div>
                 </div>
                 <mat-divider class="mt-2 mb-2"></mat-divider>
               </div>
               <div class="mt-2 mb-2" *ngFor="let question of FicheEtudiantIIIQuestions">
                 <div class="row">
-                  <div class="col-sm-3">
+                  <div class="col-sm-9">
                     <b>{{question.title}}</b><br>
                     <span *ngFor="let line of question.texte">{{line}}<br></span>
                   </div>
-                  <div class="col-sm-9">
+                  <div class="col-sm-3">
                     <mat-radio-group formControlName="{{question.controlName}}">
                       <mat-radio-button [value]="true">Oui</mat-radio-button>
                       <mat-radio-button [value]="false">Non</mat-radio-button>
@@ -211,18 +211,18 @@
             </mat-expansion-panel-header>
             <div class="mt-3 mb-3">
               <div class="row">
-                <div class="col-sm-3">Questions</div>
-                <div class="col-sm-9">Activation</div>
+                <div class="col-sm-9">Questions</div>
+                <div class="col-sm-3">Activation</div>
               </div>
               <mat-divider class="mt-2 mb-2"></mat-divider>
             </div>
             <div class="mt-2 mb-2" *ngFor="let question of FicheEnseignantIQuestions">
               <div class="row">
-                <div class="col-sm-3">
+                <div class="col-sm-9">
                   <b>{{question.title}}</b><br>
                   <span *ngFor="let line of question.texte">{{line}}<br></span>
                 </div>
-                <div class="col-sm-9">
+                <div class="col-sm-3">
                   <mat-radio-group formControlName="{{question.controlName}}">
                     <mat-radio-button [value]="true">Oui</mat-radio-button>
                     <mat-radio-button [value]="false">Non</mat-radio-button>
@@ -268,18 +268,18 @@
             </mat-expansion-panel-header>
             <div class="mt-3 mb-3">
               <div class="row">
-                <div class="col-sm-3">Questions</div>
-                <div class="col-sm-9">Activation</div>
+                <div class="col-sm-9">Questions</div>
+                <div class="col-sm-3">Activation</div>
               </div>
               <mat-divider class="mt-2 mb-2"></mat-divider>
             </div>
             <div class="mt-2 mb-2" *ngFor="let question of FicheEnseignantIIQuestions">
               <div class="row">
-                <div class="col-sm-3">
+                <div class="col-sm-9">
                   <b>{{question.title}}</b><br>
                   <span *ngFor="let line of question.texte">{{line}}<br></span>
                 </div>
-                <div class="col-sm-9">
+                <div class="col-sm-3">
                   <mat-radio-group formControlName="{{question.controlName}}">
                     <mat-radio-button [value]="true">Oui</mat-radio-button>
                     <mat-radio-button [value]="false">Non</mat-radio-button>
@@ -341,18 +341,18 @@
             </mat-expansion-panel-header>
             <div class="mt-3 mb-3">
               <div class="row">
-                <div class="col-sm-3">Questions</div>
-                <div class="col-sm-9">Activation</div>
+                <div class="col-sm-9">Questions</div>
+                <div class="col-sm-3">Activation</div>
               </div>
               <mat-divider class="mt-2 mb-2"></mat-divider>
             </div>
             <div class="mt-2 mb-2" *ngFor="let question of FicheEntrepriseIQuestions">
               <div class="row">
-                <div class="col-sm-3">
+                <div class="col-sm-9">
                   <b>{{question.title}}</b><br>
                   <span *ngFor="let line of question.texte">{{line}}<br></span>
                 </div>
-                <div class="col-sm-9">
+                <div class="col-sm-3">
                   <mat-radio-group formControlName="{{question.controlName}}">
                     <mat-radio-button [value]="true">Oui</mat-radio-button>
                     <mat-radio-button [value]="false">Non</mat-radio-button>
@@ -398,18 +398,18 @@
             </mat-expansion-panel-header>
             <div class="mt-3 mb-3">
               <div class="row">
-                <div class="col-sm-3">Questions</div>
-                <div class="col-sm-9">Activation</div>
+                <div class="col-sm-9">Questions</div>
+                <div class="col-sm-3">Activation</div>
               </div>
               <mat-divider class="mt-2 mb-2"></mat-divider>
             </div>
             <div class="mt-2 mb-2" *ngFor="let question of FicheEntrepriseIIQuestions">
               <div class="row">
-                <div class="col-sm-3">
+                <div class="col-sm-9">
                   <b>{{question.title}}</b><br>
                   <span *ngFor="let line of question.texte">{{line}}<br></span>
                 </div>
-                <div class="col-sm-9">
+                <div class="col-sm-3">
                   <mat-radio-group formControlName="{{question.controlName}}">
                     <mat-radio-button [value]="true">Oui</mat-radio-button>
                     <mat-radio-button [value]="false">Non</mat-radio-button>
@@ -456,18 +456,18 @@
             </mat-expansion-panel-header>
             <div class="mt-3 mb-3">
               <div class="row">
-                <div class="col-sm-3">Questions</div>
-                <div class="col-sm-9">Activation</div>
+                <div class="col-sm-9">Questions</div>
+                <div class="col-sm-3">Activation</div>
               </div>
               <mat-divider class="mt-2 mb-2"></mat-divider>
             </div>
             <div class="mt-2 mb-2" *ngFor="let question of FicheEntrepriseIIIQuestions">
               <div class="row">
-                <div class="col-sm-3">
+                <div class="col-sm-9">
                   <b>{{question.title}}</b><br>
                   <span *ngFor="let line of question.texte">{{line}}<br></span>
                 </div>
-                <div class="col-sm-9">
+                <div class="col-sm-3">
                   <mat-radio-group formControlName="{{question.controlName}}">
                     <mat-radio-button [value]="true">Oui</mat-radio-button>
                     <mat-radio-button [value]="false">Non</mat-radio-button>

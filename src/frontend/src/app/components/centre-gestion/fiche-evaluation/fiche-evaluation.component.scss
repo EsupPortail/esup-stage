@@ -8,3 +8,22 @@
 .mat-card .mat-divider-horizontal {
     position: relative;
 }
+
+.alert-text {
+  .icon {
+    display: inline-block;
+    margin-right: 10px;
+    vertical-align: top;
+  }
+
+  .text {
+    text-align: justify;
+    font-size: 0.8em;
+    display: inline-block;
+    max-width: calc(100% - 24px);
+
+    p:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
