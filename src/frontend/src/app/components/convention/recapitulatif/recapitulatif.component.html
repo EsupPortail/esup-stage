@@ -3,8 +3,8 @@
     <div class="col-sm-12 text-center">
       <mat-card-actions>
         <button mat-button mat-flat-button color="primary" (click)="printConvention()"
-                *ngIf="convention.validationPedagogique
-                  && (!convention.centreGestion.verificationAdministrative || (convention.centreGestion.verificationAdministrative && convention.verificationAdministrative))">
+                *ngIf="tmpConvention.validationPedagogique
+                  && (!tmpConvention.centreGestion.verificationAdministrative || (tmpConvention.centreGestion.verificationAdministrative && tmpConvention.verificationAdministrative))">
           Imprimer la convention
         </button>
       </mat-card-actions>
@@ -16,9 +16,9 @@
       <div class="mt-3 mb-3">
         <div class="row">
           <div class="col-sm-3 font-weight-bold">Année universitaire</div>
-          <div class="col-sm-9">{{convention.annee}}</div>
+          <div class="col-sm-9">{{tmpConvention.annee}}</div>
           <div class="col-sm-3 font-weight-bold">Langue de la convention</div>
-          <div class="col-sm-9">{{isValide ? convention.nomenclature.langueConvention : convention.langueConvention.libelle}}</div>
+          <div class="col-sm-9">{{tmpConvention.langueConventionLibelle}}</div>
         </div>
       </div>
       <div class="text-title">Etudiant</div>
@@ -26,21 +26,21 @@
       <div class="mt-3 mb-3">
         <div class="row">
           <div class="col-sm-3 font-weight-bold">N° étudiant</div>
-          <div class="col-sm-9">{{convention.etudiant.numEtudiant}}</div>
+          <div class="col-sm-9">{{tmpConvention.etudiant.numEtudiant}}</div>
           <div class="col-sm-3 font-weight-bold">Nom</div>
-          <div class="col-sm-9">{{convention.etudiant.nom}}</div>
+          <div class="col-sm-9">{{tmpConvention.etudiant.nom}}</div>
           <div class="col-sm-3 font-weight-bold">Prénom</div>
-          <div class="col-sm-9">{{convention.etudiant.prenom}}</div>
+          <div class="col-sm-9">{{tmpConvention.etudiant.prenom}}</div>
           <div class="col-sm-3 font-weight-bold">Adresse</div>
-          <div class="col-sm-9">{{convention.adresseEtudiant + ', ' + convention.codePostalEtudiant + ' ' + convention.villeEtudiant}}</div>
+          <div class="col-sm-9">{{tmpConvention.adresseEtudiant + ', ' + tmpConvention.codePostalEtudiant + ' ' + tmpConvention.villeEtudiant}}</div>
           <div class="col-sm-3 font-weight-bold">Téléphone</div>
-          <div class="col-sm-9">{{convention.telEtudiant}}</div>
+          <div class="col-sm-9">{{tmpConvention.telEtudiant}}</div>
           <div class="col-sm-3 font-weight-bold">Téléphone portable</div>
-          <div class="col-sm-9">{{convention.telPortableEtudiant}}</div>
+          <div class="col-sm-9">{{tmpConvention.telPortableEtudiant}}</div>
           <div class="col-sm-3 font-weight-bold">Mail institutionnel</div>
-          <div class="col-sm-9">{{convention.courrielPersoEtudiant}}</div>
+          <div class="col-sm-9">{{tmpConvention.courrielPersoEtudiant}}</div>
           <div class="col-sm-3 font-weight-bold">Mail personnel</div>
-          <div class="col-sm-9">{{convention.etudiant.mail}}</div>
+          <div class="col-sm-9">{{tmpConvention.etudiant.mail}}</div>
         </div>
       </div>
       <div class="text-title">Centre de gestion</div>
@@ -48,21 +48,21 @@
       <div class="mt-3 mb-3">
         <div class="row">
           <div class="col-sm-3 font-weight-bold">Composante/UFR</div>
-          <div class="col-sm-9">{{convention.ufr.libelle}}</div>
+          <div class="col-sm-9">{{tmpConvention.ufr.libelle}}</div>
           <div class="col-sm-3 font-weight-bold">Étape d'étude</div>
-          <div class="col-sm-9">{{convention.etape.id.code + ' - ' + convention.etape.libelle}}</div>
+          <div class="col-sm-9">{{tmpConvention.etape.id.code + ' - ' + tmpConvention.etape.libelle}}</div>
           <div class="col-sm-3 font-weight-bold">Élément pédagogique</div>
-          <div class="col-sm-9">{{convention.codeElp + ' - ' + convention.libelleELP + ' : ' + convention.creditECTS}}</div>
+          <div class="col-sm-9">{{(tmpConvention.codeElp ?? '') + (tmpConvention.libelleELP ? ' - ' + tmpConvention.libelleELP : '') + (tmpConvention.creditECTS ? ' : ' + tmpConvention.creditECTS : '')}}</div>
           <div class="col-sm-3 font-weight-bold">Centre de gestion</div>
-          <div class="col-sm-9">{{convention.centreGestion.nomCentre}}</div>
+          <div class="col-sm-9">{{tmpConvention.centreGestion.nomCentre}}</div>
           <div class="col-sm-3 font-weight-bold">Coordonnées du centre</div>
-          <div class="col-sm-9">{{convention.centreGestion.voie + ', '  + convention.centreGestion.codePostal + ' ' +convention.centreGestion.commune }}</div>
+          <div class="col-sm-9">{{tmpConvention.centreGestion.voie + ', '  + tmpConvention.centreGestion.codePostal + ' ' +tmpConvention.centreGestion.commune }}</div>
           <div class="col-sm-3 font-weight-bold">Mail du centre</div>
-          <div class="col-sm-9">{{convention.centreGestion.mail}}</div>
+          <div class="col-sm-9">{{tmpConvention.centreGestion.mail}}</div>
           <div class="col-sm-3 font-weight-bold">Teléphone du centre</div>
-          <div class="col-sm-9">{{convention.centreGestion.telephone}}</div>
+          <div class="col-sm-9">{{tmpConvention.centreGestion.telephone}}</div>
           <div class="col-sm-3 font-weight-bold">Fax du centre</div>
-          <div class="col-sm-9">{{convention.centreGestion.fax}}</div>
+          <div class="col-sm-9">{{tmpConvention.centreGestion.fax}}</div>
         </div>
       </div>
 
@@ -72,15 +72,15 @@
       <div class="mt-3 mb-3">
         <div class="row">
           <div class="col-sm-3 font-weight-bold">Type de stage</div>
-          <div class="col-sm-9">{{isValide ? convention.nomenclature.typeConvention : convention.typeConvention.libelle}}</div>
+          <div class="col-sm-9">{{tmpConvention.typeConventionLibelle}}</div>
           <div class="col-sm-3 font-weight-bold">Thématique du stage</div>
-          <div class="col-sm-9">{{isValide ? convention.nomenclature.theme : convention.theme.libelle}}</div>
+          <div class="col-sm-9">{{tmpConvention.themeLibelle}}</div>
           <div class="col-sm-3 font-weight-bold">Sujet</div>
-          <div class="col-sm-9">{{convention.sujetStage}}</div>
+          <div class="col-sm-9">{{tmpConvention.sujetStage}}</div>
           <div class="col-sm-3 font-weight-bold">Fonctions et tâches</div>
-          <div class="col-sm-9">{{convention.fonctionsEtTaches}}</div>
+          <div class="col-sm-9">{{tmpConvention.fonctionsEtTaches}}</div>
           <div class="col-sm-3 font-weight-bold">Compétences</div>
-          <div class="col-sm-9">{{convention.competences}}</div>
+          <div class="col-sm-9">{{tmpConvention.competences}}</div>
         </div>
       </div>
 
@@ -90,13 +90,13 @@
       <div class="mt-3 mb-3">
         <div class="row">
           <div class="col-sm-3 font-weight-bold">Date de début du stage</div>
-          <div class="col-sm-9">{{convention.dateDebutStage|date:'shortDate'}}</div>
+          <div class="col-sm-9">{{tmpConvention.dateDebutStage|date:'shortDate'}}</div>
           <div class="col-sm-3 font-weight-bold">Date de fin du stage</div>
-          <div class="col-sm-9">{{convention.dateFinStage|date:'shortDate'}}</div>
+          <div class="col-sm-9">{{tmpConvention.dateFinStage|date:'shortDate'}}</div>
           <div class="col-sm-3 font-weight-bold">Interruption au cours du stage</div>
-          <div class="col-sm-9">{{convention.interruptionStage ? 'Oui' : 'Non'}}</div>
+          <div class="col-sm-9">{{tmpConvention.interruptionStage ? 'Oui' : 'Non'}}</div>
         </div>
-        <div class="row" *ngIf="convention.interruptionStage">
+        <div class="row" *ngIf="tmpConvention.interruptionStage">
           <div class="col-sm-3 font-weight-bold">Périodes d'interruption du stage</div>
           <div class="col-sm-9"><span *ngFor="let interruption of interruptionsStage">
             {{(interruptionsStage.length>1?'- Du ':'Du ') + (interruption.dateDebutInterruption|date:'shortDate') + ' au '+ (interruption.dateFinInterruption|date:'shortDate')}}<br></span>
@@ -104,17 +104,17 @@
         </div>
         <div class="row">
           <div class="col-sm-3 font-weight-bold">Nombre d'heures hebdomadaires</div>
-          <div class="col-sm-9">{{convention.nbHeuresHebdo}}</div>
+          <div class="col-sm-9">{{tmpConvention.nbHeuresHebdo}}</div>
           <div class="col-sm-3 font-weight-bold">Durée effective du stage</div>
-          <div class="col-sm-9">{{convention.dureeExceptionnelle}} heures</div>
+          <div class="col-sm-9">{{tmpConvention.dureeExceptionnelle}} heures</div>
           <div class="col-sm-3 font-weight-bold">Durée effective du stage en mois/jours/année</div>
-          <div class="col-sm-9">{{convention.dureeExceptionnellePeriode}}</div>
+          <div class="col-sm-9">{{tmpConvention.dureeExceptionnellePeriode}}</div>
           <div class="col-sm-3 font-weight-bold">Temps de travail</div>
-          <div class="col-sm-9">{{isValide ? convention.nomenclature.tempsTravail : convention.tempsTravail.libelle}}</div>
+          <div class="col-sm-9">{{tmpConvention.tempsTravailLibelle}}</div>
           <div class="col-sm-3 font-weight-bold">Commentaire tps travail</div>
-          <div class="col-sm-9">{{convention.commentaireDureeTravail}}</div>
+          <div class="col-sm-9">{{tmpConvention.commentaireDureeTravail}}</div>
           <div class="col-sm-3 font-weight-bold">Nombre de jours de congés autorisés</div>
-          <div class="col-sm-9">{{convention.nbConges}}</div>
+          <div class="col-sm-9">{{tmpConvention.nbConges}}</div>
         </div>
       </div>
 
@@ -124,15 +124,15 @@
       <div class="mt-3 mb-3">
         <div class="row">
           <div class="col-sm-3 font-weight-bold">Gratification au cours du stage ?</div>
-          <div class="col-sm-9">{{convention.gratificationStage? 'Oui' : 'Non' }}</div>
+          <div class="col-sm-9">{{tmpConvention.gratificationStage? 'Oui' : 'Non' }}</div>
         </div>
-        <div class="row" *ngIf="convention.gratificationStage">
+        <div class="row" *ngIf="tmpConvention.gratificationStage">
           <div class="col-sm-3 font-weight-bold">Montant de la gratification</div>
-          <div class="col-sm-9">{{convention.montantGratification + ' ' + (isValide ? convention.nomenclature.uniteGratification : convention.uniteGratification.libelle) + ' ' + (isValide ? convention.nomenclature.uniteDureeGratification : convention.uniteDureeGratification.libelle)}}</div>
+          <div class="col-sm-9">{{tmpConvention.montantGratification + ' ' + tmpConvention.uniteGratificationLibelle + ' ' + tmpConvention.uniteDureeGratificationLibelle}}</div>
           <div class="col-sm-3 font-weight-bold">Monnaie utilisée pour le paiement</div>
-          <div class="col-sm-9">{{isValide ? convention.nomenclature.devise : convention.devise.libelle}}</div>
+          <div class="col-sm-9">{{tmpConvention.deviseLibelle}}</div>
           <div class="col-sm-3 font-weight-bold">Modalité de versement de la gratification</div>
-          <div class="col-sm-9">{{isValide ? convention.nomenclature.modeVersGratifications : convention.modeVersGratification.libelle}}</div>
+          <div class="col-sm-9">{{tmpConvention.modeVersGratificationsLibelle}}</div>
         </div>
       </div>
 
@@ -142,21 +142,21 @@
       <div class="mt-3 mb-3">
         <div class="row">
           <div class="col-sm-3 font-weight-bold">Origine du stage</div>
-          <div class="col-sm-9">{{isValide ? convention.nomenclature.origineStage : convention.origineStage.libelle }}</div>
+          <div class="col-sm-9">{{tmpConvention.origineStageLibelle }}</div>
           <div class="col-sm-3 font-weight-bold">Confidentialité sujet/theme</div>
-          <div class="col-sm-9">{{convention.confidentiel? 'Oui' : 'Non'}}</div>
+          <div class="col-sm-9">{{tmpConvention.confidentiel? 'Oui' : 'Non'}}</div>
           <div class="col-sm-3 font-weight-bold">Modalité de suivi du stagiaire</div>
-          <div class="col-sm-9">{{convention.modeEncadreSuivi}}</div>
+          <div class="col-sm-9">{{tmpConvention.modeEncadreSuivi}}</div>
           <div class="col-sm-3 font-weight-bold">Liste des avantages en nature</div>
-          <div class="col-sm-9">{{convention.avantagesNature}}</div>
+          <div class="col-sm-9">{{tmpConvention.avantagesNature}}</div>
           <div class="col-sm-3 font-weight-bold">Travail à fournir suite au stage</div>
-          <div class="col-sm-9">{{isValide ? convention.nomenclature.natureTravail : convention.natureTravail.libelle}}</div>
+          <div class="col-sm-9">{{tmpConvention.natureTravailLibelle}}</div>
           <div class="col-sm-3 font-weight-bold">Modalité de validation du stage</div>
-          <div class="col-sm-9">{{isValide ? convention.nomenclature.modeValidationStage : convention.modeValidationStage.libelle}}</div>
+          <div class="col-sm-9">{{tmpConvention.modeValidationStageLibelle}}</div>
           <div class="col-sm-3 font-weight-bold">Cas particuliers</div>
-          <div class="col-sm-9">{{convention.travailNuitFerie}}</div>
+          <div class="col-sm-9">{{tmpConvention.travailNuitFerie}}</div>
           <div class="col-sm-3 font-weight-bold">Date de création de la convention </div>
-          <div class="col-sm-9">{{convention.dateValidationCreation |date:'shortDate'}}</div>
+          <div class="col-sm-9">{{tmpConvention.dateValidationCreation |date:'shortDate'}}</div>
         </div>
       </div>
 
@@ -166,9 +166,9 @@
       <div class="mt-3 mb-3">
         <div class="row">
           <div class="col-sm-3 font-weight-bold">Nom</div>
-          <div class="col-sm-9">{{convention.enseignant.nom}}</div>
+          <div class="col-sm-9">{{tmpConvention.enseignant.nom}}</div>
           <div class="col-sm-3 font-weight-bold">Prénom</div>
-          <div class="col-sm-9">{{convention.enseignant.prenom}}</div>
+          <div class="col-sm-9">{{tmpConvention.enseignant.prenom}}</div>
         </div>
       </div>
 
@@ -178,31 +178,31 @@
       <div class="mt-3 mb-3">
         <div class="row">
           <div class="col-sm-3 font-weight-bold">Etablissement d'accueil</div>
-          <div class="col-sm-9">{{convention.structure.raisonSociale}}</div>
+          <div class="col-sm-9">{{tmpConvention.structure.raisonSociale}}</div>
           <div class="col-sm-3 font-weight-bold">Mail Etb. d'accueil :</div>
-          <div class="col-sm-9">{{convention.structure.mail}}</div>
+          <div class="col-sm-9">{{tmpConvention.structure.mail}}</div>
           <div class="col-sm-3 font-weight-bold">Service du stage</div>
-          <div class="col-sm-9">{{convention.service.nom}}</div>
+          <div class="col-sm-9">{{tmpConvention.service.nom}}</div>
           <div class="col-sm-3 font-weight-bold">Tuteur professionnel</div>
-          <div class="col-sm-9">{{(convention.contact.civilite ? convention.contact.civilite.libelle + ' ' : '') +convention.contact.nom + ' ' +convention.contact.prenom +
-          (convention.contact.fonction ? ', ' + convention.contact.fonction : '')}}</div>
+          <div class="col-sm-9">{{(tmpConvention.contact.civilite ? tmpConvention.contact.civilite.libelle + ' ' : '') +tmpConvention.contact.nom + ' ' +tmpConvention.contact.prenom +
+          (tmpConvention.contact.fonction ? ', ' + tmpConvention.contact.fonction : '')}}</div>
           <div class="col-sm-3 font-weight-bold">Coordonéees tuteur professionnel</div>
-          <div class="col-sm-9">{{(convention.contact.mail? 'Mail : ' + convention.contact.mail : '') +
-            (convention.contact.tel? ' - Tel : ' + convention.contact.tel : '')+
-            (convention.contact.fax? ' - Fax : ' + convention.contact.fax : '')}}</div>
+          <div class="col-sm-9">{{(tmpConvention.contact.mail? 'Mail : ' + tmpConvention.contact.mail : '') +
+            (tmpConvention.contact.tel? ' - Tel : ' + tmpConvention.contact.tel : '')+
+            (tmpConvention.contact.fax? ' - Fax : ' + tmpConvention.contact.fax : '')}}</div>
           <div class="col-sm-3 font-weight-bold">Signataire</div>
-          <div class="col-sm-9">{{convention.signataire ? (convention.signataire.civilite ? convention.signataire.civilite.libelle + ' ' : '') +convention.signataire.nom + ' ' +convention.signataire.prenom +
-            (convention.signataire.fonction ? ', ' + convention.signataire.fonction : '') : ''}}</div>
+          <div class="col-sm-9">{{tmpConvention.signataire ? (tmpConvention.signataire.civilite ? tmpConvention.signataire.civilite.libelle + ' ' : '') +tmpConvention.signataire.nom + ' ' +tmpConvention.signataire.prenom +
+            (tmpConvention.signataire.fonction ? ', ' + tmpConvention.signataire.fonction : '') : ''}}</div>
         </div>
       </div>
     </div>
     <div class="row">
       <div class="col-sm-12 text-center">
         <mat-card-actions>
-          <button mat-button mat-flat-button color="primary" (click)="validate()" *ngIf="!convention.validationCreation">{{'BOUTON_VALIDER'|contenu}}</button>
+          <button mat-button mat-flat-button color="primary" (click)="validate()" *ngIf="!tmpConvention.validationCreation">{{'BOUTON_VALIDER'|contenu}}</button>
           <button mat-button mat-flat-button color="primary" (click)="printConvention()"
-                  *ngIf="convention.validationPedagogique
-                  && (!convention.centreGestion.verificationAdministrative || (convention.centreGestion.verificationAdministrative && convention.verificationAdministrative))">
+                  *ngIf="tmpConvention.validationPedagogique
+                  && (!tmpConvention.centreGestion.verificationAdministrative || (tmpConvention.centreGestion.verificationAdministrative && tmpConvention.verificationAdministrative))">
             Imprimer la convention
           </button>
         </mat-card-actions>

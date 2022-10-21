@@ -13,8 +13,8 @@ import * as FileSaver from 'file-saver';
 export class RecapitulatifComponent implements OnInit {
 
   @Input() convention: any;
+  tmpConvention: any;
   interruptionsStage: any[] = [];
-  isValide: boolean = false;
 
   constructor(private periodeInterruptionStageService: PeriodeInterruptionStageService,
               private conventionService: ConventionService,
@@ -23,29 +23,49 @@ export class RecapitulatifComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.isValide = this.convention.validationPedagogique && this.convention.validationConvention && this.convention.nomenclature;
-    if(this.convention.interruptionStage){
+    this.tmpConvention = {
+      ...this.convention,
+      langueConventionLibelle: this.getNomenclatureValue('langueConvention'),
+      typeConventionLibelle: this.getNomenclatureValue('typeConvention'),
+      themeLibelle: this.getNomenclatureValue('theme'),
+      tempsTravailLibelle: this.getNomenclatureValue('tempsTravail'),
+      uniteGratificationLibelle: this.getNomenclatureValue('uniteGratification'),
+      uniteDureeGratificationLibelle: this.getNomenclatureValue('uniteDureeGratification'),
+      deviseLibelle: this.getNomenclatureValue('devise'),
+      modeVersGratificationLibelle: this.getNomenclatureValue('modeVersGratification'),
+      origineStageLibelle: this.getNomenclatureValue('origineStage'),
+      natureTravailLibelle: this.getNomenclatureValue('natureTravail'),
+      modeValidationStageLibelle: this.getNomenclatureValue(' modeValidationStage'),
+    };
+    if(this.tmpConvention.interruptionStage){
       this.loadInterruptionsStage();
     }
   }
 
+  getNomenclatureValue(key: string) {
+    if (this.convention.validationCreation && this.convention.nomenclature) {
+      return this.convention.nomenclature[key] ?? '';
+    }
+    return this.convention[key] ? this.convention[key].libelle : '';
+  }
+
   loadInterruptionsStage() : void{
-    this.periodeInterruptionStageService.getByConvention(this.convention.id).subscribe((response: any) => {
+    this.periodeInterruptionStageService.getByConvention(this.tmpConvention.id).subscribe((response: any) => {
       this.interruptionsStage = response;
     });
   }
 
   validate(): void {
-    this.conventionService.validationCreation(this.convention.id).subscribe((response: any) => {
+    this.conventionService.validationCreation(this.tmpConvention.id).subscribe((response: any) => {
       this.messageService.setSuccess('Convention créée avec succès');
-      this.router.navigate([`/conventions/${this.convention.id}`], )
+      this.router.navigate([`/conventions/${this.tmpConvention.id}`], )
     });
   }
 
   printConvention() : void {
-    this.conventionService.getConventionPDF(this.convention.id).subscribe((response: any) => {
+    this.conventionService.getConventionPDF(this.tmpConvention.id).subscribe((response: any) => {
       var blob = new Blob([response as BlobPart], {type: "application/pdf"});
-      let filename = 'Convention_' + this.convention.id + '_' + this.convention.etudiant.prenom + '_' + this.convention.etudiant.nom + '.pdf';
+      let filename = 'Convention_' + this.tmpConvention.id + '_' + this.tmpConvention.etudiant.prenom + '_' + this.tmpConvention.etudiant.nom + '.pdf';
       FileSaver.saveAs(blob, filename);
     });
   }
