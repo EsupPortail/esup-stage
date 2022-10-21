@@ -14,7 +14,7 @@ import java.util.List;
 public class LangueConventionRepository extends PaginationRepository<LangueConvention> {
 
     public LangueConventionRepository(EntityManager em) {
-        super(em, LangueConvention.class, "lc");
+        super(em, LangueConvention.class, "lc", "LEFT JOIN lc.templates template");
         this.predicateWhitelist = Arrays.asList("code", "libelle");
     }
 
@@ -24,12 +24,6 @@ public class LangueConventionRepository extends PaginationRepository<LangueConve
         query.setParameter("code", langueConvention.getCode());
         List<String> results = query.getResultList();
         return results.size() > 0;
-    }
-
-    @Override
-    protected void formatFilters(String jsonString) {
-        super.formatFilters(jsonString);
-        addJoins("LEFT JOIN lc.templates template");
     }
 
     @Override
