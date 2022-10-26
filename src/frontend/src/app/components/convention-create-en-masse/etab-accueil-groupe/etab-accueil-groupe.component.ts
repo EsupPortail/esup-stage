@@ -1,15 +1,11 @@
-import { Component, EventEmitter, Input, Output, OnChanges, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild } from '@angular/core';
 import { TableComponent } from "../../table/table.component";
 import { GroupeEtudiantService } from "../../../services/groupe-etudiant.service";
 import { ConventionService } from "../../../services/convention.service";
 import { AuthService } from "../../../services/auth.service";
 import { Router } from "@angular/router";
-import { StructureService } from "../../../services/structure.service";
-import { UfrService } from "../../../services/ufr.service";
-import { EtapeService } from "../../../services/etape.service";
 import { EtudiantGroupeEtudiantService } from "../../../services/etudiant-groupe-etudiant.service";
 import { MessageService } from "../../../services/message.service";
-import { ConfigService } from "../../../services/config.service";
 import { SortDirection } from "@angular/material/sort";
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { EtabAccueilGroupeModalComponent } from './etab-accueil-groupe-modal/etab-accueil-groupe-modal.component';
@@ -19,7 +15,7 @@ import { EtabAccueilGroupeModalComponent } from './etab-accueil-groupe-modal/eta
   templateUrl: './etab-accueil-groupe.component.html',
   styleUrls: ['./etab-accueil-groupe.component.scss']
 })
-export class EtabAccueilGroupeComponent implements OnInit {
+export class EtabAccueilGroupeComponent implements OnInit, OnChanges {
 
   columns: string[] = [];
   sortColumn = 'prenom';
@@ -40,7 +36,6 @@ export class EtabAccueilGroupeComponent implements OnInit {
     private authService: AuthService,
     private router: Router,
     private messageService: MessageService,
-    private configService: ConfigService,
     public matDialog: MatDialog,
   ) {
   }
@@ -54,15 +49,6 @@ export class EtabAccueilGroupeComponent implements OnInit {
   ngOnChanges(): void{
     this.appTable?.update();
     this.selected = [];
-  }
-
-  ngAfterViewInit(): void {
-      this.appTable?.setFilterValue('groupeEtudiant.id', this.groupeEtudiant.id);
-      this.appTable?.setFilterOption('ufr.id', this.sharedData.ufrList);
-      this.appTable?.setFilterOption('etape.id', this.sharedData.etapeList);
-      this.appTable?.setFilterOption('convention.annee', this.sharedData.annees);
-      this.appTable?.update();
-      this.selected = [];
   }
 
   isSelected(data: any): boolean {

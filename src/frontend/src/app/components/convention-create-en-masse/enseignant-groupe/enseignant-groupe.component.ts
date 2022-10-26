@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnChanges, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild } from '@angular/core';
 import { TableComponent } from "../../table/table.component";
 import { GroupeEtudiantService } from "../../../services/groupe-etudiant.service";
 import { ConventionService } from "../../../services/convention.service";
@@ -6,7 +6,6 @@ import { AuthService } from "../../../services/auth.service";
 import { Router } from "@angular/router";
 import { EtudiantGroupeEtudiantService } from "../../../services/etudiant-groupe-etudiant.service";
 import { MessageService } from "../../../services/message.service";
-import { ConfigService } from "../../../services/config.service";
 import { SortDirection } from "@angular/material/sort";
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { EnseignantGroupeModalComponent } from './enseignant-groupe-modal/enseignant-groupe-modal.component';
@@ -16,7 +15,7 @@ import { EnseignantGroupeModalComponent } from './enseignant-groupe-modal/enseig
   templateUrl: './enseignant-groupe.component.html',
   styleUrls: ['./enseignant-groupe.component.scss']
 })
-export class EnseignantGroupeComponent implements OnInit {
+export class EnseignantGroupeComponent implements OnInit, OnChanges {
 
   columns: string[] = [];
   sortColumn = 'prenom';
@@ -37,7 +36,6 @@ export class EnseignantGroupeComponent implements OnInit {
     private authService: AuthService,
     private router: Router,
     private messageService: MessageService,
-    private configService: ConfigService,
     public matDialog: MatDialog,
   ) {
   }
@@ -51,15 +49,6 @@ export class EnseignantGroupeComponent implements OnInit {
   ngOnChanges(): void{
     this.appTable?.update();
     this.selected = [];
-  }
-
-  ngAfterViewInit(): void {
-      this.appTable?.setFilterValue('groupeEtudiant.id', this.groupeEtudiant.id);
-      this.appTable?.setFilterOption('ufr.id', this.sharedData.ufrList);
-      this.appTable?.setFilterOption('etape.id', this.sharedData.etapeList);
-      this.appTable?.setFilterOption('convention.annee', this.sharedData.annees);
-      this.appTable?.update();
-      this.selected = [];
   }
 
   isSelected(data: any): boolean {

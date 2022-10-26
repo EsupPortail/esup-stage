@@ -1,11 +1,10 @@
-import { Component, EventEmitter, Input, Output, OnChanges, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild } from '@angular/core';
 import { TableComponent } from "../../table/table.component";
 import { GroupeEtudiantService } from "../../../services/groupe-etudiant.service";
 import { EtudiantGroupeEtudiantService } from "../../../services/etudiant-groupe-etudiant.service";
 import { AuthService } from "../../../services/auth.service";
 import { Router } from "@angular/router";
 import { MessageService } from "../../../services/message.service";
-import { ConfigService } from "../../../services/config.service";
 import { SortDirection } from "@angular/material/sort";
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { CadreStageModalComponent } from './cadre-stage-modal/cadre-stage-modal.component';
@@ -15,7 +14,7 @@ import { CadreStageModalComponent } from './cadre-stage-modal/cadre-stage-modal.
   templateUrl: './cadre-stage.component.html',
   styleUrls: ['./cadre-stage.component.scss']
 })
-export class CadreStageComponent implements OnInit {
+export class CadreStageComponent implements OnInit, OnChanges {
 
   columns: string[] = [];
   sortColumn = 'prenom';
@@ -34,27 +33,17 @@ export class CadreStageComponent implements OnInit {
     private authService: AuthService,
     private router: Router,
     private messageService: MessageService,
-    private configService: ConfigService,
     public matDialog: MatDialog,
   ) {
   }
 
   ngOnInit(): void {
-      this.columns = ['action','numEtudiant','nom', 'mail', 'mailPerso', 'ufr.libelle', 'etape.libelle', 'annee', 'adresse', 'codePostal', 'commune', 'pays', 'tel', 'telPortable'];
-      this.filters = [...this.sharedData.filters];
-
+    this.columns = ['action','numEtudiant','nom', 'mail', 'mailPerso', 'ufr.libelle', 'etape.libelle', 'annee', 'adresse', 'codePostal', 'commune', 'pays', 'tel', 'telPortable'];
+    this.filters = [...this.sharedData.filters];
   }
 
   ngOnChanges(): void{
     this.appTable?.update();
-  }
-
-  ngAfterViewInit(): void {
-      this.appTable?.setFilterValue('groupeEtudiant.id', this.groupeEtudiant.id);
-      this.appTable?.setFilterOption('ufr.id', this.sharedData.ufrList);
-      this.appTable?.setFilterOption('etape.id', this.sharedData.etapeList);
-      this.appTable?.setFilterOption('convention.annee', this.sharedData.annees);
-      this.appTable?.update();
   }
 
   edit(row: any): void{

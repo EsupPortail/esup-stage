@@ -1,14 +1,11 @@
-import { Component, EventEmitter, Input, Output, OnChanges, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild } from '@angular/core';
 import { TableComponent } from "../../table/table.component";
 import { GroupeEtudiantService } from "../../../services/groupe-etudiant.service";
 import { ConventionService } from "../../../services/convention.service";
 import { AuthService } from "../../../services/auth.service";
 import { Router } from "@angular/router";
-import { UfrService } from "../../../services/ufr.service";
-import { EtapeService } from "../../../services/etape.service";
 import { EtudiantGroupeEtudiantService } from "../../../services/etudiant-groupe-etudiant.service";
 import { MessageService } from "../../../services/message.service";
-import { ConfigService } from "../../../services/config.service";
 import { SortDirection } from "@angular/material/sort";
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { TuteurAccueilGroupeModalComponent } from './tuteur-accueil-groupe-modal/tuteur-accueil-groupe-modal.component';
@@ -18,7 +15,7 @@ import { TuteurAccueilGroupeModalComponent } from './tuteur-accueil-groupe-modal
   templateUrl: './tuteur-accueil-groupe.component.html',
   styleUrls: ['./tuteur-accueil-groupe.component.scss']
 })
-export class TuteurAccueilGroupeComponent implements OnInit {
+export class TuteurAccueilGroupeComponent implements OnInit, OnChanges {
 
   columns: string[] = [];
   sortColumn = 'prenom';
@@ -42,7 +39,6 @@ export class TuteurAccueilGroupeComponent implements OnInit {
     private authService: AuthService,
     private router: Router,
     private messageService: MessageService,
-    private configService: ConfigService,
     public matDialog: MatDialog,
   ) {
   }
@@ -55,39 +51,32 @@ export class TuteurAccueilGroupeComponent implements OnInit {
     this.filters = [...this.sharedData.filters];
     this.filters.push({ id: 'convention.structure.id', libelle: 'Structure d\'accueil', type: 'list', options: [], keyLibelle: 'raisonSociale', keyId: 'id'});
     this.filters.push({ id: 'convention.service.id', libelle: 'Service d\'accueil', type: 'list', options: [], keyLibelle: 'nom', keyId: 'id'});
+    this.initStructureFilter();
+    this.initServiceFilters();
   }
 
   ngOnChanges(): void{
     this.initStructureFilter();
-      this.initServiceFilters();
+    this.initServiceFilters();
     this.appTable?.update();
     this.selected = [];
   }
 
-  ngAfterViewInit(): void {
-      this.appTable?.setFilterValue('groupeEtudiant.id', this.groupeEtudiant.id);
-      this.appTable?.setFilterOption('ufr.id', this.sharedData.ufrList);
-      this.appTable?.setFilterOption('etape.id', this.sharedData.etapeList);
-      this.appTable?.setFilterOption('convention.annee', this.sharedData.annees);
-      this.initStructureFilter();
-      this.initServiceFilters();
-      this.appTable?.update();
-      this.selected = [];
-  }
-
   initStructureFilter(): void {
-    if(this.groupeEtudiant && this.groupeEtudiant.convention.structure && this.groupeEtudiant.convention.service){
-      this.structures = this.groupeEtudiant.etudiantGroupeEtudiants.map((e: any) => e.convention.structure??this.groupeEtudiant.convention.structure);
-      this.structures = [...new Map(this.structures.map(e => [e.id, {id:e.id,raisonSociale:e.raisonSociale}])).values()]
-      this.appTable?.setFilterOption('convention.structure.id', this.structures);
+    if (this.groupeEtudiant && this.groupeEtudiant.convention.structure && this.groupeEtudiant.convention.service) {
+      this.structures = this.groupeEtudiant.etudiantGroupeEtudiants.map((e: any) => e.convention.structure ?? this.groupeEtudiant.convention.structure);
+      this.structures = [...new Map(this.structures.map(e => [e.id, {id: e.id, raisonSociale: e.raisonSociale}])).values()];
+      let filter = this.filters.find((f: any) => f.id === 'convention.structure.id');
+      if (filter) filter.options = this.structures;
     }
   }
 
   initServiceFilters(): void {
-    if(this.groupeEtudiant && this.groupeEtudiant.convention.structure && this.groupeEtudiant.convention.service){
-      this.services = this.groupeEtudiant.etudiantGroupeEtudiants.map((e: any) => e.convention.service??this.groupeEtudiant.convention.service);
-      this.services = [...new Map(this.services.map(e => [e.id, {id:e.id,nom:e.nom}])).values()]
-      this.appTable?.setFilterOption('convention.service.id', this.services);
+    if (this.groupeEtudiant && this.groupeEtudiant.convention.structure && this.groupeEtudiant.convention.service) {
+      this.services = this.groupeEtudiant.etudiantGroupeEtudiants.map((e: any) => e.convention.service ?? this.groupeEtudiant.convention.service);
+      this.services = [...new Map(this.services.map(e => [e.id, {id: e.id, nom: e.nom}])).values()];
+      let filter = this.filters.find((f: any) => f.id === 'convention.service.id');
+      if (filter) filter.options = this.services;
     }
   }
 
