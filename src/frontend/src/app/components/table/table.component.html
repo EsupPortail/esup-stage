@@ -116,9 +116,9 @@
 </div>
 
 <div class="custom-table-button-paginator">
-  <mat-card>
+  <mat-card *ngIf="!isEtudiant() && exportColumns">
     <mat-card-content>
-      <ng-container *ngIf="!isEtudiant() && exportColumns">
+      <ng-container>
         <button mat-button mat-flat-button color="primary" [matMenuTriggerFor]="exportMenu">Exporter</button>
         <mat-menu #exportMenu="matMenu">
           <button mat-menu-item (click)="export('csv')">CSV</button>
