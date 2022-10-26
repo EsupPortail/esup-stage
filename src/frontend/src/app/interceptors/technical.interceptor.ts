@@ -21,7 +21,9 @@ export class TechnicalInterceptor implements HttpInterceptor {
       this.currentActiveElement = document.activeElement;
       this.currentActiveElement.blur();
     }
-    this.loaderService.show();
+    setTimeout(() => {
+      this.loaderService.show();
+    });
     this.nbRequests++;
     return next.handle(request)
       .pipe(
@@ -35,7 +37,9 @@ export class TechnicalInterceptor implements HttpInterceptor {
               this.currentActiveElement.focus();
               this.currentActiveElement = undefined;
             }
-            this.loaderService.hide();
+            setTimeout(() => {
+              this.loaderService.hide();
+            });
           }
         })
       )
