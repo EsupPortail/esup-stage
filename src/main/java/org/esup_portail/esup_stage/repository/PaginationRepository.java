@@ -37,6 +37,7 @@ public class PaginationRepository<T extends Exportable> {
     protected List<String> predicateWhitelist = new ArrayList<>(); // whitelist pour éviter l'injection sql au niveau du order by
     protected List<String> joins = new ArrayList<>();
     protected JsonObject headers;
+    protected String fixJoins;
 
     public PaginationRepository(EntityManager em, Class<T> typeClass, String alias) {
         this.em = em;
@@ -44,9 +45,14 @@ public class PaginationRepository<T extends Exportable> {
         this.alias = alias;
     }
 
+    public PaginationRepository(EntityManager em, Class<T> typeClass, String alias, String fixJoins) {
+        this(em, typeClass, alias);
+        this.fixJoins = fixJoins;
+    }
+
     public Long count(String filters) {
         formatFilters(filters);
-        String queryString = "SELECT COUNT(DISTINCT " + alias + ") FROM " + this.typeClass.getName() + " " + alias;
+        String queryString = "SELECT COUNT(DISTINCT " + alias + ") FROM " + this.typeClass.getName() + " " + alias + (fixJoins != null ? " " + fixJoins : "");
         List<String> clauses = getClauses();
         queryString += " " + String.join(" ", joins);
         if (clauses.size() > 0) {
@@ -65,7 +71,7 @@ public class PaginationRepository<T extends Exportable> {
 
     public List<T> findPaginated(int page, int perPage, String predicate, String sortOrder, String filters) {
         formatFilters(filters);
-        String queryString = "SELECT DISTINCT " + alias + " FROM " + this.typeClass.getName() + " " + alias;
+        String queryString = "SELECT DISTINCT " + alias + " FROM " + this.typeClass.getName() + " " + alias + (fixJoins != null ? " " + fixJoins : "");
         List<String> clauses = getClauses();
         queryString += " " + String.join(" ", joins);
         if (clauses.size() > 0) {

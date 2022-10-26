@@ -1242,6 +1242,27 @@ public class Convention extends ObjetMetier implements Exportable {
         return false;
     }
 
+    public void setValeurNomenclature() {
+        ConventionNomenclature conventionNomenclature = this.getNomenclature();
+        if (conventionNomenclature == null) {
+            conventionNomenclature = new ConventionNomenclature();
+            conventionNomenclature.setConvention(this);
+        }
+        conventionNomenclature.setLangueConvention(this.getLangueConvention().getLibelle());
+        conventionNomenclature.setDevise(this.getDevise() != null ? this.getDevise().getLibelle() : null);
+        conventionNomenclature.setModeValidationStage(this.getModeValidationStage() != null ? this.getModeValidationStage().getLibelle() : null);
+        conventionNomenclature.setModeVersGratification(this.getModeVersGratification() != null ? this.getModeVersGratification().getLibelle() : null);
+        conventionNomenclature.setNatureTravail(this.getNatureTravail() != null ? this.getNatureTravail().getLibelle() : null);
+        conventionNomenclature.setOrigineStage(this.getOrigineStage() != null ? this.getOrigineStage().getLibelle() : null);
+        conventionNomenclature.setTempsTravail(this.getTempsTravail() != null ? this.getTempsTravail().getLibelle() : null);
+        conventionNomenclature.setTheme(this.getTheme() != null ? this.getTheme().getLibelle() : null);
+        conventionNomenclature.setTypeConvention(this.getTypeConvention().getLibelle());
+        conventionNomenclature.setUniteDureeExceptionnelle(this.getUniteDureeExceptionnelle() != null ? this.getUniteDureeExceptionnelle().getLibelle() : null);
+        conventionNomenclature.setUniteDureeGratification(this.getUniteDureeGratification() != null ? this.getUniteDureeGratification().getLibelle() : null);
+        conventionNomenclature.setUniteGratification(this.getUniteGratification() != null ? this.getUniteGratification().getLibelle() : null);
+        this.setNomenclature(conventionNomenclature);
+    }
+
     @Override
     public String getExportValue(String key) {
         DateFormat df = new SimpleDateFormat("dd/MM/yyyy");

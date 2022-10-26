@@ -48,6 +48,9 @@ public class ImpressionService {
     ApplicationBootstrap applicationBootstrap;
 
     public void generateConventionAvenantPDF(Convention convention, Avenant avenant, ByteArrayOutputStream ou) {
+        if (convention.getNomenclature() == null) {
+            convention.setValeurNomenclature();
+        }
         TemplateConvention templateConvention = templateConventionJpaRepository.findByTypeAndLangue(convention.getTypeConvention().getId(), convention.getLangueConvention().getCode());
         if (templateConvention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Template convention " + convention.getTypeConvention().getLibelle() + "-" + convention.getLangueConvention().getCode() + " non trouvé");
