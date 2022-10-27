@@ -12,7 +12,7 @@ public class GroupeEtudiant extends ObjetMetier implements Exportable {
     @Column(name = "idGroupeEtudiant", nullable = false)
     private int id;
 
-    @Column(name = "code",nullable = false, length = 100)
+    @Column(name = "code",nullable = false, length = 100, unique = true)
     private String code;
 
     @Column(name = "nom",nullable = false, length = 100)

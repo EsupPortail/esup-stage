@@ -172,3 +172,11 @@ databaseChangeLog:
                     nullable: false
                   name: code
                   type: VARCHAR(100)
+  - changeSet:
+      id: unique-codeGroupe
+      author: ssound
+      changes:
+      - addUniqueConstraint:
+          columnNames: code
+          constraintName: uniq_code_GroupeEtudiant
+          tableName: GroupeEtudiant

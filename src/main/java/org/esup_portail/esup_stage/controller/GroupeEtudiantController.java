@@ -148,8 +148,7 @@ public class GroupeEtudiantController {
         return groupeEtudiantJpaRepository.saveAndFlush(groupeEtudiant);
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T> T mergeObjects(T first, T second) throws IllegalAccessException, InstantiationException {
+    public static <T> T mergeObjects(T first, T second) throws IllegalAccessException {
         Class<?> clazz = first.getClass();
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
@@ -230,6 +229,12 @@ public class GroupeEtudiantController {
     @PostMapping
     @Secure(fonctions = {AppFonctionEnum.CREATION_EN_MASSE_CONVENTION}, droits = {DroitEnum.CREATION})
     public GroupeEtudiant create(@Valid @RequestBody GroupeEtudiantDto groupeEtudiantDto) {
+
+        // Erreur si code groupe déjà existant
+        if (groupeEtudiantRepository.exists(groupeEtudiantDto.getCodeGroupe(), 0)) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Code groupe déjà existant");
+        }
+
         GroupeEtudiant groupeEtudiant = new GroupeEtudiant();
 
         //le premier étudiant de la liste est affecté à la convention du groupe d'étudiant (tentative)
