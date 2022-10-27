@@ -46,6 +46,21 @@ public class ConventionController {
     LangueConventionJpaRepository langueConventionJpaRepository;
 
     @Autowired
+    EtudiantJpaRepository etudiantJpaRepository;
+
+    @Autowired
+    EtudiantRepository etudiantRepository;
+
+    @Autowired
+    EtapeJpaRepository etapeJpaRepository;
+
+    @Autowired
+    UfrJpaRepository ufrJpaRepository;
+
+    @Autowired
+    CritereGestionJpaRepository critereGestionJpaRepository;
+
+    @Autowired
     PaysJpaRepository paysJpaRepository;
     @Autowired
     ThemeJpaRepository themeJpaRepository;
@@ -190,6 +205,11 @@ public class ConventionController {
     @PostMapping
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.CREATION})
     public Convention create(@Valid @RequestBody ConventionFormDto conventionFormDto) {
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
+        // Création d'un brouillon uniquement s'il n'y en a pas un déjà existant
+        if (conventionJpaRepository.findBrouillon(utilisateur.getLogin()) != null) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Vous avez déjà une convention en cours de création. Veuillez rafraichir la page.");
+        }
         Convention convention = new Convention();
         convention.setNomenclature(new ConventionNomenclature());
         convention.setValidationCreation(false);

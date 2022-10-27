@@ -62,7 +62,7 @@ public class EtudiantController {
     @GetMapping("/{numEtudiant}/apogee-data")
     @Secure
     public EtudiantRef getApogeeData(@PathVariable("numEtudiant") String numEtudiant) {
-        Etudiant etudiant = etudiantJpaRepository.findByNumEtudiant(numEtudiant);
+        Etudiant etudiant = etudiantRepository.findByNumEtudiant(numEtudiant);
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
         if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && (etudiant == null || !utilisateur.getLogin().equals(etudiant.getIdentEtudiant()))) {
             throw new AppException(HttpStatus.NOT_FOUND, "Étudiant non trouvé");
@@ -74,7 +74,7 @@ public class EtudiantController {
     @Secure
     public List<ConventionFormationDto> getFormationInscriptions(@PathVariable("numEtudiant") String numEtudiant) {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
-        Etudiant etudiant = etudiantJpaRepository.findByNumEtudiant(numEtudiant);
+        Etudiant etudiant = etudiantRepository.findByNumEtudiant(numEtudiant);
         if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && (etudiant == null || !utilisateur.getLogin().equals(etudiant.getIdentEtudiant()))) {
             throw new AppException(HttpStatus.NOT_FOUND, "Étudiant non trouvé");
         }

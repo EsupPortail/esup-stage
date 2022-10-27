@@ -21,6 +21,9 @@ public class ConventionService {
     EtudiantJpaRepository etudiantJpaRepository;
 
     @Autowired
+    EtudiantRepository etudiantRepository;
+
+    @Autowired
     EtapeJpaRepository etapeJpaRepository;
 
     @Autowired
@@ -141,7 +144,7 @@ public class ConventionService {
             throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion non trouvé");
         }
 
-        Etudiant etudiant = etudiantJpaRepository.findByNumEtudiant(conventionFormDto.getNumEtudiant());
+        Etudiant etudiant = etudiantRepository.findByNumEtudiant(conventionFormDto.getNumEtudiant());
         if (etudiant == null) {
             etudiant = new Etudiant();
             etudiant.setIdentEtudiant(conventionFormDto.getEtudiantLogin());

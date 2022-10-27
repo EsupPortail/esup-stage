@@ -51,6 +51,9 @@ public class GroupeEtudiantController {
     EtudiantJpaRepository etudiantJpaRepository;
 
     @Autowired
+    EtudiantRepository etudiantRepository;
+
+    @Autowired
     ConventionJpaRepository conventionJpaRepository;
 
     @Autowired
@@ -400,7 +403,7 @@ public class GroupeEtudiantController {
                         }
                     }
                     String numEtu = columns[indexNumEtu];
-                    Etudiant etudiant = etudiantJpaRepository.findByNumEtudiant(numEtu);
+                    Etudiant etudiant = etudiantRepository.findByNumEtudiant(numEtu);
                     if (etudiant == null) {
                         throw new AppException(HttpStatus.NOT_FOUND, "Aucune etudiant trouvé pour le numero etudiant fournit : " +
                                 numEtu + ", à la line : " + lineno);
