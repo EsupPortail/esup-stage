@@ -205,6 +205,12 @@ public class ConventionController {
     @PostMapping
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.CREATION})
     public Convention create(@Valid @RequestBody ConventionFormDto conventionFormDto) {
+        ContextDto contexteDto = ServiceContext.getServiceContext();
+        Utilisateur utilisateur = contexteDto.getUtilisateur();
+        // Création d'un brouillon uniquement s'il n'y en a pas un déjà existant
+        if (conventionJpaRepository.findBrouillon(utilisateur.getLogin()) != null) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Vous avez déjà une convention en cours de création. Veuillez rafraichir la page.");
+        }
         Convention convention = new Convention();
         convention.setNomenclature(new ConventionNomenclature());
         convention.setValidationCreation(false);
