@@ -7,10 +7,7 @@ import org.esup_portail.esup_stage.model.Etudiant;
 import org.esup_portail.esup_stage.model.Role;
 import org.esup_portail.esup_stage.model.Utilisateur;
 import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
-import org.esup_portail.esup_stage.repository.EtudiantJpaRepository;
-import org.esup_portail.esup_stage.repository.PersonnelCentreGestionJpaRepository;
-import org.esup_portail.esup_stage.repository.RoleJpaRepository;
-import org.esup_portail.esup_stage.repository.UtilisateurJpaRepository;
+import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.common.CasLayer;
 import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.ldap.LdapService;
@@ -47,6 +44,9 @@ public class CasFilter implements Filter {
 
     @Autowired
     EtudiantJpaRepository etudiantJpaRepository;
+
+    @Autowired
+    EtudiantRepository etudiantRepository;
 
     @Autowired
     AppConfigService appConfigService;
@@ -154,7 +154,7 @@ public class CasFilter implements Filter {
                 if (utilisateur != null) {
                     // Si c'est un étudiant on lui créé une ligne dans la table Etudiant s'il n'existe pas
                     if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
-                        Etudiant etudiant = etudiantJpaRepository.findByNumEtudiant(users.get(0).getCodEtu());
+                        Etudiant etudiant = etudiantRepository.findByNumEtudiant(users.get(0).getCodEtu());
                         if (etudiant == null) {
                             etudiant = new Etudiant();
                             etudiant.setIdentEtudiant(casUser.getLogin());
