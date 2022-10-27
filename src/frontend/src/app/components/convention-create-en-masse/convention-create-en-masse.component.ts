@@ -62,8 +62,10 @@ export class ConventionCreateEnMasseComponent implements OnInit {
         // Récupération du groupeEtudiant au mode brouillon
         this.groupeEtudiantService.getBrouillon().subscribe((response: any) => {
           this.groupeEtudiant = response;
-          let filter = this.sharedData.filters.find((f: any) => f.id === 'groupeEtudiant.id');
-          if (filter) filter.value = this.groupeEtudiant.id;
+          if (this.groupeEtudiant) {
+            let filter = this.sharedData.filters.find((f: any) => f.id === 'groupeEtudiant.id');
+            if (filter) filter.value = this.groupeEtudiant.id;
+          }
           this.majStatus();
         });
       } else {

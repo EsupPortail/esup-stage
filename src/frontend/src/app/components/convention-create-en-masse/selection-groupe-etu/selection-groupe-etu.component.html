@@ -5,14 +5,12 @@
         <div class="text-title" *ngIf="!groupeEtudiant">Créer un groupe</div>
         <div class="text-title" *ngIf="groupeEtudiant">Modifier le groupe existant</div>
         <mat-divider class="mb-2"></mat-divider>
-        <div class="row">
+        <div class="row mb-2">
           <mat-form-field class="col-6" appearance="fill">
             <mat-label>Code du groupe</mat-label>
             <input matInput formControlName="codeGroupe" required>
             <mat-error><app-form-error [field]="form.get('codeGroupe')"></app-form-error></mat-error>
           </mat-form-field>
-        </div>
-        <div class="row mb-2">
           <mat-form-field class="col-6" appearance="fill">
             <mat-label>Nom du groupe</mat-label>
             <input matInput formControlName="nomGroupe" required>
