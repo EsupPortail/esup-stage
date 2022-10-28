@@ -48,11 +48,26 @@ Par exemple si `appli.data_dir=/etc/eStage/uploads` on aura :
      |_/images
 ```
 
+### Docaposte
+
+Les paramètres Docaposte se trouve dans le fichier `estage.properties` :
+```
+# docaposte
+docaposte.uri=https://demo-parapheur.dfast.fr/parapheur-soap/soap/v1/Documents
+docaposte.siren=xxx
+docaposte.keystore.path=<chemin du fichier .p12>
+docaposte.keystore.password=xxx
+docaposte.truststore.path=<chemin du fichier .jks>
+docaposte.truststore.password=xxx
+```
+Les certificats pour Docaposte peuvent être déposés où vous le souhaitez en dehors du projet.
+
 ## Procédure d'installation en environnement de dev
 
 * ajouter un fichier src/main/resources/estage.properties basé sur le fichier src/main/resources/estage-example.properties 
 
 * dans ce fichier, paramétrer la variable `appli.admin_technique` en ajoutant votre login cas (les logins sont séparés par des ;)
+* lancer la génération des classes java pour le client Docaposte avec la commande maven `-Pdev jaxb2:generate` : les classes sont générées dans `org/esup_portail/esup_stage/docaposte/gen`
 * lancer le serveur avec une commande maven `-Pdev clean package cargo:run`. Le profil `dev` permet de désactiver l'installation de node, npm et du build angular. Si besoin, il suffit de commenter la partie `execution` se trouvant au niveau du profil `dev`.
 * pour lancer le frontend dev :
   * sans Docker : lancer la commande `ng serve --host localhost.dauphine.fr` au niveau du dossier frontend (node et npm devront être installés)

@@ -30,6 +30,12 @@ public class AppConfig {
     private boolean mailerDisableDelivery;
     private String mailerDeliveryAddress;
     private String dataDir;
+    private String docaposteUri;
+    private String docaposteSiren;
+    private String docaposteKeystorePath;
+    private String docaposteKeystorePassword;
+    private String docaposteTruststorePath;
+    private String docaposteTruststorePassword;
 
     public String getCasUrlLogin() {
         return casUrlLogin;
@@ -223,6 +229,54 @@ public class AppConfig {
         this.dataDir = dataDir;
     }
 
+    public String getDocaposteUri() {
+        return docaposteUri;
+    }
+
+    public void setDocaposteUri(String docaposteUri) {
+        this.docaposteUri = docaposteUri;
+    }
+
+    public String getDocaposteSiren() {
+        return docaposteSiren;
+    }
+
+    public void setDocaposteSiren(String docaposteSiren) {
+        this.docaposteSiren = docaposteSiren;
+    }
+
+    public String getDocaposteKeystorePath() {
+        return docaposteKeystorePath;
+    }
+
+    public void setDocaposteKeystorePath(String docaposteKeystorePath) {
+        this.docaposteKeystorePath = docaposteKeystorePath;
+    }
+
+    public String getDocaposteKeystorePassword() {
+        return docaposteKeystorePassword;
+    }
+
+    public void setDocaposteKeystorePassword(String docaposteKeystorePassword) {
+        this.docaposteKeystorePassword = docaposteKeystorePassword;
+    }
+
+    public String getDocaposteTruststorePath() {
+        return docaposteTruststorePath;
+    }
+
+    public void setDocaposteTruststorePath(String docaposteTruststorePath) {
+        this.docaposteTruststorePath = docaposteTruststorePath;
+    }
+
+    public String getDocaposteTruststorePassword() {
+        return docaposteTruststorePassword;
+    }
+
+    public void setDocaposteTruststorePassword(String docaposteTruststorePassword) {
+        this.docaposteTruststorePassword = docaposteTruststorePassword;
+    }
+
     public void initProperties(Properties props, String prefixeProps) {
         this.casUrlLogout = props.getProperty("cas.url.logout");
         this.casUrlLogin = props.getProperty("cas.url.login");
@@ -260,6 +314,13 @@ public class AppConfig {
             this.mailerDeliveryAddress = props.getProperty(prefixeProps+"mailer.delivery_address");
         }
         this.dataDir = props.getProperty(prefixeProps+"data_dir");
+
+        this.docaposteUri = props.getProperty("docaposte.uri");
+        this.docaposteSiren = props.getProperty("docaposte.siren");
+        this.docaposteKeystorePath = props.getProperty("docaposte.keystore.path");
+        this.docaposteKeystorePassword = props.getProperty("docaposte.keystore.password");
+        this.docaposteTruststorePath = props.getProperty("docaposte.truststore.path");
+        this.docaposteTruststorePassword = props.getProperty("docaposte.truststore.password");
     }
 
     @Override
