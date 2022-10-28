@@ -53,7 +53,7 @@ Par exemple si `appli.data_dir=/etc/eStage/uploads` on aura :
 * ajouter un fichier src/main/resources/estage.properties basé sur le fichier src/main/resources/estage-example.properties 
 
 * dans ce fichier, paramétrer la variable `appli.admin_technique` en ajoutant votre login cas (les logins sont séparés par des ;)
-* lancer le serveur avec une commande maven `-Pdev clean package cargo:run` la première fois. Pour réduire le temps d'attente lors des développements, ajouter à cette commande l'option ` -Dskip.npm=true -Dskip.install-node-and-npm=true` qui permet de ne pas générer le build angular du frontend.
+* lancer le serveur avec une commande maven `-Pdev clean package cargo:run`. Le profil `dev` permet de désactiver l'installation de node, npm et du build angular. Si besoin, il suffit de commenter la partie `execution` se trouvant au niveau du profil `dev`.
 * pour lancer le frontend dev :
   * sans Docker : lancer la commande `ng serve --host localhost.dauphine.fr` au niveau du dossier frontend (node et npm devront être installés)
   * avec Docker :
