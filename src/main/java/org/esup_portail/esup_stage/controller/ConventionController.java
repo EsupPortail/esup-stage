@@ -518,6 +518,26 @@ public class ConventionController {
         return convention;
     }
 
+    @PostMapping("/signature-electronique")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.VALIDATION})
+    public int envoiSignatureElectroniqueMultiple(@RequestBody IdsListDto idsListDto) {
+        if (idsListDto.getIds().size() == 0) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "La liste est vide");
+        }
+        int count = 0;
+        for (int id : idsListDto.getIds()) {
+            Convention convention = conventionJpaRepository.findById(id);
+            if (convention == null) {
+                continue;
+            }
+            // TODO envoi vers Docaposte
+            convention.setDateEnvoiSignature(new Date());
+            conventionJpaRepository.save(convention);
+            count++;
+        }
+        return count;
+    }
+
     private void setSingleFieldData(Convention convention, ConventionSingleFieldDto conventionSingleFieldDto, Utilisateur utilisateur) {
         conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
         if (!conventionService.isConventionModifiable(convention, ServiceContext.getUtilisateur())) {

@@ -38,6 +38,12 @@
     </div>
     <app-validation-card *ngFor="let validation of validations" [convention]="convention" [validation]="validation" [validationLibelles]="validationLibelles" [validationsActives]="validations" (conventionChanged)="updateConvention($event)"></app-validation-card>
 
+    <div class="row mt-3" *ngIf="validee">
+      <div class="col text-right">
+        <button mat-button mat-flat-button color="primary" (click)="envoiSignatureElectronique()">Envoi pour signature électronique</button>
+      </div>
+    </div>
+
     <div class="mt-3">
       <mat-accordion>
         <mat-expansion-panel [expanded]="true">

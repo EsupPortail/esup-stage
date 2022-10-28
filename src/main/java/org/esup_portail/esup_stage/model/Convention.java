@@ -370,6 +370,9 @@ public class Convention extends ObjetMetier implements Exportable {
     @OneToOne(mappedBy = "convention", cascade = {CascadeType.MERGE, CascadeType.REMOVE, CascadeType.PERSIST},fetch = FetchType.LAZY)
     private ReponseEvaluation reponseEvaluation;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateEnvoiSignature;
+
     @JsonView(Views.List.class)
     @Transient
     private String lieuStage;
@@ -1156,6 +1159,14 @@ public class Convention extends ObjetMetier implements Exportable {
 
     public void setReponseEvaluation(ReponseEvaluation reponseEvaluation) {
         this.reponseEvaluation = reponseEvaluation;
+    }
+
+    public Date getDateEnvoiSignature() {
+        return dateEnvoiSignature;
+    }
+
+    public void setDateEnvoiSignature(Date dateEnvoiSignature) {
+        this.dateEnvoiSignature = dateEnvoiSignature;
     }
 
     public String getLieuStage() {

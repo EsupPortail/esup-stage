@@ -17,7 +17,13 @@
 </mat-card>
 
 <ng-template #validAction>
-  <button *ngIf="typeDashboard === 1" type="button" mat-button mat-flat-button color="primary" [disabled]="selected.length === 0" (click)="validationAdministrative()">Valider administrativement la sélection</button>
+  <button *ngIf="typeDashboard === 1" mat-button mat-flat-button color="primary" [matMenuTriggerFor]="actions" [disabled]="selected.length === 0">
+    <mat-icon>more_vert</mat-icon> Actions
+  </button>
+  <mat-menu #actions="matMenu">
+    <button mat-menu-item (click)="validationAdministrative()">Valider administrativement la sélection</button>
+    <button mat-menu-item (click)="envoiSignatureElectronique()">Envoi pour signature électronique</button>
+  </mat-menu>
 </ng-template>
 
 <app-table *ngIf="tableCanLoad" [service]="conventionService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters" [sortOrder]="sortDirection"

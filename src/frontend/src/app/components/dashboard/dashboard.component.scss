@@ -22,3 +22,7 @@
 .mat-checkbox-disabled {
   cursor: not-allowed;
 }
+
+button.mat-menu-item:focus {
+  outline: none;
+}

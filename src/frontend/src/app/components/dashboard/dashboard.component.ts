@@ -389,6 +389,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
+  envoiSignatureElectronique(): void {
+    const ids = this.selected.map((s: any) => s.id);
+    this.conventionService.envoiSignatureElectronique(ids).subscribe((response: any) => {
+      this.messageService.setSuccess(`${response} convention(s) envoyée(s)`);
+      this.selected = [];
+      this.appTable?.update();
+    });
+  }
+
   restoreFilters() {
     if (this.savedFilters) {
       Object.keys(this.savedFilters).forEach((key: any) => {

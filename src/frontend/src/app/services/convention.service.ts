@@ -98,4 +98,8 @@ export class ConventionService implements PaginatedService {
     return this.http.post(`${environment.apiUrl}/conventions/${id}/controle-chevauchement`, {dateDebut, dateFin});
   }
 
+  envoiSignatureElectronique(ids: number[]): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/conventions/signature-electronique`, {ids});
+  }
+
 }

@@ -1,0 +1,11 @@
+databaseChangeLog:
+- changeSet:
+    id: convention-dateEnvoiSignature
+    author: ssound
+    changes:
+    - addColumn:
+        tableName: Convention
+        columns:
+        - column:
+            name: dateEnvoiSignature
+            type: datetime

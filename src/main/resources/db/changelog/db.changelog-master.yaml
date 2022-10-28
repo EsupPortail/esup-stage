@@ -146,3 +146,6 @@ databaseChangeLog:
   - include:
       file: 2.0.0-personnel-centre-gestion.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 2.0.0-docaposte.yaml
+      relativeToChangelogFile: true
