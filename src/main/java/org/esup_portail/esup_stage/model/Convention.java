@@ -373,6 +373,12 @@ public class Convention extends ObjetMetier implements Exportable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateEnvoiSignature;
 
+    @Column(length = 255)
+    private String documentId;
+
+    @Column
+    private String urlSignature;
+
     @JsonView(Views.List.class)
     @Transient
     private String lieuStage;
@@ -1167,6 +1173,22 @@ public class Convention extends ObjetMetier implements Exportable {
 
     public void setDateEnvoiSignature(Date dateEnvoiSignature) {
         this.dateEnvoiSignature = dateEnvoiSignature;
+    }
+
+    public String getDocumentId() {
+        return documentId;
+    }
+
+    public void setDocumentId(String documentId) {
+        this.documentId = documentId;
+    }
+
+    public String getUrlSignature() {
+        return urlSignature;
+    }
+
+    public void setUrlSignature(String urlSignature) {
+        this.urlSignature = urlSignature;
     }
 
     public String getLieuStage() {

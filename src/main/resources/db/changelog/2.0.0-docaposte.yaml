@@ -9,3 +9,33 @@ databaseChangeLog:
         - column:
             name: dateEnvoiSignature
             type: datetime
+- changeSet:
+    id: centreGestion-circuitSignature
+    author: ssound
+    changes:
+    - addColumn:
+        tableName: CentreGestion
+        columns:
+        - column:
+            name: circuitSignature
+            type: VARCHAR(255)
+- changeSet:
+    id: convention-documentId
+    author: ssound
+    changes:
+    - addColumn:
+        tableName: Convention
+        columns:
+        - column:
+            name: documentId
+            type: VARCHAR(255)
+- changeSet:
+    id: convention-urlSignature
+    author: ssound
+    changes:
+    - addColumn:
+        tableName: Convention
+        columns:
+        - column:
+            name: urlSignature
+            type: TEXT

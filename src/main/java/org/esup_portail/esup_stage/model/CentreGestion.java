@@ -151,6 +151,9 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     @OneToOne(mappedBy = "centreGestion", cascade = {CascadeType.MERGE, CascadeType.REMOVE, CascadeType.PERSIST},fetch = FetchType.LAZY)
     private FicheEvaluation ficheEvaluation;
 
+    @Column(length = 255)
+    private String circuitSignature;
+
     public int getId() {
         return id;
     }
@@ -493,6 +496,14 @@ public class CentreGestion extends ObjetMetier implements Exportable {
 
     public void setFicheEvaluation(FicheEvaluation ficheEvaluation) {
         this.ficheEvaluation = ficheEvaluation;
+    }
+
+    public String getCircuitSignature() {
+        return circuitSignature;
+    }
+
+    public void setCircuitSignature(String circuitSignature) {
+        this.circuitSignature = circuitSignature;
     }
 
     @Transient
