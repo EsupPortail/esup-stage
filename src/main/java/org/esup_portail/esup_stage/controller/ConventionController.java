@@ -1,6 +1,7 @@
 package org.esup_portail.esup_stage.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import org.esup_portail.esup_stage.docaposte.DocaposteClient;
 import org.esup_portail.esup_stage.dto.*;
 import org.esup_portail.esup_stage.dto.view.Views;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
@@ -112,6 +113,9 @@ public class ConventionController {
 
     @Autowired
     ConventionService conventionService;
+
+    @Autowired
+    DocaposteClient docaposteClient;
 
     @JsonView(Views.List.class)
     @GetMapping
@@ -527,12 +531,10 @@ public class ConventionController {
         int count = 0;
         for (int id : idsListDto.getIds()) {
             Convention convention = conventionJpaRepository.findById(id);
-            if (convention == null) {
+            if (convention == null || convention.getCentreGestion().getCircuitSignature() == null) {
                 continue;
             }
-            // TODO envoi vers Docaposte
-            convention.setDateEnvoiSignature(new Date());
-            conventionJpaRepository.save(convention);
+            docaposteClient.upload(convention);
             count++;
         }
         return count;

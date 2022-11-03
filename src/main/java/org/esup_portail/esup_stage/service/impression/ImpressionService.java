@@ -29,7 +29,7 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Date;
+import java.util.*;
 
 @Service
 public class ImpressionService {
@@ -165,6 +165,62 @@ public class ImpressionService {
         }
     }
 
+    public String generateOptData(Convention convention) {
+        List<Map<String, String>> otp = new ArrayList<>();
+        // Ajout de l'étudiant
+        otp.add(new HashMap<>() {{
+            put("firstname", convention.getEtudiant().getPrenom());
+            put("lastname", convention.getEtudiant().getNom());
+            put("phoneNumber", null);
+            put("email", getOtpDataEmail(convention.getEtudiant().getMail()));
+        }});
+        // Ajout de l'enseignant référent
+        otp.add(new HashMap<>() {{
+            put("firstname", convention.getEnseignant().getPrenom());
+            put("lastname", convention.getEnseignant().getNom());
+            put("phoneNumber", getOtpDataPhoneNumber(convention.getEnseignant().getTel()));
+            put("email", getOtpDataEmail(convention.getEnseignant().getMail()));
+        }});
+        // Ajout du tuteur pédagogique
+        otp.add(new HashMap<>() {{
+            put("firstname", convention.getContact().getPrenom());
+            put("lastname", convention.getContact().getNom());
+            put("phoneNumber", getOtpDataPhoneNumber(convention.getContact().getTel()));
+            put("email", getOtpDataEmail(convention.getContact().getMail()));
+        }});
+        // Ajout du signataire de la convention
+        otp.add(new HashMap<>() {{
+            put("firstname", convention.getSignataire().getPrenom());
+            put("lastname", convention.getSignataire().getNom());
+            put("phoneNumber", getOtpDataPhoneNumber(convention.getSignataire().getTel()));
+            put("email", getOtpDataEmail(convention.getSignataire().getMail()));
+        }});
+        // Ajout du directeur du département
+        otp.add(new HashMap<>() {{
+            put("firstname", convention.getCentreGestion().getPrenomViseur());
+            put("lastname", convention.getCentreGestion().getNomViseur());
+            put("phoneNumber", getOtpDataPhoneNumber(convention.getCentreGestion().getTelephone()));
+            put("email", getOtpDataEmail(convention.getCentreGestion().getMail()));
+        }});
+
+        // Construction du xml
+        StringBuilder sb = new StringBuilder();
+        sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+        sb.append("<meta-data-list>");
+        for (int i = 0 ; i < otp.size() ; ++i) {
+            sb.append("<meta-data name=\"OTP_firstname_").append(i).append("\" value=\"").append(otp.get(i).get("firstname")).append("\"/>");
+            sb.append("<meta-data name=\"OTP_lastname_").append(i).append("\" value=\"").append(otp.get(i).get("lastname")).append("\"/>");
+            if (otp.get(i).get("phoneNumber") != null) {
+                sb.append("<meta-data name=\"OTP_phonenumber_").append(i).append("\" value=\"").append(otp.get(i).get("phoneNumber")).append("\"/>");
+            }
+            if (otp.get(i).get("email") != null) {
+                sb.append("<meta-data name=\"OTP_email_").append(i).append("\" value=\"").append(otp.get(i).get("email")).append("\"/>");
+            }
+        }
+        sb.append("</meta-data-list>");
+        return sb.toString();
+    }
+
     private String getHtmlText(String texte, boolean isConvention) {
         if (texte == null) {
             texte = getDefaultText(isConvention);
@@ -195,5 +251,21 @@ public class ImpressionService {
 
     private String getNomFichier(int idFichier, String nomFichier) {
         return idFichier + "_" + nomFichier;
+    }
+
+    private String getOtpDataPhoneNumber(String phoneNumber) {
+        String deliveryAddress = applicationBootstrap.getAppConfig().getMailerDeliveryAddress();
+        if (deliveryAddress != null && !deliveryAddress.isEmpty()) {
+            return null;
+        }
+        return phoneNumber;
+    }
+
+    private String getOtpDataEmail(String email) {
+        String deliveryAddress = applicationBootstrap.getAppConfig().getMailerDeliveryAddress();
+        if (deliveryAddress != null && !deliveryAddress.isEmpty()) {
+            return deliveryAddress;
+        }
+        return email;
     }
 }
