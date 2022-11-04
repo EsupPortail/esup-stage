@@ -41,7 +41,7 @@ public class LdapController {
         return ldapService.search("/tuteur", ldapSearchDto);
     }
 
-    @GetMapping("/search-by-name")
+    @PostMapping("/search-by-name")
     @Secure(forbiddenEtu = true)
     public List<LdapUser> searchLdapUserByName(@RequestBody LdapSearchDto ldapSearchDto) {
         if (ldapSearchDto.getNom() == null && ldapSearchDto.getPrenom() == null) {
