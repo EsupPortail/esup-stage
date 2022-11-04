@@ -3,9 +3,9 @@
     <ng-container [ngSwitch]="getType()">
       <i *ngSwitchCase="'error'" class="fa fa-exclamation-triangle"></i>
       <i *ngSwitchCase="'success'" class="fa fa-check"></i>
-      <i *ngSwitchCase="'warning'" class="fa fa-exclamation"></i>
+      <i *ngSwitchCase="'warning'" class="fa fa-exclamation-circle"></i>
     </ng-container>
     {{getTitle()}}
   </h1>
-  <div mat-dialog-content>{{getMessage()}}</div>
+  <div mat-dialog-content [innerHTML]="getMessage()"></div>
 </div>

@@ -153,7 +153,7 @@ public class ApogeeService {
             ObjectMapper mapper = new ObjectMapper();
             return Arrays.asList(mapper.readValue(response, String[].class));
         } catch (JsonProcessingException e) {
-            LOGGER.error("Erreur lors de la lecture de la réponse sur l'api anneesla: " + e.getMessage(), e);
+            LOGGER.error("Erreur lors de la lecture de la réponse sur l'api anneesIa: " + e.getMessage(), e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
         }
     }

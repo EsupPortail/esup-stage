@@ -534,10 +534,27 @@ public class ConventionController {
             if (convention == null || convention.getCentreGestion().getCircuitSignature() == null) {
                 continue;
             }
+            ResponseDto controles = conventionService.controleEmailTelephone(convention);
+            if (controles.getError().size() > 0) {
+                continue;
+            }
             docaposteClient.upload(convention);
             count++;
         }
         return count;
+    }
+
+    @PostMapping("/{id}/controle-signature-electronique")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.VALIDATION})
+    public ResponseDto controleSignatureElectronique(@PathVariable("id") int id) {
+        Convention convention = conventionJpaRepository.findById(id);
+        if (convention == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        }
+        if (convention.getCentreGestion().getCircuitSignature() == null) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Le centre de gestion " + convention.getCentreGestion().getNomCentre() + " n'a pas de circuit de signature");
+        }
+        return conventionService.controleEmailTelephone(convention);
     }
 
     private void setSingleFieldData(Convention convention, ConventionSingleFieldDto conventionSingleFieldDto, Utilisateur utilisateur) {

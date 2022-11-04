@@ -1,7 +1,8 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild } from '@angular/core';
 import { ConventionService } from "../../../services/convention.service";
 import { ConfigService } from "../../../services/config.service";
 import { MessageService } from "../../../services/message.service";
+import { ConfirmComponent } from "../../confirm/confirm.component";
 
 @Component({
   selector: 'app-validation',
@@ -18,6 +19,10 @@ export class ValidationComponent implements OnInit, OnChanges {
   historiques: any[] = [];
   columnsHisto = ['modifiePar', 'type', 'valeurAvant', 'valeurApres', 'date'];
   validee = false;
+
+  @ViewChild('confirmComponent') confirmComponent!: ConfirmComponent;
+  confirmMessage: string = `L'adresse mail ou le numéro de téléphone n'est pas renseigné pour les profils suivants :<div>__profils__</div>Souhaitez-vous continuer ?`;
+  errorMessage: string = `L'adresse mail ou le numéro de téléphone doit être renseigné pour les profils suivants :<div>__profils__</div>`;
 
   constructor(
     private configService: ConfigService,
@@ -62,6 +67,20 @@ export class ValidationComponent implements OnInit, OnChanges {
     this.validee = (!this.convention.centreGestion.validationPedagogique || this.convention.validationPedagogique)
       && (!this.convention.centreGestion.verificationAdministrative || this.convention.verificationAdministrative)
       && (!this.convention.centreGestion.validationConvention || this.convention.validationConvention);
+  }
+
+  controleSignatureElectronique(): void {
+    this.conventionService.controleSignatureElectronique(this.convention.id).subscribe((responseControle: any) => {
+      if (responseControle.error.length > 0) {
+        this.messageService.setError(this.errorMessage.replace('__profils__', `<ul>${responseControle.error.map((e: string) => `<li>${e}</li>`).join('')}</ul>`));
+      } else if (responseControle.warning.length > 0) {
+        this.confirmMessage = this.confirmMessage.replace('__profils__', `<ul>${responseControle.warning.map((w: string) => `<li>${w}</li>`).join('')}</ul>`);
+        this.confirmComponent.onClick();
+      } else {
+        this.envoiSignatureElectronique();
+      }
+    });
+
   }
 
   envoiSignatureElectronique(): void {

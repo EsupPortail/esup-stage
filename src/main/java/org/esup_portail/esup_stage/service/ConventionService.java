@@ -1,6 +1,7 @@
 package org.esup_portail.esup_stage.service;
 
 import org.esup_portail.esup_stage.dto.ConventionFormDto;
+import org.esup_portail.esup_stage.dto.ResponseDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
@@ -12,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import java.util.*;
 
 @Service
 public class ConventionService {
@@ -224,5 +225,52 @@ public class ConventionService {
             }
         }
         return true;
+    }
+
+    public ResponseDto controleEmailTelephone(Convention convention) {
+        // Contrôle de la présence soit du mail, soit du numéro de téléphone pour les profils liés à la signature électronique
+        // Si les 2 manquantes, on affiche une erreur
+        // Si une donnée est manquante on affiche un warning avec possibilité de continuer
+        ResponseDto response = new ResponseDto();
+        String keyAdr = "adresse mail";
+        String keyTel = "numéro téléphone";
+        Map<String, Map<String, String>> data = new HashMap<>();
+        data.put("étudiant", new HashMap<>() {{
+            put(keyAdr, convention.getEtudiant().getMail());
+            put(keyTel, convention.getTelPortableEtudiant());
+        }});
+        data.put("enseignant référent", new HashMap<>() {{
+            put(keyAdr, convention.getEnseignant().getMail());
+            put(keyTel, convention.getEnseignant().getTel());
+        }});
+        data.put("tuteur pédagogique", new HashMap<>() {{
+            put(keyAdr, convention.getContact().getMail());
+            put(keyTel, convention.getContact().getTel());
+        }});
+        data.put("signataire", new HashMap<>() {{
+            put(keyAdr, convention.getSignataire().getMail());
+            put(keyTel, convention.getSignataire().getTel());
+        }});
+        data.put("directeur du département", new HashMap<>() {{
+            put(keyAdr, convention.getCentreGestion().getMail());
+            put(keyTel, convention.getCentreGestion().getTelephone());
+        }});
+
+        for (Map.Entry<String, Map<String, String>> entry : data.entrySet()) {
+            Map<String, String> values = entry.getValue();
+            List<String> donneesManquantes = new ArrayList<>();
+            if (values.get(keyAdr) == null || values.get(keyAdr).isEmpty()) {
+                donneesManquantes.add(keyAdr);
+            }
+            if (values.get(keyTel) == null || values.get(keyTel).isEmpty()) {
+                donneesManquantes.add(keyTel);
+            }
+            if (donneesManquantes.size() == 2) {
+                response.getError().add(entry.getKey() + " : " + String.join(", ", donneesManquantes));
+            } else if (donneesManquantes.size() == 1) {
+                response.getWarning().add(entry.getKey() + " : " + String.join(", ", donneesManquantes));
+            }
+        }
+        return response;
     }
 }

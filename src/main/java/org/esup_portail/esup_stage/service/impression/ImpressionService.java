@@ -171,7 +171,7 @@ public class ImpressionService {
         otp.add(new HashMap<>() {{
             put("firstname", convention.getEtudiant().getPrenom());
             put("lastname", convention.getEtudiant().getNom());
-            put("phoneNumber", null);
+            put("phoneNumber", convention.getTelPortableEtudiant());
             put("email", getOtpDataEmail(convention.getEtudiant().getMail()));
         }});
         // Ajout de l'enseignant référent
