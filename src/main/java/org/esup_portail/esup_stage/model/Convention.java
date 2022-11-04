@@ -379,6 +379,36 @@ public class Convention extends ObjetMetier implements Exportable {
     @Column
     private String urlSignature;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateSignatureEtudiant;
+
+    @Column
+    private String statutSignatureEtudiant;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateSignatureEnseignant;
+
+    @Column
+    private String statutSignatureEnseignant;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateSignatureTuteur;
+
+    @Column
+    private String statutSignatureTuteur;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateSignatureSignataire;
+
+    @Column
+    private String statutSignatureSignataire;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateSignatureViseur;
+
+    @Column
+    private String statutSignatureViseur;
+
     @JsonView(Views.List.class)
     @Transient
     private String lieuStage;
@@ -1189,6 +1219,86 @@ public class Convention extends ObjetMetier implements Exportable {
 
     public void setUrlSignature(String urlSignature) {
         this.urlSignature = urlSignature;
+    }
+
+    public Date getDateSignatureEtudiant() {
+        return dateSignatureEtudiant;
+    }
+
+    public void setDateSignatureEtudiant(Date dateSignatureEtudiant) {
+        this.dateSignatureEtudiant = dateSignatureEtudiant;
+    }
+
+    public String getStatutSignatureEtudiant() {
+        return statutSignatureEtudiant;
+    }
+
+    public void setStatutSignatureEtudiant(String statutSignatureEtudiant) {
+        this.statutSignatureEtudiant = statutSignatureEtudiant;
+    }
+
+    public Date getDateSignatureEnseignant() {
+        return dateSignatureEnseignant;
+    }
+
+    public void setDateSignatureEnseignant(Date dateSignatureEnseignant) {
+        this.dateSignatureEnseignant = dateSignatureEnseignant;
+    }
+
+    public String getStatutSignatureEnseignant() {
+        return statutSignatureEnseignant;
+    }
+
+    public void setStatutSignatureEnseignant(String statutSignatureEnseignant) {
+        this.statutSignatureEnseignant = statutSignatureEnseignant;
+    }
+
+    public Date getDateSignatureTuteur() {
+        return dateSignatureTuteur;
+    }
+
+    public void setDateSignatureTuteur(Date dateSignatureTuteur) {
+        this.dateSignatureTuteur = dateSignatureTuteur;
+    }
+
+    public String getStatutSignatureTuteur() {
+        return statutSignatureTuteur;
+    }
+
+    public void setStatutSignatureTuteur(String statutSignatureTuteur) {
+        this.statutSignatureTuteur = statutSignatureTuteur;
+    }
+
+    public Date getDateSignatureSignataire() {
+        return dateSignatureSignataire;
+    }
+
+    public void setDateSignatureSignataire(Date dateSignatureSignataire) {
+        this.dateSignatureSignataire = dateSignatureSignataire;
+    }
+
+    public String getStatutSignatureSignataire() {
+        return statutSignatureSignataire;
+    }
+
+    public void setStatutSignatureSignataire(String statutSignatureSignataire) {
+        this.statutSignatureSignataire = statutSignatureSignataire;
+    }
+
+    public Date getDateSignatureViseur() {
+        return dateSignatureViseur;
+    }
+
+    public void setDateSignatureViseur(Date dateSignatureViseur) {
+        this.dateSignatureViseur = dateSignatureViseur;
+    }
+
+    public String getStatutSignatureViseur() {
+        return statutSignatureViseur;
+    }
+
+    public void setStatutSignatureViseur(String statutSignatureViseur) {
+        this.statutSignatureViseur = statutSignatureViseur;
     }
 
     public String getLieuStage() {

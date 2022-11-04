@@ -39,3 +39,40 @@ databaseChangeLog:
         - column:
             name: urlSignature
             type: TEXT
+- changeSet:
+    id: convention-donneesSignature
+    author: ssound
+    changes:
+    - addColumn:
+        tableName: Convention
+        columns:
+        - column:
+            name: dateSignatureEtudiant
+            type: datetime
+        - column:
+            name: statutSignatureEtudiant
+            type: VARCHAR(255)
+        - column:
+            name: dateSignatureEnseignant
+            type: datetime
+        - column:
+            name: statutSignatureEnseignant
+            type: VARCHAR(255)
+        - column:
+            name: dateSignatureTuteur
+            type: datetime
+        - column:
+            name: statutSignatureTuteur
+            type: VARCHAR(255)
+        - column:
+            name: dateSignatureSignataire
+            type: datetime
+        - column:
+            name: statutSignatureSignataire
+            type: VARCHAR(255)
+        - column:
+            name: dateSignatureViseur
+            type: datetime
+        - column:
+            name: statutSignatureViseur
+            type: VARCHAR(255)

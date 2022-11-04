@@ -128,6 +128,7 @@ import { TemplateMailGroupeComponent } from './components/convention-create-en-m
 import { ConfirmDeleteCentreComponent } from './components/centre-gestion-search/confirm-delete-centre/confirm-delete-centre.component';
 import { TruncatePipe } from './pipes/truncate.pipe';
 import { FormAutocompleteFieldComponent } from './components/form-autocomplete-field/form-autocomplete-field.component';
+import { SignatureElectroniqueComponent } from './components/convention/signature-electronique/signature-electronique.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -212,6 +213,7 @@ registerLocaleData(localeFr, 'fr');
     ConfirmDeleteCentreComponent,
     TruncatePipe,
     FormAutocompleteFieldComponent,
+    SignatureElectroniqueComponent,
   ],
   imports: [
     BrowserModule,

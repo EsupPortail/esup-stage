@@ -1,10 +1,7 @@
 package org.esup_portail.esup_stage.docaposte;
 
 import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
-import org.esup_portail.esup_stage.docaposte.gen.DataFileVO;
-import org.esup_portail.esup_stage.docaposte.gen.ObjectFactory;
-import org.esup_portail.esup_stage.docaposte.gen.OtpUpload;
-import org.esup_portail.esup_stage.docaposte.gen.OtpUploadResponse;
+import org.esup_portail.esup_stage.docaposte.gen.*;
 import org.esup_portail.esup_stage.model.Convention;
 import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
@@ -49,6 +46,12 @@ public class DocaposteClient extends WebServiceGatewaySupport {
         convention.setDocumentId(response.getReturn().get(0));
         convention.setUrlSignature(response.getReturn().get(1));
         conventionJpaRepository.saveAndFlush(convention);
+    }
+
+    public HistoryResponse getHistorique(String documentId) {
+        History request = new History();
+        request.setDocumentId(documentId);
+        return (HistoryResponse) getWebServiceTemplate().marshalSendAndReceive(new ObjectFactory().createHistory(request));
     }
 
 }

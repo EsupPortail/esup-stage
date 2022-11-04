@@ -1,5 +1,7 @@
 package org.esup_portail.esup_stage.service;
 
+import org.esup_portail.esup_stage.docaposte.DocaposteClient;
+import org.esup_portail.esup_stage.docaposte.gen.HistoryResponse;
 import org.esup_portail.esup_stage.dto.ConventionFormDto;
 import org.esup_portail.esup_stage.dto.ResponseDto;
 import org.esup_portail.esup_stage.exception.AppException;
@@ -56,6 +58,9 @@ public class ConventionService {
 
     @Autowired
     ApogeeService apogeeService;
+
+    @Autowired
+    DocaposteClient docaposteClient;
 
     public void validationAutoDonnees(Convention convention, Utilisateur utilisateur) {
         // Validation automatique de l'établissement d'accueil, le service d'accueil et du tuteur de stage à la validation de la convention
@@ -272,5 +277,10 @@ public class ConventionService {
             }
         }
         return response;
+    }
+
+    public void updateSignatureElectroniqueHistorique(Convention convention) {
+        HistoryResponse response = docaposteClient.getHistorique(convention.getDocumentId());
+        // TODO analyser la réponse pour mettre les jours les données de la convention
     }
 }
