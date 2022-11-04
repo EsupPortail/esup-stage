@@ -29,13 +29,13 @@ public class DocaposteClient extends WebServiceGatewaySupport {
         String filename = "Convention_" + convention.getId() + "_" + convention.getEtudiant().getPrenom() + "_" + convention.getEtudiant().getNom();
         ByteArrayOutputStream ou = new ByteArrayOutputStream();
         impressionService.generateConventionAvenantPDF(convention, null, ou);
-        String optData = impressionService.generateOptData(convention);
+        String otpData = impressionService.generateOtpData(convention);
 
         DataFileVO documentFile = new DataFileVO();
         documentFile.setDataHandler(ou.toByteArray());
         documentFile.setFilename(filename + ".pdf");
         DataFileVO optDataFile = new DataFileVO();
-        optDataFile.setDataHandler(optData.getBytes());
+        optDataFile.setDataHandler(otpData.getBytes());
         optDataFile.setFilename("METAS_" + filename + ".xml");
 
         OtpUpload request = new OtpUpload();

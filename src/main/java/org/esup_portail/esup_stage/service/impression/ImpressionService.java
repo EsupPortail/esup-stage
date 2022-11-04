@@ -9,9 +9,6 @@ import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Image;
-import com.itextpdf.layout.element.Paragraph;
-import com.itextpdf.layout.properties.TextAlignment;
-import com.itextpdf.layout.properties.VerticalAlignment;
 import freemarker.template.Template;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -165,13 +162,13 @@ public class ImpressionService {
         }
     }
 
-    public String generateOptData(Convention convention) {
+    public String generateOtpData(Convention convention) {
         List<Map<String, String>> otp = new ArrayList<>();
         // Ajout de l'étudiant
         otp.add(new HashMap<>() {{
             put("firstname", convention.getEtudiant().getPrenom());
             put("lastname", convention.getEtudiant().getNom());
-            put("phoneNumber", convention.getTelPortableEtudiant());
+            put("phoneNumber", getOtpDataPhoneNumber(convention.getTelPortableEtudiant()));
             put("email", getOtpDataEmail(convention.getEtudiant().getMail()));
         }});
         // Ajout de l'enseignant référent
