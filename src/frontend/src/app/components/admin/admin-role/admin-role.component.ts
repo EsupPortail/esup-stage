@@ -136,7 +136,7 @@ export class AdminRoleComponent implements OnInit {
     return false;
   }
 
-  toogleRight(fonction: AppFonction, droit: Droit): void {
+  toggleRight(fonction: AppFonction, droit: Droit): void {
     const roleAppFonction = this.data.roleAppFonctions.find((ra: any) => ra.appFonction.code === fonction);
     if (roleAppFonction) {
       if (droit === Droit.ECRITURE) {

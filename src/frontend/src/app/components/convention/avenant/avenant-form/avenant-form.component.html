@@ -7,7 +7,7 @@
     </mat-form-field>
   </div>
 
-  <div class="text-title">Selectionez un ou plusieurs motifs de création de l'avenant :</div>
+  <div class="text-title">Sélectionnez un ou plusieurs motifs de création de l'avenant :</div>
   <mat-divider></mat-divider>
   <div class="row mt-3 mb-3">
     <mat-checkbox class="col-12" formControlName="rupture">Rupture de stage</mat-checkbox>
@@ -95,7 +95,7 @@
       <div class="row mt-3" *ngFor="let interruption of interruptionsStage">
         <div class="col-12">{{(interruptionsStage.length>1?'- Du ':'Du ') + (interruption.dateDebutInterruption|date:'shortDate') + ' au '+ (interruption.dateFinInterruption|date:'shortDate') + ':'}}</div>
         <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
-          <mat-label>Nouvelle date de début d'intérruption</mat-label>
+          <mat-label>Nouvelle date de début d'interruption</mat-label>
           <input matInput [min]="form.get('dateDebutStage')!.value?form.get('dateDebutStage')!.value:convention.dateDebutStage"
                  [max]="form.get('dateFinStage')!.value?form.get('dateFinStage')!.value:convention.dateFinStage"
                  [matDatepicker]="dateDebutInterruptionPicker" formControlName={{interruption.dateDebutInterruptionFormControlName}}>
@@ -104,7 +104,7 @@
           <mat-error><app-form-error [field]="form.get('interruption.dateDebutInterruptionFormControlName')"></app-form-error></mat-error>
         </mat-form-field>
         <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
-          <mat-label>Nouvelle date de fin d'intérruption</mat-label>
+          <mat-label>Nouvelle date de fin d'interruption</mat-label>
           <input matInput [min]="form.get('dateDebutStage')!.value?form.get('dateDebutStage')!.value:convention.dateDebutStage"
                  [max]="form.get('dateFinStage')!.value?form.get('dateFinStage')!.value:convention.dateFinStage"
                  [matDatepicker]="dateFinInterruptionPicker" formControlName={{interruption.dateFinInterruptionFormControlName}}>
@@ -194,7 +194,7 @@
       <div class="col-sm-3 font-weight-bold">Téléphone</div>
       <div class="col-sm-9">{{convention.service.telephone}}</div>
     </div>
-    <div>Sélectionez un nouveau lieu de stage :</div>
+    <div>Sélectionnez un nouveau lieu de stage :</div>
     <app-table [service]="serviceService" [columns]="serviceTableColumns" [sortColumn]="serviceSortColumn" [filters]="serviceFilters"
                matSort [matSortActive]="serviceSortColumn" [matSortDirection]="'asc'" (matSortChange)="serviceAppTable ? serviceAppTable.sorting($event) : null"
                [noResultText]="'Aucun service trouvé'" [hideDeleteFilters]="true">
@@ -233,7 +233,7 @@
 
     <div class="row mt-3 mb-3">
       <div class="col-md-12">
-        <button mat-flat-button type="button" (click)="createService()" color="primary">Créer un nouveau service d'acceuil</button>
+        <button mat-flat-button type="button" (click)="createService()" color="primary">Créer un nouveau service d'accueil</button>
       </div>
     </div>
   </div>
@@ -259,7 +259,7 @@
       <div class="col-sm-3 font-weight-bold">Fax</div>
       <div class="col-sm-9">{{convention.contact.fax}}</div>
     </div>
-    <div>Sélectionez un nouveau tuteur professionnel :</div>
+    <div>Sélectionnez un nouveau tuteur professionnel :</div>
     <app-table [service]="contactService" [columns]="contactTableColumns" [sortColumn]="contactSortColumn" [filters]="contactFilters"
                matSort [matSortActive]="contactSortColumn" [matSortDirection]="'asc'" (matSortChange)="contactAppTable ? contactAppTable.sorting($event) : null"
                [noResultText]="'Aucun contact trouvé'" [hideDeleteFilters]="true">

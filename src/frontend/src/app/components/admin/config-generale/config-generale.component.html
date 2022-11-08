@@ -159,7 +159,7 @@
             <div class="col-md-3 mb-2">
               <button mat-stroked-button color="primary" (click)="faviconInput.click()">
                 <span>Favicon</span>
-                <input #faviconInput type="file" (change)="onFavionChange($event)" accept="image/*" style="display:none">
+                <input #faviconInput type="file" (change)="onFaviconChange($event)" accept="image/*" style="display:none">
               </button>
               <div *ngIf="faviconFile">{{faviconFile.name}}</div>
             </div>

@@ -255,7 +255,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
   downloadDoc(event: any, doc: any): void {
     event.preventDefault();
     event.stopPropagation();
-    let mimetype = 'applicaton/pdf';
+    let mimetype = 'application/pdf';
     if (doc.nomReel.endsWith('.doc')) mimetype = 'application/msword';
     if (doc.nomReel.endsWith('.docx')) mimetype = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
     this.consigneService.getDocument(this.consigneEtablissement.id, doc.id).subscribe((response: any) => {

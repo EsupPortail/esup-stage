@@ -1,12 +1,12 @@
 <mat-accordion>
   <mat-expansion-panel [expanded]="!contact" *ngIf="modifiable">
     <mat-expansion-panel-header>
-      Sélection du tuteur professionnel - Etablissement d'accueil : {{etab.raisonSociale}}
+      Sélection du tuteur professionnel - Établissement d'accueil : {{etab.raisonSociale}}
     </mat-expansion-panel-header>
 
     <div class="row mt-3">
       <mat-form-field class="col-md-12" appearance="fill" [hidden]="contacts.length == 0">
-        <mat-label>Selectionez un tuteur existant :</mat-label>
+        <mat-label>Sélectionnez un tuteur existant :</mat-label>
         <mat-select [(value)]="contact" (selectionChange)="choose($event.value)">
           <mat-option *ngFor="let contact of contacts" [value]="contact">{{contact.nom+' '+contact.prenom}}</mat-option>
         </mat-select>

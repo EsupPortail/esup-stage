@@ -51,15 +51,15 @@
                 <th mat-header-cell *matHeaderCellDef>Droits</th>
                 <td mat-cell *matCellDef="let appFonction" class="role-droit-icons" [ngClass]="{disabled: !canEdit()}">
                   <ng-container *ngIf="[AppFonction.CONVENTION, AppFonction.AVENANT].indexOf(appFonction.code) === -1; else sipmplify">
-                    <i class="fa fa-eye mr-2" [ngClass]="{activate: hasRight(appFonction.code, Droit.LECTURE)}" (click)="toogleRight(appFonction.code, Droit.LECTURE)" [matTooltip]="hasRight(appFonction.code, Droit.LECTURE) ? 'visible' : 'non visible'"></i>
-                    <i class="fa fa-edit" [ngClass]="{activate: hasRight(appFonction.code, Droit.ECRITURE)}" (click)="toogleRight(appFonction.code, Droit.ECRITURE)" [matTooltip]="hasRight(appFonction.code, Droit.ECRITURE) ? 'modifiable' : 'non modifiable'"></i>
+                    <i class="fa fa-eye mr-2" [ngClass]="{activate: hasRight(appFonction.code, Droit.LECTURE)}" (click)="toggleRight(appFonction.code, Droit.LECTURE)" [matTooltip]="hasRight(appFonction.code, Droit.LECTURE) ? 'visible' : 'non visible'"></i>
+                    <i class="fa fa-edit" [ngClass]="{activate: hasRight(appFonction.code, Droit.ECRITURE)}" (click)="toggleRight(appFonction.code, Droit.ECRITURE)" [matTooltip]="hasRight(appFonction.code, Droit.ECRITURE) ? 'modifiable' : 'non modifiable'"></i>
                   </ng-container>
                   <ng-template #sipmplify>
-                    <i class="fa fa-eye mr-2" [ngClass]="{activate: hasRight(appFonction.code, Droit.LECTURE)}" (click)="toogleRight(appFonction.code, Droit.LECTURE)" [matTooltip]="hasRight(appFonction.code, Droit.LECTURE) ? 'visible' : 'non visible'"></i>
-                    <i class="fa fa-plus mr-2" [ngClass]="{activate: hasRight(appFonction.code, Droit.CREATION)}" (click)="toogleRight(appFonction.code, Droit.CREATION)" [matTooltip]="hasRight(appFonction.code, Droit.CREATION) ? 'création autorisée' : 'création interdite'"></i>
-                    <i class="fa fa-edit mr-2" [ngClass]="{activate: hasRight(appFonction.code, Droit.MODIFICATION)}" (click)="toogleRight(appFonction.code, Droit.MODIFICATION)" [matTooltip]="hasRight(appFonction.code, Droit.MODIFICATION) ? 'modifiable' : 'non modifiable'"></i>
-                    <i class="fa fa-minus mr-2" [ngClass]="{activate: hasRight(appFonction.code, Droit.SUPPRESSION)}" (click)="toogleRight(appFonction.code, Droit.SUPPRESSION)" [matTooltip]="hasRight(appFonction.code, Droit.SUPPRESSION) ? 'suppression autorisée' : 'suppression interdite'"></i>
-                    <i class="fa fa-check mr-2" [ngClass]="{activate: hasRight(appFonction.code, Droit.VALIDATION)}" (click)="toogleRight(appFonction.code, Droit.VALIDATION)" [matTooltip]="hasRight(appFonction.code, Droit.VALIDATION) ? 'validation autorisée' : 'validation interdite'"></i>
+                    <i class="fa fa-eye mr-2" [ngClass]="{activate: hasRight(appFonction.code, Droit.LECTURE)}" (click)="toggleRight(appFonction.code, Droit.LECTURE)" [matTooltip]="hasRight(appFonction.code, Droit.LECTURE) ? 'visible' : 'non visible'"></i>
+                    <i class="fa fa-plus mr-2" [ngClass]="{activate: hasRight(appFonction.code, Droit.CREATION)}" (click)="toggleRight(appFonction.code, Droit.CREATION)" [matTooltip]="hasRight(appFonction.code, Droit.CREATION) ? 'création autorisée' : 'création interdite'"></i>
+                    <i class="fa fa-edit mr-2" [ngClass]="{activate: hasRight(appFonction.code, Droit.MODIFICATION)}" (click)="toggleRight(appFonction.code, Droit.MODIFICATION)" [matTooltip]="hasRight(appFonction.code, Droit.MODIFICATION) ? 'modifiable' : 'non modifiable'"></i>
+                    <i class="fa fa-minus mr-2" [ngClass]="{activate: hasRight(appFonction.code, Droit.SUPPRESSION)}" (click)="toggleRight(appFonction.code, Droit.SUPPRESSION)" [matTooltip]="hasRight(appFonction.code, Droit.SUPPRESSION) ? 'suppression autorisée' : 'suppression interdite'"></i>
+                    <i class="fa fa-check mr-2" [ngClass]="{activate: hasRight(appFonction.code, Droit.VALIDATION)}" (click)="toggleRight(appFonction.code, Droit.VALIDATION)" [matTooltip]="hasRight(appFonction.code, Droit.VALIDATION) ? 'validation autorisée' : 'validation interdite'"></i>
                   </ng-template>
                 </td>
               </ng-container>

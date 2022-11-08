@@ -42,13 +42,13 @@ export class ConsigneComponent implements OnInit, OnChanges {
       if (this.consigne) {
         this.consigneService.updateConsigne(this.consigne.id, this.form.value).subscribe((response: any) => {
           this.consigne = response;
-          this.messageService.setSuccess('Consigne modifée');
+          this.messageService.setSuccess('Consigne modifiée');
           this.sumitted.emit(this.consigne);
         });
       } else {
         this.consigneService.createConsigne(this.form.value).subscribe((response: any) => {
           this.consigne = response;
-          this.messageService.setSuccess('Consigne créé');
+          this.messageService.setSuccess('Consigne créée');
           this.sumitted.emit(this.consigne);
         });
       }
@@ -58,7 +58,7 @@ export class ConsigneComponent implements OnInit, OnChanges {
   downloadDoc(event: any, doc: any): void {
     event.preventDefault();
     event.stopPropagation();
-    let mimetype = 'applicaton/pdf';
+    let mimetype = 'application/pdf';
     if (doc.nomReel.endsWith('.doc')) mimetype = 'application/msword';
     if (doc.nomReel.endsWith('.docx')) mimetype = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
     this.consigneService.getDocument(this.consigne.id, doc.id).subscribe((response: any) => {

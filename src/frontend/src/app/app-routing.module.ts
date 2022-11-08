@@ -36,7 +36,7 @@ const routes: Routes = [
     path: 'param-global/config-generale',
     component: ConfigGeneraleComponent,
     canActivate: [AuthGuard],
-    data: {role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.LECTURE]}, title: 'Paramétres généraux'}
+    data: {role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.LECTURE]}, title: 'Paramètres généraux'}
   },
   {
     path: 'param-global/contenu',
