@@ -156,7 +156,7 @@ export class TuteurAccueilGroupeComponent implements OnInit, OnChanges {
         }
       });
     }else{
-        this.messageService.setError('Il faut selectionner des étudiants ayant le même service');
+        this.messageService.setError('Il faut sélectionner des étudiants ayant le même service');
     }
   }
 
@@ -166,7 +166,7 @@ export class TuteurAccueilGroupeComponent implements OnInit, OnChanges {
       "value":tuteurId,
     };
     this.conventionService.patch(conventionId, data).subscribe((response: any) => {
-        this.messageService.setSuccess('Tuteur professionel affecté avec succès');
+        this.messageService.setSuccess('Tuteur professionnel affecté avec succès');
         this.groupeEtudiantService.getById(this.groupeEtudiant.id).subscribe((response: any) => {
           this.validated.emit(response);
         });

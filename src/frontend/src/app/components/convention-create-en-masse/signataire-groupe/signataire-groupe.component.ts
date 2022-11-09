@@ -150,7 +150,7 @@ export class SignataireGroupeComponent implements OnInit, OnChanges {
         }
       });
     }else{
-        this.messageService.setError('Il faut selectionner des étudiants ayant la même structure');
+        this.messageService.setError('Il faut sélectionner des étudiants ayant la même structure');
     }
   }
 

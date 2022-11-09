@@ -5,14 +5,14 @@
       <mat-divider class="mb-3"></mat-divider>
       <div class="mb-2">
         <button mat-flat-button style="margin-right:5px" color="primary" (click)="selectForGroup()">pour le groupe d'étudiant</button>
-        <button mat-flat-button style="margin-right:5px" color="primary" (click)="selectForSelected()" [disabled]="selected.length === 0">pour les étudiants selectionnés</button>
+        <button mat-flat-button style="margin-right:5px" color="primary" (click)="selectForSelected()" [disabled]="selected.length === 0">pour les étudiants sélectionnés</button>
         <button mat-flat-button style="margin-right:5px" color="primary" (click)="importer.click()">importer depuis un fichier csv</button>
         <input #importer hidden type="file" name="file" accept="text/csv" (change)="importCsv($event)">
       </div>
     </div>
 
     <div class="mb-3">
-      <div class="text-title">Selection des étudiants du groupe</div>
+      <div class="text-title">Sélection des étudiants du groupe</div>
       <mat-divider class="mb-2"></mat-divider>
       <app-table [service]="etudiantGroupeEtudiantService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters" [sortOrder]="sortDirection"
                  matSort [matSortActive]="sortColumn" [matSortDirection]="'desc'" (matSortChange)="appTable ? appTable.sorting($event) : null"

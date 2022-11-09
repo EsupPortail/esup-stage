@@ -112,7 +112,7 @@ export class InfosStageComponent implements OnInit, OnChanges {
         this.refreshGroupeEtudiant(dialogResponse);
       });
     }else{
-        this.messageService.setError('Veuillez selectionner un unique étudiant.');
+        this.messageService.setError('Veuillez sélectionner un unique étudiant.');
     }
   }
 

@@ -56,7 +56,7 @@
         <form [formGroup]="form" novalidate (submit)="save()">
           <div class="row mb-2">
             <mat-form-field class="col-md-5" appearance="fill">
-              <mat-label>Selectionez un template de mail</mat-label>
+              <mat-label>Sélectionnez un template de mail</mat-label>
               <mat-select formControlName="template">
                 <mat-option *ngFor="let template of templates" [value]="template.code">{{template.libelle}}</mat-option>
               </mat-select>
@@ -65,13 +65,13 @@
           </div>
           <div class="mb-2">
             <button mat-flat-button style="margin-right:5px" color="primary" (click)="sendMailForGroup()">En masse</button>
-            <button mat-flat-button style="margin-right:5px" color="primary" (click)="sendMailForSelected()" [disabled]="selected.length === 0">pour les étudiants selectionnés</button>
+            <button mat-flat-button style="margin-right:5px" color="primary" (click)="sendMailForSelected()" [disabled]="selected.length === 0">pour les étudiants sélectionnés</button>
           </div>
         </form>
       </div>
 
       <div class="mb-3">
-        <div class="text-title">Selection des étudiants du groupe</div>
+        <div class="text-title">Sélection des étudiants du groupe</div>
         <mat-divider class="mb-2"></mat-divider>
         <app-table #tableMail [service]="etudiantGroupeEtudiantService" [columns]="mailColumns" [sortColumn]="mailSortColumn" [filters]="mailFilters" [sortOrder]="mailSortDirection"
                    matSort [matSortActive]="mailSortColumn" [matSortDirection]="'desc'" (matSortChange)="tableMail ? tableMail.sorting($event) : null"
@@ -189,12 +189,12 @@
         <mat-divider class="mb-3"></mat-divider>
         <div class="mb-2">
           <button mat-flat-button style="margin-right:5px" color="primary" (click)="printForGroup()">En masse</button>
-          <button mat-flat-button style="margin-right:5px" color="primary" (click)="printForSelected()" [disabled]="selected.length === 0">pour les étudiants selectionnés</button>
+          <button mat-flat-button style="margin-right:5px" color="primary" (click)="printForSelected()" [disabled]="selected.length === 0">pour les étudiants sélectionnés</button>
         </div>
       </div>
 
       <div class="mb-3">
-        <div class="text-title">Selection des étudiants du groupe</div>
+        <div class="text-title">Sélection des étudiants du groupe</div>
         <mat-divider class="mb-2"></mat-divider>
         <app-table #tableExport [service]="etudiantGroupeEtudiantService" [columns]="exportColumns" [sortColumn]="exportSortColumn" [filters]="mailFilters" [sortOrder]="exportSortDirection"
                    matSort [matSortActive]="exportSortColumn" [matSortDirection]="'desc'" (matSortChange)="tableExport ? tableExport.sorting($event) : null"
