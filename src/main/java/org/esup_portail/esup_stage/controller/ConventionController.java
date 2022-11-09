@@ -588,7 +588,7 @@ public class ConventionController {
         if (etudiantRef == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Étudiant non trouvé");
         }
-        Etape etape = etapeJpaRepository.findById(conventionFormDto.getCodeEtape(), conventionFormDto.getCodeVerionEtape(), appConfigService.getConfigGenerale().getCodeUniversite());
+        Etape etape = etapeJpaRepository.findById(conventionFormDto.getCodeEtape(), conventionFormDto.getCodeVersionEtape(), appConfigService.getConfigGenerale().getCodeUniversite());
         if (etape == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Étape non trouvée");
         }
@@ -603,7 +603,7 @@ public class ConventionController {
         }
         CentreGestion centreGestion = null;
         // Recherche du centre de gestion par codeEtape/versionEtape
-        CritereGestion critereGestion = critereGestionJpaRepository.findEtapeById(conventionFormDto.getCodeEtape(), conventionFormDto.getCodeVerionEtape());
+        CritereGestion critereGestion = critereGestionJpaRepository.findEtapeById(conventionFormDto.getCodeEtape(), conventionFormDto.getCodeVersionEtape());
         // Si non trouvé, recherche par code composante et version = ""
         if (critereGestion == null) {
             critereGestion = critereGestionJpaRepository.findEtapeById(conventionFormDto.getCodeComposante(), "");
