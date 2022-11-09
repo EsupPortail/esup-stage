@@ -230,7 +230,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
       data.numEtudiant = this.selectedNumEtudiant;
       data.codeComposante = this.formConvention.value.inscription.etapeInscription.codeComposante;
       data.codeEtape = this.formConvention.value.inscription.etapeInscription.codeEtp;
-      data.codeVerionEtape = this.formConvention.value.inscription.etapeInscription.codVrsVet;
+      data.codeVersionEtape = this.formConvention.value.inscription.etapeInscription.codVrsVet;
       data.annee = this.formConvention.value.inscription.annee;
       data.codeElp = this.formConvention.value.inscriptionElp ? this.formConvention.value.inscriptionElp.codElp : null;
       data.libelleELP = this.formConvention.value.inscriptionElp ? this.formConvention.value.inscriptionElp.libElp : null;

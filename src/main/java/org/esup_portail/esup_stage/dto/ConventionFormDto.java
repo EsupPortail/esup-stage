@@ -26,7 +26,7 @@ public class ConventionFormDto {
 
     @NotNull
     @NotEmpty
-    private String codeVerionEtape;
+    private String codeVersionEtape;
 
     @NotNull
     @NotEmpty
@@ -259,12 +259,12 @@ public class ConventionFormDto {
         this.codeEtape = codeEtape;
     }
 
-    public String getCodeVerionEtape() {
-        return codeVerionEtape;
+    public String getCodeVersionEtape() {
+        return codeVersionEtape;
     }
 
-    public void setCodeVerionEtape(String codeVerionEtape) {
-        this.codeVerionEtape = codeVerionEtape;
+    public void setCodeVersionEtape(String codeVersionEtape) {
+        this.codeVersionEtape = codeVersionEtape;
     }
 
     public String getCodeComposante() {

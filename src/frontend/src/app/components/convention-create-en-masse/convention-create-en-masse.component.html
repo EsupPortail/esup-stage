@@ -1,7 +1,7 @@
 <mat-tab-group #tabGroup class="convention" (selectedTabChange)="tabChanged($event)" [(selectedIndex)]="conventionTabIndex">
   <mat-tab #selectEtuTab>
     <ng-template mat-tab-label>
-      Selection d'un groupe d'étudiants
+      Sélection d'un groupe d'étudiants
       <mat-progress-bar mode="determinate" [value]="getProgressValue(0)" [ngClass]="{editing: tabs[0].statut === 1, done: tabs[0].statut === 2}"></mat-progress-bar>
     </ng-template>
     <app-selection-groupe-etu (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant"></app-selection-groupe-etu>

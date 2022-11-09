@@ -174,7 +174,7 @@ export class CadreStageModalComponent implements OnInit {
       data.numEtudiant = this.selectedNumEtudiant;
       data.codeComposante = this.formConvention.value.inscription.etapeInscription.codeComposante;
       data.codeEtape = this.formConvention.value.inscription.etapeInscription.codeEtp;
-      data.codeVerionEtape = this.formConvention.value.inscription.etapeInscription.codVrsVet;
+      data.codeVersionEtape = this.formConvention.value.inscription.etapeInscription.codVrsVet;
       data.annee = this.formConvention.value.inscription.annee;
       data.codeElp = this.formConvention.value.inscriptionElp ? this.formConvention.value.inscriptionElp.codElp : null;
       data.libelleELP = this.formConvention.value.inscriptionElp ? this.formConvention.value.inscriptionElp.libElp : null;
@@ -191,7 +191,7 @@ export class CadreStageModalComponent implements OnInit {
   downloadDoc(event: any, doc: any): void {
     event.preventDefault();
     event.stopPropagation();
-    let mimetype = 'applicaton/pdf';
+    let mimetype = 'application/pdf';
     if (doc.nomReel.endsWith('.doc')) mimetype = 'application/msword';
     if (doc.nomReel.endsWith('.docx')) mimetype = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
     this.consigneService.getDocument(this.consigneEtablissement.id, doc.id).subscribe((response: any) => {

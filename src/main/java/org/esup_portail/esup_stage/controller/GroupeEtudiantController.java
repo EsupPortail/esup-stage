@@ -522,7 +522,7 @@ public class GroupeEtudiantController {
         conventionFormDto.setCodeLangueConvention(langueConvention.getCode());
         conventionFormDto.setCodeComposante(etapeInscription.getCodeComposante());
         conventionFormDto.setCodeEtape(etapeInscription.getCodeEtp());
-        conventionFormDto.setCodeVerionEtape(etapeInscription.getCodVrsVet());
+        conventionFormDto.setCodeVersionEtape(etapeInscription.getCodVrsVet());
         conventionFormDto.setAnnee(inscriptions.get(0).getAnnee());
         conventionFormDto.setNumEtudiant(etudiant.getNumEtudiant());
         conventionFormDto.setEtudiantLogin(etudiant.getIdentEtudiant());
