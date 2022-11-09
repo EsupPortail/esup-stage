@@ -129,7 +129,7 @@ export class ConfigGeneraleComponent implements OnInit {
     if (this.formGenerale.valid) {
       this.configService.updateGenerale(this.formGenerale.value).subscribe((response: any) => {
         this.configGenerale = response;
-        this.messageService.setSuccess('Paramètre d\'élements généraux modifés');
+        this.messageService.setSuccess('Paramètre d\'éléments généraux modifiés');
       });
     }
   }
@@ -137,7 +137,7 @@ export class ConfigGeneraleComponent implements OnInit {
   saveAlerteMail(): void {
     this.configService.updateAlerteMail(this.configAlerte).subscribe((response: any) => {
       this.configAlerte = response;
-      this.messageService.setSuccess('Paramètre d\'alertes mail modifés');
+      this.messageService.setSuccess('Paramètre d\'alertes mail modifiés');
     });
   }
 
@@ -192,7 +192,7 @@ export class ConfigGeneraleComponent implements OnInit {
     }
   }
 
-  onFavionChange(event: any): void {
+  onFaviconChange(event: any): void {
     this.faviconFile = event.target.files.item(0);
     if (this.faviconFile?.type.indexOf('image/') === -1) {
       this.messageService.setError("Le fichier doit être au format image");

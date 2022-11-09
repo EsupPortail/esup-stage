@@ -16,7 +16,7 @@ export class RetourListeComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  backTolist(): void {
+  backToList(): void {
     this.router.navigate([this.path]);
   }
 

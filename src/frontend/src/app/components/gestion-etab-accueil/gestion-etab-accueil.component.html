@@ -49,18 +49,18 @@
         <mat-expansion-panel-header>Contacts</mat-expansion-panel-header>
         <div class="row mt-3">
           <mat-form-field class="col-md-12" appearance="fill" *ngIf="services.length > 0">
-            <mat-label>Selectionez un service :</mat-label>
+            <mat-label>Sélectionnez un service :</mat-label>
             <mat-select [(value)]="service" (selectionChange)="selectService()">
               <mat-option *ngFor="let service of services" [value]="service">{{service.nom}}</mat-option>
             </mat-select>
           </mat-form-field>
           <div class="col-md-12 mb-3">
-            <button mat-flat-button (click)="createService()" color="primary">Créer un nouveau service d'acceuil</button>
+            <button mat-flat-button (click)="createService()" color="primary">Créer un nouveau service d'accueil</button>
           </div>
         </div>
         <div class="row mt-3" *ngIf="service">
           <div class="col-md-12">
-            <div class="text-title">Service selectioné</div>
+            <div class="text-title">Service sélectionné</div>
           </div>
           <div class="col-md-12">
             <table mat-table [dataSource]="[service]">

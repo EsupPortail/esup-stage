@@ -30,7 +30,7 @@
     </div>
     <div class="row" *ngIf="centreGestion.id && form.get('niveauCentre')?.value.libelle == 'ETAPE'">
       <mat-form-field class="col-sm-12 col-md-12" appearance="fill">
-        <mat-label>Etapes</mat-label>
+        <mat-label>Étapes</mat-label>
         <mat-select [(ngModel)]="selectedValues" multiple #multiSelect [compareWith]="compareCode">
           <mat-option>
             <ngx-mat-select-search [formControl]="etapeFilterCtrl" placeholderLabel="Filtrer par code ou libellé VET" noEntriesFoundLabel="Aucune étape trouvée"></ngx-mat-select-search>

@@ -27,7 +27,7 @@
         <mat-divider class="mb-2"></mat-divider>
         <div class="row">
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Thèmatique du stage</mat-label>
+            <mat-label>Thématique du stage</mat-label>
             <mat-select formControlName="idTheme" required>
               <mat-option *ngFor="let thematique of thematiques" [value]="thematique.id">{{thematique.libelle}}</mat-option>
             </mat-select>

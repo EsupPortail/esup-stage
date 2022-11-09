@@ -26,7 +26,7 @@ export class TemplateConventionComponent implements OnInit {
   sortColumn = 'typeConvention.libelle';
   exportColumns = {
     typeConvention: { title: 'Type de convention' },
-    langueConvention: { title: 'Langue de la convnention' },
+    langueConvention: { title: 'Langue de la convention' },
   };
 
   paramColumns = ['code', 'libelle', 'exemple'];

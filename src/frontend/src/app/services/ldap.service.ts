@@ -22,6 +22,6 @@ export class LdapService {
   }
 
   searchUsersByName(nom: string, prenom: string): Observable<any> {
-    return this.http.get(`${environment.apiUrl}/ldap/search-by-name`, {params: {nom, prenom}});
+    return this.http.post(`${environment.apiUrl}/ldap/search-by-name`, {nom, prenom});
   }
 }

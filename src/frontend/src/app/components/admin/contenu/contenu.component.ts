@@ -75,7 +75,7 @@ export class ContenuComponent implements OnInit {
         this.data = response;
         this.appTable?.update();
         this.contenuService.getAllLibelle(true);
-        this.messageService.setSuccess('Contenu modifé');
+        this.messageService.setSuccess('Contenu modifié');
       });
     }
   }
