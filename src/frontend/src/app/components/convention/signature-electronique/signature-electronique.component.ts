@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { AuthService } from "../../../services/auth.service";
 
 @Component({
   selector: 'app-signature-electronique',
@@ -10,16 +11,19 @@ export class SignatureElectroniqueComponent implements OnInit {
   @Input() convention!: any;
   profils = ['etudiant', 'enseignant', 'tuteur', 'signataire', 'viseur'];
   data: any[] = [];
+  isEtuOrEns = true;
 
-  constructor() { }
+  constructor(
+    private authService: AuthService,
+  ) { }
 
   ngOnInit(): void {
+    this.isEtuOrEns = this.authService.isEtudiant() || this.authService.isEnseignant();
     for (let profil of this.profils) {
       this.data.push({
         profil: profil,
-        dateSignature: this.convention['dateSignature' + profil[0].toUpperCase() + profil.slice(1)],
         statutSignature: this.convention['statutSignature' + profil[0].toUpperCase() + profil.slice(1)],
-        url: null,
+        dateSignature: this.convention['dateSignature' + profil[0].toUpperCase() + profil.slice(1)],
       });
     }
   }

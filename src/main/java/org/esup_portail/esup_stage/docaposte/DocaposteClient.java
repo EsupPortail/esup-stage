@@ -53,7 +53,7 @@ public class DocaposteClient extends WebServiceGatewaySupport {
     public HistoryResponse getHistorique(String documentId) {
         History request = new History();
         request.setDocumentId(documentId);
-        return (HistoryResponse) getWebServiceTemplate().marshalSendAndReceive(new ObjectFactory().createHistory(request));
+        return ((JAXBElement<HistoryResponse>) getWebServiceTemplate().marshalSendAndReceive(new ObjectFactory().createHistory(request))).getValue();
     }
 
 }

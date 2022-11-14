@@ -8,6 +8,10 @@
         <div class="col-sm-9">{{convention.dateEnvoiSignature|date:'dd/MM/YYYY HH:mm:ss'}}</div>
         <div class="col-sm-3 font-weight-bold">Statut d'envoi</div>
         <div class="col-sm-9">{{convention.documentId ? 'Envoyé' : ''}}</div>
+        <ng-template *ngIf="isEtuOrEns">
+          <div class="col-sm-3 font-weight-bold">Lien vers la signature</div>
+          <div class="col-sm-9"><a *ngIf="convention.urlSignature" [href]="convention.urlSignature" target="_blank">{{convention.urlSignature}}</a></div>
+        </ng-template>
       </div>
     </div>
     <div class="text-title"><i class="fa fa-pencil"></i>&nbsp;Signatures</div>
@@ -21,21 +25,17 @@
           <th mat-header-cell *matHeaderCellDef>Profil</th>
           <td mat-cell *matCellDef="let element">{{element.profil}}</td>
         </ng-container>
-        <ng-container matColumnDef="dateSignature">
-          <th mat-header-cell *matHeaderCellDef>Date signature</th>
-          <td mat-cell *matCellDef="let element">{{element.dateSignature}}</td>
-        </ng-container>
         <ng-container matColumnDef="statutSignature">
           <th mat-header-cell *matHeaderCellDef>Statut signature</th>
           <td mat-cell *matCellDef="let element">{{element.statutSignature}}</td>
         </ng-container>
-        <ng-container matColumnDef="url">
-          <th mat-header-cell *matHeaderCellDef>Lien vers convention</th>
-          <td mat-cell *matCellDef="let element">{{element.url}}</td>
+        <ng-container matColumnDef="dateSignature">
+          <th mat-header-cell *matHeaderCellDef>Date signature</th>
+          <td mat-cell *matCellDef="let element">{{element.dateSignature}}</td>
         </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="['profil', 'dateSignature', 'statutSignature', 'url']"></tr>
-        <tr mat-row *matRowDef="let row; columns: ['profil', 'dateSignature', 'statutSignature', 'url'];"></tr>
+        <tr mat-header-row *matHeaderRowDef="['profil', 'statutSignature', 'dateSignature']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['profil', 'statutSignature', 'dateSignature'];"></tr>
       </table>
     </div>
   </mat-card-content>
