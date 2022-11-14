@@ -218,4 +218,8 @@ export class ConventionComponent implements OnInit {
       }
     }
   }
+
+  conventionUpdated(convention: any): any {
+    this.convention = convention;
+  }
 }

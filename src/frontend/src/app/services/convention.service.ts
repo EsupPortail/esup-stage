@@ -106,4 +106,8 @@ export class ConventionService implements PaginatedService {
     return this.http.post(`${environment.apiUrl}/conventions/signature-electronique`, {ids});
   }
 
+  updateSignatureInfo(id: number): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/conventions/${id}/update-signature-electronique-info`, {});
+  }
+
 }

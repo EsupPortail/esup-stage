@@ -557,6 +557,17 @@ public class ConventionController {
         return conventionService.controleEmailTelephone(convention);
     }
 
+    @PostMapping("/{id}/update-signature-electronique-info")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.VALIDATION})
+    public Convention updateSignatureElectroniqueInfo(@PathVariable("id") int id) {
+        Convention convention = conventionJpaRepository.findById(id);
+        if (convention == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        }
+        conventionService.updateSignatureElectroniqueHistorique(convention);
+        return convention;
+    }
+
     private void setSingleFieldData(Convention convention, ConventionSingleFieldDto conventionSingleFieldDto, Utilisateur utilisateur) {
         conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
         if (!conventionService.isConventionModifiable(convention, ServiceContext.getUtilisateur())) {
