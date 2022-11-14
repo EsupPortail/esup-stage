@@ -54,6 +54,9 @@ public class ConventionService {
     LangueConventionJpaRepository langueConventionJpaRepository;
 
     @Autowired
+    ConventionJpaRepository conventionJpaRepository;
+
+    @Autowired
     AppConfigService appConfigService;
 
     @Autowired
@@ -277,6 +280,13 @@ public class ConventionService {
             }
         }
         return response;
+    }
+
+    public void updateSignatureElectroniqueHistorique() {
+        List<Convention> conventions = conventionJpaRepository.getSignatureInfoToUpdate();
+        for (Convention convention : conventions) {
+            updateSignatureElectroniqueHistorique(convention);
+        }
     }
 
     public void updateSignatureElectroniqueHistorique(Convention convention) {

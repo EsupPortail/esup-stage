@@ -109,4 +109,7 @@ public interface ConventionJpaRepository extends JpaRepository<Convention, Integ
 
     @Query("SELECT c.id FROM Convention c WHERE c.id != :conventionId AND c.etudiant.identEtudiant = :login AND c.validationCreation = TRUE AND ((c.dateDebutStage >= :dateDebut AND c.dateFinStage <= :dateFin) OR (c.dateDebutStage <= :dateDebut AND c.dateFinStage >= :dateDebut) OR (c.dateDebutStage <= :dateFin AND c.dateFinStage >= :dateFin))")
     List<Integer> findDatesChevauchent(String login, int conventionId, Date dateDebut, Date dateFin);
+
+    @Query("SELECT c FROM Convention c WHERE c.documentId IS NOT NULL AND (c.dateSignatureEtudiant IS NULL OR c.statutSignatureEtudiant IS NULL OR c.dateSignatureEnseignant IS NULL OR c.statutSignatureEnseignant IS NULL OR c.dateSignatureTuteur IS NULL OR c.statutSignatureTuteur IS NULL OR c.dateSignatureSignataire IS NULL OR c.statutSignatureSignataire IS NULL OR c.dateSignatureViseur IS NULL OR c.statutSignatureViseur IS NULL)")
+    List<Convention> getSignatureInfoToUpdate();
 }
