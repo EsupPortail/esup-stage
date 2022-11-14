@@ -207,12 +207,8 @@ public class ImpressionService {
         for (int i = 0 ; i < otp.size() ; ++i) {
             sb.append("<meta-data name=\"OTP_firstname_").append(i).append("\" value=\"").append(otp.get(i).get("firstname")).append("\"/>");
             sb.append("<meta-data name=\"OTP_lastname_").append(i).append("\" value=\"").append(otp.get(i).get("lastname")).append("\"/>");
-            if (otp.get(i).get("phoneNumber") != null) {
-                sb.append("<meta-data name=\"OTP_phonenumber_").append(i).append("\" value=\"").append(otp.get(i).get("phoneNumber")).append("\"/>");
-            }
-            if (otp.get(i).get("email") != null) {
-                sb.append("<meta-data name=\"OTP_email_").append(i).append("\" value=\"").append(otp.get(i).get("email")).append("\"/>");
-            }
+            sb.append("<meta-data name=\"OTP_phonenumber_").append(i).append("\" value=\"").append(otp.get(i).get("phoneNumber")).append("\"/>");
+            sb.append("<meta-data name=\"OTP_email_").append(i).append("\" value=\"").append(otp.get(i).get("email")).append("\"/>");
         }
         sb.append("</meta-data-list>");
         return sb.toString();
@@ -253,7 +249,7 @@ public class ImpressionService {
     private String getOtpDataPhoneNumber(String phoneNumber) {
         String deliveryAddress = applicationBootstrap.getAppConfig().getMailerDeliveryAddress();
         if (deliveryAddress != null && !deliveryAddress.isEmpty()) {
-            return null;
+            return "";
         }
         return phoneNumber;
     }
@@ -263,6 +259,6 @@ public class ImpressionService {
         if (deliveryAddress != null && !deliveryAddress.isEmpty()) {
             return deliveryAddress;
         }
-        return email;
+        return email != null ? email : "";
     }
 }

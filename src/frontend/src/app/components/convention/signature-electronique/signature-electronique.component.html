@@ -5,9 +5,9 @@
     <div class="mt-3 mb-3">
       <div class="row">
         <div class="col-sm-3 font-weight-bold">Date d'envoi</div>
-        <div class="col-sm-9">{{convention.dateEnvoiSignature}}</div>
+        <div class="col-sm-9">{{convention.dateEnvoiSignature|date:'dd/MM/YYYY HH:mm:ss'}}</div>
         <div class="col-sm-3 font-weight-bold">Statut d'envoi</div>
-        <div class="col-sm-9"></div>
+        <div class="col-sm-9">{{convention.documentId ? 'Envoyé' : ''}}</div>
       </div>
     </div>
     <div class="text-title"><i class="fa fa-pencil"></i>&nbsp;Signatures</div>
