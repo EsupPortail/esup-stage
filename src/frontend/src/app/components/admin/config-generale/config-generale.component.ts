@@ -61,7 +61,6 @@ export class ConfigGeneraleComponent implements OnInit {
       autoriserCentresBloquerImpressionConvention: [null, [Validators.required]],
       autoriserEtudiantAModifierEntreprise: [null, [Validators.required]],
       autoriserValidationAutoOrgaAccCreaEtu: [null, [Validators.required]],
-      ldapFiltreEnseignant: [null, [Validators.required]],
       autoriserElementPedagogiqueFacultatif: [null, [Validators.required]],
       validationPedagogiqueLibelle: [null, [Validators.required]],
       validationAdministrativeLibelle: [null, [Validators.required]],
