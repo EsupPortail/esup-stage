@@ -847,7 +847,11 @@ export class FicheEvaluationComponent implements OnInit {
   }
 
   getTypeQuestionLibelle(code: string) : string {
-    return this.typeQuestions.find((tq: any) => tq.code == code).libelle;
+    const typeQuestion = this.typeQuestions.find((tq: any) => tq.code == code);
+    if (typeQuestion) {
+      return typeQuestion.libelle;
+    }
+    return '';
   }
 
   getQuestionSupplementaire(): void {

@@ -36,6 +36,7 @@ public class AppConfig {
     private String docaposteKeystorePassword;
     private String docaposteTruststorePath;
     private String docaposteTruststorePassword;
+    private boolean docaposteEnabled = false;
 
     public String getCasUrlLogin() {
         return casUrlLogin;
@@ -277,6 +278,14 @@ public class AppConfig {
         this.docaposteTruststorePassword = docaposteTruststorePassword;
     }
 
+    public boolean isDocaposteEnabled() {
+        return docaposteEnabled;
+    }
+
+    public void setDocaposteEnabled(boolean docaposteEnabled) {
+        this.docaposteEnabled = docaposteEnabled;
+    }
+
     public void initProperties(Properties props, String prefixeProps) {
         this.casUrlLogout = props.getProperty("cas.url.logout");
         this.casUrlLogin = props.getProperty("cas.url.login");
@@ -321,6 +330,7 @@ public class AppConfig {
         this.docaposteKeystorePassword = props.getProperty("docaposte.keystore.password");
         this.docaposteTruststorePath = props.getProperty("docaposte.truststore.path");
         this.docaposteTruststorePassword = props.getProperty("docaposte.truststore.password");
+        this.docaposteEnabled = this.docaposteUri != null && this.docaposteSiren != null && this.docaposteKeystorePath != null && this.docaposteKeystorePassword != null && this.docaposteTruststorePath != null && this.docaposteTruststorePassword != null;
     }
 
     @Override

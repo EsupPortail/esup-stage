@@ -35,44 +35,49 @@ public class DocaposteConfig {
     @Bean
     public DocaposteClient docaposteClient(Jaxb2Marshaller marshaller) {
         DocaposteClient client = new DocaposteClient();
-        client.setDefaultUri(applicationBootstrap.getAppConfig().getDocaposteUri());
-        client.setMarshaller(marshaller);
-        client.setUnmarshaller(marshaller);
-        client.getWebServiceTemplate().setMessageSender(createWebServiceMessageSender());
+        if (applicationBootstrap.getAppConfig().isDocaposteEnabled()) {
+            client.setDefaultUri(applicationBootstrap.getAppConfig().getDocaposteUri());
+            client.setMarshaller(marshaller);
+            client.setUnmarshaller(marshaller);
+            client.getWebServiceTemplate().setMessageSender(createWebServiceMessageSender());
+        }
         return client;
     }
 
     private WebServiceMessageSender createWebServiceMessageSender() {
-        String docaposteKeystorePath = applicationBootstrap.getAppConfig().getDocaposteKeystorePath();
-        String docaposteKeystorePassword = applicationBootstrap.getAppConfig().getDocaposteKeystorePassword();
-        String docaposteTruststorePath = applicationBootstrap.getAppConfig().getDocaposteTruststorePath();
-        String docaposteTruststorePassword = applicationBootstrap.getAppConfig().getDocaposteTruststorePassword();
+        if (applicationBootstrap.getAppConfig().isDocaposteEnabled()) {
+            String docaposteKeystorePath = applicationBootstrap.getAppConfig().getDocaposteKeystorePath();
+            String docaposteKeystorePassword = applicationBootstrap.getAppConfig().getDocaposteKeystorePassword();
+            String docaposteTruststorePath = applicationBootstrap.getAppConfig().getDocaposteTruststorePath();
+            String docaposteTruststorePassword = applicationBootstrap.getAppConfig().getDocaposteTruststorePassword();
 
-        try {
-            KeyStore ks = KeyStore.getInstance("PKCS12");
-            logger.info("Loaded keystore: " + docaposteKeystorePath);
-            try (InputStream is = new FileInputStream(docaposteKeystorePath)) {
-                ks.load(is, docaposteKeystorePassword.toCharArray());
+            try {
+                KeyStore ks = KeyStore.getInstance("PKCS12");
+                logger.info("Loaded keystore: " + docaposteKeystorePath);
+                try (InputStream is = new FileInputStream(docaposteKeystorePath)) {
+                    ks.load(is, docaposteKeystorePassword.toCharArray());
+                }
+                KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+                keyManagerFactory.init(ks, docaposteKeystorePassword.toCharArray());
+
+                KeyStore ts = KeyStore.getInstance("JKS");
+                logger.info("Loaded truststore: " + docaposteTruststorePath);
+                try (InputStream is = new FileInputStream(docaposteTruststorePath)) {
+                    ts.load(is, docaposteTruststorePassword.toCharArray());
+                }
+                TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+                trustManagerFactory.init(ts);
+
+                HttpsUrlConnectionMessageSender webServiceMessageSender = new HttpsUrlConnectionMessageSender();
+                webServiceMessageSender.setKeyManagers(keyManagerFactory.getKeyManagers());
+                webServiceMessageSender.setTrustManagers(trustManagerFactory.getTrustManagers());
+
+                return webServiceMessageSender;
+            } catch (Exception e) {
+                logger.error(e);
+                throw new RuntimeException(e);
             }
-            KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            keyManagerFactory.init(ks, docaposteKeystorePassword.toCharArray());
-
-            KeyStore ts = KeyStore.getInstance("JKS");
-            logger.info("Loaded truststore: " + docaposteTruststorePath);
-            try (InputStream is = new FileInputStream(docaposteTruststorePath)) {
-                ts.load(is, docaposteTruststorePassword.toCharArray());
-            }
-            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            trustManagerFactory.init(ts);
-
-            HttpsUrlConnectionMessageSender webServiceMessageSender = new HttpsUrlConnectionMessageSender();
-            webServiceMessageSender.setKeyManagers(keyManagerFactory.getKeyManagers());
-            webServiceMessageSender.setTrustManagers(trustManagerFactory.getTrustManagers());
-
-            return webServiceMessageSender;
-        } catch (Exception e) {
-            logger.error(e);
-            throw new RuntimeException(e);
         }
+        return null;
     }
 }

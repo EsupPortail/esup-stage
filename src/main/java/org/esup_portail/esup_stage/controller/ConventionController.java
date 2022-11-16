@@ -525,6 +525,9 @@ public class ConventionController {
     @PostMapping("/signature-electronique")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.VALIDATION})
     public int envoiSignatureElectroniqueMultiple(@RequestBody IdsListDto idsListDto) {
+        if (!appConfigService.getConfigGenerale().isDocaposteEnabled()) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "La signature électronique n'est pas configurée");
+        }
         if (idsListDto.getIds().size() == 0) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La liste est vide");
         }
@@ -547,6 +550,9 @@ public class ConventionController {
     @PostMapping("/{id}/controle-signature-electronique")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.VALIDATION})
     public ResponseDto controleSignatureElectronique(@PathVariable("id") int id) {
+        if (!appConfigService.getConfigGenerale().isDocaposteEnabled()) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "La signature électronique n'est pas configurée");
+        }
         Convention convention = conventionJpaRepository.findById(id);
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
@@ -560,6 +566,9 @@ public class ConventionController {
     @PostMapping("/{id}/update-signature-electronique-info")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.VALIDATION})
     public Convention updateSignatureElectroniqueInfo(@PathVariable("id") int id) {
+        if (!appConfigService.getConfigGenerale().isDocaposteEnabled()) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "La signature électronique n'est pas configurée");
+        }
         Convention convention = conventionJpaRepository.findById(id);
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");

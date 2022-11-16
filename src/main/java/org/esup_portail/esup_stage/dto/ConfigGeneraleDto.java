@@ -15,6 +15,9 @@ public class ConfigGeneraleDto {
     private boolean autoriserCentresBloquerImpressionConvention = false;
 
     @JsonView(Views.Etu.class)
+    private boolean docaposteEnabled = false;
+
+    @JsonView(Views.Etu.class)
     private boolean autoriserEtudiantAModifierEntreprise = false;
 
     private boolean autoriserValidationAutoOrgaAccCreaEtu = false;
@@ -124,5 +127,13 @@ public class ConfigGeneraleDto {
 
     public void setUtiliserMailPersoEtudiant(boolean utiliserMailPersoEtudiant) {
         this.utiliserMailPersoEtudiant = utiliserMailPersoEtudiant;
+    }
+
+    public boolean isDocaposteEnabled() {
+        return docaposteEnabled;
+    }
+
+    public void setDocaposteEnabled(boolean docaposteEnabled) {
+        this.docaposteEnabled = docaposteEnabled;
     }
 }

@@ -4,6 +4,7 @@ import { ConventionService } from "../../services/convention.service";
 import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
 import { TitleService } from "../../services/title.service";
 import { AuthService } from "../../services/auth.service";
+import { ConfigService } from "../../services/config.service";
 
 @Component({
   selector: 'app-convention',
@@ -31,19 +32,25 @@ export class ConventionComponent implements OnInit {
 
   allValid = false;
   modifiable = true;
+  docaposteEnabled = false;
 
   @ViewChild("tabGroup") tabGroup: MatTabGroup;
 
-  constructor(private activatedRoute: ActivatedRoute,
-              private conventionService: ConventionService,
-              private titleService: TitleService,
-              private authService: AuthService,
-              private router: Router) {
-
+  constructor(
+    private activatedRoute: ActivatedRoute,
+    private conventionService: ConventionService,
+    private titleService: TitleService,
+    private authService: AuthService,
+    private router: Router,
+    private configService: ConfigService,
+  ) {
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
   }
 
   ngOnInit(): void {
+    this.configService.getConfigGenerale().subscribe((response: any) => {
+      this.docaposteEnabled = response.docaposteEnabled;
+    });
     this.activatedRoute.queryParams.subscribe((param: any) => {
       if (param.back) this.back = param.back;
     });
