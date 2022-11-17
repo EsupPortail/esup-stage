@@ -129,6 +129,7 @@ import { ConfirmDeleteCentreComponent } from './components/centre-gestion-search
 import { TruncatePipe } from './pipes/truncate.pipe';
 import { FormAutocompleteFieldComponent } from './components/form-autocomplete-field/form-autocomplete-field.component';
 import { SignatureElectroniqueComponent } from './components/convention/signature-electronique/signature-electronique.component';
+import { MatTabNavChangeDirective } from './directives/mat-tab-nav-change.directive';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -214,6 +215,7 @@ registerLocaleData(localeFr, 'fr');
     TruncatePipe,
     FormAutocompleteFieldComponent,
     SignatureElectroniqueComponent,
+    MatTabNavChangeDirective,
   ],
   imports: [
     BrowserModule,
