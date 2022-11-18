@@ -101,11 +101,11 @@
         </div>
       </div>
       <div class="row mt-3" *ngIf="canEdit() || canCreate()">
-        <div class="col-sm-6">
+        <div class="col-6">
           <button mat-button mat-stroked-button color="primary" *ngIf="contact.id && !modif" (click)="edit()">Modifier ces informations</button>
           <button mat-button mat-stroked-button color="warn" *ngIf="contact.id && modif" (click)="cancelEdit()">{{'BOUTON_ANNULER'|contenu}}</button>
         </div>
-        <div class="col-sm-6 text-right" *ngIf="modif">
+        <div class="col-6 text-right" *ngIf="modif">
           <button mat-button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
         </div>
       </div>
