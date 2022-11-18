@@ -1,5 +1,6 @@
 import { Directive, HostListener } from '@angular/core';
 import { MatTabGroup } from "@angular/material/tabs";
+import { TechnicalService } from "../services/technical.service";
 
 @Directive({
   selector: 'mat-tab-group'
@@ -12,7 +13,7 @@ export class MatTabNavChangeDirective {
   }
 
   @HostListener('click', ['$event.target']) onClick(element: HTMLElement): void {
-    if (window.innerWidth < 400) {
+    if (window.innerWidth < TechnicalService.MAX_WIDTH) {
       const tabSize = this.matTabs._tabs.length;
       if (element.className.indexOf('mat-tab-header-pagination-chevron') > -1) {
         element = element.parentElement!;

@@ -5,6 +5,7 @@ import { AppFonction } from "./constants/app-fonction";
 import { Droit } from "./constants/droit";
 import { environment } from "../environments/environment";
 import { ConfigService } from "./services/config.service";
+import { TechnicalService } from "./services/technical.service";
 
 @Component({
   selector: 'app-root',
@@ -161,6 +162,7 @@ export class AppComponent {
     private authService: AuthService,
     private configService: ConfigService,
     private el: ElementRef,
+    private technicalService: TechnicalService,
   ) {
     this.configService.getConfigTheme();
     this.configService.themeModified.subscribe((config: any) => {
@@ -198,6 +200,10 @@ export class AppComponent {
         behavior: 'smooth',
       });
     }
+  }
+
+  @HostListener('window:resize', ['$event.target']) onResize(target: Window): void {
+    this.technicalService.isMobile.next(target.innerWidth < TechnicalService.MAX_WIDTH);
   }
 
 }

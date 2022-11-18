@@ -17,6 +17,7 @@ import * as _ from "lodash";
 import { MatAutocompleteSelectedEvent } from "@angular/material/autocomplete";
 import { AuthService } from "../../services/auth.service";
 import * as FileSaver from "file-saver";
+import { TechnicalService } from "../../services/technical.service";
 
 @Component({
   selector: 'app-table',
@@ -60,7 +61,11 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
 
   constructor(
     private authService: AuthService,
+    private technicalService: TechnicalService,
   ) {
+    this.technicalService.isMobile.subscribe((value: boolean) => {
+      this.isMobile = value;
+    });
     this.filterChanged.pipe(debounceTime(1000)).subscribe(() => {
       const filters = this.getFilters();
       if (this.backConfig) {
@@ -89,7 +94,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   }
 
   ngOnInit(): void {
-    if (window.screen.width < 768) {
+    if (window.screen.width < TechnicalService.MAX_WIDTH) {
       this.isMobile = true;
     }
     if (!this.pagination) {

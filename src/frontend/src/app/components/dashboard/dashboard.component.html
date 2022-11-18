@@ -1,10 +1,10 @@
 <mat-card *ngIf="typeDashboard === 2 || typeDashboard === 1" class="dashboard-summary">
   <mat-card-content>
     <div class="row">
-      <div class="col-6">
+      <div class="col-md-6 col-sm-12">
         <h6>Convention(s) en attente de validation : <span class="text-title" *ngIf="nbConventionsEnAttente !== undefined">{{nbConventionsEnAttente}} trouvée(s)</span></h6>
       </div>
-      <div class="col-6 text-right">
+      <div class="col-md-6 col-sm-12 text-right">
         <mat-form-field>
           <mat-label>Année universitaire</mat-label>
           <mat-select [(ngModel)]="anneeEnCours" (ngModelChange)="changeAnnee()">

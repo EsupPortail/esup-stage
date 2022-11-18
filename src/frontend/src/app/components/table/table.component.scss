@@ -28,15 +28,8 @@ button:focus {
 }
 
 .custom-table-button-paginator {
-  display: flex;
-
   mat-card {
     padding: 10px 20px;
-  }
-
-  mat-paginator {
-    flex-basis: 100%;
-    height: fit-content;
   }
 }
 

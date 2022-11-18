@@ -87,18 +87,23 @@
 
 
 <div class="custom-table-button-paginator no-margin">
-  <mat-card *ngIf="customTemplateRef">
-    <mat-card-content>
-      <ng-container [ngTemplateOutlet]="customTemplateRef"></ng-container>
-    </mat-card-content>
-  </mat-card>
-
-  <mat-paginator #paginatorTop *ngIf="pagination"
-                 [pageSizeOptions]="[10, 25, 50, 100]"
-                 [pageSize]="pageSize"
-                 [length]="total"
-                 [showFirstLastButtons]="true"
-                 (page)="changePaginator($event); paginatorBottom.pageIndex = page - 1"></mat-paginator>
+  <div class="row">
+    <div class="col-md-3 col-sm-12">
+      <mat-card *ngIf="customTemplateRef">
+        <mat-card-content>
+          <ng-container [ngTemplateOutlet]="customTemplateRef"></ng-container>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    <div class="col-md-9 col-sm-12">
+      <mat-paginator #paginatorTop *ngIf="pagination"
+                     [pageSizeOptions]="[10, 25, 50, 100]"
+                     [pageSize]="pageSize"
+                     [length]="total"
+                     [showFirstLastButtons]="true"
+                     (page)="changePaginator($event); paginatorBottom.pageIndex = page - 1"></mat-paginator>
+    </div>
+  </div>
 </div>
 
 <div class="app-table">
