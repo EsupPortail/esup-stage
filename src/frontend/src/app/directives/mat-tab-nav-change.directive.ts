@@ -17,20 +17,23 @@ export class MatTabNavChangeDirective {
       if (element.className.indexOf('mat-tab-header-pagination-chevron') > -1) {
         element = element.parentElement!;
       }
-      const increment = element.className.indexOf('mat-tab-header-pagination-after') > -1 ? 1 : -1;
-      let newTabIndex = this.matTabs.selectedIndex! + increment;
-      if (newTabIndex > tabSize - 1) newTabIndex = tabSize - 1;
-      if (newTabIndex < 0) newTabIndex = 0
+      if (element.className.indexOf('mat-tab-header-pagination') > -1) {
 
-      let tab = this.matTabs._tabs.get(newTabIndex);
-      let foundEnabled = tab && !tab!.disabled;
-      while (newTabIndex < tabSize - 1 && newTabIndex > 0 && !foundEnabled) {
-        newTabIndex = newTabIndex + increment;
-        tab = this.matTabs._tabs.get(newTabIndex);
-        foundEnabled = tab && !tab!.disabled
+        const increment = element.className.indexOf('mat-tab-header-pagination-after') > -1 ? 1 : -1;
+        let newTabIndex = this.matTabs.selectedIndex! + increment;
+        if (newTabIndex > tabSize - 1) newTabIndex = tabSize - 1;
+        if (newTabIndex < 0) newTabIndex = 0
+
+        let tab = this.matTabs._tabs.get(newTabIndex);
+        let foundEnabled = tab && !tab!.disabled;
+        while (newTabIndex < tabSize - 1 && newTabIndex > 0 && !foundEnabled) {
+          newTabIndex = newTabIndex + increment;
+          tab = this.matTabs._tabs.get(newTabIndex);
+          foundEnabled = tab && !tab!.disabled
+        }
+
+        if (foundEnabled) this.matTabs.selectedIndex = newTabIndex;
       }
-
-      if (foundEnabled) this.matTabs.selectedIndex = newTabIndex;
     }
   }
 }
