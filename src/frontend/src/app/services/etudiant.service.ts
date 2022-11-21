@@ -31,4 +31,8 @@ export class EtudiantService implements PaginatedService {
     return this.http.get(`${environment.apiUrl}/etudiants/by-login/${login}`);
   }
 
+  getMobileTitle(row: any): string {
+    return `${row.id} - ${row.nom} ${row.prenom}`;
+  }
+
 }

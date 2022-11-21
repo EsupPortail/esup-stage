@@ -38,4 +38,8 @@ export class TemplateConventionService implements PaginatedService {
   getDefaultTemplateAvenant(): Observable<any> {
     return this.http.get(`${environment.apiUrl}/template-convention/default-avenant`, { responseType: 'text' });
   }
+
+  getMobileTitle(row: any): string {
+    return `${row.typeConvention.libelle} - ${row.langueConvention.libelle}`;
+  }
 }

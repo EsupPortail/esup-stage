@@ -30,4 +30,8 @@ export class StatutJuridiqueService implements PaginatedService {
   delete(id: number): Observable<any> {
     return this.http.delete(environment.apiUrl + '/statut-juridique/' + id);
   }
+
+  getMobileTitle(row: any): string {
+    return `${row.id} - ${row.libelle}`;
+  }
 }

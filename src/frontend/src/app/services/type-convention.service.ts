@@ -45,4 +45,8 @@ export class TypeConventionService implements PaginatedService {
   delete(id: number): Observable<any> {
     return this.http.delete(environment.apiUrl + '/type-convention/' + id);
   }
+
+  getMobileTitle(row: any): string {
+    return `${row.id} - ${row.libelle}`;
+  }
 }

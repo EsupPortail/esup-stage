@@ -34,4 +34,8 @@ export class ContenuService implements PaginatedService {
   get(code: string): Observable<any> {
     return this.http.get(`${environment.apiUrl}/contenus/${code}`);
   }
+
+  getMobileTitle(row: any): string {
+    return `${row.id} - ${row.libelle}`;
+  }
 }

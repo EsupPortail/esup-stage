@@ -30,4 +30,8 @@ export class ContratOffreService implements PaginatedService {
   delete(id: number): Observable<any> {
     return this.http.delete(environment.apiUrl + '/contrat-offre/' + id);
   }
+
+  getMobileTitle(row: any): string {
+    return `${row.id} - ${row.libelle}`;
+  }
 }

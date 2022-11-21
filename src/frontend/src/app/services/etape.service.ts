@@ -30,4 +30,8 @@ export class EtapeService implements PaginatedService, AutocompleteService {
     };
     return this.getPaginated(1, 0, '', '', JSON.stringify(filters));
   }
+
+  getMobileTitle(row: any): string {
+    return `${row.id} - ${row.libelle}`;
+  }
 }

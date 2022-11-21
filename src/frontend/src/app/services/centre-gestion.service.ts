@@ -106,4 +106,8 @@ export class CentreGestionService implements PaginatedService {
   getCentreEtablissement(): Observable<any> {
     return this.http.get(`${environment.apiUrl}/centre-gestion/etablissement`)
   }
+
+  getMobileTitle(row: any): string {
+    return `${row.id} - ${row.nomCentre}`;
+  }
 }

@@ -45,4 +45,8 @@ export class LangueConventionService implements PaginatedService {
   delete(code: string): Observable<any> {
     return this.http.delete(environment.apiUrl + '/langue-convention/' + code);
   }
+
+  getMobileTitle(row: any): string {
+    return `${row.id} - ${row.libelle}`;
+  }
 }

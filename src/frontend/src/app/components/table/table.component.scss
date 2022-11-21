@@ -33,9 +33,12 @@ button:focus {
   }
 }
 
-.custom-table-button-paginator.no-margin {
-  mat-card {
-    margin: 0;
+.custom-table-button-paginator {
+  background-color: white;
+  .no-margin {
+    mat-card {
+      margin: 0;
+    }
   }
 }
 

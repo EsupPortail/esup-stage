@@ -18,4 +18,8 @@ export class ParamConventionService implements PaginatedService {
   exportData(format: string, headers: string, predicate: string, sortOrder: string, filters: string): Observable<any> {
     return this.http.get(environment.apiUrl + `/param-convention/export/${format}`, {params: {headers, predicate, sortOrder, filters}, responseType: 'blob'});
   }
+
+  getMobileTitle(row: any): string {
+    return `${row.id} - ${row.libelle}`;
+  }
 }

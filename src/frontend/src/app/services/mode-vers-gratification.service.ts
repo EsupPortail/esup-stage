@@ -30,4 +30,8 @@ export class ModeVersGratificationService implements PaginatedService {
   delete(id: number): Observable<any> {
     return this.http.delete(environment.apiUrl + '/mode-vers-gratification/' + id);
   }
+
+  getMobileTitle(row: any): string {
+    return `${row.id} - ${row.libelle}`;
+  }
 }

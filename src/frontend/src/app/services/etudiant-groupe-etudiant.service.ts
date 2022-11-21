@@ -19,4 +19,8 @@ export class EtudiantGroupeEtudiantService implements PaginatedService {
     return this.http.get(environment.apiUrl + `/etudiantGroupeEtudiant/export/${format}`, {params: {headers, predicate, sortOrder, filters}, responseType: 'blob'});
   }
 
+  getMobileTitle(row: any): string {
+    return "";
+  }
+
 }

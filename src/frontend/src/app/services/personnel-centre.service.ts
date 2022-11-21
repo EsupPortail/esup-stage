@@ -30,4 +30,8 @@ export class PersonnelCentreService implements PaginatedService {
   delete(id: number): Observable<any> {
     return this.http.delete(`${environment.apiUrl}/personnel-centre/${id}`);
   }
+
+  getMobileTitle(row: any): string {
+    return `${row.id} - ${row.nom} ${row.prenom}`;
+  }
 }

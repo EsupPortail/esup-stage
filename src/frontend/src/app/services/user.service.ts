@@ -30,4 +30,8 @@ export class UserService implements PaginatedService {
   findOneByLogin(login: string) {
     return this.http.get(environment.apiUrl + '/users/' + login);
   }
+
+  getMobileTitle(row: any): string {
+    return `${row.id} - ${row.login}`;
+  }
 }

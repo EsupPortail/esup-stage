@@ -11,6 +11,10 @@ export class TemplateMailGroupeService implements PaginatedService {
 
   constructor(private http: HttpClient) { }
 
+  getMobileTitle(row: any): string {
+    return `${row.id} - ${row.code}`;
+    }
+
   getPaginated(page: number, perPage: number, predicate: string, sortOrder: string, filters: string): Observable<any> {
     return this.http.get(`${environment.apiUrl}/template-mails-groupe`, {params: {page, perPage, predicate, sortOrder, filters}});
   }

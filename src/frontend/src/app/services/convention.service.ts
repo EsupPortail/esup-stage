@@ -110,4 +110,8 @@ export class ConventionService implements PaginatedService {
     return this.http.post(`${environment.apiUrl}/conventions/${id}/update-signature-electronique-info`, {});
   }
 
+  getMobileTitle(row: any): string {
+    return `${row.id} - ${row.etudiant.nom} ${row.etudiant.prenom}`;
+  }
+
 }

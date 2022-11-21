@@ -43,4 +43,8 @@ export class RoleService implements PaginatedService {
     return this.http.get(environment.apiUrl + "/roles/appFonctions");
   }
 
+  getMobileTitle(row: any): string {
+    return `${row.id} - ${row.libelle}`;
+  }
+
 }

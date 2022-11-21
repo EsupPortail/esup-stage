@@ -106,7 +106,7 @@
   </div>
 </div>
 
-<div class="app-table">
+<div class="app-table" [hidden]="isMobile && templateMobile">
   <table mat-table [dataSource]="data">
     <ng-content></ng-content>
 
@@ -116,8 +116,20 @@
 
     <tr mat-header-row *matHeaderRowDef="columns"></tr>
     <tr mat-row *matRowDef="let row; columns: columns;" [class.selected]="isSelected(row)" [class.alerte]="setAlerte && (row.depasseDelaiValidation ?? false)"></tr>
-
   </table>
+</div>
+
+<div [hidden]="!templateMobile || !isMobile">
+  <mat-accordion>
+    <mat-expansion-panel *ngFor="let row of data">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          {{getMobileTitle(row)}}
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <ng-container *ngTemplateOutlet="templateMobile, context: {row}"></ng-container>
+    </mat-expansion-panel>
+  </mat-accordion>
 </div>
 
 <div class="custom-table-button-paginator">

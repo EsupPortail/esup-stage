@@ -3,13 +3,14 @@ import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { environment } from "../../environments/environment";
 import { PaginatedService } from "./paginated.service";
+import { DatePipe } from "@angular/common";
 
 @Injectable({
   providedIn: 'root'
 })
 export class PeriodeInterruptionStageService implements PaginatedService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private datePipe: DatePipe) { }
 
   getPaginated(page: number, perPage: number, predicate: string, sortOrder: string, filters: string): Observable<any> {
     return this.http.get(environment.apiUrl + "/periode-interruption-stage", {params: {page, perPage, predicate, sortOrder, filters}});
@@ -37,5 +38,9 @@ export class PeriodeInterruptionStageService implements PaginatedService {
 
   deleteByConvention(idConvention: number): Observable<any> {
     return this.http.delete(environment.apiUrl + "/periode-interruption-stage/delete-by-convention/" + idConvention);
+  }
+
+  getMobileTitle(row: any): string {
+    return `Du ${this.datePipe.transform(row.dateDebutInterruption, 'shortDate')} au ${this.datePipe.transform(row.dateFinInterruption, 'shortDate')}`;
   }
 }

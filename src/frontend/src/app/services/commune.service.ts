@@ -18,4 +18,8 @@ export class CommuneService implements PaginatedService {
   exportData(format: string, headers: string, predicate: string, sortOrder: string, filters: string): Observable<any> {
     return this.http.get(environment.apiUrl + "/commune/");
   }
+
+  getMobileTitle(row: any): string {
+    return `${row.id} - ${row.libelle}`;
+  }
 }

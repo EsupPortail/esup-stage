@@ -31,4 +31,8 @@ export class CiviliteService implements PaginatedService {
     return this.http.post(`${environment.apiUrl}/civilites`, data);
   }
 
+  getMobileTitle(row: any): string {
+    return `${row.id} - ${row.libelle}`;
+  }
+
 }

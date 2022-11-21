@@ -11,6 +11,10 @@ export class GroupeEtudiantService implements PaginatedService {
 
   constructor(private http: HttpClient) { }
 
+  getMobileTitle(row: any): string {
+    return `${row.id} - ${row.nom}`;
+    }
+
   getPaginated(page: number, perPage: number, predicate: string, sortOrder: string, filters: string): Observable<any> {
     return this.http.get(environment.apiUrl + "/groupeEtudiant", {params: {page, perPage, predicate, sortOrder, filters}});
   }

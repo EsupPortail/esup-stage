@@ -11,6 +11,10 @@ export class OrigineStageService implements PaginatedService {
 
   constructor(private http: HttpClient) { }
 
+  getMobileTitle(row: any): string {
+    return `${row.id} - ${row.libelle}`;
+    }
+
   getPaginated(page: number, perPage: number, predicate: string, sortOrder: string, filters: string): Observable<any> {
     return this.http.get(environment.apiUrl + "/origine-stage", {params: {page, perPage, predicate, sortOrder, filters}});
   }

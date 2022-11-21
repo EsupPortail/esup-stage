@@ -38,4 +38,8 @@ export class ContactService implements PaginatedService {
   delete(id: number): Observable<any> {
     return this.http.delete(environment.apiUrl + "/contacts/" + id);
   }
+
+  getMobileTitle(row: any): string {
+    return `${row.id} - ${row.nom} ${row.prenom}`;
+  }
 }

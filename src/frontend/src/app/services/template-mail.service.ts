@@ -34,4 +34,8 @@ export class TemplateMailService implements PaginatedService {
   sendMailTest(data: any): Observable<any> {
     return this.http.post(`${environment.apiUrl}/template-mails/send-test`, data);
   }
+
+  getMobileTitle(row: any): string {
+    return `${row.id} - ${row.code}`;
+  }
 }

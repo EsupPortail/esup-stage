@@ -1,10 +1,15 @@
 import {
   AfterContentInit,
-  Component, ContentChildren,
+  Component,
+  ContentChildren,
   EventEmitter,
-  Input, OnChanges,
+  Input,
+  OnChanges,
   OnInit,
-  Output, QueryList, SimpleChanges, TemplateRef,
+  Output,
+  QueryList,
+  SimpleChanges,
+  TemplateRef,
   ViewChild
 } from '@angular/core';
 import { Sort, SortDirection } from "@angular/material/sort";
@@ -39,6 +44,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   @Input() customTemplateRef: TemplateRef<any>|undefined;
   @Input() setAlerte: boolean = false;
   @Input() exportColumns: any;
+  @Input() templateMobile?: TemplateRef<any>;
 
   @Output() onUpdated = new EventEmitter<any>();
 
@@ -269,6 +275,10 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
 
   setBackConfig(config: any): void {
     this.backConfig = config;
+  }
+
+  getMobileTitle(row: any): string {
+    return this.service.getMobileTitle(row);
   }
 
 }

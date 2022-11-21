@@ -1,5 +1,6 @@
 <app-table [service]="centreGestionService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters" [exportColumns]="exportColumns"
-           matSort [matSortActive]="sortColumn" [matSortDirection]="sortDirection" (matSortChange)="appTable ? appTable.sorting($event) : null">
+           matSort [matSortActive]="sortColumn" [matSortDirection]="sortDirection" (matSortChange)="appTable ? appTable.sorting($event) : null"
+           [templateMobile]="tableMobile">
 
   <ng-container matColumnDef="personnels">
     <th mat-header-cell *matHeaderCellDef mat-sort-header><mat-icon fontSet="fa" [fontIcon]="'fa-user'" matTooltip="Indique si vous êtes rattaché au centre" color="primary"></mat-icon></th>
@@ -39,3 +40,44 @@
 </app-table>
 
 
+<ng-template #tableMobile let-row="row">
+  <table class="table table-sm">
+    <tbody>
+    <tr>
+      <th><mat-icon fontSet="fa" [fontIcon]="'fa-user'" matTooltip="Indique si vous êtes rattaché au centre" color="primary"></mat-icon></th>
+      <td>
+        <mat-icon fontSet="fa" [fontIcon]="isPersonnel(row) ? 'fa-check' : 'fa-times'"
+                  [matTooltip]="isPersonnel(row) ? 'Vous êtes rattaché au centre' : 'Vous n\'êtes pas rattaché au centre'"
+                  [color]="isPersonnel(row) ? 'primary' : 'warn'"></mat-icon>
+      </td>
+    </tr>
+    <tr>
+      <th>N°</th>
+      <td>{{row.id}}</td>
+    </tr>
+    <tr>
+      <th>Nom Centre</th>
+      <td>{{row.nomCentre}}</td>
+    </tr>
+    <tr>
+      <th>Type</th>
+      <td>{{row.niveauCentre.libelle}}</td>
+    </tr>
+    <tr>
+      <th>Validation pédagogique</th>
+      <td>{{row.validationPedagogique ? 'Oui' : 'Non'}}</td>
+    </tr>
+    <tr>
+      <th>Confidentialité</th>
+      <td>{{row.codeConfidentialite ? row.codeConfidentialite.libelle : ''}}</td>
+    </tr>
+    <tr>
+      <th>Actions</th>
+      <td>
+        <button type="button" mat-icon-button matTooltip="Modifier" color="primary" (click)="editCentre(row.id)"><i class="fa fa-pen"></i></button>
+        <button type="button" mat-icon-button matTooltip="Supprimer" color="warn" (click)="openDeleteFormModal(row.id)"><i class="fa fa-trash"></i></button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</ng-template>
