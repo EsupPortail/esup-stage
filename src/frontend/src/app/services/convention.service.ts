@@ -3,13 +3,15 @@ import { Observable } from "rxjs";
 import { environment } from "../../environments/environment";
 import { HttpClient } from "@angular/common/http";
 import { PaginatedService } from "./paginated.service";
+import { AuthService } from "./auth.service";
+import { DatePipe } from "@angular/common";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ConventionService implements PaginatedService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private authService: AuthService, private datePipe: DatePipe) { }
 
   getPaginated(page: number, perPage: number, predicate: string, sortOrder: string, filters: string): Observable<any> {
     return this.http.get(environment.apiUrl + "/conventions", {params: {page, perPage, predicate, sortOrder, filters}});
@@ -111,7 +113,7 @@ export class ConventionService implements PaginatedService {
   }
 
   getMobileTitle(row: any): string {
-    return `${row.id} - ${row.etudiant.nom} ${row.etudiant.prenom}`;
+    return this.authService.isEtudiant() ? `Du ${this.datePipe.transform(row.dateDebutStage, 'shortDate')} au ${this.datePipe.transform(row.dateFinStage, 'shortDate')}` : `${row.id} - ${row.etudiant.nom} ${row.etudiant.prenom}`;
   }
 
 }

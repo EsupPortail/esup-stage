@@ -33,7 +33,7 @@ import { MatSortModule } from "@angular/material/sort";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatPaginatorIntl, MatPaginatorModule } from "@angular/material/paginator";
 
-import { registerLocaleData } from "@angular/common";
+import { DatePipe, registerLocaleData } from "@angular/common";
 import localeFr from '@angular/common/locales/fr';
 import { MAT_DATE_LOCALE, MatNativeDateModule } from "@angular/material/core";
 import { PaginatorIntl } from "./paginator-intl";
@@ -262,6 +262,7 @@ registerLocaleData(localeFr, 'fr');
     CookieService,
     ContenuService,
     ContenuPipe,
+    DatePipe,
     { provide: LOCALE_ID, useValue: 'fr' },
     { provide: HTTP_INTERCEPTORS, useClass: TechnicalInterceptor, multi: true },
     { provide: MAT_COLOR_FORMATS, useValue: NGX_MAT_COLOR_FORMATS },

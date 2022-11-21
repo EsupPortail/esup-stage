@@ -29,7 +29,7 @@
 <app-table *ngIf="tableCanLoad" [service]="conventionService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters" [sortOrder]="sortDirection"
            matSort [matSortActive]="sortColumn" [matSortDirection]="'desc'" (matSortChange)="appTable ? appTable.sorting($event) : null"
            [noResultText]="'Aucune convention trouvée'" [customTemplateRef]="validAction"
-           (onUpdated)="countConvention()" [setAlerte]="true" [exportColumns]="exportColumns">
+           (onUpdated)="countConvention()" [setAlerte]="true" [exportColumns]="exportColumns" [templateMobile]="tableMobile">
   <ng-container *ngIf="typeDashboard === 1" matColumnDef="select">
     <th mat-header-cell *matHeaderCellDef>
       <mat-checkbox (change)="$event ? masterToggle() : null"
@@ -117,3 +117,92 @@
     </td>
   </ng-container>
 </app-table>
+
+<ng-template #tableMobile let-row="row">
+  <table class="table table-sm">
+    <tbody>
+    <tr *ngIf="typeDashboard === 1">
+        <th></th>
+        <td>
+          <mat-checkbox [checked]="isSelected(row)"
+                        (change)="$event ? toggleSelected(row) : null"
+                        (click)="$event.stopPropagation()">
+          </mat-checkbox>
+        </td>
+    </tr>
+    <tr>
+      <th>N°</th>
+      <td>{{row.id}}</td>
+    </tr>
+    <tr *ngIf="typeDashboard !== 3">
+      <th>Étudiant</th>
+      <td>{{row.etudiant.prenom + ' ' + row.etudiant.nom}}</td>
+    </tr>
+    <tr>
+      <th>Établissement</th>
+      <td>{{row.structure ? row.structure.raisonSociale : ''}}</td>
+    </tr>
+    <tr>
+      <th>Date début du stage</th>
+      <td>{{row.dateDebutStage|date:'shortDate'}}</td>
+    </tr>
+    <tr>
+      <th>Date fin du stage</th>
+      <td>{{row.dateFinStage|date:'shortDate'}}</td>
+    </tr>
+    <tr>
+      <th>UFR</th>
+      <td>{{row.ufr ? row.ufr.libelle : ''}}</td>
+    </tr>
+    <tr>
+      <th>Étape d'étude</th>
+      <td>{{row.etape ? row.etape.libelle : ''}}</td>
+    </tr>
+    <tr *ngIf="typeDashboard === 3 || typeDashboard === 1">
+      <th>Enseignant</th>
+      <td>{{row.enseignant ? row.enseignant.prenom + ' ' + row.enseignant.nom : ''}}</td>
+    </tr>
+    <tr *ngIf="typeDashboard === 2">
+      <th>Sujet du stage</th>
+      <td [matTooltip]="row.sujetStage">{{row.sujetStage|truncate:50}}</td>
+    </tr>
+    <tr *ngIf="typeDashboard === 2">
+      <th>Lieu du stage</th>
+      <td>{{row.lieuStage}}</td>
+    </tr>
+    <tr>
+      <th>Avenant</th>
+      <td>
+        <span>{{(row.avenants.length > 0)|boolean}}<br/></span>
+      </td>
+    </tr>
+    <tr *ngIf="typeDashboard === 2 || typeDashboard === 1">
+      <th>État de validation de la convention</th>
+      <td class="dashboard-validation">
+        <i *ngIf="row.centreGestion.validationPedagogique" class="fa fa-graduation-cap" [class.activate]="row.validationPedagogique" matTooltip="{{row.validationPedagogique ? validationLibelles.validationPedagogique + ' effectuée' : 'en attente ' + validationLibelles.validationPedagogique}}"></i>
+        <i *ngIf="row.centreGestion.verificationAdministrative" class="fa fa-check" [class.activate]="row.verificationAdministrative" matTooltip="{{row.verificationAdministrative ? validationLibelles.verificationAdministrative + ' effectuée' : 'en attente ' + validationLibelles.verificationAdministrative}}"></i>
+        <i *ngIf="row.centreGestion.validationConvention" class="fa fa-scroll" [class.activate]="row.validationConvention" matTooltip="{{row.validationConvention ? validationLibelles.validationConvention + ' effectuée' : 'en attente ' + validationLibelles.validationConvention}}"></i>
+      </td>
+    </tr>
+    <tr *ngIf="typeDashboard === 3">
+      <th>{{validationLibelles.validationPedagogique}}</th>
+      <td>{{row.validationPedagogique|boolean}}</td>
+    </tr>
+    <tr *ngIf="typeDashboard === 3">
+      <th>{{validationLibelles.validationConvention}}</th>
+      <td>{{row.validationConvention|boolean}}</td>
+    </tr>
+    <tr *ngIf="typeDashboard === 3">
+      <th>Année univ.</th>
+      <td>{{row.annee}}</td>
+    </tr>
+    <tr>
+      <th>Actions</th>
+      <td>
+        <button type="button" mat-icon-button matTooltip="Visualiser" color="primary" (click)="goToConvention(row.id)"><i class="fa fa-eye"></i></button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</ng-template>
+

@@ -121,7 +121,7 @@
 
 <div [hidden]="!templateMobile || !isMobile">
   <mat-accordion>
-    <mat-expansion-panel *ngFor="let row of data">
+    <mat-expansion-panel *ngFor="let row of data" [class.selected]="isSelected(row)" [class.alerte]="setAlerte && (row.depasseDelaiValidation ?? false)">
       <mat-expansion-panel-header>
         <mat-panel-title>
           {{getMobileTitle(row)}}
