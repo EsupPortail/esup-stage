@@ -1,6 +1,10 @@
 package org.esup_portail.esup_stage.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.docaposte.DocaposteClient;
+import org.esup_portail.esup_stage.docaposte.gen.HistoryEntryVO;
 import org.esup_portail.esup_stage.docaposte.gen.HistoryResponse;
 import org.esup_portail.esup_stage.dto.ConventionFormDto;
 import org.esup_portail.esup_stage.dto.ResponseDto;
@@ -19,6 +23,8 @@ import java.util.*;
 
 @Service
 public class ConventionService {
+
+    private static final Logger logger	= LogManager.getLogger(ConventionService.class);
 
     @Autowired
     EtudiantJpaRepository etudiantJpaRepository;
@@ -291,6 +297,59 @@ public class ConventionService {
 
     public void updateSignatureElectroniqueHistorique(Convention convention) {
         HistoryResponse response = docaposteClient.getHistorique(convention.getDocumentId());
-        // TODO analyser la réponse pour mettre les jours les données de la convention
+        int indexOtp = -1;
+        try {
+            List<String> profils = new ObjectMapper().readValue(convention.getCentreGestion().getOrdreSignature(), List.class);
+            for (HistoryEntryVO history : response.getReturn()) {
+                Boolean isSignarure = null;
+                if (history.getStateName().equals("Informations OTP définies")) {
+                    indexOtp++;
+                    isSignarure = false;
+                }
+                if (history.getStateName().equals("Signé")) {
+                    isSignarure = true;
+                }
+                if (indexOtp >= 0) {
+                    String profil = profils.get(indexOtp);
+                    Date date = history.getDate().toGregorianCalendar().getTime();
+                    switch (profil) {
+                        case "etudiant":
+                            if (isSignarure != null) {
+                                if (isSignarure) convention.setDateSignatureEtudiant(date);
+                                else convention.setDateDepotEtudiant(date);
+                            }
+                            break;
+                        case "enseignant":
+                            if (isSignarure != null) {
+                                if (isSignarure) convention.setDateSignatureEnseignant(date);
+                                else convention.setDateDepotEnseignant(date);
+                            }
+                            break;
+                        case "tuteur":
+                            if (isSignarure != null) {
+                                if (isSignarure) convention.setDateSignatureTuteur(date);
+                                else convention.setDateDepotTuteur(date);
+                            }
+                            break;
+                        case "signataire":
+                            if (isSignarure != null) {
+                                if (isSignarure) convention.setDateSignatureSignataire(date);
+                                else convention.setDateDepotSignataire(date);
+                            }
+                            break;
+                        case "viseur":
+                            if (isSignarure != null) {
+                                if (isSignarure) convention.setDateSignatureViseur(date);
+                                else convention.setDateDepotViseur(date);
+                            }
+                            break;
+                    }
+                }
+            }
+            conventionJpaRepository.save(convention);
+        } catch (Exception e) {
+            logger.error(e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur de la récupération de l'historique");
+        }
     }
 }

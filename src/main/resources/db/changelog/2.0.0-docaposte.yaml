@@ -50,32 +50,32 @@ databaseChangeLog:
             name: dateSignatureEtudiant
             type: datetime
         - column:
-            name: statutSignatureEtudiant
-            type: VARCHAR(255)
+            name: dateDepotEtudiant
+            type: datetime
         - column:
             name: dateSignatureEnseignant
             type: datetime
         - column:
-            name: statutSignatureEnseignant
-            type: VARCHAR(255)
+            name: dateDepotEnseignant
+            type: datetime
         - column:
             name: dateSignatureTuteur
             type: datetime
         - column:
-            name: statutSignatureTuteur
-            type: VARCHAR(255)
+            name: dateDepotTuteur
+            type: datetime
         - column:
             name: dateSignatureSignataire
             type: datetime
         - column:
-            name: statutSignatureSignataire
-            type: VARCHAR(255)
+            name: dateDepotSignataire
+            type: datetime
         - column:
             name: dateSignatureViseur
             type: datetime
         - column:
-            name: statutSignatureViseur
-            type: VARCHAR(255)
+            name: dateDepotViseur
+            type: datetime
 - changeSet:
     id: centreGestion-ordreSignature
     author: ssound

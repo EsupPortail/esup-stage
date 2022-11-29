@@ -383,31 +383,31 @@ public class Convention extends ObjetMetier implements Exportable {
     private Date dateSignatureEtudiant;
 
     @Column
-    private String statutSignatureEtudiant;
+    private Date dateDepotEtudiant;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateSignatureEnseignant;
 
     @Column
-    private String statutSignatureEnseignant;
+    private Date dateDepotEnseignant;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateSignatureTuteur;
 
     @Column
-    private String statutSignatureTuteur;
+    private Date dateDepotTuteur;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateSignatureSignataire;
 
     @Column
-    private String statutSignatureSignataire;
+    private Date dateDepotSignataire;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateSignatureViseur;
 
     @Column
-    private String statutSignatureViseur;
+    private Date dateDepotViseur;
 
     @JsonView(Views.List.class)
     @Transient
@@ -1229,12 +1229,12 @@ public class Convention extends ObjetMetier implements Exportable {
         this.dateSignatureEtudiant = dateSignatureEtudiant;
     }
 
-    public String getStatutSignatureEtudiant() {
-        return statutSignatureEtudiant;
+    public Date getDateDepotEtudiant() {
+        return dateDepotEtudiant;
     }
 
-    public void setStatutSignatureEtudiant(String statutSignatureEtudiant) {
-        this.statutSignatureEtudiant = statutSignatureEtudiant;
+    public void setDateDepotEtudiant(Date dateDepotEtudiant) {
+        this.dateDepotEtudiant = dateDepotEtudiant;
     }
 
     public Date getDateSignatureEnseignant() {
@@ -1245,12 +1245,12 @@ public class Convention extends ObjetMetier implements Exportable {
         this.dateSignatureEnseignant = dateSignatureEnseignant;
     }
 
-    public String getStatutSignatureEnseignant() {
-        return statutSignatureEnseignant;
+    public Date getDateDepotEnseignant() {
+        return dateDepotEnseignant;
     }
 
-    public void setStatutSignatureEnseignant(String statutSignatureEnseignant) {
-        this.statutSignatureEnseignant = statutSignatureEnseignant;
+    public void setDateDepotEnseignant(Date dateDepotEnseignant) {
+        this.dateDepotEnseignant = dateDepotEnseignant;
     }
 
     public Date getDateSignatureTuteur() {
@@ -1261,12 +1261,12 @@ public class Convention extends ObjetMetier implements Exportable {
         this.dateSignatureTuteur = dateSignatureTuteur;
     }
 
-    public String getStatutSignatureTuteur() {
-        return statutSignatureTuteur;
+    public Date getDateDepotTuteur() {
+        return dateDepotTuteur;
     }
 
-    public void setStatutSignatureTuteur(String statutSignatureTuteur) {
-        this.statutSignatureTuteur = statutSignatureTuteur;
+    public void setDateDepotTuteur(Date dateDepotTuteur) {
+        this.dateDepotTuteur = dateDepotTuteur;
     }
 
     public Date getDateSignatureSignataire() {
@@ -1277,12 +1277,12 @@ public class Convention extends ObjetMetier implements Exportable {
         this.dateSignatureSignataire = dateSignatureSignataire;
     }
 
-    public String getStatutSignatureSignataire() {
-        return statutSignatureSignataire;
+    public Date getDateDepotSignataire() {
+        return dateDepotSignataire;
     }
 
-    public void setStatutSignatureSignataire(String statutSignatureSignataire) {
-        this.statutSignatureSignataire = statutSignatureSignataire;
+    public void setDateDepotSignataire(Date dateDepotSignataire) {
+        this.dateDepotSignataire = dateDepotSignataire;
     }
 
     public Date getDateSignatureViseur() {
@@ -1293,12 +1293,12 @@ public class Convention extends ObjetMetier implements Exportable {
         this.dateSignatureViseur = dateSignatureViseur;
     }
 
-    public String getStatutSignatureViseur() {
-        return statutSignatureViseur;
+    public Date getDateDepotViseur() {
+        return dateDepotViseur;
     }
 
-    public void setStatutSignatureViseur(String statutSignatureViseur) {
-        this.statutSignatureViseur = statutSignatureViseur;
+    public void setDateDepotViseur(Date dateDepotViseur) {
+        this.dateDepotViseur = dateDepotViseur;
     }
 
     public String getLieuStage() {

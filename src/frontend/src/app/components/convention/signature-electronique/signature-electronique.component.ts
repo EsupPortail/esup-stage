@@ -13,7 +13,7 @@ export class SignatureElectroniqueComponent implements OnInit {
   @Input() convention!: any;
   @Output() conventionChanged = new EventEmitter<any>();
 
-  profils: string[] = [];
+  profils: any[] = [];
   data: any[] = [];
   isGestionnaire = false;
 
@@ -26,20 +26,51 @@ export class SignatureElectroniqueComponent implements OnInit {
   ngOnInit(): void {
     this.isGestionnaire = this.authService.isAdmin() || this.authService.isGestionnaire();
     this.centreGestionService.getById(this.convention.centreGestion.id).subscribe((response: any) => {
-      this.profils = JSON.parse(response.ordreSignature);
-      for (let profil of this.profils) {
-        this.data.push({
-          profil: profil,
-          statutSignature: this.convention['statutSignature' + profil[0].toUpperCase() + profil.slice(1)],
-          dateSignature: this.convention['dateSignature' + profil[0].toUpperCase() + profil.slice(1)],
+      for (let p of JSON.parse(response.ordreSignature)) {
+        const capitalize = p[0].toUpperCase() + p.slice(1)
+        let label = '';
+        switch (p) {
+          case 'etudiant':
+            label = 'Étudiant';
+            break;
+          case 'tuteur':
+            label = 'Tuteur professionnel';
+            break;
+          case 'viseur':
+            label = 'Viseur établissement';
+            break;
+          case 'signataire':
+            label = 'Signataire organisme d\'accueil';
+            break;
+          default:
+            label = capitalize;
+            break;
+        }
+        this.profils.push({
+          key: p,
+          capitalize: capitalize,
+          label: label,
         });
       }
+      this.updateData();
     });
+  }
+
+  updateData(): void {
+    this.data = [];
+    for (let profil of this.profils) {
+      this.data.push({
+        profil: profil.label,
+        dateDepot: this.convention['dateDepot' + profil.capitalize],
+        dateSignature: this.convention['dateSignature' + profil.capitalize],
+      });
+    }
   }
 
   updateSignatureInfos(): void {
     this.conventionService.updateSignatureInfo(this.convention.id).subscribe((response: any) => {
       this.convention = response;
+      this.updateData();
       this.conventionChanged.emit(this.convention);
     });
   }
