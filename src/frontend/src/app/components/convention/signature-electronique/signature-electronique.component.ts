@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AuthService } from "../../../services/auth.service";
 import { ConventionService } from "../../../services/convention.service";
 import { CentreGestionService } from "../../../services/centre-gestion.service";
+import { TechnicalService } from "../../../services/technical.service";
 
 @Component({
   selector: 'app-signature-electronique',
@@ -13,17 +14,22 @@ export class SignatureElectroniqueComponent implements OnInit {
   @Input() convention!: any;
   @Output() conventionChanged = new EventEmitter<any>();
 
+  isMobile = false;
   profils: any[] = [];
   data: any[] = [];
   isGestionnaire = false;
 
   constructor(
+    private technicalService: TechnicalService,
     private authService: AuthService,
     private conventionService: ConventionService,
     private centreGestionService: CentreGestionService,
   ) { }
 
   ngOnInit(): void {
+    this.technicalService.isMobile.subscribe((value: boolean) => {
+      this.isMobile = value;
+    });
     this.isGestionnaire = this.authService.isAdmin() || this.authService.isGestionnaire();
     this.centreGestionService.getById(this.convention.centreGestion.id).subscribe((response: any) => {
       for (let p of JSON.parse(response.ordreSignature)) {
