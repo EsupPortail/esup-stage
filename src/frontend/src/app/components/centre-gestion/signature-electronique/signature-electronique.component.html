@@ -1,0 +1,24 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-subtitle>Paramétrage de la signature électronique</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <form [formGroup]="form">
+      <div class="row">
+        <mat-form-field class="col-12" appearance="fill">
+          <mat-label>Circuit de signature</mat-label>
+          <input matInput formControlName="circuitSignature">
+          <mat-error><app-form-error [field]="form.get('circuitSignature')"></app-form-error></mat-error>
+        </mat-form-field>
+        <div class="col-12">
+          <div class="text-title">Ordre de signature</div>
+          <div cdkDropList [cdkDropListData]="ordreSignature" (cdkDropListDropped)="drop($event)">
+            <div class="ordre" *ngFor="let ordre of ordreSignature; let index = index" cdkDrag>
+              <span cdkDragHandle>{{index + 1}}</span>{{ordre}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

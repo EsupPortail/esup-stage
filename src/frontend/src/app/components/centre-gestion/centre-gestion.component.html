@@ -33,14 +33,21 @@
       Consigne
       <mat-progress-bar mode="determinate" [value]="getProgressValue(4)" [ngClass]="{editing: tabs[4].statut === 1, done: tabs[4].statut === 2}"></mat-progress-bar>
     </ng-template>
-    <app-consigne *ngIf="centreGestionInited && (consigneCentreTab.isActive || tabs[0].init)" [consigne]="consigneCentre" [idCentreGestion]="centreGestion.id" (sumitted)="consigneCentre = $event; majStatus()"></app-consigne>
+    <app-consigne *ngIf="centreGestionInited && (consigneCentreTab.isActive || tabs[4].init)" [consigne]="consigneCentre" [idCentreGestion]="centreGestion.id" (sumitted)="consigneCentre = $event; majStatus()"></app-consigne>
   </mat-tab>
   <mat-tab #fichesEvalCentreTab [disabled]="centreGestion && !centreGestion.id">
     <ng-template mat-tab-label>
       Fiches d'évaluation
       <mat-progress-bar mode="determinate" [value]="getProgressValue(5)" [ngClass]="{editing: tabs[5].statut === 1, done: tabs[5].statut === 2}"></mat-progress-bar>
     </ng-template>
-    <app-fiche-evaluation *ngIf="centreGestionInited && centreGestion.id && (fichesEvalCentreTab.isActive || tabs[0].init)" [idCentreGestion]="centreGestion.id"></app-fiche-evaluation>
+    <app-fiche-evaluation *ngIf="centreGestionInited && centreGestion.id && (fichesEvalCentreTab.isActive || tabs[5].init)" [idCentreGestion]="centreGestion.id"></app-fiche-evaluation>
+  </mat-tab>
+  <mat-tab #signatureElectroniqueTab [disabled]="centreGestion && !centreGestion.id">
+    <ng-template mat-tab-label>
+      Signature électronique
+      <mat-progress-bar mode="determinate" [value]="getProgressValue(6)" [ngClass]="{editing: tabs[6].statut === 1, done: tabs[6].statut === 2}"></mat-progress-bar>
+    </ng-template>
+    <app-centre-signature-electronique *ngIf="centreGestionInited && centreGestion.id && (signatureElectroniqueTab.isActive || tabs[6].init)" [form]="signatureElectroniqueForm" [centreGestion]="centreGestion"></app-centre-signature-electronique>
   </mat-tab>
   <mat-tab [disabled]="centreGestion && !centreGestion.id" *ngIf="centreGestion && !centreGestion.validationCreation">
     <ng-template mat-tab-label>

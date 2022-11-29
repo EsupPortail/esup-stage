@@ -116,7 +116,6 @@ export class ParamCentreComponent implements OnInit {
       prenomViseur: this.centreGestion.prenomViseur,
       qualiteViseur: this.centreGestion.qualiteViseur,
       delaiAlerteConvention: this.centreGestion.delaiAlerteConvention,
-      circuitSignature: this.centreGestion.circuitSignature,
     }, {
       emitEvent: false,
     });

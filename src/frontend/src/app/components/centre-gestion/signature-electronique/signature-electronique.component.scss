@@ -1,0 +1,12 @@
+.ordre {
+  margin-bottom: 10px;
+
+  span {
+    margin-right: 10px;
+    cursor: move;
+    padding: 2px 7px;
+    background-color: var(--primaryColor);
+    border-radius: 3px;
+    color: white;
+  }
+}

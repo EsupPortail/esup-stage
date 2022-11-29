@@ -130,6 +130,9 @@ import { TruncatePipe } from './pipes/truncate.pipe';
 import { FormAutocompleteFieldComponent } from './components/form-autocomplete-field/form-autocomplete-field.component';
 import { SignatureElectroniqueComponent } from './components/convention/signature-electronique/signature-electronique.component';
 import { MatTabNavChangeDirective } from './directives/mat-tab-nav-change.directive';
+import {
+  CentreSignatureElectroniqueComponent
+} from "./components/centre-gestion/signature-electronique/signature-electronique.component";
 
 registerLocaleData(localeFr, 'fr');
 
@@ -216,6 +219,7 @@ registerLocaleData(localeFr, 'fr');
     FormAutocompleteFieldComponent,
     SignatureElectroniqueComponent,
     MatTabNavChangeDirective,
+    CentreSignatureElectroniqueComponent,
   ],
   imports: [
     BrowserModule,

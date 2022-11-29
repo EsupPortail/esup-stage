@@ -154,6 +154,9 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     @Column(length = 255)
     private String circuitSignature;
 
+    @Column
+    private String ordreSignature = "[\"etudiant\",\"enseignant\",\"tuteur\",\"signataire\",\"viseur\"]"; // tableau encodé en JSON
+
     public int getId() {
         return id;
     }
@@ -504,6 +507,14 @@ public class CentreGestion extends ObjetMetier implements Exportable {
 
     public void setCircuitSignature(String circuitSignature) {
         this.circuitSignature = circuitSignature;
+    }
+
+    public String getOrdreSignature() {
+        return ordreSignature;
+    }
+
+    public void setOrdreSignature(String ordreSignature) {
+        this.ordreSignature = ordreSignature;
     }
 
     @Transient

@@ -76,3 +76,23 @@ databaseChangeLog:
         - column:
             name: statutSignatureViseur
             type: VARCHAR(255)
+- changeSet:
+    id: centreGestion-ordreSignature
+    author: ssound
+    changes:
+    - addColumn:
+        tableName: CentreGestion
+        columns:
+        - column:
+            name: ordreSignature
+            type: VARCHAR(255)
+- changeSet:
+    id: centreGestion-ordreSignature-init
+    author: ssound
+    changes:
+    - update:
+        columns:
+        - column:
+            name: ordreSignature
+            value: '["etudiant","enseignant","tuteur","signataire","viseur"]'
+        tableName: CentreGestion

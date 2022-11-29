@@ -29,6 +29,7 @@ export class CentreGestionComponent implements OnInit {
     3: { statut: 0, init: false },
     4: { statut: 0, init: false },
     5: { statut: 2, init: false },
+    6: { statut: 0, init: false },
   }
 
   allValid = false;
@@ -42,12 +43,14 @@ export class CentreGestionComponent implements OnInit {
   coordCentreForm: FormGroup;
   paramCentreForm: FormGroup;
   consigneCentre: any;
+  signatureElectroniqueForm: FormGroup;
 
   @ViewChild('matTabs') matTabs: MatTabGroup | undefined;
 
   constructor(private activatedRoute: ActivatedRoute, private centreGestionService: CentreGestionService, private messageService: MessageService, private fb: FormBuilder, private router: Router, private consigneService: ConsigneService) {
     this.setCoordCentreForm();
     this.setParamCentreForm();
+    this.setSignatureElectroniqueForm();
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
   }
 
@@ -114,6 +117,12 @@ export class CentreGestionComponent implements OnInit {
     } else {
       this.setStatus(4, 0);
     }
+
+    if (this.signatureElectroniqueForm.valid) {
+      this.setStatus(6,2);
+    } else {
+      this.setStatus(6,1);
+    }
   }
 
   tabChanged(event: MatTabChangeEvent): void {
@@ -177,6 +186,10 @@ export class CentreGestionComponent implements OnInit {
     });
     this.paramCentreForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
       this.setCentreGestionParamCentre();
+      this.update();
+    });
+    this.signatureElectroniqueForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
+      this.setCentreGestionSignatureElectronique();
       this.update();
     });
   }
@@ -247,7 +260,6 @@ export class CentreGestionComponent implements OnInit {
       prenomViseur: [null, [Validators.maxLength(50)]],
       qualiteViseur: [null, [Validators.maxLength(100)]],
       delaiAlerteConvention: [null, [Validators.required, Validators.min(0)]],
-      circuitSignature: [null, [Validators.maxLength(255)]],
     });
   }
 
@@ -270,7 +282,18 @@ export class CentreGestionComponent implements OnInit {
     this.centreGestion.prenomViseur = this.paramCentreForm.get('prenomViseur')?.value;
     this.centreGestion.qualiteViseur = this.paramCentreForm.get('qualiteViseur')?.value;
     this.centreGestion.delaiAlerteConvention = this.paramCentreForm.get('delaiAlerteConvention')?.value;
-    this.centreGestion.circuitSignature = this.paramCentreForm.get('circuitSignature')?.value;
+  }
+
+  setSignatureElectroniqueForm() {
+    this.signatureElectroniqueForm = this.fb.group({
+      circuitSignature: [null, [Validators.maxLength(255)]],
+      ordreSignature: [null, []],
+    });
+  }
+
+  setCentreGestionSignatureElectronique() {
+    this.centreGestion.circuitSignature = this.signatureElectroniqueForm.get('circuitSignature')?.value;
+    this.centreGestion.ordreSignature = this.signatureElectroniqueForm.get('ordreSignature')?.value;
   }
 
   invalidOrdresValidations() {

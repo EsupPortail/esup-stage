@@ -26,7 +26,7 @@
           <button mat-button mat-flat-button color="primary" (click)="updateSignatureInfos()">Mettre à jour les informations</button>
         </div>
       </div>
-      <table mat-table [dataSource]="data" *ngIf="convention.dateEnvoiSignature">
+      <table mat-table [dataSource]="data" *ngIf="convention.dateEnvoiSignature && data.length > 0">
         <ng-container matColumnDef="profil">
           <th mat-header-cell *matHeaderCellDef>Profil</th>
           <td mat-cell *matCellDef="let element">{{element.profil}}</td>
