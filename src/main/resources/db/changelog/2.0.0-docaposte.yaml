@@ -96,3 +96,25 @@ databaseChangeLog:
             name: ordreSignature
             value: '["etudiant","enseignant","tuteur","signataire","viseur"]'
         tableName: CentreGestion
+- changeSet:
+    id: contenu-alerte-signature
+    author: ssound
+    changes:
+    - insert:
+        columns:
+        - column:
+            name: codeContenu
+            value: ALERTE_SIGNATURE
+        - column:
+            name: libelle
+            valueBoolean: true
+        - column:
+            name: texte
+            value: Attention, l'envoi pour signature électronique est définitive, vous ne pourrez plus modifier la convention. Souhaitez-vous continuer ?
+        - column:
+            name: loginCreation
+            value: liquibase
+        - column:
+            name: dateCreation
+            value: now()
+        tableName: Contenu

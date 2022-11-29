@@ -26,6 +26,10 @@ export class ValidationCardComponent implements OnInit {
   }
 
   canRevertValidation(): boolean {
+    // On empêche la dévalidation si la convention a déjà été déposée pour signature électronique
+    if (this.convention.documentId) {
+      return false;
+    }
     // Un enseignant n'a les droits que sur la validation pédagogique
     if (this.authService.isEnseignant() && this.validation === 'validationConvention') {
       return false;

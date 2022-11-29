@@ -40,7 +40,9 @@
 
     <div class="row mt-3" *ngIf="docaposteEnabled && validee && !convention.documentId">
       <div class="col text-right">
-        <button mat-button mat-flat-button color="primary" (click)="controleSignatureElectronique()">Envoi pour signature électronique</button>
+        <span (confirm)="controleSignatureElectronique()" [confirmMessage]="'ALERTE_SIGNATURE'|contenu">
+          <button mat-button mat-flat-button color="primary">Envoi pour signature électronique</button>
+        </span>
       </div>
     </div>
 
