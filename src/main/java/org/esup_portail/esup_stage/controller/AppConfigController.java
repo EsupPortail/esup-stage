@@ -102,6 +102,8 @@ public class AppConfigController {
         if (appConfig == null) {
             appConfig = new AppConfig();
             appConfig.setCode(AppConfigCodeEnum.THEME);
+            appConfig.setParametres(mapper.writeValueAsString(configThemeDto));
+            appConfigJpaRepository.saveAndFlush(appConfig);
         }
         configThemeDto.setDateModification(new Date());
 
