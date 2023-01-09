@@ -1,13 +1,13 @@
 databaseChangeLog:
 - changeSet:
-    id: fix-type-reponse-evaluation
-    author: tjubera
+    id: fix-type-reponse-evaluation-reset
+    author: ssound
     changes:
     - modifyDataType:
         columnName: reponseEnt17
-        newDataType: TEXT
+        newDataType: INT
         tableName: ReponseEvaluation
     - modifyDataType:
         columnName: reponseEnt19
-        newDataType: BIT
+        newDataType: TEXT
         tableName: ReponseEvaluation

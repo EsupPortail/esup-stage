@@ -63,7 +63,7 @@ public class ReponseEvaluation {
     private Integer reponseEnt9;
     @Lob
     private String reponseEnt9bis;
-    private Integer reponseEnt10;
+    private Boolean reponseEnt10;
     @Lob
     private String reponseEnt10bis;
     private Integer reponseEnt11;
@@ -84,13 +84,14 @@ public class ReponseEvaluation {
     private Integer reponseEnt16;
     @Lob
     private String reponseEnt16bis;
-    private String reponseEnt17;
+    private Integer reponseEnt17;
     @Lob
     private String reponseEnt17bis;
     private Boolean reponseEnt18;
     @Lob
     private String reponseEnt18bis;
-    private Boolean reponseEnt19;
+    @Lob
+    private String reponseEnt19;
 
     private Integer reponseEtuI1;
     @Lob
@@ -394,11 +395,11 @@ public class ReponseEvaluation {
         this.reponseEnt9bis = reponseEnt9bis;
     }
 
-    public Integer getReponseEnt10() {
+    public Boolean getReponseEnt10() {
         return reponseEnt10;
     }
 
-    public void setReponseEnt10(Integer reponseEnt10) {
+    public void setReponseEnt10(Boolean reponseEnt10) {
         this.reponseEnt10 = reponseEnt10;
     }
 
@@ -506,11 +507,11 @@ public class ReponseEvaluation {
         this.reponseEnt16bis = reponseEnt16bis;
     }
 
-    public String getReponseEnt17() {
+    public Integer getReponseEnt17() {
         return reponseEnt17;
     }
 
-    public void setReponseEnt17(String reponseEnt17) {
+    public void setReponseEnt17(Integer reponseEnt17) {
         this.reponseEnt17 = reponseEnt17;
     }
 
@@ -538,11 +539,11 @@ public class ReponseEvaluation {
         this.reponseEnt18bis = reponseEnt18bis;
     }
 
-    public Boolean getReponseEnt19() {
+    public String getReponseEnt19() {
         return reponseEnt19;
     }
 
-    public void setReponseEnt19(Boolean reponseEnt19) {
+    public void setReponseEnt19(String reponseEnt19) {
         this.reponseEnt19 = reponseEnt19;
     }
 

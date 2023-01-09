@@ -21,7 +21,7 @@ public class ReponseEntrepriseFormDto {
     private String reponseEnt8bis;
     private Integer reponseEnt9;
     private String reponseEnt9bis;
-    private Integer reponseEnt10;
+    private Boolean reponseEnt10;
     private String reponseEnt10bis;
     private Integer reponseEnt11;
     private String reponseEnt11bis;
@@ -35,11 +35,11 @@ public class ReponseEntrepriseFormDto {
     private String reponseEnt15bis;
     private Integer reponseEnt16;
     private String reponseEnt16bis;
-    private String reponseEnt17;
+    private Integer reponseEnt17;
     private String reponseEnt17bis;
     private Boolean reponseEnt18;
     private String reponseEnt18bis;
-    private Boolean reponseEnt19;
+    private String reponseEnt19;
 
     public Integer getReponseEnt1() {
         return reponseEnt1;
@@ -177,11 +177,11 @@ public class ReponseEntrepriseFormDto {
         this.reponseEnt9bis = reponseEnt9bis;
     }
 
-    public Integer getReponseEnt10() {
+    public Boolean getReponseEnt10() {
         return reponseEnt10;
     }
 
-    public void setReponseEnt10(Integer reponseEnt10) {
+    public void setReponseEnt10(Boolean reponseEnt10) {
         this.reponseEnt10 = reponseEnt10;
     }
 
@@ -289,11 +289,11 @@ public class ReponseEntrepriseFormDto {
         this.reponseEnt16bis = reponseEnt16bis;
     }
 
-    public String getReponseEnt17() {
+    public Integer getReponseEnt17() {
         return reponseEnt17;
     }
 
-    public void setReponseEnt17(String reponseEnt17) {
+    public void setReponseEnt17(Integer reponseEnt17) {
         this.reponseEnt17 = reponseEnt17;
     }
 
@@ -321,11 +321,11 @@ public class ReponseEntrepriseFormDto {
         this.reponseEnt18bis = reponseEnt18bis;
     }
 
-    public Boolean getReponseEnt19() {
+    public String getReponseEnt19() {
         return reponseEnt19;
     }
 
-    public void setReponseEnt19(Boolean reponseEnt19) {
+    public void setReponseEnt19(String reponseEnt19) {
         this.reponseEnt19 = reponseEnt19;
     }
 }
