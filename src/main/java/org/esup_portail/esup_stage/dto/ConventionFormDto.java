@@ -30,7 +30,15 @@ public class ConventionFormDto {
 
     @NotNull
     @NotEmpty
+    private String libelleEtape;
+
+    @NotNull
+    @NotEmpty
     private String codeComposante;
+
+    @NotNull
+    @NotEmpty
+    private String libelleComposante;
 
     @Size(max = 10)
     private String codeDepartement;
@@ -267,12 +275,28 @@ public class ConventionFormDto {
         this.codeVersionEtape = codeVersionEtape;
     }
 
+    public String getLibelleEtape() {
+        return libelleEtape;
+    }
+
+    public void setLibelleEtape(String libelleEtape) {
+        this.libelleEtape = libelleEtape;
+    }
+
     public String getCodeComposante() {
         return codeComposante;
     }
 
     public void setCodeComposante(String codeComposante) {
         this.codeComposante = codeComposante;
+    }
+
+    public String getLibelleComposante() {
+        return libelleComposante;
+    }
+
+    public void setLibelleComposante(String libelleComposante) {
+        this.libelleComposante = libelleComposante;
     }
 
     public String getCodeDepartement() {

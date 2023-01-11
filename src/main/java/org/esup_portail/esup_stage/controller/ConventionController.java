@@ -590,11 +590,24 @@ public class ConventionController {
         }
         Etape etape = etapeJpaRepository.findById(conventionFormDto.getCodeEtape(), conventionFormDto.getCodeVersionEtape(), appConfigService.getConfigGenerale().getCodeUniversite());
         if (etape == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Étape non trouvée");
+            EtapeId etapeId = new EtapeId();
+            etapeId.setCode(conventionFormDto.getCodeEtape());
+            etapeId.setCodeVersionEtape(conventionFormDto.getCodeVersionEtape());
+            etapeId.setCodeUniversite(appConfigService.getConfigGenerale().getCodeUniversite());
+            etape = new Etape();
+            etape.setId(etapeId);
+            etape.setLibelle(conventionFormDto.getLibelleEtape());
+            etape = etapeJpaRepository.saveAndFlush(etape);
         }
         Ufr ufr = ufrJpaRepository.findById(conventionFormDto.getCodeComposante(), appConfigService.getConfigGenerale().getCodeUniversite());
         if (ufr == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "UFR non trouvée");
+            UfrId ufrId = new UfrId();
+            ufrId.setCode(conventionFormDto.getCodeComposante());
+            ufrId.setCodeUniversite(appConfigService.getConfigGenerale().getCodeUniversite());
+            ufr = new Ufr();
+            ufr.setId(ufrId);
+            ufr.setLibelle(conventionFormDto.getLibelleComposante());
+            ufr = ufrJpaRepository.saveAndFlush(ufr);
         }
         CentreGestion centreGestionEtab = centreGestionJpaRepository.getCentreEtablissement();
         // Erreur si le centre de type etablissement est null

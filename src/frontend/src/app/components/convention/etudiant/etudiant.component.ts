@@ -35,7 +35,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
   centreGestion: any;
   sansElp: boolean = false;
 
-  formConvention: FormGroup;
+  formConvention!: FormGroup;
 
   typeConventions: any[] = [];
   langueConventions: any[] = [];
@@ -44,7 +44,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
   consigneEtablissement: any;
 
   @Input() convention: any;
-  @Input() modifiable: boolean;
+  @Input() modifiable: boolean = false;
   @Output() validated = new EventEmitter<any>();
 
   @ViewChild(MatExpansionPanel) searchEtudiantPanel: MatExpansionPanel|undefined;
@@ -227,7 +227,9 @@ export class EtudiantComponent implements OnInit, OnChanges {
       delete data.inscription;
       data.numEtudiant = this.selectedNumEtudiant;
       data.codeComposante = this.formConvention.value.inscription.etapeInscription.codeComposante;
+      data.libelleComposante = this.formConvention.value.inscription.etapeInscription.libComposante;
       data.codeEtape = this.formConvention.value.inscription.etapeInscription.codeEtp;
+      data.libelleEtape = this.formConvention.value.inscription.etapeInscription.libWebVet;
       data.codeVersionEtape = this.formConvention.value.inscription.etapeInscription.codVrsVet;
       data.annee = this.formConvention.value.inscription.annee;
       data.codeElp = this.formConvention.value.inscriptionElp ? this.formConvention.value.inscriptionElp.codElp : null;
