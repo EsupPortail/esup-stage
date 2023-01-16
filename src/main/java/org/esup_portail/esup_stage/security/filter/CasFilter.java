@@ -135,7 +135,7 @@ public class CasFilter implements Filter {
                         roles.add(roleJpaRepository.findOneByCode(role));
                         // si l'enseignant est rattaché à un centre de gestion, on lui ajoute le rôle gestionnaire
                         if (role.equals(Role.ENS)) {
-                            long count = personnelCentreGestionJpaRepository.countPersonnelByLogin(casUser.getLogin());
+                            long count = personnelCentreGestionJpaRepository.countPersonnelByLogin(users.get(0).getUid());
                             if (count > 0) {
                                 roles.add(roleJpaRepository.findOneByCode(Role.GES));
                             }
@@ -146,6 +146,7 @@ public class CasFilter implements Filter {
                         utilisateur.setPrenom(casUser.getPrenom());
                         utilisateur.setActif(true);
                         utilisateur.setRoles(roles);
+                        utilisateur.setUid(users.get(0).getUid());
                         utilisateur = utilisateurJpaRepository.saveAndFlush(utilisateur);
                     }
                 }
@@ -157,7 +158,7 @@ public class CasFilter implements Filter {
                         Etudiant etudiant = etudiantRepository.findByNumEtudiant(users.get(0).getCodEtu());
                         if (etudiant == null) {
                             etudiant = new Etudiant();
-                            etudiant.setIdentEtudiant(casUser.getLogin());
+                            etudiant.setIdentEtudiant(users.get(0).getUid());
                             etudiant.setNumEtudiant(users.get(0).getCodEtu());
                             etudiant.setNom(casUser.getNom());
                             etudiant.setPrenom(casUser.getPrenom());
@@ -176,6 +177,13 @@ public class CasFilter implements Filter {
                     if (utilisateur.getPrenom() == null) {
                         utilisateur.setPrenom(casUser.getPrenom());
                         update = true;
+                    }
+                    if (utilisateur.getUid() == null) {
+                        LdapUser ldapUser = ldapService.searchByLogin(utilisateur.getLogin());
+                        if (ldapUser != null) {
+                            utilisateur.setUid(ldapUser.getUid());
+                            update = true;
+                        }
                     }
                     if (update) {
                         utilisateurJpaRepository.saveAndFlush(utilisateur);

@@ -52,7 +52,7 @@ public class PeriodeInterruptionAvenantController {
             JSONObject jsonFilters = new JSONObject(filters);
             Map<String, Object> currentUser = new HashMap<>();
             currentUser.put("type", "text");
-            currentUser.put("value", utilisateur.getLogin());
+            currentUser.put("value", utilisateur.getUid());
             jsonFilters.put("avenant.convention.etudiant.identEtudiant", currentUser);
             filters = jsonFilters.toString();
         }
@@ -66,7 +66,7 @@ public class PeriodeInterruptionAvenantController {
     public PeriodeInterruptionAvenant getById(@PathVariable("id") int id) {
         Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
         PeriodeInterruptionAvenant periodeInterruptionAvenant = periodeInterruptionAvenantJpaRepository.findById(id);
-        if (periodeInterruptionAvenant == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(periodeInterruptionAvenant.getAvenant().getConvention().getEtudiant().getIdentEtudiant()))) {
+        if (periodeInterruptionAvenant == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getUid().equals(periodeInterruptionAvenant.getAvenant().getConvention().getEtudiant().getIdentEtudiant()))) {
             throw new AppException(HttpStatus.NOT_FOUND, "PeriodeInterruptionAvenant non trouvée");
         }
         return periodeInterruptionAvenant;
@@ -78,7 +78,7 @@ public class PeriodeInterruptionAvenantController {
     public List<PeriodeInterruptionAvenant> getByAvenant(@PathVariable("id") int id) {
         Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
         Avenant avenant = avenantJpaRepository.findById(id);
-        if (avenant == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(avenant.getConvention().getEtudiant().getIdentEtudiant()))) {
+        if (avenant == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getUid().equals(avenant.getConvention().getEtudiant().getIdentEtudiant()))) {
             return new ArrayList<>();
         }
         return periodeInterruptionAvenantJpaRepository.findByAvenant(id);
@@ -89,7 +89,7 @@ public class PeriodeInterruptionAvenantController {
     public PeriodeInterruptionAvenant create(@Valid @RequestBody PeriodeInterruptionAvenantDto periodeInterruptionAvenantDto) {
         Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
         Avenant avenant = avenantJpaRepository.findById(periodeInterruptionAvenantDto.getIdAvenant());
-        if (avenant == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(avenant.getConvention().getEtudiant().getIdentEtudiant()))) {
+        if (avenant == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getUid().equals(avenant.getConvention().getEtudiant().getIdentEtudiant()))) {
             throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvé");
         }
         PeriodeInterruptionAvenant periodeInterruptionAvenant = new PeriodeInterruptionAvenant();
@@ -102,7 +102,7 @@ public class PeriodeInterruptionAvenantController {
     public PeriodeInterruptionAvenant update(@PathVariable("id") int id, @Valid @RequestBody PeriodeInterruptionAvenantDto periodeInterruptionAvenantDto) {
         Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
         PeriodeInterruptionAvenant periodeInterruptionAvenant = periodeInterruptionAvenantJpaRepository.findById(id);
-        if (periodeInterruptionAvenant == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(periodeInterruptionAvenant.getAvenant().getConvention().getEtudiant().getIdentEtudiant()))) {
+        if (periodeInterruptionAvenant == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getUid().equals(periodeInterruptionAvenant.getAvenant().getConvention().getEtudiant().getIdentEtudiant()))) {
             throw new AppException(HttpStatus.NOT_FOUND, "PeriodeInterruptionAvenant non trouvé");
         }
         setPeriodeInterruptionAvenantData(periodeInterruptionAvenant, periodeInterruptionAvenantDto);
@@ -114,7 +114,7 @@ public class PeriodeInterruptionAvenantController {
     public boolean delete(@PathVariable("id") int id) {
         Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
         PeriodeInterruptionAvenant periodeInterruptionAvenant = periodeInterruptionAvenantJpaRepository.findById(id);
-        if (periodeInterruptionAvenant == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(periodeInterruptionAvenant.getAvenant().getConvention().getEtudiant().getIdentEtudiant()))) {
+        if (periodeInterruptionAvenant == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getUid().equals(periodeInterruptionAvenant.getAvenant().getConvention().getEtudiant().getIdentEtudiant()))) {
             throw new AppException(HttpStatus.NOT_FOUND, "PeriodeInterruptionAvenant non trouvé");
         }
         periodeInterruptionAvenantJpaRepository.delete(periodeInterruptionAvenant);
@@ -127,7 +127,7 @@ public class PeriodeInterruptionAvenantController {
     public boolean deleteAll(@PathVariable("id") int id) {
         Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
         Avenant avenant = avenantJpaRepository.findById(id);
-        if (avenant == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(avenant.getConvention().getEtudiant().getIdentEtudiant()))) {
+        if (avenant == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getUid().equals(avenant.getConvention().getEtudiant().getIdentEtudiant()))) {
             throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvé");
         }
         List<PeriodeInterruptionAvenant> periodeInterruptionAvenants = periodeInterruptionAvenantJpaRepository.findByAvenant(id);

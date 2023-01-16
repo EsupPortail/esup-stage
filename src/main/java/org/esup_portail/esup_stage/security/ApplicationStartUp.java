@@ -6,6 +6,8 @@ import org.esup_portail.esup_stage.model.Utilisateur;
 import org.esup_portail.esup_stage.repository.RoleJpaRepository;
 import org.esup_portail.esup_stage.repository.UtilisateurJpaRepository;
 import org.esup_portail.esup_stage.service.AppConfigService;
+import org.esup_portail.esup_stage.service.ldap.LdapService;
+import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.List;
 
 @Component
 public class ApplicationStartUp {
@@ -32,6 +35,9 @@ public class ApplicationStartUp {
 
     @Autowired
     AppConfigService appConfigService;
+
+    @Autowired
+    LdapService ldapService;
 
     @EventListener(ApplicationReadyEvent.class)
     public void createAdminTech() {
@@ -53,5 +59,20 @@ public class ApplicationStartUp {
     public void loadTheming() throws IOException, URISyntaxException {
         logger.info("Initialisation du thème de l'application");
         appConfigService.updateTheme();
+    }
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void initUid() {
+        logger.info("Récupération de l'uid des utilisateurs déjà existants");
+        List<Utilisateur> utilisateurs = utilisateurRepository.findNoUid();
+        logger.info(utilisateurs.size() + " utilisateurs sans uid - recherche dans le LDAP");
+        for (Utilisateur utilisateur : utilisateurs) {
+            LdapUser ldapUser = ldapService.searchByLogin(utilisateur.getLogin());
+            if (ldapUser != null) {
+                utilisateur.setUid(ldapUser.getUid());
+                utilisateurRepository.save(utilisateur);
+            }
+        }
+        logger.info("Mise à jour des uid terminé");
     }
 }

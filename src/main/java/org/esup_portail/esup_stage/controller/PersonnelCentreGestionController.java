@@ -1,5 +1,6 @@
 package org.esup_portail.esup_stage.controller;
 
+import org.esup_portail.esup_stage.dto.LdapSearchDto;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
@@ -12,6 +13,8 @@ import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
 import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
+import org.esup_portail.esup_stage.service.ldap.LdapService;
+import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -44,6 +47,9 @@ public class PersonnelCentreGestionController {
 
     @Autowired
     AppConfigService appConfigService;
+
+    @Autowired
+    LdapService ldapService;
 
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
@@ -78,13 +84,20 @@ public class PersonnelCentreGestionController {
             throw new AppException(HttpStatus.BAD_REQUEST, "Ce gestionnaire est déjà rattaché à ce centre");
         }
 
-        Utilisateur utilisateur = utilisateurJpaRepository.findOneByLogin(personnelCentreGestion.getUidPersonnel());
+        Utilisateur utilisateur = utilisateurJpaRepository.findOneByUid(personnelCentreGestion.getUidPersonnel());
 
         if (utilisateur == null) {
             List<Role> roles = new ArrayList<>();
             roles.add(roleJpaRepository.findOneByCode(Role.GES));
+            LdapSearchDto ldapSearchDto = new LdapSearchDto();
+            ldapSearchDto.setId(personnelCentreGestion.getUidPersonnel());
+            List<LdapUser> ldapUsers = ldapService.search("/staff", ldapSearchDto);
+            if (ldapUsers.size() == 0) {
+                throw new AppException(HttpStatus.NOT_FOUND, "Gestionnaire non trouvé");
+            }
             utilisateur = new Utilisateur();
-            utilisateur.setLogin(personnelCentreGestion.getUidPersonnel());
+            utilisateur.setLogin(ldapUsers.get(0).getUid());
+            utilisateur.setUid(personnelCentreGestion.getUidPersonnel());
             utilisateur.setNom(personnelCentreGestion.getNom());
             utilisateur.setPrenom(personnelCentreGestion.getPrenom());
             utilisateur.setActif(true);

@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface EtudiantJpaRepository extends JpaRepository<Etudiant, Integer> {
 
-    @Query("SELECT e FROM Etudiant e WHERE e.identEtudiant = :login")
-    Etudiant findByLogin(String login);
+    @Query("SELECT e FROM Etudiant e WHERE e.identEtudiant = :uid")
+    Etudiant findByLogin(String uid);
 }

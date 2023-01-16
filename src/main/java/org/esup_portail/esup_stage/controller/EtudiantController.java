@@ -56,7 +56,7 @@ public class EtudiantController {
     public EtudiantRef getApogeeData(@PathVariable("numEtudiant") String numEtudiant) {
         Etudiant etudiant = etudiantRepository.findByNumEtudiant(numEtudiant);
         Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
-        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && (etudiant == null || !utilisateur.getLogin().equals(etudiant.getIdentEtudiant()))) {
+        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && (etudiant == null || !utilisateur.getUid().equals(etudiant.getIdentEtudiant()))) {
             throw new AppException(HttpStatus.NOT_FOUND, "Étudiant non trouvé");
         }
         return apogeeService.getInfoApogee(numEtudiant, appConfigService.getAnneeUniv());
@@ -68,7 +68,7 @@ public class EtudiantController {
         ContextDto contextDto = ServiceContext.getServiceContext();
         Utilisateur utilisateur = contextDto.getUtilisateur();
         Etudiant etudiant = etudiantRepository.findByNumEtudiant(numEtudiant);
-        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && (etudiant == null || !utilisateur.getLogin().equals(etudiant.getIdentEtudiant()))) {
+        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && (etudiant == null || !utilisateur.getUid().equals(etudiant.getIdentEtudiant()))) {
             throw new AppException(HttpStatus.NOT_FOUND, "Étudiant non trouvé");
         }
         List<String> annees = new ArrayList<>();
@@ -173,7 +173,7 @@ public class EtudiantController {
     public Etudiant getByLogin(@PathVariable("login") String login) {
         Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
         Etudiant etudiant = etudiantJpaRepository.findByLogin(login);
-        if (etudiant == null || UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(etudiant.getIdentEtudiant())) {
+        if (etudiant == null || UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getUid().equals(etudiant.getIdentEtudiant())) {
             throw new AppException(HttpStatus.NOT_FOUND, "Etudiant non trouvé");
         }
         return etudiant;

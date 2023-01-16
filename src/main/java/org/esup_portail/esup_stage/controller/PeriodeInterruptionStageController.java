@@ -49,7 +49,7 @@ public class PeriodeInterruptionStageController {
             JSONObject jsonFilters = new JSONObject(filters);
             Map<String, Object> currentUser = new HashMap<>();
             currentUser.put("type", "text");
-            currentUser.put("value", utilisateur.getLogin());
+            currentUser.put("value", utilisateur.getUid());
             jsonFilters.put("convention.etudiant.identEtudiant", currentUser);
             filters = jsonFilters.toString();
         }
@@ -64,7 +64,7 @@ public class PeriodeInterruptionStageController {
     public PeriodeInterruptionStage getById(@PathVariable("id") int id) {
         Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
         PeriodeInterruptionStage periodeInterruptionStage = periodeInterruptionStageJpaRepository.findById(id);
-        if (periodeInterruptionStage == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(periodeInterruptionStage.getConvention().getEtudiant().getIdentEtudiant()))) {
+        if (periodeInterruptionStage == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getUid().equals(periodeInterruptionStage.getConvention().getEtudiant().getIdentEtudiant()))) {
             throw new AppException(HttpStatus.NOT_FOUND, "PeriodeInterruptionStage non trouvée");
         }
         return periodeInterruptionStage;
@@ -76,7 +76,7 @@ public class PeriodeInterruptionStageController {
     public List<PeriodeInterruptionStage> getByConvention(@PathVariable("id") int id) {
         Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
         Convention convention = conventionJpaRepository.findById(id);
-        if (convention == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(convention.getEtudiant().getIdentEtudiant()))) {
+        if (convention == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getUid().equals(convention.getEtudiant().getIdentEtudiant()))) {
             return new ArrayList<>();
         }
         return periodeInterruptionStageJpaRepository.findByConvention(id);
@@ -87,7 +87,7 @@ public class PeriodeInterruptionStageController {
     public PeriodeInterruptionStage create(@Valid @RequestBody PeriodeInterruptionStageDto periodeInterruptionStageDto) {
         Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
         Convention convention = conventionJpaRepository.findById(periodeInterruptionStageDto.getIdConvention());
-        if (convention == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(convention.getEtudiant().getIdentEtudiant()))) {
+        if (convention == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getUid().equals(convention.getEtudiant().getIdentEtudiant()))) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvéz");
         }
         PeriodeInterruptionStage periodeInterruptionStage = new PeriodeInterruptionStage();
@@ -100,7 +100,7 @@ public class PeriodeInterruptionStageController {
     public PeriodeInterruptionStage update(@PathVariable("id") int id, @Valid @RequestBody PeriodeInterruptionStageDto periodeInterruptionStageDto) {
         Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
         PeriodeInterruptionStage periodeInterruptionStage = periodeInterruptionStageJpaRepository.findById(id);
-        if (periodeInterruptionStage == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(periodeInterruptionStage.getConvention().getEtudiant().getIdentEtudiant()))) {
+        if (periodeInterruptionStage == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getUid().equals(periodeInterruptionStage.getConvention().getEtudiant().getIdentEtudiant()))) {
             throw new AppException(HttpStatus.NOT_FOUND, "PeriodeInterruptionStage non trouvée");
         }
         setPeriodeInterruptionStageData(periodeInterruptionStage, periodeInterruptionStageDto);
@@ -112,7 +112,7 @@ public class PeriodeInterruptionStageController {
     public boolean delete(@PathVariable("id") int id) {
         Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
         PeriodeInterruptionStage periodeInterruptionStage = periodeInterruptionStageJpaRepository.findById(id);
-        if (periodeInterruptionStage == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(periodeInterruptionStage.getConvention().getEtudiant().getIdentEtudiant()))) {
+        if (periodeInterruptionStage == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getUid().equals(periodeInterruptionStage.getConvention().getEtudiant().getIdentEtudiant()))) {
             throw new AppException(HttpStatus.NOT_FOUND, "PeriodeInterruptionStage non trouvé");
         }
         periodeInterruptionStageJpaRepository.delete(periodeInterruptionStage);
@@ -125,7 +125,7 @@ public class PeriodeInterruptionStageController {
     public boolean deleteByConvention(@PathVariable("idConvention") int idConvention) {
         Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
         Convention convention = conventionJpaRepository.findById(idConvention);
-        if (convention == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(convention.getEtudiant().getIdentEtudiant()))) {
+        if (convention == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getUid().equals(convention.getEtudiant().getIdentEtudiant()))) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
         periodeInterruptionStageJpaRepository.deleteByConvention(idConvention);

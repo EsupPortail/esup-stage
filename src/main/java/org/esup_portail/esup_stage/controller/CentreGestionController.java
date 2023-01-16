@@ -103,7 +103,7 @@ public class CentreGestionController {
             ContextDto contexteDto = ServiceContext.getServiceContext();
             Utilisateur currentUser = contexteDto.getUtilisateur();
             List<CentreGestion> list =  paginatedResponse.getData();
-            Predicate<PersonnelCentreGestion> condition = value -> value.getUidPersonnel().equals(currentUser.getLogin());
+            Predicate<PersonnelCentreGestion> condition = value -> value.getUidPersonnel().equals(currentUser.getUid());
             list.sort((a, b) -> Boolean.compare(a.getPersonnels().stream().anyMatch(condition), b.getPersonnels().stream().anyMatch(condition)));
 
             if (sortOrder.equals("asc"))

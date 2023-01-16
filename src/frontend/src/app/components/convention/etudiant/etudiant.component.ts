@@ -125,7 +125,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
         this.choose({codEtu: codEtu});
       } else {
         if (this.isEtudiant) {
-          this.etudiantService.getByLogin(this.authService.userConnected.login).subscribe((response: any) => {
+          this.etudiantService.getByLogin(this.authService.userConnected.uid).subscribe((response: any) => {
             codEtu = response.numEtudiant;
             this.choose({codEtu: codEtu});
           });
@@ -236,9 +236,9 @@ export class EtudiantComponent implements OnInit, OnChanges {
       data.libelleELP = this.formConvention.value.inscriptionElp ? this.formConvention.value.inscriptionElp.libElp : null;
       data.creditECTS = this.formConvention.value.inscriptionElp ? this.formConvention.value.inscriptionElp.nbrCrdElp : null;
       if (this.isEtudiant) {
-        data.etudiantLogin = this.authService.userConnected.login;
-      } else if (this.selectedRow && this.selectedRow.supannAliasLogin) {
-        data.etudiantLogin = this.selectedRow.supannAliasLogin
+        data.etudiantLogin = this.authService.userConnected.uid;
+      } else if (this.selectedRow && this.selectedRow.uid) {
+        data.etudiantLogin = this.selectedRow.uid;
       } else if (this.convention && this.convention.etudiant) {
         data.etudiantLogin = this.convention.etudiant.identEtudiant;
       }

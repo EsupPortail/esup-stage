@@ -78,11 +78,11 @@ public interface ConventionJpaRepository extends JpaRepository<Convention, Integ
     @Query("SELECT c FROM Convention c WHERE c.annee = :annee AND c.validationCreation = TRUE AND c.validationConvention = FALSE")
     List<Convention> getConventionEnAttenteGestionnaire(String annee);
 
-    @Query("SELECT c FROM Convention c JOIN c.centreGestion cg JOIN cg.personnels p WHERE c.annee = :annee AND p.uidPersonnel = :userLogin AND c.validationCreation = TRUE AND c.validationConvention = FALSE")
-    List<Convention> getConventionEnAttenteGestionnaire(String annee, String userLogin);
+    @Query("SELECT c FROM Convention c JOIN c.centreGestion cg JOIN cg.personnels p WHERE c.annee = :annee AND p.uidPersonnel = :userUid AND c.validationCreation = TRUE AND c.validationConvention = FALSE")
+    List<Convention> getConventionEnAttenteGestionnaire(String annee, String userUid);
 
-    @Query("SELECT c FROM Convention c WHERE c.annee = :annee AND c.enseignant.uidEnseignant = :userLogin AND c.validationCreation = TRUE AND c.validationPedagogique = FALSE")
-    List<Convention> getConventionEnAttenteEnseignant(String annee, String userLogin);
+    @Query("SELECT c FROM Convention c WHERE c.annee = :annee AND c.enseignant.uidEnseignant = :userUid AND c.validationCreation = TRUE AND c.validationPedagogique = FALSE")
+    List<Convention> getConventionEnAttenteEnseignant(String annee, String userUid);
 
     @Query("SELECT COUNT(c.id) FROM Convention c WHERE c.centreGestion.id = :idCentreGestion and c.ufr.id.code = :codeUfr")
     Long countConventionRattacheUfr(int idCentreGestion, String codeUfr);
@@ -90,23 +90,23 @@ public interface ConventionJpaRepository extends JpaRepository<Convention, Integ
     @Query("SELECT COUNT(c.id) FROM Convention c WHERE c.centreGestion.id = :idCentreGestion AND c.etape.id.code = :codeEtape AND c.etape.id.codeVersionEtape = :codeVersionEtape")
     Long countConventionRattacheEtape(int idCentreGestion, String codeEtape, String codeVersionEtape);
 
-    @Query("SELECT DISTINCT(c.annee) FROM Convention c JOIN c.centreGestion cg JOIN cg.personnels p WHERE p.uidPersonnel = :login ORDER BY c.annee")
-    List<String> getGestionnaireAnnees(String login);
+    @Query("SELECT DISTINCT(c.annee) FROM Convention c JOIN c.centreGestion cg JOIN cg.personnels p WHERE p.uidPersonnel = :uid ORDER BY c.annee")
+    List<String> getGestionnaireAnnees(String uid);
 
-    @Query("SELECT DISTINCT(c.annee) FROM Convention c WHERE c.enseignant.uidEnseignant = :login ORDER BY c.annee")
-    List<String> getEnseignantAnnees(String login);
+    @Query("SELECT DISTINCT(c.annee) FROM Convention c WHERE c.enseignant.uidEnseignant = :uid ORDER BY c.annee")
+    List<String> getEnseignantAnnees(String uid);
 
-    @Query("SELECT DISTINCT(c.annee) FROM Convention c WHERE c.etudiant.identEtudiant = :login ORDER BY c.annee")
-    List<String> getEtudiantAnnees(String login);
+    @Query("SELECT DISTINCT(c.annee) FROM Convention c WHERE c.etudiant.identEtudiant = :uid ORDER BY c.annee")
+    List<String> getEtudiantAnnees(String uid);
 
     @Query("SELECT DISTINCT(c.annee) FROM Convention c ORDER BY c.annee")
-    List<String> getAnnees(String login);
+    List<String> getAnnees();
 
     @Transactional
     @Modifying
     @Query("UPDATE Convention c SET c.verificationAdministrative = TRUE WHERE c.centreGestion.id = :idCentreGestion AND c.validationPedagogique = TRUE AND c.validationConvention = TRUE")
     void updateVerificationAdministrative(int idCentreGestion);
 
-    @Query("SELECT c.id FROM Convention c WHERE c.id != :conventionId AND c.etudiant.identEtudiant = :login AND c.validationCreation = TRUE AND ((c.dateDebutStage >= :dateDebut AND c.dateFinStage <= :dateFin) OR (c.dateDebutStage <= :dateDebut AND c.dateFinStage >= :dateDebut) OR (c.dateDebutStage <= :dateFin AND c.dateFinStage >= :dateFin))")
-    List<Integer> findDatesChevauchent(String login, int conventionId, Date dateDebut, Date dateFin);
+    @Query("SELECT c.id FROM Convention c WHERE c.id != :conventionId AND c.etudiant.identEtudiant = :uid AND c.validationCreation = TRUE AND ((c.dateDebutStage >= :dateDebut AND c.dateFinStage <= :dateFin) OR (c.dateDebutStage <= :dateDebut AND c.dateFinStage >= :dateDebut) OR (c.dateDebutStage <= :dateFin AND c.dateFinStage >= :dateFin))")
+    List<Integer> findDatesChevauchent(String uid, int conventionId, Date dateDebut, Date dateFin);
 }

@@ -169,7 +169,7 @@ export class GestionnairesComponent implements OnInit {
       mail: gestionnaire.mail,
       civilite: civiliteGest,
       typePersonne: gestionnaire.eduPersonPrimaryAffiliation,
-      uidPersonnel: gestionnaire.supannAliasLogin,
+      uidPersonnel: gestionnaire.uid,
       codeAffectation: '',
       impressionConvention: true,
       droitEvaluationEtudiant: false,

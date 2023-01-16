@@ -12,8 +12,8 @@ public interface PersonnelCentreGestionJpaRepository extends JpaRepository<Perso
 
     PersonnelCentreGestion findById(int id);
 
-    @Query("SELECT COUNT(p) FROM PersonnelCentreGestion p WHERE p.uidPersonnel = :login")
-    long countPersonnelByLogin(String login);
+    @Query("SELECT COUNT(p) FROM PersonnelCentreGestion p WHERE p.uidPersonnel = :uid")
+    long countPersonnelByLogin(String uid);
 
     @Transactional
     @Modifying

@@ -163,16 +163,16 @@ public class ConventionController {
         List<String> annees;
         if (!UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
             if (UtilisateurHelper.isRole(utilisateur, Role.RESP_GES) || UtilisateurHelper.isRole(utilisateur, Role.GES)) {
-                annees = conventionJpaRepository.getGestionnaireAnnees(utilisateur.getLogin());
+                annees = conventionJpaRepository.getGestionnaireAnnees(utilisateur.getUid());
             } else if (UtilisateurHelper.isRole(utilisateur, Role.ENS)) {
-                annees = conventionJpaRepository.getEnseignantAnnees(utilisateur.getLogin());
+                annees = conventionJpaRepository.getEnseignantAnnees(utilisateur.getUid());
             } else if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
-                annees = conventionJpaRepository.getEtudiantAnnees(utilisateur.getLogin());
+                annees = conventionJpaRepository.getEtudiantAnnees(utilisateur.getUid());
             } else {
-                annees = conventionJpaRepository.getAnnees(utilisateur.getLogin());
+                annees = conventionJpaRepository.getAnnees();
             }
         } else {
-            annees = conventionJpaRepository.getAnnees(utilisateur.getLogin());
+            annees = conventionJpaRepository.getAnnees();
         }
         String anneeEnCours = appConfigService.getAnneeUniv();
         for (String anneeLibelle : annees) {
@@ -198,7 +198,7 @@ public class ConventionController {
         }
         // Pour les étudiants on vérifie que c'est une de ses conventions
         Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
-        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(convention.getEtudiant().getIdentEtudiant())) {
+        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getUid().equals(convention.getEtudiant().getIdentEtudiant())) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
         canViewEditConvention(convention, ServiceContext.getServiceContext().getUtilisateur());
@@ -256,7 +256,7 @@ public class ConventionController {
         Convention convention = conventionJpaRepository.findById(id);
         // Pour les étudiants on vérifie que c'est une de ses conventions
         Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
-        if (convention == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(convention.getEtudiant().getIdentEtudiant()))) {
+        if (convention == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getUid().equals(convention.getEtudiant().getIdentEtudiant()))) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
         setSingleFieldData(convention, conventionSingleFieldDto, utilisateur);
@@ -276,10 +276,10 @@ public class ConventionController {
         boolean isEnseignant = false;
         // Récupération des conventions en attente de validation, pédagogique pour les enseignants, administrative pour les gestionnaires
         if (UtilisateurHelper.isRole(utilisateur, Role.ENS)) {
-            conventions = conventionJpaRepository.getConventionEnAttenteEnseignant(appConfigService.getAnneeUnivLibelle(annee), utilisateur.getLogin());
+            conventions = conventionJpaRepository.getConventionEnAttenteEnseignant(appConfigService.getAnneeUnivLibelle(annee), utilisateur.getUid());
             isEnseignant = true;
         } else if (!UtilisateurHelper.isRole(utilisateur, Role.ADM) && (UtilisateurHelper.isRole(utilisateur, Role.RESP_GES) || UtilisateurHelper.isRole(utilisateur, Role.GES))) {
-            conventions = conventionJpaRepository.getConventionEnAttenteGestionnaire(appConfigService.getAnneeUnivLibelle(annee), utilisateur.getLogin());
+            conventions = conventionJpaRepository.getConventionEnAttenteGestionnaire(appConfigService.getAnneeUnivLibelle(annee), utilisateur.getUid());
         } else {
             conventions = conventionJpaRepository.getConventionEnAttenteGestionnaire(appConfigService.getAnneeUnivLibelle(annee));
         }
@@ -321,7 +321,7 @@ public class ConventionController {
         ContextDto contexteDto = ServiceContext.getServiceContext();
         Utilisateur utilisateur = contexteDto.getUtilisateur();
         // Pour les étudiants on vérifie que c'est une de ses conventions
-        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(convention.getEtudiant().getIdentEtudiant())) {
+        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getUid().equals(convention.getEtudiant().getIdentEtudiant())) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
 
@@ -500,7 +500,7 @@ public class ConventionController {
         }
         // Pour les étudiants on vérifie que c'est une de ses conventions
         Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
-        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(convention.getEtudiant().getIdentEtudiant())) {
+        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getUid().equals(convention.getEtudiant().getIdentEtudiant())) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
         canViewEditConvention(convention, ServiceContext.getServiceContext().getUtilisateur());
@@ -528,15 +528,15 @@ public class ConventionController {
     private void canViewEditConvention(Convention convention, Utilisateur utilisateur) {
         if (!UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
             if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
-                if (convention.getEtudiant() == null || !convention.getEtudiant().getIdentEtudiant().equalsIgnoreCase(utilisateur.getLogin())) {
+                if (convention.getEtudiant() == null || !convention.getEtudiant().getIdentEtudiant().equalsIgnoreCase(utilisateur.getUid())) {
                     throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
                 }
             } else if (UtilisateurHelper.isRole(utilisateur, Role.ENS)) {
-                if (convention.getEnseignant() == null || !convention.getEnseignant().getUidEnseignant().equalsIgnoreCase(utilisateur.getLogin())) {
+                if (convention.getEnseignant() == null || !convention.getEnseignant().getUidEnseignant().equalsIgnoreCase(utilisateur.getUid())) {
                     throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
                 }
             } else { // cas gestionnaire, responsable gestionnaire et profil non défini
-                if (convention.getCentreGestion() == null || convention.getCentreGestion().getPersonnels() == null || convention.getCentreGestion().getPersonnels().stream().noneMatch(p -> p.getUidPersonnel().equalsIgnoreCase(utilisateur.getLogin()))) {
+                if (convention.getCentreGestion() == null || convention.getCentreGestion().getPersonnels() == null || convention.getCentreGestion().getPersonnels().stream().noneMatch(p -> p.getUidPersonnel().equalsIgnoreCase(utilisateur.getUid()))) {
                     throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
                 }
             }
@@ -570,7 +570,7 @@ public class ConventionController {
     private void setConventionData(Convention convention, ConventionFormDto conventionFormDto) {
         // Pour les étudiants on vérifie que c'est une de ses conventions
         Utilisateur utilisateur = ServiceContext.getServiceContext().getUtilisateur();
-        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(conventionFormDto.getEtudiantLogin())) {
+        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getUid().equals(conventionFormDto.getEtudiantLogin())) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
         if (convention == null) {
@@ -901,7 +901,7 @@ public class ConventionController {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
         // Pour les étudiants on vérifie que c'est une de ses conventions
-        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(convention.getEtudiant().getIdentEtudiant())) {
+        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getUid().equals(convention.getEtudiant().getIdentEtudiant())) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
         canViewEditConvention(convention, ServiceContext.getServiceContext().getUtilisateur());
@@ -1013,13 +1013,13 @@ public class ConventionController {
         personnels = personnels.stream().filter(p -> p.getAlertesMail() != null && p.getAlertesMail()).collect(Collectors.toList());
 
         // Récupération de la fiche utilisateur des personnels
-        List<Utilisateur> utilisateurPersonnels = utilisateurJpaRepository.findByLogins(personnels.stream().map(PersonnelCentreGestion::getUidPersonnel).collect(Collectors.toList()));
+        List<Utilisateur> utilisateurPersonnels = utilisateurJpaRepository.findByUids(personnels.stream().map(PersonnelCentreGestion::getUidPersonnel).collect(Collectors.toList()));
 
         // Envoi du mail de validation administrative
         if (sendMailEtudiant) mailerService.sendAlerteValidation(convention.getEtudiant().getMail(), convention, utilisateurContext, templateMailCode);
         // Parmi le personnel avec alertMail=1, on ne garde que ceux qui n'ont pas le rôle RESP_GES pour éviter l'envoi en double du mail à la même personne
         for (PersonnelCentreGestion personnel : personnels) {
-            Utilisateur utilisateur = utilisateurPersonnels.stream().filter(u -> u.getLogin().equals(personnel.getUidPersonnel())).findAny().orElse(null);
+            Utilisateur utilisateur = utilisateurPersonnels.stream().filter(u -> u.getUid().equals(personnel.getUidPersonnel())).findAny().orElse(null);
             if (utilisateur == null || !UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)) {
                 // on s'appuie sur les booléens d'alertes creationConventionEtudiant, modificationConventionEtudiant... du personnel
                 if (mailerService.isAlerteActif(personnel, templateMailCode)) {
@@ -1030,7 +1030,7 @@ public class ConventionController {
         // Parmi le personnel avec alertMail=1, on ne garde ceux qui ont le rôle RESP_GES pour éviter l'envoi en double du mail à la même personne
         mailerService.sendAlerteValidation(convention.getEtudiant().getMail(), convention, utilisateurContext, templateMailCode);
         for (PersonnelCentreGestion personnel : personnels) {
-            Utilisateur utilisateur = utilisateurPersonnels.stream().filter(u -> u.getLogin().equals(personnel.getUidPersonnel())).findAny().orElse(null);
+            Utilisateur utilisateur = utilisateurPersonnels.stream().filter(u -> u.getUid().equals(personnel.getUidPersonnel())).findAny().orElse(null);
             if (utilisateur != null && UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)) {
                 // on s'appuie sur les booléens d'alertes creationConventionEtudiant, modificationConventionEtudiant... du personnel
                 if (mailerService.isAlerteActif(personnel, templateMailCode)) {
@@ -1048,7 +1048,7 @@ public class ConventionController {
             JSONObject jsonFilters = new JSONObject(filters);
             Map<String, Object> currentUser = new HashMap<>();
             currentUser.put("type", "text");
-            currentUser.put("value", utilisateur.getLogin());
+            currentUser.put("value", utilisateur.getUid());
             currentUser.put("specific", true);
             if (UtilisateurHelper.isRole(utilisateur, Role.RESP_GES) || UtilisateurHelper.isRole(utilisateur, Role.GES)) {
                 Map<String, Object> ges = new HashMap<>();

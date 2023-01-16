@@ -1,0 +1,14 @@
+databaseChangeLog:
+- changeSet:
+    id: utilisateur-uid
+    author: ssound
+    changes:
+    - addColumn:
+        tableName: Utilisateur
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: uid
+            type: VARCHAR(255)
+            constraints:
+                unique: true
