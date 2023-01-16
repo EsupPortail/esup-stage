@@ -165,7 +165,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.changeAnnee();
         } else {
           this.appTable?.setFilterOption('annee', this.annees);
-          this.appTable?.setFilterValue('annee', [this.anneeEnCours.libelle]);
         }
 
         if (this.savedFilters) {
