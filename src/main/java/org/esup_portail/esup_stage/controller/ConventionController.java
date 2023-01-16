@@ -1049,6 +1049,7 @@ public class ConventionController {
             Map<String, Object> currentUser = new HashMap<>();
             currentUser.put("type", "text");
             currentUser.put("value", utilisateur.getLogin());
+            currentUser.put("specific", true);
             if (UtilisateurHelper.isRole(utilisateur, Role.RESP_GES) || UtilisateurHelper.isRole(utilisateur, Role.GES)) {
                 Map<String, Object> ges = new HashMap<>();
                 ges.put("type", "text");
