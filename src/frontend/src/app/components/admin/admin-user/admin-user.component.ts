@@ -67,6 +67,7 @@ export class AdminUserComponent implements OnInit {
   ) {
     this.form = this.fb.group({
       login: [null, [Validators.required, Validators.maxLength(255)]],
+      uid: [null, [Validators.required, Validators.maxLength(255)]],
       nom: [null, [Validators.maxLength(255)]],
       prenom: [null, [Validators.maxLength(255)]],
       roles: [null, [Validators.required]],
@@ -95,6 +96,7 @@ export class AdminUserComponent implements OnInit {
   emptyData(): void {
     this.data = {
       login: null,
+      uid: null,
       nom: null,
       prenom: null,
       roles: null,
@@ -164,6 +166,7 @@ export class AdminUserComponent implements OnInit {
 
   choose(row: any): void {
     this.ldapUser = row;
+    this.form.get('uid')?.setValue(this.ldapUser.uid);
     const dialogRef = this.dialog.open(CreateDialogComponent, {
       data: {
         ldapUser: this.ldapUser,
