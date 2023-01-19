@@ -288,6 +288,12 @@ export class AvenantFormComponent implements OnInit {
       }else{
         this.avenantService.create(data).subscribe((response: any) => {
           this.messageService.setSuccess('Avenant créé avec succès');
+          this.avenant = {};
+          this.form.reset();
+          this.ngOnInit();
+          this.form.markAsPristine();
+          this.form.markAsUntouched();
+          this.form.updateValueAndValidity();
           if (this.form.get('modificationPeriode')!.value){
             this.clearAndAddInterruptionsAvenant(response.id)
           }else{
