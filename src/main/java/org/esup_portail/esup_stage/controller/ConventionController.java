@@ -531,7 +531,7 @@ public class ConventionController {
                 if (convention.getEtudiant() == null || !convention.getEtudiant().getIdentEtudiant().equalsIgnoreCase(utilisateur.getUid())) {
                     throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
                 }
-            } else if (UtilisateurHelper.isRole(utilisateur, Role.ENS)) {
+            } else if (UtilisateurHelper.isRole(utilisateur, Role.ENS) && !UtilisateurHelper.isRole(utilisateur, Role.GES)) {
                 if (convention.getEnseignant() == null || !convention.getEnseignant().getUidEnseignant().equalsIgnoreCase(utilisateur.getUid())) {
                     throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
                 }
