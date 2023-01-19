@@ -184,6 +184,9 @@ public class CentreGestionController {
         if (centreGestion.getVerificationAdministrative() != null && centreGestion.getVerificationAdministrative()) {
             conventionJpaRepository.updateVerificationAdministrative(centreGestion.getId());
         }
+        if (centreGestion.getConsigne() != null) {
+            centreGestion.getConsigne().setCentreGestion(centreGestion);
+        }
         return centreGestionJpaRepository.saveAndFlush(centreGestion);
     }
 
@@ -192,6 +195,9 @@ public class CentreGestionController {
     public CentreGestion validationCreation(@PathVariable("id") int id) {
         CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
         centreGestion.setValidationCreation(true);
+        if (centreGestion.getConsigne() != null) {
+            centreGestion.getConsigne().setCentreGestion(centreGestion);
+        }
 
         return centreGestionJpaRepository.saveAndFlush(centreGestion);
     }

@@ -141,8 +141,8 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     @Column
     private Integer delaiAlerteConvention = 0;
 
-    @OneToMany(mappedBy = "centreGestion", fetch = FetchType.EAGER)
-    private List<Consigne> consignes = new ArrayList<>();
+    @OneToOne(mappedBy = "centreGestion", fetch = FetchType.EAGER)
+    private Consigne consigne;
 
     public int getId() {
         return id;
@@ -464,12 +464,12 @@ public class CentreGestion extends ObjetMetier implements Exportable {
         this.delaiAlerteConvention = delaiAlerteConvention;
     }
 
-    public List<Consigne> getConsignes() {
-        return consignes;
+    public Consigne getConsigne() {
+        return consigne;
     }
 
-    public void setConsignes(List<Consigne> consignes) {
-        this.consignes = consignes;
+    public void setConsigne(Consigne consigne) {
+        this.consigne = consigne;
     }
 
     @Transient
