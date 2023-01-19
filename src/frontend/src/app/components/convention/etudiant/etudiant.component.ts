@@ -64,7 +64,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
     private router: Router,
   ) {
     this.form = this.fb.group({
-      id: [null, []],
+      codEtu: [null, []],
       nom: [null, []],
       prenom: [null, []],
     });
@@ -159,7 +159,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
 
   search(): void {
     this.selectedRow = undefined;
-    if (!this.form.get('id')?.value && !this.form.get('nom')?.value && !this.form.get('prenom')?.value) {
+    if (!this.form.get('codEtu')?.value && !this.form.get('nom')?.value && !this.form.get('prenom')?.value) {
       this.messageService.setError(`Veuillez renseigner au moins l'un des critères`);
       return;
     }
