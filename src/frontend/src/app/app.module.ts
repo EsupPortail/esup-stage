@@ -118,7 +118,10 @@ export class FrenchDateProvider extends NativeDateAdapter {
   parse(value: any): Date | null {
     let it = value.split('/');
     if (it.length === 3) {
-      if (it[2].length === 2) it[2] = '20' + it[2];
+      if (it[2].length === 2) {
+        const now = new Date();
+        it[2] = now.getFullYear().toString().substring(0, 2) + it[2];
+      }
       return new Date(it[2], it[1] - 1, it[0]);
     }
     return null;
