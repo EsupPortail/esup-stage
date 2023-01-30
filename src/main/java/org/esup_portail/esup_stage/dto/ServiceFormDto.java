@@ -8,7 +8,7 @@ public class ServiceFormDto {
 
     @NotNull
     @NotEmpty
-    @Size(max = 70)
+    @Size(max = 150)
     private String nom;
 
     @NotNull

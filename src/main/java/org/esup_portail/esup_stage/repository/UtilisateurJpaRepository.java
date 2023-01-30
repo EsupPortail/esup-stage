@@ -21,9 +21,18 @@ public interface UtilisateurJpaRepository extends JpaRepository<Utilisateur, Int
     @Query("SELECT u FROM Utilisateur u WHERE u.login = :login")
     Utilisateur findOneByLogin(String login);
 
+    @Query("SELECT u FROM Utilisateur u WHERE u.uid = :uid")
+    Utilisateur findOneByUid(String uid);
+
     @Query("SELECT COUNT(u.id) FROM Utilisateur u JOIN u.roles r WHERE r.id = :idRole")
     Long countUserWithRole(int idRole);
 
     @Query("SELECT u FROM Utilisateur u WHERE u.login IN :logins")
     List<Utilisateur> findByLogins(List<String> logins);
+
+    @Query("SELECT u FROM Utilisateur u WHERE u.uid IN :uids")
+    List<Utilisateur> findByUids(List<String> uids);
+
+    @Query("SELECT u FROM Utilisateur u WHERE u.uid IS NULL AND u.actif = TRUE")
+    List<Utilisateur> findNoUid();
 }

@@ -12,7 +12,10 @@ import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.enums.TypeCentreEnum;
 import org.esup_portail.esup_stage.exception.AppException;
+import org.esup_portail.esup_stage.model.Affectation;
+import org.esup_portail.esup_stage.model.AffectationId;
 import org.esup_portail.esup_stage.model.AppConfig;
+import org.esup_portail.esup_stage.repository.AffectationJpaRepository;
 import org.esup_portail.esup_stage.repository.AppConfigJpaRepository;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
@@ -25,6 +28,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 
 @ApiController
 @RequestMapping("/config")
@@ -32,6 +36,9 @@ public class AppConfigController {
 
     @Autowired
     AppConfigJpaRepository appConfigJpaRepository;
+
+    @Autowired
+    AffectationJpaRepository affectationJpaRepository;
 
     @Autowired
     AppConfigService appConfigService;
@@ -63,6 +70,19 @@ public class AppConfigController {
         ObjectMapper mapper = new ObjectMapper();
         appConfig.setParametres(mapper.writeValueAsString(configGeneraleDto));
         appConfigJpaRepository.saveAndFlush(appConfig);
+
+        // ajout de code université dans la table Affectation si elle n'existe pas
+        List<Affectation> affectations = affectationJpaRepository.findByCodeUniversite(configGeneraleDto.getCodeUniversite());
+        if (affectations.size() == 0) {
+            Affectation affectation = new Affectation();
+            AffectationId affectationId = new AffectationId();
+            affectationId.setCode("");
+            affectationId.setCodeUniversite(configGeneraleDto.getCodeUniversite());
+            affectation.setId(affectationId);
+            affectation.setLibelle("");
+            affectationJpaRepository.saveAndFlush(affectation);
+        }
+
         return appConfigService.getConfigGenerale();
     }
 

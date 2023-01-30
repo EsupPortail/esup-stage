@@ -61,7 +61,7 @@ export class CentreGestionComponent implements OnInit {
         this.isCreate = true;
         this.centreGestionService.getBrouillonByLogin().subscribe((response: any) => {
           this.centreGestion = response;
-          this.consigneCentre = this.centreGestion.consignes.length === 1 ? this.centreGestion.consignes[0] : null;
+          this.consigneCentre = this.centreGestion.consigne;
           this.centreGestionInited = true;
           if (this.centreGestion.id) {
             this.updateOnChanges();
@@ -72,7 +72,7 @@ export class CentreGestionComponent implements OnInit {
         this.isCreate = false;
         this.centreGestionService.getById(this.pathId).subscribe((response: any) => {
           this.centreGestion = response;
-          this.consigneCentre = this.centreGestion.consignes.length === 1 ? this.centreGestion.consignes[0] : null;
+          this.consigneCentre = this.centreGestion.consigne;
           this.centreGestionInited = true;
           if (this.centreGestion.id) {
             this.updateOnChanges();

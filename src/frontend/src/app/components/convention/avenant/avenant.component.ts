@@ -1,6 +1,6 @@
-import { Component, OnInit, Input, ViewChild, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { AvenantService } from "../../../services/avenant.service";
-import { MatExpansionPanel } from "@angular/material/expansion";
+import { MatExpansionPanel } from '@angular/material/expansion';
 
 @Component({
   selector: 'app-avenant',
@@ -12,7 +12,8 @@ export class AvenantComponent implements OnInit {
   avenants: any[] = [];
 
   @Input() convention: any;
-  @ViewChild(MatExpansionPanel) firstPanel: MatExpansionPanel|undefined;
+  @ViewChild('createAvenant') createAvenantPanel: MatExpansionPanel|undefined;
+  @ViewChild('listAvenants') listAvenantsPanel: MatExpansionPanel|undefined;
 
   @Output() avenantChanged = new EventEmitter<any>();
 
@@ -27,8 +28,14 @@ export class AvenantComponent implements OnInit {
   updateAvenants(): void {
     this.avenantService.getByConvention(this.convention.id).subscribe((response: any) => {
       this.avenants = response;
-      if (this.firstPanel && this.avenants.length > 0) {
-        this.firstPanel.expanded = false;
+      if (this.avenants.length > 0) {
+        if (this.listAvenantsPanel) {
+          this.listAvenantsPanel.expanded = true;
+        }
+      } else {
+        if (this.createAvenantPanel) {
+          this.createAvenantPanel.expanded = true;
+        }
       }
       this.avenantChanged.emit(this.avenants);
     });

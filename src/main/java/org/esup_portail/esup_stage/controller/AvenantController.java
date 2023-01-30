@@ -64,7 +64,7 @@ public class AvenantController {
         }
         // Pour les étudiants, on vérifie que c'est bien un avenant d'une de ses covnentions
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
-        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(avenant.getConvention().getEtudiant().getIdentEtudiant())) {
+        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getUid().equals(avenant.getConvention().getEtudiant().getIdentEtudiant())) {
             throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvée");
         }
         return avenant;
@@ -77,7 +77,7 @@ public class AvenantController {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
         if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
             Convention convention = conventionJpaRepository.getById(id);
-            if (!utilisateur.getLogin().equals(convention.getEtudiant().getIdentEtudiant())) {
+            if (!utilisateur.getUid().equals(convention.getEtudiant().getIdentEtudiant())) {
                 throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvée");
             }
         }
@@ -186,7 +186,7 @@ public class AvenantController {
         }
         // Pour les étudiants, on vérifie que c'est bien un avenant d'une de ses convention
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
-        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(convention.getEtudiant().getIdentEtudiant())) {
+        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getUid().equals(convention.getEtudiant().getIdentEtudiant())) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvé");
         }
 

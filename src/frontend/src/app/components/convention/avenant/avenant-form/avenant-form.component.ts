@@ -71,10 +71,7 @@ export class AvenantFormComponent implements OnInit {
 
   texteLimiteRenumeration: string = '';
 
-  minDateDebutStage: Date;
-  maxDateDebutStage: Date;
   minDateFinStage: Date;
-  maxDateFinStage: Date;
 
   customValidForm: boolean = false;
   autreModifChecked: boolean = false;
@@ -226,14 +223,9 @@ export class AvenantFormComponent implements OnInit {
       this.search();
     });
 
-    //controles uniquement pour les non gestionnaires
-    if(!this.isGestionnaire()){
-      this.minDateDebutStage = new Date(new Date().getTime() + (1000 * 60 * 60 * 24));
-      this.maxDateDebutStage = new Date(new Date().getFullYear()+1, 7, 31);
-      this.minDateFinStage = new Date(new Date().getTime() + (1000 * 60 * 60 * 24));
-      this.maxDateFinStage = new Date(new Date().getFullYear()+2, 0, 1);
+    if (this.avenant.dateDebutStage) {
+      this.updateDateFinBounds(new Date(this.avenant.dateDebutStage));
     }
-
     this.contenuService.get('TEXTE_LIMITE_RENUMERATION').subscribe((response: any) => {
       this.texteLimiteRenumeration = response.texte;
     })
@@ -288,6 +280,12 @@ export class AvenantFormComponent implements OnInit {
       }else{
         this.avenantService.create(data).subscribe((response: any) => {
           this.messageService.setSuccess('Avenant créé avec succès');
+          this.avenant = {};
+          this.form.reset();
+          this.ngOnInit();
+          this.form.markAsPristine();
+          this.form.markAsUntouched();
+          this.form.updateValueAndValidity();
           if (this.form.get('modificationPeriode')!.value){
             this.clearAndAddInterruptionsAvenant(response.id)
           }else{
@@ -440,7 +438,7 @@ export class AvenantFormComponent implements OnInit {
       "prenom": row.givenName.join(' '),
       "mail": row.mail,
       "typePersonne": row.eduPersonPrimaryAffiliation,
-      "uidEnseignant": row.supannAliasLogin,
+      "uidEnseignant": row.uid,
       "tel": row.telephoneNumber,
     };
 
@@ -455,7 +453,7 @@ export class AvenantFormComponent implements OnInit {
       prenom: row.givenName.join(' '),
       mail: row.mail,
       typePersonne: row.eduPersonPrimaryAffiliation,
-      uidEnseignant: row.supannAliasLogin,
+      uidEnseignant: row.uid,
       tel: row.telephoneNumber,
     };
 
@@ -479,7 +477,6 @@ export class AvenantFormComponent implements OnInit {
   updateDateFinBounds(dateDebut: Date): void {
     if (dateDebut) {
       this.minDateFinStage = new Date(dateDebut.getTime() + (1000 * 60 * 60 * 24));
-      this.maxDateFinStage = new Date(dateDebut.getTime() + (1000 * 60 * 60 * 24 * 365));
     }
   }
 

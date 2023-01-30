@@ -1,4 +1,4 @@
-import { APP_INITIALIZER, LOCALE_ID, NgModule } from '@angular/core';
+import { APP_INITIALIZER, Injectable, LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
@@ -35,7 +35,13 @@ import { MatPaginatorIntl, MatPaginatorModule } from "@angular/material/paginato
 
 import { DatePipe, registerLocaleData } from "@angular/common";
 import localeFr from '@angular/common/locales/fr';
-import { MAT_DATE_LOCALE, MatNativeDateModule } from "@angular/material/core";
+import {
+  DateAdapter,
+  MAT_DATE_FORMATS,
+  MAT_DATE_LOCALE,
+  MatDateFormats,
+  MatNativeDateModule, NativeDateAdapter
+} from "@angular/material/core";
 import { PaginatorIntl } from "./paginator-intl";
 import { TableComponent } from './components/table/table.component';
 import { BooleanPipe } from './pipes/boolean.pipe';
@@ -135,6 +141,25 @@ import {
 } from "./components/centre-gestion/signature-electronique/signature-electronique.component";
 
 registerLocaleData(localeFr, 'fr');
+
+@Injectable()
+export class FrenchDateProvider extends NativeDateAdapter {
+  parse(value: any): Date | null {
+    let it = value.split('/');
+    if (it.length === 3) {
+      if (it[2].length === 2) {
+        const now = new Date();
+        it[2] = now.getFullYear().toString().substring(0, 2) + it[2];
+      }
+      return new Date(it[2], it[1] - 1, it[0]);
+    }
+    return null;
+  }
+
+  format(date: Date, displayFormat: Object): string {
+    return date.getDate().toString().padStart(2, '0') + '/' + (date.getMonth() + 1).toString().padStart(2, '0') + '/' + date.getFullYear();
+  }
+}
 
 @NgModule({
   declarations: [
@@ -271,6 +296,7 @@ registerLocaleData(localeFr, 'fr');
     { provide: HTTP_INTERCEPTORS, useClass: TechnicalInterceptor, multi: true },
     { provide: MAT_COLOR_FORMATS, useValue: NGX_MAT_COLOR_FORMATS },
     { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' },
+    { provide: DateAdapter, useClass: FrenchDateProvider },
     { provide: MatPaginatorIntl, useClass: PaginatorIntl },
     { provide: APP_INITIALIZER, useFactory: (cs: ContenuService) => () => cs.getAllLibelle(), deps: [ContenuService], multi: true },
   ],

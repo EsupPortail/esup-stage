@@ -101,7 +101,7 @@ public class CentreGestionController {
         if (predicate.equals("personnels")) {
             Utilisateur currentUser = ServiceContext.getUtilisateur();
             List<CentreGestion> list =  paginatedResponse.getData();
-            Predicate<PersonnelCentreGestion> condition = value -> value.getUidPersonnel().equals(currentUser.getLogin());
+            Predicate<PersonnelCentreGestion> condition = value -> value.getUidPersonnel().equals(currentUser.getUid());
             list.sort((a, b) -> Boolean.compare(a.getPersonnels().stream().anyMatch(condition), b.getPersonnels().stream().anyMatch(condition)));
 
             if (sortOrder.equals("asc"))
@@ -182,6 +182,9 @@ public class CentreGestionController {
             conventionJpaRepository.updateVerificationAdministrative(centreGestion.getId());
         }
         centreGestion.setFicheEvaluation(null);
+        if (centreGestion.getConsigne() != null) {
+            centreGestion.getConsigne().setCentreGestion(centreGestion);
+        }
         return centreGestionJpaRepository.saveAndFlush(centreGestion);
     }
 
@@ -190,6 +193,9 @@ public class CentreGestionController {
     public CentreGestion validationCreation(@PathVariable("id") int id) {
         CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
         centreGestion.setValidationCreation(true);
+        if (centreGestion.getConsigne() != null) {
+            centreGestion.getConsigne().setCentreGestion(centreGestion);
+        }
 
         return centreGestionJpaRepository.saveAndFlush(centreGestion);
     }

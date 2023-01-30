@@ -67,7 +67,7 @@ export class CentreGestionSearchComponent implements OnInit, OnDestroy, AfterVie
   }
 
   isPersonnel(data: any) {
-    return data.personnels.some((p: any) => p.uidPersonnel == this.currentUser.login);
+    return data.personnels.some((p: any) => p.uidPersonnel == this.currentUser.uid);
   }
 
   editCentre(id: number): void {

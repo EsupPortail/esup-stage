@@ -8,6 +8,7 @@ public class LdapSearchDto {
     private String primaryAffiliation;
     private String affiliation;
     private String supannAliasLogin;
+    private String codEtu;
 
     public String getId() {
         return id;
@@ -63,5 +64,13 @@ public class LdapSearchDto {
 
     public void setSupannAliasLogin(String supannAliasLogin) {
         this.supannAliasLogin = supannAliasLogin;
+    }
+
+    public String getCodEtu() {
+        return codEtu;
+    }
+
+    public void setCodEtu(String codEtu) {
+        this.codEtu = codEtu;
     }
 }

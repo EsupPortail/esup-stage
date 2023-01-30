@@ -75,6 +75,10 @@ export class ConsigneComponent implements OnInit, OnChanges {
           this.messageService.setError("Le fichier doit être au format pdf, doc ou docx");
           return;
         }
+        if (doc.size > 1048576) {
+          this.messageService.setError("Le fichier ne doit pas dépasser 10Mo");
+          return;
+        }
         const formData = new FormData();
         formData.append('doc', doc, doc.name);
         this.consigneService.addDoc(this.consigne.id, formData).subscribe((response: any) => {

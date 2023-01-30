@@ -18,6 +18,9 @@ public class Utilisateur implements Exportable {
     @Column(nullable = false, unique = true)
     private String login;
 
+    @Column(unique = true)
+    private String uid;
+
     @Column
     private String password;
 
@@ -56,6 +59,14 @@ public class Utilisateur implements Exportable {
 
     public void setLogin(String login) {
         this.login = login;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     public String getPassword() {

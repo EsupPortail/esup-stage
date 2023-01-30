@@ -37,7 +37,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
   savedFilters: any[] = [];
 
   nbConventionsEnAttente: number|undefined;
-  anneeEnCours: any|undefined;
+  anneeEnCours = {
+    "annee": "any",
+    "libelle": "Toutes les années",
+    "anneeEnCours": false,
+    "any": true
+  };
   annees: any[] = [];
   ufrList: any[] = [];
   etapeList: any[] = [];
@@ -166,18 +171,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
         // annees
         this.annees = listAnneeData;
-        this.anneeEnCours = this.annees.find((a: any) => { return a.anneeEnCours === true });
         if (!this.authService.isEtudiant()) {
-          this.annees.push({
-            "annee": "any",
-            "libelle": "Toutes les années",
-            "anneeEnCours": false,
-            "any": true
-          })
-          this.changeAnnee();
+          this.annees.push(this.anneeEnCours);
         } else {
           this.appTable?.setFilterOption('annee', this.annees);
-          this.appTable?.setFilterValue('annee', [this.anneeEnCours.libelle]);
         }
 
         // langue convention

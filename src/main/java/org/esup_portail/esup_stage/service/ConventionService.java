@@ -105,7 +105,7 @@ public class ConventionService {
     public void setConventionData(Convention convention, ConventionFormDto conventionFormDto) {
         // Pour les étudiants on vérifie que c'est une de ses conventions
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
-        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getLogin().equals(conventionFormDto.getEtudiantLogin())) {
+        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getUid().equals(conventionFormDto.getEtudiantLogin())) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
         if (convention == null) {
@@ -125,11 +125,24 @@ public class ConventionService {
         }
         Etape etape = etapeJpaRepository.findById(conventionFormDto.getCodeEtape(), conventionFormDto.getCodeVersionEtape(), appConfigService.getConfigGenerale().getCodeUniversite());
         if (etape == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Étape non trouvée");
+            EtapeId etapeId = new EtapeId();
+            etapeId.setCode(conventionFormDto.getCodeEtape());
+            etapeId.setCodeVersionEtape(conventionFormDto.getCodeVersionEtape());
+            etapeId.setCodeUniversite(appConfigService.getConfigGenerale().getCodeUniversite());
+            etape = new Etape();
+            etape.setId(etapeId);
+            etape.setLibelle(conventionFormDto.getLibelleEtape());
+            etape = etapeJpaRepository.saveAndFlush(etape);
         }
         Ufr ufr = ufrJpaRepository.findById(conventionFormDto.getCodeComposante(), appConfigService.getConfigGenerale().getCodeUniversite());
         if (ufr == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "UFR non trouvée");
+            UfrId ufrId = new UfrId();
+            ufrId.setCode(conventionFormDto.getCodeComposante());
+            ufrId.setCodeUniversite(appConfigService.getConfigGenerale().getCodeUniversite());
+            ufr = new Ufr();
+            ufr.setId(ufrId);
+            ufr.setLibelle(conventionFormDto.getLibelleComposante());
+            ufr = ufrJpaRepository.saveAndFlush(ufr);
         }
         CentreGestion centreGestionEtab = centreGestionJpaRepository.getCentreEtablissement();
         // Erreur si le centre de type etablissement est null
@@ -202,15 +215,15 @@ public class ConventionService {
     public void canViewEditConvention(Convention convention, Utilisateur utilisateur) {
         if (!UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
             if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
-                if (convention.getEtudiant() == null || !convention.getEtudiant().getIdentEtudiant().equalsIgnoreCase(utilisateur.getLogin())) {
+                if (convention.getEtudiant() == null || !convention.getEtudiant().getIdentEtudiant().equalsIgnoreCase(utilisateur.getUid())) {
                     throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
                 }
             } else if (UtilisateurHelper.isRole(utilisateur, Role.ENS)) {
-                if (convention.getEnseignant() == null || !convention.getEnseignant().getUidEnseignant().equalsIgnoreCase(utilisateur.getLogin())) {
+                if (convention.getEnseignant() == null || !convention.getEnseignant().getUidEnseignant().equalsIgnoreCase(utilisateur.getUid())) {
                     throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
                 }
             } else { // cas gestionnaire, responsable gestionnaire et profil non défini
-                if (convention.getCentreGestion() == null || convention.getCentreGestion().getPersonnels() == null || convention.getCentreGestion().getPersonnels().stream().noneMatch(p -> p.getUidPersonnel().equalsIgnoreCase(utilisateur.getLogin()))) {
+                if (convention.getCentreGestion() == null || convention.getCentreGestion().getPersonnels() == null || convention.getCentreGestion().getPersonnels().stream().noneMatch(p -> p.getUidPersonnel().equalsIgnoreCase(utilisateur.getUid()))) {
                     throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
                 }
             }

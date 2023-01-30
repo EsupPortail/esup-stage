@@ -171,7 +171,7 @@ export class ParamCentreComponent implements OnInit {
       "prenom": row.givenName.join(' '),
       "mail": row.mail,
       "typePersonne": row.eduPersonPrimaryAffiliation,
-      "uidEnseignant": row.supannAliasLogin,
+      "uidEnseignant": row.uid,
       "tel": row.telephoneNumber,
     };
 
@@ -187,7 +187,7 @@ export class ParamCentreComponent implements OnInit {
       prenom: row.givenName.join(' '),
       mail: row.mail,
       typePersonne: row.eduPersonPrimaryAffiliation,
-      uidEnseignant: row.supannAliasLogin,
+      uidEnseignant: row.uid,
       tel: row.telephoneNumber,
     };
 

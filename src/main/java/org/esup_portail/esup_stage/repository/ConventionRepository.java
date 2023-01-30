@@ -35,6 +35,12 @@ public class ConventionRepository extends PaginationRepository<Convention> {
         if (key.equals("centreGestion.personnels")) {
             clauses.add("personnel.uidPersonnel = :" + key.replace(".", ""));
         }
+        if (key.equals("enseignant.uidEnseignant")) {
+            clauses.add("enseignant.uidEnseignant = :" + key.replace(".", ""));
+        }
+        if (key.equals("etudiant.identEtudiant")) {
+            clauses.add("etudiant.identEtudiant = :" + key.replace(".", ""));
+        }
         if (key.equals("etape.id")) {
             JSONArray jsonArray = parameter.getJSONArray("value");
             List<String> clauseOr = new ArrayList<>();
@@ -117,6 +123,12 @@ public class ConventionRepository extends PaginationRepository<Convention> {
     @Override
     protected void setSpecificParameterValue(String key, JSONObject parameter, Query query) {
         if (key.equals("centreGestion.personnels")) {
+            query.setParameter(key.replace(".", ""), parameter.getString("value"));
+        }
+        if (key.equals("enseignant.uidEnseignant")) {
+            query.setParameter(key.replace(".", ""), parameter.getString("value"));
+        }
+        if (key.equals("etudiant.identEtudiant")) {
             query.setParameter(key.replace(".", ""), parameter.getString("value"));
         }
         if (key.equals("etape.id")) {
