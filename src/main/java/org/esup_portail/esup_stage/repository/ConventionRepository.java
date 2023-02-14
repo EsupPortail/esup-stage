@@ -36,10 +36,10 @@ public class ConventionRepository extends PaginationRepository<Convention> {
             clauses.add("personnel.uidPersonnel = :" + key.replace(".", ""));
         }
         if (key.equals("enseignant.uidEnseignant")) {
-            clauses.add("enseignant.uidEnseignant = :" + key.replace(".", ""));
+            clauses.add("c.enseignant.uidEnseignant = :" + key.replace(".", ""));
         }
         if (key.equals("etudiant.identEtudiant")) {
-            clauses.add("etudiant.identEtudiant = :" + key.replace(".", ""));
+            clauses.add("c.etudiant.identEtudiant = :" + key.replace(".", ""));
         }
         if (key.equals("etape.id")) {
             JSONArray jsonArray = parameter.getJSONArray("value");
