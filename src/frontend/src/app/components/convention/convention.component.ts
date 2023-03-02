@@ -58,18 +58,20 @@ export class ConventionComponent implements OnInit {
       const pathId = param.id;
       this.conventionTabIndex = this.conventionService.getGoToOnglet()??0;
       if (pathId === 'create') {
-        this.titleService.title = 'Création d\'une convention';
         // Récupération de la convention au mode brouillon
         this.conventionService.getBrouillon().subscribe((response: any) => {
           this.convention = response;
+          this.titleService.title = 'Création d\'une convention pour ' + this.convention.etudiant?.nom
+          + ' ' + this.convention.etudiant?.prenom;
           this.majStatus();
         });
         this.modifiable = true;
       } else {
-        this.titleService.title = 'Gestion de la convention n°' + pathId;
         // Récupération de la convention correspondant à l'id
         this.conventionService.getById(pathId).subscribe((response: any) => {
           this.convention = response;
+          this.titleService.title = 'Gestion de la convention n°' + pathId 
+          + ' ' + this.convention.etudiant.nom + ' ' + this.convention.etudiant.prenom;
           this.majStatus();
           // un admin a tout le temps les droits de modifications
           if (this.authService.isAdmin()) {
