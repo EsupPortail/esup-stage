@@ -888,7 +888,7 @@ public class ConventionController {
         List<Utilisateur> utilisateurPersonnels = utilisateurJpaRepository.findByUids(personnels.stream().map(PersonnelCentreGestion::getUidPersonnel).collect(Collectors.toList()));
 
         String mailEtudiant = convention.getCourrielPersoEtudiant();
-        if(mailEtudiant == null || appConfigService.getConfigGenerale().isUtiliserMailPersoEtudiant())
+        if(mailEtudiant == null || !appConfigService.getConfigGenerale().isUtiliserMailPersoEtudiant())
             mailEtudiant = convention.getEtudiant().getMail();
 
         // Envoi du mail de validation administrative

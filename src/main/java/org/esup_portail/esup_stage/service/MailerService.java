@@ -56,8 +56,13 @@ public class MailerService {
         if (templateMail == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Template mail " + templateMailCode + " non trouvé");
         }
-        MailContext mailContext = new MailContext(applicationBootstrap, convention, null, userModif);
-        sendMail(to, templateMail.getId(),templateMail.getObjet(),templateMail.getTexte(),templateMail.getCode(), mailContext, false,null,null);
+        if(to == null || to.equals("")){
+            logger.info("Aucun destinataire défini pour l'envoie de l'email.");
+        }else{
+            MailContext mailContext = new MailContext(applicationBootstrap, convention, null, userModif);
+            sendMail(to, templateMail.getId(),templateMail.getObjet(),templateMail.getTexte(),templateMail.getCode(),
+                    mailContext, false,null,null);
+        }
     }
 
     public void sendMailGroupe(String to, Convention convention, Utilisateur userModif, String templateMailCode,byte[] archive) {
@@ -65,9 +70,13 @@ public class MailerService {
         if (templateMailGroupe == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Template mail " + templateMailCode + " non trouvé");
         }
-        MailContext mailContext = new MailContext(applicationBootstrap, convention, null, userModif);
-        sendMail(to,templateMailGroupe.getId(),templateMailGroupe.getObjet(),templateMailGroupe.getTexte(),templateMailGroupe.getCode(),
-                mailContext, false,"conventions.zip",archive);
+        if(to == null || to.equals("")){
+            logger.info("Aucun destinataire défini pour l'envoie de l'email.");
+        }else {
+            MailContext mailContext = new MailContext(applicationBootstrap, convention, null, userModif);
+            sendMail(to, templateMailGroupe.getId(), templateMailGroupe.getObjet(), templateMailGroupe.getTexte(), templateMailGroupe.getCode(),
+                    mailContext, false, "conventions.zip", archive);
+        }
     }
 
     public void sendTest(SendMailTestDto sendMailTestDto, Utilisateur utilisateur) {
@@ -75,10 +84,14 @@ public class MailerService {
         if (templateMail == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Template mail " + sendMailTestDto.getTemplateMail() + " non trouvé");
         }
-
+        if(sendMailTestDto.getTo() == null || sendMailTestDto.getTo().equals("")){
+            logger.info("Aucun destinataire défini pour l'envoie de l'email.");
+        }else{
         MailContext mailContext = new MailContext();
         mailContext.setModifiePar(new MailContext.ModifieParContext(utilisateur));
-        sendMail(sendMailTestDto.getTo(),templateMail.getId(),templateMail.getObjet(),templateMail.getTexte(),templateMail.getCode(), mailContext, true,null,null);
+        sendMail(sendMailTestDto.getTo(),templateMail.getId(),templateMail.getObjet(),templateMail.getTexte(),
+                templateMail.getCode(), mailContext, true,null,null);
+        }
     }
 
     private void sendMail(String to, int templateMailId, String templateMailObject, String templateMailTexte, String templateMailCode,

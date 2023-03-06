@@ -150,7 +150,7 @@ public class ReponseEvaluationController {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
 
         String mailEtudiant = convention.getCourrielPersoEtudiant();
-        if(mailEtudiant == null || appConfigService.getConfigGenerale().isUtiliserMailPersoEtudiant())
+        if(mailEtudiant == null || !appConfigService.getConfigGenerale().isUtiliserMailPersoEtudiant())
             mailEtudiant = convention.getEtudiant().getMail();
 
         if(typeFiche == 0) {
