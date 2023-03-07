@@ -51,18 +51,8 @@ constructor(private periodeInterruptionStageService: PeriodeInterruptionStageSer
         if(centreGestion.conditionValidationImpression == 0){
           this.canPrint = true;
         }
-        if(centreGestion.conditionValidationImpression == 1 && this.convention.validationPedagogique){
-          this.canPrint = true;
-        }
-        if(centreGestion.conditionValidationImpression == 2 && this.convention.verificationAdministrative){
-          this.canPrint = true;
-        }
         if(centreGestion.conditionValidationImpression == 3 && this.convention.validationPedagogique && this.convention.verificationAdministrative){
           this.canPrint = true;
-        }
-        if(centreGestion.validationPedagogique && (!centreGestion.verificationAdministrative && !centreGestion.validationConvention)
-        || centreGestion.validationConvention && (!centreGestion.verificationAdministrative && !centreGestion.validationPedagogique)){
-          this.canPrint = false;
         }
       }
     }
