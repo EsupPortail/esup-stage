@@ -7,18 +7,18 @@ import { Router } from "@angular/router";
 import * as FileSaver from 'file-saver';
 
 @Component({
-selector: 'app-recapitulatif',
-templateUrl: './recapitulatif.component.html',
-styleUrls: ['./recapitulatif.component.scss']
+  selector: 'app-recapitulatif',
+  templateUrl: './recapitulatif.component.html',
+  styleUrls: ['./recapitulatif.component.scss']
 })
 export class RecapitulatifComponent implements OnInit {
 
-@Input() convention: any;
-tmpConvention: any;
-interruptionsStage: any[] = [];
-canPrint: boolean = true;
+  @Input() convention: any;
+  tmpConvention: any;
+  interruptionsStage: any[] = [];
+  canPrint: boolean = true;
 
-constructor(private periodeInterruptionStageService: PeriodeInterruptionStageService,
+  constructor(private periodeInterruptionStageService: PeriodeInterruptionStageService,
               private conventionService: ConventionService,
               private messageService: MessageService,
               private authService: AuthService,
@@ -51,7 +51,16 @@ constructor(private periodeInterruptionStageService: PeriodeInterruptionStageSer
         if(centreGestion.conditionValidationImpression == 0){
           this.canPrint = true;
         }
-        if(centreGestion.conditionValidationImpression == 3 && this.convention.validationPedagogique && this.convention.verificationAdministrative){
+        if(centreGestion.conditionValidationImpression == 1 && this.convention.validationPedagogique){
+          this.canPrint = true;
+        }
+        if(centreGestion.conditionValidationImpression == 2 && this.convention.validationConvention){
+          this.canPrint = true;
+        }
+        if(centreGestion.conditionValidationImpression == 3 && this.convention.validationPedagogique && this.convention.validationConvention){
+          this.canPrint = true;
+        }
+        if(centreGestion.conditionValidationImpression == 4 && this.convention.verificationAdministrative){
           this.canPrint = true;
         }
       }
