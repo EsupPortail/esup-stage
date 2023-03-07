@@ -56,7 +56,7 @@ export class EvalStageComponent implements OnInit, OnDestroy {
     this.filters = [];
 
     if(this.isGestionnaireOrAdmin){
-      this.columns = ['id', 'etudiant.prenom', 'structure.raisonSociale', 'dateDebutStage', 'dateFinStage', 'ufr.libelle',
+      this.columns = ['id', 'etudiant.nom_etudiant.prenom', 'structure.raisonSociale', 'dateDebutStage', 'dateFinStage', 'ufr.libelle',
      'etape.libelle', 'annee','reponseEvaluationEtudiant','reponseEvaluationEnseignant','reponseEvaluationEntreprise', 'action'];
 
       this.filters.push({ id: 'annee', libelle: 'Année', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'libelle', value: [] });
@@ -81,7 +81,7 @@ export class EvalStageComponent implements OnInit, OnDestroy {
 
         this.filters.push({id: 'etudiant.identEtudiant', type: 'string', value: login, hidden: true, permanent: true});
       } else if (this.isEnseignant) {
-        this.columns = ['id', 'etudiant.prenom', 'structure.raisonSociale', 'dateDebutStage', 'dateFinStage', 'ufr.libelle',
+        this.columns = ['id', 'etudiant.nom_etudiant.prenom', 'structure.raisonSociale', 'dateDebutStage', 'dateFinStage', 'ufr.libelle',
           'etape.libelle', 'annee', 'reponseEvaluationEnseignant', 'action'];
 
         this.filters.push({id: 'enseignant.uidEnseignant', type: 'string', value: login, hidden: true, permanent: true});

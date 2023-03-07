@@ -78,12 +78,17 @@ public class PaginationRepository<T extends Exportable> {
             queryString += " WHERE " + String.join(" AND ", clauses);
         }
         if (predicate != null && predicateWhitelist.contains(predicate)) {
-            queryString += " ORDER BY " + alias + "." + predicate;
-            if (sortOrder.equalsIgnoreCase("asc")) {
-                queryString += " ASC";
-            } else {
-                queryString += " DESC";
+            List<String> predicates = Arrays.asList(predicate.split("_"));
+            queryString += " ORDER BY ";
+            for(String p : predicates){
+                queryString += alias + "." + p;
+                if (sortOrder.equalsIgnoreCase("asc")) {
+                    queryString += " ASC,";
+                } else {
+                    queryString += " DESC,";
+                }
             }
+            queryString = queryString.substring(0, queryString.length() - 1);
         }
 
         TypedQuery<T> query = em.createQuery(queryString, this.typeClass);
