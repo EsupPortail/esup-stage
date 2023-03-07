@@ -143,7 +143,6 @@ export class StageComponent implements OnInit {
 
     this.form = this.fb.group({
       // - Modèle de la convention
-      codeLangueConvention: [this.convention.langueConvention ? this.convention.langueConvention.code : null, [Validators.required]],
       idPays: [this.convention.paysConvention ? this.convention.paysConvention.id : null, [Validators.required]],
       // - Description du stage
       idTheme: [this.convention.theme ? this.convention.theme.id : null, [Validators.required]],
