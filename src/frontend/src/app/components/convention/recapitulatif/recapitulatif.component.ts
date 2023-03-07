@@ -7,18 +7,18 @@ import { Router } from "@angular/router";
 import * as FileSaver from 'file-saver';
 
 @Component({
-  selector: 'app-recapitulatif',
-  templateUrl: './recapitulatif.component.html',
-  styleUrls: ['./recapitulatif.component.scss']
+selector: 'app-recapitulatif',
+templateUrl: './recapitulatif.component.html',
+styleUrls: ['./recapitulatif.component.scss']
 })
 export class RecapitulatifComponent implements OnInit {
 
-  @Input() convention: any;
-  tmpConvention: any;
-  interruptionsStage: any[] = [];
-  canPrint: boolean = true;
+@Input() convention: any;
+tmpConvention: any;
+interruptionsStage: any[] = [];
+canPrint: boolean = true;
 
-  constructor(private periodeInterruptionStageService: PeriodeInterruptionStageService,
+constructor(private periodeInterruptionStageService: PeriodeInterruptionStageService,
               private conventionService: ConventionService,
               private messageService: MessageService,
               private authService: AuthService,
@@ -59,6 +59,10 @@ export class RecapitulatifComponent implements OnInit {
         }
         if(centreGestion.conditionValidationImpression == 3 && this.convention.validationPedagogique && this.convention.verificationAdministrative){
           this.canPrint = true;
+        }
+        if(centreGestion.validationPedagogique && (!centreGestion.verificationAdministrative && !centreGestion.validationConvention)
+        || centreGestion.validationConvention && (!centreGestion.verificationAdministrative && !centreGestion.validationPedagogique)){
+          this.canPrint = false;
         }
       }
     }
