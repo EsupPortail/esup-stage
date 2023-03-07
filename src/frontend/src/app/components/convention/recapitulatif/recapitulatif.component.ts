@@ -54,10 +54,13 @@ export class RecapitulatifComponent implements OnInit {
         if(centreGestion.conditionValidationImpression == 1 && this.convention.validationPedagogique){
           this.canPrint = true;
         }
-        if(centreGestion.conditionValidationImpression == 2 && this.convention.verificationAdministrative){
+        if(centreGestion.conditionValidationImpression == 2 && this.convention.validationConvention){
           this.canPrint = true;
         }
-        if(centreGestion.conditionValidationImpression == 3 && this.convention.validationPedagogique && this.convention.verificationAdministrative){
+        if(centreGestion.conditionValidationImpression == 3 && this.convention.validationPedagogique && this.convention.validationConvention){
+          this.canPrint = true;
+        }
+        if(centreGestion.conditionValidationImpression == 4 && this.convention.verificationAdministrative){
           this.canPrint = true;
         }
       }
