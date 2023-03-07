@@ -95,7 +95,9 @@ public class ApogeeService {
         String response = call("/etudiantRef", params);
         try {
             ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(response, EtudiantRef.class);
+            EtudiantRef etudiantRef =  mapper.readValue(response, EtudiantRef.class);
+            etudiantRef.setMainAddress(etudiantRef.getLibAd1() + " " + etudiantRef.getLibAd2() + " " + etudiantRef.getLibAd3());
+            return etudiantRef;
         } catch (JsonProcessingException e) {
             LOGGER.error("Erreur lors de la lecture de la réponse sur l'api etudiantRef: " + e.getMessage(), e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
