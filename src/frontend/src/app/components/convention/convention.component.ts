@@ -207,10 +207,10 @@ export class ConventionComponent implements OnInit {
 
   isConventionValide(): boolean {
     let conventionValide = null;
-    if (this.convention.centreGestion.validationPedagogique) {
+    if (this.convention.centreGestion?.validationPedagogique) {
       conventionValide = this.convention.validationPedagogique;
     }
-    if (this.convention.centreGestion.validationConvention) {
+    if (this.convention.centreGestion?.validationConvention) {
       if (conventionValide != null) {
         conventionValide = conventionValide && this.convention.validationConvention
       } else {
