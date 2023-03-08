@@ -173,7 +173,9 @@ export class CadreStageModalComponent implements OnInit {
       delete data.inscription;
       data.numEtudiant = this.selectedNumEtudiant;
       data.codeComposante = this.formConvention.value.inscription.etapeInscription.codeComposante;
+      data.libelleComposante = this.formConvention.value.inscription.etapeInscription.libComposante;
       data.codeEtape = this.formConvention.value.inscription.etapeInscription.codeEtp;
+      data.libelleEtape = this.formConvention.value.inscription.etapeInscription.libWebVet;
       data.codeVersionEtape = this.formConvention.value.inscription.etapeInscription.codVrsVet;
       data.annee = this.formConvention.value.inscription.annee;
       data.codeElp = this.formConvention.value.inscriptionElp ? this.formConvention.value.inscriptionElp.codElp : null;

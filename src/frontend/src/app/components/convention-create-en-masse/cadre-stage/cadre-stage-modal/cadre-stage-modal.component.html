@@ -133,9 +133,9 @@
           <div *ngFor="let doc of consigneEtablissement.documents">
             <a href (click)="downloadDoc($event, doc)"><i class="fa fa-paperclip"></i> {{doc.nomReel}}</a>
           </div>
-          <div class="mt-3" *ngIf="centreGestion && centreGestion.niveauCentre.libelle !== 'ETABLISSEMENT' && centreGestion.consignes.length === 1">
-            <div [innerHTML]="centreGestion.consignes[0].texte"></div>
-            <div *ngFor="let doc of centreGestion.consignes[0].documents">
+          <div class="mt-3" *ngIf="centreGestion && centreGestion.niveauCentre.libelle !== 'ETABLISSEMENT' && centreGestion.consigne">
+            <div [innerHTML]="centreGestion.consigne.texte"></div>
+            <div *ngFor="let doc of centreGestion.consigne.documents">
               <a href (click)="downloadDoc($event, doc)"><i class="fa fa-paperclip"></i> {{doc.nomReel}}</a>
             </div>
           </div>
