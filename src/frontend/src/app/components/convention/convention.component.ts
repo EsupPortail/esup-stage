@@ -207,7 +207,18 @@ export class ConventionComponent implements OnInit {
   }
 
   isConventionValide(): boolean {
-    return this.convention && this.convention.validationPedagogique && this.convention.validationConvention;
+    let conventionValide = null;
+    if (this.convention.centreGestion.validationPedagogique) {
+      conventionValide = this.convention.validationPedagogique;
+    }
+    if (this.convention.centreGestion.validationConvention) {
+      if (conventionValide != null) {
+        conventionValide = conventionValide && this.convention.validationConvention
+      } else {
+        conventionValide = this.convention.validationConvention
+      }
+    }
+    return conventionValide;
   }
 
   isStageOver(): boolean {
