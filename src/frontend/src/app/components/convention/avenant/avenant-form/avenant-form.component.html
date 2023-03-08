@@ -12,11 +12,15 @@
   <div class="row mt-3 mb-3">
     <mat-checkbox class="col-12" formControlName="rupture">Rupture de stage</mat-checkbox>
     <mat-checkbox class="col-12" formControlName="modificationSujet">Modification du sujet de stage</mat-checkbox>
-    <mat-checkbox class="col-12" formControlName="modificationPeriode">Modification de la période de stage</mat-checkbox>
-    <mat-checkbox class="col-12" formControlName="modificationMontantGratification">Modification du montant de la gratification</mat-checkbox>
+    <mat-checkbox class="col-12" formControlName="modificationPeriode">Modification de la période de
+      stage</mat-checkbox>
+    <mat-checkbox class="col-12" formControlName="modificationMontantGratification">Modification du montant de la
+      gratification</mat-checkbox>
     <mat-checkbox class="col-12" formControlName="modificationLieu">Modification du lieu de stage</mat-checkbox>
-    <mat-checkbox class="col-12" formControlName="modificationSalarie">Modification du tuteur professionnel</mat-checkbox>
-    <mat-checkbox class="col-12" formControlName="modificationEnseignant">Modification de l’enseignant référent</mat-checkbox>
+    <mat-checkbox class="col-12" formControlName="modificationSalarie">Modification du tuteur
+      professionnel</mat-checkbox>
+    <mat-checkbox class="col-12" formControlName="modificationEnseignant">Modification de l’enseignant
+      référent</mat-checkbox>
     <mat-checkbox class="col-12" formControlName="modificationAutre">Autre modification</mat-checkbox>
   </div>
 
@@ -26,7 +30,8 @@
     <div class="row mt-3 mb-3">
       <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
         <mat-label>Date de rupture</mat-label>
-        <input matInput [min]="convention.dateDebutStage" [max]="convention.dateFinStage" [matDatepicker]="dateRupturePicker" formControlName="dateRupture" required >
+        <input matInput [min]="convention.dateDebutStage" [max]="convention.dateFinStage"
+          [matDatepicker]="dateRupturePicker" formControlName="dateRupture" required>
         <mat-datepicker-toggle matSuffix [for]="dateRupturePicker"></mat-datepicker-toggle>
         <mat-datepicker #dateRupturePicker></mat-datepicker>
         <mat-error><app-form-error [field]="form.get('dateRupture')"></app-form-error></mat-error>
@@ -69,14 +74,15 @@
     <div class="row" *ngIf="convention.interruptionStage">
       <div class="col-sm-3 font-weight-bold">Périodes d'interruption du stage</div>
       <div class="col-sm-9"><span *ngFor="let interruption of interruptionsStage">
-            {{(interruptionsStage.length>1?'- Du ':'Du ') + (interruption.dateDebutInterruption|date:'shortDate') + ' au '+ (interruption.dateFinInterruption|date:'shortDate')}}<br></span>
+          {{(interruptionsStage.length>1?'- Du ':'Du ') + (interruption.dateDebutInterruption|date:'shortDate') + ' au
+          '+ (interruption.dateFinInterruption|date:'shortDate')}}<br></span>
       </div>
     </div>
     <div class="row mt-3 mb-3">
       <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
         <mat-label>Nouvelle date de début du stage</mat-label>
-        <input matInput [matDatepicker]="dateDebutStagePicker"
-               (dateChange)="dateDebutChanged($event)" formControlName="dateDebutStage">
+        <input matInput [matDatepicker]="dateDebutStagePicker" (dateChange)="dateDebutChanged($event)"
+          formControlName="dateDebutStage">
         <mat-datepicker-toggle matSuffix [for]="dateDebutStagePicker"></mat-datepicker-toggle>
         <mat-datepicker #dateDebutStagePicker></mat-datepicker>
         <mat-error><app-form-error [field]="form.get('dateDebutStage')"></app-form-error></mat-error>
@@ -93,24 +99,32 @@
       <div>Modification d'une période d'interruption existante</div>
       <mat-divider></mat-divider>
       <div class="row mt-3" *ngFor="let interruption of interruptionsStage">
-        <div class="col-12">{{(interruptionsStage.length>1?'- Du ':'Du ') + (interruption.dateDebutInterruption|date:'shortDate') + ' au '+ (interruption.dateFinInterruption|date:'shortDate') + ':'}}</div>
+        <div class="col-12">{{(interruptionsStage.length>1?'- Du ':'Du ') +
+          (interruption.dateDebutInterruption|date:'shortDate') + ' au '+
+          (interruption.dateFinInterruption|date:'shortDate') + ':'}}</div>
         <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
           <mat-label>Nouvelle date de début d'interruption</mat-label>
-          <input matInput [min]="form.get('dateDebutStage')!.value?form.get('dateDebutStage')!.value:convention.dateDebutStage"
-                 [max]="form.get('dateFinStage')!.value?form.get('dateFinStage')!.value:convention.dateFinStage"
-                 [matDatepicker]="dateDebutInterruptionPicker" formControlName={{interruption.dateDebutInterruptionFormControlName}}>
+          <input matInput
+            [min]="form.get('dateDebutStage')!.value?form.get('dateDebutStage')!.value:convention.dateDebutStage"
+            [max]="form.get('dateFinStage')!.value?form.get('dateFinStage')!.value:convention.dateFinStage"
+            [matDatepicker]="dateDebutInterruptionPicker"
+            formControlName={{interruption.dateDebutInterruptionFormControlName}}>
           <mat-datepicker-toggle matSuffix [for]="dateDebutInterruptionPicker"></mat-datepicker-toggle>
           <mat-datepicker #dateDebutInterruptionPicker></mat-datepicker>
-          <mat-error><app-form-error [field]="form.get('interruption.dateDebutInterruptionFormControlName')"></app-form-error></mat-error>
+          <mat-error><app-form-error
+              [field]="form.get('interruption.dateDebutInterruptionFormControlName')"></app-form-error></mat-error>
         </mat-form-field>
         <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
           <mat-label>Nouvelle date de fin d'interruption</mat-label>
-          <input matInput [min]="form.get('dateDebutStage')!.value?form.get('dateDebutStage')!.value:convention.dateDebutStage"
-                 [max]="form.get('dateFinStage')!.value?form.get('dateFinStage')!.value:convention.dateFinStage"
-                 [matDatepicker]="dateFinInterruptionPicker" formControlName={{interruption.dateFinInterruptionFormControlName}}>
+          <input matInput
+            [min]="form.get('dateDebutStage')!.value?form.get('dateDebutStage')!.value:convention.dateDebutStage"
+            [max]="form.get('dateFinStage')!.value?form.get('dateFinStage')!.value:convention.dateFinStage"
+            [matDatepicker]="dateFinInterruptionPicker"
+            formControlName={{interruption.dateFinInterruptionFormControlName}}>
           <mat-datepicker-toggle matSuffix [for]="dateFinInterruptionPicker"></mat-datepicker-toggle>
           <mat-datepicker #dateFinInterruptionPicker></mat-datepicker>
-          <mat-error><app-form-error [field]="form.get('interruption.dateFinInterruptionFormControlName')"></app-form-error></mat-error>
+          <mat-error><app-form-error
+              [field]="form.get('interruption.dateFinInterruptionFormControlName')"></app-form-error></mat-error>
         </mat-form-field>
       </div>
     </div>
@@ -118,7 +132,9 @@
     <mat-divider></mat-divider>
     <div class="row mt-3 mb-3">
       <div class="col-6">
-        <button mat-button mat-flat-button type="button" color="primary" (click)="openInterruptionsCreateFormModal()">{{addedInterruptionsStage.length === 0 ?'Ajouter des':'Gérer les'}} nouvelles périodes d'interruptions</button>
+        <button mat-button mat-flat-button type="button" color="primary"
+          (click)="openInterruptionsCreateFormModal()">{{addedInterruptionsStage.length === 0 ?'Ajouter des':'Gérer
+          les'}} nouvelles périodes d'interruptions</button>
       </div>
     </div>
   </div>
@@ -132,7 +148,8 @@
     </div>
     <div class="row" *ngIf="convention.gratificationStage">
       <div class="col-sm-3 font-weight-bold">Montant de la gratification</div>
-      <div class="col-sm-9">{{convention.montantGratification + ' ' + convention.uniteGratification.libelle + ' ' + convention.uniteDureeGratification.libelle}}</div>
+      <div class="col-sm-9">{{convention.montantGratification + ' ' + convention.uniteGratification.libelle + ' ' +
+        convention.uniteDureeGratification.libelle}}</div>
       <div class="col-sm-3 font-weight-bold">Monnaie utilisée pour le paiement</div>
       <div class="col-sm-9">{{convention.devise.libelle}}</div>
       <div class="col-sm-3 font-weight-bold">Modalité de versement de la gratification</div>
@@ -148,7 +165,8 @@
       </mat-form-field>
       <mat-form-field class="col-sm-3 col-md-3 mb-2" appearance="fill">
         <mat-select formControlName="idUniteGratification">
-          <mat-option *ngFor="let uniteGratification of uniteGratifications" [value]="uniteGratification.id">{{uniteGratification.libelle}}</mat-option>
+          <mat-option *ngFor="let uniteGratification of uniteGratifications"
+            [value]="uniteGratification.id">{{uniteGratification.libelle}}</mat-option>
         </mat-select>
         <mat-error><app-form-error [field]="form.get('idUniteGratification')"></app-form-error></mat-error>
       </mat-form-field>
@@ -168,7 +186,8 @@
       <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
         <mat-label>Nouvelle modalité de versement de la gratification</mat-label>
         <mat-select formControlName="idModeVersGratification">
-          <mat-option *ngFor="let modeVersGratification of modeVersGratifications" [value]="modeVersGratification.id">{{modeVersGratification.libelle}}</mat-option>
+          <mat-option *ngFor="let modeVersGratification of modeVersGratifications"
+            [value]="modeVersGratification.id">{{modeVersGratification.libelle}}</mat-option>
         </mat-select>
         <mat-error><app-form-error [field]="form.get('idModeVersGratification')"></app-form-error></mat-error>
       </mat-form-field>
@@ -195,13 +214,15 @@
       <div class="col-sm-9">{{convention.service.telephone}}</div>
     </div>
     <div>Sélectionnez un nouveau lieu de stage :</div>
-    <app-table [service]="serviceService" [columns]="serviceTableColumns" [sortColumn]="serviceSortColumn" [filters]="serviceFilters"
-               matSort [matSortActive]="serviceSortColumn" [matSortDirection]="'asc'" (matSortChange)="serviceAppTable ? serviceAppTable.sorting($event) : null"
-               [noResultText]="'Aucun service trouvé'" [hideDeleteFilters]="true">
+    <app-table [service]="serviceService" [columns]="serviceTableColumns" [sortColumn]="serviceSortColumn"
+      [filters]="serviceFilters" matSort [matSortActive]="serviceSortColumn" [matSortDirection]="'asc'"
+      (matSortChange)="serviceAppTable ? serviceAppTable.sorting($event) : null" [noResultText]="'Aucun service trouvé'"
+      [hideDeleteFilters]="true">
       <ng-container matColumnDef="choix">
         <th mat-header-cell *matHeaderCellDef>Choix</th>
         <td mat-cell *matCellDef="let row">
-          <mat-checkbox class="col-12" (click)="$event.preventDefault();selectService(row)" [checked]="row.id === service.id"></mat-checkbox>
+          <mat-checkbox class="col-12" (click)="$event.preventDefault();selectService(row)"
+            [checked]="row.id === service.id"></mat-checkbox>
         </td>
       </ng-container>
 
@@ -233,7 +254,8 @@
 
     <div class="row mt-3 mb-3">
       <div class="col-md-12">
-        <button mat-flat-button type="button" (click)="createService()" color="primary">Créer un nouveau service d'accueil</button>
+        <button mat-flat-button type="button" (click)="createService()" color="primary">Créer un nouveau service
+          d'accueil</button>
       </div>
     </div>
   </div>
@@ -260,13 +282,15 @@
       <div class="col-sm-9">{{convention.contact.fax}}</div>
     </div>
     <div>Sélectionnez un nouveau tuteur professionnel :</div>
-    <app-table [service]="contactService" [columns]="contactTableColumns" [sortColumn]="contactSortColumn" [filters]="contactFilters"
-               matSort [matSortActive]="contactSortColumn" [matSortDirection]="'asc'" (matSortChange)="contactAppTable ? contactAppTable.sorting($event) : null"
-               [noResultText]="'Aucun contact trouvé'" [hideDeleteFilters]="true">
+    <app-table [service]="contactService" [columns]="contactTableColumns" [sortColumn]="contactSortColumn"
+      [filters]="contactFilters" matSort [matSortActive]="contactSortColumn" [matSortDirection]="'asc'"
+      (matSortChange)="contactAppTable ? contactAppTable.sorting($event) : null" [noResultText]="'Aucun contact trouvé'"
+      [hideDeleteFilters]="true">
       <ng-container matColumnDef="choix">
         <th mat-header-cell *matHeaderCellDef>Choix</th>
         <td mat-cell *matCellDef="let row">
-          <mat-checkbox class="col-12" (click)="$event.preventDefault();selectContact(row)" [checked]="row.id === contact.id"></mat-checkbox>
+          <mat-checkbox class="col-12" (click)="$event.preventDefault();selectContact(row)"
+            [checked]="row.id === contact.id"></mat-checkbox>
         </td>
       </ng-container>
       <ng-container matColumnDef="centreGestionnaire">
@@ -328,7 +352,7 @@
       <div class="col-sm-9">{{convention.enseignant.mail}}</div>
     </div>
 
-    <div class="mb-3" >Recherchez un nouvel enseignant :</div>
+    <div class="mb-3">Recherchez un nouvel enseignant :</div>
     <form [formGroup]="enseignantSearchForm" novalidate class="mt-3">
       <div class="row">
         <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
@@ -342,7 +366,8 @@
       </div>
     </form>
 
-    <div class="alert alert-info" *ngIf="enseignants.length > 10">La recherche est limitée à 10 enseignants. Veuillez affiner la recherche si l'enseignant n'apparaît pas.</div>
+    <div class="alert alert-info" *ngIf="enseignants.length > 10">La recherche est limitée à 10 enseignants. Veuillez
+      affiner la recherche si l'enseignant n'apparaît pas.</div>
     <table mat-table [dataSource]="enseignants | slice:0:10" *ngIf="enseignants.length > 0">
       <tr class="mat-row" *matNoDataRow>
         <td class="mat-cell" colspan="9999">Aucun enseignant trouvé</td>
@@ -398,17 +423,24 @@
     </div>
   </div>
   <div class="row mt-3">
-    <div class="col-sm-4 text-left">
-      <button mat-button type="button" mat-flat-button color="warn" (click)="cancel()" *ngIf="!avenant.id">{{'BOUTON_ANNULER'|contenu}}</button>
-      <span (confirm)="delete()" [confirmMessage]="'Êtes-vous sûr de vouloir supprimer cet avenant ?'" *ngIf="avenant.id">
+    <div [ngClass]="avenant.id ? 'col-sm-3 text-center' : 'col-sm-4 text-center'">
+      <button mat-button type="button" mat-flat-button color="warn" (click)="cancel()"
+        *ngIf="!avenant.id">{{'BOUTON_ANNULER'|contenu}}</button>
+      <span (confirm)="delete()" [confirmMessage]="'Êtes-vous sûr de vouloir supprimer cet avenant ?'"
+        *ngIf="avenant.id">
         <button mat-button type="button" mat-flat-button color="warn">Supprimer</button>
       </span>
     </div>
-    <div class="col-sm-4 text-center">
-      <button mat-button mat-flat-button type="button" color="primary" (click)="validate()" *ngIf="isGestionnaire() && avenant.id">Valider l'avenant</button>
+    <div [ngClass]="avenant.id ? 'col-sm-3 text-center' : 'col-sm-4 text-center'">
+      <button mat-button mat-flat-button type="button" color="primary" (click)="validate()"
+        *ngIf="isGestionnaire() && avenant.id">Valider l'avenant</button>
     </div>
-    <div class="col-sm-4 text-right">
-      <button mat-button mat-flat-button color="primary" [disabled]="!customValidForm">{{avenant.id?'Modifier':'Créer'}}</button>
+    <div *ngIf="avenant.id" class="col-sm-3 text-center">
+      <button mat-flat-button type="button" color="primary" (click)="printAvenant()">Imprimer l'avenant</button>
+    </div>
+    <div [ngClass]="avenant.id ? 'col-sm-3 text-center' : 'col-sm-4 text-center'">
+      <button mat-button mat-flat-button color="primary"
+        [disabled]="!customValidForm">{{avenant.id?'Modifier':'Créer'}}</button>
     </div>
   </div>
 </form>
