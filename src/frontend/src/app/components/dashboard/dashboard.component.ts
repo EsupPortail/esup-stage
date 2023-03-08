@@ -36,7 +36,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   tableCanLoad = false;
   savedFilters: any[] = [];
 
-  nbConventionsEnAttente: number|undefined;
+  nbConventionsEnAttente: number | undefined;
   anneeEnCours = {
     "annee": "any",
     "libelle": "Toutes les années",
@@ -84,7 +84,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.setDataGestionnaire();
       } else if (this.authService.isEnseignant()) {
         this.typeDashboard = 2;
-        this.columns = ['id', 'etudiant.prenom', 'ufr.libelle', 'etape.libelle',  'dateDebutStage', 'dateFinStage', 'structure.raisonSociale', 'sujetStage', 'lieuStage', 'avenant', 'etatValidation', 'action'];
+        this.columns = ['id', 'etudiant.prenom', 'ufr.libelle', 'etape.libelle', 'dateDebutStage', 'dateFinStage', 'structure.raisonSociale', 'sujetStage', 'lieuStage', 'avenant', 'etatValidation', 'action'];
         this.filters = [
           { id: 'id', libelle: 'N° de la convention', type: 'int' },
           { id: 'etudiant', libelle: 'Étudiant', specific: true },
@@ -119,7 +119,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         };
       } else if (this.authService.isEtudiant()) {
         this.typeDashboard = 3;
-        this.columns = ['id', 'structure.raisonSociale', 'dateDebutStage', 'dateFinStage', 'ufr.libelle', 'etape.libelle', 'enseignant.prenom', 'avenant', 'validationPedagogique', 'validationConvention', 'annee', 'action'];
+        this.columns = ['id', 'structure.raisonSociale', 'dateDebutStage', 'dateFinStage', 'ufr.libelle', 'etape.libelle', 'enseignant.prenom', 'avenant', 'etatValidation', 'annee', 'action'];
         this.filters = [
           { id: 'id', libelle: 'N° de la convention', type: 'int' },
           { id: 'structure', libelle: 'Établissement d\'accueil', specific: true },
@@ -129,8 +129,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           { id: 'etape.id', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
           { id: 'enseignant', libelle: 'Enseignant', specific: true },
           { id: 'avenant', libelle: 'Avenant', type: 'boolean', specific: true },
-          { id: 'validationPedagogique', libelle: this.validationLibelles.validationPedagogique, type: 'boolean' },
-          { id: 'validationConvention', libelle: this.validationLibelles.validationConvention, type: 'boolean' },
+          { id: 'etatValidation', libelle: 'État de validation de la convention', type: 'list', options: this.validationsOptions, keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
           { id: 'annee', libelle: 'Année', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'libelle', value: [] },
         ];
 
@@ -220,9 +219,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
             numEtudiant: { title: 'N° étudiant' },
             etudiant: { title: 'Étudiant (NOM Prénom)' },
             courrielPersoEtudiant: { title: 'Mail perso étudiant' },
-            mailUniEtudiant: { title: 'Mail universitaire étudiant'},
-            telEtudiant: { title: 'Téléphone perso étudiant'},
-            telPortableEtudiant: { title: 'Téléphone portable étudiant'},
+            mailUniEtudiant: { title: 'Mail universitaire étudiant' },
+            telEtudiant: { title: 'Téléphone perso étudiant' },
+            telPortableEtudiant: { title: 'Téléphone portable étudiant' },
             codeUFR: { title: 'Code UFR' },
             ufr: { title: 'Libellé UFR' },
             codeDepartement: { title: 'Code département' },
@@ -301,10 +300,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   changeAnnee(): void {
-    this.appTable?.setFilter({id: 'annee', type: 'text', value: this.anneeEnCours.any?"":this.anneeEnCours.libelle, specific: false});
+    this.appTable?.setFilter({ id: 'annee', type: 'text', value: this.anneeEnCours.any ? "" : this.anneeEnCours.libelle, specific: false });
     this.appTable?.update();
     this.countConvention();
-    if(!this.anneeEnCours.any){
+    if (!this.anneeEnCours.any) {
       // Compte le nombre de conventions dont la date de validation se rapproche ou dépasse la date de début du stage
       this.conventionService.countConventionEnAttenteAlerte(this.anneeEnCours.annee).subscribe((response: number) => {
         if (response > 0) {
@@ -318,11 +317,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   isSelected(data: any): boolean {
-    return this.selected.find((r: any) => {return r.id === data.id}) !== undefined;
+    return this.selected.find((r: any) => { return r.id === data.id }) !== undefined;
   }
 
   toggleSelected(data: any): void {
-    const index = this.selected.findIndex((r: any) => {return r.id === data.id});
+    const index = this.selected.findIndex((r: any) => { return r.id === data.id });
     if (index > -1) {
       this.selected.splice(index, 1);
     } else {
@@ -346,9 +345,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   isAllSelected(): boolean {
     let allSelected = true;
     this.appTable?.data.forEach((data: any) => {
-      const index = this.selected.findIndex((r: any) => {return r.id === data.id});
+      const index = this.selected.findIndex((r: any) => { return r.id === data.id });
       if (index === -1) {
-         allSelected = false;
+        allSelected = false;
       }
     });
     return allSelected;
@@ -368,7 +367,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   goToConvention(id: number): void {
-    this.router.navigate([`/conventions/${id}`], )
+    this.router.navigate([`/conventions/${id}`],)
   }
 
   validationAdministrative(): void {
@@ -425,7 +424,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.appTable?.setFilterValue(key, this.savedFilters[key].value);
       });
     }
-    const pagingString: string|null = sessionStorage.getItem('dashboard-paging');
+    const pagingString: string | null = sessionStorage.getItem('dashboard-paging');
     if (pagingString) {
       const pagingConfig = JSON.parse(pagingString);
       this.sortColumn = pagingConfig.sortColumn;
@@ -435,7 +434,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    sessionStorage.setItem('dashboard-paging', JSON.stringify({page: this.appTable?.page, pageSize: this.appTable?.pageSize, sortColumn: this.appTable?.sortColumn, sortOrder: this.appTable?.sortOrder}));
+    sessionStorage.setItem('dashboard-paging', JSON.stringify({ page: this.appTable?.page, pageSize: this.appTable?.pageSize, sortColumn: this.appTable?.sortColumn, sortOrder: this.appTable?.sortOrder }));
     sessionStorage.setItem('dashboard-filters', JSON.stringify(this.appTable?.getFilterValues()))
   }
 }
