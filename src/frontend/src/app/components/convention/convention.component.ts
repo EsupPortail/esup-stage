@@ -56,13 +56,13 @@ export class ConventionComponent implements OnInit {
     });
     this.activatedRoute.params.subscribe((param: any) => {
       const pathId = param.id;
-      this.conventionTabIndex = this.conventionService.getGoToOnglet()??0;
+      this.conventionTabIndex = this.conventionService.getGoToOnglet() ?? 0;
       if (pathId === 'create') {
         // Récupération de la convention au mode brouillon
         this.conventionService.getBrouillon().subscribe((response: any) => {
           this.convention = response;
           this.titleService.title = 'Création d\'une convention pour ' + this.convention.etudiant?.nom
-          + ' ' + this.convention.etudiant?.prenom;
+            + ' ' + this.convention.etudiant?.prenom;
           this.majStatus();
         });
         this.modifiable = true;
@@ -70,8 +70,8 @@ export class ConventionComponent implements OnInit {
         // Récupération de la convention correspondant à l'id
         this.conventionService.getById(pathId).subscribe((response: any) => {
           this.convention = response;
-          this.titleService.title = 'Gestion de la convention n°' + pathId 
-          + ' ' + this.convention.etudiant.nom + ' ' + this.convention.etudiant.prenom;
+          this.titleService.title = 'Gestion de la convention n°' + pathId
+            + ' ' + this.convention.etudiant.nom + ' ' + this.convention.etudiant.prenom;
           this.majStatus();
           // un admin a tout le temps les droits de modifications
           if (this.authService.isAdmin()) {
@@ -105,35 +105,35 @@ export class ConventionComponent implements OnInit {
   }
 
   majStatus(): void {
-    if (this.convention.etudiant){
-      this.setStatus(0,2);
-    }else{
-      this.setStatus(0,0);
+    if (this.convention.etudiant) {
+      this.setStatus(0, 2);
+    } else {
+      this.setStatus(0, 0);
     }
-    if (this.convention.structure){
-      this.setStatus(1,2);
-    }else{
-      this.setStatus(1,0);
+    if (this.convention.structure) {
+      this.setStatus(1, 2);
+    } else {
+      this.setStatus(1, 0);
     }
-    if (this.convention.service){
-      this.setStatus(2,2);
-    }else{
-      this.setStatus(2,0);
+    if (this.convention.service) {
+      this.setStatus(2, 2);
+    } else {
+      this.setStatus(2, 0);
     }
-    if (this.convention.contact){
-      this.setStatus(3,2);
-    }else{
-      this.setStatus(3,0);
+    if (this.convention.contact) {
+      this.setStatus(3, 2);
+    } else {
+      this.setStatus(3, 0);
     }
-    if (this.convention.enseignant){
-      this.setStatus(5,2);
-    }else{
-      this.setStatus(5,0);
+    if (this.convention.enseignant) {
+      this.setStatus(5, 2);
+    } else {
+      this.setStatus(5, 0);
     }
-    if (this.convention.signataire){
-      this.setStatus(6,2);
-    }else{
-      this.setStatus(6,0);
+    if (this.convention.signataire) {
+      this.setStatus(6, 2);
+    } else {
+      this.setStatus(6, 0);
     }
   }
 
@@ -145,9 +145,9 @@ export class ConventionComponent implements OnInit {
   majAllValid(): void {
     this.allValid = true;
     for (let key in this.tabs) {
-        if (key != '7' && key != '8' && this.tabs[key].statut !== 2) {
-          this.allValid = false;
-        }
+      if (key != '7' && key != '8' && this.tabs[key].statut !== 2) {
+        this.allValid = false;
+      }
     }
   }
 
@@ -167,38 +167,38 @@ export class ConventionComponent implements OnInit {
 
   updateConvention(data: any): void {
     this.convention = data;
-    this.setStatus(0,2);
+    this.setStatus(0, 2);
   }
 
   updateEtab(data: any): void {
-    this.updateSingleField('idStructure',data.id);
+    this.updateSingleField('idStructure', data.id);
   }
 
   updateService(data: any): void {
-    this.updateSingleField('idService',data.id);
+    this.updateSingleField('idService', data.id);
   }
 
   updateTuteurPro(data: any): void {
-    this.updateSingleField('idContact',data.id);
+    this.updateSingleField('idContact', data.id);
   }
 
   updateStage(data: any): void {
-    this.updateSingleField(data.field,data.value);
+    this.updateSingleField(data.field, data.value);
   }
 
   updateEnseignant(data: any): void {
-    this.updateSingleField('idEnseignant',data.id);
+    this.updateSingleField('idEnseignant', data.id);
   }
 
   updateSignataire(data: any): void {
-    this.updateSingleField('idSignataire',data.id);
+    this.updateSingleField('idSignataire', data.id);
   }
 
 
   updateSingleField(key: string, value: any): void {
     const data = {
-      "field":key,
-      "value":value,
+      "field": key,
+      "value": value,
     };
     this.conventionService.patch(this.convention.id, data).subscribe((response: any) => {
       this.convention = response;
@@ -207,7 +207,18 @@ export class ConventionComponent implements OnInit {
   }
 
   isConventionValide(): boolean {
-    return this.convention && this.convention.validationPedagogique && this.convention.validationConvention;
+    let conventionValide = null;
+    if (this.convention.centreGestion.validationPedagogique) {
+      conventionValide = this.convention.validationPedagogique;
+    }
+    if (this.convention.centreGestion.validationConvention) {
+      if (conventionValide != null) {
+        conventionValide = conventionValide && this.convention.validationConvention
+      } else {
+        conventionValide = this.convention.validationConvention
+      }
+    }
+    return conventionValide;
   }
 
   isStageOver(): boolean {
