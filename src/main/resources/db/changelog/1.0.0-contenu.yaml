@@ -199,3 +199,30 @@ databaseChangeLog:
                     name: dateCreation
                     value: now()
             tableName: Contenu
+- changeSet:
+    id: contenu-insert-texte-recapitulatif
+    author: dcorrochano
+    changes:
+        - insert:
+            columns:
+                - column:
+                    name: codeContenu
+                    value: TEXTE_RECAPITULATIF
+                - column:
+                    name: libelle
+                    valueBoolean: true
+                - column:
+                    name: texte
+                    value: Conformément au Règlement (UE) 2016/679 du Parlement européen et du Conseil du 27 avril 2016 relatif à la protection des personnes physiques
+                        à l'égard du traitement des données à caractère personnel et à la libre circulation de ces données (ci-après "RGPD"),
+                        entré en vigueur le 25 mai 2018, et à la loi Informatique et Libertés du 6 janvier 1978 modifiée,
+                        les données personnelles recueillies feront l'objet d'un traitement uniquement pour permettre la gestion de la demande de convention de stage.
+                        Vous disposez d'un droit d'accès, de rectification et d'effacement de vos données personnelles, lesquels droits peuvent être exercés auprès du délégué
+                        à la protection des données de l'Université XXXXXX, à l'adresse  DPO Université Paris-Dauphine - Place de XXXXXXXXXX ou à l'adresse courriel suivante  dpo@XXXXX.fr.
+                - column:
+                    name: loginCreation
+                    value: liquibase
+                - column:
+                    name: dateCreation
+                    value: now()
+            tableName: Contenu
