@@ -61,8 +61,7 @@ export class ConventionComponent implements OnInit {
         // Récupération de la convention au mode brouillon
         this.conventionService.getBrouillon().subscribe((response: any) => {
           this.convention = response;
-          this.titleService.title = 'Création d\'une convention pour ' + this.convention.etudiant?.nom
-          + ' ' + this.convention.etudiant?.prenom;
+          this.titleService.title = 'Création d\'une convention';
           this.majStatus();
         });
         this.modifiable = true;

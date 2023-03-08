@@ -16,6 +16,7 @@ import { ConfigService } from "../../../services/config.service";
 import { ConsigneService } from "../../../services/consigne.service";
 import * as FileSaver from "file-saver";
 import { Router } from "@angular/router";
+import { TitleService } from 'src/app/services/title.service';
 
 @Component({
   selector: 'app-convention-etudiant',
@@ -64,6 +65,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
     private configService: ConfigService,
     private consigneService: ConsigneService,
     private router: Router,
+    private titleService: TitleService,
   ) {
     this.form = this.fb.group({
       codEtu: [null, []],
@@ -190,6 +192,8 @@ export class EtudiantComponent implements OnInit, OnChanges {
       this.formConvention.get('telEtudiant')?.setValue(this.etudiant.phone);
       this.formConvention.get('telPortableEtudiant')?.setValue(this.etudiant.portablePhone);
       this.formConvention.get('courrielPersoEtudiant')?.setValue(this.etudiant.mailPerso);
+     
+      this.titleService.title = 'Création d\'une convention pour ' + this.etudiant.nompatro + ' ' + this.etudiant.prenom;
     });
     this.etudiantService.getApogeeInscriptions(row.codEtu).subscribe((response: any) => {
       this.inscriptions = response;
