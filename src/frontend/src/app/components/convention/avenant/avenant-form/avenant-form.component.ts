@@ -22,6 +22,8 @@ import { ServiceAccueilFormComponent } from '../../../gestion-etab-accueil/servi
 import { ContactFormComponent } from '../../../gestion-etab-accueil/contact-form/contact-form.component';
 import { InterruptionsFormComponent } from '../../../convention/stage/interruptions-form/interruptions-form.component';
 import { debounceTime } from "rxjs/operators";
+import * as FileSaver from 'file-saver';
+import { ConventionService } from 'src/app/services/convention.service';
 
 @Component({
   selector: 'app-avenant-form',
@@ -98,6 +100,7 @@ export class AvenantFormComponent implements OnInit {
               private fb: FormBuilder,
               private messageService: MessageService,
               public matDialog: MatDialog,
+              private conventionService: ConventionService,
   ) {
   }
 
@@ -561,6 +564,14 @@ export class AvenantFormComponent implements OnInit {
         this.addedInterruptionsStage = dialogResponse;
         this.customFormValidation();
       }
+    });
+  }
+
+  printAvenant(): void {
+    this.conventionService.getAvenantPDF(this.avenant.id).subscribe((response: any) => {
+      var blob = new Blob([response as BlobPart], { type: "application/pdf" });
+      let filename = 'Avenant_' + this.convention.id + '_' + this.convention.etudiant.prenom + '_' + this.convention.etudiant.nom + '.pdf';
+      FileSaver.saveAs(blob, filename);
     });
   }
 }
