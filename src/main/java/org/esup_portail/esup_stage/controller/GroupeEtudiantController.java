@@ -57,6 +57,9 @@ public class GroupeEtudiantController {
     ConventionJpaRepository conventionJpaRepository;
 
     @Autowired
+    TypeConventionJpaRepository typeConventionJpaRepository;
+
+    @Autowired
     EtudiantGroupeEtudiantJpaRepository etudiantGroupeEtudiantJpaRepository;
 
     @Autowired
@@ -513,12 +516,20 @@ public class GroupeEtudiantController {
             throw new AppException(HttpStatus.NOT_FOUND, "Aucunes inscriptions trouvées dans apogée pour l'étudiant : " + etudiant.getNom() + " " + etudiant.getPrenom());
         }
         EtapeInscription etapeInscription = inscriptions.get(0).getEtapeInscription();
+        TypeConvention typeConvention = inscriptions.get(0).getTypeConvention();
+
+        if (etapeInscription == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Aucun etapeInscription renseignée dans apogée pour l'étudiant : " + etudiant.getNom() + " " + etudiant.getPrenom());
+        }
+        if (typeConvention == null) {
+            typeConvention = typeConventionJpaRepository.findAll().get(0);
+        }
 
         ConventionFormDto conventionFormDto = new ConventionFormDto();
 
         LangueConvention langueConvention = langueConventionJpaRepository.findByCode("fr");
 
-        conventionFormDto.setIdTypeConvention(inscriptions.get(0).getTypeConvention().getId());
+        conventionFormDto.setIdTypeConvention(typeConvention.getId());
         conventionFormDto.setCodeLangueConvention(langueConvention.getCode());
         conventionFormDto.setCodeComposante(etapeInscription.getCodeComposante());
         conventionFormDto.setCodeEtape(etapeInscription.getCodeEtp());
