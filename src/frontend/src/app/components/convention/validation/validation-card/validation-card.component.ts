@@ -34,10 +34,6 @@ export class ValidationCardComponent implements OnInit {
     if (this.authService.isEnseignant() && this.validation === 'validationConvention') {
       return false;
     }
-    // Impossible de dévalider s'il y a au moins un avenant
-    if (this.convention.avenants.length > 0) {
-      return false;
-    }
     const validationOrdre = this.convention.centreGestion[this.validation + 'Ordre'];
     // On peut toujours dévalider la dernière validation
     if (validationOrdre === this.validationsActives.length) {
