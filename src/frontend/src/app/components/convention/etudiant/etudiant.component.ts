@@ -36,6 +36,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
   inscriptions: any[] = [];
   centreGestion: any;
   sansElp: boolean = false;
+  autoriserConventionsOrphelines: boolean = false;
 
   formConvention!: FormGroup;
 
@@ -87,6 +88,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
     });
 
     this.configService.getConfigGenerale().subscribe((response: any) => {
+      this.autoriserConventionsOrphelines = response.autoriserConventionsOrphelines;
       this.formConvention = this.fb.group({
         adresseEtudiant: [this.convention.adresseEtudiant, [Validators.required]],
         codePostalEtudiant: [this.convention.codePostalEtudiant, [Validators.required]],
