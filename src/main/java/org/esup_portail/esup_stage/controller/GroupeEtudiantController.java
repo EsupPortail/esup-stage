@@ -190,7 +190,7 @@ public class GroupeEtudiantController {
         }
 
         GroupeEtudiantDto groupeEtudiantDto = new GroupeEtudiantDto();
-        groupeEtudiantDto.setCodeGroupe(groupeEtudiant.getCode());
+        groupeEtudiantDto.setCodeGroupe(groupeEtudiant.getCode() + " duplicate");
         groupeEtudiantDto.setNomGroupe(groupeEtudiant.getNom());
 
         List<Integer> etudiantIds = groupeEtudiant.getEtudiantGroupeEtudiants().stream().map(EtudiantGroupeEtudiant::getEtudiantId).collect(Collectors.toList());
