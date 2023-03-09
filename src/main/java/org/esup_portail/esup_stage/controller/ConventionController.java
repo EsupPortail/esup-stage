@@ -410,6 +410,9 @@ public class ConventionController {
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
+        if (convention.getDocumentId() != null) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Convention déjà envoyée pour signature");
+        }
         // Un enseignant n'a les droits que sur la validation pédagogique
         if (UtilisateurHelper.isRole(ServiceContext.getUtilisateur(), Role.ENS) && !type.equals("validationPedagogique")) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Type de validation inconnu");
