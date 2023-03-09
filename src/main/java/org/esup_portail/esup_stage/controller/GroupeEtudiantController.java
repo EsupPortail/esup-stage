@@ -463,6 +463,7 @@ public class GroupeEtudiantController {
             if(!newEtudiants.contains(etudiantGroupeEtudiant.getEtudiantId())){
                 it.remove();
                 etudiantGroupeEtudiantJpaRepository.delete(etudiantGroupeEtudiant);
+                conventionJpaRepository.delete(etudiantGroupeEtudiant.getConvention());
             }
         }
 

@@ -40,6 +40,9 @@
         <button mat-icon-button matTooltip="Dupliquer le groupe" (click)="duplicate(row)" color="primary"><i class="fa fa-copy"></i></button>
         <button mat-icon-button matTooltip="Envoie de mail" (click)="sendMailTab(row)" color="primary"><i class="fa fa-envelope"></i></button>
         <button mat-icon-button matTooltip="Export pdf" (click)="printTab(row)" color="primary"><i class="fa fa-file-contract"></i></button>
+        <span (confirm)="delete(row.id)" [confirmMessage]="'Voulez-vous supprimer ce groupe ?'">
+              <button mat-icon-button matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
+        </span>
       </ng-container>
     </td>
   </ng-container>

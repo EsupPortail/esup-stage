@@ -72,11 +72,9 @@ export class GestionGroupeComponent implements OnInit {
     this.form = this.fb.group({
       template: [null, [Validators.required]],
     });
-
   }
 
   ngOnInit(): void {
-
     this.groupeColumns = ['code','nom','annee','loginCreation','dateCreation','periodStage','actions'];
     this.groupeFilters = [
       { id: 'code', libelle: 'Code'},
@@ -158,7 +156,6 @@ export class GestionGroupeComponent implements OnInit {
       this.refreshHistorique();
     }
   }
-
 
   save(): void {
   }
@@ -271,5 +268,12 @@ export class GestionGroupeComponent implements OnInit {
       }
     }
     return allSelected;
+  }
+
+  delete(id: number) {
+    this.groupeEtudiantService.delete(id).subscribe((response: any) => {
+      this.messageService.setSuccess("groupe supprimé");
+      this.tableList?.update();
+    });
   }
 }
