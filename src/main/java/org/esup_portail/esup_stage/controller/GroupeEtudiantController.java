@@ -305,7 +305,7 @@ public class GroupeEtudiantController {
 
     @PostMapping("/sendMail/{id}/templateMail/{template}")
     @Secure(fonctions = {AppFonctionEnum.CREATION_EN_MASSE_CONVENTION}, droits = {DroitEnum.LECTURE})
-    public boolean sendMail(@PathVariable("id") int id,@PathVariable("template") String template,@Valid @RequestBody IdsListDto idsListDto) {
+    public boolean sendMail(@PathVariable("id") int id, @PathVariable("template") String template, @Valid @RequestBody IdsListDto idsListDto) {
 
         GroupeEtudiant groupeEtudiant = groupeEtudiantJpaRepository.findById(id);
         if (groupeEtudiant == null) {
@@ -327,6 +327,14 @@ public class GroupeEtudiantController {
         for(Structure structure : etudiantsByStructure.keySet()){
 
             String mailto = structure.getMail();
+
+            HistoriqueMailGroupe historique = new HistoriqueMailGroupe();
+            historique.setDate(new Date());
+            historique.setMailto(mailto);
+            historique.setLogin(ServiceContext.getUtilisateur().getLogin());
+            historique.setGroupeEtudiant(groupeEtudiant);
+
+            historiqueMailGroupeJpaRepository.saveAndFlush(historique);
 
             try {
                 ByteArrayOutputStream archiveOutputStream = new ByteArrayOutputStream();
@@ -351,14 +359,6 @@ public class GroupeEtudiantController {
             } catch (IOException e) {
                 throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de la création de l'achive zip");
             }
-
-            HistoriqueMailGroupe historique = new HistoriqueMailGroupe();
-            historique.setDate(new Date());
-            historique.setMailto(mailto);
-            historique.setLogin(ServiceContext.getUtilisateur().getLogin());
-            historique.setGroupeEtudiant(groupeEtudiant);
-
-            historiqueMailGroupeJpaRepository.saveAndFlush(historique);
         }
 
         return true;
