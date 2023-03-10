@@ -62,10 +62,7 @@ export class ConventionCreateEnMasseComponent implements OnInit {
         // Récupération du groupeEtudiant au mode brouillon
         this.groupeEtudiantService.getBrouillon().subscribe((response: any) => {
           this.groupeEtudiant = response;
-          if (this.groupeEtudiant) {
-            let filter = this.sharedData.filters.find((f: any) => f.id === 'groupeEtudiant.id');
-            if (filter) filter.value = this.groupeEtudiant.id;
-          }
+          this.majFilter();
           this.majStatus();
         });
       } else {
@@ -157,8 +154,16 @@ export class ConventionCreateEnMasseComponent implements OnInit {
     return 33;
   }
 
+  majFilter(): void {
+    if (this.groupeEtudiant) {
+      let filter = this.sharedData.filters.find((f: any) => f.id === 'groupeEtudiant.id');
+      if (filter) filter.value = this.groupeEtudiant.id;
+    }
+  }
+
   updateGroupeEtudiant(data: any): void {
     this.groupeEtudiant = data;
+    this.majFilter();
     this.majStatus();
   }
 }

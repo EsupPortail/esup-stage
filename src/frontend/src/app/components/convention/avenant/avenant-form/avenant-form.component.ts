@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, OnInit, Input, ViewChild  } from '@angular/core';
+import { Component, Output, EventEmitter, OnInit, Input, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, FormControl, Validators } from "@angular/forms";
 import { ServiceService } from "../../../../services/service.service";
@@ -22,6 +22,8 @@ import { ServiceAccueilFormComponent } from '../../../gestion-etab-accueil/servi
 import { ContactFormComponent } from '../../../gestion-etab-accueil/contact-form/contact-form.component';
 import { InterruptionsFormComponent } from '../../../convention/stage/interruptions-form/interruptions-form.component';
 import { debounceTime } from "rxjs/operators";
+import * as FileSaver from 'file-saver';
+import { ConventionService } from 'src/app/services/convention.service';
 
 @Component({
   selector: 'app-avenant-form',
@@ -30,15 +32,15 @@ import { debounceTime } from "rxjs/operators";
 })
 export class AvenantFormComponent implements OnInit {
 
-  fieldValidators : any = {
-      'dateRupture': [Validators.required],
+  fieldValidators: any = {
+    'dateRupture': [Validators.required],
   }
 
-  checkboxFields : any  = ['dateRupture', 'modificationPeriode', 'modificationLieu', 'modificationSujet', 'modificationSalarie',
-       'modificationEnseignant', 'modificationMontantGratification', 'modificationAutre'];
+  checkboxFields: any = ['dateRupture', 'modificationPeriode', 'modificationLieu', 'modificationSujet', 'modificationSalarie',
+    'modificationEnseignant', 'modificationMontantGratification', 'modificationAutre'];
 
-  periodeStageFields : any = ['dateDebutStage', 'dateFinStage'];
-  montantGratificationFields : any = ['montantGratification', 'idUniteGratification','idUniteDuree', 'idModeVersGratification','idDevise'];
+  periodeStageFields: any = ['dateDebutStage', 'dateFinStage'];
+  montantGratificationFields: any = ['montantGratification', 'idUniteGratification', 'idUniteDuree', 'idModeVersGratification', 'idDevise'];
 
   modeVersGratifications: any[] = [];
   uniteDurees: any[] = [];
@@ -55,8 +57,8 @@ export class AvenantFormComponent implements OnInit {
   service: any = 0;
   contact: any = 0;
 
-  serviceTableColumns = ['choix','nom', 'voie', 'codePostal','batimentResidence', 'commune'];
-  contactTableColumns = ['choix','centreGestionnaire', 'civilite', 'nom','prenom', 'telephone', 'mail', 'fax'];
+  serviceTableColumns = ['choix', 'nom', 'voie', 'codePostal', 'batimentResidence', 'commune'];
+  contactTableColumns = ['choix', 'centreGestionnaire', 'civilite', 'nom', 'prenom', 'telephone', 'mail', 'fax'];
   enseignantColumns = ['nomprenom', 'mail', 'departement', 'action'];
   serviceSortColumn = 'nom';
   contactSortColumn = 'nom';
@@ -81,73 +83,74 @@ export class AvenantFormComponent implements OnInit {
   @ViewChild(TableComponent) contactAppTable: TableComponent | undefined;
 
   constructor(private avenantService: AvenantService,
-              public serviceService: ServiceService,
-              public contactService: ContactService,
-              private modeVersGratificationService: ModeVersGratificationService,
-              private uniteDureeService: UniteDureeService,
-              private uniteGratificationService: UniteGratificationService,
-              private deviseService: DeviseService,
-              private enseignantService: EnseignantService,
-              private ldapService: LdapService,
-              private civiliteService: CiviliteService,
-              private paysService: PaysService,
-              private periodeInterruptionStageService: PeriodeInterruptionStageService,
-              private periodeInterruptionAvenantService: PeriodeInterruptionAvenantService,
-              private authService: AuthService,
-              private contenuService: ContenuService,
-              private fb: FormBuilder,
-              private messageService: MessageService,
-              public matDialog: MatDialog,
+    public serviceService: ServiceService,
+    public contactService: ContactService,
+    private modeVersGratificationService: ModeVersGratificationService,
+    private uniteDureeService: UniteDureeService,
+    private uniteGratificationService: UniteGratificationService,
+    private deviseService: DeviseService,
+    private enseignantService: EnseignantService,
+    private ldapService: LdapService,
+    private civiliteService: CiviliteService,
+    private paysService: PaysService,
+    private periodeInterruptionStageService: PeriodeInterruptionStageService,
+    private periodeInterruptionAvenantService: PeriodeInterruptionAvenantService,
+    private authService: AuthService,
+    private contenuService: ContenuService,
+    private fb: FormBuilder,
+    private messageService: MessageService,
+    public matDialog: MatDialog,
+    private conventionService: ConventionService,
   ) {
   }
 
   ngOnInit(): void {
-    this.modeVersGratificationService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
+    this.modeVersGratificationService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({ temEnServ: { value: 'O', type: 'text' } })).subscribe((response: any) => {
       this.modeVersGratifications = response.data;
     });
-    this.uniteDureeService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
+    this.uniteDureeService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({ temEnServ: { value: 'O', type: 'text' } })).subscribe((response: any) => {
       this.uniteDurees = response.data;
     });
-    this.uniteGratificationService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
+    this.uniteGratificationService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({ temEnServ: { value: 'O', type: 'text' } })).subscribe((response: any) => {
       this.uniteGratifications = response.data;
     });
-    this.deviseService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
+    this.deviseService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({ temEnServ: { value: 'O', type: 'text' } })).subscribe((response: any) => {
       this.devises = response.data;
     });
-    this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServPays: {value: 'O', type: 'text'}})).subscribe((response: any) => {
+    this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({ temEnServPays: { value: 'O', type: 'text' } })).subscribe((response: any) => {
       this.countries = response.data;
     });
-    this.civiliteService.getPaginated(1, 0, 'libelle', 'asc','').subscribe((response: any) => {
+    this.civiliteService.getPaginated(1, 0, 'libelle', 'asc', '').subscribe((response: any) => {
       this.civilites = response.data;
     });
 
     this.serviceFilters = [
-        { id: 'structure.id', libelle: 'Structure', type: 'int',value:this.convention.structure.id, hidden : true},
+      { id: 'structure.id', libelle: 'Structure', type: 'int', value: this.convention.structure.id, hidden: true },
     ];
 
     this.contactFilters = [
-        { id: 'service.id', libelle: 'Service', type: 'int',value:this.convention.service.id, hidden : true},
+      { id: 'service.id', libelle: 'Service', type: 'int', value: this.convention.service.id, hidden: true },
     ];
 
     this.loadInterruptionsStage();
 
-    if (this.avenant.modificationLieu){
+    if (this.avenant.modificationLieu) {
       this.service = this.avenant.service;
-    }else{
+    } else {
       this.service = this.convention.service;
     }
 
-    if (this.avenant.modificationSalarie){
+    if (this.avenant.modificationSalarie) {
       this.contact = this.avenant.contact;
-    }else{
+    } else {
       this.contact = this.convention.contact;
     }
 
-    if (this.avenant.modificationEnseignant){
+    if (this.avenant.modificationEnseignant) {
       this.enseignant = this.avenant.enseignant;
     }
 
-    if (this.avenant.id){
+    if (this.avenant.id) {
       this.form = this.fb.group({
         titreAvenant: [this.avenant.titreAvenant],
         rupture: [this.avenant.rupture],
@@ -166,15 +169,15 @@ export class AvenantFormComponent implements OnInit {
         modificationEnseignant: [this.avenant.modificationEnseignant],
         modificationMontantGratification: [this.avenant.modificationMontantGratification],
         montantGratification: [this.avenant.montantGratification, [Validators.maxLength(7)]],
-        idUniteGratification: [this.avenant.uniteGratification?this.avenant.uniteGratification.id:null],
-        idUniteDuree: [this.avenant.uniteDuree?this.avenant.uniteDuree.id:null],
-        idModeVersGratification: [this.avenant.modeVersGratification?this.avenant.modeVersGratification.id:null],
-        idDevise: [this.avenant.devise?this.avenant.devise.id:null],
+        idUniteGratification: [this.avenant.uniteGratification ? this.avenant.uniteGratification.id : null],
+        idUniteDuree: [this.avenant.uniteDuree ? this.avenant.uniteDuree.id : null],
+        idModeVersGratification: [this.avenant.modeVersGratification ? this.avenant.modeVersGratification.id : null],
+        idDevise: [this.avenant.devise ? this.avenant.devise.id : null],
         validationAvenant: [this.avenant.validationAvenant],
-        modificationAutre: [this.avenant.motifAvenant?true:false],
+        modificationAutre: [this.avenant.motifAvenant ? true : false],
         motifAvenant: [this.avenant.motifAvenant],
       });
-    }else{
+    } else {
       this.form = this.fb.group({
         titreAvenant: [null],
         rupture: [null],
@@ -209,14 +212,14 @@ export class AvenantFormComponent implements OnInit {
     });
 
     this.form.valueChanges.subscribe((values: any) => {
-      if (!values.rupture) this.form.get('dateRupture')?.disable({emitEvent: false});
-      else this.form.get('dateRupture')?.enable({emitEvent: false});
+      if (!values.rupture) this.form.get('dateRupture')?.disable({ emitEvent: false });
+      else this.form.get('dateRupture')?.enable({ emitEvent: false });
 
-      if (!values.modificationSujet) this.form.get('sujetStage')?.disable({emitEvent: false});
-      else this.form.get('sujetStage')?.enable({emitEvent: false});
+      if (!values.modificationSujet) this.form.get('sujetStage')?.disable({ emitEvent: false });
+      else this.form.get('sujetStage')?.enable({ emitEvent: false });
 
-      if (!values.modificationAutre) this.form.get('motifAvenant')?.disable({emitEvent: false});
-      else this.form.get('motifAvenant')?.enable({emitEvent: false});
+      if (!values.modificationAutre) this.form.get('motifAvenant')?.disable({ emitEvent: false });
+      else this.form.get('motifAvenant')?.enable({ emitEvent: false });
       this.customFormValidation();
     });
     this.enseignantSearchForm.valueChanges.pipe(debounceTime(1000)).subscribe(() => {
@@ -234,50 +237,50 @@ export class AvenantFormComponent implements OnInit {
   createOrEdit(): void {
     if (this.customValidForm) {
 
-      const data = {...this.form.value};
+      const data = { ...this.form.value };
 
       data.idConvention = this.convention.id
 
-      if (this.form.get('modificationLieu')!.value){
+      if (this.form.get('modificationLieu')!.value) {
         data.idService = this.service.id;
       }
-      if (this.form.get('modificationSalarie')!.value){
+      if (this.form.get('modificationSalarie')!.value) {
         data.idContact = this.contact.id;
       }
-      if (this.form.get('modificationEnseignant')!.value){
+      if (this.form.get('modificationEnseignant')!.value) {
         data.idEnseignant = this.enseignant.id;
       }
 
-      if (this.form.get('modificationPeriode')!.value){
+      if (this.form.get('modificationPeriode')!.value) {
 
         this.modifiedInterruptionsStage = [];
-        for(const interruption of this.interruptionsStage){
+        for (const interruption of this.interruptionsStage) {
           if (this.form.get(interruption.dateDebutInterruptionFormControlName)!.value ||
-              this.form.get(interruption.dateFinInterruptionFormControlName)!.value){
+            this.form.get(interruption.dateFinInterruptionFormControlName)!.value) {
             const modifiedInterruption = {
-              "dateDebutInterruption":this.form.get(interruption.dateDebutInterruptionFormControlName)!.value,
-              "dateFinInterruption":this.form.get(interruption.dateFinInterruptionFormControlName)!.value,
-              "isModif":true,
-              "idPeriodeInterruptionStage":interruption.id,
+              "dateDebutInterruption": this.form.get(interruption.dateDebutInterruptionFormControlName)!.value,
+              "dateFinInterruption": this.form.get(interruption.dateFinInterruptionFormControlName)!.value,
+              "isModif": true,
+              "idPeriodeInterruptionStage": interruption.id,
             };
             this.modifiedInterruptionsStage.push(modifiedInterruption);
           }
         }
-        for (let addedInterruption of this.addedInterruptionsStage){
+        for (let addedInterruption of this.addedInterruptionsStage) {
           addedInterruption.isModif = false;
         }
       }
-      if (this.avenant.id){
-        this.avenantService.update(this.avenant.id,data).subscribe((response: any) => {
+      if (this.avenant.id) {
+        this.avenantService.update(this.avenant.id, data).subscribe((response: any) => {
           this.avenant = response;
           this.messageService.setSuccess('Avenant modifié avec succès');
-          if (this.form.get('modificationPeriode')!.value){
+          if (this.form.get('modificationPeriode')!.value) {
             this.clearAndAddInterruptionsAvenant(response.id)
-          }else{
+          } else {
             this.updated.emit();
           }
         });
-      }else{
+      } else {
         this.avenantService.create(data).subscribe((response: any) => {
           this.messageService.setSuccess('Avenant créé avec succès');
           this.avenant = {};
@@ -286,9 +289,9 @@ export class AvenantFormComponent implements OnInit {
           this.form.markAsPristine();
           this.form.markAsUntouched();
           this.form.updateValueAndValidity();
-          if (this.form.get('modificationPeriode')!.value){
+          if (this.form.get('modificationPeriode')!.value) {
             this.clearAndAddInterruptionsAvenant(response.id)
-          }else{
+          } else {
             this.updated.emit();
           }
         });
@@ -300,42 +303,42 @@ export class AvenantFormComponent implements OnInit {
     let valid = false;
 
     this.checkboxFields.forEach((field: string) => {
-      if (this.form.get(field)!.value){
+      if (this.form.get(field)!.value) {
         valid = true;
       }
     });
 
-    if (this.form.get('modificationPeriode')!.value){
+    if (this.form.get('modificationPeriode')!.value) {
       let periodeStageValid = false;
       this.periodeStageFields.forEach((field: string) => {
-        if (this.form.get(field)!.value){
+        if (this.form.get(field)!.value) {
           periodeStageValid = true;
         }
       });
       valid = valid && (periodeStageValid || this.addedInterruptionsStage.length > 0);
     }
 
-    if (this.form.get('modificationMontantGratification')!.value){
+    if (this.form.get('modificationMontantGratification')!.value) {
       let montantGratificationValid = false;
       this.montantGratificationFields.forEach((field: string) => {
-        if (this.form.get(field)!.value){
+        if (this.form.get(field)!.value) {
           montantGratificationValid = true;
         }
       });
       valid = valid && montantGratificationValid;
     }
-    if (this.form.get('modificationLieu')!.value){
-      if(this.service.id === this.convention.service.id){
+    if (this.form.get('modificationLieu')!.value) {
+      if (this.service.id === this.convention.service.id) {
         valid = false;
       }
     }
-    if (this.form.get('modificationSalarie')!.value){
-      if(this.contact.id === this.convention.contact.id){
+    if (this.form.get('modificationSalarie')!.value) {
+      if (this.contact.id === this.convention.contact.id) {
         valid = false;
       }
     }
-    if (this.form.get('modificationEnseignant')!.value){
-      if(!this.enseignant || this.enseignant.id === this.convention.enseignant.id){
+    if (this.form.get('modificationEnseignant')!.value) {
+      if (!this.enseignant || this.enseignant.id === this.convention.enseignant.id) {
         valid = false;
       }
     }
@@ -363,7 +366,7 @@ export class AvenantFormComponent implements OnInit {
     });
   }
 
-  selectService(row: any): void{
+  selectService(row: any): void {
     this.service = row;
     this.customFormValidation();
   }
@@ -372,7 +375,7 @@ export class AvenantFormComponent implements OnInit {
     this.openServiceFormModal(null);
   }
 
-  selectContact(row: any): void{
+  selectContact(row: any): void {
     this.contact = row;
     this.customFormValidation();
   }
@@ -384,7 +387,7 @@ export class AvenantFormComponent implements OnInit {
   openServiceFormModal(service: any) {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.width = '1000px';
-    dialogConfig.data = {service: service, etab: this.convention.structure, countries: this.countries};
+    dialogConfig.data = { service: service, etab: this.convention.structure, countries: this.countries };
     const modalDialog = this.matDialog.open(ServiceAccueilFormComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse) {
@@ -398,7 +401,7 @@ export class AvenantFormComponent implements OnInit {
   openContactFormModal(contact: any) {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.width = '1000px';
-    dialogConfig.data = {contact: contact, service: this.convention.service, civilites: this.civilites, idCentreGestion: this.convention.centreGestion.id};
+    dialogConfig.data = { contact: contact, service: this.convention.service, civilites: this.civilites, idCentreGestion: this.convention.centreGestion.id };
     const modalDialog = this.matDialog.open(ContactFormComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse) {
@@ -421,15 +424,15 @@ export class AvenantFormComponent implements OnInit {
   }
 
   chooseEnseignant(row: any): void {
-      this.enseignantService.getByUid(row.supannAliasLogin).subscribe((response: any) => {
-        this.enseignant = response;
-        this.customFormValidation();
-        if (this.enseignant == null){
-          this.createEnseignant(row);
-        } else {
-          this.updateEnseignant(this.enseignant.id, row);
-        }
-      });
+    this.enseignantService.getByUid(row.supannAliasLogin).subscribe((response: any) => {
+      this.enseignant = response;
+      this.customFormValidation();
+      if (this.enseignant == null) {
+        this.createEnseignant(row);
+      } else {
+        this.updateEnseignant(this.enseignant.id, row);
+      }
+    });
   }
 
   createEnseignant(row: any): void {
@@ -480,14 +483,14 @@ export class AvenantFormComponent implements OnInit {
     }
   }
 
-  loadInterruptionsStage() : void{
+  loadInterruptionsStage(): void {
     this.periodeInterruptionStageService.getByConvention(this.convention.id).subscribe((response: any) => {
       this.interruptionsStage = response;
-      for(let interruption of this.interruptionsStage){
+      for (let interruption of this.interruptionsStage) {
         const dateDebutInterruptionFormControlName = 'dateDebutInterruption' + interruption.id
         const dateFinInterruptionFormControlName = 'dateFinInterruption' + interruption.id
-        this.form.addControl(dateDebutInterruptionFormControlName,new FormControl(null));
-        this.form.addControl(dateFinInterruptionFormControlName,new FormControl(null));
+        this.form.addControl(dateDebutInterruptionFormControlName, new FormControl(null));
+        this.form.addControl(dateFinInterruptionFormControlName, new FormControl(null));
         this.periodeStageFields.push(dateDebutInterruptionFormControlName);
         this.periodeStageFields.push(dateFinInterruptionFormControlName);
         interruption.dateDebutInterruptionFormControlName = dateDebutInterruptionFormControlName;
@@ -497,17 +500,17 @@ export class AvenantFormComponent implements OnInit {
     });
   }
 
-  loadInterruptionsAvenant() : void {
-    if(this.avenant.id){
+  loadInterruptionsAvenant(): void {
+    if (this.avenant.id) {
       this.periodeInterruptionAvenantService.getByAvenant(this.avenant.id).subscribe((response: any) => {
-        for(let interruption of response){
-          if (interruption.isModif){
+        for (let interruption of response) {
+          if (interruption.isModif) {
             this.modifiedInterruptionsStage.push(interruption);
-          }else{
+          } else {
             this.addedInterruptionsStage.push(interruption);
           }
         }
-        for(let interruption of this.modifiedInterruptionsStage){
+        for (let interruption of this.modifiedInterruptionsStage) {
           const dateDebutInterruptionFormControlName = 'dateDebutInterruption' + interruption.periodeInterruptionStage.id
           const dateFinInterruptionFormControlName = 'dateFinInterruption' + interruption.periodeInterruptionStage.id
           this.form.get(dateDebutInterruptionFormControlName)!.setValue(interruption.dateDebutInterruption);
@@ -517,29 +520,29 @@ export class AvenantFormComponent implements OnInit {
     }
   }
 
-  addInterruptionsAvenant(avenantId: number){
+  addInterruptionsAvenant(avenantId: number) {
     let finished = 0;
-    for (let addedInterruption of this.addedInterruptionsStage){
+    for (let addedInterruption of this.addedInterruptionsStage) {
       addedInterruption.idAvenant = avenantId;
       this.periodeInterruptionAvenantService.create(addedInterruption).subscribe((response: any) => {
         finished++;
-        if (finished === (this.addedInterruptionsStage.length + this.modifiedInterruptionsStage.length)){
+        if (finished === (this.addedInterruptionsStage.length + this.modifiedInterruptionsStage.length)) {
           this.updated.emit();
         }
       });
     }
-    for (let modifiedInterruption of this.modifiedInterruptionsStage){
+    for (let modifiedInterruption of this.modifiedInterruptionsStage) {
       modifiedInterruption.idAvenant = avenantId;
       this.periodeInterruptionAvenantService.create(modifiedInterruption).subscribe((response: any) => {
         finished++;
-        if (finished === (this.addedInterruptionsStage.length + this.modifiedInterruptionsStage.length)){
+        if (finished === (this.addedInterruptionsStage.length + this.modifiedInterruptionsStage.length)) {
           this.updated.emit();
         }
       });
     }
   }
 
-  clearAndAddInterruptionsAvenant(avenantId: number) : void{
+  clearAndAddInterruptionsAvenant(avenantId: number): void {
     this.periodeInterruptionAvenantService.deleteAll(avenantId).subscribe((response: any) => {
       this.addInterruptionsAvenant(avenantId);
       this.updated.emit();
@@ -550,17 +553,25 @@ export class AvenantFormComponent implements OnInit {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.width = '1000px';
     const convention = {
-      'id':this.convention.id,
-      'dateDebutStage':this.form.get('dateDebutStage')!.value?this.form.get('dateDebutStage')!.value:this.convention.dateDebutStage,
-      'dateFinStage':this.form.get('dateFinStage')!.value?this.form.get('dateFinStage')!.value:this.convention.dateFinStage
+      'id': this.convention.id,
+      'dateDebutStage': this.form.get('dateDebutStage')!.value ? this.form.get('dateDebutStage')!.value : this.convention.dateDebutStage,
+      'dateFinStage': this.form.get('dateFinStage')!.value ? this.form.get('dateFinStage')!.value : this.convention.dateFinStage
     }
-    dialogConfig.data = {convention: convention,interruptionsStage: [],interruptionStage: null,periodes:this.addedInterruptionsStage};
+    dialogConfig.data = { convention: convention, interruptionsStage: [], interruptionStage: null, periodes: this.addedInterruptionsStage };
     const modalDialog = this.matDialog.open(InterruptionsFormComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse) {
         this.addedInterruptionsStage = dialogResponse;
         this.customFormValidation();
       }
+    });
+  }
+
+  printAvenant(): void {
+    this.conventionService.getAvenantPDF(this.avenant.id).subscribe((response: any) => {
+      var blob = new Blob([response as BlobPart], { type: "application/pdf" });
+      let filename = 'Avenant_' + this.convention.id + '_' + this.convention.etudiant.prenom + '_' + this.convention.etudiant.nom + '.pdf';
+      FileSaver.saveAs(blob, filename);
     });
   }
 }

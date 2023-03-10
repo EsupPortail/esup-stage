@@ -22,7 +22,7 @@ public class EtudiantGroupeEtudiant implements Exportable {
     @JoinColumn(name = "idGroupeEtudiant", nullable = false)
     private GroupeEtudiant groupeEtudiant;
 
-    @OneToOne(cascade = {CascadeType.REMOVE}, orphanRemoval = true)
+    @OneToOne
     @JoinColumn(name = "idConvention", nullable = false)
     private Convention convention;
 
