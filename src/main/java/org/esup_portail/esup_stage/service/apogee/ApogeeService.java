@@ -222,6 +222,7 @@ public class ApogeeService {
                     // récupération du centre de gestion établissement si autorisation de création d'une convention non rattachée à un centre
                     if (appConfigService.getConfigGenerale().isAutoriserConventionsOrphelines()) {
                         centreGestion = centreGestionJpaRepository.getCentreEtablissement();
+                        if(centreGestion == null) throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion de niveau établissement non trouvé");
                     }
                 } else {
                     centreGestion = critereGestion.getCentreGestion();

@@ -190,7 +190,7 @@
               <div *ngFor="let doc of consigneEtablissement?.documents">
                 <a href (click)="downloadDoc($event, doc)"><i class="fa fa-paperclip"></i> {{doc.nomReel}}</a>
               </div>
-              <div class="mt-3" *ngIf="centreGestion && centreGestion.niveauCentre.libelle !== 'ETABLISSEMENT' && centreGestion.consigne">
+              <div class="mt-3" *ngIf="centreGestion.niveauCentre.libelle !== 'ETABLISSEMENT' && centreGestion.consigne">
                 <div [innerHTML]="centreGestion.consigne.texte"></div>
                 <div *ngFor="let doc of centreGestion.consigne.documents">
                   <a href (click)="downloadDoc($event, doc)"><i class="fa fa-paperclip"></i> {{doc.nomReel}}</a>
@@ -207,7 +207,7 @@
         <span *ngIf="canDelete()" (confirm)="deleteConvention()" [confirmMessage]="'Voulez-vous vraiment supprimer la convention ?'" class="mr-2">
           <button type="button" mat-flat-button color="warn">Supprimer</button>
         </span>
-        <button mat-flat-button color="primary" [disabled]="(!centreGestion && !autoriserConventionsOrphelines) || inscriptions.length === 0 || !selectedInscription">{{'BOUTON_VALIDER'|contenu}}</button>
+        <button mat-flat-button color="primary" [disabled]= "inscriptions.length === 0 || !selectedInscription">{{'BOUTON_VALIDER'|contenu}}</button>
       </div>
     </form>
   </mat-expansion-panel>
