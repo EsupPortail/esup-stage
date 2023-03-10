@@ -12,3 +12,16 @@ databaseChangeLog:
             type: VARCHAR(255)
             constraints:
                 unique: true
+- changeSet:
+      id: utilisateur-numEtudiant
+      author: dcorrochano
+      changes:
+          - addColumn:
+                tableName: Utilisateur
+                columns:
+                    - column:
+                          defaultValueComputed: 'NULL'
+                          name: numEtudiant
+                          type: VARCHAR(255)
+                          constraints:
+                              unique: true

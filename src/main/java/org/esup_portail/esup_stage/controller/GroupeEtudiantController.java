@@ -511,7 +511,7 @@ public class GroupeEtudiantController {
         }
 
         EtudiantRef etudiantRef = apogeeService.getInfoApogee(etudiant.getNumEtudiant(), appConfigService.getAnneeUniv());
-        List<ConventionFormationDto> inscriptions = apogeeService.getInscriptions(utilisateur, etudiant);
+        List<ConventionFormationDto> inscriptions = apogeeService.getInscriptions(utilisateur, etudiant.getNumEtudiant());
 
         if (inscriptions.size() == 0) {
             throw new AppException(HttpStatus.NOT_FOUND, "Aucunes inscriptions trouvées dans apogée pour l'étudiant : " + etudiant.getNom() + " " + etudiant.getPrenom());
