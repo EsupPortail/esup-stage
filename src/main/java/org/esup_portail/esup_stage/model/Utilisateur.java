@@ -45,6 +45,9 @@ public class Utilisateur implements Exportable {
     )
     private List<Role> roles = new ArrayList<>();
 
+    @Column(unique = true)
+    private String numEtudiant;
+
     public int getId() {
         return id;
     }
@@ -120,6 +123,14 @@ public class Utilisateur implements Exportable {
     @PrePersist
     public void prePersist() {
         setDateCreation(new Date());
+    }
+
+    public String getNumEtudiant() {
+        return numEtudiant;
+    }
+
+    public void setNumEtudiant(String numEtudiant) {
+        this.numEtudiant = numEtudiant;
     }
 
     @Override

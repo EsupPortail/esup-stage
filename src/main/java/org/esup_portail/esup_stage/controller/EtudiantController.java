@@ -74,12 +74,10 @@ public class EtudiantController {
     @Secure
     public List<ConventionFormationDto> getFormationInscriptions(@PathVariable("numEtudiant") String numEtudiant) {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
-        Etudiant etudiant = etudiantRepository.findByNumEtudiant(numEtudiant);
-        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && (etudiant == null || !utilisateur.getUid().equals(etudiant.getIdentEtudiant()))) {
+        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !numEtudiant.equals(utilisateur.getNumEtudiant())) {
             throw new AppException(HttpStatus.NOT_FOUND, "Étudiant non trouvé");
         }
-
-        return apogeeService.getInscriptions(utilisateur, etudiant);
+        return apogeeService.getInscriptions(utilisateur, numEtudiant);
     }
 
     @GetMapping("/by-login/{login}")

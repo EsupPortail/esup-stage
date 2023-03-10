@@ -104,6 +104,7 @@ public class CasUserDetailsServiceImpl implements AuthenticationUserDetailsServi
                     etudiantJpaRepository.saveAndFlush(etudiant);
                 }
             }
+            LdapUser ldapUser = ldapService.searchByLogin(utilisateur.getLogin());
 
             boolean update = false;
             if (utilisateur.getNom() == null) {
@@ -115,9 +116,14 @@ public class CasUserDetailsServiceImpl implements AuthenticationUserDetailsServi
                 update = true;
             }
             if (utilisateur.getUid() == null) {
-                LdapUser ldapUser = ldapService.searchByLogin(utilisateur.getLogin());
                 if (ldapUser != null) {
                     utilisateur.setUid(ldapUser.getUid());
+                    update = true;
+                }
+            }
+            if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && utilisateur.getNumEtudiant() == null) {
+                if(ldapUser != null){
+                    utilisateur.setNumEtudiant(ldapUser.getCodEtu());
                     update = true;
                 }
             }

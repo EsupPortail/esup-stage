@@ -172,9 +172,7 @@ public class ApogeeService {
         }
     }
 
-    public List<ConventionFormationDto> getInscriptions(Utilisateur utilisateur, Etudiant etudiant) {
-        String numEtudiant = etudiant.getNumEtudiant();
-
+    public List<ConventionFormationDto> getInscriptions(Utilisateur utilisateur, String numEtudiant) {
         List<String> annees = new ArrayList<>();
         String anneeEnCours = appConfigService.getAnneeUniv();
         String anneePrecedente = String.valueOf(Integer.parseInt(anneeEnCours) - 1);
