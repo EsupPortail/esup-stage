@@ -61,8 +61,7 @@ export class ConventionComponent implements OnInit {
         // Récupération de la convention au mode brouillon
         this.conventionService.getBrouillon().subscribe((response: any) => {
           this.convention = response;
-          this.titleService.title = 'Création d\'une convention pour ' + this.convention.etudiant?.nom
-          + ' ' + this.convention.etudiant?.prenom;
+          this.titleService.title = 'Création d\'une convention';
           this.majStatus();
         });
         this.modifiable = true;
@@ -208,17 +207,20 @@ export class ConventionComponent implements OnInit {
 
   isConventionValide(): boolean {
     let conventionValide = null;
-    if (this.convention.centreGestion.validationPedagogique) {
-      conventionValide = this.convention.validationPedagogique;
-    }
-    if (this.convention.centreGestion.validationConvention) {
-      if (conventionValide != null) {
-        conventionValide = conventionValide && this.convention.validationConvention
-      } else {
-        conventionValide = this.convention.validationConvention
+    if (this.convention.centreGestion != null) {
+      if (this.convention.centreGestion.validationPedagogique) {
+        conventionValide = this.convention.validationPedagogique;
       }
+      if (this.convention.centreGestion.validationConvention) {
+        if (conventionValide != null) {
+          conventionValide = conventionValide && this.convention.validationConvention
+        } else {
+          conventionValide = this.convention.validationConvention
+        }
+      }
+      return conventionValide;
     }
-    return conventionValide;
+    return false;
   }
 
   isStageOver(): boolean {
