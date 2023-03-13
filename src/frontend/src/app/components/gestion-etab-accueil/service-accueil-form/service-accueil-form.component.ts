@@ -34,7 +34,7 @@ export class ServiceAccueilFormComponent {
       this.form = this.fb.group({
         nom: [this.service.nom, [Validators.required, Validators.maxLength(70)]],
         voie: [this.service.voie, [Validators.required, Validators.maxLength(200)]],
-        codePostal: [this.service.codePostal, [Validators.required, Validators.maxLength(10), Validators.pattern('[0-9]+')]],
+        codePostal: [this.service.codePostal, [Validators.required, Validators.maxLength(10)]],
         batimentResidence: [this.service.batimentResidence, [Validators.maxLength(200)]],
         commune: [this.service.commune, [Validators.required, Validators.maxLength(200)]],
         idPays: [this.service.pays ? this.service.pays.id : null, [Validators.required]],
