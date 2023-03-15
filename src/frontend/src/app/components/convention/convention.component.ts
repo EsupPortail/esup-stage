@@ -69,7 +69,7 @@ export class ConventionComponent implements OnInit {
         // Récupération de la convention correspondant à l'id
         this.conventionService.getById(pathId).subscribe((response: any) => {
           this.convention = response;
-          this.titleService.title = 'Gestion de la convention n°' + pathId 
+          this.titleService.title = 'Gestion de la convention n°' + pathId
           + ' ' + this.convention.etudiant.nom + ' ' + this.convention.etudiant.prenom;
           this.majStatus();
           // un admin a tout le temps les droits de modifications
@@ -221,10 +221,6 @@ export class ConventionComponent implements OnInit {
       return conventionValide;
     }
     return false;
-  }
-
-  isStageOver(): boolean {
-    return new Date(this.convention.dateFinStage) < new Date();
   }
 
   isEtudiant(): boolean {

@@ -73,7 +73,7 @@
     </ng-template>
     <app-avenant *ngIf="(avenantTab.isActive) && convention.id" [convention]="convention" (avenantChanged)="convention.avenants = $event"></app-avenant>
   </mat-tab>
-  <mat-tab #evaluationTab *ngIf="isConventionValide() && isStageOver() ">
+  <mat-tab #evaluationTab *ngIf="isConventionValide()">
     <ng-template mat-tab-label>
       Evaluation du stage
     </ng-template>
