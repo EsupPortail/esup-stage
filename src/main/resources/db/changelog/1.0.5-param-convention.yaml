@@ -15,3 +15,20 @@ databaseChangeLog:
             name: exemple
             value: Sous forme de tableau avec en titre la raison, à droites les anciennes valeurs et à gauche les nouvelles
         tableName: ParamConvention
+- changeSet:
+      id: paramConvention-insert-convention.periodesInterruptions
+      author: dcorrochano
+      changes:
+          - insert:
+                columns:
+                    - column:
+                          name: code
+                          value: convention.periodesInterruptions
+                    - column:
+                          name: libelle
+                          value: Liste des périodes d'interruptions de stage
+                    - column:
+                          name: exemple
+                          value: $LIST convention.periodesInterruptions as periode $FI du ${periode.dateDebutInterruption}
+                              au ${periode.dateFinInterruption} $ENDLIST
+                tableName: ParamConvention

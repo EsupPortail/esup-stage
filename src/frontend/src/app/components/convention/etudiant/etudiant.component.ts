@@ -45,6 +45,8 @@ export class EtudiantComponent implements OnInit, OnChanges {
   centreGestionEtablissement: any;
   consigneEtablissement: any;
 
+  communes: any[] = [];
+  
   @Input() convention: any;
   @Input() modifiable: boolean = false;
   @Output() validated = new EventEmitter<any>();
@@ -76,7 +78,9 @@ export class EtudiantComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.isEtudiant = this.authService.isEtudiant();
-
+    this.communeService.getPaginated(1, 0, 'lib', 'asc', "").subscribe((response: any) => {
+      this.communes = response;
+    });
     this.centreGestionService.getCentreEtablissement().subscribe((response: any) => {
       this.centreGestionEtablissement = response;
       if (this.centreGestionEtablissement) {
@@ -230,6 +234,11 @@ export class EtudiantComponent implements OnInit, OnChanges {
 
   validate(): void {
     if (this.formConvention.valid) {
+      // Contrôle code postal commune
+      if (this.isFr() && !this.isCodePostalValid()) {
+        this.messageService.setError('Code postal inconnu');
+        return;
+      }
       const data = {...this.formConvention.getRawValue()};
       delete data.inscription;
       data.numEtudiant = this.selectedNumEtudiant;
@@ -309,5 +318,15 @@ export class EtudiantComponent implements OnInit, OnChanges {
   isFr() {
     let pays = this.formConvention.get('paysEtudiant')?.value;
     return pays.toLowerCase() === 'france';
+  }
+
+  isCodePostalValid() {
+    let codePostal = this.formConvention.get('codePostalEtudiant')?.value;
+    if (codePostal) {
+      let commune = this.communes.find(c => c.codePostal === codePostal);
+      if (commune)
+        return true;
+    }
+    return false;
   }
 }

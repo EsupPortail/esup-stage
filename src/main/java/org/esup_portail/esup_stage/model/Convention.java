@@ -105,12 +105,6 @@ public class Convention extends ObjetMetier implements Exportable {
     @Column()
     private Boolean interruptionStage;
 
-    @Temporal(TemporalType.DATE)
-    private Date dateDebutInterruption;
-
-    @Temporal(TemporalType.DATE)
-    private Date dateFinInterruption;
-
     @Column()
     private NbJoursHebdoEnum nbJoursHebdo;
 
@@ -554,22 +548,6 @@ public class Convention extends ObjetMetier implements Exportable {
 
     public void setInterruptionStage(Boolean interruptionStage) {
         this.interruptionStage = interruptionStage;
-    }
-
-    public Date getDateDebutInterruption() {
-        return dateDebutInterruption;
-    }
-
-    public void setDateDebutInterruption(Date dateDebutInterruption) {
-        this.dateDebutInterruption = dateDebutInterruption;
-    }
-
-    public Date getDateFinInterruption() {
-        return dateFinInterruption;
-    }
-
-    public void setDateFinInterruption(Date dateFinInterruption) {
-        this.dateFinInterruption = dateFinInterruption;
     }
 
     public NbJoursHebdoEnum getNbJoursHebdo() {
@@ -1474,16 +1452,6 @@ public class Convention extends ObjetMetier implements Exportable {
             case "interruptionStage":
                 if (getInterruptionStage() != null) {
                     value = getInterruptionStage()?"Oui":"Non";
-                }
-                break;
-            case "dateDebutInterruption":
-                if (getDateDebutInterruption() != null) {
-                    value = df.format(getDateDebutInterruption());
-                }
-                break;
-            case "dateFinInterruption":
-                if (getDateFinInterruption() != null) {
-                    value = df.format(getDateFinInterruption());
                 }
                 break;
             case "theme":

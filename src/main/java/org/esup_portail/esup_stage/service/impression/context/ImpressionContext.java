@@ -123,9 +123,7 @@ public class ImpressionContext {
         private String commentaireDureeTravail;
         private String courrielPersoEtudiant;
         private String creditECTS;
-        private String dateDebutInterruption;
         private String dateDebutStage;
-        private String dateFinInterruption;
         private String dateFinStage;
         private String details;
         private String dureeStageHeure;
@@ -182,9 +180,7 @@ public class ImpressionContext {
             this.commentaireDureeTravail = convention.getCommentaireDureeTravail();
             this.courrielPersoEtudiant = convention.getCourrielPersoEtudiant();
             this.creditECTS = String.valueOf(convention.getCreditECTS());
-            this.dateDebutInterruption = convention.getDateDebutInterruption() != null ? df.format(convention.getDateDebutInterruption()) : null;
             this.dateDebutStage = convention.getDateDebutStage() != null ? df.format(convention.getDateDebutStage()) : null;
-            this.dateFinInterruption = convention.getDateFinInterruption() != null ? df.format(convention.getDateFinInterruption()) : null;
             this.dateFinStage = convention.getDateFinStage() != null ? df.format(convention.getDateFinStage()) : null;
             this.details = convention.getDetails();
             this.dureeStageHeure = convention.getDureeExceptionnelle();
@@ -332,13 +328,6 @@ public class ImpressionContext {
             this.creditECTS = creditECTS;
         }
 
-        public String getDateDebutInterruption() {
-            return dateDebutInterruption != null ? dateDebutInterruption : "";
-        }
-
-        public void setDateDebutInterruption(String dateDebutInterruption) {
-            this.dateDebutInterruption = dateDebutInterruption;
-        }
 
         public String getDateDebutStage() {
             return dateDebutStage != null ? dateDebutStage : "";
@@ -346,14 +335,6 @@ public class ImpressionContext {
 
         public void setDateDebutStage(String dateDebutStage) {
             this.dateDebutStage = dateDebutStage;
-        }
-
-        public String getDateFinInterruption() {
-            return dateFinInterruption != null ? dateFinInterruption : "";
-        }
-
-        public void setDateFinInterruption(String dateFinInterruption) {
-            this.dateFinInterruption = dateFinInterruption;
         }
 
         public String getDateFinStage() {
