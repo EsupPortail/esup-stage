@@ -12,3 +12,18 @@ databaseChangeLog:
                 nullable: false
             name: creationEnMasse
             type: BIT
+- changeSet:
+    id: del-convention-dateDebutInterruption
+    author: dcorrochano
+    changes:
+      - dropColumn:
+          columnName: dateDebutInterruption
+          tableName: Convention
+
+- changeSet:
+    id: del-convention-dateFinInterruption
+    author: dcorrochano
+    changes:
+      - dropColumn:
+          columnName: dateFinInterruption
+          tableName: Convention

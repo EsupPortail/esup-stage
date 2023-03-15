@@ -633,14 +633,6 @@ public class ConventionController {
         if (Objects.equals(conventionSingleFieldDto.getField(), "interruptionStage")){
             convention.setInterruptionStage((Boolean) conventionSingleFieldDto.getValue());
         }
-        if (Objects.equals(conventionSingleFieldDto.getField(), "dateDebutInterruption")){
-            Instant instant = Instant.parse((String) conventionSingleFieldDto.getValue()) ;
-            convention.setDateDebutInterruption(java.util.Date.from(instant));
-        }
-        if (Objects.equals(conventionSingleFieldDto.getField(), "dateFinInterruption")){
-            Instant instant = Instant.parse((String) conventionSingleFieldDto.getValue()) ;
-            convention.setDateFinInterruption(java.util.Date.from(instant));
-        }
         if (Objects.equals(conventionSingleFieldDto.getField(), "horairesReguliers")){
             convention.setHorairesReguliers((Boolean) conventionSingleFieldDto.getValue());
         }

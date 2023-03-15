@@ -63,3 +63,17 @@ databaseChangeLog:
             name: exemple
             value: Bat. 1
         tableName: ParamConvention
+- changeSet:
+      id:  delete-variable-dateDebutInterruption
+      author:  dcorrochano
+      changes:
+          -  delete:
+                 tableName:  ParamConvention
+                 where:  code='convention.dateDebutInterruption'
+- changeSet:
+      id:  delete-variable-dateFinInterruption
+      author:  dcorrochano
+      changes:
+          -  delete:
+                 tableName:  ParamConvention
+                 where:  code='convention.dateFinInterruption'
