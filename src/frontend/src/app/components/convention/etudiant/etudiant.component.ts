@@ -171,6 +171,8 @@ export class EtudiantComponent implements OnInit, OnChanges {
     this.selectedNumEtudiant = null;
     this.ldapService.searchEtudiants(this.form.value).subscribe((response: any) => {
       this.etudiants = response;
+      console.log('response : ' + JSON.stringify(response, null, 2));
+
       if (this.etudiants.length === 1) {
         this.choose(this.etudiants[0]);
       }

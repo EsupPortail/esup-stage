@@ -32,7 +32,11 @@
     </mat-form-field>
   </div>
   <div class="row">
-    <div class="col-sm-12 col-md-6 mb-2"></div>
+    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+      <mat-label>Numéro RNE</mat-label>
+      <input matInput formControlName="numeroRNE"/>
+      <mat-error><app-form-error [field]="form.get('numeroRNE')"></app-form-error></mat-error>
+    </mat-form-field>
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Statut juridique</mat-label>
       <mat-select formControlName="idStatutJuridique" required>

@@ -92,6 +92,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges {
       telephone: [this.etab.telephone, [Validators.required, Validators.maxLength(20)]],
       siteWeb: [this.etab.siteWeb, [Validators.maxLength(200), Validators.pattern('^https?://(\\w([\\w\\-]{0,61}\\w)?\\.)+[a-zA-Z]{2,6}([/]{1}.*)?$')]],
       fax: [this.etab.fax, [Validators.maxLength(20)]],
+      numeroRNE: [this.etab.numeroRNE, [Validators.maxLength(20)]],
     });
 
     this.form.get('idTypeStructure')?.disable();

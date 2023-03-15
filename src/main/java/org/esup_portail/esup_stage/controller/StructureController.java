@@ -306,5 +306,6 @@ public class StructureController {
         structure.setTelephone(structureFormDto.getTelephone());
         structure.setSiteWeb(structureFormDto.getSiteWeb());
         structure.setFax(structureFormDto.getFax());
+        structure.setNumeroRNE(structureFormDto.getNumeroRNE());
     }
 }

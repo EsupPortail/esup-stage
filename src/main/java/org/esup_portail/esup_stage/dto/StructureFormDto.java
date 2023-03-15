@@ -70,6 +70,9 @@ public class StructureFormDto {
     @NotNull
     private int idPays;
 
+    @Size(max = 20)
+    private String numeroRNE;
+
     public String getLibCedex() {
         return libCedex;
     }
@@ -204,5 +207,13 @@ public class StructureFormDto {
 
     public void setIdPays(int idPays) {
         this.idPays = idPays;
+    }
+
+    public String getNumeroRNE() {
+        return numeroRNE;
+    }
+
+    public void setNumeroRNE(String numeroRNE) {
+        this.numeroRNE = numeroRNE;
     }
 }
