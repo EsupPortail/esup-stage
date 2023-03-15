@@ -1,0 +1,35 @@
+<#if convention.periodesInterruptions?size gt 0>
+<figure class="table">
+    <table style="border:1px solid hsl(0, 0%, 0%);">
+        <colgroup>
+            <col style="width:50%;">
+            <col style="width:50%;">
+        </colgroup>
+        <tbody>
+        <tr>
+            <td style="text-align:center;border:1px solid hsl(0, 0%, 0%);" colspan="2">Périodes d'interruptions de
+                stage
+            </td>
+        </tr>
+        <tr>
+            <td style="border:1px solid hsl(0, 0%, 0%);vertical-align:top;">
+                Début
+            </td>
+            <td style="border:1px solid hsl(0, 0%, 0%);vertical-align:top;">
+                Fin
+            </td>
+        </tr>
+        <#list convention.periodesInterruptions as periode>
+        <tr>
+            <td style="border:1px solid hsl(0, 0%, 0%);vertical-align:top;">
+                ${periode.dateDebutInterruption}
+            </td>
+            <td style="border:1px solid hsl(0, 0%, 0%);vertical-align:top;">
+                ${periode.dateFinInterruption}
+            </td>
+        </tr>
+        </#list>
+    </tbody>
+    </table>
+</figure>
+</#if>

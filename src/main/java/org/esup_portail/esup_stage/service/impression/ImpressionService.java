@@ -218,13 +218,17 @@ public class ImpressionService {
         if (texte == null) {
             texte = getDefaultText(isConvention);
         }
+        String htmlTexte = "<style>table { table-layout: fixed; width: 100%; overflow-wrap: break-word; border-spacing: 0px; }</style>";
+
+
+        String periodesInterruptionsStage = getDefaultText("/templates/template_convention_periodesInterruptions.html");
+        texte = texte.replace("${convention.periodesInterruptions}", periodesInterruptionsStage);
 
         // Remplacement ${avenant.motifs} par le template html contenant tous les motifs
         String motifTexte = getDefaultText("/templates/template_avenant_motifs.html");
         texte = texte.replace("${avenant.motifs}", motifTexte);
 
         // Style par défaut des tables dans les templates
-        String htmlTexte = "<style>table { table-layout: fixed; width: 100%; overflow-wrap: break-word; border-spacing: 0px; }</style>";
         htmlTexte += texte;
 
         // Remplacement de tags et styles générés par l'éditeur qui ne sont pas convertis correctement
