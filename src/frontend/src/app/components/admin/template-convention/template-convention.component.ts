@@ -8,7 +8,7 @@ import { LangueConventionService } from "../../../services/langue-convention.ser
 import { AppFonction } from "../../../constants/app-fonction";
 import { Droit } from "../../../constants/droit";
 import { AuthService } from "../../../services/auth.service";
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatLegacyTabChangeEvent as MatTabChangeEvent, MatLegacyTabGroup as MatTabGroup } from "@angular/material/legacy-tabs";
 import * as Editor from '../../../../custom-ck5/ckeditor';
 import { TitleService } from "../../../services/title.service";
@@ -41,7 +41,7 @@ export class TemplateConventionComponent implements OnInit {
   createTabIndex = 1
   editTabIndex = 2;
   data: any = {};
-  form: UntypedFormGroup;
+  form: FormGroup;
 
   typesConvention: any;
   languesConvention: any;
@@ -59,7 +59,7 @@ export class TemplateConventionComponent implements OnInit {
     private typeConventionService: TypeConventionService,
     private langueConventionService: LangueConventionService,
     private authService: AuthService,
-    private fb: UntypedFormBuilder,
+    private fb: FormBuilder,
     private titleService: TitleService,
   ) {
     this.form = this.fb.group({

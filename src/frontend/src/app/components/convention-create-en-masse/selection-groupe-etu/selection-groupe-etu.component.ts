@@ -7,7 +7,7 @@ import { EtudiantService } from "../../../services/etudiant.service";
 import { MessageService } from "../../../services/message.service";
 import { ConfigService } from "../../../services/config.service";
 import { SortDirection } from "@angular/material/sort";
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 
 @Component({
   selector: 'app-selection-groupe-etu',
@@ -25,7 +25,7 @@ export class SelectionGroupeEtuComponent implements OnInit {
   anneeEnCours: any|undefined;
   annees: any[] = [];
 
-  form: UntypedFormGroup;
+  form: FormGroup;
 
   @Input() groupeEtudiant: any;
   @Output() validated = new EventEmitter<any>();
@@ -39,7 +39,7 @@ export class SelectionGroupeEtuComponent implements OnInit {
     private router: Router,
     private messageService: MessageService,
     private configService: ConfigService,
-    private fb: UntypedFormBuilder,
+    private fb: FormBuilder,
   ) {
     this.form = this.fb.group({
       codeGroupe: [null, [Validators.required, Validators.maxLength(100)]],

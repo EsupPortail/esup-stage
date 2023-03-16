@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit, OnChanges, Input, Output, ViewChild } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { CiviliteService } from "../../../services/civilite.service";
 import { ContactService } from "../../../services/contact.service";
 import { MessageService } from "../../../services/message.service";
@@ -28,7 +28,7 @@ export class TuteurProComponent implements OnInit, OnChanges {
   contacts:any[] = [];
 
   modif: boolean = false;
-  form: UntypedFormGroup;
+  form: FormGroup;
 
   autorisationModification = false;
 
@@ -39,7 +39,7 @@ export class TuteurProComponent implements OnInit, OnChanges {
   @Input() modifiable: boolean;
 
   constructor(public contactService: ContactService,
-              private fb: UntypedFormBuilder,
+              private fb: FormBuilder,
               private messageService: MessageService,
               private authService: AuthService,
               private civiliteService: CiviliteService,

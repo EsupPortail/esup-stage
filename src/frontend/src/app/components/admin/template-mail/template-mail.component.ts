@@ -4,7 +4,7 @@ import { TemplateMailService } from "../../../services/template-mail.service";
 import { AppFonction } from "../../../constants/app-fonction";
 import { Droit } from "../../../constants/droit";
 import { AuthService } from "../../../services/auth.service";
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatLegacyTabChangeEvent as MatTabChangeEvent, MatLegacyTabGroup as MatTabGroup } from "@angular/material/legacy-tabs";
 import { MessageService } from "../../../services/message.service";
 import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
@@ -35,7 +35,7 @@ export class TemplateMailComponent implements OnInit {
 
   editTabIndex = 1;
   data: any = {};
-  form: UntypedFormGroup;
+  form: FormGroup;
 
   @ViewChild('tableList') appTable: TableComponent | undefined;
   @ViewChild('tabs') tabs: MatTabGroup | undefined;
@@ -43,7 +43,7 @@ export class TemplateMailComponent implements OnInit {
   constructor(
     public templateMailService: TemplateMailService,
     private authService: AuthService,
-    private fb: UntypedFormBuilder,
+    private fb: FormBuilder,
     private messageService: MessageService,
     private dialog: MatDialog,
   ) {

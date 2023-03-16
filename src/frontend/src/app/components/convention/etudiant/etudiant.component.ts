@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { AuthService } from "../../../services/auth.service";
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MessageService } from "../../../services/message.service";
 import { EtudiantService } from "../../../services/etudiant.service";
 import { CommuneService } from "../../../services/commune.service";
+import { CPAMService } from "../../../services/cpam.service";
 import { MatExpansionPanel } from "@angular/material/expansion";
 import { LdapService } from "../../../services/ldap.service";
 import { TypeConventionService } from "../../../services/type-convention.service";
@@ -27,7 +28,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
 
   isEtudiant: boolean = true;
 
-  form: UntypedFormGroup;
+  form: FormGroup;
   columns = ['numetudiant', 'nomprenom', 'action'];
   etudiants: any[] = [];
   etudiant: any;
@@ -37,10 +38,14 @@ export class EtudiantComponent implements OnInit, OnChanges {
   centreGestion: any;
   sansElp: boolean = false;
 
-  formConvention!: UntypedFormGroup;
+  formConvention!: FormGroup;
 
   typeConventions: any[] = [];
   langueConventions: any[] = [];
+
+  CPAMs: any[] = [];
+  regions: any[] = [];
+  libelles: any[] = [];
 
   centreGestionEtablissement: any;
   consigneEtablissement: any;
@@ -57,7 +62,8 @@ export class EtudiantComponent implements OnInit, OnChanges {
     private authService: AuthService,
     private etudiantService: EtudiantService,
     public communeService: CommuneService,
-    private fb: UntypedFormBuilder,
+    public cpamService: CPAMService,
+    private fb: FormBuilder,
     private messageService: MessageService,
     private ldapService: LdapService,
     private typeConventionService: TypeConventionService,
@@ -99,6 +105,9 @@ export class EtudiantComponent implements OnInit, OnChanges {
         telEtudiant: [this.convention.telEtudiant, []],
         telPortableEtudiant: [this.convention.telPortableEtudiant, []],
         courrielPersoEtudiant: [this.convention.courrielPersoEtudiant, [Validators.required, Validators.pattern('[^@ ]+@[^@. ]+\\.[^@ ]+')]],
+        regionCPAM: [this.convention.regionCPAM, []],
+        libelleCPAM: [this.convention.libelleCPAM, []],
+        adresseCPAM: [this.convention.adresseCPAM, []],
         inscription: [null, [Validators.required]],
         inscriptionElp: [null, []],
         idTypeConvention: [this.convention.typeConvention ? this.convention.typeConvention.id : null, [Validators.required]],
@@ -151,6 +160,18 @@ export class EtudiantComponent implements OnInit, OnChanges {
           this.messageService.setWarning("Aucune langue disponible pour ce type de convention.");
         }
       });
+
+      this.cpamService.findAll().subscribe((response: any) => {
+        this.CPAMs = response;
+        this.regions = [...new Set(response.map((r : any) => r.region))];
+        this.regions = this.regions.sort((a, b) => {return a.localeCompare(b)});
+        if (this.formConvention.get('regionCPAM')?.value) {
+          this.setCPAMLibelles({value: this.formConvention.get('regionCPAM')?.value});
+        } else {
+          this.formConvention.get('libelleCPAM')?.disable();
+        }
+      });
+
     });
 
     this.typeConventionService.getListActiveWithTemplate().subscribe((response: any) => {
@@ -327,5 +348,19 @@ export class EtudiantComponent implements OnInit, OnChanges {
         return true;
     }
     return false;
+  }
+
+  setCPAMLibelles(event: any) {
+    this.formConvention.get('libelleCPAM')?.enable();
+    this.libelles = this.CPAMs.filter((c : any) => c.region === event.value);
+    this.libelles = [...new Set(this.libelles.map((c : any) => c.libelle))];
+    this.libelles = this.libelles.sort((a, b) => {return a.localeCompare(b)});
+  }
+
+  setCPAMRegion(event: any) {
+    let adresse = this.CPAMs.find((c : any) => c.libelle === event.option.value);
+    if (adresse){
+      this.formConvention.get('adresseCPAM')?.setValue(adresse.adresse);
+    }
   }
 }

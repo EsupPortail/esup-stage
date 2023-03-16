@@ -114,9 +114,7 @@ public class ImpressionContext {
         private String adresseEtabRef;
         private String adresseEtudiant;
         private String annee;
-        private String assuranceLibelle;
         private String avantagesNature;
-        private String codeCaisse;
         private String codeCursusLMD;
         private String codeDepartement;
         private String codePostalEtudiant;
@@ -133,6 +131,8 @@ public class ImpressionContext {
         private String fonctionsEtTaches;
         private String interruptionStage;
         private String libelleCPAM;
+        private String regionCPAM;
+        private String adresseCPAM;
         private String libelleFinalite;
         private String modeEncadreSuivi;
         private String modeValidationStageLibelle;
@@ -171,9 +171,7 @@ public class ImpressionContext {
             this.adresseEtabRef = convention.getAdresseEtabRef() != null ? convention.getAdresseEtabRef() : centreEtablissement.getAdresseComplete();
             this.adresseEtudiant = convention.getAdresseEtudiant();
             this.annee = convention.getAnnee();
-            this.assuranceLibelle = convention.getAssurance() != null ? convention.getAssurance().getLibelle() : null;
             this.avantagesNature = convention.getAvantagesNature();
-            this.codeCaisse = convention.getCodeCaisse();
             this.codeCursusLMD = convention.getCodeCursusLMD();
             this.codeDepartement = convention.getCodeDepartement();
             this.codePostalEtudiant = convention.getCodePostalEtudiant();
@@ -189,6 +187,8 @@ public class ImpressionContext {
             this.fonctionsEtTaches = convention.getFonctionsEtTaches();
             this.interruptionStage = (convention.getInterruptionStage() != null && convention.getInterruptionStage())  ? "Oui" : "Non";
             this.libelleCPAM = convention.getLibelleCPAM();
+            this.regionCPAM = convention.getRegionCPAM();
+            this.adresseCPAM = convention.getAdresseCPAM();
             this.libelleFinalite = convention.getLibelleFinalite();
             this.modeEncadreSuivi = convention.getModeEncadreSuivi();
             this.modeValidationStageLibelle = convention.getNomenclature() != null ? convention.getNomenclature().getModeValidationStage() : null;
@@ -256,28 +256,12 @@ public class ImpressionContext {
             this.annee = annee;
         }
 
-        public String getAssuranceLibelle() {
-            return assuranceLibelle != null ? assuranceLibelle : "";
-        }
-
-        public void setAssuranceLibelle(String assuranceLibelle) {
-            this.assuranceLibelle = assuranceLibelle;
-        }
-
         public String getAvantagesNature() {
             return avantagesNature != null ? avantagesNature : "";
         }
 
         public void setAvantagesNature(String avantagesNature) {
             this.avantagesNature = avantagesNature;
-        }
-
-        public String getCodeCaisse() {
-            return codeCaisse != null ? codeCaisse : "";
-        }
-
-        public void setCodeCaisse(String codeCaisse) {
-            this.codeCaisse = codeCaisse;
         }
 
         public String getCodeCursusLMD() {
@@ -407,6 +391,22 @@ public class ImpressionContext {
 
         public void setLibelleCPAM(String libelleCPAM) {
             this.libelleCPAM = libelleCPAM;
+        }
+
+        public String getRegionCPAM() {
+            return regionCPAM;
+        }
+
+        public void setRegionCPAM(String regionCPAM) {
+            this.regionCPAM = regionCPAM;
+        }
+
+        public String getAdresseCPAM() {
+            return adresseCPAM;
+        }
+
+        public void setAdresseCPAM(String adresseCPAM) {
+            this.adresseCPAM = adresseCPAM;
         }
 
         public String getLibelleFinalite() {

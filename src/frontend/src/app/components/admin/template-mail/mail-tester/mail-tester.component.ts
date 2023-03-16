@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA, MatLegacyDialogRef as MatDialogRef } from "@angular/material/legacy-dialog";
 import { MessageService } from "../../../../services/message.service";
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { TemplateMailService } from "../../../../services/template-mail.service";
 
 @Component({
@@ -11,12 +11,12 @@ import { TemplateMailService } from "../../../../services/template-mail.service"
 })
 export class MailTesterComponent implements OnInit {
 
-  form: UntypedFormGroup;
+  form: FormGroup;
 
   constructor(
     private dialogRef: MatDialogRef<MailTesterComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private fb: UntypedFormBuilder,
+    private fb: FormBuilder,
     private templateMailService: TemplateMailService,
     private messageService: MessageService,
   ) {

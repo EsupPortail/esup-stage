@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter, ViewChildren, QueryList } from '@angular/core';
-import { AbstractControl, UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
+import { AbstractControl, FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { CentreGestionService } from "../../../services/centre-gestion.service";
 import { MessageService } from "../../../services/message.service";
 import { LdapService } from "../../../services/ldap.service";
@@ -17,11 +17,11 @@ import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 export class ParamCentreComponent implements OnInit {
 
   @Input() centreGestion: any;
-  @Input() form: UntypedFormGroup;
+  @Input() form: FormGroup;
 
   dureeRecupList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 
-  viseurForm: UntypedFormGroup;
+  viseurForm: FormGroup;
   columns = ['nomprenom', 'mail', 'departement', 'action'];
   enseignants: any[] = [];
   enseignant: any;
@@ -38,7 +38,7 @@ export class ParamCentreComponent implements OnInit {
   constructor(
     private centreGestionService: CentreGestionService,
     private messageService: MessageService,
-    private fb: UntypedFormBuilder,
+    private fb: FormBuilder,
     private ldapService: LdapService,
     private enseignantService: EnseignantService,
     private configService: ConfigService,

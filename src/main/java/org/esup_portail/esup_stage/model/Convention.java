@@ -178,14 +178,6 @@ public class Convention extends ObjetMetier implements Exportable {
     @Column
     private String annee;
 
-    @ManyToOne
-    @JoinColumn(name = "idAssurance")
-    @NotFound(action=NotFoundAction.IGNORE)
-    private Assurance assurance;
-
-    @Column
-    private String codeCaisse;
-
     @Column
     private String temConfSujetTeme;
 
@@ -235,6 +227,14 @@ public class Convention extends ObjetMetier implements Exportable {
 
     @Column
     private String libelleCPAM;
+
+    @JsonView(Views.List.class)
+    @Column
+    private String regionCPAM;
+
+    @JsonView(Views.List.class)
+    @Column
+    private String adresseCPAM;
 
     @Column
     private String dureeExceptionnelle;
@@ -742,22 +742,6 @@ public class Convention extends ObjetMetier implements Exportable {
         this.annee = annee;
     }
 
-    public Assurance getAssurance() {
-        return assurance;
-    }
-
-    public void setAssurance(Assurance assurance) {
-        this.assurance = assurance;
-    }
-
-    public String getCodeCaisse() {
-        return codeCaisse;
-    }
-
-    public void setCodeCaisse(String codeCaisse) {
-        this.codeCaisse = codeCaisse;
-    }
-
     public String getTemConfSujetTeme() {
         return temConfSujetTeme;
     }
@@ -892,6 +876,22 @@ public class Convention extends ObjetMetier implements Exportable {
 
     public void setLibelleCPAM(String libelleCPAM) {
         this.libelleCPAM = libelleCPAM;
+    }
+
+    public String getRegionCPAM() {
+        return regionCPAM;
+    }
+
+    public void setRegionCPAM(String regionCPAM) {
+        this.regionCPAM = regionCPAM;
+    }
+
+    public String getAdresseCPAM() {
+        return adresseCPAM;
+    }
+
+    public void setAdresseCPAM(String adresseCPAM) {
+        this.adresseCPAM = adresseCPAM;
     }
 
     public String getDureeExceptionnelle() {

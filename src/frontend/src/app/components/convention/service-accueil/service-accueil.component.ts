@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit, OnChanges, Input, Output, ViewChild } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { PaysService } from "../../../services/pays.service";
 import { ServiceService } from "../../../services/service.service";
 import { CommuneService } from "../../../services/commune.service";
@@ -29,7 +29,7 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
 
   @Input() service: any;
   modif: boolean = false;
-  form: UntypedFormGroup;
+  form: FormGroup;
 
   autorisationModification = false;
 
@@ -41,7 +41,7 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
 
   constructor(public serviceService: ServiceService,
               public communeService: CommuneService,
-              private fb: UntypedFormBuilder,
+              private fb: FormBuilder,
               private messageService: MessageService,
               private authService: AuthService,
               private paysService: PaysService,

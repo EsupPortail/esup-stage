@@ -108,6 +108,8 @@ public class MailerService {
                 StringWriter objet = new StringWriter();
                 templateObjet.process(mailContext, objet);
 
+                templateMailTexte = manageIfElse(templateMailTexte);
+
                 Template templateText = new Template("template_mail_text"+templateMailId, templateMailTexte, freeMarkerConfigurer.getConfiguration());
                 StringWriter text = new StringWriter();
                 templateText.process(mailContext, text);
@@ -161,6 +163,16 @@ public class MailerService {
             default:
                 return false;
         }
+    }
+    
+    private String manageIfElse(String templateMailTexte) {
+       return templateMailTexte
+                .replaceAll("\\$IF", "<#if")
+                .replaceAll("\\$EQUALS ", "==\\\"")
+                .replaceAll(" \\$FI", " >")
+                .replaceAll("\\$ELSE", "<#else>")
+                .replaceAll("\\?\\?\\$", "\\?\\?>")
+                .replaceAll("\\$ENDIF", "</#if>");
     }
 
     public static class MailContext {

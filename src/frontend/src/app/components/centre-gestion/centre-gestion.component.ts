@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { CentreGestionService } from "../../services/centre-gestion.service";
 import { MessageService } from "../../services/message.service";
 import { MatLegacyTabChangeEvent as MatTabChangeEvent, MatLegacyTabGroup as MatTabGroup } from "@angular/material/legacy-tabs";
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { debounceTime } from 'rxjs/operators';
 import { ConsigneService } from "../../services/consigne.service";
 
@@ -40,14 +40,14 @@ export class CentreGestionComponent implements OnInit {
   isCreate: boolean;
   pathId: any;
 
-  coordCentreForm: UntypedFormGroup;
-  paramCentreForm: UntypedFormGroup;
+  coordCentreForm: FormGroup;
+  paramCentreForm: FormGroup;
   consigneCentre: any;
-  signatureElectroniqueForm: UntypedFormGroup;
+  signatureElectroniqueForm: FormGroup;
 
   @ViewChild('matTabs') matTabs: MatTabGroup | undefined;
 
-  constructor(private activatedRoute: ActivatedRoute, private centreGestionService: CentreGestionService, private messageService: MessageService, private fb: UntypedFormBuilder, private router: Router, private consigneService: ConsigneService) {
+  constructor(private activatedRoute: ActivatedRoute, private centreGestionService: CentreGestionService, private messageService: MessageService, private fb: FormBuilder, private router: Router, private consigneService: ConsigneService) {
     this.setCoordCentreForm();
     this.setParamCentreForm();
     this.setSignatureElectroniqueForm();

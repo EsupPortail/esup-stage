@@ -194,6 +194,9 @@ public class ConventionService {
         convention.setTelEtudiant(conventionFormDto.getTelEtudiant());
         convention.setTelPortableEtudiant(conventionFormDto.getTelPortableEtudiant());
         convention.setCourrielPersoEtudiant(conventionFormDto.getCourrielPersoEtudiant());
+        convention.setLibelleCPAM(conventionFormDto.getLibelleCPAM());
+        convention.setRegionCPAM(conventionFormDto.getRegionCPAM());
+        convention.setAdresseCPAM(conventionFormDto.getAdresseCPAM());
         convention.setTypeConvention(typeConvention);
         convention.setLangueConvention(langueConvention);
         convention.setUfr(ufr);

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from "@angular/forms";
+import { FormBuilder, FormControl, FormGroup } from "@angular/forms";
 import { CentreGestionService } from "../../../services/centre-gestion.service";
 import { CommuneService } from "../../../services/commune.service";
 import { NiveauCentreService } from "../../../services/niveau-centre.service";
@@ -20,12 +20,12 @@ import { TableComponent } from "../../table/table.component";
 export class CoordCentreComponent implements OnInit {
 
   @Input() centreGestion: any;
-  @Input() form!: UntypedFormGroup;
+  @Input() form!: FormGroup;
 
   @Output() refreshCentreGestion = new EventEmitter<any>();
   @Output() update = new EventEmitter<any>();
 
-  etapeFilterCtrl: UntypedFormControl = new UntypedFormControl();
+  etapeFilterCtrl: FormControl = new FormControl();
   filteredEtapes: ReplaySubject<any> = new ReplaySubject<any>(1);
   selectedValues: any[] = [];
   @ViewChild('multiSelect') multiSelect!: MatSelect;
@@ -52,7 +52,7 @@ export class CoordCentreComponent implements OnInit {
     private niveauCentreService: NiveauCentreService,
     public critereGestionService: CritereGestionService,
     private messageService: MessageService,
-    private fb: UntypedFormBuilder) { }
+    private fb: FormBuilder) { }
 
   ngOnInit(): void {
     this.communeService.getPaginated(1, 0, 'lib', 'asc', "").subscribe((response: any) => {

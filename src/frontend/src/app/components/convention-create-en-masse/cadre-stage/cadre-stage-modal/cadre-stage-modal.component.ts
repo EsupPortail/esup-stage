@@ -1,10 +1,11 @@
 import { Component, EventEmitter, Input, Inject, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { AuthService } from "../../../../services/auth.service";
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MessageService } from "../../../../services/message.service";
 import { EtudiantService } from "../../../../services/etudiant.service";
 import { MatExpansionPanel } from "@angular/material/expansion";
 import { LdapService } from "../../../../services/ldap.service";
+import { CPAMService } from "../../../../services/cpam.service";
 import { TypeConventionService } from "../../../../services/type-convention.service";
 import { LangueConventionService } from "../../../../services/langue-convention.service";
 import * as _ from "lodash";
@@ -31,10 +32,14 @@ export class CadreStageModalComponent implements OnInit {
   centreGestion: any;
   sansElp: boolean = false;
 
-  formConvention: UntypedFormGroup;
+  formConvention: FormGroup;
 
   typeConventions: any[] = [];
   langueConventions: any[] = [];
+
+  CPAMs: any[] = [];
+  regions: any[] = [];
+  libelles: any[] = [];
 
   centreGestionEtablissement: any;
   consigneEtablissement: any;
@@ -42,7 +47,8 @@ export class CadreStageModalComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private etudiantService: EtudiantService,
-    private fb: UntypedFormBuilder,
+    public cpamService: CPAMService,
+    private fb: FormBuilder,
     private messageService: MessageService,
     private ldapService: LdapService,
     private typeConventionService: TypeConventionService,
@@ -80,6 +86,9 @@ export class CadreStageModalComponent implements OnInit {
         telEtudiant: [this.convention.telEtudiant, []],
         telPortableEtudiant: [this.convention.telPortableEtudiant, []],
         courrielPersoEtudiant: [this.convention.courrielPersoEtudiant, [Validators.required, Validators.pattern('[^@ ]+@[^@. ]+\\.[^@ ]+')]],
+        regionCPAM: [this.convention.regionCPAM, []],
+        libelleCPAM: [this.convention.libelleCPAM, []],
+        adresseCPAM: [this.convention.adresseCPAM, []],
         inscription: [null, [Validators.required]],
         inscriptionElp: [null, []],
         idTypeConvention: [this.convention.typeConvention ? this.convention.typeConvention.id : null, [Validators.required]],
@@ -116,6 +125,17 @@ export class CadreStageModalComponent implements OnInit {
         } else {
           this.langueConventions = [];
           this.messageService.setWarning("Aucune langue disponible pour ce type de convention.");
+        }
+      });
+
+      this.cpamService.findAll().subscribe((response: any) => {
+        this.CPAMs = response;
+        this.regions = [...new Set(response.map((r : any) => r.region))];
+        this.regions = this.regions.sort((a, b) => {return a.localeCompare(b)});
+        if (this.formConvention.get('regionCPAM')?.value) {
+          this.setCPAMLibelles({value: this.formConvention.get('regionCPAM')?.value});
+        } else {
+          this.formConvention.get('libelleCPAM')?.disable();
         }
       });
     });
@@ -206,4 +226,17 @@ export class CadreStageModalComponent implements OnInit {
     this.dialogRef.close(null);
   }
 
+  setCPAMLibelles(event: any) {
+    this.formConvention.get('libelleCPAM')?.enable();
+    this.libelles = this.CPAMs.filter((c : any) => c.region === event.value);
+    this.libelles = [...new Set(this.libelles.map((c : any) => c.libelle))];
+    this.libelles = this.libelles.sort((a, b) => {return a.localeCompare(b)});
+  }
+
+  setCPAMRegion(event: any) {
+    let adresse = this.CPAMs.find((c : any) => c.libelle === event.option.value);
+    if (adresse){
+      this.formConvention.get('adresseCPAM')?.setValue(adresse.adresse);
+    }
+  }
 }

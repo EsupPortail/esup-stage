@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA, MatLegacyDialogRef as MatDialogRef } from '@angular/material/legacy-dialog';
-import { UntypedFormBuilder, Validators } from "@angular/forms";
+import { FormBuilder, Validators } from "@angular/forms";
 
 @Component({
   selector: 'app-question-supplementaire-form',
@@ -21,7 +21,7 @@ export class QuestionSupplementaireFormComponent implements OnInit {
   form: any;
 
   constructor(private dialogRef: MatDialogRef<QuestionSupplementaireFormComponent>,
-              private fb: UntypedFormBuilder,
+              private fb: FormBuilder,
               @Inject(MAT_DIALOG_DATA) data: any
   ) {
     this.question = data.question

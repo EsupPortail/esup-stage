@@ -46,8 +46,6 @@ public class EtudiantRef {
     private Map<String, String> steps;
     private Map<String, String> studys;
     private List<EtapeInscription> listeEtapeInscriptions;
-    private String theAssurance;
-    private String theCaisseRegime;
     private AdministrationApogee administrationApogee;
     private List<String> listeAnneesUniv;
     private String volumeHoraireFormation;
@@ -317,22 +315,6 @@ public class EtudiantRef {
 
     public void setListeEtapeInscriptions(List<EtapeInscription> listeEtapeInscriptions) {
         this.listeEtapeInscriptions = listeEtapeInscriptions;
-    }
-
-    public String getTheAssurance() {
-        return theAssurance;
-    }
-
-    public void setTheAssurance(String theAssurance) {
-        this.theAssurance = theAssurance;
-    }
-
-    public String getTheCaisseRegime() {
-        return theCaisseRegime;
-    }
-
-    public void setTheCaisseRegime(String theCaisseRegime) {
-        this.theCaisseRegime = theCaisseRegime;
     }
 
     public AdministrationApogee getAdministrationApogee() {

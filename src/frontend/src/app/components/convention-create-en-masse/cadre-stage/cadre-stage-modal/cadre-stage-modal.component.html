@@ -64,10 +64,34 @@
             </mat-form-field>
           </div>
         </div>
-      </mat-card-content>
-    </mat-card>
-    <mat-card>
-      <mat-card-content>
+        <div class="text-title"><i class="fa fa-house-medical"></i> Caisse Primaire d’Assurance Maladie</div>
+        <mat-divider></mat-divider>
+        <div class="mt-3 mb-3">
+          <div class="row">
+            <mat-form-field class="col-sm-12 mb-2" appearance="fill" *ngIf="regions.length > 0">
+              <mat-label>Région CPAM</mat-label>
+              <mat-select formControlName="regionCPAM" (selectionChange)="setCPAMLibelles($event)" required>
+                <mat-option *ngFor="let region of regions" [value]="region">{{region}}</mat-option>
+              </mat-select>
+              <mat-error><app-form-error [field]="formConvention.get('regionCPAM')"></app-form-error></mat-error>
+            </mat-form-field>
+            <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+              <mat-label>Libellé CPAM</mat-label>
+              <input matInput formControlName="libelleCPAM" [matAutocomplete]="auto" required />
+              <mat-autocomplete #auto="matAutocomplete" (optionSelected)="setCPAMRegion($event)">
+                <mat-option *ngFor="let libelle of libelles" [value]="libelle">
+                  {{libelle}}
+                </mat-option>
+              </mat-autocomplete>
+              <mat-error><app-form-error [field]="formConvention.get('libelleCPAM')"></app-form-error></mat-error>
+            </mat-form-field>
+            <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+              <mat-label>Adresse CPAM</mat-label>
+              <input matInput formControlName="adresseCPAM" required />
+              <mat-error><app-form-error [field]="formConvention.get('adresseCPAM')"></app-form-error></mat-error>
+            </mat-form-field>
+          </div>
+        </div>
         <div class="text-title"><i class="fa fa-graduation-cap"></i> Choisissez le cadre du stage</div>
         <mat-divider></mat-divider>
         <div class="mt-3 mb-3">
@@ -95,7 +119,7 @@
               </div>
               <div class="row mb-2">
                 <div class="col-sm-4 font-weight-bold">Formation</div>
-                <div class="col-sm-8">{{selectedInscription.etapeInscription.codeEtp + ' - ' + selectedInscription.etapeInscription.libComposante}}</div>
+                <div class="col-sm-8">{{selectedInscription.etapeInscription.codeEtp}}{{selectedInscription.etapeInscription.libComposante != null ? ' - ' + selectedInscription.etapeInscription.libComposante : ''}}</div>
               </div>
               <div class="row" *ngIf="selectedInscription.elementPedagogiques.length > 0">
                 <mat-form-field class="col-sm-12 mb-2" appearance="fill">
