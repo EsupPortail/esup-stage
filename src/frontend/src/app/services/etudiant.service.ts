@@ -23,8 +23,9 @@ export class EtudiantService implements PaginatedService {
     return this.http.get(`${environment.apiUrl}/etudiants/${numEtudiant}/apogee-data`);
   }
 
-  getApogeeInscriptions(numEtudiant: string): Observable<any> {
-    return this.http.get(`${environment.apiUrl}/etudiants/${numEtudiant}/apogee-inscriptions`);
+  getApogeeInscriptions(numEtudiant: string, annee: string): Observable<any> {
+    const a = annee ? annee.split('/')[0] : '';
+    return this.http.get(`${environment.apiUrl}/etudiants/${numEtudiant}/apogee-inscriptions`, {params: {annee: a ?? null} });
   }
 
   getByLogin(login: string): Observable<any> {

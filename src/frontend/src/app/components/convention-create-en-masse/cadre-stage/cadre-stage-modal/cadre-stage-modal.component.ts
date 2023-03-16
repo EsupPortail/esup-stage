@@ -139,7 +139,7 @@ export class CadreStageModalComponent implements OnInit {
       this.formConvention.get('telPortableEtudiant')?.setValue(this.etudiant.portablePhone);
       this.formConvention.get('courrielPersoEtudiant')?.setValue(this.etudiant.mailPerso);
     });
-    this.etudiantService.getApogeeInscriptions(row.codEtu).subscribe((response: any) => {
+    this.etudiantService.getApogeeInscriptions(row.codEtu, '').subscribe((response: any) => {
       this.inscriptions = response;
       if (this.inscriptions.length === 1) {
         this.formConvention.get('inscription')?.setValue(this.inscriptions[0]);

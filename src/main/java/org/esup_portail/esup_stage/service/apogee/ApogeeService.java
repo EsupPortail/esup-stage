@@ -191,7 +191,7 @@ public class ApogeeService {
         }
     }
 
-    public List<ConventionFormationDto> getInscriptions(Utilisateur utilisateur, String numEtudiant) {
+    public List<ConventionFormationDto> getInscriptions(Utilisateur utilisateur, String numEtudiant, String anneeConvention) {
         String anneeEnCours = appConfigService.getAnneeUniv();
         List<ConventionFormationDto> inscriptions = new ArrayList<>();
         List<String> anneeInscriptions = getAnneeInscriptions(numEtudiant);
@@ -204,6 +204,9 @@ public class ApogeeService {
             anneeInscriptions = anneeInscriptions.stream().filter(a -> a.equals(anneeEnCours) || Integer.parseInt(a) > anneeEnCoursInt).collect(Collectors.toList());
         } else {
             anneeInscriptions = anneeInscriptions.stream().filter(a -> a.equals(anneeEnCours) || Integer.parseInt(a) > anneeEnCoursInt || anneeEnCoursInt - 1 == Integer.parseInt(a)).collect(Collectors.toList());
+        }
+        if (anneeConvention != null && !anneeConvention.isEmpty() && !anneeInscriptions.contains(anneeConvention)) {
+            anneeInscriptions.add(anneeConvention);
         }
 
         for (String annee : anneeInscriptions) {

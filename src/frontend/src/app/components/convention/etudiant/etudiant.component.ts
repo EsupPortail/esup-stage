@@ -199,7 +199,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
       this.formConvention.get('courrielPersoEtudiant')?.setValue(this.etudiant.mailPerso);
       this.titleService.title = 'Création d\'une convention pour ' + this.etudiant.nompatro + ' ' + this.etudiant.prenom;
     });
-    this.etudiantService.getApogeeInscriptions(row.codEtu).subscribe((response: any) => {
+    this.etudiantService.getApogeeInscriptions(row.codEtu, this.convention ? this.convention.annee : null).subscribe((response: any) => {
       this.inscriptions = response;
       if (this.inscriptions.length === 1) {
         this.formConvention.get('inscription')?.setValue(this.inscriptions[0]);
