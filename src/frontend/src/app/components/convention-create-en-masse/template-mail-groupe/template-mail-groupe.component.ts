@@ -5,9 +5,9 @@ import { AppFonction } from "../../../constants/app-fonction";
 import { Droit } from "../../../constants/droit";
 import { AuthService } from "../../../services/auth.service";
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
-import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
+import { MatLegacyTabChangeEvent as MatTabChangeEvent, MatLegacyTabGroup as MatTabGroup } from "@angular/material/legacy-tabs";
 import { MessageService } from "../../../services/message.service";
-import { MatDialog } from "@angular/material/dialog";
+import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
 import { MailTesterComponent } from "../../admin/template-mail/mail-tester/mail-tester.component";
 
 @Component({

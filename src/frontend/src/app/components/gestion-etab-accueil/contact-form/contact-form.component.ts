@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output, SimpleChanges, Inject, OnInit } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA, MatLegacyDialogRef as MatDialogRef } from '@angular/material/legacy-dialog';
 import { UntypedFormBuilder, Validators } from "@angular/forms";
 import { PaysService } from "../../../services/pays.service";
 import { ContactService } from "../../../services/contact.service";

@@ -6,7 +6,7 @@ import { AuthService } from "../../../services/auth.service";
 import { Router } from "@angular/router";
 import { MessageService } from "../../../services/message.service";
 import { SortDirection } from "@angular/material/sort";
-import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog, MatLegacyDialogConfig as MatDialogConfig } from '@angular/material/legacy-dialog';
 import { CadreStageModalComponent } from './cadre-stage-modal/cadre-stage-modal.component';
 
 @Component({

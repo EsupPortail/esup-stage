@@ -11,7 +11,7 @@ import { MessageService } from "../../../services/message.service";
 import { SortDirection } from "@angular/material/sort";
 import { Router } from "@angular/router";
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
-import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
+import { MatLegacyTabChangeEvent as MatTabChangeEvent, MatLegacyTabGroup as MatTabGroup } from "@angular/material/legacy-tabs";
 import * as FileSaver from 'file-saver';
 
 @Component({

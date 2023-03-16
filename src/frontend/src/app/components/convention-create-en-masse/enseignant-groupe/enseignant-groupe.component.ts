@@ -7,7 +7,7 @@ import { Router } from "@angular/router";
 import { EtudiantGroupeEtudiantService } from "../../../services/etudiant-groupe-etudiant.service";
 import { MessageService } from "../../../services/message.service";
 import { SortDirection } from "@angular/material/sort";
-import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog, MatLegacyDialogConfig as MatDialogConfig } from '@angular/material/legacy-dialog';
 import { EnseignantGroupeModalComponent } from './enseignant-groupe-modal/enseignant-groupe-modal.component';
 
 @Component({
