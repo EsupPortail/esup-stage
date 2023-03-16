@@ -1,6 +1,6 @@
 import { Component, EventEmitter, OnInit, OnChanges, Input, Output, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
 import { ServiceService } from "../../../services/service.service";
 import { ContactService } from "../../../services/contact.service";
 import { PaysService } from "../../../services/pays.service";
@@ -34,7 +34,7 @@ export class SignataireComponent implements OnInit, OnChanges {
   service: any;
 
   modif: boolean = false;
-  form: FormGroup;
+  form: UntypedFormGroup;
 
   autorisationModification = false;
 
@@ -45,7 +45,7 @@ export class SignataireComponent implements OnInit, OnChanges {
   @Input() modifiable: boolean;
 
   constructor(private contactService: ContactService,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private messageService: MessageService,
               private authService: AuthService,
               private serviceService: ServiceService,

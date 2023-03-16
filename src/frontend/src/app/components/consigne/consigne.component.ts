@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import * as FileSaver from "file-saver";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
 import { ConsigneService } from "../../services/consigne.service";
 import { MessageService } from "../../services/message.service";
 import * as Editor from '../../../custom-ck5/ckeditor';
@@ -18,10 +18,10 @@ export class ConsigneComponent implements OnInit, OnChanges {
   @Input() idCentreGestion: number;
   @Output() sumitted = new EventEmitter<any>();
 
-  form: FormGroup;
+  form: UntypedFormGroup;
 
   constructor(
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private consigneService: ConsigneService,
     private messageService: MessageService,
   ) {

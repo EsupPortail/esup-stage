@@ -1,6 +1,6 @@
 import { Component, Output, EventEmitter, OnInit, Input, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { FormBuilder, FormGroup, FormControl, Validators } from "@angular/forms";
+import { UntypedFormBuilder, UntypedFormGroup, UntypedFormControl, Validators } from "@angular/forms";
 import { ServiceService } from "../../../../services/service.service";
 import { ContactService } from "../../../../services/contact.service";
 import { MessageService } from "../../../../services/message.service";
@@ -68,8 +68,8 @@ export class AvenantFormComponent implements OnInit {
   @Input() avenant: any;
   @Input() convention: any;
 
-  form: FormGroup;
-  enseignantSearchForm: FormGroup;
+  form: UntypedFormGroup;
+  enseignantSearchForm: UntypedFormGroup;
 
   texteLimiteRenumeration: string = '';
 
@@ -97,7 +97,7 @@ export class AvenantFormComponent implements OnInit {
     private periodeInterruptionAvenantService: PeriodeInterruptionAvenantService,
     private authService: AuthService,
     private contenuService: ContenuService,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private messageService: MessageService,
     public matDialog: MatDialog,
     private conventionService: ConventionService,
@@ -489,8 +489,8 @@ export class AvenantFormComponent implements OnInit {
       for (let interruption of this.interruptionsStage) {
         const dateDebutInterruptionFormControlName = 'dateDebutInterruption' + interruption.id
         const dateFinInterruptionFormControlName = 'dateFinInterruption' + interruption.id
-        this.form.addControl(dateDebutInterruptionFormControlName, new FormControl(null));
-        this.form.addControl(dateFinInterruptionFormControlName, new FormControl(null));
+        this.form.addControl(dateDebutInterruptionFormControlName, new UntypedFormControl(null));
+        this.form.addControl(dateFinInterruptionFormControlName, new UntypedFormControl(null));
         this.periodeStageFields.push(dateDebutInterruptionFormControlName);
         this.periodeStageFields.push(dateFinInterruptionFormControlName);
         interruption.dateDebutInterruptionFormControlName = dateDebutInterruptionFormControlName;

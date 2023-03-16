@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ViewChildren, QueryList } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
 import { PersonnelCentreService } from "../../../services/personnel-centre.service";
 import { CiviliteService } from "../../../services/civilite.service";
 import { MessageService } from "../../../services/message.service";
@@ -21,8 +21,8 @@ export class GestionnairesComponent implements OnInit {
   @Input() centreGestion: any;
   @Output() refreshPersonnelsCentre = new EventEmitter<any>();
 
-  form: FormGroup;
-  searchForm: FormGroup;
+  form: UntypedFormGroup;
+  searchForm: UntypedFormGroup;
 
   civilites: any;
 
@@ -67,7 +67,7 @@ export class GestionnairesComponent implements OnInit {
   @ViewChildren(MatExpansionPanel) pannels: QueryList<MatExpansionPanel>;
 
   constructor(
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     public personnelCentreService: PersonnelCentreService,
     private messageService: MessageService,
     private ldapService: LdapService,

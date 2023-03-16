@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { PaysService } from "../../../services/pays.service";
 import { ThemeService } from "../../../services/theme.service";
@@ -61,7 +61,7 @@ export class StageComponent implements OnInit {
 
   @Input() convention: any;
 
-  form: FormGroup;
+  form: UntypedFormGroup;
 
   texteLimiteRenumeration: string = '';
 
@@ -82,7 +82,7 @@ export class StageComponent implements OnInit {
   @Input() enMasse: boolean;
 
   constructor(public conventionService: ConventionService,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private authService: AuthService,
               private contenuService: ContenuService,
               private paysService: PaysService,

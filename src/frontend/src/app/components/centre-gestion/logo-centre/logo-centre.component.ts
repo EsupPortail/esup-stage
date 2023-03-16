@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CentreGestionService } from "../../../services/centre-gestion.service";
 import { MessageService } from "../../../services/message.service";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
 import { debounceTime } from 'rxjs/operators';
 import Quill from 'quill'
 import BlotFormatter from 'quill-blot-formatter';
@@ -22,13 +22,13 @@ export class LogoCentreComponent implements OnInit {
   currentFile: any;
 
   modules = {};
-  form: FormGroup;
+  form: UntypedFormGroup;
 
   dimensions: any[] = [];
   height: any;
   width: any;
 
-  constructor(private centreGestionService: CentreGestionService, private messageService: MessageService, private fb: FormBuilder,) {
+  constructor(private centreGestionService: CentreGestionService, private messageService: MessageService, private fb: UntypedFormBuilder,) {
     this.modules = {
       blotFormatter: {
       },

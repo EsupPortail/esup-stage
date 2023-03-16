@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { FormBuilder, Validators } from "@angular/forms";
+import { UntypedFormBuilder, Validators } from "@angular/forms";
 import { ServiceService } from "../../../services/service.service";
 import { CommuneService } from "../../../services/commune.service";
 import { MessageService } from "../../../services/message.service";
@@ -24,7 +24,7 @@ export class ServiceAccueilFormComponent {
               public communeService: CommuneService,
               private messageService: MessageService,
               private dialogRef: MatDialogRef<ServiceAccueilFormComponent>,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               @Inject(MAT_DIALOG_DATA) data: any
   ) {
     this.service = data.service

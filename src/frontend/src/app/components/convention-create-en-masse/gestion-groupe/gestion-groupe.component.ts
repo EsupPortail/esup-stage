@@ -10,7 +10,7 @@ import { TemplateMailGroupeService } from "../../../services/template-mail-group
 import { MessageService } from "../../../services/message.service";
 import { SortDirection } from "@angular/material/sort";
 import { Router } from "@angular/router";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
 import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
 import * as FileSaver from 'file-saver';
 
@@ -48,7 +48,7 @@ export class GestionGroupeComponent implements OnInit {
   historiques: any[] = [];
   columnsHisto = ['modifiePar', 'date', 'destinataire'];
 
-  form: FormGroup;
+  form: UntypedFormGroup;
 
   mailTabIndex = 1;
   printTabIndex = 2;
@@ -65,7 +65,7 @@ export class GestionGroupeComponent implements OnInit {
               private ufrService: UfrService,
               private etapeService: EtapeService,
     public templateMailGroupeService: TemplateMailGroupeService,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private messageService: MessageService,
     private router: Router
   ) {

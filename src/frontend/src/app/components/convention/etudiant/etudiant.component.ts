@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { AuthService } from "../../../services/auth.service";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
 import { MessageService } from "../../../services/message.service";
 import { EtudiantService } from "../../../services/etudiant.service";
 import { CommuneService } from "../../../services/commune.service";
@@ -27,7 +27,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
 
   isEtudiant: boolean = true;
 
-  form: FormGroup;
+  form: UntypedFormGroup;
   columns = ['numetudiant', 'nomprenom', 'action'];
   etudiants: any[] = [];
   etudiant: any;
@@ -37,7 +37,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
   centreGestion: any;
   sansElp: boolean = false;
 
-  formConvention!: FormGroup;
+  formConvention!: UntypedFormGroup;
 
   typeConventions: any[] = [];
   langueConventions: any[] = [];
@@ -57,7 +57,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
     private authService: AuthService,
     private etudiantService: EtudiantService,
     public communeService: CommuneService,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private messageService: MessageService,
     private ldapService: LdapService,
     private typeConventionService: TypeConventionService,

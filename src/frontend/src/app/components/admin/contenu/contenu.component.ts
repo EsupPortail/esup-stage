@@ -5,7 +5,7 @@ import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
 import { AppFonction } from "../../../constants/app-fonction";
 import { Droit } from "../../../constants/droit";
 import { AuthService } from "../../../services/auth.service";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
 import { MessageService } from "../../../services/message.service";
 import * as Editor from '../../../../custom-ck5/ckeditor';
 
@@ -31,12 +31,12 @@ export class ContenuComponent implements OnInit {
 
   formTabIndex = 1;
   data: any;
-  form: FormGroup;
+  form: UntypedFormGroup;
 
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
   @ViewChild('tabs') tabs: MatTabGroup | undefined;
 
-  constructor(public contenuService: ContenuService, private authService: AuthService, private fb: FormBuilder, private messageService: MessageService) { }
+  constructor(public contenuService: ContenuService, private authService: AuthService, private fb: UntypedFormBuilder, private messageService: MessageService) { }
 
   ngOnInit(): void {
     this.form = this.fb.group({

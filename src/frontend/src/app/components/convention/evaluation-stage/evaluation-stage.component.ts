@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, FormControl, Validators } from "@angular/forms";
+import { UntypedFormBuilder, UntypedFormGroup, UntypedFormControl, Validators } from "@angular/forms";
 import { ReponseEvaluationService } from "../../../services/reponse-evaluation.service";
 import { FicheEvaluationService } from "../../../services/fiche-evaluation.service";
 import { MessageService } from "../../../services/message.service";
@@ -21,13 +21,13 @@ export class EvaluationStageComponent implements OnInit {
   questionsSupplementaires: any;
   @Input() convention: any;
 
-  reponseEtudiantForm: FormGroup;
-  reponseEnseignantForm: FormGroup;
-  reponseEntrepriseForm: FormGroup;
+  reponseEtudiantForm: UntypedFormGroup;
+  reponseEnseignantForm: UntypedFormGroup;
+  reponseEntrepriseForm: UntypedFormGroup;
 
-  reponseSupplementaireEtudiantForm: FormGroup;
-  reponseSupplementaireEnseignantForm: FormGroup;
-  reponseSupplementaireEntrepriseForm: FormGroup;
+  reponseSupplementaireEtudiantForm: UntypedFormGroup;
+  reponseSupplementaireEnseignantForm: UntypedFormGroup;
+  reponseSupplementaireEntrepriseForm: UntypedFormGroup;
 
   edit: boolean = false;
   editEtu: boolean = false;
@@ -754,7 +754,7 @@ export class EvaluationStageComponent implements OnInit {
 
   constructor(private reponseEvaluationService: ReponseEvaluationService,
               private ficheEvaluationService: FicheEvaluationService,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private messageService: MessageService,
               private authService: AuthService,
   ) {
@@ -940,7 +940,7 @@ export class EvaluationStageComponent implements OnInit {
     this.reponseSupplementaireEntrepriseForm = this.fb.group({});
   }
 
-  toggleValidators(form: FormGroup, keys: string[],toggle: boolean): void {
+  toggleValidators(form: UntypedFormGroup, keys: string[],toggle: boolean): void {
     keys.forEach((key: string) => {
       if (toggle){
         form.get(key)!.addValidators(Validators.required);
@@ -1109,7 +1109,7 @@ export class EvaluationStageComponent implements OnInit {
           form = this.reponseSupplementaireEntrepriseForm;
         }
         const questionSupplementaireFormControlName = 'questionSupplementaire' + questionSupplementaire.id
-        form.addControl(questionSupplementaireFormControlName,new FormControl(null, Validators.required));
+        form.addControl(questionSupplementaireFormControlName,new UntypedFormControl(null, Validators.required));
         questionSupplementaire.formControlName = questionSupplementaireFormControlName
 
          if(this.reponseEvaluation){

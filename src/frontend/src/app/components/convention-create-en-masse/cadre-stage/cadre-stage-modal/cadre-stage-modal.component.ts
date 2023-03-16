@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Inject, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { AuthService } from "../../../../services/auth.service";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
 import { MessageService } from "../../../../services/message.service";
 import { EtudiantService } from "../../../../services/etudiant.service";
 import { MatExpansionPanel } from "@angular/material/expansion";
@@ -31,7 +31,7 @@ export class CadreStageModalComponent implements OnInit {
   centreGestion: any;
   sansElp: boolean = false;
 
-  formConvention: FormGroup;
+  formConvention: UntypedFormGroup;
 
   typeConventions: any[] = [];
   langueConventions: any[] = [];
@@ -42,7 +42,7 @@ export class CadreStageModalComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private etudiantService: EtudiantService,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private messageService: MessageService,
     private ldapService: LdapService,
     private typeConventionService: TypeConventionService,

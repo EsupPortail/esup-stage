@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { UntypedFormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MessageService } from "../../../../services/message.service";
 import { UserService } from "../../../../services/user.service";
 
@@ -14,7 +14,7 @@ export class CreateDialogComponent implements OnInit {
   constructor(
     private dialogRef: MatDialogRef<CreateDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private userService: UserService,
     private messageService: MessageService,
   ) {

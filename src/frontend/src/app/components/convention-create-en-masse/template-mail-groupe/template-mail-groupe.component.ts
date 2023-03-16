@@ -4,7 +4,7 @@ import { TemplateMailGroupeService } from "../../../services/template-mail-group
 import { AppFonction } from "../../../constants/app-fonction";
 import { Droit } from "../../../constants/droit";
 import { AuthService } from "../../../services/auth.service";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
 import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
 import { MessageService } from "../../../services/message.service";
 import { MatDialog } from "@angular/material/dialog";
@@ -35,7 +35,7 @@ export class TemplateMailGroupeComponent implements OnInit {
 
   editTabIndex = 1;
   data: any = {};
-  form: FormGroup;
+  form: UntypedFormGroup;
 
   @ViewChild('tableList') appTable: TableComponent | undefined;
   @ViewChild('tabs') tabs: MatTabGroup | undefined;
@@ -43,7 +43,7 @@ export class TemplateMailGroupeComponent implements OnInit {
   constructor(
     public templateMailGroupeService: TemplateMailGroupeService,
     private authService: AuthService,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private messageService: MessageService,
     private dialog: MatDialog,
   ) {

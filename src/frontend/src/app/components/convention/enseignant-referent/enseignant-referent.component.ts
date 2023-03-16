@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output, OnInit, ViewChild } from '@angular/core';
 import { EnseignantService } from "../../../services/enseignant.service";
 import { AuthService } from "../../../services/auth.service";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
 import { MessageService } from "../../../services/message.service";
 import { MatExpansionPanel } from "@angular/material/expansion";
 import { LdapService } from "../../../services/ldap.service";
@@ -15,13 +15,13 @@ import { debounceTime } from "rxjs/operators";
 })
 export class EnseignantReferentComponent implements OnInit {
 
-  form: FormGroup;
+  form: UntypedFormGroup;
   columns = ['nomprenom', 'mail', 'departement', 'action'];
 
   enseignants: any[] = [];
   @Input() enseignant: any;
 
-  formAdresse: FormGroup;
+  formAdresse: UntypedFormGroup;
 
   @ViewChild(MatExpansionPanel) searchEnseignantPanel: MatExpansionPanel|undefined;
 
@@ -30,7 +30,7 @@ export class EnseignantReferentComponent implements OnInit {
   @Input() modifiable: boolean;
 
   constructor(private authService: AuthService,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private messageService: MessageService,
               private ldapService: LdapService,
               private enseignantService: EnseignantService,

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormGroup } from "@angular/forms";
+import { UntypedFormGroup } from "@angular/forms";
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 
 @Component({
@@ -10,7 +10,7 @@ import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 export class CentreSignatureElectroniqueComponent implements OnInit {
 
   @Input() centreGestion: any;
-  @Input() form!: FormGroup;
+  @Input() form!: UntypedFormGroup;
 
   ordreSignature: string[] = [];
 

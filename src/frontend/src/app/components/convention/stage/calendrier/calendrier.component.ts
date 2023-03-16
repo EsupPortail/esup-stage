@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { FormBuilder, FormGroup, FormControl, Validators } from "@angular/forms";
+import { UntypedFormBuilder, UntypedFormGroup, UntypedFormControl, Validators } from "@angular/forms";
 
 @Component({
   selector: 'app-calendrier',
@@ -12,15 +12,15 @@ export class CalendrierComponent implements OnInit  {
   periodes: any[] = [];
   interruptionsStage: any[] = [];
 
-  periodesForm: FormGroup;
-  heuresJournalieresForm: FormGroup;
+  periodesForm: UntypedFormGroup;
+  heuresJournalieresForm: UntypedFormGroup;
 
   convention: any;
   idPeriod : number = 0;
 
   calendarDateFilter: any;
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private dialogRef: MatDialogRef<CalendrierComponent>,
               @Inject(MAT_DIALOG_DATA) data: any
   ) {
@@ -73,7 +73,7 @@ export class CalendrierComponent implements OnInit  {
       data.formControlName = 'heuresJournalieres' + this.idPeriod;
       this.idPeriod += 1;
       this.periodes.push(data);
-      this.heuresJournalieresForm.addControl(data.formControlName, new FormControl(null, Validators.required));
+      this.heuresJournalieresForm.addControl(data.formControlName, new UntypedFormControl(null, Validators.required));
       this.periodesForm.reset();
     }
   }

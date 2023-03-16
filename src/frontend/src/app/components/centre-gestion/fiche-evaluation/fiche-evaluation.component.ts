@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
 import { FicheEvaluationService } from "../../../services/fiche-evaluation.service";
 import { MessageService } from "../../../services/message.service";
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
@@ -24,9 +24,9 @@ export class FicheEvaluationComponent implements OnInit {
     {code: "yn", libelle: "Oui/Non"},
   ]
 
-  ficheEtudiantForm: FormGroup;
-  ficheEnseignantForm: FormGroup;
-  ficheEntrepriseForm: FormGroup;
+  ficheEtudiantForm: UntypedFormGroup;
+  ficheEnseignantForm: UntypedFormGroup;
+  ficheEntrepriseForm: UntypedFormGroup;
 
   FicheEtudiantIQuestions: any = [
     {
@@ -664,7 +664,7 @@ export class FicheEvaluationComponent implements OnInit {
 
   @Input() idCentreGestion: any;
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private ficheEvaluationService: FicheEvaluationService,
               private messageService: MessageService,
               public matDialog: MatDialog,

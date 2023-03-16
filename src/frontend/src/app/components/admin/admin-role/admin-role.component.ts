@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { RoleService } from "../../../services/role.service";
 import { TableComponent } from "../../table/table.component";
 import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
 import { AppFonction } from "../../../constants/app-fonction";
 import { AuthService } from "../../../services/auth.service";
 import { Droit } from "../../../constants/droit";
@@ -28,7 +28,7 @@ export class AdminRoleComponent implements OnInit {
 
   formTabIndex = 1;
   data: any = {};
-  form: FormGroup;
+  form: UntypedFormGroup;
 
   appFonctions: any[] = [];
   appFonctionColumns = ['fonctionnalite', 'droits'];
@@ -36,7 +36,7 @@ export class AdminRoleComponent implements OnInit {
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
   @ViewChild('tabs') tabs: MatTabGroup | undefined;
 
-  constructor(public roleService: RoleService, private fb: FormBuilder, private authService: AuthService, private messageService: MessageService) {
+  constructor(public roleService: RoleService, private fb: UntypedFormBuilder, private authService: AuthService, private messageService: MessageService) {
     this.form = this.fb.group({
       code: [null, [Validators.required, Validators.maxLength(50)]],
       libelle: [null, [Validators.maxLength(255)]],

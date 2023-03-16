@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, OnDestroy } from '@angular/core';
-import { FormBuilder, FormControl, Validators } from "@angular/forms";
+import { UntypedFormBuilder, UntypedFormControl, Validators } from "@angular/forms";
 import { StructureService } from "../../../services/structure.service";
 import { CommuneService } from "../../../services/commune.service";
 import { PaysService } from "../../../services/pays.service";
@@ -32,7 +32,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges {
   selectedNafN5: any;
   nafN5List: any[] = [];
 
-  nafN5FilterCtrl: FormControl = new FormControl();
+  nafN5FilterCtrl: UntypedFormControl = new UntypedFormControl();
   filteredNafN5List: ReplaySubject<any> = new ReplaySubject<any>(1);
   _onDestroy = new Subject<void>();
 
@@ -47,7 +47,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges {
     private nafN5Service: NafN5Service,
     private statutJuridiqueService: StatutJuridiqueService,
     private effectifService: EffectifService,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private messageService: MessageService,
   ) { }
 

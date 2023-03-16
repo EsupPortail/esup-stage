@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { FormBuilder, FormGroup, FormControl, Validators } from "@angular/forms";
+import { UntypedFormBuilder, UntypedFormGroup, UntypedFormControl, Validators } from "@angular/forms";
 import { TypeStructureService } from "../../../../services/type-structure.service";
 import { TypeOffreService } from "../../../../services/type-offre.service";
 
@@ -11,14 +11,14 @@ import { TypeOffreService } from "../../../../services/type-offre.service";
 })
 export class AdminNomenclaturesCreationComponent implements OnInit {
 
-  form!: FormGroup;
+  form!: UntypedFormGroup;
   service: any;
   labelTable: string;
   typeStructures: any;
   typeOffres: any;
 
   constructor(
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private dialogRef: MatDialogRef<AdminNomenclaturesCreationComponent>,
     private typeStructureService: TypeStructureService,
     private typeOffreService: TypeOffreService,
@@ -110,7 +110,7 @@ export class AdminNomenclaturesCreationComponent implements OnInit {
     return false;
   }
 
-  emptyStringValidator(control: FormControl) {
+  emptyStringValidator(control: UntypedFormControl) {
     const isEmpty = (control.value || '').trim().length == 0;
     return isEmpty ? { 'empty': true } : null;
   }

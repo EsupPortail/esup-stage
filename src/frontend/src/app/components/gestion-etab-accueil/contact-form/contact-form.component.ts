@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output, SimpleChanges, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { FormBuilder, Validators } from "@angular/forms";
+import { UntypedFormBuilder, Validators } from "@angular/forms";
 import { PaysService } from "../../../services/pays.service";
 import { ContactService } from "../../../services/contact.service";
 import { MessageService } from "../../../services/message.service";
@@ -21,7 +21,7 @@ export class ContactFormComponent implements OnInit {
 
   constructor(public contactService: ContactService,
               private dialogRef: MatDialogRef<ContactFormComponent>,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private authService: AuthService,
               @Inject(MAT_DIALOG_DATA) data: any
   ) {

@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { UserService } from "../../../services/user.service";
 import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
 import { RoleService } from "../../../services/role.service";
 import { MessageService } from "../../../services/message.service";
 import { TableComponent } from "../../table/table.component";
@@ -44,7 +44,7 @@ export class AdminUserComponent implements OnInit {
   createTabIndex = 1;
   editTabIndex = 2;
   data: any;
-  form: FormGroup;
+  form: UntypedFormGroup;
   roles: any;
   roleMultipleSettings = {
     idField: 'code',
@@ -58,7 +58,7 @@ export class AdminUserComponent implements OnInit {
 
   constructor(
     public userService: UserService,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private roleService: RoleService,
     private messageService: MessageService,
     private authService: AuthService,

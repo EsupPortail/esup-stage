@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { FormBuilder, FormGroup, FormControl, Validators } from "@angular/forms";
+import { UntypedFormBuilder, UntypedFormGroup, FormControl, Validators } from "@angular/forms";
 
 @Component({
   selector: 'app-interruptions-form',
@@ -12,7 +12,7 @@ export class InterruptionsFormComponent implements OnInit  {
   periodes: any[] = [];
   interruptionsStage: any[] = [];
 
-  periodesForm: FormGroup;
+  periodesForm: UntypedFormGroup;
 
   convention: any;
   interruptionStage: any;
@@ -20,7 +20,7 @@ export class InterruptionsFormComponent implements OnInit  {
 
   interruptionsDateFilter: any;
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private dialogRef: MatDialogRef<InterruptionsFormComponent>,
               @Inject(MAT_DIALOG_DATA) data: any
   ) {

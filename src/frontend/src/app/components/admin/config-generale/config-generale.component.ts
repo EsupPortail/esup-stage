@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ConfigService } from "../../../services/config.service";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
 import { AppFonction } from "../../../constants/app-fonction";
 import { Droit } from "../../../constants/droit";
 import { AuthService } from "../../../services/auth.service";
@@ -19,7 +19,7 @@ export class ConfigGeneraleComponent implements OnInit {
   configAlerte: any;
   configTheme: any;
 
-  formGenerale: FormGroup;
+  formGenerale: UntypedFormGroup;
 
   alertes = [
     {code: 'creationConventionEtudiant', libelle: 'Création d\'une convention par l\'étudiant'},
@@ -37,7 +37,7 @@ export class ConfigGeneraleComponent implements OnInit {
   ];
   alerteColumns = ['alertes', 'alerteEtudiant', 'alerteGestionnaire', 'alerteRespGestionnaire', 'alerteEnseignant'];
 
-  formTheme: FormGroup;
+  formTheme: UntypedFormGroup;
 
   typeCentres = ['VIDE', 'COMPOSANTE', 'ETAPE', 'MIXTE'];
 
@@ -48,7 +48,7 @@ export class ConfigGeneraleComponent implements OnInit {
 
   constructor(
     private configService: ConfigService,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private authService: AuthService,
     private messageService: MessageService,
     private centreGestionService: CentreGestionService,
