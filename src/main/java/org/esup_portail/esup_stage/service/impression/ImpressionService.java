@@ -58,6 +58,8 @@ public class ImpressionService {
 
         try {
             String htmlTexte = avenant != null ? this.getHtmlText(templateConvention.getTexteAvenant(), false) : this.getHtmlText(templateConvention.getTexte(), true);
+            
+            htmlTexte = manageIfElse(htmlTexte);
 
             Template template = new Template("template_convention_texte" + templateConvention.getId(), htmlTexte, freeMarkerConfigurer.getConfiguration());
             StringWriter texte = new StringWriter();
@@ -264,5 +266,15 @@ public class ImpressionService {
             return deliveryAddress;
         }
         return email != null ? email : "";
+    }
+
+    public String manageIfElse(String text) {
+        return text.replaceAll("\\$IF", "<#if")
+                .replaceAll("\\$EQUALS ", "==\\\"")
+                .replaceAll(" \\$FI", ">")
+                .replaceAll("\\$ELSE", "<#else>")
+                .replaceAll("\\?\\?\\$", "\\?\\?>")
+                .replaceAll("\\$ENDIF", "</#if>");
+
     }
 }
