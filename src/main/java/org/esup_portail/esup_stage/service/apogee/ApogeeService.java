@@ -192,15 +192,20 @@ public class ApogeeService {
     }
 
     public List<ConventionFormationDto> getInscriptions(Utilisateur utilisateur, String numEtudiant) {
-        List<String> annees = new ArrayList<>();
         String anneeEnCours = appConfigService.getAnneeUniv();
-        String anneePrecedente = String.valueOf(Integer.parseInt(anneeEnCours) - 1);
-        annees.add(anneePrecedente); // Ajout de l'année précédente
-        annees.add(anneeEnCours); // Ajout de l'année en cours
-        Date currentDate = new Date();
-        Calendar dateBascule = appConfigService.getDateBascule(Integer.parseInt(anneeEnCours));
         List<ConventionFormationDto> inscriptions = new ArrayList<>();
         List<String> anneeInscriptions = getAnneeInscriptions(numEtudiant);
+
+        // Filtre la liste des années universitaire pour lesquels on doit rechercher les inscriptions
+        // Pour les étudiants, pas d'autorisation sur l'année précédente
+        // Pour les gestionnaire, au plus autorisation sur l'année précédente
+        int anneeEnCoursInt = Integer.parseInt(anneeEnCours);
+        if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
+            anneeInscriptions = anneeInscriptions.stream().filter(a -> a.equals(anneeEnCours) || Integer.parseInt(a) > anneeEnCoursInt).collect(Collectors.toList());
+        } else {
+            anneeInscriptions = anneeInscriptions.stream().filter(a -> a.equals(anneeEnCours) || Integer.parseInt(a) > anneeEnCoursInt || anneeEnCoursInt - 1 == Integer.parseInt(a)).collect(Collectors.toList());
+        }
+
         for (String annee : anneeInscriptions) {
             ApogeeMap apogeeMap = getEtudiantEtapesInscription(numEtudiant, annee);
             RegimeInscription regIns = apogeeMap.getRegimeInscription().stream().filter(r -> r.getAnnee().equals(annee)).findAny().orElse(null);
@@ -264,12 +269,11 @@ public class ApogeeService {
                 // On garde les formations dont le centre de gestion autorise la création d'une convention
                 inscriptions = inscriptions.stream().filter(i -> i.getCentreGestion().isAutorisationEtudiantCreationConvention()).collect(Collectors.toList());
             }
-            // Si ce n'est pas un utilisateur admin, on doit afficher les formations de l'année précédente seulement si le centre l'autorise
+            // Filtre les inscriptions on fonction du paramétrage côté centre de gestion
             inscriptions = inscriptions.stream().filter(i -> {
                 CentreGestion centreGestion = i.getCentreGestion();
                 Boolean autorisationAnneePrecedente = centreGestion.getRecupInscriptionAnterieure();
                 // On autorise la création de convention sur l'année en cours et les années suivantes
-                int anneeEnCoursInt = Integer.parseInt(anneeEnCours);
                 int anneeInt = Integer.parseInt(i.getAnnee());
                 if (i.getAnnee().equals(anneeEnCours) || anneeInt > anneeEnCoursInt) {
                     return true;
