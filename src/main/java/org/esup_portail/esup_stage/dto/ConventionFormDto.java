@@ -130,11 +130,6 @@ public class ConventionFormDto {
     @Size(max = 10)
     private String annee;
 
-    private int idAssurance;
-
-    @Size(max = 5)
-    private String codeCaisse;
-
     @Size(max = 5)
     private String nbHeuresHebdo;
 
@@ -172,8 +167,14 @@ public class ConventionFormDto {
     @Size(max = 60)
     private String qualiteSignataire;
 
-    @Size(max = 100)
+    @Size(max = 255)
     private String libelleCPAM;
+
+    @Size(max = 255)
+    private String regionCPAM;
+
+    @Size(max = 255)
+    private String adresseCPAM;
 
     @Size(max = 4)
     private String dureeExceptionnelle;
@@ -595,22 +596,6 @@ public class ConventionFormDto {
         this.annee = annee;
     }
 
-    public int getIdAssurance() {
-        return idAssurance;
-    }
-
-    public void setIdAssurance(int idAssurance) {
-        this.idAssurance = idAssurance;
-    }
-
-    public String getCodeCaisse() {
-        return codeCaisse;
-    }
-
-    public void setCodeCaisse(String codeCaisse) {
-        this.codeCaisse = codeCaisse;
-    }
-
     public String getNbHeuresHebdo() {
         return nbHeuresHebdo;
     }
@@ -737,6 +722,22 @@ public class ConventionFormDto {
 
     public void setLibelleCPAM(String libelleCPAM) {
         this.libelleCPAM = libelleCPAM;
+    }
+
+    public String getRegionCPAM() {
+        return regionCPAM;
+    }
+
+    public void setRegionCPAM(String regionCPAM) {
+        this.regionCPAM = regionCPAM;
+    }
+
+    public String getAdresseCPAM() {
+        return adresseCPAM;
+    }
+
+    public void setAdresseCPAM(String adresseCPAM) {
+        this.adresseCPAM = adresseCPAM;
     }
 
     public String getDureeExceptionnelle() {

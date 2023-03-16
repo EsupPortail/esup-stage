@@ -1,0 +1,119 @@
+databaseChangeLog:
+  - changeSet:
+      id: drop-convention-codeCaisse
+      author: tjubera
+      preConditions:
+        - onFail: MARK_RAN
+        - columnExists:
+            tableName: Convention
+            columnName: codeCaisse
+      changes:
+        - dropColumn:
+            columnName: codeCaisse
+            tableName: Convention
+  - changeSet:
+      id: drop-convention-assurance
+      author: tjubera
+      preConditions:
+        - onFail: MARK_RAN
+        - columnExists:
+            tableName: Convention
+            columnName: idAssurance
+      changes:
+        - dropColumn:
+            columnName: idAssurance
+            tableName: Convention
+  - changeSet:
+      id: del-assurance
+      author: tjubera
+      changes:
+        - dropTable:
+            tableName: Assurance
+  - changeSet:
+      id: del-caisse-regime
+      author: tjubera
+      changes:
+        - dropTable:
+            tableName: CaisseRegime
+  - changeSet:
+      id: cpam-create
+      author: tjubera
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                  name: idCPAM
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: region
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: libelleCPAM
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: adresse
+                  type: VARCHAR(255)
+            tableName: CPAM
+  - changeSet:
+      id: cpam-init
+      author: tjubera
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM CPAM
+      changes:
+        - sqlFile:
+            path: init-insert/cpam.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: convention-cpam
+      author: tjubera
+      changes:
+        - addColumn:
+            tableName: Convention
+            columns:
+              - column:
+                  name: regionCPAM
+                  type: VARCHAR(255)
+              - column:
+                  name: adresseCPAM
+                  type: VARCHAR(255)
+  - changeSet:
+      id: paramConvention-insert-regionCPAM
+      author: tjubera
+      changes:
+        - insert:
+            columns:
+              - column:
+                  name: code
+                  value: convention.regionCPAM
+              - column:
+                  name: libelle
+                  value: Région CPAM
+              - column:
+                  name: exemple
+                  value: Bretagne
+            tableName: ParamConvention
+        - insert:
+            columns:
+              - column:
+                  name: code
+                  value: convention.adresseCPAM
+              - column:
+                  name: libelle
+                  value: Adresse CPAM
+              - column:
+                  name: exemple
+                  value: BP 20321 56021 Vannes Cedex
+            tableName: ParamConvention
