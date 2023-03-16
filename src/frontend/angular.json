@@ -36,7 +36,13 @@
             ],
             "scripts": [
               "node_modules/@ckeditor/ckeditor5-build-decoupled-document/build/translations/fr.js"
-            ]
+            ],
+            "allowedCommonJsDependencies": [
+              "quill",
+              "quill-blot-formatter",
+              "file-saver",
+              "lodash"
+            ],
           },
           "configurations": {
             "production": {
