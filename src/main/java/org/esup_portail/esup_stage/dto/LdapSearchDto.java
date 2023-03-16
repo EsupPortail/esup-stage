@@ -73,4 +73,18 @@ public class LdapSearchDto {
     public void setCodEtu(String codEtu) {
         this.codEtu = codEtu;
     }
+
+    @Override
+    public String toString() {
+        return "LdapSearchDto{" +
+                "id='" + id + '\'' +
+                ", nom='" + nom + '\'' +
+                ", prenom='" + prenom + '\'' +
+                ", mail='" + mail + '\'' +
+                ", primaryAffiliation='" + primaryAffiliation + '\'' +
+                ", affiliation='" + affiliation + '\'' +
+                ", supannAliasLogin='" + supannAliasLogin + '\'' +
+                ", codEtu='" + codEtu + '\'' +
+                '}';
+    }
 }

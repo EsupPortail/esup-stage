@@ -57,6 +57,7 @@ public class ApogeeService {
         HttpURLConnection con;
 
         try {
+            LOGGER.info("Apogee " + api + " parametres: " + "{" + params.keySet().stream().map(key -> key + "=" + params.get(key)).collect(Collectors.joining(", ", "{", "}")) + "}");
             String urlWithQuery = applicationBootstrap.getAppConfig().getReferentielWsApogeeUrl() + api;
             List<String> listParams = new ArrayList<>();
             params.forEach((key, value) -> listParams.add(key + "=" + URLEncoder.encode(value, StandardCharsets.UTF_8)));
@@ -95,7 +96,11 @@ public class ApogeeService {
         String response = call("/etudiantRef", params);
         try {
             ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(response, EtudiantRef.class);
+            EtudiantRef etudiantRef = mapper.readValue(response, EtudiantRef.class);
+            if (etudiantRef == null) {
+                LOGGER.info("Aucun étudiant trouvé avec les paramètres");
+            }
+            return etudiantRef;
         } catch (JsonProcessingException e) {
             LOGGER.error("Erreur lors de la lecture de la réponse sur l'api etudiantRef: " + e.getMessage(), e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
@@ -114,6 +119,9 @@ public class ApogeeService {
                 composante.setCode(entry.getKey());
                 composante.setLibelle(entry.getValue().toString());
                 list.add(composante);
+            }
+            if (list.size() == 0) {
+                LOGGER.info("Aucune composante trouvée");
             }
             return list;
         } catch (JsonParseException e) {
@@ -138,6 +146,9 @@ public class ApogeeService {
                 etapeApogee.setLibelle(entry.getValue().toString());
                 list.add(etapeApogee);
             }
+            if (list.size() == 0) {
+                LOGGER.info("Aucune étape trouvée");
+            }
             return list;
         } catch (JsonParseException e) {
             LOGGER.error("Erreur lors de la lecture de la réponse sur l'api etapesReference: " + e.getMessage(), e);
@@ -151,7 +162,11 @@ public class ApogeeService {
         String response = call("/anneesIa", params);
         try {
             ObjectMapper mapper = new ObjectMapper();
-            return Arrays.asList(mapper.readValue(response, String[].class));
+            List<String> annees = Arrays.asList(mapper.readValue(response, String[].class));
+            if (annees.size() == 0) {
+                LOGGER.info("Aucune année trouvée");
+            }
+            return annees;
         } catch (JsonProcessingException e) {
             LOGGER.error("Erreur lors de la lecture de la réponse sur l'api anneesIa: " + e.getMessage(), e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
@@ -165,7 +180,11 @@ public class ApogeeService {
         String response = call("/etapesByEtudiantAndAnnee", params);
         try {
             ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(response, ApogeeMap.class);
+            ApogeeMap apogeeMap = mapper.readValue(response, ApogeeMap.class);
+            if (apogeeMap == null) {
+                LOGGER.info("Aucune donnée trouvée");
+            }
+            return apogeeMap;
         } catch (JsonProcessingException e) {
             LOGGER.error("Erreur lors de la lecture de la réponse sur l'api etapesByEtudiantAndAnnee: " + e.getMessage(), e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");

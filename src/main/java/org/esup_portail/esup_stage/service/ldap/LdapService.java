@@ -78,8 +78,11 @@ public class LdapService {
     public List<LdapUser> search(String api, LdapSearchDto ldapSearchDto) {
         String response = call(api, "POST", ldapSearchDto);
         try {
+            LOGGER.info("LDAP " + api + " parametres: " + ldapSearchDto);
             ObjectMapper mapper = new ObjectMapper();
-            return Arrays.asList(mapper.readValue(response, LdapUser[].class));
+            List<LdapUser> users = Arrays.asList(mapper.readValue(response, LdapUser[].class));
+            LOGGER.info(users.size() + " utilisateurs trouvé");
+            return users;
         } catch (JsonProcessingException e) {
             LOGGER.error("Erreur lors de la lecture de la réponse sur l'api " + api + ": " + e.getMessage(), e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
@@ -93,7 +96,10 @@ public class LdapService {
         try {
             ObjectMapper mapper = new ObjectMapper();
             if (!response.isEmpty()) {
+                LOGGER.info("Utilisateur login = " + login + " trouvé");
                 return mapper.readValue(response, LdapUser.class);
+            } else {
+                LOGGER.info("Utilisateur login = " + login + " non trouvé");
             }
             return null;
         } catch (JsonProcessingException e) {
