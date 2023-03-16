@@ -25,7 +25,6 @@ export class CentreSignatureElectroniqueComponent implements OnInit {
 
   setFormData(): void {
     this.ordreSignature = JSON.parse(this.centreGestion.ordreSignature);
-    console.log(this.centreGestion);
     this.form.patchValue({
       circuitSignature: this.centreGestion.circuitSignature,
       ordreSignature: JSON.stringify(this.ordreSignature),
