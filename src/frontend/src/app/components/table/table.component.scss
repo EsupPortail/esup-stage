@@ -11,10 +11,15 @@
 
 .app-table {
   overflow-x: auto;
+  max-height: 650px;
 
   .mat-table {
     max-width: 100%;
   }
+}
+
+.table-paging-top {
+  margin-bottom: 0;
 }
 
 input.mat-chip-input {
