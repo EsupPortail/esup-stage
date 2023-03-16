@@ -1,0 +1,8 @@
+databaseChangeLog:
+- changeSet:
+    id: change-engine-collation-2
+    author: ssound
+    changes:
+    - sqlFile:
+        path: 2.0.0-engine-collate.sql
+        relativeToChangelogFile: true
