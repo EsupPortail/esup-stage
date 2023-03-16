@@ -80,6 +80,12 @@ body { margin: 0; font-family: var(--fontFamily); font-size: var(--fontSize); }
   margin-top: 20px;
 }
 
+.convention {
+  .mat-tab-body-wrapper {
+    max-height: calc(100vh - 64px - 30px - 34px - 20px - 49px - 20px - 40px);
+  }
+}
+
 .mat-table {
   width: 100%;
 }
