@@ -36,8 +36,6 @@ public class ConventionFormDto {
     @NotEmpty
     private String codeComposante;
 
-    @NotNull
-    @NotEmpty
     private String libelleComposante;
 
     @Size(max = 10)
