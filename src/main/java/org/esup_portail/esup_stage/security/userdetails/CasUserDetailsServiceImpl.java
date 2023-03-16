@@ -55,10 +55,10 @@ public class CasUserDetailsServiceImpl implements AuthenticationUserDetailsServi
         Utilisateur utilisateur = utilisateurJpaRepository.findOneByLogin(username);
         LdapSearchDto ldapSearchDto = new LdapSearchDto();
         ldapSearchDto.setSupannAliasLogin(username);
-        List<LdapUser> users = ldapService.search("/etudiant", ldapSearchDto);
 
         // création de l'utilisateur avec le rôle correspondant (ETU, ENS : à rechercher dans le LDAP) s'il n'existe pas en base
         if (utilisateur == null) {
+            List<LdapUser> users = ldapService.search("/etudiant", ldapSearchDto);
             String role = Role.ETU;
             if (users.size() == 0) {
                 users = ldapService.search("/tuteur", ldapSearchDto);
@@ -89,22 +89,25 @@ public class CasUserDetailsServiceImpl implements AuthenticationUserDetailsServi
 
         // éventuel mise à jour de son nom/prénom si non existant
         if (utilisateur != null) {
+            LdapUser ldapUser = ldapService.searchByLogin(utilisateur.getLogin());
+            if (ldapUser == null) {
+                throw new UsernameNotFoundException("Utilisateur LDAP non trouvé à partir du login " + utilisateur.getLogin());
+            }
             // Si c'est un étudiant on lui créé une ligne dans la table Etudiant s'il n'existe pas
             if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
-                Etudiant etudiant = etudiantRepository.findByNumEtudiant(users.get(0).getCodEtu());
+                Etudiant etudiant = etudiantRepository.findByNumEtudiant(ldapUser.getCodEtu());
                 if (etudiant == null) {
                     etudiant = new Etudiant();
-                    etudiant.setIdentEtudiant(users.get(0).getUid());
-                    etudiant.setNumEtudiant(users.get(0).getCodEtu());
+                    etudiant.setIdentEtudiant(ldapUser.getUid());
+                    etudiant.setNumEtudiant(ldapUser.getCodEtu());
                     etudiant.setNom(nom);
                     etudiant.setPrenom(prenom);
-                    etudiant.setMail(users.get(0).getMail());
+                    etudiant.setMail(ldapUser.getMail());
                     etudiant.setCodeUniversite(appConfigService.getConfigGenerale().getCodeUniversite());
                     etudiant.setLoginCreation(username);
                     etudiantJpaRepository.saveAndFlush(etudiant);
                 }
             }
-            LdapUser ldapUser = ldapService.searchByLogin(utilisateur.getLogin());
 
             boolean update = false;
             if (utilisateur.getNom() == null) {
@@ -116,16 +119,12 @@ public class CasUserDetailsServiceImpl implements AuthenticationUserDetailsServi
                 update = true;
             }
             if (utilisateur.getUid() == null) {
-                if (ldapUser != null) {
-                    utilisateur.setUid(ldapUser.getUid());
-                    update = true;
-                }
+                utilisateur.setUid(ldapUser.getUid());
+                update = true;
             }
             if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && utilisateur.getNumEtudiant() == null) {
-                if(ldapUser != null){
-                    utilisateur.setNumEtudiant(ldapUser.getCodEtu());
-                    update = true;
-                }
+                utilisateur.setNumEtudiant(ldapUser.getCodEtu());
+                update = true;
             }
             if (update) {
                 utilisateurJpaRepository.saveAndFlush(utilisateur);
