@@ -80,9 +80,9 @@
     <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">N°</th>
     <td mat-cell *matCellDef="let row">{{row.id}}</td>
   </ng-container>
-  <ng-container matColumnDef="etudiant.prenom" *ngIf="typeDashboard !== 3">
+  <ng-container matColumnDef="etudiant.nom" *ngIf="typeDashboard !== 3">
     <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Étudiant</th>
-    <td mat-cell *matCellDef="let row">{{row.etudiant.prenom + ' ' + row.etudiant.nom}}</td>
+    <td mat-cell *matCellDef="let row">{{row.etudiant.nom + ' ' + row.etudiant.prenom}}</td>
   </ng-container>
   <ng-container matColumnDef="structure.raisonSociale">
     <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Établissement</th>
@@ -147,7 +147,7 @@
       </tr>
       <tr *ngIf="typeDashboard !== 3">
         <th>Étudiant</th>
-        <td>{{row.etudiant.prenom + ' ' + row.etudiant.nom}}</td>
+        <td>{{row.etudiant.nom + ' ' + row.etudiant.prenom}}</td>
       </tr>
       <tr>
         <th>Établissement</th>
