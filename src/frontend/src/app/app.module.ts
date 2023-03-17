@@ -24,9 +24,9 @@ import {
   NGX_MAT_COLOR_FORMATS,
   NgxMatColorPickerModule
 } from "@angular-material-components/color-picker";
-import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatLegacyFormFieldModule as MatFormFieldModule } from "@angular/material/legacy-form-field";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { MatInputModule } from "@angular/material/input";
+import { MatLegacyInputModule as MatInputModule } from "@angular/material/legacy-input";
 import { AdminUserComponent } from './components/admin/admin-user/admin-user.component';
 import { MatLegacyTableModule as MatTableModule } from "@angular/material/legacy-table";
 import { MatSortModule } from "@angular/material/sort";
@@ -37,7 +37,9 @@ import { DatePipe, registerLocaleData } from "@angular/common";
 import localeFr from '@angular/common/locales/fr';
 import {
   DateAdapter,
+  MAT_DATE_FORMATS,
   MAT_DATE_LOCALE,
+  MatDateFormats,
   MatNativeDateModule, NativeDateAdapter
 } from "@angular/material/core";
 import { PaginatorIntl } from "./paginator-intl";
@@ -45,8 +47,8 @@ import { TableComponent } from './components/table/table.component';
 import { BooleanPipe } from './pipes/boolean.pipe';
 import { MatLegacyCardModule as MatCardModule } from "@angular/material/legacy-card";
 import { RoleLibellePipe } from './pipes/role-libelle.pipe';
-import { MatSelectModule } from "@angular/material/select";
-import { MatCheckboxModule } from "@angular/material/checkbox";
+import { MatLegacySelectModule as MatSelectModule } from "@angular/material/legacy-select";
+import { MatLegacyCheckboxModule as MatCheckboxModule } from "@angular/material/legacy-checkbox";
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { ConventionComponent } from './components/convention/convention.component';
 import { MatStepperModule } from "@angular/material/stepper";
@@ -55,7 +57,7 @@ import { AdminNomenclaturesEditionComponent } from './components/admin/admin-nom
 import { AdminRoleComponent } from './components/admin/admin-role/admin-role.component';
 import { ConfirmComponent } from './components/confirm/confirm.component';
 import { ConfigGeneraleComponent } from './components/admin/config-generale/config-generale.component';
-import { MatRadioModule } from "@angular/material/radio";
+import { MatLegacyRadioModule as MatRadioModule } from "@angular/material/legacy-radio";
 import { ContenuComponent } from './components/admin/contenu/contenu.component';
 import { ContenuPipe } from './pipes/contenu.pipe';
 import { ContenuService } from "./services/contenu.service";
@@ -89,8 +91,8 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { GestionnairesComponent } from './components/centre-gestion/gestionnaires/gestionnaires.component';
 import { RecapitulatifComponent } from './components/convention/recapitulatif/recapitulatif.component';
 import { AvenantComponent } from './components/convention/avenant/avenant.component';
-import { MatChipsModule } from "@angular/material/chips";
-import { MatAutocompleteModule } from "@angular/material/autocomplete";
+import { MatLegacyChipsModule as MatChipsModule } from "@angular/material/legacy-chips";
+import { MatLegacyAutocompleteModule as MatAutocompleteModule } from "@angular/material/legacy-autocomplete";
 import { AvenantFormComponent } from './components/convention/avenant/avenant-form/avenant-form.component';
 import { MatLegacyMenuModule as MatMenuModule } from "@angular/material/legacy-menu";
 import { ValidationComponent } from './components/convention/validation/validation.component';
