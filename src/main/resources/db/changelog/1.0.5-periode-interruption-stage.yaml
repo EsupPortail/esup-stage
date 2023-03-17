@@ -2,8 +2,9 @@ databaseChangeLog:
 - changeSet:
     id: init-periode-interruption-stage
     author: ssound
-    validCheckSum: 8:50af1fa728e3c863fed7c97cafa2bff0
+    validCheckSum: ANY
     changes:
     - sqlFile:
         path: init-insert/periodeinterruptionstage.sql
         relativeToChangelogFile: true
+        encoding: utf8

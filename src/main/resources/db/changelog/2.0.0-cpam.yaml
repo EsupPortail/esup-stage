@@ -67,6 +67,7 @@ databaseChangeLog:
   - changeSet:
       id: cpam-init
       author: tjubera
+      validCheckSum: ANY
       preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -76,6 +77,7 @@ databaseChangeLog:
         - sqlFile:
             path: init-insert/cpam.sql
             relativeToChangelogFile: true
+            encoding: utf8
   - changeSet:
       id: convention-cpam
       author: tjubera

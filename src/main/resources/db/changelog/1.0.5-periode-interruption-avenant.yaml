@@ -2,7 +2,9 @@ databaseChangeLog:
 - changeSet:
     id: init-periode-interruption-avenant
     author: ssound
+    validCheckSum: ANY
     changes:
     - sqlFile:
         path: init-insert/periodeinterruptionavenant.sql
         relativeToChangelogFile: true
+        encoding: utf8

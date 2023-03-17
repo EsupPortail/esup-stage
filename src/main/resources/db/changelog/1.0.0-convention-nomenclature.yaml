@@ -61,7 +61,9 @@ databaseChangeLog:
 - changeSet:
     id: convention-nomenclature-init
     author: ssound
+    validCheckSum: ANY
     changes:
     - sqlFile:
         path: 1.0.0-convention-nomenclature-init.sql
         relativeToChangelogFile: true
+        encoding: utf8

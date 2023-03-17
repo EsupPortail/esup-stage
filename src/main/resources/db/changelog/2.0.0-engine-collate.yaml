@@ -6,3 +6,4 @@ databaseChangeLog:
     - sqlFile:
         path: 2.0.0-engine-collate.sql
         relativeToChangelogFile: true
+        encoding: utf8

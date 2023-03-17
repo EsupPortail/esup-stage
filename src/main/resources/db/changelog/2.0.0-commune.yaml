@@ -26,6 +26,7 @@ databaseChangeLog:
 - changeSet:
     id: commune-init
     author: tjubera
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -35,3 +36,4 @@ databaseChangeLog:
         - sqlFile:
               path: init-insert/commune.sql
               relativeToChangelogFile: true
+              encoding: utf8

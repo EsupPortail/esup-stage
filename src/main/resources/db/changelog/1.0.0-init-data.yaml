@@ -2,6 +2,7 @@ databaseChangeLog:
 - changeSet:
     id: init-data-effectif
     author: ssound
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -11,9 +12,11 @@ databaseChangeLog:
     - sqlFile:
         path: init-insert/effectif.sql
         relativeToChangelogFile: true
+        encoding: utf8
 - changeSet:
     id: init-data-typestructure
     author: ssound
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -23,9 +26,11 @@ databaseChangeLog:
     - sqlFile:
         path: init-insert/typestructure.sql
         relativeToChangelogFile: true
+        encoding: utf8
 - changeSet:
     id: init-data-statutjuridique
     author: ssound
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -35,9 +40,11 @@ databaseChangeLog:
     - sqlFile:
         path: init-insert/statutjuridique.sql
         relativeToChangelogFile: true
+        encoding: utf8
 - changeSet:
     id: init-data-civilite
     author: ssound
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -47,9 +54,11 @@ databaseChangeLog:
     - sqlFile:
         path: init-insert/civilite.sql
         relativeToChangelogFile: true
+        encoding: utf8
 - changeSet:
     id: init-data-niveaucentre
     author: ssound
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -59,9 +68,11 @@ databaseChangeLog:
     - sqlFile:
         path: init-insert/niveaucentre.sql
         relativeToChangelogFile: true
+        encoding: utf8
 - changeSet:
     id: init-data-confidentialite
     author: ssound
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -71,9 +82,11 @@ databaseChangeLog:
     - sqlFile:
         path: init-insert/confidentialite.sql
         relativeToChangelogFile: true
+        encoding: utf8
 - changeSet:
     id: init-data-uniteduree
     author: ssound
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -83,9 +96,11 @@ databaseChangeLog:
     - sqlFile:
         path: init-insert/uniteduree.sql
         relativeToChangelogFile: true
+        encoding: utf8
 - changeSet:
     id: init-data-tempstravail
     author: ssound
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -95,9 +110,11 @@ databaseChangeLog:
     - sqlFile:
         path: init-insert/tempstravail.sql
         relativeToChangelogFile: true
+        encoding: utf8
 - changeSet:
     id: init-data-niveauformation
     author: ssound
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -107,9 +124,11 @@ databaseChangeLog:
     - sqlFile:
         path: init-insert/niveauformation.sql
         relativeToChangelogFile: true
+        encoding: utf8
 - changeSet:
     id: init-data-typeoffre
     author: ssound
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -119,9 +138,11 @@ databaseChangeLog:
     - sqlFile:
         path: init-insert/typeoffre.sql
         relativeToChangelogFile: true
+        encoding: utf8
 - changeSet:
     id: init-data-contratoffre
     author: ssound
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -131,9 +152,11 @@ databaseChangeLog:
     - sqlFile:
         path: init-insert/contratoffre.sql
         relativeToChangelogFile: true
+        encoding: utf8
 - changeSet:
     id: init-data-droitadministration
     author: ssound
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -143,9 +166,11 @@ databaseChangeLog:
     - sqlFile:
         path: init-insert/droitadministration.sql
         relativeToChangelogFile: true
+        encoding: utf8
 - changeSet:
     id: init-data-affectation
     author: ssound
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -155,9 +180,11 @@ databaseChangeLog:
     - sqlFile:
         path: init-insert/affectation.sql
         relativeToChangelogFile: true
+        encoding: utf8
 - changeSet:
     id: init-data-fap_qualificationsimplifiee
     author: ssound
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -167,9 +194,11 @@ databaseChangeLog:
     - sqlFile:
         path: init-insert/fap_qualificationsimplifiee.sql
         relativeToChangelogFile: true
+        encoding: utf8
 - changeSet:
     id: init-data-fap_qualification
     author: ssound
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -179,9 +208,11 @@ databaseChangeLog:
     - sqlFile:
         path: init-insert/fap_qualification.sql
         relativeToChangelogFile: true
+        encoding: utf8
 - changeSet:
     id: init-data-modecandidature
     author: ssound
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -191,6 +222,7 @@ databaseChangeLog:
     - sqlFile:
         path: init-insert/modecandidature.sql
         relativeToChangelogFile: true
+        encoding: utf8
 - changeSet:
     id: init-data-typeconvention
     author: ssound
@@ -204,9 +236,11 @@ databaseChangeLog:
     - sqlFile:
         path: init-insert/typeconvention.sql
         relativeToChangelogFile: true
+        encoding: utf8
 - changeSet:
     id: init-data-langueconvention
     author: ssound
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -216,9 +250,11 @@ databaseChangeLog:
     - sqlFile:
         path: init-insert/langueconvention.sql
         relativeToChangelogFile: true
+        encoding: utf8
 - changeSet:
     id: init-data-theme
     author: ssound
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -228,9 +264,11 @@ databaseChangeLog:
     - sqlFile:
         path: init-insert/theme.sql
         relativeToChangelogFile: true
+        encoding: utf8
 - changeSet:
     id: init-data-indemnisation
     author: ssound
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -240,9 +278,11 @@ databaseChangeLog:
     - sqlFile:
         path: init-insert/indemnisation.sql
         relativeToChangelogFile: true
+        encoding: utf8
 - changeSet:
     id: init-data-modeversgratification
     author: ssound
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -252,9 +292,11 @@ databaseChangeLog:
     - sqlFile:
         path: init-insert/modeversgratification.sql
         relativeToChangelogFile: true
+        encoding: utf8
 - changeSet:
     id: init-data-naturetravail
     author: ssound
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -264,9 +306,11 @@ databaseChangeLog:
     - sqlFile:
         path: init-insert/naturetravail.sql
         relativeToChangelogFile: true
+        encoding: utf8
 - changeSet:
     id: init-data-modevalidationstage
     author: ssound
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -276,9 +320,11 @@ databaseChangeLog:
     - sqlFile:
         path: init-insert/modevalidationstage.sql
         relativeToChangelogFile: true
+        encoding: utf8
 - changeSet:
     id: init-data-unitegratification
     author: ssound
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -288,9 +334,11 @@ databaseChangeLog:
     - sqlFile:
         path: init-insert/unitegratification.sql
         relativeToChangelogFile: true
+        encoding: utf8
 - changeSet:
     id: init-data-assurance
     author: ssound
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -300,9 +348,11 @@ databaseChangeLog:
     - sqlFile:
         path: init-insert/assurance.sql
         relativeToChangelogFile: true
+        encoding: utf8
 - changeSet:
     id: init-data-caisseregime
     author: ssound
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -315,6 +365,7 @@ databaseChangeLog:
 - changeSet:
     id: init-data-originestage
     author: ssound
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -324,9 +375,11 @@ databaseChangeLog:
     - sqlFile:
         path: init-insert/originestage.sql
         relativeToChangelogFile: true
+        encoding: utf8
 - changeSet:
     id: init-data-dureediffusion
     author: ssound
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -336,9 +389,11 @@ databaseChangeLog:
     - sqlFile:
         path: init-insert/dureediffusion.sql
         relativeToChangelogFile: true
+        encoding: utf8
 - changeSet:
     id: init-data-fap_n1
     author: ssound
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -348,9 +403,11 @@ databaseChangeLog:
     - sqlFile:
         path: init-insert/fap_n1.sql
         relativeToChangelogFile: true
+        encoding: utf8
 - changeSet:
     id: init-data-fap_n2
     author: ssound
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -360,9 +417,11 @@ databaseChangeLog:
     - sqlFile:
         path: init-insert/fap_n2.sql
         relativeToChangelogFile: true
+        encoding: utf8
 - changeSet:
     id: init-data-fap_n3
     author: ssound
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -372,9 +431,11 @@ databaseChangeLog:
     - sqlFile:
         path: init-insert/fap_n3.sql
         relativeToChangelogFile: true
+        encoding: utf8
 - changeSet:
     id: init-data-naf_n1
     author: ssound
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -384,9 +445,11 @@ databaseChangeLog:
     - sqlFile:
         path: init-insert/naf_n1.sql
         relativeToChangelogFile: true
+        encoding: utf8
 - changeSet:
     id: init-data-naf_n5
     author: ssound
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -396,9 +459,11 @@ databaseChangeLog:
     - sqlFile:
         path: init-insert/naf_n5.sql
         relativeToChangelogFile: true
+        encoding: utf8
 - changeSet:
     id: init-data-pays
     author: ssound
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -408,6 +473,7 @@ databaseChangeLog:
     - sqlFile:
         path: init-insert/pays.sql
         relativeToChangelogFile: true
+        encoding: utf8
 - changeSet:
     id: templateConvention-insert
     author: jwang
@@ -453,6 +519,7 @@ databaseChangeLog:
     - sqlFile:
         path: init-insert/typeconventionapogee.sql
         relativeToChangelogFile: true
+        encoding: utf8
 - changeSet:
     id: templateConvention-insert-typeConventionApogee
     author: ssound

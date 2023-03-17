@@ -2,7 +2,9 @@ databaseChangeLog:
 - changeSet:
     id: change-engine-collation
     author: ssound
+    validCheckSum: ANY
     changes:
     - sqlFile:
         path: 1.0.0-engine-collate.sql
         relativeToChangelogFile: true
+        encoding: utf8
