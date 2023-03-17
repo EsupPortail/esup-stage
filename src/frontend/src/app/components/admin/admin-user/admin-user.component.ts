@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { UserService } from "../../../services/user.service";
-import { MatLegacyTabChangeEvent as MatTabChangeEvent, MatLegacyTabGroup as MatTabGroup } from "@angular/material/legacy-tabs";
+import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { RoleService } from "../../../services/role.service";
 import { MessageService } from "../../../services/message.service";
@@ -13,7 +13,7 @@ import { LdapService } from "../../../services/ldap.service";
 import { Subject } from "rxjs";
 import { debounceTime } from "rxjs/operators";
 import { CreateDialogComponent } from "./create-dialog/create-dialog.component";
-import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
+import { MatDialog } from "@angular/material/dialog";
 
 @Component({
   selector: 'app-admin-user',

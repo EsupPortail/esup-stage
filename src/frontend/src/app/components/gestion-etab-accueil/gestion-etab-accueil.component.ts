@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatLegacyDialog as MatDialog, MatLegacyDialogConfig as MatDialogConfig } from '@angular/material/legacy-dialog';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { StructureService } from "../../services/structure.service";
 import { ServiceService } from "../../services/service.service";
 import { ContactService } from "../../services/contact.service";
@@ -14,7 +14,7 @@ import { AuthService } from "../../services/auth.service";
 import { TableComponent } from "../table/table.component";
 import { AppFonction } from "../../constants/app-fonction";
 import { Droit } from "../../constants/droit";
-import { MatLegacyTabChangeEvent as MatTabChangeEvent, MatLegacyTabGroup as MatTabGroup } from "@angular/material/legacy-tabs";
+import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
 import { ServiceAccueilFormComponent } from './service-accueil-form/service-accueil-form.component';
 import { ContactFormComponent } from './contact-form/contact-form.component';
 
