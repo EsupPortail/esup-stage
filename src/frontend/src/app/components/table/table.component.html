@@ -47,14 +47,14 @@
                   <input matInput [name]="filter.id" [matDatepicker]="datepicker" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()" />
                 </ng-container>
                 <ng-container *ngSwitchCase="'autocomplete'">
-                  <mat-chip-list #chipList>
-                    <mat-chip *ngFor="let v of filterValues[filter.id].value" [selectable]="true" [removable]="true" (removed)="removeAutocomplete(filter, v)">
+                  <mat-chip-grid #chipList>
+                    <mat-chip-row *ngFor="let v of filterValues[filter.id].value" [selectable]="true" [removable]="true" (removed)="removeAutocomplete(filter, v)">
                       {{v[filter.keyLibelle]}}
                       <span matChipRemove>
                       <mat-icon>cancel</mat-icon>
                     </span>
-                    </mat-chip>
-                  </mat-chip-list>
+                    </mat-chip-row>
+                  </mat-chip-grid>
                   <input [name]="filter.id + '-autocomplete'" [(ngModel)]="filterValues[filter.id].autocomplete" (ngModelChange)="searchAutocomplete(filter, $event)"
                          [matAutocomplete]="auto" [matChipInputFor]="chipList" />
                   <mat-autocomplete #auto="matAutocomplete" (optionSelected)="autocompleteSelected(filter, $event)">
