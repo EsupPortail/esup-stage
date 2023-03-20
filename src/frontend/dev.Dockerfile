@@ -12,7 +12,7 @@ WORKDIR $HOME/app
 
 RUN npm install -g npm@8.5.5
 
-RUN npm install -g @angular/cli@13.3.5 --save-dev && npm cache clean --force
+RUN npm install -g @angular/cli@14.2.11 --save-dev && npm cache clean --force
 
 EXPOSE 4200
 
