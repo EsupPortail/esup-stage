@@ -43,7 +43,7 @@ export class EvalStageComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.isEtudiant = this.authService.isEtudiant();
-    this.isEnseignant= this.authService.isEnseignant();
+    this.isEnseignant = this.authService.isEnseignant();
     this.isGestionnaireOrAdmin = this.authService.isGestionnaire() || this.authService.isAdmin() ;
     const login = this.authService.getUserConnectedLogin();
 
