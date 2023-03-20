@@ -105,6 +105,10 @@ public class ConventionRepository extends PaginationRepository<Convention> {
             clauses.add("c.validationConvention = FALSE");
             clauses.add("c.validationPedagogique = TRUE");
         }
+        if (key.equals("isConventionValide")) {
+            clauses.add(" (c.centreGestion.validationPedagogique = FALSE OR c.validationPedagogique = TRUE) AND" +
+                    " (c.centreGestion.validationConvention = FALSE OR c.validationConvention = TRUE)");
+        }
         if (key.equals("lieuStage")) {
             List<String> clauseOr = new ArrayList<>();
             clauseOr.add("LOWER(c.service.nom) = :lieuStage");

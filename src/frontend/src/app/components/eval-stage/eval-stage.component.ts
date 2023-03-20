@@ -53,7 +53,7 @@ export class EvalStageComponent implements OnInit, OnDestroy {
     let filtersString: any = sessionStorage.getItem('evalstages-filters');
     this.savedFilters = JSON.parse(filtersString);
 
-    this.filters = [];
+    this.filters = [{id: 'isConventionValide', value: 'true', hidden: true, permanent: true, specific: true}];
 
     if(this.isGestionnaireOrAdmin){
       this.columns = ['id', 'etudiant.nom_etudiant.prenom', 'structure.raisonSociale', 'dateDebutStage', 'dateFinStage', 'ufr.libelle',
