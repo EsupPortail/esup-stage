@@ -23,8 +23,8 @@ import { LangueConventionService } from "../../services/langue-convention.servic
 export class DashboardComponent implements OnInit, OnDestroy {
 
   columns: string[] = [];
-  sortColumn = 'id';
-  sortDirection: SortDirection = 'desc';
+  sortColumn = 'etudiant.nom_etudiant.prenom';
+  sortDirection: SortDirection = 'asc';
   filters: any[] = [];
   validationsOptions: any[] = [
     { id: 'validationPedagogique', libelle: 'Validée pédagogiquement' },
@@ -84,7 +84,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.setDataGestionnaire();
       } else if (this.authService.isEnseignant()) {
         this.typeDashboard = 2;
-        this.columns = ['id', 'etudiant.prenom', 'ufr.libelle', 'etape.libelle', 'dateDebutStage', 'dateFinStage', 'structure.raisonSociale', 'sujetStage', 'lieuStage', 'avenant', 'etatValidation', 'action'];
+        this.columns = ['id', 'etudiant.nom_etudiant.prenom', 'ufr.libelle', 'etape.libelle', 'dateDebutStage', 'dateFinStage', 'structure.raisonSociale', 'sujetStage', 'lieuStage', 'avenant', 'etatValidation', 'action'];
         this.filters = [
           { id: 'id', libelle: 'N° de la convention', type: 'int' },
           { id: 'etudiant', libelle: 'Étudiant', specific: true },
@@ -194,7 +194,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   setDataGestionnaire(): void {
-    this.columns = ['select', 'id', 'etudiant.prenom', 'structure.raisonSociale', 'dateDebutStage', 'dateFinStage', 'ufr.libelle', 'etape.libelle', 'enseignant.prenom', 'avenant', 'etatValidation', 'action'];
+    this.columns = ['select', 'id', 'etudiant.nom_etudiant.prenom', 'structure.raisonSociale', 'dateDebutStage', 'dateFinStage', 'ufr.libelle', 'etape.libelle', 'enseignant.prenom', 'avenant', 'etatValidation', 'action'];
     this.filters = [
       { id: 'id', libelle: 'N° de la convention', type: 'int' },
       { id: 'etudiant', libelle: 'Étudiant', specific: true },
@@ -356,9 +356,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   countConvention(): void {
     if (this.typeDashboard !== 3 && this.appTable) {
       const filters = this.appTable.getFilters();
-      this.conventionService.getPaginated(1, 1, '', '', JSON.stringify(filters)).subscribe((response: any) => {
-        this.nbConventionsEnAttente = response.total;
-      });
+      this.nbConventionsEnAttente = this.appTable.total;
     }
     if (this.appTable) {
       const filters = this.appTable?.getFilterValues();

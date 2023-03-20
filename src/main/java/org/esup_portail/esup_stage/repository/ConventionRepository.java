@@ -60,10 +60,21 @@ public class ConventionRepository extends PaginationRepository<Convention> {
             clauses.add("(" + String.join(" OR ", clauseOr) + ")");
         }
         if (key.equals("etudiant")) {
-            clauses.add("(LOWER(c.etudiant.identEtudiant) LIKE :etudiant OR LOWER(c.etudiant.nom) LIKE :etudiant OR LOWER(c.etudiant.prenom) LIKE :etudiant OR" +
-                    " LOWER(c.etudiant.mail) LIKE :etudiant OR LOWER(c.etudiant.numEtudiant) LIKE :etudiant OR" +
-                    " (LOWER(c.etudiant.nom) LIKE :etudiantSplit1 AND LOWER(c.etudiant.prenom) LIKE :etudiantSplit2) OR" +
-                    " (LOWER(c.etudiant.prenom) LIKE :etudiantSplit1 AND LOWER(c.etudiant.nom) LIKE :etudiantSplit2))");
+            String value = parameter.getString("value").toLowerCase();
+            String[] parts = value.split(" ");
+            String clause = "LOWER(c.etudiant.identEtudiant) LIKE :etudiant OR LOWER(c.etudiant.nom) LIKE :etudiant OR LOWER(c.etudiant.prenom) LIKE :etudiant OR" +
+                    " LOWER(c.etudiant.mail) LIKE :etudiant OR LOWER(c.etudiant.numEtudiant) LIKE :etudiant";
+            StringBuilder nom = new StringBuilder();
+            StringBuilder prenom = new StringBuilder();
+
+            for (int i = 0; i < parts.length; ++i) {
+                nom.append(" LOWER(c.etudiant.nom) LIKE :etudiantSplit").append(i).append(" OR");
+                prenom.append(" LOWER(c.etudiant.prenom) LIKE :etudiantSplit").append(i).append(" OR");
+            }
+            nom = new StringBuilder("(" + nom.substring(0, nom.length() - 2) + ")");
+            prenom = new StringBuilder("(" + prenom.substring(0, prenom.length() - 2) + ")");
+
+            clauses.add(clause + " OR (" + nom + " AND " + prenom + ")");
         }
         if (key.equals("enseignant")) {
             clauses.add("(LOWER(c.enseignant.uidEnseignant) LIKE :enseignant OR LOWER(c.enseignant.nom) LIKE :enseignant OR LOWER(c.enseignant.prenom) LIKE :enseignant OR LOWER(c.enseignant.mail) LIKE :enseignant)");
@@ -155,13 +166,9 @@ public class ConventionRepository extends PaginationRepository<Convention> {
         if (key.equals("etudiant")) {
             String value = parameter.getString("value").toLowerCase();
             query.setParameter("etudiant", "%" + value + "%");
-            String[] parts = value.split(" ", 2);
-            if(parts.length > 1){
-                query.setParameter("etudiantSplit1", "%" + parts[0] + "%");
-                query.setParameter("etudiantSplit2", "%" + parts[1] + "%");
-            }else{
-                query.setParameter("etudiantSplit1", "%" + value + "%");
-                query.setParameter("etudiantSplit2", "%" + value + "%");
+            String[] parts = value.split(" ");
+            for (int i = 0; i < parts.length; i++) {
+                query.setParameter("etudiantSplit" + i, "%" + parts[i] + "%");
             }
         }
         if (key.equals("enseignant")) {
