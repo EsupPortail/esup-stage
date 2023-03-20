@@ -79,12 +79,7 @@ public class PaginationRepository<T extends Exportable> {
         }
         if (predicate != null && predicateWhitelist.contains(predicate)) {
             List<String> predicates = Arrays.asList(predicate.split("_"));
-            if(predicates.contains("etudiant.nom") && clauses.size() >= 2){
-                queryString +=" ORDER BY CASE WHEN nom LIKE :etudiant then 1  WHEN nom like :etudiantSplit1 then 1 "+
-                        " WHEN nom like :etudiantSplit2 then 1 ELSE 2  END, ";
-            }else {
-                queryString += " ORDER BY ";
-            }
+            queryString += " ORDER BY ";
             for(String p : predicates){
                 queryString += alias + "." + p;
                 if (sortOrder.equalsIgnoreCase("asc")) {

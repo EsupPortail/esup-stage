@@ -47,7 +47,7 @@
   </ng-container>
   <ng-container *ngIf="typeDashboard === 3 || typeDashboard === 1" matColumnDef="enseignant.prenom">
     <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Enseignant</th>
-    <td mat-cell *matCellDef="let row">{{row.enseignant ? row.enseignant.prenom + ' ' + row.enseignant.nom : ''}}</td>
+    <td mat-cell *matCellDef="let row">{{row.enseignant ? row.enseignant.nom + ' ' + row.enseignant.prenom : ''}}</td>
   </ng-container>
   <ng-container *ngIf="typeDashboard === 2" matColumnDef="sujetStage">
     <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Sujet du stage</th>
@@ -80,7 +80,7 @@
     <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">N°</th>
     <td mat-cell *matCellDef="let row">{{row.id}}</td>
   </ng-container>
-  <ng-container matColumnDef="etudiant.nom" *ngIf="typeDashboard !== 3">
+  <ng-container matColumnDef="etudiant.nom_etudiant.prenom" *ngIf="typeDashboard !== 3">
     <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Étudiant</th>
     <td mat-cell *matCellDef="let row">{{row.etudiant.nom + ' ' + row.etudiant.prenom}}</td>
   </ng-container>
@@ -171,7 +171,7 @@
       </tr>
       <tr *ngIf="typeDashboard === 3 || typeDashboard === 1">
         <th>Enseignant</th>
-        <td>{{row.enseignant ? row.enseignant.prenom + ' ' + row.enseignant.nom : ''}}</td>
+        <td>{{row.enseignant ? row.enseignant.nom + ' ' + row.enseignant.prenom : ''}}</td>
       </tr>
       <tr *ngIf="typeDashboard === 2">
         <th>Sujet du stage</th>
