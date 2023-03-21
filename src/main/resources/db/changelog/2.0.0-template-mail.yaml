@@ -3,6 +3,31 @@ databaseChangeLog:
     id: templateMail-insert-fiche-eval
     author: tjubera
     changes:
+      - insert:
+          columns:
+            - column:
+                name: code
+                value: FICHE_EVAL
+            - column:
+                name: libelle
+                value: Prévenir l'étudiant ou l'enseignant qu'il peut remplir sa fiche
+            - column:
+                name: objet
+                value: Votre fiche d'évaluation de stage est disponible
+            - column:
+                name: texte
+                value: Texte à modifier
+            - column:
+                name: dateCreation
+                value: now()
+            - column:
+                name: loginCreation
+                value: liquibase
+          tableName: TemplateMail
+- changeSet:
+    id: templateMail-insert-fiche-eval-fix
+    author: tjubera
+    changes:
     - insert:
         columns:
             - column:
@@ -129,3 +154,6 @@ databaseChangeLog:
                     name: loginCreation
                     value: liquibase
           tableName: TemplateMail
+    - delete:
+         tableName:  TemplateMail
+         where:  code='FICHE_EVAL'
