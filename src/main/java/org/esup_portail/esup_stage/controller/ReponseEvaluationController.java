@@ -153,16 +153,26 @@ public class ReponseEvaluationController {
         if(mailEtudiant == null || !appConfigService.getConfigGenerale().isUtiliserMailPersoEtudiant())
             mailEtudiant = convention.getEtudiant().getMail();
 
+        String template = "";
         if(typeFiche == 0) {
-            mailerService.sendAlerteValidation(mailEtudiant, convention, utilisateur, TemplateMail.CODE_FICHE_EVAL);
+            template = TemplateMail.CODE_FICHE_EVAL_ETU;
+            if(convention.getEnvoiMailEtudiant() != null && convention.getEnvoiMailEtudiant())
+                template = TemplateMail.CODE_RAPPEL_FICHE_EVAL_ETU;
+            mailerService.sendAlerteValidation(mailEtudiant, convention, utilisateur, template);
             convention.setEnvoiMailEtudiant(true);
             convention.setDateEnvoiMailEtudiant(new Date());
         }else if(typeFiche == 1){
-            mailerService.sendAlerteValidation(convention.getEnseignant().getMail(), convention, utilisateur, TemplateMail.CODE_FICHE_EVAL);
+            template = TemplateMail.CODE_FICHE_EVAL_ENSEIGNANT;
+            if(convention.getEnvoiMailTuteurPedago() != null && convention.getEnvoiMailTuteurPedago())
+                template = TemplateMail.CODE_RAPPEL_FICHE_EVAL_ENSEIGNANT;
+            mailerService.sendAlerteValidation(convention.getEnseignant().getMail(), convention, utilisateur, template);
             convention.setEnvoiMailTuteurPedago(true);
             convention.setDateEnvoiMailTuteurPedago(new Date());
         }else if(typeFiche == 2){
-            mailerService.sendAlerteValidation(convention.getContact().getMail(), convention, utilisateur, TemplateMail.CODE_FICHE_EVAL);
+            template = TemplateMail.CODE_FICHE_EVAL_TUTEUR;
+            if(convention.getEnvoiMailTuteurPro() != null && convention.getEnvoiMailTuteurPro())
+                template = TemplateMail.CODE_RAPPEL_FICHE_EVAL_TUTEUR;
+            mailerService.sendAlerteValidation(convention.getContact().getMail(), convention, utilisateur, template);
             convention.setEnvoiMailTuteurPro(true);
             convention.setDateEnvoiMailTuteurPro(new Date());
         }

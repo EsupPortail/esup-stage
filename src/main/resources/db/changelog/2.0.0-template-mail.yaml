@@ -7,10 +7,10 @@ databaseChangeLog:
         columns:
             - column:
                 name: code
-                value: FICHE_EVAL
+                value: FICHE_EVAL_ETU
             - column:
                 name: libelle
-                value: Prévenir l'étudiant ou l'enseignant qu'il peut remplir sa fiche
+                value: Prévenir l'étudiant qu'il peut remplir sa fiche
             - column:
                 name: objet
                 value: Votre fiche d'évaluation de stage est disponible
@@ -24,3 +24,108 @@ databaseChangeLog:
                 name: loginCreation
                 value: liquibase
         tableName: TemplateMail
+    - insert:
+          columns:
+              - column:
+                    name: code
+                    value: FICHE_EVAL_ENSEIGNANT
+              - column:
+                    name: libelle
+                    value: Prévenir l'enseignant qu'il peut remplir sa fiche
+              - column:
+                    name: objet
+                    value: Votre fiche d'évaluation de stage est disponible
+              - column:
+                    name: texte
+                    value: Texte à modifier
+              - column:
+                    name: dateCreation
+                    value: now()
+              - column:
+                    name: loginCreation
+                    value: liquibase
+          tableName: TemplateMail
+    - insert:
+          columns:
+              - column:
+                    name: code
+                    value: FICHE_EVAL_TUTEUR
+              - column:
+                    name: libelle
+                    value: Prévenir le tuteur professionel qu'il peut remplir sa fiche
+              - column:
+                    name: objet
+                    value: Votre fiche d'évaluation de stage est disponible
+              - column:
+                    name: texte
+                    value: Texte à modifier
+              - column:
+                    name: dateCreation
+                    value: now()
+              - column:
+                    name: loginCreation
+                    value: liquibase
+          tableName: TemplateMail
+    - insert:
+          columns:
+              - column:
+                    name: code
+                    value: RAPPEL_FICHE_EVAL_ETU
+              - column:
+                    name: libelle
+                    value: Rappeler à l'étudiant qu'il peut remplir sa fiche
+              - column:
+                    name: objet
+                    value: Votre fiche d'évaluation de stage est disponible
+              - column:
+                    name: texte
+                    value: Texte à modifier
+              - column:
+                    name: dateCreation
+                    value: now()
+              - column:
+                    name: loginCreation
+                    value: liquibase
+          tableName: TemplateMail
+    - insert:
+          columns:
+              - column:
+                    name: code
+                    value: RAPPEL_FICHE_EVAL_ENSEIGNANT
+              - column:
+                    name: libelle
+                    value: Rappeler à l'enseignant qu'il peut remplir sa fiche
+              - column:
+                    name: objet
+                    value: Votre fiche d'évaluation de stage est disponible
+              - column:
+                    name: texte
+                    value: Texte à modifier
+              - column:
+                    name: dateCreation
+                    value: now()
+              - column:
+                    name: loginCreation
+                    value: liquibase
+          tableName: TemplateMail
+    - insert:
+          columns:
+              - column:
+                    name: code
+                    value: RAPPEL_FICHE_EVAL_TUTEUR
+              - column:
+                    name: libelle
+                    value: Rappeler au tuteur professionel qu'il peut remplir sa fiche
+              - column:
+                    name: objet
+                    value: Votre fiche d'évaluation de stage est disponible
+              - column:
+                    name: texte
+                    value: Texte à modifier
+              - column:
+                    name: dateCreation
+                    value: now()
+              - column:
+                    name: loginCreation
+                    value: liquibase
+          tableName: TemplateMail

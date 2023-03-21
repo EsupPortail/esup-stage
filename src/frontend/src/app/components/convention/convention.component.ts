@@ -30,6 +30,7 @@ export class ConventionComponent implements OnInit {
     8: { statut: 0, init: false },
   }
 
+  goToOnglet = 0;
   allValid = false;
   modifiable = true;
   docaposteEnabled = false;
@@ -53,10 +54,11 @@ export class ConventionComponent implements OnInit {
     });
     this.activatedRoute.queryParams.subscribe((param: any) => {
       if (param.back) this.back = param.back;
+      if (param.goToOnglet) this.goToOnglet = param.goToOnglet;
     });
     this.activatedRoute.params.subscribe((param: any) => {
       const pathId = param.id;
-      this.conventionTabIndex = this.conventionService.getGoToOnglet()??0;
+      this.conventionTabIndex = this.goToOnglet;
       if (pathId === 'create') {
         // Récupération de la convention au mode brouillon
         this.conventionService.getBrouillon().subscribe((response: any) => {

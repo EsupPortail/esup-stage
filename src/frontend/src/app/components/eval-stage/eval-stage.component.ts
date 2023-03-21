@@ -93,8 +93,7 @@ export class EvalStageComponent implements OnInit, OnDestroy {
   }
 
   goToConvention(id: number): void {
-    this.conventionService.setGoToOnglet(8)
-    this.router.navigate([`/conventions/${id}`], {queryParams: {back: 'eval-stages'} });
+    this.router.navigate([`/conventions/${id}`], {queryParams: {back: 'eval-stages', goToOnglet: '8'} });
   }
 
   restoreFilters() {

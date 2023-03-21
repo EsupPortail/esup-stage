@@ -954,7 +954,7 @@ export class EvaluationStageComponent implements OnInit {
   ngOnInit(): void {
 
     this.isEtudiant = this.authService.isEtudiant();
-    this.isEnseignant= this.authService.isEnseignant();
+    this.isEnseignant = this.authService.isEnseignant();
     this.isGestionnaireOrAdmin = this.authService.isGestionnaire() || this.authService.isAdmin() ;
 
     this.ficheEvaluationService.getByCentreGestion(this.convention.centreGestion.id).subscribe((response: any) => {
@@ -1501,6 +1501,12 @@ export class EvaluationStageComponent implements OnInit {
   envoiMailEvaluation(typeFiche: number): void {
     this.reponseEvaluationService.sendMailEvaluation(this.convention.id, typeFiche).subscribe((response: any) => {
       this.messageService.setSuccess('Mail envoyé avec succès');
+      if (typeFiche == 0)
+        this.convention.envoiMailEtudiant = true
+      if (typeFiche == 1)
+        this.convention.envoiMailTuteurPedago = true
+      if (typeFiche == 2)
+        this.convention.envoiMailTuteurPro = true
     });
   }
 
