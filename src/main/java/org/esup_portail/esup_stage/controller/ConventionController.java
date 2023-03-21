@@ -442,7 +442,7 @@ public class ConventionController {
 
     @GetMapping("/{id}/pdf-convention")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
-    public ResponseEntity<byte[]> getConventionPDF(@PathVariable("id") int id) {
+    public ResponseEntity<byte[]> getConventionPDF(@PathVariable("id") int id, @RequestParam(name = "isRecap", required = false) boolean isRecap) {
         Convention convention = conventionJpaRepository.findById(id);
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
@@ -458,7 +458,7 @@ public class ConventionController {
             conventionJpaRepository.saveAndFlush(convention);
         }
         ByteArrayOutputStream ou = new ByteArrayOutputStream();
-        impressionService.generateConventionAvenantPDF(convention, null, ou);
+        impressionService.generateConventionAvenantPDF(convention, null, ou, isRecap);
 
         byte[] pdf = ou.toByteArray();
         return ResponseEntity.ok().body(pdf);
@@ -472,7 +472,7 @@ public class ConventionController {
             throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvée");
         }
         ByteArrayOutputStream ou = new ByteArrayOutputStream();
-        impressionService.generateConventionAvenantPDF(avenant.getConvention(), avenant, ou);
+        impressionService.generateConventionAvenantPDF(avenant.getConvention(), avenant, ou, false);
 
         byte[] pdf = ou.toByteArray();
         return ResponseEntity.ok().body(pdf);

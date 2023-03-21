@@ -44,7 +44,7 @@ public class ImpressionService {
     @Autowired
     ApplicationBootstrap applicationBootstrap;
 
-    public void generateConventionAvenantPDF(Convention convention, Avenant avenant, ByteArrayOutputStream ou) {
+    public void generateConventionAvenantPDF(Convention convention, Avenant avenant, ByteArrayOutputStream ou, boolean isRecap) {
         if (convention.getNomenclature() == null) {
             convention.setValeurNomenclature();
         }
@@ -57,7 +57,8 @@ public class ImpressionService {
         ImpressionContext impressionContext = new ImpressionContext(convention, avenant, centreEtablissement);
 
         try {
-            String htmlTexte = avenant != null ? this.getHtmlText(templateConvention.getTexteAvenant(), false) : this.getHtmlText(templateConvention.getTexte(), true);
+
+            String htmlTexte = avenant != null ? this.getHtmlText(templateConvention.getTexteAvenant(), false, isRecap) : this.getHtmlText(templateConvention.getTexte(), true, isRecap);
             
             htmlTexte = manageIfElse(htmlTexte);
 
@@ -216,32 +217,35 @@ public class ImpressionService {
         return sb.toString();
     }
 
-    private String getHtmlText(String texte, boolean isConvention) {
-        if (texte == null) {
-            texte = getDefaultText(isConvention);
-        }
-        String htmlTexte = "<style>table { table-layout: fixed; width: 100%; overflow-wrap: break-word; border-spacing: 0px; }</style>";
+    private String getHtmlText(String texte, boolean isConvention, boolean isRecap) {
 
+            if (texte == null) {
+                texte = getDefaultText(isConvention);
+            }
 
-        String periodesInterruptionsStage = getDefaultText("/templates/template_convention_periodesInterruptions.html");
-        texte = texte.replace("${convention.periodesInterruptions}", periodesInterruptionsStage);
+            String htmlTexte = "<style>table { table-layout: fixed; width: 100%; overflow-wrap: break-word; border-spacing: 0px; }</style>";
+            if(isRecap){
+                htmlTexte += getDefaultText("/templates/template_recapitulatif.html");
+            }else {
+                String periodesInterruptionsStage = getDefaultText("/templates/template_convention_periodesInterruptions.html");
+                texte = texte.replace("${convention.periodesInterruptions}", periodesInterruptionsStage);
 
-        // Remplacement ${avenant.motifs} par le template html contenant tous les motifs
-        String motifTexte = getDefaultText("/templates/template_avenant_motifs.html");
-        texte = texte.replace("${avenant.motifs}", motifTexte);
+                // Remplacement ${avenant.motifs} par le template html contenant tous les motifs
+                String motifTexte = getDefaultText("/templates/template_avenant_motifs.html");
+                texte = texte.replace("${avenant.motifs}", motifTexte);
 
-        // Style par défaut des tables dans les templates
-        htmlTexte += texte;
+                // Style par défaut des tables dans les templates
+                htmlTexte += texte;
+            }
+                // Remplacement de tags et styles générés par l'éditeur qui ne sont pas convertis correctement
+                htmlTexte = htmlTexte.replace("<figure", "<div");
+                htmlTexte = htmlTexte.replace("</figure>", "</div>");
+                htmlTexte = htmlTexte.replace("class=\"text-tiny\"", "style=\"font-size: 11px\"");
+                htmlTexte = htmlTexte.replace("class=\"text-small\"", "style=\"font-size: 13px\"");
+                htmlTexte = htmlTexte.replace("class=\"text-big\"", "style=\"font-size: 21px\"");
+                htmlTexte = htmlTexte.replace("class=\"text-huge\"", "style=\"font-size: 23px\"");
 
-        // Remplacement de tags et styles générés par l'éditeur qui ne sont pas convertis correctement
-        htmlTexte = htmlTexte.replace("<figure", "<div");
-        htmlTexte = htmlTexte.replace("</figure>", "</div>");
-        htmlTexte = htmlTexte.replace("class=\"text-tiny\"", "style=\"font-size: 11px\"");
-        htmlTexte = htmlTexte.replace("class=\"text-small\"", "style=\"font-size: 13px\"");
-        htmlTexte = htmlTexte.replace("class=\"text-big\"", "style=\"font-size: 21px\"");
-        htmlTexte = htmlTexte.replace("class=\"text-huge\"", "style=\"font-size: 23px\"");
-
-        return htmlTexte;
+            return htmlTexte;
     }
 
     private String getLogoFilePath(String filename) {

@@ -87,8 +87,8 @@ export class RecapitulatifComponent implements OnInit {
     });
   }
 
-  printConvention() : void {
-    this.conventionService.getConventionPDF(this.tmpConvention.id).subscribe((response: any) => {
+  printConvention(isRecap : boolean) : void {
+    this.conventionService.getConventionPDF(this.tmpConvention.id, isRecap).subscribe((response: any) => {
       var blob = new Blob([response as BlobPart], {type: "application/pdf"});
       let filename = 'Convention_' + this.tmpConvention.id + '_' + this.tmpConvention.etudiant.prenom + '_' + this.tmpConvention.etudiant.nom + '.pdf';
       FileSaver.saveAs(blob, filename);
