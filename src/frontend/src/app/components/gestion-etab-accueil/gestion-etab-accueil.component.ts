@@ -17,7 +17,6 @@ import { Droit } from "../../constants/droit";
 import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
 import { ServiceAccueilFormComponent } from './service-accueil-form/service-accueil-form.component';
 import { ContactFormComponent } from './contact-form/contact-form.component';
-import { Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-gestion-etab-accueil',
@@ -73,7 +72,7 @@ export class GestionEtabAccueilComponent implements OnInit {
     this.filters = [
       { id: 'raisonSociale', libelle: 'Raison sociale' },
       { id: 'numeroSiret', libelle: 'Numéro SIRET' },
-      { id: 'numeroRNE', libelle: 'Numéro UAI', options:[Validators.maxLength(7)] },
+      { id: 'numeroRNE', libelle: 'Numéro UAI' },
       { id: 'nafN1.code', libelle: 'Activité', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'code', specific: true },
       { id: 'pays.id', libelle: 'Pays', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id' },
       { id: 'commune', libelle: 'Commune' },
