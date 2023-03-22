@@ -109,9 +109,26 @@ public class GroupeEtudiantController {
         return historiqueMailGroupeJpaRepository.findByGroupeEtudiant(id);
     }
 
+    @PatchMapping("/{id}/setTypeConventionGroupe/{typeConventionId}")
+    @Secure(fonctions = {AppFonctionEnum.CREATION_EN_MASSE_CONVENTION}, droits = {DroitEnum.MODIFICATION})
+    public GroupeEtudiant setTypeConventionGroupe(@PathVariable("id") int id, @PathVariable("typeConventionId") int typeConventionId) {
+        GroupeEtudiant groupeEtudiant = groupeEtudiantJpaRepository.findById(id);
+        if (groupeEtudiant == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "GroupeEtudiant non trouvée");
+        }
+        TypeConvention typeConvention = typeConventionJpaRepository.findById(typeConventionId);
+        if (typeConvention == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "TypeConvention non trouvé");
+        }
+        Convention groupeConvention = groupeEtudiant.getConvention();
+        groupeConvention.setTypeConvention(typeConvention);
+        conventionJpaRepository.saveAndFlush(groupeConvention);
+        return groupeEtudiant;
+    }
+
     @PatchMapping("/{id}/setInfosStageValid/{valid}")
     @Secure(fonctions = {AppFonctionEnum.CREATION_EN_MASSE_CONVENTION}, droits = {DroitEnum.MODIFICATION})
-    public GroupeEtudiant setInfosStageValid(@PathVariable("id") int id,@PathVariable("valid") boolean valid) {
+    public GroupeEtudiant setInfosStageValid(@PathVariable("id") int id, @PathVariable("valid") boolean valid) {
         GroupeEtudiant groupeEtudiant = groupeEtudiantJpaRepository.findById(id);
         if (groupeEtudiant == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "GroupeEtudiant non trouvée");

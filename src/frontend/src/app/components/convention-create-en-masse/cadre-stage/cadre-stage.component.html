@@ -1,6 +1,26 @@
 <mat-card>
   <mat-card-content>
     <div class="mb-3">
+      <div class="text-title">Modifier les informations du groupe</div>
+      <mat-divider class="mb-2"></mat-divider>
+      <form [formGroup]="form" (submit)="validate()" novalidate>
+        <div class="row mb-2">
+          <mat-form-field class="col-6" appearance="fill">
+            <mat-label>Type de convention du groupe</mat-label>
+            <mat-select formControlName="typeConventionGroupe" required>
+              <mat-option *ngFor="let typeConvention of typeConventions" [value]="typeConvention.id">{{typeConvention.libelle}}</mat-option>
+            </mat-select>
+            <mat-error><app-form-error [field]="form.get('typeConventionGroupe')"></app-form-error></mat-error>
+          </mat-form-field>
+        </div>
+        <div>
+          <button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
+        </div>
+      </form>
+    </div>
+    <div class="mb-3">
+      <div class="text-title">Modifier les informations de chaque étudiant</div>
+      <mat-divider class="mb-2"></mat-divider>
       <app-table [service]="etudiantGroupeEtudiantService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters" [sortOrder]="sortDirection"
                  matSort [matSortActive]="sortColumn" [matSortDirection]="'desc'" (matSortChange)="appTable ? appTable.sorting($event) : null"
                  [noResultText]="'Aucun étudiant trouvé'">

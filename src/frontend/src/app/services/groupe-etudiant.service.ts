@@ -43,6 +43,10 @@ export class GroupeEtudiantService implements PaginatedService {
     return this.http.patch(`${environment.apiUrl}/groupeEtudiant/${id}/setInfosStageValid/${valid}`, {});
   }
 
+  setTypeConventionGroupe(id: number, typeConventionId: number): Observable<any> {
+    return this.http.patch(`${environment.apiUrl}/groupeEtudiant/${id}/setTypeConventionGroupe/${typeConventionId}`, {});
+  }
+
   validate(id: number): Observable<any> {
     return this.http.patch(`${environment.apiUrl}/groupeEtudiant/${id}/valider`, {});
   }
