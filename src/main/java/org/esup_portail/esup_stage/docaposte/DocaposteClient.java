@@ -4,6 +4,7 @@ import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
 import org.esup_portail.esup_stage.docaposte.gen.*;
 import org.esup_portail.esup_stage.model.Avenant;
 import org.esup_portail.esup_stage.model.Convention;
+import org.esup_portail.esup_stage.repository.AvenantJpaRepository;
 import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,8 @@ public class DocaposteClient extends WebServiceGatewaySupport {
 
     @Autowired
     ConventionJpaRepository conventionJpaRepository;
+    @Autowired
+    AvenantJpaRepository avenantJpaRepository;
 
     public void upload(Convention convention, Avenant avenant) {
         String filename = "";
@@ -49,10 +52,17 @@ public class DocaposteClient extends WebServiceGatewaySupport {
         request.setLabel("");
         OtpUploadResponse response = ((JAXBElement<OtpUploadResponse>) getWebServiceTemplate().marshalSendAndReceive(new ObjectFactory().createOtpUpload(request))).getValue();
 
-        convention.setDateEnvoiSignature(new Date());
-        convention.setDocumentId(response.getReturn().get(0));
-        convention.setUrlSignature(response.getReturn().get(1));
-        conventionJpaRepository.saveAndFlush(convention);
+        if(avenant != null){
+            avenant.setDateEnvoiSignature(new Date());
+            avenant.setDocumentId(response.getReturn().get(0));
+            avenant.setUrlSignature(response.getReturn().get(1));
+            avenantJpaRepository.saveAndFlush(avenant);
+        }else {
+            convention.setDateEnvoiSignature(new Date());
+            convention.setDocumentId(response.getReturn().get(0));
+            convention.setUrlSignature(response.getReturn().get(1));
+            conventionJpaRepository.saveAndFlush(convention);
+        }
     }
 
     public HistoryResponse getHistorique(String documentId) {
