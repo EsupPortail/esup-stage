@@ -207,13 +207,13 @@
 
 <div class="row mt-3">
   <div class="col-sm-12 text-center">
-    <span style="margin-right: 5px;" *ngIf="docaposteEnabled && avenant.validationAvenant && !convention.documentId" (confirm)="controleSignatureElectronique()" [confirmMessage]="'ALERTE_SIGNATURE'|contenu">
+    <span style="margin-right: 5px;" *ngIf="docaposteEnabled && avenant.validationAvenant && !avenant.documentId" (confirm)="controleSignatureElectronique()" [confirmMessage]="'ALERTE_SIGNATURE'|contenu">
       <button mat-button mat-flat-button color="primary">Envoi pour signature électronique</button>
     </span>
     <span style="margin-right: 5px;">
       <button mat-flat-button type="button" color="primary" (click)="printAvenant()">Imprimer l'avenant</button>
     </span>
-    <span *ngIf="isGestionnaire()" (confirm)="cancelValidation()" [confirmMessage]="'Êtes-vous sûr de vouloir annuler la validation de cette avenant ?'">
+    <span *ngIf="isGestionnaire() && !avenant.documentId" (confirm)="cancelValidation()" [confirmMessage]="'Êtes-vous sûr de vouloir annuler la validation de cette avenant ?'">
       <button mat-flat-button type="button" color="warn">Annuler la validation</button>
     </span>
   </div>

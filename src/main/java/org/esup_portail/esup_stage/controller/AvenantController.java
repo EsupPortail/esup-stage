@@ -117,6 +117,9 @@ public class AvenantController {
         if (avenant == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvée");
         }
+        if (avenant.getDocumentId() != null) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Avenant déjà envoyé pour signature");
+        }
         avenant.setValidationAvenant(false);
         avenant.setDateValidation(null);
         return avenantJpaRepository.saveAndFlush(avenant);
