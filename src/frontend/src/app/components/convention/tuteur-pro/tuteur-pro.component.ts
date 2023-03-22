@@ -8,6 +8,8 @@ import { AppFonction } from "../../../constants/app-fonction";
 import { Droit } from "../../../constants/droit";
 import { AuthService } from "../../../services/auth.service";
 import { ConfigService } from "../../../services/config.service";
+import { debounceTime } from "rxjs/operators";
+import { LdapService } from "../../../services/ldap.service";
 
 @Component({
   selector: 'app-tuteur-pro',
@@ -17,6 +19,7 @@ import { ConfigService } from "../../../services/config.service";
 export class TuteurProComponent implements OnInit, OnChanges {
 
   civilites: any[] = [];
+  columns = ['nomprenom', 'mail', 'departement', 'action'];
 
   data: any;
 
@@ -27,8 +30,12 @@ export class TuteurProComponent implements OnInit, OnChanges {
   @Input() contact: any;
   contacts:any[] = [];
 
+  staffs: any[] = [];
+  staff: any;
+
   modif: boolean = false;
   form: FormGroup;
+  searchForm: FormGroup;
 
   autorisationModification = false;
 
@@ -37,11 +44,13 @@ export class TuteurProComponent implements OnInit, OnChanges {
   @Output() validated = new EventEmitter<number>();
 
   @Input() modifiable: boolean;
+  @Input() enMasse: boolean;
 
   constructor(public contactService: ContactService,
               private fb: FormBuilder,
               private messageService: MessageService,
               private authService: AuthService,
+              private ldapService: LdapService,
               private civiliteService: CiviliteService,
               private configService: ConfigService,
   ) {
@@ -54,6 +63,11 @@ export class TuteurProComponent implements OnInit, OnChanges {
       mail: [null, [Validators.required, Validators.pattern('[^@ ]+@[^@. ]+\\.[^@ ]+'), Validators.maxLength(50)]],
       fax: [null, [Validators.maxLength(50)]],
     });
+
+    this.searchForm = this.fb.group({
+      nom: [null, []],
+      prenom: [null, []],
+    });
   }
 
   ngOnInit(): void {
@@ -62,6 +76,9 @@ export class TuteurProComponent implements OnInit, OnChanges {
     });
     this.civiliteService.getPaginated(1, 0, 'libelle', 'asc','').subscribe((response: any) => {
       this.civilites = response.data;
+    });
+    this.searchForm.valueChanges.pipe(debounceTime(1000)).subscribe(() => {
+      this.search();
     });
   }
 
@@ -99,6 +116,21 @@ export class TuteurProComponent implements OnInit, OnChanges {
       this.firstPanel.expanded = false;
     }
     this.validated.emit(this.contact);
+  }
+
+  chooseStaff(row: any): void {
+    this.contact = {};
+    let civilite = 'M.' ? this.civilites.find(c => c.libelle === 'Mr') : this.civilites.find(c => c.libelle === 'Mme')
+    this.form.setValue({
+      nom: row.sn.join(' '),
+      prenom: row.givenName.join(' '),
+      idCivilite: civilite ? civilite.id : null,
+      fonction: row.eduPersonPrimaryAffiliation,
+      tel: row.telephoneNumber,
+      fax: '',
+      mail: row.mail,
+    });
+    this.modif = true;
   }
 
   initCreate(): void {
@@ -144,7 +176,6 @@ export class TuteurProComponent implements OnInit, OnChanges {
           this.modif = false;
         });
       } else {
-
         //ajoute idService à l'objet contact
         data.idService = this.service.id;
 
@@ -158,6 +189,20 @@ export class TuteurProComponent implements OnInit, OnChanges {
         });
       }
     }
+  }
+
+  search(): void {
+    if (!this.searchForm.get('nom')?.value && !this.searchForm.get('prenom')?.value) {
+      this.messageService.setError(`Veuillez renseigner au moins l'un des critères`);
+      return;
+    }
+    this.staff = undefined;
+    this.ldapService.searchUsersByName(this.searchForm.get('nom')?.value, this.searchForm.get('prenom')?.value).subscribe((response: any) => {
+      this.staffs = response;
+      if (this.staffs.length === 1) {
+        this.chooseStaff(this.staffs[0]);
+      }
+    });
   }
 
 }

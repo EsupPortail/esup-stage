@@ -18,6 +18,59 @@
 
   </mat-expansion-panel>
 
+  <mat-expansion-panel [expanded]="false" *ngIf="modifiable && enMasse">
+    <mat-expansion-panel-header>
+      <mat-panel-title>Recherchez un tuteur via son nom et/ou son prénom</mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <form [formGroup]="searchForm" novalidate class="mt-2 mb-3">
+      <div class="row">
+        <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+          <mat-label>Nom</mat-label>
+          <input matInput formControlName="nom" />
+        </mat-form-field>
+        <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+          <mat-label>Prénom</mat-label>
+          <input matInput formControlName="prenom" />
+        </mat-form-field>
+      </div>
+    </form>
+
+    <div class="alert alert-info" *ngIf="staffs.length > 10">La recherche est limitée à 10 tuteurs. Veuillez affiner la recherche si le tuteur n'apparaît pas.</div>
+    <table mat-table [dataSource]="staffs | slice:0:10">
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="9999">Aucun tuteur trouvé</td>
+      </tr>
+      <ng-container matColumnDef="nomprenom">
+        <th mat-header-cell *matHeaderCellDef>Nom / Prénom</th>
+        <td mat-cell *matCellDef="let row">{{row.sn.join(' ')}} {{row.givenName.join(' ')}}</td>
+      </ng-container>
+      <ng-container matColumnDef="mail">
+        <th mat-header-cell *matHeaderCellDef>Mail</th>
+        <td mat-cell *matCellDef="let row">{{row.mail}}</td>
+      </ng-container>
+      <ng-container matColumnDef="departement">
+        <th mat-header-cell *matHeaderCellDef>Département</th>
+        <td mat-cell *matCellDef="let row">-</td>
+      </ng-container>
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row">
+          <button mat-button mat-stroked-button (click)="chooseStaff(row)" color="primary">
+            <span *ngIf="true"><i class="fa fa-check"></i> Sélectionner</span>
+            <ng-template #notSelected>
+              <i class="fa fa-check-circle"></i> Sélectionner
+            </ng-template>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columns"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+    </table>
+
+  </mat-expansion-panel>
+
   <mat-expansion-panel [expanded]="contact" [disabled]="!contact">
     <mat-expansion-panel-header>
       <mat-panel-title>Tuteur professionnel</mat-panel-title>

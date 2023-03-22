@@ -70,7 +70,7 @@ export class EnseignantReferentComponent implements OnInit {
         if (this.enseignant == null){
           this.createEnseignant(row);
         }else{
-          // Mise des données de l'enseignant
+          // Mise à jour des données de l'enseignant
           this.updateEnseignant(this.enseignant.id, row);
         }
       });
