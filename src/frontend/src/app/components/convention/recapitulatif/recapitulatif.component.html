@@ -2,10 +2,12 @@
   <mat-card-content>
     <div class="col-sm-12 text-center">
       <mat-card-actions>
-        <button mat-button mat-flat-button color="primary" (click)="printConvention()"
+        <button mat-button mat-flat-button color="primary" (click)="printConvention(false)"
                 *ngIf="canPrint">
           Imprimer la convention
         </button>
+        <button mat-button mat-flat-button color="primary" (click)="printConvention(true)"
+        *ngIf="canPrint">Imprimer le récapitulatif</button>
       </mat-card-actions>
     </div>
     <div class="mt-3 mb-3">
@@ -199,11 +201,13 @@
       <div class="col-sm-12 text-center">
         <mat-card-actions>
           <button mat-button mat-flat-button color="primary" (click)="validate()" *ngIf="!tmpConvention.validationCreation">{{'BOUTON_VALIDER'|contenu}}</button>
-          <button mat-button mat-flat-button color="primary" (click)="printConvention()"
+          <button mat-button mat-flat-button color="primary" (click)="printConvention(false)"
                   *ngIf="tmpConvention.validationPedagogique
                   && (!tmpConvention.centreGestion.verificationAdministrative || (tmpConvention.centreGestion.verificationAdministrative && tmpConvention.verificationAdministrative))">
             Imprimer la convention
           </button>
+          <button mat-button mat-flat-button color="primary" (click)="printConvention(true)"
+          *ngIf="canPrint">Imprimer le récapitulatif</button>
         </mat-card-actions>
       </div>
     </div>

@@ -302,7 +302,7 @@ public class GroupeEtudiantController {
                 }
 
                 ByteArrayOutputStream pdfOutputStream = new ByteArrayOutputStream();
-                impressionService.generateConventionAvenantPDF(convention, null, pdfOutputStream);
+                impressionService.generateConventionAvenantPDF(convention, null, pdfOutputStream,false);
 
                 byte[] pdf = pdfOutputStream.toByteArray();
                 String filename = "Convention_" + convention.getEtudiant().getNom() + "_" +convention.getEtudiant().getPrenom() + ".pdf";
@@ -361,7 +361,7 @@ public class GroupeEtudiantController {
                     Convention convention = ege.getConvention();
 
                     ByteArrayOutputStream pdfOutputStream = new ByteArrayOutputStream();
-                    impressionService.generateConventionAvenantPDF(convention, null, pdfOutputStream);
+                    impressionService.generateConventionAvenantPDF(convention, null, pdfOutputStream, false);
 
                     byte[] pdf = pdfOutputStream.toByteArray();
                     String filename = "Convention_" + ege.getEtudiant().getNom() + "_" +ege.getEtudiant().getPrenom() + ".pdf";

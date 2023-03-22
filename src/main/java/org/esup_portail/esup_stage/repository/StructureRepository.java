@@ -17,7 +17,7 @@ import java.util.List;
 public class StructureRepository extends PaginationRepository<Structure> {
     public StructureRepository(EntityManager em) {
         super(em, Structure.class, "s");
-        this.predicateWhitelist = Arrays.asList("raisonSociale", "numeroSiret", "nafN5.nafN1.libelle", "pays.lib", "commune", "typeStructure.libelle", "statutJuridique.libelle");
+        this.predicateWhitelist = Arrays.asList("raisonSociale", "numeroSiret", "numeroUAI" , "nafN5.nafN1.libelle", "pays.lib", "commune", "typeStructure.libelle", "statutJuridique.libelle");
     }
 
     @Override

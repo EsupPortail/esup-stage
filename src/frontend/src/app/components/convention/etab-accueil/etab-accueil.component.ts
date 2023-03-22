@@ -63,6 +63,7 @@ export class EtabAccueilComponent implements OnInit {
     this.filters = [
       { id: 'raisonSociale', libelle: 'Raison sociale' },
       { id: 'numeroSiret', libelle: 'Numéro SIRET' },
+      { id: 'numeroRNE', libelle: 'Numéro UAI' },
       { id: 'nafN1.code', libelle: 'Activité', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'code', specific: true },
       { id: 'pays.id', libelle: 'Pays', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id' },
       { id: 'commune', libelle: 'Commune' },
