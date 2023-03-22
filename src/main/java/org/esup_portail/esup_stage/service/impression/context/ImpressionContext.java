@@ -128,6 +128,7 @@ public class ImpressionContext {
         private String dureeStageHeurePeriode;
         private String dureeStage;
         private String etapeLibelle;
+        private String etapeCode;
         private String fonctionsEtTaches;
         private String interruptionStage;
         private String libelleCPAM;
@@ -155,12 +156,18 @@ public class ImpressionContext {
         private String themeLibelle;
         private String travailNuitFerie;
         private String ufrLibelle;
+        private String ufrCode;
         private String uniteGratificationLibelle;
         private String uniteDureeGratificationLibelle;
         private String villeEtudiant;
         private String volumeHoraireFormation;
         private String competences;
         private List<PeriodeInterruptionContext> periodesInterruptions = new ArrayList<>();
+        private String typeConventionLibelle;
+        private String langueConvention;
+        private String confidentiel;
+        private String lieuStage;
+        private String conventionValidee;
 
         public ConventionContext() { }
 
@@ -182,8 +189,9 @@ public class ImpressionContext {
             this.dateFinStage = convention.getDateFinStage() != null ? df.format(convention.getDateFinStage()) : null;
             this.details = convention.getDetails();
             this.dureeStageHeure = convention.getDureeExceptionnelle();
-            this.dureeStage = String.valueOf(convention.getDureeStage());
+            this.dureeStage = convention.getDureeStage() != null ? String.valueOf(convention.getDureeStage()) : "";
             this.etapeLibelle = convention.getEtape() != null ? convention.getEtape().getLibelle() : null;
+            this.etapeCode = convention.getEtape() != null ? convention.getEtape().getId().getCode() : null;
             this.fonctionsEtTaches = convention.getFonctionsEtTaches();
             this.interruptionStage = (convention.getInterruptionStage() != null && convention.getInterruptionStage())  ? "Oui" : "Non";
             this.libelleCPAM = convention.getLibelleCPAM();
@@ -192,7 +200,7 @@ public class ImpressionContext {
             this.libelleFinalite = convention.getLibelleFinalite();
             this.modeEncadreSuivi = convention.getModeEncadreSuivi();
             this.modeValidationStageLibelle = convention.getNomenclature() != null ? convention.getNomenclature().getModeValidationStage() : null;
-            if (convention.getGratificationStage() != null && convention.getGratificationStage() == true) {
+            if (convention.getGratificationStage() != null && convention.getGratificationStage()) {
                 this.modeVersGratificationLibelle = convention.getNomenclature() != null ? convention.getNomenclature().getModeVersGratification() : null;
                 this.montantGratification = convention.getMontantGratification();
                 this.uniteGratificationLibelle = convention.getNomenclature() != null ? convention.getNomenclature().getUniteGratification() : null;
@@ -215,6 +223,7 @@ public class ImpressionContext {
             this.themeLibelle = convention.getNomenclature() != null ? convention.getNomenclature().getTheme() : null;
             this.travailNuitFerie = convention.getTravailNuitFerie();
             this.ufrLibelle = convention.getUfr() != null ? convention.getUfr().getLibelle() : null;
+            this.ufrCode = convention.getUfr() != null ? convention.getUfr().getId().getCode() :null;
             this.villeEtudiant = convention.getVilleEtudiant();
             this.volumeHoraireFormation = convention.getVolumeHoraireFormation();
             this.dureeStageHeurePeriode = convention.getDureeExceptionnellePeriode();
@@ -222,6 +231,18 @@ public class ImpressionContext {
             for (PeriodeInterruptionStage periode : convention.getPeriodeInterruptionStages()) {
                 this.periodesInterruptions.add(new PeriodeInterruptionContext(df.format(periode.getDateDebutInterruption()), df.format(periode.getDateFinInterruption())));
             }
+            this.typeConventionLibelle = convention.getTypeConvention().getLibelle();
+            this.langueConvention = convention.getLangueConvention() != null ? convention.getLangueConvention().getLibelle() : "";
+            this.confidentiel = convention.getConfidentiel() != null && convention.getConfidentiel() ? "Oui" : "Non";
+            this.lieuStage = convention.getLieuStage();
+
+            Boolean validationConvention = null;
+            if (centreEtablissement != null) {
+                validationConvention = centreEtablissement.getValidationPedagogique() ? convention.getValidationPedagogique() : null;
+                validationConvention = centreEtablissement.getValidationConvention() ? Boolean.valueOf(validationConvention != null ?
+                        validationConvention && convention.getValidationConvention() : convention.getValidationConvention()) : validationConvention;
+            }
+            this.conventionValidee = validationConvention != null && validationConvention ? "Oui" :"Non";
         }
 
         public String getId() {
@@ -368,6 +389,10 @@ public class ImpressionContext {
         public void setEtapeLibelle(String etapeLibelle) {
             this.etapeLibelle = etapeLibelle;
         }
+
+        public String getEtapeCode() {return etapeCode;}
+
+        public void setEtapeCode(String etapeCode) {this.etapeCode = etapeCode;}
 
         public String getFonctionsEtTaches() {
             return fonctionsEtTaches != null ? fonctionsEtTaches : "";
@@ -580,10 +605,12 @@ public class ImpressionContext {
         public String getUfrLibelle() {
             return ufrLibelle != null ? ufrLibelle : "";
         }
+        public String getUfrCode() {return ufrCode != null ? ufrCode : "";}
 
         public void setUfrLibelle(String ufrLibelle) {
             this.ufrLibelle = ufrLibelle;
         }
+        public void setUfrCode(String ufrCode) {this.ufrCode = ufrCode;}
 
         public String getUniteGratificationLibelle() {
             return uniteGratificationLibelle != null ? uniteGratificationLibelle : "";
@@ -632,6 +659,26 @@ public class ImpressionContext {
         public void setPeriodesInterruptions(List<PeriodeInterruptionContext> periodesInterruptions) {
             this.periodesInterruptions = periodesInterruptions;
         }
+
+        public String getTypeConventionLibelle() {return typeConventionLibelle!= null ? typeConventionLibelle : "";}
+
+        public void setTypeConventionLibelle(String typeConventionLibelle) {this.typeConventionLibelle = typeConventionLibelle;}
+
+        public String getLangueConvention() {return langueConvention != null ? langueConvention : "";}
+
+        public void setLangueConvention(String langueConvention) {this.langueConvention = langueConvention;}
+
+        public String getConfidentiel() {return confidentiel;}
+
+        public void setConfidentiel(String confidentiel) {this.confidentiel = confidentiel;}
+
+        public String getLieuStage() {return lieuStage != null ? lieuStage : "";}
+
+        public void setLieuStage(String lieuStage) {this.lieuStage = lieuStage;}
+
+        public String getConventionValidee() {return conventionValidee != null ? conventionValidee : "";}
+
+        public void setConventionValidee(String conventionValidee) {this.conventionValidee = conventionValidee;}
     }
 
     public static class CentreGestionContext {
