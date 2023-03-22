@@ -11,6 +11,10 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Numéro SIRET</th>
         <td mat-cell *matCellDef="let row">{{row.numeroSiret}}</td>
       </ng-container>
+      <ng-container matColumnDef="numeroRNE">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Numéro UAI</th>
+        <td mat-cell *matCellDef="let row">{{row.numeroRNE}}</td>
+      </ng-container>
       <ng-container matColumnDef="nafN5.nafN1.libelle">
         <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Activité</th>
         <td mat-cell *matCellDef="let row">{{row.nafN5 ? row.nafN5.nafN1.libelle : ''}}</td>
