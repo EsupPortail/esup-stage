@@ -36,6 +36,10 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Forme juridique</th>
         <td mat-cell *matCellDef="let row">{{row.statutJuridique ? row.statutJuridique.libelle : ''}}</td>
       </ng-container>
+      <ng-container matColumnDef="numeroRNE">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Numéro UAI</th>
+        <td mat-cell *matCellDef="let row">{{row.numeroUAI ? row.numeroUAI.libelle : ''}}</td>
+      </ng-container>
       <ng-container matColumnDef="action">
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let row">
