@@ -207,6 +207,9 @@
 
 <div class="row mt-3">
   <div class="col-sm-12 text-center">
+    <span style="margin-right: 5px;" *ngIf="docaposteEnabled && avenant.validationAvenant && !convention.documentId" (confirm)="controleSignatureElectronique()" [confirmMessage]="'ALERTE_SIGNATURE'|contenu">
+      <button mat-button mat-flat-button color="primary">Envoi pour signature électronique</button>
+    </span>
     <span style="margin-right: 5px;">
       <button mat-flat-button type="button" color="primary" (click)="printAvenant()">Imprimer l'avenant</button>
     </span>
@@ -215,3 +218,4 @@
     </span>
   </div>
 </div>
+<div #confirmComponent (confirm)="envoiSignatureElectronique()" [confirmMessage]="confirmMessage"></div>

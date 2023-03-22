@@ -541,7 +541,7 @@ public class ConventionController {
             if (controles.getError().size() > 0) {
                 continue;
             }
-            docaposteClient.upload(convention);
+            docaposteClient.upload(convention, null);
             count++;
         }
         return count;

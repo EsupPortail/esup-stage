@@ -2,6 +2,7 @@ package org.esup_portail.esup_stage.docaposte;
 
 import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
 import org.esup_portail.esup_stage.docaposte.gen.*;
+import org.esup_portail.esup_stage.model.Avenant;
 import org.esup_portail.esup_stage.model.Convention;
 import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
@@ -23,10 +24,14 @@ public class DocaposteClient extends WebServiceGatewaySupport {
     @Autowired
     ConventionJpaRepository conventionJpaRepository;
 
-    public void upload(Convention convention) {
-        String filename = "Convention_" + convention.getId() + "_" + convention.getEtudiant().getPrenom() + "_" + convention.getEtudiant().getNom();
+    public void upload(Convention convention, Avenant avenant) {
+        String filename = "";
+        if (avenant != null) {
+            filename += "Avenant_" + avenant.getId() + "_";
+        }
+        filename += "Convention_" + convention.getId() + "_" + convention.getEtudiant().getPrenom() + "_" + convention.getEtudiant().getNom();
         ByteArrayOutputStream ou = new ByteArrayOutputStream();
-        impressionService.generateConventionAvenantPDF(convention, null, ou, false);
+        impressionService.generateConventionAvenantPDF(convention, avenant, ou, false);
         String otpData = impressionService.generateOtpData(convention);
 
         DataFileVO documentFile = new DataFileVO();
