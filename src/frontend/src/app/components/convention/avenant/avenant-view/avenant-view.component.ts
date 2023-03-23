@@ -107,9 +107,8 @@ export class AvenantViewComponent implements OnInit {
     this.avenantService.envoiSignatureElectronique([this.avenant.id]).subscribe((response: any) => {
       if (response === 1) {
         this.messageService.setSuccess(`Avenant envoyé`);
-        this.avenant.getById(this.avenant.id).subscribe((responseavenant: any) => {
-          this.avenant = responseavenant;
-          this.updated.emit(this.avenant);
+        this.avenantService.getById(this.avenant.id).subscribe((responseavenant: any) => {
+          this.updated.emit(responseavenant);
         });
       }
     });

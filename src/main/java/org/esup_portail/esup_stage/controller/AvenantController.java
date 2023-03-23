@@ -14,6 +14,7 @@ import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
+import org.esup_portail.esup_stage.service.AvenantService;
 import org.esup_portail.esup_stage.service.ConventionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -62,8 +63,8 @@ public class AvenantController {
     ConventionService conventionService;
     @Autowired
     DocaposteClient docaposteClient;
-
-
+    @Autowired
+    AvenantService avenantService;
 
     @GetMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.LECTURE})
@@ -311,9 +312,26 @@ public class AvenantController {
         if (avenant == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvé");
         }
+        if(!avenant.isValidationAvenant()){
+            throw new AppException(HttpStatus.BAD_REQUEST, "L'avenant n'a pas été préalablement validé");
+        }
         if (avenant.getConvention().getCentreGestion().getCircuitSignature() == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Le centre de gestion " + avenant.getConvention().getCentreGestion().getNomCentre() + " n'a pas de circuit de signature");
         }
         return conventionService.controleEmailTelephone(avenant.getConvention());
+    }
+
+    @PostMapping("/{id}/update-signature-electronique-info")
+    @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.VALIDATION})
+    public Avenant updateSignatureElectroniqueInfo(@PathVariable("id") int id) {
+        if (!appConfigService.getConfigGenerale().isDocaposteEnabled()) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "La signature électronique n'est pas configurée");
+        }
+        Avenant avenant = avenantJpaRepository.findById(id);
+        if (avenant == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvé");
+        }
+        avenantService.updateSignatureElectroniqueHistorique(avenant);
+        return avenant;
     }
 }
