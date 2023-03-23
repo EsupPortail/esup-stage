@@ -155,6 +155,9 @@ public class Avenant extends ObjetMetier implements Exportable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateSignatureViseur;
 
+    @Column
+    private Date dateDepotViseur;
+
     public int getId() {
         return id;
     }
@@ -502,5 +505,13 @@ public class Avenant extends ObjetMetier implements Exportable {
 
     public void setDateSignatureViseur(Date dateSignatureViseur) {
         this.dateSignatureViseur = dateSignatureViseur;
+    }
+
+    public Date getDateDepotViseur() {
+        return dateDepotViseur;
+    }
+
+    public void setDateDepotViseur(Date dateDepotViseur) {
+        this.dateDepotViseur = dateDepotViseur;
     }
 }
