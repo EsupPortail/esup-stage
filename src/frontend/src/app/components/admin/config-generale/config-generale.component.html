@@ -212,10 +212,10 @@
           </div>
           <div class="mt-3">
             <div class="ml-2">
-              <button *ngIf="canEdit()" mat-flat-button color="primary" (click)="saveTheme()">Valider les modification</button>
+              <button *ngIf="canEdit()" mat-flat-button color="primary" (click)="saveTheme()">Valider les modifications</button>
             </div>
-            <div>
-              <button *ngIf="canDelete()" mat-flat-button class="mr-2" (click)="rollbackTheme()">Remettre la configuration par défaut</button>
+            <div class="ml-2" style="margin-top: 10px;">
+              <button *ngIf="canDelete()" mat-flat-button color="primary" (click)="rollbackTheme()">Remettre la configuration par défaut</button>
             </div>
           </div>
         </form>
