@@ -14,6 +14,10 @@ export class AvenantService {
     return this.http.get(`${environment.apiUrl}/avenant/getByConvention/${id}`);
   }
 
+  getById(id: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/avenant/${id}`);
+  }
+
   create(data: any): Observable<any> {
     return this.http.post(environment.apiUrl + "/avenant", data);
   }
@@ -33,4 +37,17 @@ export class AvenantService {
   cancelValidation(id: number): Observable<any> {
     return this.http.get(`${environment.apiUrl}/avenant/validate/cancel/${id}`);
   }
+
+  controleSignatureElectronique(id: number): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/avenant/${id}/controle-signature-electronique`, {});
+  }
+
+  envoiSignatureElectronique(ids: number[]): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/avenant/signature-electronique`, {ids});
+  }
+
+  updateSignatureInfo(id: number): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/avenant/${id}/update-signature-electronique-info`, {});
+  }
+
 }

@@ -2,7 +2,9 @@ package org.esup_portail.esup_stage.docaposte;
 
 import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
 import org.esup_portail.esup_stage.docaposte.gen.*;
+import org.esup_portail.esup_stage.model.Avenant;
 import org.esup_portail.esup_stage.model.Convention;
+import org.esup_portail.esup_stage.repository.AvenantJpaRepository;
 import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +24,17 @@ public class DocaposteClient extends WebServiceGatewaySupport {
 
     @Autowired
     ConventionJpaRepository conventionJpaRepository;
+    @Autowired
+    AvenantJpaRepository avenantJpaRepository;
 
-    public void upload(Convention convention) {
-        String filename = "Convention_" + convention.getId() + "_" + convention.getEtudiant().getPrenom() + "_" + convention.getEtudiant().getNom();
+    public void upload(Convention convention, Avenant avenant) {
+        String filename = "";
+        if (avenant != null) {
+            filename += "Avenant_" + avenant.getId() + "_";
+        }
+        filename += "Convention_" + convention.getId() + "_" + convention.getEtudiant().getPrenom() + "_" + convention.getEtudiant().getNom();
         ByteArrayOutputStream ou = new ByteArrayOutputStream();
-        impressionService.generateConventionAvenantPDF(convention, null, ou, false);
+        impressionService.generateConventionAvenantPDF(convention, avenant, ou, false);
         String otpData = impressionService.generateOtpData(convention);
 
         DataFileVO documentFile = new DataFileVO();
@@ -44,10 +52,17 @@ public class DocaposteClient extends WebServiceGatewaySupport {
         request.setLabel("");
         OtpUploadResponse response = ((JAXBElement<OtpUploadResponse>) getWebServiceTemplate().marshalSendAndReceive(new ObjectFactory().createOtpUpload(request))).getValue();
 
-        convention.setDateEnvoiSignature(new Date());
-        convention.setDocumentId(response.getReturn().get(0));
-        convention.setUrlSignature(response.getReturn().get(1));
-        conventionJpaRepository.saveAndFlush(convention);
+        if(avenant != null){
+            avenant.setDateEnvoiSignature(new Date());
+            avenant.setDocumentId(response.getReturn().get(0));
+            avenant.setUrlSignature(response.getReturn().get(1));
+            avenantJpaRepository.saveAndFlush(avenant);
+        }else {
+            convention.setDateEnvoiSignature(new Date());
+            convention.setDocumentId(response.getReturn().get(0));
+            convention.setUrlSignature(response.getReturn().get(1));
+            conventionJpaRepository.saveAndFlush(convention);
+        }
     }
 
     public HistoryResponse getHistorique(String documentId) {

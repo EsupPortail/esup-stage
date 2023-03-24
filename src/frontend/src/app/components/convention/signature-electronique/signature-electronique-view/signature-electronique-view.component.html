@@ -1,0 +1,74 @@
+<mat-card-content>
+    <div class="text-title text-center">Avenant n°{{avenant.id}}</div>
+    <div class="text-title"><i class="fa fa-paper-plane"></i>&nbsp;Envoi</div>
+    <mat-divider></mat-divider>
+    <div class="mt-3 mb-3">
+        <div class="row">
+            <div class="col-sm-3 font-weight-bold">Date d'envoi {{avenant}}</div>
+            <div class="col-sm-9">{{avenant.dateEnvoiSignature|date:'dd/MM/YYYY HH:mm:ss'}}</div>
+            <div class="col-sm-3 font-weight-bold">Statut d'envoi</div>
+            <div class="col-sm-9">{{avenant.documentId ? 'Envoyé' : ''}}</div>
+            <ng-container *ngIf="isGestionnaire">
+                <div class="col-sm-3 font-weight-bold">Lien vers la signature</div>
+                <div class="col-sm-9"><a *ngIf="avenant.urlSignature" [href]="avenant.urlSignature" target="_blank">Lien
+                        vers Docaposte</a></div>
+            </ng-container>
+        </div>
+    </div>
+    <div class="text-title"><i class="fa fa-pencil"></i>&nbsp;Signatures</div>
+    <mat-divider></mat-divider>
+    <div class="mt-3">
+        <div class="alert alert-warning" *ngIf="!avenant.dateEnvoiSignature">
+            L'avenant n'a pas été envoyé pour signature électronique.
+        </div>
+        <div class="alert alert-info" *ngIf="avenant.dateEnvoiSignature">
+            Les informations de signature sont mises à jour automatiquement tous les jours à 1h.
+            <div class="mt-2 text-center" *ngIf="isGestionnaire">
+                <button mat-button mat-flat-button color="primary" (click)="updateSignatureInfos()">Mettre à jour les
+                    informations</button>
+            </div>
+        </div>
+        <div *ngIf="avenant.dateEnvoiSignature && data.length > 0">
+            <table mat-table [dataSource]="data" *ngIf="!isMobile; else mobileTable">
+                <ng-container matColumnDef="profil">
+                    <th mat-header-cell *matHeaderCellDef>Profil</th>
+                    <td mat-cell *matCellDef="let element">{{element.profil}}</td>
+                </ng-container>
+                <ng-container matColumnDef="dateDepot">
+                    <th mat-header-cell *matHeaderCellDef>Date de transmission</th>
+                    <td mat-cell *matCellDef="let element">{{element.dateDepot|date:'dd/MM/YYYY HH:mm:ss'}}</td>
+                </ng-container>
+                <ng-container matColumnDef="dateSignature">
+                    <th mat-header-cell *matHeaderCellDef>Date signature</th>
+                    <td mat-cell *matCellDef="let element">{{element.dateSignature|date:'dd/MM/YYYY HH:mm:ss'}}</td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="['profil', 'dateDepot', 'dateSignature']"></tr>
+                <tr mat-row *matRowDef="let row; columns: ['profil', 'dateDepot', 'dateSignature'];"></tr>
+            </table>
+            <ng-template #mobileTable>
+                <mat-accordion>
+                    <mat-expansion-panel *ngFor="let element of data">
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                {{element.profil}}
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <table class="table table-sm">
+                            <tbody>
+                                <tr>
+                                    <th>Date de transmission</th>
+                                    <td>{{element.dateDepot|date:'dd/MM/YYYY HH:mm:ss'}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Date signature</th>
+                                    <td>{{element.dateSignature|date:'dd/MM/YYYY HH:mm:ss'}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </mat-expansion-panel>
+                </mat-accordion>
+            </ng-template>
+        </div>
+    </div>
+</mat-card-content>

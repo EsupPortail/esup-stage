@@ -119,6 +119,45 @@ public class Avenant extends ObjetMetier implements Exportable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateValidation;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateEnvoiSignature;
+
+    @Column(length = 255)
+    private String documentId;
+
+    @Column
+    private String urlSignature;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateSignatureEtudiant;
+
+    @Column
+    private Date dateDepotEtudiant;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateSignatureEnseignant;
+
+    @Column
+    private Date dateDepotEnseignant;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateSignatureTuteur;
+
+    @Column
+    private Date dateDepotTuteur;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateSignatureSignataire;
+
+    @Column
+    private Date dateDepotSignataire;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateSignatureViseur;
+
+    @Column
+    private Date dateDepotViseur;
+
     public int getId() {
         return id;
     }
@@ -370,5 +409,109 @@ public class Avenant extends ObjetMetier implements Exportable {
     @Override
     public String getExportValue(String key) {
         return null;
+    }
+
+    public Date getDateEnvoiSignature() {
+        return dateEnvoiSignature;
+    }
+
+    public void setDateEnvoiSignature(Date dateEnvoiSignature) {
+        this.dateEnvoiSignature = dateEnvoiSignature;
+    }
+
+    public String getDocumentId() {
+        return documentId;
+    }
+
+    public void setDocumentId(String documentId) {
+        this.documentId = documentId;
+    }
+
+    public String getUrlSignature() {
+        return urlSignature;
+    }
+
+    public void setUrlSignature(String urlSignature) {
+        this.urlSignature = urlSignature;
+    }
+
+    public Date getDateSignatureEtudiant() {
+        return dateSignatureEtudiant;
+    }
+
+    public void setDateSignatureEtudiant(Date dateSignatureEtudiant) {
+        this.dateSignatureEtudiant = dateSignatureEtudiant;
+    }
+
+    public Date getDateDepotEtudiant() {
+        return dateDepotEtudiant;
+    }
+
+    public void setDateDepotEtudiant(Date dateDepotEtudiant) {
+        this.dateDepotEtudiant = dateDepotEtudiant;
+    }
+
+    public Date getDateSignatureEnseignant() {
+        return dateSignatureEnseignant;
+    }
+
+    public void setDateSignatureEnseignant(Date dateSignatureEnseignant) {
+        this.dateSignatureEnseignant = dateSignatureEnseignant;
+    }
+
+    public Date getDateDepotEnseignant() {
+        return dateDepotEnseignant;
+    }
+
+    public void setDateDepotEnseignant(Date dateDepotEnseignant) {
+        this.dateDepotEnseignant = dateDepotEnseignant;
+    }
+
+    public Date getDateSignatureTuteur() {
+        return dateSignatureTuteur;
+    }
+
+    public void setDateSignatureTuteur(Date dateSignatureTuteur) {
+        this.dateSignatureTuteur = dateSignatureTuteur;
+    }
+
+    public Date getDateDepotTuteur() {
+        return dateDepotTuteur;
+    }
+
+    public void setDateDepotTuteur(Date dateDepotTuteur) {
+        this.dateDepotTuteur = dateDepotTuteur;
+    }
+
+    public Date getDateSignatureSignataire() {
+        return dateSignatureSignataire;
+    }
+
+    public void setDateSignatureSignataire(Date dateSignatureSignataire) {
+        this.dateSignatureSignataire = dateSignatureSignataire;
+    }
+
+    public Date getDateDepotSignataire() {
+        return dateDepotSignataire;
+    }
+
+    public void setDateDepotSignataire(Date dateDepotSignataire) {
+        this.dateDepotSignataire = dateDepotSignataire;
+    }
+
+    public Date getDateSignatureViseur() {
+        return dateSignatureViseur;
+    }
+
+    public void setDateSignatureViseur(Date dateSignatureViseur) {
+        this.dateSignatureViseur = dateSignatureViseur;
+    }
+
+    public Date getDateDepotViseur() {
+        return dateDepotViseur;
+    }
+
+    public void setDateDepotViseur(Date dateDepotViseur) {
+        this.dateDepotViseur = dateDepotViseur;
     }
 }

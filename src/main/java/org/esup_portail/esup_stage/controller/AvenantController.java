@@ -1,7 +1,10 @@
 package org.esup_portail.esup_stage.controller;
 
+import org.esup_portail.esup_stage.docaposte.DocaposteClient;
 import org.esup_portail.esup_stage.dto.AvenantDto;
 import org.esup_portail.esup_stage.dto.ConfigAlerteMailDto;
+import org.esup_portail.esup_stage.dto.IdsListDto;
+import org.esup_portail.esup_stage.dto.ResponseDto;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
@@ -11,6 +14,8 @@ import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
+import org.esup_portail.esup_stage.service.AvenantService;
+import org.esup_portail.esup_stage.service.ConventionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -54,6 +59,12 @@ public class AvenantController {
 
     @Autowired
     ConventionController conventionController;
+    @Autowired
+    ConventionService conventionService;
+    @Autowired
+    DocaposteClient docaposteClient;
+    @Autowired
+    AvenantService avenantService;
 
     @GetMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.LECTURE})
@@ -106,6 +117,9 @@ public class AvenantController {
         Avenant avenant = avenantJpaRepository.findById(id);
         if (avenant == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvée");
+        }
+        if (avenant.getDocumentId() != null) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Avenant déjà envoyé pour signature");
         }
         avenant.setValidationAvenant(false);
         avenant.setDateValidation(null);
@@ -261,5 +275,63 @@ public class AvenantController {
         avenant.setDateRupture(avenantDto.getDateRupture());
         avenant.setCommentaireRupture(avenantDto.getCommentaireRupture());
         avenant.setMonnaieGratification(avenantDto.getMonnaieGratification());
+    }
+
+    @PostMapping("/signature-electronique")
+    @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.VALIDATION})
+    public int envoiSignatureElectroniqueMultiple(@RequestBody IdsListDto idsListDto) {
+        if (!appConfigService.getConfigGenerale().isDocaposteEnabled()) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "La signature électronique n'est pas configurée");
+        }
+        if (idsListDto.getIds().size() == 0) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "La liste est vide");
+        }
+        int count = 0;
+        for (int id : idsListDto.getIds()) {
+            Avenant avenant = avenantJpaRepository.findById(id);
+            if (avenant == null || avenant.getConvention().getCentreGestion().getCircuitSignature() == null) {
+                continue;
+            }
+            ResponseDto controles = conventionService.controleEmailTelephone(avenant.getConvention());
+            if (controles.getError().size() > 0) {
+                continue;
+            }
+            docaposteClient.upload(avenant.getConvention(),avenant);
+            count++;
+        }
+        return count;
+    }
+
+    @PostMapping("/{id}/controle-signature-electronique")
+    @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.VALIDATION})
+    public ResponseDto controleSignatureElectronique(@PathVariable("id") int id) {
+        if (!appConfigService.getConfigGenerale().isDocaposteEnabled()) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "La signature électronique n'est pas configurée");
+        }
+        Avenant avenant = avenantJpaRepository.findById(id);
+        if (avenant == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvé");
+        }
+        if(!avenant.isValidationAvenant()){
+            throw new AppException(HttpStatus.BAD_REQUEST, "L'avenant n'a pas été préalablement validé");
+        }
+        if (avenant.getConvention().getCentreGestion().getCircuitSignature() == null) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Le centre de gestion " + avenant.getConvention().getCentreGestion().getNomCentre() + " n'a pas de circuit de signature");
+        }
+        return conventionService.controleEmailTelephone(avenant.getConvention());
+    }
+
+    @PostMapping("/{id}/update-signature-electronique-info")
+    @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.VALIDATION})
+    public Avenant updateSignatureElectroniqueInfo(@PathVariable("id") int id) {
+        if (!appConfigService.getConfigGenerale().isDocaposteEnabled()) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "La signature électronique n'est pas configurée");
+        }
+        Avenant avenant = avenantJpaRepository.findById(id);
+        if (avenant == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvé");
+        }
+        avenantService.updateSignatureElectroniqueHistorique(avenant);
+        return avenant;
     }
 }

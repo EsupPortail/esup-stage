@@ -118,3 +118,71 @@ databaseChangeLog:
             name: dateCreation
             value: now()
         tableName: Contenu
+
+- changeSet:
+      id: avenant-documentId
+      author: dcorrochano
+      changes:
+          - addColumn:
+                tableName: Avenant
+                columns:
+                    - column:
+                          name: documentId
+                          type: VARCHAR(255)
+- changeSet:
+      id: avenant-urlSignature
+      author: dcorrochano
+      changes:
+          - addColumn:
+                tableName: Avenant
+                columns:
+                    - column:
+                          name: urlSignature
+                          type: TEXT
+- changeSet:
+      id: avenant-donneesSignature
+      author: dcorrochano
+      changes:
+          - addColumn:
+                tableName: Avenant
+                columns:
+                    - column:
+                          name: dateSignatureEtudiant
+                          type: datetime
+                    - column:
+                          name: dateDepotEtudiant
+                          type: datetime
+                    - column:
+                          name: dateSignatureEnseignant
+                          type: datetime
+                    - column:
+                          name: dateDepotEnseignant
+                          type: datetime
+                    - column:
+                          name: dateSignatureTuteur
+                          type: datetime
+                    - column:
+                          name: dateDepotTuteur
+                          type: datetime
+                    - column:
+                          name: dateSignatureSignataire
+                          type: datetime
+                    - column:
+                          name: dateDepotSignataire
+                          type: datetime
+                    - column:
+                          name: dateSignatureViseur
+                          type: datetime
+                    - column:
+                          name: dateDepotViseur
+                          type: datetime
+- changeSet:
+    id: avenant-dateEnvoiSignature
+    author: dcorrochano
+    changes:
+      - addColumn:
+          tableName: Avenant
+          columns:
+            - column:
+                name: dateEnvoiSignature
+                type: datetime
