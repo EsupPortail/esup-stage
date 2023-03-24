@@ -10,3 +10,14 @@ databaseChangeLog:
             defaultValue: 0
             type: INT
         tableName: CentreGestion
+- changeSet:
+      id: centre-gestion-onlyMailCentreGes
+      author: dcorrochano
+      changes:
+          - addColumn:
+                columns:
+                    - column:
+                          name: onlyMailCentreGestion
+                          type: BIT
+                          defaultValue: 0
+                tableName: CentreGestion
