@@ -8,7 +8,6 @@ import org.esup_portail.esup_stage.docaposte.gen.HistoryEntryVO;
 import org.esup_portail.esup_stage.docaposte.gen.HistoryResponse;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.Avenant;
-import org.esup_portail.esup_stage.model.Convention;
 import org.esup_portail.esup_stage.repository.AvenantJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,7 +18,7 @@ import java.util.List;
 
 @Service
 public class AvenantService {
-    private static final Logger logger	= LogManager.getLogger(ConventionService.class);
+    private static final Logger logger = LogManager.getLogger(AvenantService.class);
     @Autowired
     DocaposteClient docaposteClient;
     @Autowired
