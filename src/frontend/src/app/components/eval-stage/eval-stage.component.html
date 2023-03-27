@@ -8,7 +8,7 @@
   </ng-container>
   <ng-container matColumnDef="etudiant.nom_etudiant.prenom" *ngIf="isGestionnaireOrAdmin || isEnseignant">
     <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Étudiant</th>
-    <td mat-cell *matCellDef="let row">{{row.etudiant.prenom + ' ' + row.etudiant.nom}}</td>
+    <td mat-cell *matCellDef="let row">{{row.etudiant.nom + ' ' + row.etudiant.prenom}}</td>
   </ng-container>
   <ng-container matColumnDef="structure.raisonSociale">
     <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Établissement</th>
