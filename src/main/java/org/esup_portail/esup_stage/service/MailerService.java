@@ -42,7 +42,7 @@ public class MailerService {
     TemplateMailGroupeJpaRepository templateMailGroupeJpaRepository;
 
     private void sendMail(String to, TemplateMail templateMail, MailContext mailContext) {
-        sendMail(to,templateMail.getId(),templateMail.getObjet(),templateMail.getTexte(),templateMail.getCode(), mailContext, false,null,null,null);
+        sendMail(to,templateMail.getId(),templateMail.getObjet(),templateMail.getTexte(),templateMail.getCode(), mailContext, false,null,null);
     }
 
     /**
@@ -66,7 +66,7 @@ public class MailerService {
                 onlyMailCentreGestion = convention.getCentreGestion().getMail();
             }
             sendMail(to, templateMail.getId(),templateMail.getObjet(),templateMail.getTexte(),templateMail.getCode(),
-                    mailContext, false, onlyMailCentreGestion ,null,null);
+                    mailContext, false ,null,null);
         }
     }
 
@@ -84,7 +84,7 @@ public class MailerService {
                 onlyMailCentreGestion = convention.getCentreGestion().getMail();
             }
             sendMail(to, templateMailGroupe.getId(), templateMailGroupe.getObjet(), templateMailGroupe.getTexte(), templateMailGroupe.getCode(),
-                    mailContext, false, onlyMailCentreGestion , "conventions.zip", archive);
+                    mailContext, false , "conventions.zip", archive);
         }
     }
 
@@ -99,19 +99,17 @@ public class MailerService {
         MailContext mailContext = new MailContext();
         mailContext.setModifiePar(new MailContext.ModifieParContext(utilisateur));
         sendMail(sendMailTestDto.getTo(),templateMail.getId(),templateMail.getObjet(),templateMail.getTexte(),
-                templateMail.getCode(), mailContext, true,null,null,null);
+                templateMail.getCode(), mailContext, true,null,null);
         }
     }
 
     private void sendMail(String to, int templateMailId, String templateMailObject, String templateMailTexte, String templateMailCode,
-                          MailContext mailContext, boolean forceTo, String onlyMailCentreGestion ,String attachmentLibelle,byte[] attachment) {
+                          MailContext mailContext, boolean forceTo, String attachmentLibelle,byte[] attachment) {
         boolean disableDelivery = applicationBootstrap.getAppConfig().getMailerDisableDelivery();
         if (!disableDelivery) {
             String deliveryAddress = applicationBootstrap.getAppConfig().getMailerDeliveryAddress();
             if (!forceTo && deliveryAddress != null && !deliveryAddress.isEmpty()) {
                 to = deliveryAddress;
-            } else if (onlyMailCentreGestion != null) {
-                to = onlyMailCentreGestion;
             }
 
             try {
