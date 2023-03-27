@@ -372,7 +372,12 @@ public class GroupeEtudiantController {
                 }
                 zos.close();
                 byte[] archive = archiveOutputStream.toByteArray();
-                mailerService.sendMailGroupe(mailto, groupeEtudiant.getEtudiantGroupeEtudiants().get(0).getConvention(), ServiceContext.getUtilisateur(), template, archive);
+                if (groupeEtudiant.getEtudiantGroupeEtudiants().get(0).getConvention().getCentreGestion().isOnlyMailCentreGestion()) {
+                    mailerService.sendMailGroupe(groupeEtudiant.getEtudiantGroupeEtudiants().get(0).getConvention().getCentreGestion().getMail()
+                            , groupeEtudiant.getEtudiantGroupeEtudiants().get(0).getConvention(), ServiceContext.getUtilisateur(), template, archive);
+                } else {
+                    mailerService.sendMailGroupe(mailto, groupeEtudiant.getEtudiantGroupeEtudiants().get(0).getConvention(), ServiceContext.getUtilisateur(), template, archive);
+                }
             } catch (IOException e) {
                 throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de la création de l'achive zip");
             }

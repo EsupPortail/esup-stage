@@ -1,14 +1,17 @@
 package org.esup_portail.esup_stage.controller;
 
-import org.esup_portail.esup_stage.dto.*;
+import org.esup_portail.esup_stage.dto.ReponseEnseignantFormDto;
+import org.esup_portail.esup_stage.dto.ReponseEntrepriseFormDto;
+import org.esup_portail.esup_stage.dto.ReponseEtudiantFormDto;
+import org.esup_portail.esup_stage.dto.ReponseSupplementaireFormDto;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
 import org.esup_portail.esup_stage.repository.QuestionSupplementaireJpaRepository;
-import org.esup_portail.esup_stage.repository.ReponseSupplementaireJpaRepository;
 import org.esup_portail.esup_stage.repository.ReponseEvaluationJpaRepository;
+import org.esup_portail.esup_stage.repository.ReponseSupplementaireJpaRepository;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
@@ -158,23 +161,35 @@ public class ReponseEvaluationController {
             template = TemplateMail.CODE_FICHE_EVAL_ETU;
             if(convention.getEnvoiMailEtudiant() != null && convention.getEnvoiMailEtudiant())
                 template = TemplateMail.CODE_RAPPEL_FICHE_EVAL_ETU;
-            mailerService.sendAlerteValidation(mailEtudiant, convention, utilisateur, template);
-            convention.setEnvoiMailEtudiant(true);
-            convention.setDateEnvoiMailEtudiant(new Date());
+            if (convention.getCentreGestion().isOnlyMailCentreGestion()) {
+                mailerService.sendAlerteValidation(convention.getCentreGestion().getMail(), convention, utilisateur, template);
+            } else {
+                mailerService.sendAlerteValidation(mailEtudiant, convention, utilisateur, template);
+                convention.setEnvoiMailEtudiant(true);
+                convention.setDateEnvoiMailEtudiant(new Date());
+            }
         }else if(typeFiche == 1){
             template = TemplateMail.CODE_FICHE_EVAL_ENSEIGNANT;
             if(convention.getEnvoiMailTuteurPedago() != null && convention.getEnvoiMailTuteurPedago())
                 template = TemplateMail.CODE_RAPPEL_FICHE_EVAL_ENSEIGNANT;
-            mailerService.sendAlerteValidation(convention.getEnseignant().getMail(), convention, utilisateur, template);
-            convention.setEnvoiMailTuteurPedago(true);
-            convention.setDateEnvoiMailTuteurPedago(new Date());
+            if (convention.getCentreGestion().isOnlyMailCentreGestion()) {
+                mailerService.sendAlerteValidation(convention.getCentreGestion().getMail(), convention, utilisateur, template);
+            } else {
+                mailerService.sendAlerteValidation(convention.getEnseignant().getMail(), convention, utilisateur, template);
+                convention.setEnvoiMailTuteurPedago(true);
+                convention.setDateEnvoiMailTuteurPedago(new Date());
+            }
         }else if(typeFiche == 2){
             template = TemplateMail.CODE_FICHE_EVAL_TUTEUR;
             if(convention.getEnvoiMailTuteurPro() != null && convention.getEnvoiMailTuteurPro())
                 template = TemplateMail.CODE_RAPPEL_FICHE_EVAL_TUTEUR;
             mailerService.sendAlerteValidation(convention.getContact().getMail(), convention, utilisateur, template);
-            convention.setEnvoiMailTuteurPro(true);
-            convention.setDateEnvoiMailTuteurPro(new Date());
+            if (convention.getCentreGestion().isOnlyMailCentreGestion()) {
+                mailerService.sendAlerteValidation(convention.getCentreGestion().getMail(), convention, utilisateur, template);
+            } else {
+                convention.setEnvoiMailTuteurPro(true);
+                convention.setDateEnvoiMailTuteurPro(new Date());
+            }
         }
         conventionJpaRepository.saveAndFlush(convention);
     }

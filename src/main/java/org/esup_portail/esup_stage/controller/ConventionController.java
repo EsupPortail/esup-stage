@@ -879,34 +879,38 @@ public class ConventionController {
         // Récupération de la fiche utilisateur des personnels
         List<Utilisateur> utilisateurPersonnels = utilisateurJpaRepository.findByUids(personnels.stream().map(PersonnelCentreGestion::getUidPersonnel).collect(Collectors.toList()));
 
-        String mailEtudiant = convention.getCourrielPersoEtudiant();
-        if(mailEtudiant == null || !appConfigService.getConfigGenerale().isUtiliserMailPersoEtudiant())
-            mailEtudiant = convention.getEtudiant().getMail();
+        if(convention.getCentreGestion().isOnlyMailCentreGestion()){
+            mailerService.sendAlerteValidation(convention.getCentreGestion().getMail(), convention, utilisateurContext, templateMailCode);
+        }else{
+            String mailEtudiant = convention.getCourrielPersoEtudiant();
+            if(mailEtudiant == null || !appConfigService.getConfigGenerale().isUtiliserMailPersoEtudiant())
+                mailEtudiant = convention.getEtudiant().getMail();
 
-        // Envoi du mail de validation administrative
-        if (sendMailEtudiant) mailerService.sendAlerteValidation(mailEtudiant, convention, utilisateurContext, templateMailCode);
-        // Parmi le personnel avec alertMail=1, on ne garde que ceux qui n'ont pas le rôle RESP_GES pour éviter l'envoi en double du mail à la même personne
-        for (PersonnelCentreGestion personnel : personnels) {
-            Utilisateur utilisateur = utilisateurPersonnels.stream().filter(u -> u.getUid().equals(personnel.getUidPersonnel())).findAny().orElse(null);
-            if (utilisateur == null || !UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)) {
-                // on s'appuie sur les booléens d'alertes creationConventionEtudiant, modificationConventionEtudiant... du personnel
-                if (mailerService.isAlerteActif(personnel, templateMailCode)) {
-                    mailerService.sendAlerteValidation(personnel.getMail(), convention, utilisateurContext, templateMailCode);
+            // Envoi du mail de validation administrative
+            if (sendMailEtudiant) mailerService.sendAlerteValidation(mailEtudiant, convention, utilisateurContext, templateMailCode);
+            // Parmi le personnel avec alertMail=1, on ne garde que ceux qui n'ont pas le rôle RESP_GES pour éviter l'envoi en double du mail à la même personne
+            for (PersonnelCentreGestion personnel : personnels) {
+                Utilisateur utilisateur = utilisateurPersonnels.stream().filter(u -> u.getUid().equals(personnel.getUidPersonnel())).findAny().orElse(null);
+                if (utilisateur == null || !UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)) {
+                    // on s'appuie sur les booléens d'alertes creationConventionEtudiant, modificationConventionEtudiant... du personnel
+                    if (mailerService.isAlerteActif(personnel, templateMailCode)) {
+                        mailerService.sendAlerteValidation(personnel.getMail(), convention, utilisateurContext, templateMailCode);
+                    }
                 }
             }
-        }
-        // Parmi le personnel avec alertMail=1, on ne garde ceux qui ont le rôle RESP_GES pour éviter l'envoi en double du mail à la même personne
-        mailerService.sendAlerteValidation(mailEtudiant, convention, utilisateurContext, templateMailCode);
-        for (PersonnelCentreGestion personnel : personnels) {
-            Utilisateur utilisateur = utilisateurPersonnels.stream().filter(u -> u.getUid().equals(personnel.getUidPersonnel())).findAny().orElse(null);
-            if (utilisateur != null && UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)) {
-                // on s'appuie sur les booléens d'alertes creationConventionEtudiant, modificationConventionEtudiant... du personnel
-                if (mailerService.isAlerteActif(personnel, templateMailCode)) {
-                    mailerService.sendAlerteValidation(personnel.getMail(), convention, utilisateurContext, templateMailCode);
+            // Parmi le personnel avec alertMail=1, on ne garde ceux qui ont le rôle RESP_GES pour éviter l'envoi en double du mail à la même personne
+            mailerService.sendAlerteValidation(mailEtudiant, convention, utilisateurContext, templateMailCode);
+            for (PersonnelCentreGestion personnel : personnels) {
+                Utilisateur utilisateur = utilisateurPersonnels.stream().filter(u -> u.getUid().equals(personnel.getUidPersonnel())).findAny().orElse(null);
+                if (utilisateur != null && UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)) {
+                    // on s'appuie sur les booléens d'alertes creationConventionEtudiant, modificationConventionEtudiant... du personnel
+                    if (mailerService.isAlerteActif(personnel, templateMailCode)) {
+                        mailerService.sendAlerteValidation(personnel.getMail(), convention, utilisateurContext, templateMailCode);
+                    }
                 }
             }
+            if (sendMailEnseignant) mailerService.sendAlerteValidation(convention.getEnseignant().getMail(), convention, utilisateurContext, templateMailCode);
         }
-        if (sendMailEnseignant) mailerService.sendAlerteValidation(convention.getEnseignant().getMail(), convention, utilisateurContext, templateMailCode);
     }
 
     private String addUserContextFilter(String filters) {

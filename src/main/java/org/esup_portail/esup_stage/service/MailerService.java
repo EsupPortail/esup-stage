@@ -53,8 +53,6 @@ public class MailerService {
 
     public void sendAlerteValidation(String to, Convention convention, Utilisateur userModif, String templateMailCode) {
         TemplateMail templateMail = templateMailJpaRepository.findByCode(templateMailCode);
-        String onlyMailCentreGestion = null;
-
         if (templateMail == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Template mail " + templateMailCode + " non trouvé");
         }
@@ -62,9 +60,6 @@ public class MailerService {
             logger.info("Aucun destinataire défini pour l'envoie de l'email.");
         }else{
             MailContext mailContext = new MailContext(applicationBootstrap, convention, null, userModif);
-            if(convention.getCentreGestion().isOnlyMailCentreGestion()){
-                onlyMailCentreGestion = convention.getCentreGestion().getMail();
-            }
             sendMail(to, templateMail.getId(),templateMail.getObjet(),templateMail.getTexte(),templateMail.getCode(),
                     mailContext, false ,null,null);
         }
@@ -72,7 +67,6 @@ public class MailerService {
 
     public void sendMailGroupe(String to, Convention convention, Utilisateur userModif, String templateMailCode,byte[] archive) {
         TemplateMailGroupe templateMailGroupe = templateMailGroupeJpaRepository.findByCode(templateMailCode);
-        String onlyMailCentreGestion = null;
         if (templateMailGroupe == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Template mail " + templateMailCode + " non trouvé");
         }
@@ -80,9 +74,6 @@ public class MailerService {
             logger.info("Aucun destinataire défini pour l'envoie de l'email.");
         }else {
             MailContext mailContext = new MailContext(applicationBootstrap, convention, null, userModif);
-            if(convention.getCentreGestion().isOnlyMailCentreGestion()){
-                onlyMailCentreGestion = convention.getCentreGestion().getMail();
-            }
             sendMail(to, templateMailGroupe.getId(), templateMailGroupe.getObjet(), templateMailGroupe.getTexte(), templateMailGroupe.getCode(),
                     mailContext, false , "conventions.zip", archive);
         }
