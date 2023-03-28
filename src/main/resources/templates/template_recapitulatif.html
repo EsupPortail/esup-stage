@@ -2,86 +2,246 @@
     <span class="text-big" style="color:hsl(0,0%,0%);font-family:'Times New Roman', Times, serif;"><strong>Année universitaire ${convention.annee}</strong></span>
 </p>
 <figure class="table">
-    <table style="border:0.2px solid hsl(0, 0%, 0%);">
+    <table style="border: 5px solid #e1e3e1;" cellpadding="10">
         <colgroup><col style="width:50%;"><col style="width:50%;"></colgroup>
-        <tr>
-            <th>N° convention</th>
-            <th>${convention.id}</th>
-        </tr>
         <tbody>
         <tr>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;background-color: #cacccb">
+            <th colspan="2" style="background-color:#333;color: #fff;">
+                Convention
+            </th>
+        </tr>
+        <tr>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color: #e1e3e1">
+                <b>N° convention</b>
+            </td>
+            <td>
+                <b>${convention.id}</b>
+            </td>
+        </tr>
+        <tr>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color: #e1e3e1">
+                Convention validée
+            </td>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+                ${convention.conventionValidee}
+            </td>
+        </tr>
+        <tr>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color: #e1e3e1">
+                ELP - Crédits ECTS
+            </td>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+                ${convention.creditECTS}
+            </td>
+        </tr>
+        <tr>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color: #e1e3e1">
+                Langue d'impression
+            </td>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+                ${convention.langueConvention}
+            </td>
+        </tr>
+        <tr>
+            <th colspan="2" style="background-color:#333;color: #fff;">
                 Etudiant
+            </th>
+        </tr>
+        <tr>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color:#e1e3e1">
+                Nom
             </td>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;">
-                <span>${etudiant.nom} ${etudiant.prenom} (N° Etudiant : ${etudiant.numEtudiant})</span>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+                <span>${etudiant.nom}</span>
+            </td>
+        </tr>
+        <tr>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color:#e1e3e1">
+                Prenom
+            </td>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+                <span>${etudiant.prenom}</span>
+            </td>
+        </tr>
+        <tr>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color:#e1e3e1">
+                N° etudiant
+            </td>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+                <span>${etudiant.numEtudiant}</span>
+            </td>
+        </tr>
+        <tr>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color: #e1e3e1">
+                Adresse
+            </td>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+                ${convention.adresseEtudiant}
+            </td>
+        </tr>
+        <tr>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color: #e1e3e1">
+                Courriel
+            </td>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+                <#if convention.courrielPersoEtudiant != ''>
+                     ${convention.courrielPersoEtudiant}
+                </#if>
                 <br>
-                <span>UFR - ${convention.ufrCode} - ${convention.ufrLibelle}</span>
-                <br>
-                <span>ETAPE - ${convention.etapeCode} - ${convention.etapeLibelle}</span>
+                <#if etudiant.mail != ''>
+                    ${etudiant.mail}
+                </#if>
             </td>
         </tr>
         <tr>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;background-color:#cacccb">
-                Type de stage
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color: #e1e3e1">
+                Téléphone
             </td>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;">
-                ${convention.typeConventionLibelle}
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+                ${convention.telEtudiant}
+            </td>
+        </tr>
+
+        <tr>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color: #e1e3e1">
+                Caisse d'assurance maladie
+            </td>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+                ${convention.libelleCPAM}
             </td>
         </tr>
         <tr>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;background-color:#cacccb">
-                Thématique du stage
+            <th colspan="2" style="background-color:#333;color: #fff;">
+                Centre de gestion
+            </th>
+        </tr>
+        <tr>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color:#e1e3e1">
+                Composante / UFR
             </td>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;">
-                ${convention.themeLibelle}
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+                ${convention.ufrCode} - ${convention.ufrLibelle}</span>
             </td>
         </tr>
         <tr>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;background-color:#cacccb">
-                Sujet du stage
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color:#e1e3e1">
+                Etape d'étude
             </td>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;">
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+                <span>${convention.etapeCode} - ${convention.etapeLibelle}</span>
+            </td>
+        </tr>
+        <tr>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color:#e1e3e1">
+                Centre de gestion
+            </td>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+                <span>${centreGestion.nomCentre}</span>
+            </td>
+        </tr>
+        <tr>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color:#e1e3e1">
+                Adresse
+            </td>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+                <span>${centreGestion.adresse}</span>
+            </td>
+        </tr>
+        <tr>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color:#e1e3e1">
+                Mail
+            </td>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+                <span>${centreGestion.mail}</span>
+            </td>
+        </tr>
+        <tr>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color:#e1e3e1">
+                Téléphone
+            </td>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+                <span>${centreGestion.telephone}</span>
+            </td>
+        </tr>
+        <tr>
+            <th colspan="2" style="background-color:#333;color: #fff;">
+                Stage
+            </th>
+        </tr>
+        <tr>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color:#e1e3e1">
+                Sujet
+            </td>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
                 ${convention.sujetStage}
             </td>
         </tr>
         <tr>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;background-color:#cacccb">
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color:#e1e3e1">
+                Thématique
+            </td>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+                ${convention.themeLibelle}
+            </td>
+        </tr>
+        <tr>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color:#e1e3e1">
+                Type de stage
+            </td>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+                ${convention.typeConventionLibelle}
+            </td>
+        </tr>
+        <tr>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color:#e1e3e1">
                 Fonctions et tâches
             </td>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;">
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
                 ${convention.fonctionsEtTaches}
             </td>
         </tr>
         <tr>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;background-color: #cacccb">
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color: #e1e3e1">
                 Compétences à acquérir ou à développer
             </td>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;">
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
                 ${convention.competences}
             </td>
         </tr>
         <tr>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;background-color: #cacccb">
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color: #e1e3e1">
                 Détails du projet
             </td>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;">
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
                 ${convention.details}
             </td>
         </tr>
         <tr>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;background-color: #cacccb">
-                Période de stage
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color: #e1e3e1">
+                Lieu de stage
             </td>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;">
-                ${convention.dateDebutStage} - ${convention.dateFinStage}
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+                ${convention.lieuStage}
             </td>
         </tr>
         <tr>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;background-color: #cacccb">
+            <th colspan="2" style="background-color:#333;color: #fff;">
+                Dates / horaires
+            </th>
+        </tr>
+        <tr>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color: #e1e3e1">
+                Période de stage
+            </td>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+                Du ${convention.dateDebutStage} Au ${convention.dateFinStage}
+            </td>
+        </tr>
+        <tr>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color: #e1e3e1">
                 Interruption de stage
             </td>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;">
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
                 <#if convention.periodesInterruptions?size gt 0>
                 <ul>
                     <#list convention.periodesInterruptions as periode>
@@ -92,152 +252,184 @@
             </td>
         </tr>
         <tr>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;background-color: #cacccb">
-                Durée de travail
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color: #e1e3e1">
+                Nombres d'heures Hebdomadaires
             </td>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;">
-                <#if convention.nbHeuresHebdo != ''>
-                    ${convention.tempsTravailLibelle} / ${convention.nbHeuresHebdo} heures hebdomadaires
-                <#else>
-                    ${convention.tempsTravailLibelle} / ${convention.dureeStageHeure} heures
-                </#if>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+                ${convention.nbHeuresHebdo}
             </td>
         </tr>
         <tr>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;background-color: #cacccb">
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color: #e1e3e1">
+                Durée de travail
+            </td>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+                ${convention.tempsTravailLibelle}
+            </td>
+        </tr>
+        <tr>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color: #e1e3e1">
+                Durée du stage
+            </td>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+            <#if convention.dureeStageHeure != ''>
+                ${convention.dureeStageHeure} heures de présence effective dans l'organisme d'accueil
+            </#if>
+            <#if convention.dureeStageHeurePeriode != ''>
+                <br>
+                (représentant une durée totale de ${convention.dureeStageHeurePeriode})
+            </#if>
+             </td>
+        </tr>
+        <tr>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color: #e1e3e1">
                 Commentaires sur le temps de travail
             </td>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;">
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
                 ${convention.commentaireDureeTravail}
             </td>
         </tr>
         <tr>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;background-color: #cacccb">
-                Langue d'impression de la convention
-            </td>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;">
-                ${convention.langueConvention}
-            </td>
-        </tr>
-        <tr>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;background-color: #cacccb">
-                Gratification au cours du stage
-            </td>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;">
-                <#if convention.montantGratification != ''>
-                    ${convention.montantGratification} ${convention.deviseGratification} ${convention.uniteGratificationLibelle} /
-                    ${convention.uniteDureeGratificationLibelle} par
-                    ${convention.modeVersGratificationLibelle}
-                </#if>
-            </td>
-        </tr>
-        <tr>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;background-color: #cacccb">
-                Origine du stage
-            </td>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;">
-                ${convention.origineStageLibelle}
-            </td>
-        </tr>
-        <tr>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;background-color: #cacccb">
-                Confidentialité du sujet/theme du stage
-            </td>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;">
-                ${convention.confidentiel}
-            </td>
-        </tr>
-        <tr>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;background-color: #cacccb">
-                Modalité de suivi du stagiaire par l'établissement
-            </td>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;">
-                ${convention.modeEncadreSuivi}
-            </td>
-        </tr>
-        <tr>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;background-color: #cacccb">
-                Liste des avantages en nature
-            </td>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;">
-                ${convention.avantagesNature}
-            </td>
-        </tr>
-        <tr>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;background-color: #cacccb">
-                Nature du travail à fournir suite au stage
-            </td>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;">
-                ${convention.natureTravailLibelle}
-            </td>
-        </tr>
-        <tr>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;background-color: #cacccb">
-                Modalité de validation du stage
-            </td>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;">
-                ${convention.modeValidationStageLibelle}
-            </td>
-        </tr>
-        <tr>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;background-color: #cacccb">
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color: #e1e3e1">
                 Conditions particulières du stage
             </td>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;">
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
                 ${convention.travailNuitFerie}
             </td>
         </tr>
         <tr>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;background-color: #cacccb">
-                Durée du stage
+            <th colspan="2" style="background-color:#333;color: #fff;">
+                Gratification
+            </th>
+        </tr>
+        <tr>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color: #e1e3e1">
+                Gratification au cours du stage
             </td>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;">
-                <#if convention.dureeStageHeure != ''>
-                    ${convention.dureeStageHeure} heures de présence effective dans l'organisme d'accueil
-                </#if>
-                <#if convention.dureeStageHeurePeriode != ''>
-                    <br>
-                    (représentant une durée totale de ${convention.dureeStageHeurePeriode})
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+                <#if convention.montantGratification != ''>
+                    Oui
+                <#else>
+                    Non
                 </#if>
             </td>
         </tr>
         <tr>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;background-color: #cacccb">
-                Enseignant référent
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color: #e1e3e1">
+                Modalité de versement de la gratification
             </td>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;">
-                ${enseignant.nom} ${enseignant.prenom}
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+                ${convention.modeVersGratificationLibelle}
             </td>
         </tr>
         <tr>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;background-color: #cacccb">
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color: #e1e3e1">
+                Montant de la gratification
+            </td>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+                ${convention.montantGratification} ${convention.deviseGratification}
+            </td>
+        </tr>
+        <tr>
+            <th colspan="2" style="background-color:#333;color: #fff;">
+                Divers
+            </th>
+        </tr>
+        <tr>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color: #e1e3e1">
+                Origine du stage
+            </td>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+                ${convention.origineStageLibelle}
+            </td>
+        </tr>
+        <tr>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color: #e1e3e1">
+                Confidentialité du sujet/theme du stage
+            </td>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+                ${convention.confidentiel}
+            </td>
+        </tr>
+        <tr>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color: #e1e3e1">
+                Liste des avantages en nature
+            </td>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+                ${convention.avantagesNature}
+            </td>
+        </tr>
+        <tr>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color: #e1e3e1">
+                Nature du travail à fournir suite au stage
+            </td>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+                ${convention.natureTravailLibelle}
+            </td>
+        </tr>
+        <tr>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color: #e1e3e1">
+                Modalité de validation du stage
+            </td>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+                ${convention.modeValidationStageLibelle}
+            </td>
+        </tr>
+        <tr>
+            <th colspan="2" style="background-color:#333;color: #fff;">
+                Enseignant Référent
+            </th>
+        </tr>
+        <tr>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color: #e1e3e1">
+                Nom
+            </td>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+                ${enseignant.nom}
+            </td>
+        </tr>
+        <tr>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color: #e1e3e1">
+                Prenom
+            </td>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+                ${enseignant.prenom}
+            </td>
+        </tr>
+        <tr>
+            <th colspan="2" style="background-color:#333;color: #fff;">
                 Etablissement d'accueil
+            </th>
+        </tr>
+        <tr>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color: #e1e3e1">
+                Nom
             </td>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;">
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
                 ${convention.nomEtabRef}
             </td>
         </tr>
         <tr>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;background-color: #cacccb">
-                Lieu de stage
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color: #e1e3e1">
+                Adresse
             </td>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;">
-                ${convention.lieuStage}
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+                ${convention.adresseEtabRef}
             </td>
         </tr>
         <tr>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;background-color: #cacccb">
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color: #e1e3e1">
                 Tuteur professionnel
             </td>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;">
-                ${contact.nom} ${contact.prenom}
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
+                ${contact.nom} ${contact.prenom} (${contact.fonction})
             </td>
         </tr>
         <tr>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;background-color: #cacccb">
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color: #e1e3e1">
                 Coordonnées tuteur professionnel
             </td>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;">
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
                 <#if contact.mail != ''>
                     Mail : ${contact.mail}
                 </#if>
@@ -248,59 +440,11 @@
             </td>
         </tr>
         <tr>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;background-color: #cacccb">
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;background-color: #e1e3e1">
                 Signataire
             </td>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;">
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;width:50%;">
                 ${signataire.nom} ${signataire.prenom} (${signataire.fonction})
-            </td>
-        </tr>
-        <tr>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;background-color: #cacccb">
-                Adresse de l'étudiant
-            </td>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;">
-                ${convention.adresseEtudiant}
-            </td>
-        </tr>
-        <tr>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;background-color: #cacccb">
-                Téléphone de l'étudiant
-            </td>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;">
-                ${convention.telEtudiant}
-            </td>
-        </tr>
-        <tr>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;background-color: #cacccb">
-                Courriel de l'étudiant
-            </td>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;">
-                ${convention.courrielPersoEtudiant}
-            </td>
-        </tr>
-        <tr>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;background-color: #cacccb">
-                Caisse d'assurance maladie
-            </td>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;">
-                ${convention.libelleCPAM}
-            </td>
-        </tr>
-        <tr>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;background-color: #cacccb">
-                ELP - Crédits ECTS
-            </td>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;">
-                ${convention.creditECTS}
-            </td>
-        </tr>
-        <tr>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;background-color: #cacccb">
-                Convention validée
-            </td>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);vertical-align:top;width:50%;">
-                ${convention.conventionValidee}
             </td>
         </tr>
         </tbody>
