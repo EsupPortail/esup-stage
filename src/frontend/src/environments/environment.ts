@@ -4,9 +4,9 @@
 
 export const environment = {
   production: false,
-  apiUrl : 'http://localhost.dauphine.fr:8080/api',
-  logoutUrl: '../logout',
-  themeUrl: 'http://localhost.dauphine.fr:8080/theme.css',
+  apiUrl : '/api',
+  logoutUrl: '/logout',
+  themeUrl: '/theme.css',
 };
 
 /*

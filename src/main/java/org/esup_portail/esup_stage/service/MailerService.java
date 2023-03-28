@@ -61,7 +61,7 @@ public class MailerService {
         }else{
             MailContext mailContext = new MailContext(applicationBootstrap, convention, null, userModif);
             sendMail(to, templateMail.getId(),templateMail.getObjet(),templateMail.getTexte(),templateMail.getCode(),
-                    mailContext, false,null,null);
+                    mailContext, false ,null,null);
         }
     }
 
@@ -75,7 +75,7 @@ public class MailerService {
         }else {
             MailContext mailContext = new MailContext(applicationBootstrap, convention, null, userModif);
             sendMail(to, templateMailGroupe.getId(), templateMailGroupe.getObjet(), templateMailGroupe.getTexte(), templateMailGroupe.getCode(),
-                    mailContext, false, "conventions.zip", archive);
+                    mailContext, false , "conventions.zip", archive);
         }
     }
 

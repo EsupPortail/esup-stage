@@ -116,6 +116,7 @@ export class ParamCentreComponent implements OnInit {
       prenomViseur: this.centreGestion.prenomViseur,
       qualiteViseur: this.centreGestion.qualiteViseur,
       delaiAlerteConvention: this.centreGestion.delaiAlerteConvention,
+      onlyMailCentreGestion: this.centreGestion.onlyMailCentreGestion,
     }, {
       emitEvent: false,
     });

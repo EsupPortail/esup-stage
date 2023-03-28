@@ -77,10 +77,9 @@ Les certificats pour Docaposte peuvent être déposés où vous le souhaitez en 
       * `docker-compose build`
       * `docker-compose run --rm --entrypoint=npm frontend ci`
     * lancer la commande suivante pour lancer le fontend en dev : `docker-compose up -d`
-* lancer chrome avec les options `--disable-web-security --user-data-dir=chemin d'un dossier` pour désactiver le CORS
 * aller sur l'application à l'adresse http://localhost.dauphine.fr:8080/frontend/#/ et se connecter une première fois
-* ouvrir un nouvel onglet sur http://localhost.dauphine.fr:8700 pour accéder à l'application en mode angular dev
-* pour se déconnecter, aller sur http://localhost.dauphine.fr:8080/logout
+* ouvrir un nouvel onglet sur http://localhost.dauphine.fr:8700 (ou http://localhost.dauphine.fr:4200) pour accéder à l'application en mode angular dev
+* pour se déconnecter, aller sur http://localhost.dauphine.fr:4200/logout
 
 ## Procédure d'installation
 
