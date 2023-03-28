@@ -157,6 +157,9 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     @Column
     private String ordreSignature = "[\"etudiant\",\"enseignant\",\"tuteur\",\"signataire\",\"viseur\"]"; // tableau encodé en JSON
 
+    @JsonView(Views.List.class)
+    private Boolean onlyMailCentreGestion;
+
     public int getId() {
         return id;
     }
@@ -521,6 +524,10 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     public String getAdresseComplete() {
         return getVoie() + " " + getCodePostal() + " " + getCommune();
     }
+
+    public boolean isOnlyMailCentreGestion() {return onlyMailCentreGestion;}
+
+    public void setOnlyMailCentreGestion(boolean onlyMailCentreGestion) {this.onlyMailCentreGestion = onlyMailCentreGestion;}
 
     @Override
     public String getExportValue(String key) {

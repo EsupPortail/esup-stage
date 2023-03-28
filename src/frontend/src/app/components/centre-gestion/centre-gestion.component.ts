@@ -260,6 +260,7 @@ export class CentreGestionComponent implements OnInit {
       prenomViseur: [null, [Validators.maxLength(50)]],
       qualiteViseur: [null, [Validators.maxLength(100)]],
       delaiAlerteConvention: [null, [Validators.required, Validators.min(0)]],
+      onlyMailCentreGestion: [null],
     });
   }
 
@@ -282,6 +283,7 @@ export class CentreGestionComponent implements OnInit {
     this.centreGestion.prenomViseur = this.paramCentreForm.get('prenomViseur')?.value;
     this.centreGestion.qualiteViseur = this.paramCentreForm.get('qualiteViseur')?.value;
     this.centreGestion.delaiAlerteConvention = this.paramCentreForm.get('delaiAlerteConvention')?.value;
+    this.centreGestion.onlyMailCentreGestion = this.paramCentreForm.get('onlyMailCentreGestion')?.value;
   }
 
   setSignatureElectroniqueForm() {
