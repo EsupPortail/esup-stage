@@ -31,6 +31,9 @@ public class ConfigGeneraleDto {
     @JsonView(Views.Etu.class)
     private String validationAdministrativeLibelle = "validation administrative";
 
+    @JsonView(Views.Etu.class)
+    private String codeCesure;
+
     private boolean utiliserMailPersoEtudiant = false;
 
     public String getCodeUniversite() {
@@ -135,5 +138,13 @@ public class ConfigGeneraleDto {
 
     public void setDocaposteEnabled(boolean docaposteEnabled) {
         this.docaposteEnabled = docaposteEnabled;
+    }
+
+    public String getCodeCesure() {
+        return codeCesure;
+    }
+
+    public void setCodeCesure(String codeCesure) {
+        this.codeCesure = codeCesure;
     }
 }

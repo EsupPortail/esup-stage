@@ -17,6 +17,8 @@ public class EtapeInscription {
     private String codFinalite;
     private String libFinalite;
     private String volumeHoraire;
+    private String codeCursusAmenage;
+    private String libelleCursusAmenage;
 
     public String getCodeComposante() {
         return codeComposante;
@@ -120,5 +122,21 @@ public class EtapeInscription {
 
     public void setVolumeHoraire(String volumeHoraire) {
         this.volumeHoraire = volumeHoraire;
+    }
+
+    public String getCodeCursusAmenage() {
+        return codeCursusAmenage;
+    }
+
+    public void setCodeCursusAmenage(String codeCursusAmenage) {
+        this.codeCursusAmenage = codeCursusAmenage;
+    }
+
+    public String getLibelleCursusAmenage() {
+        return libelleCursusAmenage;
+    }
+
+    public void setLibelleCursusAmenage(String libelleCursusAmenage) {
+        this.libelleCursusAmenage = libelleCursusAmenage;
     }
 }
