@@ -106,7 +106,7 @@ export class ConventionComponent implements OnInit {
   }
 
   majStatus(): void {
-    if (this.convention.etudiant){
+    if (this.convention.etudiant && this.convention.regionCPAM  && this.convention.libelleCPAM && this.convention.adresseCPAM){
       this.setStatus(0,2);
     }else{
       this.setStatus(0,0);
