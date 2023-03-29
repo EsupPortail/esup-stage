@@ -64,7 +64,7 @@ export class GestionnairesComponent implements OnInit {
   toggleAlertes = true;
 
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
-  @ViewChildren(MatExpansionPanel) pannels: QueryList<MatExpansionPanel>;
+  @ViewChildren(MatExpansionPanel) pannels!: QueryList<MatExpansionPanel>;
 
   constructor(
     private fb: FormBuilder,
