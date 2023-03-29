@@ -158,7 +158,7 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     private String ordreSignature = "[\"etudiant\",\"enseignant\",\"tuteur\",\"signataire\",\"viseur\"]"; // tableau encodé en JSON
 
     @JsonView(Views.List.class)
-    private Boolean onlyMailCentreGestion;
+    private Boolean onlyMailCentreGestion = false;
 
     public int getId() {
         return id;
