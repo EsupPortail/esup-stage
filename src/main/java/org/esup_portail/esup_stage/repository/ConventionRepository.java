@@ -62,8 +62,8 @@ public class ConventionRepository extends PaginationRepository<Convention> {
         if (key.equals("etudiant")) {
             String value = parameter.getString("value").toLowerCase();
             String[] parts = value.split(" ");
-            String clause = "LOWER(c.etudiant.identEtudiant) LIKE :etudiant OR LOWER(c.etudiant.nom) LIKE :etudiant OR LOWER(c.etudiant.prenom) LIKE :etudiant OR" +
-                    " LOWER(c.etudiant.mail) LIKE :etudiant OR LOWER(c.etudiant.numEtudiant) LIKE :etudiant";
+            String clause = "(LOWER(c.etudiant.identEtudiant) LIKE :etudiant OR LOWER(c.etudiant.nom) LIKE :etudiant OR LOWER(c.etudiant.prenom) LIKE :etudiant OR" +
+                    " LOWER(c.etudiant.mail) LIKE :etudiant OR LOWER(c.etudiant.numEtudiant) LIKE :etudiant)";
             StringBuilder nom = new StringBuilder();
             StringBuilder prenom = new StringBuilder();
 
