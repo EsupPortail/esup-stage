@@ -234,6 +234,13 @@ public class ApogeeService {
                 ConventionFormationDto conventionFormationDto = new ConventionFormationDto();
                 conventionFormationDto.setEtapeInscription(etapeInscription);
                 conventionFormationDto.setAnnee(annee);
+                String codeCursusAmenage = etapeInscription.getCodeCursusAmenage();
+                if(codeCursusAmenage != null && !codeCursusAmenage.isEmpty()){
+                    List<String> codeCesureList = List.of(appConfigService.getConfigGenerale().getCodeCesure().split(";"));
+                    if (codeCesureList.contains(codeCursusAmenage))
+                        if (typeConventionJpaRepository.findByCodeCtrl(codeCursusAmenage) != null )
+                            typeConvention = typeConventionJpaRepository.findByCodeCtrl(codeCursusAmenage);
+                }
                 conventionFormationDto.setTypeConvention(typeConvention);
                 CentreGestion centreGestion = null;
                 // Recherche du centre de gestion par codeEtape/versionEtape
