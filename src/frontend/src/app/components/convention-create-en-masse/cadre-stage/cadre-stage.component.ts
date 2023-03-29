@@ -58,6 +58,11 @@ export class CadreStageComponent implements OnInit, OnChanges {
 
   ngOnChanges(): void{
     this.appTable?.update();
+    if(this.groupeEtudiant){
+      this.form.setValue({
+        typeConventionGroupe: this.groupeEtudiant.convention.typeConvention.id,
+      });
+    }
   }
 
   edit(row: any): void{

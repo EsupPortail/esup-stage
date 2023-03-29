@@ -72,7 +72,7 @@ public class MailerService {
         }
         if(to == null || to.equals("")){
             logger.info("Aucun destinataire défini pour l'envoie de l'email.");
-        }else {
+        }else{
             MailContext mailContext = new MailContext(applicationBootstrap, convention, null, userModif);
             sendMail(to, templateMailGroupe.getId(), templateMailGroupe.getObjet(), templateMailGroupe.getTexte(), templateMailGroupe.getCode(),
                     mailContext, false , "conventions.zip", archive);

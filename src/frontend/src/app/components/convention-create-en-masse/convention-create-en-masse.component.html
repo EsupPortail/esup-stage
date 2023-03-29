@@ -55,10 +55,10 @@
     </ng-template>
     <app-signataire-groupe *ngIf="signataireTab.isActive || tabs[7].init" (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant" [sharedData]="sharedData"></app-signataire-groupe>
   </mat-tab>
-  <mat-tab #validationCreationTab [disabled]="(!groupeEtudiant || !allValid)">
+  <mat-tab #validationCreationTab [disabled]="!groupeEtudiant">
     <ng-template mat-tab-label>
-      Valider la création
+      Finaliser/Valider la {{groupeEtudiant && groupeEtudiant.validationCreation ? 'modification' : 'creation'}}
     </ng-template>
-    <app-validation-creation (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant"></app-validation-creation>
+    <app-validation-creation (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant" [allValid]="allValid"></app-validation-creation>
   </mat-tab>
 </mat-tab-group>

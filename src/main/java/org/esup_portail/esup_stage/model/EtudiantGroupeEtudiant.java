@@ -26,6 +26,10 @@ public class EtudiantGroupeEtudiant implements Exportable {
     @JoinColumn(name = "idConvention", nullable = false)
     private Convention convention;
 
+    @OneToOne
+    @JoinColumn(name = "idMergedConvention")
+    private Convention mergedConvention;
+
     public int getId() {
         return id;
     }
@@ -62,7 +66,14 @@ public class EtudiantGroupeEtudiant implements Exportable {
         this.convention = convention;
     }
 
-    @Override
+    public Convention getMergedConvention() {
+        return mergedConvention;
+    }
+
+    public void setMergedConvention(Convention mergedConvention) {
+        this.mergedConvention = mergedConvention;
+    }
+
     public String getExportValue(String key) {
         return null;
     }

@@ -66,12 +66,11 @@ export class ConventionCreateEnMasseComponent implements OnInit {
           this.majStatus();
         });
       } else {
-        this.titleService.title = 'Gestion du groupe';
+        this.titleService.title = 'Modification de conventions en masse';
         // Récupération du groupeEtudiant correspondant à l'id
         this.groupeEtudiantService.getById(pathId).subscribe((response: any) => {
           this.groupeEtudiant = response;
-          let filter = this.sharedData.filters.find((f: any) => f.id === 'groupeEtudiant.id');
-          if (filter) filter.value = this.groupeEtudiant.id;
+          this.majFilter();
           this.majStatus();
         });
       }
