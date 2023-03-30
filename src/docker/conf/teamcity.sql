@@ -1,0 +1,6 @@
+CREATE DATABASE IF NOT EXISTS teamcity DEFAULT CHARSET utf8;
+
+CREATE USER 'teamcity'@'%' IDENTIFIED BY 'teamcity';
+GRANT ALL PRIVILEGES ON teamcity.* TO 'teamcity'@'%';
+
+FLUSH PRIVILEGES;

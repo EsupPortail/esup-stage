@@ -137,6 +137,8 @@ export class ConfigGeneraleComponent implements OnInit {
     this.configService.updateAlerteMail(this.configAlerte).subscribe((response: any) => {
       this.configAlerte = response;
       this.messageService.setSuccess('Paramètre d\'alertes mail modifiés');
+      console.log("response -> ");
+      console.log(response);
     });
   }
 
