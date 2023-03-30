@@ -877,8 +877,6 @@ public class ConventionController extends AppConfigService{
 
     public void sendValidationMail(Convention convention, Utilisateur utilisateurContext, String templateMailCode, boolean sendMailEtudiant, boolean sendMailEnseignant, boolean sendMailGestionnaire) {
         // Récupération du personnel du centre de gestion de la convention avec alertMail=1
-        System.out.println("sendMailGestionnaire : ");
-        System.out.println(sendMailGestionnaire);
         List<PersonnelCentreGestion> personnels = convention.getCentreGestion().getPersonnels();
         personnels = personnels.stream().filter(p -> p.getAlertesMail() != null && p.getAlertesMail()).collect(Collectors.toList());
 
@@ -900,8 +898,8 @@ public class ConventionController extends AppConfigService{
                 }
             }
             // Parmi le personnel avec alertMail=1, on ne garde ceux qui ont le rôle RESP_GES pour éviter l'envoi en double du mail à la même personne
-//ICI LE MAIL A L'ETUDIANT 100% DU TEMPS
-           // mailerService.sendAlerteValidation(mailEtudiant, convention, utilisateurContext, templateMailCode);
+            //ICI LE MAIL A L'ETUDIANT 100% DU TEMPS
+            // mailerService.sendAlerteValidation(mailEtudiant, convention, utilisateurContext, templateMailCode);
             for (PersonnelCentreGestion personnel : personnels) {
                 Utilisateur utilisateur = utilisateurPersonnels.stream().filter(u -> u.getUid().equals(personnel.getUidPersonnel())).findAny().orElse(null);
                 if (utilisateur != null && UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)) {
