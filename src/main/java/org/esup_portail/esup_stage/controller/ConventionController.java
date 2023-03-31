@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 
 @ApiController
 @RequestMapping("/conventions")
-public class ConventionController extends AppConfigService{
+public class ConventionController {
 
     @Autowired
     ConventionRepository conventionRepository;
@@ -834,7 +834,6 @@ public class ConventionController extends AppConfigService{
         historique.setValeurApres(valider);
         historiqueValidationJpaRepository.saveAndFlush(historique);
 
-        getConfigAlerteMail();
         sendValidationMail(convention, utilisateurContext, valider ? TemplateMail.CODE_CONVENTION_VALID_PEDAGOGIQUE : TemplateMail.CODE_CONVENTION_DEVALID_PEDAGOGIQUE, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
     }
 

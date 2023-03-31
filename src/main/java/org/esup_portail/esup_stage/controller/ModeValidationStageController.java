@@ -20,8 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 
 @ApiController
 @RequestMapping("mode-validation-stage")
-public class
-ModeValidationStageController {
+public class ModeValidationStageController {
 
     @Autowired
     ModeValidationStageRepository modeValidationStageRepository;
