@@ -30,7 +30,7 @@ export class ConventionCreateEnMasseComponent implements OnInit {
     4: { statut: 0, init: false },
     5: { statut: 0, init: false },
     6: { statut: 0, init: false },
-    7: { statut: 0, init: false },
+    7: { statut: 2, init: false },
   }
 
   constructor(private activatedRoute: ActivatedRoute,
@@ -66,12 +66,11 @@ export class ConventionCreateEnMasseComponent implements OnInit {
           this.majStatus();
         });
       } else {
-        this.titleService.title = 'Gestion du groupe';
+        this.titleService.title = 'Modification de conventions en masse';
         // Récupération du groupeEtudiant correspondant à l'id
         this.groupeEtudiantService.getById(pathId).subscribe((response: any) => {
           this.groupeEtudiant = response;
-          let filter = this.sharedData.filters.find((f: any) => f.id === 'groupeEtudiant.id');
-          if (filter) filter.value = this.groupeEtudiant.id;
+          this.majFilter();
           this.majStatus();
         });
       }
@@ -122,11 +121,12 @@ export class ConventionCreateEnMasseComponent implements OnInit {
     }else{
       this.setStatus(6,0);
     }
-    if (this.groupeEtudiant && this.groupeEtudiant.convention.signataire){
-      this.setStatus(7,2);
-    }else{
-      this.setStatus(7,0);
-    }
+    //le signataire est facultatif pour la création en masse
+    //if (this.groupeEtudiant && this.groupeEtudiant.convention.signataire){
+    //  this.setStatus(7,2);
+    //}else{
+    //  this.setStatus(7,0);
+    //}
   }
 
   setStatus(key: number, value: number): void {

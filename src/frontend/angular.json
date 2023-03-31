@@ -45,7 +45,7 @@
               "quill-blot-formatter",
               "file-saver",
               "lodash"
-            ],
+            ]
           },
           "configurations": {
             "production": {

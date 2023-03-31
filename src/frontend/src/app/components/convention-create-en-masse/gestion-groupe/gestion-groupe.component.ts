@@ -129,6 +129,13 @@ export class GestionGroupeComponent implements OnInit {
     });
   }
 
+  isConventionGenerated(row: any): boolean{
+    if (row.etudiantGroupeEtudiants[0].mergedConvention) {
+      return true
+    }
+    return false
+  }
+
   refreshFilters(): void{
    this.tableMail?.setFilterValue('groupeEtudiant.id', this.groupeEtudiant.id);
    this.tableExport?.setFilterValue('groupeEtudiant.id', this.groupeEtudiant.id);
@@ -143,8 +150,12 @@ export class GestionGroupeComponent implements OnInit {
   duplicate(row: any): void{
     this.groupeEtudiantService.duplicate(row.id).subscribe((response: any) => {
       this.messageService.setSuccess('Groupe dupliqué avec succès');
-      this.router.navigate([`/convention-create-en-masse/create`], )
+      this.router.navigate([`/convention-create-en-masse/create`])
     });
+  }
+
+  edit(row: any): void{
+    this.router.navigate([`/convention-create-en-masse/` + row.id])
   }
 
   tabChanged(event: MatTabChangeEvent): void {
@@ -194,12 +205,12 @@ export class GestionGroupeComponent implements OnInit {
   }
 
   printForGroup(): void{
-    const data = {ids: this.groupeEtudiant.etudiantGroupeEtudiants.map((ege: any) => ege.convention.id)};
+    const data = {ids: this.groupeEtudiant.etudiantGroupeEtudiants.map((ege: any) => ege.mergedConvention.id)};
     this.print(data);
   }
 
   printForSelected(): void{
-    const data = {ids: this.selected.map((ege: any) => ege.convention.id)};
+    const data = {ids: this.selected.map((ege: any) => ege.mergedConvention.id)};
     this.print(data);
   }
 

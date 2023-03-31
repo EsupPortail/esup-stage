@@ -34,6 +34,7 @@ export class ConfigGeneraleComponent implements OnInit {
     {code: 'validationAdministrativeConvention', libelle: 'Validation administrative d\'une convention'},
     {code: 'verificationAdministrativeConvention', libelle: 'Vérification administrative d\'une convention'},
     {code: 'validationAvenant', libelle: 'Validation d\'un avenant'},
+    {code: 'codeCesure', libelle: 'Codes césure'},
   ];
   alerteColumns = ['alertes', 'alerteEtudiant', 'alerteGestionnaire', 'alerteRespGestionnaire', 'alerteEnseignant'];
 
@@ -65,6 +66,7 @@ export class ConfigGeneraleComponent implements OnInit {
       autoriserElementPedagogiqueFacultatif: [null, [Validators.required]],
       validationPedagogiqueLibelle: [null, [Validators.required]],
       validationAdministrativeLibelle: [null, [Validators.required]],
+      codeCesure: [null, ],
     });
     this.formTheme = this.fb.group({
       logo: [null, [Validators.required]],

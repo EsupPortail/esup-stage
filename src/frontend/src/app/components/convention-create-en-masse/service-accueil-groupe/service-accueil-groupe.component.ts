@@ -130,7 +130,7 @@ export class ServiceAccueilGroupeComponent implements OnInit, OnChanges {
       dialogConfig.width = '1200px';
       dialogConfig.height = '1000px';
       let convention = this.selected[0].convention;
-      dialogConfig.data = {etab: convention.structure,
+      dialogConfig.data = {etab: convention.structure ?? this.groupeEtudiant.convention.structure,
                            service: null,
                            centreGestion: this.groupeEtudiant.convention.centreGestion};
       const modalDialog = this.matDialog.open(ServiceAccueilGroupeModalComponent, dialogConfig);

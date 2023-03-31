@@ -85,6 +85,12 @@
               </mat-radio-group>
             </div>
           </div>
+          <div class="row mb-2">
+            <mat-form-field class="col-md-12" appearance="fill">
+              <mat-label>Codes césures séparés par ;</mat-label>
+              <input matInput formControlName="codeCesure" />
+            </mat-form-field>
+          </div>
           <div class="mt-3" *ngIf="canEdit()">
             <button mat-flat-button color="primary">Valider</button>
           </div>

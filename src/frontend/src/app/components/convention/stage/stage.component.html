@@ -29,17 +29,17 @@
         <div class="row">
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Sujet</mat-label>
-            <textarea matInput formControlName="sujetStage" required ></textarea>
+            <textarea matInput formControlName="sujetStage" [required]="!enMasse"></textarea>
             <mat-error><app-form-error [field]="form.get('sujetStage')"></app-form-error></mat-error>
           </mat-form-field>
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Compétences</mat-label>
-            <textarea matInput formControlName="competences" required ></textarea>
+            <textarea matInput formControlName="competences" [required]="!enMasse"></textarea>
             <mat-error><app-form-error [field]="form.get('competences')"></app-form-error></mat-error>
           </mat-form-field>
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Fonctions et tâches</mat-label>
-            <textarea matInput formControlName="fonctionsEtTaches" required ></textarea>
+            <textarea matInput formControlName="fonctionsEtTaches" [required]="!enMasse"></textarea>
             <mat-error><app-form-error [field]="form.get('fonctionsEtTaches')"></app-form-error></mat-error>
           </mat-form-field>
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">

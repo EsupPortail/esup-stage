@@ -144,8 +144,8 @@ export class TuteurAccueilGroupeComponent implements OnInit, OnChanges {
       dialogConfig.height = '1000px';
       let convention = this.selected[0].convention;
       dialogConfig.data = {contact: null,
-                           etab: convention.structure,
-                           service: convention.service,
+                           etab: convention.structure ?? this.groupeEtudiant.convention.structure,
+                           service: convention.service ?? this.groupeEtudiant.convention.service,
                            centreGestion: this.groupeEtudiant.convention.centreGestion};
       const modalDialog = this.matDialog.open(TuteurAccueilGroupeModalComponent, dialogConfig);
       modalDialog.afterClosed().subscribe(dialogResponse => {

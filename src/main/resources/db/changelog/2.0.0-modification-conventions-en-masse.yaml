@@ -1,0 +1,30 @@
+databaseChangeLog:
+  - changeSet:
+      id: etudiantGroupeEtudiant-mergedConvention
+      author: tjubera
+      changes:
+        - addColumn:
+            tableName: EtudiantGroupeEtudiant
+            columns:
+              - column:
+                  constraints:
+                    unique: true
+                  name: idMergedConvention
+                  type: INT
+        - addForeignKeyConstraint:
+            baseColumnNames: idMergedConvention
+            baseTableName: EtudiantGroupeEtudiant
+            constraintName: fk_EtudiantGroupeEtudiant_Convention2
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: NO ACTION
+            referencedColumnNames: idConvention
+            referencedTableName: Convention
+            validate: true
+        - createIndex:
+            columns:
+              - column:
+                  name: idConvention
+            indexName: fk_EtudiantGroupeEtudiant_Convention2
+            tableName: EtudiantGroupeEtudiant

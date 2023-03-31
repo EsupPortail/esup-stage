@@ -1140,12 +1140,21 @@ public class ImpressionContext {
         }
 
         public SignataireContext(Contact signataire) {
-            this.civiliteLibelle = signataire.getCivilite() != null ? signataire.getCivilite().getLibelle() : null;
-            this.fonction = signataire.getFonction();
-            this.mail = signataire.getMail();
-            this.nom = signataire.getNom();
-            this.prenom = signataire.getPrenom();
-            this.tel = signataire.getTel();
+            if(signataire == null){
+                this.civiliteLibelle = "";
+                this.fonction = "";
+                this.mail = "";
+                this.nom = "";
+                this.prenom = "";
+                this.tel = "";
+            }else{
+                this.civiliteLibelle = signataire.getCivilite() != null ? signataire.getCivilite().getLibelle() : null;
+                this.fonction = signataire.getFonction();
+                this.mail = signataire.getMail();
+                this.nom = signataire.getNom();
+                this.prenom = signataire.getPrenom();
+                this.tel = signataire.getTel();
+            }
         }
 
         public String getCiviliteLibelle() {

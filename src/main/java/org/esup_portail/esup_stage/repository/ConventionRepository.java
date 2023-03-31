@@ -62,8 +62,8 @@ public class ConventionRepository extends PaginationRepository<Convention> {
         if (key.equals("etudiant")) {
             String value = parameter.getString("value").toLowerCase();
             String[] parts = value.split(" ");
-            String clause = "(LOWER(c.etudiant.identEtudiant) LIKE :etudiant OR LOWER(c.etudiant.nom) LIKE :etudiant OR LOWER(c.etudiant.prenom) LIKE :etudiant OR" +
-                    " LOWER(c.etudiant.mail) LIKE :etudiant OR LOWER(c.etudiant.numEtudiant) LIKE :etudiant)";
+            String clause = "LOWER(c.etudiant.identEtudiant) LIKE :etudiant OR LOWER(c.etudiant.nom) LIKE :etudiant OR LOWER(c.etudiant.prenom) LIKE :etudiant OR" +
+                    " LOWER(c.etudiant.mail) LIKE :etudiant OR LOWER(c.etudiant.numEtudiant) LIKE :etudiant";
             StringBuilder nom = new StringBuilder();
             StringBuilder prenom = new StringBuilder();
 
@@ -74,7 +74,7 @@ public class ConventionRepository extends PaginationRepository<Convention> {
             nom = new StringBuilder("(" + nom.substring(0, nom.length() - 2) + ")");
             prenom = new StringBuilder("(" + prenom.substring(0, prenom.length() - 2) + ")");
 
-            clauses.add(clause + " OR (" + nom + " AND " + prenom + ")");
+            clauses.add("(" + clause + " OR (" + nom + " AND " + prenom + "))");
         }
         if (key.equals("enseignant")) {
             clauses.add("(LOWER(c.enseignant.uidEnseignant) LIKE :enseignant OR LOWER(c.enseignant.nom) LIKE :enseignant OR LOWER(c.enseignant.prenom) LIKE :enseignant OR LOWER(c.enseignant.mail) LIKE :enseignant)");

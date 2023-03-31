@@ -17,7 +17,7 @@ import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 export class ParamCentreComponent implements OnInit {
 
   @Input() centreGestion: any;
-  @Input() form: FormGroup;
+  @Input() form!: FormGroup;
 
   dureeRecupList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 
@@ -31,7 +31,7 @@ export class ParamCentreComponent implements OnInit {
   validationLibelles: any = {};
   validationsActives: any[] = [];
 
-  @ViewChildren(MatExpansionPanel) pannels: QueryList<MatExpansionPanel>;
+  @ViewChildren(MatExpansionPanel) pannels!: QueryList<MatExpansionPanel>;
 
   @Output() update = new EventEmitter<any>();
 
@@ -144,7 +144,7 @@ export class ParamCentreComponent implements OnInit {
       return;
     }
     this.enseignant = undefined;
-    this.ldapService.searchEnseignants(this.viseurForm.value).subscribe((response: any) => {
+    this.ldapService.searchUsersByName(this.viseurForm.value.nom, this.viseurForm.value.prenom).subscribe((response: any) => {
       this.enseignants = response;
       if (this.enseignants.length === 1) {
         this.choose(this.enseignants[0]);

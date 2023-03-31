@@ -137,9 +137,20 @@ public class GroupeEtudiantController {
         return groupeEtudiantJpaRepository.saveAndFlush(groupeEtudiant);
     }
 
-    @PatchMapping("/{id}/valider")
+    @PatchMapping("/{id}/validateBrouillon")
+    @Secure(fonctions = {AppFonctionEnum.CREATION_EN_MASSE_CONVENTION}, droits = {DroitEnum.CREATION})
+    public GroupeEtudiant validateBrouillon(@PathVariable("id") int id) {
+        GroupeEtudiant groupeEtudiant = groupeEtudiantJpaRepository.findById(id);
+        if (groupeEtudiant == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "GroupeEtudiant non trouvée");
+        }
+        groupeEtudiant.setValidationCreation(true);
+        return groupeEtudiantJpaRepository.saveAndFlush(groupeEtudiant);
+    }
+
+    @PatchMapping("/{id}/mergeAndValidateConventions")
     @Secure(fonctions = {AppFonctionEnum.CREATION_EN_MASSE_CONVENTION}, droits = {DroitEnum.VALIDATION})
-    public GroupeEtudiant validate(@PathVariable("id") int id) {
+    public GroupeEtudiant mergeAndValidateConventions(@PathVariable("id") int id) {
         GroupeEtudiant groupeEtudiant = groupeEtudiantJpaRepository.findById(id);
         if (groupeEtudiant == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "GroupeEtudiant non trouvée");
@@ -148,21 +159,29 @@ public class GroupeEtudiantController {
         for (EtudiantGroupeEtudiant etudiant : groupeEtudiant.getEtudiantGroupeEtudiants()){
 
             Convention etudiantConvention = etudiant.getConvention();
+            Convention etudiantMergedConvention = new Convention();
             try {
                 //applications des champs par défaults du groupe aux conventions de chaque étudiant quand ils n'ont pas de valeurs spécifiques pour ces champs
-                etudiantConvention = mergeObjects(etudiantConvention, groupeConvention);
+                mergeObjects(etudiantMergedConvention, etudiantConvention);
+                mergeObjects(etudiantMergedConvention, groupeConvention);
             } catch (Exception e) {
                 throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur création des conventions en masse");
             }
-            etudiantConvention.setValidationCreation(true);
-            etudiantConvention.setDateValidationCreation(new Date());
-            etudiantConvention.setValidationPedagogique(true);
-            etudiantConvention.setVerificationAdministrative(true);
-            etudiantConvention.setValidationConvention(true);
-            etudiantConvention.setLoginValidation(ServiceContext.getUtilisateur().getLogin());
-            conventionService.validationAutoDonnees(etudiantConvention, ServiceContext.getUtilisateur());
+            etudiantMergedConvention.setCreationEnMasse(true);
+            etudiantMergedConvention.setValidationCreation(true);
+            etudiantMergedConvention.setDateValidationCreation(new Date());
+            etudiantMergedConvention.setValidationPedagogique(true);
+            etudiantMergedConvention.setVerificationAdministrative(true);
+            etudiantMergedConvention.setValidationConvention(true);
+            etudiantMergedConvention.setLoginValidation(ServiceContext.getUtilisateur().getLogin());
+            conventionService.validationAutoDonnees(etudiantMergedConvention, ServiceContext.getUtilisateur());
+            conventionJpaRepository.save(etudiantMergedConvention);
 
-            conventionJpaRepository.save(etudiantConvention);
+            Convention previousConvention = etudiant.getMergedConvention();
+            etudiant.setMergedConvention(etudiantMergedConvention);
+            etudiantGroupeEtudiantJpaRepository.save(etudiant);
+            if(previousConvention != null)
+                conventionJpaRepository.delete(previousConvention);
         }
         groupeEtudiant.setValidationCreation(true);
         return groupeEtudiantJpaRepository.saveAndFlush(groupeEtudiant);
@@ -333,7 +352,7 @@ public class GroupeEtudiantController {
 
         for(EtudiantGroupeEtudiant ege : groupeEtudiant.getEtudiantGroupeEtudiants()){
             if(idsListDto.getIds().contains(ege.getId())){
-                Structure structure = ege.getConvention().getStructure();
+                Structure structure = ege.getMergedConvention().getStructure();
                 if(!etudiantsByStructure.containsKey(structure)){
                     etudiantsByStructure.put(structure,new ArrayList<>());
                 }
@@ -358,7 +377,7 @@ public class GroupeEtudiantController {
                 ZipOutputStream zos = new ZipOutputStream(archiveOutputStream);
                 for(EtudiantGroupeEtudiant ege : etudiantsByStructure.get(structure)){
 
-                    Convention convention = ege.getConvention();
+                    Convention convention = ege.getMergedConvention();
 
                     ByteArrayOutputStream pdfOutputStream = new ByteArrayOutputStream();
                     impressionService.generateConventionAvenantPDF(convention, null, pdfOutputStream, false);
@@ -372,11 +391,11 @@ public class GroupeEtudiantController {
                 }
                 zos.close();
                 byte[] archive = archiveOutputStream.toByteArray();
-                if (groupeEtudiant.getEtudiantGroupeEtudiants().get(0).getConvention().getCentreGestion().isOnlyMailCentreGestion()) {
-                    mailerService.sendMailGroupe(groupeEtudiant.getEtudiantGroupeEtudiants().get(0).getConvention().getCentreGestion().getMail()
-                            , groupeEtudiant.getEtudiantGroupeEtudiants().get(0).getConvention(), ServiceContext.getUtilisateur(), template, archive);
+                if (groupeEtudiant.getEtudiantGroupeEtudiants().get(0).getMergedConvention().getCentreGestion().isOnlyMailCentreGestion()) {
+                    mailerService.sendMailGroupe(groupeEtudiant.getEtudiantGroupeEtudiants().get(0).getMergedConvention().getCentreGestion().getMail()
+                            , groupeEtudiant.getEtudiantGroupeEtudiants().get(0).getMergedConvention(), ServiceContext.getUtilisateur(), template, archive);
                 } else {
-                    mailerService.sendMailGroupe(mailto, groupeEtudiant.getEtudiantGroupeEtudiants().get(0).getConvention(), ServiceContext.getUtilisateur(), template, archive);
+                    mailerService.sendMailGroupe(mailto, groupeEtudiant.getEtudiantGroupeEtudiants().get(0).getMergedConvention(), ServiceContext.getUtilisateur(), template, archive);
                 }
             } catch (IOException e) {
                 throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de la création de l'achive zip");

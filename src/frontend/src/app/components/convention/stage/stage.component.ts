@@ -32,6 +32,9 @@ export class StageComponent implements OnInit {
       'nbHeuresHebdo': [Validators.required, Validators.pattern('[0-9]{1,2}([,.][0-9]{1,2})?')],
       'dureeExceptionnelle': [Validators.required, Validators.pattern('[0-9]+([,.][0-9]{1,2})?')],
       'montantGratification': [Validators.required, Validators.pattern('[0-9]{1,10}([,.][0-9]{1,2})?')],
+      'sujetStage': [Validators.required],
+      'competences': [Validators.required],
+      'fonctionsEtTaches': [Validators.required],
       'idUniteGratification': [Validators.required],
       'idUniteDuree': [Validators.required],
       'idDevise': [Validators.required],
@@ -146,9 +149,9 @@ export class StageComponent implements OnInit {
       idPays: [this.convention.paysConvention ? this.convention.paysConvention.id : null, [Validators.required]],
       // - Description du stage
       idTheme: [this.convention.theme ? this.convention.theme.id : null, [Validators.required]],
-      sujetStage: [this.convention.sujetStage, [Validators.required]],
-      competences: [this.convention.competences, [Validators.required]],
-      fonctionsEtTaches: [this.convention.fonctionsEtTaches, [Validators.required]],
+      sujetStage: [this.convention.sujetStage],
+      competences: [this.convention.competences],
+      fonctionsEtTaches: [this.convention.fonctionsEtTaches],
       details: [this.convention.details],
       // - Partie Dates / horaires
       dateDebutStage: [this.convention.dateDebutStage, [Validators.required]],
@@ -194,7 +197,7 @@ export class StageComponent implements OnInit {
     //Update validators that depends on booleans
     this.toggleValidators(['nbHeuresHebdo',],this.convention.horairesReguliers);
     this.toggleValidators(['montantGratification','idUniteGratification','idUniteDuree','idDevise','idModeVersGratification'],this.convention.gratificationStage);
-    this.toggleValidators(['idOrigineStage','confidentiel','idNatureTravail','idModeValidationStage'],!this.enMasse);
+    this.toggleValidators(['sujetStage','competences','fonctionsEtTaches','idOrigineStage','confidentiel','idNatureTravail','idModeValidationStage'],!this.enMasse);
 
     this.loadInterruptionsStage();
 
