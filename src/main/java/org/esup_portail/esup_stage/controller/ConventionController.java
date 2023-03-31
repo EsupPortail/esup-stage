@@ -241,7 +241,7 @@ public class ConventionController {
                 boolean sendMailRespGestionnaire = configAlerteMailDto.getAlerteRespGestionnaire().isModificationConventionEtudiant();
                 sendValidationMail(convention, utilisateur,TemplateMail.CODE_ETU_MODIF_CONVENTION, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
             }
-            if (UtilisateurHelper.isRole(utilisateur, Role.GES)) {
+            else if (UtilisateurHelper.isRole(utilisateur, Role.GES)) {
                 ConfigAlerteMailDto configAlerteMailDto = appConfigService.getConfigAlerteMail();
                 boolean sendMailEtudiant = configAlerteMailDto.getAlerteEtudiant().isModificationConventionGestionnaire();
                 boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isModificationConventionGestionnaire();
@@ -346,7 +346,7 @@ public class ConventionController {
             boolean sendMailRespGestionnaire = configAlerteMailDto.getAlerteRespGestionnaire().isCreationConventionEtudiant();
             sendValidationMail(convention, utilisateur,TemplateMail.CODE_ETU_CREA_CONVENTION, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire); //ICI : ATTENTION IL Y AVAIT DEJA UN SENDMAILGESTIONNAIRE EN PARAM2 DE LA FONCTION
         }
-        if (UtilisateurHelper.isRole(utilisateur, Role.GES)) {
+        else if (UtilisateurHelper.isRole(utilisateur, Role.GES)) {
             ConfigAlerteMailDto configAlerteMailDto = appConfigService.getConfigAlerteMail();
             boolean sendMailEtudiant = configAlerteMailDto.getAlerteEtudiant().isCreationConventionGestionnaire();
             boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isCreationConventionGestionnaire();
@@ -854,8 +854,8 @@ public class ConventionController {
         convention = conventionJpaRepository.saveAndFlush(convention);
 
         historique.setValeurApres(valider);
-       historiqueValidationJpaRepository.saveAndFlush(historique);
-       sendValidationMail(convention, utilisateurContext, valider ? TemplateMail.CODE_CONVENTION_VERIF_ADMINISTRATIVE : TemplateMail.CODE_CONVENTION_DEVERIF_ADMINISTRATIVE, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
+        historiqueValidationJpaRepository.saveAndFlush(historique);
+        sendValidationMail(convention, utilisateurContext, valider ? TemplateMail.CODE_CONVENTION_VERIF_ADMINISTRATIVE : TemplateMail.CODE_CONVENTION_DEVERIF_ADMINISTRATIVE, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
     }
 
     private void validationAdministrative(Convention convention, ConfigAlerteMailDto configAlerteMailDto, Utilisateur utilisateurContext, boolean valider) {
@@ -889,22 +889,15 @@ public class ConventionController {
 
         // Récupération de la fiche utilisateur des personnels
         List<Utilisateur> utilisateurPersonnels = utilisateurJpaRepository.findByUids(personnels.stream().map(PersonnelCentreGestion::getUidPersonnel).collect(Collectors.toList()));
-//ICI
-        if(convention.getCentreGestion().isOnlyMailCentreGestion())
-        {
+        if (convention.getCentreGestion().isOnlyMailCentreGestion() && (sendMailGestionnaire || sendMailRespGestionnaire)) {
             mailerService.sendAlerteValidation(convention.getCentreGestion().getMail(), convention, utilisateurContext, templateMailCode);
-        }
-        else
-        {
+        } else {
             for (PersonnelCentreGestion personnel : personnels) {
                 Utilisateur utilisateur = utilisateurPersonnels.stream().filter(u -> u.getUid().equals(personnel.getUidPersonnel())).findAny().orElse(null);
-                if ((utilisateur == null || !UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)))
-                {
+                if ((utilisateur == null || !UtilisateurHelper.isRole(utilisateur, Role.RESP_GES))) {
                     if (mailerService.isAlerteActif(personnel, templateMailCode) && sendMailGestionnaire)
                         mailerService.sendAlerteValidation(personnel.getMail(), convention, utilisateurContext, templateMailCode);
-                }
-                else if ((utilisateur != null && UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)))
-                {
+                } else if ((utilisateur != null && UtilisateurHelper.isRole(utilisateur, Role.RESP_GES))) {
                     if (mailerService.isAlerteActif(personnel, templateMailCode) && sendMailRespGestionnaire)
                         mailerService.sendAlerteValidation(personnel.getMail(), convention, utilisateurContext, templateMailCode);
                 }
