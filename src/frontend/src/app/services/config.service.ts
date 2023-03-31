@@ -31,8 +31,6 @@ export class ConfigService {
   }
 
   updateAlerteMail(data: any): Observable<any> {
-    console.log("updateAerteMail -> ");
-    console.log(data);
     return this.http.post(environment.apiUrl + `/config/alerte-mail`, data);
   }
 
