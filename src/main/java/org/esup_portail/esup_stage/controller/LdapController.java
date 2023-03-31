@@ -39,7 +39,6 @@ public class LdapController {
             throw new AppException(HttpStatus.BAD_REQUEST, "Veuillez renseigner au moins un des filtres");
         }
         return ldapService.search("/tuteur", ldapSearchDto);
-        //return ldapService.search("/staff", ldapSearchDto);
     }
 
     @PostMapping("/search-by-name")
