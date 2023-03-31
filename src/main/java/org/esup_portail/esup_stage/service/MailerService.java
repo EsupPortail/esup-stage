@@ -109,6 +109,8 @@ public class MailerService {
                 templateObjet.process(mailContext, objet);
 
                 templateMailTexte = manageIfElse(templateMailTexte);
+                templateMailTexte = templateMailTexte.replace("class=\"ql-font-serif\"" ,"style = \" font-family: serif\"")
+                        .replace("class=\"ql-font-monospace\"" ,"style = \" font-family: monospace\"");
 
                 Template templateText = new Template("template_mail_text"+templateMailId, templateMailTexte, freeMarkerConfigurer.getConfiguration());
                 StringWriter text = new StringWriter();
