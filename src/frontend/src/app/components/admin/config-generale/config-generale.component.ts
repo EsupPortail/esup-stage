@@ -126,7 +126,7 @@ export class ConfigGeneraleComponent implements OnInit {
 
   saveGenerale(): void {
     if (this.formGenerale.valid) {
-      this.configService.updateGenerale(this.formGenerale.value).subscribe((response: any) => {
+      this.configService.updateGenerale(this.formGenerale.value).subscribe((response: any) => {    
         this.configGenerale = response;
         this.messageService.setSuccess('Paramètre d\'éléments généraux modifiés');
       });
@@ -137,8 +137,6 @@ export class ConfigGeneraleComponent implements OnInit {
     this.configService.updateAlerteMail(this.configAlerte).subscribe((response: any) => {
       this.configAlerte = response;
       this.messageService.setSuccess('Paramètre d\'alertes mail modifiés');
-      console.log("response -> ");
-      console.log(response);
     });
   }
 
