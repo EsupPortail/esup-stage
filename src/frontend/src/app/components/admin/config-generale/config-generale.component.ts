@@ -128,7 +128,7 @@ export class ConfigGeneraleComponent implements OnInit {
 
   saveGenerale(): void {
     if (this.formGenerale.valid) {
-      this.configService.updateGenerale(this.formGenerale.value).subscribe((response: any) => {    
+      this.configService.updateGenerale(this.formGenerale.value).subscribe((response: any) => {
         this.configGenerale = response;
         this.messageService.setSuccess('Paramètre d\'éléments généraux modifiés');
       });
