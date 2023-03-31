@@ -223,7 +223,9 @@ public class ImpressionService {
                 texte = getDefaultText(isConvention);
             }
 
-            String htmlTexte = "<style>table { table-layout: fixed; width: 100%; overflow-wrap: break-word; border-spacing: 0px; }</style>";
+            String htmlTexte = getDefaultText("/templates/template_style.html");
+            htmlTexte = htmlTexte.replaceAll("__project_fonts_dir__", this.getClass().getResource("/static/fonts").getPath());
+            
             if(isRecap){
                 htmlTexte += getDefaultText("/templates/template_recapitulatif.html");
             }else {
@@ -240,10 +242,6 @@ public class ImpressionService {
                 // Remplacement de tags et styles générés par l'éditeur qui ne sont pas convertis correctement
                 htmlTexte = htmlTexte.replace("<figure", "<div");
                 htmlTexte = htmlTexte.replace("</figure>", "</div>");
-                htmlTexte = htmlTexte.replace("class=\"text-tiny\"", "style=\"font-size: 11px\"");
-                htmlTexte = htmlTexte.replace("class=\"text-small\"", "style=\"font-size: 13px\"");
-                htmlTexte = htmlTexte.replace("class=\"text-big\"", "style=\"font-size: 21px\"");
-                htmlTexte = htmlTexte.replace("class=\"text-huge\"", "style=\"font-size: 23px\"");
 
             return htmlTexte;
     }
