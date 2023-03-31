@@ -1,6 +1,0 @@
-CREATE DATABASE IF NOT EXISTS redmine CHARACTER SET utf8;
-
-CREATE USER 'redmine'@'%' IDENTIFIED BY 'redmine';
-GRANT ALL PRIVILEGES ON redmine.* TO 'redmine'@'%';
-
-FLUSH PRIVILEGES;
