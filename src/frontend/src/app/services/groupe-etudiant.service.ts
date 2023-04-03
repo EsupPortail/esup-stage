@@ -72,6 +72,9 @@ export class GroupeEtudiantService implements PaginatedService {
   }
 
   sendMail(id: number, template: string, data: any): Observable<any> {
+    console.log("DATA => ");
+    console.log(data);
+    
     return this.http.post(`${environment.apiUrl}/groupeEtudiant/sendMail/${id}/templateMail/${template}`,data);
   }
 
