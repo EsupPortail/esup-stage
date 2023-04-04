@@ -200,7 +200,7 @@ export class GestionnairesComponent implements OnInit {
     this.form.reset();
     this.form.patchValue(this.gestionnaire);
     this.userService.findOneByLogin(this.gestionnaire.uidPersonnel).subscribe((gest:any) => {
-      if (gest != null && gest.roles[0].id == 2){
+      if (gest != null && gest.roles[0].code == "RESP_GES"){
         if(this.configAlertes.alerteRespGestionnaire.creationConventionEtudiant == false)
           this.form.get('creationConventionEtudiant')?.disable();
         if(this.configAlertes.alerteRespGestionnaire.modificationConventionEtudiant == false)
