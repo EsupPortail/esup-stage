@@ -10,7 +10,6 @@ import { UserService } from "../../../services/user.service";
 import { MatExpansionPanel } from "@angular/material/expansion";
 import { TableComponent } from "../../table/table.component";
 import { debounceTime } from "rxjs/operators";
-import { Role } from 'src/app/constants/role';
 
 @Component({
   selector: 'app-gestionnaires',

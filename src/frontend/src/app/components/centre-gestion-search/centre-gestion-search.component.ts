@@ -25,26 +25,33 @@ export class CentreGestionSearchComponent implements OnInit, OnDestroy, AfterVie
   };
   sortColumn = 'id';
   sortDirection: SortDirection = 'asc';
-  filters = [
-    { id: 'nomCentre', libelle: 'Nom du centre de gestion' }
-  ];
 
   data: any;
   currentUser: any;
 
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
-
+  public filters : any[] = [];
   constructor(
     public centreGestionService: CentreGestionService,
     public authService: AuthService,
     private messageService: MessageService,
     public matDialog: MatDialog,
-    private router: Router) { }
+    private router: Router) {
+      this.filters = [
+      { id: 'nomCentre', libelle: 'Centres de gestion', type: 'custom-select', options: [], keyLabel: '', keyValue:'id'}
+    ]; 
+  }
+
+    centres!:any[];
 
   ngOnInit(): void {
     this.authService.getCurrentUser().subscribe(response => {
       this.currentUser = response;
     });
+
+    this.centreGestionService.getPaginated(1,50,"","","").subscribe((res) => {
+      this.centres = res.data;   
+    })
   }
 
   ngAfterViewInit(): void {
@@ -64,6 +71,12 @@ export class CentreGestionSearchComponent implements OnInit, OnDestroy, AfterVie
         this.appTable?.setBackConfig(pagingConfig);
       }
     });
+  }
+
+  getCentreChoosen(event : any)
+  { 
+    console.log("event");
+    console.log(event);
   }
 
   isPersonnel(data: any) {

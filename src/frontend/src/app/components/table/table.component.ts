@@ -31,26 +31,28 @@ import { TechnicalService } from "../../services/technical.service";
 })
 export class TableComponent implements OnInit, AfterContentInit, OnChanges {
 
-  @Input() service: PaginatedService;
+  @Input() service!: PaginatedService;
   @Input() columns: any;
   @Input() sortColumn: string = '';
   @Input() sortOrder: SortDirection = 'asc';
   @Input() filters: any[] = [];
   @Input() pagination: boolean = true;
   @Input() actionButton: any;
-  @Input() hideDeleteFilters: boolean;
+  @Input() hideDeleteFilters!: boolean;
   @Input() selectedRow: any;
   @Input() noResultText: string = 'Aucun élément trouvé';
   @Input() customTemplateRef: TemplateRef<any>|undefined;
   @Input() setAlerte: boolean = false;
   @Input() exportColumns: any;
   @Input() templateMobile?: TemplateRef<any>;
+  
+  @Input() listCentres !: any[];
 
   @Output() onUpdated = new EventEmitter<any>();
 
   @ViewChild(MatTable, { static: true }) table: MatTable<any> | undefined;
-  @ViewChild("paginatorTop") paginatorTop: MatPaginator;
-  @ViewChild("paginatorBottom") paginatorBottom: MatPaginator;
+  @ViewChild("paginatorTop") paginatorTop!: MatPaginator;
+  @ViewChild("paginatorBottom") paginatorBottom!: MatPaginator;
   @ContentChildren(MatColumnDef) columnDefs: QueryList<MatColumnDef> | undefined;
 
   total: number = 0;
@@ -144,6 +146,10 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
 
   update(): void {
     this.filterChanged.next(this.filterValues);
+  }
+
+  selectCentreGestion(value: any) {
+    this.onUpdated.emit(value);
   }
 
   changePaginator(event: PageEvent): void {
@@ -248,6 +254,13 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
         if (f[key].specific === undefined) {
           delete f[key].specific;
         }
+        if (['select', 'select-multiple'].indexOf(f.type) > -1 && f.noneOption && !f.noneOptionSetted) { // && f.noneOption && !f.noneOptionSetted
+          const option: any = {};
+          option[f.keyLabel] = 'Aucun';
+          option[f.keyValue] = 0;
+          f.options.unshift(option);
+          f.noneOptionSetted = true;
+          }
       }
     }
 

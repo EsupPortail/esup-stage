@@ -37,13 +37,13 @@ export class CentreGestionComponent implements OnInit {
   centreGestion: any;
   centreGestionInited = false;
 
-  isCreate: boolean;
+  isCreate!: boolean;
   pathId: any;
 
-  coordCentreForm: FormGroup;
-  paramCentreForm: FormGroup;
+  coordCentreForm!: FormGroup;
+  paramCentreForm!: FormGroup;
   consigneCentre: any;
-  signatureElectroniqueForm: FormGroup;
+  signatureElectroniqueForm!: FormGroup;
 
   @ViewChild('matTabs') matTabs: MatTabGroup | undefined;
 
