@@ -889,17 +889,19 @@ public class ConventionController {
 
         // Récupération de la fiche utilisateur des personnels
         List<Utilisateur> utilisateurPersonnels = utilisateurJpaRepository.findByUids(personnels.stream().map(PersonnelCentreGestion::getUidPersonnel).collect(Collectors.toList()));
-        if (convention.getCentreGestion().isOnlyMailCentreGestion() && (sendMailGestionnaire || sendMailRespGestionnaire)) {
-            mailerService.sendAlerteValidation(convention.getCentreGestion().getMail(), convention, utilisateurContext, templateMailCode);
-        } else {
-            for (PersonnelCentreGestion personnel : personnels) {
-                Utilisateur utilisateur = utilisateurPersonnels.stream().filter(u -> u.getUid().equals(personnel.getUidPersonnel())).findAny().orElse(null);
-                if ((utilisateur == null || !UtilisateurHelper.isRole(utilisateur, Role.RESP_GES))) {
-                    if (mailerService.isAlerteActif(personnel, templateMailCode) && sendMailGestionnaire)
-                        mailerService.sendAlerteValidation(personnel.getMail(), convention, utilisateurContext, templateMailCode);
-                } else if ((utilisateur != null && UtilisateurHelper.isRole(utilisateur, Role.RESP_GES))) {
-                    if (mailerService.isAlerteActif(personnel, templateMailCode) && sendMailRespGestionnaire)
-                        mailerService.sendAlerteValidation(personnel.getMail(), convention, utilisateurContext, templateMailCode);
+        if (sendMailGestionnaire || sendMailRespGestionnaire) {
+            if (convention.getCentreGestion().isOnlyMailCentreGestion()) {
+                mailerService.sendAlerteValidation(convention.getCentreGestion().getMail(), convention, utilisateurContext, templateMailCode);
+            } else {
+                for (PersonnelCentreGestion personnel : personnels) {
+                    Utilisateur utilisateur = utilisateurPersonnels.stream().filter(u -> u.getUid().equals(personnel.getUidPersonnel())).findAny().orElse(null);
+                    if ((utilisateur == null || !UtilisateurHelper.isRole(utilisateur, Role.RESP_GES))) {
+                        if (mailerService.isAlerteActif(personnel, templateMailCode) && sendMailGestionnaire)
+                            mailerService.sendAlerteValidation(personnel.getMail(), convention, utilisateurContext, templateMailCode);
+                    } else if ((utilisateur != null && UtilisateurHelper.isRole(utilisateur, Role.RESP_GES))) {
+                        if (mailerService.isAlerteActif(personnel, templateMailCode) && sendMailRespGestionnaire)
+                            mailerService.sendAlerteValidation(personnel.getMail(), convention, utilisateurContext, templateMailCode);
+                    }
                 }
             }
         }

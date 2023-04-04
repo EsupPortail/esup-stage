@@ -10,6 +10,7 @@ import { UserService } from "../../../services/user.service";
 import { MatExpansionPanel } from "@angular/material/expansion";
 import { TableComponent } from "../../table/table.component";
 import { debounceTime } from "rxjs/operators";
+import { Role } from 'src/app/constants/role';
 
 @Component({
   selector: 'app-gestionnaires',
@@ -198,6 +199,48 @@ export class GestionnairesComponent implements OnInit {
     this.gestionnaire = gestionnaire;
     this.form.reset();
     this.form.patchValue(this.gestionnaire);
+    this.userService.findOneByLogin(this.gestionnaire.uidPersonnel).subscribe((gest:any) => {
+      if (gest != null && gest.roles[0].id == 2){
+        if(this.configAlertes.alerteRespGestionnaire.creationConventionEtudiant == false)
+          this.form.get('creationConventionEtudiant')?.disable();
+        if(this.configAlertes.alerteRespGestionnaire.modificationConventionEtudiant == false)
+          this.form.get('modificationConventionEtudiant')?.disable();
+        if(this.configAlertes.alerteRespGestionnaire.modificationConventionGestionnaire == false)
+          this.form.get('modificationConventionGestionnaire')?.disable();
+        if(this.configAlertes.alerteRespGestionnaire.creationAvenantEtudiant == false)
+          this.form.get('creationAvenantEtudiant')?.disable();
+        if(this.configAlertes.alerteRespGestionnaire.creationAvenantGestionnaire == false)
+          this.form.get('creationAvenantGestionnaire')?.disable();
+        if(this.configAlertes.alerteRespGestionnaire.validationPedagogiqueConvention == false)
+          this.form.get('validationPedagogiqueConvention')?.disable();
+        if(this.configAlertes.alerteRespGestionnaire.validationAdministrativeConvention == false)
+          this.form.get('validationAdministrativeConvention')?.disable();
+        if(this.configAlertes.alerteRespGestionnaire.verificationAdministrativeConvention == false)
+          this.form.get('verificationAdministrativeConvention')?.disable();
+        if(this.configAlertes.alerteRespGestionnaire.validationAvenant == false)
+          this.form.get('validationAvenant')?.disable();
+      }else{
+        if(this.configAlertes.alerteGestionnaire.creationConventionEtudiant == false)
+          this.form.get('creationConventionEtudiant')?.disable();
+        if(this.configAlertes.alerteGestionnaire.modificationConventionEtudiant == false)
+          this.form.get('modificationConventionEtudiant')?.disable();
+        if(this.configAlertes.alerteGestionnaire.modificationConventionGestionnaire == false)
+          this.form.get('modificationConventionGestionnaire')?.disable();
+        if(this.configAlertes.alerteGestionnaire.creationAvenantEtudiant == false)
+          this.form.get('creationAvenantEtudiant')?.disable();
+        if(this.configAlertes.alerteGestionnaire.creationAvenantGestionnaire == false)
+          this.form.get('creationAvenantGestionnaire')?.disable();
+        if(this.configAlertes.alerteGestionnaire.validationPedagogiqueConvention == false)
+          this.form.get('validationPedagogiqueConvention')?.disable();
+        if(this.configAlertes.alerteGestionnaire.validationAdministrativeConvention == false)
+          this.form.get('validationAdministrativeConvention')?.disable();
+        if(this.configAlertes.alerteGestionnaire.verificationAdministrativeConvention == false)
+          this.form.get('verificationAdministrativeConvention')?.disable();
+        if(this.configAlertes.alerteGestionnaire.validationAvenant == false)
+          this.form.get('validationAvenant')?.disable();
+      }
+    })
+    
     for (let alerte of this.alertesMail) {
       if (this.form.get(alerte.id)?.value == true) {
         this.toggleAlertes = false;
@@ -280,5 +323,4 @@ export class GestionnairesComponent implements OnInit {
     }
     return false;
   }
-
 }

