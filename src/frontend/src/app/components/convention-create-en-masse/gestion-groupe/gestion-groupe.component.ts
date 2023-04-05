@@ -204,7 +204,7 @@ export class GestionGroupeComponent implements OnInit {
     }
   }
 
-  printForGroup(): void{
+  printForGroup(): void {
     const data = {ids: this.groupeEtudiant.etudiantGroupeEtudiants.map((ege: any) => ege.mergedConvention.id)};
     this.print(data);
   }

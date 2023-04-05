@@ -68,12 +68,12 @@ export class AvenantFormComponent implements OnInit {
   @Input() avenant: any;
   @Input() convention: any;
 
-  form: FormGroup;
-  enseignantSearchForm: FormGroup;
+  form!: FormGroup;
+  enseignantSearchForm!: FormGroup;
 
   texteLimiteRenumeration: string = '';
 
-  minDateFinStage: Date;
+  minDateFinStage!: Date;
 
   customValidForm: boolean = false;
   autreModifChecked: boolean = false;

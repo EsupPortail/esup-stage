@@ -10,6 +10,7 @@ import { UserService } from "../../../services/user.service";
 import { MatExpansionPanel } from "@angular/material/expansion";
 import { TableComponent } from "../../table/table.component";
 import { debounceTime } from "rxjs/operators";
+import { Role } from 'src/app/constants/role';
 
 @Component({
   selector: 'app-gestionnaires',
@@ -198,6 +199,26 @@ export class GestionnairesComponent implements OnInit {
     this.gestionnaire = gestionnaire;
     this.form.reset();
     this.form.patchValue(this.gestionnaire);
+    this.userService.findOneByLogin(this.gestionnaire.uidPersonnel).subscribe((gest:any) => {
+      if (gest != null && gest.roles.find((rol:any) => rol.code === Role.RESP_GES) !== undefined){
+        for(let alerte of this.alertesMail) {
+          if (!this.configAlertes.alerteRespGestionnaire[alerte.id]){
+            this.form.get(alerte.id)?.disable();
+          } else {
+            this.form.get(alerte.id)?.enable();
+          }
+        }
+      } else {
+        for(let alerte of this.alertesMail) {
+          if (!this.configAlertes.alerteGestionnaire[alerte.id]) {
+            this.form.get(alerte.id)?.disable();
+          } else {
+            this.form.get(alerte.id)?.enable();
+          }
+        }
+      }
+    })
+    
     for (let alerte of this.alertesMail) {
       if (this.form.get(alerte.id)?.value == true) {
         this.toggleAlertes = false;
@@ -280,5 +301,4 @@ export class GestionnairesComponent implements OnInit {
     }
     return false;
   }
-
 }

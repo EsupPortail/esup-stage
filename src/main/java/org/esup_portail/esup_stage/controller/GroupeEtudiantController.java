@@ -347,7 +347,6 @@ public class GroupeEtudiantController {
         if (groupeEtudiant == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "GroupeEtudiant non trouvée");
         }
-
         HashMap<Structure,ArrayList<EtudiantGroupeEtudiant>> etudiantsByStructure = new HashMap<>();
 
         for(EtudiantGroupeEtudiant ege : groupeEtudiant.getEtudiantGroupeEtudiants()){

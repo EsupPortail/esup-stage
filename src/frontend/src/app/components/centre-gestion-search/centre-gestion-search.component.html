@@ -5,7 +5,7 @@
   <ng-container matColumnDef="personnels">
     <th mat-header-cell *matHeaderCellDef mat-sort-header><mat-icon fontSet="fa" [fontIcon]="'fa-user'" matTooltip="Indique si vous êtes rattaché au centre" color="primary"></mat-icon></th>
     <td mat-cell *matCellDef="let row">
-      <mat-icon fontSet="fa" [fontIcon]="isPersonnel(row) ? 'fa-check' : 'fa-times'"
+             <mat-icon fontSet="fa" [fontIcon]="isPersonnel(row) ? 'fa-check' : 'fa-times'"
                 [matTooltip]="isPersonnel(row) ? 'Vous êtes rattaché au centre' : 'Vous n\'êtes pas rattaché au centre'"
                 [color]="isPersonnel(row) ? 'primary' : 'warn'"></mat-icon>
     </td>
@@ -38,7 +38,6 @@
     </td>
   </ng-container>
 </app-table>
-
 
 <ng-template #tableMobile let-row="row">
   <table class="table table-sm">

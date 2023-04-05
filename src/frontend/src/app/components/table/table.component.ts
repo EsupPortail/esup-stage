@@ -31,14 +31,14 @@ import { TechnicalService } from "../../services/technical.service";
 })
 export class TableComponent implements OnInit, AfterContentInit, OnChanges {
 
-  @Input() service: PaginatedService;
+  @Input() service!: PaginatedService;
   @Input() columns: any;
   @Input() sortColumn: string = '';
   @Input() sortOrder: SortDirection = 'asc';
   @Input() filters: any[] = [];
   @Input() pagination: boolean = true;
   @Input() actionButton: any;
-  @Input() hideDeleteFilters: boolean;
+  @Input() hideDeleteFilters!: boolean;
   @Input() selectedRow: any;
   @Input() noResultText: string = 'Aucun élément trouvé';
   @Input() customTemplateRef: TemplateRef<any>|undefined;
@@ -49,8 +49,8 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   @Output() onUpdated = new EventEmitter<any>();
 
   @ViewChild(MatTable, { static: true }) table: MatTable<any> | undefined;
-  @ViewChild("paginatorTop") paginatorTop: MatPaginator;
-  @ViewChild("paginatorBottom") paginatorBottom: MatPaginator;
+  @ViewChild("paginatorTop") paginatorTop!: MatPaginator;
+  @ViewChild("paginatorBottom") paginatorBottom!: MatPaginator;
   @ContentChildren(MatColumnDef) columnDefs: QueryList<MatColumnDef> | undefined;
 
   total: number = 0;

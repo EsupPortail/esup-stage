@@ -69,12 +69,15 @@
             </mat-form-field>
           </div>
           <div class="mb-2">
-            <button mat-flat-button style="margin-right:5px" color="primary" (click)="sendMailForGroup()">En masse</button>
-            <button mat-flat-button style="margin-right:5px" color="primary" (click)="sendMailForSelected()" [disabled]="selected.length === 0">pour les étudiants sélectionnés</button>
+            <span (confirm)="sendMailForGroup()" [confirmMessage]="'Envoyer les mails ? Cette action est irreversible.'">
+              <button mat-flat-button style="margin-right:5px" color="primary">En masse</button>
+            </span>
+            <span (confirm)="sendMailForSelected()" [confirmMessage]="'Envoyer les mails ? Cette action est irreversible.'">
+              <button mat-flat-button style="margin-right:5px" color="primary" [disabled]="selected.length === 0">Pour les étudiants sélectionnés</button>
+            </span>
           </div>
         </form>
       </div>
-
       <div class="mb-3">
         <div class="text-title">Sélection des étudiants du groupe</div>
         <mat-divider class="mb-2"></mat-divider>
@@ -197,7 +200,6 @@
           <button mat-flat-button style="margin-right:5px" color="primary" (click)="printForSelected()" [disabled]="selected.length === 0">pour les étudiants sélectionnés</button>
         </div>
       </div>
-
       <div class="mb-3">
         <div class="text-title">Sélection des étudiants du groupe</div>
         <mat-divider class="mb-2"></mat-divider>
