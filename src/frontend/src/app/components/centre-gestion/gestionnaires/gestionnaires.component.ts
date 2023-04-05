@@ -60,18 +60,6 @@ export class GestionnairesComponent implements OnInit {
     {id: 'validationAvenant', libelle: 'Validation d\'un avenant '},
   ];
 
-  typeAlerte = [
-    'creationConventionEtudiant',
-    'modificationConventionEtudiant',
-    'modificationConventionGestionnaire',
-    'creationAvenantEtudiant',
-    'creationAvenantGestionnaire',
-    'validationPedagogiqueConvention',
-    'validationAdministrativeConvention',
-    'verificationAdministrativeConvention',
-    'validationAvenant',
-  ];
-
   configAlertes: any;
   selectedConfig: any;
   toggleAlertes = true;

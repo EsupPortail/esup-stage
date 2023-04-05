@@ -28,25 +28,24 @@ export class CentreGestionSearchComponent implements OnInit, OnDestroy, AfterVie
 
   data: any;
   currentUser: any;
-
+  filters = [
+    { id: 'nomCentre', libelle: 'Centres de gestion', type: 'list', options: [], keyId: 'nomCentre', keyLibelle: 'nomCentre'}
+  ];
+  
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
-  public filters : any[] = [];
   constructor(
     public centreGestionService: CentreGestionService,
     public authService: AuthService,
     private messageService: MessageService,
     public matDialog: MatDialog,
     private router: Router) {
-      this.filters = [
-      { id: 'nomCentre', libelle: 'Centres de gestion', type: 'list', options: [], keyId: 'nomCentre', keyLibelle: 'nomCentre'}
-    ]; 
   }
   ngOnInit(): void {
     this.authService.getCurrentUser().subscribe(response => {
       this.currentUser = response;
     });
 
-    this.centreGestionService.getPaginated(1,50,"","","").subscribe((res) => {
+    this.centreGestionService.getPaginated(1,0,"","","").subscribe((res) => {
       this.appTable?.setFilterOption('nomCentre', res.data);
     })
   }
