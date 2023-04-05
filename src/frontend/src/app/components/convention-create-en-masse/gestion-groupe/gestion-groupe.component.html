@@ -70,10 +70,10 @@
           </div>
           <div class="mb-2">
             <span (confirm)="sendMailForGroup()" [confirmMessage]="'Envoyer les mails ? Cette action est irreversible.'">
-              <button mat-flat-button style="margin-right:5px" color="primary">En masse</button>
+              <button mat-flat-button style="margin-right:5px" color="primary" [disabled]="this.form.get('template')?.value===null">En masse</button>
             </span>
             <span (confirm)="sendMailForSelected()" [confirmMessage]="'Envoyer les mails ? Cette action est irreversible.'">
-              <button mat-flat-button style="margin-right:5px" color="primary" [disabled]="selected.length === 0">Pour les étudiants sélectionnés</button>
+              <button mat-flat-button style="margin-right:5px" color="primary" [disabled]="selected.length === 0 || this.form.get('template')?.value===null">Pour les étudiants sélectionnés</button>
             </span>
           </div>
         </form>
