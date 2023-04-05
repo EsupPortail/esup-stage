@@ -158,11 +158,6 @@ export class GestionGroupeComponent implements OnInit {
     this.router.navigate([`/convention-create-en-masse/` + row.id])
   }
 
-  selectionner(row: any): void{
-    this.groupeEtudiant = row;
-  }
-
-
   tabChanged(event: MatTabChangeEvent): void {
     this.selected = [];
     if (event.index == 0) {

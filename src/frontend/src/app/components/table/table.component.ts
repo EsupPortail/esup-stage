@@ -45,8 +45,6 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   @Input() setAlerte: boolean = false;
   @Input() exportColumns: any;
   @Input() templateMobile?: TemplateRef<any>;
-  
-  @Input() listCentres !: any[];
 
   @Output() onUpdated = new EventEmitter<any>();
 
@@ -146,10 +144,6 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
 
   update(): void {
     this.filterChanged.next(this.filterValues);
-  }
-
-  selectCentreGestion(value: any) {
-    this.onUpdated.emit(value);
   }
 
   changePaginator(event: PageEvent): void {
@@ -254,13 +248,6 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
         if (f[key].specific === undefined) {
           delete f[key].specific;
         }
-        if (['select', 'select-multiple'].indexOf(f.type) > -1 && f.noneOption && !f.noneOptionSetted) { // && f.noneOption && !f.noneOptionSetted
-          const option: any = {};
-          option[f.keyLabel] = 'Aucun';
-          option[f.keyValue] = 0;
-          f.options.unshift(option);
-          f.noneOptionSetted = true;
-          }
       }
     }
 

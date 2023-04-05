@@ -1,6 +1,7 @@
 <app-table [service]="centreGestionService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters" [exportColumns]="exportColumns"
            matSort [matSortActive]="sortColumn" [matSortDirection]="sortDirection" (matSortChange)="appTable ? appTable.sorting($event) : null"
-           [templateMobile]="tableMobile" [listCentres]="centres" (onUpdated)="getCentreChoosen($event)">
+           [templateMobile]="tableMobile">
+
   <ng-container matColumnDef="personnels">
     <th mat-header-cell *matHeaderCellDef mat-sort-header><mat-icon fontSet="fa" [fontIcon]="'fa-user'" matTooltip="Indique si vous êtes rattaché au centre" color="primary"></mat-icon></th>
     <td mat-cell *matCellDef="let row">

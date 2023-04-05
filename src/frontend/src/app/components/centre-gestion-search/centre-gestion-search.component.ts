@@ -38,19 +38,16 @@ export class CentreGestionSearchComponent implements OnInit, OnDestroy, AfterVie
     public matDialog: MatDialog,
     private router: Router) {
       this.filters = [
-      { id: 'nomCentre', libelle: 'Centres de gestion', type: 'custom-select', options: [], keyLabel: '', keyValue:'id'}
+      { id: 'nomCentre', libelle: 'Centres de gestion', type: 'list', options: [], keyId: 'nomCentre', keyLibelle: 'nomCentre'}
     ]; 
   }
-
-    centres!:any[];
-
   ngOnInit(): void {
     this.authService.getCurrentUser().subscribe(response => {
       this.currentUser = response;
     });
 
     this.centreGestionService.getPaginated(1,50,"","","").subscribe((res) => {
-      this.centres = res.data;   
+      this.appTable?.setFilterOption('nomCentre', res.data);
     })
   }
 
@@ -71,12 +68,6 @@ export class CentreGestionSearchComponent implements OnInit, OnDestroy, AfterVie
         this.appTable?.setBackConfig(pagingConfig);
       }
     });
-  }
-
-  getCentreChoosen(event : any)
-  { 
-    console.log("event");
-    console.log(event);
   }
 
   isPersonnel(data: any) {

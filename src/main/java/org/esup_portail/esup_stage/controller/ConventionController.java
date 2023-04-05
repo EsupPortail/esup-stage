@@ -888,8 +888,8 @@ public class ConventionController {
         personnels = personnels.stream().filter(p -> p.getAlertesMail() != null && p.getAlertesMail()).collect(Collectors.toList());
 
         // Récupération de la fiche utilisateur des personnels
-        List<Utilisateur> utilisateurPersonnels = utilisateurJpaRepository.findByUids(personnels.stream().map(PersonnelCentreGestion::getUidPersonnel).collect(Collectors.toList()));
         if (sendMailGestionnaire || sendMailRespGestionnaire) {
+            List<Utilisateur> utilisateurPersonnels = utilisateurJpaRepository.findByUids(personnels.stream().map(PersonnelCentreGestion::getUidPersonnel).collect(Collectors.toList()));
             if (convention.getCentreGestion().isOnlyMailCentreGestion()) {
                 mailerService.sendAlerteValidation(convention.getCentreGestion().getMail(), convention, utilisateurContext, templateMailCode);
             } else {

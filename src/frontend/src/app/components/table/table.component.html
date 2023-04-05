@@ -18,14 +18,6 @@
             <mat-form-field class="col-md-{{filter.colSpan ?? 3}}" appearance="fill" *ngIf="!filter.hidden">
               <mat-label>{{filter.libelle}}</mat-label>
               <ng-container [ngSwitch]="filter.type">
-              <ng-container *ngSwitchCase="'custom-select'">
-                  <mat-select [name]="listCentres" (ngModelChange)="selectCentreGestion(value)">
-                    <mat-option></mat-option>
-                    <div *ngFor="let centre of listCentres">
-                    <mat-option [value]="centre" (click)="selectCentreGestion(centre)">{{centre.nomCentre}}</mat-option>
-                  </div>
-                </mat-select>
-              </ng-container>
                 <ng-container *ngSwitchCase="'boolean'">
                   <mat-select [name]="filter.id" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()">
                     <mat-option></mat-option>

@@ -10,6 +10,7 @@ import { UserService } from "../../../services/user.service";
 import { MatExpansionPanel } from "@angular/material/expansion";
 import { TableComponent } from "../../table/table.component";
 import { debounceTime } from "rxjs/operators";
+import { Role } from 'src/app/constants/role';
 
 @Component({
   selector: 'app-gestionnaires',
@@ -57,6 +58,18 @@ export class GestionnairesComponent implements OnInit {
     {id: 'validationAdministrativeConvention', libelle: 'Validation administrative d\'une convention'},
     {id: 'verificationAdministrativeConvention', libelle: 'Vérification administrative d\'une convention'},
     {id: 'validationAvenant', libelle: 'Validation d\'un avenant '},
+  ];
+
+  typeAlerte = [
+    'creationConventionEtudiant',
+    'modificationConventionEtudiant',
+    'modificationConventionGestionnaire',
+    'creationAvenantEtudiant',
+    'creationAvenantGestionnaire',
+    'validationPedagogiqueConvention',
+    'validationAdministrativeConvention',
+    'verificationAdministrativeConvention',
+    'validationAvenant',
   ];
 
   configAlertes: any;
@@ -199,44 +212,22 @@ export class GestionnairesComponent implements OnInit {
     this.form.reset();
     this.form.patchValue(this.gestionnaire);
     this.userService.findOneByLogin(this.gestionnaire.uidPersonnel).subscribe((gest:any) => {
-      if (gest != null && gest.roles[0].code == "RESP_GES"){
-        if(this.configAlertes.alerteRespGestionnaire.creationConventionEtudiant == false)
-          this.form.get('creationConventionEtudiant')?.disable();
-        if(this.configAlertes.alerteRespGestionnaire.modificationConventionEtudiant == false)
-          this.form.get('modificationConventionEtudiant')?.disable();
-        if(this.configAlertes.alerteRespGestionnaire.modificationConventionGestionnaire == false)
-          this.form.get('modificationConventionGestionnaire')?.disable();
-        if(this.configAlertes.alerteRespGestionnaire.creationAvenantEtudiant == false)
-          this.form.get('creationAvenantEtudiant')?.disable();
-        if(this.configAlertes.alerteRespGestionnaire.creationAvenantGestionnaire == false)
-          this.form.get('creationAvenantGestionnaire')?.disable();
-        if(this.configAlertes.alerteRespGestionnaire.validationPedagogiqueConvention == false)
-          this.form.get('validationPedagogiqueConvention')?.disable();
-        if(this.configAlertes.alerteRespGestionnaire.validationAdministrativeConvention == false)
-          this.form.get('validationAdministrativeConvention')?.disable();
-        if(this.configAlertes.alerteRespGestionnaire.verificationAdministrativeConvention == false)
-          this.form.get('verificationAdministrativeConvention')?.disable();
-        if(this.configAlertes.alerteRespGestionnaire.validationAvenant == false)
-          this.form.get('validationAvenant')?.disable();
-      }else{
-        if(this.configAlertes.alerteGestionnaire.creationConventionEtudiant == false)
-          this.form.get('creationConventionEtudiant')?.disable();
-        if(this.configAlertes.alerteGestionnaire.modificationConventionEtudiant == false)
-          this.form.get('modificationConventionEtudiant')?.disable();
-        if(this.configAlertes.alerteGestionnaire.modificationConventionGestionnaire == false)
-          this.form.get('modificationConventionGestionnaire')?.disable();
-        if(this.configAlertes.alerteGestionnaire.creationAvenantEtudiant == false)
-          this.form.get('creationAvenantEtudiant')?.disable();
-        if(this.configAlertes.alerteGestionnaire.creationAvenantGestionnaire == false)
-          this.form.get('creationAvenantGestionnaire')?.disable();
-        if(this.configAlertes.alerteGestionnaire.validationPedagogiqueConvention == false)
-          this.form.get('validationPedagogiqueConvention')?.disable();
-        if(this.configAlertes.alerteGestionnaire.validationAdministrativeConvention == false)
-          this.form.get('validationAdministrativeConvention')?.disable();
-        if(this.configAlertes.alerteGestionnaire.verificationAdministrativeConvention == false)
-          this.form.get('verificationAdministrativeConvention')?.disable();
-        if(this.configAlertes.alerteGestionnaire.validationAvenant == false)
-          this.form.get('validationAvenant')?.disable();
+      if (gest != null && gest.roles.find((rol:any) => rol.code === Role.RESP_GES) !== undefined){
+        for(let alerte of this.alertesMail) {
+          if (!this.configAlertes.alerteRespGestionnaire[alerte.id]){
+            this.form.get(alerte.id)?.disable();
+          } else {
+            this.form.get(alerte.id)?.enable();
+          }
+        }
+      } else {
+        for(let alerte of this.alertesMail) {
+          if (!this.configAlertes.alerteGestionnaire[alerte.id]) {
+            this.form.get(alerte.id)?.disable();
+          } else {
+            this.form.get(alerte.id)?.enable();
+          }
+        }
       }
     })
     
