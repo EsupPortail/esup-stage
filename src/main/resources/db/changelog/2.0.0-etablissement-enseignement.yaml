@@ -2,6 +2,7 @@ databaseChangeLog:
 - changeSet:
     id: etabEnseignement-nomenclature
     author: tjubera
+    validCheckSum: ANY
     preConditions:
         - onFail: MARK_RAN
         - sqlCheck:
@@ -41,6 +42,7 @@ databaseChangeLog:
 - changeSet:
     id: etabEnseignement-rne
     author: tjubera
+    validCheckSum: ANY
     changes:
     - addColumn:
         tableName: Structure
