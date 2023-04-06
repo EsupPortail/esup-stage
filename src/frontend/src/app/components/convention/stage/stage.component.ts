@@ -64,15 +64,15 @@ export class StageComponent implements OnInit {
 
   @Input() convention: any;
 
-  form: FormGroup;
+  form!: FormGroup;
 
   texteLimiteRenumeration: string = '';
 
   periodesInterruptionsValid:boolean = false;
-  minDateDebutStage: Date;
-  maxDateDebutStage: Date;
-  minDateFinStage: Date;
-  maxDateFinStage: Date;
+  minDateDebutStage!: Date;
+  maxDateDebutStage!: Date;
+  minDateFinStage!: Date;
+  maxDateFinStage!: Date;
   previousValues: any;
   singleFieldUpdateLock: boolean = false;
   singleFieldUpdateQueue : any[] = [];
@@ -81,8 +81,8 @@ export class StageComponent implements OnInit {
   @Output() validated = new EventEmitter<number>();
   @Output() updateField = new EventEmitter<any>();
 
-  @Input() modifiable: boolean;
-  @Input() enMasse: boolean;
+  @Input() modifiable!: boolean;
+  @Input() enMasse!: boolean;
 
   constructor(public conventionService: ConventionService,
               private fb: FormBuilder,

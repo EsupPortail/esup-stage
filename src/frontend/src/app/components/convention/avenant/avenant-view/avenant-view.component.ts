@@ -30,6 +30,8 @@ export class AvenantViewComponent implements OnInit {
 
   docaposteEnabled = false;
 
+  numberPeriodeInterruption !:number;
+
   constructor(private authService: AuthService,
               private messageService: MessageService,
               private avenantService: AvenantService,
@@ -41,6 +43,7 @@ export class AvenantViewComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadInterruptionsStage();
+    this.periodeInterruptionExist();
     this.configService.getConfigGenerale().subscribe((response) => {
       this.docaposteEnabled = response.docaposteEnabled;
     });
@@ -54,6 +57,14 @@ export class AvenantViewComponent implements OnInit {
     return this.authService.isGestionnaire() || this.authService.isAdmin();
   }
 
+  periodeInterruptionExist() {
+    if (this.avenant.id)
+    {
+      this.periodeInterruptionAvenantService.getByAvenant(this.avenant.id).subscribe((res) => {
+        this.numberPeriodeInterruption = res.length;
+      })
+    }
+  }
   cancelValidation(): void {
     this.avenantService.cancelValidation(this.avenant.id).subscribe((response: any) => {
       this.avenant = response;

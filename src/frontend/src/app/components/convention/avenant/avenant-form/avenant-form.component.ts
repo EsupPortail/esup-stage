@@ -78,6 +78,8 @@ export class AvenantFormComponent implements OnInit {
   customValidForm: boolean = false;
   autreModifChecked: boolean = false;
 
+  numberPeriodeInterruption!: number;
+
   @Output() updated = new EventEmitter<any>();
   @ViewChild(TableComponent) serviceAppTable: TableComponent | undefined;
   @ViewChild(TableComponent) contactAppTable: TableComponent | undefined;
@@ -205,7 +207,13 @@ export class AvenantFormComponent implements OnInit {
         motifAvenant: [null, [Validators.required]],
       });
     }
-
+    if (this.avenant.id)
+    {
+      this.periodeInterruptionAvenantService.getByAvenant(this.avenant.id).subscribe((res) => {
+        if (res)
+          this.numberPeriodeInterruption = res.length;
+      })
+    }
     this.enseignantSearchForm = this.fb.group({
       nom: [null, []],
       prenom: [null, []],
