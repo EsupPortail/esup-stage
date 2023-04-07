@@ -302,6 +302,7 @@ export class AvenantFormComponent implements OnInit {
             }
             this.messageService.setSuccess('Avenant créé avec succès');
             this.form.reset();
+            this.addedInterruptionsStage = [];
             this.ngOnInit();
             this.form.markAsPristine();
             this.form.markAsUntouched();
