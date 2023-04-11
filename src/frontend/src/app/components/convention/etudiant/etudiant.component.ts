@@ -180,7 +180,6 @@ export class EtudiantComponent implements OnInit, OnChanges {
     this.form.valueChanges.pipe(debounceTime(1000)).subscribe(() => {
       this.search();
     });
-    console.log(this.convention)
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -195,10 +194,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
     this.etudiant = undefined;
     this.selectedNumEtudiant = null;
     this.ldapService.searchEtudiants(this.form.value).subscribe((response: any) => {
-      console.log("là il y a comme etudiant :")
-      console.log(response)
       this.etudiants = response;
-
       if (this.etudiants.length === 1) {
         this.choose(this.etudiants[0]);
       }
@@ -244,9 +240,6 @@ export class EtudiantComponent implements OnInit, OnChanges {
         }
       }
     });
-    console.log("convention :")
-    console.log(this.convention);
-    
   }
 
   get selectedInscription() {

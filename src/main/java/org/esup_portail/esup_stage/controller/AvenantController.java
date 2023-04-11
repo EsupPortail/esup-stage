@@ -150,8 +150,6 @@ public class AvenantController {
             boolean sendMailRespGestionnaire = configAlerteMailDto.getAlerteRespGestionnaire().isCreationAvenantGestionnaire();
             conventionController.sendValidationMail(avenant.getConvention(), utilisateur,TemplateMail.CODE_GES_CREA_AVENANT, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
         }
-        System.out.println("avenant créé : ");
-        System.out.println("id : " + avenant.getId() + ", motif : " + avenant.getMotifAvenant() + ", date rupture : " + avenant.getDateRupture());
         return avenant;
     }
 
