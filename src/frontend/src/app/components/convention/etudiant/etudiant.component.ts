@@ -112,7 +112,6 @@ export class EtudiantComponent implements OnInit, OnChanges {
         inscriptionElp: [null, []],
         idTypeConvention: [this.convention.typeConvention ? this.convention.typeConvention.id : null, [Validators.required]],
         codeLangueConvention: [this.convention.langueConvention ? this.convention.langueConvention.code : null, [Validators.required]],
-        heuresDeFormation: [null, [Validators.required]],
       });
       this.sansElp = response.autoriserElementPedagogiqueFacultatif;
 
