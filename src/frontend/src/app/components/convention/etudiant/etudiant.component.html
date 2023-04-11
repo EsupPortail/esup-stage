@@ -192,23 +192,40 @@
                       <mat-error><app-form-error [field]="formConvention.get('inscriptionElp')"></app-form-error></mat-error>
                     </mat-form-field>
                   </div>
-                  <!--<div class="row mb-2">
-                    <div class="col-md-12">
-                      <div class="mb-2">Saisie manuelle du nombre d'heures de formation de l'étudiant</div>
-                        <mat-radio-groupe formControlName="saisieManuelle">
-                          <mat-radio-button [value]="true">Oui</mat-radio-button>
-                          <mat-radio-button [value]="false">Non</mat-radio-button>
-                        </mat-radio-groupe>
-                      </div>
-                    </div> 
+                  <!-- <div class="row">
+                    <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                      <mat-label>Nombre d'heures de formation</mat-label>
+                      <input matInput formControlName="heuresDeFormation" />
+                      <mat-error><app-form-error [field]="formConvention.get('heuresDeFormation')"></app-form-error></mat-error>
+                    </mat-form-field>
+                  </div> -->
+                  <mat-radio-group formControlName="volumeHoraireFormationBool">Nombre d'heures de formation * : 
+                    <div class="row" *ngIf="!this.convention.volumeHoraireFormation || this.convention.volumeHoraireFormation == 0 || this.convention.volumeHoraireFormation == '200+'">
+                      <mat-radio-button class="col-sm-12" (click)="changevolumeHoraireFormationBool(false)">Plus de 200 heures</mat-radio-button>
+                      <mat-radio-button (click)="changevolumeHoraireFormationBool(true)">Saisie manuelle</mat-radio-button>
+                    </div>
+                    <div class="row" *ngIf="this.convention.volumeHoraireFormation && this.convention.volumeHoraireFormation > 0">
+                      <mat-radio-button class="col-sm-12" [disabled]="true" (click)="changevolumeHoraireFormationBool(false)">Plus de 200 heures</mat-radio-button>
+                      <mat-radio-button (click)="changevolumeHoraireFormationBool(true)">Valeur récupérée via les données de l'établissement (Apogée)</mat-radio-button>
+                  </div>
+                  </mat-radio-group>
+                  <div class="row">
+                    <mat-form-field *ngIf="volumeHoraireFormationBool==true" class=" "col-sm-12 mb-2 appearance="fill">
+                      <mat-label>Entrez le nombre d'heures de formation :</mat-label>
+                      <input matInput formControlName="volumeHoraireFormation"/>
+                    </mat-form-field>
+                  </div>
+                      <!--<input matInput formControlName="heuresDeFormation" />
+                      <mat-error><app-form-error [field]="formConvention.get('heuresDeFormation')"></app-form-error></mat-error>
+                    </mat-form-field> 
                   </div>-->
-                <div class="row">
+                <!-- <div class="row">
                   <mat-form-field class="col-sm-12 mb-2" appearance="fill">
                     <mat-label>Heures de formation</mat-label>
                     <input matInput formControlName="heuresDeFormation" />
                     <mat-error><app-form-error [field]="formConvention.get('heuresDeFormation')"></app-form-error></mat-error>
                   </mat-form-field>
-                </div>
+                </div> -->
                   <div class="row">
                     <mat-form-field class="col-sm-12 mb-2" appearance="fill">
                       <mat-label>Type de convention</mat-label>

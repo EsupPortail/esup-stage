@@ -54,6 +54,8 @@
           <div class="col-sm-9">{{tmpConvention.etape.id.code + ' - ' + tmpConvention.etape.libelle}}</div>
           <div class="col-sm-3 font-weight-bold">Élément pédagogique</div>
           <div class="col-sm-9">{{(tmpConvention.codeElp ?? '') + (tmpConvention.libelleELP ? ' - ' + tmpConvention.libelleELP : '') + (tmpConvention.creditECTS ? ' : ' + tmpConvention.creditECTS : '')}}</div>
+          <div class="col-sm-3 font-weight-bold">Nombre d'heures de formation</div>
+          <div class="col-sm-9">{{(tmpConvention.volumeHoraireFormation)}}</div>
           <div class="col-sm-3 font-weight-bold">Centre de gestion</div>
           <div class="col-sm-9">{{tmpConvention.centreGestion.nomCentre}}</div>
           <div class="col-sm-3 font-weight-bold">Coordonnées du centre</div>

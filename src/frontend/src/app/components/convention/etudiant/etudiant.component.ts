@@ -52,6 +52,8 @@ export class EtudiantComponent implements OnInit, OnChanges {
 
   communes: any[] = [];
 
+  volumeHoraireFormationBool: boolean = false;
+
   @Input() convention: any;
   @Input() modifiable: boolean = false;
   @Output() validated = new EventEmitter<any>();
@@ -112,10 +114,10 @@ export class EtudiantComponent implements OnInit, OnChanges {
         inscriptionElp: [null, []],
         idTypeConvention: [this.convention.typeConvention ? this.convention.typeConvention.id : null, [Validators.required]],
         codeLangueConvention: [this.convention.langueConvention ? this.convention.langueConvention.code : null, [Validators.required]],
-        heuresDeFormation: [null, [Validators.required]],
+        volumeHoraireFormation: [this.convention.volumeHoraireFormation ? this.convention.volumeHoraireFormation : "0", Validators.pattern('^[0-9]+$')],
+        volumeHoraireFormationBool:[false, ]
       });
       this.sansElp = response.autoriserElementPedagogiqueFacultatif;
-
       this.formConvention.get('inscription')?.valueChanges.subscribe((inscription: any) => {
         if (inscription) {
           this.sansElp = this.sansElp || !inscription.elementPedagogiques || inscription.elementPedagogiques.length == 0;
@@ -147,7 +149,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
             codEtu = response.numEtudiant;
             this.choose({codEtu: codEtu});
           });
-        }
+        }  
       }
 
       // Recherche des langues disponible en fonction du type de convention
@@ -181,7 +183,10 @@ export class EtudiantComponent implements OnInit, OnChanges {
     this.form.valueChanges.pipe(debounceTime(1000)).subscribe(() => {
       this.search();
     });
-    console.log(this.convention)
+    console.log("la convention : ");
+    console.log(this.convention);
+    console.log("volumetHoraireFormation : ");
+    console.log(this.convention.volumeHoraireFormation);
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -196,8 +201,6 @@ export class EtudiantComponent implements OnInit, OnChanges {
     this.etudiant = undefined;
     this.selectedNumEtudiant = null;
     this.ldapService.searchEtudiants(this.form.value).subscribe((response: any) => {
-      console.log("là il y a comme etudiant :")
-      console.log(response)
       this.etudiants = response;
 
       if (this.etudiants.length === 1) {
@@ -245,9 +248,6 @@ export class EtudiantComponent implements OnInit, OnChanges {
         }
       }
     });
-    console.log("convention :")
-    console.log(this.convention);
-    
   }
 
   get selectedInscription() {
@@ -259,6 +259,10 @@ export class EtudiantComponent implements OnInit, OnChanges {
   }
 
   validate(): void {
+    console.log("this.formConvention.valid");
+    
+    console.log(this.formConvention.valid);
+    
     if (this.formConvention.valid) {
       // Contrôle code postal commune
       if (this.isFr() && !this.isCodePostalValid()) {
@@ -284,12 +288,14 @@ export class EtudiantComponent implements OnInit, OnChanges {
       } else if (this.convention && this.convention.etudiant) {
         data.etudiantLogin = this.convention.etudiant.identEtudiant;
       }
+      if(this.volumeHoraireFormationBool == false)
+        data.volumeHoraireFormation = "200+";
       if (!this.convention || !this.convention.id) {
         this.conventionService.create(data).subscribe((response: any) => {
           this.validated.emit(response);
         });
       } else {
-        this.conventionService.update(this.convention.id, data).subscribe((response: any) => {
+        this.conventionService.update(this.convention.id, data).subscribe((response: any) => {        
           this.validated.emit(response);
         });
       }
@@ -368,5 +374,10 @@ export class EtudiantComponent implements OnInit, OnChanges {
     if (adresse){
       this.formConvention.get('adresseCPAM')?.setValue(adresse.adresse);
     }
+  }
+
+  changevolumeHoraireFormationBool(value: boolean)
+  {
+    this.volumeHoraireFormationBool = value;
   }
 }

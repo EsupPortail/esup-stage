@@ -26,6 +26,10 @@ export class RecapitulatifComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log("la convention");
+    
+    console.log(this.convention);
+    
     this.tmpConvention = {
       ...this.convention,
       langueConventionLibelle: this.getNomenclatureValue('langueConvention'),
@@ -40,6 +44,9 @@ export class RecapitulatifComponent implements OnInit {
       natureTravailLibelle: this.getNomenclatureValue('natureTravail'),
       modeValidationStageLibelle: this.getNomenclatureValue(' modeValidationStage'),
     };
+    console.log("la tmpConvention");
+    
+    console.log(this.tmpConvention);
     if(this.tmpConvention.interruptionStage){
       this.loadInterruptionsStage();
     }
