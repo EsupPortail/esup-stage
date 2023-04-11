@@ -171,7 +171,6 @@ export class EtudiantComponent implements OnInit, OnChanges {
           this.formConvention.get('libelleCPAM')?.disable();
         }
       });
-
     });
 
     this.typeConventionService.getListActiveWithTemplate().subscribe((response: any) => {
@@ -196,7 +195,6 @@ export class EtudiantComponent implements OnInit, OnChanges {
     this.selectedNumEtudiant = null;
     this.ldapService.searchEtudiants(this.form.value).subscribe((response: any) => {
       this.etudiants = response;
-
       if (this.etudiants.length === 1) {
         this.choose(this.etudiants[0]);
       }

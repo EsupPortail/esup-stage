@@ -78,6 +78,8 @@ export class AvenantFormComponent implements OnInit {
   customValidForm: boolean = false;
   autreModifChecked: boolean = false;
 
+  numberPeriodeInterruption!: number;
+
   @Output() updated = new EventEmitter<any>();
   @ViewChild(TableComponent) serviceAppTable: TableComponent | undefined;
   @ViewChild(TableComponent) contactAppTable: TableComponent | undefined;
@@ -205,7 +207,13 @@ export class AvenantFormComponent implements OnInit {
         motifAvenant: [null, [Validators.required]],
       });
     }
-
+    if (this.avenant.id)
+    {
+      this.periodeInterruptionAvenantService.getByAvenant(this.avenant.id).subscribe((res) => {
+        if (res)
+          this.numberPeriodeInterruption = res.length;
+      })
+    }
     this.enseignantSearchForm = this.fb.group({
       nom: [null, []],
       prenom: [null, []],
@@ -240,7 +248,11 @@ export class AvenantFormComponent implements OnInit {
       const data = { ...this.form.value };
 
       data.idConvention = this.convention.id
-
+      if (this.addedInterruptionsStage.length)
+      {
+        data.interruptionsStage = this.addedInterruptionsStage;
+        this.numberPeriodeInterruption++;
+      }
       if (this.form.get('modificationLieu')!.value) {
         data.idService = this.service.id;
       }
@@ -281,14 +293,21 @@ export class AvenantFormComponent implements OnInit {
           }
         });
       } else {
-        this.avenantService.create(data).subscribe((response: any) => {
-          this.messageService.setSuccess('Avenant créé avec succès');
-          this.avenant = {};
-          this.form.reset();
-          this.ngOnInit();
-          this.form.markAsPristine();
-          this.form.markAsUntouched();
-          this.form.updateValueAndValidity();
+          this.avenantService.create(data).subscribe((response: any) => {
+            for(let i = 0; this.addedInterruptionsStage[i]; i++) //TODO : Erreur de conception. Il faudrait passer toutes les périodes dans l'avenant et faire la création/modification en même temps.
+            {
+              let dataToSend : any = {idAvenant: response.id, dateDebutInterruption: this.addedInterruptionsStage[i].dateDebutInterruption, dateFinInterruption: this.addedInterruptionsStage[i].dateFinInterruption, idConvention: this.addedInterruptionsStage[i].idConvention, isModif: this.addedInterruptionsStage[i].isModif};
+              this.periodeInterruptionAvenantService.create(dataToSend).subscribe((res) => {
+              })
+            }
+            this.messageService.setSuccess('Avenant créé avec succès');
+            this.form.reset();
+            this.addedInterruptionsStage = [];
+            this.ngOnInit();
+            this.form.markAsPristine();
+            this.form.markAsUntouched();
+            this.form.updateValueAndValidity();
+            this.avenant = {};
           if (this.form.get('modificationPeriode')!.value) {
             this.clearAndAddInterruptionsAvenant(response.id)
           } else {

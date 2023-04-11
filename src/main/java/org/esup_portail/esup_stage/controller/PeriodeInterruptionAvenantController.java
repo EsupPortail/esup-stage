@@ -139,7 +139,6 @@ public class PeriodeInterruptionAvenantController {
     }
 
     private void setPeriodeInterruptionAvenantData(PeriodeInterruptionAvenant periodeInterruptionAvenant, PeriodeInterruptionAvenantDto periodeInterruptionAvenantDto) {
-
         Avenant avenant = avenantJpaRepository.findById(periodeInterruptionAvenantDto.getIdAvenant());
         if (avenant == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvée");

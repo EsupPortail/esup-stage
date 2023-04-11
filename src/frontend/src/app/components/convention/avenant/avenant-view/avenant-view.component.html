@@ -30,8 +30,10 @@
     <div class="col-sm-9">{{convention.dateDebutStage|date:'shortDate'}}</div>
     <div class="col-sm-3 font-weight-bold">Ancienne date de fin du stage</div>
     <div class="col-sm-9">{{convention.dateFinStage|date:'shortDate'}}</div>
-    <div class="col-sm-3 font-weight-bold">Interruption au cours du stage</div>
+    <div class="col-sm-3 font-weight-bold">Interruption au cours du stage sur la convention</div>
     <div class="col-sm-9">{{convention.interruptionStage ? 'Oui' : 'Non'}}</div>
+    <div class="col-sm-3 font-weight-bold">Interruption au cours du stage sur cet avenant</div>
+    <div class="col-sm-9">{{numberPeriodeInterruption > 0 ? 'Oui' : 'Non'}}</div>
   </div>
   <div class="row" *ngIf="convention.interruptionStage">
     <div class="col-sm-3 font-weight-bold">Anciennes périodes d'interruption du stage</div>

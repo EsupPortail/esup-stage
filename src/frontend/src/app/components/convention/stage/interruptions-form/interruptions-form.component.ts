@@ -12,7 +12,7 @@ export class InterruptionsFormComponent implements OnInit  {
   periodes: any[] = [];
   interruptionsStage: any[] = [];
 
-  periodesForm: FormGroup;
+  periodesForm!: FormGroup;
 
   convention: any;
   interruptionStage: any;
@@ -112,6 +112,7 @@ export class InterruptionsFormComponent implements OnInit  {
       if (this.periodesForm.valid){
         const data = {...this.periodesForm.value};
         data.idConvention = this.convention.id;
+        data.interruption = true;
         this.dialogRef.close(data);
       }
     }else{
