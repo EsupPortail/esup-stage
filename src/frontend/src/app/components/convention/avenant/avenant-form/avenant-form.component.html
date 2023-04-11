@@ -68,9 +68,9 @@
       <div class="col-sm-9">{{convention.dateDebutStage|date:'shortDate'}}</div>
       <div class="col-sm-3 font-weight-bold">Date de fin du stage</div>
       <div class="col-sm-9">{{convention.dateFinStage|date:'shortDate'}}</div>
-      <div class="col-sm-3 font-weight-bold">Ancienne interruption au cours du stage</div>
+      <div class="col-sm-3 font-weight-bold">Interruption au cours du stage sur la convention</div>
       <div class="col-sm-9">{{convention.interruptionStage ? 'Oui' : 'Non'}}</div>
-      <div class="col-sm-3 font-weight-bold">Nouvelle interruption au cours du stage</div>
+      <div class="col-sm-3 font-weight-bold">Interruption au cours du stage sur cet avenant</div>
       <div class="col-sm-9">{{numberPeriodeInterruption > 0 ? 'Oui' : 'Non'}}</div>
     </div>
     <div class="row" *ngIf="convention.interruptionStage">
@@ -405,7 +405,7 @@
         <div class="col-sm-9">{{enseignant.nom+ ' ' + enseignant.prenom}}</div>
         <div class="col-sm-3 font-weight-bold">Fonction</div>
         <div class="col-sm-9">{{enseignant.typePersonne}}</div>
-        <div class="col-sm-3 font-weight-bold">Téléphone</div>.get('interruptionstage')!.value
+        <div class="col-sm-3 font-weight-bold">Téléphone</div>
         <div class="col-sm-9">{{enseignant.tel}}</div>
         <div class="col-sm-3 font-weight-bold">Mail</div>
         <div class="col-sm-9">{{enseignant.mail}}</div>

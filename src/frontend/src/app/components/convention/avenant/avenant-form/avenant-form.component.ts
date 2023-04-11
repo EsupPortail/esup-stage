@@ -294,7 +294,7 @@ export class AvenantFormComponent implements OnInit {
         });
       } else {
           this.avenantService.create(data).subscribe((response: any) => {
-            for(let i = 0; this.addedInterruptionsStage[i]; i++)
+            for(let i = 0; this.addedInterruptionsStage[i]; i++) //TODO : Erreur de conception. Il faudrait passer toutes les périodes dans l'avenant et faire la création/modification en même temps.
             {
               let dataToSend : any = {idAvenant: response.id, dateDebutInterruption: this.addedInterruptionsStage[i].dateDebutInterruption, dateFinInterruption: this.addedInterruptionsStage[i].dateFinInterruption, idConvention: this.addedInterruptionsStage[i].idConvention, isModif: this.addedInterruptionsStage[i].isModif};
               this.periodeInterruptionAvenantService.create(dataToSend).subscribe((res) => {
