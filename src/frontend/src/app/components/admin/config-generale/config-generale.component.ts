@@ -67,6 +67,7 @@ export class ConfigGeneraleComponent implements OnInit {
       validationPedagogiqueLibelle: [null, [Validators.required]],
       validationAdministrativeLibelle: [null, [Validators.required]],
       codeCesure: [null, ],
+      saisieManuelle: [false, [Validators.required]],
     });
     this.formTheme = this.fb.group({
       logo: [null, [Validators.required]],

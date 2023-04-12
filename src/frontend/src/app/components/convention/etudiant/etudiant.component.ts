@@ -26,7 +26,7 @@ import { TitleService } from 'src/app/services/title.service';
 })
 export class EtudiantComponent implements OnInit, OnChanges {
 
-  isEtudiant: boolean = true;
+  isEtudiant: boolean = false;
 
   form: FormGroup;
   columns = ['numetudiant', 'nomprenom', 'action'];
@@ -53,6 +53,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
   communes: any[] = [];
 
   volumeHoraireFormationBool: boolean = false;
+  defaultVolumeHoraire: any = null;
 
   @Input() convention: any;
   @Input() modifiable: boolean = false;
@@ -114,7 +115,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
         inscriptionElp: [null, []],
         idTypeConvention: [this.convention.typeConvention ? this.convention.typeConvention.id : null, [Validators.required]],
         codeLangueConvention: [this.convention.langueConvention ? this.convention.langueConvention.code : null, [Validators.required]],
-        volumeHoraireFormation: [this.convention.volumeHoraireFormation ? this.convention.volumeHoraireFormation : "0", Validators.pattern('^[0-9]+$')],
+        volumeHoraireFormation: [this.convention.volumeHoraireFormation ? this.convention.volumeHoraireFormation : null, []],
         volumeHoraireFormationBool:[false, ]
       });
       this.sansElp = response.autoriserElementPedagogiqueFacultatif;
@@ -132,6 +133,10 @@ export class EtudiantComponent implements OnInit, OnChanges {
           } else {
             this.formConvention.get('idTypeConvention')?.enable();
           }
+          this.formConvention.get('volumeHoraireFormation')?.setValue(inscription.etapeInscription.volumeHoraire);
+          this.defaultVolumeHoraire = this.formConvention.get('volumeHoraireFormation')?.value;
+          if(inscription.etapeInscription.volumeHoraire && inscription.etapeInscription.volumeHoraire != "0" && inscription.etapeInscription.volumeHoraire != "200+")
+            this.volumeHoraireFormationBool = true;
         }
       });
 
@@ -183,10 +188,6 @@ export class EtudiantComponent implements OnInit, OnChanges {
     this.form.valueChanges.pipe(debounceTime(1000)).subscribe(() => {
       this.search();
     });
-    console.log("la convention : ");
-    console.log(this.convention);
-    console.log("volumetHoraireFormation : ");
-    console.log(this.convention.volumeHoraireFormation);
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -258,11 +259,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
     return _.isEqual(row, this.selectedRow);
   }
 
-  validate(): void {
-    console.log("this.formConvention.valid");
-    
-    console.log(this.formConvention.valid);
-    
+  validate(): void { 
     if (this.formConvention.valid) {
       // Contrôle code postal commune
       if (this.isFr() && !this.isCodePostalValid()) {
@@ -378,6 +375,10 @@ export class EtudiantComponent implements OnInit, OnChanges {
 
   changevolumeHoraireFormationBool(value: boolean)
   {
-    this.volumeHoraireFormationBool = value;
+    if (!(this.defaultVolumeHoraire && this.defaultVolumeHoraire > 0))
+    {
+      this.volumeHoraireFormationBool = value;
+      this.formConvention.controls['volumeHoraireFormationBool'].setValue(value);
+    }
   }
 }

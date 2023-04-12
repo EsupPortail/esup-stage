@@ -35,7 +35,7 @@ export class ConventionComponent implements OnInit {
   modifiable = true;
   docaposteEnabled = false;
 
-  @ViewChild("tabGroup") tabGroup: MatTabGroup;
+  @ViewChild("tabGroup") tabGroup!: MatTabGroup;
 
   constructor(
     private activatedRoute: ActivatedRoute,
