@@ -14,6 +14,8 @@ public class ConfigGeneraleDto {
     private TypeCentreEnum typeCentre = null;
     private boolean autoriserCentresBloquerImpressionConvention = false;
 
+    private boolean saisieManuelle = false;
+
     @JsonView(Views.Etu.class)
     private boolean docaposteEnabled = false;
 
@@ -146,5 +148,13 @@ public class ConfigGeneraleDto {
 
     public void setCodeCesure(String codeCesure) {
         this.codeCesure = codeCesure;
+    }
+
+    public boolean isSaisieManuelle() {
+        return saisieManuelle;
+    }
+
+    public void setSaisieManuelle(boolean saisieManuelle) {
+        this.saisieManuelle = saisieManuelle;
     }
 }
