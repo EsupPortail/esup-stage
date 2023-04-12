@@ -1,36 +1,52 @@
 databaseChangeLog:
-    - changeSet:
-        id: etabEnseignement-nomenclature
-        author: tjubera
-        changes:
-            - insert:
-                columns:
-                  - column:
-                      name: libelleTypeStructure
-                      value: Etablissement d'enseignement
-                  - column:
-                      name: temEnServTypeStructure
-                      value: O
-                tableName: TypeStructure
-            - insert:
-                columns:
-                    - column:
-                        name: libelleStatutJuridique
-                        value: public
-                    - column:
-                        name: temEnServStatut
-                        value: O
-                    - column:
-                        name: idTypeStructure
-                        valueComputed: (SELECT idTypeStructure FROM TypeStructure WHERE libelleTypeStructure = 'Etablissement d''enseignement')
-                tableName: StatutJuridique
-    - changeSet:
-          id: etabEnseignement-rne
-          author: tjubera
-          changes:
-              - addColumn:
-                    tableName: Structure
-                    columns:
-                        - column:
-                              name: numeroRNE
-                              type: VARCHAR(8)
+- changeSet:
+    id: etabEnseignement-nomenclature
+    author: tjubera
+    validCheckSum: ANY
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT count(*) FROM TypeStructure WHERE libelleTypeStructure = 'Etablissement d''enseignement'
+    changes:
+    - insert:
+        columns:
+        - column:
+            name: libelleTypeStructure
+            value: Etablissement d'enseignement
+        - column:
+            name: temEnServTypeStructure
+            value: O
+        tableName: TypeStructure
+- changeSet:
+    id: StatutJuridique-public
+    author: ssound
+    preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+              expectedResult: 0
+              sql: SELECT count(*) FROM StatutJuridique WHERE lower(libelleStatutJuridique) = 'public'
+    changes:
+    - insert:
+        columns:
+        - column:
+            name: libelleStatutJuridique
+            value: public
+        - column:
+            name: temEnServStatut
+            value: O
+        - column:
+            name: idTypeStructure
+            valueComputed: (SELECT idTypeStructure FROM TypeStructure WHERE libelleTypeStructure = 'Etablissement d''enseignement')
+        tableName: StatutJuridique
+- changeSet:
+    id: etabEnseignement-rne
+    author: tjubera
+    validCheckSum: ANY
+    changes:
+    - addColumn:
+        tableName: Structure
+        columns:
+        - column:
+            name: numeroRNE
+            type: VARCHAR(8)

@@ -26,7 +26,7 @@ import { TitleService } from 'src/app/services/title.service';
 })
 export class EtudiantComponent implements OnInit, OnChanges {
 
-  isEtudiant: boolean = false;
+  isEtudiant: boolean = true;
 
   form: FormGroup;
   columns = ['numetudiant', 'nomprenom', 'action'];
@@ -119,6 +119,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
         volumeHoraireFormationBool:[false, ]
       });
       this.sansElp = response.autoriserElementPedagogiqueFacultatif;
+
       this.formConvention.get('inscription')?.valueChanges.subscribe((inscription: any) => {
         if (inscription) {
           this.sansElp = this.sansElp || !inscription.elementPedagogiques || inscription.elementPedagogiques.length == 0;
@@ -154,7 +155,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
             codEtu = response.numEtudiant;
             this.choose({codEtu: codEtu});
           });
-        }  
+        }
       }
 
       // Recherche des langues disponible en fonction du type de convention
@@ -203,7 +204,6 @@ export class EtudiantComponent implements OnInit, OnChanges {
     this.selectedNumEtudiant = null;
     this.ldapService.searchEtudiants(this.form.value).subscribe((response: any) => {
       this.etudiants = response;
-
       if (this.etudiants.length === 1) {
         this.choose(this.etudiants[0]);
       }
@@ -259,7 +259,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
     return _.isEqual(row, this.selectedRow);
   }
 
-  validate(): void { 
+  validate(): void {
     if (this.formConvention.valid) {
       // Contrôle code postal commune
       if (this.isFr() && !this.isCodePostalValid()) {
@@ -292,7 +292,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
           this.validated.emit(response);
         });
       } else {
-        this.conventionService.update(this.convention.id, data).subscribe((response: any) => {        
+        this.conventionService.update(this.convention.id, data).subscribe((response: any) => {
           this.validated.emit(response);
         });
       }
