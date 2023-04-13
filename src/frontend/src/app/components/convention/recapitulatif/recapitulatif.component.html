@@ -160,6 +160,12 @@
           <div class="col-sm-9">{{tmpConvention.travailNuitFerie}}</div>
           <div class="col-sm-3 font-weight-bold">Date de création de la convention </div>
           <div class="col-sm-9">{{tmpConvention.dateValidationCreation |date:'shortDate'}}</div>
+          <div class="col-sm-3 font-weight-bold">Par </div>
+          <div class="col-sm-9">{{tmpConvention.contact.loginCreation}}</div>
+          <div class="col-sm-3 font-weight-bold">Date de dernière modification </div>
+          <div class="col-sm-9">{{tmpConvention.contact.dateModif |date:'shortDate'}}</div>
+          <div class="col-sm-3 font-weight-bold">Par </div>
+          <div class="col-sm-9">{{tmpConvention.contact.loginModif}}</div>
         </div>
       </div>
 
