@@ -38,6 +38,10 @@ public class EtudiantGroupeEtudiant implements Exportable {
         return etudiant.getId();
     }
 
+    public String getEtudiantNumEtudiant() {
+        return etudiant.getNumEtudiant();
+    }
+
     public void setId(int id) {
         this.id = id;
     }

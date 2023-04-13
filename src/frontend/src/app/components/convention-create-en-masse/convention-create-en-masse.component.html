@@ -4,7 +4,7 @@
       Sélection d'un groupe d'étudiants
       <mat-progress-bar mode="determinate" [value]="getProgressValue(0)" [ngClass]="{editing: tabs[0].statut === 1, done: tabs[0].statut === 2}"></mat-progress-bar>
     </ng-template>
-    <app-selection-groupe-etu (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant"></app-selection-groupe-etu>
+    <app-selection-groupe-etu *ngIf="tabs[0].init"  (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant" [sharedData]="sharedData"></app-selection-groupe-etu>
   </mat-tab>
   <mat-tab #infosStageTab [disabled]="!groupeEtudiant">
     <ng-template mat-tab-label>

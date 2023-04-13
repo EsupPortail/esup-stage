@@ -20,6 +20,8 @@ public class LdapUser {
     private String eduPersonPrimaryAffiliation;
     private List<String> eduPersonAffiliation = new ArrayList<>();
     private List<String> supannEntiteAffectation = new ArrayList<>();
+    private String supannEtuAnneeInscription;
+    private List<String> supannEtuEtape = new ArrayList<>();
     private String supannEntiteAffectationPrincipale;
     private String supannCivilite;
     private String telephoneNumber;
@@ -126,6 +128,22 @@ public class LdapUser {
 
     public void setSupannEntiteAffectation(List<String> supannEntiteAffectation) {
         this.supannEntiteAffectation = supannEntiteAffectation;
+    }
+
+    public String getSupannEtuAnneeInscription() {
+        return supannEtuAnneeInscription;
+    }
+
+    public void setSupannEtuAnneeInscription(String supannEtuAnneeInscription) {
+        this.supannEtuAnneeInscription = supannEtuAnneeInscription;
+    }
+
+    public List<String> getSupannEtuEtape() {
+        return supannEtuEtape;
+    }
+
+    public void setSupannEtuEtape(List<String> supannEtuEtape) {
+        this.supannEtuEtape = supannEtuEtape;
     }
 
     public String getSupannEntiteAffectationPrincipale() {

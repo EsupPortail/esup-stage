@@ -9,6 +9,9 @@ public class LdapSearchDto {
     private String affiliation;
     private String supannAliasLogin;
     private String codEtu;
+    private String supannEtuEtape;
+    private String supannEntiteAffectation;
+    private String supannEtuAnneeInscription;
 
     public String getId() {
         return id;
@@ -74,6 +77,30 @@ public class LdapSearchDto {
         this.codEtu = codEtu;
     }
 
+    public String getSupannEtuEtape() {
+        return supannEtuEtape;
+    }
+
+    public void setSupannEtuEtape(String supannEtuEtape) {
+        this.supannEtuEtape = supannEtuEtape;
+    }
+
+    public String getSupannEntiteAffectation() {
+        return supannEntiteAffectation;
+    }
+
+    public void setSupannEntiteAffectation(String supannEntiteAffectation) {
+        this.supannEntiteAffectation = supannEntiteAffectation;
+    }
+
+    public String getSupannEtuAnneeInscription() {
+        return supannEtuAnneeInscription;
+    }
+
+    public void setSupannEtuAnneeInscription(String supannEtuAnneeInscription) {
+        this.supannEtuAnneeInscription = supannEtuAnneeInscription;
+    }
+
     @Override
     public String toString() {
         return "LdapSearchDto{" +
@@ -85,6 +112,9 @@ public class LdapSearchDto {
                 ", affiliation='" + affiliation + '\'' +
                 ", supannAliasLogin='" + supannAliasLogin + '\'' +
                 ", codEtu='" + codEtu + '\'' +
+                ", supannEtuEtape='" + supannEtuEtape + '\'' +
+                ", supannEntiteAffectation='" + supannEntiteAffectation + '\'' +
+                ", supannEtuAnneeInscription='" + supannEtuAnneeInscription + '\'' +
                 '}';
     }
 }

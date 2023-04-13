@@ -190,7 +190,7 @@ public class ConventionService {
         convention.setAdresseEtudiant(conventionFormDto.getAdresseEtudiant());
         convention.setCodePostalEtudiant(conventionFormDto.getCodePostalEtudiant());
         convention.setVilleEtudiant(conventionFormDto.getVilleEtudiant());
-        convention.setPaysEtudiant(convention.getPaysEtudiant());
+        convention.setPaysEtudiant(conventionFormDto.getPaysEtudiant());
         convention.setTelEtudiant(conventionFormDto.getTelEtudiant());
         convention.setTelPortableEtudiant(conventionFormDto.getTelPortableEtudiant());
         convention.setCourrielPersoEtudiant(conventionFormDto.getCourrielPersoEtudiant());

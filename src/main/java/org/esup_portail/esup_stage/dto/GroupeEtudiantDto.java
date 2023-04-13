@@ -1,5 +1,7 @@
 package org.esup_portail.esup_stage.dto;
 
+import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
+
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -19,7 +21,10 @@ public class GroupeEtudiantDto {
     private String nomGroupe;
 
     @NotNull
-    private List<Integer> etudiantIds = new ArrayList<>();
+    private List<Integer> etudiantRemovedIds = new ArrayList<>();
+
+    @NotNull
+    private List<LdapUser> etudiantAdded = new ArrayList<>();
 
     public String getCodeGroupe() {
         return codeGroupe;
@@ -37,11 +42,19 @@ public class GroupeEtudiantDto {
         this.nomGroupe = nomGroupe;
     }
 
-    public List<Integer> getEtudiantIds() {
-        return etudiantIds;
+    public List<Integer> getEtudiantRemovedIds() {
+        return etudiantRemovedIds;
     }
 
-    public void setEtudiantIds(List<Integer> etudiantIds) {
-        this.etudiantIds = etudiantIds;
+    public void setEtudiantRemovedIds(List<Integer> etudiantRemovedIds) {
+        this.etudiantRemovedIds = etudiantRemovedIds;
+    }
+
+    public List<LdapUser> getEtudiantAdded() {
+        return etudiantAdded;
+    }
+
+    public void setEtudiantAdded(List<LdapUser> etudiantAdded) {
+        this.etudiantAdded = etudiantAdded;
     }
 }

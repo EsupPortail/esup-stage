@@ -7,7 +7,6 @@ import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
-import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
 import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
@@ -18,6 +17,7 @@ import org.esup_portail.esup_stage.service.apogee.ApogeeService;
 import org.esup_portail.esup_stage.service.apogee.model.EtapeInscription;
 import org.esup_portail.esup_stage.service.apogee.model.EtudiantRef;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
+import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -229,9 +229,15 @@ public class GroupeEtudiantController {
         groupeEtudiantDto.setCodeGroupe(groupeEtudiant.getCode() + " duplicate");
         groupeEtudiantDto.setNomGroupe(groupeEtudiant.getNom());
 
-        List<Integer> etudiantIds = groupeEtudiant.getEtudiantGroupeEtudiants().stream().map(EtudiantGroupeEtudiant::getEtudiantId).collect(Collectors.toList());
+        List<String> numEtudiants = groupeEtudiant.getEtudiantGroupeEtudiants().stream().map(EtudiantGroupeEtudiant::getEtudiantNumEtudiant).collect(Collectors.toList());
 
-        groupeEtudiantDto.setEtudiantIds(etudiantIds);
+        List<LdapUser> etudiantsAdded = new ArrayList<>();
+        for(String numEtudiant : numEtudiants){
+            LdapUser etudiant = new LdapUser();
+            etudiant.setCodEtu(numEtudiant);
+            etudiantsAdded.add(etudiant);
+        }
+        groupeEtudiantDto.setEtudiantAdded(etudiantsAdded);
 
         GroupeEtudiant newGroupeEtudiant = create(groupeEtudiantDto);
         newGroupeEtudiant.setInfosStageValid(true);
@@ -276,12 +282,8 @@ public class GroupeEtudiantController {
 
         GroupeEtudiant groupeEtudiant = new GroupeEtudiant();
 
-        //le premier étudiant de la liste est affecté à la convention du groupe d'étudiant (tentative)
-        int id = groupeEtudiantDto.getEtudiantIds().get(0);
-        Etudiant e = etudiantJpaRepository.findById(id);
-        if (e == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Etudiant non trouvé");
-        }
+        //le premier étudiant de la liste est affecté à la convention du groupe d'étudiant
+        LdapUser e = groupeEtudiantDto.getEtudiantAdded().get(0);
         Convention convention = createNewConvention(e);
 
         groupeEtudiant.setConvention(convention);
@@ -292,14 +294,9 @@ public class GroupeEtudiantController {
 
         List<EtudiantGroupeEtudiant> etudiantGroupeEtudiants = new ArrayList<>();
 
-        for(int etudiantId : groupeEtudiantDto.getEtudiantIds()){
+        for(LdapUser etudiant : groupeEtudiantDto.getEtudiantAdded()){
 
-            Etudiant etudiant = etudiantJpaRepository.findById(etudiantId);
-            if (etudiant == null) {
-                throw new AppException(HttpStatus.NOT_FOUND, "Etudiant non trouvé");
-            }
-
-            EtudiantGroupeEtudiant etudiantGroupeEtudiant = createNewEtudiantGroupeEtudiant(groupeEtudiant,etudiant);
+            EtudiantGroupeEtudiant etudiantGroupeEtudiant = createNewEtudiantGroupeEtudiant(groupeEtudiant, etudiant);
             etudiantGroupeEtudiants.add(etudiantGroupeEtudiant);
         }
         groupeEtudiant.setEtudiantGroupeEtudiants(etudiantGroupeEtudiants);
@@ -483,14 +480,15 @@ public class GroupeEtudiantController {
         groupeEtudiant.setNom(groupeEtudiantDto.getNomGroupe());
         groupeEtudiant.setCode(groupeEtudiantDto.getCodeGroupe());
 
-        List<Integer> oldEtudiants = groupeEtudiant.getEtudiantGroupeEtudiants().stream().map(EtudiantGroupeEtudiant::getEtudiantId).collect(Collectors.toList());
-        List<Integer> newEtudiants = groupeEtudiantDto.getEtudiantIds();
+        List<String> oldEtudiants = groupeEtudiant.getEtudiantGroupeEtudiants().stream().map(EtudiantGroupeEtudiant::getEtudiantNumEtudiant).collect(Collectors.toList());
+        List<LdapUser> newEtudiants = groupeEtudiantDto.getEtudiantAdded();
 
-        List<Integer> addedEtudiants = new ArrayList<>();
+        List<LdapUser> addedEtudiants = new ArrayList<>();
+        List<Integer> removedEtudiants = groupeEtudiantDto.getEtudiantRemovedIds();
 
-        for(int etudiantId : newEtudiants){
-            if(!oldEtudiants.contains(etudiantId)){
-                addedEtudiants.add(etudiantId);
+        for(LdapUser etudiant : newEtudiants){
+            if(!oldEtudiants.contains(etudiant.getCodEtu())){
+                addedEtudiants.add(etudiant);
             }
         }
 
@@ -500,7 +498,7 @@ public class GroupeEtudiantController {
         Iterator<EtudiantGroupeEtudiant> it = etudiantGroupeEtudiants.iterator();
         while(it.hasNext()) {
             EtudiantGroupeEtudiant etudiantGroupeEtudiant = it.next();
-            if(!newEtudiants.contains(etudiantGroupeEtudiant.getEtudiantId())){
+            if(removedEtudiants.contains(etudiantGroupeEtudiant.getId())){
                 it.remove();
                 etudiantGroupeEtudiantJpaRepository.delete(etudiantGroupeEtudiant);
                 conventionJpaRepository.delete(etudiantGroupeEtudiant.getConvention());
@@ -508,14 +506,8 @@ public class GroupeEtudiantController {
         }
 
         //added etudiants
-        for(int etudiantId : addedEtudiants){
-
-            Etudiant etudiant = etudiantJpaRepository.findById(etudiantId);
-            if (etudiant == null) {
-                throw new AppException(HttpStatus.NOT_FOUND, "Etudiant non trouvé");
-            }
-
-            EtudiantGroupeEtudiant etudiantGroupeEtudiant = createNewEtudiantGroupeEtudiant(groupeEtudiant,etudiant);
+        for(LdapUser etudiant : addedEtudiants){
+            EtudiantGroupeEtudiant etudiantGroupeEtudiant = createNewEtudiantGroupeEtudiant(groupeEtudiant, etudiant);
             etudiantGroupeEtudiants.add(etudiantGroupeEtudiant);
         }
 
@@ -534,33 +526,29 @@ public class GroupeEtudiantController {
         return true;
     }
 
-    private EtudiantGroupeEtudiant createNewEtudiantGroupeEtudiant(GroupeEtudiant groupeEtudiant, Etudiant etudiant) {
+    private EtudiantGroupeEtudiant createNewEtudiantGroupeEtudiant(GroupeEtudiant groupeEtudiant, LdapUser etudiant) {
         Convention convention = createNewConvention(etudiant);
         EtudiantGroupeEtudiant etudiantGroupeEtudiant = new EtudiantGroupeEtudiant();
-        etudiantGroupeEtudiant.setEtudiant(etudiant);
+        etudiantGroupeEtudiant.setEtudiant(convention.getEtudiant());
         etudiantGroupeEtudiant.setConvention(convention);
         etudiantGroupeEtudiant.setGroupeEtudiant(groupeEtudiant);
         return etudiantGroupeEtudiantJpaRepository.save(etudiantGroupeEtudiant);
     }
 
-    private Convention createNewConvention(Etudiant etudiant) {
+    private Convention createNewConvention(LdapUser etudiant) {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
 
-        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && (etudiant == null || !utilisateur.getLogin().equals(etudiant.getIdentEtudiant()))) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Étudiant non trouvé");
-        }
-
-        EtudiantRef etudiantRef = apogeeService.getInfoApogee(etudiant.getNumEtudiant(), appConfigService.getAnneeUniv());
-        List<ConventionFormationDto> inscriptions = apogeeService.getInscriptions(utilisateur, etudiant.getNumEtudiant(), null);
+        EtudiantRef etudiantRef = apogeeService.getInfoApogee(etudiant.getCodEtu(), appConfigService.getAnneeUniv());
+        List<ConventionFormationDto> inscriptions = apogeeService.getInscriptions(utilisateur, etudiant.getCodEtu(), null);
 
         if (inscriptions.size() == 0) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Aucunes inscriptions trouvées dans apogée pour l'étudiant : " + etudiant.getNom() + " " + etudiant.getPrenom());
+            throw new AppException(HttpStatus.NOT_FOUND, "Aucunes inscriptions trouvées dans apogée pour l'étudiant : " + etudiant.getSn() + " " + etudiant.getGivenName());
         }
         EtapeInscription etapeInscription = inscriptions.get(0).getEtapeInscription();
         TypeConvention typeConvention = inscriptions.get(0).getTypeConvention();
 
         if (etapeInscription == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Aucun etapeInscription renseignée dans apogée pour l'étudiant : " + etudiant.getNom() + " " + etudiant.getPrenom());
+            throw new AppException(HttpStatus.NOT_FOUND, "Aucun etapeInscription renseignée dans apogée pour l'étudiant : " + etudiant.getSn() + " " + etudiant.getGivenName());
         }
         if (typeConvention == null) {
             typeConvention = typeConventionJpaRepository.findAll().get(0);
@@ -576,8 +564,8 @@ public class GroupeEtudiantController {
         conventionFormDto.setCodeEtape(etapeInscription.getCodeEtp());
         conventionFormDto.setCodeVersionEtape(etapeInscription.getCodVrsVet());
         conventionFormDto.setAnnee(inscriptions.get(0).getAnnee());
-        conventionFormDto.setNumEtudiant(etudiant.getNumEtudiant());
-        conventionFormDto.setEtudiantLogin(etudiant.getIdentEtudiant());
+        conventionFormDto.setNumEtudiant(etudiant.getCodEtu());
+        conventionFormDto.setEtudiantLogin(etudiant.getUid());
 
         conventionFormDto.setAdresseEtudiant(etudiantRef.getMainAddress());
         conventionFormDto.setCodePostalEtudiant(etudiantRef.getPostalCode());

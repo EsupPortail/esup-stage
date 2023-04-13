@@ -23,7 +23,7 @@ export class ConventionCreateEnMasseComponent implements OnInit {
   allValid = false;
 
   tabs: any = {
-    0: { statut: 0, init: true },
+    0: { statut: 0, init: false },
     1: { statut: 0, init: false },
     2: { statut: 2, init: false },
     3: { statut: 0, init: false },
@@ -46,12 +46,12 @@ export class ConventionCreateEnMasseComponent implements OnInit {
   ngOnInit(): void {
     this.sharedData.columns = ['select','numEtudiant','nom', 'prenom', 'mail', 'ufr.libelle', 'etape.libelle', 'annee'];
     this.sharedData.filters = [
-      { id: 'ufr.id', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
-      { id: 'etape.id', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
-      { id: 'convention.annee', libelle: 'Année', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'libelle', value: [] },
       { id: 'etudiant.nom', libelle: 'Nom'},
       { id: 'etudiant.prenom', libelle: 'Prénom'},
       { id: 'etudiant.numEtudiant', libelle: 'N° étudiant'},
+      { id: 'convention.annee', libelle: 'Année', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'libelle', value: [] },
+      { id: 'ufr.id', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
+      { id: 'etape.id', libelle: 'Étape', type: 'autocomplete', autocompleteService: this.etapeService, options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true, colSpan: 9 },
     ];
     this.sharedData.filters.push({ id: 'groupeEtudiant.id', type: 'int', value: 0, hidden: true, permanent: true });
 
@@ -159,6 +159,7 @@ export class ConventionCreateEnMasseComponent implements OnInit {
       let filter = this.sharedData.filters.find((f: any) => f.id === 'groupeEtudiant.id');
       if (filter) filter.value = this.groupeEtudiant.id;
     }
+    this.tabs[0].init = true;
   }
 
   updateGroupeEtudiant(data: any): void {
