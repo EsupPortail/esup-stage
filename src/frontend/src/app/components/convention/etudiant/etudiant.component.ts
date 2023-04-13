@@ -136,7 +136,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
           }
           this.formConvention.get('volumeHoraireFormation')?.setValue(inscription.etapeInscription.volumeHoraire);
           this.defaultVolumeHoraire = this.formConvention.get('volumeHoraireFormation')?.value;
-          if(inscription.etapeInscription.volumeHoraire && inscription.etapeInscription.volumeHoraire != "0" && inscription.etapeInscription.volumeHoraire != "200+")
+          if(inscription.etapeInscription.volumeHoraire && inscription.etapeInscription.volumeHoraire != "0" && inscription.etapeInscription.volumeHoraire != "200")
             this.volumeHoraireFormationBool = true;
         }
       });
@@ -286,7 +286,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
         data.etudiantLogin = this.convention.etudiant.identEtudiant;
       }
       if(this.volumeHoraireFormationBool == false)
-        data.volumeHoraireFormation = "200+";
+        data.volumeHoraireFormation = "200";
       if (!this.convention || !this.convention.id) {
         this.conventionService.create(data).subscribe((response: any) => {
           this.validated.emit(response);
