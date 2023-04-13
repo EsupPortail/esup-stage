@@ -208,6 +208,7 @@ public class ConventionService {
         convention.setCreditECTS(conventionFormDto.getCreditECTS());
         convention.setNomEtabRef(centreGestionEtab.getNomCentre());
         convention.setAdresseEtabRef(centreGestionEtab.getAdresseComplete());
+        convention.setVolumeHoraireFormation(conventionFormDto.getVolumeHoraireFormation());
 
         canViewEditConvention(convention, ServiceContext.getUtilisateur());
         if (!isConventionModifiable(convention, ServiceContext.getUtilisateur())) {
