@@ -70,7 +70,7 @@ Les certificats pour Docaposte peuvent être déposés où vous le souhaitez en 
 * lancer la génération des classes java pour le client Docaposte avec la commande maven `-Pdev jaxb2:generate` : les classes sont générées dans `org/esup_portail/esup_stage/docaposte/gen`
 * lancer le serveur avec une commande maven `-Pdev clean package cargo:run`. Le profil `dev` permet de désactiver l'installation de node, npm et du build angular. Si besoin, il suffit de commenter la partie `execution` se trouvant au niveau du profil `dev`.
 * pour lancer le frontend dev :
-  * sans Docker : lancer la commande `ng serve --host localhost.dauphine.fr` au niveau du dossier frontend (node et npm devront être installés)
+  * sans Docker : lancer la commande `ng serve --host localhost.dauphine.fr --proxy-config src/proxy.conf.json` au niveau du dossier frontend (node et npm devront être installés)
   * avec Docker :
     * se positionner au niveau du dossier `frontend`
     * lancer les commandes suivantes pour initier et installer les nodes modules :

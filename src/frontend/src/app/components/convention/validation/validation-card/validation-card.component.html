@@ -1,8 +1,5 @@
 <div class="validation-card">
   <h5 class="text-title">{{validationLibelles[validation] ?? 'vérification administrative'}}</h5>
-  <p *ngIf="validation === 'validationPedagogique'"><b>{{validationLibelles[validation]}} : </b>lorsque le projet de stage saisi par l'étudiant a été vérifié, l'autorisant ainsi à l'imprimer.</p>
-  <p *ngIf="validation === 'validationConvention'"><b>{{validationLibelles[validation]}} : </b>lorsque tous les partenaires du stage ont signé la convention papier.</p>
-  <p *ngIf="validation === 'verificationAdministrative'"><b>vérification administrative : </b>lorsque la convention saisie par l'étudiant a été vérifiée, l'autorisant ainsi à l'imprimer.</p>
   <div class="text-center info" [class.validate]="convention[validation]">
     <ng-container *ngIf="convention[validation]; else nonValid">
       <i class="fa fa-check"></i> {{validationLibelles[validation] ?? 'vérification administrative'}} effectuée.

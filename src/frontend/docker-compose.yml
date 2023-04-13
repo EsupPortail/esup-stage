@@ -6,10 +6,12 @@ services:
     build:
       context: ./
       dockerfile: dev.Dockerfile
-    command: serve --host 0.0.0.0 --disable-host-check
+    command: serve --host 0.0.0.0 --disable-host-check --proxy-config src/proxy-docker.conf.json
     ports:
       - 8700:4200
     volumes:
       - ./:/home/node/app
     expose:
       - "4200"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

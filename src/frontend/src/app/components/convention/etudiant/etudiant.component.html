@@ -187,7 +187,7 @@
                     <mat-form-field class="col-sm-12 mb-2" appearance="fill">
                       <mat-label>Élément pédagogique</mat-label>
                       <mat-select formControlName="inscriptionElp" [required]="!sansElp">
-                        <mat-option *ngFor="let elp of selectedInscription.elementPedagogiques" [value]="elp">{{elp.codElp + ' - ' + elp.libElp + ' : ' + elp.nbrCrdElp}}</mat-option>
+                        <mat-option *ngFor="let elp of selectedInscription.elementPedagogiques" [value]="elp">{{elp.codElp + ' - ' + elp.libElp + ' : ' + elp.nbrCrdElp + ' Crédits ECTS'}}</mat-option>
                       </mat-select>
                       <mat-error><app-form-error [field]="formConvention.get('inscriptionElp')"></app-form-error></mat-error>
                     </mat-form-field>
@@ -199,12 +199,13 @@
                         <mat-radio-button value="true" [checked]="this.defaultVolumeHoraire && this.defaultVolumeHoraire > 0 ? true : false" (click)="changevolumeHoraireFormationBool(true)">{{ !(this.defaultVolumeHoraire && this.defaultVolumeHoraire > 0) ? "Saisie manuelle" : "Valeur récupérée via les données de l'établissement (Apogée)"}} :</mat-radio-button>
                       </mat-radio-group>
                   </div>
-                  </div>
+                </div>
                   <div class="row">
                     <mat-form-field *ngIf="volumeHoraireFormationBool==true" class="col-sm-12 mb-2" appearance="fill">
                       <mat-label>Entrez le nombre d'heures de formation :</mat-label>
                       <input matInput formControlName="volumeHoraireFormation"/>
                     </mat-form-field>
+                  </div>
                   <div class="row">
                     <mat-form-field class="col-sm-12 mb-2" appearance="fill">
                       <mat-label>Type de convention</mat-label>
@@ -221,7 +222,6 @@
                       <mat-error><app-form-error [field]="formConvention.get('codeLangueConvention')"></app-form-error></mat-error>
                     </mat-form-field>
                   </div>
-                </div>
               </ng-template>
             </div>
 

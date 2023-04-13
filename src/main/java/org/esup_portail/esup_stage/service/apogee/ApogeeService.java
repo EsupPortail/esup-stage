@@ -235,7 +235,7 @@ public class ApogeeService {
                 conventionFormationDto.setEtapeInscription(etapeInscription);
                 conventionFormationDto.setAnnee(annee);
                 String codeCursusAmenage = etapeInscription.getCodeCursusAmenage();
-                if(codeCursusAmenage != null && !codeCursusAmenage.isEmpty() && appConfigService.getConfigGenerale().getCodeCesure() != null){
+                if(codeCursusAmenage != null && !codeCursusAmenage.isEmpty() && appConfigService.getConfigGenerale().getCodeCesure() != null && !appConfigService.getConfigGenerale().getCodeCesure().isEmpty()){
                     List<String> codeCesureList = List.of(appConfigService.getConfigGenerale().getCodeCesure().split(";"));
                     if (codeCesureList.contains(codeCursusAmenage))
                         if (typeConventionJpaRepository.findByCodeCtrl(codeCursusAmenage) != null )
