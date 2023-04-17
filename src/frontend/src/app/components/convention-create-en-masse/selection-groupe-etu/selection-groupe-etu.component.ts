@@ -97,9 +97,10 @@ export class SelectionGroupeEtuComponent implements OnInit {
     });
 
     this.autocompleteChanged.pipe(debounceTime(1000)).subscribe(async (event: any) => {
+      if (!event) return;
       this.autocompleteData = await this.etapeService.getAutocompleteData(event).toPromise();
       this.autocompleteData = this.autocompleteData.data;
-      if(event === ''){
+      if (event === '') {
         this.etapeFilterValue = '';
         this.search();
       }
@@ -123,7 +124,8 @@ export class SelectionGroupeEtuComponent implements OnInit {
   search(): void {
     if (!this.formAddEtudiants.get('codEtu')?.value && !this.formAddEtudiants.get('nom')?.value && !this.formAddEtudiants.get('prenom')?.value
     && !this.formAddEtudiants.get('etape')?.value && !this.formAddEtudiants.get('composante')?.value && !this.formAddEtudiants.get('annee')?.value) {
-      this.messageService.setError(`Veuillez renseigner au moins l'un des critères`);
+      this.etudiants = [];
+      this.selectedAdd = [];
       return;
     }
     const data = {...this.formAddEtudiants.value};
@@ -231,8 +233,29 @@ export class SelectionGroupeEtuComponent implements OnInit {
     }
   }
 
+  resetFilters(): void {
+    this.formAddEtudiants.reset();
+  }
+
   filterOnChange(value: string): void {
     this.filterChanged.next(value);
+  }
+
+  getEtapeLibelle(ldapEtape: string): string {
+    let etape = ldapEtape.split('}')[1].split('-');
+    let codeEtape = etape[0];
+    let codeVersionEtape = etape[1];
+    let result = this.etapeList.find((x: any) => x.id.code === codeEtape && x.id.codeVersionEtape === codeVersionEtape);
+    if (result)
+      return result.libelle;
+    return ldapEtape;
+  }
+
+  getUfrLibelle(codeUfr: string): string {
+    let result = this.ufrList.find((x: any) => x.id.code === codeUfr);
+    if (result)
+      return result.libelle;
+    return codeUfr;
   }
 
   searchAutocomplete(value: string): void {
