@@ -542,13 +542,40 @@ public class GroupeEtudiantController {
         List<ConventionFormationDto> inscriptions = apogeeService.getInscriptions(utilisateur, etudiant.getCodEtu(), null);
 
         if (inscriptions.size() == 0) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Aucunes inscriptions trouvées dans apogée pour l'étudiant : " + etudiant.getSn() + " " + etudiant.getGivenName());
+            throw new AppException(HttpStatus.NOT_FOUND, "Aucunes inscriptions trouvées dans apogée pour l'étudiant : " + etudiant.getCn());
         }
-        EtapeInscription etapeInscription = inscriptions.get(0).getEtapeInscription();
-        TypeConvention typeConvention = inscriptions.get(0).getTypeConvention();
+
+        if (etudiant.getSupannEtuEtape().size() < 1 || !etudiant.getSupannEtuEtape().get(0).contains("}") || !etudiant.getSupannEtuEtape().get(0).contains("-")) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Données ldap invalides pour l'étudiant : " + etudiant.getCn());
+        }
+
+        String etape = etudiant.getSupannEtuEtape().get(0).split("}")[1];
+        String codeEtape = etape.split("-")[0];
+        String codeVersionEtape = etape.split("-")[1];
+        String codeComposante = etudiant.getSupannEntiteAffectationPrincipale();
+
+        ConventionFormationDto inscription = null;
+
+        for (ConventionFormationDto _inscription : inscriptions) {
+            if (_inscription.getEtapeInscription() != null &&
+                _inscription.getEtapeInscription().getCodeComposante().equals(codeComposante) &&
+                _inscription.getEtapeInscription().getCodeEtp().equals(codeEtape) &&
+                _inscription.getEtapeInscription().getCodVrsVet().equals(codeVersionEtape)) {
+                inscription = _inscription;
+            }
+        }
+
+        if (inscription == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Aucunes inscriptions trouvées dans apogée pour l'étudiant : " + etudiant.getCn() +
+                    " avec param : {année : " + etudiant.getSupannEtuAnneeInscription() + ", codeComposante : " + codeComposante +
+                    ", codeEtape : " + codeEtape + ", codeVersionEtape : " + codeVersionEtape + "}");
+        }
+
+        EtapeInscription etapeInscription = inscription.getEtapeInscription();
+        TypeConvention typeConvention = inscription.getTypeConvention();
 
         if (etapeInscription == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Aucun etapeInscription renseignée dans apogée pour l'étudiant : " + etudiant.getSn() + " " + etudiant.getGivenName());
+            throw new AppException(HttpStatus.NOT_FOUND, "Aucun etapeInscription renseignée dans apogée pour l'étudiant : " + etudiant.getCn());
         }
         if (typeConvention == null) {
             typeConvention = typeConventionJpaRepository.findAll().get(0);
