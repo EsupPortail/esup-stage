@@ -4,7 +4,7 @@
       <div class="text-title">Choix du tuteur professionnel</div>
       <mat-divider class="mb-3"></mat-divider>
       <div class="mb-2">
-        <button mat-flat-button style="margin-right:5px" color="primary" (click)="selectForGroup()">pour le groupe d'étudiant</button>
+        <button mat-flat-button style="margin-right:5px" color="primary" (click)="selectForGroup()" [disabled]="!groupeEtudiant.convention.structure || !groupeEtudiant.convention.service">pour le groupe d'étudiant</button>
         <button mat-flat-button style="margin-right:5px" color="primary" (click)="selectForSelected()" [disabled]="selected.length === 0">pour les étudiants sélectionnés</button>
       </div>
     </div>

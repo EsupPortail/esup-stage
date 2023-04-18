@@ -101,37 +101,72 @@ export class ConventionCreateEnMasseComponent implements OnInit {
     }else{
       this.setStatus(1,0);
     }
-    if (this.groupeEtudiant && this.groupeEtudiant.convention.structure){
+    if (this.groupeEtudiant && this.allValidStructure()){
       this.setStatus(3,2);
     }else{
       this.setStatus(3,0);
     }
-    if (this.groupeEtudiant && this.groupeEtudiant.convention.service){
+    if (this.groupeEtudiant && this.allValidService()){
       this.setStatus(4,2);
     }else{
       this.setStatus(4,0);
     }
-    if (this.groupeEtudiant && this.groupeEtudiant.convention.contact){
+    if (this.groupeEtudiant && this.allValidContact()){
       this.setStatus(5,2);
     }else{
       this.setStatus(5,0);
     }
-    if (this.groupeEtudiant && this.groupeEtudiant.convention.enseignant){
+    if (this.groupeEtudiant && this.allValidEnseignant()){
       this.setStatus(6,2);
     }else{
       this.setStatus(6,0);
     }
-    //le signataire est facultatif pour la création en masse
-    //if (this.groupeEtudiant && this.groupeEtudiant.convention.signataire){
-    //  this.setStatus(7,2);
-    //}else{
-    //  this.setStatus(7,0);
-    //}
   }
 
   setStatus(key: number, value: number): void {
     this.tabs[key].statut = value;
     this.majAllValid();
+  }
+
+  allValidStructure(): boolean {
+    return this.groupeEtudiant.convention.structure || this.allValidEtudiantsStructure();
+  }
+  allValidService(): boolean {
+    return this.groupeEtudiant.convention.service || this.allValidEtudiantsService();
+  }
+  allValidContact(): boolean {
+    return this.groupeEtudiant.convention.contact || this.allValidEtudiantsContact();
+  }
+  allValidEnseignant(): boolean {
+    return this.groupeEtudiant.convention.enseignant || this.allValidEtudiantsEnseignant();
+  }
+  allValidEtudiantsStructure(): boolean {
+    for (let etudiant of this.groupeEtudiant.etudiantGroupeEtudiants) {
+      if (!etudiant.convention.structure)
+        return false;
+    }
+    return true;
+  }
+  allValidEtudiantsService(): boolean {
+    for (let etudiant of this.groupeEtudiant.etudiantGroupeEtudiants) {
+      if (!etudiant.convention.service)
+        return false;
+    }
+    return true;
+  }
+  allValidEtudiantsContact(): boolean {
+    for (let etudiant of this.groupeEtudiant.etudiantGroupeEtudiants) {
+      if (!etudiant.convention.contact)
+        return false;
+    }
+    return true;
+  }
+  allValidEtudiantsEnseignant(): boolean {
+    for (let etudiant of this.groupeEtudiant.etudiantGroupeEtudiants) {
+      if (!etudiant.convention.enseignant)
+        return false;
+    }
+    return true;
   }
 
   majAllValid(): void {

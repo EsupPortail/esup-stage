@@ -27,28 +27,28 @@
     </ng-template>
     <app-etab-accueil-groupe *ngIf="etabAccueilTab.isActive || tabs[3].init" (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant" [sharedData]="sharedData"></app-etab-accueil-groupe>
   </mat-tab>
-  <mat-tab #serviceAccueilTab [disabled]="!groupeEtudiant || !groupeEtudiant.convention.structure">
+  <mat-tab #serviceAccueilTab [disabled]="!groupeEtudiant || !allValidStructure()">
     <ng-template mat-tab-label>
       Service d'accueil
       <mat-progress-bar mode="determinate" [value]="getProgressValue(4)" [ngClass]="{editing: tabs[4].statut === 1, done: tabs[4].statut === 2}"></mat-progress-bar>
     </ng-template>
     <app-service-accueil-groupe *ngIf="serviceAccueilTab.isActive || tabs[4].init" (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant" [sharedData]="sharedData"></app-service-accueil-groupe>
   </mat-tab>
-  <mat-tab #tuteurAccueilTab [disabled]="!groupeEtudiant || !groupeEtudiant.convention.structure || !groupeEtudiant.convention.service">
+  <mat-tab #tuteurAccueilTab [disabled]="!groupeEtudiant || !allValidStructure() || !allValidService()">
     <ng-template mat-tab-label>
       Tuteur professionnel
       <mat-progress-bar mode="determinate" [value]="getProgressValue(5)" [ngClass]="{editing: tabs[5].statut === 1, done: tabs[5].statut === 2}"></mat-progress-bar>
     </ng-template>
     <app-tuteur-accueil-groupe *ngIf="tuteurAccueilTab.isActive || tabs[5].init" (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant" [sharedData]="sharedData"></app-tuteur-accueil-groupe>
   </mat-tab>
-  <mat-tab #enseignantTab [disabled]="!groupeEtudiant || !groupeEtudiant.convention.structure">
+  <mat-tab #enseignantTab [disabled]="!groupeEtudiant">
     <ng-template mat-tab-label>
       Enseignant
       <mat-progress-bar mode="determinate" [value]="getProgressValue(6)" [ngClass]="{editing: tabs[6].statut === 1, done: tabs[6].statut === 2}"></mat-progress-bar>
     </ng-template>
     <app-enseignant-groupe *ngIf="enseignantTab.isActive || tabs[6].init" (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant" [sharedData]="sharedData"></app-enseignant-groupe>
   </mat-tab>
-  <mat-tab #signataireTab [disabled]="!groupeEtudiant || !groupeEtudiant.convention.structure">
+  <mat-tab #signataireTab [disabled]="!groupeEtudiant || !allValidStructure()">
     <ng-template mat-tab-label>
       Signataire
       <mat-progress-bar mode="determinate" [value]="getProgressValue(7)" [ngClass]="{editing: tabs[7].statut === 1, done: tabs[7].statut === 2}"></mat-progress-bar>
