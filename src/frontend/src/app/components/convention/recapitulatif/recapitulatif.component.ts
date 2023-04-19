@@ -40,6 +40,7 @@ export class RecapitulatifComponent implements OnInit {
       natureTravailLibelle: this.getNomenclatureValue('natureTravail'),
       modeValidationStageLibelle: this.getNomenclatureValue(' modeValidationStage'),
     };
+    console.log(this.tmpConvention)
     if(this.tmpConvention.interruptionStage){
       this.loadInterruptionsStage();
     }
