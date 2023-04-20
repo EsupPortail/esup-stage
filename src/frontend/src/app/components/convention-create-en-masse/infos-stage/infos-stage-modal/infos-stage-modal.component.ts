@@ -11,6 +11,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 export class InfosStageModalComponent implements OnInit {
 
   convention: any;
+  groupeConvention: any;
   groupeEtudiant: any;
 
   constructor(private dialogRef: MatDialogRef<InfosStageModalComponent>,
@@ -19,6 +20,7 @@ export class InfosStageModalComponent implements OnInit {
               @Inject(MAT_DIALOG_DATA) data: any
   ) {
     this.convention = data.convention;
+    this.groupeConvention = data.groupeConvention;
     this.groupeEtudiant = data.groupeEtudiant;
   }
 

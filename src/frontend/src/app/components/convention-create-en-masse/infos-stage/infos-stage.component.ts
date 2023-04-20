@@ -93,7 +93,7 @@ export class InfosStageComponent implements OnInit, OnChanges {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.width = '1000px';
     dialogConfig.height = '1000px';
-    dialogConfig.data = {convention:this.groupeEtudiant.convention,groupeEtudiant:this.groupeEtudiant};
+    dialogConfig.data = {convention:this.groupeEtudiant.convention, groupeConvention:null, groupeEtudiant:this.groupeEtudiant};
     const modalDialog = this.matDialog.open(InfosStageModalComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
       this.refreshGroupeEtudiant(dialogResponse);
@@ -106,7 +106,7 @@ export class InfosStageComponent implements OnInit, OnChanges {
       dialogConfig.width = '1000px';
     dialogConfig.height = '1000px';
       const etu = this.selected[0];
-      dialogConfig.data = {convention:etu.convention,groupeEtudiant:null};
+      dialogConfig.data = {convention:etu.convention, groupeConvention:this.groupeEtudiant.convention, groupeEtudiant:null};
       const modalDialog = this.matDialog.open(InfosStageModalComponent, dialogConfig);
       modalDialog.afterClosed().subscribe(dialogResponse => {
         this.refreshGroupeEtudiant(dialogResponse);

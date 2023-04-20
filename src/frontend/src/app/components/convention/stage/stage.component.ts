@@ -63,6 +63,7 @@ export class StageComponent implements OnInit {
   joursFeries : any[] = [];
 
   @Input() convention: any;
+  @Input() groupeConvention: any;
 
   form!: FormGroup;
 
@@ -143,6 +144,10 @@ export class StageComponent implements OnInit {
     this.modeValidationStageService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
       this.modeValidationStages = response.data;
     });
+
+    if (this.enMasse && this.groupeConvention) {
+      this.convention = this.mergeObject(this.convention, this.groupeConvention);
+    }
 
     this.form = this.fb.group({
       // - Modèle de la convention
@@ -256,6 +261,13 @@ export class StageComponent implements OnInit {
       const data = this.singleFieldUpdateQueue.pop();
       this.updateSingleField(data.field,data.value);
     }
+  }
+
+  mergeObject(mainObject: any, objectToMerge: any): any {
+    Object.keys(objectToMerge).forEach(key => {
+      if (mainObject[key] === null) mainObject[key] = objectToMerge[key]
+    })
+    return mainObject
   }
 
   isEtudiant(): boolean {
