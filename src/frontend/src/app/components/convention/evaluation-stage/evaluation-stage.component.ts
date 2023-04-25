@@ -747,7 +747,7 @@ export class EvaluationStageComponent implements OnInit {
       texte: [
               "Oui / Non",
              ],
-      bisQuestionTrue:"Pour quelles raisons ?",
+      bisQuestionFalse:"Pour quelles raisons ?",
       controlName: "Ent18",
     },
   ]
