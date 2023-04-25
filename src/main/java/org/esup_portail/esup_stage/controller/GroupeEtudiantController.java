@@ -590,7 +590,7 @@ public class GroupeEtudiantController {
         conventionFormDto.setCodeComposante(etapeInscription.getCodeComposante());
         conventionFormDto.setCodeEtape(etapeInscription.getCodeEtp());
         conventionFormDto.setCodeVersionEtape(etapeInscription.getCodVrsVet());
-        conventionFormDto.setAnnee(inscriptions.get(0).getAnnee());
+        conventionFormDto.setAnnee(inscription.getAnnee());
         conventionFormDto.setNumEtudiant(etudiant.getCodEtu());
         conventionFormDto.setEtudiantLogin(etudiant.getUid());
 

@@ -776,11 +776,11 @@ export class EvaluationStageComponent implements OnInit {
       reponseEtuI7bis2: [null],
       reponseEtuI8: [null, [Validators.required]],
       reponseEtuII1: [null, [Validators.required]],
-      reponseEtuII1bis: [null, [Validators.required]],
+      reponseEtuII1bis: [null],
       reponseEtuII2: [null, [Validators.required]],
-      reponseEtuII2bis: [null, [Validators.required]],
+      reponseEtuII2bis: [null],
       reponseEtuII3: [null, [Validators.required]],
-      reponseEtuII3bis: [null, [Validators.required]],
+      reponseEtuII3bis: [null],
       reponseEtuII4: [null, [Validators.required]],
       reponseEtuII5: [null, [Validators.required]],
       reponseEtuII5a: [null],
@@ -880,30 +880,33 @@ export class EvaluationStageComponent implements OnInit {
         let key = 'reponse' + question.controlName;
         let bisKey = key + 'bis';
         this.reponseEtudiantForm.get(key)?.valueChanges.subscribe(val => {
-          if((question.bisQuestionLowNotation && val>=3) || (question.bisQuestionTrue && val) || (question.bisQuestionFalse && !val) ){
-            this.toggleValidators(this.reponseEtudiantForm,[bisKey],true);
-          }else if(question.controlName == 'EtuI7'){
-            let bisKey1 = key + 'bis1';
-            let bisKey2 = key + 'bis2';
-            if(val){
-              this.toggleValidators(this.reponseEtudiantForm,[bisKey1],true);
-              this.toggleValidators(this.reponseEtudiantForm,[bisKey2],false);
+          let questionKey = 'question' + question.controlName;
+          if(this.ficheEvaluation[questionKey]){
+            if((question.bisQuestionLowNotation && val>=3) || (question.bisQuestionTrue && val) || (question.bisQuestionFalse && !val) ){
+              this.toggleValidators(this.reponseEtudiantForm,[bisKey],true);
+            }else if(question.controlName == 'EtuI7'){
+              let bisKey1 = key + 'bis1';
+              let bisKey2 = key + 'bis2';
+              if(val){
+                this.toggleValidators(this.reponseEtudiantForm,[bisKey1],true);
+                this.toggleValidators(this.reponseEtudiantForm,[bisKey2],false);
+              }else{
+                this.toggleValidators(this.reponseEtudiantForm,[bisKey2],true);
+                this.toggleValidators(this.reponseEtudiantForm,[bisKey1],false);
+              }
+            }else if(question.controlName == 'EtuII5'){
+              let bisKey1 = key + 'a';
+              let bisKey2 = key + 'b';
+              if(val){
+                this.toggleValidators(this.reponseEtudiantForm,[bisKey1],true);
+                this.toggleValidators(this.reponseEtudiantForm,[bisKey2],true);
+              }else{
+                this.toggleValidators(this.reponseEtudiantForm,[bisKey1],false);
+                this.toggleValidators(this.reponseEtudiantForm,[bisKey2],false);
+              }
             }else{
-              this.toggleValidators(this.reponseEtudiantForm,[bisKey2],true);
-              this.toggleValidators(this.reponseEtudiantForm,[bisKey1],false);
+              this.toggleValidators(this.reponseEtudiantForm,[bisKey],false);
             }
-          }else if(question.controlName == 'EtuII5'){
-            let bisKey1 = key + 'a';
-            let bisKey2 = key + 'b';
-            if(val){
-              this.toggleValidators(this.reponseEtudiantForm,[bisKey1],true);
-              this.toggleValidators(this.reponseEtudiantForm,[bisKey2],true);
-            }else{
-              this.toggleValidators(this.reponseEtudiantForm,[bisKey1],false);
-              this.toggleValidators(this.reponseEtudiantForm,[bisKey2],false);
-            }
-          }else{
-            this.toggleValidators(this.reponseEtudiantForm,[bisKey],false);
           }
         });
       }
@@ -913,10 +916,13 @@ export class EvaluationStageComponent implements OnInit {
         let key = 'reponse' + question.controlName;
         let bisKey = key + 'bis';
         this.reponseEnseignantForm.get(key)?.valueChanges.subscribe(val => {
-          if((question.bisQuestionLowNotation && val>=3) || (question.bisQuestionTrue && val) || (question.bisQuestionFalse && !val) ){
-            this.toggleValidators(this.reponseEnseignantForm,[bisKey],true);
-          }else{
-            this.toggleValidators(this.reponseEnseignantForm,[bisKey],false);
+          let questionKey = 'question' + question.controlName;
+          if(this.ficheEvaluation[questionKey]){
+            if((question.bisQuestionLowNotation && val>=3) || (question.bisQuestionTrue && val) || (question.bisQuestionFalse && !val) ){
+              this.toggleValidators(this.reponseEnseignantForm,[bisKey],true);
+            }else{
+              this.toggleValidators(this.reponseEnseignantForm,[bisKey],false);
+            }
           }
         });
       }
@@ -926,10 +932,13 @@ export class EvaluationStageComponent implements OnInit {
         let key = 'reponse' + question.controlName;
         let bisKey = key + 'bis';
         this.reponseEntrepriseForm.get(key)?.valueChanges.subscribe(val => {
-          if((question.bisQuestionLowNotation && val>=3) || (question.bisQuestionTrue && val) || (question.bisQuestionFalse && !val) ){
-            this.toggleValidators(this.reponseEntrepriseForm,[bisKey],true);
-          }else{
-            this.toggleValidators(this.reponseEntrepriseForm,[bisKey],false);
+          let questionKey = 'question' + question.controlName;
+          if(this.ficheEvaluation[questionKey]){
+            if((question.bisQuestionLowNotation && val>=3) || (question.bisQuestionTrue && val) || (question.bisQuestionFalse && !val) ){
+              this.toggleValidators(this.reponseEntrepriseForm,[bisKey],true);
+            }else{
+              this.toggleValidators(this.reponseEntrepriseForm,[bisKey],false);
+            }
           }
         });
       }
@@ -960,6 +969,51 @@ export class EvaluationStageComponent implements OnInit {
     this.ficheEvaluationService.getByCentreGestion(this.convention.centreGestion.id).subscribe((response: any) => {
 
       this.ficheEvaluation = response;
+
+      for(let question of this.FicheEtudiantIQuestions.concat(this.FicheEtudiantIIQuestions).concat(this.FicheEtudiantIIIQuestions)){
+        let questionKey = 'question' + question.controlName;
+        if(!this.ficheEvaluation[questionKey]){
+          if(question.type == 'multiple-boolean'){
+            for (var i = 0; i < question.texte.length; i++) {
+              let key = "reponse" + question.controlName + this.controlsIndexToLetter[i];
+              this.toggleValidators(this.reponseEtudiantForm,[key],false);
+            }
+          }else{
+            let key = 'reponse' + question.controlName;
+            this.toggleValidators(this.reponseEtudiantForm,[key],false);
+          }
+        }
+      }
+      for(let question of this.FicheEnseignantIQuestions.concat(this.FicheEnseignantIIQuestions)){
+        let key = 'reponse' + question.controlName;
+        let questionKey = 'question' + question.controlName;
+        if(!this.ficheEvaluation[questionKey]){
+          if(question.type == 'multiple-boolean'){
+            for (var i = 0; i < question.texte.length; i++) {
+              let key = "reponse" + question.controlName + this.controlsIndexToLetter[i];
+              this.toggleValidators(this.reponseEnseignantForm,[key],false);
+            }
+          }else{
+            let key = 'reponse' + question.controlName;
+            this.toggleValidators(this.reponseEnseignantForm,[key],false);
+          }
+        }
+      }
+      for(let question of this.FicheEntrepriseIQuestions.concat(this.FicheEntrepriseIIQuestions).concat(this.FicheEntrepriseIIIQuestions)){
+        let key = 'reponse' + question.controlName;
+        let questionKey = 'question' + question.controlName;
+        if(!this.ficheEvaluation[questionKey]){
+          if(question.type == 'multiple-boolean'){
+            for (var i = 0; i < question.texte.length; i++) {
+              let key = "reponse" + question.controlName + this.controlsIndexToLetter[i];
+              this.toggleValidators(this.reponseEntrepriseForm,[key],false);
+            }
+          }else{
+            let key = 'reponse' + question.controlName;
+            this.toggleValidators(this.reponseEntrepriseForm,[key],false);
+          }
+        }
+      }
 
       if(this.ficheEvaluation){
         this.reponseEvaluationService.getByConvention(this.convention.id).subscribe((response2: any) => {
