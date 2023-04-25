@@ -412,7 +412,11 @@
       <div *ngIf="isGestionnaireOrAdmin && ficheEvaluation && ficheEvaluation.validationEtudiant && (!reponseEvaluation || !reponseEvaluation.validationEtudiant)" class="alert alert-secondary mt-3">
         <div class="mb-2">Cliquez sur le bouton ci-dessous afin d'envoyer un mail prévenant l'étudiant ({{convention.etudiant.mail}}) qu'il peut remplir sa fiche.</div>
         <div class="text-center">
-          <button class="mat-btn-small" mat-button mat-stroked-button color="primary" (click)="envoiMailEvaluation(0)"><i style="vertical-align: initial;" class="fa fa-envelope"></i>&nbsp;{{'Envoyer' + (convention.envoiMailEtudiant ? ' un rappel' : '')}}</button>
+          <span (confirm)="envoiMailEvaluation(0)" [confirmMessage]="'Vous vous apprêtez à envoyer un mail à ' + convention.etudiant.mail + '. Cette action est définitive. Etes vous sur de vouloir continuer ?'">
+            <button class="mat-btn-small" mat-button mat-stroked-button color="primary">
+              <i style="vertical-align: initial;" class="fa fa-envelope"></i>&nbsp;{{'Envoyer' + (convention.envoiMailEtudiant ? ' un rappel' : '')}}
+            </button>
+          </span>
         </div>
       </div>
 
@@ -657,7 +661,11 @@
       <div *ngIf="isGestionnaireOrAdmin && ficheEvaluation && ficheEvaluation.validationEnseignant && (!reponseEvaluation || !reponseEvaluation.validationEnseignant)" class="alert alert-secondary mt-3">
         <div class="mb-2">Cliquez sur le bouton ci-dessous afin d'envoyer un mail prévenant l'enseignant ({{convention.enseignant.mail}}) qu'il peut remplir sa fiche.</div>
         <div class="text-center">
-          <button class="mat-btn-small" mat-button mat-stroked-button color="primary" (click)="envoiMailEvaluation(1)"><i style="vertical-align: initial;" class="fa fa-envelope"></i>&nbsp;{{'Envoyer' + (convention.envoiMailTuteurPedago ? ' un rappel' : '')}}</button>
+          <span (confirm)="envoiMailEvaluation(1)" [confirmMessage]="'Vous vous apprêtez à envoyer un mail à ' + convention.enseignant.mail + '. Cette action est définitive. Etes vous sur de vouloir continuer ?'">
+            <button class="mat-btn-small" mat-button mat-stroked-button color="primary">
+              <i style="vertical-align: initial;" class="fa fa-envelope"></i>&nbsp;{{'Envoyer' + (convention.envoiMailTuteurPedago ? ' un rappel' : '')}}
+            </button>
+          </span>
         </div>
       </div>
     </div>
@@ -1005,7 +1013,11 @@
       <div *ngIf="isGestionnaireOrAdmin && ficheEvaluation && ficheEvaluation.validationEntreprise && (!reponseEvaluation || !reponseEvaluation.validationEntreprise)" class="alert alert-secondary mt-3">
         <div class="mb-2">Cliquez sur le bouton ci-dessous afin d'envoyer un mail prévenant le tuteur professionnel ({{convention.contact.mail}}) qu'il peut remplir sa fiche.</div>
         <div class="text-center">
-          <button class="mat-btn-small" mat-button mat-stroked-button color="primary" (click)="envoiMailEvaluation(2)"><i style="vertical-align: initial;" class="fa fa-envelope"></i>&nbsp;{{'Envoyer' + (convention.envoiMailTuteurPro ? ' un rappel' : '')}}</button>
+          <span (confirm)="envoiMailEvaluation(2)" [confirmMessage]="'Vous vous apprêtez à envoyer un mail à ' + convention.contact.mail + '. Cette action est définitive. Etes vous sur de vouloir continuer ?'">
+            <button class="mat-btn-small" mat-button mat-stroked-button color="primary">
+              <i style="vertical-align: initial;" class="fa fa-envelope"></i>&nbsp;{{'Envoyer' + (convention.envoiMailTuteurPro ? ' un rappel' : '')}}
+            </button>
+          </span>
         </div>
       </div>
     </div>
