@@ -25,13 +25,13 @@ export class CentreGestionSearchComponent implements OnInit, OnDestroy, AfterVie
   };
   sortColumn = 'id';
   sortDirection: SortDirection = 'asc';
+  filters = [
+    { id: 'nomCentre', libelle: 'Nom du centre de gestion' }
+  ];
 
   data: any;
   currentUser: any;
-  filters = [
-    { id: 'nomCentre', libelle: 'Centres de gestion', type: 'list', options: [], keyId: 'nomCentre', keyLibelle: 'nomCentre'}
-  ];
-  
+
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
   constructor(
     public centreGestionService: CentreGestionService,
@@ -44,10 +44,6 @@ export class CentreGestionSearchComponent implements OnInit, OnDestroy, AfterVie
     this.authService.getCurrentUser().subscribe(response => {
       this.currentUser = response;
     });
-
-    this.centreGestionService.getPaginated(1,0,"","","").subscribe((res) => {
-      this.appTable?.setFilterOption('nomCentre', res.data);
-    })
   }
 
   ngAfterViewInit(): void {

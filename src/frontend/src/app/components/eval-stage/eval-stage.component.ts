@@ -5,6 +5,7 @@ import { AuthService } from "../../services/auth.service";
 import { Router } from "@angular/router";
 import { SortDirection } from "@angular/material/sort";
 import { TitleService } from "../../services/title.service";
+import { CentreGestionService } from "../../services/centre-gestion.service";
 
 @Component({
   selector: 'app-eval-stage',
@@ -33,6 +34,7 @@ export class EvalStageComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private router: Router,
     private titleService: TitleService,
+    private centreGestionService: CentreGestionService,
   ) {
   }
 
@@ -60,7 +62,7 @@ export class EvalStageComponent implements OnInit, OnDestroy {
      'etape.libelle', 'annee','reponseEvaluationEtudiant','reponseEvaluationEnseignant','reponseEvaluationEntreprise', 'action'];
 
       this.filters.push({ id: 'annee', libelle: 'Année', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'libelle', value: [] });
-      this.filters.push({ id: 'centreGestion.nomCentre', libelle: 'Centre de gestion'},);
+      this.filters.push({ id: 'centreGestion.nomCentre', libelle: 'Centres de gestion', type: 'list', options: [], keyId: 'nomCentre', keyLibelle: 'nomCentre' });
       this.filters.push({ id: 'stageTermine', libelle: 'N\'afficher que les stages terminés ?', type: 'boolean', specific: true });
 
       this.conventionService.getListAnnee().subscribe(response => {
@@ -72,6 +74,9 @@ export class EvalStageComponent implements OnInit, OnDestroy {
         if (this.savedFilters) {
           this.restoreFilters();
         }
+        this.centreGestionService.getPaginated(1, 0, 'nomCentre', '', '').subscribe((response: any) => {
+          this.appTable?.setFilterOption('centreGestion.nomCentre', response.data);
+        });
         this.appTable?.update();
       });
     } else {
