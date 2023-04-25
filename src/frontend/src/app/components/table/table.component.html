@@ -63,6 +63,9 @@
                     </mat-option>
                   </mat-autocomplete>
                 </ng-container>
+                <ng-container *ngSwitchCase="'int'">
+                  <input matInput type="number" [name]="filter.id" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()" />
+                </ng-container>
                 <ng-container *ngSwitchDefault>
                   <input matInput [name]="filter.id" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()" />
                 </ng-container>
