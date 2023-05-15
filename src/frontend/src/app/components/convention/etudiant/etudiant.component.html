@@ -187,7 +187,7 @@
                     <mat-form-field class="col-sm-12 mb-2" appearance="fill">
                       <mat-label>Élément pédagogique</mat-label>
                       <mat-select formControlName="inscriptionElp" [required]="!sansElp">
-                        <mat-option *ngFor="let elp of selectedInscription.elementPedagogiques" [value]="elp">{{elp.codElp + ' - ' + elp.libElp + ' : ' + elp.nbrCrdElp + ' Crédits ECTS'}}</mat-option>
+                        <mat-option *ngFor="let elp of selectedInscription.elementPedagogiques" [value]="elp">{{elp.codElp + ' - ' + elp.libElp + ' : ' + elp.nbrCrdElp + ' crédits ECTS'}}</mat-option>
                       </mat-select>
                       <mat-error><app-form-error [field]="formConvention.get('inscriptionElp')"></app-form-error></mat-error>
                     </mat-form-field>
