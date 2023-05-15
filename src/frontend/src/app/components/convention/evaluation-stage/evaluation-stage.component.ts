@@ -1502,7 +1502,7 @@ export class EvaluationStageComponent implements OnInit {
     }
 
     if (typeFiche==2){
-      htmlTexte += "<p style=\"text-align:center;\"><span class=\"text-huge\"><strong>Evaluation du stage par le tuteur pédagogique</strong></span></p>";
+      htmlTexte += "<p style=\"text-align:center;\"><span class=\"text-huge\"><strong>Evaluation du stage par le tuteur professionnel</strong></span></p>";
       htmlTexte += "<p style=\"text-align:center;\"><span class=\"text-small\"><strong>Convention de stage n°"+this.convention.id+"</strong></span></p>";
       htmlTexte += "<p><span class=\"text-small\"><strong>I. <u>Savoir être du stagiaire</u></strong></span></p>";
       for(let question of this.FicheEntrepriseIQuestions){
@@ -1514,7 +1514,7 @@ export class EvaluationStageComponent implements OnInit {
       for(let questionSupplementaire of questionsSupplementaires){
         htmlTexte += this.getQuestionSupplementaireTexte(this.reponseSupplementaireEntrepriseForm,questionSupplementaire);
       }
-      htmlTexte += "<p><span class=\"text-small\"><strong>II. <u>>Savoir faire du stagiaire</u></strong></span></p>";
+      htmlTexte += "<p><span class=\"text-small\"><strong>II. <u>Savoir faire du stagiaire</u></strong></span></p>";
       for(let question of this.FicheEntrepriseIIQuestions){
         if(this.ficheEvaluation['question' + question.controlName]){
           htmlTexte += this.getQestionTexte(question);
