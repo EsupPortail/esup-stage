@@ -130,8 +130,14 @@
         </mat-form-field>
       </div>
     </div>
-
     <mat-divider></mat-divider>
+    <br />
+    <div *ngIf="addedInterruptionsStage.length>0">
+      <div class="col-sm-3 font-weight-bold">Nouvelles périodes d'interruption du stage </div>
+      <div *ngFor="let row of addedInterruptionsStage">
+        <div class="col-sm-9">Du {{row.dateDebutInterruption | date:'d/MM/yy'}} au {{row.dateFinInterruption | date:'d/MM/yy'}}</div>
+      </div>
+    </div>
     <div class="row mt-3 mb-3">
       <div class="col-6">
         <button mat-button mat-flat-button type="button" color="primary"
@@ -140,7 +146,6 @@
       </div>
     </div>
   </div>
-
   <div *ngIf="form.value.modificationMontantGratification">
     <div class="text-title">Modification du montant de la gratification</div>
     <mat-divider></mat-divider>
