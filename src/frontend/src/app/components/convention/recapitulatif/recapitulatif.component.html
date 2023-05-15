@@ -202,9 +202,8 @@
         <mat-card-actions>
           <button mat-button mat-flat-button color="primary" (click)="validate()" *ngIf="!tmpConvention.validationCreation">{{'BOUTON_VALIDER'|contenu}}</button>
           <button mat-button mat-flat-button color="primary" (click)="printConvention(false)"
-                  *ngIf="tmpConvention.validationPedagogique
-                  && (!tmpConvention.centreGestion.verificationAdministrative || (tmpConvention.centreGestion.verificationAdministrative && tmpConvention.verificationAdministrative))">
-            Imprimer la convention
+          *ngIf="canPrint">
+             Imprimer la convention
           </button>
           <button mat-button mat-flat-button color="primary" (click)="printConvention(true)"
           *ngIf="canPrint">Imprimer le récapitulatif</button>
