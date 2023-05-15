@@ -286,7 +286,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
         data.etudiantLogin = this.convention.etudiant.identEtudiant;
       }
       if(this.volumeHoraireFormationBool == false)
-        data.volumeHoraireFormation = "200";
+        data.volumeHoraireFormation = "200+";
       if (!this.convention || !this.convention.id) {
         this.conventionService.create(data).subscribe((response: any) => {
           this.validated.emit(response);
