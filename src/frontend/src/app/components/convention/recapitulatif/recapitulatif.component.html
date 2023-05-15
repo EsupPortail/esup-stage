@@ -215,9 +215,12 @@
   <mat-divider></mat-divider>
   <br>
   <div class="mt-3 mb-3">
-    <div class="row">
-      <div>{{ 'TEXTE_RECAPITULATIF' | contenu }}</div>
-      <div>Date de création de la convention : {{tmpConvention.dateValidationCreation |date:'shortDate'}} par {{tmpConvention.loginCreation}}, date de la dernière modification : {{tmpConvention.dateModif |date:'shortDate'}} par {{tmpConvention.loginModif}}</div>
+    <div>
+      <div class="row">{{ 'TEXTE_RECAPITULATIF' | contenu }}</div>
+      <div class="row">Créé(e) le : {{tmpConvention.dateCreation |date:'d MMM y'}}</div>
+      <div class="row">par {{tmpConvention.loginCreation}}</div>
+      <div class="row">Modifié(e) le : {{tmpConvention.dateModif |date:'d MMM y'}}</div>
+      <div class="row">par {{tmpConvention.loginModif}}</div>
     </div>
   </div>
 </mat-card>
