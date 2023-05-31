@@ -122,7 +122,7 @@ export class ParamCentreComponent implements OnInit {
     });
     for (let validation of ['validationPedagogique', 'verificationAdministrative', 'validationConvention']) {
       if (this.centreGestion[validation]) {
-        this.validationsActives.push({ id: validation, ordre: this.centreGestion[validation + 'Ordre'], libelle: this.validationLibelles[validation] ?? 'vérification administrative'})
+        this.validationsActives.push({ id: validation, ordre: this.centreGestion[validation + 'Ordre'], libelle: this.validationLibelles[validation] ?? 'Vérification administrative'})
       }
     }
     if (this.validationsActives.length > 1) {
@@ -243,7 +243,7 @@ export class ParamCentreComponent implements OnInit {
     if (ordres.length > 0) {
       lastOrdre = Math.max.apply(Math, ordres);
     }
-    this.validationsActives.push({ id: validation, ordre: lastOrdre + 1, libelle: this.validationLibelles[validation] ?? 'vérification administrative'})
+    this.validationsActives.push({ id: validation, ordre: lastOrdre + 1, libelle: this.validationLibelles[validation] ?? 'Vérification administrative'})
     this.reorderValidations();
   }
 

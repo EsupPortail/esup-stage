@@ -76,7 +76,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       let filtersString: any = sessionStorage.getItem('dashboard-filters');
       this.savedFilters = JSON.parse(filtersString);
       this.validationLibelles.validationPedagogique = response.validationPedagogiqueLibelle;
-      this.validationLibelles.verificationAdministrative = 'vérification administrative';
+      this.validationLibelles.verificationAdministrative = 'Vérification administrative';
       this.validationLibelles.validationConvention = response.validationAdministrativeLibelle;
 
       if (this.authService.isGestionnaire()) {
