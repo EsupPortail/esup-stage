@@ -11,6 +11,7 @@ import org.esup_portail.esup_stage.repository.ParamConventionJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateConventionJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateConventionRepository;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
+import org.esup_portail.esup_stage.service.ColorConverter;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -89,9 +90,10 @@ public class TemplateConventionController {
         if (templateConvention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Template convention non trouvé");
         }
-
-        templateConvention.setTexte(templateConventionDto.getTexte());
-        templateConvention.setTexteAvenant(templateConventionDto.getTexteAvenant());
+        String convertedHtml = ColorConverter.convertHslToRgb(templateConventionDto.getTexte());
+        String convertedAvenant = ColorConverter.convertHslToRgb(templateConventionDto.getTexteAvenant());
+        templateConvention.setTexte(convertedHtml);
+        templateConvention.setTexteAvenant(convertedAvenant);
         templateConvention = templateConventionJpaRepository.saveAndFlush(templateConvention);
         return templateConvention;
     }
