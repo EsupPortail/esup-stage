@@ -1,14 +1,14 @@
 <div class="validation-card">
-  <h5 class="text-title">{{validationLibelles[validation] ?? 'vérification administrative'}}</h5>
+  <h5 class="text-title">{{validationLibelles[validation] ?? 'Vérification administrative'}}</h5>
   <div class="text-center info" [class.validate]="convention[validation]">
     <ng-container *ngIf="convention[validation]; else nonValid">
-      <i class="fa fa-check"></i> {{validationLibelles[validation] ?? 'vérification administrative'}} effectuée.
+      <i class="fa fa-check"></i> {{validationLibelles[validation] ?? 'Vérification administrative'}} effectuée.
       <div class="mt-3" *ngIf="canRevertValidation()">
         <button type="button" mat-button mat-flat-button color="warn" (click)="cancelValidation()">Annuler la validation</button>
       </div>
     </ng-container>
     <ng-template #nonValid>
-      <i class="fa fa-times"></i> En attente de la {{validationLibelles[validation] ?? 'vérification administrative'}}.
+      <i class="fa fa-times"></i> En attente de la {{validationLibelles[validation] ?? 'Vérification administrative'}}.
       <div class="mt-3" *ngIf="canValidate()">
         <button type="button" mat-button mat-flat-button color="primary" (click)="validate()">Valider</button>
       </div>
