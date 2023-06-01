@@ -74,7 +74,7 @@ public class TemplateConventionController {
             throw new AppException(HttpStatus.BAD_REQUEST, "Un template avec ce type et cette langue existe déjà");
         }
 
-        TemplateConventionDto templateConventionDto = new TemplateConventionDto(templateConvention.getTexte(), templateConvention.getTexteAvenant());
+        TemplateConventionDto templateConventionDto = new TemplateConventionDto(ColorConverter.convertHslToRgb(templateConvention.getTexte()), ColorConverter.convertHslToRgb(templateConvention.getTexteAvenant()));
         checkTemplateConvention(templateConventionDto);
 
         templateConvention = templateConventionJpaRepository.saveAndFlush(templateConvention);
