@@ -15,6 +15,7 @@ import org.esup_portail.esup_stage.model.ConsigneDocument;
 import org.esup_portail.esup_stage.repository.ConsigneDocumentJpaRepository;
 import org.esup_portail.esup_stage.repository.ConsigneJpaRepository;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
+import org.esup_portail.esup_stage.service.ColorConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,7 +59,7 @@ public class ConsigneController {
     @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL, AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.CREATION})
     public Consigne create(@Valid @RequestBody ConsigneFormDto consigneFormDto) {
         Consigne consigne = new Consigne();
-        consigne.setTexte(consigneFormDto.getTexte());
+        consigne.setTexte(ColorConverter.convertHslToRgb(consigneFormDto.getTexte()));
         consigne = consigneJpaRepository.saveAndFlush(consigne);
         return consigne;
     }
@@ -70,7 +71,7 @@ public class ConsigneController {
         if (consigne == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Consigne non trouvée");
         }
-        consigne.setTexte(consigneFormDto.getTexte());
+        consigne.setTexte(ColorConverter.convertHslToRgb(consigneFormDto.getTexte()));
         consigne = consigneJpaRepository.saveAndFlush(consigne);
         return consigne;
     }
