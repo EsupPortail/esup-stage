@@ -281,4 +281,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
     return this.service.getMobileTitle(row);
   }
 
+  updateNumber(){
+    this.filterValues.id.value = this.filterValues.id.value.replace(/\D/g, '');
+  }
 }
