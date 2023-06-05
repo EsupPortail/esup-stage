@@ -18,6 +18,7 @@ import { ConsigneService } from "../../../services/consigne.service";
 import * as FileSaver from "file-saver";
 import { Router } from "@angular/router";
 import { TitleService } from 'src/app/services/title.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-convention-etudiant',
@@ -77,6 +78,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
     private consigneService: ConsigneService,
     private router: Router,
     private titleService: TitleService,
+    private sanitizer: DomSanitizer,
   ) {
     this.form = this.fb.group({
       codEtu: [null, []],
@@ -380,5 +382,9 @@ export class EtudiantComponent implements OnInit, OnChanges {
       this.volumeHoraireFormationBool = value;
       this.formConvention.controls['volumeHoraireFormationBool'].setValue(value);
     }
+  }
+
+  trustHtml(html: string){    
+    return this.sanitizer.bypassSecurityTrustHtml(html);
   }
 }
