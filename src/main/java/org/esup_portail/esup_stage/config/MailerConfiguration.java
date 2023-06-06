@@ -32,6 +32,9 @@ public class MailerConfiguration {
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail." + protocol + ".auth", applicationBootstrap.getAppConfig().getMailerAuth());
         props.put("mail." + protocol + ".from", applicationBootstrap.getAppConfig().getMailerFrom());
+        if (applicationBootstrap.getAppConfig().isMailerSsl()) {
+            props.put("mail." + protocol + ".ssl.enable", applicationBootstrap.getAppConfig().isMailerSsl());
+        }
 
         return mailSender;
     }

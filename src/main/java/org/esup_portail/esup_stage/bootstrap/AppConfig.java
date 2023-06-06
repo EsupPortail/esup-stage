@@ -24,6 +24,7 @@ public class AppConfig {
     private String mailerHost;
     private int mailerPort;
     private boolean mailerAuth;
+    private boolean mailerSsl;
     private String mailerUsername;
     private String mailerPassword;
     private String mailerFrom;
@@ -182,6 +183,14 @@ public class AppConfig {
         this.mailerAuth = mailerAuth;
     }
 
+    public boolean isMailerSsl() {
+        return mailerSsl;
+    }
+
+    public void setMailerSsl(boolean mailerSsl) {
+        this.mailerSsl = mailerSsl;
+    }
+
     public String getMailerUsername() {
         return mailerUsername;
     }
@@ -322,6 +331,11 @@ public class AppConfig {
         if (props.containsKey(prefixeProps+"mailer.delivery_address") && !props.getProperty(prefixeProps+"mailer.delivery_address").equals("null")) {
             this.mailerDeliveryAddress = props.getProperty(prefixeProps+"mailer.delivery_address");
         }
+        if (props.containsKey(prefixeProps+"mailer.ssl.enable")) {
+            this.mailerSsl = Boolean.parseBoolean(props.getProperty(prefixeProps+"mailer.ssl.enable"));
+        } else {
+            this.mailerSsl = false;
+        }
         this.dataDir = props.getProperty(prefixeProps+"data_dir");
 
         this.docaposteUri = props.getProperty("docaposte.uri");
@@ -351,6 +365,7 @@ public class AppConfig {
                 ", mailerHost='" + mailerHost + "'" +
                 ", mailerPort='" + mailerPort + "'" +
                 ", mailerAuth='" + mailerAuth + "'" +
+                ", mailerSsl='" + mailerSsl + "'" +
                 ", mailerUsername='" + mailerUsername + "'" +
                 ", mailerFrom='" + mailerFrom + "'" +
                 ", mailerDisableDelivery='" + mailerDisableDelivery + "'" +
