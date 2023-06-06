@@ -64,7 +64,6 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   autocompleteData: any = [];
   backConfig: any;
   isMobile: boolean = false;
-  infoBulleNomCentre : String = "";
 
   constructor(
     private authService: AuthService,
@@ -145,7 +144,6 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
 
   update(): void {
     this.filterChanged.next(this.filterValues);
-    this.infoBulleNomCentre = this.filterValues['centreGestion.nomCentre']?.value?.join(", ");
   }
 
   changePaginator(event: PageEvent): void {
