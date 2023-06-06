@@ -62,7 +62,7 @@ export class EvalStageComponent implements OnInit, OnDestroy {
      'etape.libelle', 'annee','reponseEvaluationEtudiant','reponseEvaluationEnseignant','reponseEvaluationEntreprise', 'action'];
 
       this.filters.push({ id: 'annee', libelle: 'Année', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'libelle', value: [] });
-      this.filters.push({ id: 'centreGestion.nomCentre', libelle: 'Centres de gestion', type: 'list', options: [], keyId: 'nomCentre', keyLibelle: 'nomCentre', colSpan: 6 });
+      this.filters.push({ id: 'centreGestion.nomCentre', libelle: 'Centres de gestion', type: 'list', options: [], keyId: 'nomCentre', keyLibelle: 'nomCentre', colSpan: 6, infoBulleCentre: true });
       this.filters.push({ id: 'stageTermine', libelle: 'N\'afficher que les stages terminés ?', type: 'boolean', specific: true });
 
       this.conventionService.getListAnnee().subscribe(response => {
