@@ -37,12 +37,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   savedFilters: any[] = [];
 
   nbConventionsEnAttente: number | undefined;
-  anneeEnCours = {
-    "annee": "any",
-    "libelle": "Toutes les années",
-    "anneeEnCours": false,
-    "any": true
-  };
+  anneeEnCours: any|undefined;
   annees: any[] = [];
   ufrList: any[] = [];
   etapeList: any[] = [];
@@ -170,8 +165,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
         // annees
         this.annees = listAnneeData;
+        this.anneeEnCours = this.annees.find((a: any) => { return a.anneeEnCours === true });
         if (!this.authService.isEtudiant()) {
-          this.annees.push(this.anneeEnCours);
+          this.annees.push({
+            "annee": "any",
+            "libelle": "Toutes les années",
+            "anneeEnCours": false,
+            "any": true
+          })
+          this.changeAnnee();
         } else {
           this.appTable?.setFilterOption('annee', this.annees);
         }
