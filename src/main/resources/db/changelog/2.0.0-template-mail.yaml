@@ -157,3 +157,11 @@ databaseChangeLog:
     - delete:
          tableName:  TemplateMail
          where:  code='FICHE_EVAL'
+
+- changeSet:
+    id:  delete-variable-elementsModifs
+    author:  dcorrochano
+    changes:
+      -  delete:
+           tableName:  ParamMail
+           where:  code='convention.elementModifs'
