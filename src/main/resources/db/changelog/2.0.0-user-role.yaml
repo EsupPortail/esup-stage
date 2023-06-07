@@ -136,3 +136,13 @@ databaseChangeLog:
                               name: validation
                               valueBoolean: false
                     tableName: RoleAppFonction
+    - changeSet:
+        id: role-addOrigineAttribute
+        author: dcorrochano
+        changes:
+          - addColumn:
+              tableName: Role
+              columns:
+                - column:
+                    name: roleOrigine
+                    type: VARCHAR(100)

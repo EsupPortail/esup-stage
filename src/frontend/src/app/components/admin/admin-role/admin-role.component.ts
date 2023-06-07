@@ -33,6 +33,8 @@ export class AdminRoleComponent implements OnInit {
   appFonctions: any[] = [];
   appFonctionColumns = ['fonctionnalite', 'droits'];
 
+  roleOrigine :  any  = undefined;
+
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
   @ViewChild('tabs') tabs: MatTabGroup | undefined;
 
@@ -40,6 +42,7 @@ export class AdminRoleComponent implements OnInit {
     this.form = this.fb.group({
       code: [null, [Validators.required, Validators.maxLength(50)]],
       libelle: [null, [Validators.maxLength(255)]],
+      origine: [null, [Validators.maxLength(255)]],
     });
   }
 
@@ -67,6 +70,7 @@ export class AdminRoleComponent implements OnInit {
         this.data.roleAppFonctions.forEach((ra: any) => {
           delete ra.id;
         });
+        data.origine != null ? this.roleOrigine = data.origine : this.roleOrigine = data.code;
       }
       this.appFonctions.forEach((af: any) => {
         const ra = this.data.roleAppFonctions.find((r: any) => r.appFonction.code === af.code);
@@ -88,6 +92,7 @@ export class AdminRoleComponent implements OnInit {
       this.addEmptyAppFonction(af);
     });
     this.setFormData();
+    this.roleOrigine = undefined;
   }
 
   addEmptyAppFonction(af: any): void {
@@ -105,6 +110,9 @@ export class AdminRoleComponent implements OnInit {
     const data = {...this.data};
     delete data.id;
     delete data.roleAppFonctions;
+    if(this.roleOrigine != undefined){
+      data.origine = this.roleOrigine;
+    }
     this.form.setValue(data);
   }
 
