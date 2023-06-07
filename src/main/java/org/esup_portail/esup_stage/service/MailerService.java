@@ -47,7 +47,6 @@ public class MailerService {
 
     /**
      * TODO pour le mail de modification d'une convention, récupérer le type de l'information modifié pour l'ajouter dans les paramètres
-     * MailContext.convention.elementModifs est une string contenant "les infos étudiant, le tuteur professionnel, le signataire, le détail du stage, l'enseignant référent"
      * Mettre sous formation de list "les infos étudiant", "le tuteur professionnel" etc et concatener les valeurs avec ", "
      */
 
@@ -260,7 +259,6 @@ public class MailerService {
             private String tempsTravail;
             private String tempsTravailComment;
             private String lien;
-            private String elementModifs;
 
             public ConventionContext() { }
 
@@ -368,13 +366,6 @@ public class MailerService {
                 this.lien = lien;
             }
 
-            public String getElementModifs() {
-                return elementModifs != null ? elementModifs : "";
-            }
-
-            public void setElementModifs(String elementModifs) {
-                this.elementModifs = elementModifs;
-            }
         }
 
         public static class TuteurProContext {
