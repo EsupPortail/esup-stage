@@ -16,6 +16,10 @@ export class EtapeService implements PaginatedService, AutocompleteService {
     return this.http.get(`${environment.apiUrl}/etapes`, {params: {page, perPage, predicate, sortOrder, filters}});
   }
 
+  getApogeeEtapes(): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/etapes/apogee`);
+  }
+
   exportData(format: string, headers: string, predicate: string, sortOrder: string, filters: string): Observable<any> {
     return this.http.get(`${environment.apiUrl}/etapes/export/${format}`, {params: {headers, predicate, sortOrder, filters}, responseType: 'blob'});
   }

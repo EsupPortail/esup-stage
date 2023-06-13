@@ -84,22 +84,21 @@ export class SelectionGroupeEtuComponent implements OnInit {
     this.columns =  [...this.sharedData.columns];
 
     forkJoin(
-      this.ufrService.getPaginated(1, 0, 'libelle', 'asc', '{}'),
-      this.etapeService.getPaginated(1, 0, 'libelle', 'asc', '{}'),
+      this.ufrService.getApogeeComposantes(),
+      this.etapeService.getApogeeEtapes(),
       this.conventionService.getListAnnee(),
     ).subscribe(([ufrData, etapeData, listAnneeData]) => {
       // ufr
-      this.ufrList = ufrData.data;
+      this.ufrList = ufrData;
       // etape
-      this.etapeList = etapeData.data;
+      this.etapeList = etapeData;
       // annees
       this.annees = listAnneeData;
     });
 
     this.autocompleteChanged.pipe(debounceTime(1000)).subscribe(async (event: any) => {
       if (!event) return;
-      this.autocompleteData = await this.etapeService.getAutocompleteData(event).toPromise();
-      this.autocompleteData = this.autocompleteData.data;
+      this.autocompleteData = this.etapeList.filter(e => e.libelle.toLowerCase().includes(event.toLowerCase()));
       if (event === '') {
         this.etapeFilterValue = '';
         this.search();
@@ -242,17 +241,14 @@ export class SelectionGroupeEtuComponent implements OnInit {
   }
 
   getEtapeLibelle(ldapEtape: string): string {
-    let etape = ldapEtape.split('}')[1].split('-');
-    let codeEtape = etape[0];
-    let codeVersionEtape = etape[1];
-    let result = this.etapeList.find((x: any) => x.id.code === codeEtape && x.id.codeVersionEtape === codeVersionEtape);
+    let result = this.etapeList.find((x: any) => ldapEtape.includes(x.code));
     if (result)
       return result.libelle;
     return ldapEtape;
   }
 
   getUfrLibelle(codeUfr: string): string {
-    let result = this.ufrList.find((x: any) => x.id.code === codeUfr);
+    let result = this.ufrList.find((x: any) => x.code === codeUfr);
     if (result)
       return result.libelle;
     return codeUfr;
@@ -264,7 +260,7 @@ export class SelectionGroupeEtuComponent implements OnInit {
 
   autocompleteSelected(event: MatAutocompleteSelectedEvent): void {
     this.formAddEtudiants.get('etape')?.setValue(event.option.value.libelle, { emitEvent: false});
-    this.etapeFilterValue = '{UAI:' + event.option.value.id.codeUniversite + '}' + event.option.value.id.code + '-' + event.option.value.id.codeVersionEtape;
+    this.etapeFilterValue = event.option.value.code;
     this.search();
   }
 

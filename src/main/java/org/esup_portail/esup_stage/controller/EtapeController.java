@@ -4,10 +4,12 @@ import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.model.Etape;
 import org.esup_portail.esup_stage.repository.EtapeRepository;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
+import org.esup_portail.esup_stage.service.apogee.ApogeeService;
+import org.esup_portail.esup_stage.service.apogee.model.EtapeApogee;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @ApiController
 @RequestMapping("/etapes")
@@ -15,6 +17,9 @@ public class EtapeController {
 
     @Autowired
     EtapeRepository etapeRepository;
+
+    @Autowired
+    ApogeeService apogeeService;
 
     @GetMapping
     @Secure()
@@ -24,4 +29,11 @@ public class EtapeController {
         paginatedResponse.setData(etapeRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
         return paginatedResponse;
     }
+
+    @GetMapping("/apogee")
+    @Secure()
+    public List<EtapeApogee> getApogeeEtapes() {
+        return apogeeService.getListEtape();
+    }
+
 }

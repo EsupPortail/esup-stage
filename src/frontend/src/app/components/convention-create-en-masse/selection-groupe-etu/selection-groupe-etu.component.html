@@ -108,7 +108,7 @@
               <mat-form-field class="col-sm-12 col-md-3 mb-2" appearance="fill">
                 <mat-label>Composante</mat-label>
                 <mat-select formControlName="composante" (ngModelChange)="filterOnChange($event)">
-                  <mat-option *ngFor="let composante of ufrList" [value]="composante.id.code">{{composante.libelle}}</mat-option>
+                  <mat-option *ngFor="let composante of ufrList" [value]="composante.code">{{composante.libelle}}</mat-option>
                 </mat-select>
               </mat-form-field>
               <mat-form-field class="col-sm-12 col-md-9 mb-2" appearance="fill">

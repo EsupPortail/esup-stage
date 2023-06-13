@@ -15,6 +15,10 @@ export class UfrService implements PaginatedService {
     return this.http.get(`${environment.apiUrl}/ufrs`, {params: {page, perPage, predicate, sortOrder, filters}});
   }
 
+  getApogeeComposantes(): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/ufrs/apogee`);
+  }
+
   exportData(format: string, headers: string, predicate: string, sortOrder: string, filters: string): Observable<any> {
     return this.http.get(`${environment.apiUrl}/ufrs/export/${format}`, {params: {headers, predicate, sortOrder, filters}, responseType: 'blob'});
   }
