@@ -108,17 +108,17 @@
               <mat-form-field class="col-sm-12 col-md-3 mb-2" appearance="fill">
                 <mat-label>Composante</mat-label>
                 <mat-select formControlName="composante" (ngModelChange)="filterOnChange($event)">
-                  <mat-option *ngFor="let composante of ufrList" [value]="composante.code">{{composante.libelle}}</mat-option>
+                  <mat-option *ngFor="let composante of ufrList" [value]="composante.code">{{composante.code + ' - '+ composante.libelle}}</mat-option>
                 </mat-select>
               </mat-form-field>
               <mat-form-field class="col-sm-12 col-md-9 mb-2" appearance="fill">
-                <mat-label>Etape</mat-label>
-                <input matInput formControlName="etape" (ngModelChange)="searchAutocomplete($event)" [matAutocomplete]="auto"/>
-                <mat-autocomplete #auto="matAutocomplete" (optionSelected)="autocompleteSelected($event)">
-                  <mat-option *ngFor="let v of autocompleteData" [value]="v">
-                    {{v.libelle}}
+                <mat-label>Étape</mat-label>
+                <mat-select formControlName="etape" [compareWith]="compareCode">
+                  <mat-option>
+                    <ngx-mat-select-search [formControl]="etapeFilterCtrl" placeholderLabel="Filtrer par code ou libellé VET" noEntriesFoundLabel="Aucune étape trouvée"></ngx-mat-select-search>
                   </mat-option>
-                </mat-autocomplete>
+                  <mat-option #matOption *ngFor="let etape of filteredEtapes | async" [value]="etape.code" (click)="filterOnChange($event)">{{etape.code}};{{etape.codeVrsEtp}} - {{etape.libelle}}</mat-option>
+                </mat-select>
               </mat-form-field>
             </div>
             <div class="row">

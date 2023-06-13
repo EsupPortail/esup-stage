@@ -12,11 +12,12 @@ import { LdapService } from "../../../services/ldap.service";
 import { EtudiantService } from "../../../services/etudiant.service";
 import { MessageService } from "../../../services/message.service";
 import { forkJoin } from 'rxjs';
-import { Subject } from "rxjs";
+import { ReplaySubject, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { ConfigService } from "../../../services/config.service";
 import { debounceTime } from "rxjs/operators";
 import { SortDirection } from "@angular/material/sort";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
 
 @Component({
   selector: 'app-selection-groupe-etu',
@@ -36,10 +37,12 @@ export class SelectionGroupeEtuComponent implements OnInit {
   annees: any[] = [];
   ufrList: any[] = [];
   etapeList: any[] = [];
-  etapeFilterValue: string = '';
-  autocompleteData: any = [];
-  autocompleteChanged: any = new Subject();
   filterChanged: any = new Subject();
+
+  etapeFilterCtrl: FormControl = new FormControl();
+  filteredEtapes: ReplaySubject<any> = new ReplaySubject<any>(1);
+
+  _onDestroy = new Subject<void>();
 
   form: FormGroup;
   formAddEtudiants: FormGroup;
@@ -92,17 +95,15 @@ export class SelectionGroupeEtuComponent implements OnInit {
       this.ufrList = ufrData;
       // etape
       this.etapeList = etapeData;
+
+      this.filteredEtapes.next(this.etapeList.slice());
+      this.etapeFilterCtrl.valueChanges
+        .pipe(takeUntil(this._onDestroy))
+        .subscribe(() => {
+          this.filterEtapes();
+        });
       // annees
       this.annees = listAnneeData;
-    });
-
-    this.autocompleteChanged.pipe(debounceTime(1000)).subscribe(async (event: any) => {
-      if (!event) return;
-      this.autocompleteData = this.etapeList.filter(e => e.libelle.toLowerCase().includes(event.toLowerCase()));
-      if (event === '') {
-        this.etapeFilterValue = '';
-        this.search();
-      }
     });
 
     this.filterChanged.pipe(debounceTime(1000)).subscribe((event: any) => {
@@ -128,7 +129,7 @@ export class SelectionGroupeEtuComponent implements OnInit {
       return;
     }
     const data = {...this.formAddEtudiants.value};
-    data.supannEtuEtape = this.etapeFilterValue;
+    data.supannEtuEtape = data.etape;
     data.supannEntiteAffectation = data.composante;
     data.supannEtuAnneeInscription = data.annee;
 
@@ -254,14 +255,34 @@ export class SelectionGroupeEtuComponent implements OnInit {
     return codeUfr;
   }
 
-  searchAutocomplete(value: string): void {
-    this.autocompleteChanged.next(value);
+  compareCode(option: any, value: any): boolean {
+    if (option && value) {
+      return option.code === value.code;
+    }
+    return false;
   }
 
-  autocompleteSelected(event: MatAutocompleteSelectedEvent): void {
-    this.formAddEtudiants.get('etape')?.setValue(event.option.value.libelle, { emitEvent: false});
-    this.etapeFilterValue = event.option.value.code;
-    this.search();
+  filterEtapes() {
+    if (!this.etapeList) {
+      return;
+    }
+
+    let search = this.etapeFilterCtrl.value;
+    if (!search) {
+      this.filteredEtapes.next(this.etapeList.slice());
+      return;
+    } else {
+      search = search.toLowerCase();
+    }
+
+    this.filteredEtapes.next(
+      this.etapeList.filter(etape => etape.code.toLowerCase().indexOf(search) > -1 || etape.libelle.toLowerCase().indexOf(search) > -1)
+    );
   }
 
+  etapesChange(etape: any, selected: any) {
+    if (selected) {
+    } else {
+    }
+  }
 }
