@@ -122,7 +122,13 @@ public class GroupeEtudiantController {
         }
         Convention groupeConvention = groupeEtudiant.getConvention();
         groupeConvention.setTypeConvention(typeConvention);
-        conventionJpaRepository.saveAndFlush(groupeConvention);
+        conventionJpaRepository.save(groupeConvention);
+        for (EtudiantGroupeEtudiant etudiant : groupeEtudiant.getEtudiantGroupeEtudiants()) {
+            Convention etudiantConvention = etudiant.getConvention();
+            etudiantConvention.setTypeConvention(typeConvention);
+            conventionJpaRepository.save(etudiantConvention);
+        }
+        conventionJpaRepository.flush();
         return groupeEtudiant;
     }
 
@@ -545,30 +551,42 @@ public class GroupeEtudiantController {
             throw new AppException(HttpStatus.NOT_FOUND, "Aucunes inscriptions trouvées dans apogée pour l'étudiant : " + etudiant.getCn());
         }
 
-        if (etudiant.getSupannEtuEtape().size() < 1 || !etudiant.getSupannEtuEtape().get(0).contains("}") || !etudiant.getSupannEtuEtape().get(0).contains("-")) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Données ldap invalides pour l'étudiant : " + etudiant.getCn());
+        if (etudiant.getSupannEtuEtape().size() < 1) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Aucunes étapes renseignées dans le ldap pour l'étudiant : " + etudiant.getCn());
         }
 
-        String etape = etudiant.getSupannEtuEtape().get(0).split("}")[1];
-        String codeEtape = etape.split("-")[0];
-        String codeVersionEtape = etape.split("-")[1];
+        List<String> etapes = etudiant.getSupannEtuEtape();
         String codeComposante = etudiant.getSupannEntiteAffectationPrincipale();
 
         ConventionFormationDto inscription = null;
 
+        // recherche de l'inscription apogée de l'étudiant correspondant aux valeurs du ldap
         for (ConventionFormationDto _inscription : inscriptions) {
-            if (_inscription.getEtapeInscription() != null &&
-                _inscription.getEtapeInscription().getCodeComposante().equals(codeComposante) &&
-                _inscription.getEtapeInscription().getCodeEtp().equals(codeEtape) &&
-                _inscription.getEtapeInscription().getCodVrsVet().equals(codeVersionEtape)) {
-                inscription = _inscription;
+            for (String etape : etapes) {
+                if (_inscription.getAnnee().equals(etudiant.getSupannEtuAnneeInscription()) &&
+                    _inscription.getEtapeInscription() != null &&
+                    _inscription.getEtapeInscription().getCodeComposante().equals(codeComposante) &&
+                    etape.toLowerCase().contains(_inscription.getEtapeInscription().getCodeEtp().toLowerCase())) {
+                    inscription = _inscription;
+                    break;
+                }
             }
         }
 
         if (inscription == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Aucunes inscriptions trouvées dans apogée pour l'étudiant : " + etudiant.getCn() +
-                    " avec param : {année : " + etudiant.getSupannEtuAnneeInscription() + ", codeComposante : " + codeComposante +
-                    ", codeEtape : " + codeEtape + ", codeVersionEtape : " + codeVersionEtape + "}");
+            String errorString = "Incohérence des données entre Apogée et LDAP pour l'étudiant " + etudiant.getCn() + " :<br>";
+            errorString += "données ldap : {année : " + etudiant.getSupannEtuAnneeInscription() + ", codeComposante : " + codeComposante +
+                    ", codesEtapes : " + etapes.toString() + "}<br>";
+            int i = 0;
+            for (ConventionFormationDto _inscription : inscriptions) {
+                i++;
+                String composante = _inscription.getEtapeInscription() != null ? _inscription.getEtapeInscription().getCodeComposante() : "";
+                String etape = _inscription.getEtapeInscription() != null ? _inscription.getEtapeInscription().getCodeEtp() : "";
+                errorString += "données inscription " + i + " : {année : " + _inscription.getAnnee() + ", codeComposante : " + composante +
+                        ", codeEtape : " + etape + "}<br>";
+            }
+
+            throw new AppException(HttpStatus.NOT_FOUND, errorString);
         }
 
         EtapeInscription etapeInscription = inscription.getEtapeInscription();
