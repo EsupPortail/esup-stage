@@ -270,10 +270,7 @@ public class ApogeeService {
                 }
             }
         }
-        // On supprime les formations sans ELP si la config n'autorise pas la création de convention sans ELP
-        if (!appConfigService.getConfigGenerale().isAutoriserElementPedagogiqueFacultatif()) {
-            inscriptions = inscriptions.stream().filter(i -> i.getElementPedagogiques().size() > 0).collect(Collectors.toList());
-        }
+
         if (!UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
             if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
                 // On garde les formations dont le centre de gestion autorise la création d'une convention

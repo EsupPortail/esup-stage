@@ -30,7 +30,12 @@ public class Role implements Exportable {
     @Column(name = "roleLibelle", unique = true)
     private String libelle;
 
-    @OneToMany(mappedBy = "role", fetch = FetchType.EAGER, cascade = {CascadeType.MERGE}, orphanRemoval = true)
+    @JsonView(Views.List.class)
+    @Column(name = "roleOrigine")
+    private String origine;
+
+
+    @OneToMany(mappedBy = "role", fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<RoleAppFonction> roleAppFonctions;
 
     public int getId() {
@@ -84,5 +89,13 @@ public class Role implements Exportable {
                 break;
         }
         return value;
+    }
+
+    public String getOrigine() {
+        return origine;
+    }
+
+    public void setOrigine(String origine) {
+        this.origine = origine;
     }
 }

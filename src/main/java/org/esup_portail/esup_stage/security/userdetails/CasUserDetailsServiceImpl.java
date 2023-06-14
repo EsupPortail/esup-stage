@@ -106,6 +106,8 @@ public class CasUserDetailsServiceImpl implements AuthenticationUserDetailsServi
                     etudiant.setCodeUniversite(appConfigService.getConfigGenerale().getCodeUniversite());
                     etudiant.setLoginCreation(username);
                     etudiantJpaRepository.saveAndFlush(etudiant);
+                } else if (etudiant.getMail().isEmpty()) {
+                    etudiant.setMail(ldapUser.getMail());
                 }
             }
 

@@ -124,8 +124,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
 
       this.formConvention.get('inscription')?.valueChanges.subscribe((inscription: any) => {
         if (inscription) {
-          this.sansElp = this.sansElp || !inscription.elementPedagogiques || inscription.elementPedagogiques.length == 0;
-          if (!this.sansElp) {
+          if (this.sansElp == false && inscription.elementPedagogiques && inscription.elementPedagogiques.length > 0) {
             this.formConvention.get('inscriptionElp')?.setValidators([Validators.required]);
           }
           this.centreGestion = inscription.centreGestion;
