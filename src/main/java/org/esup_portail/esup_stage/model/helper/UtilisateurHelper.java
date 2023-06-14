@@ -15,7 +15,7 @@ public class UtilisateurHelper {
     }
 
     public static boolean isRole(Utilisateur utilisateur, String code) {
-        return utilisateur.getRoles().stream().anyMatch(r -> r.getCode().equals(code));
+        return utilisateur.getRoles().stream().anyMatch(r -> r.getCode().equals(code) || (code != null && code.equals(r.getOrigine())));
     }
 
     public static boolean isRole(Utilisateur utilisateur, AppFonctionEnum[] fonctions, DroitEnum[] droits) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
