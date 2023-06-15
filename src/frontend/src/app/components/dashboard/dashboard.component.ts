@@ -23,7 +23,7 @@ import { LangueConventionService } from "../../services/langue-convention.servic
 export class DashboardComponent implements OnInit, OnDestroy {
 
   columns: string[] = [];
-  sortColumn = 'etudiant.nom_etudiant.prenom';
+  sortColumn = 'etudiant.nom_etudiant.prenom_id-reverse';
   sortDirection: SortDirection = 'asc';
   filters: any[] = [];
   validationsOptions: any[] = [
@@ -79,7 +79,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.setDataGestionnaire();
       } else if (this.authService.isEnseignant()) {
         this.typeDashboard = 2;
-        this.columns = ['id', 'etudiant.nom_etudiant.prenom', 'ufr.libelle', 'etape.libelle', 'dateDebutStage', 'dateFinStage', 'structure.raisonSociale', 'sujetStage', 'lieuStage', 'avenant', 'etatValidation', 'action'];
+        this.columns = ['id', 'etudiant.nom_etudiant.prenom_id-reverse', 'ufr.libelle', 'etape.libelle', 'dateDebutStage', 'dateFinStage', 'structure.raisonSociale', 'sujetStage', 'lieuStage', 'avenant', 'etatValidation', 'action'];
         this.filters = [
           { id: 'id', libelle: 'N° de la convention', type: 'int' },
           { id: 'etudiant', libelle: 'Étudiant', specific: true },
@@ -196,7 +196,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   setDataGestionnaire(): void {
-    this.columns = ['select', 'id', 'etudiant.nom_etudiant.prenom', 'structure.raisonSociale', 'dateDebutStage', 'dateFinStage', 'ufr.libelle', 'etape.libelle', 'enseignant.prenom', 'avenant', 'etatValidation', 'action'];
+    this.columns = ['select', 'id', 'etudiant.nom_etudiant.prenom_id-reverse', 'structure.raisonSociale', 'dateDebutStage', 'dateFinStage', 'ufr.libelle', 'etape.libelle', 'enseignant.prenom', 'avenant', 'etatValidation', 'action'];
     this.filters = [
       { id: 'id', libelle: 'N° de la convention', type: 'int' },
       { id: 'etudiant', libelle: 'Étudiant', specific: true },
