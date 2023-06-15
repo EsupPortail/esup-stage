@@ -1,0 +1,9 @@
+databaseChangeLog:
+- changeSet:
+      id: update-empty-cpam
+      author: tjubera
+      changes:
+          - sql:
+                sql: UPDATE Convention c SET c.regionCPAM = 'Autre' WHERE c.regionCPAM is null;
+                     UPDATE Convention c SET c.libelleCPAM = 'A renseigner par l\'étudiant' WHERE c.libelleCPAM is null;
+                     UPDATE Convention c SET c.adresseCPAM = 'vide' WHERE c.adresseCPAM is null;
