@@ -39,9 +39,6 @@
               <div>
                 <mat-checkbox formControlName="recupInscriptionAnterieure" (change)="toggleRecupInscription()">Autoriser les gestionnaires à créer des conventions sur l'année universitaire précédente</mat-checkbox>
               </div>
-              <div>
-                <mat-checkbox formControlName="onlyMailCentreGestion">Recevoir les mails émis par la plateforme uniquement à cette adresse mail</mat-checkbox>
-              </div>
               <div *ngIf="form.get('recupInscriptionAnterieure')?.value">
                 <span><i>Limité à une durée de</i></span>
                 <mat-form-field class="col-sm-12 col-md-2">
@@ -50,6 +47,9 @@
                   </mat-select>
                 </mat-form-field>
                 <span><i>après la date de bascule de l'année universitaire</i></span>
+              </div>
+              <div>
+                <mat-checkbox formControlName="onlyMailCentreGestion">Recevoir les mails émis par la plateforme uniquement à cette adresse mail</mat-checkbox>
               </div>
               <div>
                 <mat-form-field class="col-sm-12 col-md-12" appearance="fill" style="margin-left: -15px">
