@@ -3,7 +3,7 @@
   <mat-divider></mat-divider>
   <div class="row mt-3 mb-3">
     <div class="col-sm-3 font-weight-bold">Date de rupture</div>
-    <div class="col-sm-9">{{avenant.dateRupture}}</div>
+    <div class="col-sm-9">{{avenant.dateRupture|date:'shortDate'}}</div>
     <div class="col-sm-3 font-weight-bold">Commentaire(s)</div>
     <div class="col-sm-9">{{avenant.commentaireRupture}}</div>
   </div>
