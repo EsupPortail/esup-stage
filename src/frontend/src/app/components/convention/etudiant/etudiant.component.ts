@@ -16,7 +16,7 @@ import { debounceTime } from "rxjs/operators";
 import { ConfigService } from "../../../services/config.service";
 import { ConsigneService } from "../../../services/consigne.service";
 import * as FileSaver from "file-saver";
-import { Router } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { TitleService } from 'src/app/services/title.service';
 import { DomSanitizer } from '@angular/platform-browser';
 
@@ -63,6 +63,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
   @ViewChild(MatExpansionPanel) searchEtudiantPanel: MatExpansionPanel|undefined;
 
   constructor(
+    private activatedRoute: ActivatedRoute,
     private authService: AuthService,
     private etudiantService: EtudiantService,
     public communeService: CommuneService,
@@ -227,7 +228,12 @@ export class EtudiantComponent implements OnInit, OnChanges {
       this.formConvention.get('telEtudiant')?.setValue(this.etudiant.phone);
       this.formConvention.get('telPortableEtudiant')?.setValue(this.etudiant.portablePhone);
       this.formConvention.get('courrielPersoEtudiant')?.setValue(this.etudiant.mailPerso);
-      this.titleService.title = 'Création d\'une convention pour ' + this.etudiant.nompatro + ' ' + this.etudiant.prenom;
+      this.activatedRoute.params.subscribe((param: any) => {
+        const pathId = param.id;
+        if (pathId === 'create') {
+          this.titleService.title = 'Création d\'une convention pour ' + this.etudiant.nompatro + ' ' + this.etudiant.prenom;
+        }
+      });
     });
     this.etudiantService.getApogeeInscriptions(row.codEtu, this.convention ? this.convention.annee : null).subscribe((response: any) => {
       this.inscriptions = response;
@@ -384,7 +390,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
     }
   }
 
-  trustHtml(html: string){    
+  trustHtml(html: string){
     return this.sanitizer.bypassSecurityTrustHtml(html);
   }
 }
