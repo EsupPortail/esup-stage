@@ -81,8 +81,13 @@ public class PaginationRepository<T extends Exportable> {
             List<String> predicates = Arrays.asList(predicate.split("_"));
             queryString += " ORDER BY ";
             for(String p : predicates){
+                boolean reverse = false;
+                if(p.contains("-reverse")){
+                    p = p.split("-")[0];
+                    reverse = true;
+                }
                 queryString += alias + "." + p;
-                if (sortOrder.equalsIgnoreCase("asc")) {
+                if ((sortOrder.equalsIgnoreCase("asc") && !reverse) || (sortOrder.equalsIgnoreCase("desc") && reverse)) {
                     queryString += " ASC,";
                 } else {
                     queryString += " DESC,";

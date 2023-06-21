@@ -80,7 +80,7 @@
     <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">N°</th>
     <td mat-cell *matCellDef="let row">{{row.id}}</td>
   </ng-container>
-  <ng-container matColumnDef="etudiant.nom_etudiant.prenom" *ngIf="typeDashboard !== 3">
+  <ng-container matColumnDef="etudiant.nom_etudiant.prenom_id-reverse" *ngIf="typeDashboard !== 3">
     <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Étudiant</th>
     <td mat-cell *matCellDef="let row">{{row.etudiant.nom + ' ' + row.etudiant.prenom}}</td>
   </ng-container>
