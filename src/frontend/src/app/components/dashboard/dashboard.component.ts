@@ -307,14 +307,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.countConvention();
     if (!this.anneeEnCours.any) {
       // Compte le nombre de conventions dont la date de validation se rapproche ou dépasse la date de début du stage
-      this.conventionService.countConventionEnAttenteAlerte(this.anneeEnCours.annee).subscribe((response: number) => {
-        if (response > 0) {
-          this.snackBar.open(`${response} convention(s) à valider dont la date de validation se rapproche ou dépasse la date de début du stage`, 'Fermer', {
-            horizontalPosition: 'center',
-            verticalPosition: 'top',
-          });
-        }
-      });
+      // this.conventionService.countConventionEnAttenteAlerte(this.anneeEnCours.annee).subscribe((response: number) => {
+      //   if (response > 0) {
+      //     this.snackBar.open(`${response} convention(s) à valider dont la date de validation se rapproche ou dépasse la date de début du stage`, 'Fermer', {
+      //       horizontalPosition: 'center',
+      //       verticalPosition: 'top',
+      //     });
+      //   }
+      // });
     }
   }
 
