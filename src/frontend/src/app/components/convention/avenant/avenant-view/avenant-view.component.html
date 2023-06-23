@@ -83,10 +83,10 @@
   </div>
   <div class="row mt-3 mb-3">
     <div class="col-sm-3 font-weight-bold">Nouveau montant de la gratification</div>
-    <div class="col-sm-9">{{avenant.montantGratification + ' ' + (avenant.uniteGratification?avenant.uniteGratification.libelle:convention.uniteGratification.libelle)
-      + ' ' + (avenant.uniteDuree?avenant.uniteDuree.libelle:convention.uniteDureeGratification.libelle)}}</div>
+    <div class="col-sm-9">{{avenant.montantGratification + ' ' + (avenant.uniteGratification?avenant.uniteGratification.libelle:(convention.uniteGratification ? convention.uniteGratification.libelle : ''))
+      + ' ' + (avenant.uniteDuree?avenant.uniteDuree.libelle:(convention.uniteDureeGratification ? convention.uniteDureeGratification.libelle : ''))}}</div>
     <div class="col-sm-3 font-weight-bold">Nouvelle monnaie utilisée pour le paiement</div>
-    <div class="col-sm-9">{{avenant.devise?avenant.devise.libelle:convention.devise.libelle}}</div>
+    <div class="col-sm-9">{{avenant.devise?avenant.devise.libelle:(convention.devise ? convention.devise.libelle : '')}}</div>
     <div class="col-sm-3 font-weight-bold">Nouveau modalité de versement de la gratification</div>
     <div class="col-sm-9">{{avenant.modeVersGratification?avenant.modeVersGratification.libelle:(convention.modeVersGratification ? convention.modeVersGratification.libelle : '')}}</div>
   </div>
