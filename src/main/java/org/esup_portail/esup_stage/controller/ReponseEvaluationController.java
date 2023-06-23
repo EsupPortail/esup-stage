@@ -162,9 +162,9 @@ public class ReponseEvaluationController {
             if(convention.getEnvoiMailEtudiant() != null && convention.getEnvoiMailEtudiant())
                 template = TemplateMail.CODE_RAPPEL_FICHE_EVAL_ETU;
             if (convention.getCentreGestion().isOnlyMailCentreGestion()) {
-                mailerService.sendAlerteValidation(convention.getCentreGestion().getMail(), convention, utilisateur, template);
+                mailerService.sendAlerteValidation(convention.getCentreGestion().getMail(), convention, null, utilisateur, template);
             } else {
-                mailerService.sendAlerteValidation(mailEtudiant, convention, utilisateur, template);
+                mailerService.sendAlerteValidation(mailEtudiant, convention, null, utilisateur, template);
                 convention.setEnvoiMailEtudiant(true);
                 convention.setDateEnvoiMailEtudiant(new Date());
             }
@@ -173,9 +173,9 @@ public class ReponseEvaluationController {
             if(convention.getEnvoiMailTuteurPedago() != null && convention.getEnvoiMailTuteurPedago())
                 template = TemplateMail.CODE_RAPPEL_FICHE_EVAL_ENSEIGNANT;
             if (convention.getCentreGestion().isOnlyMailCentreGestion()) {
-                mailerService.sendAlerteValidation(convention.getCentreGestion().getMail(), convention, utilisateur, template);
+                mailerService.sendAlerteValidation(convention.getCentreGestion().getMail(), convention, null, utilisateur, template);
             } else {
-                mailerService.sendAlerteValidation(convention.getEnseignant().getMail(), convention, utilisateur, template);
+                mailerService.sendAlerteValidation(convention.getEnseignant().getMail(), convention, null, utilisateur, template);
                 convention.setEnvoiMailTuteurPedago(true);
                 convention.setDateEnvoiMailTuteurPedago(new Date());
             }
@@ -183,9 +183,9 @@ public class ReponseEvaluationController {
             template = TemplateMail.CODE_FICHE_EVAL_TUTEUR;
             if(convention.getEnvoiMailTuteurPro() != null && convention.getEnvoiMailTuteurPro())
                 template = TemplateMail.CODE_RAPPEL_FICHE_EVAL_TUTEUR;
-            mailerService.sendAlerteValidation(convention.getContact().getMail(), convention, utilisateur, template);
+            mailerService.sendAlerteValidation(convention.getContact().getMail(), convention, null, utilisateur, template);
             if (convention.getCentreGestion().isOnlyMailCentreGestion()) {
-                mailerService.sendAlerteValidation(convention.getCentreGestion().getMail(), convention, utilisateur, template);
+                mailerService.sendAlerteValidation(convention.getCentreGestion().getMail(), convention, null, utilisateur, template);
             } else {
                 convention.setEnvoiMailTuteurPro(true);
                 convention.setDateEnvoiMailTuteurPro(new Date());

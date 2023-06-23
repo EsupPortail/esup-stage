@@ -50,7 +50,7 @@ public class MailerService {
      * Mettre sous formation de list "les infos étudiant", "le tuteur professionnel" etc et concatener les valeurs avec ", "
      */
 
-    public void sendAlerteValidation(String to, Convention convention, Utilisateur userModif, String templateMailCode) {
+    public void sendAlerteValidation(String to, Convention convention, Avenant avenant, Utilisateur userModif, String templateMailCode) {
         TemplateMail templateMail = templateMailJpaRepository.findByCode(templateMailCode);
         if (templateMail == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Template mail " + templateMailCode + " non trouvé");
@@ -58,7 +58,7 @@ public class MailerService {
         if(to == null || to.equals("")){
             logger.info("Aucun destinataire défini pour l'envoie de l'email.");
         }else{
-            MailContext mailContext = new MailContext(applicationBootstrap, convention, null, userModif);
+            MailContext mailContext = new MailContext(applicationBootstrap, convention, avenant, userModif);
             sendMail(to, templateMail.getId(),templateMail.getObjet(),templateMail.getTexte(),templateMail.getCode(),
                     mailContext, false ,null,null);
         }
