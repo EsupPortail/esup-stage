@@ -30,7 +30,7 @@ public class ReponseEtudiantFormDto {
     
     private Integer reponseEtuI7bis1a;
     
-    private Integer reponseEtuI7bis1b;
+    private String reponseEtuI7bis1b;
     
     private Integer reponseEtuI7bis2;
     
@@ -218,11 +218,11 @@ public class ReponseEtudiantFormDto {
         this.reponseEtuI7bis1a = reponseEtuI7bis1a;
     }
 
-    public Integer getReponseEtuI7bis1b() {
+    public String getReponseEtuI7bis1b() {
         return reponseEtuI7bis1b;
     }
 
-    public void setReponseEtuI7bis1b(Integer reponseEtuI7bis1b) {
+    public void setReponseEtuI7bis1b(String reponseEtuI7bis1b) {
         this.reponseEtuI7bis1b = reponseEtuI7bis1b;
     }
 
