@@ -1,5 +1,6 @@
 package org.esup_portail.esup_stage.repository;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -24,7 +25,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
-import com.google.gson.Gson;
 
 public class PaginationRepository<T extends Exportable> {
 
@@ -78,22 +78,8 @@ public class PaginationRepository<T extends Exportable> {
             queryString += " WHERE " + String.join(" AND ", clauses);
         }
         if (predicate != null && predicateWhitelist.contains(predicate)) {
-            List<String> predicates = Arrays.asList(predicate.split("_"));
-            queryString += " ORDER BY ";
-            for(String p : predicates){
-                boolean reverse = false;
-                if(p.contains("-reverse")){
-                    p = p.split("-")[0];
-                    reverse = true;
-                }
-                queryString += alias + "." + p;
-                if ((sortOrder.equalsIgnoreCase("asc") && !reverse) || (sortOrder.equalsIgnoreCase("desc") && reverse)) {
-                    queryString += " ASC,";
-                } else {
-                    queryString += " DESC,";
-                }
-            }
-            queryString = queryString.substring(0, queryString.length() - 1);
+            Map<String, String> predicates = orderBy(predicate, sortOrder);
+            queryString += " ORDER BY " + predicates.entrySet().stream().map(e -> alias + "." + e.getKey() + " " + e.getValue()).collect(Collectors.joining(", "));
         }
 
         TypedQuery<T> query = em.createQuery(queryString, this.typeClass);
@@ -122,6 +108,15 @@ public class PaginationRepository<T extends Exportable> {
         if (!joins.contains(join)) {
             joins.add(join);
         }
+    }
+
+    protected Map<String, String> orderBy(String predicate, String sortOrder) {
+        Map<String, String> predicates = new LinkedHashMap<>();
+        String[] predicateSplit = predicate.split("_");
+        for (String p : predicateSplit) {
+            predicates.put(p, sortOrder.equalsIgnoreCase("asc") ? "ASC" : "DESC");
+        }
+        return predicates;
     }
 
     private List<String> getClauses() {

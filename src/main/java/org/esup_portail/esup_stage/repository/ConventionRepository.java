@@ -7,16 +7,15 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 public class ConventionRepository extends PaginationRepository<Convention> {
 
     public ConventionRepository(EntityManager em) {
         super(em, Convention.class, "c");
-        this.predicateWhitelist = Arrays.asList("id", "etudiant.prenom", "etudiant.nom_etudiant.prenom", "etudiant.nom_etudiant.prenom_id-reverse", "structure.raisonSociale", "dateDebutStage", "dateFinStage", "ufr.libelle", "etape.libelle", "enseignant.prenom", "sujetStage", "lieuStage", "annee");
+        this.predicateWhitelist = Arrays.asList("id", "etudiant.prenom", "etudiant.nom", "etudiant.nom_etudiant.prenom", "structure.raisonSociale", "dateDebutStage", "dateFinStage", "ufr.libelle", "etape.libelle", "enseignant.prenom", "sujetStage", "lieuStage", "annee");
     }
 
     @Override
@@ -183,5 +182,21 @@ public class ConventionRepository extends PaginationRepository<Convention> {
         if (key.equals("stageTermine")) {
             query.setParameter("stageTermine", parameter.getBoolean("value"));
         }
+    }
+
+    @Override
+    protected Map<String, String> orderBy(String predicate, String sortOrder) {
+        Map<String, String> predicates = super.orderBy(predicate, sortOrder);
+        // Ajout d'un tri sur le nom, prénom, l'id DESC si non présent
+        if (!predicates.containsKey("etudiant.nom")) {
+            predicates.put("etudiant.nom", "ASC");
+        }
+        if (!predicates.containsKey("etudiant.prenom")) {
+            predicates.put("etudiant.prenom", "ASC");
+        }
+        if (!predicates.containsKey("id")) {
+            predicates.put("id", "DESC");
+        }
+        return predicates;
     }
 }
