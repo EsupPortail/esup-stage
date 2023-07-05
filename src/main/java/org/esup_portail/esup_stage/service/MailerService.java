@@ -95,11 +95,13 @@ public class MailerService {
 
     private void sendMail(String to, int templateMailId, String templateMailObject, String templateMailTexte, String templateMailCode,
                           MailContext mailContext, boolean forceTo, String attachmentLibelle,byte[] attachment) {
+        logger.info("Mail " + templateMailCode + ", destinataires : " + to);
         boolean disableDelivery = applicationBootstrap.getAppConfig().getMailerDisableDelivery();
         if (!disableDelivery) {
             String deliveryAddress = applicationBootstrap.getAppConfig().getMailerDeliveryAddress();
             if (!forceTo && deliveryAddress != null && !deliveryAddress.isEmpty()) {
                 to = deliveryAddress;
+                logger.info("Mail redirigé vers : " + to);
             }
 
             try {
