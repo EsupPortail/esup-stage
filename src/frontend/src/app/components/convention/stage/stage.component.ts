@@ -151,58 +151,40 @@ export class StageComponent implements OnInit {
 
     this.form = this.fb.group({
       // - Modèle de la convention
-      idPays: [this.convention.paysConvention ? this.convention.paysConvention.id : null, [Validators.required]],
+      idPays: [null, [Validators.required]],
       // - Description du stage
-      idTheme: [this.convention.theme ? this.convention.theme.id : null, [Validators.required]],
-      sujetStage: [this.convention.sujetStage],
-      competences: [this.convention.competences],
-      fonctionsEtTaches: [this.convention.fonctionsEtTaches],
-      details: [this.convention.details],
+      idTheme: [null, [Validators.required]],
+      sujetStage: [null],
+      competences: [null],
+      fonctionsEtTaches: [null],
+      details: [null],
       // - Partie Dates / horaires
-      dateDebutStage: [this.convention.dateDebutStage, [Validators.required]],
-      dateFinStage: [this.convention.dateFinStage, [Validators.required]],
-      interruptionStage: [this.convention.interruptionStage, [Validators.required]],
-      horairesReguliers: [this.convention.horairesReguliers, [Validators.required]],
-      nbHeuresHebdo: [this.convention.nbHeuresHebdo, this.fieldValidators['nbHeuresHebdo']],
-      nbConges: [this.convention.nbConges],
-      dureeExceptionnelle: [this.convention.dureeExceptionnelle, this.fieldValidators['dureeExceptionnelle']],
-      idTempsTravail: [this.convention.tempsTravail ? this.convention.tempsTravail.id : null, [Validators.required]],
-      commentaireDureeTravail: [this.convention.commentaireDureeTravail],
+      dateDebutStage: [null, [Validators.required]],
+      dateFinStage: [null, [Validators.required]],
+      interruptionStage: [false, [Validators.required]],
+      horairesReguliers: [true, [Validators.required]],
+      nbHeuresHebdo: [null, this.fieldValidators['nbHeuresHebdo']],
+      nbConges: [null],
+      dureeExceptionnelle: [null, this.fieldValidators['dureeExceptionnelle']],
+      idTempsTravail: [null, [Validators.required]],
+      commentaireDureeTravail: [null],
       // - Partie Gratification
-      gratificationStage: [this.convention.gratificationStage, [Validators.required]],
-      montantGratification: [this.convention.montantGratification, this.fieldValidators['montantGratification']],
-      idUniteGratification: [this.convention.uniteGratification ? this.convention.uniteGratification.id : null, this.fieldValidators['idUniteGratification']],
-      idUniteDuree: [this.convention.uniteDureeGratification ? this.convention.uniteDureeGratification.id : null, this.fieldValidators['idUniteDuree']],
-      idDevise: [this.convention.devise ? this.convention.devise.id : null, this.fieldValidators['idDevise']],
-      idModeVersGratification: [this.convention.modeVersGratification ? this.convention.modeVersGratification.id : null, this.fieldValidators['idModeVersGratification']],
-      //TODO un bandeau doit permettre de mettre un message à l’attention de l’étudiant
+      gratificationStage: [false, [Validators.required]],
+      montantGratification: [null, this.fieldValidators['montantGratification']],
+      idUniteGratification: [null, this.fieldValidators['idUniteGratification']],
+      idUniteDuree: [null, this.fieldValidators['idUniteDuree']],
+      idDevise: [null, this.fieldValidators['idDevise']],
+      idModeVersGratification: [null, this.fieldValidators['idModeVersGratification']],
       // - Partie Divers
-      idOrigineStage: [this.convention.origineStage ? this.convention.origineStage.id : null],
-      confidentiel: [this.convention.confidentiel],
-      idNatureTravail: [this.convention.natureTravail ? this.convention.natureTravail.id : null],
-      idModeValidationStage: [this.convention.modeValidationStage ? this.convention.modeValidationStage.id : null],
-      modeEncadreSuivi: [this.convention.modeEncadreSuivi],
-      avantagesNature: [this.convention.avantagesNature],
-      travailNuitFerie: [this.convention.travailNuitFerie],
+      idOrigineStage: [null],
+      confidentiel: [false],
+      idNatureTravail: [null],
+      idModeValidationStage: [null],
+      modeEncadreSuivi: [null],
+      avantagesNature: [null],
+      travailNuitFerie: [null],
     });
-
-    //Set default value for booleans
-    if (this.convention.interruptionStage == null){
-      this.form.get('interruptionStage')?.setValue(false);
-    }
-    if (this.convention.horairesReguliers == null){
-      this.form.get('horairesReguliers')?.setValue(true);
-    }
-    if (this.convention.gratificationStage == null){
-      this.form.get('gratificationStage')?.setValue(false);
-    }
-    if (this.convention.confidentiel == null){
-      this.form.get('confidentiel')?.setValue(false);
-    }
-    //Update validators that depends on booleans
-    this.toggleValidators(['nbHeuresHebdo',],this.convention.horairesReguliers);
-    this.toggleValidators(['montantGratification','idUniteGratification','idUniteDuree','idDevise','idModeVersGratification'],this.convention.gratificationStage);
-    this.toggleValidators(['sujetStage','competences','fonctionsEtTaches','idOrigineStage','confidentiel','idNatureTravail','idModeValidationStage'],!this.enMasse);
+    this.setFormValue();
 
     this.loadInterruptionsStage();
 
@@ -256,11 +238,69 @@ export class StageComponent implements OnInit {
   }
 
   ngOnChanges(): void{
+    if (this.form) {
+      this.setFormValue();
+    }
     this.singleFieldUpdateLock = false;
     if(this.singleFieldUpdateQueue.length > 0){
       const data = this.singleFieldUpdateQueue.pop();
       this.updateSingleField(data.field,data.value);
     }
+  }
+
+  setFormValue(): void {
+    this.form.patchValue({
+      // - Modèle de la convention
+      idPays: this.convention.paysConvention ? this.convention.paysConvention.id : null,
+      // - Description du stage
+      idTheme: this.convention.theme ? this.convention.theme.id : null,
+      sujetStage: this.convention.sujetStage,
+      competences: this.convention.competences,
+      fonctionsEtTaches: this.convention.fonctionsEtTaches,
+      details: this.convention.details,
+      // - Partie Dates / horaires
+      dateDebutStage: this.convention.dateDebutStage,
+      dateFinStage: this.convention.dateFinStage,
+      interruptionStage: this.convention.interruptionStage,
+      horairesReguliers: this.convention.horairesReguliers,
+      nbHeuresHebdo: this.convention.nbHeuresHebdo,
+      nbConges: this.convention.nbConges,
+      dureeExceptionnelle: this.convention.dureeExceptionnelle,
+      idTempsTravail: this.convention.tempsTravail ? this.convention.tempsTravail.id : null,
+      commentaireDureeTravail: this.convention.commentaireDureeTravail,
+      // - Partie Gratification
+      gratificationStage: this.convention.gratificationStage,
+      montantGratification: this.convention.montantGratification,
+      idUniteGratification: this.convention.uniteGratification ? this.convention.uniteGratification.id : null,
+      idUniteDuree: this.convention.uniteDureeGratification ? this.convention.uniteDureeGratification.id : null,
+      idDevise: this.convention.devise ? this.convention.devise.id : null,
+      idModeVersGratification: this.convention.modeVersGratification ? this.convention.modeVersGratification.id : null,
+      // - Partie Divers
+      idOrigineStage: this.convention.origineStage ? this.convention.origineStage.id : null,
+      confidentiel: this.convention.confidentiel,
+      idNatureTravail: this.convention.natureTravail ? this.convention.natureTravail.id : null,
+      idModeValidationStage: this.convention.modeValidationStage ? this.convention.modeValidationStage.id : null,
+      modeEncadreSuivi: this.convention.modeEncadreSuivi,
+      avantagesNature: this.convention.avantagesNature,
+      travailNuitFerie: this.convention.travailNuitFerie,
+    });
+    if (this.convention.interruptionStage == null){
+      this.form.get('interruptionStage')?.setValue(false);
+    }
+    if (this.convention.horairesReguliers == null){
+      this.form.get('horairesReguliers')?.setValue(true);
+    }
+    if (this.convention.gratificationStage == null){
+      this.form.get('gratificationStage')?.setValue(false);
+    }
+    if (this.convention.confidentiel == null){
+      this.form.get('confidentiel')?.setValue(false);
+    }
+
+    //Update validators that depends on booleans
+    this.toggleValidators(['nbHeuresHebdo',],this.convention.horairesReguliers);
+    this.toggleValidators(['montantGratification','idUniteGratification','idUniteDuree','idDevise','idModeVersGratification'],this.convention.gratificationStage);
+    this.toggleValidators(['sujetStage','competences','fonctionsEtTaches','idOrigineStage','confidentiel','idNatureTravail','idModeValidationStage'],!this.enMasse);
   }
 
   mergeObject(mainObject: any, objectToMerge: any): any {
@@ -312,18 +352,9 @@ export class StageComponent implements OnInit {
     });
   }
 
-  checkInterruptionsPeriodesValid():void {
-    if (this.form.get('interruptionStage')?.value){
-      if (this.interruptionsStage.length >= 1){
-        this.periodesInterruptionsValid = true;
-      }else{
-        this.periodesInterruptionsValid = false;
-      }
-    }else{
-      this.periodesInterruptionsValid = true;
-    }
+  checkInterruptionsPeriodesValid(): void {
+    this.periodesInterruptionsValid = !this.form.get('interruptionStage')?.value || this.interruptionsStage.length > 0;
     this.validateForm();
-
   }
 
   setHorairesReguliersFormControls(event : any): void {

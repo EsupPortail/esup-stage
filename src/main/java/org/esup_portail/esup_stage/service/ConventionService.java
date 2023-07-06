@@ -63,6 +63,9 @@ public class ConventionService {
     ConventionJpaRepository conventionJpaRepository;
 
     @Autowired
+    PaysJpaRepository paysJpaRepository;
+
+    @Autowired
     AppConfigService appConfigService;
 
     @Autowired
@@ -185,6 +188,11 @@ public class ConventionService {
         etudiant.setCodeSexe(etudiantRef.getCodeSexe());
         etudiant.setDateNais(etudiantRef.getDateNais());
         etudiant = etudiantJpaRepository.saveAndFlush(etudiant);
+
+        // Ajout du pays de la convention à France si non renseigné
+        if (convention.getPaysConvention() == null) {
+            convention.setPaysConvention(paysJpaRepository.findByIso2("FR"));
+        }
 
         convention.setEtudiant(etudiant);
         convention.setAdresseEtudiant(conventionFormDto.getAdresseEtudiant());

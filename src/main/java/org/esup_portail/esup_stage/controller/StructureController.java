@@ -119,7 +119,7 @@ public class StructureController {
             throw new AppException(HttpStatus.NOT_FOUND, "Code non trouvé");
         }
 
-        Pays pays = paysJpaRepository.findByLibelle("France");
+        Pays pays = paysJpaRepository.findByIso2("FR");
         if (pays == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Pays non trouvé");
         }
