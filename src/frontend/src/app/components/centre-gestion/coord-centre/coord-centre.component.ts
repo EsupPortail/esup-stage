@@ -157,7 +157,7 @@ export class CoordCentreComponent implements OnInit {
 
   compareCode(option: any, value: any): boolean {
     if (option && value) {
-      return option.code === value.code;
+      return option.code === value.code && option.codeVrsEtp === value.codeVrsEtp;
     }
     return false;
   }
