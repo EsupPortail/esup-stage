@@ -38,7 +38,7 @@ export class RecapitulatifComponent implements OnInit {
       modeVersGratificationLibelle: this.getNomenclatureValue('modeVersGratification'),
       origineStageLibelle: this.getNomenclatureValue('origineStage'),
       natureTravailLibelle: this.getNomenclatureValue('natureTravail'),
-      modeValidationStageLibelle: this.getNomenclatureValue(' modeValidationStage'),
+      modeValidationStageLibelle: this.getNomenclatureValue('modeValidationStage'),
     };
     if(this.tmpConvention.interruptionStage){
       this.loadInterruptionsStage();
@@ -69,6 +69,7 @@ export class RecapitulatifComponent implements OnInit {
 
   getNomenclatureValue(key: string) {
     if (this.convention.validationCreation && this.convention.nomenclature) {
+      console.log(key, this.convention.nomenclature[key]);
       return this.convention.nomenclature[key] ?? '';
     }
     return this.convention[key] ? this.convention[key].libelle : '';
