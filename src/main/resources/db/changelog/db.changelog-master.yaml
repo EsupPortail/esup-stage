@@ -164,3 +164,6 @@ databaseChangeLog:
   - include:
       file: 2.0.0-update-empty-cpam.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 2.1.0-centre-gestion-signataire.yaml
+      relativeToChangelogFile: true

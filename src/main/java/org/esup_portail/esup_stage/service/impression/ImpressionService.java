@@ -13,6 +13,7 @@ import freemarker.template.Template;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
+import org.esup_portail.esup_stage.enums.TypeSignatureEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
@@ -27,6 +28,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ImpressionService {
@@ -165,53 +167,82 @@ public class ImpressionService {
         }
     }
 
-    public String generateOtpData(Convention convention) {
+    public String generateXmlData(Convention convention, TypeSignatureEnum typeSignatureEnum) {
         List<Map<String, String>> otp = new ArrayList<>();
-        // Ajout de l'étudiant
-        otp.add(new HashMap<>() {{
-            put("firstname", convention.getEtudiant().getPrenom());
-            put("lastname", convention.getEtudiant().getNom());
-            put("phoneNumber", getOtpDataPhoneNumber(convention.getTelPortableEtudiant()));
-            put("email", getOtpDataEmail(convention.getEtudiant().getMail()));
-        }});
-        // Ajout de l'enseignant référent
-        otp.add(new HashMap<>() {{
-            put("firstname", convention.getEnseignant().getPrenom());
-            put("lastname", convention.getEnseignant().getNom());
-            put("phoneNumber", getOtpDataPhoneNumber(convention.getEnseignant().getTel()));
-            put("email", getOtpDataEmail(convention.getEnseignant().getMail()));
-        }});
-        // Ajout du tuteur pédagogique
-        otp.add(new HashMap<>() {{
-            put("firstname", convention.getContact().getPrenom());
-            put("lastname", convention.getContact().getNom());
-            put("phoneNumber", getOtpDataPhoneNumber(convention.getContact().getTel()));
-            put("email", getOtpDataEmail(convention.getContact().getMail()));
-        }});
-        // Ajout du signataire de la convention
-        otp.add(new HashMap<>() {{
-            put("firstname", convention.getSignataire().getPrenom());
-            put("lastname", convention.getSignataire().getNom());
-            put("phoneNumber", getOtpDataPhoneNumber(convention.getSignataire().getTel()));
-            put("email", getOtpDataEmail(convention.getSignataire().getMail()));
-        }});
-        // Ajout du directeur du département
-        otp.add(new HashMap<>() {{
-            put("firstname", convention.getCentreGestion().getPrenomViseur());
-            put("lastname", convention.getCentreGestion().getNomViseur());
-            put("phoneNumber", getOtpDataPhoneNumber(convention.getCentreGestion().getTelephone()));
-            put("email", getOtpDataEmail(convention.getCentreGestion().getMail()));
-        }});
+        List<CentreGestionSignataire> signatairesOtp = convention.getCentreGestion().getSignataires().stream().filter(s -> s.getType() == typeSignatureEnum).collect(Collectors.toList());
+        if (signatairesOtp.size() == 0) {
+            return null;
+        }
+        for (CentreGestionSignataire signataire : signatairesOtp) {
+            switch (signataire.getId().getSignataire()) {
+                case etudiant:
+                    // Ajout de l'étudiant
+                    otp.add(new HashMap<>() {{
+                        put("firstname", convention.getEtudiant().getPrenom());
+                        put("lastname", convention.getEtudiant().getNom());
+                        put("phoneNumber", getOtpDataPhoneNumber(convention.getTelPortableEtudiant()));
+                        put("email", getOtpDataEmail(convention.getEtudiant().getMail()));
+                    }});
+                    break;
+                case enseignant:
+                    // Ajout de l'enseignant référent
+                    otp.add(new HashMap<>() {{
+                        put("firstname", convention.getEnseignant().getPrenom());
+                        put("lastname", convention.getEnseignant().getNom());
+                        put("phoneNumber", getOtpDataPhoneNumber(convention.getEnseignant().getTel()));
+                        put("email", getOtpDataEmail(convention.getEnseignant().getMail()));
+                    }});
+                    break;
+                case tuteur:
+                    // Ajout du tuteur pédagogique
+                    otp.add(new HashMap<>() {{
+                        put("firstname", convention.getContact().getPrenom());
+                        put("lastname", convention.getContact().getNom());
+                        put("phoneNumber", getOtpDataPhoneNumber(convention.getContact().getTel()));
+                        put("email", getOtpDataEmail(convention.getContact().getMail()));
+                    }});
+                    break;
+                case signataire:
+                    // Ajout du signataire de la convention
+                    otp.add(new HashMap<>() {{
+                        put("firstname", convention.getSignataire().getPrenom());
+                        put("lastname", convention.getSignataire().getNom());
+                        put("phoneNumber", getOtpDataPhoneNumber(convention.getSignataire().getTel()));
+                        put("email", getOtpDataEmail(convention.getSignataire().getMail()));
+                    }});
+                    break;
+                case viseur:
+                    // Ajout du directeur du département
+                    otp.add(new HashMap<>() {{
+                        put("firstname", convention.getCentreGestion().getPrenomViseur());
+                        put("lastname", convention.getCentreGestion().getNomViseur());
+                        put("phoneNumber", getOtpDataPhoneNumber(convention.getCentreGestion().getTelephone()));
+                        put("email", getOtpDataEmail(convention.getCentreGestion().getMail()));
+                    }});
+                    break;
+                default:
+                    break;
+            }
+        }
 
         // Construction du xml
         StringBuilder sb = new StringBuilder();
         sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
         sb.append("<meta-data-list>");
-        for (int i = 0 ; i < otp.size() ; ++i) {
-            sb.append("<meta-data name=\"OTP_firstname_").append(i).append("\" value=\"").append(otp.get(i).get("firstname")).append("\"/>");
-            sb.append("<meta-data name=\"OTP_lastname_").append(i).append("\" value=\"").append(otp.get(i).get("lastname")).append("\"/>");
-            sb.append("<meta-data name=\"OTP_phonenumber_").append(i).append("\" value=\"").append(otp.get(i).get("phoneNumber")).append("\"/>");
-            sb.append("<meta-data name=\"OTP_email_").append(i).append("\" value=\"").append(otp.get(i).get("email")).append("\"/>");
+        if (typeSignatureEnum == TypeSignatureEnum.otp) {
+            for (int i = 0 ; i < otp.size() ; ++i) {
+                sb.append("<meta-data name=\"OTP_firstname_").append(i).append("\" value=\"").append(otp.get(i).get("firstname")).append("\"/>");
+                sb.append("<meta-data name=\"OTP_lastname_").append(i).append("\" value=\"").append(otp.get(i).get("lastname")).append("\"/>");
+                sb.append("<meta-data name=\"OTP_phonenumber_").append(i).append("\" value=\"").append(otp.get(i).get("phoneNumber")).append("\"/>");
+                sb.append("<meta-data name=\"OTP_email_").append(i).append("\" value=\"").append(otp.get(i).get("email")).append("\"/>");
+            }
+        } else {
+            int counter = 1;
+            for (String key : Arrays.asList("lastname", "firstname", "email")) {
+                for (Map<String, String> stringStringMap : otp) {
+                    sb.append("<meta-data name=\"TEXT").append(String.format("%03d", counter++)).append("\" value=\"").append(stringStringMap.get(key)).append("\"/>");
+                }
+            }
         }
         sb.append("</meta-data-list>");
         return sb.toString();

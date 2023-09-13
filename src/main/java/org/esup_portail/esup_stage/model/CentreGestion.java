@@ -154,8 +154,10 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     @Column(length = 255)
     private String circuitSignature;
 
-    @Column
-    private String ordreSignature = "[\"etudiant\",\"enseignant\",\"tuteur\",\"signataire\",\"viseur\"]"; // tableau encodé en JSON
+    @OneToMany(mappedBy = "centreGestion", cascade = {CascadeType.MERGE, CascadeType.REMOVE, CascadeType.PERSIST})
+    @OrderBy("ordre ASC")
+    @JsonManagedReference
+    private List<CentreGestionSignataire> signataires = new ArrayList<>();
 
     @JsonView(Views.List.class)
     private Boolean onlyMailCentreGestion = false;
@@ -512,12 +514,12 @@ public class CentreGestion extends ObjetMetier implements Exportable {
         this.circuitSignature = circuitSignature;
     }
 
-    public String getOrdreSignature() {
-        return ordreSignature;
+    public List<CentreGestionSignataire> getSignataires() {
+        return signataires;
     }
 
-    public void setOrdreSignature(String ordreSignature) {
-        this.ordreSignature = ordreSignature;
+    public void setSignataires(List<CentreGestionSignataire> signataires) {
+        this.signataires = signataires;
     }
 
     @Transient

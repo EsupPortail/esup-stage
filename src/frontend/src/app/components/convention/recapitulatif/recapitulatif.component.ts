@@ -69,7 +69,6 @@ export class RecapitulatifComponent implements OnInit {
 
   getNomenclatureValue(key: string) {
     if (this.convention.validationCreation && this.convention.nomenclature) {
-      console.log(key, this.convention.nomenclature[key]);
       return this.convention.nomenclature[key] ?? '';
     }
     return this.convention[key] ? this.convention[key].libelle : '';

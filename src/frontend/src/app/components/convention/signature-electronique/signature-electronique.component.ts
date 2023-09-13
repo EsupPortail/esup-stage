@@ -32,10 +32,11 @@ export class SignatureElectroniqueComponent implements OnInit {
     });
     this.isGestionnaire = this.authService.isAdmin() || this.authService.isGestionnaire();
     this.centreGestionService.getById(this.convention.centreGestion.id).subscribe((response: any) => {
-      for (let p of JSON.parse(response.ordreSignature)) {
-        const capitalize = p[0].toUpperCase() + p.slice(1)
+      for (let p of response.signataires) {
+        const profil = p.id.signataire;
+        const capitalize = profil[0].toUpperCase() + profil.slice(1)
         let label = '';
-        switch (p) {
+        switch (profil) {
           case 'etudiant':
             label = 'Étudiant';
             break;

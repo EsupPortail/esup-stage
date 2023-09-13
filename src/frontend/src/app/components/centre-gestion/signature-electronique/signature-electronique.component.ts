@@ -12,7 +12,7 @@ export class CentreSignatureElectroniqueComponent implements OnInit {
   @Input() centreGestion: any;
   @Input() form!: FormGroup;
 
-  ordreSignature: string[] = [];
+  signataires: any[] = [];
 
   constructor() { }
 
@@ -22,18 +22,25 @@ export class CentreSignatureElectroniqueComponent implements OnInit {
     }
   }
 
-
   setFormData(): void {
-    this.ordreSignature = JSON.parse(this.centreGestion.ordreSignature);
+    this.signataires = this.centreGestion.signataires;
     this.form.patchValue({
       circuitSignature: this.centreGestion.circuitSignature,
-      ordreSignature: JSON.stringify(this.ordreSignature),
+      signataires: this.signataires,
     });
   }
 
   drop(event: CdkDragDrop<string[]>): void {
-    moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-    this.form.get('ordreSignature')?.setValue(JSON.stringify(this.ordreSignature));
+    moveItemInArray(this.signataires, event.previousIndex, event.currentIndex);
+    let newOrdre = 1;
+    this.signataires.forEach((s) => {
+      s.ordre = newOrdre++;
+    });
+    this.updateSignataire();
+  }
+
+  updateSignataire(): void {
+    this.form.get('signataires')?.setValue(this.signataires);
   }
 
 }

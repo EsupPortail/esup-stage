@@ -12,9 +12,19 @@
         </mat-form-field>
         <div class="col-12">
           <div class="text-title">Ordre de signature</div>
-          <div cdkDropList [cdkDropListData]="ordreSignature" (cdkDropListDropped)="drop($event)">
-            <div class="ordre" *ngFor="let ordre of ordreSignature; let index = index" cdkDrag>
-              <span cdkDragHandle>{{index + 1}}</span>{{ordre}}
+          <div cdkDropList [cdkDropListData]="signataires" (cdkDropListDropped)="drop($event)">
+            <div class="ordre" *ngFor="let signataire of signataires; let index = index" cdkDrag>
+              <div class="row">
+                <div class="col-4">
+                  <span cdkDragHandle>{{signataire.ordre}}</span>{{signataire.id.signataire}}
+                </div>
+                <div class="col-8">
+                  <mat-radio-group [(ngModel)]="signataire.type" [ngModelOptions]="{standalone: true}" (ngModelChange)="updateSignataire()">
+                    <mat-radio-button style="margin-left: 10px" [value]="'otp'">Signature OTP</mat-radio-button>
+                    <mat-radio-button style="margin-left: 10px" [value]="'serveur'">Signature serveur</mat-radio-button>
+                  </mat-radio-group>
+                </div>
+              </div>
             </div>
           </div>
         </div>

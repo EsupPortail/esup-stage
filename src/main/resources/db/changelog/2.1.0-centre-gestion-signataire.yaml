@@ -1,0 +1,38 @@
+databaseChangeLog:
+- changeSet:
+    id: centre-gestion-signataire
+    author: ssound
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+                nullable: false
+                primaryKey: true
+            name: idCentreGestion
+            type: INT
+        - column:
+            constraints:
+                nullable: false
+                primaryKey: true
+            name: signataire
+            type: ENUM('etudiant', 'enseignant', 'tuteur', 'signataire', 'viseur')
+        - column:
+            constraints:
+                nullable: false
+            name: ordre
+            type: INT
+        - column:
+            constraints:
+                nullable: false
+            name: type
+            type: ENUM('otp', 'serveur')
+        tableName: CentreGestionSignataire
+- changeSet:
+    id: centre-gestion-signataire-init
+    author: ssound
+    changes:
+    - sqlFile:
+        path: 2.1.0-centre-gestion-signataire-init.sql
+        relativeToChangelogFile: true
+        encoding: utf8

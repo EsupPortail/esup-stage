@@ -1,13 +1,14 @@
 package org.esup_portail.esup_stage.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.docaposte.DocaposteClient;
 import org.esup_portail.esup_stage.docaposte.gen.HistoryEntryVO;
 import org.esup_portail.esup_stage.docaposte.gen.HistoryResponse;
+import org.esup_portail.esup_stage.enums.TypeSignatureEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.Avenant;
+import org.esup_portail.esup_stage.model.CentreGestionSignataire;
 import org.esup_portail.esup_stage.repository.AvenantJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AvenantService {
@@ -26,51 +28,40 @@ public class AvenantService {
 
     public void updateSignatureElectroniqueHistorique(Avenant avenant) {
         HistoryResponse response = docaposteClient.getHistorique(avenant.getDocumentId());
-        int indexOtp = -1;
         try {
-            List<String> profils = new ObjectMapper().readValue(avenant.getConvention().getCentreGestion().getOrdreSignature(), List.class);
+            List<CentreGestionSignataire> profils = avenant.getConvention().getCentreGestion().getSignataires();
+            List<CentreGestionSignataire> profilsOtp = profils.stream().filter(p -> p.getType() == TypeSignatureEnum.otp).collect(Collectors.toList());
+            List<CentreGestionSignataire> profilsServeur = profils.stream().filter(p -> p.getType() == TypeSignatureEnum.serveur).collect(Collectors.toList());
+            int ordreOtp = 0;
+            int ordreServeur = 0;
+            TypeSignatureEnum typeSignature = null;
             for (HistoryEntryVO history : response.getReturn()) {
-                Boolean isSignarure = null;
-                if (history.getStateName().equals("Informations OTP définies")) {
-                    indexOtp++;
-                    isSignarure = false;
+                boolean signature = false;
+                boolean aTraiter = false;
+                Date date = history.getDate().toGregorianCalendar().getTime();
+                switch (history.getStateName()) {
+                    case "Informations OTP définies":
+                        ordreOtp++;
+                        typeSignature = TypeSignatureEnum.otp;
+                        aTraiter = true;
+                        break;
+                    case "Envoyé pour signature":
+                        ordreServeur++;
+                        typeSignature = TypeSignatureEnum.serveur;
+                        aTraiter = true;
+                        break;
+                    case "Signé":
+                        signature = true;
+                        aTraiter = true;
+                        break;
                 }
-                if (history.getStateName().equals("Signé")) {
-                    isSignarure = true;
-                }
-                if (indexOtp >= 0) {
-                    String profil = profils.get(indexOtp);
-                    Date date = history.getDate().toGregorianCalendar().getTime();
-                    switch (profil) {
-                        case "etudiant":
-                            if (isSignarure != null) {
-                                if (isSignarure) avenant.setDateSignatureEtudiant(date);
-                                else avenant.setDateDepotEtudiant(date);
-                            }
+                if (aTraiter && typeSignature != null && (ordreOtp > 0 || ordreServeur > 0)) {
+                    switch (typeSignature) {
+                        case otp:
+                            updateDateSignature(avenant, profilsOtp.get(ordreOtp - 1), date, signature);
                             break;
-                        case "enseignant":
-                            if (isSignarure != null) {
-                                if (isSignarure) avenant.setDateSignatureEnseignant(date);
-                                else avenant.setDateDepotEnseignant(date);
-                            }
-                            break;
-                        case "tuteur":
-                            if (isSignarure != null) {
-                                if (isSignarure) avenant.setDateSignatureTuteur(date);
-                                else avenant.setDateDepotTuteur(date);
-                            }
-                            break;
-                        case "signataire":
-                            if (isSignarure != null) {
-                                if (isSignarure) avenant.setDateSignatureSignataire(date);
-                                else avenant.setDateDepotSignataire(date);
-                            }
-                            break;
-                        case "viseur":
-                            if (isSignarure != null) {
-                                if (isSignarure) avenant.setDateSignatureViseur(date);
-                                else avenant.setDateDepotViseur(date);
-                            }
+                        case serveur:
+                            updateDateSignature(avenant, profilsServeur.get(ordreServeur - 1), date, signature);
                             break;
                     }
                 }
@@ -79,6 +70,33 @@ public class AvenantService {
         } catch (Exception e) {
             logger.error(e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur de la récupération de l'historique");
+        }
+    }
+
+    private void updateDateSignature(Avenant avenant, CentreGestionSignataire profil, Date date, boolean signature) {
+        switch (profil.getId().getSignataire()) {
+            case etudiant:
+                if (signature) avenant.setDateSignatureEtudiant(date);
+                else avenant.setDateDepotEtudiant(date);
+                break;
+            case enseignant:
+                if (signature) avenant.setDateSignatureEnseignant(date);
+                else avenant.setDateDepotEnseignant(date);
+                break;
+            case tuteur:
+                if (signature) avenant.setDateSignatureTuteur(date);
+                else avenant.setDateDepotTuteur(date);
+                break;
+            case signataire:
+                if (signature) avenant.setDateSignatureSignataire(date);
+                else avenant.setDateDepotSignataire(date);
+                break;
+            case viseur:
+                if (signature) avenant.setDateSignatureViseur(date);
+                else avenant.setDateDepotViseur(date);
+                break;
+            default:
+                break;
         }
     }
 }

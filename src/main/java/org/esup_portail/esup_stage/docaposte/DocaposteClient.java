@@ -2,6 +2,7 @@ package org.esup_portail.esup_stage.docaposte;
 
 import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
 import org.esup_portail.esup_stage.docaposte.gen.*;
+import org.esup_portail.esup_stage.enums.TypeSignatureEnum;
 import org.esup_portail.esup_stage.model.Avenant;
 import org.esup_portail.esup_stage.model.Convention;
 import org.esup_portail.esup_stage.repository.AvenantJpaRepository;
@@ -29,39 +30,57 @@ public class DocaposteClient extends WebServiceGatewaySupport {
 
     public void upload(Convention convention, Avenant avenant) {
         String filename = "";
+        String label = "conventions";
+        String documentId = convention.getDocumentId();
         if (avenant != null) {
             filename += "Avenant_" + avenant.getId() + "_";
+            label = "avenants";
+            documentId = avenant.getDocumentId();
         }
         filename += "Convention_" + convention.getId() + "_" + convention.getEtudiant().getPrenom() + "_" + convention.getEtudiant().getNom();
         ByteArrayOutputStream ou = new ByteArrayOutputStream();
         impressionService.generateConventionAvenantPDF(convention, avenant, ou, false);
-        String otpData = impressionService.generateOtpData(convention);
 
         DataFileVO documentFile = new DataFileVO();
         documentFile.setDataHandler(ou.toByteArray());
         documentFile.setFilename(filename + ".pdf");
-        DataFileVO optDataFile = new DataFileVO();
-        optDataFile.setDataHandler(otpData.getBytes());
-        optDataFile.setFilename("METAS_" + filename + ".xml");
 
-        OtpUpload request = new OtpUpload();
-        request.setSiren(applicationBootstrap.getAppConfig().getDocaposteSiren());
-        request.setCircuitId(convention.getCentreGestion().getCircuitSignature());
-        request.setDocument(documentFile);
-        request.setOtpData(optDataFile);
-        request.setLabel("");
-        OtpUploadResponse response = ((JAXBElement<OtpUploadResponse>) getWebServiceTemplate().marshalSendAndReceive(new ObjectFactory().createOtpUpload(request))).getValue();
+        // Dépôt du PDF dans Docaposte
+        if (documentId == null) {
+            Upload uploadRequest = new Upload();
+            uploadRequest.setSubscriberId(applicationBootstrap.getAppConfig().getDocaposteSiren());
+            uploadRequest.setCircuitId(convention.getCentreGestion().getCircuitSignature());
+            uploadRequest.setDataFileVO(documentFile);
+            uploadRequest.setLabel(label);
+            UploadResponse uploadResponse = ((JAXBElement<UploadResponse>) getWebServiceTemplate().marshalSendAndReceive(new ObjectFactory().createUpload(uploadRequest))).getValue();
+            documentId = uploadResponse.getReturn();
+            if (avenant != null) {
+                avenant.setDateEnvoiSignature(new Date());
+                avenant.setDocumentId(documentId);
+                avenantJpaRepository.saveAndFlush(avenant);
+            } else {
+                convention.setDateEnvoiSignature(new Date());
+                convention.setDocumentId(documentId);
+                conventionJpaRepository.saveAndFlush(convention);
+            }
+        }
 
-        if(avenant != null){
-            avenant.setDateEnvoiSignature(new Date());
-            avenant.setDocumentId(response.getReturn().get(0));
-            avenant.setUrlSignature(response.getReturn().get(1));
-            avenantJpaRepository.saveAndFlush(avenant);
-        }else {
-            convention.setDateEnvoiSignature(new Date());
-            convention.setDocumentId(response.getReturn().get(0));
-            convention.setUrlSignature(response.getReturn().get(1));
-            conventionJpaRepository.saveAndFlush(convention);
+        // Ajout des otp pour les signatures otp
+        String otpData = impressionService.generateXmlData(convention, TypeSignatureEnum.otp);
+        String metaData = impressionService.generateXmlData(convention, TypeSignatureEnum.serveur);
+        if (otpData != null) {
+            UploadOTPInformation requestUploadOtpInformation = new UploadOTPInformation();
+            requestUploadOtpInformation.setDocumentId(documentId);
+            requestUploadOtpInformation.setArg1(otpData.getBytes());
+            ((JAXBElement<UploadOTPInformationResponse>) getWebServiceTemplate().marshalSendAndReceive(new ObjectFactory().createUploadOTPInformation(requestUploadOtpInformation))).getValue();
+        }
+
+        // Ajout des informations meta pour les signatures serveurs
+        if (metaData != null) {
+            UploadMeta requestUploadMeta = new UploadMeta();
+            requestUploadMeta.setDocumentId(documentId);
+            requestUploadMeta.setArg1(metaData.getBytes());
+            ((JAXBElement<UploadMetaResponse>) getWebServiceTemplate().marshalSendAndReceive(new ObjectFactory().createUploadMeta(requestUploadMeta))).getValue();
         }
     }
 

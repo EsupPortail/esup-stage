@@ -9,10 +9,10 @@
         <div class="col-sm-9">{{convention.dateEnvoiSignature|date:'dd/MM/YYYY HH:mm:ss'}}</div>
         <div class="col-sm-3 font-weight-bold">Statut d'envoi</div>
         <div class="col-sm-9">{{convention.documentId ? 'Envoyé' : ''}}</div>
-        <ng-container *ngIf="isGestionnaire">
-          <div class="col-sm-3 font-weight-bold">Lien vers la signature</div>
-          <div class="col-sm-9"><a *ngIf="convention.urlSignature" [href]="convention.urlSignature" target="_blank">Lien vers Docaposte</a></div>
-        </ng-container>
+<!--        <ng-container *ngIf="isGestionnaire">-->
+<!--          <div class="col-sm-3 font-weight-bold">Lien vers la signature</div>-->
+<!--          <div class="col-sm-9"><a *ngIf="convention.urlSignature" [href]="convention.urlSignature" target="_blank">Lien vers Docaposte</a></div>-->
+<!--        </ng-container>-->
       </div>
     </div>
     <div class="text-title"><i class="fa fa-pencil"></i>&nbsp;Signatures</div>
@@ -74,6 +74,6 @@
 </mat-card>
 
 <mat-card *ngFor="let avenant of convention.avenants">
-  <app-signature-electronique-view  [isGestionnaire]="isGestionnaire" 
+  <app-signature-electronique-view  [isGestionnaire]="isGestionnaire"
   [isMobile]="isMobile" [profils]="profils" [avenant]="avenant"></app-signature-electronique-view>
 </mat-card>
