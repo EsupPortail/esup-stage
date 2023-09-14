@@ -15,6 +15,7 @@ import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.service.apogee.ApogeeService;
 import org.esup_portail.esup_stage.service.apogee.model.EtudiantRef;
+import org.esup_portail.esup_stage.service.signature.model.Historique;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -322,76 +323,38 @@ public class ConventionService {
     }
 
     public void updateSignatureElectroniqueHistorique(Convention convention) {
-        HistoryResponse response = docaposteClient.getHistorique(convention.getDocumentId());
         try {
-            List<CentreGestionSignataire> profils = convention.getCentreGestion().getSignataires();
-            List<CentreGestionSignataire> profilsOtp = profils.stream().filter(p -> p.getType() == TypeSignatureEnum.otp).collect(Collectors.toList());
-            List<CentreGestionSignataire> profilsServeur = profils.stream().filter(p -> p.getType() == TypeSignatureEnum.serveur).collect(Collectors.toList());
-            int ordreOtp = 0;
-            int ordreServeur = 0;
-            TypeSignatureEnum typeSignature = null;
-            for (HistoryEntryVO history : response.getReturn()) {
-                boolean signature = false;
-                boolean aTraiter = false;
-                Date date = history.getDate().toGregorianCalendar().getTime();
-                switch (history.getStateName()) {
-                    case "Informations OTP définies":
-                        ordreOtp++;
-                        typeSignature = TypeSignatureEnum.otp;
-                        aTraiter = true;
+            List<Historique> historiques = docaposteClient.getHistorique(convention.getDocumentId(), convention.getCentreGestion().getSignataires());
+            for (Historique historique : historiques) {
+                switch (historique.getTypeSignataire()) {
+                    case etudiant:
+                        convention.setDateSignatureEtudiant(historique.getDateSignature());
+                        convention.setDateDepotEtudiant(historique.getDateDepot());
                         break;
-                    case "Envoyé pour signature":
-                        ordreServeur++;
-                        typeSignature = TypeSignatureEnum.serveur;
-                        aTraiter = true;
+                    case enseignant:
+                        convention.setDateSignatureEnseignant(historique.getDateSignature());
+                        convention.setDateDepotEnseignant(historique.getDateDepot());
                         break;
-                    case "Signé":
-                        signature = true;
-                        aTraiter = true;
+                    case tuteur:
+                        convention.setDateSignatureTuteur(historique.getDateSignature());
+                        convention.setDateDepotTuteur(historique.getDateDepot());
                         break;
-                }
-                if (aTraiter && typeSignature != null && (ordreOtp > 0 || ordreServeur > 0)) {
-                    switch (typeSignature) {
-                        case otp:
-                            updateDateSignature(convention, profilsOtp.get(ordreOtp - 1), date, signature);
-                            break;
-                        case serveur:
-                            updateDateSignature(convention, profilsServeur.get(ordreServeur - 1), date, signature);
-                            break;
-                    }
+                    case signataire:
+                        convention.setDateSignatureSignataire(historique.getDateSignature());
+                        convention.setDateDepotSignataire(historique.getDateDepot());
+                        break;
+                    case viseur:
+                        convention.setDateSignatureViseur(historique.getDateSignature());
+                        convention.setDateDepotViseur(historique.getDateDepot());
+                        break;
+                    default:
+                        break;
                 }
             }
             conventionJpaRepository.save(convention);
         } catch (Exception e) {
             logger.error(e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur de la récupération de l'historique");
-        }
-    }
-
-    private void updateDateSignature(Convention convention, CentreGestionSignataire profil, Date date, boolean signature) {
-        switch (profil.getId().getSignataire()) {
-            case etudiant:
-                if (signature) convention.setDateSignatureEtudiant(date);
-                else convention.setDateDepotEtudiant(date);
-                break;
-            case enseignant:
-                if (signature) convention.setDateSignatureEnseignant(date);
-                else convention.setDateDepotEnseignant(date);
-                break;
-            case tuteur:
-                if (signature) convention.setDateSignatureTuteur(date);
-                else convention.setDateDepotTuteur(date);
-                break;
-            case signataire:
-                if (signature) convention.setDateSignatureSignataire(date);
-                else convention.setDateDepotSignataire(date);
-                break;
-            case viseur:
-                if (signature) convention.setDateSignatureViseur(date);
-                else convention.setDateDepotViseur(date);
-                break;
-            default:
-                break;
         }
     }
 }
