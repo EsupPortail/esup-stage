@@ -1,5 +1,7 @@
 package org.esup_portail.esup_stage.bootstrap;
 
+import org.apache.logging.log4j.util.Strings;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,6 +40,11 @@ public class AppConfig {
     private String docaposteTruststorePath;
     private String docaposteTruststorePassword;
     private boolean docaposteEnabled = false;
+    private String esupSignatureUri;
+    private Integer esupSignatureCircuit;
+    private boolean esupSignatureEnabled = false;
+    private String appPublicLogin;
+    private String appPublicPassword;
 
     public String getCasUrlLogin() {
         return casUrlLogin;
@@ -295,6 +302,46 @@ public class AppConfig {
         this.docaposteEnabled = docaposteEnabled;
     }
 
+    public String getEsupSignatureUri() {
+        return esupSignatureUri;
+    }
+
+    public void setEsupSignatureUri(String esupSignatureUri) {
+        this.esupSignatureUri = esupSignatureUri;
+    }
+
+    public Integer getEsupSignatureCircuit() {
+        return esupSignatureCircuit;
+    }
+
+    public void setEsupSignatureCircuit(Integer esupSignatureCircuit) {
+        this.esupSignatureCircuit = esupSignatureCircuit;
+    }
+
+    public boolean isEsupSignatureEnabled() {
+        return esupSignatureEnabled;
+    }
+
+    public void setEsupSignatureEnabled(boolean esupSignatureEnabled) {
+        this.esupSignatureEnabled = esupSignatureEnabled;
+    }
+
+    public String getAppPublicLogin() {
+        return appPublicLogin;
+    }
+
+    public void setAppPublicLogin(String appPublicLogin) {
+        this.appPublicLogin = appPublicLogin;
+    }
+
+    public String getAppPublicPassword() {
+        return appPublicPassword;
+    }
+
+    public void setAppPublicPassword(String appPublicPassword) {
+        this.appPublicPassword = appPublicPassword;
+    }
+
     public void initProperties(Properties props, String prefixeProps) {
         this.casUrlLogout = props.getProperty("cas.url.logout");
         this.casUrlLogin = props.getProperty("cas.url.login");
@@ -345,6 +392,15 @@ public class AppConfig {
         this.docaposteTruststorePath = props.getProperty("docaposte.truststore.path");
         this.docaposteTruststorePassword = props.getProperty("docaposte.truststore.password");
         this.docaposteEnabled = this.docaposteUri != null && this.docaposteSiren != null && this.docaposteKeystorePath != null && this.docaposteKeystorePassword != null && this.docaposteTruststorePath != null && this.docaposteTruststorePassword != null;
+
+        this.esupSignatureUri = props.getProperty("esupsignature.uri");
+        if (props.containsKey("esupsignature.circuit") && !Strings.isEmpty(props.getProperty("esupsignature.circuit"))) {
+            this.esupSignatureCircuit = Integer.valueOf(props.getProperty("esupsignature.circuit"));
+        }
+        this.esupSignatureEnabled = this.esupSignatureUri != null && this.esupSignatureCircuit != null;
+
+        this.appPublicLogin = props.getProperty(prefixeProps+"public.login");
+        this.appPublicPassword = props.getProperty(prefixeProps+"public.password");
     }
 
     @Override
@@ -371,6 +427,15 @@ public class AppConfig {
                 ", mailerDisableDelivery='" + mailerDisableDelivery + "'" +
                 ", mailerDeliveryAddress='" + mailerDeliveryAddress + "'" +
                 ", dataDir='" + dataDir + "'" +
+                ", docaposteUri='" + docaposteUri + "'" +
+                ", docaposteSiren='" + docaposteSiren + "'" +
+                ", docaposteKeystorePath='" + docaposteKeystorePath + "'" +
+                ", docaposteTruststorePath='" + docaposteTruststorePath + "'" +
+                ", docaposteEnabled='" + docaposteEnabled + "'" +
+                ", esupSignatureUri='" + esupSignatureUri + "'" +
+                ", esupSignatureCircuit='" + esupSignatureCircuit + "'" +
+                ", esupSignatureEnabled='" + esupSignatureEnabled + "'" +
+                ", appPublicLogin='" + appPublicLogin + "'" +
                 "}";
     }
 }
