@@ -21,11 +21,8 @@ import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -54,8 +51,6 @@ public class ApogeeService {
     CentreGestionJpaRepository centreGestionJpaRepository;
 
     private String call(String api, Map<String, String> params) {
-        HttpURLConnection con;
-
         try {
             LOGGER.info("Apogee " + api + " parametres: " + "{" + params.keySet().stream().map(key -> key + "=" + params.get(key)).collect(Collectors.joining(", ", "{", "}")) + "}");
             String urlWithQuery = applicationBootstrap.getAppConfig().getReferentielWsApogeeUrl() + api;
@@ -64,24 +59,14 @@ public class ApogeeService {
             if (listParams.size() > 0) {
                 urlWithQuery += "?" + String.join("&", listParams);
             }
-            URL url = new URL(urlWithQuery);
-            con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("GET");
-            con.setRequestProperty("Authorization", "Basic " + Base64.getEncoder().encodeToString((applicationBootstrap.getAppConfig().getReferentielWsLogin() + ":" + applicationBootstrap.getAppConfig().getReferentielWsPassword()).getBytes()));
 
-            if (con.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur code " + con.getResponseCode() + " " + urlWithQuery);
-            }
-
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))) {
-                StringBuilder response = new StringBuilder();
-                String responseLine;
-                while ((responseLine = br.readLine()) != null) {
-                    response.append(responseLine.trim());
-                }
-
-                return response.toString();
-            }
+            WebClient client = WebClient.create();
+            return client.get()
+                    .uri(urlWithQuery)
+                    .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((applicationBootstrap.getAppConfig().getReferentielWsLogin() + ":" + applicationBootstrap.getAppConfig().getReferentielWsPassword()).getBytes()))
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
 
         } catch (Exception e) {
             LOGGER.error("Erreur lors de l'appel au ws Apogee " + api + ": " + e.getMessage(), e);
