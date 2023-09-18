@@ -3,7 +3,6 @@ package org.esup_portail.esup_stage.controller.apipublic;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.esup_portail.esup_stage.dto.MetadataDto;
@@ -15,9 +14,7 @@ import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -60,7 +57,7 @@ public class ConventionPublicController {
         return getMetadata(convention);
     }
 
-    @GetMapping(value = "/{id}/pdf", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    @GetMapping(value = "/{id}/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
     @Operation(description = "Récupération du PDF de la convention")
     @ApiResponses({
             @ApiResponse(),
@@ -77,7 +74,15 @@ public class ConventionPublicController {
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention inexistante");
         }
-        return ResponseEntity.ok().body(getPdf(convention));
+        return ResponseEntity
+                .ok()
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        ContentDisposition.builder("attachment")
+                                .filename("Convention_" + convention.getId() + ".pdf")
+                                .build()
+                                .toString())
+                .body(getPdf(convention));
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
