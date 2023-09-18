@@ -1,6 +1,7 @@
 package org.esup_portail.esup_stage.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.apache.logging.log4j.util.Strings;
 import org.esup_portail.esup_stage.enums.SignataireEnum;
 
 import javax.validation.constraints.NotNull;
@@ -54,7 +55,7 @@ public class MetadataDto {
     }
 
     public String getTelephone() {
-        return telephone;
+        return Strings.isEmpty(telephone) ? null : telephone;
     }
 
     public void setTelephone(String telephone) {
