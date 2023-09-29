@@ -1,13 +1,14 @@
 package org.esup_portail.esup_stage.service;
 
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.util.Strings;
 import org.esup_portail.esup_stage.docaposte.DocaposteClient;
-import org.esup_portail.esup_stage.docaposte.gen.HistoryEntryVO;
-import org.esup_portail.esup_stage.docaposte.gen.HistoryResponse;
 import org.esup_portail.esup_stage.dto.ConventionFormDto;
 import org.esup_portail.esup_stage.dto.ResponseDto;
-import org.esup_portail.esup_stage.enums.TypeSignatureEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
@@ -21,7 +22,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class ConventionService {
@@ -356,5 +356,20 @@ public class ConventionService {
             logger.error(e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur de la récupération de l'historique");
         }
+    }
+
+    public String parseNumTel(String numTel) {
+        if (!Strings.isEmpty(numTel)) {
+            try {
+                PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+                Phonenumber.PhoneNumber phoneNumber = phoneUtil.parse(numTel, "FR");
+                if (phoneUtil.isValidNumber(phoneNumber)) {
+                    return phoneUtil.format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.E164);
+                }
+            } catch (NumberParseException e) {
+                logger.error("Numéro de téléphone non valide : " + numTel);
+            }
+        }
+        return null;
     }
 }

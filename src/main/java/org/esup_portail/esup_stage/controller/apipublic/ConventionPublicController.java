@@ -12,6 +12,7 @@ import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
+import org.esup_portail.esup_stage.service.ConventionService;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -36,6 +37,9 @@ public class ConventionPublicController {
 
     @Autowired
     ImpressionService impressionService;
+
+    @Autowired
+    ConventionService conventionService;
 
     @GetMapping(value = "/{id}/metadata", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "Récupération des metadata de la convention")
@@ -127,19 +131,21 @@ public class ConventionPublicController {
 
     private MetadataDto getMetadata(Convention convention) {
         MetadataDto metadata = new MetadataDto();
-        metadata.setTitle(convention.getId() + "_" + convention.getEtudiant().getNom() + "_" + convention.getEtudiant().getPrenom());
+        metadata.setTitle("Convention_" + convention.getId() + "_" + convention.getEtudiant().getNom() + "_" + convention.getEtudiant().getPrenom());
         metadata.setCompanyname(convention.getNomEtabRef());
         metadata.setSchool(convention.getEtape().getLibelle());
         List<MetadataSignataireDto> signataires = new ArrayList<>();
+
         convention.getCentreGestion().getSignataires().forEach(s -> {
             MetadataSignataireDto signataireDto = new MetadataSignataireDto();
+            String phone = "";
             switch (s.getId().getSignataire()) {
                 case etudiant:
                     Etudiant etudiant = convention.getEtudiant();
                     signataireDto.setName(etudiant.getNom());
                     signataireDto.setGivenname(etudiant.getPrenom());
                     signataireDto.setMail(etudiant.getMail());
-                    signataireDto.setPhone(convention.getTelPortableEtudiant());
+                    phone = convention.getTelPortableEtudiant();
                     signataireDto.setOrder(s.getOrdre());
                     break;
                 case enseignant:
@@ -147,7 +153,7 @@ public class ConventionPublicController {
                     signataireDto.setName(enseignant.getNom());
                     signataireDto.setGivenname(enseignant.getPrenom());
                     signataireDto.setMail(enseignant.getMail());
-                    signataireDto.setPhone(enseignant.getTel());
+                    phone = enseignant.getTel();
                     signataireDto.setOrder(s.getOrdre());
                     break;
                 case tuteur:
@@ -155,7 +161,7 @@ public class ConventionPublicController {
                     signataireDto.setName(tuteur.getNom());
                     signataireDto.setGivenname(tuteur.getPrenom());
                     signataireDto.setMail(tuteur.getMail());
-                    signataireDto.setPhone(tuteur.getTel());
+                    phone = tuteur.getTel();
                     signataireDto.setOrder(s.getOrdre());
                     break;
                 case signataire:
@@ -163,7 +169,7 @@ public class ConventionPublicController {
                     signataireDto.setName(signataire.getNom());
                     signataireDto.setGivenname(signataire.getPrenom());
                     signataireDto.setMail(signataire.getMail());
-                    signataireDto.setPhone(signataire.getTel());
+                    phone = signataire.getTel();
                     signataireDto.setOrder(s.getOrdre());
                     break;
                 case viseur:
@@ -171,11 +177,12 @@ public class ConventionPublicController {
                     signataireDto.setName(centreGestion.getNomViseur());
                     signataireDto.setGivenname(centreGestion.getPrenomViseur());
                     signataireDto.setMail(centreGestion.getMail());
-                    signataireDto.setPhone(centreGestion.getTelephone());
+                    phone = centreGestion.getTelephone();
                     signataireDto.setOrder(s.getOrdre());
                     break;
             }
             if (signataireDto.getOrder() != 0) {
+                signataireDto.setPhone(conventionService.parseNumTel(phone));
                 signataires.add(signataireDto);
             }
         });
