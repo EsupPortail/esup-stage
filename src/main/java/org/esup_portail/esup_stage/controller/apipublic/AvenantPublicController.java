@@ -8,8 +8,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.esup_portail.esup_stage.dto.MetadataDto;
 import org.esup_portail.esup_stage.dto.PdfMetadataDto;
 import org.esup_portail.esup_stage.exception.AppException;
-import org.esup_portail.esup_stage.model.Convention;
-import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
+import org.esup_portail.esup_stage.model.Avenant;
+import org.esup_portail.esup_stage.repository.AvenantJpaRepository;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -20,84 +20,84 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.Base64;
 
 @ApiPublicController
-@RequestMapping("/conventions")
-public class ConventionPublicController {
+@RequestMapping("/avenants")
+public class AvenantPublicController {
 
     @Autowired
-    ConventionJpaRepository conventionJpaRepository;
+    AvenantJpaRepository avenantJpaRepository;
 
     @Autowired
     ImpressionService impressionService;
 
     @GetMapping(value = "/{id}/metadata", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(description = "Récupération des metadata de la convention")
+    @Operation(description = "Récupération des metadata de l'avenant")
     @ApiResponses({
             @ApiResponse(),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Convention non trouvée",
+                    description = "Avenant non trouvé",
                     content = { @Content(mediaType = MediaType.TEXT_PLAIN_VALUE) }
             )
     })
-    public MetadataDto getConventionMetadata(
-            @PathVariable("id") @Parameter(description = "Identifiant de la convention") int id
+    public MetadataDto getAvenantMetadata(
+            @PathVariable("id") @Parameter(description = "Identifiant de l'avenant") int id
     ) {
-        Convention convention = conventionJpaRepository.findById(id);
-        if (convention == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Convention inexistante");
+        Avenant avenant = avenantJpaRepository.findById(id);
+        if (avenant == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Avenant inexistant");
         }
-        return impressionService.getPublicMetadata(convention);
+        return impressionService.getPublicMetadata(avenant.getConvention(), avenant.getId());
     }
 
     @GetMapping(value = "/{id}/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
-    @Operation(description = "Récupération du PDF de la convention")
+    @Operation(description = "Récupération du PDF de l'avenant")
     @ApiResponses({
             @ApiResponse(),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Convention non trouvée",
+                    description = "Avenant non trouvé",
                     content = { @Content(mediaType = MediaType.TEXT_PLAIN_VALUE) }
             )
     })
     public ResponseEntity<byte[]> getConventionPdf(
-            @PathVariable("id") @Parameter(description = "Identifiant de la convention") int id
+            @PathVariable("id") @Parameter(description = "Identifiant de l'avenant") int id
     ) {
-        Convention convention = conventionJpaRepository.findById(id);
-        if (convention == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Convention inexistante");
+        Avenant avenant = avenantJpaRepository.findById(id);
+        if (avenant == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Avenant inexistant");
         }
         return ResponseEntity
                 .ok()
                 .header(
                         HttpHeaders.CONTENT_DISPOSITION,
                         ContentDisposition.builder("attachment")
-                                .filename("Convention_" + convention.getId() + ".pdf")
+                                .filename("Avenant_" + avenant.getId() + ".pdf")
                                 .build()
                                 .toString())
-                .body(impressionService.getPublicPdf(convention, null));
+                .body(impressionService.getPublicPdf(avenant.getConvention(), avenant));
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(description = "Récupération du PDF de la convention en base64 et des metadata")
+    @Operation(description = "Récupération du PDF de l'avenant en base64 et des metadata")
     @ApiResponses({
             @ApiResponse(),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Convention non trouvée",
+                    description = "Avenant non trouvé",
                     content = { @Content(mediaType = MediaType.TEXT_PLAIN_VALUE) }
             )
     })
-    public PdfMetadataDto getConvention(
-            @PathVariable("id") @Parameter(description = "Identifiant de la convention") int id
+    public PdfMetadataDto getAvenant(
+            @PathVariable("id") @Parameter(description = "Identifiant de l'avenant") int id
     ) {
-        Convention convention = conventionJpaRepository.findById(id);
-        if (convention == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Convention inexistante");
+        Avenant avenant = avenantJpaRepository.findById(id);
+        if (avenant == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Avenant inexistant");
         }
 
         PdfMetadataDto pdfMetadataDto = new PdfMetadataDto();
-        pdfMetadataDto.setPdf64(Base64.getEncoder().encodeToString(impressionService.getPublicPdf(convention, null)));
-        pdfMetadataDto.setMetadata(impressionService.getPublicMetadata(convention));
+        pdfMetadataDto.setPdf64(Base64.getEncoder().encodeToString(impressionService.getPublicPdf(avenant.getConvention(), avenant)));
+        pdfMetadataDto.setMetadata(impressionService.getPublicMetadata(avenant.getConvention(), avenant.getId()));
         return pdfMetadataDto;
     }
 }
