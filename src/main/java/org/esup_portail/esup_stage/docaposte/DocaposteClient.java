@@ -70,15 +70,8 @@ public class DocaposteClient extends WebServiceGatewaySupport {
             }
         }
 
-        // Ajout des otp pour les signatures otp
         String otpData = impressionService.generateXmlData(convention, TypeSignatureEnum.otp);
         String metaData = impressionService.generateXmlData(convention, TypeSignatureEnum.serveur);
-        if (otpData != null) {
-            UploadOTPInformation requestUploadOtpInformation = new UploadOTPInformation();
-            requestUploadOtpInformation.setDocumentId(documentId);
-            requestUploadOtpInformation.setArg1(otpData.getBytes());
-            ((JAXBElement<UploadOTPInformationResponse>) getWebServiceTemplate().marshalSendAndReceive(new ObjectFactory().createUploadOTPInformation(requestUploadOtpInformation))).getValue();
-        }
 
         // Ajout des informations meta pour les signatures serveurs
         if (metaData != null) {
@@ -86,6 +79,13 @@ public class DocaposteClient extends WebServiceGatewaySupport {
             requestUploadMeta.setDocumentId(documentId);
             requestUploadMeta.setArg1(metaData.getBytes());
             ((JAXBElement<UploadMetaResponse>) getWebServiceTemplate().marshalSendAndReceive(new ObjectFactory().createUploadMeta(requestUploadMeta))).getValue();
+        }
+        // Ajout des otp pour les signatures otp
+        if (otpData != null) {
+            UploadOTPInformation requestUploadOtpInformation = new UploadOTPInformation();
+            requestUploadOtpInformation.setDocumentId(documentId);
+            requestUploadOtpInformation.setArg1(otpData.getBytes());
+            ((JAXBElement<UploadOTPInformationResponse>) getWebServiceTemplate().marshalSendAndReceive(new ObjectFactory().createUploadOTPInformation(requestUploadOtpInformation))).getValue();
         }
     }
 
