@@ -6,8 +6,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.esup_portail.esup_stage.dto.MetadataDto;
+import org.esup_portail.esup_stage.dto.MetadataSignataireDto;
 import org.esup_portail.esup_stage.dto.PdfMetadataDto;
-import org.esup_portail.esup_stage.enums.SignataireEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
@@ -47,7 +47,7 @@ public class ConventionPublicController {
                     content = { @Content(mediaType = MediaType.TEXT_PLAIN_VALUE) }
             )
     })
-    public List<MetadataDto> getConventionMetadata(
+    public MetadataDto getConventionMetadata(
             @PathVariable("id") @Parameter(description = "Identifiant de la convention") int id
     ) {
         Convention convention = conventionJpaRepository.findById(id);
@@ -125,56 +125,62 @@ public class ConventionPublicController {
         return ou.toByteArray();
     }
 
-    private List<MetadataDto> getMetadata(Convention convention) {
-        List<MetadataDto> metadata = new ArrayList<>();
+    private MetadataDto getMetadata(Convention convention) {
+        MetadataDto metadata = new MetadataDto();
+        metadata.setTitle(convention.getId() + "_" + convention.getEtudiant().getNom() + "_" + convention.getEtudiant().getPrenom());
+        metadata.setCompanyname(convention.getNomEtabRef());
+        metadata.setSchool(convention.getEtape().getLibelle());
+        List<MetadataSignataireDto> signataires = new ArrayList<>();
         convention.getCentreGestion().getSignataires().forEach(s -> {
-            MetadataDto metadataDto = new MetadataDto();
+            MetadataSignataireDto signataireDto = new MetadataSignataireDto();
             switch (s.getId().getSignataire()) {
                 case etudiant:
                     Etudiant etudiant = convention.getEtudiant();
-                    metadataDto.setSignataire(SignataireEnum.etudiant);
-                    metadataDto.setNom(etudiant.getNom());
-                    metadataDto.setPrenom(etudiant.getPrenom());
-                    metadataDto.setEmail(etudiant.getMail());
-                    metadataDto.setTelephone(convention.getTelPortableEtudiant());
+                    signataireDto.setName(etudiant.getNom());
+                    signataireDto.setGivenname(etudiant.getPrenom());
+                    signataireDto.setMail(etudiant.getMail());
+                    signataireDto.setPhone(convention.getTelPortableEtudiant());
+                    signataireDto.setOrder(s.getOrdre());
                     break;
                 case enseignant:
                     Enseignant enseignant = convention.getEnseignant();
-                    metadataDto.setSignataire(SignataireEnum.enseignant);
-                    metadataDto.setNom(enseignant.getNom());
-                    metadataDto.setPrenom(enseignant.getPrenom());
-                    metadataDto.setEmail(enseignant.getMail());
-                    metadataDto.setTelephone(enseignant.getTel());
+                    signataireDto.setName(enseignant.getNom());
+                    signataireDto.setGivenname(enseignant.getPrenom());
+                    signataireDto.setMail(enseignant.getMail());
+                    signataireDto.setPhone(enseignant.getTel());
+                    signataireDto.setOrder(s.getOrdre());
                     break;
                 case tuteur:
                     Contact tuteur = convention.getContact();
-                    metadataDto.setSignataire(SignataireEnum.tuteur);
-                    metadataDto.setNom(tuteur.getNom());
-                    metadataDto.setPrenom(tuteur.getPrenom());
-                    metadataDto.setEmail(tuteur.getMail());
-                    metadataDto.setTelephone(tuteur.getTel());
+                    signataireDto.setName(tuteur.getNom());
+                    signataireDto.setGivenname(tuteur.getPrenom());
+                    signataireDto.setMail(tuteur.getMail());
+                    signataireDto.setPhone(tuteur.getTel());
+                    signataireDto.setOrder(s.getOrdre());
                     break;
                 case signataire:
                     Contact signataire = convention.getSignataire();
-                    metadataDto.setSignataire(SignataireEnum.signataire);
-                    metadataDto.setNom(signataire.getNom());
-                    metadataDto.setPrenom(signataire.getPrenom());
-                    metadataDto.setEmail(signataire.getMail());
-                    metadataDto.setTelephone(signataire.getTel());
+                    signataireDto.setName(signataire.getNom());
+                    signataireDto.setGivenname(signataire.getPrenom());
+                    signataireDto.setMail(signataire.getMail());
+                    signataireDto.setPhone(signataire.getTel());
+                    signataireDto.setOrder(s.getOrdre());
                     break;
                 case viseur:
                     CentreGestion centreGestion = convention.getCentreGestion();
-                    metadataDto.setSignataire(SignataireEnum.viseur);
-                    metadataDto.setNom(centreGestion.getNomViseur());
-                    metadataDto.setPrenom(centreGestion.getPrenomViseur());
-                    metadataDto.setEmail(centreGestion.getMail());
-                    metadataDto.setTelephone(centreGestion.getTelephone());
+                    signataireDto.setName(centreGestion.getNomViseur());
+                    signataireDto.setGivenname(centreGestion.getPrenomViseur());
+                    signataireDto.setMail(centreGestion.getMail());
+                    signataireDto.setPhone(centreGestion.getTelephone());
+                    signataireDto.setOrder(s.getOrdre());
                     break;
             }
-            if (metadataDto.getSignataire() != null) {
-                metadata.add(metadataDto);
+            if (signataireDto.getOrder() != 0) {
+                signataires.add(signataireDto);
             }
         });
+
+        metadata.setSignatory(signataires);
         return metadata;
     }
 }

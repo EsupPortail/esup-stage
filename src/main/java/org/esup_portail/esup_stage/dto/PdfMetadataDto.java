@@ -3,7 +3,6 @@ package org.esup_portail.esup_stage.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 public class PdfMetadataDto {
 
@@ -12,7 +11,7 @@ public class PdfMetadataDto {
     private String pdf64;
 
     @NotNull
-    private List<MetadataDto> metadata;
+    private MetadataDto metadata;
 
     public String getPdf64() {
         return pdf64;
@@ -22,11 +21,11 @@ public class PdfMetadataDto {
         this.pdf64 = pdf64;
     }
 
-    public List<MetadataDto> getMetadata() {
+    public MetadataDto getMetadata() {
         return metadata;
     }
 
-    public void setMetadata(List<MetadataDto> metadata) {
+    public void setMetadata(MetadataDto metadata) {
         this.metadata = metadata;
     }
 }

@@ -1,64 +1,50 @@
 package org.esup_portail.esup_stage.dto;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import org.apache.logging.log4j.util.Strings;
-import org.esup_portail.esup_stage.enums.SignataireEnum;
-
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 public class MetadataDto {
+    @NotNull
+    private String title;
 
     @NotNull
-    private SignataireEnum signataire;
+    private String companyname;
 
     @NotNull
-    private String nom;
+    private String school;
 
     @NotNull
-    private String prenom;
+    private List<MetadataSignataireDto> signatory;
 
-    @NotNull
-    private String email;
-
-    private String telephone;
-
-    public SignataireEnum getSignataire() {
-        return signataire;
+    public String getTitle() {
+        return title;
     }
 
-    public void setSignataire(SignataireEnum signataire) {
-        this.signataire = signataire;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public String getNom() {
-        return nom;
+    public String getCompanyname() {
+        return companyname;
     }
 
-    public void setNom(String nom) {
-        this.nom = nom;
+    public void setCompanyname(String companyname) {
+        this.companyname = companyname;
     }
 
-    public String getPrenom() {
-        return prenom;
+    public String getSchool() {
+        return school;
     }
 
-    public void setPrenom(String prenom) {
-        this.prenom = prenom;
+    public void setSchool(String school) {
+        this.school = school;
     }
 
-    public String getEmail() {
-        return email;
+    public List<MetadataSignataireDto> getSignatory() {
+        return signatory;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getTelephone() {
-        return Strings.isEmpty(telephone) ? null : telephone;
-    }
-
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
+    public void setSignatory(List<MetadataSignataireDto> signatory) {
+        this.signatory = signatory;
     }
 }
