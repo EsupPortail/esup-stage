@@ -43,8 +43,9 @@ public class AppConfig {
     private boolean docaposteEnabled = false;
     private String[] appPublicTokens;
     private String webhookSignatureUri;
-    private String webhookEsupSignatureToken;
-    private Integer webhookEsupSignatureCiruit;
+    private String webhookSignatureToken;
+    private String esupSignatureUri;
+    private Integer esupSignatureCiruit;
     private AppSignatureEnum appSignatureEnabled;
 
     public String getCasUrlLogin() {
@@ -319,20 +320,28 @@ public class AppConfig {
         this.appPublicTokens = appPublicTokens;
     }
 
-    public String getWebhookEsupSignatureToken() {
-        return webhookEsupSignatureToken;
+    public String getWebhookSignatureToken() {
+        return webhookSignatureToken;
     }
 
-    public void setWebhookEsupSignatureToken(String webhookEsupSignatureToken) {
-        this.webhookEsupSignatureToken = webhookEsupSignatureToken;
+    public void setWebhookSignatureToken(String webhookSignatureToken) {
+        this.webhookSignatureToken = webhookSignatureToken;
     }
 
-    public Integer getWebhookEsupSignatureCiruit() {
-        return webhookEsupSignatureCiruit;
+    public String getEsupSignatureUri() {
+        return esupSignatureUri;
     }
 
-    public void setWebhookEsupSignatureCiruit(Integer webhookEsupSignatureCiruit) {
-        this.webhookEsupSignatureCiruit = webhookEsupSignatureCiruit;
+    public void setEsupSignatureUri(String esupSignatureUri) {
+        this.esupSignatureUri = esupSignatureUri;
+    }
+
+    public Integer getEsupSignatureCiruit() {
+        return esupSignatureCiruit;
+    }
+
+    public void setEsupSignatureCiruit(Integer esupSignatureCiruit) {
+        this.esupSignatureCiruit = esupSignatureCiruit;
     }
 
     public AppSignatureEnum getAppSignatureEnabled() {
@@ -403,18 +412,21 @@ public class AppConfig {
         if (props.containsKey("webhook.signature.uri") && !Strings.isEmpty(props.getProperty("webhook.signature.uri"))) {
             this.webhookSignatureUri = props.getProperty("webhook.signature.uri");
         }
-        if (props.containsKey("webhook.esupsignature.token") && !Strings.isEmpty(props.getProperty("webhook.esupsignature.token"))) {
-            this.webhookEsupSignatureToken = props.getProperty("webhook.esupsignature.token");
+        if (props.containsKey("webhook.signature.token") && !Strings.isEmpty(props.getProperty("webhook.signature.token"))) {
+            this.webhookSignatureToken = props.getProperty("webhook.signature.token");
         }
-        if (props.containsKey("webhook.esupsignature.circuit") && !Strings.isEmpty(props.getProperty("webhook.esupsignature.circuit"))) {
-            this.webhookEsupSignatureCiruit = Integer.parseInt(props.getProperty("webhook.esupsignature.circuit"));
+        if (props.containsKey("esupsignature.uri") && !Strings.isEmpty(props.getProperty("esupsignature.uri"))) {
+            this.esupSignatureUri = props.getProperty("esupsignature.uri");
+        }
+        if (props.containsKey("esupsignature.circuit") && !Strings.isEmpty(props.getProperty("esupsignature.circuit"))) {
+            this.esupSignatureCiruit = Integer.parseInt(props.getProperty("esupsignature.circuit"));
         }
         if (this.docaposteEnabled) {
             this.appSignatureEnabled = AppSignatureEnum.DOCAPOSTE;
         } else {
-            if (this.webhookSignatureUri != null) {
+            if (this.webhookSignatureUri != null && this.webhookSignatureToken != null) {
                 this.appSignatureEnabled = AppSignatureEnum.EXTERNE;
-                if (this.webhookEsupSignatureToken != null && this.webhookEsupSignatureCiruit != null) {
+                if (this.esupSignatureUri != null && this.esupSignatureCiruit != null) {
                     this.appSignatureEnabled = AppSignatureEnum.ESUPSIGNATURE;
                 }
             }
@@ -452,7 +464,8 @@ public class AppConfig {
                 ", docaposteTruststorePath='" + docaposteTruststorePath + "'" +
                 ", docaposteEnabled='" + docaposteEnabled + "'" +
                 ", webhookSignatureUri='" + webhookSignatureUri + "'" +
-                ", webhookEsupSignatureCiruit='" + webhookEsupSignatureCiruit + "'" +
+                ", esupSignatureUri='" + esupSignatureUri + "'" +
+                ", esupSignatureCiruit='" + esupSignatureCiruit + "'" +
                 ", appSignatureEnabled='" + appSignatureEnabled + "'" +
                 "}";
     }

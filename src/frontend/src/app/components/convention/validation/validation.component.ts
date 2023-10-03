@@ -19,7 +19,7 @@ export class ValidationComponent implements OnInit, OnChanges {
   historiques: any[] = [];
   columnsHisto = ['modifiePar', 'type', 'valeurAvant', 'valeurApres', 'date'];
   validee = false;
-  docaposteEnabled = false;
+  signatureEnabled = false;
 
   @ViewChild('confirmComponent') confirmComponent!: ConfirmComponent;
   confirmMessage: string = `L'adresse mail ou le numéro de téléphone n'est pas renseigné pour les profils suivants :<div>__profils__</div>Souhaitez-vous continuer ?`;
@@ -46,7 +46,7 @@ export class ValidationComponent implements OnInit, OnChanges {
     this.configService.getConfigGenerale().subscribe((response) => {
       this.validationLibelles.validationPedagogique = response.validationPedagogiqueLibelle;
       this.validationLibelles.validationConvention = response.validationAdministrativeLibelle;
-      this.docaposteEnabled = response.docaposteEnabled;
+      this.signatureEnabled = response.signatureEnabled;
     });
 
     this.setValidee();

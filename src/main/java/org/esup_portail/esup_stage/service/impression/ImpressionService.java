@@ -296,40 +296,40 @@ public class ImpressionService {
                     Etudiant etudiant = convention.getEtudiant();
                     signataireDto.setName(etudiant.getNom());
                     signataireDto.setGivenname(etudiant.getPrenom());
-                    signataireDto.setMail(etudiant.getMail());
-                    phone = convention.getTelPortableEtudiant();
+                    signataireDto.setMail(getOtpDataEmail(etudiant.getMail()));
+                    phone = getOtpDataPhoneNumber(convention.getTelPortableEtudiant());
                     signataireDto.setOrder(s.getOrdre());
                     break;
                 case enseignant:
                     Enseignant enseignant = convention.getEnseignant();
                     signataireDto.setName(enseignant.getNom());
                     signataireDto.setGivenname(enseignant.getPrenom());
-                    signataireDto.setMail(enseignant.getMail());
-                    phone = enseignant.getTel();
+                    signataireDto.setMail(getOtpDataEmail(enseignant.getMail()));
+                    phone = getOtpDataPhoneNumber(enseignant.getTel());
                     signataireDto.setOrder(s.getOrdre());
                     break;
                 case tuteur:
                     Contact tuteur = convention.getContact();
                     signataireDto.setName(tuteur.getNom());
                     signataireDto.setGivenname(tuteur.getPrenom());
-                    signataireDto.setMail(tuteur.getMail());
-                    phone = tuteur.getTel();
+                    signataireDto.setMail(getOtpDataEmail(tuteur.getMail()));
+                    phone = getOtpDataPhoneNumber(tuteur.getTel());
                     signataireDto.setOrder(s.getOrdre());
                     break;
                 case signataire:
                     Contact signataire = convention.getSignataire();
                     signataireDto.setName(signataire.getNom());
                     signataireDto.setGivenname(signataire.getPrenom());
-                    signataireDto.setMail(signataire.getMail());
-                    phone = signataire.getTel();
+                    signataireDto.setMail(getOtpDataEmail(signataire.getMail()));
+                    phone = getOtpDataPhoneNumber(signataire.getTel());
                     signataireDto.setOrder(s.getOrdre());
                     break;
                 case viseur:
                     CentreGestion centreGestion = convention.getCentreGestion();
                     signataireDto.setName(centreGestion.getNomViseur());
                     signataireDto.setGivenname(centreGestion.getPrenomViseur());
-                    signataireDto.setMail(centreGestion.getMail());
-                    phone = centreGestion.getTelephone();
+                    signataireDto.setMail(getOtpDataEmail(centreGestion.getMail()));
+                    phone = getOtpDataPhoneNumber(centreGestion.getTelephone());
                     signataireDto.setOrder(s.getOrdre());
                     break;
             }

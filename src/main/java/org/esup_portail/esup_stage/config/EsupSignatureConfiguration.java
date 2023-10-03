@@ -1,7 +1,7 @@
 package org.esup_portail.esup_stage.config;
 
 import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
-import org.esup_portail.esup_stage.config.filters.PublicTokenFilter;
+import org.esup_portail.esup_stage.config.filters.WebhookEsupSignatureTokenFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,17 +12,15 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@Order(1)
-public class PublicSecurityConfiguration {
+@Order(2)
+public class EsupSignatureConfiguration {
 
     @Autowired
     ApplicationBootstrap applicationBootstrap;
 
     @Bean
-    public SecurityFilterChain filterChainPublic(HttpSecurity http) throws Exception {
-        http.antMatcher("/public/**").authorizeRequests()
-                .antMatchers("/public/api-docs/**", "/public/swagger-ui.html", "/public/swagger-ui/**").permitAll()
-                .anyRequest().authenticated()
+    public SecurityFilterChain filterChainWebhookEsupSignature(HttpSecurity http) throws Exception {
+        http.antMatcher("/webhook/**").authorizeRequests().anyRequest().authenticated()
                 .and()
                 .addFilterBefore(tokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
@@ -32,7 +30,7 @@ public class PublicSecurityConfiguration {
         return http.build();
     }
 
-    public PublicTokenFilter tokenFilter() {
-        return new PublicTokenFilter(applicationBootstrap);
+    public WebhookEsupSignatureTokenFilter tokenFilter() {
+        return new WebhookEsupSignatureTokenFilter(applicationBootstrap);
     }
 }

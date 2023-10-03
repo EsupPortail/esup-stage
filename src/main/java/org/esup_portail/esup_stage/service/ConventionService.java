@@ -273,42 +273,42 @@ public class ConventionService {
         // Si les 2 manquantes, on affiche une erreur
         // Si une donnée est manquante on affiche un warning avec possibilité de continuer
         ResponseDto response = new ResponseDto();
-        String keyAdr = "adresse mail";
-        String keyTel = "numéro téléphone";
+        String keyMail = "adresse mail";
+        String keyTel = "numéro téléphone (au format international)";
         Map<String, Map<String, String>> data = new HashMap<>();
         data.put("étudiant", new HashMap<>() {{
-            put(keyAdr, convention.getEtudiant().getMail());
+            put(keyMail, convention.getEtudiant().getMail());
             put(keyTel, convention.getTelPortableEtudiant());
         }});
         data.put("enseignant référent", new HashMap<>() {{
-            put(keyAdr, convention.getEnseignant().getMail());
+            put(keyMail, convention.getEnseignant().getMail());
             put(keyTel, convention.getEnseignant().getTel());
         }});
         data.put("tuteur pédagogique", new HashMap<>() {{
-            put(keyAdr, convention.getContact().getMail());
+            put(keyMail, convention.getContact().getMail());
             put(keyTel, convention.getContact().getTel());
         }});
         data.put("signataire", new HashMap<>() {{
-            put(keyAdr, convention.getSignataire().getMail());
+            put(keyMail, convention.getSignataire().getMail());
             put(keyTel, convention.getSignataire().getTel());
         }});
         data.put("directeur du département", new HashMap<>() {{
-            put(keyAdr, convention.getCentreGestion().getMail());
+            put(keyMail, convention.getCentreGestion().getMail());
             put(keyTel, convention.getCentreGestion().getTelephone());
         }});
 
         for (Map.Entry<String, Map<String, String>> entry : data.entrySet()) {
             Map<String, String> values = entry.getValue();
             List<String> donneesManquantes = new ArrayList<>();
-            if (values.get(keyAdr) == null || values.get(keyAdr).isEmpty()) {
-                donneesManquantes.add(keyAdr);
+            if (values.get(keyMail) == null || values.get(keyMail).isEmpty()) {
+                donneesManquantes.add(keyMail);
             }
-            if (values.get(keyTel) == null || values.get(keyTel).isEmpty()) {
+            if (values.get(keyTel) == null || values.get(keyTel).isEmpty() || parseNumTel(values.get(keyTel)) == null) {
                 donneesManquantes.add(keyTel);
             }
-            if (donneesManquantes.size() == 2) {
+            if (donneesManquantes.contains(keyMail)) {
                 response.getError().add(entry.getKey() + " : " + String.join(", ", donneesManquantes));
-            } else if (donneesManquantes.size() == 1) {
+            } else if (donneesManquantes.size() > 0) {
                 response.getWarning().add(entry.getKey() + " : " + String.join(", ", donneesManquantes));
             }
         }

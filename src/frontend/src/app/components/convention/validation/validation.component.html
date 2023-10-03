@@ -38,7 +38,7 @@
     </div>
     <app-validation-card *ngFor="let validation of validations" [convention]="convention" [validation]="validation" [validationLibelles]="validationLibelles" [validationsActives]="validations" (conventionChanged)="updateConvention($event)"></app-validation-card>
 
-    <div class="row mt-3" *ngIf="docaposteEnabled && validee && !convention.documentId">
+    <div class="row mt-3" *ngIf="signatureEnabled && validee && !convention.documentId">
       <div class="col text-right">
         <span (confirm)="controleSignatureElectronique()" [confirmMessage]="'ALERTE_SIGNATURE'|contenu">
           <button mat-button mat-flat-button color="primary">Envoi pour signature électronique</button>

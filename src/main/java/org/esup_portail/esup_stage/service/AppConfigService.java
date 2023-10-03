@@ -47,7 +47,7 @@ public class AppConfigService {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             ConfigGeneraleDto configGeneraleDto = objectMapper.readValue(appConfig.getParametres(), ConfigGeneraleDto.class);
-            configGeneraleDto.setDocaposteEnabled(applicationBootstrap.getAppConfig().isDocaposteEnabled());
+            configGeneraleDto.setSignatureEnabled(applicationBootstrap.getAppConfig().getAppSignatureEnabled() != null);
             // Initialisation du code université si non renseigné
             if (configGeneraleDto.getCodeUniversite() == null || configGeneraleDto.getCodeUniversite().isEmpty()) {
                 Affectation affectation = affectationRepository.getOneNotNullCodeUniversite();

@@ -33,7 +33,7 @@ export class ConventionComponent implements OnInit {
   goToOnglet = 0;
   allValid = false;
   modifiable = true;
-  docaposteEnabled = false;
+  signatureEnabled = false;
 
   @ViewChild("tabGroup") tabGroup!: MatTabGroup;
 
@@ -50,7 +50,7 @@ export class ConventionComponent implements OnInit {
 
   ngOnInit(): void {
     this.configService.getConfigGenerale().subscribe((response: any) => {
-      this.docaposteEnabled = response.docaposteEnabled;
+      this.signatureEnabled = response.signatureEnabled;
     });
     this.activatedRoute.queryParams.subscribe((param: any) => {
       if (param.back) this.back = param.back;

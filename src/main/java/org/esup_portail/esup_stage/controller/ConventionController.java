@@ -1,10 +1,11 @@
 package org.esup_portail.esup_stage.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import org.esup_portail.esup_stage.docaposte.DocaposteClient;
+import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
 import org.esup_portail.esup_stage.dto.*;
 import org.esup_portail.esup_stage.dto.view.Views;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
+import org.esup_portail.esup_stage.enums.AppSignatureEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
@@ -16,6 +17,7 @@ import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.ConventionService;
 import org.esup_portail.esup_stage.service.MailerService;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
+import org.esup_portail.esup_stage.service.signature.SignatureService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -45,21 +47,6 @@ public class ConventionController {
 
     @Autowired
     LangueConventionJpaRepository langueConventionJpaRepository;
-
-    @Autowired
-    EtudiantJpaRepository etudiantJpaRepository;
-
-    @Autowired
-    EtudiantRepository etudiantRepository;
-
-    @Autowired
-    EtapeJpaRepository etapeJpaRepository;
-
-    @Autowired
-    UfrJpaRepository ufrJpaRepository;
-
-    @Autowired
-    CritereGestionJpaRepository critereGestionJpaRepository;
 
     @Autowired
     PaysJpaRepository paysJpaRepository;
@@ -115,7 +102,11 @@ public class ConventionController {
     ConventionService conventionService;
 
     @Autowired
-    DocaposteClient docaposteClient;
+    SignatureService signatureService;
+
+    @Autowired
+    ApplicationBootstrap applicationBootstrap;
+
     @JsonView(Views.List.class)
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
@@ -532,39 +523,20 @@ public class ConventionController {
     @PostMapping("/signature-electronique")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.VALIDATION})
     public int envoiSignatureElectroniqueMultiple(@RequestBody IdsListDto idsListDto) {
-        if (!appConfigService.getConfigGenerale().isDocaposteEnabled()) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "La signature électronique n'est pas configurée");
-        }
-        if (idsListDto.getIds().size() == 0) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "La liste est vide");
-        }
-        int count = 0;
-        for (int id : idsListDto.getIds()) {
-            Convention convention = conventionJpaRepository.findById(id);
-            if (convention == null || convention.getCentreGestion().getCircuitSignature() == null) {
-                continue;
-            }
-            ResponseDto controles = conventionService.controleEmailTelephone(convention);
-            if (controles.getError().size() > 0) {
-                continue;
-            }
-            docaposteClient.upload(convention, null);
-            count++;
-        }
-        return count;
+        return signatureService.upload(idsListDto, false);
     }
 
     @PostMapping("/{id}/controle-signature-electronique")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.VALIDATION})
     public ResponseDto controleSignatureElectronique(@PathVariable("id") int id) {
-        if (!appConfigService.getConfigGenerale().isDocaposteEnabled()) {
+        if (!appConfigService.getConfigGenerale().isSignatureEnabled()) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La signature électronique n'est pas configurée");
         }
         Convention convention = conventionJpaRepository.findById(id);
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
-        if (convention.getCentreGestion().getCircuitSignature() == null) {
+        if (applicationBootstrap.getAppConfig().getAppSignatureEnabled() == AppSignatureEnum.DOCAPOSTE && convention.getCentreGestion().getCircuitSignature() == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Le centre de gestion " + convention.getCentreGestion().getNomCentre() + " n'a pas de circuit de signature");
         }
         return conventionService.controleEmailTelephone(convention);
@@ -573,7 +545,7 @@ public class ConventionController {
     @PostMapping("/{id}/update-signature-electronique-info")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.VALIDATION})
     public Convention updateSignatureElectroniqueInfo(@PathVariable("id") int id) {
-        if (!appConfigService.getConfigGenerale().isDocaposteEnabled()) {
+        if (!appConfigService.getConfigGenerale().isSignatureEnabled()) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La signature électronique n'est pas configurée");
         }
         Convention convention = conventionJpaRepository.findById(id);

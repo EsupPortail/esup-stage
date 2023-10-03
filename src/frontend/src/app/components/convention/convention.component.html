@@ -61,7 +61,7 @@
     </ng-template>
     <app-validation *ngIf="validationTab.isActive && convention.id" [convention]="convention" (conventionChanged)="conventionValidated($event)"></app-validation>
   </mat-tab>
-  <mat-tab #signatureElectroniqueTab *ngIf="isConventionValide() && docaposteEnabled">
+  <mat-tab #signatureElectroniqueTab *ngIf="isConventionValide() && signatureEnabled">
     <ng-template mat-tab-label>
       Signature électronique
     </ng-template>

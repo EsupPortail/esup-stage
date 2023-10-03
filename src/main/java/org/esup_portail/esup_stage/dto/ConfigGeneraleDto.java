@@ -17,7 +17,7 @@ public class ConfigGeneraleDto {
     private boolean saisieManuelle = false;
 
     @JsonView(Views.Etu.class)
-    private boolean docaposteEnabled = false;
+    private boolean signatureEnabled = false;
 
     @JsonView(Views.Etu.class)
     private boolean autoriserEtudiantAModifierEntreprise = false;
@@ -134,12 +134,12 @@ public class ConfigGeneraleDto {
         this.utiliserMailPersoEtudiant = utiliserMailPersoEtudiant;
     }
 
-    public boolean isDocaposteEnabled() {
-        return docaposteEnabled;
+    public boolean isSignatureEnabled() {
+        return signatureEnabled;
     }
 
-    public void setDocaposteEnabled(boolean docaposteEnabled) {
-        this.docaposteEnabled = docaposteEnabled;
+    public void setSignatureEnabled(boolean signatureEnabled) {
+        this.signatureEnabled = signatureEnabled;
     }
 
     public String getCodeCesure() {

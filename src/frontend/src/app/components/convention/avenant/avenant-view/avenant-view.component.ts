@@ -28,7 +28,7 @@ export class AvenantViewComponent implements OnInit {
   confirmMessage: string = `L'adresse mail ou le numéro de téléphone n'est pas renseigné pour les profils suivants :<div>__profils__</div>Souhaitez-vous continuer ?`;
   errorMessage: string = `L'adresse mail ou le numéro de téléphone doit être renseigné pour les profils suivants :<div>__profils__</div>`;
 
-  docaposteEnabled = false;
+  signatureEnabled = false;
 
   numberPeriodeInterruption !:number;
 
@@ -45,7 +45,7 @@ export class AvenantViewComponent implements OnInit {
     this.loadInterruptionsStage();
     this.periodeInterruptionExist();
     this.configService.getConfigGenerale().subscribe((response) => {
-      this.docaposteEnabled = response.docaposteEnabled;
+      this.signatureEnabled = response.signatureEnabled;
     });
   }
 
