@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AvenantService } from 'src/app/services/avenant.service';
+import * as FileSaver from 'file-saver';
 
 @Component({
   selector: 'app-signature-electronique-view',
@@ -37,6 +38,15 @@ export class SignatureElectroniqueViewComponent {
       this.avenant = avenant;
       this.updateData();
       this.avenantChanged.emit(this.avenant);
+    });
+  }
+
+  downloadSignedDoc($event: Event, avenant: any): void {
+    $event.preventDefault();
+    $event.stopPropagation();
+    this.avenantService.downloadSignedDoc(avenant.id).subscribe((response: any) => {
+      var blob = new Blob([response as BlobPart], {type: 'application/pdf'});
+      FileSaver.saveAs(blob, `Avenant_${avenant.id}_${avenant.convention.etudiant.nom}_${avenant.convention.etudiant.prenom}_signe.pdf`);
     });
   }
 }

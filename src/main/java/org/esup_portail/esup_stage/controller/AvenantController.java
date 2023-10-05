@@ -1,10 +1,10 @@
 package org.esup_portail.esup_stage.controller;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
-import org.esup_portail.esup_stage.dto.AvenantDto;
-import org.esup_portail.esup_stage.dto.ConfigAlerteMailDto;
-import org.esup_portail.esup_stage.dto.IdsListDto;
-import org.esup_portail.esup_stage.dto.ResponseDto;
+import org.esup_portail.esup_stage.dto.*;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.AppSignatureEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
@@ -15,20 +15,26 @@ import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
-import org.esup_portail.esup_stage.service.AvenantService;
 import org.esup_portail.esup_stage.service.ConventionService;
 import org.esup_portail.esup_stage.service.signature.SignatureService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
 
 @ApiController
 @RequestMapping("/avenant")
 public class AvenantController {
+
+    private static final Logger logger	= LogManager.getLogger(AvenantController.class);
 
     @Autowired
     ConventionJpaRepository conventionJpaRepository;
@@ -64,9 +70,6 @@ public class AvenantController {
 
     @Autowired
     SignatureService signatureService;
-
-    @Autowired
-    AvenantService avenantService;
 
     @Autowired
     ApplicationBootstrap applicationBootstrap;
@@ -325,7 +328,28 @@ public class AvenantController {
         if (avenant == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvé");
         }
-        avenantService.updateSignatureElectroniqueHistorique(avenant);
+        signatureService.updateHistorique(avenant);
         return avenant;
+    }
+
+    @GetMapping("/{id}/download-signed-doc")
+    @Secure
+    public ResponseEntity<byte[]> downloadDoc(@PathVariable("id") int id) {
+        Avenant avenant = avenantJpaRepository.findById(id);
+        if (avenant == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvé");
+        }
+        MetadataDto metadataDto = signatureService.getPublicMetadata(avenant.getConvention(), avenant.getId());
+        String filePath = signatureService.getSignatureFilePath(metadataDto.getTitle());
+        if (Files.exists(Paths.get(filePath))) {
+            try {
+                return ResponseEntity.ok().body(FileUtils.readFileToByteArray(new File(filePath)));
+            } catch (IOException e) {
+                logger.error("Erreur lors de la lecture du fichier", e);
+                throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur sur le téléchargement du fichier");
+            }
+        } else {
+            throw new AppException(HttpStatus.NOT_FOUND, "Fichier non trouvé");
+        }
     }
 }

@@ -3,6 +3,7 @@ import { AuthService } from "../../../services/auth.service";
 import { ConventionService } from "../../../services/convention.service";
 import { CentreGestionService } from "../../../services/centre-gestion.service";
 import { TechnicalService } from "../../../services/technical.service";
+import * as FileSaver from 'file-saver';
 
 @Component({
   selector: 'app-signature-electronique',
@@ -79,6 +80,15 @@ export class SignatureElectroniqueComponent implements OnInit {
       this.convention = response;
       this.updateData();
       this.conventionChanged.emit(this.convention);
+    });
+  }
+
+  downloadSignedDoc($event: Event, convention: any): void {
+    $event.preventDefault();
+    $event.stopPropagation();
+    this.conventionService.downloadSignedDoc(convention.id).subscribe((response: any) => {
+      var blob = new Blob([response as BlobPart], {type: 'application/pdf'});
+      FileSaver.saveAs(blob, `Convention_${convention.id}_${convention.etudiant.nom}_${convention.etudiant.prenom}_signe.pdf`);
     });
   }
 

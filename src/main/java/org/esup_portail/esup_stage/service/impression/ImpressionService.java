@@ -258,91 +258,6 @@ public class ImpressionService {
         return sb.toString();
     }
 
-    public byte[] getPublicPdf(Convention convention, Avenant avenant) {
-        if (convention.getNomEtabRef() == null || convention.getAdresseEtabRef() == null) {
-            CentreGestion centreGestionEtab = centreGestionJpaRepository.getCentreEtablissement();
-            if (centreGestionEtab == null) {
-                throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion de type établissement non trouvé");
-            }
-            convention.setNomEtabRef(centreGestionEtab.getNomCentre());
-            convention.setAdresseEtabRef(centreGestionEtab.getAdresseComplete());
-            conventionJpaRepository.saveAndFlush(convention);
-        }
-        ByteArrayOutputStream ou = new ByteArrayOutputStream();
-        generateConventionAvenantPDF(convention, avenant, ou, false);
-
-        return ou.toByteArray();
-    }
-
-    public MetadataDto getPublicMetadata(Convention convention) {
-        return getPublicMetadata(convention, null);
-    }
-
-    public MetadataDto getPublicMetadata(Convention convention, Integer idAvenant) {
-        MetadataDto metadata = new MetadataDto();
-        metadata.setTitle("Convention_" + convention.getId() + "_" + convention.getEtudiant().getNom() + "_" + convention.getEtudiant().getPrenom());
-        if (idAvenant != null) {
-            metadata.setTitle("Avenant_" + idAvenant + "_" + convention.getEtudiant().getNom() + "_" + convention.getEtudiant().getPrenom());
-        }
-        metadata.setCompanyname(convention.getNomEtabRef());
-        metadata.setSchool(convention.getEtape().getLibelle());
-        List<MetadataSignataireDto> signataires = new ArrayList<>();
-
-        convention.getCentreGestion().getSignataires().forEach(s -> {
-            MetadataSignataireDto signataireDto = new MetadataSignataireDto();
-            String phone = "";
-            switch (s.getId().getSignataire()) {
-                case etudiant:
-                    Etudiant etudiant = convention.getEtudiant();
-                    signataireDto.setName(etudiant.getNom());
-                    signataireDto.setGivenname(etudiant.getPrenom());
-                    signataireDto.setMail(getOtpDataEmail(etudiant.getMail()));
-                    phone = getOtpDataPhoneNumber(convention.getTelPortableEtudiant());
-                    signataireDto.setOrder(s.getOrdre());
-                    break;
-                case enseignant:
-                    Enseignant enseignant = convention.getEnseignant();
-                    signataireDto.setName(enseignant.getNom());
-                    signataireDto.setGivenname(enseignant.getPrenom());
-                    signataireDto.setMail(getOtpDataEmail(enseignant.getMail()));
-                    phone = getOtpDataPhoneNumber(enseignant.getTel());
-                    signataireDto.setOrder(s.getOrdre());
-                    break;
-                case tuteur:
-                    Contact tuteur = convention.getContact();
-                    signataireDto.setName(tuteur.getNom());
-                    signataireDto.setGivenname(tuteur.getPrenom());
-                    signataireDto.setMail(getOtpDataEmail(tuteur.getMail()));
-                    phone = getOtpDataPhoneNumber(tuteur.getTel());
-                    signataireDto.setOrder(s.getOrdre());
-                    break;
-                case signataire:
-                    Contact signataire = convention.getSignataire();
-                    signataireDto.setName(signataire.getNom());
-                    signataireDto.setGivenname(signataire.getPrenom());
-                    signataireDto.setMail(getOtpDataEmail(signataire.getMail()));
-                    phone = getOtpDataPhoneNumber(signataire.getTel());
-                    signataireDto.setOrder(s.getOrdre());
-                    break;
-                case viseur:
-                    CentreGestion centreGestion = convention.getCentreGestion();
-                    signataireDto.setName(centreGestion.getNomViseur());
-                    signataireDto.setGivenname(centreGestion.getPrenomViseur());
-                    signataireDto.setMail(getOtpDataEmail(centreGestion.getMail()));
-                    phone = getOtpDataPhoneNumber(centreGestion.getTelephone());
-                    signataireDto.setOrder(s.getOrdre());
-                    break;
-            }
-            if (signataireDto.getOrder() != 0) {
-                signataireDto.setPhone(conventionService.parseNumTel(phone));
-                signataires.add(signataireDto);
-            }
-        });
-
-        metadata.setSignatory(signataires);
-        return metadata;
-    }
-
     private String getHtmlText(String texte, boolean isConvention, boolean isRecap) {
 
             if (texte == null) {
@@ -380,7 +295,7 @@ public class ImpressionService {
         return idFichier + "_" + nomFichier;
     }
 
-    private String getOtpDataPhoneNumber(String phoneNumber) {
+    public String getOtpDataPhoneNumber(String phoneNumber) {
         String deliveryAddress = applicationBootstrap.getAppConfig().getMailerDeliveryAddress();
         if (deliveryAddress != null && !deliveryAddress.isEmpty()) {
             return "";
@@ -388,7 +303,7 @@ public class ImpressionService {
         return phoneNumber;
     }
 
-    private String getOtpDataEmail(String email) {
+    public String getOtpDataEmail(String email) {
         String deliveryAddress = applicationBootstrap.getAppConfig().getMailerDeliveryAddress();
         if (deliveryAddress != null && !deliveryAddress.isEmpty()) {
             return deliveryAddress;

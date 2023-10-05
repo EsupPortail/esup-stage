@@ -50,4 +50,8 @@ export class AvenantService {
     return this.http.post(`${environment.apiUrl}/avenant/${id}/update-signature-electronique-info`, {});
   }
 
+  downloadSignedDoc(id: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/avenant/${id}/download-signed-doc`, { responseType: 'blob'});
+  }
+
 }

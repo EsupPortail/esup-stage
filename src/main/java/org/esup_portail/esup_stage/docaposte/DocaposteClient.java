@@ -4,6 +4,7 @@ import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
 import org.esup_portail.esup_stage.docaposte.gen.*;
 import org.esup_portail.esup_stage.enums.SignataireEnum;
 import org.esup_portail.esup_stage.enums.TypeSignatureEnum;
+import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.Avenant;
 import org.esup_portail.esup_stage.model.CentreGestionSignataire;
 import org.esup_portail.esup_stage.model.Convention;
@@ -12,10 +13,13 @@ import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
 import org.esup_portail.esup_stage.service.signature.model.Historique;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 
 import javax.xml.bind.JAXBElement;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -132,6 +136,21 @@ public class DocaposteClient extends WebServiceGatewaySupport {
             }
         }
         return historiques;
+    }
+
+    public InputStream download(String documentId) {
+        Download request = new Download();
+        request.setDocumentId(documentId);
+        DownloadResponse response = ((JAXBElement<DownloadResponse>) getWebServiceTemplate().marshalSendAndReceive(new ObjectFactory().createDownload(request))).getValue();
+        if (response.getReturn() != null && response.getReturn().getContent() != null) {
+            try {
+                return response.getReturn().getContent().getInputStream();
+            } catch (IOException e) {
+                logger.error(e.getMessage(), e);
+                throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de l'appel api de récupération du document");
+            }
+        }
+        return null;
     }
 
     private void setModelHistorique(List<Historique> historiques, CentreGestionSignataire profil, Date date, boolean signature) {

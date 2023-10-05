@@ -1,6 +1,9 @@
 package org.esup_portail.esup_stage.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
 import org.esup_portail.esup_stage.dto.*;
 import org.esup_portail.esup_stage.dto.view.Views;
@@ -28,6 +31,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,6 +42,8 @@ import java.util.stream.Collectors;
 @ApiController
 @RequestMapping("/conventions")
 public class ConventionController {
+
+    private static final Logger logger	= LogManager.getLogger(ConventionController.class);
 
     @Autowired
     ConventionRepository conventionRepository;
@@ -552,7 +561,7 @@ public class ConventionController {
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
-        conventionService.updateSignatureElectroniqueHistorique(convention);
+        signatureService.updateHistorique(convention);
         return convention;
     }
 
@@ -904,5 +913,26 @@ public class ConventionController {
             filters = jsonFilters.toString();
         }
         return filters;
+    }
+
+    @GetMapping("/{id}/download-signed-doc")
+    @Secure
+    public ResponseEntity<byte[]> downloadDoc(@PathVariable("id") int id) {
+        Convention convention = conventionJpaRepository.findById(id);
+        if (convention == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvé");
+        }
+        MetadataDto metadataDto = signatureService.getPublicMetadata(convention);
+        String filePath = signatureService.getSignatureFilePath(metadataDto.getTitle());
+        if (Files.exists(Paths.get(filePath))) {
+            try {
+                return ResponseEntity.ok().body(FileUtils.readFileToByteArray(new File(filePath)));
+            } catch (IOException e) {
+                logger.error("Erreur lors de la lecture du fichier", e);
+                throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur sur le téléchargement du fichier");
+            }
+        } else {
+            throw new AppException(HttpStatus.NOT_FOUND, "Fichier non trouvé");
+        }
     }
 }

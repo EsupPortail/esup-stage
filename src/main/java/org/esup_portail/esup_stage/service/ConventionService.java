@@ -16,6 +16,7 @@ import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.service.apogee.ApogeeService;
 import org.esup_portail.esup_stage.service.apogee.model.EtudiantRef;
+import org.esup_portail.esup_stage.service.signature.SignatureService;
 import org.esup_portail.esup_stage.service.signature.model.Historique;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -74,7 +75,7 @@ public class ConventionService {
     ApogeeService apogeeService;
 
     @Autowired
-    DocaposteClient docaposteClient;
+    SignatureService signatureService;
 
     public void validationAutoDonnees(Convention convention, Utilisateur utilisateur) {
         // Validation automatique de l'établissement d'accueil, le service d'accueil et du tuteur de stage à la validation de la convention
@@ -318,43 +319,7 @@ public class ConventionService {
     public void updateSignatureElectroniqueHistorique() {
         List<Convention> conventions = conventionJpaRepository.getSignatureInfoToUpdate();
         for (Convention convention : conventions) {
-            updateSignatureElectroniqueHistorique(convention);
-        }
-    }
-
-    public void updateSignatureElectroniqueHistorique(Convention convention) {
-        try {
-            List<Historique> historiques = docaposteClient.getHistorique(convention.getDocumentId(), convention.getCentreGestion().getSignataires());
-            for (Historique historique : historiques) {
-                switch (historique.getTypeSignataire()) {
-                    case etudiant:
-                        convention.setDateSignatureEtudiant(historique.getDateSignature());
-                        convention.setDateDepotEtudiant(historique.getDateDepot());
-                        break;
-                    case enseignant:
-                        convention.setDateSignatureEnseignant(historique.getDateSignature());
-                        convention.setDateDepotEnseignant(historique.getDateDepot());
-                        break;
-                    case tuteur:
-                        convention.setDateSignatureTuteur(historique.getDateSignature());
-                        convention.setDateDepotTuteur(historique.getDateDepot());
-                        break;
-                    case signataire:
-                        convention.setDateSignatureSignataire(historique.getDateSignature());
-                        convention.setDateDepotSignataire(historique.getDateDepot());
-                        break;
-                    case viseur:
-                        convention.setDateSignatureViseur(historique.getDateSignature());
-                        convention.setDateDepotViseur(historique.getDateDepot());
-                        break;
-                    default:
-                        break;
-                }
-            }
-            conventionJpaRepository.save(convention);
-        } catch (Exception e) {
-            logger.error(e);
-            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur de la récupération de l'historique");
+            signatureService.updateHistorique(convention);
         }
     }
 

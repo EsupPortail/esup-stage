@@ -105,4 +105,8 @@ export class ConventionService implements PaginatedService {
     return this.authService.isEtudiant() ? `Du ${this.datePipe.transform(row.dateDebutStage, 'shortDate')} au ${this.datePipe.transform(row.dateFinStage, 'shortDate')}` : `${row.id} - ${row.etudiant.nom} ${row.etudiant.prenom}`;
   }
 
+  downloadSignedDoc(id: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/conventions/${id}/download-signed-doc`, { responseType: 'blob'});
+  }
+
 }

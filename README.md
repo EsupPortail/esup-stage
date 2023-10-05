@@ -36,6 +36,7 @@ Cette execution passe par le fichier de configuration "src/main/resources-filter
     * `consigne-documents`
     * `logos`
   * `images`
+  * `signatures`
 
 Par exemple si `appli.data_dir=/etc/eStage/uploads` on aura :
 ```
@@ -46,12 +47,19 @@ Par exemple si `appli.data_dir=/etc/eStage/uploads` on aura :
        |_/consigne-documents
        |_/logos
      |_/images
+     |_/signatures
 ```
+
+## Signature électronique (optionnel)
+
+La signature électronique est activée si au moins une des configuration ci-dessous est paramétrée. Si plusieurs solutions configurées, Docaposte prendra le dessus.
 
 ### Docaposte
 
+> **ATTENTION :** Les paramètres ne doivent pas être ajoutés s'ils ne sont pas utilisés
+
 Les paramètres Docaposte se trouve dans le fichier `estage.properties` :
-```
+```properties
 # docaposte
 docaposte.uri=https://demo-parapheur.dfast.fr/parapheur-soap/soap/v1/Documents
 docaposte.siren=xxx
@@ -61,6 +69,35 @@ docaposte.truststore.path=<chemin du fichier .jks>
 docaposte.truststore.password=xxx
 ```
 Les certificats pour Docaposte peuvent être déposés où vous le souhaitez en dehors du projet.
+
+### ESUP-Signature (mode solution externe)
+
+> **ATTENTION :** Les paramètres ne doivent pas être ajoutés s'ils ne sont pas utilisés
+
+ESUP-Stage met à disposition des api "public" accessible avec un des tokens paramétrés dans `appli.public.tokens`. La liste des api se trouve dans `/public/swagger-ui.html`.
+
+Le paramétrage "webhook" correspondent à l'appel vers une api externe pour la signature électronique (cette solution est à mettre en place par chaque établissement). Les api vers ESUP-Signature sont intégrés dans ESUP-Stage mais la configuration est la même pour une solution externe.
+
+`webhook.signature.uri` : uri de l'api externe\
+`webhook.signature.token` : token d'accès
+
+```properties
+# tokens d'accès d'esup-stage permettant d'autoriser les webhook à accéder aux api /public/api d'esup-stage séparés par des ; (exemple : token1;token2;token3)
+appli.public.tokens=xxxx
+
+### Paramétrage webhooks ###
+# uri du webhook de signature
+webhook.signature.uri=http://localhost:8080/webhook/esup-signature
+# token permettant d'accéder au webhook signature
+webhook.signature.token=yyyyy
+### -------------------- ###
+
+### Paramétrage esup-signature ###
+# numero du circuit
+esupsignature.uri=http://localhost:8880/ws
+esupsignature.circuit=123
+### -------------------- ###
+```
 
 ## Procédure d'installation en environnement de dev
 

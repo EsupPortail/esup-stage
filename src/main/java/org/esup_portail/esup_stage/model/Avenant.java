@@ -125,9 +125,6 @@ public class Avenant extends ObjetMetier implements Exportable {
     @Column(length = 255)
     private String documentId;
 
-    @Column
-    private String urlSignature;
-
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateSignatureEtudiant;
 
@@ -427,14 +424,6 @@ public class Avenant extends ObjetMetier implements Exportable {
         this.documentId = documentId;
     }
 
-    public String getUrlSignature() {
-        return urlSignature;
-    }
-
-    public void setUrlSignature(String urlSignature) {
-        this.urlSignature = urlSignature;
-    }
-
     public Date getDateSignatureEtudiant() {
         return dateSignatureEtudiant;
     }
@@ -513,5 +502,14 @@ public class Avenant extends ObjetMetier implements Exportable {
 
     public void setDateDepotViseur(Date dateDepotViseur) {
         this.dateDepotViseur = dateDepotViseur;
+    }
+
+    @Transient
+    public boolean isAllSignedDateSetted() {
+        return getDateDepotEtudiant() != null && getDateSignatureEtudiant() != null &&
+                getDateDepotEnseignant() != null && getDateSignatureEnseignant() != null &&
+                getDateDepotTuteur() != null && getDateSignatureTuteur() != null &&
+                getDateDepotSignataire() != null && getDateSignatureSignataire() != null &&
+                getDateDepotViseur() != null && getDateSignatureViseur() != null;
     }
 }

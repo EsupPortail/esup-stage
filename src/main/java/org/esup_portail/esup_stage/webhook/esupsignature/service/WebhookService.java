@@ -1,13 +1,11 @@
 package org.esup_portail.esup_stage.webhook.esupsignature.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itextpdf.commons.utils.Base64;
 import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
 import org.esup_portail.esup_stage.dto.MetadataDto;
 import org.esup_portail.esup_stage.dto.PdfMetadataDto;
-import org.esup_portail.esup_stage.enums.SignataireEnum;
 import org.esup_portail.esup_stage.exception.AppException;
+import org.esup_portail.esup_stage.model.CentreGestionSignataire;
 import org.esup_portail.esup_stage.model.Convention;
 import org.esup_portail.esup_stage.service.signature.model.Historique;
 import org.esup_portail.esup_stage.webhook.esupsignature.service.model.AuditStep;
@@ -16,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,10 +23,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,7 +46,7 @@ public class WebhookService {
         MultipartBodyBuilder builder = new MultipartBodyBuilder();
         builder.part("multipartFiles", geMultipartFile(metadataDto.getTitle(), Base64.decode(content.getPdf64())));
         builder.part("createByEppn", "system");
-        builder.part("recipientsEmails", recipients);
+        builder.part("recipientsEmails", String.join(",", recipients));
 
         return client.post()
                 .uri(applicationBootstrap.getAppConfig().getEsupSignatureUri() + "/workflows/" + applicationBootstrap.getAppConfig().getEsupSignatureCiruit() + "/new")
@@ -59,41 +59,47 @@ public class WebhookService {
 
     public List<Historique> getHistorique(String documentId, Convention convention) {
         WebClient client = WebClient.create();
-        String response = client.get()
+        AuditTrail response = client.get()
                 .uri(applicationBootstrap.getAppConfig().getEsupSignatureUri() + "/signrequests/audit-trail/" + documentId)
+                .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .bodyToMono(String.class)
+                .bodyToMono(AuditTrail.class)
                 .block();
 
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            AuditTrail auditTrail = mapper.readValue(response, AuditTrail.class);
-
-            List<Historique> historiques = new ArrayList<>();
-            for (AuditStep step : auditTrail.getAuditSteps()) {
-                Historique historique = new Historique();
-                historique.setDateDepot(new Date()); // TODO ?
-                historique.setDateSignature(step.getTimeStampDate());
-                if (step.getEmail().equals(convention.getEtudiant().getMail())) {
-                    historique.setTypeSignataire(SignataireEnum.etudiant);
-                } else if (step.getEmail().equals(convention.getEnseignant().getMail())) {
-                    historique.setTypeSignataire(SignataireEnum.enseignant);
-                } else if (step.getEmail().equals(convention.getContact().getMail())) {
-                    historique.setTypeSignataire(SignataireEnum.tuteur);
-                } else if (step.getEmail().equals(convention.getSignataire().getMail())) {
-                    historique.setTypeSignataire(SignataireEnum.signataire);
-                } else if (step.getEmail().equals(convention.getCentreGestion().getMail())) {
-                    historique.setTypeSignataire(SignataireEnum.viseur);
-                } else {
-                    continue;
+        List<Historique> historiques = new ArrayList<>();
+        if (response != null) {
+            List<CentreGestionSignataire> signataires = convention.getCentreGestion().getSignataires();
+            for (int ordre = 1 ; ordre <= response.getAuditSteps().size() ; ++ordre) {
+                AuditStep step = response.getAuditSteps().get(ordre - 1);
+                int finalOrdre = ordre;
+                CentreGestionSignataire signataire = signataires.stream().filter(s -> s.getOrdre() == finalOrdre).findAny().orElse(null);
+                if (signataire != null) {
+                    Historique historique = new Historique();
+                    historique.setDateDepot(step.getTimeStampDate());
+                    historique.setDateSignature(step.getTimeStampDate());
+                    historique.setTypeSignataire(signataire.getId().getSignataire());
+                    historiques.add(historique);
                 }
-                historiques.add(historique);
             }
-            return historiques;
-        } catch (JsonProcessingException e) {
-            LOGGER.error(e.getMessage(), e);
-            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
         }
+        return historiques;
+    }
+
+    public InputStream download(String documentId) {
+        WebClient client = WebClient.create();
+        return client.get()
+                .uri(applicationBootstrap.getAppConfig().getEsupSignatureUri() + "/signrequests/get-last-file/" + documentId)
+                .accept(MediaType.APPLICATION_PDF)
+                .exchangeToMono(clientResponse -> clientResponse.bodyToMono(InputStreamResource.class))
+                .map(inputStreamResource -> {
+                    try {
+                        return inputStreamResource.getInputStream();
+                    } catch (IOException e) {
+                        LOGGER.error(e.getMessage(), e);
+                        throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de la récupération du document signé");
+                    }
+                })
+                .block();
     }
 
     private static Resource geMultipartFile(String filename, byte[] bytes) {
