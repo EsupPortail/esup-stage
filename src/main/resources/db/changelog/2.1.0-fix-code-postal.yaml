@@ -1,0 +1,9 @@
+databaseChangeLog:
+- changeSet:
+    id: 2.1.0-fix-code-postal
+    author: ssound
+    changes:
+    - sqlFile:
+        path: 2.1.0-fix-code-postal.sql
+        relativeToChangelogFile: true
+        encoding: utf8

@@ -167,3 +167,6 @@ databaseChangeLog:
   - include:
       file: 2.1.0-centre-gestion-signataire.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 2.1.0-fix-code-postal.yaml
+      relativeToChangelogFile: true
