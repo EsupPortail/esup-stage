@@ -9,6 +9,8 @@ import org.apache.logging.log4j.util.Strings;
 import org.esup_portail.esup_stage.dto.ConventionFormDto;
 import org.esup_portail.esup_stage.dto.LdapSearchDto;
 import org.esup_portail.esup_stage.dto.ResponseDto;
+import org.esup_portail.esup_stage.enums.AppFonctionEnum;
+import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
@@ -270,10 +272,17 @@ public class ConventionService {
                     modifiable = false;
                 }
                 return modifiable;
-            } else if (UtilisateurHelper.isRole(utilisateur, Role.ENS)) {
-                return false;
-            } else { // cas gestionnaire, responsable gestionnaire et profil non défini
-                return convention.getValidationConvention() == null || !convention.getValidationConvention();
+            } else {
+                boolean modifiable = convention.getValidationConvention() == null || !convention.getValidationConvention();
+                if (!UtilisateurHelper.isRole(utilisateur, Role.GES) && !UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)) {
+                    // en fonction du paramétrage
+                    try {
+                        modifiable = modifiable && UtilisateurHelper.isRole(utilisateur, new AppFonctionEnum[]{AppFonctionEnum.CONVENTION}, new DroitEnum[]{DroitEnum.MODIFICATION});
+                    } catch (Exception e) {
+                        throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
+                    }
+                }
+                return modifiable;
             }
         }
         return true;

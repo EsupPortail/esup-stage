@@ -5,6 +5,8 @@ import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
 import { TitleService } from "../../services/title.service";
 import { AuthService } from "../../services/auth.service";
 import { ConfigService } from "../../services/config.service";
+import { AppFonction } from '../../constants/app-fonction';
+import { Droit } from '../../constants/droit';
 
 @Component({
   selector: 'app-convention',
@@ -78,12 +80,13 @@ export class ConventionComponent implements OnInit {
           if (this.authService.isAdmin()) {
             this.modifiable = true;
           } else {
+            const canModifConvention = !this.convention.validationConvention && this.authService.checkRights({ fonction: AppFonction.CONVENTION, droits: [Droit.MODIFICATION] });
             if (this.authService.isGestionnaire()) {
               this.modifiable = !this.convention.validationConvention;
             }
-            // Un enseignant n'a pas les droits de modifications d'une convention
+            // Récupération du droit en fonction du paramétrage du rôle
             else if (this.authService.isEnseignant()) {
-              this.modifiable = false;
+              this.modifiable = canModifConvention;
             }
             // Une convention n'est plus modifiable par l'étudiant dès qu'il y a eu au moins une validation
             else if (this.authService.isEtudiant()) {
@@ -95,9 +98,9 @@ export class ConventionComponent implements OnInit {
               }
               this.modifiable = !validee;
             }
-            // les utilisateurs sans profil pré-défini ont les mêmes droits que le gestionnaire
+            // Récupération du droit en fonction du paramétrage du rôle
             else {
-              this.modifiable = !this.convention.validationConvention;
+              this.modifiable = canModifConvention;
             }
           }
         });
