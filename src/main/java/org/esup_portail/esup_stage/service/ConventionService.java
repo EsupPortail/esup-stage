@@ -6,8 +6,8 @@ import com.google.i18n.phonenumbers.Phonenumber;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
-import org.esup_portail.esup_stage.docaposte.DocaposteClient;
 import org.esup_portail.esup_stage.dto.ConventionFormDto;
+import org.esup_portail.esup_stage.dto.LdapSearchDto;
 import org.esup_portail.esup_stage.dto.ResponseDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
@@ -16,8 +16,9 @@ import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.service.apogee.ApogeeService;
 import org.esup_portail.esup_stage.service.apogee.model.EtudiantRef;
+import org.esup_portail.esup_stage.service.ldap.LdapService;
+import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
 import org.esup_portail.esup_stage.service.signature.SignatureService;
-import org.esup_portail.esup_stage.service.signature.model.Historique;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -77,6 +78,9 @@ public class ConventionService {
     @Autowired
     SignatureService signatureService;
 
+    @Autowired
+    LdapService ldapService;
+
     public void validationAutoDonnees(Convention convention, Utilisateur utilisateur) {
         // Validation automatique de l'établissement d'accueil, le service d'accueil et du tuteur de stage à la validation de la convention
         if (
@@ -127,6 +131,12 @@ public class ConventionService {
         }
         EtudiantRef etudiantRef = apogeeService.getInfoApogee(conventionFormDto.getNumEtudiant(), appConfigService.getAnneeUniv());
         if (etudiantRef == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Étudiant non trouvé");
+        }
+        LdapSearchDto ldapSearchDto = new LdapSearchDto();
+        ldapSearchDto.setCodEtu(conventionFormDto.getNumEtudiant());
+        List<LdapUser> ldapEtudiant = ldapService.search("/etudiant", ldapSearchDto);
+        if (ldapEtudiant == null || ldapEtudiant.size() == 0) {
             throw new AppException(HttpStatus.NOT_FOUND, "Étudiant non trouvé");
         }
         Etape etape = etapeJpaRepository.findById(conventionFormDto.getCodeEtape(), conventionFormDto.getCodeVersionEtape(), appConfigService.getConfigGenerale().getCodeUniversite());
@@ -183,11 +193,11 @@ public class ConventionService {
             etudiant = new Etudiant();
             etudiant.setIdentEtudiant(conventionFormDto.getEtudiantLogin());
             etudiant.setNumEtudiant(conventionFormDto.getNumEtudiant());
-            etudiant.setNom(etudiantRef.getNompatro());
-            etudiant.setPrenom(etudiantRef.getPrenom());
-            etudiant.setMail(etudiantRef.getMail());
             etudiant.setCodeUniversite(appConfigService.getConfigGenerale().getCodeUniversite());
         }
+        etudiant.setNom(String.join(" ", ldapEtudiant.get(0).getSn()));
+        etudiant.setPrenom(String.join(" ", ldapEtudiant.get(0).getGivenName()));
+        etudiant.setMail(ldapEtudiant.get(0).getMail());
         etudiant.setCodeSexe(etudiantRef.getCodeSexe());
         etudiant.setDateNais(etudiantRef.getDateNais());
         etudiant = etudiantJpaRepository.saveAndFlush(etudiant);
