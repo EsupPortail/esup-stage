@@ -113,7 +113,7 @@ export class AdminRoleComponent implements OnInit {
     if(this.roleOrigine != undefined){
       data.origine = this.roleOrigine;
     }
-    this.form.setValue(data);
+    this.form.patchValue(data);
   }
 
   get AppFonction() {
