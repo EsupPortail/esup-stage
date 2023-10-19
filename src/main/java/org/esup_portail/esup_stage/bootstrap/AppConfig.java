@@ -45,7 +45,6 @@ public class AppConfig {
     private String webhookSignatureUri;
     private String webhookSignatureToken;
     private String esupSignatureUri;
-    private Integer esupSignatureCiruit;
     private AppSignatureEnum appSignatureEnabled;
 
     public String getCasUrlLogin() {
@@ -336,14 +335,6 @@ public class AppConfig {
         this.esupSignatureUri = esupSignatureUri;
     }
 
-    public Integer getEsupSignatureCiruit() {
-        return esupSignatureCiruit;
-    }
-
-    public void setEsupSignatureCiruit(Integer esupSignatureCiruit) {
-        this.esupSignatureCiruit = esupSignatureCiruit;
-    }
-
     public AppSignatureEnum getAppSignatureEnabled() {
         return appSignatureEnabled;
     }
@@ -418,15 +409,12 @@ public class AppConfig {
         if (props.containsKey("esupsignature.uri") && !Strings.isEmpty(props.getProperty("esupsignature.uri"))) {
             this.esupSignatureUri = props.getProperty("esupsignature.uri");
         }
-        if (props.containsKey("esupsignature.circuit") && !Strings.isEmpty(props.getProperty("esupsignature.circuit"))) {
-            this.esupSignatureCiruit = Integer.parseInt(props.getProperty("esupsignature.circuit"));
-        }
         if (this.docaposteEnabled) {
             this.appSignatureEnabled = AppSignatureEnum.DOCAPOSTE;
         } else {
             if (this.webhookSignatureUri != null && this.webhookSignatureToken != null) {
                 this.appSignatureEnabled = AppSignatureEnum.EXTERNE;
-                if (this.esupSignatureUri != null && this.esupSignatureCiruit != null) {
+                if (this.esupSignatureUri != null) {
                     this.appSignatureEnabled = AppSignatureEnum.ESUPSIGNATURE;
                 }
             }
@@ -465,7 +453,6 @@ public class AppConfig {
                 ", docaposteEnabled='" + docaposteEnabled + "'" +
                 ", webhookSignatureUri='" + webhookSignatureUri + "'" +
                 ", esupSignatureUri='" + esupSignatureUri + "'" +
-                ", esupSignatureCiruit='" + esupSignatureCiruit + "'" +
                 ", appSignatureEnabled='" + appSignatureEnabled + "'" +
                 "}";
     }

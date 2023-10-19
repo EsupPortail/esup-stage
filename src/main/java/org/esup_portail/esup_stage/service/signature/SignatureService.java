@@ -91,6 +91,7 @@ public class SignatureService {
         }
         metadata.setCompanyname(convention.getNomEtabRef());
         metadata.setSchool(convention.getEtape().getLibelle());
+        metadata.setWorkflowId(convention.getCentreGestion().getCircuitSignature());
         List<MetadataSignataireDto> signataires = new ArrayList<>();
 
         convention.getCentreGestion().getSignataires().forEach(s -> {

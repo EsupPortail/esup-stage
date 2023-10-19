@@ -49,7 +49,7 @@ public class WebhookService {
         builder.part("recipientsEmails", String.join(",", recipients));
 
         return client.post()
-                .uri(applicationBootstrap.getAppConfig().getEsupSignatureUri() + "/workflows/" + applicationBootstrap.getAppConfig().getEsupSignatureCiruit() + "/new")
+                .uri(applicationBootstrap.getAppConfig().getEsupSignatureUri() + "/workflows/" + metadataDto.getWorkflowId() + "/new")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .retrieve()

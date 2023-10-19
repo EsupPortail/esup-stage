@@ -14,6 +14,9 @@ public class MetadataDto {
     private String school;
 
     @NotNull
+    private String workflowId;
+
+    @NotNull
     private List<MetadataSignataireDto> signatory;
 
     public String getTitle() {
@@ -46,5 +49,13 @@ public class MetadataDto {
 
     public void setSignatory(List<MetadataSignataireDto> signatory) {
         this.signatory = signatory;
+    }
+
+    public String getWorkflowId() {
+        return workflowId;
+    }
+
+    public void setWorkflowId(String workflowId) {
+        this.workflowId = workflowId;
     }
 }
