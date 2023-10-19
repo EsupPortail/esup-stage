@@ -12,6 +12,9 @@
         </mat-form-field>
         <div class="col-12">
           <div class="text-title">Ordre de signature</div>
+          <div class="text-hint">
+            <mat-hint>Le choix entre OTP et signature serveur est obligatoire. Si vous n'utilisez pas Docaposte, vous pouvez indifféremment cocher signature OTP ou signature serveur</mat-hint>
+          </div>
           <div cdkDropList [cdkDropListData]="signataires" (cdkDropListDropped)="drop($event)">
             <div class="ordre" *ngFor="let signataire of signataires; let index = index" cdkDrag>
               <div class="row">
