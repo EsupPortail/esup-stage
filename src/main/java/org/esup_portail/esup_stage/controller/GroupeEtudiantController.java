@@ -14,10 +14,8 @@ import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.ConventionService;
 import org.esup_portail.esup_stage.service.MailerService;
 import org.esup_portail.esup_stage.service.apogee.ApogeeService;
-import org.esup_portail.esup_stage.service.apogee.model.EtapeInscription;
-import org.esup_portail.esup_stage.service.apogee.model.EtudiantRef;
+import org.esup_portail.esup_stage.service.apogee.model.*;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
-import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,9 +44,6 @@ public class GroupeEtudiantController {
 
     @Autowired
     HistoriqueMailGroupeJpaRepository historiqueMailGroupeJpaRepository;
-
-    @Autowired
-    EtudiantJpaRepository etudiantJpaRepository;
 
     @Autowired
     EtudiantRepository etudiantRepository;
@@ -237,9 +232,9 @@ public class GroupeEtudiantController {
 
         List<String> numEtudiants = groupeEtudiant.getEtudiantGroupeEtudiants().stream().map(EtudiantGroupeEtudiant::getEtudiantNumEtudiant).collect(Collectors.toList());
 
-        List<LdapUser> etudiantsAdded = new ArrayList<>();
+        List<EtudiantDiplomeEtapeResponse> etudiantsAdded = new ArrayList<>();
         for(String numEtudiant : numEtudiants){
-            LdapUser etudiant = new LdapUser();
+            EtudiantDiplomeEtapeResponse etudiant = new EtudiantDiplomeEtapeResponse();
             etudiant.setCodEtu(numEtudiant);
             etudiantsAdded.add(etudiant);
         }
@@ -280,16 +275,19 @@ public class GroupeEtudiantController {
     @PostMapping
     @Secure(fonctions = {AppFonctionEnum.CREATION_EN_MASSE_CONVENTION}, droits = {DroitEnum.CREATION})
     public GroupeEtudiant create(@Valid @RequestBody GroupeEtudiantDto groupeEtudiantDto) {
-
         // Erreur si code groupe déjà existant
         if (groupeEtudiantRepository.exists(groupeEtudiantDto.getCodeGroupe(), 0)) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Code groupe déjà existant");
+        }
+        // Erreur si aucun étudiant
+        if (groupeEtudiantDto.getEtudiantAdded().size() == 0) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Aucun étudiant à ajouter");
         }
 
         GroupeEtudiant groupeEtudiant = new GroupeEtudiant();
 
         //le premier étudiant de la liste est affecté à la convention du groupe d'étudiant
-        LdapUser e = groupeEtudiantDto.getEtudiantAdded().get(0);
+        EtudiantDiplomeEtapeResponse e = groupeEtudiantDto.getEtudiantAdded().get(0);
         Convention convention = createNewConvention(e);
 
         groupeEtudiant.setConvention(convention);
@@ -300,8 +298,7 @@ public class GroupeEtudiantController {
 
         List<EtudiantGroupeEtudiant> etudiantGroupeEtudiants = new ArrayList<>();
 
-        for(LdapUser etudiant : groupeEtudiantDto.getEtudiantAdded()){
-
+        for (EtudiantDiplomeEtapeResponse etudiant : groupeEtudiantDto.getEtudiantAdded()) {
             EtudiantGroupeEtudiant etudiantGroupeEtudiant = createNewEtudiantGroupeEtudiant(groupeEtudiant, etudiant);
             etudiantGroupeEtudiants.add(etudiantGroupeEtudiant);
         }
@@ -487,12 +484,12 @@ public class GroupeEtudiantController {
         groupeEtudiant.setCode(groupeEtudiantDto.getCodeGroupe());
 
         List<String> oldEtudiants = groupeEtudiant.getEtudiantGroupeEtudiants().stream().map(EtudiantGroupeEtudiant::getEtudiantNumEtudiant).collect(Collectors.toList());
-        List<LdapUser> newEtudiants = groupeEtudiantDto.getEtudiantAdded();
+        List<EtudiantDiplomeEtapeResponse> newEtudiants = groupeEtudiantDto.getEtudiantAdded();
 
-        List<LdapUser> addedEtudiants = new ArrayList<>();
+        List<EtudiantDiplomeEtapeResponse> addedEtudiants = new ArrayList<>();
         List<Integer> removedEtudiants = groupeEtudiantDto.getEtudiantRemovedIds();
 
-        for(LdapUser etudiant : newEtudiants){
+        for(EtudiantDiplomeEtapeResponse etudiant : newEtudiants){
             if(!oldEtudiants.contains(etudiant.getCodEtu())){
                 addedEtudiants.add(etudiant);
             }
@@ -512,7 +509,7 @@ public class GroupeEtudiantController {
         }
 
         //added etudiants
-        for(LdapUser etudiant : addedEtudiants){
+        for(EtudiantDiplomeEtapeResponse etudiant : addedEtudiants){
             EtudiantGroupeEtudiant etudiantGroupeEtudiant = createNewEtudiantGroupeEtudiant(groupeEtudiant, etudiant);
             etudiantGroupeEtudiants.add(etudiantGroupeEtudiant);
         }
@@ -532,7 +529,7 @@ public class GroupeEtudiantController {
         return true;
     }
 
-    private EtudiantGroupeEtudiant createNewEtudiantGroupeEtudiant(GroupeEtudiant groupeEtudiant, LdapUser etudiant) {
+    private EtudiantGroupeEtudiant createNewEtudiantGroupeEtudiant(GroupeEtudiant groupeEtudiant, EtudiantDiplomeEtapeResponse etudiant) {
         Convention convention = createNewConvention(etudiant);
         EtudiantGroupeEtudiant etudiantGroupeEtudiant = new EtudiantGroupeEtudiant();
         etudiantGroupeEtudiant.setEtudiant(convention.getEtudiant());
@@ -541,63 +538,36 @@ public class GroupeEtudiantController {
         return etudiantGroupeEtudiantJpaRepository.save(etudiantGroupeEtudiant);
     }
 
-    private Convention createNewConvention(LdapUser etudiant) {
-        Utilisateur utilisateur = ServiceContext.getUtilisateur();
-
-        EtudiantRef etudiantRef = apogeeService.getInfoApogee(etudiant.getCodEtu(), appConfigService.getAnneeUniv());
-        List<ConventionFormationDto> inscriptions = apogeeService.getInscriptions(utilisateur, etudiant.getCodEtu(), null);
-
-        if (inscriptions.size() == 0) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Aucunes inscriptions trouvées dans apogée pour l'étudiant : " + etudiant.getCn());
+    private Convention createNewConvention(EtudiantDiplomeEtapeResponse etudiant) {
+        EtudiantRef etudiantRef = apogeeService.getInfoApogee(etudiant.getCodEtu(), etudiant.getAnnee());
+        ApogeeMap apogeeMap = apogeeService.getEtudiantEtapesInscription(etudiant.getCodEtu(), etudiant.getAnnee());
+        RegimeInscription regIns = apogeeMap.getRegimeInscription().stream().filter(r -> r.getAnnee().equals(etudiant.getAnnee())).findAny().orElse(null);
+        TypeConvention typeConvention = null;
+        if (regIns != null) {
+            typeConvention = typeConventionJpaRepository.findByCodeCtrl(regIns.getLicRegIns());
         }
-
-        if (etudiant.getSupannEtuEtape().size() < 1) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Aucunes étapes renseignées dans le ldap pour l'étudiant : " + etudiant.getCn());
-        }
-
-        List<String> etapes = etudiant.getSupannEtuEtape();
-        String codeComposante = etudiant.getSupannEntiteAffectationPrincipale();
-
-        ConventionFormationDto inscription = null;
-
-        // recherche de l'inscription apogée de l'étudiant correspondant aux valeurs du ldap
-        for (ConventionFormationDto _inscription : inscriptions) {
-            for (String etape : etapes) {
-                if (_inscription.getAnnee().equals(etudiant.getSupannEtuAnneeInscription()) &&
-                    _inscription.getEtapeInscription() != null &&
-                    _inscription.getEtapeInscription().getCodeComposante().equals(codeComposante) &&
-                    etape.toLowerCase().contains(_inscription.getEtapeInscription().getCodeEtp().toLowerCase())) {
-                    inscription = _inscription;
-                    break;
-                }
-            }
-        }
-
-        if (inscription == null) {
-            String errorString = "Incohérence des données entre Apogée et LDAP pour l'étudiant " + etudiant.getCn() + " :<br>";
-            errorString += "données ldap : {année : " + etudiant.getSupannEtuAnneeInscription() + ", codeComposante : " + codeComposante +
-                    ", codesEtapes : " + etapes.toString() + "}<br>";
-            int i = 0;
-            for (ConventionFormationDto _inscription : inscriptions) {
-                i++;
-                String composante = _inscription.getEtapeInscription() != null ? _inscription.getEtapeInscription().getCodeComposante() : "";
-                String etape = _inscription.getEtapeInscription() != null ? _inscription.getEtapeInscription().getCodeEtp() : "";
-                errorString += "données inscription " + i + " : {année : " + _inscription.getAnnee() + ", codeComposante : " + composante +
-                        ", codeEtape : " + etape + "}<br>";
-            }
-
-            throw new AppException(HttpStatus.NOT_FOUND, errorString);
-        }
-
-        EtapeInscription etapeInscription = inscription.getEtapeInscription();
-        TypeConvention typeConvention = inscription.getTypeConvention();
-
-        if (etapeInscription == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Aucun etapeInscription renseignée dans apogée pour l'étudiant : " + etudiant.getCn());
+        EtapeInscription etapeInscription = apogeeMap.getListeEtapeInscriptions().stream()
+                .filter(i -> i.getCodeComposante().equals(etudiant.getCodeComposante())
+                        && i.getCodeDiplome().equals(etudiant.getCodeDiplome())
+                        && i.getVersionDiplome().equals(etudiant.getVersionDiplome())
+                        && i.getCodeEtp().equals(etudiant.getCodeEtape())
+                        && i.getCodVrsVet().equals(etudiant.getVersionEtape())
+                )
+                .findAny()
+                .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "Aucun inscription trouvée"));
+        TypeConvention typeCesure = apogeeService.changeTypeConventionByCodeCursus(etapeInscription.getCodeCursusAmenage());
+        if (typeCesure != null) {
+            typeConvention = typeCesure;
         }
         if (typeConvention == null) {
-            typeConvention = typeConventionJpaRepository.findAll().get(0);
+            throw new AppException(HttpStatus.NO_CONTENT, "Type de convention non trouvé");
         }
+        CentreGestion centreGestionEtab = conventionService.getCentreGestionEtab();
+        ConventionFormationDto inscription = new ConventionFormationDto();
+        inscription.setAnnee(etudiant.getAnnee());
+        inscription.setEtapeInscription(etapeInscription);
+        inscription.setCentreGestion(conventionService.getCentreGestion(centreGestionEtab, etudiant.getCodeComposante(), etudiant.getCodeEtape(), etudiant.getVersionEtape()));
+        inscription.setTypeConvention(typeConvention);
 
         ConventionFormDto conventionFormDto = new ConventionFormDto();
 
@@ -610,7 +580,6 @@ public class GroupeEtudiantController {
         conventionFormDto.setCodeVersionEtape(etapeInscription.getCodVrsVet());
         conventionFormDto.setAnnee(inscription.getAnnee());
         conventionFormDto.setNumEtudiant(etudiant.getCodEtu());
-        conventionFormDto.setEtudiantLogin(etudiant.getUid());
 
         conventionFormDto.setAdresseEtudiant(etudiantRef.getMainAddress());
         conventionFormDto.setCodePostalEtudiant(etudiantRef.getPostalCode());

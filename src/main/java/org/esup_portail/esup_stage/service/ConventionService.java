@@ -123,13 +123,13 @@ public class ConventionService {
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
-        TypeConvention typeConvention = typeConventionJpaRepository.findById(conventionFormDto.getIdTypeConvention());
-        if (typeConvention == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Type de convention non trouvé");
+        if (convention.getTypeConvention() == null) {
+            TypeConvention typeConvention = getTypeConvention(conventionFormDto.getIdTypeConvention());
+            convention.setTypeConvention(typeConvention);
         }
-        LangueConvention langueConvention = langueConventionJpaRepository.findByCode(conventionFormDto.getCodeLangueConvention());
-        if (langueConvention == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Langue de convention non trouvée");
+        if (convention.getLangueConvention() == null) {
+            LangueConvention langueConvention = getLangueConvention(conventionFormDto.getCodeLangueConvention());
+            convention.setLangueConvention(langueConvention);
         }
         EtudiantRef etudiantRef = apogeeService.getInfoApogee(conventionFormDto.getNumEtudiant(), appConfigService.getAnneeUniv());
         if (etudiantRef == null) {
@@ -141,59 +141,24 @@ public class ConventionService {
         if (ldapEtudiant == null || ldapEtudiant.size() == 0) {
             throw new AppException(HttpStatus.NOT_FOUND, "Étudiant non trouvé");
         }
-        Etape etape = etapeJpaRepository.findById(conventionFormDto.getCodeEtape(), conventionFormDto.getCodeVersionEtape(), appConfigService.getConfigGenerale().getCodeUniversite());
-        if (etape == null) {
-            EtapeId etapeId = new EtapeId();
-            etapeId.setCode(conventionFormDto.getCodeEtape());
-            etapeId.setCodeVersionEtape(conventionFormDto.getCodeVersionEtape());
-            etapeId.setCodeUniversite(appConfigService.getConfigGenerale().getCodeUniversite());
-            etape = new Etape();
-            etape.setId(etapeId);
-            etape.setLibelle(conventionFormDto.getLibelleEtape());
-            etape = etapeJpaRepository.saveAndFlush(etape);
+        if (convention.getEtape() == null) {
+            Etape etape = getEtape(conventionFormDto.getCodeEtape(), conventionFormDto.getCodeVersionEtape(), conventionFormDto.getLibelleEtape());
+            convention.setEtape(etape);
         }
-        Ufr ufr = ufrJpaRepository.findById(conventionFormDto.getCodeComposante(), appConfigService.getConfigGenerale().getCodeUniversite());
-        if (ufr == null) {
-            UfrId ufrId = new UfrId();
-            ufrId.setCode(conventionFormDto.getCodeComposante());
-            ufrId.setCodeUniversite(appConfigService.getConfigGenerale().getCodeUniversite());
-            ufr = new Ufr();
-            ufr.setId(ufrId);
-            ufr.setLibelle(conventionFormDto.getLibelleComposante());
-            ufr = ufrJpaRepository.saveAndFlush(ufr);
+        if (convention.getUfr() == null) {
+            Ufr ufr = getUfr(conventionFormDto.getCodeComposante(), conventionFormDto.getLibelleComposante());
+            convention.setUfr(ufr);
         }
-        CentreGestion centreGestionEtab = centreGestionJpaRepository.getCentreEtablissement();
-        // Erreur si le centre de type etablissement est null
-        if (centreGestionEtab == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion de type établissement non trouvé");
-        }
-        CentreGestion centreGestion = null;
-        // Recherche du centre de gestion par codeEtape/versionEtape
-        CritereGestion critereGestion = critereGestionJpaRepository.findEtapeById(conventionFormDto.getCodeEtape(), conventionFormDto.getCodeVersionEtape());
-        // Si non trouvé, recherche par code composante et version = ""
-        if (critereGestion == null) {
-            critereGestion = critereGestionJpaRepository.findEtapeById(conventionFormDto.getCodeComposante(), "");
-        }
-        // Si non trouvé on vérifie l'autorisation de création de convention non liée à un centre
-        if (critereGestion == null) {
-            // Erreur si on n'autorise pas la création de convention non rattaché à un centre de gestion
-            if (!appConfigService.getConfigGenerale().isAutoriserConventionsOrphelines()) {
-                throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion non trouvé");
-            }
-            // Sinon on prend le centre de type établissement
-            centreGestion = centreGestionEtab;
-        } else {
-            centreGestion = critereGestion.getCentreGestion();
-        }
-        // Erreur si le centre est null
-        if (centreGestion == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion non trouvé");
+        CentreGestion centreGestionEtab = getCentreGestionEtab();
+        if (convention.getCentreGestion() == null) {
+            CentreGestion centreGestion = getCentreGestion(centreGestionEtab, conventionFormDto.getCodeComposante(), conventionFormDto.getCodeEtape(), conventionFormDto.getCodeVersionEtape());
+            convention.setCentreGestion(centreGestion);
         }
 
         Etudiant etudiant = etudiantRepository.findByNumEtudiant(conventionFormDto.getNumEtudiant());
         if (etudiant == null) {
             etudiant = new Etudiant();
-            etudiant.setIdentEtudiant(conventionFormDto.getEtudiantLogin());
+            etudiant.setIdentEtudiant(ldapEtudiant.get(0).getUid());
             etudiant.setNumEtudiant(conventionFormDto.getNumEtudiant());
             etudiant.setCodeUniversite(appConfigService.getConfigGenerale().getCodeUniversite());
         }
@@ -220,11 +185,6 @@ public class ConventionService {
         convention.setLibelleCPAM(conventionFormDto.getLibelleCPAM());
         convention.setRegionCPAM(conventionFormDto.getRegionCPAM());
         convention.setAdresseCPAM(conventionFormDto.getAdresseCPAM());
-        convention.setTypeConvention(typeConvention);
-        convention.setLangueConvention(langueConvention);
-        convention.setUfr(ufr);
-        convention.setEtape(etape);
-        convention.setCentreGestion(centreGestion);
         convention.setAnnee(conventionFormDto.getAnnee() + "/" + (Integer.parseInt(conventionFormDto.getAnnee()) + 1));
         convention.setCodeElp(conventionFormDto.getCodeElp());
         convention.setLibelleELP(conventionFormDto.getLibelleELP());
@@ -237,6 +197,86 @@ public class ConventionService {
         if (!isConventionModifiable(convention, ServiceContext.getUtilisateur())) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La convention n'est plus modifiable");
         }
+    }
+
+    public TypeConvention getTypeConvention(int id) {
+        TypeConvention typeConvention = typeConventionJpaRepository.findById(id);
+        if (typeConvention == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Type de convention non trouvé");
+        }
+        return typeConvention;
+    }
+
+    public LangueConvention getLangueConvention(String code) {
+        LangueConvention langueConvention = langueConventionJpaRepository.findByCode(code);
+        if (langueConvention == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Langue de convention non trouvée");
+        }
+        return langueConvention;
+    }
+
+    public Etape getEtape(String codeEtape, String versionEtape, String libelleEtape) {
+        Etape etape = etapeJpaRepository.findById(codeEtape, versionEtape, appConfigService.getConfigGenerale().getCodeUniversite());
+        if (etape == null) {
+            EtapeId etapeId = new EtapeId();
+            etapeId.setCode(codeEtape);
+            etapeId.setCodeVersionEtape(versionEtape);
+            etapeId.setCodeUniversite(appConfigService.getConfigGenerale().getCodeUniversite());
+            etape = new Etape();
+            etape.setId(etapeId);
+            etape.setLibelle(libelleEtape);
+            etape = etapeJpaRepository.saveAndFlush(etape);
+        }
+        return etape;
+    }
+
+    public Ufr getUfr(String codeComposante, String libelleComposante) {
+        Ufr ufr = ufrJpaRepository.findById(codeComposante, appConfigService.getConfigGenerale().getCodeUniversite());
+        if (ufr == null) {
+            UfrId ufrId = new UfrId();
+            ufrId.setCode(codeComposante);
+            ufrId.setCodeUniversite(appConfigService.getConfigGenerale().getCodeUniversite());
+            ufr = new Ufr();
+            ufr.setId(ufrId);
+            ufr.setLibelle(libelleComposante);
+            ufr = ufrJpaRepository.saveAndFlush(ufr);
+        }
+        return ufr;
+    }
+
+    public CentreGestion getCentreGestionEtab() {
+        CentreGestion centreGestionEtab = centreGestionJpaRepository.getCentreEtablissement();
+        // Erreur si le centre de type etablissement est null
+        if (centreGestionEtab == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion de type établissement non trouvé");
+        }
+        return centreGestionEtab;
+    }
+
+    public CentreGestion getCentreGestion(CentreGestion centreGestionEtab, String codeComposante, String codeEtape, String versionEtape) {
+        CentreGestion centreGestion = null;
+        // Recherche du centre de gestion par codeEtape/versionEtape
+        CritereGestion critereGestion = critereGestionJpaRepository.findEtapeById(codeEtape, versionEtape);
+        // Si non trouvé, recherche par code composante et version = ""
+        if (critereGestion == null) {
+            critereGestion = critereGestionJpaRepository.findEtapeById(codeComposante, "");
+        }
+        // Si non trouvé on vérifie l'autorisation de création de convention non liée à un centre
+        if (critereGestion == null) {
+            // Erreur si on n'autorise pas la création de convention non rattaché à un centre de gestion
+            if (!appConfigService.getConfigGenerale().isAutoriserConventionsOrphelines()) {
+                throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion non trouvé");
+            }
+            // Sinon on prend le centre de type établissement
+            centreGestion = centreGestionEtab;
+        } else {
+            centreGestion = critereGestion.getCentreGestion();
+        }
+        // Erreur si le centre est null
+        if (centreGestion == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion non trouvé");
+        }
+        return centreGestion;
     }
 
     public void canViewEditConvention(Convention convention, Utilisateur utilisateur) {

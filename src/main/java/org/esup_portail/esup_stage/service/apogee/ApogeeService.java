@@ -2,6 +2,7 @@ package org.esup_portail.esup_stage.service.apogee;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.logging.log4j.util.Strings;
 import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
 import org.esup_portail.esup_stage.dto.ConventionFormationDto;
 import org.esup_portail.esup_stage.exception.AppException;
@@ -22,6 +23,8 @@ import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.core.publisher.Mono;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -55,19 +58,27 @@ public class ApogeeService {
             LOGGER.info("Apogee " + api + " parametres: " + "{" + params.keySet().stream().map(key -> key + "=" + params.get(key)).collect(Collectors.joining(", ", "{", "}")) + "}");
             String urlWithQuery = applicationBootstrap.getAppConfig().getReferentielWsApogeeUrl() + api;
             List<String> listParams = new ArrayList<>();
-            params.forEach((key, value) -> listParams.add(key + "=" + URLEncoder.encode(value, StandardCharsets.UTF_8)));
+            params.forEach((key, value) -> {
+                if (!Strings.isEmpty(value)) listParams.add(key + "=" + URLEncoder.encode(value, StandardCharsets.UTF_8));
+            });
             if (listParams.size() > 0) {
                 urlWithQuery += "?" + String.join("&", listParams);
             }
 
             WebClient client = WebClient.create();
-            return client.get()
+            String response = client.get()
                     .uri(urlWithQuery)
                     .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((applicationBootstrap.getAppConfig().getReferentielWsLogin() + ":" + applicationBootstrap.getAppConfig().getReferentielWsPassword()).getBytes()))
                     .retrieve()
                     .bodyToMono(String.class)
+                    .onErrorResume(WebClientResponseException.class, ex -> ex.getRawStatusCode() == HttpStatus.NOT_FOUND.value() ? Mono.just("") : Mono.error(ex))
                     .block();
-
+            if (Strings.isEmpty(response)) {
+                throw new AppException(HttpStatus.NOT_FOUND, "Aucune donnée trouvée");
+            }
+            return response;
+        } catch (AppException e) {
+            throw e;
         } catch (Exception e) {
             LOGGER.error("Erreur lors de l'appel au ws Apogee " + api + ": " + e.getMessage(), e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
@@ -136,6 +147,21 @@ public class ApogeeService {
             }
             return list;
         } catch (JsonParseException e) {
+            LOGGER.error("Erreur lors de la lecture de la réponse sur l'api etapesReference: " + e.getMessage(), e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
+        }
+    }
+
+    public DiplomeEtape[] getListDiplomeEtape(String codeComposante, String codeAnnee) {
+        Map<String, String> params = new HashMap<>() {{
+            put("codeComposante", codeComposante);
+            put("codeAnnee", codeAnnee);
+        }};
+        String response = call("/diplomesReferenceParComposanteEtAnnee", params);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readValue(response, DiplomeEtape[].class);
+        } catch (Exception e) {
             LOGGER.error("Erreur lors de la lecture de la réponse sur l'api etapesReference: " + e.getMessage(), e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
         }
@@ -219,15 +245,9 @@ public class ApogeeService {
                 ConventionFormationDto conventionFormationDto = new ConventionFormationDto();
                 conventionFormationDto.setEtapeInscription(etapeInscription);
                 conventionFormationDto.setAnnee(annee);
-                String codeCursusAmenage = etapeInscription.getCodeCursusAmenage();
-                if(codeCursusAmenage != null && !codeCursusAmenage.isEmpty() && appConfigService.getConfigGenerale().getCodeCesure() != null && !appConfigService.getConfigGenerale().getCodeCesure().isEmpty()){
-                    List<String> codeCesureList = List.of(appConfigService.getConfigGenerale().getCodeCesure().split(";"));
-                    if (codeCesureList.contains(codeCursusAmenage)) {
-                        TypeConvention typeCesure = typeConventionJpaRepository.findByCodeCtrl("CESURE");
-                        if (typeCesure != null) {
-                            typeConvention = typeCesure;
-                        }
-                    }
+                TypeConvention typeCesure = changeTypeConventionByCodeCursus(etapeInscription.getCodeCursusAmenage());
+                if (typeCesure != null) {
+                    typeConvention = typeCesure;
                 }
                 conventionFormationDto.setTypeConvention(typeConvention);
                 CentreGestion centreGestion = null;
@@ -287,5 +307,40 @@ public class ApogeeService {
         }
 
         return inscriptions;
+    }
+
+    public TypeConvention changeTypeConventionByCodeCursus(String codeCursusAmenage) {
+        if (codeCursusAmenage != null && !codeCursusAmenage.isEmpty() && appConfigService.getConfigGenerale().getCodeCesure() != null && !appConfigService.getConfigGenerale().getCodeCesure().isEmpty()) {
+            List<String> codeCesureList = List.of(appConfigService.getConfigGenerale().getCodeCesure().split(";"));
+            if (codeCesureList.contains(codeCursusAmenage)) {
+                return typeConventionJpaRepository.findByCodeCtrl("CESURE");
+            }
+        }
+        return null;
+    }
+
+    public EtudiantDiplomeEtapeResponse[] getEtudiantsParDiplomeEtape(EtudiantDiplomeEtapeSearch search) {
+        Map<String, String> params = new HashMap<>();
+        params.put("codeComposante", search.getCodeComposante());
+        params.put("annee", search.getAnnee());
+        params.put("codeEtape", search.getCodeEtape());
+        params.put("versionEtape", search.getVersionEtape());
+        params.put("codeDiplome", search.getCodeDiplome());
+        params.put("versionDiplome", search.getVersionDiplome());
+        params.put("codEtu", search.getCodEtu());
+        params.put("nom", search.getNom());
+        params.put("prenom", search.getPrenom());
+        String response = call("/listEtuParEtapeEtDiplome", params);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            EtudiantDiplomeEtapeResponse[] apogeeMap = mapper.readValue(response, EtudiantDiplomeEtapeResponse[].class);
+            if (apogeeMap == null) {
+                LOGGER.info("Aucune donnée trouvée");
+            }
+            return apogeeMap;
+        } catch (JsonProcessingException e) {
+            LOGGER.error("Erreur lors de la lecture de la réponse sur l'api etapesByEtudiantAndAnnee: " + e.getMessage(), e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
+        }
     }
 }

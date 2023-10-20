@@ -5,11 +5,11 @@ import org.esup_portail.esup_stage.model.Etape;
 import org.esup_portail.esup_stage.repository.EtapeRepository;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.apogee.ApogeeService;
-import org.esup_portail.esup_stage.service.apogee.model.EtapeApogee;
+import org.esup_portail.esup_stage.service.apogee.model.DiplomeEtape;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @ApiController
 @RequestMapping("/etapes")
@@ -32,8 +32,8 @@ public class EtapeController {
 
     @GetMapping("/apogee")
     @Secure()
-    public List<EtapeApogee> getApogeeEtapes() {
-        return apogeeService.getListEtape();
+    public DiplomeEtape[] getApogeeEtapes(@RequestParam(name = "codeComposante") String codeComposante, @RequestParam(name = "codeAnnee") String codeAnnee) {
+        return apogeeService.getListDiplomeEtape(codeComposante, codeAnnee);
     }
 
 }

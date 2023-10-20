@@ -36,4 +36,8 @@ export class EtudiantService implements PaginatedService {
     return `${row.id} - ${row.nom} ${row.prenom}`;
   }
 
+  searchEtudiantsDiplomeEtape(filters: any): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/etudiants/diplome-etape`, filters);
+  }
+
 }

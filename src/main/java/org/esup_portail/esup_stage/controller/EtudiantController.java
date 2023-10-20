@@ -3,20 +3,21 @@ package org.esup_portail.esup_stage.controller;
 import org.esup_portail.esup_stage.dto.ConventionFormationDto;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.exception.AppException;
-import org.esup_portail.esup_stage.model.*;
+import org.esup_portail.esup_stage.model.Etudiant;
+import org.esup_portail.esup_stage.model.Role;
+import org.esup_portail.esup_stage.model.Utilisateur;
 import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
 import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.apogee.ApogeeService;
-import org.esup_portail.esup_stage.service.apogee.model.*;
+import org.esup_portail.esup_stage.service.apogee.model.EtudiantDiplomeEtapeResponse;
+import org.esup_portail.esup_stage.service.apogee.model.EtudiantDiplomeEtapeSearch;
+import org.esup_portail.esup_stage.service.apogee.model.EtudiantRef;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -89,5 +90,11 @@ public class EtudiantController {
             throw new AppException(HttpStatus.NOT_FOUND, "Etudiant non trouvé");
         }
         return etudiant;
+    }
+
+    @PostMapping("/diplome-etape")
+    @Secure(forbiddenEtu = true)
+    public EtudiantDiplomeEtapeResponse[] getLdapUsers(@RequestBody EtudiantDiplomeEtapeSearch search) {
+        return apogeeService.getEtudiantsParDiplomeEtape(search);
     }
 }

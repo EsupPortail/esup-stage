@@ -1,6 +1,6 @@
 package org.esup_portail.esup_stage.dto;
 
-import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
+import org.esup_portail.esup_stage.service.apogee.model.EtudiantDiplomeEtapeResponse;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -24,7 +24,7 @@ public class GroupeEtudiantDto {
     private List<Integer> etudiantRemovedIds = new ArrayList<>();
 
     @NotNull
-    private List<LdapUser> etudiantAdded = new ArrayList<>();
+    private List<EtudiantDiplomeEtapeResponse> etudiantAdded = new ArrayList<>();
 
     public String getCodeGroupe() {
         return codeGroupe;
@@ -50,11 +50,11 @@ public class GroupeEtudiantDto {
         this.etudiantRemovedIds = etudiantRemovedIds;
     }
 
-    public List<LdapUser> getEtudiantAdded() {
+    public List<EtudiantDiplomeEtapeResponse> getEtudiantAdded() {
         return etudiantAdded;
     }
 
-    public void setEtudiantAdded(List<LdapUser> etudiantAdded) {
+    public void setEtudiantAdded(List<EtudiantDiplomeEtapeResponse> etudiantAdded) {
         this.etudiantAdded = etudiantAdded;
     }
 }

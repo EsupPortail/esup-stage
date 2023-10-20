@@ -83,52 +83,52 @@
     <div class="mb-3">
       <div class="text-title">Ajouter des étudiants au groupe</div>
       <mat-divider class="mb-2"></mat-divider>
-      <mat-card class="table-filters">
-        <mat-card-content>
-          <form [formGroup]="formAddEtudiants" novalidate class="mt-2 mb-3">
-            <div class="row">
-              <mat-form-field class="col-sm-12 col-md-3 mb-2" appearance="fill">
-                <mat-label>N° étudiant</mat-label>
-                <input matInput formControlName="codEtu" (ngModelChange)="filterOnChange($event)"/>
-              </mat-form-field>
-              <mat-form-field class="col-sm-12 col-md-3 mb-2" appearance="fill">
-                <mat-label>Nom</mat-label>
-                <input matInput formControlName="nom" (ngModelChange)="filterOnChange($event)"/>
-              </mat-form-field>
-              <mat-form-field class="col-sm-12 col-md-3 mb-2" appearance="fill">
-                <mat-label>Prénom</mat-label>
-                <input matInput formControlName="prenom" (ngModelChange)="filterOnChange($event)"/>
-              </mat-form-field>
-              <mat-form-field class="col-sm-12 col-md-3 mb-2" appearance="fill">
-                <mat-label>Annee</mat-label>
-                <input matInput formControlName="annee" (ngModelChange)="filterOnChange($event)"/>
-              </mat-form-field>
+      <div class="table-filters">
+        <form [formGroup]="formAddEtudiants" class="mt-2 mb-3" (submit)="search()">
+          <div class="row">
+            <mat-form-field class="col-sm-12 col-md-3 mb-2" appearance="fill">
+              <mat-label>N° étudiant</mat-label>
+              <input matInput formControlName="codEtu" />
+            </mat-form-field>
+            <mat-form-field class="col-sm-12 col-md-3 mb-2" appearance="fill">
+              <mat-label>Nom</mat-label>
+              <input matInput formControlName="nom" />
+            </mat-form-field>
+            <mat-form-field class="col-sm-12 col-md-3 mb-2" appearance="fill">
+              <mat-label>Prénom</mat-label>
+              <input matInput formControlName="prenom" />
+            </mat-form-field>
+            <mat-form-field class="col-sm-12 col-md-3 mb-2" appearance="fill">
+              <mat-label>Annee</mat-label>
+              <mat-select formControlName="annee" required>
+                <mat-option *ngFor="let annee of annees" [value]="annee.value">{{annee.label}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="row">
+            <mat-form-field class="col-sm-12 col-md-4 mb-2" appearance="fill">
+              <mat-label>Composante</mat-label>
+              <mat-select formControlName="composante" required>
+                <mat-option *ngFor="let composante of ufrList" [value]="composante.code">{{composante.code + ' - '+ composante.libelle}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field class="col-sm-12 col-md-8 mb-2" appearance="fill">
+              <mat-label>Étape</mat-label>
+              <mat-select formControlName="etape" required>
+                <mat-option *ngFor="let etape of etapeList" [value]="etape">
+                  {{etape.etape.codeEtp + '-' + etape.etape.codVrsVet + ' ' + etape.etape.libWebVet + ' (' + etape.diplome.codeDiplome + '-' + etape.diplome.versionDiplome + ' ' + etape.diplome.libDiplome + ')'}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="row">
+            <div class="col-12 text-right">
+              <button type="button" mat-button mat-stroked-button (click)="resetFilters()">Supprimer les filtres</button>
+              <button type="submit" mat-button mat-flat-button color="primary" class="ml-2">Rechercher</button>
             </div>
-            <div class="row">
-              <mat-form-field class="col-sm-12 col-md-3 mb-2" appearance="fill">
-                <mat-label>Composante</mat-label>
-                <mat-select formControlName="composante" (ngModelChange)="filterOnChange($event)">
-                  <mat-option *ngFor="let composante of ufrList" [value]="composante.code">{{composante.code + ' - '+ composante.libelle}}</mat-option>
-                </mat-select>
-              </mat-form-field>
-              <mat-form-field class="col-sm-12 col-md-9 mb-2" appearance="fill">
-                <mat-label>Étape</mat-label>
-                <mat-select formControlName="etape" [compareWith]="compareCode">
-                  <mat-option>
-                    <ngx-mat-select-search [formControl]="etapeFilterCtrl" placeholderLabel="Filtrer par code ou libellé VET" noEntriesFoundLabel="Aucune étape trouvée"></ngx-mat-select-search>
-                  </mat-option>
-                  <mat-option #matOption *ngFor="let etape of filteredEtapes | async" [value]="etape.code" (click)="filterOnChange($event)">{{etape.code}};{{etape.codeVrsEtp}} - {{etape.libelle}}</mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
-            <div class="row">
-              <div class="col-12 text-right">
-                <button type="button" mat-button mat-stroked-button (click)="resetFilters()">Supprimer les filtres</button>
-              </div>
-            </div>
-          </form>
-        </mat-card-content>
-      </mat-card>
+          </div>
+        </form>
+      </div>
 
       <table mat-table [dataSource]="etudiants">
         <tr class="mat-row" *matNoDataRow>
@@ -154,11 +154,11 @@
         </ng-container>
         <ng-container matColumnDef="nom">
           <th mat-header-cell *matHeaderCellDef>Nom</th>
-          <td mat-cell *matCellDef="let row">{{row.sn.join(' ')}}</td>
+          <td mat-cell *matCellDef="let row">{{row.nom}}</td>
         </ng-container>
         <ng-container matColumnDef="prenom">
           <th mat-header-cell *matHeaderCellDef>Prénom</th>
-          <td mat-cell *matCellDef="let row">{{row.givenName.join(' ')}}</td>
+          <td mat-cell *matCellDef="let row">{{row.prenom}}</td>
         </ng-container>
         <ng-container matColumnDef="mail">
           <th mat-header-cell *matHeaderCellDef>Mail</th>
@@ -167,28 +167,18 @@
         <ng-container matColumnDef="ufr.libelle">
           <th mat-header-cell *matHeaderCellDef>UFR</th>
           <td mat-cell *matCellDef="let row">
-            <div *ngIf="row.supannEntiteAffectation.length > 1">
-              <div *ngFor="let ldapUfr of row.supannEntiteAffectation">
-                {{'- ' + getUfrLibelle(ldapUfr)}}
-              </div>
-            </div>
-            <span *ngIf="row.supannEntiteAffectation.length == 1">{{getUfrLibelle(row.supannEntiteAffectation[0])}}</span>
+            {{formAddEtudiants.get('composante')?.value}}
           </td>
         </ng-container>
         <ng-container matColumnDef="etape.libelle">
           <th mat-header-cell *matHeaderCellDef>Étape d'étude</th>
           <td mat-cell *matCellDef="let row">
-            <div *ngIf="row.supannEtuEtape.length > 1">
-              <div *ngFor="let ldapEtape of row.supannEtuEtape">
-                {{'- ' + getEtapeLibelle(ldapEtape)}}
-              </div>
-            </div>
-            <span *ngIf="row.supannEtuEtape.length == 1">{{getEtapeLibelle(row.supannEtuEtape[0])}}</span>
+            {{formAddEtudiants.get('etape')?.value.etape.codeEtp + '-' + formAddEtudiants.get('etape')?.value.etape.codVrsVet}}
           </td>
         </ng-container>
         <ng-container matColumnDef="annee">
           <th mat-header-cell *matHeaderCellDef>Année univ.</th>
-          <td mat-cell *matCellDef="let row">{{row.supannEtuAnneeInscription}}</td>
+          <td mat-cell *matCellDef="let row">{{formAddEtudiants.get('annee')?.value}}</td>
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="columns"></tr>
