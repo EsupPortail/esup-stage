@@ -15,6 +15,7 @@ import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
+import org.esup_portail.esup_stage.service.ConventionService;
 import org.esup_portail.esup_stage.service.apogee.ApogeeService;
 import org.esup_portail.esup_stage.service.apogee.model.Composante;
 import org.esup_portail.esup_stage.service.apogee.model.EtapeApogee;
@@ -36,8 +37,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -84,6 +85,9 @@ public class CentreGestionController {
 
     @Autowired
     ConsigneJpaRepository consigneJpaRepository;
+
+    @Autowired
+    ConventionService conventionService;
 
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
@@ -166,6 +170,11 @@ public class CentreGestionController {
         if (etablissement != null) {
             centreGestion.setCodeConfidentialite(etablissement.getCodeConfidentialite());
         }
+
+        List<CentreGestionSignataire> signataires = conventionService.initSignataires(centreGestion);
+
+        centreGestion.setSignataires(signataires);
+
         centreGestion = centreGestionJpaRepository.saveAndFlush(centreGestion);
         Consigne consigne = new Consigne();
         consigne.setCentreGestion(centreGestion);

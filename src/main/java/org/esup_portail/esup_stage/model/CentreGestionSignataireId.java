@@ -18,6 +18,14 @@ public class CentreGestionSignataireId implements Serializable {
     @Column(nullable = false)
     private SignataireEnum signataire;
 
+    public CentreGestionSignataireId(int idCentreGestion, SignataireEnum signataire) {
+        this.idCentreGestion = idCentreGestion;
+        this.signataire = signataire;
+    }
+
+    public CentreGestionSignataireId() {
+    }
+
     public int getIdCentreGestion() {
         return idCentreGestion;
     }
