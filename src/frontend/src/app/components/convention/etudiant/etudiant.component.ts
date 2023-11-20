@@ -177,7 +177,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
         this.regions = [...new Set(response.map((r : any) => r.region))];
         this.regions = this.regions.sort((a, b) => {return a.localeCompare(b)});
         this.regions.push('Autre')
-        if (this.formConvention.get('regionCPAM')?.value) {
+        if (this.formConvention.get('regionCPAM')?.value && this.modifiable) {
           this.setCPAMLibelles({value: this.formConvention.get('regionCPAM')?.value});
         } else {
           this.formConvention.get('libelleCPAM')?.disable();
