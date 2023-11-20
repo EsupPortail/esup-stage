@@ -1,6 +1,7 @@
 package org.esup_portail.esup_stage.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import org.esup_portail.esup_stage.enums.SignataireEnum;
 import org.esup_portail.esup_stage.enums.TypeSignatureEnum;
 
 import javax.persistence.*;
@@ -24,6 +25,17 @@ public class CentreGestionSignataire {
     @JoinColumn(name = "idCentreGestion", nullable = false)
     @JsonBackReference
     private CentreGestion centreGestion;
+
+    public CentreGestionSignataire(CentreGestion centreGestion, SignataireEnum signataireEnum, int ordre) {
+        this.id = new CentreGestionSignataireId(centreGestion.getId(), signataireEnum);
+        this.ordre = ordre;
+        this.type = TypeSignatureEnum.otp;
+        this.centreGestion = centreGestion;
+    }
+
+    public CentreGestionSignataire() {
+
+    }
 
     public CentreGestionSignataireId getId() {
         return id;

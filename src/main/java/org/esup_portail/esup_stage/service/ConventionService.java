@@ -11,6 +11,7 @@ import org.esup_portail.esup_stage.dto.LdapSearchDto;
 import org.esup_portail.esup_stage.dto.ResponseDto;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
+import org.esup_portail.esup_stage.enums.SignataireEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
@@ -396,4 +397,15 @@ public class ConventionService {
         }
         return null;
     }
+
+    public List<CentreGestionSignataire> initSignataires(CentreGestion centreGestion) {
+        List<CentreGestionSignataire> signataires = new ArrayList<>();
+        SignataireEnum[] signataireEnums = SignataireEnum.values();
+
+        for (int i = 0; i < signataireEnums.length; i++) {
+            signataires.add(new CentreGestionSignataire(centreGestion, signataireEnums[i], i + 1));
+        }
+        return signataires;
+    }
+
 }
