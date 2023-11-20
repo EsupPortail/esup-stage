@@ -168,6 +168,7 @@ public class ImpressionContext {
         private String confidentiel;
         private String lieuStage;
         private String conventionValidee;
+        private String codeCaisse;
 
         public ConventionContext() { }
 
@@ -243,8 +244,16 @@ public class ImpressionContext {
                         validationConvention && convention.getValidationConvention() : convention.getValidationConvention()) : validationConvention;
             }
             this.conventionValidee = validationConvention != null && validationConvention ? "Oui" :"Non";
+            this.codeCaisse = convention.getLibelleCPAM();
         }
 
+        public String getCodeCaisse() {
+            return codeCaisse;
+        }
+
+        public void setCodeCaisse(String codeCaisse) {
+            this.codeCaisse = codeCaisse;
+        }
         public String getId() {
             return id != null ? id : "";
         }
