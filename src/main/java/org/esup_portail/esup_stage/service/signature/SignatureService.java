@@ -160,10 +160,11 @@ public class SignatureService {
         int count = 0;
         for (int id : idsListDto.getIds()) {
             Convention convention = null;
+            Avenant avenant = null;
             String queryParam = "conventionid";
             if (isAvenant) {
                 queryParam = "avenantid";
-                Avenant avenant = avenantJpaRepository.findById(id);
+                avenant = avenantJpaRepository.findById(id);
                 if (avenant != null) convention = avenant.getConvention();
             } else {
                 convention = conventionJpaRepository.findById(id);
@@ -177,7 +178,7 @@ public class SignatureService {
             }
             switch (appSignature) {
                 case DOCAPOSTE:
-                    docaposteClient.upload(convention, null);
+                    docaposteClient.upload(convention, avenant);
                     break;
                 case ESUPSIGNATURE:
                 case EXTERNE:
@@ -189,9 +190,15 @@ public class SignatureService {
                             .bodyToMono(String.class)
                             .block();
                     if (documentId != null) {
-                        convention.setDateEnvoiSignature(new Date());
-                        convention.setDocumentId(documentId);
-                        conventionJpaRepository.saveAndFlush(convention);
+                        if (isAvenant) {
+                            avenant.setDateEnvoiSignature(new Date());
+                            avenant.setDocumentId(documentId);
+                            avenantJpaRepository.saveAndFlush(avenant);
+                        } else {
+                            convention.setDateEnvoiSignature(new Date());
+                            convention.setDocumentId(documentId);
+                            conventionJpaRepository.saveAndFlush(convention);
+                        }
                     }
                     break;
             }

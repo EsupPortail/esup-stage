@@ -7,9 +7,10 @@ import * as FileSaver from 'file-saver';
   templateUrl: './signature-electronique-view.component.html',
   styleUrls: ['./signature-electronique-view.component.scss']
 })
-export class SignatureElectroniqueViewComponent {
+export class SignatureElectroniqueViewComponent implements OnInit {
 
   @Input() avenant!: any;
+  @Input() convention!: any;
   @Input() isGestionnaire: any;
   @Input() isMobile: any;
   @Input() profils: any[] = [];
@@ -21,6 +22,10 @@ export class SignatureElectroniqueViewComponent {
   constructor(
     private avenantService: AvenantService,
   ) { }
+
+  ngOnInit(): void {
+    this.updateData();
+  }
 
   updateData(): void {
     this.data = [];
@@ -46,7 +51,7 @@ export class SignatureElectroniqueViewComponent {
     $event.stopPropagation();
     this.avenantService.downloadSignedDoc(avenant.id).subscribe((response: any) => {
       var blob = new Blob([response as BlobPart], {type: 'application/pdf'});
-      FileSaver.saveAs(blob, `Avenant_${avenant.id}_${avenant.convention.etudiant.nom}_${avenant.convention.etudiant.prenom}_signe.pdf`);
+      FileSaver.saveAs(blob, `Avenant_${avenant.id}_${this.convention.etudiant.nom}_${this.convention.etudiant.prenom}_signe.pdf`);
     });
   }
 }

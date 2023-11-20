@@ -75,6 +75,10 @@
 </mat-card>
 
 <mat-card *ngFor="let avenant of convention.avenants">
-  <app-signature-electronique-view  [isGestionnaire]="isGestionnaire"
-  [isMobile]="isMobile" [profils]="profils" [avenant]="avenant"></app-signature-electronique-view>
+  <app-signature-electronique-view *ngIf="profils.length > 0"
+                                   [isGestionnaire]="isGestionnaire"
+                                   [isMobile]="isMobile"
+                                   [profils]="profils"
+                                   [avenant]="avenant"
+                                   [convention]="convention"></app-signature-electronique-view>
 </mat-card>
