@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.util.Strings;
 import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
 import org.esup_portail.esup_stage.dto.ConventionFormationDto;
+import org.esup_portail.esup_stage.dto.LdapSearchDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
@@ -14,6 +15,8 @@ import org.esup_portail.esup_stage.repository.EtapeJpaRepository;
 import org.esup_portail.esup_stage.repository.TypeConventionJpaRepository;
 import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.apogee.model.*;
+import org.esup_portail.esup_stage.service.ldap.LdapService;
+import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +55,9 @@ public class ApogeeService {
 
     @Autowired
     CentreGestionJpaRepository centreGestionJpaRepository;
+
+    @Autowired
+    LdapService ldapService;
 
     private final WebClient webClient;
 
@@ -100,6 +106,16 @@ public class ApogeeService {
             EtudiantRef etudiantRef = mapper.readValue(response, EtudiantRef.class);
             if (etudiantRef == null) {
                 LOGGER.info("Aucun étudiant trouvé avec les paramètres");
+            } else {
+                // Si mail étudiant vide, on le récupère depuis le LDAP
+                if (Strings.isEmpty(etudiantRef.getMail())) {
+                    LdapSearchDto ldapSearchDto = new LdapSearchDto();
+                    ldapSearchDto.setCodEtu(numEtudiant);
+                    List<LdapUser> ldapEtudiant = ldapService.search("/etudiant", ldapSearchDto);
+                    if (ldapEtudiant != null && ldapEtudiant.size() > 0) {
+                        etudiantRef.setMail(ldapEtudiant.get(0).getMail());
+                    }
+                }
             }
             return etudiantRef;
         } catch (JsonProcessingException e) {
