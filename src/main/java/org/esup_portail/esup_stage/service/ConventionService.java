@@ -354,7 +354,7 @@ public class ConventionService {
             put(keyTel, convention.getSignataire().getTel());
         }});
         data.put("directeur du département", new HashMap<>() {{
-            put(keyMail, convention.getCentreGestion().getMail());
+            put(keyMail, convention.getCentreGestion().getMailViseur());
             put(keyTel, convention.getCentreGestion().getTelephone());
         }});
 

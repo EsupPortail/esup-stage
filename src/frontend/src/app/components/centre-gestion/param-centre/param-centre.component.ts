@@ -114,6 +114,7 @@ export class ParamCentreComponent implements OnInit {
       urlPageInstruction: this.centreGestion.urlPageInstruction,
       nomViseur: this.centreGestion.nomViseur,
       prenomViseur: this.centreGestion.prenomViseur,
+      mailViseur: this.centreGestion.mailViseur,
       qualiteViseur: this.centreGestion.qualiteViseur,
       delaiAlerteConvention: this.centreGestion.delaiAlerteConvention,
       onlyMailCentreGestion: this.centreGestion.onlyMailCentreGestion,
@@ -201,12 +202,14 @@ export class ParamCentreComponent implements OnInit {
   setViseur(enseignant: any) {
     this.form.get('nomViseur')?.setValue(enseignant.nom);
     this.form.get('prenomViseur')?.setValue(enseignant.prenom);
+    this.form.get('mailViseur')?.setValue(enseignant.mail);
     this.form.get('qualiteViseur')?.reset();
   }
 
   resetViseur() {
     this.form.get('nomViseur')?.reset();
     this.form.get('prenomViseur')?.reset();
+    this.form.get('mailViseur')?.reset();
     this.form.get('qualiteViseur')?.reset();
   }
 

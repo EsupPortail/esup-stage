@@ -258,6 +258,7 @@ export class CentreGestionComponent implements OnInit {
       urlPageInstruction: [null, [Validators.maxLength(200)]],
       nomViseur: [null, [Validators.maxLength(50)]],
       prenomViseur: [null, [Validators.maxLength(50)]],
+      mailViseur: [null, [Validators.maxLength(255)]],
       qualiteViseur: [null, [Validators.maxLength(100)]],
       delaiAlerteConvention: [null, [Validators.required, Validators.min(0)]],
       onlyMailCentreGestion: [null],
@@ -281,6 +282,7 @@ export class CentreGestionComponent implements OnInit {
     this.centreGestion.urlPageInstruction = this.paramCentreForm.get('urlPageInstruction')?.value;
     this.centreGestion.nomViseur = this.paramCentreForm.get('nomViseur')?.value;
     this.centreGestion.prenomViseur = this.paramCentreForm.get('prenomViseur')?.value;
+    this.centreGestion.mailViseur = this.paramCentreForm.get('mailViseur')?.value;
     this.centreGestion.qualiteViseur = this.paramCentreForm.get('qualiteViseur')?.value;
     this.centreGestion.delaiAlerteConvention = this.paramCentreForm.get('delaiAlerteConvention')?.value;
     this.centreGestion.onlyMailCentreGestion = this.paramCentreForm.get('onlyMailCentreGestion')?.value;

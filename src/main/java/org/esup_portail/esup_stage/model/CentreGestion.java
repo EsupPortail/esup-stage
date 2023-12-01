@@ -67,6 +67,9 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     private String qualiteViseur;
 
     @Column
+    private String mailViseur;
+
+    @Column
     private String urlPageInstruction;
 
     @ManyToOne
@@ -288,6 +291,14 @@ public class CentreGestion extends ObjetMetier implements Exportable {
 
     public void setQualiteViseur(String qualiteViseur) {
         this.qualiteViseur = qualiteViseur;
+    }
+
+    public String getMailViseur() {
+        return mailViseur;
+    }
+
+    public void setMailViseur(String mailViseur) {
+        this.mailViseur = mailViseur;
     }
 
     public String getUrlPageInstruction() {

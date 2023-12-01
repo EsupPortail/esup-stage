@@ -170,3 +170,6 @@ databaseChangeLog:
   - include:
       file: 2.1.0-fix-code-postal.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 2.1.2-mail-viseur.yaml
+      relativeToChangelogFile: true

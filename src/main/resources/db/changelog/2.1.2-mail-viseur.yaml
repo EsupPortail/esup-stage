@@ -1,0 +1,12 @@
+databaseChangeLog:
+- changeSet:
+    id: 2.1.1-ajout-mail-viseur
+    author: ssound
+    changes:
+    - addColumn:
+        tableName: CentreGestion
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: mailViseur
+            type: VARCHAR(255)

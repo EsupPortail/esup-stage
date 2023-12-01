@@ -140,7 +140,7 @@ public class SignatureService {
                     CentreGestion centreGestion = convention.getCentreGestion();
                     signataireDto.setName(centreGestion.getNomViseur());
                     signataireDto.setGivenname(centreGestion.getPrenomViseur());
-                    signataireDto.setMail(impressionService.getOtpDataEmail(centreGestion.getMail()));
+                    signataireDto.setMail(impressionService.getOtpDataEmail(centreGestion.getMailViseur()));
                     phone = impressionService.getOtpDataPhoneNumber(centreGestion.getTelephone());
                     signataireDto.setOrder(s.getOrdre());
                     break;
