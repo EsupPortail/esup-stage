@@ -14,7 +14,7 @@ public interface PeriodeInterruptionStageJpaRepository extends JpaRepository<Per
 
     PeriodeInterruptionStage findById(int id);
 
-    @Query("SELECT pis FROM PeriodeInterruptionStage pis WHERE pis.convention.id = :idConvention")
+    @Query("SELECT pis FROM PeriodeInterruptionStage pis WHERE pis.convention.id = :idConvention ORDER BY pis.dateDebutInterruption ASC")
     List<PeriodeInterruptionStage> findByConvention(int idConvention);
 
     @Transactional
