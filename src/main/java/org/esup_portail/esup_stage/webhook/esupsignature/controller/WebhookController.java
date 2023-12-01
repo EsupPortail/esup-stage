@@ -20,6 +20,12 @@ public class WebhookController {
     @Autowired
     ApplicationBootstrap applicationBootstrap;
 
+    private final WebClient webClient;
+
+    public WebhookController(WebClient.Builder builder) {
+        this.webClient = builder.build();
+    }
+
     @PostMapping("/webhook/esup-signature")
     public String upload(@RequestParam(name = "conventionid", required = false) Integer conventionId, @RequestParam(name = "avenantid", required = false) Integer avenantId) {
         if ((conventionId == null && avenantId == null) || (conventionId != null && avenantId != null)) {
@@ -33,8 +39,7 @@ public class WebhookController {
             id = avenantId;
         }
         // Récupération du PDF et des metadata
-        WebClient client = WebClient.create();
-        PdfMetadataDto content = client.get()
+        PdfMetadataDto content = webClient.get()
                 .uri(applicationBootstrap.getAppConfig().getPrefix() + "/public/api/" + type + "/" + id)
                 .headers(httpHeaders -> httpHeaders.setBearerAuth(token))
                 .retrieve()

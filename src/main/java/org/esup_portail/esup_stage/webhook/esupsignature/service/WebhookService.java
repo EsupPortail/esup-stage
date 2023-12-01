@@ -38,17 +38,22 @@ public class WebhookService {
     @Autowired
     ApplicationBootstrap applicationBootstrap;
 
+    private final WebClient webClient;
+
+    public WebhookService(WebClient.Builder builder) {
+        this.webClient = builder.build();
+    }
+
     public String upload(PdfMetadataDto content) {
         MetadataDto metadataDto = content.getMetadata();
         List<String> recipients = metadataDto.getSignatory().stream().map(s -> s.getOrder() + "*" + s.getMail()).collect(Collectors.toList());
 
-        WebClient client = WebClient.create();
         MultipartBodyBuilder builder = new MultipartBodyBuilder();
         builder.part("multipartFiles", geMultipartFile(metadataDto.getTitle(), Base64.decode(content.getPdf64())));
         builder.part("createByEppn", "system");
         builder.part("recipientsEmails", String.join(",", recipients));
 
-        return client.post()
+        return webClient.post()
                 .uri(applicationBootstrap.getAppConfig().getEsupSignatureUri() + "/workflows/" + metadataDto.getWorkflowId() + "/new")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
@@ -58,8 +63,7 @@ public class WebhookService {
     }
 
     public List<Historique> getHistorique(String documentId, Convention convention) {
-        WebClient client = WebClient.create();
-        AuditTrail response = client.get()
+        AuditTrail response = webClient.get()
                 .uri(applicationBootstrap.getAppConfig().getEsupSignatureUri() + "/signrequests/audit-trail/" + documentId)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
@@ -86,8 +90,7 @@ public class WebhookService {
     }
 
     public InputStream download(String documentId) {
-        WebClient client = WebClient.create();
-        return client.get()
+        return webClient.get()
                 .uri(applicationBootstrap.getAppConfig().getEsupSignatureUri() + "/signrequests/get-last-file/" + documentId)
                 .accept(MediaType.APPLICATION_PDF)
                 .exchangeToMono(clientResponse -> clientResponse.bodyToMono(InputStreamResource.class))

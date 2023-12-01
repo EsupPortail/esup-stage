@@ -63,6 +63,12 @@ public class SignatureService {
     @Autowired
     WebhookService webhookService;
 
+    private final WebClient webClient;
+
+    public SignatureService(WebClient.Builder builder) {
+        this.webClient = builder.build();
+    }
+
     public byte[] getPublicPdf(Convention convention, Avenant avenant) {
         if (convention.getNomEtabRef() == null || convention.getAdresseEtabRef() == null) {
             CentreGestion centreGestionEtab = centreGestionJpaRepository.getCentreEtablissement();
@@ -182,8 +188,7 @@ public class SignatureService {
                     break;
                 case ESUPSIGNATURE:
                 case EXTERNE:
-                    WebClient client = WebClient.create();
-                    String documentId = client.post()
+                    String documentId = webClient.post()
                             .uri(applicationBootstrap.getAppConfig().getWebhookSignatureUri() + "?" + queryParam + "=" + id)
                             .header("Authorization", "Bearer " + applicationBootstrap.getAppConfig().getWebhookSignatureToken())
                             .retrieve()

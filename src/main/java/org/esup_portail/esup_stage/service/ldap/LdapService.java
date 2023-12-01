@@ -26,9 +26,14 @@ public class LdapService {
     @Autowired
     ApplicationBootstrap applicationBootstrap;
 
+    private final WebClient webClient;
+
+    public LdapService(WebClient.Builder builder) {
+        this.webClient = builder.build();
+    }
+
     private String call(String api, String method, Object params) {
         try {
-            WebClient client = WebClient.create();
             if (method.equals("GET")) {
                 String query = "";
                 List<String> listParams = new ArrayList<>();
@@ -36,7 +41,7 @@ public class LdapService {
                 if (listParams.size() > 0) {
                     query += "?" + String.join("&", listParams);
                 }
-                return client.get()
+                return webClient.get()
                         .uri(applicationBootstrap.getAppConfig().getReferentielWsLdapUrl() + api + query)
                         .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((applicationBootstrap.getAppConfig().getReferentielWsLogin() + ":" + applicationBootstrap.getAppConfig().getReferentielWsPassword()).getBytes()))
                         .accept(MediaType.APPLICATION_JSON)
@@ -44,7 +49,7 @@ public class LdapService {
                         .bodyToMono(String.class)
                         .block();
             } else {
-                return client.post()
+                return webClient.post()
                         .uri(applicationBootstrap.getAppConfig().getReferentielWsLdapUrl() + api)
                         .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((applicationBootstrap.getAppConfig().getReferentielWsLogin() + ":" + applicationBootstrap.getAppConfig().getReferentielWsPassword()).getBytes()))
                         .accept(MediaType.APPLICATION_JSON)

@@ -53,6 +53,12 @@ public class ApogeeService {
     @Autowired
     CentreGestionJpaRepository centreGestionJpaRepository;
 
+    private final WebClient webClient;
+
+    public ApogeeService(WebClient.Builder builder) {
+        this.webClient = builder.build();
+    }
+
     private String call(String api, Map<String, String> params) {
         try {
             LOGGER.info("Apogee " + api + " parametres: " + "{" + params.keySet().stream().map(key -> key + "=" + params.get(key)).collect(Collectors.joining(", ", "{", "}")) + "}");
@@ -65,8 +71,7 @@ public class ApogeeService {
                 urlWithQuery += "?" + String.join("&", listParams);
             }
 
-            WebClient client = WebClient.create();
-            String response = client.get()
+            String response = webClient.get()
                     .uri(urlWithQuery)
                     .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((applicationBootstrap.getAppConfig().getReferentielWsLogin() + ":" + applicationBootstrap.getAppConfig().getReferentielWsPassword()).getBytes()))
                     .retrieve()
