@@ -221,13 +221,13 @@ export class EtudiantComponent implements OnInit, OnChanges {
         this.searchEtudiantPanel.expanded = false;
       }
       this.etudiant = response;
-      this.formConvention.get('adresseEtudiant')?.setValue(this.etudiant.mainAddress);
-      this.formConvention.get('codePostalEtudiant')?.setValue(this.etudiant.postalCode);
-      this.formConvention.get('villeEtudiant')?.setValue(this.etudiant.town);
-      this.formConvention.get('paysEtudiant')?.setValue(this.etudiant.country);
-      this.formConvention.get('telEtudiant')?.setValue(this.etudiant.phone);
-      this.formConvention.get('telPortableEtudiant')?.setValue(this.etudiant.portablePhone);
-      this.formConvention.get('courrielPersoEtudiant')?.setValue(this.etudiant.mailPerso);
+      this.formConvention.get('adresseEtudiant')?.setValue(this.convention.adresseEtudiant ? this.convention.adresseEtudiant : this.etudiant.mainAddress);
+      this.formConvention.get('codePostalEtudiant')?.setValue(this.convention.codePostalEtudiant ? this.convention.codePostalEtudiant : this.etudiant.postalCode);
+      this.formConvention.get('villeEtudiant')?.setValue(this.convention.villeEtudiant ? this.convention.villeEtudiant : this.etudiant.town);
+      this.formConvention.get('paysEtudiant')?.setValue(this.convention.paysEtudiant ? this.convention.paysEtudiant : this.etudiant.country);
+      this.formConvention.get('telEtudiant')?.setValue(this.convention.telEtudiant ? this.convention.telEtudiant : this.etudiant.phone);
+      this.formConvention.get('telPortableEtudiant')?.setValue(this.convention.telPortableEtudiant ? this.convention.telPortableEtudiant : this.etudiant.portablePhone);
+      this.formConvention.get('courrielPersoEtudiant')?.setValue(this.convention.courrielPersoEtudiant ? this.convention.courrielPersoEtudiant : this.etudiant.mailPerso);
       this.activatedRoute.params.subscribe((param: any) => {
         const pathId = param.id;
         if (pathId === 'create') {
