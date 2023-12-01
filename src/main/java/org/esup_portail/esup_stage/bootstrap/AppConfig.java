@@ -17,6 +17,7 @@ public class AppConfig {
     private String datasourcePassword;
     private String datasourceDriver;
     private String prefix;
+    private String localApi;
     private String url;
     private List<String> adminTechs = new ArrayList<>();
     private String referentielWsLogin;
@@ -109,6 +110,14 @@ public class AppConfig {
 
     public void setPrefix(String prefix) {
         this.prefix = prefix;
+    }
+
+    public String getLocalApi() {
+        return localApi;
+    }
+
+    public void setLocalApi(String localApi) {
+        this.localApi = localApi;
     }
 
     public String getUrl() {
@@ -355,6 +364,7 @@ public class AppConfig {
 
         this.prefix = props.getProperty(prefixeProps+"prefix");
         this.url = props.getProperty(prefixeProps+"url");
+        this.localApi = props.getProperty(prefixeProps+"localapi");
         if (props.containsKey(prefixeProps+"admin_technique")) {
             this.adminTechs = Arrays.asList(props.getProperty(prefixeProps+"admin_technique").split(";"));
         }
