@@ -72,7 +72,7 @@ public abstract class ObjetMetier {
         if (ServiceContext.getUtilisateur() != null) {
             return ServiceContext.getUtilisateur().getLogin();
         } else {
-            return null;
+            return ("(auto)");
         }
     }
 }

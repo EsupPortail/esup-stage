@@ -9,7 +9,10 @@ public class ServiceContext {
 
     public static Utilisateur getUtilisateur() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CasUserDetailsImpl customUserDetails = (CasUserDetailsImpl) authentication.getPrincipal();
-        return customUserDetails.getUtilisateur();
+        if (authentication != null && authentication.getPrincipal() != null) {
+            CasUserDetailsImpl customUserDetails = (CasUserDetailsImpl) authentication.getPrincipal();
+            return customUserDetails.getUtilisateur();
+        }
+        return null;
     }
 }
