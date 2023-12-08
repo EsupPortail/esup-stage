@@ -6,6 +6,7 @@ import org.esup_portail.esup_stage.dto.view.Views;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -388,6 +389,10 @@ public class Avenant extends ObjetMetier implements Exportable {
     }
 
     public List<PeriodeInterruptionAvenant> getPeriodeInterruptionAvenants() {
+        if (periodeInterruptionAvenants != null) {
+            // Ordonne par ordre de début asc
+            periodeInterruptionAvenants.sort(Comparator.comparing(PeriodeInterruptionAvenant::getDateDebutInterruption));
+        }
         return periodeInterruptionAvenants;
     }
 

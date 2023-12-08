@@ -12,10 +12,7 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Table(name = "Convention")
@@ -1300,6 +1297,10 @@ public class Convention extends ObjetMetier implements Exportable {
     }
 
     public List<PeriodeInterruptionStage> getPeriodeInterruptionStages() {
+        if (periodeInterruptionStages != null) {
+            // Ordonne par ordre de début asc
+            periodeInterruptionStages.sort(Comparator.comparing(PeriodeInterruptionStage::getDateDebutInterruption));
+        }
         return periodeInterruptionStages;
     }
 
