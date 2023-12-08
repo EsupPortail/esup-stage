@@ -302,8 +302,8 @@ public class CentreGestionController {
     public List<EtapeApogee> getEtapes(@PathVariable("id") int id) {
         List<EtapeApogee> etapeApogees = apogeeService.getListEtape();
         List<CritereGestion> critereGestionsEtapes = critereGestionJpaRepository.findEtapes();
-        etapeApogees = etapeApogees.stream().filter(e -> critereGestionsEtapes.stream().noneMatch(cg -> cg.getId().getCode().equalsIgnoreCase(e.getCode()) && cg.getCentreGestion().getId() != id)).collect(Collectors.toList());
-        etapeApogees.sort(Comparator.comparing(EtapeApogee::getCodeVrsEtp).thenComparing(EtapeApogee::getCode));
+        etapeApogees = etapeApogees.stream().filter(e -> critereGestionsEtapes.stream().noneMatch(cg -> cg.getId().getCode().equalsIgnoreCase(e.getCode()) && cg.getId().getCodeVersionEtape().equalsIgnoreCase(e.getCodeVrsEtp()) && cg.getCentreGestion().getId() != id)).collect(Collectors.toList());
+        etapeApogees.sort(Comparator.comparing(EtapeApogee::getCode).thenComparing(EtapeApogee::getCodeVrsEtp));
         return etapeApogees;
     }
 
