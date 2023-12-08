@@ -9,6 +9,7 @@ import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
+import org.esup_portail.esup_stage.enums.FolderEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.*;
@@ -470,7 +471,7 @@ public class CentreGestionController {
     }
 
     private String getFilePath(String filename) {
-        return applicationBootstrap.getAppConfig().getDataDir() + "/centregestion/logos/" + filename;
+        return applicationBootstrap.getAppConfig().getDataDir() + FolderEnum.CENTRE_GESTION_LOGOS + "/" + filename;
     }
 
     private String getNomFichier(int idFichier, String nomFichier) {

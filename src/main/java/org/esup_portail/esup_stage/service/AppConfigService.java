@@ -8,6 +8,7 @@ import org.esup_portail.esup_stage.dto.ConfigAlerteMailDto;
 import org.esup_portail.esup_stage.dto.ConfigGeneraleDto;
 import org.esup_portail.esup_stage.dto.ConfigThemeDto;
 import org.esup_portail.esup_stage.enums.AppConfigCodeEnum;
+import org.esup_portail.esup_stage.enums.FolderEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.Affectation;
 import org.esup_portail.esup_stage.model.AppConfig;
@@ -85,13 +86,13 @@ public class AppConfigService {
             ObjectMapper objectMapper = new ObjectMapper();
             ConfigThemeDto configThemeDto = objectMapper.readValue(appConfig.getParametres(), ConfigThemeDto.class);
             if (configThemeDto.getLogo() != null && configThemeDto.getLogo().getContentType() != null) {
-                File file = new File(applicationBootstrap.getAppConfig().getDataDir() + "/images/" + getFilename("logo", configThemeDto.getLogo().getContentType()));
+                File file = new File(applicationBootstrap.getAppConfig().getDataDir() + FolderEnum.IMAGES + "/" + getFilename("logo", configThemeDto.getLogo().getContentType()));
                 if (file.exists()) {
                     configThemeDto.getLogo().setBase64(Base64.getEncoder().encodeToString(FileUtils.readFileToByteArray(file)));
                 }
             }
             if (configThemeDto.getFavicon() != null && configThemeDto.getFavicon().getContentType() != null) {
-                File file = new File(applicationBootstrap.getAppConfig().getDataDir() + "/images/" + getFilename("favicon", configThemeDto.getFavicon().getContentType()));
+                File file = new File(applicationBootstrap.getAppConfig().getDataDir() + FolderEnum.IMAGES + "/" + getFilename("favicon", configThemeDto.getFavicon().getContentType()));
                 if (file.exists()) {
                     configThemeDto.getFavicon().setBase64(Base64.getEncoder().encodeToString(FileUtils.readFileToByteArray(file)));
                 }
@@ -164,7 +165,7 @@ public class AppConfigService {
             AppConfig appConfig = appConfigJpaRepository.findByCode(AppConfigCodeEnum.THEME);
             ObjectMapper mapper = new ObjectMapper();
             if (configThemeDto.getLogo() != null && configThemeDto.getLogo().getBase64() != null) {
-                try (FileOutputStream outputStream = new FileOutputStream(applicationBootstrap.getAppConfig().getDataDir() + "/images/" + getFilename("logo", configThemeDto.getLogo().getContentType()))) {
+                try (FileOutputStream outputStream = new FileOutputStream(applicationBootstrap.getAppConfig().getDataDir() + FolderEnum.IMAGES + "/" + getFilename("logo", configThemeDto.getLogo().getContentType()))) {
                     outputStream.write(Base64.getDecoder().decode(configThemeDto.getLogo().getBase64()));
                     configThemeDto.getLogo().setBase64(null);
                     appConfig.setParametres(mapper.writeValueAsString(configThemeDto));
@@ -172,7 +173,7 @@ public class AppConfigService {
                 }
             }
             if (configThemeDto.getFavicon() != null && configThemeDto.getFavicon().getBase64() != null) {
-                try (FileOutputStream outputStream = new FileOutputStream(applicationBootstrap.getAppConfig().getDataDir() + "/images/" + getFilename("favicon", configThemeDto.getFavicon().getContentType()))) {
+                try (FileOutputStream outputStream = new FileOutputStream(applicationBootstrap.getAppConfig().getDataDir() + FolderEnum.IMAGES + "/" + getFilename("favicon", configThemeDto.getFavicon().getContentType()))) {
                     outputStream.write(Base64.getDecoder().decode(configThemeDto.getFavicon().getBase64()));
                     configThemeDto.getFavicon().setBase64(null);
                     appConfig.setParametres(mapper.writeValueAsString(configThemeDto));

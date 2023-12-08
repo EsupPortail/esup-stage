@@ -1,6 +1,7 @@
 package org.esup_portail.esup_stage.security;
 
 import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
+import org.esup_portail.esup_stage.enums.FolderEnum;
 import org.esup_portail.esup_stage.model.Role;
 import org.esup_portail.esup_stage.model.Utilisateur;
 import org.esup_portail.esup_stage.repository.RoleJpaRepository;
@@ -15,8 +16,11 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 @Component
@@ -74,5 +78,19 @@ public class ApplicationStartUp {
             }
         }
         logger.info("Mise à jour des uid terminé");
+    }
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void initFolders() throws IOException {
+        logger.info("Création des dossiers dans le répertoire upload si non existant");
+        for (FolderEnum folderEnum : FolderEnum.values()) {
+            String path = applicationBootstrap.getAppConfig().getDataDir() + folderEnum;
+            File dir = new File(path);
+            if (!dir.isDirectory()) {
+                logger.info("Création du dossier " + path);
+                Files.createDirectories(Paths.get(path));
+            }
+        }
+        logger.info("Création des dossiers terminé");
     }
 }

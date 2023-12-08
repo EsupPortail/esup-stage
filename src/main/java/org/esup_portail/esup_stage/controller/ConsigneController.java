@@ -9,6 +9,7 @@ import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
 import org.esup_portail.esup_stage.dto.ConsigneFormDto;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
+import org.esup_portail.esup_stage.enums.FolderEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.Consigne;
 import org.esup_portail.esup_stage.model.ConsigneDocument;
@@ -158,7 +159,7 @@ public class ConsigneController {
     }
 
     private String getFilePath(String filename) {
-        return applicationBootstrap.getAppConfig().getDataDir() + "/centregestion/consigne-documents/" + filename;
+        return applicationBootstrap.getAppConfig().getDataDir() + FolderEnum.CENTRE_GESTION_CONSIGNE_DOCS + "/" + filename;
     }
 
     private String getNomDocument(int idFichier, String nomFichier) {

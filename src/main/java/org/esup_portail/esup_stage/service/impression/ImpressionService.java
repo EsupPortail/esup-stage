@@ -13,8 +13,7 @@ import freemarker.template.Template;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
-import org.esup_portail.esup_stage.dto.MetadataDto;
-import org.esup_portail.esup_stage.dto.MetadataSignataireDto;
+import org.esup_portail.esup_stage.enums.FolderEnum;
 import org.esup_portail.esup_stage.enums.TypeSignatureEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
@@ -288,7 +287,7 @@ public class ImpressionService {
     }
 
     private String getLogoFilePath(String filename) {
-        return applicationBootstrap.getAppConfig().getDataDir() + "/centregestion/logos/" + filename;
+        return applicationBootstrap.getAppConfig().getDataDir() + FolderEnum.CENTRE_GESTION_LOGOS + "/" + filename;
     }
 
     private String getNomFichier(int idFichier, String nomFichier) {

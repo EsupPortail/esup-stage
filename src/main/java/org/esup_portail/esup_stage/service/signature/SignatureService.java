@@ -9,6 +9,7 @@ import org.esup_portail.esup_stage.dto.MetadataDto;
 import org.esup_portail.esup_stage.dto.MetadataSignataireDto;
 import org.esup_portail.esup_stage.dto.ResponseDto;
 import org.esup_portail.esup_stage.enums.AppSignatureEnum;
+import org.esup_portail.esup_stage.enums.FolderEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.AvenantJpaRepository;
@@ -373,7 +374,7 @@ public class SignatureService {
     }
 
     public String getSignatureFilePath(String filename) {
-        return applicationBootstrap.getAppConfig().getDataDir() + "/signatures/" + filename + "_signe.pdf";
+        return applicationBootstrap.getAppConfig().getDataDir() + FolderEnum.SIGNATURES + "/" + filename + "_signe.pdf";
     }
 
     public void downloadSignedPdf(String documentId, MetadataDto metadataDto) {
