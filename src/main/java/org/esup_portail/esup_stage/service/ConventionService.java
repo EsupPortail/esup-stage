@@ -27,6 +27,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ConventionService {
@@ -83,6 +84,12 @@ public class ConventionService {
 
     @Autowired
     LdapService ldapService;
+
+    @Autowired
+    UtilisateurJpaRepository utilisateurJpaRepository;
+
+    @Autowired
+    MailerService mailerService;
 
     public void validationAutoDonnees(Convention convention, Utilisateur utilisateur) {
         // Validation automatique de l'établissement d'accueil, le service d'accueil et du tuteur de stage à la validation de la convention
@@ -406,6 +413,33 @@ public class ConventionService {
             signataires.add(new CentreGestionSignataire(centreGestion, signataireEnums[i], i + 1));
         }
         return signataires;
+    }
+
+    public void sendValidationMail(Convention convention, Avenant avenant, Utilisateur utilisateurContext, String templateMailCode, boolean sendMailEtudiant, boolean sendMailEnseignant, boolean sendMailGestionnaire, boolean sendMailRespGestionnaire) {
+        // Récupération du personnel du centre de gestion de la convention avec alertMail=1
+        List<PersonnelCentreGestion> personnels = convention.getCentreGestion().getPersonnels();
+        personnels = personnels.stream().filter(p -> p.getAlertesMail() != null && p.getAlertesMail()).collect(Collectors.toList());
+
+        // Récupération de la fiche utilisateur des personnels
+        if (sendMailGestionnaire || sendMailRespGestionnaire) {
+            List<Utilisateur> utilisateurPersonnels = utilisateurJpaRepository.findByUids(personnels.stream().map(PersonnelCentreGestion::getUidPersonnel).collect(Collectors.toList()));
+            if (convention.getCentreGestion().isOnlyMailCentreGestion()) {
+                mailerService.sendAlerteValidation(convention.getCentreGestion().getMail(), convention, avenant, utilisateurContext, templateMailCode);
+            } else {
+                for (PersonnelCentreGestion personnel : personnels) {
+                    Utilisateur utilisateur = utilisateurPersonnels.stream().filter(u -> u.getUid().equals(personnel.getUidPersonnel())).findAny().orElse(null);
+                    if ((utilisateur == null || !UtilisateurHelper.isRole(utilisateur, Role.RESP_GES))) {
+                        if (mailerService.isAlerteActif(personnel, templateMailCode) && sendMailGestionnaire)
+                            mailerService.sendAlerteValidation(personnel.getMail(), convention, avenant, utilisateurContext, templateMailCode);
+                    } else if ((utilisateur != null && UtilisateurHelper.isRole(utilisateur, Role.RESP_GES))) {
+                        if (mailerService.isAlerteActif(personnel, templateMailCode) && sendMailRespGestionnaire)
+                            mailerService.sendAlerteValidation(personnel.getMail(), convention, avenant, utilisateurContext, templateMailCode);
+                    }
+                }
+            }
+        }
+        if (sendMailEtudiant) mailerService.sendAlerteValidation(convention.getEtudiant().getMail(), convention, avenant, utilisateurContext, templateMailCode);
+        if (sendMailEnseignant) mailerService.sendAlerteValidation(convention.getEnseignant().getMail(), convention, avenant, utilisateurContext, templateMailCode);
     }
 
 }
