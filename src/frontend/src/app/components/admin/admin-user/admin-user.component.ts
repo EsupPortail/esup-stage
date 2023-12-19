@@ -110,7 +110,7 @@ export class AdminUserComponent implements OnInit {
     delete data.id;
     delete data.password;
     delete data.dateCreation;
-    this.form.setValue(data);
+    this.form.patchValue(data);
   }
 
   tabChanged(event: MatTabChangeEvent): void {
