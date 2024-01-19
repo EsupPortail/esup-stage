@@ -1,0 +1,21 @@
+databaseChangeLog:
+- changeSet:
+    id: 2.1.5-ajout-convention-date-actualisation
+    author: ssound
+    changes:
+    - addColumn:
+        tableName: Convention
+        columns:
+        - column:
+            name: dateActualisationSignature
+            type: datetime
+- changeSet:
+    id: 2.1.5-ajout-avenant-date-actualisation
+    author: ssound
+    changes:
+    - addColumn:
+        tableName: Avenant
+        columns:
+        - column:
+            name: dateActualisationSignature
+            type: datetime

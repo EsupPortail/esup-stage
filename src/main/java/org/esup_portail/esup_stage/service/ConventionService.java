@@ -386,7 +386,11 @@ public class ConventionService {
     public void updateSignatureElectroniqueHistorique() {
         List<Convention> conventions = conventionJpaRepository.getSignatureInfoToUpdate();
         for (Convention convention : conventions) {
-            signatureService.updateHistorique(convention);
+            try {
+                signatureService.updateHistorique(convention);
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
         }
     }
 

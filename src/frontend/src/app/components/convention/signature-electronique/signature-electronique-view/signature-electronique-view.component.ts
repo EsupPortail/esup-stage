@@ -54,4 +54,10 @@ export class SignatureElectroniqueViewComponent implements OnInit {
       FileSaver.saveAs(blob, `Avenant_${avenant.id}_${this.convention.etudiant.nom}_${this.convention.etudiant.prenom}_signe.pdf`);
     });
   }
+
+  isActualisationActif(): boolean {
+    const date = new Date();
+    date.setMinutes(date.getMinutes() - 30);
+    return new Date(this.avenant.dateActualisationSignature) >= date;
+  }
 }

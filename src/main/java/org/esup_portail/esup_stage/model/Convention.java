@@ -397,6 +397,9 @@ public class Convention extends ObjetMetier implements Exportable {
     @Column
     private Date dateDepotViseur;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateActualisationSignature;
+
     @JsonView(Views.List.class)
     @Transient
     private String lieuStage;
@@ -1263,6 +1266,14 @@ public class Convention extends ObjetMetier implements Exportable {
 
     public void setDateDepotViseur(Date dateDepotViseur) {
         this.dateDepotViseur = dateDepotViseur;
+    }
+
+    public Date getDateActualisationSignature() {
+        return dateActualisationSignature;
+    }
+
+    public void setDateActualisationSignature(Date dateActualisationSignature) {
+        this.dateActualisationSignature = dateActualisationSignature;
     }
 
     public String getLieuStage() {

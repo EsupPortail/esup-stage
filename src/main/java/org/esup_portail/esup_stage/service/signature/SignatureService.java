@@ -32,6 +32,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -217,6 +218,13 @@ public class SignatureService {
         if (convention == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Convention inexistante");
         }
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.MINUTE, -30);
+        Date nowMinus30 = calendar.getTime();
+        if (convention.getDateActualisationSignature() != null && nowMinus30.before(convention.getDateActualisationSignature())) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Le rafraichissement des données n'est possible que toutes les 30 minutes");
+        }
         AppSignatureEnum appSignature = applicationBootstrap.getAppConfig().getAppSignatureEnabled();
         if (appSignature == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La signature électronique n'est pas configurée");
@@ -246,6 +254,13 @@ public class SignatureService {
         if (avenant == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Avenant inexistant");
         }
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.MINUTE, -30);
+        Date nowMinus30 = calendar.getTime();
+        if (avenant.getDateActualisationSignature() != null && nowMinus30.before(avenant.getDateActualisationSignature())) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Le rafraichissement des données n'est possible que toutes les 30 minutes");
+        }
         AppSignatureEnum appSignature = applicationBootstrap.getAppConfig().getAppSignatureEnabled();
         if (appSignature == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La signature électronique n'est pas configurée");
@@ -272,6 +287,7 @@ public class SignatureService {
     }
 
     public void setSignatureHistorique(Convention convention, List<Historique> historiques) {
+        convention.setDateActualisationSignature(new Date());
         for (Historique historique : historiques) {
             switch (historique.getTypeSignataire()) {
                 case etudiant:
@@ -323,6 +339,7 @@ public class SignatureService {
     }
 
     public void setSignatureHistorique(Avenant avenant, List<Historique> historiques) {
+        avenant.setDateActualisationSignature(new Date());
         for (Historique historique : historiques) {
             switch (historique.getTypeSignataire()) {
                 case etudiant:

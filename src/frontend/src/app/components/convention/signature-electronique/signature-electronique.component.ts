@@ -92,4 +92,10 @@ export class SignatureElectroniqueComponent implements OnInit {
     });
   }
 
+  isActualisationActif(): boolean {
+    const date = new Date();
+    date.setMinutes(date.getMinutes() - 30);
+    return new Date(this.convention.dateActualisationSignature) >= date;
+  }
+
 }

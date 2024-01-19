@@ -173,3 +173,6 @@ databaseChangeLog:
   - include:
       file: 2.1.2-mail-viseur.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 2.1.5-convention-avenant-actualisation.yaml
+      relativeToChangelogFile: true

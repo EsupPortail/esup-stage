@@ -156,6 +156,9 @@ public class Avenant extends ObjetMetier implements Exportable {
     @Column
     private Date dateDepotViseur;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateActualisationSignature;
+
     public int getId() {
         return id;
     }
@@ -507,6 +510,14 @@ public class Avenant extends ObjetMetier implements Exportable {
 
     public void setDateDepotViseur(Date dateDepotViseur) {
         this.dateDepotViseur = dateDepotViseur;
+    }
+
+    public Date getDateActualisationSignature() {
+        return dateActualisationSignature;
+    }
+
+    public void setDateActualisationSignature(Date dateActualisationSignature) {
+        this.dateActualisationSignature = dateActualisationSignature;
     }
 
     @Transient
