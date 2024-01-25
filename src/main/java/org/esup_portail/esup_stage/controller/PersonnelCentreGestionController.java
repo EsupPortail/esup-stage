@@ -96,7 +96,7 @@ public class PersonnelCentreGestionController {
                 throw new AppException(HttpStatus.NOT_FOUND, "Gestionnaire non trouvé");
             }
             utilisateur = new Utilisateur();
-            utilisateur.setLogin(ldapUsers.get(0).getUid());
+            utilisateur.setLogin(ldapUsers.get(0).getSupannAliasLogin());
             utilisateur.setUid(personnelCentreGestion.getUidPersonnel());
             utilisateur.setNom(personnelCentreGestion.getNom());
             utilisateur.setPrenom(personnelCentreGestion.getPrenom());
