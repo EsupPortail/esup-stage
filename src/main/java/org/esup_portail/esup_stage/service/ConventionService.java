@@ -191,7 +191,6 @@ public class ConventionService {
         convention.setAdresseEtabRef(centreGestionEtab.getAdresseComplete());
         convention.setVolumeHoraireFormation(conventionFormDto.getVolumeHoraireFormation());
 
-        canViewEditConvention(convention, ServiceContext.getUtilisateur());
         if (!isConventionModifiable(convention, ServiceContext.getUtilisateur())) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La convention n'est plus modifiable");
         }

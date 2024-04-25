@@ -218,6 +218,7 @@ public class ConventionController {
     public Convention update(@PathVariable("id") int id, @Valid @RequestBody ConventionFormDto conventionFormDto) {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
         Convention convention = conventionJpaRepository.findById(id);
+        conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
         conventionService.setConventionData(convention, conventionFormDto);
         if (convention.isValidationCreation()) {
             convention.setValeurNomenclature();
