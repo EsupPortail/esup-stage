@@ -131,14 +131,10 @@ public class ConventionService {
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
-        if (convention.getTypeConvention() == null) {
-            TypeConvention typeConvention = getTypeConvention(conventionFormDto.getIdTypeConvention());
-            convention.setTypeConvention(typeConvention);
-        }
-        if (convention.getLangueConvention() == null) {
-            LangueConvention langueConvention = getLangueConvention(conventionFormDto.getCodeLangueConvention());
-            convention.setLangueConvention(langueConvention);
-        }
+        TypeConvention typeConvention = getTypeConvention(conventionFormDto.getIdTypeConvention());
+        convention.setTypeConvention(typeConvention);
+        LangueConvention langueConvention = getLangueConvention(conventionFormDto.getCodeLangueConvention());
+        convention.setLangueConvention(langueConvention);
         EtudiantRef etudiantRef = apogeeService.getInfoApogee(conventionFormDto.getNumEtudiant(), appConfigService.getAnneeUniv());
         if (etudiantRef == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Étudiant non trouvé");
@@ -149,19 +145,13 @@ public class ConventionService {
         if (ldapEtudiant == null || ldapEtudiant.size() == 0) {
             throw new AppException(HttpStatus.NOT_FOUND, "Étudiant non trouvé");
         }
-        if (convention.getEtape() == null) {
-            Etape etape = getEtape(conventionFormDto.getCodeEtape(), conventionFormDto.getCodeVersionEtape(), conventionFormDto.getLibelleEtape());
-            convention.setEtape(etape);
-        }
-        if (convention.getUfr() == null) {
-            Ufr ufr = getUfr(conventionFormDto.getCodeComposante(), conventionFormDto.getLibelleComposante());
-            convention.setUfr(ufr);
-        }
+        Etape etape = getEtape(conventionFormDto.getCodeEtape(), conventionFormDto.getCodeVersionEtape(), conventionFormDto.getLibelleEtape());
+        convention.setEtape(etape);
+        Ufr ufr = getUfr(conventionFormDto.getCodeComposante(), conventionFormDto.getLibelleComposante());
+        convention.setUfr(ufr);
         CentreGestion centreGestionEtab = getCentreGestionEtab();
-        if (convention.getCentreGestion() == null) {
-            CentreGestion centreGestion = getCentreGestion(centreGestionEtab, conventionFormDto.getCodeComposante(), conventionFormDto.getCodeEtape(), conventionFormDto.getCodeVersionEtape());
-            convention.setCentreGestion(centreGestion);
-        }
+        CentreGestion centreGestion = getCentreGestion(centreGestionEtab, conventionFormDto.getCodeComposante(), conventionFormDto.getCodeEtape(), conventionFormDto.getCodeVersionEtape());
+        convention.setCentreGestion(centreGestion);
 
         Etudiant etudiant = etudiantRepository.findByNumEtudiant(conventionFormDto.getNumEtudiant());
         if (etudiant == null) {
