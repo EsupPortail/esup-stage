@@ -85,7 +85,7 @@ export class CadreStageModalComponent implements OnInit {
         paysEtudiant: [this.convention.paysEtudiant, [Validators.required]],
         telEtudiant: [this.convention.telEtudiant, []],
         telPortableEtudiant: [this.convention.telPortableEtudiant, []],
-        courrielPersoEtudiant: [this.convention.courrielPersoEtudiant, [Validators.required, Validators.pattern('[^@ ]+@[^@. ]+\\.[^@ ]+')]],
+        courrielPersoEtudiant: [this.convention.courrielPersoEtudiant, [Validators.required, Validators.pattern('[^@ ]+@[^@. ]+\\.[^@ ]+'), Validators.maxLength(255)]],
         regionCPAM: [this.convention.regionCPAM, []],
         libelleCPAM: [this.convention.libelleCPAM, []],
         adresseCPAM: [this.convention.adresseCPAM, []],

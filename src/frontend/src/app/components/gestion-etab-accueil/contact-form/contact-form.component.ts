@@ -34,7 +34,7 @@ export class ContactFormComponent implements OnInit {
       idCivilite: [null, []],
       fonction: [null, [Validators.required, Validators.maxLength(100)]],
       tel: [null, [Validators.required, Validators.maxLength(50)]],
-      mail: [null, [Validators.required, Validators.pattern('[^@ ]+@[^@. ]+\\.[^@ ]+'), Validators.maxLength(50)]],
+      mail: [null, [Validators.required, Validators.pattern('[^@ ]+@[^@. ]+\\.[^@ ]+'), Validators.maxLength(255)]],
       fax: [null, [Validators.maxLength(50)]],
     });
 
