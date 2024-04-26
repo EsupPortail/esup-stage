@@ -53,8 +53,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
 
   communes: any[] = [];
 
-  volumeHoraireFormationBool: boolean = false;
-  defaultVolumeHoraire: any = null;
+  hasDefaultVolumeHoraire: boolean = false;
 
   @Input() convention: any;
   @Input() modifiable: boolean = false;
@@ -119,7 +118,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
         idTypeConvention: [this.convention.typeConvention ? this.convention.typeConvention.id : null, [Validators.required]],
         codeLangueConvention: [this.convention.langueConvention ? this.convention.langueConvention.code : null, [Validators.required]],
         volumeHoraireFormation: [this.convention.volumeHoraireFormation ? this.convention.volumeHoraireFormation : null, []],
-        volumeHoraireFormationBool: [false, ],
+        volumeHoraireFormationBool: [this.convention.volumeHoraireFormation !== null && this.convention.volumeHoraireFormation !== '200+', []],
       });
       this.sansElp = response.autoriserElementPedagogiqueFacultatif;
 
@@ -136,10 +135,13 @@ export class EtudiantComponent implements OnInit, OnChanges {
           } else {
             this.formConvention.get('idTypeConvention')?.enable();
           }
-          this.formConvention.get('volumeHoraireFormation')?.setValue(inscription.etapeInscription.volumeHoraire);
-          this.defaultVolumeHoraire = this.formConvention.get('volumeHoraireFormation')?.value;
-          if(inscription.etapeInscription.volumeHoraire && inscription.etapeInscription.volumeHoraire != "0")
-            this.volumeHoraireFormationBool = true;
+          if (!this.convention.volumeHoraireFormation) {
+            this.formConvention.get('volumeHoraireFormation')?.setValue(inscription.etapeInscription.volumeHoraire);
+          }
+          this.hasDefaultVolumeHoraire = inscription.etapeInscription.volumeHoraire && inscription.etapeInscription.volumeHoraire != "0";
+          if (this.hasDefaultVolumeHoraire) {
+            this.formConvention.get('volumeHoraireFormationBool')?.setValue(true);
+          }
         }
       });
 
@@ -293,7 +295,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
       } else if (this.convention && this.convention.etudiant) {
         data.etudiantLogin = this.convention.etudiant.identEtudiant;
       }
-      if(this.volumeHoraireFormationBool == false)
+      if(!data.volumeHoraireFormationBool)
         data.volumeHoraireFormation = "200+";
       if (!this.convention || !this.convention.id) {
         this.conventionService.create(data).subscribe((response: any) => {
@@ -378,15 +380,6 @@ export class EtudiantComponent implements OnInit, OnChanges {
     let adresse = this.CPAMs.find((c : any) => c.libelle === event.option.value);
     if (adresse){
       this.formConvention.get('adresseCPAM')?.setValue(adresse.adresse);
-    }
-  }
-
-  changevolumeHoraireFormationBool(value: boolean)
-  {
-    if (!(this.defaultVolumeHoraire && this.defaultVolumeHoraire > 0))
-    {
-      this.volumeHoraireFormationBool = value;
-      this.formConvention.controls['volumeHoraireFormationBool'].setValue(value);
     }
   }
 

@@ -195,13 +195,13 @@
                   <div class="row align-items-start">
                     <label class="col-sm-12">Nombre d'heures de formation * :</label>
                       <mat-radio-group class="col-sm-12" formControlName="volumeHoraireFormationBool">
-                        <mat-radio-button class="mb-2" value="false" [checked]="this.defaultVolumeHoraire && this.defaultVolumeHoraire > 0 ? false : true" [disabled]="this.defaultVolumeHoraire && this.defaultVolumeHoraire > 0" (click)="changevolumeHoraireFormationBool(false)">Plus de 200 heures</mat-radio-button>
-                        <mat-radio-button value="true" [checked]="this.defaultVolumeHoraire && this.defaultVolumeHoraire > 0 ? true : false" (click)="changevolumeHoraireFormationBool(true)">{{ !(this.defaultVolumeHoraire && this.defaultVolumeHoraire > 0) ? "Saisie manuelle" : "Valeur récupérée via les données de l'établissement (Apogée)"}} :</mat-radio-button>
+                        <mat-radio-button class="mb-2" [value]="false" [disabled]="hasDefaultVolumeHoraire">Plus de 200 heures</mat-radio-button>
+                        <mat-radio-button [value]="true">{{ !hasDefaultVolumeHoraire ? "Saisie manuelle" : "Valeur récupérée via les données de l'établissement (Apogée)"}} :</mat-radio-button>
                       </mat-radio-group>
                   </div>
                 </div>
                   <div class="row">
-                    <mat-form-field *ngIf="volumeHoraireFormationBool==true" class="col-sm-12 mb-2" appearance="fill">
+                    <mat-form-field *ngIf="formConvention.get('volumeHoraireFormationBool').value" class="col-sm-12 mb-2" appearance="fill">
                       <mat-label>Entrez le nombre d'heures de formation :</mat-label>
                       <input matInput formControlName="volumeHoraireFormation"/>
                     </mat-form-field>
