@@ -34,7 +34,7 @@ public class StructureFormDto {
     private String fax;
 
     @Email
-    @Size(max = 50)
+    @Size(max = 255)
     private String mail;
 
     @URL

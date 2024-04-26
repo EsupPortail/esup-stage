@@ -105,7 +105,7 @@ public class ConventionFormDto {
     private String paysEtudiant;
 
     @Email
-    @Size(max = 100)
+    @Size(max = 255)
     private String courrielPersoEtudiant;
 
     @Size(max = 20)

@@ -1,5 +1,6 @@
 package org.esup_portail.esup_stage.dto;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -16,7 +17,8 @@ public class EnseignantDto {
     @Size(max = 50)
     private String prenom;
 
-    @Size(max = 50)
+    @Email
+    @Size(max = 255)
     private String mail;
 
     @Size(max = 30)

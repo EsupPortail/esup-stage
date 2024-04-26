@@ -20,7 +20,7 @@ public class ContactFormDto {
     @NotNull
     @NotEmpty
     @Email
-    @Size(max = 50)
+    @Size(max = 255)
     private String mail;
 
     @NotNull
