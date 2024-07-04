@@ -123,7 +123,7 @@
             </td>
             <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;">
                 <#if convention.montantGratification != ''>
-                    ${convention.montantGratification} ${convention.deviseGratification}
+                    ${convention.montantGratification} ${convention.deviseGratification} ${convention.uniteGratificationLibelle}
                 <#else>
                     Non
                 </#if>
@@ -167,6 +167,14 @@
             </td>
             <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;">
                 ${convention.avantagesNature}
+            </td>
+        </tr>
+        <tr>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;background-color: #e1e3e1">
+                Nombre de jours de congés autorisés
+            </td>
+            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;">
+                ${convention.nbConges}
             </td>
         </tr>
         <tr>
@@ -229,7 +237,8 @@
                 Lieu de stage
             </td>
             <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;">
-                ${convention.lieuStage}
+                ${convention.lieuStage}<br/>
+                ${convention.adresseEtabRef}
             </td>
         </tr>
         <tr>
@@ -258,7 +267,8 @@
                 Signataire
             </td>
             <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;">
-                ${signataire.prenom} ${signataire.nom} (${signataire.fonction})
+                ${signataire.prenom} ${signataire.nom} (${signataire.fonction})<br/>
+                ${signataire.mail}
             </td>
         </tr>
         <tr>
@@ -301,14 +311,6 @@
             </td>
             <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;">
                 ${convention.creditECTS}
-            </td>
-        </tr>
-        <tr>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;background-color: #e1e3e1">
-                Convention validée
-            </td>
-            <td style="border:0.2px solid hsl(0, 0%, 0%);border-color:white;vertical-align:top;">
-                ${convention.conventionValidee}
             </td>
         </tr>
         </tbody>

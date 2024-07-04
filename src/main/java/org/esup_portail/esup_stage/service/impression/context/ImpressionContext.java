@@ -185,7 +185,7 @@ public class ImpressionContext {
             this.codePostalEtudiant = convention.getCodePostalEtudiant();
             this.commentaireDureeTravail = convention.getCommentaireDureeTravail();
             this.courrielPersoEtudiant = convention.getCourrielPersoEtudiant();
-            this.creditECTS = String.valueOf(convention.getCreditECTS());
+            this.creditECTS = String.valueOf(convention.getCreditECTS() != null ? convention.getCreditECTS(): "");
             this.dateDebutStage = convention.getDateDebutStage() != null ? df.format(convention.getDateDebutStage()) : null;
             this.dateFinStage = convention.getDateFinStage() != null ? df.format(convention.getDateFinStage()) : null;
             this.details = convention.getDetails();
