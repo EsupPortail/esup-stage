@@ -176,3 +176,6 @@ databaseChangeLog:
   - include:
       file: 2.1.5-convention-avenant-actualisation.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 2.1.8-docaposte-envoi-doc.yaml
+      relativeToChangelogFile: true

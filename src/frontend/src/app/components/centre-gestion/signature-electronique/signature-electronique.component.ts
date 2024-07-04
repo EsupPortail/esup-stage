@@ -27,6 +27,7 @@ export class CentreSignatureElectroniqueComponent implements OnInit {
     this.form.patchValue({
       circuitSignature: this.centreGestion.circuitSignature,
       signataires: this.signataires,
+      envoiDocumentSigne: this.centreGestion.envoiDocumentSigne,
     });
   }
 

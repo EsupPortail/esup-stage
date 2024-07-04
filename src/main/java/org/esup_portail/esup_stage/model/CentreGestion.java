@@ -165,6 +165,9 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     @JsonView(Views.List.class)
     private Boolean onlyMailCentreGestion = false;
 
+    @Column
+    private boolean envoiDocumentSigne = false;
+
     public int getId() {
         return id;
     }
@@ -541,6 +544,14 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     public boolean isOnlyMailCentreGestion() {return onlyMailCentreGestion;}
 
     public void setOnlyMailCentreGestion(boolean onlyMailCentreGestion) {this.onlyMailCentreGestion = onlyMailCentreGestion;}
+
+    public boolean isEnvoiDocumentSigne() {
+        return envoiDocumentSigne;
+    }
+
+    public void setEnvoiDocumentSigne(boolean envoiDocumentSigne) {
+        this.envoiDocumentSigne = envoiDocumentSigne;
+    }
 
     @Override
     public String getExportValue(String key) {

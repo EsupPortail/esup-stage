@@ -1,1341 +1,378 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
-                  xmlns:tns="documentTarget" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
-                  xmlns:ns2="http://schemas.xmlsoap.org/soap/http" xmlns:ns1="http://sei.ws.fast.cdc.com/"
-                  name="CXFDocumentServiceService" targetNamespace="documentTarget">
-    <wsdl:types>
-        <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xmime="http://www.w3.org/2005/05/xmlmime"
-                   xmlns:tns="http://sei.ws.fast.cdc.com/" attributeFormDefault="unqualified"
-                   elementFormDefault="unqualified" targetNamespace="http://sei.ws.fast.cdc.com/">
-            <xs:import namespace="http://www.w3.org/2005/05/xmlmime"/>
-            <xs:element name="DocumentContentVO" type="tns:documentContentVO"/>
-            <xs:element name="ExportUsersData" type="tns:ExportUsersData"/>
-            <xs:element name="ExportUsersDataResponse" type="tns:ExportUsersDataResponse"/>
-            <xs:element name="HistoryEntryVO" type="tns:historyEntryVO"/>
-            <xs:element name="MetaDataVO" type="tns:metaDataVO"/>
-            <xs:element name="SMSHistoryVO" type="tns:smsHistoryVO"/>
-            <xs:element name="UserVO" type="tns:userVO"/>
-            <xs:element name="circuit" nillable="true" type="xs:anyType"/>
-            <xs:element name="delete" type="tns:delete"/>
-            <xs:element name="deleteResponse" type="tns:deleteResponse"/>
-            <xs:element name="download" type="tns:download"/>
-            <xs:element name="downloadAcknowledgement" type="tns:downloadAcknowledgement"/>
-            <xs:element name="downloadAcknowledgementResponse" type="tns:downloadAcknowledgementResponse"/>
-            <xs:element name="downloadChorus" type="tns:downloadChorus"/>
-            <xs:element name="downloadChorusResponse" type="tns:downloadChorusResponse"/>
-            <xs:element name="downloadPesRetour" type="tns:downloadPesRetour"/>
-            <xs:element name="downloadPesRetourResponse" type="tns:downloadPesRetourResponse"/>
-            <xs:element name="downloadResponse" type="tns:downloadResponse"/>
-            <xs:element name="getCircuits" type="tns:getCircuits"/>
-            <xs:element name="getCircuitsResponse" type="tns:getCircuitsResponse"/>
-            <xs:element name="getFdc" type="tns:getFdc"/>
-            <xs:element name="getFdcResponse" type="tns:getFdcResponse"/>
-            <xs:element name="getMetas" type="tns:getMetas"/>
-            <xs:element name="getMetasResponse" type="tns:getMetasResponse"/>
-            <xs:element name="getMultiIdsSmsUrl" type="tns:getMultiIdsSmsUrl"/>
-            <xs:element name="getMultiIdsSmsUrlResponse" type="tns:getMultiIdsSmsUrlResponse"/>
-            <xs:element name="getProperties" type="tns:getProperties"/>
-            <xs:element name="getPropertiesByName" type="tns:getPropertiesByName"/>
-            <xs:element name="getPropertiesByNameResponse" type="tns:getPropertiesByNameResponse"/>
-            <xs:element name="getPropertiesResponse" type="tns:getPropertiesResponse"/>
-            <xs:element name="getRefusalMessage" type="tns:getRefusalMessage"/>
-            <xs:element name="getRefusalMessageResponse" type="tns:getRefusalMessageResponse"/>
-            <xs:element name="getSMSHistory" type="tns:getSMSHistory"/>
-            <xs:element name="getSMSHistoryResponse" type="tns:getSMSHistoryResponse"/>
-            <xs:element name="getSmsUrl" type="tns:getSmsUrl"/>
-            <xs:element name="getSmsUrlResponse" type="tns:getSmsUrlResponse"/>
-            <xs:element name="history" type="tns:history"/>
-            <xs:element name="historyResponse" type="tns:historyResponse"/>
-            <xs:element name="listRemainingAcknowledgements" type="tns:listRemainingAcknowledgements"/>
-            <xs:element name="listRemainingAcknowledgementsResponse" type="tns:listRemainingAcknowledgementsResponse"/>
-            <xs:element name="listRemainingChorus" type="tns:listRemainingChorus"/>
-            <xs:element name="listRemainingChorusResponse" type="tns:listRemainingChorusResponse"/>
-            <xs:element name="listRemainingPesRetour" type="tns:listRemainingPesRetour"/>
-            <xs:element name="listRemainingPesRetourResponse" type="tns:listRemainingPesRetourResponse"/>
-            <xs:element name="otpUpload" type="tns:otpUpload"/>
-            <xs:element name="otpUploadResponse" type="tns:otpUploadResponse"/>
-            <xs:element name="rawdelete" type="tns:rawdelete"/>
-            <xs:element name="rawdeleteResponse" type="tns:rawdeleteResponse"/>
-            <xs:element name="search" type="tns:search"/>
-            <xs:element name="searchResponse" type="tns:searchResponse"/>
-            <xs:element name="synchronizeUsers" type="tns:synchronizeUsers"/>
-            <xs:element name="synchronizeUsersResponse" type="tns:synchronizeUsersResponse"/>
-            <xs:element name="upload" type="tns:upload"/>
-            <xs:element name="uploadBSMS" type="tns:uploadBSMS"/>
-            <xs:element name="uploadBSMSResponse" type="tns:uploadBSMSResponse"/>
-            <xs:element name="uploadMeta" type="tns:uploadMeta"/>
-            <xs:element name="uploadMetaResponse" type="tns:uploadMetaResponse"/>
-            <xs:element name="uploadOTPInformation" type="tns:uploadOTPInformation"/>
-            <xs:element name="uploadOTPInformationResponse" type="tns:uploadOTPInformationResponse"/>
-            <xs:element name="uploadOnDemand" type="tns:uploadOnDemand"/>
-            <xs:element name="uploadOnDemandResponse" type="tns:uploadOnDemandResponse"/>
-            <xs:element name="uploadPJ" type="tns:uploadPJ"/>
-            <xs:element name="uploadPJResponse" type="tns:uploadPJResponse"/>
-            <xs:element name="uploadResponse" type="tns:uploadResponse"/>
-            <xs:complexType name="getMultiIdsSmsUrl">
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="nodeRefIds" type="xs:string"/>
-                    <xs:element minOccurs="0" name="url" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="getMultiIdsSmsUrlResponse">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="return" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="getSMSHistory">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="siren" type="xs:string"/>
-                    <xs:element minOccurs="0" name="cinematiqueId" type="xs:string"/>
-                    <xs:element minOccurs="0" name="date" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="getSMSHistoryResponse">
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="tns:smsHistoryVO"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="smsHistoryVO">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="receiver" type="xs:string"/>
-                    <xs:element minOccurs="0" name="message" type="xs:string"/>
-                    <xs:element name="pttId" type="xs:long"/>
-                    <xs:element minOccurs="0" name="ptt" type="xs:string"/>
-                    <xs:element minOccurs="0" name="pttDescription" type="xs:string"/>
-                    <xs:element minOccurs="0" name="creationDatetime" type="xs:string"/>
-                    <xs:element minOccurs="0" name="id" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="downloadChorus">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="documentId" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="downloadChorusResponse">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="return" type="tns:documentContentVO"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="documentContentVO">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="documentId" type="xs:string"/>
-                    <xs:element minOccurs="0" name="content" type="xs:base64Binary"
-                                xmime:expectedContentTypes="application/octet-stream"/>
-                    <xs:element minOccurs="0" name="documentName" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="uploadOnDemand">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="siren" type="xs:string"/>
-                    <xs:element minOccurs="0" ref="tns:circuit"/>
-                    <xs:element minOccurs="0" name="doc" type="tns:dataFileVO"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="annexe" type="tns:dataFileVO"/>
-                    <xs:element minOccurs="0" name="email_destinataire" type="xs:string"/>
-                    <xs:element minOccurs="0" name="agents" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="circuit">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="type" type="xs:string"/>
-                    <xs:element minOccurs="0" name="steps" type="tns:step"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="step">
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="step" nillable="true" type="tns:stepVO"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="stepVO">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="members" type="xs:string"/>
-                    <xs:element minOccurs="0" name="type" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="dataFileVO">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="dataHandler" type="xs:base64Binary"/>
-                    <xs:element minOccurs="0" name="filename" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="uploadOnDemandResponse">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="return" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="rawdelete">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="documentId" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="rawdeleteResponse">
-                <xs:sequence/>
-            </xs:complexType>
-            <xs:complexType name="getFdc">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="documentId" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="getFdcResponse">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="return" type="tns:documentContentVO"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="getProperties">
-                <xs:sequence>
-                    <xs:element name="documentId" type="xs:long"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="getPropertiesResponse">
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="tns:docPropertyVO"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="docPropertyVO">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="name" type="xs:string"/>
-                    <xs:element name="propertyRank" type="xs:int"/>
-                    <xs:element minOccurs="0" name="value" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="listRemainingChorus">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="siren" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="listRemainingChorusResponse">
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="getCircuits">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="siren" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="getCircuitsResponse">
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="tns:circuitDetails"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="circuitDetails">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="circuitId" type="xs:string"/>
-                    <xs:element minOccurs="0" name="circuitName" type="xs:string"/>
-                    <xs:element minOccurs="0" name="circuitType" type="xs:string"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="signers" nillable="true" type="tns:userVO"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="validators" nillable="true"
-                                type="tns:userVO"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="userVO">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="username" type="xs:string"/>
-                    <xs:element minOccurs="0" name="userFullname" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="getRefusalMessage">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="nodeRefId" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="getRefusalMessageResponse">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="return" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="listRemainingPesRetour">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="siren" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="listRemainingPesRetourResponse">
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="listRemainingAcknowledgements">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="siren" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="listRemainingAcknowledgementsResponse">
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="history">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="documentId" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="historyResponse">
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="tns:historyEntryVO"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="historyEntryVO">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="userFullname" type="xs:string"/>
-                    <xs:element minOccurs="0" name="date" type="xs:dateTime"/>
-                    <xs:element minOccurs="0" name="stateName" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="getMetas">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="documentId" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="getMetasResponse">
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="tns:metaDataVO"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="metaDataVO">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="metaDataId" type="xs:string"/>
-                    <xs:element minOccurs="0" name="metaDataName" type="xs:string"/>
-                    <xs:element minOccurs="0" name="metaDataValue" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="downloadAcknowledgement">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="documentId" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="downloadAcknowledgementResponse">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="return" type="tns:documentContentVO"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="download">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="documentId" type="xs:string"/>
-                    <xs:element minOccurs="0" name="fdc" type="xs:string"/>
-                    <xs:element minOccurs="0" name="acquit" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="downloadResponse">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="return" type="tns:documentContentVO"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="search">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="siren" type="xs:string"/>
-                    <xs:element minOccurs="0" name="circuitId" type="xs:string"/>
-                    <xs:element minOccurs="0" name="label" type="xs:string"/>
-                    <xs:element minOccurs="0" name="filename" type="xs:string"/>
-                    <xs:element minOccurs="0" name="state" type="xs:string"/>
-                    <xs:element minOccurs="0" name="uploadBy" type="xs:string"/>
-                    <xs:element minOccurs="0" name="uploadAfter" type="xs:string"/>
-                    <xs:element minOccurs="0" name="uploadBefore" type="xs:string"/>
-                    <xs:element minOccurs="0" name="validateBy" type="xs:string"/>
-                    <xs:element minOccurs="0" name="validateAfter" type="xs:string"/>
-                    <xs:element minOccurs="0" name="validateBefore" type="xs:string"/>
-                    <xs:element minOccurs="0" name="signBy" type="xs:string"/>
-                    <xs:element minOccurs="0" name="signAfter" type="xs:string"/>
-                    <xs:element minOccurs="0" name="signBefore" type="xs:string"/>
-                    <xs:element minOccurs="0" name="meta" type="tns:mapWrapper"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="mapWrapper">
-                <xs:sequence>
-                    <xs:element name="parameters">
-                        <xs:complexType>
-                            <xs:sequence>
-                                <xs:element maxOccurs="unbounded" minOccurs="0" name="entry">
-                                    <xs:complexType>
-                                        <xs:sequence>
-                                            <xs:element minOccurs="0" name="key" type="xs:string"/>
-                                            <xs:element minOccurs="0" name="value" type="xs:string"/>
-                                        </xs:sequence>
-                                    </xs:complexType>
-                                </xs:element>
-                            </xs:sequence>
-                        </xs:complexType>
-                    </xs:element>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="searchResponse">
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="synchronizeUsers">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="siren" type="xs:string"/>
-                    <xs:element minOccurs="0" name="users" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="synchronizeUsersResponse">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="return" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="getPropertiesByName">
-                <xs:sequence>
-                    <xs:element name="documentId" type="xs:long"/>
-                    <xs:element minOccurs="0" name="name" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="getPropertiesByNameResponse">
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="uploadMeta">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="documentId" type="xs:string"/>
-                    <xs:element minOccurs="0" name="arg1" type="xs:base64Binary"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="uploadMetaResponse">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="return" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="ExportUsersData">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="siren" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="ExportUsersDataResponse">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="return" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="otpUpload">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="label" type="xs:string"/>
-                    <xs:element minOccurs="0" name="comment" type="xs:string"/>
-                    <xs:element minOccurs="0" name="siren" type="xs:string"/>
-                    <xs:element minOccurs="0" name="circuitId" type="xs:string"/>
-                    <xs:element minOccurs="0" name="redirectionURL" type="xs:string"/>
-                    <xs:element minOccurs="0" name="document" type="tns:dataFileVO"/>
-                    <xs:element minOccurs="0" name="otpData" type="tns:dataFileVO"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="otpUploadResponse">
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="upload">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="label" type="xs:string"/>
-                    <xs:element minOccurs="0" name="comment" type="xs:string"/>
-                    <xs:element minOccurs="0" name="subscriberId" type="xs:string"/>
-                    <xs:element minOccurs="0" name="circuitId" type="xs:string"/>
-                    <xs:element minOccurs="0" name="dataFileVO" type="tns:dataFileVO"/>
-                    <xs:element minOccurs="0" name="email_destinataire" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="uploadResponse">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="return" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="getSmsUrl">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="nodeRefId" type="xs:string"/>
-                    <xs:element minOccurs="0" name="url" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="getSmsUrlResponse">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="return" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="uploadOTPInformation">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="documentId" type="xs:string"/>
-                    <xs:element minOccurs="0" name="arg1" type="xs:base64Binary"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="uploadOTPInformationResponse">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="return" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="downloadPesRetour">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="documentId" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="downloadPesRetourResponse">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="return" type="tns:documentContentVO"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="uploadBSMS">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="label" type="xs:string"/>
-                    <xs:element minOccurs="0" name="comment" type="xs:string"/>
-                    <xs:element minOccurs="0" name="subscriberId" type="xs:string"/>
-                    <xs:element minOccurs="0" name="circuitId" type="xs:string"/>
-                    <xs:element minOccurs="0" name="referrer" type="xs:string"/>
-                    <xs:element minOccurs="0" name="dataFileVO" type="tns:dataFileVO"/>
-                    <xs:element minOccurs="0" name="metaFileVO" type="tns:dataFileVO"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="uploadBSMSResponse">
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="uploadPJ">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="documentId" type="xs:string"/>
-                    <xs:element minOccurs="0" name="file" type="tns:dataFileVO"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="uploadPJResponse">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="return" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="delete">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="documentId" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="deleteResponse">
-                <xs:sequence/>
-            </xs:complexType>
-            <xs:element name="BusinessException" type="tns:BusinessException"/>
-            <xs:complexType name="BusinessException">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="details" type="xs:string"/>
-                    <xs:element minOccurs="0" name="message" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:element name="IOException" type="tns:IOException"/>
-            <xs:complexType name="IOException">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="message" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-        </xs:schema>
-    </wsdl:types>
-    <wsdl:message name="rawdeleteResponse">
-        <wsdl:part element="ns1:rawdeleteResponse" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="getPropertiesByNameResponse">
-        <wsdl:part element="ns1:getPropertiesByNameResponse" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="listRemainingPesRetourResponse">
-        <wsdl:part element="ns1:listRemainingPesRetourResponse" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="uploadOTPInformationResponse">
-        <wsdl:part element="ns1:uploadOTPInformationResponse" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="rawdelete">
-        <wsdl:part element="ns1:rawdelete" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="ExportUsersDataResponse">
-        <wsdl:part element="ns1:ExportUsersDataResponse" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="uploadPJResponse">
-        <wsdl:part element="ns1:uploadPJResponse" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="getRefusalMessage">
-        <wsdl:part element="ns1:getRefusalMessage" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="listRemainingPesRetour">
-        <wsdl:part element="ns1:listRemainingPesRetour" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="synchronizeUsersResponse">
-        <wsdl:part element="ns1:synchronizeUsersResponse" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="listRemainingAcknowledgements">
-        <wsdl:part element="ns1:listRemainingAcknowledgements" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="IOException">
-        <wsdl:part element="ns1:IOException" name="IOException">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="uploadMetaResponse">
-        <wsdl:part element="ns1:uploadMetaResponse" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="deleteResponse">
-        <wsdl:part element="ns1:deleteResponse" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="downloadResponse">
-        <wsdl:part element="ns1:downloadResponse" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="downloadAcknowledgement">
-        <wsdl:part element="ns1:downloadAcknowledgement" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="uploadOnDemandResponse">
-        <wsdl:part element="ns1:uploadOnDemandResponse" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="search">
-        <wsdl:part element="ns1:search" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="synchronizeUsers">
-        <wsdl:part element="ns1:synchronizeUsers" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="getPropertiesByName">
-        <wsdl:part element="ns1:getPropertiesByName" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="downloadAcknowledgementResponse">
-        <wsdl:part element="ns1:downloadAcknowledgementResponse" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="uploadMeta">
-        <wsdl:part element="ns1:uploadMeta" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="otpUpload">
-        <wsdl:part element="ns1:otpUpload" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="getSMSHistoryResponse">
-        <wsdl:part element="ns1:getSMSHistoryResponse" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="getSmsUrl">
-        <wsdl:part element="ns1:getSmsUrl" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="listRemainingAcknowledgementsResponse">
-        <wsdl:part element="ns1:listRemainingAcknowledgementsResponse" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="getCircuitsResponse">
-        <wsdl:part element="ns1:getCircuitsResponse" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="downloadPesRetour">
-        <wsdl:part element="ns1:downloadPesRetour" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="uploadBSMS">
-        <wsdl:part element="ns1:uploadBSMS" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="delete">
-        <wsdl:part element="ns1:delete" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="historyResponse">
-        <wsdl:part element="ns1:historyResponse" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="getSmsUrlResponse">
-        <wsdl:part element="ns1:getSmsUrlResponse" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="getMultiIdsSmsUrlResponse">
-        <wsdl:part element="ns1:getMultiIdsSmsUrlResponse" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="uploadBSMSResponse">
-        <wsdl:part element="ns1:uploadBSMSResponse" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="searchResponse">
-        <wsdl:part element="ns1:searchResponse" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="getMultiIdsSmsUrl">
-        <wsdl:part element="ns1:getMultiIdsSmsUrl" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="getSMSHistory">
-        <wsdl:part element="ns1:getSMSHistory" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="getFdcResponse">
-        <wsdl:part element="ns1:getFdcResponse" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="downloadChorus">
-        <wsdl:part element="ns1:downloadChorus" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="getMetasResponse">
-        <wsdl:part element="ns1:getMetasResponse" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="uploadOnDemand">
-        <wsdl:part element="ns1:uploadOnDemand" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="getFdc">
-        <wsdl:part element="ns1:getFdc" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="getProperties">
-        <wsdl:part element="ns1:getProperties" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="listRemainingChorus">
-        <wsdl:part element="ns1:listRemainingChorus" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="getCircuits">
-        <wsdl:part element="ns1:getCircuits" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="history">
-        <wsdl:part element="ns1:history" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="getMetas">
-        <wsdl:part element="ns1:getMetas" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="BusinessException">
-        <wsdl:part element="ns1:BusinessException" name="BusinessException">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="listRemainingChorusResponse">
-        <wsdl:part element="ns1:listRemainingChorusResponse" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="download">
-        <wsdl:part element="ns1:download" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="otpUploadResponse">
-        <wsdl:part element="ns1:otpUploadResponse" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="downloadChorusResponse">
-        <wsdl:part element="ns1:downloadChorusResponse" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="ExportUsersData">
-        <wsdl:part element="ns1:ExportUsersData" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="upload">
-        <wsdl:part element="ns1:upload" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="uploadOTPInformation">
-        <wsdl:part element="ns1:uploadOTPInformation" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="downloadPesRetourResponse">
-        <wsdl:part element="ns1:downloadPesRetourResponse" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="uploadPJ">
-        <wsdl:part element="ns1:uploadPJ" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="getRefusalMessageResponse">
-        <wsdl:part element="ns1:getRefusalMessageResponse" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="uploadResponse">
-        <wsdl:part element="ns1:uploadResponse" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="getPropertiesResponse">
-        <wsdl:part element="ns1:getPropertiesResponse" name="parameters">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:portType name="DocumentService">
-        <wsdl:operation name="getMultiIdsSmsUrl">
-            <wsdl:input message="ns1:getMultiIdsSmsUrl" name="getMultiIdsSmsUrl">
-            </wsdl:input>
-            <wsdl:output message="ns1:getMultiIdsSmsUrlResponse" name="getMultiIdsSmsUrlResponse">
-            </wsdl:output>
-            <wsdl:fault message="ns1:BusinessException" name="BusinessException">
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="getSMSHistory">
-            <wsdl:input message="ns1:getSMSHistory" name="getSMSHistory">
-            </wsdl:input>
-            <wsdl:output message="ns1:getSMSHistoryResponse" name="getSMSHistoryResponse">
-            </wsdl:output>
-            <wsdl:fault message="ns1:BusinessException" name="BusinessException">
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="downloadChorus">
-            <wsdl:input message="ns1:downloadChorus" name="downloadChorus">
-            </wsdl:input>
-            <wsdl:output message="ns1:downloadChorusResponse" name="downloadChorusResponse">
-            </wsdl:output>
-            <wsdl:fault message="ns1:BusinessException" name="BusinessException">
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="uploadOnDemand">
-            <wsdl:input message="ns1:uploadOnDemand" name="uploadOnDemand">
-            </wsdl:input>
-            <wsdl:output message="ns1:uploadOnDemandResponse" name="uploadOnDemandResponse">
-            </wsdl:output>
-            <wsdl:fault message="ns1:BusinessException" name="BusinessException">
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="rawdelete">
-            <wsdl:input message="ns1:rawdelete" name="rawdelete">
-            </wsdl:input>
-            <wsdl:output message="ns1:rawdeleteResponse" name="rawdeleteResponse">
-            </wsdl:output>
-            <wsdl:fault message="ns1:BusinessException" name="BusinessException">
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="getFdc">
-            <wsdl:input message="ns1:getFdc" name="getFdc">
-            </wsdl:input>
-            <wsdl:output message="ns1:getFdcResponse" name="getFdcResponse">
-            </wsdl:output>
-            <wsdl:fault message="ns1:BusinessException" name="BusinessException">
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="getProperties">
-            <wsdl:input message="ns1:getProperties" name="getProperties">
-            </wsdl:input>
-            <wsdl:output message="ns1:getPropertiesResponse" name="getPropertiesResponse">
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="listRemainingChorus">
-            <wsdl:input message="ns1:listRemainingChorus" name="listRemainingChorus">
-            </wsdl:input>
-            <wsdl:output message="ns1:listRemainingChorusResponse" name="listRemainingChorusResponse">
-            </wsdl:output>
-            <wsdl:fault message="ns1:BusinessException" name="BusinessException">
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="getCircuits">
-            <wsdl:input message="ns1:getCircuits" name="getCircuits">
-            </wsdl:input>
-            <wsdl:output message="ns1:getCircuitsResponse" name="getCircuitsResponse">
-            </wsdl:output>
-            <wsdl:fault message="ns1:BusinessException" name="BusinessException">
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="getRefusalMessage">
-            <wsdl:input message="ns1:getRefusalMessage" name="getRefusalMessage">
-            </wsdl:input>
-            <wsdl:output message="ns1:getRefusalMessageResponse" name="getRefusalMessageResponse">
-            </wsdl:output>
-            <wsdl:fault message="ns1:BusinessException" name="BusinessException">
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="listRemainingPesRetour">
-            <wsdl:input message="ns1:listRemainingPesRetour" name="listRemainingPesRetour">
-            </wsdl:input>
-            <wsdl:output message="ns1:listRemainingPesRetourResponse" name="listRemainingPesRetourResponse">
-            </wsdl:output>
-            <wsdl:fault message="ns1:BusinessException" name="BusinessException">
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="listRemainingAcknowledgements">
-            <wsdl:input message="ns1:listRemainingAcknowledgements" name="listRemainingAcknowledgements">
-            </wsdl:input>
-            <wsdl:output message="ns1:listRemainingAcknowledgementsResponse"
-                         name="listRemainingAcknowledgementsResponse">
-            </wsdl:output>
-            <wsdl:fault message="ns1:BusinessException" name="BusinessException">
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="history">
-            <wsdl:input message="ns1:history" name="history">
-            </wsdl:input>
-            <wsdl:output message="ns1:historyResponse" name="historyResponse">
-            </wsdl:output>
-            <wsdl:fault message="ns1:BusinessException" name="BusinessException">
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="getMetas">
-            <wsdl:input message="ns1:getMetas" name="getMetas">
-            </wsdl:input>
-            <wsdl:output message="ns1:getMetasResponse" name="getMetasResponse">
-            </wsdl:output>
-            <wsdl:fault message="ns1:BusinessException" name="BusinessException">
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="downloadAcknowledgement">
-            <wsdl:input message="ns1:downloadAcknowledgement" name="downloadAcknowledgement">
-            </wsdl:input>
-            <wsdl:output message="ns1:downloadAcknowledgementResponse" name="downloadAcknowledgementResponse">
-            </wsdl:output>
-            <wsdl:fault message="ns1:BusinessException" name="BusinessException">
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="download">
-            <wsdl:input message="ns1:download" name="download">
-            </wsdl:input>
-            <wsdl:output message="ns1:downloadResponse" name="downloadResponse">
-            </wsdl:output>
-            <wsdl:fault message="ns1:BusinessException" name="BusinessException">
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="search">
-            <wsdl:input message="ns1:search" name="search">
-            </wsdl:input>
-            <wsdl:output message="ns1:searchResponse" name="searchResponse">
-            </wsdl:output>
-            <wsdl:fault message="ns1:BusinessException" name="BusinessException">
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="synchronizeUsers">
-            <wsdl:input message="ns1:synchronizeUsers" name="synchronizeUsers">
-            </wsdl:input>
-            <wsdl:output message="ns1:synchronizeUsersResponse" name="synchronizeUsersResponse">
-            </wsdl:output>
-            <wsdl:fault message="ns1:BusinessException" name="BusinessException">
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="getPropertiesByName">
-            <wsdl:input message="ns1:getPropertiesByName" name="getPropertiesByName">
-            </wsdl:input>
-            <wsdl:output message="ns1:getPropertiesByNameResponse" name="getPropertiesByNameResponse">
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="uploadMeta">
-            <wsdl:input message="ns1:uploadMeta" name="uploadMeta">
-            </wsdl:input>
-            <wsdl:output message="ns1:uploadMetaResponse" name="uploadMetaResponse">
-            </wsdl:output>
-            <wsdl:fault message="ns1:BusinessException" name="BusinessException">
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="ExportUsersData">
-            <wsdl:input message="ns1:ExportUsersData" name="ExportUsersData">
-            </wsdl:input>
-            <wsdl:output message="ns1:ExportUsersDataResponse" name="ExportUsersDataResponse">
-            </wsdl:output>
-            <wsdl:fault message="ns1:BusinessException" name="BusinessException">
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="otpUpload">
-            <wsdl:input message="ns1:otpUpload" name="otpUpload">
-            </wsdl:input>
-            <wsdl:output message="ns1:otpUploadResponse" name="otpUploadResponse">
-            </wsdl:output>
-            <wsdl:fault message="ns1:BusinessException" name="BusinessException">
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="upload">
-            <wsdl:input message="ns1:upload" name="upload">
-            </wsdl:input>
-            <wsdl:output message="ns1:uploadResponse" name="uploadResponse">
-            </wsdl:output>
-            <wsdl:fault message="ns1:BusinessException" name="BusinessException">
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="getSmsUrl">
-            <wsdl:input message="ns1:getSmsUrl" name="getSmsUrl">
-            </wsdl:input>
-            <wsdl:output message="ns1:getSmsUrlResponse" name="getSmsUrlResponse">
-            </wsdl:output>
-            <wsdl:fault message="ns1:BusinessException" name="BusinessException">
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="uploadOTPInformation">
-            <wsdl:input message="ns1:uploadOTPInformation" name="uploadOTPInformation">
-            </wsdl:input>
-            <wsdl:output message="ns1:uploadOTPInformationResponse" name="uploadOTPInformationResponse">
-            </wsdl:output>
-            <wsdl:fault message="ns1:BusinessException" name="BusinessException">
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="downloadPesRetour">
-            <wsdl:input message="ns1:downloadPesRetour" name="downloadPesRetour">
-            </wsdl:input>
-            <wsdl:output message="ns1:downloadPesRetourResponse" name="downloadPesRetourResponse">
-            </wsdl:output>
-            <wsdl:fault message="ns1:BusinessException" name="BusinessException">
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="uploadBSMS">
-            <wsdl:input message="ns1:uploadBSMS" name="uploadBSMS">
-            </wsdl:input>
-            <wsdl:output message="ns1:uploadBSMSResponse" name="uploadBSMSResponse">
-            </wsdl:output>
-            <wsdl:fault message="ns1:BusinessException" name="BusinessException">
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="uploadPJ">
-            <wsdl:input message="ns1:uploadPJ" name="uploadPJ">
-            </wsdl:input>
-            <wsdl:output message="ns1:uploadPJResponse" name="uploadPJResponse">
-            </wsdl:output>
-            <wsdl:fault message="ns1:IOException" name="IOException">
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="delete">
-            <wsdl:input message="ns1:delete" name="delete">
-            </wsdl:input>
-            <wsdl:output message="ns1:deleteResponse" name="deleteResponse">
-            </wsdl:output>
-            <wsdl:fault message="ns1:BusinessException" name="BusinessException">
-            </wsdl:fault>
-        </wsdl:operation>
-    </wsdl:portType>
-    <wsdl:binding name="CXFDocumentServiceServiceSoapBinding" type="ns1:DocumentService">
-        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
-        <wsdl:operation name="getMultiIdsSmsUrl">
-            <soap:operation soapAction="" style="document"/>
-            <wsdl:input name="getMultiIdsSmsUrl">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="getMultiIdsSmsUrlResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="BusinessException">
-                <soap:fault name="BusinessException" use="literal"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="getSMSHistory">
-            <soap:operation soapAction="" style="document"/>
-            <wsdl:input name="getSMSHistory">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="getSMSHistoryResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="BusinessException">
-                <soap:fault name="BusinessException" use="literal"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="downloadChorus">
-            <soap:operation soapAction="" style="document"/>
-            <wsdl:input name="downloadChorus">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="downloadChorusResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="BusinessException">
-                <soap:fault name="BusinessException" use="literal"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="uploadOnDemand">
-            <soap:operation soapAction="" style="document"/>
-            <wsdl:input name="uploadOnDemand">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="uploadOnDemandResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="BusinessException">
-                <soap:fault name="BusinessException" use="literal"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="rawdelete">
-            <soap:operation soapAction="" style="document"/>
-            <wsdl:input name="rawdelete">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="rawdeleteResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="BusinessException">
-                <soap:fault name="BusinessException" use="literal"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="getFdc">
-            <soap:operation soapAction="" style="document"/>
-            <wsdl:input name="getFdc">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="getFdcResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="BusinessException">
-                <soap:fault name="BusinessException" use="literal"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="getProperties">
-            <soap:operation soapAction="" style="document"/>
-            <wsdl:input name="getProperties">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="getPropertiesResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="listRemainingChorus">
-            <soap:operation soapAction="" style="document"/>
-            <wsdl:input name="listRemainingChorus">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="listRemainingChorusResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="BusinessException">
-                <soap:fault name="BusinessException" use="literal"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="getCircuits">
-            <soap:operation soapAction="" style="document"/>
-            <wsdl:input name="getCircuits">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="getCircuitsResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="BusinessException">
-                <soap:fault name="BusinessException" use="literal"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="getRefusalMessage">
-            <soap:operation soapAction="" style="document"/>
-            <wsdl:input name="getRefusalMessage">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="getRefusalMessageResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="BusinessException">
-                <soap:fault name="BusinessException" use="literal"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="listRemainingPesRetour">
-            <soap:operation soapAction="" style="document"/>
-            <wsdl:input name="listRemainingPesRetour">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="listRemainingPesRetourResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="BusinessException">
-                <soap:fault name="BusinessException" use="literal"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="listRemainingAcknowledgements">
-            <soap:operation soapAction="" style="document"/>
-            <wsdl:input name="listRemainingAcknowledgements">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="listRemainingAcknowledgementsResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="BusinessException">
-                <soap:fault name="BusinessException" use="literal"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="history">
-            <soap:operation soapAction="" style="document"/>
-            <wsdl:input name="history">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="historyResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="BusinessException">
-                <soap:fault name="BusinessException" use="literal"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="getMetas">
-            <soap:operation soapAction="" style="document"/>
-            <wsdl:input name="getMetas">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="getMetasResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="BusinessException">
-                <soap:fault name="BusinessException" use="literal"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="downloadAcknowledgement">
-            <soap:operation soapAction="" style="document"/>
-            <wsdl:input name="downloadAcknowledgement">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="downloadAcknowledgementResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="BusinessException">
-                <soap:fault name="BusinessException" use="literal"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="download">
-            <soap:operation soapAction="" style="document"/>
-            <wsdl:input name="download">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="downloadResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="BusinessException">
-                <soap:fault name="BusinessException" use="literal"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="search">
-            <soap:operation soapAction="" style="document"/>
-            <wsdl:input name="search">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="searchResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="BusinessException">
-                <soap:fault name="BusinessException" use="literal"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="synchronizeUsers">
-            <soap:operation soapAction="" style="document"/>
-            <wsdl:input name="synchronizeUsers">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="synchronizeUsersResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="BusinessException">
-                <soap:fault name="BusinessException" use="literal"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="getPropertiesByName">
-            <soap:operation soapAction="" style="document"/>
-            <wsdl:input name="getPropertiesByName">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="getPropertiesByNameResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="uploadMeta">
-            <soap:operation soapAction="" style="document"/>
-            <wsdl:input name="uploadMeta">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="uploadMetaResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="BusinessException">
-                <soap:fault name="BusinessException" use="literal"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="ExportUsersData">
-            <soap:operation soapAction="" style="document"/>
-            <wsdl:input name="ExportUsersData">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="ExportUsersDataResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="BusinessException">
-                <soap:fault name="BusinessException" use="literal"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="otpUpload">
-            <soap:operation soapAction="" style="document"/>
-            <wsdl:input name="otpUpload">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="otpUploadResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="BusinessException">
-                <soap:fault name="BusinessException" use="literal"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="upload">
-            <soap:operation soapAction="" style="document"/>
-            <wsdl:input name="upload">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="uploadResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="BusinessException">
-                <soap:fault name="BusinessException" use="literal"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="getSmsUrl">
-            <soap:operation soapAction="" style="document"/>
-            <wsdl:input name="getSmsUrl">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="getSmsUrlResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="BusinessException">
-                <soap:fault name="BusinessException" use="literal"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="uploadOTPInformation">
-            <soap:operation soapAction="" style="document"/>
-            <wsdl:input name="uploadOTPInformation">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="uploadOTPInformationResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="BusinessException">
-                <soap:fault name="BusinessException" use="literal"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="downloadPesRetour">
-            <soap:operation soapAction="" style="document"/>
-            <wsdl:input name="downloadPesRetour">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="downloadPesRetourResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="BusinessException">
-                <soap:fault name="BusinessException" use="literal"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="uploadBSMS">
-            <soap:operation soapAction="" style="document"/>
-            <wsdl:input name="uploadBSMS">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="uploadBSMSResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="BusinessException">
-                <soap:fault name="BusinessException" use="literal"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="uploadPJ">
-            <soap:operation soapAction="" style="document"/>
-            <wsdl:input name="uploadPJ">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="uploadPJResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="IOException">
-                <soap:fault name="IOException" use="literal"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="delete">
-            <soap:operation soapAction="" style="document"/>
-            <wsdl:input name="delete">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="deleteResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="BusinessException">
-                <soap:fault name="BusinessException" use="literal"/>
-            </wsdl:fault>
-        </wsdl:operation>
-    </wsdl:binding>
-    <wsdl:service name="CXFDocumentServiceService">
-        <wsdl:port binding="tns:CXFDocumentServiceServiceSoapBinding" name="DocumentPort">
-            <soap:address location="https://demo-parapheur.dfast.fr/parapheur-soap/soap/v1/Documents"/>
-        </wsdl:port>
-    </wsdl:service>
+<?xml version='1.0' encoding='UTF-8'?><wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="documentTarget" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns2="http://schemas.xmlsoap.org/soap/http" xmlns:ns1="http://sei.ws.fast.cdc.com/" name="CXFDocumentServiceService" targetNamespace="documentTarget">
+  <wsdl:import location="DocumentService.wsdl" namespace="http://sei.ws.fast.cdc.com/">
+    </wsdl:import>
+  <wsdl:binding name="CXFDocumentServiceServiceSoapBinding" type="ns1:DocumentService">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="getMultiIdsSmsUrl">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="getMultiIdsSmsUrl">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getMultiIdsSmsUrlResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getSMSHistory">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="getSMSHistory">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getSMSHistoryResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="downloadChorus">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="downloadChorus">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="downloadChorusResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="uploadOnDemand">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="uploadOnDemand">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="uploadOnDemandResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="rawdelete">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="rawdelete">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="rawdeleteResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getFdc">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="getFdc">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getFdcResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getProperties">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="getProperties">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getPropertiesResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="listRemainingChorus">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="listRemainingChorus">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="listRemainingChorusResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getCircuits">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="getCircuits">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getCircuitsResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getRefusalMessage">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="getRefusalMessage">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getRefusalMessageResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="listRemainingPesRetour">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="listRemainingPesRetour">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="listRemainingPesRetourResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="searchDetails">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="searchDetails">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="searchDetailsResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="listRemainingAcknowledgements">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="listRemainingAcknowledgements">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="listRemainingAcknowledgementsResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="history">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="history">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="historyResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getMetas">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="getMetas">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getMetasResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="downloadAcknowledgement">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="downloadAcknowledgement">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="downloadAcknowledgementResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="download">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="download">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="downloadResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="search">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="search">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="searchResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="listRemainingSignedDocs">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="listRemainingSignedDocs">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="listRemainingSignedDocsResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="synchronizeUsers">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="synchronizeUsers">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="synchronizeUsersResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getPropertiesByName">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="getPropertiesByName">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getPropertiesByNameResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="uploadMeta">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="uploadMeta">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="uploadMetaResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="ExportUsersData">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="ExportUsersData">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="ExportUsersDataResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="otpUpload">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="otpUpload">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="otpUploadResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="upload">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="upload">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="uploadResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getSmsUrl">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="getSmsUrl">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getSmsUrlResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="uploadOTPInformation">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="uploadOTPInformation">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="uploadOTPInformationResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="downloadPesRetour">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="downloadPesRetour">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="downloadPesRetourResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="uploadBSMS">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="uploadBSMS">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="uploadBSMSResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="uploadPJ">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="uploadPJ">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="uploadPJResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="IOException">
+        <soap:fault name="IOException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="delete">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="delete">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="deleteResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="CXFDocumentServiceService">
+    <wsdl:port binding="tns:CXFDocumentServiceServiceSoapBinding" name="DocumentPort">
+      <soap:address location="https://demo-parapheur.dfast.fr/parapheur-soap/soap/v1/Documents"/>
+    </wsdl:port>
+  </wsdl:service>
 </wsdl:definitions>

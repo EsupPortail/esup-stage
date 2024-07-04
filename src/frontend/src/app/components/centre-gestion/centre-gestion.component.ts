@@ -292,12 +292,14 @@ export class CentreGestionComponent implements OnInit {
     this.signatureElectroniqueForm = this.fb.group({
       circuitSignature: [null, [Validators.maxLength(255)]],
       signataires: [null, []],
+      envoiDocumentSigne: [null, []],
     });
   }
 
   setCentreGestionSignatureElectronique() {
     this.centreGestion.circuitSignature = this.signatureElectroniqueForm.get('circuitSignature')?.value;
     this.centreGestion.signataires = this.signatureElectroniqueForm.get('signataires')?.value;
+    this.centreGestion.envoiDocumentSigne = this.signatureElectroniqueForm.get('envoiDocumentSigne')?.value;
   }
 
   invalidOrdresValidations() {

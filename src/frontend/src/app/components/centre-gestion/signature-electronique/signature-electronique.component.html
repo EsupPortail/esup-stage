@@ -11,6 +11,9 @@
           <mat-error><app-form-error [field]="form.get('circuitSignature')"></app-form-error></mat-error>
         </mat-form-field>
         <div class="col-12">
+          <mat-checkbox formControlName="envoiDocumentSigne">Activer l'envoi du document signé</mat-checkbox>
+        </div>
+        <div class="col-12">
           <div class="text-title">Ordre de signature</div>
           <div class="text-hint">
             <mat-hint>Le choix entre OTP et signature serveur est obligatoire. Si vous n'utilisez pas Docaposte, vous pouvez indifféremment cocher signature OTP ou signature serveur</mat-hint>

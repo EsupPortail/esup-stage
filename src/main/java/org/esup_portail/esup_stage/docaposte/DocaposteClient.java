@@ -1,8 +1,10 @@
 package org.esup_portail.esup_stage.docaposte;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.util.Strings;
 import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
 import org.esup_portail.esup_stage.docaposte.gen.*;
-import org.esup_portail.esup_stage.enums.SignataireEnum;
 import org.esup_portail.esup_stage.enums.TypeSignatureEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.Avenant;
@@ -26,6 +28,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class DocaposteClient extends WebServiceGatewaySupport {
+    private static final Logger logger	= LogManager.getLogger(DocaposteClient.class);
 
     @Autowired
     ApplicationBootstrap applicationBootstrap;
@@ -61,6 +64,19 @@ public class DocaposteClient extends WebServiceGatewaySupport {
             uploadRequest.setCircuitId(convention.getCentreGestion().getCircuitSignature());
             uploadRequest.setDataFileVO(documentFile);
             uploadRequest.setLabel(label);
+            if (convention.getCentreGestion().isEnvoiDocumentSigne()) {
+                String receiver = null;
+                if (convention.getSignataire() != null && Strings.isNotEmpty(convention.getSignataire().getMail())) {
+                    receiver = convention.getSignataire().getMail();
+                }
+                String deliveryAddress = applicationBootstrap.getAppConfig().getMailerDeliveryAddress();
+                if (deliveryAddress != null && !deliveryAddress.isEmpty()) {
+                    String originalReceiver = receiver + "";
+                    receiver = deliveryAddress;
+                    logger.info("Email destinataire " + originalReceiver + " redirigé vers " + receiver);
+                }
+                uploadRequest.setEmailDestinataire(receiver);
+            }
             UploadResponse uploadResponse = ((JAXBElement<UploadResponse>) getWebServiceTemplate().marshalSendAndReceive(new ObjectFactory().createUpload(uploadRequest))).getValue();
             documentId = uploadResponse.getReturn();
             if (avenant != null) {

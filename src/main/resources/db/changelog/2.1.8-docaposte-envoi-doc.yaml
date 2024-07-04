@@ -1,0 +1,14 @@
+databaseChangeLog:
+- changeSet:
+    id: 2.1.8-centre-envoi-doc
+    author: ssound
+    changes:
+    - addColumn:
+        tableName: CentreGestion
+        columns:
+        - column:
+            name: envoiDocumentSigne
+            type: BIT
+            defaultValueBoolean: false
+            constraints:
+                nullable: false
