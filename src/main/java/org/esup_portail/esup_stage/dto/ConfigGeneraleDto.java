@@ -3,6 +3,7 @@ package org.esup_portail.esup_stage.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.esup_portail.esup_stage.dto.view.Views;
+import org.esup_portail.esup_stage.enums.AppSignatureEnum;
 import org.esup_portail.esup_stage.enums.TypeCentreEnum;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -18,6 +19,9 @@ public class ConfigGeneraleDto {
 
     @JsonView(Views.Etu.class)
     private boolean signatureEnabled = false;
+
+    @JsonView(Views.Etu.class)
+    private AppSignatureEnum signatureType;
 
     @JsonView(Views.Etu.class)
     private boolean autoriserEtudiantAModifierEntreprise = false;
@@ -140,6 +144,14 @@ public class ConfigGeneraleDto {
 
     public void setSignatureEnabled(boolean signatureEnabled) {
         this.signatureEnabled = signatureEnabled;
+    }
+
+    public AppSignatureEnum getSignatureType() {
+        return signatureType;
+    }
+
+    public void setSignatureType(AppSignatureEnum signatureType) {
+        this.signatureType = signatureType;
     }
 
     public String getCodeCesure() {

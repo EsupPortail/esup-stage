@@ -4,6 +4,7 @@ import { ConventionService } from "../../../services/convention.service";
 import { CentreGestionService } from "../../../services/centre-gestion.service";
 import { TechnicalService } from "../../../services/technical.service";
 import * as FileSaver from 'file-saver';
+import { ConfigService } from '../../../services/config.service';
 
 @Component({
   selector: 'app-signature-electronique',
@@ -19,17 +20,22 @@ export class SignatureElectroniqueComponent implements OnInit {
   profils: any[] = [];
   data: any[] = [];
   isGestionnaire = false;
+  signatureType: string;
 
   constructor(
     private technicalService: TechnicalService,
     private authService: AuthService,
     private conventionService: ConventionService,
     private centreGestionService: CentreGestionService,
+    private configService: ConfigService,
   ) { }
 
   ngOnInit(): void {
     this.technicalService.isMobile.subscribe((value: boolean) => {
       this.isMobile = value;
+    });
+    this.configService.getConfigGenerale().subscribe((response) => {
+      this.signatureType = response.signatureType;
     });
     this.isGestionnaire = this.authService.isAdmin() || this.authService.isGestionnaire();
     this.centreGestionService.getById(this.convention.centreGestion.id).subscribe((response: any) => {

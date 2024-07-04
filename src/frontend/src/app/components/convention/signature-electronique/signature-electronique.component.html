@@ -23,7 +23,7 @@
       <div class="alert alert-warning" *ngIf="!convention.dateEnvoiSignature">
         La convention n'a pas été envoyée pour signature électronique.
       </div>
-      <div class="alert alert-info" *ngIf="convention.dateEnvoiSignature">
+      <div class="alert alert-info" *ngIf="convention.dateEnvoiSignature && signatureType !== 'EXTERNE'">
         Docaposte et ESUP-Signature : les informations de signature sont mises à jour automatiquement tous les jours à 1h.<br/>
         Solutions externes : les informations de signature sont mis à jour automatiquement via webhook.<br/>
         L'actualisation des données n'est possible que toutes les 30 minutes.
