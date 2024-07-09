@@ -39,4 +39,3 @@ src/main/resources/estage.properties
 
 ### Docaposte gen code ###
 src/main/java/org/esup_portail/esup_stage/docaposte/gen/*
-src/main/java/META-INF/sun-jaxb.episode
