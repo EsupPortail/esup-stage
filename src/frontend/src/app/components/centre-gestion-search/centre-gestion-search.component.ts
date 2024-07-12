@@ -15,6 +15,7 @@ import { ConfirmDeleteCentreComponent } from './confirm-delete-centre/confirm-de
 })
 export class CentreGestionSearchComponent implements OnInit, OnDestroy, AfterViewInit {
 
+  isAdmin:boolean = false;	
   columns = ['personnels', 'id', 'nomCentre', 'niveauCentre.libelle', 'validationPedagogique', 'codeConfidentialite', 'action'];
   exportColumns = {
     id: { title: 'Id' },
@@ -41,6 +42,7 @@ export class CentreGestionSearchComponent implements OnInit, OnDestroy, AfterVie
     private router: Router) {
   }
   ngOnInit(): void {
+    this.isAdmin = this.authService.isAdmin();	  
     this.authService.getCurrentUser().subscribe(response => {
       this.currentUser = response;
     });
