@@ -35,14 +35,11 @@ public class LdapService {
     private String call(String api, String method, Object params) {
         try {
             if (method.equals("GET")) {
-                String query = "";
-                List<String> listParams = new ArrayList<>();
-                ((Map<String, String>) params).forEach((key, value) -> listParams.add(key + "=" + URLEncoder.encode(value, StandardCharsets.UTF_8)));
-                if (listParams.size() > 0) {
-                    query += "?" + String.join("&", listParams);
-                }
                 return webClient.get()
-                        .uri(applicationBootstrap.getAppConfig().getReferentielWsLdapUrl() + api + query)
+                        .uri(applicationBootstrap.getAppConfig().getReferentielWsLdapUrl() + api, uri -> {
+                            ((Map<String, String>) params).forEach(uri::queryParam);
+                             return uri.build();
+                        })
                         .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((applicationBootstrap.getAppConfig().getReferentielWsLogin() + ":" + applicationBootstrap.getAppConfig().getReferentielWsPassword()).getBytes()))
                         .accept(MediaType.APPLICATION_JSON)
                         .retrieve()
