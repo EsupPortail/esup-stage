@@ -10,6 +10,8 @@ import org.esup_portail.esup_stage.model.Convention;
 import org.esup_portail.esup_stage.service.signature.model.Historique;
 import org.esup_portail.esup_stage.webhook.esupsignature.service.model.AuditStep;
 import org.esup_portail.esup_stage.webhook.esupsignature.service.model.AuditTrail;
+import org.esup_portail.esup_stage.webhook.esupsignature.service.model.Recipient;
+import org.esup_portail.esup_stage.webhook.esupsignature.service.model.WorkflowStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,11 +49,29 @@ public class WebhookService {
     public String upload(PdfMetadataDto content) {
         MetadataDto metadataDto = content.getMetadata();
         List<String> recipients = metadataDto.getSignatory().stream().map(s -> s.getOrder() + "*" + s.getMail()).collect(Collectors.toList());
+        List<WorkflowStep> workflowSteps = new ArrayList<>();
+        metadataDto.getSignatory().forEach(s -> {
+            WorkflowStep step = workflowSteps.stream().filter(ws -> ws.getStepNumber() == s.getOrder()).findFirst().orElse(null);
+            if (step == null) {
+                step = new WorkflowStep();
+                step.setStepNumber(s.getOrder());
+                workflowSteps.add(step);
+            }
+            Recipient recipient = new Recipient();
+            recipient.setStep(s.getOrder());
+            recipient.setEmail(s.getMail());
+            recipient.setFirstName(s.getGivenname());
+            recipient.setName(s.getName());
+            recipient.setPhone(s.getPhone());
+            step.getRecipients().add(recipient);
+        });
+
 
         MultipartBodyBuilder builder = new MultipartBodyBuilder();
         builder.part("multipartFiles", geMultipartFile(metadataDto.getTitle(), Base64.decode(content.getPdf64())));
         builder.part("createByEppn", "system");
         builder.part("recipientsEmails", String.join(",", recipients));
+        builder.part("stepsJsonString", workflowSteps);
 
         return webClient.post()
                 .uri(applicationBootstrap.getAppConfig().getEsupSignatureUri() + "/workflows/" + metadataDto.getWorkflowId() + "/new")
