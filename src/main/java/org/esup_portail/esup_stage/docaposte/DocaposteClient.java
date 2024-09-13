@@ -17,6 +17,7 @@ import org.esup_portail.esup_stage.service.signature.model.Historique;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import javax.xml.bind.JAXBElement;
 import java.io.ByteArrayOutputStream;
@@ -58,36 +59,42 @@ public class DocaposteClient extends WebServiceGatewaySupport {
         documentFile.setFilename(filename + ".pdf");
 
         // Dépôt du PDF dans Docaposte
-        if (documentId == null) {
-            Upload uploadRequest = new Upload();
-            uploadRequest.setSubscriberId(applicationBootstrap.getAppConfig().getDocaposteSiren());
-            uploadRequest.setCircuitId(convention.getCentreGestion().getCircuitSignature());
-            uploadRequest.setDataFileVO(documentFile);
-            uploadRequest.setLabel(label);
-            if (convention.getCentreGestion().isEnvoiDocumentSigne()) {
-                String receiver = null;
-                if (convention.getSignataire() != null && Strings.isNotEmpty(convention.getSignataire().getMail())) {
-                    receiver = convention.getSignataire().getMail();
-                }
-                String deliveryAddress = applicationBootstrap.getAppConfig().getMailerDeliveryAddress();
-                if (deliveryAddress != null && !deliveryAddress.isEmpty()) {
-                    String originalReceiver = receiver + "";
-                    receiver = deliveryAddress;
-                    logger.info("Email destinataire " + originalReceiver + " redirigé vers " + receiver);
-                }
-                uploadRequest.setEmailDestinataire(receiver);
+        Upload uploadRequest = new Upload();
+        uploadRequest.setSubscriberId(applicationBootstrap.getAppConfig().getDocaposteSiren());
+        uploadRequest.setCircuitId(convention.getCentreGestion().getCircuitSignature());
+        uploadRequest.setDataFileVO(documentFile);
+        uploadRequest.setLabel(label);
+        if (convention.getCentreGestion().isEnvoiDocumentSigne()) {
+            String receiver = null;
+            if (convention.getSignataire() != null && Strings.isNotEmpty(convention.getSignataire().getMail())) {
+                receiver = convention.getSignataire().getMail();
             }
+            String deliveryAddress = applicationBootstrap.getAppConfig().getMailerDeliveryAddress();
+            if (deliveryAddress != null && !deliveryAddress.isEmpty()) {
+                String originalReceiver = receiver + "";
+                receiver = deliveryAddress;
+                logger.info("Email destinataire " + originalReceiver + " redirigé vers " + receiver);
+            }
+            uploadRequest.setEmailDestinataire(receiver);
+        }
+        try {
             UploadResponse uploadResponse = ((JAXBElement<UploadResponse>) getWebServiceTemplate().marshalSendAndReceive(new ObjectFactory().createUpload(uploadRequest))).getValue();
             documentId = uploadResponse.getReturn();
-            if (avenant != null) {
-                avenant.setDateEnvoiSignature(new Date());
-                avenant.setDocumentId(documentId);
-                avenantJpaRepository.saveAndFlush(avenant);
+        } catch (SoapFaultClientException e) {
+            if (e.getMessage() != null && e.getMessage().contains("Fichier déjà depose par un agent")) {
+                throw new AppException(HttpStatus.BAD_REQUEST, e.getMessage() + " Veuillez le supprimer manuellement");
             } else {
-                convention.setDateEnvoiSignature(new Date());
-                convention.setDocumentId(documentId);
-                conventionJpaRepository.saveAndFlush(convention);
+                throw e;
             }
+        }
+        if (avenant != null) {
+            avenant.setDateEnvoiSignature(new Date());
+            avenant.setDocumentId(documentId);
+            avenantJpaRepository.saveAndFlush(avenant);
+        } else {
+            convention.setDateEnvoiSignature(new Date());
+            convention.setDocumentId(documentId);
+            conventionJpaRepository.saveAndFlush(convention);
         }
 
         String otpData = impressionService.generateXmlData(convention, TypeSignatureEnum.otp);
