@@ -84,10 +84,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "esup-stage-front:build:production"
+              "buildTarget": "esup-stage-front:build:production"
             },
             "development": {
-              "browserTarget": "esup-stage-front:build:development"
+              "buildTarget": "esup-stage-front:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -95,7 +95,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "esup-stage-front:build"
+            "buildTarget": "esup-stage-front:build"
           }
         },
         "test": {
