@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { RoleService } from "../../../services/role.service";
 import { TableComponent } from "../../table/table.component";
-import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
+import { MatLegacyTabChangeEvent as MatTabChangeEvent, MatLegacyTabGroup as MatTabGroup } from "@angular/material/legacy-tabs";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { AppFonction } from "../../../constants/app-fonction";
 import { AuthService } from "../../../services/auth.service";

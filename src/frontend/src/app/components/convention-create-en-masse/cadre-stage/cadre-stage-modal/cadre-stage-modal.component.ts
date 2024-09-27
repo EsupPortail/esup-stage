@@ -16,7 +16,7 @@ import { ConfigService } from "../../../../services/config.service";
 import { ConsigneService } from "../../../../services/consigne.service";
 import * as FileSaver from "file-saver";
 import { Router } from "@angular/router";
-import { MatDialog, MatDialogConfig, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog, MatLegacyDialogConfig as MatDialogConfig, MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA, MatLegacyDialogRef as MatDialogRef } from '@angular/material/legacy-dialog';
 
 @Component({
   selector: 'app-cadre-stage-modal',

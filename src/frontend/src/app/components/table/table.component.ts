@@ -13,13 +13,13 @@ import {
   ViewChild
 } from '@angular/core';
 import { Sort, SortDirection } from "@angular/material/sort";
-import { MatPaginator, PageEvent } from "@angular/material/paginator";
-import { MatColumnDef, MatTable } from "@angular/material/table";
+import { MatLegacyPaginator as MatPaginator, LegacyPageEvent as PageEvent } from "@angular/material/legacy-paginator";
+import { MatLegacyColumnDef as MatColumnDef, MatLegacyTable as MatTable } from "@angular/material/legacy-table";
 import { PaginatedService } from "../../services/paginated.service";
 import { Subject } from "rxjs";
 import { debounceTime } from "rxjs/operators";
 import * as _ from "lodash";
-import { MatAutocompleteSelectedEvent } from "@angular/material/autocomplete";
+import { MatLegacyAutocompleteSelectedEvent as MatAutocompleteSelectedEvent } from "@angular/material/legacy-autocomplete";
 import { AuthService } from "../../services/auth.service";
 import * as FileSaver from "file-saver";
 import { TechnicalService } from "../../services/technical.service";

@@ -1,5 +1,5 @@
 import { Directive, HostListener } from '@angular/core';
-import { MatTabGroup } from "@angular/material/tabs";
+import { MatLegacyTabGroup as MatTabGroup } from "@angular/material/legacy-tabs";
 import { TechnicalService } from "../services/technical.service";
 
 @Directive({
