@@ -31,7 +31,7 @@
     "file-saver": "^2.0.5",
     "lodash": "^4.17.21",
     "ngx-cookie-service": "^15.0.0",
-    "ngx-mat-select-search": "^4.1.1",
+    "ngx-mat-select-search": "^7.0.6",
     "ngx-progressbar": "^8.0.0",
     "ngx-quill": "^16.2.0",
     "quill": "^1.3.7",
