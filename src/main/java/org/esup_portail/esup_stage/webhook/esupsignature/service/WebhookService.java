@@ -62,7 +62,7 @@ public class WebhookService {
             recipient.setEmail(s.getMail());
             recipient.setFirstName(s.getGivenname());
             recipient.setName(s.getName());
-            recipient.setPhone(s.getPhone());
+//            recipient.setPhone(s.getPhone());
             step.getRecipients().add(recipient);
         });
 
