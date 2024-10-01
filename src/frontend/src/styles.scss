@@ -14,8 +14,8 @@
 //  If you don't need the default component typographies but still want the hierarchy styles,
 //  you can delete this line and instead use:
 //    `@include mat.legacy-typography-hierarchy(mat.define-legacy-typography-config());`
-@include mat.all-legacy-component-typographies();
-@include mat.legacy-core();
+//@include mat.all-legacy-component-typographies();
+//@include mat.legacy-core();
 
 $my-primary-palette: (
   100: var(--primaryColor),
@@ -57,7 +57,7 @@ $my-theme: mat.define-light-theme((
     warn: $my-warn,
   )
 ));
-@include mat.all-legacy-component-themes($my-theme);
+//@include mat.all-legacy-component-themes($my-theme);
 
 html, body { height: 100%; }
 body { margin: 0; font-family: var(--fontFamily); font-size: var(--fontSize); }
