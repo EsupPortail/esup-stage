@@ -1,11 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, WritableSignal} from '@angular/core';
 import { ConfigService } from "../../../services/config.service";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { AppFonction } from "../../../constants/app-fonction";
 import { Droit } from "../../../constants/droit";
 import { AuthService } from "../../../services/auth.service";
 import { MessageService } from "../../../services/message.service";
-import { Color } from "@angular-material-components/color-picker";
 import { CentreGestionService } from "../../../services/centre-gestion.service";
 
 @Component({
@@ -45,6 +44,11 @@ export class ConfigGeneraleComponent implements OnInit {
   faviconFile: File|undefined;
 
   centreGestion: any;
+  pickerPrimaryColor: string | WritableSignal<string> | undefined;
+  pickerSecondaryColor: string | WritableSignal<string> | undefined;
+  pickerDangerColor: string | WritableSignal<string> | undefined;
+  pickerWarningColor: string | WritableSignal<string> | undefined;
+  pickerSuccessColor: string | WritableSignal<string> | undefined;
 
   constructor(
     private configService: ConfigService,
@@ -114,7 +118,7 @@ export class ConfigGeneraleComponent implements OnInit {
 
   setColor(key: string): void {
     const color = this.hexToRgb(this.configTheme[key]);
-    this.formTheme.get(key)?.setValue(new Color(color.r, color.g, color.b));
+    this.formTheme.get(key)?.setValue(this.configTheme[key]);
   }
 
   canEdit(): boolean {
@@ -143,11 +147,7 @@ export class ConfigGeneraleComponent implements OnInit {
 
   saveTheme(): void {
     const config = {...this.formTheme.value};
-    config.primaryColor = '#' + config.primaryColor.hex;
-    config.secondaryColor = '#' + config.secondaryColor.hex;
-    config.dangerColor = '#' + config.dangerColor.hex;
-    config.warningColor = '#' + config.warningColor.hex;
-    config.successColor = '#' + config.successColor.hex;
+
     const formData = new FormData();
     if (this.logoFile !== undefined) {
       formData.append('logo', this.logoFile, this.logoFile.name);
@@ -156,12 +156,14 @@ export class ConfigGeneraleComponent implements OnInit {
       formData.append('favicon', this.faviconFile, this.faviconFile.name);
     }
     formData.append('data', JSON.stringify(config));
+
     this.configService.updateTheme(formData).then((response: any) => {
       this.configTheme = response;
       this.messageService.setSuccess('Thème modifié');
       this.setFormThemeValue();
     });
   }
+
 
   rollbackTheme(): void {
     this.configService.rollbackTheme().then((response: any) => {

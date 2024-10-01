@@ -4,8 +4,6 @@ import { MessageService } from "../../../services/message.service";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { debounceTime } from 'rxjs/operators';
 import Quill from 'quill'
-import BlotFormatter from 'quill-blot-formatter';
-Quill.register('modules/blotFormatter', BlotFormatter);
 
 @Component({
   selector: 'app-logo-centre',
@@ -30,8 +28,6 @@ export class LogoCentreComponent implements OnInit {
 
   constructor(private centreGestionService: CentreGestionService, private messageService: MessageService, private fb: FormBuilder,) {
     this.modules = {
-      blotFormatter: {
-      },
       toolbar: false
     }
 

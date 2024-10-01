@@ -19,11 +19,11 @@ import { TitleComponent } from './components/title/title.component';
 import { MessageComponent } from './components/message/message.component';
 import { MatLegacyDialogModule as MatDialogModule } from "@angular/material/legacy-dialog";
 import { MatLegacyTabsModule as MatTabsModule } from "@angular/material/legacy-tabs";
-import {
-  MAT_COLOR_FORMATS,
-  NGX_MAT_COLOR_FORMATS,
-  NgxMatColorPickerModule
-} from "@angular-material-components/color-picker";
+// import {
+//   MAT_COLOR_FORMATS,
+//   NGX_MAT_COLOR_FORMATS,
+//   NgxMatColorPickerModule
+// } from "@angular-material-components/color-picker";
 import { MatLegacyFormFieldModule as MatFormFieldModule } from "@angular/material/legacy-form-field";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatLegacyInputModule as MatInputModule } from "@angular/material/legacy-input";
@@ -140,6 +140,7 @@ import {
   CentreSignatureElectroniqueComponent
 } from "./components/centre-gestion/signature-electronique/signature-electronique.component";
 import { SignatureElectroniqueViewComponent } from './components/convention/signature-electronique/signature-electronique-view/signature-electronique-view.component';
+import {ColorPickerModule} from "ngx-color-picker";
 
 registerLocaleData(localeFr, 'fr');
 
@@ -264,7 +265,7 @@ export class FrenchDateProvider extends NativeDateAdapter {
     MatTabsModule,
     MatFormFieldModule,
     MatInputModule,
-    NgxMatColorPickerModule,
+    //NgxMatColorPickerModule,
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
@@ -288,6 +289,7 @@ export class FrenchDateProvider extends NativeDateAdapter {
     CKEditorModule,
     MatSnackBarModule,
     MatBadgeModule,
+    ColorPickerModule,
   ],
   providers: [
     CookieService,
@@ -296,7 +298,7 @@ export class FrenchDateProvider extends NativeDateAdapter {
     DatePipe,
     { provide: LOCALE_ID, useValue: 'fr' },
     { provide: HTTP_INTERCEPTORS, useClass: TechnicalInterceptor, multi: true },
-    { provide: MAT_COLOR_FORMATS, useValue: NGX_MAT_COLOR_FORMATS },
+    //{ provide: MAT_COLOR_FORMATS, useValue: NGX_MAT_COLOR_FORMATS },
     { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' },
     { provide: DateAdapter, useClass: FrenchDateProvider },
     { provide: MatPaginatorIntl, useClass: PaginatorIntl },

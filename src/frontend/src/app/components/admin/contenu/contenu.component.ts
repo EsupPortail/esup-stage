@@ -7,7 +7,7 @@ import { Droit } from "../../../constants/droit";
 import { AuthService } from "../../../services/auth.service";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MessageService } from "../../../services/message.service";
-import * as Editor from '../../../../custom-ck5/ckeditor';
+// import * as Editor from '../../../../custom-ck5/ckeditor';
 
 @Component({
   selector: 'app-contenu',
@@ -16,7 +16,7 @@ import * as Editor from '../../../../custom-ck5/ckeditor';
 })
 export class ContenuComponent implements OnInit {
 
-  public Editor = Editor;
+  // public Editor = Editor;
 
   columns = ['code', 'texte', 'action'];
   sortColumn = 'code';
