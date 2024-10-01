@@ -7,7 +7,7 @@ import { CritereGestionService } from "../../../services/critere-gestion.service
 import { MessageService } from "../../../services/message.service";
 import { ReplaySubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { MatLegacySelect as MatSelect } from '@angular/material/legacy-select';
+import { MatSelect } from '@angular/material/select';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatExpansionPanel } from '@angular/material/expansion';
 import { TableComponent } from "../../table/table.component";

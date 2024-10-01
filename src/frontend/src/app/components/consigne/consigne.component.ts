@@ -15,10 +15,10 @@ export class ConsigneComponent implements OnInit, OnChanges {
   // public Editor = Editor;
 
   @Input() consigne: any;
-  @Input() idCentreGestion: number;
+  @Input() idCentreGestion!: number;
   @Output() sumitted = new EventEmitter<any>();
 
-  form: FormGroup;
+  form!: FormGroup;
 
   constructor(
     private fb: FormBuilder,
