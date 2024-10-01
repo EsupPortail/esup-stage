@@ -37,9 +37,9 @@
               "./node_modules/bootstrap-css-only/css/bootstrap.min.css",
               "src/styles.scss"
             ],
-            "scripts": [
-              "node_modules/@ckeditor/ckeditor5-build-decoupled-document/build/translations/fr.js"
-            ],
+//            "scripts": [
+//              "node_modules/@ckeditor/ckeditor5-build-decoupled-document/build/translations/fr.js"
+//            ],
             "allowedCommonJsDependencies": [
               "quill",
               "quill-blot-formatter",

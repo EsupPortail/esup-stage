@@ -7,7 +7,7 @@ import { AuthService } from "../../../services/auth.service";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatLegacyTabChangeEvent as MatTabChangeEvent, MatLegacyTabGroup as MatTabGroup } from "@angular/material/legacy-tabs";
 import { MessageService } from "../../../services/message.service";
-import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
+import { MatDialog } from "@angular/material/dialog";
 import { MailTesterComponent } from "./mail-tester/mail-tester.component";
 
 @Component({

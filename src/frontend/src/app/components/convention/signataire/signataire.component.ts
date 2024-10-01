@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit, OnChanges, Input, Output, ViewChild } from '@angular/core';
-import { MatLegacyDialog as MatDialog, MatLegacyDialogConfig as MatDialogConfig } from '@angular/material/legacy-dialog';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { ServiceService } from "../../../services/service.service";
 import { ContactService } from "../../../services/contact.service";

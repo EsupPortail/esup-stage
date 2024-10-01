@@ -1,43 +1,49 @@
 import { APP_INITIALIZER, Injectable, LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
-import { AppComponent } from './app.component';
+import
+{ AppComponent } from './app.component';
 import { AppRoutingModule } from "./app-routing.module";
-import { HeaderComponent } from './components/header/header.component';
+import
+{ HeaderComponent } from './components/header/header.component';
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 import { MatToolbarModule } from "@angular/material/toolbar";
-import { MatIconModule } from "@angular/material/icon";
-import { MatLegacyButtonModule as MatButtonModule } from "@angular/material/legacy-button";
+import
+{ MatIconModule } from "@angular/material/icon";
+import { MatButtonModule } from "@angular/material/button";
 import { MenuComponent } from './components/menu/menu.component';
-import { MatLegacyListModule as MatListModule } from "@angular/material/legacy-list";
+import { MatListModule } from "@angular/material/list";
 import { HTTP_INTERCEPTORS, HttpClientModule } from "@angular/common/http";
 import { CookieService } from "ngx-cookie-service";
 import { TechnicalInterceptor } from "./interceptors/technical.interceptor";
 import { HomeComponent } from './components/home/home.component';
 import { TitleComponent } from './components/title/title.component';
 import { MessageComponent } from './components/message/message.component';
-import { MatLegacyDialogModule as MatDialogModule } from "@angular/material/legacy-dialog";
-import { MatLegacyTabsModule as MatTabsModule } from "@angular/material/legacy-tabs";
+import { MatDialogModule } from "@angular/material/dialog";
+import { MatTabsModule } from "@angular/material/tabs";
 // import {
 //   MAT_COLOR_FORMATS,
 //   NGX_MAT_COLOR_FORMATS,
 //   NgxMatColorPickerModule
 // } from "@angular-material-components/color-picker";
-import { MatLegacyFormFieldModule as MatFormFieldModule } from "@angular/material/legacy-form-field";
+import { MatFormFieldModule } from "@angular/material/form-field";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { MatLegacyInputModule as MatInputModule } from "@angular/material/legacy-input";
+import { MatInputModule } from "@angular/material/input";
 import { AdminUserComponent } from './components/admin/admin-user/admin-user.component';
-import { MatLegacyTableModule as MatTableModule } from "@angular/material/legacy-table";
+import { MatTableModule } from "@angular/material/table";
 import { MatSortModule } from "@angular/material/sort";
-import { MatLegacyTooltipModule as MatTooltipModule } from "@angular/material/legacy-tooltip";
-import { MatLegacyPaginatorIntl as MatPaginatorIntl, MatLegacyPaginatorModule as MatPaginatorModule } from "@angular/material/legacy-paginator";
+import { MatTooltipModule } from "@angular/material/tooltip";
+import { MatPaginatorIntl, MatPaginatorModule } from "@angular/material/paginator";
+
 
 import { DatePipe, registerLocaleData } from "@angular/common";
 import localeFr from '@angular/common/locales/fr';
 import {
   DateAdapter,
   MAT_DATE_FORMATS,
+
   MAT_DATE_LOCALE,
   MatDateFormats,
   MatNativeDateModule, NativeDateAdapter
@@ -45,10 +51,10 @@ import {
 import { PaginatorIntl } from "./paginator-intl";
 import { TableComponent } from './components/table/table.component';
 import { BooleanPipe } from './pipes/boolean.pipe';
-import { MatLegacyCardModule as MatCardModule } from "@angular/material/legacy-card";
+import { MatCardModule } from "@angular/material/card";
 import { RoleLibellePipe } from './pipes/role-libelle.pipe';
-import { MatLegacySelectModule as MatSelectModule } from "@angular/material/legacy-select";
-import { MatLegacyCheckboxModule as MatCheckboxModule } from "@angular/material/legacy-checkbox";
+import { MatSelectModule } from "@angular/material/select";
+import { MatCheckboxModule } from "@angular/material/checkbox";
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { ConventionComponent } from './components/convention/convention.component';
 import { MatStepperModule } from "@angular/material/stepper";
@@ -57,7 +63,7 @@ import { AdminNomenclaturesEditionComponent } from './components/admin/admin-nom
 import { AdminRoleComponent } from './components/admin/admin-role/admin-role.component';
 import { ConfirmComponent } from './components/confirm/confirm.component';
 import { ConfigGeneraleComponent } from './components/admin/config-generale/config-generale.component';
-import { MatLegacyRadioModule as MatRadioModule } from "@angular/material/legacy-radio";
+import { MatRadioModule } from "@angular/material/radio";
 import { ContenuComponent } from './components/admin/contenu/contenu.component';
 import { ContenuPipe } from './pipes/contenu.pipe';
 import { ContenuService } from "./services/contenu.service";
@@ -66,12 +72,12 @@ import { EtabAccueilComponent } from './components/convention/etab-accueil/etab-
 import { MatExpansionModule } from "@angular/material/expansion";
 import { CentreGestionComponent } from './components/centre-gestion/centre-gestion.component';
 import { EtudiantComponent } from './components/convention/etudiant/etudiant.component';
-import { MatLegacyProgressSpinnerModule as MatProgressSpinnerModule } from "@angular/material/legacy-progress-spinner";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { LoaderComponent } from './components/loader/loader.component';
 import { AdminNomenclaturesCreationComponent } from './components/admin/admin-nomenclatures/admin-nomenclatures-creation/admin-nomenclatures-creation.component';
 import { QuillModule } from "ngx-quill";
 import { FormErrorComponent } from './components/form-error/form-error.component';
-import { MatLegacyProgressBarModule as MatProgressBarModule } from "@angular/material/legacy-progress-bar";
+import { MatProgressBarModule } from "@angular/material/progress-bar";
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { ServiceAccueilComponent } from './components/convention/service-accueil/service-accueil.component';
 import { TuteurProComponent } from './components/convention/tuteur-pro/tuteur-pro.component';
@@ -91,19 +97,19 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { GestionnairesComponent } from './components/centre-gestion/gestionnaires/gestionnaires.component';
 import { RecapitulatifComponent } from './components/convention/recapitulatif/recapitulatif.component';
 import { AvenantComponent } from './components/convention/avenant/avenant.component';
-import { MatLegacyChipsModule as MatChipsModule } from "@angular/material/legacy-chips";
-import { MatLegacyAutocompleteModule as MatAutocompleteModule } from "@angular/material/legacy-autocomplete";
+import { MatChipsModule } from "@angular/material/chips";
+import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { AvenantFormComponent } from './components/convention/avenant/avenant-form/avenant-form.component';
-import { MatLegacyMenuModule as MatMenuModule } from "@angular/material/legacy-menu";
+import { MatMenuModule } from "@angular/material/menu";
 import { ValidationComponent } from './components/convention/validation/validation.component';
 import { ValidationCardComponent } from './components/convention/validation/validation-card/validation-card.component';
 import { LogoCentreComponent } from './components/centre-gestion/logo-centre/logo-centre.component';
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { AvenantViewComponent } from './components/convention/avenant/avenant-view/avenant-view.component';
 import { CalendrierComponent } from './components/convention/stage/calendrier/calendrier.component';
-import { CKEditorModule } from "@ckeditor/ckeditor5-angular";
+// import { CKEditorModule } from "@ckeditor/ckeditor5-angular";
 import { TemplateConventionComponent } from './components/admin/template-convention/template-convention.component';
-import { MatLegacySnackBarModule as MatSnackBarModule } from "@angular/material/legacy-snack-bar";
+import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { InterruptionsFormComponent } from './components/convention/stage/interruptions-form/interruptions-form.component';
 import { MatBadgeModule } from "@angular/material/badge";
 import { ConsigneComponent } from './components/consigne/consigne.component';
@@ -286,7 +292,7 @@ export class FrenchDateProvider extends NativeDateAdapter {
     MatAutocompleteModule,
     MatMenuModule,
     DragDropModule,
-    CKEditorModule,
+    // CKEditorModule,
     MatSnackBarModule,
     MatBadgeModule,
     ColorPickerModule,

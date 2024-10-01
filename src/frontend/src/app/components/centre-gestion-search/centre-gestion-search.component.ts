@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MatLegacyDialog as MatDialog, MatLegacyDialogConfig as MatDialogConfig } from '@angular/material/legacy-dialog';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { TableComponent } from "../table/table.component";
 import { CentreGestionService } from "../../services/centre-gestion.service";
 import { MessageService } from "../../services/message.service";

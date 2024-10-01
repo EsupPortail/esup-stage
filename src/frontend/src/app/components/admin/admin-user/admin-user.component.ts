@@ -13,7 +13,7 @@ import { LdapService } from "../../../services/ldap.service";
 import { Subject } from "rxjs";
 import { debounceTime } from "rxjs/operators";
 import { CreateDialogComponent } from "./create-dialog/create-dialog.component";
-import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
+import { MatDialog } from "@angular/material/dialog";
 
 @Component({
   selector: 'app-admin-user',

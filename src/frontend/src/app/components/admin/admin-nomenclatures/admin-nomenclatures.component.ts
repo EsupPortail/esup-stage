@@ -1,6 +1,6 @@
 import { Component, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { MatLegacyTabChangeEvent as MatTabChangeEvent, MatLegacyTabGroup as MatTabGroup } from "@angular/material/legacy-tabs";
-import { MatLegacyDialog as MatDialog, MatLegacyDialogConfig as MatDialogConfig } from '@angular/material/legacy-dialog';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { AuthService } from "../../../services/auth.service";
 import { TypeConventionService } from "../../../services/type-convention.service";
 import { LangueConventionService } from "../../../services/langue-convention.service";
@@ -218,3 +218,4 @@ export class AdminNomenclaturesComponent implements OnInit {
   }
 
 }
+//
