@@ -145,7 +145,7 @@ public class TemplateConventionController {
     }
 
     private void checkChamp(List<ParamConvention> champs, String champ) {
-        if (champs.stream().noneMatch(c -> c.getCode().equals(champ))) {
+        if (champs.stream().noneMatch(c -> c.getCode().equals(champ.split("\\?")[0]))) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Le champ personnalisé ${" + champ + "} n'existe pas");
         }
     }
