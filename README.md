@@ -50,6 +50,14 @@ Par exemple si `appli.data_dir=/etc/eStage/uploads` on aura :
      |_/signatures
 ```
 
+## CAS
+
+Par défaut, l'application attend du serveur CAS une réponse au format JSON. Si le serveur CAS répond au format XML,
+il faut ajouter la ligne suivante au fichier `estage.properties` :
+```properties
+cas.response_type=xml
+```
+
 ## Signature électronique (optionnel)
 
 La signature électronique est activée si au moins une des configuration ci-dessous est paramétrée. Si plusieurs solutions configurées, Docaposte prendra le dessus.

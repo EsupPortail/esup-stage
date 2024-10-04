@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Properties;
 
 public class AppConfig {
+    private String casResponseType;
     private String casUrlLogin;
     private String casUrlLogout;
     private String casUrlService;
@@ -47,6 +48,14 @@ public class AppConfig {
     private String webhookSignatureToken;
     private String esupSignatureUri;
     private AppSignatureEnum appSignatureEnabled;
+
+    public String getCasResponseType() {
+        return casResponseType;
+    }
+
+    public void setCasResponseType(String casResponseType) {
+        this.casResponseType = casResponseType;
+    }
 
     public String getCasUrlLogin() {
         return casUrlLogin;
@@ -353,6 +362,11 @@ public class AppConfig {
     }
 
     public void initProperties(Properties props, String prefixeProps) {
+        if (props.containsKey("cas.response_type") && !Strings.isEmpty(props.getProperty("cas.response_type"))) {
+            this.casResponseType = props.getProperty("cas.response_type");
+        } else {
+            this.casResponseType = "json";
+        }
         this.casUrlLogout = props.getProperty("cas.url.logout");
         this.casUrlLogin = props.getProperty("cas.url.login");
         this.casUrlService = props.getProperty("cas.url.service");
@@ -435,6 +449,7 @@ public class AppConfig {
     @Override
     public String toString() {
         return "AppConfig{" +
+                ", casResponseType='" + casResponseType + "'" +
                 ", casUrlLogin='" + casUrlLogin + "'" +
                 ", casUrlLogout='" + casUrlLogout + "'" +
                 ", casUrlService='" + casUrlService + "'" +
