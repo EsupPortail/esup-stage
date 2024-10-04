@@ -202,6 +202,16 @@ public class SignatureService {
                             avenant.setDocumentId(documentId);
                             avenantJpaRepository.saveAndFlush(avenant);
                         } else {
+                            // Que fait-on si un précédent envoi a déjà été fait avant ?
+                            String previousDocumentId = convention.getDocumentId();
+                            if (previousDocumentId != null) {
+                                // Pour ESUP-Signature, on supprime l'ancien avant de renseigner le nouveau
+                                if (appSignature == AppSignatureEnum.ESUPSIGNATURE) {
+                                    webClient.delete()
+                                        .uri(applicationBootstrap.getAppConfig().getEsupSignatureUri() + "/ws/signrequests/soft/" + previousDocumentId)
+                                        .retrieve();
+                                }
+                            }
                             convention.setDateEnvoiSignature(new Date());
                             convention.setDocumentId(documentId);
                             conventionJpaRepository.saveAndFlush(convention);
