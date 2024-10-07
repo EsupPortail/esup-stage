@@ -10,7 +10,7 @@ import { Droit } from "../../../constants/droit";
 import { AuthService } from "../../../services/auth.service";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
-// import * as Editor from '../../../../custom-ck5/ckeditor';
+import * as Editor from '../../../../custom-ck5/ckeditor';
 import { TitleService } from "../../../services/title.service";
 
 @Component({
@@ -20,7 +20,7 @@ import { TitleService } from "../../../services/title.service";
 })
 export class TemplateConventionComponent implements OnInit {
 
-  // public Editor = Editor;
+  public Editor = Editor;
 
   columns = ['typeConvention.libelle', 'langueConvention.code', 'action'];
   sortColumn = 'typeConvention.libelle';

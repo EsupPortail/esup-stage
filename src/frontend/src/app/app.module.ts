@@ -107,7 +107,7 @@ import { LogoCentreComponent } from './components/centre-gestion/logo-centre/log
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { AvenantViewComponent } from './components/convention/avenant/avenant-view/avenant-view.component';
 import { CalendrierComponent } from './components/convention/stage/calendrier/calendrier.component';
-// import { CKEditorModule } from "@ckeditor/ckeditor5-angular";
+import { CKEditorModule } from "@ckeditor/ckeditor5-angular";
 import { TemplateConventionComponent } from './components/admin/template-convention/template-convention.component';
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { InterruptionsFormComponent } from './components/convention/stage/interruptions-form/interruptions-form.component';
@@ -292,7 +292,7 @@ export class FrenchDateProvider extends NativeDateAdapter {
     MatAutocompleteModule,
     MatMenuModule,
     DragDropModule,
-    // CKEditorModule,
+    CKEditorModule,
     MatSnackBarModule,
     MatBadgeModule,
     ColorPickerModule,
