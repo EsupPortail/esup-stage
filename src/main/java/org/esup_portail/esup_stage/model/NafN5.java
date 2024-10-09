@@ -3,7 +3,7 @@ package org.esup_portail.esup_stage.model;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.esup_portail.esup_stage.dto.view.Views;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "NAF_N5")

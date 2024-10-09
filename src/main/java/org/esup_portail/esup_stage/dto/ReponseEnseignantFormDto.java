@@ -1,6 +1,6 @@
 package org.esup_portail.esup_stage.dto;
 
-import javax.persistence.Lob;
+import jakarta.persistence.Lob;
 
 public class ReponseEnseignantFormDto {
 

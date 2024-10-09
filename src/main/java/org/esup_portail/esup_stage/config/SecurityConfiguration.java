@@ -1,10 +1,10 @@
 package org.esup_portail.esup_stage.config;
 
+import org.apereo.cas.client.session.SingleSignOutFilter;
+import org.apereo.cas.client.validation.TicketValidator;
+import org.apereo.cas.client.validation.json.Cas30JsonServiceTicketValidator;
 import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
 import org.esup_portail.esup_stage.security.userdetails.CasUserDetailsServiceImpl;
-import org.jasig.cas.client.session.SingleSignOutFilter;
-import org.jasig.cas.client.validation.TicketValidator;
-import org.jasig.cas.client.validation.json.Cas30JsonServiceTicketValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +16,7 @@ import org.springframework.security.cas.authentication.CasAuthenticationProvider
 import org.springframework.security.cas.web.CasAuthenticationEntryPoint;
 import org.springframework.security.cas.web.CasAuthenticationFilter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
@@ -91,18 +92,21 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain filterChainPrivate(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers("/login/cas", "/api/version").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .exceptionHandling().authenticationEntryPoint(casEntryPoint())
-                .and()
-                .addFilter(casAuthenticationFilter())
-                .addFilterBefore(singleSignOutFilter(), CasAuthenticationFilter.class)
-                .addFilterBefore(logoutFilter(), LogoutFilter.class);
+        http
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/login/cas", "/api/version").permitAll()  // Autoriser ces URLs sans authentification
+                        .anyRequest().authenticated()  // Toutes les autres requêtes doivent être authentifiées
+                )
+                .exceptionHandling(exception ->
+                        exception.authenticationEntryPoint(casEntryPoint())  // Gestion des exceptions d'authentification
+                )
+                .addFilter(casAuthenticationFilter())  // Ajouter le filtre d'authentification CAS
+                .addFilterBefore(singleSignOutFilter(), CasAuthenticationFilter.class)  // Ajouter le filtre de déconnexion avant le filtre CAS
+                .addFilterBefore(logoutFilter(), LogoutFilter.class)  // Ajouter le filtre de déconnexion
 
-        http.csrf().disable();
+                .csrf(AbstractHttpConfigurer::disable);  // Désactiver CSRF
 
         return http.build();
     }
+
 }

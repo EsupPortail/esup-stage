@@ -2,7 +2,7 @@ package org.esup_portail.esup_stage.model;
 
 import org.esup_portail.esup_stage.security.ServiceContext;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Date;
 
 @MappedSuperclass

@@ -1,6 +1,6 @@
 package org.esup_portail.esup_stage.service;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
