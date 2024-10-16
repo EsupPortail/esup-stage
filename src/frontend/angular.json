@@ -1,7 +1,10 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "cli": {
-    "analytics": false
+    "analytics": false,
+    "cache": {
+      "enabled": false
+    }
   },
   "version": 1,
   "newProjectRoot": "projects",
@@ -37,15 +40,13 @@
               "./node_modules/bootstrap-css-only/css/bootstrap.min.css",
               "src/styles.scss"
             ],
-//            "scripts": [
-//              "node_modules/@ckeditor/ckeditor5-build-decoupled-document/build/translations/fr.js"
-//            ],
             "allowedCommonJsDependencies": [
               "quill",
               "quill-blot-formatter",
               "file-saver",
               "lodash"
-            ]
+            ],
+            "sourceMap": true
           },
           "configurations": {
             "production": {

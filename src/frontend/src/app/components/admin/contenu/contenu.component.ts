@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { ContenuService } from "../../../services/contenu.service";
 import { TableComponent } from "../../table/table.component";
 import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
@@ -7,7 +7,8 @@ import { Droit } from "../../../constants/droit";
 import { AuthService } from "../../../services/auth.service";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MessageService } from "../../../services/message.service";
-import * as Editor from '../../../../custom-ck5/ckeditor';
+
+
 
 @Component({
   selector: 'app-contenu',
@@ -16,17 +17,17 @@ import * as Editor from '../../../../custom-ck5/ckeditor';
 })
 export class ContenuComponent implements OnInit {
 
-  public Editor = Editor;
+
 
   columns = ['code', 'texte', 'action'];
   sortColumn = 'code';
   filters = [
-    { id: 'code', libelle: 'Code' },
-    { id: 'texte', libelle: 'Texte' },
+    {id: 'code', libelle: 'Code'},
+    {id: 'texte', libelle: 'Texte'},
   ];
   exportColumns = {
-    code: { title: 'Code' },
-    texte: { title: 'Texte' },
+    code: {title: 'Code'},
+    texte: {title: 'Texte'},
   };
 
   formTabIndex = 1;
@@ -36,7 +37,8 @@ export class ContenuComponent implements OnInit {
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
   @ViewChild('tabs') tabs: MatTabGroup | undefined;
 
-  constructor(public contenuService: ContenuService, private authService: AuthService, private fb: FormBuilder, private messageService: MessageService) { }
+  constructor(public contenuService: ContenuService, private authService: AuthService, private fb: FormBuilder, private messageService: MessageService,private changeDetector: ChangeDetectorRef) {
+  }
 
   ngOnInit(): void {
     this.form = this.fb.group({

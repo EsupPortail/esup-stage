@@ -3,7 +3,7 @@ import * as FileSaver from "file-saver";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { ConsigneService } from "../../services/consigne.service";
 import { MessageService } from "../../services/message.service";
-import * as Editor from '../../../custom-ck5/ckeditor';
+//import Editor from '../../../custom-ck5/ckeditor';
 
 @Component({
   selector: 'app-consigne',
@@ -12,7 +12,7 @@ import * as Editor from '../../../custom-ck5/ckeditor';
 })
 export class ConsigneComponent implements OnInit, OnChanges {
 
-  public Editor = Editor;
+  //public Editor = Editor;
 
   @Input() consigne: any;
   @Input() idCentreGestion!: number;
