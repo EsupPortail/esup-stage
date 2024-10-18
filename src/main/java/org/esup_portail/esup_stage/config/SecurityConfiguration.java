@@ -97,7 +97,7 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChainPrivate(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/login/cas", "/api/version").permitAll()
+                .antMatchers("/login/cas", "/api/version", "/error", "/theme.css").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().authenticationEntryPoint(casEntryPoint())

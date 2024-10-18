@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="fr" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"  xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <title>ESUP - Stage</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link id="app-favicon" rel="icon" type="image/x-icon" th:href="${favicon}">
+  <link id="theme" rel="stylesheet" href="/theme.css">
+
+  <style>
+    body {
+      margin: auto;
+      font-family: var(--fontFamily);
+    }
+
+    header {
+      font-size: 2.5em;
+      width: 100%;
+      color: white;
+      background: var(--primaryColor);
+      text-align: center;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .error-message {
+      width: 90%;
+      text-align: center;
+      margin: 15% auto 0;
+      font-weight: bold;
+      font-size: x-large;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div>ESUP-Stage</div>
+</header>
+<div class="error-message">
+  <section layout:fragment="error-content">
+    <div>Une erreur technique est survenue. Veuillez contacter un administrateur.</div>
+  </section>
+</div>
+</body>
+</html>
