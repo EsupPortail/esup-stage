@@ -22,6 +22,7 @@ public class CustomErrorController implements ErrorController {
     public String handleError(HttpServletRequest request, ModelMap model) {
         ConfigThemeDto configTheme = appConfigService.getConfigTheme();
         model.addAttribute("favicon", "data:" + configTheme.getFavicon().getContentType() + ";base64," + configTheme.getFavicon().getBase64());
+        model.addAttribute("logo", "data:" + configTheme.getLogo().getContentType() + ";base64," + configTheme.getLogo().getBase64());
 
         Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
         if (status != null) {
