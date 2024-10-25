@@ -144,6 +144,8 @@ export class CentreGestionComponent implements OnInit {
   }
 
   getProgressValue(key: number): number {
+    console.log("Key" + key + "Value : " + this.tabs[key].statut);
+    console.log("------------------------------------------");
     if (this.tabs[key].statut === 1) return 66;
     if (this.tabs[key].statut === 2) return 100;
     return 33;

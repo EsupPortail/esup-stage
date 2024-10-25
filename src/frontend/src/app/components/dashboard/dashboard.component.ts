@@ -9,11 +9,11 @@ import { EtapeService } from "../../services/etape.service";
 import { MessageService } from "../../services/message.service";
 import { ConfigService } from "../../services/config.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { forkJoin } from 'rxjs';
 import { SortDirection } from "@angular/material/sort";
 import { ContenuPipe } from "../../pipes/contenu.pipe";
 import { TypeConventionService } from "../../services/type-convention.service";
 import { LangueConventionService } from "../../services/langue-convention.service";
+import { zip } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
@@ -148,12 +148,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
       }
       this.filters.push({ id: 'validationCreation', type: 'boolean', value: true, hidden: true, permanent: true });
 
-      forkJoin(
+      zip(
         this.ufrService.getPaginated(1, 0, 'libelle', 'asc', '{}'),
         this.etapeService.getPaginated(1, 0, 'libelle', 'asc', '{}'),
         this.conventionService.getListAnnee(),
         this.langueConventionService.getPaginated(1, 0, 'libelle', 'asc', '{}'),
-        this.typeConventionService.getPaginated(1, 0, 'libelle', 'asc', '{}'),
+        this.typeConventionService.getPaginated(1, 0, 'libelle', 'asc', '{}')
       ).subscribe(([ufrData, etapeData, listAnneeData, langueConventionList, typeConventionList]) => {
         // ufr
         this.ufrList = ufrData.data;
@@ -165,14 +165,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
         // annees
         this.annees = listAnneeData;
-        this.anneeEnCours = this.annees.find((a: any) => { return a.anneeEnCours === true });
+        this.anneeEnCours = this.annees.find((a: any) => a.anneeEnCours === true);
         if (!this.authService.isEtudiant()) {
           this.annees.push({
             "annee": "any",
             "libelle": "Toutes les années",
             "anneeEnCours": false,
             "any": true
-          })
+          });
           this.changeAnnee();
         } else {
           this.appTable?.setFilterOption('annee', this.annees);
@@ -299,6 +299,22 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }
       ]
     };
+    console.log("---------------------------------------");
+    console.log("var etapeList");
+    console.log(this.etapeList);
+    console.log("appele ws etape");
+    this.etapeService.getPaginated(1, 0, 'libelle', 'asc', '{}').subscribe({
+      next: (value: any) => {
+        console.log(value);
+      },
+      error: (err: any) => {
+        console.error('Error: ', err);
+      },
+      complete: () => {
+        console.log('Completed');
+      }
+    });
+    console.log("---------------------------------------");
   }
 
   changeAnnee(): void {
@@ -437,6 +453,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     sessionStorage.setItem('dashboard-paging', JSON.stringify({ page: this.appTable?.page, pageSize: this.appTable?.pageSize, sortColumn: this.appTable?.sortColumn, sortOrder: this.appTable?.sortOrder }));
     sessionStorage.setItem('dashboard-filters', JSON.stringify(this.appTable?.getFilterValues()))
   }
+
 }
 
 

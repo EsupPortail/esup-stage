@@ -1,11 +1,11 @@
-import {Component, OnInit, WritableSignal} from '@angular/core';
-import { ConfigService } from "../../../services/config.service";
+import {Component, OnInit, ViewContainerRef, WritableSignal} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { AppFonction } from "../../../constants/app-fonction";
-import { Droit } from "../../../constants/droit";
+import { ConfigService } from "../../../services/config.service";
 import { AuthService } from "../../../services/auth.service";
 import { MessageService } from "../../../services/message.service";
 import { CentreGestionService } from "../../../services/centre-gestion.service";
+import { AppFonction } from "../../../constants/app-fonction";
+import { Droit } from "../../../constants/droit";
 
 @Component({
   selector: 'app-config-generale',
@@ -19,7 +19,6 @@ export class ConfigGeneraleComponent implements OnInit {
   configTheme: any;
 
   formGenerale: FormGroup;
-
   alertes = [
     {code: 'creationConventionEtudiant', libelle: 'Création d\'une convention par l\'étudiant'},
     {code: 'modificationConventionEtudiant', libelle: 'Modification d\'une convention par l\'étudiant'},
@@ -44,11 +43,11 @@ export class ConfigGeneraleComponent implements OnInit {
   faviconFile: File|undefined;
 
   centreGestion: any;
-  pickerPrimaryColor: string | WritableSignal<string> | undefined;
-  pickerSecondaryColor: string | WritableSignal<string> | undefined;
-  pickerDangerColor: string | WritableSignal<string> | undefined;
-  pickerWarningColor: string | WritableSignal<string> | undefined;
-  pickerSuccessColor: string | WritableSignal<string> | undefined;
+  primaryColor: string | WritableSignal<string> | undefined;
+  secondaryColor: string | WritableSignal<string> | undefined;
+  dangerColor: string | WritableSignal<string> | undefined;
+  warningColor: string | WritableSignal<string> | undefined;
+  successColor: string | WritableSignal<string> | undefined;
 
   constructor(
     private configService: ConfigService,
@@ -69,8 +68,9 @@ export class ConfigGeneraleComponent implements OnInit {
       autoriserElementPedagogiqueFacultatif: [null, [Validators.required]],
       validationPedagogiqueLibelle: [null, [Validators.required]],
       validationAdministrativeLibelle: [null, [Validators.required]],
-      codeCesure: [null, ],
+      codeCesure: [null],
     });
+
     this.formTheme = this.fb.group({
       logo: [null, [Validators.required]],
       favicon: [null, [Validators.required]],
@@ -89,44 +89,54 @@ export class ConfigGeneraleComponent implements OnInit {
       this.formGenerale.disable();
       this.formTheme.disable();
     }
+
+    // Récupération de la configuration générale
     this.configService.getConfigGenerale().subscribe((response: any) => {
       this.configGenerale = response;
       if (this.configGenerale.typeCentre === null) this.configGenerale.typeCentre = 'VIDE';
       this.formGenerale.patchValue(this.configGenerale);
     });
+
+    // Récupération de la configuration des alertes
     this.configService.getConfigAlerteMail().subscribe((response: any) => {
       this.configAlerte = response;
     });
+
+    // Récupération de la configuration du thème
     this.configService.getConfigTheme().then((response: any) => {
       this.configTheme = response;
       this.setFormThemeValue();
     });
-    this.centreGestionService.getCentreEtablissement().subscribe((response: any) => {
-      this.centreGestion = response;
-    });
+
   }
 
   setFormThemeValue(): void {
-    this.formTheme.get('fontFamily')?.setValue(this.configTheme.fontFamily);
-    this.formTheme.get('fontSize')?.setValue(this.configTheme.fontSize);
-    this.setColor('primaryColor');
-    this.setColor('secondaryColor');
-    this.setColor('dangerColor');
-    this.setColor('warningColor');
-    this.setColor('successColor');
-  }
+    this.formTheme.patchValue({
+      fontFamily: this.configTheme.fontFamily,
+      fontSize: this.configTheme.fontSize,
+      primaryColor: this.configTheme.primaryColor,
+      secondaryColor: this.configTheme.secondaryColor,
+      dangerColor: this.configTheme.dangerColor,
+      warningColor: this.configTheme.warningColor,
+      successColor: this.configTheme.successColor
+    });
 
-  setColor(key: string): void {
-    const color = this.hexToRgb(this.configTheme[key]);
-    this.formTheme.get(key)?.setValue(this.configTheme[key]);
+    console.log('Valeurs appliquées au formulaire:');
+    console.log('Police de caractères:', this.formTheme.get('fontFamily')?.value);
+    console.log('Taille de police:', this.formTheme.get('fontSize')?.value);
+    console.log('Couleur principale:', this.formTheme.get('primaryColor')?.value);
+    console.log('Couleur secondaire:', this.formTheme.get('secondaryColor')?.value);
+    console.log('Couleur danger:', this.formTheme.get('dangerColor')?.value);
+    console.log('Couleur avertissement:', this.formTheme.get('warningColor')?.value);
+    console.log('Couleur succès:', this.formTheme.get('successColor')?.value);
   }
 
   canEdit(): boolean {
-    return this.authService.checkRights({fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.MODIFICATION]});
+    return this.authService.checkRights({ fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.MODIFICATION] });
   }
 
   canDelete(): boolean {
-    return this.authService.checkRights({fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.SUPPRESSION]});
+    return this.authService.checkRights({ fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.SUPPRESSION] });
   }
 
   saveGenerale(): void {
@@ -146,7 +156,8 @@ export class ConfigGeneraleComponent implements OnInit {
   }
 
   saveTheme(): void {
-    const config = {...this.formTheme.value};
+    const config = { ...this.formTheme.value };
+
 
     const formData = new FormData();
     if (this.logoFile !== undefined) {
@@ -155,6 +166,7 @@ export class ConfigGeneraleComponent implements OnInit {
     if (this.faviconFile !== undefined) {
       formData.append('favicon', this.faviconFile, this.faviconFile.name);
     }
+
     formData.append('data', JSON.stringify(config));
 
     this.configService.updateTheme(formData).then((response: any) => {
@@ -164,25 +176,12 @@ export class ConfigGeneraleComponent implements OnInit {
     });
   }
 
-
   rollbackTheme(): void {
     this.configService.rollbackTheme().then((response: any) => {
       this.configTheme = response;
       this.messageService.setSuccess('Thème réinitialisé');
       this.setFormThemeValue();
     });
-  }
-
-  hexToRgb(hex: string): any {
-    hex = hex.replace('#', '');
-    const hexR = hex.substring(0, 2);
-    const hexG = hex.substring(2, 4);
-    const hexB = hex.substring(4);
-    return {
-      r: parseInt(hexR, 16),
-      g: parseInt(hexG, 16),
-      b: parseInt(hexB, 16),
-    }
   }
 
   onLogoChange(event: any): void {
@@ -203,4 +202,5 @@ export class ConfigGeneraleComponent implements OnInit {
     }
   }
 
+  protected readonly focus = focus;
 }

@@ -1,21 +1,12 @@
 @use '@angular/material' as mat;
 
-/* You can add global styles to this file, and also import other style files */
 @import "~@fortawesome/fontawesome-free/css/all.css";
 @import '~quill/dist/quill.core.css';
 @import '~quill/dist/quill.bubble.css';
 @import '~quill/dist/quill.snow.css';
 
-// TODO(v15): As of v15 mat.legacy-core no longer includes default typography styles.
-//  The following line adds:
-//    1. Default typography styles for all components
-//    2. Styles for typography hierarchy classes (e.g. .mat-headline-1)
-//  If you specify typography styles for the components you use elsewhere, you should delete this line.
-//  If you don't need the default component typographies but still want the hierarchy styles,
-//  you can delete this line and instead use:
-//    `@include mat.legacy-typography-hierarchy(mat.define-legacy-typography-config());`
-//@include mat.all-legacy-component-typographies();
-//@include mat.legacy-core();
+//@include mat.all-component-typographies();
+@include mat.core();
 
 $my-primary-palette: (
   100: var(--primaryColor),
@@ -57,7 +48,7 @@ $my-theme: mat.m2-define-light-theme((
     warn: $my-warn,
   )
 ));
-//@include mat.all-legacy-component-themes($my-theme);
+@include mat.all-component-themes($my-theme);
 
 html, body { height: 100%; }
 body { margin: 0; font-family: var(--fontFamily); font-size: var(--fontSize); }
@@ -65,6 +56,23 @@ body { margin: 0; font-family: var(--fontFamily); font-size: var(--fontSize); }
 .fa, .fas {
   font-family: 'Font Awesome 5 Free' !important;
   font-weight: 900 !important;
+}
+
+.app-menu {
+  display: flex;
+  flex-direction: column;
+  margin-top: 48px;
+}
+
+.app-menu .fa, .app-menu .fas{
+  vertical-align: middle;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.app-menu span{
+  display: flex;
 }
 
 .text-red {
@@ -218,3 +226,5 @@ ckeditor {
   margin-bottom: 10px;
   font-size: 0.9rem;
 }
+
+

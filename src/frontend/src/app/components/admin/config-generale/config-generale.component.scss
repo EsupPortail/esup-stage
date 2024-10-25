@@ -1,0 +1,19 @@
+.color-preview {
+  width: 24px;
+  height: 24px;
+  border: 1px solid #ccc;
+  margin-left: 10px;
+  vertical-align: middle;
+  display: inline-block !important;
+}
+
+.color-picker-container {
+  display: flex !important;
+  align-items: center !important;
+}
+
+.color-picker-container input {
+  flex-grow: 1 !important;
+}
+
+

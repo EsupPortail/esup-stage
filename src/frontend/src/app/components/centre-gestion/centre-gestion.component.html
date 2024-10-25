@@ -2,56 +2,72 @@
 <mat-tab-group class="centre-gestion" #matTabs (selectedTabChange)="tabChanged($event)">
   <mat-tab #coordCentreTab>
     <ng-template mat-tab-label>
-      Coordonnées du centre
-      <mat-progress-bar mode="determinate" [value]="getProgressValue(0)" [ngClass]="{editing: tabs[0].statut === 1, done: tabs[0].statut === 2}"></mat-progress-bar>
+      <div class="tabTitle">
+        Coordonnées du centre
+        <mat-progress-bar mode="determinate" [value]="getProgressValue(0)" [ngClass]="{editing: tabs[0].statut === 1, done: tabs[0].statut === 2}"></mat-progress-bar>
+      </div>
     </ng-template>
     <app-coord-centre *ngIf="centreGestionInited && (coordCentreTab.isActive || tabs[0].init)" [form]="coordCentreForm" [centreGestion]="centreGestion" (update)="update()" (refreshCentreGestion)="refreshCentreGestion($event)"></app-coord-centre>
   </mat-tab>
   <mat-tab #paramCentreTab [disabled]="centreGestion && !centreGestion.id">
     <ng-template mat-tab-label>
+      <div class="tabTitle">
       Paramètres du centre
       <mat-progress-bar mode="determinate" [value]="getProgressValue(1)" [ngClass]="{editing: tabs[1].statut === 1, done: tabs[1].statut === 2}"></mat-progress-bar>
+      </div>
     </ng-template>
     <app-param-centre *ngIf="centreGestionInited && (paramCentreTab.isActive || tabs[1].init)" [form]="paramCentreForm" [centreGestion]="centreGestion" (update)="update()"></app-param-centre>
   </mat-tab>
   <mat-tab #logoCentreTab [disabled]="centreGestion && !centreGestion.id">
     <ng-template mat-tab-label>
+      <div class="tabTitle">
       Personnalisation du centre
       <mat-progress-bar mode="determinate" [value]="getProgressValue(2)" [ngClass]="{editing: tabs[2].statut === 1, done: tabs[2].statut === 2}"></mat-progress-bar>
+      </div>
     </ng-template>
     <app-logo-centre *ngIf="centreGestionInited && (logoCentreTab.isActive || tabs[2].init)" [centreGestion]="centreGestion" (refreshCentreGestion)="refreshCentreGestion($event)"></app-logo-centre>
   </mat-tab>
   <mat-tab #gestCentreTab [disabled]="centreGestion && !centreGestion.id">
     <ng-template mat-tab-label>
+      <div class="tabTitle">
       Rattacher un gestionnaire
       <mat-progress-bar mode="determinate" [value]="getProgressValue(3)" [ngClass]="{editing: tabs[3].statut === 1, done: tabs[3].statut === 2}"></mat-progress-bar>
+      </div>
     </ng-template>
     <app-gestionnaires *ngIf="centreGestionInited && (gestCentreTab.isActive || tabs[3].init)" [centreGestion]="centreGestion" (refreshPersonnelsCentre)="refreshPersonnelsCentre()"></app-gestionnaires>
   </mat-tab>
   <mat-tab #consigneCentreTab [disabled]="centreGestion && !centreGestion.id">
     <ng-template mat-tab-label>
+      <div class="tabTitle">
       Consigne
       <mat-progress-bar mode="determinate" [value]="getProgressValue(4)" [ngClass]="{editing: tabs[4].statut === 1, done: tabs[4].statut === 2}"></mat-progress-bar>
+      </div>
     </ng-template>
     <app-consigne *ngIf="centreGestionInited && (consigneCentreTab.isActive || tabs[4].init)" [consigne]="consigneCentre" [idCentreGestion]="centreGestion.id" (sumitted)="consigneCentre = $event; majStatus()"></app-consigne>
   </mat-tab>
   <mat-tab #fichesEvalCentreTab [disabled]="centreGestion && !centreGestion.id">
     <ng-template mat-tab-label>
+      <div class="tabTitle">
       Fiches d'évaluation
       <mat-progress-bar mode="determinate" [value]="getProgressValue(5)" [ngClass]="{editing: tabs[5].statut === 1, done: tabs[5].statut === 2}"></mat-progress-bar>
+      </div>
     </ng-template>
     <app-fiche-evaluation *ngIf="centreGestionInited && centreGestion.id && (fichesEvalCentreTab.isActive || tabs[5].init)" [idCentreGestion]="centreGestion.id"></app-fiche-evaluation>
   </mat-tab>
   <mat-tab #signatureElectroniqueTab [disabled]="centreGestion && !centreGestion.id">
     <ng-template mat-tab-label>
+      <div class="tabTitle">
       Signature électronique
       <mat-progress-bar mode="determinate" [value]="getProgressValue(6)" [ngClass]="{editing: tabs[6].statut === 1, done: tabs[6].statut === 2}"></mat-progress-bar>
+      </div>
     </ng-template>
     <app-centre-signature-electronique *ngIf="centreGestionInited && centreGestion.id && (signatureElectroniqueTab.isActive || tabs[6].init)" [form]="signatureElectroniqueForm" [centreGestion]="centreGestion"></app-centre-signature-electronique>
   </mat-tab>
   <mat-tab [disabled]="centreGestion && !centreGestion.id" *ngIf="centreGestion && !centreGestion.validationCreation">
     <ng-template mat-tab-label>
+      <div class="tabTitle">
       Validation définitive
+      </div>
     </ng-template>
     <mat-card>
       <mat-card-content>

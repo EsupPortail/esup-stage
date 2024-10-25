@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
-import { Observable, Subject } from "rxjs";
+import {firstValueFrom, Observable, Subject} from "rxjs";
 import { environment } from "../../environments/environment";
 import { AuthService } from "./auth.service";
 
@@ -36,14 +36,14 @@ export class ConfigService {
 
   async getConfigTheme(): Promise<any> {
     if (!this.configTheme) {
-      this.configTheme = await this.http.get(environment.apiUrl + "/config/theme").toPromise();
+      this.configTheme = await firstValueFrom(this.http.get(environment.apiUrl + "/config/theme"));
       this.themeSubject.next(this.configTheme);
     }
     return this.configTheme;
   }
 
   async updateTheme(data: any): Promise<any> {
-    this.configTheme = await this.http.post(environment.apiUrl + `/config/theme`, data).toPromise();
+    this.configTheme = await firstValueFrom(this.http.post(environment.apiUrl + `/config/theme`, data));
     this.themeSubject.next(this.configTheme);
     return this.configTheme;
   }

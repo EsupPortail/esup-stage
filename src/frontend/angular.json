@@ -3,7 +3,7 @@
   "cli": {
     "analytics": false,
     "cache": {
-      "enabled": false
+      "enabled": true
     }
   },
   "version": 1,
@@ -24,8 +24,11 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-builders/custom-webpack:browser",
           "options": {
+            "customWebpackConfig": {
+              "path": "webpack.config.js"
+            },
             "outputPath": "../main/resources/frontend",
             "index": "src/index.html",
             "main": "src/main.ts",
