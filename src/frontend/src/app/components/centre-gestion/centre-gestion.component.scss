@@ -1,11 +1,7 @@
-.tabTitle{
+.tabTitle {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-}
-
-mat-progress-bar {
-  margin-top: 4px;
 }
 
 .progress-status {
@@ -13,7 +9,7 @@ mat-progress-bar {
   margin-right: 5px;
   display: inline-block;
   border-radius: 50%;
-  background-color: grey;
+  background-color: #e9ecef;
 }
 
 .progress-status.done {

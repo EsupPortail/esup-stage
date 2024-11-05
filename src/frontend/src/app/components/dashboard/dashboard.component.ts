@@ -155,43 +155,28 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.langueConventionService.getPaginated(1, 0, 'libelle', 'asc', '{}'),
         this.typeConventionService.getPaginated(1, 0, 'libelle', 'asc', '{}')
       ).subscribe(([ufrData, etapeData, listAnneeData, langueConventionList, typeConventionList]) => {
-        // ufr
         this.ufrList = ufrData.data;
         this.appTable?.setFilterOption('ufr.id', this.ufrList);
 
-        // etape
         this.etapeList = etapeData.data;
         this.appTable?.setFilterOption('etape.id', this.etapeList);
 
-        // annees
         this.annees = listAnneeData;
         this.anneeEnCours = this.annees.find((a: any) => a.anneeEnCours === true);
-        if (!this.authService.isEtudiant()) {
-          this.annees.push({
-            "annee": "any",
-            "libelle": "Toutes les années",
-            "anneeEnCours": false,
-            "any": true
-          });
-          this.changeAnnee();
-        } else {
-          this.appTable?.setFilterOption('annee', this.annees);
-        }
+        this.appTable?.setFilterOption('annee', this.annees);
 
-        // langue convention
         this.langueConventionList = langueConventionList.data;
         this.appTable?.setFilterOption('langueConvention.code', this.langueConventionList);
 
-        // type convention
         this.typeConventionList = typeConventionList.data;
         this.appTable?.setFilterOption('typeConvention.id', this.typeConventionList);
 
         if (this.savedFilters) {
           this.restoreFilters();
         }
-      });
 
-      this.tableCanLoad = true;
+        this.tableCanLoad = true;
+      });
     });
   }
 
@@ -299,22 +284,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }
       ]
     };
-    console.log("---------------------------------------");
-    console.log("var etapeList");
-    console.log(this.etapeList);
-    console.log("appele ws etape");
-    this.etapeService.getPaginated(1, 0, 'libelle', 'asc', '{}').subscribe({
-      next: (value: any) => {
-        console.log(value);
-      },
-      error: (err: any) => {
-        console.error('Error: ', err);
-      },
-      complete: () => {
-        console.log('Completed');
-      }
-    });
-    console.log("---------------------------------------");
   }
 
   changeAnnee(): void {
@@ -323,14 +292,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.countConvention();
     if (!this.anneeEnCours.any) {
       // Compte le nombre de conventions dont la date de validation se rapproche ou dépasse la date de début du stage
-      // this.conventionService.countConventionEnAttenteAlerte(this.anneeEnCours.annee).subscribe((response: number) => {
-      //   if (response > 0) {
-      //     this.snackBar.open(`${response} convention(s) à valider dont la date de validation se rapproche ou dépasse la date de début du stage`, 'Fermer', {
-      //       horizontalPosition: 'center',
-      //       verticalPosition: 'top',
-      //     });
-      //   }
-      // });
+      this.conventionService.countConventionEnAttenteAlerte(this.anneeEnCours.annee).subscribe((response: number) => {
+        if (response > 0) {
+          this.snackBar.open(`${response} convention(s) à valider dont la date de validation se rapproche ou dépasse la date de début du stage`, 'Fermer', {
+            horizontalPosition: 'center',
+            verticalPosition: 'top',
+          });
+        }
+      });
     }
   }
 

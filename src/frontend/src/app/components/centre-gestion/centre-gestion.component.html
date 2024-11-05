@@ -13,7 +13,7 @@
     <ng-template mat-tab-label>
       <div class="tabTitle">
       Paramètres du centre
-      <mat-progress-bar mode="determinate" [value]="getProgressValue(1)" [ngClass]="{editing: tabs[1].statut === 1, done: tabs[1].statut === 2}"></mat-progress-bar>
+      <mat-progress-bar mode="determinate" value="getProgressValue(1)" ngClass="{editing: tabs[1].statut === 1, done: tabs[1].statut === 2}"></mat-progress-bar>
       </div>
     </ng-template>
     <app-param-centre *ngIf="centreGestionInited && (paramCentreTab.isActive || tabs[1].init)" [form]="paramCentreForm" [centreGestion]="centreGestion" (update)="update()"></app-param-centre>
@@ -22,7 +22,7 @@
     <ng-template mat-tab-label>
       <div class="tabTitle">
       Personnalisation du centre
-      <mat-progress-bar mode="determinate" [value]="getProgressValue(2)" [ngClass]="{editing: tabs[2].statut === 1, done: tabs[2].statut === 2}"></mat-progress-bar>
+      <mat-progress-bar mode="determinate" value="getProgressValue(2)" ngClass="{editing: tabs[2].statut === 1, done: tabs[2].statut === 2}"></mat-progress-bar>
       </div>
     </ng-template>
     <app-logo-centre *ngIf="centreGestionInited && (logoCentreTab.isActive || tabs[2].init)" [centreGestion]="centreGestion" (refreshCentreGestion)="refreshCentreGestion($event)"></app-logo-centre>
@@ -31,7 +31,7 @@
     <ng-template mat-tab-label>
       <div class="tabTitle">
       Rattacher un gestionnaire
-      <mat-progress-bar mode="determinate" [value]="getProgressValue(3)" [ngClass]="{editing: tabs[3].statut === 1, done: tabs[3].statut === 2}"></mat-progress-bar>
+      <mat-progress-bar mode="determinate" value="getProgressValue(3)" ngClass="{editing: tabs[3].statut === 1, done: tabs[3].statut === 2}"></mat-progress-bar>
       </div>
     </ng-template>
     <app-gestionnaires *ngIf="centreGestionInited && (gestCentreTab.isActive || tabs[3].init)" [centreGestion]="centreGestion" (refreshPersonnelsCentre)="refreshPersonnelsCentre()"></app-gestionnaires>
