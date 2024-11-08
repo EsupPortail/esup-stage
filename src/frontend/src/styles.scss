@@ -160,17 +160,17 @@ form, .mat-cell {
     margin: 0;
   }
   mat-progress-bar {
-    width: 80px;
-    margin: auto;
+    width: 80px !important;
+    margin: auto !important;
   }
-  mat-progress-bar .mat-progress-bar-fill::after {
-    background-color: var(--dangerColor);
+  .empty .mat-mdc-progress-bar-fill::after, .empty {
+    --mdc-linear-progress-active-indicator-color: var(--dangerColor) !important;
   }
-  mat-progress-bar.done .mat-progress-bar-fill::after, .progress-status.done {
-    background-color: var(--successColor);
+  .done .mat-mdc-progress-bar-fill::after, .done {
+    --mdc-linear-progress-active-indicator-color: var(--successColor) !important;
   }
-  mat-progress-bar.editing .mat-progress-bar-fill::after, .progress-status.editing {
-    background-color: var(--warningColor);
+  .editing .mat-mdc-progress-bar-fill::after, .editing {
+    --mdc-linear-progress-active-indicator-color: var(--warningColor) !important;
   }
 }
 
@@ -210,7 +210,7 @@ ckeditor {
   }
 }
 
-.mat-progress-bar-buffer {
+mat-progress-bar .mat-progress-buffer-bar {
   background-color: #cbd0e9;
 }
 
@@ -227,5 +227,6 @@ ckeditor {
   margin-bottom: 10px;
   font-size: 0.9rem;
 }
+
 
 
