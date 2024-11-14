@@ -1,7 +1,9 @@
 package org.esup_portail.esup_stage.config;
 
+import nz.net.ultraq.thymeleaf.LayoutDialect;
 import org.esup_portail.esup_stage.controller.ApiController;
 import org.esup_portail.esup_stage.controller.apipublic.ApiPublicController;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.HandlerTypePredicate;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
@@ -29,5 +31,10 @@ public class WebMcvConfiguration implements WebMvcConfigurer {
     public void configurePathMatch(PathMatchConfigurer configurer) {
         configurer.addPathPrefix("/api", HandlerTypePredicate.forAnnotation(ApiController.class));
         configurer.addPathPrefix("/public/api", HandlerTypePredicate.forAnnotation(ApiPublicController.class));
+    }
+
+    @Bean
+    public LayoutDialect layoutDialect() {
+        return new LayoutDialect();
     }
 }

@@ -4,6 +4,7 @@ import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
 import org.esup_portail.esup_stage.security.userdetails.CasUserDetailsServiceImpl;
 import org.jasig.cas.client.session.SingleSignOutFilter;
 import org.jasig.cas.client.validation.TicketValidator;
+import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
 import org.jasig.cas.client.validation.json.Cas30JsonServiceTicketValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -49,6 +50,10 @@ public class SecurityConfiguration {
 
     @Bean
     public TicketValidator ticketValidator() {
+        
+        if (applicationBootstrap.getAppConfig().getCasResponseType().equals("xml")) {
+            return new Cas20ServiceTicketValidator(applicationBootstrap.getAppConfig().getCasUrlService());
+        }
         return new Cas30JsonServiceTicketValidator(applicationBootstrap.getAppConfig().getCasUrlService());
     }
 
@@ -92,7 +97,7 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChainPrivate(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/login/cas", "/api/version").permitAll()
+                .antMatchers("/login/cas", "/api/version", "/error", "/theme.css").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().authenticationEntryPoint(casEntryPoint())

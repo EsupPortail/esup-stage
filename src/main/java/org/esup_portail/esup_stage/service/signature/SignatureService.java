@@ -197,6 +197,18 @@ public class SignatureService {
                             .bodyToMono(String.class)
                             .block();
                     if (documentId != null) {
+                        // Que fait-on si un précédent envoi a déjà été fait avant ?
+                        String previousDocumentId = isAvenant ? avenant.getDocumentId() : convention.getDocumentId();
+                        if (previousDocumentId != null) {
+                            // Pour ESUP-Signature, on supprime l'ancien avant de renseigner le nouveau
+                            if (appSignature == AppSignatureEnum.ESUPSIGNATURE) {
+                                webClient.delete()
+                                    .uri(applicationBootstrap.getAppConfig().getEsupSignatureUri() + "/signrequests/soft/" + previousDocumentId)
+                                    .retrieve()
+                                    .bodyToMono(String.class)
+                                    .block();
+                            }
+                        }
                         if (isAvenant) {
                             avenant.setDateEnvoiSignature(new Date());
                             avenant.setDocumentId(documentId);
