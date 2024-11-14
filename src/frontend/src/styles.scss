@@ -195,6 +195,17 @@ label.required::after {
   width: 18px;
 }
 
+.content-editor{
+  border: 1px solid lightgrey;
+  margin: 2%;
+  width: 95%;
+}
+
+.ql-editor{
+  max-height: 500px;
+  overflow-y: auto;
+}
+
 ckeditor {
   .ck.ck-editor__editable_inline {
     border: 1px solid var(--ck-color-toolbar-border);

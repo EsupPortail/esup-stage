@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import { ActivatedRoute, Router } from "@angular/router";
 import { ConventionService } from "../../services/convention.service";
 import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
@@ -36,6 +36,12 @@ export class ConventionComponent implements OnInit {
   allValid = false;
   modifiable = true;
   signatureEnabled = false;
+
+  @Input() cby:boolean = false;
+  @Input() cbn:boolean = false;
+
+  @Output() cbyChange = new EventEmitter<any>();
+  @Output() cbnChange = new EventEmitter<any>();
 
   @ViewChild("tabGroup") tabGroup!: MatTabGroup;
 
@@ -161,6 +167,9 @@ export class ConventionComponent implements OnInit {
 
   tabChanged(event: MatTabChangeEvent): void {
     this.tabs[event.index].init = true;
+    this.cbyChange.emit(this.cby);
+    this.cbnChange.emit(this.cbn);
+    console.log("cby : "+this.cby+" & cbn : "+this.cbn);
   }
 
   getProgressValue(key: number): number {
