@@ -14,6 +14,8 @@ import * as FileSaver from 'file-saver';
 export class RecapitulatifComponent implements OnInit {
 
   @Input() convention: any;
+  @Input() cby!:boolean;
+  @Input() cbn!:boolean;
   tmpConvention: any;
   interruptionsStage: any[] = [];
   canPrint: boolean = true;

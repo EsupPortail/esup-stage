@@ -1,15 +1,13 @@
-.progress-status {
-  padding: 5px;
-  margin-right: 5px;
-  display: inline-block;
-  border-radius: 50%;
-  background-color: #e9ecef;
+.tabTitle {
+  display: flex;
+  flex-direction: column !important;
+  align-items: center !important;
 }
 
-.progress-status.done {
-  background-color: var(--successColor);
-}
-
-.progress-status.editing {
-  background-color: var(--warningColor);
+.mat-mdc-progress-bar {
+  padding: 5px !important;
+  display: inline-block !important;
+  border-radius: 50% !important;
+  width: 80px !important;
+  margin: auto !important;
 }

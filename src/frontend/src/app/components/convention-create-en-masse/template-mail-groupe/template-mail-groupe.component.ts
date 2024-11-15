@@ -7,7 +7,7 @@ import { AuthService } from "../../../services/auth.service";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
 import { MessageService } from "../../../services/message.service";
-import { MatDialog } from "@angular/material/dialog";
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MailTesterComponent } from "../../admin/template-mail/mail-tester/mail-tester.component";
 
 @Component({

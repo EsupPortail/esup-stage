@@ -1,3 +1,5 @@
+@import "~@fortawesome/fontawesome-free/css/all.css";
+
 mat-sidenav-container {
   min-height: calc(100vh - 64px);
 }
@@ -7,11 +9,7 @@ mat-sidenav-content {
   max-height: calc(100vh - 64px);
 }
 
-.app-menu {
-  display: flex;
-  flex-direction: column;
-  margin-top: 48px;
-}
+
 
 .menu-button {
   button {
@@ -61,4 +59,27 @@ mat-nav-list {
   mat-sidenav-content {
     margin-left: 0px !important;
   }
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 10px;
+  height: 48px; /* Ajuste selon la hauteur souhaitée */
+}
+
+.icon-display {
+  font-size: 24px; /* Ajuste la taille de l'icône */
+  width: 48px; /* Taille du conteneur de l'icône */
+  height: 48px; /* Hauteur du conteneur de l'icône */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 10px; /* Espacement entre l'icône et le texte */
+}
+
+.menu-label {
+  flex-grow: 1; /* Le texte occupe l'espace restant */
+  font-size: 16px; /* Ajuste la taille du texte */
 }

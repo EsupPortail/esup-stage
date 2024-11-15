@@ -1,7 +1,10 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "cli": {
-    "analytics": false
+    "analytics": false,
+    "cache": {
+      "enabled": true
+    }
   },
   "version": 1,
   "newProjectRoot": "projects",
@@ -33,19 +36,19 @@
               "src/assets"
             ],
             "styles": [
+              "src/styles.scss",
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
               "./node_modules/bootstrap-css-only/css/bootstrap.min.css",
-              "src/styles.scss"
-            ],
-            "scripts": [
-              "node_modules/@ckeditor/ckeditor5-build-decoupled-document/build/translations/fr.js"
+              "./node_modules/quill/dist/quill.core.css",
+              "./node_modules/quill/dist/quill.snow.css"
             ],
             "allowedCommonJsDependencies": [
               "quill",
               "quill-blot-formatter",
               "file-saver",
               "lodash"
-            ]
+            ],
+            "sourceMap": true
           },
           "configurations": {
             "production": {
@@ -84,10 +87,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "esup-stage-front:build:production"
+              "buildTarget": "esup-stage-front:build:production"
             },
             "development": {
-              "browserTarget": "esup-stage-front:build:development"
+              "buildTarget": "esup-stage-front:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -95,7 +98,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "esup-stage-front:build"
+            "buildTarget": "esup-stage-front:build"
           }
         },
         "test": {
@@ -110,9 +113,11 @@
               "src/assets"
             ],
             "styles": [
+              "src/styles.scss",
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
               "./node_modules/bootstrap-css-only/css/bootstrap.min.css",
-              "src/styles.scss"
+              ",./node_modules/quill/dist/quill.core.css",
+              "./node_modules/quill/dist/quill.snow.css"
             ],
             "scripts": []
           }

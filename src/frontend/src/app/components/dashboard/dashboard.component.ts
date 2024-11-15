@@ -9,11 +9,11 @@ import { EtapeService } from "../../services/etape.service";
 import { MessageService } from "../../services/message.service";
 import { ConfigService } from "../../services/config.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { forkJoin } from 'rxjs';
 import { SortDirection } from "@angular/material/sort";
 import { ContenuPipe } from "../../pipes/contenu.pipe";
 import { TypeConventionService } from "../../services/type-convention.service";
 import { LangueConventionService } from "../../services/langue-convention.service";
+import { zip } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
@@ -148,50 +148,35 @@ export class DashboardComponent implements OnInit, OnDestroy {
       }
       this.filters.push({ id: 'validationCreation', type: 'boolean', value: true, hidden: true, permanent: true });
 
-      forkJoin(
+      zip(
         this.ufrService.getPaginated(1, 0, 'libelle', 'asc', '{}'),
         this.etapeService.getPaginated(1, 0, 'libelle', 'asc', '{}'),
         this.conventionService.getListAnnee(),
         this.langueConventionService.getPaginated(1, 0, 'libelle', 'asc', '{}'),
-        this.typeConventionService.getPaginated(1, 0, 'libelle', 'asc', '{}'),
+        this.typeConventionService.getPaginated(1, 0, 'libelle', 'asc', '{}')
       ).subscribe(([ufrData, etapeData, listAnneeData, langueConventionList, typeConventionList]) => {
-        // ufr
         this.ufrList = ufrData.data;
         this.appTable?.setFilterOption('ufr.id', this.ufrList);
 
-        // etape
         this.etapeList = etapeData.data;
         this.appTable?.setFilterOption('etape.id', this.etapeList);
 
-        // annees
         this.annees = listAnneeData;
-        this.anneeEnCours = this.annees.find((a: any) => { return a.anneeEnCours === true });
-        if (!this.authService.isEtudiant()) {
-          this.annees.push({
-            "annee": "any",
-            "libelle": "Toutes les années",
-            "anneeEnCours": false,
-            "any": true
-          })
-          this.changeAnnee();
-        } else {
-          this.appTable?.setFilterOption('annee', this.annees);
-        }
+        this.anneeEnCours = this.annees.find((a: any) => a.anneeEnCours === true);
+        this.appTable?.setFilterOption('annee', this.annees);
 
-        // langue convention
         this.langueConventionList = langueConventionList.data;
         this.appTable?.setFilterOption('langueConvention.code', this.langueConventionList);
 
-        // type convention
         this.typeConventionList = typeConventionList.data;
         this.appTable?.setFilterOption('typeConvention.id', this.typeConventionList);
 
         if (this.savedFilters) {
           this.restoreFilters();
         }
-      });
 
-      this.tableCanLoad = true;
+        this.tableCanLoad = true;
+      });
     });
   }
 
@@ -307,14 +292,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.countConvention();
     if (!this.anneeEnCours.any) {
       // Compte le nombre de conventions dont la date de validation se rapproche ou dépasse la date de début du stage
-      // this.conventionService.countConventionEnAttenteAlerte(this.anneeEnCours.annee).subscribe((response: number) => {
-      //   if (response > 0) {
-      //     this.snackBar.open(`${response} convention(s) à valider dont la date de validation se rapproche ou dépasse la date de début du stage`, 'Fermer', {
-      //       horizontalPosition: 'center',
-      //       verticalPosition: 'top',
-      //     });
-      //   }
-      // });
+      this.conventionService.countConventionEnAttenteAlerte(this.anneeEnCours.annee).subscribe((response: number) => {
+        if (response > 0) {
+          this.snackBar.open(`${response} convention(s) à valider dont la date de validation se rapproche ou dépasse la date de début du stage`, 'Fermer', {
+            horizontalPosition: 'center',
+            verticalPosition: 'top',
+          });
+        }
+      });
     }
   }
 
@@ -437,6 +422,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     sessionStorage.setItem('dashboard-paging', JSON.stringify({ page: this.appTable?.page, pageSize: this.appTable?.pageSize, sortColumn: this.appTable?.sortColumn, sortOrder: this.appTable?.sortOrder }));
     sessionStorage.setItem('dashboard-filters', JSON.stringify(this.appTable?.getFilterValues()))
   }
+
 }
 
 

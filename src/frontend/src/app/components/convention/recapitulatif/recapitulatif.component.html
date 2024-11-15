@@ -196,6 +196,11 @@
           <div class="col-sm-3 font-weight-bold">Signataire</div>
           <div class="col-sm-9">{{tmpConvention.signataire ? (tmpConvention.signataire.civilite ? tmpConvention.signataire.civilite.libelle + ' ' : '') +tmpConvention.signataire.nom + ' ' +tmpConvention.signataire.prenom +
             (tmpConvention.signataire.fonction ? ', ' + tmpConvention.signataire.fonction : '') : ''}}</div>
+          <div class="col-sm-3 font-weight-bold">Protection sociale issue de l'organisme d'accueil </div>
+          <div class="col-sm-9">
+            <mat-checkbox [checked]="cby" [disabled]="true">OUI</mat-checkbox>
+            <mat-checkbox [checked]="cbn" [disabled]="true">NON</mat-checkbox>
+          </div>
         </div>
       </div>
     </div>

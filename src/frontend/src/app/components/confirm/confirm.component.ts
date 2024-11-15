@@ -1,5 +1,5 @@
 import { Component, EventEmitter, HostListener, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
-import { MatDialog, MatDialogRef } from "@angular/material/dialog";
+import { MatDialog, MatDialogRef} from '@angular/material/dialog';
 
 @Component({
   selector: '[confirm]',
@@ -11,8 +11,8 @@ export class ConfirmComponent implements OnInit {
   @Input() confirmMessage: string = '';
   @Output() confirm = new EventEmitter();
 
-  @ViewChild('confirmDialog') template: TemplateRef<any>;
-  dialogRef: MatDialogRef<any>;
+  @ViewChild('confirmDialog') template!: TemplateRef<any>;
+  dialogRef!: MatDialogRef<any>;
 
   constructor(public dialog: MatDialog) { }
 

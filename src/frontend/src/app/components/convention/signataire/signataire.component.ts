@@ -42,7 +42,7 @@ export class SignataireComponent implements OnInit, OnChanges {
 
   @Output() validated = new EventEmitter<number>();
 
-  @Input() modifiable: boolean;
+  @Input() modifiable!: boolean;
 
   constructor(private contactService: ContactService,
               private fb: FormBuilder,
