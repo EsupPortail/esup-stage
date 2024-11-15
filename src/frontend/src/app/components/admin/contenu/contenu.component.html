@@ -64,10 +64,10 @@
                 (onEditorCreated)="onEditorCreated($event)">
               </quill-editor>
             </div>
-            <div id="custom-toolbar">
-              <button class="ql-undo" type="button" aria-label="Undo"><i class="fa fa-undo" aria-hidden="true"></i></button>
-              <button class="ql-redo" type="button" aria-label="Redo"><i class="fa fa-repeat" aria-hidden="true"></i></button>
-            </div>
+<!--            <div id="custom-toolbar">-->
+<!--              <button class="ql-undo" type="button" aria-label="Undo"><i class="fa fa-undo" aria-hidden="true"></i></button>-->
+<!--              <button class="ql-redo" type="button" aria-label="Redo"><i class="fa fa-repeat" aria-hidden="true"></i></button>-->
+<!--            </div>-->
             <mat-form-field *ngIf="form.controls.libelle.value === true" class="col-md-12" appearance="fill">
               <mat-label>Texte</mat-label>
               <input matInput formControlName="texte" />
