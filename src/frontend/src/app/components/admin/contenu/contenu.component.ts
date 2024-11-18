@@ -157,9 +157,6 @@ export class ContenuComponent implements OnInit {
   public config: EditorConfig = {}; // CKEditor needs the DOM tree before calculating the configuration.
   public ngAfterViewInit(): void {
 
-    this.isLayoutReady = true;
-    this.changeDetector.detectChanges();
-
     this.config = {
       toolbar: {
         items: [

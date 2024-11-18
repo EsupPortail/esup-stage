@@ -36,8 +36,8 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss",
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+              "src/styles.scss",
               "./node_modules/bootstrap-css-only/css/bootstrap.min.css",
               "./node_modules/quill/dist/quill.core.css",
               "./node_modules/quill/dist/quill.snow.css"
@@ -113,8 +113,8 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss",
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+              "src/styles.scss",
               "./node_modules/bootstrap-css-only/css/bootstrap.min.css",
               ",./node_modules/quill/dist/quill.core.css",
               "./node_modules/quill/dist/quill.snow.css"

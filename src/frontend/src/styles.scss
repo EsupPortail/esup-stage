@@ -172,6 +172,9 @@ form, .mat-cell {
   .editing .mat-mdc-progress-bar-fill::after, .editing {
     --mdc-linear-progress-active-indicator-color: var(--warningColor) !important;
   }
+  .mat-mdc-progress-bar-fill::after, .empty, .done, .editing {
+    --mdc-linear-progress-track-color:lightgrey;
+  }
 }
 
 .mat-form-field {
