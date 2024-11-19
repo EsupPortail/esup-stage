@@ -372,24 +372,23 @@
 			</plugin>
 
 			<plugin>
-				<groupId>org.jvnet.jaxb</groupId>
-				<artifactId>jaxb-maven-plugin</artifactId>
-				<version>4.0.8</version>
+				<groupId>com.sun.xml.ws</groupId>
+				<artifactId>jaxws-maven-plugin</artifactId>
+				<version>4.0.3</version>
 				<executions>
 					<execution>
 						<goals>
-							<goal>generate</goal>
+							<goal>wsimport</goal>
 						</goals>
 					</execution>
 				</executions>
 				<configuration>
-					<schemaLanguage>WSDL</schemaLanguage>
-					<generateDirectory>${project.basedir}/src/main/java</generateDirectory>
-					<generatePackage>org.esup_portail.esup_stage.docaposte.gen</generatePackage>
-					<schemaDirectory>${project.basedir}/src/main/resources/docaposte</schemaDirectory>
-					<schemaIncludes>
-						<include>Documents.wsdl</include>
-					</schemaIncludes>
+					<wsdlDirectory>${project.basedir}/src/main/resources/docaposte/</wsdlDirectory>
+					<wsdlFiles>
+						<wsdlFile>Documents.wsdl</wsdlFile>
+					</wsdlFiles>
+					<packageName>org.esup_portail.esup_stage.docaposte.gen</packageName>
+					<sourceDestDir>${project.basedir}/src/main/java</sourceDestDir>
 				</configuration>
 			</plugin>
 		</plugins>
