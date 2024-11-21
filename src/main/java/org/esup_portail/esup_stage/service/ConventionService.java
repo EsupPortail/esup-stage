@@ -23,6 +23,7 @@ import org.esup_portail.esup_stage.service.ldap.LdapService;
 import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
 import org.esup_portail.esup_stage.service.signature.SignatureService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -79,6 +80,7 @@ public class ConventionService {
     @Autowired
     ApogeeService apogeeService;
 
+    @Lazy
     @Autowired
     SignatureService signatureService;
 
