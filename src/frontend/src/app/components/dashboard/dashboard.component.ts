@@ -175,6 +175,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.restoreFilters();
         }
 
+        this.filters.push({ id: 'annee', libelle: 'Année', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'libelle', value: [this.anneeEnCours.libelle] , hidden: true},)
+
         this.tableCanLoad = true;
       });
     });

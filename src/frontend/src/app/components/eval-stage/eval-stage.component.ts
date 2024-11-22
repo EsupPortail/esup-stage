@@ -7,6 +7,9 @@ import { SortDirection } from "@angular/material/sort";
 import { TitleService } from "../../services/title.service";
 import { CentreGestionService } from "../../services/centre-gestion.service";
 
+//TODO
+// Faire en sorte que le filtre soit actif dès le chargement du tableau, même problème que dashboard
+
 @Component({
   selector: 'app-eval-stage',
   templateUrl: './eval-stage.component.html',
