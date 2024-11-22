@@ -9,7 +9,6 @@ import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.ldap.LdapService;
 import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
-import org.jasig.cas.client.authentication.AttributePrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.cas.authentication.CasAssertionAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,7 +17,10 @@ import org.springframework.security.core.userdetails.AuthenticationUserDetailsSe
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class CasUserDetailsServiceImpl implements AuthenticationUserDetailsService<CasAssertionAuthenticationToken> {
 
@@ -45,11 +47,7 @@ public class CasUserDetailsServiceImpl implements AuthenticationUserDetailsServi
 
     @Override
     public UserDetails loadUserDetails(CasAssertionAuthenticationToken authentication) throws UsernameNotFoundException {
-        AttributePrincipal principal = authentication.getAssertion().getPrincipal();
         String username = authentication.getName();
-        Map<String, Object> attributes = principal.getAttributes();
-        String nom = getStringValue(attributes.get("sn"));
-        String prenom = getStringValue(attributes.get("givenName"));
 
         // Recherche de l'utilisateur
         Utilisateur utilisateur = utilisateurJpaRepository.findOneByLogin(username);
@@ -78,8 +76,8 @@ public class CasUserDetailsServiceImpl implements AuthenticationUserDetailsServi
                 }
                 utilisateur = new Utilisateur();
                 utilisateur.setLogin(username);
-                utilisateur.setNom(nom);
-                utilisateur.setPrenom(prenom);
+                utilisateur.setNom(String.join(" ", users.get(0).getSn()));
+                utilisateur.setPrenom(String.join(" ", users.get(0).getGivenName()));
                 utilisateur.setActif(true);
                 utilisateur.setRoles(roles);
                 utilisateur.setUid(users.get(0).getUid());
@@ -93,6 +91,8 @@ public class CasUserDetailsServiceImpl implements AuthenticationUserDetailsServi
             if (ldapUser == null) {
                 throw new UsernameNotFoundException("Utilisateur LDAP non trouvé à partir du login " + utilisateur.getLogin());
             }
+            String nom = String.join(" ", ldapUser.getSn());
+            String prenom = String.join(" ", ldapUser.getGivenName());
             // Si c'est un étudiant on lui créé une ligne dans la table Etudiant s'il n'existe pas
             if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
                 Etudiant etudiant = etudiantRepository.findByNumEtudiant(ldapUser.getCodEtu());
