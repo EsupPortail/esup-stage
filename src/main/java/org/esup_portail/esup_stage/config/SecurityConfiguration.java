@@ -1,6 +1,7 @@
 package org.esup_portail.esup_stage.config;
 
 import org.apereo.cas.client.session.SingleSignOutFilter;
+import org.apereo.cas.client.validation.Cas20ServiceTicketValidator;
 import org.apereo.cas.client.validation.TicketValidator;
 import org.apereo.cas.client.validation.json.Cas30JsonServiceTicketValidator;
 import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
