@@ -2,7 +2,7 @@ package org.esup_portail.esup_stage.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "RoleAppFonction", uniqueConstraints = {@UniqueConstraint(name = "uniq_RoleAppFonction_Role_AppFonction", columnNames = {"idRole", "idAppFonction"})})

@@ -3,7 +3,7 @@ package org.esup_portail.esup_stage.repository;
 import org.esup_portail.esup_stage.model.Contact;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 @Repository
 public class ContactRepository extends PaginationRepository<Contact> {

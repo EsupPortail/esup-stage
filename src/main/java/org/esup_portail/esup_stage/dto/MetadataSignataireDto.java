@@ -2,7 +2,7 @@ package org.esup_portail.esup_stage.dto;
 
 import org.apache.logging.log4j.util.Strings;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 public class MetadataSignataireDto {
     @NotNull

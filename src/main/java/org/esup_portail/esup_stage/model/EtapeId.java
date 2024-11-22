@@ -1,7 +1,7 @@
 package org.esup_portail.esup_stage.model;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import java.io.Serializable;
 
 @Embeddable

@@ -20,6 +20,7 @@ import org.esup_portail.esup_stage.service.impression.ImpressionService;
 import org.esup_portail.esup_stage.service.signature.model.Historique;
 import org.esup_portail.esup_stage.webhook.esupsignature.service.WebhookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -53,6 +54,7 @@ public class SignatureService {
     @Autowired
     CentreGestionJpaRepository centreGestionJpaRepository;
 
+    @Lazy
     @Autowired
     ConventionService conventionService;
 

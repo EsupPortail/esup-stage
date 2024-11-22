@@ -1,0 +1,14 @@
+<bindings xmlns="http://java.sun.com/xml/ns/jaxb"
+          xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+          xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+          xmlns:jaxws="http://java.sun.com/xml/ns/jaxws"
+          version="2.1">
+    <!-- Forcer l'utilisation des API Jakarta -->
+    <globalBindings generateElementProperty="true">
+        <javaType name="jakarta.jws.WebService" />
+        <javaType name="jakarta.jws.WebMethod" />
+        <javaType name="jakarta.jws.WebParam" />
+        <javaType name="jakarta.xml.ws.BindingType" />
+        <javaType name="jakarta.xml.ws.WebServiceContext" />
+    </globalBindings>
+</bindings>
