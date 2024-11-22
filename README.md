@@ -4,8 +4,8 @@ ESUP STAGE est la refonte de l'application pStage. L'application a été complè
 
 ## Techno
 
-* JAVA 11
-* NodeJS 14
+* JAVA 21
+* NodeJS 20
 
 
 ## Integration
