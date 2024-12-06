@@ -55,7 +55,17 @@
           <div class="row">
             <div class="col-12">
               <label class="required">Texte</label>
-              <quill-editor formControlName="texte"></quill-editor>
+              <div>
+                <div class="main-container">
+                  <div class="editor-container editor-container_classic-editor editor-container_include-style" #editorContainerElement>
+                    <div class="editor-container__editor">
+                      <div #editorElement>
+                        <ckeditor [editor]="Editor" [config]="config"  formControlName="texte" *ngIf="isLayoutReady" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 

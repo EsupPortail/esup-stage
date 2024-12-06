@@ -90,6 +90,8 @@ public class CentreGestionController {
 
     @Autowired
     ConventionService conventionService;
+    @Autowired
+    private ConsigneDocumentJpaRepository consigneDocumentJpaRepository;
 
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
@@ -237,11 +239,24 @@ public class CentreGestionController {
         // Suppression des critères, personnels et consigne rattachés à ce centre
         critereGestionJpaRepository.deleteCriteresByCentreId(id);
         personnelCentreGestionJpaRepository.deletePersonnelsByCentreId(id);
+
+        // Suppression des ConsigneDocument associés
+        List<Integer> documentIds = consigneJpaRepository.findByIdCentreGestion(id).getDocuments().stream()
+                .map(ConsigneDocument::getId)
+                .collect(Collectors.toList());
+        consigneDocumentJpaRepository.deleteAllById(documentIds);
+
+        // Synchroniser la session avant de supprimer la Consigne
+        consigneDocumentJpaRepository.flush();  // Synchronisation des changements
+
+        // Suppression de la Consigne
         consigneJpaRepository.deleteoConsigneByCentreId(id);
 
+        // Suppression du CentreGestion
         centreGestionJpaRepository.deleteById(id);
-        centreGestionJpaRepository.flush();
+        centreGestionJpaRepository.flush();  // Synchronisation de la suppression
     }
+
 
 
     @GetMapping("/{id}/composantes")

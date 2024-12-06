@@ -78,7 +78,17 @@
 
     <div class="col-sm-12 col-md-6 mb-2">
       <label>Activité principale</label>
-      <quill-editor formControlName="activitePrincipale"></quill-editor>
+      <div>
+        <div class="main-container">
+          <div class="editor-container editor-container_classic-editor editor-container_include-style" #editorContainerElement>
+            <div class="editor-container__editor">
+              <div #editorElement>
+                <ckeditor [editor]="Editor" [config]="config"  formControlName="activitePrincipale" *ngIf="isLayoutReady" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <mat-error><div *ngIf="!form.get('activitePrincipale')?.value && !form.get('codeNafN5')?.value">Le code APE ou l'activité principale doit être renseigné</div></mat-error>
     </div>
   </div>
