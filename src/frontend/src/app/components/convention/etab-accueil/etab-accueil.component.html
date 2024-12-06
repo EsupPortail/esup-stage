@@ -116,18 +116,6 @@
       </div>
     </div>
   </mat-expansion-panel>
-  <mat-expansion-panel [expanded]="etab" [disabled]="!etab">
-    <mat-expansion-panel-header>
-      Protection sociale issue de l'organisme d'accueil
-    </mat-expansion-panel-header>
-    <div class="row">En cochant la case appropriée, l'organisme d'accueil indique ci-après s'il
-      fournit une protection Maladie au stagiaire, en vertu du droit local :</div>
-    <div class="row"><mat-checkbox id="checkboxYes" [(ngModel)]="cby" (click)="checkboxHandler('yes')">OUI : cette protection s'ajoute au maintien, à l'étranger,
-      des droits issus du droit français</mat-checkbox></div>
-    <div class="row"><mat-checkbox id="checkboxNo" [(ngModel)]="cbn" (click)="checkboxHandler('no')">NON: la protection découle alors exclusivement du
-      maintien, à l'étranger, des droits issus du régime français
-      étudiant. </mat-checkbox></div>
-    <div class="row">Si aucune case n'est cochée, le 6.3-1 s'applique</div>
-  </mat-expansion-panel>
+ 
 
 </mat-accordion>

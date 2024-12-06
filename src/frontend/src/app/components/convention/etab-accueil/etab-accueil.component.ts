@@ -48,8 +48,7 @@ export class EtabAccueilComponent implements OnInit {
   @Output() cbyChange = new EventEmitter<any>();
   @Output() cbnChange = new EventEmitter<any>();
 
-  cby:boolean = false; //checkboxYes
-  cbn:boolean = false; //checkboxNo
+
 
 
   constructor(public structureService: StructureService,
@@ -141,21 +140,4 @@ export class EtabAccueilComponent implements OnInit {
     this.modif = true;
   }
 
-  checkboxHandler(selected: 'yes' | 'no') {
-    if (selected === "yes") {
-      this.cby = true;
-      if (this.cbn) {
-        this.cbn = false;
-      }
-    }
-    if (selected === "no") {
-      this.cbn = true;
-      if (this.cby) {
-        this.cby = false;
-      }
-    }
-    console.log("cby : "+this.cby+" & cbn : "+this.cbn);
-    this.cbyChange.emit(this.cby);
-    this.cbnChange.emit(this.cbn);
-  }
 }

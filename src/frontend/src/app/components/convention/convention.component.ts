@@ -37,12 +37,6 @@ export class ConventionComponent implements OnInit {
   modifiable = true;
   signatureEnabled = false;
 
-  @Input() cby:boolean = false;
-  @Input() cbn:boolean = false;
-
-  @Output() cbyChange = new EventEmitter<any>();
-  @Output() cbnChange = new EventEmitter<any>();
-
   @ViewChild("tabGroup") tabGroup!: MatTabGroup;
 
   constructor(
@@ -167,9 +161,6 @@ export class ConventionComponent implements OnInit {
 
   tabChanged(event: MatTabChangeEvent): void {
     this.tabs[event.index].init = true;
-    this.cbyChange.emit(this.cby);
-    this.cbnChange.emit(this.cbn);
-    console.log("cby : "+this.cby+" & cbn : "+this.cbn);
   }
 
   getProgressValue(key: number): number {
