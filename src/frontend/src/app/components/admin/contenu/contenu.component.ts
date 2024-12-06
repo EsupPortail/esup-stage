@@ -79,7 +79,6 @@ import {
 } from 'ckeditor5';
 
 import translations from 'ckeditor5/translations/fr.js';
-import Quill from "quill";
 
 
 @Component({
@@ -107,49 +106,12 @@ export class ContenuComponent implements OnInit {
   data: any;
   form!: FormGroup;
 
-  quill!:any;
 
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
   @ViewChild('tabs') tabs: MatTabGroup | undefined;
   @ViewChild('editor', { static: false }) editorElement!: ElementRef;
 
   constructor(public contenuService: ContenuService, private authService: AuthService, private fb: FormBuilder, private messageService: MessageService,private changeDetector: ChangeDetectorRef) {
-  }
-
-
-  public toolbarOptions = {
-    toolbar: [
-      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-      [{ 'font': [] }, { 'size': ['small', false, 'large', 'huge'] }],
-      [{ 'color': [] }, { 'background': [] }],
-      ['bold', 'italic', 'underline', 'strike'],
-      [{ 'script': 'sub' }, { 'script': 'super' }],
-      ['clean'],
-      ['link', 'image', 'video'],
-      ['blockquote', 'code-block'],
-      [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'list': 'check' }],
-      [{ 'align': [] }],
-      [{ 'indent': '-1' }, { 'indent': '+1' }],
-    ]
-  };
-
-
-
-
-  onEditorCreated(quillInstance: Quill): void {
-    this.quill = quillInstance;
-
-    const toolbar:any = quillInstance.getModule('toolbar');
-    // Ajouter des handlers pour `undo` et `redo`
-    toolbar.addHandler('undo', () => this.myUndo());
-    toolbar.addHandler('redo', () => this.myRedo());
-
-    // Ajoutez les boutons `undo` et `redo` manuellement
-    const undoButton = document.querySelector('.ql-undo') as HTMLElement;
-    const redoButton = document.querySelector('.ql-redo') as HTMLElement;
-
-    if (undoButton) undoButton.addEventListener('click', () => this.myUndo());
-    if (redoButton) redoButton.addEventListener('click', () => this.myRedo());
   }
 
   public isLayoutReady = false;
@@ -462,14 +424,6 @@ export class ContenuComponent implements OnInit {
         this.messageService.setSuccess('Contenu modifié');
       });
     }
-  }
-
-  myUndo(): void{
-    this.quill.history.undo();
-  }
-
-  myRedo():void{
-    this.quill.history.redo()
   }
 
 }

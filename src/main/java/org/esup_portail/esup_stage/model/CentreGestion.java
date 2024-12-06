@@ -133,7 +133,7 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     @Column
     private String codePostal;
 
-    @OneToMany(mappedBy = "centreGestion")
+    @OneToMany(mappedBy = "centreGestion", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JsonManagedReference
     private List<PersonnelCentreGestion> personnels =  new ArrayList<>();
 
@@ -141,7 +141,7 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     private boolean validationCreation;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "centreGestion")
+    @OneToMany(mappedBy = "centreGestion", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<CritereGestion> criteres = new ArrayList<>();
 
     @Column

@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -229,16 +230,19 @@ public class CentreGestionController {
         return centreGestion.getCriteres().size();
     }
 
+    @Transactional
     @DeleteMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.SUPPRESSION})
     public void delete(@PathVariable("id") int id) {
-        // Suppression des critères et personnels rattachés à ce centre
+        // Suppression des critères, personnels et consigne rattachés à ce centre
         critereGestionJpaRepository.deleteCriteresByCentreId(id);
         personnelCentreGestionJpaRepository.deletePersonnelsByCentreId(id);
+        consigneJpaRepository.deleteoConsigneByCentreId(id);
 
         centreGestionJpaRepository.deleteById(id);
         centreGestionJpaRepository.flush();
     }
+
 
     @GetMapping("/{id}/composantes")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})

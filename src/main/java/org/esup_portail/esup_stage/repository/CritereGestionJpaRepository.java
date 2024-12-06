@@ -24,7 +24,7 @@ public interface CritereGestionJpaRepository extends JpaRepository<CritereGestio
     @Query("SELECT cg FROM CritereGestion cg WHERE cg.id.code = :code AND cg.id.codeVersionEtape = :codeVersionEtape")
     CritereGestion findEtapeById(String code, String codeVersionEtape);
 
-    @Query("SELECT cg FROM CritereGestion cg WHERE cg.centreGestion.id = :id AND cg.id.codeVersionEtape <> null")
+    @Query("SELECT cg FROM CritereGestion cg WHERE cg.centreGestion.id = :id AND cg.id.codeVersionEtape IS NOT NULL")
     List<CritereGestion> findEtapesByCentreId(int id);
 
     @Transactional
