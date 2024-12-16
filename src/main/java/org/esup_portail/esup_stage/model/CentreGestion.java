@@ -147,7 +147,7 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     @Column
     private Integer delaiAlerteConvention = 0;
 
-    @OneToOne(mappedBy = "centreGestion", fetch = FetchType.EAGER)
+    @OneToOne(mappedBy = "centreGestion", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Consigne consigne;
 
     @JsonView(Views.List.class)

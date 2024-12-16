@@ -13,6 +13,7 @@ import org.esup_portail.esup_stage.enums.FolderEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.Consigne;
 import org.esup_portail.esup_stage.model.ConsigneDocument;
+import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.ConsigneDocumentJpaRepository;
 import org.esup_portail.esup_stage.repository.ConsigneJpaRepository;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
@@ -45,6 +46,8 @@ public class ConsigneController {
 
     @Autowired
     ConsigneDocumentJpaRepository consigneDocumentJpaRepository;
+    @Autowired
+    private CentreGestionJpaRepository centreGestionJpaRepository;
 
     @GetMapping("/centres/{idCentreGestion}")
     @Secure
@@ -60,6 +63,7 @@ public class ConsigneController {
     @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL, AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.CREATION})
     public Consigne create(@Valid @RequestBody ConsigneFormDto consigneFormDto) {
         Consigne consigne = new Consigne();
+        consigne.setCentreGestion(centreGestionJpaRepository.findById(consigneFormDto.getIdCentreGestion()));
         consigne.setTexte(ColorConverter.convertHslToRgb(consigneFormDto.getTexte()));
         consigne = consigneJpaRepository.saveAndFlush(consigne);
         return consigne;

@@ -1,5 +1,6 @@
 package org.esup_portail.esup_stage.controller;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -236,28 +237,12 @@ public class CentreGestionController {
     @DeleteMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.SUPPRESSION})
     public void delete(@PathVariable("id") int id) {
-        // Suppression des critères, personnels et consigne rattachés à ce centre
+        // Suppression des critères et personnels rattachés à ce centre
         critereGestionJpaRepository.deleteCriteresByCentreId(id);
         personnelCentreGestionJpaRepository.deletePersonnelsByCentreId(id);
 
-        // Suppression des ConsigneDocument associés
-        List<Integer> documentIds = consigneJpaRepository.findByIdCentreGestion(id).getDocuments().stream()
-                .map(ConsigneDocument::getId)
-                .collect(Collectors.toList());
-        consigneDocumentJpaRepository.deleteAllById(documentIds);
-
-        // Synchroniser la session avant de supprimer la Consigne
-        consigneDocumentJpaRepository.flush();  // Synchronisation des changements
-
-        // Suppression de la Consigne
-        consigneJpaRepository.deleteoConsigneByCentreId(id);
-
-        // Suppression du CentreGestion
-        centreGestionJpaRepository.deleteById(id);
-        centreGestionJpaRepository.flush();  // Synchronisation de la suppression
+        centreGestionJpaRepository.deleteById(id); // Suppression du CentreGestion
     }
-
-
 
     @GetMapping("/{id}/composantes")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
