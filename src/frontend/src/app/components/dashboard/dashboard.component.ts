@@ -31,6 +31,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     { id: 'validationConvention', libelle: 'Validée administrativement' },
     { id: 'nonValidationPedagogique', libelle: 'Non validée pédagogiquement' },
     { id: 'nonValidationConvention', libelle: 'Non validée administrativement' },
+    { id: 'signé', libelle: 'Signé' },
+    { id: 'enCours', libelle: 'En cours de signature' },
+    { id: 'nonSigné', libelle: 'Non signé' },
   ];
   exportColumns = {};
   tableCanLoad = false;
@@ -152,9 +155,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.ufrService.getPaginated(1, 0, 'libelle', 'asc', '{}'),
         this.etapeService.getPaginated(1, 0, 'libelle', 'asc', '{}'),
         this.conventionService.getListAnnee(),
+        this.conventionService.getPaginated(1, 0, 'libelle', 'asc', '{}'),
         this.langueConventionService.getPaginated(1, 0, 'libelle', 'asc', '{}'),
         this.typeConventionService.getPaginated(1, 0, 'libelle', 'asc', '{}'),
-      ).subscribe(([ufrData, etapeData, listAnneeData, langueConventionList, typeConventionList]) => {
+      ).subscribe(([ufrData, etapeData, listAnneeData, listConventionData , langueConventionList, typeConventionList]) => {
         // ufr
         this.ufrList = ufrData.data;
         this.appTable?.setFilterOption('ufr.id', this.ufrList);
@@ -177,6 +181,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
         } else {
           this.appTable?.setFilterOption('annee', this.annees);
         }
+
+        // this.validationLibelles.SignatureStatus = listConventionData.
+
+        console.log(listConventionData);
+
 
         // langue convention
         this.langueConventionList = langueConventionList.data;

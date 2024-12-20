@@ -74,6 +74,7 @@
          matTooltip="{{row.verificationAdministrative ? validationLibelles.verificationAdministrative + ' effectuée' : 'en attente ' + validationLibelles.verificationAdministrative}}"></i>
       <i *ngIf="row.centreGestion.validationConvention" class="fa fa-scroll" [class.activate]="row.validationConvention"
          matTooltip="{{row.validationConvention ? validationLibelles.validationConvention + ' effectuée' : 'en attente ' + validationLibelles.validationConvention}}"></i>
+      <i class="fa-solid fa-pen" ngClass="{ 'inProgress': tabs[0]?.statut === 1, 'done': tabs[0]?.statut === 2,'empty':tabs[0]?.statut===0 }" matTooltip =  ></i>
     </td>
   </ng-container>
   <ng-container matColumnDef="id">

@@ -26,3 +26,15 @@
 button.mat-menu-item:focus {
   outline: none;
 }
+
+i.empty{
+  color: var(--dangerColor);
+}
+
+i.inProgress{
+  color: var(--warningColor)
+}
+
+i.done{
+  color: var(--successColor);
+}
