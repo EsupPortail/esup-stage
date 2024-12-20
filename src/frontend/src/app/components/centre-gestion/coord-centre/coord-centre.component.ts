@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormControl, FormGroup, isFormControl, Validators} from "@angular/forms";
 import { CentreGestionService } from "../../../services/centre-gestion.service";
 import { CommuneService } from "../../../services/commune.service";
 import { NiveauCentreService } from "../../../services/niveau-centre.service";
@@ -65,27 +65,56 @@ export class CoordCentreComponent implements OnInit {
       }
       this.niveauxCentre = response;
     });
-    // Initialisation du formulaire avec validation Regex pour "mail"
-    this.form.addControl(
-      'mail',
-      new FormControl(
+    this.form = new FormGroup({
+      nomCentre: new FormControl(
+        this.centreGestion.nomCentre || '',
+        [Validators.required]
+      ),
+      niveauCentre: new FormControl(
+        this.centreGestion.niveauCentre || '',
+        [Validators.required]
+      ),
+      siteWeb: new FormControl(
+        this.centreGestion.siteWeb || '',
+        [
+          Validators.pattern(/^(https?:\/\/)?([a-zA-Z0-9.-]+)\.([a-zA-Z]{2,})(:[0-9]{1,5})?(\/.*)?$/)
+        ]
+      ),
+      mail: new FormControl(
         this.centreGestion.mail || '',
         [
           Validators.required,
           Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/) // Regex email RFC 5322
         ]
-      )
-    );
-    this.form.addControl(
-      'telephone',
-      new FormControl(
+      ),
+      telephone: new FormControl(
         this.centreGestion.telephone || '',
         [
           Validators.required,
-          Validators.pattern(/^\+?[1-9]\d{1,14}$/) // Regex pour les numéros E.164
+          Validators.pattern(/^(?:(?:\+|00)\d{1,4}[-.\s]?|0)\d{1,4}([-.\s]?\d{1,4})*$/) // Accepte E.164 et numéros locaux
+        ]
+      ),
+      fax: new FormControl(
+        this.centreGestion.fax || ''
+      ),
+      adresse: new FormControl(
+        this.centreGestion.adresse || ''
+      ),
+      voie: new FormControl(
+        this.centreGestion.voie || ''
+      ),
+      commune: new FormControl(
+        this.centreGestion.commune || ''
+      ),
+      codePostal: new FormControl(
+        this.centreGestion.codePostal || '',
+        [
+          Validators.required,
+          Validators.pattern(/^\d{5}$/) // Validation pour un code postal français à 5 chiffres
         ]
       )
-    );
+    });
+
     if (this.centreGestion.id) {
       this.setFormData();
       if (this.centreGestion.niveauCentre.libelle == 'UFR') {

@@ -120,7 +120,11 @@
         <mat-form-field class="col-sm12 col-md-6" appearance="fill">
           <mat-label>Site Internet</mat-label>
           <input matInput formControlName="siteWeb">
+          <mat-error *ngIf="form.get('siteWeb')?.hasError('pattern')">
+            URL invalide. Veuillez entrer une URL valide (ex. https://example.com).
+          </mat-error>
         </mat-form-field>
+
         <mat-form-field class="col-sm12 col-md-6" appearance="fill">
           <mat-label>Fax</mat-label>
           <input matInput formControlName="fax">
