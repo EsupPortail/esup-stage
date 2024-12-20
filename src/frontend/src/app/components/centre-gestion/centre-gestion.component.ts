@@ -6,7 +6,6 @@ import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { debounceTime } from 'rxjs/operators';
 import { ConsigneService } from "../../services/consigne.service";
-import {MatProgressBar} from "@angular/material/progress-bar";
 
 @Component({
   selector: 'app-centre-gestion',

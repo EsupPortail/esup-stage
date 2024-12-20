@@ -97,13 +97,24 @@
         <mat-form-field class="col-sm12 col-md-6" appearance="fill">
           <mat-label>Adresse mail</mat-label>
           <input matInput formControlName="mail" required>
-          <mat-error><app-form-error [field]="form.get('mail')"></app-form-error></mat-error>
+          <mat-error *ngIf="form.get('mail')?.hasError('required')">
+            Ce champ est requis.
+          </mat-error>
+          <mat-error *ngIf="form.get('mail')?.hasError('pattern')">
+            Adresse email invalide.
+          </mat-error>
         </mat-form-field>
         <mat-form-field class="col-sm12 col-md-6" appearance="fill">
-          <mat-label>Téléphone</mat-label>
+          <mat-label>Numéro de téléphone</mat-label>
           <input matInput formControlName="telephone" required>
-          <mat-error><app-form-error [field]="form.get('telephone')"></app-form-error></mat-error>
+          <mat-error *ngIf="form.get('telephone')?.hasError('required')">
+            Ce champ est requis.
+          </mat-error>
+          <mat-error *ngIf="form.get('telephone')?.hasError('pattern')">
+            Numéro de téléphone invalide.
+          </mat-error>
         </mat-form-field>
+
       </div>
       <div class="row">
         <mat-form-field class="col-sm12 col-md-6" appearance="fill">

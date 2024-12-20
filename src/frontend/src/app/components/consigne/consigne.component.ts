@@ -7,7 +7,7 @@ import {
   OnChanges,
   SimpleChanges,
   ChangeDetectorRef,
-  ViewChild, ElementRef, ViewEncapsulation
+  ViewChild, ElementRef, ViewEncapsulation, AfterViewInit
 } from '@angular/core';
 import * as FileSaver from "file-saver";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
@@ -90,7 +90,7 @@ import translations from 'ckeditor5/translations/fr.js';
   styleUrls: ['./consigne.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class ConsigneComponent implements OnInit, OnChanges {
+export class ConsigneComponent implements OnInit, OnChanges, AfterViewInit {
 
 
   //public Editor = Editor;

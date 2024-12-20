@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from "@angular/forms";
+import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import { CentreGestionService } from "../../../services/centre-gestion.service";
 import { CommuneService } from "../../../services/commune.service";
 import { NiveauCentreService } from "../../../services/niveau-centre.service";
@@ -65,6 +65,27 @@ export class CoordCentreComponent implements OnInit {
       }
       this.niveauxCentre = response;
     });
+    // Initialisation du formulaire avec validation Regex pour "mail"
+    this.form.addControl(
+      'mail',
+      new FormControl(
+        this.centreGestion.mail || '',
+        [
+          Validators.required,
+          Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/) // Regex email RFC 5322
+        ]
+      )
+    );
+    this.form.addControl(
+      'telephone',
+      new FormControl(
+        this.centreGestion.telephone || '',
+        [
+          Validators.required,
+          Validators.pattern(/^\+?[1-9]\d{1,14}$/) // Regex pour les numéros E.164
+        ]
+      )
+    );
     if (this.centreGestion.id) {
       this.setFormData();
       if (this.centreGestion.niveauCentre.libelle == 'UFR') {

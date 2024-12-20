@@ -74,7 +74,6 @@ import { EtudiantComponent } from './components/convention/etudiant/etudiant.com
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { LoaderComponent } from './components/loader/loader.component';
 import { AdminNomenclaturesCreationComponent } from './components/admin/admin-nomenclatures/admin-nomenclatures-creation/admin-nomenclatures-creation.component';
-import { QuillModule } from "ngx-quill";
 import { FormErrorComponent } from './components/form-error/form-error.component';
 import { MatProgressBarModule } from "@angular/material/progress-bar";
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -279,7 +278,6 @@ export class FrenchDateProvider extends NativeDateAdapter {
         MatRadioModule,
         MatExpansionModule,
         MatProgressSpinnerModule,
-        QuillModule.forRoot(),
         MatProgressBarModule,
         MatDatepickerModule,
         MatNativeDateModule,

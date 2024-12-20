@@ -173,6 +173,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
         this.autocmpleteChanged[filter.id] = new Subject();
       }
     }
+    this.filterChanged.next(this.filterValues);
   }
 
   reset(): void {
