@@ -72,6 +72,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
     this.technicalService.isMobile.subscribe((value: boolean) => {
       this.isMobile = value;
     });
+
     this.filterChanged.pipe(debounceTime(1000)).subscribe(() => {
       const filters = this.getFilters();
       if (this.backConfig) {
@@ -79,23 +80,30 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
         this.pageSize = this.backConfig.pageSize;
         this.sortColumn = this.backConfig.sortColumn;
         this.sortOrder = this.backConfig.sortOrder;
-        this.paginatorTop.pageIndex = this.page - 1;
-        this.paginatorBottom.pageIndex = this.page - 1;
+        if (this.paginatorTop) this.paginatorTop.pageIndex = this.page - 1;
+        if (this.paginatorBottom) this.paginatorBottom.pageIndex = this.page - 1;
       } else {
         this.resetPage();
       }
 
       for (const key of Object.keys(this.autocmpleteChanged)) {
         this.autocmpleteChanged[key].pipe(debounceTime(1000)).subscribe(async (event: any) => {
-          if (event.value.length >= 2) {
-            this.autocompleteData[event.filter.id] = await event.filter.autocompleteService.getAutocompleteData(event.value).toPromise();
-            this.autocompleteData[event.filter.id] = this.autocompleteData[event.filter.id].data;
+          if (event.value?.length >= 2) {
+            try {
+              const result = await event.filter.autocompleteService.getAutocompleteData(event.value).toPromise();
+              this.autocompleteData[event.filter.id] = result?.data || [];
+            } catch (error) {
+              console.error('Error fetching autocomplete data:', error);
+              this.autocompleteData[event.filter.id] = [];
+            }
           }
         });
       }
 
-      this.filterValuesToSend = filters;
-      this.getPaginated();
+      if (filters && Object.keys(filters).length >= 2) {
+        this.filterValuesToSend = filters;
+        this.getPaginated();
+      }
     });
   }
 
@@ -124,7 +132,9 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   }
 
   getPaginated(): void {
+
     this.service.getPaginated(this.page, this.pageSize, this.sortColumn, this.sortOrder, JSON.stringify(this.filterValuesToSend)).subscribe((results: any) => {
+
       this.total = results.total;
       this.data = results.data;
       if (this.setAlerte) {
@@ -133,14 +143,16 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
           if (!this.isEtudiant()) {
             row.depasseDelaiValidation = (row.centreGestion.validationPedagogique && !row.validationPedagogique) ||
               (row.centreGestion.verificationAdministrative && !row.verificationAdministrative) ||
-              (row.centreGestion.validationConvention && !row.validationConvention)
+              (row.centreGestion.validationConvention && !row.validationConvention);
           }
         });
       }
+
       this.backConfig = undefined;
       this.onUpdated.emit(results);
     });
   }
+
 
   update(): void {
     this.filterChanged.next(this.filterValues);
@@ -163,16 +175,23 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   }
 
   initFilters(emptyValues: boolean): void {
-    for (const filter of this.filters) {
-      this.filterValues[filter.id] = {
-        type: filter.type ?? 'text',
-        value: (emptyValues && !filter.permanent) ? undefined : filter.value,
-        specific: filter.specific
+    this.filters.forEach(filter => {
+      if (filter && filter.id) {
+        this.filterValues[filter.id] = {
+          type: filter.type ?? 'text',
+          value: (emptyValues && !filter.permanent) ? undefined : filter.value,
+          specific: filter.specific
+        };
+
+        if (filter.type === 'autocomplete') {
+          this.autocmpleteChanged[filter.id] = new Subject();
+          // Initialize autocomplete value as an array if it's undefined
+          if (!this.filterValues[filter.id].value) {
+            this.filterValues[filter.id].value = [];
+          }
+        }
       }
-      if (filter.type === 'autocomplete') {
-        this.autocmpleteChanged[filter.id] = new Subject();
-      }
-    }
+    });
     this.filterChanged.next(this.filterValues);
   }
 
@@ -228,30 +247,39 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   }
 
   getFilters(): any {
-    let f: any = {};
-    for (let key of Object.keys(this.filterValues)) {
-      if (this.filterValues[key].value !== undefined && this.filterValues[key].value !== '' && this.filterValues[key].value !== null && (!Array.isArray(this.filterValues[key].value) || this.filterValues[key].value.length > 0)) {
-        f[key] = {...this.filterValues[key]};
-        if (['date', 'date-min', 'date-max'].indexOf(f[key].type) > -1) {
-          f[key].value = f[key].value.getTime();
+    const f: any = {};
+    for (const key of Object.keys(this.filterValues)) {
+      const filterValue = this.filterValues[key];
+      if (filterValue?.value !== undefined &&
+        filterValue.value !== '' &&
+        filterValue.value !== null &&
+        (!Array.isArray(filterValue.value) || filterValue.value.length > 0)) {
+
+        f[key] = {...filterValue};
+
+        if (['date', 'date-min', 'date-max'].includes(f[key].type)) {
+          f[key].value = f[key].value instanceof Date ? f[key].value.getTime() : f[key].value;
         }
-        // conversion de l'array d'objets en array de keyId
-        if (['autocomplete'].indexOf(f[key].type) > -1) {
+
+        if (f[key].type === 'autocomplete') {
           f[key].type = 'list';
-          const filter = this.filters.find((filter: any) => { return filter.id === key; });
-          if (filter) {
-            f[key].value = f[key].value.map((v: any) => { return v[filter.keyId]; });
+          const filter = this.filters.find(filter => filter.id === key);
+          if (filter && filter.keyId && Array.isArray(f[key].value)) {
+            f[key].value = f[key].value
+              .filter((v: { [x: string]: undefined; }) => v && v[filter.keyId] !== undefined)
+              .map((v: { [x: string]: any; }) => v[filter.keyId]);
           }
         }
-        if (f[key].value !== undefined && (f[key].value instanceof String || typeof f[key].value === 'string')) {
+
+        if (typeof f[key].value === 'string') {
           f[key].value = f[key].value.trim();
         }
+
         if (f[key].specific === undefined) {
           delete f[key].specific;
         }
       }
     }
-
     return f;
   }
 
