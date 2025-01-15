@@ -167,10 +167,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         any: true
       });
     }
-
-    if (this.savedFilters) {
-      this.restoreFilters();
-    }
   }
 
   private loadComplementaryData(): void {
@@ -181,8 +177,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       typeConvention: this.typeConventionService.getPaginated(1, 0, 'libelle', 'asc', '{}')
     }).subscribe({
       next: (results) => {
-        this.updateFilterOptions();
-
         this.ufrList = results.ufr.data || [];
         this.etapeList = results.etape.data || [];
         this.langueConventionList = results.langueConvention.data || [];
@@ -191,6 +185,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
         if (this.appTable) {
           this.appTable.update();
           this.changeAnnee();
+        }
+
+        this.updateFilterOptions();
+
+        if (this.savedFilters) {
+          this.restoreFilters();
         }
       },
       error: (error) => {
@@ -483,33 +483,95 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private restoreFilters(): void {
-    if (!this.appTable || !this.savedFilters || !this.ufrList.length || !this.etapeList.length) {
-      console.error("Les données nécessaires ne sont pas encore chargées");
+    if (!this.appTable || !this.savedFilters) {
+      console.error("Required data not yet loaded");
       return;
     }
 
-    Object.entries(this.savedFilters).forEach(([key, filterValue]: [string, any]) => {
-      if (!filterValue || !filterValue.value) return;
+    console.log("Starting filter restoration...");
 
-      if (key === 'ufr.id' && Array.isArray(filterValue.value)) {
-        const ufrSelectedList = filterValue.value
-          .map((value: any) => this.ufrList.find((ufr: any) => ufr.id === value))
-          .filter(Boolean);
-        if (ufrSelectedList.length) {
-          this.appTable?.setFilterValue(key, ufrSelectedList);
+    Object.entries(this.savedFilters).forEach(([key, filterValue]: [string, any]) => {
+      // Skip validation creation as it's handled separately
+      if (key === 'validationCreation') return;
+
+      console.log(`Restoring filter for ${key}:`, filterValue);
+
+      try {
+        switch (key) {
+          case 'annee':
+            if (filterValue.value) {
+              this.anneeEnCours = this.annees.find((a: any) => a.libelle === filterValue.value);
+              if (this.anneeEnCours) {
+                console.log(`Found matching année:`, this.anneeEnCours);
+                this.changeAnnee();
+              }
+            }
+            break;
+
+          case 'ufr.id':
+            if (Array.isArray(filterValue.value) && filterValue.value.length > 0) {
+              const ufrSelectedList = filterValue.value
+                .map((value: any) => {
+                  const found = this.ufrList.find((ufr: any) => ufr.id === value);
+                  if (!found) console.log(`UFR with id ${value} not found`);
+                  return found;
+                })
+                .filter(Boolean);
+
+              if (ufrSelectedList.length) {
+                console.log(`Setting UFR filter with ${ufrSelectedList.length} items`);
+                this.appTable?.setFilterValue(key, ufrSelectedList);
+              }
+            }
+            break;
+
+          case 'etape.id':
+            if (Array.isArray(filterValue.value) && filterValue.value.length > 0) {
+              const etapeSelectedList = filterValue.value
+                .map((etape: any) => {
+                  // Handle both ID object and direct ID cases
+                  const etapeId = etape.id || etape;
+                  const found = this.etapeList.find((e: any) =>
+                    JSON.stringify(e.id) === JSON.stringify(etapeId));
+                  if (!found) console.log(`Etape not found:`, etapeId);
+                  return found;
+                })
+                .filter(Boolean);
+
+              if (etapeSelectedList.length) {
+                console.log(`Setting Etape filter with ${etapeSelectedList.length} items`);
+                this.appTable?.setFilterValue(key, etapeSelectedList);
+              }
+            }
+            break;
+
+          case 'dateDebutStage':
+          case 'dateFinStage':
+            if (filterValue.value) {
+              const date = new Date(filterValue.value);
+              if (!isNaN(date.getTime())) {
+                console.log(`Setting date filter ${key}:`, date);
+                this.appTable?.setFilterValue(key, date);
+              }
+            }
+            break;
+
+          default:
+            if (filterValue.value !== undefined && filterValue.value !== null) {
+              console.log(`Setting default filter ${key}:`, filterValue.value);
+              this.appTable?.setFilterValue(key, filterValue.value);
+            }
         }
-      } else if (key === 'etape.id' && Array.isArray(filterValue.value)) {
-        const etapeSelectedList = filterValue.value
-          .map((value: any) => this.etapeList.find((etape: any) => etape.id === value))
-          .filter(Boolean);
-        if (etapeSelectedList.length) {
-          this.appTable?.setFilterValue(key, etapeSelectedList);
-        }
-      } else {
-          this.appTable?.setFilterValue(key, filterValue.value);
-        }
-      });
-    this.restorePagingConfig();
+      } catch (error) {
+        console.error(`Error restoring filter ${key}:`, error);
+      }
+    });
+
+    // Force table update after all filters are set
+    if (this.appTable) {
+      console.log("Updating table after filter restoration");
+      this.appTable.update();
+    }
   }
 
   private restorePagingConfig(): void {

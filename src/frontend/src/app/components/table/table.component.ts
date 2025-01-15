@@ -213,7 +213,31 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   }
 
   setFilterValue(id: string, value: any): void {
-    this.filterValues[id].value = value;
+    if (!this.filterValues[id]) {
+      console.warn(`Filter ${id} not initialized`);
+      return;
+    }
+
+    // Pour les filtres de type liste
+    if (this.filterValues[id].type === 'list') {
+      // Si la valeur est null ou undefined, initialiser avec un tableau vide
+      if (value === null || value === undefined) {
+        this.filterValues[id].value = [];
+      }
+      // Si c'est déjà un tableau, le garder tel quel
+      else if (Array.isArray(value)) {
+        this.filterValues[id].value = value;
+      }
+      // Si c'est une valeur unique, la mettre dans un tableau
+      else {
+        this.filterValues[id].value = [value];
+      }
+    } else {
+      this.filterValues[id].value = value;
+    }
+
+    console.log(`Setting filter ${id}:`, this.filterValues[id]);
+    this.filterChanged.next(this.filterValues);
   }
 
   getFilterValues(): any {
@@ -222,11 +246,24 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   }
 
   setFilterOption(id: string, options: any[]): void {
-    const filter = this.filters.find((f: any) => { return f.id === id; });
+    // Recherche du filtre par ID
+    const filter = this.filters.find((f: any) => f.id === id);
+
     if (filter) {
-      filter.options = options;
+      if (Array.isArray(options)) {
+        filter.options = options;
+        console.log(id)
+        console.log(options)
+        // Si nécessaire, notifier le changement (exemple : mise à jour de la table)
+        this.filterChanged.next(this.filterValues);
+      } else {
+        console.warn(`Les options fournies pour le filtre ${id} ne sont pas un tableau.`);
+      }
+    } else {
+      console.warn(`Aucun filtre trouvé avec l'ID : ${id}`);
     }
   }
+
 
   searchAutocomplete(filter: any, value: string): void {
     this.autocmpleteChanged[filter.id].next({filter, value});
@@ -250,36 +287,68 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
     const f: any = {};
     for (const key of Object.keys(this.filterValues)) {
       const filterValue = this.filterValues[key];
+      const filter = this.filters.find((f: any) => f.id === key);
+
+      // Ne pas inclure les filtres avec des valeurs undefined ou des tableaux vides
       if (filterValue?.value !== undefined &&
         filterValue.value !== '' &&
         filterValue.value !== null &&
-        (!Array.isArray(filterValue.value) || filterValue.value.length > 0)) {
+        (!Array.isArray(filterValue.value) || filterValue.value.some((v: undefined) => v !== undefined))) {
 
         f[key] = {...filterValue};
 
+        // Gestion spécifique pour les filtres de type liste
+        if (f[key].type === 'list') {
+          // Si c'est un tableau, filtrer les valeurs undefined
+          if (Array.isArray(f[key].value)) {
+            f[key].value = f[key].value
+              .filter((v: undefined) => v !== undefined)
+              .map((item: { id: any; } | null) => {
+                if (typeof item === 'object' && item !== null) {
+                  return item.id || item;
+                }
+                return item;
+              });
+
+            // Si après filtrage le tableau est vide, ne pas inclure ce filtre
+            if (f[key].value.length === 0) {
+              delete f[key];
+              continue;
+            }
+          }
+          // Si c'est une seule valeur
+          else if (typeof f[key].value === 'object' && f[key].value !== null) {
+            f[key].value = f[key].value.id || f[key].value;
+          }
+        }
+
+        // Gestion des dates
         if (['date', 'date-min', 'date-max'].includes(f[key].type)) {
           f[key].value = f[key].value instanceof Date ? f[key].value.getTime() : f[key].value;
         }
 
+        // Gestion de l'autocomplete
         if (f[key].type === 'autocomplete') {
-          f[key].type = 'list';
-          const filter = this.filters.find(filter => filter.id === key);
-          if (filter && filter.keyId && Array.isArray(f[key].value)) {
+          if (Array.isArray(f[key].value)) {
             f[key].value = f[key].value
-              .filter((v: { [x: string]: undefined; }) => v && v[filter.keyId] !== undefined)
-              .map((v: { [x: string]: any; }) => v[filter.keyId]);
+              .filter((v: undefined) => v !== undefined)
+              .map((item: { id: any; }) => item.id || item);
           }
         }
 
+        // Nettoyage des chaînes de caractères
         if (typeof f[key].value === 'string') {
           f[key].value = f[key].value.trim();
         }
 
+        // Gestion du specific
         if (f[key].specific === undefined) {
           delete f[key].specific;
         }
       }
     }
+
+    console.log('Filtres transformés:', f);
     return f;
   }
 
