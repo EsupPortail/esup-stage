@@ -27,14 +27,14 @@ button.mat-menu-item:focus {
   outline: none;
 }
 
-i.empty{
-  color: var(--dangerColor);
+i.empty {
+  color: var(--dangerColor) !important;
 }
 
-i.inProgress{
-  color: var(--warningColor)
+i.inProgress {
+  color: var(--warningColor) !important;
 }
 
-i.done{
-  color: var(--successColor);
+i.done {
+  color: var(--successColor) !important;
 }

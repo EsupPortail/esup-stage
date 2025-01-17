@@ -12,17 +12,17 @@ import {
   TemplateRef,
   ViewChild
 } from '@angular/core';
-import { Sort, SortDirection } from "@angular/material/sort";
-import { MatPaginator, PageEvent } from "@angular/material/paginator";
-import { MatColumnDef, MatTable } from "@angular/material/table";
-import { PaginatedService } from "../../services/paginated.service";
-import { Subject } from "rxjs";
-import { debounceTime } from "rxjs/operators";
+import {Sort, SortDirection} from "@angular/material/sort";
+import {MatPaginator, PageEvent} from "@angular/material/paginator";
+import {MatColumnDef, MatTable} from "@angular/material/table";
+import {PaginatedService} from "../../services/paginated.service";
+import {Subject} from "rxjs";
+import {debounceTime} from "rxjs/operators";
 import * as _ from "lodash";
-import { MatAutocompleteSelectedEvent } from "@angular/material/autocomplete";
-import { AuthService } from "../../services/auth.service";
+import {MatAutocompleteSelectedEvent} from "@angular/material/autocomplete";
+import {AuthService} from "../../services/auth.service";
 import * as FileSaver from "file-saver";
-import { TechnicalService } from "../../services/technical.service";
+import {TechnicalService} from "../../services/technical.service";
 
 @Component({
   selector: 'app-table',
@@ -236,13 +236,11 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
       this.filterValues[id].value = value;
     }
 
-    console.log(`Setting filter ${id}:`, this.filterValues[id]);
     this.filterChanged.next(this.filterValues);
   }
 
   getFilterValues(): any {
-    let f = {...this.filterValues};
-    return f;
+    return {...this.filterValues};
   }
 
   setFilterOption(id: string, options: any[]): void {
@@ -252,9 +250,6 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
     if (filter) {
       if (Array.isArray(options)) {
         filter.options = options;
-        console.log(id)
-        console.log(options)
-        // Si nécessaire, notifier le changement (exemple : mise à jour de la table)
         this.filterChanged.next(this.filterValues);
       } else {
         console.warn(`Les options fournies pour le filtre ${id} ne sont pas un tableau.`);
@@ -287,38 +282,65 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
     const f: any = {};
     for (const key of Object.keys(this.filterValues)) {
       const filterValue = this.filterValues[key];
-      const filter = this.filters.find((f: any) => f.id === key);
 
-      // Ne pas inclure les filtres avec des valeurs undefined ou des tableaux vides
-      if (filterValue?.value !== undefined &&
+      if (
+        filterValue?.value !== undefined &&
         filterValue.value !== '' &&
         filterValue.value !== null &&
-        (!Array.isArray(filterValue.value) || filterValue.value.some((v: undefined) => v !== undefined))) {
+        (!Array.isArray(filterValue.value) || filterValue.value.length > 0)
+      ) {
+        f[key] = { ...filterValue };
 
-        f[key] = {...filterValue};
-
-        // Gestion spécifique pour les filtres de type liste
+        // Traitement spécifique pour les listes
         if (f[key].type === 'list') {
-          // Si c'est un tableau, filtrer les valeurs undefined
-          if (Array.isArray(f[key].value)) {
-            f[key].value = f[key].value
-              .filter((v: undefined) => v !== undefined)
-              .map((item: { id: any; } | null) => {
-                if (typeof item === 'object' && item !== null) {
-                  return item.id || item;
-                }
-                return item;
-              });
-
-            // Si après filtrage le tableau est vide, ne pas inclure ce filtre
-            if (f[key].value.length === 0) {
-              delete f[key];
-              continue;
+          if (key === 'ufr.id') {
+            if (Array.isArray(f[key].value)) {
+              f[key].value = f[key].value
+                .filter((v: any) => v !== undefined)
+                .map((item: any) => {
+                  // Si l'item a une structure d'ID complète
+                  if (item?.id?.code && item?.id?.codeUniversite) {
+                    return {
+                      code: item.id.code,
+                      codeUniversite: item.id.codeUniversite,
+                    };
+                  }
+                  // Si l'item est directement la structure d'ID
+                  else if (item?.code && item?.codeUniversite) {
+                    return {
+                      code: item.code,
+                      codeUniversite: item.codeUniversite,
+                    };
+                  }
+                  // Fallback pour les autres cas
+                  return item;
+                })
+                .filter(Boolean); // Enlève les valeurs null/undefined
+            } else if (f[key].value?.id?.code && f[key].value?.id?.codeUniversite) {
+              // Cas d'une seule valeur avec structure complète
+              f[key].value = {
+                code: f[key].value.id.code,
+                codeUniversite: f[key].value.id.codeUniversite,
+              };
+            } else if (f[key].value?.code && f[key].value?.codeUniversite) {
+              // Cas d'une seule valeur avec structure d'ID directe
+              f[key].value = {
+                code: f[key].value.code,
+                codeUniversite: f[key].value.codeUniversite,
+              };
             }
-          }
-          // Si c'est une seule valeur
-          else if (typeof f[key].value === 'object' && f[key].value !== null) {
-            f[key].value = f[key].value.id || f[key].value;
+          } else {
+            // Traitement normal pour les autres listes
+            if (Array.isArray(f[key].value)) {
+              f[key].value = f[key].value
+                .filter((v: any) => v !== undefined)
+                .map((item: any) => {
+                  if (typeof item === 'object' && item.id) {
+                    return item;
+                  }
+                  return item;
+                });
+            }
           }
         }
 
@@ -332,7 +354,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
           if (Array.isArray(f[key].value)) {
             f[key].value = f[key].value
               .filter((v: undefined) => v !== undefined)
-              .map((item: { id: any; }) => item.id || item);
+              .map((item: { id: any }) => item.id || item);
           }
         }
 
@@ -341,16 +363,16 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
           f[key].value = f[key].value.trim();
         }
 
-        // Gestion du specific
+        // Suppression du specific si undefined
         if (f[key].specific === undefined) {
           delete f[key].specific;
         }
       }
     }
-
-    console.log('Filtres transformés:', f);
     return f;
   }
+
+
 
   isEtudiant(): boolean {
     return this.authService.isEtudiant();
@@ -359,7 +381,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   export(format: string): void {
     this.service.exportData(format, JSON.stringify(this.exportColumns), this.sortColumn, this.sortOrder, JSON.stringify(this.filterValuesToSend)).subscribe((response: any) => {
       const type = format === 'excel' ? 'application/vnd.ms-excel' : 'text/csv';
-      var blob = new Blob([response as BlobPart], {type: type});
+      let blob = new Blob([response as BlobPart], {type: type});
       let filename = 'export_' + (new Date()).getTime() + '.' + (format === 'excel' ? 'xls' : 'csv');
       FileSaver.saveAs(blob, filename);
     });

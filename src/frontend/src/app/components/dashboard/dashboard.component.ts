@@ -1,14 +1,12 @@
-import {AfterViewInit, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import { TableComponent } from "../table/table.component";
 import { ConventionService } from "../../services/convention.service";
 import { AuthService } from "../../services/auth.service";
 import { Router } from "@angular/router";
-import { StructureService } from "../../services/structure.service";
 import { UfrService } from "../../services/ufr.service";
 import { EtapeService } from "../../services/etape.service";
 import { MessageService } from "../../services/message.service";
 import { ConfigService } from "../../services/config.service";
-import { MatSnackBar } from "@angular/material/snack-bar";
 import { forkJoin } from 'rxjs';
 import { SortDirection } from "@angular/material/sort";
 import { ContenuPipe } from "../../pipes/contenu.pipe";
@@ -57,12 +55,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     public conventionService: ConventionService,
     private authService: AuthService,
     private router: Router,
-    public structureService: StructureService,
     private ufrService: UfrService,
     private etapeService: EtapeService,
     private messageService: MessageService,
     private configService: ConfigService,
-    private snackBar: MatSnackBar,
     private contenuPipe: ContenuPipe,
     private langueConventionService: LangueConventionService,
     private typeConventionService: TypeConventionService,
@@ -100,7 +96,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.validationLibelles = {
       validationPedagogique: response.validationPedagogiqueLibelle || 'Validation pédagogique',
       verificationAdministrative: 'Vérification administrative',
-      validationConvention: response.validationAdministrativeLibelle || 'Validation administrative'
+      validationConvention : 'Validation convention'
     };
   }
 
@@ -445,7 +441,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   countConvention(): void {
     if (this.typeDashboard !== 3 && this.appTable) {
-      const filters = this.appTable.getFilters();
       this.nbConventionsEnAttente = this.appTable.total;
     }
     if (this.appTable) {
@@ -488,21 +483,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
       return;
     }
 
-    console.log("Starting filter restoration...");
-
     Object.entries(this.savedFilters).forEach(([key, filterValue]: [string, any]) => {
       // Skip validation creation as it's handled separately
       if (key === 'validationCreation') return;
-
-      console.log(`Restoring filter for ${key}:`, filterValue);
-
       try {
         switch (key) {
           case 'annee':
             if (filterValue.value) {
               this.anneeEnCours = this.annees.find((a: any) => a.libelle === filterValue.value);
               if (this.anneeEnCours) {
-                console.log(`Found matching année:`, this.anneeEnCours);
                 this.changeAnnee();
               }
             }
@@ -512,16 +501,33 @@ export class DashboardComponent implements OnInit, OnDestroy {
             if (Array.isArray(filterValue.value) && filterValue.value.length > 0) {
               const ufrSelectedList = filterValue.value
                 .map((value: any) => {
-                  const found = this.ufrList.find((ufr: any) => ufr.id === value);
-                  if (!found) console.log(`UFR with id ${value} not found`);
+
+                  // Vérifie que la donnée filtrée contient un champ 'code'
+                  const ufrCode = value.code; // Extrait le code à comparer
+                  if (!ufrCode) {
+                    return null;
+                  }
+
+                  // Recherche dans la liste ufrList en comparant les codes
+                  const found = this.ufrList.find((ufr: any) => ufr.id.code === ufrCode);
+                  if (!found) {
+                    console.log(`UFR with code ${ufrCode} not found in ufrList`);
+                  }
                   return found;
                 })
-                .filter(Boolean);
-
+                .filter(Boolean);  // Supprime les éléments null ou undefined
               if (ufrSelectedList.length) {
-                console.log(`Setting UFR filter with ${ufrSelectedList.length} items`);
-                this.appTable?.setFilterValue(key, ufrSelectedList);
+                this.appTable?.setFilter({
+                  id: 'ufr.id',
+                  type:'list',
+                  value: ufrSelectedList.map((ufr: { id: any; }) => ufr.id),
+                  specific:true
+                });
+              } else {
+                console.log('No matching UFRs found for the filter.');
               }
+            } else {
+              console.log('Filter value for UFR is empty or not an array:', filterValue.value);
             }
             break;
 
@@ -539,7 +545,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 .filter(Boolean);
 
               if (etapeSelectedList.length) {
-                console.log(`Setting Etape filter with ${etapeSelectedList.length} items`);
                 this.appTable?.setFilterValue(key, etapeSelectedList);
               }
             }
@@ -550,7 +555,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
             if (filterValue.value) {
               const date = new Date(filterValue.value);
               if (!isNaN(date.getTime())) {
-                console.log(`Setting date filter ${key}:`, date);
                 this.appTable?.setFilterValue(key, date);
               }
             }
@@ -558,7 +562,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
           default:
             if (filterValue.value !== undefined && filterValue.value !== null) {
-              console.log(`Setting default filter ${key}:`, filterValue.value);
               this.appTable?.setFilterValue(key, filterValue.value);
             }
         }
@@ -569,9 +572,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     // Force table update after all filters are set
     if (this.appTable) {
-      console.log("Updating table after filter restoration");
       this.appTable.update();
     }
+    this.restorePagingConfig()
   }
 
   private restorePagingConfig(): void {
@@ -585,6 +588,52 @@ export class DashboardComponent implements OnInit, OnDestroy {
       } catch (error) {
         console.error('Error parsing paging config:', error);
       }
+    }
+  }
+
+  getValidationIconStatus(row: any): string {
+    // Vérifie si toutes les signatures sont présentes
+    const allSignaturesPresent =
+      row.dateSignatureEnseignant &&
+      row.dateSignatureEtudiant &&
+      row.dateSignatureSignataire &&
+      row.dateSignatureTuteur &&
+      row.dateSignatureViseur;
+
+    // Vérifie si au moins une signature est présente mais pas toutes
+    const someSignaturesPresent =
+      row.dateSignatureEnseignant ||
+      row.dateSignatureEtudiant ||
+      row.dateSignatureSignataire ||
+      row.dateSignatureTuteur ||
+      row.dateSignatureViseur;
+
+    // Retourne la classe CSS appropriée selon l'état des signatures
+    if (allSignaturesPresent) {
+      return 'done';        // Vert - Toutes les signatures sont présentes
+    } else if (someSignaturesPresent) {
+      return 'inProgress';  // Orange - Certaines signatures sont présentes
+    } else {
+      return 'empty';       // Rouge - Aucune signature n'est présente
+    }
+  }
+
+// Message du Tooltip avec les signatures manquantes
+  getValidationTooltip(row: any): string {
+    const missingSignatures = [];
+
+    if (!row.dateSignatureEnseignant) missingSignatures.push('enseignant');
+    if (!row.dateSignatureEtudiant) missingSignatures.push('étudiant');
+    if (!row.dateSignatureSignataire) missingSignatures.push('signataire');
+    if (!row.dateSignatureTuteur) missingSignatures.push('tuteur');
+    if (!row.dateSignatureViseur) missingSignatures.push('viseur');
+
+    if (missingSignatures.length === 0) {
+      return 'Toutes les signatures sont présentes';
+    } else if (missingSignatures.length === 5) {
+      return 'Aucune signature';
+    } else {
+      return `Signatures manquantes : ${missingSignatures.join(', ')}`;
     }
   }
 
