@@ -1,6 +1,6 @@
 <app-table [service]="conventionService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters" [sortOrder]="sortDirection"
            matSort [matSortActive]="sortColumn" [matSortDirection]="'desc'" (matSortChange)="appTable ? appTable.sorting($event) : null"
-           [noResultText]="'Aucune fiche d\'évaluation trouvée'" [hideDeleteFilters]="isEtudiant || isEnseignant">
+           [noResultText]="'Aucune fiche d\'évaluation trouvée'" [hideDeleteFilters]="isEtudiant || isEnseignant" [loadWithoutFilters]="false">
 
   <ng-container matColumnDef="id">
     <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">N°</th>

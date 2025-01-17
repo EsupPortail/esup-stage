@@ -45,6 +45,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   @Input() setAlerte: boolean = false;
   @Input() exportColumns: any;
   @Input() templateMobile?: TemplateRef<any>;
+  @Input() loadWithoutFilters: boolean = true;
 
   @Output() onUpdated = new EventEmitter<any>();
 
@@ -100,7 +101,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
         });
       }
 
-      if (filters && Object.keys(filters).length >= 2) {
+      if (this.loadWithoutFilters || (filters && Object.keys(filters).length >= 2)) {
         this.filterValuesToSend = filters;
         this.getPaginated();
       }

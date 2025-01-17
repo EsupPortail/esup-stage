@@ -32,7 +32,7 @@
            [filters]="filters" [sortOrder]="sortDirection" matSort [matSortActive]="sortColumn" [matSortDirection]="'desc'"
            (matSortChange)="appTable ? appTable.sorting($event) : null" [noResultText]="'Aucune convention trouvée'"
            [customTemplateRef]="validAction" (onUpdated)="countConvention()" [setAlerte]="true" [exportColumns]="exportColumns"
-           [templateMobile]="tableMobile">
+           [templateMobile]="tableMobile" [loadWithoutFilters]="false">
   <ng-container *ngIf="typeDashboard === 1" matColumnDef="select">
     <th mat-header-cell *matHeaderCellDef>
       <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selected.length > 0 && isAllSelected()"

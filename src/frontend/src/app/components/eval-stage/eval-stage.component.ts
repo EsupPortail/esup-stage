@@ -41,11 +41,6 @@ export class EvalStageComponent implements OnInit, OnDestroy {
   ) {
   }
 
-  ngOnDestroy(): void {
-    sessionStorage.setItem('evalstages-paging', JSON.stringify({page: this.appTable?.page, pageSize: this.appTable?.pageSize, sortColumn: this.appTable?.sortColumn, sortOrder: this.appTable?.sortOrder}));
-    sessionStorage.setItem('evalstages-filters', JSON.stringify(this.appTable?.getFilterValues()))
-  }
-
   ngOnInit(): void {
     this.isEtudiant = this.authService.isEtudiant();
     this.isEnseignant = this.authService.isEnseignant();
@@ -105,10 +100,20 @@ export class EvalStageComponent implements OnInit, OnDestroy {
   }
 
   restoreFilters() {
-    Object.keys(this.savedFilters).forEach((key: any) => {
-      if (this.savedFilters[key].value)
-        this.appTable?.setFilterValue(key, this.savedFilters[key].value);
+    Object.entries(this.savedFilters).forEach(([key, filterData]: [string, any]) => {
+      if (filterData.value) {
+        let value = filterData.value;
+
+        if (filterData.type === 'list') {
+          value = Array.isArray(value) ?
+            value.map((v: string) => v.trim()) :
+            value;
+        }
+
+        this.appTable?.setFilterValue(key, value);
+      }
     });
+
     const pagingString: string|null = sessionStorage.getItem('evalstages-paging');
     if (pagingString) {
       const pagingConfig = JSON.parse(pagingString);
@@ -116,6 +121,11 @@ export class EvalStageComponent implements OnInit, OnDestroy {
       this.sortDirection = pagingConfig.sortOrder;
       this.appTable?.setBackConfig(pagingConfig);
     }
+  }
+
+  ngOnDestroy(): void {
+    sessionStorage.setItem('evalstages-paging', JSON.stringify({page: this.appTable?.page, pageSize: this.appTable?.pageSize, sortColumn: this.appTable?.sortColumn, sortOrder: this.appTable?.sortOrder}));
+    sessionStorage.setItem('evalstages-filters', JSON.stringify(this.appTable?.getFilterValues()))
   }
 
 }
