@@ -1,0 +1,65 @@
+site:
+  title: Documentation technique Esup-Stage
+  url: ~
+  robots: allow
+content:
+  sources:
+  - url: ./
+    start_path: src/docs
+    branches:
+    #- main
+    #- develop
+    - feature/*
+    version:
+      main: ''
+      dev: develop
+      feature/(*): $1
+ui:
+  bundle:
+    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
+    snapshot: true
+  supplemental_files: ./src/docs/ui
+  output_dir: ./
+urls:
+  # cli: --html-url-extension-style indexify
+  html_extension_style: indexify
+  # cli: --redirect-facility gitlab
+  redirect_facility: static
+  latest_version_segment_strategy: replace
+  latest_version_segment: ''
+asciidoc:
+  sourcemap: true
+  attributes:
+    icons: font
+    appendix-caption: Annexe
+    appendix-refsig: Annexe
+    caution-caption: Attention
+    chapter-signifier: Chapitre
+    chapter-refsig: Chapitre
+    example-caption: Exemple
+    figure-caption: Figure
+    important-caption: Important
+    last-update-label: Dernière mise à jour
+    listing-caption: Liste
+    manname-title: Nom
+    note-caption: Note
+    part-signifier: Partie
+    part-refsig: Partie
+    preface-title: Préface
+    section-refsig: Section
+    table-caption: Tableau
+    tip-caption: Astuce
+    toc-title: Table des matières
+    untitled-label: Sans titre
+    version-label: Version
+    warning-caption: Avertissement
+    kroki-fetch-diagram: true
+    safe: safe
+  extensions:
+  - asciidoctor-kroki
+output:
+  clean: true
+  dir: ./build/site
+runtime:
+  log:
+    level: info

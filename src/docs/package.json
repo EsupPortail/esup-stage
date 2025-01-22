@@ -1,0 +1,14 @@
+{
+    "name": "esup-stage-doctech",
+    "description": "documentation technique d'Esup Stage",
+    "version": "1.0.0",
+    "scripts": {
+        "prestart": "antora generate --to-dir=../../build/site ../../antora-playbook.yml",
+        "start": "http-server ../../build/site"
+    },
+    "devDependencies": {
+        "antora": "^3.1.10",
+        "asciidoctor-kroki": "^0.18.1",
+        "http-server": "^14.1.1"
+    }
+}
