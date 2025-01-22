@@ -1,3 +1,5 @@
 name: ROOT
 title: Documentation technique Esup-Stage
 prerelease: true
+nav:
+- modules/ROOT/nav.adoc

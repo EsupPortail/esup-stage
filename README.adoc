@@ -4,8 +4,6 @@ ESUP STAGE est la refonte de l'application pStage. L'application a été complè
 
 link:src/docs/modules/ROOT/pages/index.adoc[→ Documentation technique Esup-Stage]
 
-include::src/docs/modules/ROOT/pages/index.adoc[leveloffset=1]
-
 == Techno
 
 * JAVA 11

@@ -1,88 +1,29 @@
 = Documentation technique Esup-Stage
 :author: Université Lorraine
 :imagesdir: ../images/
+:reftext: Documentation technique
+:navtitle: Documentation technique
 
+****
+ESUP-Stage est l'application qui permet aux étudiants de créer et faire signer
+leur(s) convention(s) de stage. Développée dans une technologie moderne, cette
+solution est prévue pour s'interconnecter avec l'annuaire LDAP des
+établissements ainsi qu'Apogée dans un premier temps. Des travaux sont en cours
+avec les équipes PC-Scol pour assurer une compatibilité avec Pégase.
 
-== Vocabulaire du domaine
+* Interface utilisateur modernisée,
+* facilité de configuration de l'application selon les besoins de chaque
+établissement,
+* gestion fine des droits d'utilisateur,
+* matérialisation des étapes de création d'une convention ergonomique.
+* Par ailleurs, le périmètre d'utilisation de l'application s'élargit en
+permettant son utilisation par les INSPÉ avec notamment la possibilité
+de créer des conventions de stage en masse.
+* Ouverture vers la dématérialisation des signatures
+* La dématérialisation du processus de création et validation des conventions est au cœur des préoccupations du groupe de travail œuvrant pour le développement et l'évolution de ESUP-Stage. Aussi arrivera prochainement la possibilité d'interfacer via un webservice la solution ESUP-Signature ou toute solution commerciale compatible.
+****
 
-Stage:: #TODO#
-Convention (lié à un centre de gestion via les critères):: #TODO#
-PDF Convention:: #TODO#
-Centre de gestion:: #TODO#
-Validation administrative:: #TODO#
-Validation pédagogique:: #TODO#
-Signature de la Convention:: #TODO#
-Avenant:: #TODO#
-PDF Avenant:: #TODO#
-Évaluation de stage:: #TODO#
-Modèle de convention:: #TODO#
-Modèle d’avenant:: #TODO#
-Modèle de mail:: #TODO#
-Etablissement d’accueil:: #TODO#
-Etape : VET:: #TODO#
-UFR:: #TODO#
-Critères de gestion:: #TODO#
-Type de convention:: #TODO#
-
-== Décisions Stratégique
-
-* Un stage a toujours une convention
-
-== Flux
-=== Flux Entrant
-
-==== Application de signature électronique
-
-.Messages
-** PDF *signés*
-*** Convention
-*** Avenant
-
-.Systèmes (1 seul au choix, configuration)
-* Esup-signature ou _autre_
-** API serveur et client dans une séquence
-CAUTION: Lien vers doc(s) à trouver _svp_
-* Docaposte
-** [JAX-RS client, WSDL]
-
-
-==== Esup-siscol
-
-[plantuml]
-....
-left to right direction
-card e_ins as "Étudiant inscrit\n(Apogée)"
-card esup_siscol as "Esup-siscol"
-card esup_stage as "Esup-Stage"
-e_ins <-0)- esup_siscol: "WS Apogée"
-esup_siscol <-0)- esup_stage
-....
-
-//'@startuml
-//'card e_ins as "Étudiant inscrit (Apogée)"
-//'
-//'interface ws_apo as "WS Apogée"
-//'
-//'card siscol as Esup-siscol
-//'
-//'e_ins -> ws_apo
-//'
-//'' Etudiant inscrit (Apogée) ← WS Apogée← Esup-siscol ← Esup-Stage
-//'@enduml
-
-
-=== Flux Sortant
-
-==== Application de signature (_c.f._ flux entrant)
-
-** PDF *à signer*
-*** Convention
-*** Avenant
-
-.Systèmes (1 seul au choix, configuration)
-* Esup-signature ou _autre_
-** API serveur et client dans une séquence
-CAUTION: Lien vers doc(s) à trouver _svp_
-* Docaposte
-** [JAX-RS client, WSDL]
-
+== xref:vocabulaire.adoc[]
+== xref:decisions.adoc[]
+== xref:flux.adoc[]
+== xref:archi-tech.adoc[]

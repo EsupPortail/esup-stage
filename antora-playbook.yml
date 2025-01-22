@@ -11,7 +11,7 @@ content:
     #- develop
     - feature/*
     version:
-      main: ''
+      #main: ''
       dev: develop
       feature/(*): $1
 ui:
@@ -31,6 +31,7 @@ asciidoc:
   sourcemap: true
   attributes:
     icons: font
+    page-pagination: '@'
     appendix-caption: Annexe
     appendix-refsig: Annexe
     caution-caption: Attention
@@ -50,6 +51,7 @@ asciidoc:
     table-caption: Tableau
     tip-caption: Astuce
     toc-title: Table des matières
+    page-toctitle: Table des matières
     untitled-label: Sans titre
     version-label: Version
     warning-caption: Avertissement
