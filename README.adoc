@@ -4,10 +4,14 @@ ESUP STAGE est la refonte de l'application pStage. L'application a été complè
 
 link:src/docs/modules/ROOT/pages/index.adoc[→ Documentation technique Esup-Stage]
 
-== Techno
+ifndef::env-github[]
+include::src/docs/modules/ROOT/pages/wiki/ESUP-STAGE.adoc[tag=compilation]
+endif::[]
+ifdef::env-github[]
+== link:src/docs/modules/ROOT/pages/wiki/ESUP-STAGE.adoc#compilation[→ Compilation]
+endif::[]
 
-* JAVA 11
-* NodeJS 14
+
 
 == Integration
 

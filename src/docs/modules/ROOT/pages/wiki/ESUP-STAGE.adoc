@@ -106,6 +106,9 @@ appli.data_dir=/data_esup_stage
 
 NOTE: il faut que l'utilisateur faisant tourner votre *Tomcat puisse avoir les droits en écriture sur le répertoire data_esup_stage*
 
+// tag::compilation[]
+
+[#compilation]
 == Compilation du projet
 
 [source,shell]
@@ -113,6 +116,8 @@ NOTE: il faut que l'utilisateur faisant tourner votre *Tomcat puisse avoir les d
 cd /opt/esup-stage
 mvn -Dmaven.test.skip=true clean package
 ----
+
+// end::compilation[]
 
 == Déploiement / Lancement de l'application
 
