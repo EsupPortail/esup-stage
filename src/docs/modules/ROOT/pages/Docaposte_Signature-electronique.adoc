@@ -263,7 +263,7 @@ gestion le paramètre "Signature serveur". Dans Fast, vous devez renseigner à
 l'étape de signature concernée le paramètre Signature.
 
 .Exemple de paramétrage d'un centre de gestion avec un workflow incluant une signature personnel (signature de l'étudiant) :
-image:wiki/001a98b2-ec5e-4a2c-b24e-b6a0911f6196.png[image]
+image:001a98b2-ec5e-4a2c-b24e-b6a0911f6196.png[image]
 
 .Même exemple de workflow avec 4 signatures OTP et une signature avec un certificat personnel du côté de Fast
-image:wiki/366f4814-a881-435b-9fcd-57195695b1bd.png[image]
+image:366f4814-a881-435b-9fcd-57195695b1bd.png[image]

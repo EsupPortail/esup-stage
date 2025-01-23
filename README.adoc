@@ -5,10 +5,10 @@ ESUP STAGE est la refonte de l'application pStage. L'application a été complè
 link:src/docs/modules/ROOT/pages/index.adoc[→ Documentation technique Esup-Stage]
 
 ifndef::env-github[]
-include::src/docs/modules/ROOT/pages/wiki/ESUP-STAGE.adoc[tag=compilation]
+include::src/docs/modules/ROOT/pages/ESUP-STAGE.adoc[tag=compilation]
 endif::[]
 ifdef::env-github[]
-== link:src/docs/modules/ROOT/pages/wiki/ESUP-STAGE.adoc#compilation[→ Compilation]
+== link:src/docs/modules/ROOT/pages/ESUP-STAGE.adoc#compilation[→ Compilation]
 endif::[]
 
 
@@ -68,62 +68,7 @@ il faut ajouter la ligne suivante au fichier `estage.properties` :
 cas.response_type=xml
 ----
 
-== Signature électronique (optionnel)
-
-La signature électronique est activée si au moins une des configuration ci-dessous est paramétrée. Si plusieurs solutions configurées, Docaposte prendra le dessus.
-
-=== Docaposte
-
-____
-*ATTENTION :* Les paramètres ne doivent pas être ajoutés s'ils ne sont pas utilisés
-____
-
-Les paramètres Docaposte se trouve dans le fichier `estage.properties` :
-
-[,properties]
-----
-# docaposte
-docaposte.uri=https://demo-parapheur.dfast.fr/parapheur-soap/soap/v1/Documents
-docaposte.siren=xxx
-docaposte.keystore.path=<chemin du fichier .p12>
-docaposte.keystore.password=xxx
-docaposte.truststore.path=<chemin du fichier .jks>
-docaposte.truststore.password=xxx
-----
-
-Les certificats pour Docaposte peuvent être déposés où vous le souhaitez en dehors du projet.
-
-=== ESUP-Signature (mode solution externe)
-
-____
-*ATTENTION :* Les paramètres ne doivent pas être ajoutés s'ils ne sont pas utilisés
-____
-
-ESUP-Stage met à disposition des api "public" accessible avec un des tokens paramétrés dans `appli.public.tokens`. La liste des api se trouve dans `/public/swagger-ui.html`.
-
-Le paramétrage "webhook" correspondent à l'appel vers une api externe pour la signature électronique (cette solution est à mettre en place par chaque établissement). Les api vers ESUP-Signature sont intégrés dans ESUP-Stage mais la configuration est la même pour une solution externe.
-
-`webhook.signature.uri` : uri de l'api externe +
-`webhook.signature.token` : token d'accès
-
-[,properties]
-----
-# tokens d'accès d'esup-stage permettant d'autoriser les webhook à accéder aux api /public/api d'esup-stage séparés par des ; (exemple : token1;token2;token3)
-appli.public.tokens=xxxx
-
-### Paramétrage webhooks ###
-# uri du webhook de signature
-webhook.signature.uri=http://localhost:8080/webhook/esup-signature
-# token permettant d'accéder au webhook signature
-webhook.signature.token=yyyyy
-### -------------------- ###
-
-### Paramétrage esup-signature ###
-# numero du circuit
-esupsignature.uri=http://localhost:8880/ws
-esupsignature.circuit=123
-### -------------------- ###
-----
+== link:src/docs/modules/ROOT/pages/signature.adoc[→ Signature électronique (optionnel)]
 
 == Procédure d'installation en environnement de dev
 

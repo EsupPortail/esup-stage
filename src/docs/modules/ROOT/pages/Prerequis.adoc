@@ -155,14 +155,14 @@ rm -f apache-maven-3.6.2-bin.tar.gz
 
 L'installation et la sécurisation de votre base de donnée ne sont pas décrites dans cette documentation.
 
-La création de la base et d'un utilisateur sont décrit dans la partie xref:wiki/ESUP-STAGE.adoc#la-base-de-donnees[La base de données]
+La création de la base et d'un utilisateur sont décrit dans la partie xref:ESUP-STAGE.adoc#la-base-de-donnees[La base de données]
 
 == Installation du projet Esup-SIscol
 
 ESUP Stage dépend de ce module pour interroger le SI de scolarité (Apogée) et l'annuaire LDAP
 
 * Le projet est hébergé ici : https://github.com/EsupPortail/esup-siscol
-* La procédure d'installation xref:wiki/ESUP-SISCOL.adoc[ESUP-SISCOL]
+* La procédure d'installation xref:ESUP-SISCOL.adoc[ESUP-SISCOL]
 
 Après installation, vous avez 2 URLs qui seront utilisés dans le fichier de configuration d'ESUP-STAGE :
 

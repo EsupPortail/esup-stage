@@ -2,7 +2,7 @@
 
 == Prérequis
 
-.Les xref:wiki/Prerequis.adoc[prérequis] sont les suivants sur votre serveur :
+.Les xref:Prerequis.adoc[prérequis] sont les suivants sur votre serveur :
 * Git
 * Java OpenJdk 11
 * Apache Maven

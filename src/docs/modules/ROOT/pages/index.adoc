@@ -56,7 +56,7 @@ du consortium https://www.esup-portail.org/catalogue-des-services[ESUP Portail]
 
 === Liste des changements
 
-xref:wiki/Liste-des-changements.adoc[Suivi des changements à venir et passés] +
+xref:Liste-des-changements.adoc[Suivi des changements à venir et passés] +
 La liste des changements vous permettra de suivre l'évolution des applications
 ainsi que les corrections et évolutions associées.
 

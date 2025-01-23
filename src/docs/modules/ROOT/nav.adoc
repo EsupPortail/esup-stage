@@ -1,9 +1,10 @@
 .Documentation d’installation
-* xref:wiki/Prerequis.adoc[]
-* xref:wiki/ESUP-SISCOL.adoc[]
-* xref:wiki/ESUP-STAGE.adoc[]
-* xref:wiki/Docaposte_Signature-electronique.adoc[]
+* xref:Prerequis.adoc[]
+* xref:ESUP-SISCOL.adoc[]
+* xref:ESUP-STAGE.adoc[]
+* xref:signature.adoc[]
+** xref:Docaposte_Signature-electronique.adoc[]
 
 .Autres documents
-* xref:wiki/Processus-de-creation-d-un-utilisateur.adoc[]
-* xref:wiki/Gestion-des-conditions-dans-les-templates.adoc[]
+* xref:Processus-de-creation-d-un-utilisateur.adoc[]
+* xref:Gestion-des-conditions-dans-les-templates.adoc[]
