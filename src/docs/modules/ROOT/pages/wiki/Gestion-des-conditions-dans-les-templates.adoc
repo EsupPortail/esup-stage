@@ -1,0 +1,46 @@
+= Gestion des conditions dans les templates
+:sectnums:
+:imagesdir: ../../images
+
+Dans les modèles (templates) de convention de stage, il est possible d'afficher
+les variables en fonction de conditions. Les conditions, pour fonctionner,
+doivent respecter les règles suivantes : 
+
+== Conditions simples
+
+[literal]
+$IF condition
+vContenu si la condition est vraie.
+$ELSE
+Contenu si la condition est fausse.
+$ENDIF
+
+== Conditions multiples
+
+[literal]
+$IF condition1
+Contenu si condition1 est vraie.
+$ELSEIF condition2
+Contenu si condition2 est vraie.
+$ELSE
+Contenu si aucune condition n'est vraie.
+$ENDIF
+
+== Utilisation avec des variables dynamiques
+
+[literal]
+$IF user.name != ''
+Bonjour, ${user.name} !
+$ELSE
+Bonjour, utilisateur anonyme.
+$ENDIF
+
+== La structure $IF ... $FI
+
+Cela encadre une condition. Si la condition est vraie, le contenu placé entre $IF et $ENDIF sera affiché. +
+
+== Opérateurs logiques
+
+image:wiki/fe18f0b8-1f06-4c17-813e-bc8868b60c62.png[image]
+
+WARNING: veuillez utiliser uniquement les simples quotes (pas celles courbées) lorsque vous utilisez cette syntaxe.

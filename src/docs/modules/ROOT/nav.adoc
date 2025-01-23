@@ -4,3 +4,8 @@
 * xref::flux.adoc[]
 * xref::archi-tech.adoc[]
 * xref::event-storming.adoc[]
+* ESUP STAGE
+** xref::wiki/index.adoc[Home]
+** xref::wiki/Prerequis.adoc[Prérequis]
+** xref::wiki/ESUP-SISCOL.adoc[ESUP-SISCOL]
+** xref::wiki/ESUP-STAGE.adoc[ESUP-STAGE]
