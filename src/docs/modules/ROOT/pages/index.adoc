@@ -8,8 +8,7 @@
 ESUP-Stage est l'application qui permet aux étudiants de créer et faire signer
 leur(s) convention(s) de stage. Développée dans une technologie moderne, cette
 solution est prévue pour s'interconnecter avec l'annuaire LDAP des
-établissements ainsi qu'Apogée dans un premier temps. Des travaux sont en cours
-avec les équipes PC-Scol pour assurer une compatibilité avec Pégase.
+établissements ainsi qu'Apogée dans un premier temps.
 
 * Interface utilisateur modernisée,
 * facilité de configuration de l'application selon les besoins de chaque
@@ -20,7 +19,11 @@ avec les équipes PC-Scol pour assurer une compatibilité avec Pégase.
 permettant son utilisation par les INSPÉ avec notamment la possibilité
 de créer des conventions de stage en masse.
 * Ouverture vers la dématérialisation des signatures
-* La dématérialisation du processus de création et validation des conventions est au cœur des préoccupations du groupe de travail œuvrant pour le développement et l'évolution de ESUP-Stage. Aussi arrivera prochainement la possibilité d'interfacer via un webservice la solution ESUP-Signature ou toute solution commerciale compatible.
+* La dématérialisation du processus de création et validation des conventions
+est au cœur des préoccupations du groupe de travail œuvrant pour le
+développement et l'évolution de ESUP-Stage. Aussi arrivera prochainement la
+possibilité d'interfacer via un webservice la solution ESUP-Signature ou toute
+solution commerciale compatible.
 ****
 
 == xref:vocabulaire.adoc[]
