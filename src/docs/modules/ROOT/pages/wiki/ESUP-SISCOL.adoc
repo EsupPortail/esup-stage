@@ -1,28 +1,38 @@
 = ESUP SISCOL
 
-Cette application expose à l'application ESUP-STAGE des API REST (OPEN API - Swagger). Ainsi seule ESUP SIScol fait des accès au SI de l'établissement (Annuaire LDAP et Apogée).
+Cette application expose à l'application ESUP-STAGE
+des API REST (OPEN API - Swagger).
+Ainsi seule ESUP SIScol fait des accès au SI de l'établissement
+(Annuaire LDAP et Apogée). 
 
-[discrete]
-=== Versions
+== Versions
 
 * APOGEE `6.4.x`
 * JDK `11`, `8`
 * APOGEE WS `62031` ...`62070`
 
-[discrete]
-=== Installation du JAR client WS-APOGEE
+== Installation du JAR client WS-APOGEE
 
-_Avant de commencer l'installation, il faut vous procurer le client Web service Apogée soit auprès des collègues qui déploient Apogée dans votre établissement ou directement auprès de l'AMUE. Les WebServices Apogée doivent être installés selon les préconisations de l'AMUE et fonctionnelles sinon, il n'est pas nécessaire d'aller plus loin..._
+NOTE: Avant de commencer l'installation, il faut vous procurer le client Web
+service Apogée soit auprès des collègues qui déploient Apogée dans votre
+établissement ou directement auprès de l'AMUE. Les WebServices Apogée doivent
+être installés selon les préconisations de l'AMUE et fonctionnelles sinon, il
+n'est pas nécessaire d'aller plus loin...
 
-*Le jar client apo-webservices-client doit correspondre au web-service Apogée installé.* Votre fichier apo-webservices-client{mettre la version}.jar doit être installé ainsi :
+****
+Le jar client apo-webservices-client doit correspondre au web-service Apogée
+installé.
+****
+
+Votre fichier `apo-webservices-client__{mettre la version}__.jar` doit être
+installé ainsi :
 
 [source,shell]
 ----
-mvn install:install-file -Dfile=apo-webservices-client{mettre la version}.jar -DgroupId=gouv.education.apogee -DartifactId=apo-webservices-client -Dversion={mettre la version} -Dpackaging=jar
+mvn install:install-file -Dfile=apo-webservices-client-version.jar -DgroupId=gouv.education.apogee -DartifactId=apo-webservices-client -Dversion={mettre la version} -Dpackaging=jar
 ----
 
-[discrete]
-=== Clonage et installation
+== Clonage et installation
 
 [source,shell]
 ----
@@ -30,19 +40,21 @@ cd /opt
 git clone https://github.com/EsupPortail/esup-siscol.git esup-siscol
 ----
 
-Il faut ajouter la bonne dépendance vers votre numéro de version du client Apogée, ex. 62070 au lieu de "*version-ws-apogee-a-définir-ici*" dans le pom.xml.
-
 [source,xml]
+.pom.xml
 ----
 <dependency>
 	<groupId>gouv.education.apogee</groupId>
 	<artifactId>apo-webservices-client</artifactId>
-	<version>version-ws-apogee-a-définir-ici</version>
+	<version>x.y.z</version> <!--1-->
 </dependency>
 ----
+<1> Il faut ajouter la bonne dépendance
+vers votre numéro de version du client Apogée, +
+ex. `62070` au lieu de `x.y.z` dans le `pom.xml`.
 
-[discrete]
-=== Fichier de paramétrage
+
+== Fichier de paramétrage
 
 Nous allons créer un répertoire où nous placerons les fichiers de configurations de l'application esup-siscol :
 
@@ -52,7 +64,7 @@ mkdir /etc/esup-siscol
 cp /opt/esup-siscol/src/main/resources/application.yml.sample /etc/esup-siscol/application.yml
 ----
 
-.Fichier /etc/esup-siscol/application.yml
+./etc/esup-siscol/application.yml
 [source,yaml]
 ----
 spring:
@@ -151,8 +163,7 @@ Vous devez modifier en cohérence avec vos spécificités :
 * la section "APOGEE" en indiquant vos URL côté serveur WebService Apogée (installé en général par les administrateurs techniques Apogée)
 * la section "credential" en modifiant votre mot de passe qui devra être renseigné aussi dans le fichier de configuration de l'application ESUP-STAGE
 
-[discrete]
-=== Compilation et génération du WAR
+== Compilation et génération du WAR
 
 Pour compiler le projet et générer le WAR dans le répertoire "./target/", lancez les commandes :
 
@@ -162,8 +173,7 @@ mvn clean compile
 mvn install
 ----
 
-[discrete]
-=== Déploiement sur un serveur Tomcat :
+== Déploiement sur un serveur Tomcat :
 
 Si vous n'avez pas déjà installé votre serveur Tomcat, vous pouvez vous aider des prérequis de cette documentation. L'application ESUP SIScol peut-être déployée sur un serveur Tomcat indépendant (même serveur ou sur un autre serveur) ou utilisé le même serveur Tomcat que l'application ESUP Stage.
 

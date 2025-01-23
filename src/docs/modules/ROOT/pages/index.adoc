@@ -1,14 +1,30 @@
-= Documentation technique Esup-Stage
+= image:https://raw.github.com/EsupPortail/esup-stage/main/logo-esup-stage.png[ESUP STAGE]
 :author: Université Lorraine
 :imagesdir: ../images/
-:reftext: Documentation technique
-:navtitle: Documentation technique
+:reftext: ESUP Stage
+:navtitle: ESUP Stage
+
+== 🎓 Gestion Moderne des Conventions de Stage pour l'Enseignement Supérieur
 
 ****
+ESUP-Stage est une application web nouvelle génération conçue pour simplifier
+la gestion des stages dans les établissements d'enseignement supérieur.
+****
+
 ESUP-Stage est l'application qui permet aux étudiants de créer et faire signer
 leur(s) convention(s) de stage. Développée dans une technologie moderne, cette
 solution est prévue pour s'interconnecter avec l'annuaire LDAP des
 établissements ainsi qu'Apogée dans un premier temps.
+
+=== 🚀 Fonctionnalités
+
+[horizontal]
+.Fonctionnalités Principales
+--
+Création de Conventions:: Processus complet de génération et de validation des conventions de stage
+Intégration Système:: Compatible avec les infrastructures universitaires existantes
+Personnalisation:: Configuration souple et adaptable via l'interface utilisateur
+--
 
 * Interface utilisateur modernisée,
 * facilité de configuration de l'application selon les besoins de chaque
@@ -24,9 +40,39 @@ est au cœur des préoccupations du groupe de travail œuvrant pour le
 développement et l'évolution de ESUP-Stage. Aussi arrivera prochainement la
 possibilité d'interfacer via un webservice la solution ESUP-Signature ou toute
 solution commerciale compatible.
-****
 
-== xref:vocabulaire.adoc[]
-== xref:decisions.adoc[]
-== xref:flux.adoc[]
-== xref:archi-tech.adoc[]
+=== 🔗 Interconnexions
+
+* Intégration LDAP
+* Compatibilité Apogée
+* Pégase (Développement en cours)
+
+=== 📦 Partie du Consortium
+
+Développée et maintenue dans le cadre
+du consortium https://www.esup-portail.org/catalogue-des-services[ESUP Portail]
+
+'''
+
+=== Liste des changements
+
+xref:wiki/Liste-des-changements.adoc[Suivi des changements à venir et passés] +
+La liste des changements vous permettra de suivre l'évolution des applications
+ainsi que les corrections et évolutions associées.
+
+'''
+
+=== Liens vers le code source des applications
+
+[horizontal]
+.L'application ESUP-Stage se compose de deux applications que sont :
+ESUP-Stage:: https://github.com/EsupPortail/esup-stage
+ESUP-SIscol:: https://github.com/EsupPortail/esup-siscol
+
+'''
+
+=== Liste de diffusion
+
+.https://listes.esup-portail.org/sympa/info/esup-stage
+Cette liste permet de nous faire parvenir vos retours
+et d'échanger avec les autres établissements utilisateurs de l'application.

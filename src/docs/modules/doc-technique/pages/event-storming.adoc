@@ -2,4 +2,4 @@
 :author: Université Lorraine
 :imagesdir: ../images/
 
-image::event-storming-20250121.jpg[event-storming]
+image::event-storming-20250121.jpg[event storming]

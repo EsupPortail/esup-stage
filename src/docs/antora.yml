@@ -1,5 +1,32 @@
 name: ROOT
-title: Documentation technique Esup-Stage
+title: Esup-Stage
 prerelease: true
 nav:
 - modules/ROOT/nav.adoc
+- modules/doc-technique/nav.adoc
+asciidoc:
+  attributes:
+    page-pagination: '@'
+    appendix-caption: Annexe
+    appendix-refsig: Annexe
+    caution-caption: Attention
+    chapter-signifier: Chapitre
+    chapter-refsig: Chapitre
+    example-caption: Exemple@
+    figure-caption: Figure@
+    important-caption: Important
+    last-update-label: Dernière mise à jour
+    listing-caption: false
+    manname-title: Nom
+    note-caption: Note
+    part-signifier: Partie
+    part-refsig: Partie
+    preface-title: Préface
+    section-refsig: Section
+    table-caption: Tableau
+    tip-caption: Astuce
+    toc-title: Table des matières
+    page-toctitle: Table des matières
+    untitled-label: Sans titre
+    version-label: Version
+    warning-caption: Avertissement

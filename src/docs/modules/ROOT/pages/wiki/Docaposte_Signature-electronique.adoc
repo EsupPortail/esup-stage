@@ -9,24 +9,30 @@ Documentation d'aide à la configuration des certificats TLS gérés du process 
 
 Java sépare le magasin de certificats à utiliser en 2 catégories :
 
-* keystore : magasin de certificats qui contient des clés privées d'authentification ou de sécurité
-* truststore : magasin de certificats qui contient les certificats publics qui sont acceptés
+* `keystore` : magasin de certificats qui contient des clés privées d'authentification ou de sécurité
+* `truststore` : magasin de certificats qui contient les certificats publics qui sont acceptés
 
 Ces 2 magasins sont stockés dans des fichiers de type JKS ou PKCS12
 
 === Edition de votre truststore
 
-Les applications tomcat devront accepter certains certificats pour pouvoir accepter les appels web vers d'autres services de votre SI.
+Les applications tomcat devront accepter certains certificats pour pouvoir
+accepter les appels web vers d'autres services de votre SI.
 
-L'application Esup-Stage aura surement besoin de se connecter à votre serveur d'authentification SSO en HTTPS (certificat TLS), il faut donc rajouter la confiance de l'Autorité Certification (AC) qui émet les certificats de votre établissement dans le truststore dédié au tomcat.
+L'application Esup-Stage aura surement besoin de se connecter à votre serveur
+d'authentification SSO en HTTPS (certificat TLS), il faut donc rajouter la
+confiance de l'Autorité Certification (AC) qui émet les certificats de votre
+établissement dans le truststore dédié au tomcat.
 
-Nous allons pour cela créer un fichier truststore avec la chaine de certificat de l'AC émettant les certificats de votre établissement
+Nous allons pour cela créer un fichier truststore avec la chaine de certificat
+de l'AC émettant les certificats de votre établissement
 
 * Récupérez le fichier ca.crt de l'AC de votre établissement
 
-Pour l'exemple de création du truststore, nous avons pris le mot de passe 'my_password' mais ceci reste à votre libre choix.
+Pour l'exemple de création du truststore, nous avons pris le mot de passe
+"my_password" mais ceci reste à votre libre choix.
 
-. Découpez la chaîne des certificats publics contenu dans le fichier ca.crt**
+. Découpez la chaîne des certificats publics contenu dans le fichier `ca.crt`
 +
 [source,console]
 ----
@@ -37,7 +43,7 @@ cacrt-01
 ca.crt
 ----
 
-. Créez/Importez la série des certificats issus du ca.crt dans un nouveau truststore
+. Créez/Importez la série des certificats issus du `ca.crt` dans un nouveau `truststore`
 +
 [source,console]
 ----
@@ -53,7 +59,7 @@ Certificate was added to keystore
 [user@computer ~/tmp]$
 ----
 
-. Vérifiez le contenu du truststore +
+. Vérifiez le contenu du `truststore`
 +
 [source,console]
 ----
@@ -72,10 +78,12 @@ Valid from: ...
 ----
 
 . Ajoutez un autre service avec son certificat public +
-Si vous avez d'autres services HTTPS n'utilisant pas le CA de votre établissement, vous pouvez importer le certificat de service externe dans votre truststore.
+Si vous avez d'autres services HTTPS n'utilisant pas le CA
+de votre établissement, vous pouvez importer le certificat de service externe
+dans votre truststore.
 +
 * récupérez le certificat de ce service externe
-* importez ce fichier certificat manuellement dans le truststore
+* importez ce fichier certificat manuellement dans le `truststore`
 
 .Exemple avec l'API de test de Docaposte
 . Récupérez le certificat
@@ -85,7 +93,7 @@ Si vous avez d'autres services HTTPS n'utilisant pas le CA de votre établisseme
 [user@computer ~/tmp]$ openssl s_client -showcerts -connect demo-parapheur.dfast.fr:443 </dev/null 2>/dev/null|openssl x509 -outform PEM > demo-parapheur.pem
 ----
 
-. Ajout au magasin trustore
+. Ajout au magasin `trustore`
 +
 [source,console]
 ----
@@ -95,33 +103,37 @@ Certificate was added to keystore
 [user@computer ~/tmp]$
 ----
 
-. Exportez votre truststore +
-Exportez ce fichier 'truststore.jks' vers votre serveur esup-stage et retenez le mot de passe de celui-ci.
+. Exportez votre `truststore` +
+Exportez ce fichier `truststore.jks` vers votre serveur esup-stage et retenez le mot de passe de celui-ci.
 +
-* Reportez cette config du truststore dans la variable 'CATALINA_OPTS' de votre tomcat (voir section suivante 'Lanceur Tomcat')
-* Reportez cette config du truststore dans la config d'esup-stage, voir les propriétés 'docaposte.truststore.*' dans le fichier /etc/estage/estage.properties
+* Reportez cette config du `truststore` dans la variable `CATALINA_OPTS`
+de votre tomcat (voir section suivante link:#tomcat[Lanceur Tomcat])
+* Reportez cette config du `truststore` dans la config d'esup-stage,
+voir les propriétés `docaposte.truststore.*` dans le fichier `/etc/estage/estage.properties`
 
+[#tomcat]
 == Lanceur Tomcat
 
-Le tomcat doit être lancé avec les paramètres indiquant les paramètres de chargement du truststore.
+Le tomcat doit être lancé avec les paramètres indiquant les paramètres de chargement du `truststore`.
 
-Votre fichier de configuration devra contenir les variables 'CATALINA_OPTS' de lancement suivante :
+Votre fichier de configuration devra contenir les variables `CATALINA_OPTS` de lancement suivante :
 
 * `javax.net.ssl.trustStore` : chemin du fichier truststore
 * `javax.net.ssl.trustStoreType` : type de magazin (JKS ou PKCS12)
-* `javax.net.ssl.trustStorePassword` : mot de passe associé à votre fichier magazin truststore
+* `javax.net.ssl.trustStorePassword` : mot de passe associé à votre fichier magasin `truststore`
 
-Exemple avec un apache-tomcat-9.0 packagé en Red Hat
+=== Exemple avec un `apache-tomcat-9.0` packagé en Red Hat
 
-* /etc/sysconfig/tomcat9.0
 [source,shell]
+./etc/sysconfig/tomcat9.0
 ----
 CATALINA_OPTS=" -Xms2048m -Xmx4096m ... -Djavax.net.ssl.trustStore=/etc/ssl/catalina.truststore -Djavax.net.ssl.trustStoreType=JKS -Djavax.net.ssl.trustStorePassword=my_password ... "
 ----
-Exemple à partir d'un apache-tomcat binaire récupérer sur le site [Apache Tomcat](https://tomcat.apache.org/)
 
-* `${CATALINA_HOME}/bin/setenv.sh` (fichier exécutable à créer si inexistant)
+=== Exemple à partir d'un apache-tomcat binaire récupérer sur le site https://tomcat.apache.org/[Apache Tomcat]
+
 [source,shell]
+.+${CATALINA_HOME}+/bin/setenv.sh _(fichier exécutable à créer si inexistant)_
 ----
 
 # TOMCAT > MEMOIRE
@@ -144,15 +156,18 @@ tomcat ... /usr/bin/java ... -Djavax.net.ssl.trustStore=/etc/ssl/catalina.trusts
 
 == Module Docaposte
 
-Pour le module "Docaposte" intégré dans https://github.com/EsupPortail/esup-stage/[esup-stage], le service "Docaposte" via l'organisme certificateur (Certinomis, ChamberSign, ...) vous a normalement fourni un fichier avec l'extension '.p12' (au format PKCS12) nécessaire à l'authentification auprès du service.
+Pour le module "Docaposte" intégrer dans
+https://github.com/EsupPortail/esup-stage/[esup-stage], le service "Docaposte"
+via l'organisme certificateur (Certinomis, ChamberSign, ...) vous a normalement
+fourni un fichier avec l'extension '.p12' (au format PKCS12) nécessaire à
+l'authentification auprès du service.
 
-Tout d'abord, il faut vérifier la validité de ce fichier 'certificat.p12' qui doit contenir la clé privée d'authentification et les certificats publics associés.
+Tout d'abord, il faut vérifier la validité de ce fichier `certificat.p12` qui
+doit contenir la clé privée d'authentification et les certificats publics
+associés.
 
-* Vérification de la présence d'une clé privée valide dans le fichier 'certificat.p12': Pour le module "Docaposte" intégrer dans https://github.com/EsupPortail/esup-stage/[esup-stage], le service "Docaposte" via l'organisme certificateur (Certinomis, ChamberSign, ...) vous a normalement fourni un fichier avec l'extension '.p12' (au format PKCS12) nécessaire à l'authentification auprès du service.
-Tout d'abord, il faut vérifier la validité de ce fichier 'certificat.p12' qui doit contenir la clé privée d'authentification et les certificats publics associés.
-* Vérification de la présence d'une clé privée valide dans le fichier 'certificat.p12':
-+
 [source,console]
+.Vérification de la présence d'une clé privée valide dans le fichier `certificat.p12`:
 ----
 [root@server ~]# keytool -list -v -keystore /data/certificat.p12 -storepass my_password \
   | grep -C 6 '^Entry type: PrivateKeyEntry' \
@@ -166,9 +181,8 @@ Valid from: Tue Nov 22 08:12:07 CET 2022 until: Thu Nov 21 08:12:07 CET 2024
 [root@server ~]#
 ----
 
-* Vérification de la présence des certificats publics présents dans le fichier 'certificat.p12' :
-+
 [source,console]
+.Vérification de la présence des certificats publics présents dans le fichier `certificat.p12` :
 ----
 [root@server ~]# openssl pkcs12 -in certificat.p12 -out docaposte.crt -nodes
 Enter Import Password: *****
@@ -186,9 +200,10 @@ Enter Import Password: *****
 
 == Paramétrage dans ESUP-Stage
 
-=== Fichier estage.properties
+=== Fichier `estage.properties`
 
-Dans le fichier `/etc/estage/estage.properties` du serveur ESUP-Stage, complétez les informations suivantes :
+Dans le fichier `/etc/estage/estage.properties` du serveur ESUP-Stage,
+complétez les informations suivantes :
 
 [source,properties]
 ----
@@ -208,26 +223,47 @@ docaposte.truststore.password=xxx
 
 === Centre de gestion
 
-Au niveau de chaque centre de gestion qui doit donner droit à la signature électronique, renseignez dans l'onglet Signature électronique le code du circuit de signature paramétré dans Docaposte. Pour ce faire :
+Au niveau de chaque centre de gestion qui doit donner droit
+à la signature électronique, renseignez dans l'onglet Signature électronique
+le code du circuit de signature paramétré dans Docaposte.
 
+.Pour ce faire :
 * Rendez-vous à l'emplacement _Centre de gestion > Liste des centre de gestion_ puis sélectionnez un centre de gestion.
 * Dans ce centre de gestion, rendez vous dans l'onglet _Signature électronique_.
 
-Dans l'_Ordre de signature_, vous pouvez changer l'ordre des signataires à l'aide de la croix multidirectionnelle qui s'affiche en survolant avec la souris le nombre précédent l'intitulé du signataire. +
-Dans cette version, il n'est possible d'utiliser que des signatures OTP. Cela signifie que chaque signataire recevra un mail ou sms l'invitant à signer électroniquement la convention. La signature automatique (signature serveur) n'est pas prise en charge.
+Dans l'_Ordre de signature_, vous pouvez changer l'ordre des signataires à
+l'aide de la croix multidirectionnelle qui s'affiche en survolant avec la souris
+le nombre précédent l'intitulé du signataire.
+
+Dans cette version, il n'est possible d'utiliser que des signatures OTP. Cela
+signifie que chaque signataire recevra un mail ou sms l'invitant à signer
+électroniquement la convention. La signature automatique (signature serveur)
+n'est pas prise en charge.
 
 === Contrôle des métadonnées
 
-Dans Fast, vous avez la possibilité de contrôler la bonne transmission des métadonnées en allant dans le répertoire
+Dans Fast, vous avez la possibilité de contrôler la bonne transmission
+des métadonnées en allant dans le répertoire
 
-* Preuve => Cliquez sur un document dans la rubrique "A signer(OTP) puis en bas de page vous verrez le lien "Preuve". Dans une des pages s'afficheront les métadonnées.
-* OTP => Cliquez sur un document dans la rubrique "A signer(OTP) puis en bas de page vous verrez le lien "OTP". Seront affichées toutes les métadonnées disponibles. Si l'étape de signature associée à l'OTP n'a pas encore été dépassée, vous pouvez modifier manuellement les métadonnées. Cela est utile en cas d'erreur de saisi dans ESUP-Stage.
+* Preuve => Cliquez sur un document dans la rubrique
+"A signer(OTP) puis en bas de page vous verrez le lien "Preuve".
+Dans une des pages s'afficheront les métadonnées.
+* OTP => Cliquez sur un document dans la rubrique
+"A signer(OTP) puis en bas de page vous verrez le lien "OTP".
+Seront affichées toutes les métadonnées disponibles.
+Si l'étape de signature associée à l'OTP n'a pas encore été dépassée,
+vous pouvez modifier manuellement les métadonnées.
+Cela est utile en cas d'erreur de saisi dans ESUP-Stage.
 
 === Certificat personnel
 
-Il est possible de faire signer une convention avec le certificat personnel d'un utilisateur. Pour ce faire, vous devez choisir dans le paramétrage du centre de gestion le paramètre "Signature serveur". Dans Fast, vous devez renseigner à l'étape de signature concernée le paramètre Signature.
-Exemple de paramétrage d'un centre de gestion avec un workflow incluant une signature personnel (signature de l'étudiant) :
+Il est possible de faire signer une convention avec le certificat personnel d'un
+utilisateur. Pour ce faire, vous devez choisir dans le paramétrage du centre de
+gestion le paramètre "Signature serveur". Dans Fast, vous devez renseigner à
+l'étape de signature concernée le paramètre Signature.
+
+.Exemple de paramétrage d'un centre de gestion avec un workflow incluant une signature personnel (signature de l'étudiant) :
 image:wiki/001a98b2-ec5e-4a2c-b24e-b6a0911f6196.png[image]
 
-Même exemple de workflow avec 4 signatures OTP et une signature avec un certificat personnel du côté de Fast
+.Même exemple de workflow avec 4 signatures OTP et une signature avec un certificat personnel du côté de Fast
 image:wiki/366f4814-a881-435b-9fcd-57195695b1bd.png[image]

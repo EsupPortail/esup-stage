@@ -1,11 +1,9 @@
-* xref::index.adoc[]
-* xref::vocabulaire.adoc[]
-* xref::decisions.adoc[]
-* xref::flux.adoc[]
-* xref::archi-tech.adoc[]
-* xref::event-storming.adoc[]
-* ESUP STAGE
-** xref::wiki/index.adoc[Home]
-** xref::wiki/Prerequis.adoc[Prérequis]
-** xref::wiki/ESUP-SISCOL.adoc[ESUP-SISCOL]
-** xref::wiki/ESUP-STAGE.adoc[ESUP-STAGE]
+.Documentation d’installation
+* xref:wiki/Prerequis.adoc[]
+* xref:wiki/ESUP-SISCOL.adoc[]
+* xref:wiki/ESUP-STAGE.adoc[]
+* xref:wiki/Docaposte_Signature-electronique.adoc[]
+
+.Autres documents
+* xref:wiki/Processus-de-creation-d-un-utilisateur.adoc[]
+* xref:wiki/Gestion-des-conditions-dans-les-templates.adoc[]

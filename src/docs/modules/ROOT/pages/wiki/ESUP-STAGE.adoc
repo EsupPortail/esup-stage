@@ -1,16 +1,15 @@
 = ESUP STAGE
 
-=== Prérequis
+== Prérequis
 
-Les xref:wiki/Prerequis.adoc[prérequis] sont les suivants sur votre serveur :
+.Les xref:wiki/Prerequis.adoc[prérequis] sont les suivants sur votre serveur :
+* Git
+* Java OpenJdk 11
+* Apache Maven
+* Installation Mariadb
+* Installation du projet Esup-SIscol (sur le même serveur ou sur un serveur dédié)
 
-. Git
-. Java OpenJdk 11
-. Apache Maven
-. Installation Mariadb
-. Installation du projet Esup-SIscol (sur le même serveur ou sur un serveur dédié)
-
-=== Clonage du projet
+== Clonage du projet
 
 [source,shell]
 ----
@@ -19,9 +18,9 @@ git clone https://github.com/EsupPortail/esup-stage.git
 ----
 
 [#la-base-de-donnees]
-=== La base de données
+== La base de données
 
-==== Création de la base et de l'utilisateur
+=== Création de la base et de l'utilisateur
 
 [source,SQL]
 ----
@@ -31,18 +30,14 @@ GRANT ALL PRIVILEGES ON estage.* TO 'esupstage_user'@'%';
 FLUSH PRIVILEGES;
 ----
 
-==== Import de la base pStage et passage du patch
+=== Import de la base pStage et passage du patch
 
-Si vous n'avez pas de base pStage a reprendre, cette partie est inutile
+TIP: Si vous n'avez pas de base pStage a reprendre, cette partie est inutile
 
-____
 Pour importer votre base pStage d'une installation en production, vous devez réaliser un dump, ici le fichier : +
-mysql-pstage-2022-01-25-16h00.sql.gz
-____
+`mysql-pstage-2022-01-25-16h00.sql.gz`
 
-____
-Votre dump ne doit pas comporter de CREATE DATABASE ou USE DATABASE
-____
+CAUTION: Votre dump ne doit pas comporter de `CREATE DATABASE` ou `USE DATABASE`
 
 Les commandes suivantes permettent d'importer votre dump (pStage) dans votre base estage (ESUP STAGE) :
 
@@ -52,19 +47,18 @@ zcat /opt/estage/mysql-pstage-2022-01-25-16h00.sql.gz | mysql -u esupstage_user 
 cat /opt/estage/src/main/resources/db/changelog/init-changelog.sql | mysql -u esupstage_user -p estage
 ----
 
-=== Modification du fichier de configuration
+== Modification du fichier de configuration
 
 [source,shell]
 ----
-cd /etc
-mkdir estage
-cd estage
-cp /opt/esup-stage/etc/estage/estage-example.properties estage.properties
+mkdir -p /etc/estage
+cp /opt/esup-stage/etc/estage/estage-example.properties /etc/estage/estage.properties
 ----
 
 Modifier le fichier de configuration
 
 [source,properties]
+./etc/estage/estage.properties
 ----
 # parametres des URLs pour l'authentication CAS
 cas.url.login=https://cas.monuniv.fr/cas/login?service={service}
@@ -110,11 +104,9 @@ appli.mailer.delivery_address=user@monuniv.fr
 appli.data_dir=/data_esup_stage
 ----
 
-____
-Remarque : il faut que l'utilisateur faisant tourner votre *Tomcat puisse avoir les droits en écriture sur le répertoire data_esup_stage*
-____
+NOTE: il faut que l'utilisateur faisant tourner votre *Tomcat puisse avoir les droits en écriture sur le répertoire data_esup_stage*
 
-=== Compilation du projet
+== Compilation du projet
 
 [source,shell]
 ----
@@ -122,23 +114,22 @@ cd /opt/esup-stage
 mvn -Dmaven.test.skip=true clean package
 ----
 
-=== Déploiement / Lancement de l'application
+== Déploiement / Lancement de l'application
 
-____
-Après la compilation, le chemin complet du fichier de déploiement est le suivant : /opt/estage/target/ROOT.war
-____
+Après la compilation, le chemin complet du fichier de déploiement est le suivant : `/opt/estage/target/ROOT.war`
 
-==== Déploiement TOMCAT
+=== Déploiement TOMCAT
 
-Cette documentation ne va pas décrire l'installation d'un Tomcat. ESUP STAGE a été déployé et testé sur une version TOMCAT 9
+NOTE: Cette documentation ne va pas décrire l'installation d'un Tomcat.
+ESUP STAGE a été déployé et testé sur une version TOMCAT 9
 
-Vous pouvez télécharger tomcat ici : https://tomcat.apache.org/download-90.cgi
+TIP: Vous pouvez télécharger tomcat ici : https://tomcat.apache.org/download-90.cgi
 
-Nous considérons par exemple le chemin du répertoire tomcat ainsi : /opt/tomcat-esup-stage
+Nous considérons par exemple le chemin du répertoire tomcat ainsi : `/opt/tomcat-esup-stage`
 
-Supprimer (ou déplacer une sauvegarde) votre répertoire /opt/tomcat-esup-stage/webapp/ROOT avant le déploiement
+Supprimer (ou déplacer une sauvegarde) votre répertoire `/opt/tomcat-esup-stage/webapp/ROOT` avant le déploiement
 
-Copier directement votre fichier /opt/estage/target/ROOT.war dans votre répertoire *webapp de tomcat*
+Copier directement votre fichier `/opt/estage/target/ROOT.war` dans votre répertoire *`webapp` de tomcat*
 
 [source,shell]
 ----
@@ -152,10 +143,9 @@ On arrête le tomcat avant et on le redémarre ensuite
 /opt/tomcat-esup-stage/bin/shutdown.sh
 ----
 
-Pensez à paramétrer les espaces mémoire JVM : export JAVA\_OPTS="-Xms1024m -Xmx1024m -XX:MaxPermSize=256m"
+Pensez à paramétrer les espaces mémoire JVM : `export JAVA_OPTS="-Xms1024m -Xmx1024m -XX:MaxPermSize=256m"`
 
 Démarrage :
-
 
 [source,shell]
 ----
@@ -164,14 +154,12 @@ Démarrage :
 
 Bravo, l'installation est terminée ! Vous pouvez y accéder sur http://localhost:8080
 
-Lancement direct du war (ne pas utiliser : en cours de debug) java -jar /opt/estage/target/ROOT.war
+Lancement direct du `war` (ne pas utiliser : en cours de debug) `java -jar /opt/estage/target/ROOT.war`
 
 Dans le cas de l'utilisation d'un proxy (apache proxypass par exemple) il est conseillé d'utiliser le protocole AJP.
 
-Exemple de configuration Apache :
-
-
 [source,apacheconf]
+.Exemple de configuration Apache :
 ----
 <VirtualHost *:80>
     ServerAdmin admin@monuniv.fr

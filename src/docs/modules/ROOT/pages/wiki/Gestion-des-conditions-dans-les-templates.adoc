@@ -1,6 +1,7 @@
 = Gestion des conditions dans les templates
 :sectnums:
 :imagesdir: ../../images
+:reftext: Gestion des conditions dans les modèles (templates) de convention
 
 Dans les modèles (templates) de convention de stage, il est possible d'afficher
 les variables en fonction de conditions. Les conditions, pour fonctionner,
@@ -41,6 +42,36 @@ Cela encadre une condition. Si la condition est vraie, le contenu placé entre $
 
 == Opérateurs logiques
 
-image:wiki/fe18f0b8-1f06-4c17-813e-bc8868b60c62.png[image]
+[%header,cols="1m,1,1m"]
+|===
+|Opérateur
+|Signification
+|Exemple
+
+| ==
+| Égal à
+| $IF user.age == 18
+
+| !=
+| Différent de
+| $IF user.country != 'FR'
+
+| > / <
+| Supérieur / Inférieur
+| $IF product.price > 100
+
+| >= / +<=+
+| Supérieur ou égal / Inférieur ou égal
+| $IF user.age >= 18
+
+| AND
+| ET logique
+| $IF user.age > 18 AND user.member == true
+
+| OR
+| OU logique
+| $IF user.age < 18 OR user.student == true
+
+|===
 
 WARNING: veuillez utiliser uniquement les simples quotes (pas celles courbées) lorsque vous utilisez cette syntaxe.

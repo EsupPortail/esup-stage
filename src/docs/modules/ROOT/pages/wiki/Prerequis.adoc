@@ -1,8 +1,9 @@
 = Prérequis
+:sectnums: 
 
 _Avant de lancer les installations, il est nécessaire de mettre en place un "écosystème" permettant de compiler, déployer et exécuter nos applications._
 
-==== 1. Git
+== Git
 
 Sur RHEL 8 / CentOS 8
 
@@ -18,11 +19,11 @@ Sur Ubuntu 20.04 / Debian
 apt-get install git
 ----
 
-==== 2. Java
+== Java
 
 Version de java minimale : Java OpenJdk 11 (seul cette version a été testé pour ESUP Stage)
 
-===== Installation java OpenJdk 11
+=== Installation java OpenJdk 11
 
 *Sous RHEL 8 / CentOS 8*
 
@@ -90,9 +91,9 @@ Remarque : pour changer la version par défaut (en cas de version multiple)
 sudo update-alternatives --config java
 ----
 
-==== 3. Apache Maven
+== Apache Maven
 
-===== Installation
+=== Installation
 
 Téléchargez Apache Maven depuis son site officiel ou utilisez la commande suivante pour télécharger Apache Maven 3.6.3.
 
@@ -108,7 +109,7 @@ Extraire maintenant l'archive téléchargée à l'aide de la commande suivante :
 sudo tar xzf apache-maven-3.6.3-bin.tar.gz sudo ln -s apache-maven-3.6.3 maven
 ----
 
-===== Configuration des variables d'environnement
+=== Configuration des variables d'environnement
 
 Définissez maintenant les variables d'environnement en créant un nouveau fichier /etc/profile.d/maven.sh
 
@@ -132,7 +133,7 @@ sudo chmod +x /etc/profile.d/maven.sh
 source /etc/profile.d/maven.sh
 ----
 
-===== Vérifier la version de Maven
+=== Vérifier la version de Maven
 
 Apache Maven a été configuré avec succès sur votre système. Utilisez la commande suivante pour vérifier la version de Maven installé sur votre système.
 
@@ -150,20 +151,20 @@ Enfin, supprimez le fichier d'archive téléchargé du système pour libérer de
 rm -f apache-maven-3.6.2-bin.tar.gz
 ----
 
-==== 4. Installation Mariadb
+== Installation Mariadb
 
 L'installation et la sécurisation de votre base de donnée ne sont pas décrites dans cette documentation.
 
 La création de la base et d'un utilisateur sont décrit dans la partie xref:wiki/ESUP-STAGE.adoc#la-base-de-donnees[La base de données]
 
-==== 5. Installation du projet Esup-SIscol
+== Installation du projet Esup-SIscol
 
 ESUP Stage dépend de ce module pour interroger le SI de scolarité (Apogée) et l'annuaire LDAP
 
 * Le projet est hébergé ici : https://github.com/EsupPortail/esup-siscol
 * La procédure d'installation xref:wiki/ESUP-SISCOL.adoc[ESUP-SISCOL]
 
-Après installation, vous avez 2 URLs qui seront utilisés dans le fichier de configuration d'ESUP-STAGE (<<bkmrk-modifcation-du-fichi,voir plus bas>>) :
+Après installation, vous avez 2 URLs qui seront utilisés dans le fichier de configuration d'ESUP-STAGE :
 
 [source,properties]
 ----
