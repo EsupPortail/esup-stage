@@ -2,7 +2,9 @@
 
 ESUP STAGE est la refonte de l'application pStage. L'application a été complètement réécrite pour reprendre et améliorer les grandes et fonctionnalités : produire une convention de stage et ses avenants dans le cadre d'un processus de validation adapté.
 
-link:src/docs/modules/ROOT/pages/index.adoc[→ Documentation technique Esup-Stage]
+== https://esupportail.github.io/esup-stage/[→ Documentation technique Esup-Stage]
+
+Documentation technique link:src/docs/modules/ROOT/pages/index.adoc[(source)]
 
 ifndef::env-github[]
 include::src/docs/modules/ROOT/pages/ESUP-STAGE.adoc[tag=compilation]
