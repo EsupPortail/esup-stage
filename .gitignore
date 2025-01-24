@@ -3,6 +3,7 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+etc/estage/estage.properties
 
 ### STS ###
 .apt_generated
@@ -39,3 +40,6 @@ src/main/resources/estage.properties
 
 ### Docaposte gen code ###
 src/main/java/org/esup_portail/esup_stage/docaposte/gen/*
+
+### Docker ###
+compose.env
