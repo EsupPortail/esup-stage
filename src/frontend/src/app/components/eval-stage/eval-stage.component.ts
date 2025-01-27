@@ -7,9 +7,6 @@ import { SortDirection } from "@angular/material/sort";
 import { TitleService } from "../../services/title.service";
 import { CentreGestionService } from "../../services/centre-gestion.service";
 
-//TODO
-// Faire en sorte que le filtre soit actif dès le chargement du tableau, même problème que dashboard
-
 @Component({
   selector: 'app-eval-stage',
   templateUrl: './eval-stage.component.html',
@@ -93,6 +90,7 @@ export class EvalStageComponent implements OnInit, OnDestroy {
         this.restoreFilters();
       }
     }
+    window.addEventListener('beforeunload', this.saveSessionData.bind(this));
   }
 
   goToConvention(id: number): void {
@@ -123,9 +121,22 @@ export class EvalStageComponent implements OnInit, OnDestroy {
     }
   }
 
+  saveSessionData(): void {
+    const pagingData = {
+      page: this.appTable?.page,
+      pageSize: this.appTable?.pageSize,
+      sortColumn: this.appTable?.sortColumn,
+      sortOrder: this.appTable?.sortOrder
+    };
+    const filterValues = this.appTable?.getFilterValues();
+
+    sessionStorage.setItem('evalstages-paging', JSON.stringify(pagingData));
+    sessionStorage.setItem('evalstages-filters', JSON.stringify(filterValues));
+  }
+
   ngOnDestroy(): void {
-    sessionStorage.setItem('evalstages-paging', JSON.stringify({page: this.appTable?.page, pageSize: this.appTable?.pageSize, sortColumn: this.appTable?.sortColumn, sortOrder: this.appTable?.sortOrder}));
-    sessionStorage.setItem('evalstages-filters', JSON.stringify(this.appTable?.getFilterValues()))
+    this.saveSessionData();
+    window.removeEventListener('beforeunload', this.saveSessionData.bind(this));
   }
 
 }
