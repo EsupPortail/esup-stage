@@ -1,8 +1,7 @@
 package org.esup_portail.esup_stage.config;
 
-import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
 import liquibase.integration.spring.SpringLiquibase;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,17 +11,25 @@ import javax.sql.DataSource;
 @Configuration
 public class DatasourceConfiguration {
 
-    @Autowired
-    ApplicationBootstrap applicationBootstrap;
+    @Value("${appli.datasource.url}")
+    private String datasourceUrl;
+
+    @Value("${appli.datasource.username}")
+    private String datasourceUsername;
+
+    @Value("${appli.datasource.password}")
+    private String datasourcePassword;
+
+    @Value("${appli.datasource.driver}")
+    private String datasourceDriver;
 
     @Bean
-    public DataSource getDataSource()
-    {
+    public DataSource getDataSource() {
         DataSourceBuilder<?> dataSourceBuilder = DataSourceBuilder.create();
-        dataSourceBuilder.driverClassName(applicationBootstrap.getAppConfig().getDatasourceDriver());
-        dataSourceBuilder.url(applicationBootstrap.getAppConfig().getDatasourceUrl());
-        dataSourceBuilder.username(applicationBootstrap.getAppConfig().getDatasourceUsername());
-        dataSourceBuilder.password(applicationBootstrap.getAppConfig().getDatasourcePassword());
+        dataSourceBuilder.driverClassName(datasourceDriver);
+        dataSourceBuilder.url(datasourceUrl);
+        dataSourceBuilder.username(datasourceUsername);
+        dataSourceBuilder.password(datasourcePassword);
         return dataSourceBuilder.build();
     }
 

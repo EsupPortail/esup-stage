@@ -1,6 +1,6 @@
 package org.esup_portail.esup_stage.config.filters;
 
-import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -16,18 +16,16 @@ import java.util.Arrays;
 
 public class PublicTokenFilter extends OncePerRequestFilter {
 
-    private final ApplicationBootstrap applicationBootstrap;
+    @Value("${appli.public.tokens")
+    private String publicTokens;
 
-    public PublicTokenFilter(ApplicationBootstrap applicationBootstrap) {
-        this.applicationBootstrap = applicationBootstrap;
-    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authorizationHeader = request.getHeader("Authorization");
         if (authorizationHeader != null) {
             String token = authorizationHeader.substring(7);
-            if (!authorizationHeader.startsWith("Bearer") || Arrays.stream(applicationBootstrap.getAppConfig().getAppPublicTokens()).noneMatch(t -> t.equals(token))) {
+            if (!authorizationHeader.startsWith("Bearer") || Arrays.stream(new String[]{publicTokens}).noneMatch(t -> t.equals(token))) {
                 throw new AccessDeniedException("Access denied");
             }
 

@@ -4,9 +4,8 @@ import org.apereo.cas.client.session.SingleSignOutFilter;
 import org.apereo.cas.client.validation.Cas20ServiceTicketValidator;
 import org.apereo.cas.client.validation.TicketValidator;
 import org.apereo.cas.client.validation.json.Cas30JsonServiceTicketValidator;
-import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
 import org.esup_portail.esup_stage.security.userdetails.CasUserDetailsServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -30,13 +29,25 @@ import java.util.Collections;
 @Order(3)
 public class SecurityConfiguration {
 
-    @Autowired
-    ApplicationBootstrap applicationBootstrap;
+    @Value("${appli.prefix}")
+    private String prefix;
+
+    @Value("${cas.url.login}")
+    private String casUrlLogin;
+
+    @Value("${cas.url.service}")
+    private String casUrlService;
+
+    @Value("${cas.responseType}")
+    private String casResponseType;
+
+    @Value("${cas.url.logout}")
+    private String casUrlLogout;
 
     @Bean
     public ServiceProperties serviceProperties() {
         ServiceProperties serviceProperties = new ServiceProperties();
-        serviceProperties.setService(applicationBootstrap.getAppConfig().getPrefix() + "/login/cas");
+        serviceProperties.setService(prefix + "/login/cas");
         serviceProperties.setSendRenew(false);
         return serviceProperties;
     }
@@ -44,7 +55,7 @@ public class SecurityConfiguration {
     @Bean
     public AuthenticationEntryPoint casEntryPoint() {
         CasAuthenticationEntryPoint entryPoint = new CasAuthenticationEntryPoint();
-        entryPoint.setLoginUrl(applicationBootstrap.getAppConfig().getCasUrlLogin());
+        entryPoint.setLoginUrl(casUrlLogin);
         entryPoint.setServiceProperties(serviceProperties());
         return entryPoint;
     }
@@ -52,10 +63,10 @@ public class SecurityConfiguration {
     @Bean
     public TicketValidator ticketValidator() {
 
-        if (applicationBootstrap.getAppConfig().getCasResponseType().equals("xml")) {
-            return new Cas20ServiceTicketValidator(applicationBootstrap.getAppConfig().getCasUrlService());
+        if (casResponseType.equals("xml")) {
+            return new Cas20ServiceTicketValidator(casUrlService);
         }
-        return new Cas30JsonServiceTicketValidator(applicationBootstrap.getAppConfig().getCasUrlService());
+        return new Cas30JsonServiceTicketValidator(casUrlService);
     }
 
     @Bean
@@ -90,7 +101,7 @@ public class SecurityConfiguration {
 
     @Bean
     public LogoutFilter logoutFilter() {
-        LogoutFilter logoutFilter = new LogoutFilter(applicationBootstrap.getAppConfig().getCasUrlLogout(), new SecurityContextLogoutHandler());
+        LogoutFilter logoutFilter = new LogoutFilter(casUrlLogout, new SecurityContextLogoutHandler());
         logoutFilter.setFilterProcessesUrl("/logout");
         return logoutFilter;
     }

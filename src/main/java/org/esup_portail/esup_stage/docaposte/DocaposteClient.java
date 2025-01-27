@@ -3,7 +3,6 @@ package org.esup_portail.esup_stage.docaposte;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
-import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
 import org.esup_portail.esup_stage.docaposte.gen.*;
 import org.esup_portail.esup_stage.enums.TypeSignatureEnum;
 import org.esup_portail.esup_stage.exception.AppException;
@@ -15,6 +14,7 @@ import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
 import org.esup_portail.esup_stage.service.signature.model.Historique;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 import org.springframework.ws.soap.client.SoapFaultClientException;
@@ -31,8 +31,11 @@ import java.util.stream.Collectors;
 public class DocaposteClient extends WebServiceGatewaySupport {
     private static final Logger logger	= LogManager.getLogger(DocaposteClient.class);
 
-    @Autowired
-    ApplicationBootstrap applicationBootstrap;
+    @Value("${docaposte.siren}")
+    private String siren;
+
+    @Value("${appli.mailer.delivery_address}")
+    private String deliveryAddress;
 
     @Autowired
     ImpressionService impressionService;
@@ -60,7 +63,7 @@ public class DocaposteClient extends WebServiceGatewaySupport {
 
         // Dépôt du PDF dans Docaposte
         Upload uploadRequest = new Upload();
-        uploadRequest.setSubscriberId(applicationBootstrap.getAppConfig().getDocaposteSiren());
+        uploadRequest.setSubscriberId(siren);
         uploadRequest.setCircuitId(convention.getCentreGestion().getCircuitSignature());
         uploadRequest.setDataFileVO(documentFile);
         uploadRequest.setLabel(label);
@@ -69,7 +72,6 @@ public class DocaposteClient extends WebServiceGatewaySupport {
             if (convention.getSignataire() != null && Strings.isNotEmpty(convention.getSignataire().getMail())) {
                 receiver = convention.getSignataire().getMail();
             }
-            String deliveryAddress = applicationBootstrap.getAppConfig().getMailerDeliveryAddress();
             if (deliveryAddress != null && !deliveryAddress.isEmpty()) {
                 String originalReceiver = receiver + "";
                 receiver = deliveryAddress;

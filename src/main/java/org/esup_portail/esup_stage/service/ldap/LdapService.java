@@ -2,29 +2,24 @@ package org.esup_portail.esup_stage.service.ldap;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
 import org.esup_portail.esup_stage.dto.LdapSearchDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.beans.factory.annotation.Value;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Service
 public class LdapService {
     private static final Logger LOGGER = LoggerFactory.getLogger(LdapService.class);
-
-    @Autowired
-    ApplicationBootstrap applicationBootstrap;
 
     private final WebClient webClient;
 
@@ -32,23 +27,33 @@ public class LdapService {
         this.webClient = builder.build();
     }
 
+    @Value("${referentiel.ws.ldap_url}")
+    private String referentielWSLdapUrl;
+
+    @Value("${referentiel.ws.login}")
+    private String referentielWSLogin;
+
+    @Value("${referentiel.ws.password}")
+    private String referentielWSPassword;
+
+
     private String call(String api, String method, Object params) {
         try {
             if (method.equals("GET")) {
                 return webClient.get()
-                        .uri(applicationBootstrap.getAppConfig().getReferentielWsLdapUrl() + api, uri -> {
+                        .uri(referentielWSLdapUrl + api, uri -> {
                             ((Map<String, String>) params).forEach(uri::queryParam);
                              return uri.build();
                         })
-                        .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((applicationBootstrap.getAppConfig().getReferentielWsLogin() + ":" + applicationBootstrap.getAppConfig().getReferentielWsPassword()).getBytes()))
+                        .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((referentielWSLogin + ":" + referentielWSPassword).getBytes()))
                         .accept(MediaType.APPLICATION_JSON)
                         .retrieve()
                         .bodyToMono(String.class)
                         .block();
             } else {
                 return webClient.post()
-                        .uri(applicationBootstrap.getAppConfig().getReferentielWsLdapUrl() + api)
-                        .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((applicationBootstrap.getAppConfig().getReferentielWsLogin() + ":" + applicationBootstrap.getAppConfig().getReferentielWsPassword()).getBytes()))
+                        .uri(referentielWSLdapUrl + api)
+                        .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((referentielWSLogin + ":" + referentielWSPassword).getBytes()))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(BodyInserters.fromValue(params))

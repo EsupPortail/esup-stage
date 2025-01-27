@@ -1,6 +1,5 @@
 package org.esup_portail.esup_stage.security;
 
-import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
 import org.esup_portail.esup_stage.enums.FolderEnum;
 import org.esup_portail.esup_stage.model.Role;
 import org.esup_portail.esup_stage.model.Utilisateur;
@@ -12,6 +11,7 @@ import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -29,9 +29,6 @@ public class ApplicationStartUp {
     private static final Logger logger = LoggerFactory.getLogger(ApplicationStartUp.class);
 
     @Autowired
-    ApplicationBootstrap applicationBootstrap;
-
-    @Autowired
     UtilisateurJpaRepository utilisateurRepository;
 
     @Autowired
@@ -43,10 +40,16 @@ public class ApplicationStartUp {
     @Autowired
     LdapService ldapService;
 
+    @Value("${appli.admin_technique}")
+    private String adminTechs;
+
+    @Value("${appli.data_dir}")
+    private String dataDir;
+
     @EventListener(ApplicationReadyEvent.class)
     public void createAdminTech() {
         Role roleAdmTech = roleJpaRepository.findOneByCode(Role.ADM);
-        for (String login : applicationBootstrap.getAppConfig().getAdminTechs()) {
+        for (String login : (new String[]{adminTechs})) {
             Utilisateur utilisateur = utilisateurRepository.findOneByLogin(login);
             if (utilisateur == null) {
                 logger.info("Création utilisateur ADM_TECH " + login);
@@ -84,7 +87,7 @@ public class ApplicationStartUp {
     public void initFolders() throws IOException {
         logger.info("Création des dossiers dans le répertoire upload si non existant");
         for (FolderEnum folderEnum : FolderEnum.values()) {
-            String path = applicationBootstrap.getAppConfig().getDataDir() + folderEnum;
+            String path = dataDir + folderEnum;
             File dir = new File(path);
             if (!dir.isDirectory()) {
                 logger.info("Création du dossier " + path);
