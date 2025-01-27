@@ -5,7 +5,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
+import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.dto.ConsigneFormDto;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
@@ -39,7 +39,7 @@ public class ConsigneController {
     private static final Logger logger	= LogManager.getLogger(ConsigneController.class);
 
     @Autowired
-    ApplicationBootstrap applicationBootstrap;
+    AppliProperties appliProperties;
 
     @Autowired
     ConsigneJpaRepository consigneJpaRepository;
@@ -163,7 +163,7 @@ public class ConsigneController {
     }
 
     private String getFilePath(String filename) {
-        return applicationBootstrap.getAppConfig().getDataDir() + FolderEnum.CENTRE_GESTION_CONSIGNE_DOCS + "/" + filename;
+        return appliProperties.getDataDir() + FolderEnum.CENTRE_GESTION_CONSIGNE_DOCS + "/" + filename;
     }
 
     private String getNomDocument(int idFichier, String nomFichier) {

@@ -1,12 +1,11 @@
 package org.esup_portail.esup_stage.controller;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
+import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
@@ -84,15 +83,14 @@ public class CentreGestionController {
     ApogeeService apogeeService;
 
     @Autowired
-    ApplicationBootstrap applicationBootstrap;
-
-    @Autowired
     ConsigneJpaRepository consigneJpaRepository;
 
     @Autowired
     ConventionService conventionService;
+
     @Autowired
-    private ConsigneDocumentJpaRepository consigneDocumentJpaRepository;
+    AppliProperties appliProperties;
+
 
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
@@ -475,7 +473,7 @@ public class CentreGestionController {
     }
 
     private String getFilePath(String filename) {
-        return applicationBootstrap.getAppConfig().getDataDir() + FolderEnum.CENTRE_GESTION_LOGOS + "/" + filename;
+        return appliProperties.getDataDir() + FolderEnum.CENTRE_GESTION_LOGOS + "/" + filename;
     }
 
     private String getNomFichier(int idFichier, String nomFichier) {

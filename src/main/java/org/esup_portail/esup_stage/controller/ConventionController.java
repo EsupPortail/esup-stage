@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
+import org.esup_portail.esup_stage.config.properties.SignatureProperties;
 import org.esup_portail.esup_stage.dto.*;
 import org.esup_portail.esup_stage.dto.view.Views;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
@@ -106,7 +106,7 @@ public class ConventionController {
     SignatureService signatureService;
 
     @Autowired
-    ApplicationBootstrap applicationBootstrap;
+    SignatureProperties signatureProperties;
 
     @JsonView(Views.List.class)
     @GetMapping
@@ -535,7 +535,7 @@ public class ConventionController {
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
-        if (applicationBootstrap.getAppConfig().getAppSignatureEnabled() == AppSignatureEnum.DOCAPOSTE && convention.getCentreGestion().getCircuitSignature() == null) {
+        if (signatureProperties.getAppSignatureType() == AppSignatureEnum.DOCAPOSTE && convention.getCentreGestion().getCircuitSignature() == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Le centre de gestion " + convention.getCentreGestion().getNomCentre() + " n'a pas de circuit de signature");
         }
         return conventionService.controleEmailTelephone(convention);

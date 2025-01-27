@@ -12,15 +12,13 @@ import com.itextpdf.layout.element.Image;
 import freemarker.template.Template;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
+import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.enums.FolderEnum;
 import org.esup_portail.esup_stage.enums.TypeSignatureEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
-import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateConventionJpaRepository;
-import org.esup_portail.esup_stage.service.ConventionService;
 import org.esup_portail.esup_stage.service.impression.context.ImpressionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -47,13 +45,13 @@ public class ImpressionService {
     FreeMarkerConfigurer freeMarkerConfigurer;
 
     @Autowired
-    ApplicationBootstrap applicationBootstrap;
+    AppliProperties appliProperties;
 
-    @Autowired
-    ConventionService conventionService;
-
-    @Autowired
-    ConventionJpaRepository conventionJpaRepository;
+//    @Autowired
+//    ConventionService conventionService;
+//
+//    @Autowired
+//    ConventionJpaRepository conventionJpaRepository;
 
     public void generateConventionAvenantPDF(Convention convention, Avenant avenant, ByteArrayOutputStream ou, boolean isRecap) {
         if (convention.getNomenclature() == null) {
@@ -287,7 +285,7 @@ public class ImpressionService {
     }
 
     private String getLogoFilePath(String filename) {
-        return applicationBootstrap.getAppConfig().getDataDir() + FolderEnum.CENTRE_GESTION_LOGOS + "/" + filename;
+        return appliProperties.getDataDir() + FolderEnum.CENTRE_GESTION_LOGOS + "/" + filename;
     }
 
     private String getNomFichier(int idFichier, String nomFichier) {
@@ -295,7 +293,7 @@ public class ImpressionService {
     }
 
     public String getOtpDataPhoneNumber(String phoneNumber) {
-        String deliveryAddress = applicationBootstrap.getAppConfig().getMailerDeliveryAddress();
+        String deliveryAddress = appliProperties.getMailer().getDeliveryAddress();
         if (deliveryAddress != null && !deliveryAddress.isEmpty()) {
             return "";
         }
@@ -303,7 +301,7 @@ public class ImpressionService {
     }
 
     public String getOtpDataEmail(String email) {
-        String deliveryAddress = applicationBootstrap.getAppConfig().getMailerDeliveryAddress();
+        String deliveryAddress = appliProperties.getMailer().getDeliveryAddress();
         if (deliveryAddress != null && !deliveryAddress.isEmpty()) {
             return deliveryAddress;
         }

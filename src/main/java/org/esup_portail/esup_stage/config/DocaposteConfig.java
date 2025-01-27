@@ -2,8 +2,9 @@ package org.esup_portail.esup_stage.config;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.esup_portail.esup_stage.config.properties.SignatureProperties;
 import org.esup_portail.esup_stage.docaposte.DocaposteClient;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
@@ -19,22 +20,10 @@ import java.security.KeyStore;
 @Configuration
 public class DocaposteConfig {
 
+    @Autowired
+    private SignatureProperties signatureProperties;
+
     private static final Logger logger = LogManager.getLogger(DocaposteConfig.class);
-
-    @Value("${docaposte.uri}")
-    private String docaposteUri;
-
-    @Value("${docaposte.keystore.path}")
-    private String docaposteKeystorePath;
-
-    @Value("${docaposte.keystore.password}")
-    private String docaposteKeystorePassword;
-
-    @Value("${docaposte.truststore.path}")
-    private String docaposteTruststorePath;
-
-    @Value("${docaposte.truststore.password}")
-    private String docaposteTruststorePassword;
 
     @Bean
     public Jaxb2Marshaller marshaller() {
@@ -46,7 +35,7 @@ public class DocaposteConfig {
     @Bean
     public DocaposteClient docaposteClient(Jaxb2Marshaller marshaller) {
         DocaposteClient client = new DocaposteClient();
-        client.setDefaultUri(docaposteUri);
+        client.setDefaultUri(signatureProperties.getDocaposte().getUri());
         client.setMarshaller(marshaller);
         client.setUnmarshaller(marshaller);
         client.getWebServiceTemplate().setMessageSender(createWebServiceMessageSender());
@@ -56,17 +45,17 @@ public class DocaposteConfig {
     private WebServiceMessageSender createWebServiceMessageSender() {
         try {
             KeyStore ks = KeyStore.getInstance("PKCS12");
-            logger.info("Loaded keystore: " + docaposteKeystorePath);
-            try (InputStream is = new FileInputStream(docaposteKeystorePath)) {
-                ks.load(is, docaposteKeystorePassword.toCharArray());
+            logger.info("Loaded keystore: " + signatureProperties.getDocaposte().getKeystorePath());
+            try (InputStream is = new FileInputStream(signatureProperties.getDocaposte().getKeystorePath())) {
+                ks.load(is, signatureProperties.getDocaposte().getKeystorePassword().toCharArray());
             }
             KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            keyManagerFactory.init(ks, docaposteKeystorePassword.toCharArray());
+            keyManagerFactory.init(ks, signatureProperties.getDocaposte().getKeystorePassword().toCharArray());
 
             KeyStore ts = KeyStore.getInstance("JKS");
-            logger.info("Loaded truststore: " + docaposteTruststorePath);
-            try (InputStream is = new FileInputStream(docaposteTruststorePath)) {
-                ts.load(is, docaposteTruststorePassword.toCharArray());
+            logger.info("Loaded truststore: " + signatureProperties.getDocaposte().getTruststorePassword());
+            try (InputStream is = new FileInputStream(signatureProperties.getDocaposte().getTruststorePassword())) {
+                ts.load(is, signatureProperties.getDocaposte().getTruststorePassword().toCharArray());
             }
             TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             trustManagerFactory.init(ts);

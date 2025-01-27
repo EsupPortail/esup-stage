@@ -3,7 +3,8 @@ package org.esup_portail.esup_stage.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
-import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
+import org.esup_portail.esup_stage.config.properties.AppliProperties;
+import org.esup_portail.esup_stage.config.properties.SignatureProperties;
 import org.esup_portail.esup_stage.dto.ConfigAlerteMailDto;
 import org.esup_portail.esup_stage.dto.ConfigGeneraleDto;
 import org.esup_portail.esup_stage.dto.ConfigThemeDto;
@@ -38,7 +39,8 @@ public class AppConfigService {
     AffectationRepository affectationRepository;
 
     @Autowired
-    ApplicationBootstrap applicationBootstrap;
+    SignatureProperties signatureProperties;
+    private AppliProperties appliProperties;
 
     public ConfigGeneraleDto getConfigGenerale() {
         AppConfig appConfig = appConfigJpaRepository.findByCode(AppConfigCodeEnum.GENERAL);
@@ -48,7 +50,7 @@ public class AppConfigService {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             ConfigGeneraleDto configGeneraleDto = objectMapper.readValue(appConfig.getParametres(), ConfigGeneraleDto.class);
-            configGeneraleDto.setSignatureType(applicationBootstrap.getAppConfig().getAppSignatureEnabled());
+            configGeneraleDto.setSignatureType(signatureProperties.getAppSignatureType());
             configGeneraleDto.setSignatureEnabled(configGeneraleDto.getSignatureType() != null);
             // Initialisation du code université si non renseigné
             if (configGeneraleDto.getCodeUniversite() == null || configGeneraleDto.getCodeUniversite().isEmpty()) {
@@ -87,13 +89,13 @@ public class AppConfigService {
             ObjectMapper objectMapper = new ObjectMapper();
             ConfigThemeDto configThemeDto = objectMapper.readValue(appConfig.getParametres(), ConfigThemeDto.class);
             if (configThemeDto.getLogo() != null && configThemeDto.getLogo().getContentType() != null) {
-                File file = new File(applicationBootstrap.getAppConfig().getDataDir() + FolderEnum.IMAGES + "/" + getFilename("logo", configThemeDto.getLogo().getContentType()));
+                File file = new File(appliProperties.getDataDir() + FolderEnum.IMAGES + "/" + getFilename("logo", configThemeDto.getLogo().getContentType()));
                 if (file.exists()) {
                     configThemeDto.getLogo().setBase64(Base64.getEncoder().encodeToString(FileUtils.readFileToByteArray(file)));
                 }
             }
             if (configThemeDto.getFavicon() != null && configThemeDto.getFavicon().getContentType() != null) {
-                File file = new File(applicationBootstrap.getAppConfig().getDataDir() + FolderEnum.IMAGES + "/" + getFilename("favicon", configThemeDto.getFavicon().getContentType()));
+                File file = new File(appliProperties.getDataDir() + FolderEnum.IMAGES + "/" + getFilename("favicon", configThemeDto.getFavicon().getContentType()));
                 if (file.exists()) {
                     configThemeDto.getFavicon().setBase64(Base64.getEncoder().encodeToString(FileUtils.readFileToByteArray(file)));
                 }
@@ -166,7 +168,7 @@ public class AppConfigService {
             AppConfig appConfig = appConfigJpaRepository.findByCode(AppConfigCodeEnum.THEME);
             ObjectMapper mapper = new ObjectMapper();
             if (configThemeDto.getLogo() != null && configThemeDto.getLogo().getBase64() != null) {
-                try (FileOutputStream outputStream = new FileOutputStream(applicationBootstrap.getAppConfig().getDataDir() + FolderEnum.IMAGES + "/" + getFilename("logo", configThemeDto.getLogo().getContentType()))) {
+                try (FileOutputStream outputStream = new FileOutputStream(appliProperties.getDataDir() + FolderEnum.IMAGES + "/" + getFilename("logo", configThemeDto.getLogo().getContentType()))) {
                     outputStream.write(Base64.getDecoder().decode(configThemeDto.getLogo().getBase64()));
                     configThemeDto.getLogo().setBase64(null);
                     appConfig.setParametres(mapper.writeValueAsString(configThemeDto));
@@ -174,7 +176,7 @@ public class AppConfigService {
                 }
             }
             if (configThemeDto.getFavicon() != null && configThemeDto.getFavicon().getBase64() != null) {
-                try (FileOutputStream outputStream = new FileOutputStream(applicationBootstrap.getAppConfig().getDataDir() + FolderEnum.IMAGES + "/" + getFilename("favicon", configThemeDto.getFavicon().getContentType()))) {
+                try (FileOutputStream outputStream = new FileOutputStream(appliProperties.getDataDir() + FolderEnum.IMAGES + "/" + getFilename("favicon", configThemeDto.getFavicon().getContentType()))) {
                     outputStream.write(Base64.getDecoder().decode(configThemeDto.getFavicon().getBase64()));
                     configThemeDto.getFavicon().setBase64(null);
                     appConfig.setParametres(mapper.writeValueAsString(configThemeDto));

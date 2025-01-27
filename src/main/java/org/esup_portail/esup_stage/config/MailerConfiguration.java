@@ -1,7 +1,8 @@
 package org.esup_portail.esup_stage.config;
 
 import freemarker.template.TemplateExceptionHandler;
-import org.springframework.beans.factory.annotation.Value;
+import org.esup_portail.esup_stage.config.properties.AppliProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -13,47 +14,31 @@ import java.util.Properties;
 @Configuration
 public class MailerConfiguration {
 
-    @Value("${appli.mailer.protocol}")
-    private String mailerProtocol;
+    final AppliProperties appliProperties;
 
-    @Value("${appli.mailer.host}")
-    private String mailerHost;
+    private final String mailerProtocol;
 
-    @Value("${appli.mailer.ssl.enable}")
-    private boolean mailerSslEnable;
-
-    @Value("${appli.mailer.port}")
-    private int mailerPort;
-
-    @Value("${appli.mailer.auth}")
-    private boolean mailerAuth;
-
-    @Value("${appli.mailer.username}")
-    private String mailerUsername;
-
-    @Value("${appli.mailer.password}")
-    private String mailerPassword;
-
-    @Value("${appli.mailer.from}")
-    private String mailerFrom;
-
+    public MailerConfiguration(AppliProperties appliProperties) {
+        this.appliProperties = appliProperties;
+        this.mailerProtocol = appliProperties.getMailer().getProtocol();
+    }
 
     @Bean
     public JavaMailSender getJavaMailSender() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setProtocol(mailerProtocol);
-        mailSender.setHost(mailerHost);
-        mailSender.setPort(mailerPort);
-        if (mailerAuth) {
-            mailSender.setUsername(mailerUsername);
-            mailSender.setPassword(mailerPassword);
+        mailSender.setHost(appliProperties.getMailer().getHost());
+        mailSender.setPort(appliProperties.getMailer().getPort());
+        if (appliProperties.getMailer().isAuth()) {
+            mailSender.setUsername(appliProperties.getMailer().getUsername());
+            mailSender.setPassword(appliProperties.getMailer().getPassword());
         }
 
         Properties props = mailSender.getJavaMailProperties();
-        props.put("mail." + mailerProtocol + ".auth", mailerAuth);
-        props.put("mail." + mailerProtocol + ".from", mailerFrom);
-        if (mailerSslEnable) {
-            props.put("mail." + mailerProtocol + ".ssl.enable", mailerSslEnable);
+        props.put("mail." + mailerProtocol + ".auth", appliProperties.getMailer().isAuth());
+        props.put("mail." + mailerProtocol + ".from", appliProperties.getMailer().getFrom());
+        if (appliProperties.getMailer().isSslEnable()) {
+            props.put("mail." + mailerProtocol + ".ssl.enable", appliProperties.getMailer().isSslEnable());
         }
 
         return mailSender;

@@ -2,11 +2,13 @@ package org.esup_portail.esup_stage.service.ldap;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.esup_portail.esup_stage.config.properties.ReferentielProperties;
 import org.esup_portail.esup_stage.dto.LdapSearchDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -27,33 +29,27 @@ public class LdapService {
         this.webClient = builder.build();
     }
 
-    @Value("${referentiel.ws.ldap_url}")
-    private String referentielWSLdapUrl;
-
-    @Value("${referentiel.ws.login}")
-    private String referentielWSLogin;
-
-    @Value("${referentiel.ws.password}")
-    private String referentielWSPassword;
+    @Autowired
+    private ReferentielProperties referentielProperties;
 
 
     private String call(String api, String method, Object params) {
         try {
             if (method.equals("GET")) {
                 return webClient.get()
-                        .uri(referentielWSLdapUrl + api, uri -> {
+                        .uri(referentielProperties.getLdapUrl() + api, uri -> {
                             ((Map<String, String>) params).forEach(uri::queryParam);
                              return uri.build();
                         })
-                        .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((referentielWSLogin + ":" + referentielWSPassword).getBytes()))
+                        .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((referentielProperties.getWsLogin() + ":" + referentielProperties.getWsPassword()).getBytes()))
                         .accept(MediaType.APPLICATION_JSON)
                         .retrieve()
                         .bodyToMono(String.class)
                         .block();
             } else {
                 return webClient.post()
-                        .uri(referentielWSLdapUrl + api)
-                        .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((referentielWSLogin + ":" + referentielWSPassword).getBytes()))
+                        .uri(referentielProperties.getLdapUrl()+ api)
+                        .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((referentielProperties.getWsLogin() + ":" + referentielProperties.getWsPassword()).getBytes()))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(BodyInserters.fromValue(params))

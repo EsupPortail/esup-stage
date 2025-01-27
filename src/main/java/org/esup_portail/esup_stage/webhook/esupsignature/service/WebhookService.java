@@ -1,7 +1,7 @@
 package org.esup_portail.esup_stage.webhook.esupsignature.service;
 
 import com.itextpdf.commons.utils.Base64;
-import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
+import org.esup_portail.esup_stage.config.properties.SignatureProperties;
 import org.esup_portail.esup_stage.dto.MetadataDto;
 import org.esup_portail.esup_stage.dto.PdfMetadataDto;
 import org.esup_portail.esup_stage.exception.AppException;
@@ -38,7 +38,7 @@ public class WebhookService {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebhookService.class);
 
     @Autowired
-    ApplicationBootstrap applicationBootstrap;
+    SignatureProperties signatureProperties;
 
     private final WebClient webClient;
 
@@ -74,7 +74,7 @@ public class WebhookService {
         builder.part("stepsJsonString", workflowSteps);
 
         return webClient.post()
-                .uri(applicationBootstrap.getAppConfig().getEsupSignatureUri() + "/workflows/" + metadataDto.getWorkflowId() + "/new")
+                .uri(signatureProperties.getEsupsignature().getUri() + "/workflows/" + metadataDto.getWorkflowId() + "/new")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .retrieve()
@@ -84,7 +84,7 @@ public class WebhookService {
 
     public List<Historique> getHistorique(String documentId, Convention convention) {
         AuditTrail response = webClient.get()
-                .uri(applicationBootstrap.getAppConfig().getEsupSignatureUri() + "/signrequests/audit-trail/" + documentId)
+                .uri(signatureProperties.getEsupsignature().getUri() + "/signrequests/audit-trail/" + documentId)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(AuditTrail.class)
@@ -111,7 +111,7 @@ public class WebhookService {
 
     public InputStream download(String documentId) {
         return webClient.get()
-                .uri(applicationBootstrap.getAppConfig().getEsupSignatureUri() + "/signrequests/get-last-file/" + documentId)
+                .uri(signatureProperties.getEsupsignature().getUri() + "/signrequests/get-last-file/" + documentId)
                 .accept(MediaType.APPLICATION_PDF)
                 .exchangeToMono(clientResponse -> clientResponse.bodyToMono(InputStreamResource.class))
                 .map(inputStreamResource -> {

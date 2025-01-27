@@ -1,8 +1,11 @@
 package org.esup_portail.esup_stage.docaposte;
 
+import jakarta.annotation.PostConstruct;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
+import org.esup_portail.esup_stage.config.properties.AppliProperties;
+import org.esup_portail.esup_stage.config.properties.SignatureProperties;
 import org.esup_portail.esup_stage.docaposte.gen.*;
 import org.esup_portail.esup_stage.enums.TypeSignatureEnum;
 import org.esup_portail.esup_stage.exception.AppException;
@@ -29,21 +32,25 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class DocaposteClient extends WebServiceGatewaySupport {
-    private static final Logger logger	= LogManager.getLogger(DocaposteClient.class);
-
-    @Value("${docaposte.siren}")
-    private String siren;
-
-    @Value("${appli.mailer.delivery_address}")
-    private String deliveryAddress;
 
     @Autowired
+    SignatureProperties signatureProperties;
+    @Autowired
+    AppliProperties appliProperties;
+    @Autowired
     ImpressionService impressionService;
-
     @Autowired
     ConventionJpaRepository conventionJpaRepository;
     @Autowired
     AvenantJpaRepository avenantJpaRepository;
+
+    private static final Logger logger	= LogManager.getLogger(DocaposteClient.class);
+    private String deliveryAddress;
+
+    @PostConstruct
+    public void init() {
+        this.deliveryAddress = appliProperties.getMailer().getDeliveryAddress();
+    }
 
     public void upload(Convention convention, Avenant avenant) {
         String filename = "Convention_" + convention.getId() + "_" + convention.getEtudiant().getPrenom() + "_" + convention.getEtudiant().getNom();
@@ -63,7 +70,7 @@ public class DocaposteClient extends WebServiceGatewaySupport {
 
         // Dépôt du PDF dans Docaposte
         Upload uploadRequest = new Upload();
-        uploadRequest.setSubscriberId(siren);
+        uploadRequest.setSubscriberId(signatureProperties.getDocaposte().getSiren());
         uploadRequest.setCircuitId(convention.getCentreGestion().getCircuitSignature());
         uploadRequest.setDataFileVO(documentFile);
         uploadRequest.setLabel(label);

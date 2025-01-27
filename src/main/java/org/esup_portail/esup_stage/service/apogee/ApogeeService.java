@@ -3,7 +3,7 @@ package org.esup_portail.esup_stage.service.apogee;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.util.Strings;
-import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
+import org.esup_portail.esup_stage.config.properties.ReferentielProperties;
 import org.esup_portail.esup_stage.dto.ConventionFormationDto;
 import org.esup_portail.esup_stage.dto.LdapSearchDto;
 import org.esup_portail.esup_stage.exception.AppException;
@@ -39,7 +39,7 @@ public class ApogeeService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApogeeService.class);
 
     @Autowired
-    ApplicationBootstrap applicationBootstrap;
+    ReferentielProperties referentielProperties;
 
     @Autowired
     AppConfigService appConfigService;
@@ -68,7 +68,7 @@ public class ApogeeService {
     private String call(String api, Map<String, String> params) {
         try {
             LOGGER.info("Apogee " + api + " parametres: " + "{" + params.keySet().stream().map(key -> key + "=" + params.get(key)).collect(Collectors.joining(", ", "{", "}")) + "}");
-            String urlWithQuery = applicationBootstrap.getAppConfig().getReferentielWsApogeeUrl() + api;
+            String urlWithQuery = referentielProperties.getApogeeUrl() + api;
             List<String> listParams = new ArrayList<>();
             params.forEach((key, value) -> {
                 if (!Strings.isEmpty(value)) listParams.add(key + "=" + URLEncoder.encode(value, StandardCharsets.UTF_8));
@@ -79,7 +79,7 @@ public class ApogeeService {
 
             String response = webClient.get()
                     .uri(urlWithQuery)
-                    .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((applicationBootstrap.getAppConfig().getReferentielWsLogin() + ":" + applicationBootstrap.getAppConfig().getReferentielWsPassword()).getBytes()))
+                    .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((referentielProperties.getWsLogin() + ":" + referentielProperties.getWsPassword()).getBytes()))
                     .retrieve()
                     .bodyToMono(String.class)
                     .onErrorResume(WebClientResponseException.class, ex -> ex.getRawStatusCode() == HttpStatus.NOT_FOUND.value() ? Mono.just("") : Mono.error(ex))

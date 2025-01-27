@@ -3,7 +3,7 @@ package org.esup_portail.esup_stage.service;
 import freemarker.template.Template;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
+import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.dto.SendMailTestDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
@@ -27,7 +27,7 @@ public class MailerService {
     private static final Logger logger	= LogManager.getLogger(MailerService.class);
 
     @Autowired
-    ApplicationBootstrap applicationBootstrap;
+    AppliProperties appliProperties;
 
     @Autowired
     JavaMailSender javaMailSender;
@@ -58,7 +58,7 @@ public class MailerService {
         if(to == null || to.equals("")){
             logger.info("Aucun destinataire défini pour l'envoie de l'email.");
         }else{
-            MailContext mailContext = new MailContext(applicationBootstrap, convention, avenant, userModif);
+            MailContext mailContext = new MailContext(appliProperties, convention, avenant, userModif);
             sendMail(to, templateMail.getId(),templateMail.getObjet(),templateMail.getTexte(),templateMail.getCode(),
                     mailContext, false ,null,null);
         }
@@ -72,7 +72,7 @@ public class MailerService {
         if(to == null || to.equals("")){
             logger.info("Aucun destinataire défini pour l'envoie de l'email.");
         }else{
-            MailContext mailContext = new MailContext(applicationBootstrap, convention, null, userModif);
+            MailContext mailContext = new MailContext(appliProperties, convention, null, userModif);
             sendMail(to, templateMailGroupe.getId(), templateMailGroupe.getObjet(), templateMailGroupe.getTexte(), templateMailGroupe.getCode(),
                     mailContext, false , "conventions.zip", archive);
         }
@@ -96,9 +96,9 @@ public class MailerService {
     private void sendMail(String to, int templateMailId, String templateMailObject, String templateMailTexte, String templateMailCode,
                           MailContext mailContext, boolean forceTo, String attachmentLibelle,byte[] attachment) {
         logger.info("Mail " + templateMailCode + ", destinataires : " + to);
-        boolean disableDelivery = applicationBootstrap.getAppConfig().getMailerDisableDelivery();
+        boolean disableDelivery = appliProperties.getMailer().isDisableDelivery();
         if (!disableDelivery) {
-            String deliveryAddress = applicationBootstrap.getAppConfig().getMailerDeliveryAddress();
+            String deliveryAddress = appliProperties.getMailer().getDeliveryAddress();
             if (!forceTo && deliveryAddress != null && !deliveryAddress.isEmpty()) {
                 to = deliveryAddress;
                 logger.info("Mail redirigé vers : " + to);
@@ -121,7 +121,7 @@ public class MailerService {
                 boolean multipart = attachment != null;
                 MimeMessageHelper helper = new MimeMessageHelper(message, multipart, "utf-8");
                 helper.setTo(to);
-                helper.setFrom(applicationBootstrap.getAppConfig().getMailerFrom());
+                helper.setFrom(appliProperties.getMailer().getFrom());
                 helper.setSubject(objet.toString());
                 helper.setText(text.toString(), true);
                 if(attachment != null){
@@ -188,9 +188,9 @@ public class MailerService {
 
         public MailContext() { }
 
-        public MailContext(ApplicationBootstrap applicationBootstrap, Convention convention, Avenant avenant, Utilisateur userModif) {
+        public MailContext(AppliProperties appliProperties, Convention convention, Avenant avenant, Utilisateur userModif) {
             if (convention != null) {
-                this.convention = new ConventionContext(applicationBootstrap, convention);
+                this.convention = new ConventionContext(appliProperties, convention);
                 this.tuteurPro = new TuteurProContext(convention.getContact(), convention.getStructure(), convention.getService());
                 this.signataire = new SignataireContext(convention.getSignataire());
                 this.etudiant = new EtudiantContext(convention.getEtudiant(), convention.getCourrielPersoEtudiant(), convention.getTelEtudiant());
@@ -264,7 +264,7 @@ public class MailerService {
 
             public ConventionContext() { }
 
-            public ConventionContext(ApplicationBootstrap applicationBootstrap, Convention convention) {
+            public ConventionContext(AppliProperties appliProperties, Convention convention) {
                 DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
 
                 this.numero = String.valueOf(convention.getId());
@@ -277,7 +277,7 @@ public class MailerService {
                 this.dateFin = convention.getDateFinStage() != null ? df.format(convention.getDateFinStage()) : null;
                 this.tempsTravail = convention.getTempsTravail() != null ? convention.getTempsTravail().getLibelle() : null;
                 this.tempsTravailComment = convention.getCommentaireDureeTravail();
-                this.lien = applicationBootstrap.getAppConfig().getUrl() + "/conventions/" + convention.getId();
+                this.lien = appliProperties.getUrl() + "/conventions/" + convention.getId();
             }
 
             public String getNumero() {

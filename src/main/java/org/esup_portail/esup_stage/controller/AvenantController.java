@@ -3,7 +3,7 @@ package org.esup_portail.esup_stage.controller;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
+import org.esup_portail.esup_stage.config.properties.SignatureProperties;
 import org.esup_portail.esup_stage.dto.*;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.AppSignatureEnum;
@@ -69,7 +69,7 @@ public class AvenantController {
     SignatureService signatureService;
 
     @Autowired
-    ApplicationBootstrap applicationBootstrap;
+    SignatureProperties signatureProperties;
 
     @GetMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.LECTURE})
@@ -317,7 +317,7 @@ public class AvenantController {
         if(!avenant.isValidationAvenant()){
             throw new AppException(HttpStatus.BAD_REQUEST, "L'avenant n'a pas été préalablement validé");
         }
-        if (applicationBootstrap.getAppConfig().getAppSignatureEnabled() == AppSignatureEnum.DOCAPOSTE && avenant.getConvention().getCentreGestion().getCircuitSignature() == null) {
+        if (signatureProperties.getAppSignatureType() == AppSignatureEnum.DOCAPOSTE && avenant.getConvention().getCentreGestion().getCircuitSignature() == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Le centre de gestion " + avenant.getConvention().getCentreGestion().getNomCentre() + " n'a pas de circuit de signature");
         }
         return conventionService.controleEmailTelephone(avenant.getConvention());

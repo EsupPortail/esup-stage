@@ -27,9 +27,9 @@
 	<profiles>
 		<profile>
 			<id>dev</id>
-			<properties>
-				<application.configfilepath>classpath:estage.properties</application.configfilepath>
-			</properties>
+<!--			<properties>-->
+<!--				<application.configfilepath>classpath:estage.properties</application.configfilepath>-->
+<!--			</properties>-->
 			<build>
 				<plugins>
 					<plugin>
@@ -59,9 +59,9 @@
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
-			<properties>
-				<application.configfilepath>file:///etc/${project.name}/estage.properties</application.configfilepath>
-			</properties>
+<!--			<properties>-->
+<!--				<application.configfilepath>file:///etc/${project.name}/estage.properties</application.configfilepath>-->
+<!--			</properties>-->
 			<build>
 				<plugins>
 					<plugin>
@@ -349,7 +349,7 @@
                 <directory>src/main/resources</directory>
 				<filtering>false</filtering>
             </resource>
-            <!-- interpreter le fichier 'application.properties' -->
+            <!-- interpreter le fichier 'default.properties' -->
             <resource>
             <!-- interprete les valeurs en ${xxx} en fonction des attributs maven -->
                 <directory>src/main/resources-filtered</directory>
@@ -366,6 +366,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
 				<configuration>
+					<encoding>UTF-8</encoding>
 					<delimiters>
 						<delimiter>${*}</delimiter>
 						<delimiter>@</delimiter>

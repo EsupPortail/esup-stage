@@ -1,6 +1,6 @@
 package org.esup_portail.esup_stage.webhook.esupsignature.controller;
 
-import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
+import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.dto.PdfMetadataDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.webhook.esupsignature.service.WebhookService;
@@ -18,7 +18,7 @@ public class WebhookController {
     WebhookService webhookService;
 
     @Autowired
-    ApplicationBootstrap applicationBootstrap;
+    AppliProperties appliProperties;
 
     private final WebClient webClient;
 
@@ -31,7 +31,7 @@ public class WebhookController {
         if ((conventionId == null && avenantId == null) || (conventionId != null && avenantId != null)) {
             throw new AppException(HttpStatus.BAD_REQUEST, "conventionid OU avenantid obligatoire");
         }
-        String token = applicationBootstrap.getAppConfig().getAppPublicTokens()[0];
+        String token = appliProperties.getPublicTokens()[0];
         String type = "conventions";
         Integer id = conventionId;
         if (avenantId != null) {
@@ -40,7 +40,7 @@ public class WebhookController {
         }
         // Récupération du PDF et des metadata
         PdfMetadataDto content = webClient.get()
-                .uri(applicationBootstrap.getAppConfig().getLocalApi() + "/public/api/" + type + "/" + id)
+                .uri(appliProperties.getLocalapi() + "/public/api/" + type + "/" + id)
                 .headers(httpHeaders -> httpHeaders.setBearerAuth(token))
                 .retrieve()
                 .bodyToMono(PdfMetadataDto.class)

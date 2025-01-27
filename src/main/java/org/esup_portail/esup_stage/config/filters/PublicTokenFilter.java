@@ -1,8 +1,12 @@
 package org.esup_portail.esup_stage.config.filters;
 
+import org.esup_portail.esup_stage.config.properties.AppliProperties;
+import org.hibernate.annotations.Filter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import jakarta.servlet.FilterChain;
@@ -14,10 +18,11 @@ import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+@Component
 public class PublicTokenFilter extends OncePerRequestFilter {
 
-    @Value("${appli.public.tokens")
-    private String publicTokens;
+    @Autowired
+    AppliProperties appliProperties;
 
 
     @Override
@@ -25,7 +30,7 @@ public class PublicTokenFilter extends OncePerRequestFilter {
         String authorizationHeader = request.getHeader("Authorization");
         if (authorizationHeader != null) {
             String token = authorizationHeader.substring(7);
-            if (!authorizationHeader.startsWith("Bearer") || Arrays.stream(new String[]{publicTokens}).noneMatch(t -> t.equals(token))) {
+            if (!authorizationHeader.startsWith("Bearer") || Arrays.stream(appliProperties.getPublicTokens()).noneMatch(token::equals)) {
                 throw new AccessDeniedException("Access denied");
             }
 
