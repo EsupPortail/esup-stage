@@ -88,7 +88,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges {
       commune: [this.etab.commune, [Validators.required, Validators.maxLength(200)]],
       libCedex: [this.etab.libCedex, [Validators.maxLength(20)]],
       idPays: [this.etab.pays ? this.etab.pays.id : null, [Validators.required]],
-      mail: [this.etab.mail, [Validators.pattern('[^@ ]+@[^@. ]+\\.[^@ ]+'), Validators.maxLength(255)]],
+      mail: [this.etab.mail, [Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/), Validators.maxLength(255)]],
       telephone: [this.etab.telephone, [Validators.required, Validators.maxLength(20)]],
       siteWeb: [this.etab.siteWeb, [Validators.maxLength(200), Validators.pattern('^https?://(\\w([\\w\\-]{0,61}\\w)?\\.)+[a-zA-Z]{2,6}([/]{1}.*)?$')]],
       fax: [this.etab.fax, [Validators.maxLength(20)]],

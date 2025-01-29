@@ -109,7 +109,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
         paysEtudiant: [this.convention.paysEtudiant, [Validators.required]],
         telEtudiant: [this.convention.telEtudiant, []],
         telPortableEtudiant: [this.convention.telPortableEtudiant, []],
-        courrielPersoEtudiant: [this.convention.courrielPersoEtudiant, [Validators.required, Validators.pattern('[^@ ]+@[^@. ]+\\.[^@ ]+'), Validators.maxLength(255)]],
+        courrielPersoEtudiant: [this.convention.courrielPersoEtudiant, [Validators.required, Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/), Validators.maxLength(255)]],
         regionCPAM: [this.convention.regionCPAM, []],
         libelleCPAM: [this.convention.libelleCPAM, []],
         adresseCPAM: [this.convention.adresseCPAM, []],

@@ -217,7 +217,7 @@ export class CentreGestionComponent implements OnInit {
       nomCentre: [null, [Validators.required, Validators.maxLength(100)]],
       niveauCentre: [null, [Validators.required]],
       siteWeb: [null, [Validators.maxLength(50)]],
-      mail: [null, [Validators.required, Validators.pattern('[^@ ]+@[^@. ]+\\.[^@ ]+'), Validators.maxLength(255)]],
+      mail: [null, [Validators.required, Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/), Validators.maxLength(255)]],
       telephone: [null, [Validators.required, Validators.maxLength(20)]],
       fax: [null, [Validators.maxLength(20)]],
       adresse: [null, [Validators.maxLength(200)]],
