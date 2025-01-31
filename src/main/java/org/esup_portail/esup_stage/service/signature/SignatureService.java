@@ -60,7 +60,7 @@ public class SignatureService {
     ImpressionService impressionService;
 
     @Autowired
-    DocaposteClient docaposteClient;
+    private SignatureClient signatureClient;
 
     @Autowired
     WebhookService webhookService;
@@ -187,12 +187,12 @@ public class SignatureService {
                 continue;
             }
             ResponseDto controles = conventionService.controleEmailTelephone(convention);
-            if (controles.getError().size() > 0) {
+            if (!controles.getError().isEmpty()) {
                 continue;
             }
             switch (appSignature) {
                 case DOCAPOSTE:
-                    docaposteClient.upload(convention, avenant);
+                    signatureClient.upload(convention, avenant);
                     break;
                 case ESUPSIGNATURE:
                 case EXTERNE:
@@ -255,7 +255,7 @@ public class SignatureService {
             List<Historique> historiques = new ArrayList<>();
             switch (appSignature) {
                 case DOCAPOSTE:
-                    historiques = docaposteClient.getHistorique(convention.getDocumentId(), convention.getCentreGestion().getSignataires());
+                    historiques = signatureClient.getHistorique(convention.getDocumentId(), convention.getCentreGestion().getSignataires());
                     break;
                 case ESUPSIGNATURE:
                     historiques = webhookService.getHistorique(convention.getDocumentId(), convention);
@@ -291,7 +291,7 @@ public class SignatureService {
             List<Historique> historiques = new ArrayList<>();
             switch (appSignature) {
                 case DOCAPOSTE:
-                    historiques = docaposteClient.getHistorique(avenant.getDocumentId(), avenant.getConvention().getCentreGestion().getSignataires());
+                    historiques = signatureClient.getHistorique(avenant.getDocumentId(), avenant.getConvention().getCentreGestion().getSignataires());
                     break;
                 case ESUPSIGNATURE:
                     historiques = webhookService.getHistorique(avenant.getDocumentId(), avenant.getConvention());
@@ -416,7 +416,7 @@ public class SignatureService {
         InputStream inputStream = null;
         switch (signatureProperties.getAppSignatureType()) {
             case DOCAPOSTE:
-                inputStream = docaposteClient.download(documentId);
+                inputStream = signatureClient.download(documentId);
                 break;
             case ESUPSIGNATURE:
                 inputStream = webhookService.download(documentId);

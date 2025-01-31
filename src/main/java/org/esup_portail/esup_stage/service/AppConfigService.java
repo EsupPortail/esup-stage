@@ -33,13 +33,15 @@ public class AppConfigService {
     private static final Logger logger	= LogManager.getLogger(AppConfigService.class);
 
     @Autowired
-    AppConfigJpaRepository appConfigJpaRepository;
+    private AppConfigJpaRepository appConfigJpaRepository;
 
     @Autowired
-    AffectationRepository affectationRepository;
+    private AffectationRepository affectationRepository;
 
     @Autowired
-    SignatureProperties signatureProperties;
+    private SignatureProperties signatureProperties;
+
+    @Autowired
     private AppliProperties appliProperties;
 
     public ConfigGeneraleDto getConfigGenerale() {

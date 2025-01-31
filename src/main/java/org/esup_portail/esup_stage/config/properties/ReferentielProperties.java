@@ -7,28 +7,28 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ConfigurationPropertiesScan
-@ConfigurationProperties(prefix = "referentiel")
+@ConfigurationProperties(prefix = "referentiel.ws")
 public class ReferentielProperties {
 
-    private String wsLogin;
-    private String wsPassword;
+    private String login;
+    private String password;
     private String ldapUrl;
     private String apogeeUrl;
 
     public String getWsLogin() {
-        return wsLogin;
+        return login;
     }
 
     public void setWsLogin(String wsLogin) {
-        this.wsLogin = wsLogin;
+        this.login = wsLogin;
     }
 
     public String getWsPassword() {
-        return wsPassword;
+        return password;
     }
 
     public void setWsPassword(String wsPassword) {
-        this.wsPassword = wsPassword;
+        this.password = wsPassword;
     }
 
     public String getLdapUrl() {
