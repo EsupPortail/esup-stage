@@ -1,5 +1,6 @@
 package org.esup_portail.esup_stage.docaposte;
 
+
 import jakarta.annotation.PostConstruct;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,40 +18,120 @@ import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
 import org.esup_portail.esup_stage.service.signature.model.Historique;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import jakarta.xml.bind.JAXBElement;
+import org.springframework.ws.transport.WebServiceMessageSender;
+import org.springframework.ws.transport.http.HttpsUrlConnectionMessageSender;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.TrustManagerFactory;
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
+@Service
+@ConditionalOnProperty(prefix="docaposte",name = "uri")
 public class DocaposteClient extends WebServiceGatewaySupport {
 
     @Autowired
-    SignatureProperties signatureProperties;
+    private SignatureProperties signatureProperties;
+
     @Autowired
-    AppliProperties appliProperties;
+    private AppliProperties appliProperties;
+
     @Autowired
-    ImpressionService impressionService;
+    private ImpressionService impressionService;
+
     @Autowired
-    ConventionJpaRepository conventionJpaRepository;
+    private ConventionJpaRepository conventionJpaRepository;
+
     @Autowired
-    AvenantJpaRepository avenantJpaRepository;
+    private AvenantJpaRepository avenantJpaRepository;
 
     private static final Logger logger	= LogManager.getLogger(DocaposteClient.class);
-    private String deliveryAddress;
+
+    public DocaposteClient(SignatureProperties signatureProperties) {
+        this.signatureProperties = signatureProperties;
+    }
 
     @PostConstruct
     public void init() {
-        this.deliveryAddress = appliProperties.getMailer().getDeliveryAddress();
+        try {
+            this.getWebServiceTemplate().setMessageSender(createWebServiceMessageSender());
+            logger.info("DocaposteClient initialized successfully");
+        } catch (Exception e) {
+            logger.error("Failed to initialize DocaposteClient", e);
+            throw new RuntimeException("Failed to initialize DocaposteClient", e);
+        }
     }
+
+    private WebServiceMessageSender createWebServiceMessageSender() {
+        try {
+            // Keystore initialization
+            KeyStore ks = loadKeyStore();
+            KeyManagerFactory keyManagerFactory = initializeKeyManagerFactory(ks);
+
+            // Truststore initialization
+            KeyStore ts = loadTrustStore();
+            TrustManagerFactory trustManagerFactory = initializeTrustManagerFactory(ts);
+
+            // Create and configure message sender
+            return createHttpsMessageSender(keyManagerFactory, trustManagerFactory);
+        } catch (Exception e) {
+            logger.error("Failed to create WebServiceMessageSender", e);
+            throw new RuntimeException("Failed to create WebServiceMessageSender", e);
+        }
+    }
+
+    private KeyStore loadKeyStore() throws Exception {
+        KeyStore ks = KeyStore.getInstance("PKCS12");
+        logger.debug("Loading keystore from: {}", signatureProperties.getDocaposte().getKeystorePath());
+        try (InputStream is = new FileInputStream(signatureProperties.getDocaposte().getKeystorePath())) {
+            ks.load(is, signatureProperties.getDocaposte().getKeystorePassword().toCharArray());
+            logger.info("Keystore loaded successfully");
+            return ks;
+        }
+    }
+
+    private KeyStore loadTrustStore() throws Exception {
+        KeyStore ts = KeyStore.getInstance("JKS");
+        logger.debug("Loading truststore from: {}", signatureProperties.getDocaposte().getTruststorePassword());
+        try (InputStream is = new FileInputStream(signatureProperties.getDocaposte().getTruststorePassword())) {
+            ts.load(is, signatureProperties.getDocaposte().getTruststorePassword().toCharArray());
+            logger.info("Truststore loaded successfully");
+            return ts;
+        }
+    }
+
+    private KeyManagerFactory initializeKeyManagerFactory(KeyStore ks) throws Exception {
+        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        keyManagerFactory.init(ks, signatureProperties.getDocaposte().getKeystorePassword().toCharArray());
+        return keyManagerFactory;
+    }
+
+    private TrustManagerFactory initializeTrustManagerFactory(KeyStore ts) throws Exception {
+        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        trustManagerFactory.init(ts);
+        return trustManagerFactory;
+    }
+
+    private WebServiceMessageSender createHttpsMessageSender(KeyManagerFactory keyManagerFactory, TrustManagerFactory trustManagerFactory) {
+        HttpsUrlConnectionMessageSender webServiceMessageSender = new HttpsUrlConnectionMessageSender();
+        webServiceMessageSender.setKeyManagers(keyManagerFactory.getKeyManagers());
+        webServiceMessageSender.setTrustManagers(trustManagerFactory.getTrustManagers());
+        return webServiceMessageSender;
+    }
+
 
     public void upload(Convention convention, Avenant avenant) {
         String filename = "Convention_" + convention.getId() + "_" + convention.getEtudiant().getPrenom() + "_" + convention.getEtudiant().getNom();
@@ -79,9 +160,9 @@ public class DocaposteClient extends WebServiceGatewaySupport {
             if (convention.getSignataire() != null && Strings.isNotEmpty(convention.getSignataire().getMail())) {
                 receiver = convention.getSignataire().getMail();
             }
-            if (deliveryAddress != null && !deliveryAddress.isEmpty()) {
+            if (appliProperties.getMailer().getDeliveryAddress() != null && !appliProperties.getMailer().getDeliveryAddress().isEmpty()) {
                 String originalReceiver = receiver + "";
-                receiver = deliveryAddress;
+                receiver = appliProperties.getMailer().getDeliveryAddress();
                 logger.info("Email destinataire " + originalReceiver + " redirigé vers " + receiver);
             }
             uploadRequest.setEmailDestinataire(receiver);
@@ -130,8 +211,8 @@ public class DocaposteClient extends WebServiceGatewaySupport {
         request.setDocumentId(documentId);
         HistoryResponse response = ((JAXBElement<HistoryResponse>) getWebServiceTemplate().marshalSendAndReceive(new ObjectFactory().createHistory(request))).getValue();
 
-        List<CentreGestionSignataire> profilsOtp = profils.stream().filter(p -> p.getType() == TypeSignatureEnum.otp).collect(Collectors.toList());
-        List<CentreGestionSignataire> profilsServeur = profils.stream().filter(p -> p.getType() == TypeSignatureEnum.serveur).collect(Collectors.toList());
+        List<CentreGestionSignataire> profilsOtp = profils.stream().filter(p -> p.getType() == TypeSignatureEnum.otp).toList();
+        List<CentreGestionSignataire> profilsServeur = profils.stream().filter(p -> p.getType() == TypeSignatureEnum.serveur).toList();
         List<Historique> historiques = new ArrayList<>();
         int ordreOtp = 0;
         int ordreServeur = 0;
