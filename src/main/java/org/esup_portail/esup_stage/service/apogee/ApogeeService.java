@@ -79,7 +79,7 @@ public class ApogeeService {
 
             String response = webClient.get()
                     .uri(urlWithQuery)
-                    .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((referentielProperties.getWsLogin() + ":" + referentielProperties.getWsPassword()).getBytes()))
+                    .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((referentielProperties.getLogin() + ":" + referentielProperties.getPassword()).getBytes()))
                     .retrieve()
                     .bodyToMono(String.class)
                     .onErrorResume(WebClientResponseException.class, ex -> ex.getRawStatusCode() == HttpStatus.NOT_FOUND.value() ? Mono.just("") : Mono.error(ex))

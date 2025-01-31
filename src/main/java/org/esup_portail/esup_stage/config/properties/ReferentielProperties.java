@@ -15,19 +15,19 @@ public class ReferentielProperties {
     private String ldapUrl;
     private String apogeeUrl;
 
-    public String getWsLogin() {
+    public String getLogin() {
         return login;
     }
 
-    public void setWsLogin(String wsLogin) {
+    public void setLogin(String wsLogin) {
         this.login = wsLogin;
     }
 
-    public String getWsPassword() {
+    public String getPassword() {
         return password;
     }
 
-    public void setWsPassword(String wsPassword) {
+    public void setPassword(String wsPassword) {
         this.password = wsPassword;
     }
 

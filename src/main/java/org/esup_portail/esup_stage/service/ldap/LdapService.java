@@ -9,13 +9,11 @@ import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.util.*;
 
@@ -34,6 +32,10 @@ public class LdapService {
 
 
     private String call(String api, String method, Object params) {
+        if(referentielProperties.getLogin()==null || referentielProperties.getPassword()==null){
+            LOGGER.error("Erreur lors de l'appel au ws LDAP " + api + ": login ou mot de passe non renseigné");
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
+        }
         try {
             if (method.equals("GET")) {
                 return webClient.get()
@@ -41,7 +43,7 @@ public class LdapService {
                             ((Map<String, String>) params).forEach(uri::queryParam);
                              return uri.build();
                         })
-                        .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((referentielProperties.getWsLogin() + ":" + referentielProperties.getWsPassword()).getBytes()))
+                        .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((referentielProperties.getLogin() + ":" + referentielProperties.getPassword()).getBytes()))
                         .accept(MediaType.APPLICATION_JSON)
                         .retrieve()
                         .bodyToMono(String.class)
@@ -49,7 +51,7 @@ public class LdapService {
             } else {
                 return webClient.post()
                         .uri(referentielProperties.getLdapUrl()+ api)
-                        .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((referentielProperties.getWsLogin() + ":" + referentielProperties.getWsPassword()).getBytes()))
+                        .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((referentielProperties.getLogin() + ":" + referentielProperties.getPassword()).getBytes()))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(BodyInserters.fromValue(params))
@@ -78,6 +80,10 @@ public class LdapService {
     }
 
     public LdapUser searchByLogin(String login) {
+        if(login==null || login.isEmpty()){
+            LOGGER.error("Erreur lors de la recherche de l'utilisateur par login: login est null ou vide");
+            return null;
+        }
         Map<String, String> params = new HashMap<>();
         params.put("login", login);
         String response = call("/bySupannAliasLogin", "GET", params);

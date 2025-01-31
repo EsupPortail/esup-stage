@@ -5,8 +5,10 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Configuration
@@ -19,7 +21,7 @@ public class AppliProperties {
     private  String prefix;
     private  String url;
     private  String localapi;
-    private  Set<String> adminTechnique;
+    private  String adminTechnique;
     private  String dataDir;
     private  List<String> publicTokens;
 
@@ -64,10 +66,15 @@ public class AppliProperties {
     }
 
     public Set<String> getAdminTechnique() {
-        return adminTechnique;
+        if (adminTechnique == null || adminTechnique.trim().isEmpty()) {
+            return Set.of(); // Retourne un Set vide si `adminTechnique` est null ou vide
+        }
+        return Arrays.stream(adminTechnique.split(";"))
+                .map(String::trim)
+                .collect(Collectors.toSet());
     }
 
-    public void setAdminTechnique(Set<String> adminTechnique) {
+    public void setAdminTechnique(String adminTechnique) {
         this.adminTechnique = adminTechnique;
     }
 
