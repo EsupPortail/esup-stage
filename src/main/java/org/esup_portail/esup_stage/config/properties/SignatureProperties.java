@@ -1,5 +1,7 @@
 package org.esup_portail.esup_stage.config.properties;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.esup_portail.esup_stage.config.properties.signature.DocaposteProperties;
 import org.esup_portail.esup_stage.config.properties.signature.EsupSignatureProperties;
 import org.esup_portail.esup_stage.config.properties.signature.WebhookProperties;
@@ -7,7 +9,7 @@ import org.esup_portail.esup_stage.enums.AppSignatureEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
-
+@Data
 @Configuration
 public class SignatureProperties {
 
@@ -26,21 +28,7 @@ public class SignatureProperties {
         initializeProperties();
     }
 
-
-    public  DocaposteProperties getDocaposte() {
-        return docaposte;
-    }
-
-    public WebhookProperties getWebhook() {
-        return webhook;
-    }
-
-    public EsupSignatureProperties getEsupsignature() {
-        return esupsignature;
-    }
-
     public void initializeProperties() {
-
         boolean docaposteEnabled = docaposte.getUri() != null && docaposte.getSiren() != null &&
                 docaposte.getKeystorePath() != null && docaposte.getKeystorePassword() != null &&
                 docaposte.getTruststorePath() != null && docaposte.getTruststorePassword() != null;
@@ -55,9 +43,5 @@ public class SignatureProperties {
                 }
             }
         }
-    }
-
-    public AppSignatureEnum getAppSignatureType() {
-        return appSignatureType;
     }
 }

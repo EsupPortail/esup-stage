@@ -18,7 +18,7 @@ public interface UtilisateurJpaRepository extends JpaRepository<Utilisateur, Int
     @Query("SELECT u FROM Utilisateur u WHERE u.login = :login AND u.actif = true")
     Utilisateur findOneByLoginAcitf(String login);
 
-    @Query("SELECT u FROM Utilisateur u WHERE u.login = :login")
+    @Query("SELECT u FROM Utilisateur u WHERE u.login = ?1")
     Utilisateur findOneByLogin(String login);
 
     @Query("SELECT u FROM Utilisateur u WHERE u.uid = :uid")

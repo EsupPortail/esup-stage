@@ -27,9 +27,6 @@
 	<profiles>
 		<profile>
 			<id>dev</id>
-<!--			<properties>-->
-<!--				<application.configfilepath>classpath:estage.properties</application.configfilepath>-->
-<!--			</properties>-->
 			<build>
 				<plugins>
 					<plugin>
@@ -59,9 +56,6 @@
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
-<!--			<properties>-->
-<!--				<application.configfilepath>file:///etc/${project.name}/estage.properties</application.configfilepath>-->
-<!--			</properties>-->
 			<build>
 				<plugins>
 					<plugin>
@@ -147,6 +141,11 @@
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-ui</artifactId>
 			<version>1.7.0</version>
+		</dependency>
+		<!-- Outils de développement -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
 		</dependency>
         <dependency>
             <groupId>com.googlecode.libphonenumber</groupId>
@@ -482,6 +481,20 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.1</version>
+				<configuration>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+							<version>1.18.30</version>
+						</path>
+					</annotationProcessorPaths>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

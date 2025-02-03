@@ -13,15 +13,15 @@ import javax.sql.DataSource;
 public class DatasourceConfiguration {
 
     @Autowired
-    private AppliProperties AppliProperties;
+    private AppliProperties appliProperties;
 
     @Bean
     public DataSource getDataSource() {
         DataSourceBuilder<?> dataSourceBuilder = DataSourceBuilder.create();
-        dataSourceBuilder.driverClassName(AppliProperties.getDatasource().getDriver());
-        dataSourceBuilder.url(AppliProperties.getDatasource().getUrl());
-        dataSourceBuilder.username(AppliProperties.getDatasource().getUsername());
-        dataSourceBuilder.password(AppliProperties.getDatasource().getPassword());
+        dataSourceBuilder.driverClassName(appliProperties.getDatasource().getDriver());
+        dataSourceBuilder.url(appliProperties.getDatasource().getUrl());
+        dataSourceBuilder.username(appliProperties.getDatasource().getUsername());
+        dataSourceBuilder.password(appliProperties.getDatasource().getPassword());
         return dataSourceBuilder.build();
     }
 
