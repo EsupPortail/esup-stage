@@ -137,9 +137,9 @@
   <div class="row">
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Adresse mail</mat-label>
-      <input type="email" matInput formControlName="mail" />
-      <mat-hint>Sous cette forme adresse&#64;domain.fr</mat-hint>
-      <mat-error *ngIf="form.get('email')"> Adresse email invalide. </mat-error>
+      <input matInput formControlName="mail" />
+      <mat-hint>Sous cette forme adresse&#64;domaine.fr</mat-hint>
+      <mat-error><app-form-error [field]="form.get('email')"></app-form-error></mat-error>
     </mat-form-field>
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Téléphone</mat-label>
