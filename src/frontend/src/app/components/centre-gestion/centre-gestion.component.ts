@@ -6,6 +6,7 @@ import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { debounceTime } from 'rxjs/operators';
 import { ConsigneService } from "../../services/consigne.service";
+import {REGEX} from "../../utils/regex.utils";
 
 @Component({
   selector: 'app-centre-gestion',
@@ -217,7 +218,7 @@ export class CentreGestionComponent implements OnInit {
       nomCentre: [null, [Validators.required, Validators.maxLength(100)]],
       niveauCentre: [null, [Validators.required]],
       siteWeb: [null, [Validators.maxLength(50)]],
-      mail: [null, [Validators.required, Validators.pattern('[^@ ]+@[^@. ]+\\.[^@ ]+'), Validators.maxLength(255)]],
+      mail: [null, [Validators.required, Validators.pattern(REGEX.EMAIL), Validators.maxLength(255)]],
       telephone: [null, [Validators.required, Validators.maxLength(20)]],
       fax: [null, [Validators.maxLength(20)]],
       adresse: [null, [Validators.maxLength(200)]],

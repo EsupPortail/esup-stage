@@ -18,6 +18,7 @@ import { NafN5Service } from "../../../services/naf-n5.service";
 import { StatutJuridiqueService } from "../../../services/statut-juridique.service";
 import { EffectifService } from "../../../services/effectif.service";
 import { MessageService } from "../../../services/message.service";
+import {REGEX} from "../../../utils/regex.utils";
 import { ReplaySubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import {
@@ -434,7 +435,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
       commune: [this.etab.commune, [Validators.required, Validators.maxLength(200)]],
       libCedex: [this.etab.libCedex, [Validators.maxLength(20)]],
       idPays: [this.etab.pays ? this.etab.pays.id : null, [Validators.required]],
-      mail: [this.etab.mail, [ Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/), Validators.maxLength(255)]],
+      mail: [this.etab.mail, [Validators.pattern(REGEX.EMAIL), Validators.maxLength(255)]],
       telephone: [this.etab.telephone, [Validators.required,Validators.pattern(/^(?:(?:\+|00)\d{1,4}[-.\s]?|0)\d{1,4}([-.\s]?\d{1,4})*$/)]],
       siteWeb: [this.etab.siteWeb, [Validators.maxLength(200), Validators.pattern('^https?://(\\w([\\w\\-]{0,61}\\w)?\\.)+[a-zA-Z]{2,6}([/]{1}.*)?$')]],
       fax: [this.etab.fax, [Validators.maxLength(20)]],
