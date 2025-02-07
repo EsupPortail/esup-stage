@@ -1,4 +1,5 @@
 package org.esup_portail.esup_stage.dto;
+
 import jakarta.validation.constraints.NotNull;
 
 public class QuestionSupplementaireDto {

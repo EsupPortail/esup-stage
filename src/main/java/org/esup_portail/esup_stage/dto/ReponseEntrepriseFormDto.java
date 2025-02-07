@@ -1,7 +1,5 @@
 package org.esup_portail.esup_stage.dto;
 
-import jakarta.persistence.Lob;
-
 public class ReponseEntrepriseFormDto {
 
     private Integer reponseEnt1;

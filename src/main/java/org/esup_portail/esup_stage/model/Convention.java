@@ -3,13 +3,11 @@ package org.esup_portail.esup_stage.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
+import jakarta.persistence.*;
 import org.esup_portail.esup_stage.dto.view.Views;
 import org.esup_portail.esup_stage.enums.NbJoursHebdoEnum;
 import org.esup_portail.esup_stage.service.PeriodeService;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
 
-import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -337,30 +335,30 @@ public class Convention extends ObjetMetier implements Exportable {
     private Boolean confidentiel;
 
     @JsonView(Views.List.class)
-    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE},fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE}, fetch = FetchType.LAZY)
     private List<Avenant> avenants = new ArrayList<>();
 
     @OneToOne(mappedBy = "convention", cascade = {CascadeType.MERGE, CascadeType.REMOVE, CascadeType.PERSIST})
     private ConventionNomenclature nomenclature;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE},fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE}, fetch = FetchType.LAZY)
     private List<HistoriqueValidation> historiqueValidations = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE},fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE}, fetch = FetchType.LAZY)
     private List<PeriodeInterruptionStage> periodeInterruptionStages = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE},fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE}, fetch = FetchType.LAZY)
     private List<ReponseEvaluation> reponseEvaluations = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE},fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE}, fetch = FetchType.LAZY)
     private List<ReponseSupplementaire> reponseSupplementaires = new ArrayList<>();
 
     @JsonView(Views.List.class)
-    @OneToOne(mappedBy = "convention", cascade = {CascadeType.MERGE, CascadeType.REMOVE, CascadeType.PERSIST},fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "convention", cascade = {CascadeType.MERGE, CascadeType.REMOVE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
     private ReponseEvaluation reponseEvaluation;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -1359,9 +1357,7 @@ public class Convention extends ObjetMetier implements Exportable {
                 calendar.set(Calendar.SECOND, 0);
                 calendar.set(Calendar.MILLISECOND, 0);
                 Date dateAlerte = calendar.getTime();
-                if (now.after(dateAlerte) || now.compareTo(dateAlerte) == 0) {
-                    return true;
-                }
+                return now.after(dateAlerte) || now.compareTo(dateAlerte) == 0;
             }
         }
         return false;
@@ -1455,7 +1451,7 @@ public class Convention extends ObjetMetier implements Exportable {
                 break;
             case "interruptionStage":
                 if (getInterruptionStage() != null) {
-                    value = getInterruptionStage()?"Oui":"Non";
+                    value = getInterruptionStage() ? "Oui" : "Non";
                 }
                 break;
             case "theme":
@@ -1570,7 +1566,7 @@ public class Convention extends ObjetMetier implements Exportable {
             case "avenant":
                 if (getAvenants() != null) {
                     value = getAvenants().isEmpty() ? "Non" : "Oui";
-                break;
+                    break;
                 }
             case "dateCreation":
                 if (getDateCreation() != null) {

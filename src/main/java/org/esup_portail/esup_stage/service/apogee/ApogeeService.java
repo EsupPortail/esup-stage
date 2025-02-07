@@ -37,29 +37,21 @@ import java.util.stream.Collectors;
 @Service
 public class ApogeeService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApogeeService.class);
-
+    private final WebClient webClient;
     @Autowired
     ReferentielProperties referentielProperties;
-
     @Autowired
     AppConfigService appConfigService;
-
     @Autowired
     TypeConventionJpaRepository typeConventionJpaRepository;
-
     @Autowired
     EtapeJpaRepository etapeJpaRepository;
-
     @Autowired
     CritereGestionJpaRepository critereGestionJpaRepository;
-
     @Autowired
     CentreGestionJpaRepository centreGestionJpaRepository;
-
     @Autowired
     LdapService ldapService;
-
-    private final WebClient webClient;
 
     public ApogeeService(WebClient.Builder builder) {
         this.webClient = builder.build();
@@ -71,7 +63,8 @@ public class ApogeeService {
             String urlWithQuery = referentielProperties.getApogeeUrl() + api;
             List<String> listParams = new ArrayList<>();
             params.forEach((key, value) -> {
-                if (!Strings.isEmpty(value)) listParams.add(key + "=" + URLEncoder.encode(value, StandardCharsets.UTF_8));
+                if (!Strings.isEmpty(value))
+                    listParams.add(key + "=" + URLEncoder.encode(value, StandardCharsets.UTF_8));
             });
             if (listParams.size() > 0) {
                 urlWithQuery += "?" + String.join("&", listParams);

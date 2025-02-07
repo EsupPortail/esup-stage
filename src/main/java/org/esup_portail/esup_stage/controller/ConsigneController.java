@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -36,7 +37,7 @@ import java.nio.file.StandardCopyOption;
 @RequestMapping("/consignes")
 public class ConsigneController {
 
-    private static final Logger logger	= LogManager.getLogger(ConsigneController.class);
+    private static final Logger logger = LogManager.getLogger(ConsigneController.class);
 
     @Autowired
     AppliProperties appliProperties;

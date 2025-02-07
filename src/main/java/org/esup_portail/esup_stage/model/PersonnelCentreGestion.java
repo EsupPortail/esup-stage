@@ -1,8 +1,8 @@
 package org.esup_portail.esup_stage.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.List;
 

@@ -2,9 +2,8 @@ package org.esup_portail.esup_stage.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
-import org.esup_portail.esup_stage.dto.view.Views;
-
 import jakarta.persistence.*;
+import org.esup_portail.esup_stage.dto.view.Views;
 
 @Entity
 @Table(name = "FicheEvaluation")

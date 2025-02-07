@@ -4,12 +4,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class ApplicationClientInterruption {
-    public static SimpleDateFormat parseDateToJson = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     public static final int SSTYPE_NON_DEFINI = 0;
     public static final int SSTYPE_DB = 1;
     public static final int SSTYPE_PRECONDITION = 2;
     public static final int SSTYPE_AUTHORISATION = 3;
     public static final int SSTYPE_METIER = 4;
+    public static SimpleDateFormat parseDateToJson = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private Date dateInterruption;
     private int codeHttp;
     private String clientMessage;

@@ -14,13 +14,11 @@ import org.springframework.web.reactive.function.client.WebClient;
 @RestController
 public class WebhookController {
 
+    private final WebClient webClient;
     @Autowired
     WebhookService webhookService;
-
     @Autowired
     AppliProperties appliProperties;
-
-    private final WebClient webClient;
 
     public WebhookController(WebClient.Builder builder) {
         this.webClient = builder.build();

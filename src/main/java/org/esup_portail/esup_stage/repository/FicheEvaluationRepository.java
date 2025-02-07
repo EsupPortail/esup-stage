@@ -8,5 +8,7 @@ import jakarta.persistence.EntityManager;
 @Repository
 public class FicheEvaluationRepository extends PaginationRepository<FicheEvaluation> {
 
-    public FicheEvaluationRepository(EntityManager em) {super(em, FicheEvaluation.class, "fe");}
+    public FicheEvaluationRepository(EntityManager em) {
+        super(em, FicheEvaluation.class, "fe");
+    }
 }

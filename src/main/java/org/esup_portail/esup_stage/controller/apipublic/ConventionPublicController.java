@@ -42,7 +42,7 @@ public class ConventionPublicController {
             @ApiResponse(
                     responseCode = "404",
                     description = "Convention non trouvée",
-                    content = { @Content(mediaType = MediaType.TEXT_PLAIN_VALUE) }
+                    content = {@Content(mediaType = MediaType.TEXT_PLAIN_VALUE)}
             )
     })
     public MetadataDto getConventionMetadata(
@@ -62,7 +62,7 @@ public class ConventionPublicController {
             @ApiResponse(
                     responseCode = "404",
                     description = "Convention non trouvée",
-                    content = { @Content(mediaType = MediaType.TEXT_PLAIN_VALUE) }
+                    content = {@Content(mediaType = MediaType.TEXT_PLAIN_VALUE)}
             )
     })
     public ResponseEntity<byte[]> getConventionPdf(
@@ -90,7 +90,7 @@ public class ConventionPublicController {
             @ApiResponse(
                     responseCode = "404",
                     description = "Convention non trouvée",
-                    content = { @Content(mediaType = MediaType.TEXT_PLAIN_VALUE) }
+                    content = {@Content(mediaType = MediaType.TEXT_PLAIN_VALUE)}
             )
     })
     public PdfMetadataDto getConvention(
@@ -114,7 +114,7 @@ public class ConventionPublicController {
             @ApiResponse(
                     responseCode = "404",
                     description = "Convention non trouvée",
-                    content = { @Content(mediaType = MediaType.TEXT_PLAIN_VALUE) }
+                    content = {@Content(mediaType = MediaType.TEXT_PLAIN_VALUE)}
             )
     })
     public GenericResponse updateDates(
@@ -149,7 +149,7 @@ public class ConventionPublicController {
             @ApiResponse(
                     responseCode = "404",
                     description = "Convention non trouvée",
-                    content = { @Content(mediaType = MediaType.TEXT_PLAIN_VALUE) }
+                    content = {@Content(mediaType = MediaType.TEXT_PLAIN_VALUE)}
             )
     })
     public GenericResponse uploadPdf(

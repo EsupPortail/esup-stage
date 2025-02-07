@@ -29,7 +29,7 @@ public class EtudiantRef {
     private String libAde;
     private String codeSexe;
 
-    @JsonFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date dateNais;
 
     private String libelleCPAM;

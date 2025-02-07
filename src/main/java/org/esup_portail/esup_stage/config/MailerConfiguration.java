@@ -2,7 +2,6 @@ package org.esup_portail.esup_stage.config;
 
 import freemarker.template.TemplateExceptionHandler;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;

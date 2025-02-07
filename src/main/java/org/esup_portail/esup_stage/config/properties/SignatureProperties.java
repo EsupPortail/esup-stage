@@ -1,7 +1,6 @@
 package org.esup_portail.esup_stage.config.properties;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.esup_portail.esup_stage.config.properties.signature.DocaposteProperties;
 import org.esup_portail.esup_stage.config.properties.signature.EsupSignatureProperties;
 import org.esup_portail.esup_stage.config.properties.signature.WebhookProperties;
@@ -9,6 +8,7 @@ import org.esup_portail.esup_stage.enums.AppSignatureEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
+
 @Data
 @Configuration
 public class SignatureProperties {

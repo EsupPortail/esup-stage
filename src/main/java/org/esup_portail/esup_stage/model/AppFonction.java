@@ -1,8 +1,7 @@
 package org.esup_portail.esup_stage.model;
 
-import org.esup_portail.esup_stage.enums.AppFonctionEnum;
-
 import jakarta.persistence.*;
+import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 
 @Entity
 @Table(name = "AppFonction")

@@ -21,10 +21,10 @@ public class CustomErrorController implements ErrorController {
     @RequestMapping("/error")
     public String handleError(HttpServletRequest request, ModelMap model) {
         ConfigThemeDto configTheme = appConfigService.getConfigTheme();
-        if (configTheme.getFavicon()!=null) {
+        if (configTheme.getFavicon() != null) {
             model.addAttribute("favicon", "data:" + configTheme.getFavicon().getContentType() + ";base64," + configTheme.getFavicon().getBase64());
         }
-        if (configTheme.getLogo()!=null) {
+        if (configTheme.getLogo() != null) {
             model.addAttribute("logo", "data:" + configTheme.getLogo().getContentType() + ";base64," + configTheme.getLogo().getBase64());
         }
 

@@ -56,7 +56,8 @@ public class ConfigAlerteMailDto {
         private boolean verificationAdministrativeConvention;
         private boolean validationAvenant;
 
-        public Alerte() { }
+        public Alerte() {
+        }
 
         public Alerte(boolean creationConventionEtudiant,
                       boolean modificationConventionEtudiant,
@@ -69,8 +70,7 @@ public class ConfigAlerteMailDto {
                       boolean validationPedagogiqueConvention,
                       boolean validationAdministrativeConvention,
                       boolean verificationAdministrativeConvention,
-                      boolean validationAvenant)
-        {
+                      boolean validationAvenant) {
             this.creationConventionEtudiant = creationConventionEtudiant;
             this.modificationConventionEtudiant = modificationConventionEtudiant;
             this.creationConventionGestionnaire = creationConventionGestionnaire;

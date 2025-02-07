@@ -10,6 +10,8 @@ import java.util.List;
 
 public interface SignatureClient {
     void upload(Convention convention, Avenant avenant);
+
     List<Historique> getHistorique(String documentId, List<CentreGestionSignataire> signataires);
+
     InputStream download(String documentId);
 }

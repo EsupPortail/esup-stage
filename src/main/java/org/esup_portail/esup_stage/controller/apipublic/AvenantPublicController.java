@@ -42,7 +42,7 @@ public class AvenantPublicController {
             @ApiResponse(
                     responseCode = "404",
                     description = "Avenant non trouvé",
-                    content = { @Content(mediaType = MediaType.TEXT_PLAIN_VALUE) }
+                    content = {@Content(mediaType = MediaType.TEXT_PLAIN_VALUE)}
             )
     })
     public MetadataDto getAvenantMetadata(
@@ -62,7 +62,7 @@ public class AvenantPublicController {
             @ApiResponse(
                     responseCode = "404",
                     description = "Avenant non trouvé",
-                    content = { @Content(mediaType = MediaType.TEXT_PLAIN_VALUE) }
+                    content = {@Content(mediaType = MediaType.TEXT_PLAIN_VALUE)}
             )
     })
     public ResponseEntity<byte[]> getConventionPdf(
@@ -90,7 +90,7 @@ public class AvenantPublicController {
             @ApiResponse(
                     responseCode = "404",
                     description = "Avenant non trouvé",
-                    content = { @Content(mediaType = MediaType.TEXT_PLAIN_VALUE) }
+                    content = {@Content(mediaType = MediaType.TEXT_PLAIN_VALUE)}
             )
     })
     public PdfMetadataDto getAvenant(
@@ -114,7 +114,7 @@ public class AvenantPublicController {
             @ApiResponse(
                     responseCode = "404",
                     description = "Avenant non trouvé",
-                    content = { @Content(mediaType = MediaType.TEXT_PLAIN_VALUE) }
+                    content = {@Content(mediaType = MediaType.TEXT_PLAIN_VALUE)}
             )
     })
     public GenericResponse updateDates(
@@ -149,7 +149,7 @@ public class AvenantPublicController {
             @ApiResponse(
                     responseCode = "404",
                     description = "Avenant non trouvé",
-                    content = { @Content(mediaType = MediaType.TEXT_PLAIN_VALUE) }
+                    content = {@Content(mediaType = MediaType.TEXT_PLAIN_VALUE)}
             )
     })
     public GenericResponse uploadPdf(

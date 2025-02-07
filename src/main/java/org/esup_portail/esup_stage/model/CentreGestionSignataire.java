@@ -1,10 +1,9 @@
 package org.esup_portail.esup_stage.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
 import org.esup_portail.esup_stage.enums.SignataireEnum;
 import org.esup_portail.esup_stage.enums.TypeSignatureEnum;
-
-import jakarta.persistence.*;
 
 @Entity
 @Table(name = "CentreGestionSignataire")

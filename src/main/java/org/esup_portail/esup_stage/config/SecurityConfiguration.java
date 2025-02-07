@@ -31,11 +31,11 @@ import java.util.Collections;
 @Order(3)
 public class SecurityConfiguration {
 
-   @Autowired
-   AppliProperties appliProperties;
+    @Autowired
+    AppliProperties appliProperties;
 
-   @Autowired
-   CasProperties casProperties;
+    @Autowired
+    CasProperties casProperties;
 
     @Bean
     public ServiceProperties serviceProperties() {
@@ -56,9 +56,9 @@ public class SecurityConfiguration {
     @Bean
     public TicketValidator ticketValidator() {
 
-        if (casProperties.getResponseType()!=null && casProperties.getResponseType().equals("xml")) {
+        if (casProperties.getResponseType() != null && casProperties.getResponseType().equals("xml")) {
             return new Cas20ServiceTicketValidator(casProperties.getUrl().getService());
-        }else{
+        } else {
             return new Cas30JsonServiceTicketValidator(casProperties.getUrl().getService());
         }
 

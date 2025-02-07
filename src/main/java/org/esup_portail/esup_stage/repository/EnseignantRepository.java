@@ -8,5 +8,7 @@ import jakarta.persistence.EntityManager;
 @Repository
 public class EnseignantRepository extends PaginationRepository<Enseignant> {
 
-    public EnseignantRepository(EntityManager em) {super(em, Enseignant.class, "e");}
+    public EnseignantRepository(EntityManager em) {
+        super(em, Enseignant.class, "e");
+    }
 }

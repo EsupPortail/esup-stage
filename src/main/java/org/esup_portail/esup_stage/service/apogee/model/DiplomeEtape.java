@@ -23,16 +23,16 @@ public class DiplomeEtape {
         return versionDiplome;
     }
 
+    public void setVersionDiplome(String versionDiplome) {
+        this.versionDiplome = versionDiplome;
+    }
+
     public String getLibDiplome() {
         return libDiplome;
     }
 
     public void setLibDiplome(String libDiplome) {
         this.libDiplome = libDiplome;
-    }
-
-    public void setVersionDiplome(String versionDiplome) {
-        this.versionDiplome = versionDiplome;
     }
 
     public List<EtapeV2Apogee> getListeEtapes() {

@@ -8,5 +8,7 @@ import jakarta.persistence.EntityManager;
 @Repository
 public class AvenantRepository extends PaginationRepository<Avenant> {
 
-    public AvenantRepository(EntityManager em) {super(em, Avenant.class, "a");}
+    public AvenantRepository(EntityManager em) {
+        super(em, Avenant.class, "a");
+    }
 }

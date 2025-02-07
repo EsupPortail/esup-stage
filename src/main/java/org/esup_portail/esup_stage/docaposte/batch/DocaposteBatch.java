@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class DocaposteBatch {
 
-    private static final Logger logger	= LogManager.getLogger(DocaposteBatch.class);
+    private static final Logger logger = LogManager.getLogger(DocaposteBatch.class);
 
     @Autowired
     ConventionService conventionService;

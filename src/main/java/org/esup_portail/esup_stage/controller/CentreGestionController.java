@@ -30,8 +30,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
+
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -47,7 +49,7 @@ import java.util.stream.Collectors;
 @ApiController
 @RequestMapping("/centre-gestion")
 public class CentreGestionController {
-    private static final Logger logger	= LogManager.getLogger(CentreGestionController.class);
+    private static final Logger logger = LogManager.getLogger(CentreGestionController.class);
 
     @Autowired
     CentreGestionRepository centreGestionRepository;
@@ -107,7 +109,7 @@ public class CentreGestionController {
 
         if (predicate.equals("personnels")) {
             Utilisateur currentUser = ServiceContext.getUtilisateur();
-            List<CentreGestion> list =  paginatedResponse.getData();
+            List<CentreGestion> list = paginatedResponse.getData();
             Predicate<PersonnelCentreGestion> condition = value -> value.getUidPersonnel().equals(currentUser.getUid());
             list.sort((a, b) -> Boolean.compare(a.getPersonnels().stream().anyMatch(condition), b.getPersonnels().stream().anyMatch(condition)));
 

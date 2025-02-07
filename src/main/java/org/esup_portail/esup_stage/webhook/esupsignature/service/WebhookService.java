@@ -36,14 +36,23 @@ import java.util.stream.Collectors;
 @Service
 public class WebhookService {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebhookService.class);
-
+    private final WebClient webClient;
     @Autowired
     SignatureProperties signatureProperties;
 
-    private final WebClient webClient;
-
     public WebhookService(WebClient.Builder builder) {
         this.webClient = builder.build();
+    }
+
+    private static Resource geMultipartFile(String filename, byte[] bytes) {
+        try {
+            Path tmpFile = Files.createTempFile(filename, ".pdf");
+            Files.write(tmpFile, bytes);
+            return new FileSystemResource(tmpFile.toFile());
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
+        }
     }
 
     public String upload(PdfMetadataDto content) {
@@ -62,7 +71,7 @@ public class WebhookService {
             recipient.setEmail(s.getMail());
             recipient.setFirstName(s.getGivenname());
             recipient.setName(s.getName());
-//            recipient.setPhone(s.getPhone());
+            //            recipient.setPhone(s.getPhone());
             step.getRecipients().add(recipient);
         });
 
@@ -93,7 +102,7 @@ public class WebhookService {
         List<Historique> historiques = new ArrayList<>();
         if (response != null) {
             List<CentreGestionSignataire> signataires = convention.getCentreGestion().getSignataires();
-            for (int ordre = 1 ; ordre <= response.getAuditSteps().size() ; ++ordre) {
+            for (int ordre = 1; ordre <= response.getAuditSteps().size(); ++ordre) {
                 AuditStep step = response.getAuditSteps().get(ordre - 1);
                 int finalOrdre = ordre;
                 CentreGestionSignataire signataire = signataires.stream().filter(s -> s.getOrdre() == finalOrdre).findAny().orElse(null);
@@ -123,16 +132,5 @@ public class WebhookService {
                     }
                 })
                 .block();
-    }
-
-    private static Resource geMultipartFile(String filename, byte[] bytes) {
-        try {
-            Path tmpFile = Files.createTempFile(filename, ".pdf");
-            Files.write(tmpFile, bytes);
-            return new FileSystemResource(tmpFile.toFile());
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
-        }
     }
 }

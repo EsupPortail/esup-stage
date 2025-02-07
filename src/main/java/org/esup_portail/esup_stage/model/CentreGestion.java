@@ -3,9 +3,9 @@ package org.esup_portail.esup_stage.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
+import jakarta.persistence.*;
 import org.esup_portail.esup_stage.dto.view.Views;
 
-import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -135,7 +135,7 @@ public class CentreGestion extends ObjetMetier implements Exportable {
 
     @OneToMany(mappedBy = "centreGestion", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JsonManagedReference
-    private List<PersonnelCentreGestion> personnels =  new ArrayList<>();
+    private List<PersonnelCentreGestion> personnels = new ArrayList<>();
 
     @Column(nullable = false)
     private boolean validationCreation;
@@ -151,7 +151,7 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     private Consigne consigne;
 
     @JsonView(Views.List.class)
-    @OneToOne(mappedBy = "centreGestion", cascade = {CascadeType.MERGE, CascadeType.REMOVE, CascadeType.PERSIST},fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "centreGestion", cascade = {CascadeType.MERGE, CascadeType.REMOVE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
     private FicheEvaluation ficheEvaluation;
 
     @Column(length = 255)
@@ -541,9 +541,13 @@ public class CentreGestion extends ObjetMetier implements Exportable {
         return getVoie() + " " + getCodePostal() + " " + getCommune();
     }
 
-    public boolean isOnlyMailCentreGestion() {return onlyMailCentreGestion;}
+    public boolean isOnlyMailCentreGestion() {
+        return onlyMailCentreGestion;
+    }
 
-    public void setOnlyMailCentreGestion(boolean onlyMailCentreGestion) {this.onlyMailCentreGestion = onlyMailCentreGestion;}
+    public void setOnlyMailCentreGestion(boolean onlyMailCentreGestion) {
+        this.onlyMailCentreGestion = onlyMailCentreGestion;
+    }
 
     public boolean isEnvoiDocumentSigne() {
         return envoiDocumentSigne;

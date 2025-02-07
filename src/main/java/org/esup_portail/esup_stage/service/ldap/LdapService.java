@@ -22,17 +22,15 @@ public class LdapService {
     private static final Logger LOGGER = LoggerFactory.getLogger(LdapService.class);
 
     private final WebClient webClient;
+    @Autowired
+    private ReferentielProperties referentielProperties;
 
     public LdapService(WebClient.Builder builder) {
         this.webClient = builder.build();
     }
 
-    @Autowired
-    private ReferentielProperties referentielProperties;
-
-
     private String call(String api, String method, Object params) {
-        if(referentielProperties.getLogin()==null || referentielProperties.getPassword()==null){
+        if (referentielProperties.getLogin() == null || referentielProperties.getPassword() == null) {
             LOGGER.error("Erreur lors de l'appel au ws LDAP " + api + ": login ou mot de passe non renseigné");
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
         }
@@ -41,7 +39,7 @@ public class LdapService {
                 return webClient.get()
                         .uri(referentielProperties.getLdapUrl() + api, uri -> {
                             ((Map<String, String>) params).forEach(uri::queryParam);
-                             return uri.build();
+                            return uri.build();
                         })
                         .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((referentielProperties.getLogin() + ":" + referentielProperties.getPassword()).getBytes()))
                         .accept(MediaType.APPLICATION_JSON)
@@ -50,7 +48,7 @@ public class LdapService {
                         .block();
             } else {
                 return webClient.post()
-                        .uri(referentielProperties.getLdapUrl()+ api)
+                        .uri(referentielProperties.getLdapUrl() + api)
                         .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((referentielProperties.getLogin() + ":" + referentielProperties.getPassword()).getBytes()))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -80,7 +78,7 @@ public class LdapService {
     }
 
     public LdapUser searchByLogin(String login) {
-        if(login==null || login.isEmpty()){
+        if (login == null || login.isEmpty()) {
             LOGGER.error("Erreur lors de la recherche de l'utilisateur par login: login est null ou vide");
             return null;
         }

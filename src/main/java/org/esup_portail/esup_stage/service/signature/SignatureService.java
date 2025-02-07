@@ -4,7 +4,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.config.properties.SignatureProperties;
-import org.esup_portail.esup_stage.docaposte.DocaposteClient;
 import org.esup_portail.esup_stage.dto.IdsListDto;
 import org.esup_portail.esup_stage.dto.MetadataDto;
 import org.esup_portail.esup_stage.dto.MetadataSignataireDto;
@@ -41,27 +40,19 @@ import java.util.List;
 @Service
 public class SignatureService {
 
-    private static final Logger logger	= LogManager.getLogger(SignatureService.class);
-
+    private static final Logger logger = LogManager.getLogger(SignatureService.class);
+    private final WebClient webClient;
     @Autowired
     ConventionJpaRepository conventionJpaRepository;
-
     @Autowired
     AvenantJpaRepository avenantJpaRepository;
-
     @Autowired
     CentreGestionJpaRepository centreGestionJpaRepository;
-
     @Lazy
     @Autowired
     ConventionService conventionService;
-
     @Autowired
     ImpressionService impressionService;
-
-    @Autowired
-    private SignatureClient signatureClient;
-
     @Autowired
     WebhookService webhookService;
 
@@ -70,8 +61,8 @@ public class SignatureService {
 
     @Autowired
     AppliProperties appliProperties;
-
-    private final WebClient webClient;
+    @Autowired
+    private SignatureClient signatureClient;
 
     public SignatureService(WebClient.Builder builder) {
         this.webClient = builder.build();
@@ -209,10 +200,10 @@ public class SignatureService {
                             // Pour ESUP-Signature, on supprime l'ancien avant de renseigner le nouveau
                             if (appSignature == AppSignatureEnum.ESUPSIGNATURE) {
                                 webClient.delete()
-                                    .uri(signatureProperties.getEsupsignature().getUri() + "/signrequests/soft/" + previousDocumentId)
-                                    .retrieve()
-                                    .bodyToMono(String.class)
-                                    .block();
+                                        .uri(signatureProperties.getEsupsignature().getUri() + "/signrequests/soft/" + previousDocumentId)
+                                        .retrieve()
+                                        .bodyToMono(String.class)
+                                        .block();
                             }
                         }
                         if (isAvenant) {

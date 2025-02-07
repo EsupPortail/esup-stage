@@ -3,8 +3,6 @@ package org.esup_portail.esup_stage.config.properties;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
@@ -17,14 +15,14 @@ import java.util.stream.Stream;
 @NoArgsConstructor
 @ConfigurationProperties(prefix = "appli")
 public class AppliProperties {
-    private  DatasourceProperties datasource;
-    private  MailerProperties mailer;
-    private  String prefix;
-    private  String url;
-    private  String localapi;
-    private  String adminTechnique;
-    private  String dataDir;
-    private  List<String> publicTokens;
+    private DatasourceProperties datasource;
+    private MailerProperties mailer;
+    private String prefix;
+    private String url;
+    private String localapi;
+    private String adminTechnique;
+    private String dataDir;
+    private List<String> publicTokens;
 
     public Set<String> getAdminTechnique() {
         if (adminTechnique == null || adminTechnique.trim().isEmpty()) {
@@ -45,26 +43,28 @@ public class AppliProperties {
                 .flatMap(token -> Stream.of(token.split(";"))) // Divise les tokens par ";"
                 .toArray(String[]::new); // Retourne un tableau
     }
+
     @Data
     @NoArgsConstructor
     public static class DatasourceProperties {
-        private  String url;
-        private  String username;
-        private  String password;
-        private  String driver;
+        private String url;
+        private String username;
+        private String password;
+        private String driver;
     }
+
     @Data
     @NoArgsConstructor
     public static class MailerProperties {
-        private  String protocol;
-        private  String host;
-        private  boolean sslEnable;
-        private  int port;
-        private  boolean auth;
-        private  String username;
-        private  String password;
-        private  String from;
-        private  boolean disableDelivery;
-        private  String deliveryAddress;
+        private String protocol;
+        private String host;
+        private boolean sslEnable;
+        private int port;
+        private boolean auth;
+        private String username;
+        private String password;
+        private String from;
+        private boolean disableDelivery;
+        private String deliveryAddress;
     }
 }

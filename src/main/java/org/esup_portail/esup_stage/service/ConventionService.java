@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 @Service
 public class ConventionService {
 
-    private static final Logger logger	= LogManager.getLogger(ConventionService.class);
+    private static final Logger logger = LogManager.getLogger(ConventionService.class);
 
     @Autowired
     EtudiantJpaRepository etudiantJpaRepository;
@@ -433,8 +433,10 @@ public class ConventionService {
                 }
             }
         }
-        if (sendMailEtudiant) mailerService.sendAlerteValidation(convention.getEtudiant().getMail(), convention, avenant, utilisateurContext, templateMailCode);
-        if (sendMailEnseignant) mailerService.sendAlerteValidation(convention.getEnseignant().getMail(), convention, avenant, utilisateurContext, templateMailCode);
+        if (sendMailEtudiant)
+            mailerService.sendAlerteValidation(convention.getEtudiant().getMail(), convention, avenant, utilisateurContext, templateMailCode);
+        if (sendMailEnseignant)
+            mailerService.sendAlerteValidation(convention.getEnseignant().getMail(), convention, avenant, utilisateurContext, templateMailCode);
     }
 
 }

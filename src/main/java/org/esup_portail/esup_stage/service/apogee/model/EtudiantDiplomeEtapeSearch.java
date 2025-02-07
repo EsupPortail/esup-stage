@@ -1,7 +1,6 @@
 package org.esup_portail.esup_stage.service.apogee.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import jakarta.validation.constraints.NotNull;
 
 @JsonIgnoreProperties(ignoreUnknown = true)

@@ -47,7 +47,7 @@ public class ApplicationStartUp {
     @EventListener(ApplicationReadyEvent.class)
     public void createAdminTech() {
         Role roleAdmTech = roleJpaRepository.findOneByCode(Role.ADM);
-        for (String login : appliProperties.getAdminTechnique()){
+        for (String login : appliProperties.getAdminTechnique()) {
             Utilisateur utilisateur = utilisateurRepository.findOneByLogin(login);
             if (utilisateur == null) {
                 logger.info("Création utilisateur ADM_TECH " + login);

@@ -30,7 +30,7 @@ import java.util.Date;
 
 @Service
 public class AppConfigService {
-    private static final Logger logger	= LogManager.getLogger(AppConfigService.class);
+    private static final Logger logger = LogManager.getLogger(AppConfigService.class);
 
     @Autowired
     private AppConfigJpaRepository appConfigJpaRepository;
@@ -113,17 +113,16 @@ public class AppConfigService {
         FileWriter file = new FileWriter(ApplicationStartUp.class.getClassLoader().getResource("static/theme.css").getPath());
         try {
             ConfigThemeDto configThemeDto = getConfigTheme();
-            StringBuilder sb = new StringBuilder();
-            sb.append(":root {\n");
-            sb.append("  --fontFamily: ").append(configThemeDto.getFontFamily()).append(";\n");
-            sb.append("  --fontSize: ").append(configThemeDto.getFontSize()).append(";\n");
-            sb.append("  --primaryColor: ").append(configThemeDto.getPrimaryColor()).append(";\n");
-            sb.append("  --secondaryColor: ").append(configThemeDto.getSecondaryColor()).append(";\n");
-            sb.append("  --dangerColor: ").append(configThemeDto.getDangerColor()).append(";\n");
-            sb.append("  --warningColor: ").append(configThemeDto.getWarningColor()).append(";\n");
-            sb.append("  --successColor: ").append(configThemeDto.getSuccessColor()).append(";\n");
-            sb.append("}");
-            file.write(sb.toString());
+            String sb = ":root {\n" +
+                    "  --fontFamily: " + configThemeDto.getFontFamily() + ";\n" +
+                    "  --fontSize: " + configThemeDto.getFontSize() + ";\n" +
+                    "  --primaryColor: " + configThemeDto.getPrimaryColor() + ";\n" +
+                    "  --secondaryColor: " + configThemeDto.getSecondaryColor() + ";\n" +
+                    "  --dangerColor: " + configThemeDto.getDangerColor() + ";\n" +
+                    "  --warningColor: " + configThemeDto.getWarningColor() + ";\n" +
+                    "  --successColor: " + configThemeDto.getSuccessColor() + ";\n" +
+                    "}";
+            file.write(sb);
 
             writeImageIntoFile(configThemeDto);
         } finally {

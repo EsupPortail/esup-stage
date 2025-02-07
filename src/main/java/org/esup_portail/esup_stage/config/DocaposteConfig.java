@@ -4,15 +4,15 @@ import groovy.util.logging.Slf4j;
 import org.esup_portail.esup_stage.config.properties.SignatureProperties;
 import org.esup_portail.esup_stage.docaposte.DocaposteClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 
 @Configuration
 @Slf4j
-@ConditionalOnProperty(prefix="docaposte",name = "uri")
+@ConditionalOnProperty(prefix = "docaposte", name = "uri")
 public class DocaposteConfig {
 
     @Autowired

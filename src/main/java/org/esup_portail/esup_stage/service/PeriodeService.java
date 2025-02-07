@@ -9,8 +9,9 @@ public class PeriodeService {
 
     /**
      * Calcul de la période en temps ouvré à partir d'un nombre d'heures par semaine et total
+     *
      * @param nbHeuresHebdo le nombre d'heures par semaine
-     * @param nbHeures le nombre d'heures au total
+     * @param nbHeures      le nombre d'heures au total
      * @return Retourne sous forme "X mois Y jour(s) et Z heure(s)" en temps ouvré : 1 mois = 22 jours, 1 semaine = 5 jours
      */
     public static String calculPeriodeOuvree(float nbHeuresHebdo, float nbHeures) {

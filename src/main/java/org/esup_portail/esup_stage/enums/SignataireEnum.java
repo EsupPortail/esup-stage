@@ -5,5 +5,5 @@ public enum SignataireEnum {
     enseignant,
     tuteur,
     signataire,
-    viseur;
+    viseur
 }

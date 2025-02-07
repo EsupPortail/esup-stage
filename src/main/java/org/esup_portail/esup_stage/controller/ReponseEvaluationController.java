@@ -23,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+
 import java.io.ByteArrayOutputStream;
 import java.util.Date;
 
@@ -61,7 +62,7 @@ public class ReponseEvaluationController {
     }
 
     @PostMapping("/{id}/etudiant/valid/{valid}")
-    public ReponseEvaluation createReponseEtudiant(@PathVariable("id") int id,@PathVariable("valid") boolean valid, @Valid @RequestBody ReponseEtudiantFormDto reponseEtudiantFormDto) {
+    public ReponseEvaluation createReponseEtudiant(@PathVariable("id") int id, @PathVariable("valid") boolean valid, @Valid @RequestBody ReponseEtudiantFormDto reponseEtudiantFormDto) {
         ReponseEvaluation reponseEvaluation = initReponseEvaluation(id);
         reponseEvaluation.setValidationEtudiant(valid);
         setReponseEvaluationEtudiantData(reponseEvaluation, reponseEtudiantFormDto);
@@ -69,7 +70,7 @@ public class ReponseEvaluationController {
     }
 
     @PutMapping("/{id}/etudiant/valid/{valid}")
-    public ReponseEvaluation updateReponseEtudiant(@PathVariable("id") int id,@PathVariable("valid") boolean valid, @Valid @RequestBody ReponseEtudiantFormDto reponseEtudiantFormDto) {
+    public ReponseEvaluation updateReponseEtudiant(@PathVariable("id") int id, @PathVariable("valid") boolean valid, @Valid @RequestBody ReponseEtudiantFormDto reponseEtudiantFormDto) {
         ReponseEvaluation reponseEvaluation = reponseEvaluationJpaRepository.findByConvention(id);
         if (reponseEvaluation == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "ReponseEvaluation non trouvé");
@@ -80,7 +81,7 @@ public class ReponseEvaluationController {
     }
 
     @PostMapping("/{id}/enseignant/valid/{valid}")
-    public ReponseEvaluation createReponseEnseignant(@PathVariable("id") int id,@PathVariable("valid") boolean valid, @Valid @RequestBody ReponseEnseignantFormDto reponseEnseignantFormDto) {
+    public ReponseEvaluation createReponseEnseignant(@PathVariable("id") int id, @PathVariable("valid") boolean valid, @Valid @RequestBody ReponseEnseignantFormDto reponseEnseignantFormDto) {
         ReponseEvaluation reponseEvaluation = initReponseEvaluation(id);
         reponseEvaluation.setValidationEnseignant(valid);
         setReponseEvaluationEnseignantData(reponseEvaluation, reponseEnseignantFormDto);
@@ -88,7 +89,7 @@ public class ReponseEvaluationController {
     }
 
     @PutMapping("/{id}/enseignant/valid/{valid}")
-    public ReponseEvaluation updateReponseEnseignant(@PathVariable("id") int id,@PathVariable("valid") boolean valid, @Valid @RequestBody ReponseEnseignantFormDto reponseEnseignantFormDto) {
+    public ReponseEvaluation updateReponseEnseignant(@PathVariable("id") int id, @PathVariable("valid") boolean valid, @Valid @RequestBody ReponseEnseignantFormDto reponseEnseignantFormDto) {
         ReponseEvaluation reponseEvaluation = reponseEvaluationJpaRepository.findByConvention(id);
         if (reponseEvaluation == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "ReponseEvaluation non trouvé");
@@ -99,7 +100,7 @@ public class ReponseEvaluationController {
     }
 
     @PostMapping("/{id}/entreprise/valid/{valid}")
-    public ReponseEvaluation createReponseEntreprise(@PathVariable("id") int id,@PathVariable("valid") boolean valid, @Valid @RequestBody ReponseEntrepriseFormDto reponseEntrepriseFormDto) {
+    public ReponseEvaluation createReponseEntreprise(@PathVariable("id") int id, @PathVariable("valid") boolean valid, @Valid @RequestBody ReponseEntrepriseFormDto reponseEntrepriseFormDto) {
         ReponseEvaluation reponseEvaluation = initReponseEvaluation(id);
         reponseEvaluation.setValidationEntreprise(valid);
         setReponseEvaluationEntrepriseData(reponseEvaluation, reponseEntrepriseFormDto);
@@ -107,7 +108,7 @@ public class ReponseEvaluationController {
     }
 
     @PutMapping("/{id}/entreprise/valid/{valid}")
-    public ReponseEvaluation updateReponseEntreprise(@PathVariable("id") int id,@PathVariable("valid") boolean valid, @Valid @RequestBody ReponseEntrepriseFormDto reponseEntrepriseFormDto) {
+    public ReponseEvaluation updateReponseEntreprise(@PathVariable("id") int id, @PathVariable("valid") boolean valid, @Valid @RequestBody ReponseEntrepriseFormDto reponseEntrepriseFormDto) {
         ReponseEvaluation reponseEvaluation = reponseEvaluationJpaRepository.findByConvention(id);
         if (reponseEvaluation == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "ReponseEvaluation non trouvé");
@@ -116,24 +117,25 @@ public class ReponseEvaluationController {
         setReponseEvaluationEntrepriseData(reponseEvaluation, reponseEntrepriseFormDto);
         return reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
     }
+
     @PostMapping("/{id}/getFichePDF/typeFiche/{typeFiche}")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
-    public ResponseEntity<byte[]> getFichePDF(@PathVariable("id") int id,@PathVariable("typeFiche") int typeFiche,@RequestBody String htmlTexte) {
+    public ResponseEntity<byte[]> getFichePDF(@PathVariable("id") int id, @PathVariable("typeFiche") int typeFiche, @RequestBody String htmlTexte) {
         ReponseEvaluation reponseEvaluation = reponseEvaluationJpaRepository.findByConvention(id);
         if (reponseEvaluation == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "ReponseEvaluation non trouvé");
         }
         ByteArrayOutputStream ou = new ByteArrayOutputStream();
 
-        if(typeFiche == 0) {
+        if (typeFiche == 0) {
             impressionService.generateFichePDF(htmlTexte, ou);
             reponseEvaluation.setImpressionEtudiant(true);
         }
-        if(typeFiche == 1) {
+        if (typeFiche == 1) {
             impressionService.generateFichePDF(htmlTexte, ou);
             reponseEvaluation.setImpressionEnseignant(true);
         }
-        if(typeFiche == 2) {
+        if (typeFiche == 2) {
             impressionService.generateFichePDF(htmlTexte, ou);
             reponseEvaluation.setImpressionEntreprise(true);
         }
@@ -145,7 +147,7 @@ public class ReponseEvaluationController {
 
     @GetMapping("/{id}/sendMailEvaluation/typeFiche/{typeFiche}")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.MODIFICATION})
-    public void sendMailEvaluation(@PathVariable("id") int id,@PathVariable("typeFiche") int typeFiche) {
+    public void sendMailEvaluation(@PathVariable("id") int id, @PathVariable("typeFiche") int typeFiche) {
         Convention convention = conventionJpaRepository.findById(id);
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
@@ -153,13 +155,13 @@ public class ReponseEvaluationController {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
 
         String mailEtudiant = convention.getCourrielPersoEtudiant();
-        if(mailEtudiant == null || !appConfigService.getConfigGenerale().isUtiliserMailPersoEtudiant())
+        if (mailEtudiant == null || !appConfigService.getConfigGenerale().isUtiliserMailPersoEtudiant())
             mailEtudiant = convention.getEtudiant().getMail();
 
         String template = "";
-        if(typeFiche == 0) {
+        if (typeFiche == 0) {
             template = TemplateMail.CODE_FICHE_EVAL_ETU;
-            if(convention.getEnvoiMailEtudiant() != null && convention.getEnvoiMailEtudiant())
+            if (convention.getEnvoiMailEtudiant() != null && convention.getEnvoiMailEtudiant())
                 template = TemplateMail.CODE_RAPPEL_FICHE_EVAL_ETU;
             if (convention.getCentreGestion().isOnlyMailCentreGestion()) {
                 mailerService.sendAlerteValidation(convention.getCentreGestion().getMail(), convention, null, utilisateur, template);
@@ -168,9 +170,9 @@ public class ReponseEvaluationController {
                 convention.setEnvoiMailEtudiant(true);
                 convention.setDateEnvoiMailEtudiant(new Date());
             }
-        }else if(typeFiche == 1){
+        } else if (typeFiche == 1) {
             template = TemplateMail.CODE_FICHE_EVAL_ENSEIGNANT;
-            if(convention.getEnvoiMailTuteurPedago() != null && convention.getEnvoiMailTuteurPedago())
+            if (convention.getEnvoiMailTuteurPedago() != null && convention.getEnvoiMailTuteurPedago())
                 template = TemplateMail.CODE_RAPPEL_FICHE_EVAL_ENSEIGNANT;
             if (convention.getCentreGestion().isOnlyMailCentreGestion()) {
                 mailerService.sendAlerteValidation(convention.getCentreGestion().getMail(), convention, null, utilisateur, template);
@@ -179,9 +181,9 @@ public class ReponseEvaluationController {
                 convention.setEnvoiMailTuteurPedago(true);
                 convention.setDateEnvoiMailTuteurPedago(new Date());
             }
-        }else if(typeFiche == 2){
+        } else if (typeFiche == 2) {
             template = TemplateMail.CODE_FICHE_EVAL_TUTEUR;
-            if(convention.getEnvoiMailTuteurPro() != null && convention.getEnvoiMailTuteurPro())
+            if (convention.getEnvoiMailTuteurPro() != null && convention.getEnvoiMailTuteurPro())
                 template = TemplateMail.CODE_RAPPEL_FICHE_EVAL_TUTEUR;
             mailerService.sendAlerteValidation(convention.getContact().getMail(), convention, null, utilisateur, template);
             if (convention.getCentreGestion().isOnlyMailCentreGestion()) {
@@ -207,19 +209,19 @@ public class ReponseEvaluationController {
 
     @GetMapping("/{idConvention}/reponseSupplementaire/{idQestion}")
     public ReponseSupplementaire getReponseSupplementaire(@PathVariable("idConvention") int idConvention, @PathVariable("idQestion") int idQestion) {
-        return reponseSupplementaireJpaRepository.findByQuestionAndConvention(idConvention,idQestion);
+        return reponseSupplementaireJpaRepository.findByQuestionAndConvention(idConvention, idQestion);
     }
 
     @PostMapping("/{idConvention}/reponseSupplementaire/{idQestion}")
     public ReponseSupplementaire createReponseSupplementaire(@PathVariable("idConvention") int idConvention, @PathVariable("idQestion") int idQestion, @Valid @RequestBody ReponseSupplementaireFormDto reponseSupplementaireFormDto) {
-        ReponseSupplementaire reponseSupplementaire = initReponseSupplementaire(idConvention,idQestion);
+        ReponseSupplementaire reponseSupplementaire = initReponseSupplementaire(idConvention, idQestion);
         setReponseSupplementaireData(reponseSupplementaire, reponseSupplementaireFormDto);
         return reponseSupplementaireJpaRepository.saveAndFlush(reponseSupplementaire);
     }
 
     @PutMapping("/{idConvention}/reponseSupplementaire/{idQestion}")
     public ReponseSupplementaire updateReponseSupplementaire(@PathVariable("idConvention") int idConvention, @PathVariable("idQestion") int idQestion, @Valid @RequestBody ReponseSupplementaireFormDto reponseSupplementaireFormDto) {
-        ReponseSupplementaire reponseSupplementaire = reponseSupplementaireJpaRepository.findByQuestionAndConvention(idConvention,idQestion);
+        ReponseSupplementaire reponseSupplementaire = reponseSupplementaireJpaRepository.findByQuestionAndConvention(idConvention, idQestion);
         if (reponseSupplementaire == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "ReponseSupplementaire non trouvé");
         }
@@ -251,7 +253,8 @@ public class ReponseEvaluationController {
 
         return reponseEvaluation;
     }
-    private ReponseSupplementaire initReponseSupplementaire(int idConvention,int idQestion) {
+
+    private ReponseSupplementaire initReponseSupplementaire(int idConvention, int idQestion) {
 
         Convention convention = conventionJpaRepository.findById(idConvention);
         if (convention == null) {
@@ -395,6 +398,7 @@ public class ReponseEvaluationController {
         reponseEvaluation.setReponseEnt18bis(reponseEntrepriseFormDto.getReponseEnt18bis());
         reponseEvaluation.setReponseEnt19(reponseEntrepriseFormDto.getReponseEnt19());
     }
+
     private void setReponseSupplementaireData(ReponseSupplementaire reponseSupplementaire, ReponseSupplementaireFormDto reponseSupplementaireFormDto) {
         reponseSupplementaire.setReponseTxt(reponseSupplementaireFormDto.getReponseTxt());
         reponseSupplementaire.setReponseBool(reponseSupplementaireFormDto.getReponseBool());

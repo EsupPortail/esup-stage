@@ -40,25 +40,20 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-@ConditionalOnProperty(prefix="docaposte",name = "uri")
+@ConditionalOnProperty(prefix = "docaposte", name = "uri")
 public class DocaposteClient extends WebServiceGatewaySupport {
 
+    private static final Logger logger = LogManager.getLogger(DocaposteClient.class);
     @Autowired
     private SignatureProperties signatureProperties;
-
     @Autowired
     private AppliProperties appliProperties;
-
     @Autowired
     private ImpressionService impressionService;
-
     @Autowired
     private ConventionJpaRepository conventionJpaRepository;
-
     @Autowired
     private AvenantJpaRepository avenantJpaRepository;
-
-    private static final Logger logger	= LogManager.getLogger(DocaposteClient.class);
 
     public DocaposteClient(SignatureProperties signatureProperties) {
         this.signatureProperties = signatureProperties;
@@ -161,7 +156,7 @@ public class DocaposteClient extends WebServiceGatewaySupport {
                 receiver = convention.getSignataire().getMail();
             }
             if (appliProperties.getMailer().getDeliveryAddress() != null && !appliProperties.getMailer().getDeliveryAddress().isEmpty()) {
-                String originalReceiver = receiver + "";
+                String originalReceiver = receiver;
                 receiver = appliProperties.getMailer().getDeliveryAddress();
                 logger.info("Email destinataire " + originalReceiver + " redirigé vers " + receiver);
             }

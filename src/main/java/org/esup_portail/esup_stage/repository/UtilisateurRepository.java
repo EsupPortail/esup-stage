@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,7 +39,7 @@ public class UtilisateurRepository extends PaginationRepository<Utilisateur> {
         if (key.equals("roles")) {
             List<Object> values = new ArrayList<>();
             JSONArray jsonArray = parameter.getJSONArray("value");
-            for (int j = 0 ; j < jsonArray.length(); ++j) {
+            for (int j = 0; j < jsonArray.length(); ++j) {
                 values.add(jsonArray.get(j));
             }
             query.setParameter(key.replace(".", ""), values);

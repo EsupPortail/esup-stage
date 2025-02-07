@@ -1,10 +1,10 @@
 package org.esup_portail.esup_stage.dto;
 
-import org.esup_portail.esup_stage.service.apogee.model.EtudiantDiplomeEtapeResponse;
-
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.esup_portail.esup_stage.service.apogee.model.EtudiantDiplomeEtapeResponse;
+
 import java.util.ArrayList;
 import java.util.List;
 
