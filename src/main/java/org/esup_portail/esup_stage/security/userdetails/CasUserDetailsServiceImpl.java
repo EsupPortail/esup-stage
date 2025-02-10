@@ -47,10 +47,6 @@ public class CasUserDetailsServiceImpl implements AuthenticationUserDetailsServi
 
     @Override
     public UserDetails loadUserDetails(CasAssertionAuthenticationToken authentication) throws UsernameNotFoundException {
-<<<<<<< HEAD
-=======
-        AttributePrincipal principal = authentication.getAssertion().getPrincipal();
->>>>>>> feature/dockerisation
         String username = authentication.getName();
 
         // Recherche de l'utilisateur

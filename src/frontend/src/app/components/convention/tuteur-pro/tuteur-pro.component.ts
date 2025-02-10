@@ -57,11 +57,7 @@ export class TuteurProComponent implements OnInit, OnChanges {
       prenom: [null, [Validators.required, Validators.maxLength(50)]],
       idCivilite: [null, []],
       fonction: [null, [Validators.maxLength(100)]],
-<<<<<<< HEAD
       tel: [null, [Validators.required, Validators.pattern(/^(?:(?:\+|00)\d{1,4}[-.\s]?|0)\d{1,4}([-.\s]?\d{1,4})*$/), Validators.maxLength(50)]],
-=======
-      tel: [null, [Validators.required, Validators.maxLength(50)]],
->>>>>>> feature/dockerisation
       mail: [null, [Validators.required, Validators.pattern(REGEX.EMAIL), Validators.maxLength(255)]],
       fax: [null, [Validators.maxLength(50)]],
     });

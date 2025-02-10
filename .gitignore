@@ -10,6 +10,8 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+application.properties
+etc/estage/application.properties
 
 ### HTTP files ###
 *rest.http
