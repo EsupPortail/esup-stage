@@ -19,6 +19,7 @@ import * as FileSaver from "file-saver";
 import { ActivatedRoute, Router } from "@angular/router";
 import { TitleService } from 'src/app/services/title.service';
 import { DomSanitizer } from '@angular/platform-browser';
+import {REGEX} from "../../../utils/regex.utils";
 
 @Component({
   selector: 'app-convention-etudiant',
@@ -109,7 +110,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
         paysEtudiant: [this.convention.paysEtudiant, [Validators.required]],
         telEtudiant: [this.convention.telEtudiant, []],
         telPortableEtudiant: [this.convention.telPortableEtudiant, []],
-        courrielPersoEtudiant: [this.convention.courrielPersoEtudiant, [Validators.required, Validators.pattern('[^@ ]+@[^@. ]+\\.[^@ ]+'), Validators.maxLength(255)]],
+        courrielPersoEtudiant: [this.convention.courrielPersoEtudiant, [Validators.required, Validators.pattern(REGEX.EMAIL), Validators.maxLength(255)]],
         regionCPAM: [this.convention.regionCPAM, []],
         libelleCPAM: [this.convention.libelleCPAM, []],
         adresseCPAM: [this.convention.adresseCPAM, []],

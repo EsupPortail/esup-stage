@@ -12,6 +12,7 @@ import { Droit } from "../../../constants/droit";
 import { AuthService } from "../../../services/auth.service";
 import { ConfigService } from "../../../services/config.service";
 import { ServiceAccueilFormComponent } from '../../gestion-etab-accueil/service-accueil-form/service-accueil-form.component';
+import {REGEX} from "../../../utils/regex.utils";
 
 @Component({
   selector: 'app-signataire',
@@ -60,7 +61,7 @@ export class SignataireComponent implements OnInit, OnChanges {
       idCivilite: [null, []],
       fonction: [null, [Validators.required, Validators.maxLength(100)]],
       tel: [null, [Validators.required, Validators.maxLength(50)]],
-      mail: [null, [Validators.required, Validators.pattern('[^@ ]+@[^@. ]+\\.[^@ ]+'), Validators.maxLength(255)]],
+      mail: [null, [Validators.required, Validators.pattern(REGEX.EMAIL), Validators.maxLength(255)]],
       fax: [null, [Validators.maxLength(50)]],
     });
   }
