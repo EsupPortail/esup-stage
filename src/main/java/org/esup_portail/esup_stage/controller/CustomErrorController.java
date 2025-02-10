@@ -21,8 +21,14 @@ public class CustomErrorController implements ErrorController {
     @RequestMapping("/error")
     public String handleError(HttpServletRequest request, ModelMap model) {
         ConfigThemeDto configTheme = appConfigService.getConfigTheme();
-        model.addAttribute("favicon", "data:" + configTheme.getFavicon().getContentType() + ";base64," + configTheme.getFavicon().getBase64());
-        model.addAttribute("logo", "data:" + configTheme.getLogo().getContentType() + ";base64," + configTheme.getLogo().getBase64());
+        if (configTheme != null) {
+            if (configTheme.getFavicon() != null) {
+                model.addAttribute("favicon", "data:" + configTheme.getFavicon().getContentType() + ";base64," + configTheme.getFavicon().getBase64());
+            }
+            if (configTheme.getLogo() != null) {
+                model.addAttribute("logo", "data:" + configTheme.getLogo().getContentType() + ";base64," + configTheme.getLogo().getBase64());
+            }
+        }
 
         Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
         if (status != null) {

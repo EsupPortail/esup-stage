@@ -1,0 +1,175 @@
+= Prérequis
+:sectnums: 
+
+_Avant de lancer les installations, il est nécessaire de mettre en place un "écosystème" permettant de compiler, déployer et exécuter nos applications._
+
+== Git
+
+Sur RHEL 8 / CentOS 8
+
+[source,shell]
+----
+yum install git
+----
+
+Sur Ubuntu 20.04 / Debian
+
+[source,shell]
+----
+apt-get install git
+----
+
+== Java
+
+Version de java minimale : Java OpenJdk 11 (seul cette version a été testé pour ESUP Stage)
+
+=== Installation java OpenJdk 11
+
+*Sous RHEL 8 / CentOS 8*
+
+[source,shell]
+----
+sudo yum -y install  java-11-openjdk java-11-openjdk-devel
+----
+
+Vérification de l'installation
+
+[,console]
+----
+$ java -version
+openjdk version "11.0.12" 2021-07-20 LTS
+OpenJDK Runtime Environment 18.9 (build 11.0.12+7-LTS)
+OpenJDK 64-Bit Server VM 18.9 (build 11.0.12+7-LTS, mixed mode, sharing)
+
+$ which java
+/usr/bin/java
+----
+
+Définir les variables d'environnement Java
+
+[source,shell]
+----
+sudo tee /etc/profile.d/java11.sh <<EOF
+export JAVA_HOME=\$(dirname \$(dirname \$(readlink \$(readlink \$(which javac)))))
+export PATH=\$PATH:\$JAVA_HOME/bin
+export CLASSPATH=.:\$JAVA_HOME/jre/lib:\$JAVA_HOME/lib:\$JAVA_HOME/lib/tools.jar
+EOF
+----
+
+Appliquer cette commande pour charger vos variables et commencer à utiliser Java
+
+[source,shell]
+----
+source /etc/profile.d/java11.sh
+----
+
+*Sous Debian / Ubuntu*
+
+[source,shell]
+----
+sudo apt update
+sudo apt install openjdk-11-jdk
+----
+
+Vous pouvez vérifier l'installation :
+
+[source,shell]
+----
+java -version
+----
+
+Cela devrait donner ceci :
+
+`openjdk version "11.0.7" 2020-04-14` +
+`OpenJDK Runtime Environment (build 11.0.7+10-post-Ubuntu-3ubuntu1)` +
+`OpenJDK 64-Bit Server VM (build 11.0.7+10-post-Ubuntu-3ubuntu1, mixed mode, sharing)`
+
+Remarque : pour changer la version par défaut (en cas de version multiple)
+
+[source,shell]
+----
+sudo update-alternatives --config java
+----
+
+== Apache Maven
+
+=== Installation
+
+Téléchargez Apache Maven depuis son site officiel ou utilisez la commande suivante pour télécharger Apache Maven 3.6.3.
+
+[source,shell]
+----
+cd /opt wget https://www-eu.apache.org/dist/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz
+----
+
+Extraire maintenant l'archive téléchargée à l'aide de la commande suivante :
+
+[source,shell]
+----
+sudo tar xzf apache-maven-3.6.3-bin.tar.gz sudo ln -s apache-maven-3.6.3 maven
+----
+
+=== Configuration des variables d'environnement
+
+Définissez maintenant les variables d'environnement en créant un nouveau fichier /etc/profile.d/maven.sh
+
+[source,shell]
+----
+sudo vi /etc/profile.d/maven.sh
+----
+
+et ajoutez le contenu suivant :
+
+[source,shell]
+----
+export M2_HOME=/opt/maven export PATH=${M2_HOME}/bin:${PATH}
+----
+
+Chargez maintenant les variables d'environnement dans le shell actuel à l'aide de la commande suivante :
+
+[source,shell]
+----
+sudo chmod +x /etc/profile.d/maven.sh
+source /etc/profile.d/maven.sh
+----
+
+=== Vérifier la version de Maven
+
+Apache Maven a été configuré avec succès sur votre système. Utilisez la commande suivante pour vérifier la version de Maven installé sur votre système.
+
+[source,shell]
+----
+mvn -version
+----
+
+`Apache Maven 3.6.3 (cecedd343002696d0abb50b32b541b8a6ba2883f) Maven home: /opt/maven Java version: 11.0.6, vendor: Oracle Corporation, runtime: /usr/lib/jvm/java-11-openjdk-11.0.6.10-0.el8_1.x86_64 Default locale: en_US, platform encoding: UTF-8 OS name: "linux", version: "4.18.0-147.3.1.el8_1.x86_64", arch: "amd64", family: "unix"`
+
+Enfin, supprimez le fichier d'archive téléchargé du système pour libérer de l'espace disque.
+
+[source,shell]
+----
+rm -f apache-maven-3.6.2-bin.tar.gz
+----
+
+== Installation Mariadb
+
+L'installation et la sécurisation de votre base de donnée ne sont pas décrites dans cette documentation.
+
+La création de la base et d'un utilisateur sont décrit dans la partie xref:ESUP-STAGE.adoc#la-base-de-donnees[La base de données]
+
+== Installation du projet Esup-SIscol
+
+ESUP Stage dépend de ce module pour interroger le SI de scolarité (Apogée) et l'annuaire LDAP
+
+* Le projet est hébergé ici : https://github.com/EsupPortail/esup-siscol
+* La procédure d'installation xref:ESUP-SISCOL.adoc[ESUP-SISCOL]
+
+Après installation, vous avez 2 URLs qui seront utilisés dans le fichier de configuration d'ESUP-STAGE :
+
+[source,properties]
+----
+# url du service LDAP
+referentiel.ws.ldap_url=https://referentiel.monuniv.fr/ldap
+# url du service Apogée
+referentiel.ws.apogee_url=https://referentiel.monuniv.fr/apogee
+----

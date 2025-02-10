@@ -16,6 +16,7 @@ import { ConfigService } from "../../../../services/config.service";
 import { ConsigneService } from "../../../../services/consigne.service";
 import * as FileSaver from "file-saver";
 import { Router } from "@angular/router";
+import {REGEX} from "../../../../utils/regex.utils";
 import { MatDialog, MatDialogRef,MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
@@ -85,7 +86,7 @@ export class CadreStageModalComponent implements OnInit {
         paysEtudiant: [this.convention.paysEtudiant, [Validators.required]],
         telEtudiant: [this.convention.telEtudiant, []],
         telPortableEtudiant: [this.convention.telPortableEtudiant, []],
-        courrielPersoEtudiant: [this.convention.courrielPersoEtudiant, [Validators.required, Validators.pattern('[^@ ]+@[^@. ]+\\.[^@ ]+'), Validators.maxLength(255)]],
+        courrielPersoEtudiant: [this.convention.courrielPersoEtudiant, [Validators.required, Validators.pattern(REGEX.EMAIL), Validators.maxLength(255)]],
         regionCPAM: [this.convention.regionCPAM, []],
         libelleCPAM: [this.convention.libelleCPAM, []],
         adresseCPAM: [this.convention.adresseCPAM, []],

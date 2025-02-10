@@ -1,0 +1,137 @@
+= Vocabulaire du domaine de Esup-Stage
+:author: Université Lorraine
+:imagesdir: ../images/
+:reftext: Vocabulaire
+:navtitle: Vocabulaire
+
+== Établissement
+Organisme d'enseignement ou formation
+qui gère administrativement les stages dans l'application Esup-Stage.
+
+== Stage
+est effectué par un étudiant dans un établissement d’accueil pour une durée
+limitée.
+
+TIP: Dans l'application,
+c'est la convention qui articule la gestion administrative du stage.
+
+== Convention (de stage)
+description administrative d'un stage qui définit les responsabilités des
+différentes parties, en général adossé à un document écrit contractuel.
+Les données saisies pour la convention sont utilisées
+pour le suivi administratif du stage.
+
+TIP: Est liée à un centre de gestion via les critères du centre de gestion.
+
+=== Validation
+* S’il s’agit d’une convention saisie par l’étudiant, la convention est validée
+selon le paramétrage effectué au niveau du centre de gestion.
+* S’il s’agit d’une
+convention issue d’une création en masse par le gestionnaire, elle est déjà validée.
+Suivant le paramétrage défini dans centre de gestion : #TODO: À PRÉCISER MIEUX s.v.p.#
+
+==== Validation pédagogique
+#TODO: À DÉFINIR#
+
+==== Validation administrative
+#TODO: À DÉFINIR#
+
+=== PDF Convention
+document écrit dématérialisé de la convention de stage (a
+vocation à être signé).
+
+TIP: il est définitif une fois signé.
+
+==== Signature de la Convention
+#TODO: À DÉFINIR#
+
+=== Type de convention
+#TODO: À DÉFINIR#
+
+=== Avenant
+#TODO: À DÉFINIR#
+
+==== Validation de l'avenant
+#TODO: À DÉFINIR#
+
+==== PDF Avenant
+document écrit dématérialisé d'un avenant à la convention
+(a vocation à être signé aussi). #TODO: À PRÉCISER UN PEU PLUS#
+
+=== Etablissement d’accueil
+entreprise, administration, établissement scolaire, association ou tout autre
+organisme amené à accueillir des étudiants en stage.
+
+=== Enseignant référent pour le stage
+l’enseignant référent est un enseignant de
+l’Université responsable du stage. Il s’agit souvent de l’enseignant responsable
+de l’étape (ou de la formation). Il est habilité à consulter tous les rapports
+déposés (rapports de visites et rapport du tuteur professionnel) pour les stages
+dont il est responsable.
+
+=== Tuteur professionnel
+le tuteur appartient à l’établissement d’accueil. Il
+n’accède pas à l’application ESUP-Stage. Il ne dispose pas nécessairement d’un
+compte à l’université. Il n’accède pas à l’application ESUP-Stage.
+
+== Étudiant
+de l’université inscrit à au moins une version d’étape
+et pouvant effectuer des stages facultatifs ou obligatoires.
+
+== Groupe
+groupe d’étudiants *créé dans l'application*
+à partir d’une sélection d’étudiants.
+
+=== Conventions en masse
+facilité de gestion administrative de création des
+conventions par groupe d’étudiants losque la mise en stage est effectuée par des
+gestionnaires.
+
+Le template de convention est actuellement choisi pour chaque groupe.
+
+== Évaluation de stage
+#TODO: À DÉFINIR#
+
+== Centre de gestion
+est une entité de l'établissement qui :
+* regoupe un ensemble d’utilisateurs qui a la charge de gérer les stages
+d’une partie de l’établissement : les gestionnaires.
+* est associé à des étapes via des critères :
+
+=== Critères de gestion
+un centre de gestion peut être associé
+au niveau d'une UFR ou au niveau d'une étape.
+
+==== Etape : VET (version d'étape)
+fractionnement dans le temps d’un enseignement
+conduisant éventuellement à un diplôme. +
+Issue d’APOGEE.
+
+==== UFR
+Composante ou Unité de formation de l'établissement.
+
+=== Gestionnaire (de scolarité)
+utilisateur actuellement habilité dans ESUP-Stage à gérer les stages pour un ou plusieurs centres de gestion.
+
+== Modèles
+Paramétrables dans l'application avec des champs
+-- substitués à l'édition (ou l'envoi) --
+qui peuvent être placés dans du texte enrichi.
+
+=== Modèle de convention
+Définit l'édition du PDF de la convention.
+
+[TIP]
+.Pour les fonctionnaires stagiaires :
+====
+un INSPÉ créera un modèle de convention « INSPÉ stage sans convention ».
+Ainsi même s’il n’y a pas de convention écrite pour le(s) stage(s),
+ce modèle vide pourra être utilisé.
+====
+
+=== Modèle d’avenant
+Définit l'édition du PDF d'un avenant.
+
+=== Modèle de mail
+Définit les message de notifications par courriel.
+

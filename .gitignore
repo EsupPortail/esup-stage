@@ -39,3 +39,14 @@ src/main/resources/estage.properties
 
 ### Docaposte gen code ###
 src/main/java/org/esup_portail/esup_stage/docaposte/gen/*
+
+# HTTP files
+*rest.http
+
+# local dev
+/application.yml
+/application.properties
+/data*
+**/~*.docx
+**/~*.tmp
+application.properties

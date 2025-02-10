@@ -5,7 +5,7 @@
   <title>ESUP - Stage</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link id="app-favicon" rel="icon" type="image/x-icon" th:href="${favicon}">
+  <link th:if="${#ctx.containsVariable('favicon')}" id="app-favicon" rel="icon" type="image/x-icon" th:href="${favicon}">
   <link id="theme" rel="stylesheet" href="/theme.css">
 
   <style>
@@ -61,7 +61,7 @@
 <body>
 <header>
   <div class="logo">
-    <img alt="logo" th:src="${logo}"/>
+    <img th:if="${#ctx.containsVariable('logo')}" alt="logo" th:src="${logo}"/>
   </div>
   <div>ESUP-Stage - Gestion des conventions de stage</div>
   <div class="logout">

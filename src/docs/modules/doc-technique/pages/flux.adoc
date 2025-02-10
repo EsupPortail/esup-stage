@@ -1,0 +1,64 @@
+= Flux
+:author: Université Lorraine
+:imagesdir: ../images/
+
+== Flux Entrant
+
+=== Application de signature électronique
+
+.Messages
+** PDF *signés*
+*** Convention
+*** Avenant
+
+.Systèmes (1 seul au choix, configuration)
+* Esup-signature ou _autre_
+** API serveur et client dans une séquence
+CAUTION: Lien vers doc(s) à trouver _svp_
+* Docaposte
+** [JAX-RS client, WSDL]
+
+==== Esup-Signature (ou _autre_)
+
+WARNING: la séquence de communication plus compliquée
+que le schéma *_très_* simplifié ci dessous.
+[plantuml]
+....
+
+card esup_signature as "Esup Signature"
+card esup_stage as "Esup Stage"
+
+esup_signature  "🖺" <-0)- esup_stage
+esup_signature -(0-> "📃" esup_stage
+....
+
+
+=== Esup-siscol
+
+[plantuml]
+....
+left to right direction
+
+card etudiant_inscrit as "Étudiant inscrit\n(Apogée)"
+card esup_siscol as "Esup SISCOL"
+card esup_stage as "Esup Stage"
+
+etudiant_inscrit <-0)- esup_siscol: "WS Apogée"
+esup_siscol <-0)- esup_stage
+....
+
+
+== Flux Sortant
+
+=== Application de signature (_c.f._ flux entrant)
+
+** PDF *à signer*
+*** Convention
+*** Avenant
+
+.Systèmes (1 seul au choix, configuration)
+* Esup-signature ou _autre_
+** API serveur et client dans une séquence
+CAUTION: Lien vers doc(s) à trouver _svp_
+* Docaposte
+** [JAX-RS client, WSDL]

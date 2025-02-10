@@ -1,0 +1,77 @@
+= Gestion des conditions dans les templates
+:sectnums:
+:imagesdir: ../../images
+:reftext: Gestion des conditions dans les modèles (templates) de convention
+
+Dans les modèles (templates) de convention de stage, il est possible d'afficher
+les variables en fonction de conditions. Les conditions, pour fonctionner,
+doivent respecter les règles suivantes : 
+
+== Conditions simples
+
+[literal]
+$IF condition
+vContenu si la condition est vraie.
+$ELSE
+Contenu si la condition est fausse.
+$ENDIF
+
+== Conditions multiples
+
+[literal]
+$IF condition1
+Contenu si condition1 est vraie.
+$ELSEIF condition2
+Contenu si condition2 est vraie.
+$ELSE
+Contenu si aucune condition n'est vraie.
+$ENDIF
+
+== Utilisation avec des variables dynamiques
+
+[literal]
+$IF user.name != ''
+Bonjour, ${user.name} !
+$ELSE
+Bonjour, utilisateur anonyme.
+$ENDIF
+
+== La structure $IF ... $FI
+
+Cela encadre une condition. Si la condition est vraie, le contenu placé entre $IF et $ENDIF sera affiché. +
+
+== Opérateurs logiques
+
+[%header,cols="1m,1,1m"]
+|===
+|Opérateur
+|Signification
+|Exemple
+
+| ==
+| Égal à
+| $IF user.age == 18
+
+| !=
+| Différent de
+| $IF user.country != 'FR'
+
+| > / <
+| Supérieur / Inférieur
+| $IF product.price > 100
+
+| >= / +<=+
+| Supérieur ou égal / Inférieur ou égal
+| $IF user.age >= 18
+
+| AND
+| ET logique
+| $IF user.age > 18 AND user.member == true
+
+| OR
+| OU logique
+| $IF user.age < 18 OR user.student == true
+
+|===
+
+WARNING: veuillez utiliser uniquement les simples quotes (pas celles courbées) lorsque vous utilisez cette syntaxe.

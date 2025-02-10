@@ -10,6 +10,7 @@ import { AuthService } from "../../../services/auth.service";
 import { ConfigService } from "../../../services/config.service";
 import { debounceTime } from "rxjs/operators";
 import { LdapService } from "../../../services/ldap.service";
+import {REGEX} from "../../../utils/regex.utils";
 
 @Component({
   selector: 'app-tuteur-pro',
@@ -56,8 +57,8 @@ export class TuteurProComponent implements OnInit, OnChanges {
       prenom: [null, [Validators.required, Validators.maxLength(50)]],
       idCivilite: [null, []],
       fonction: [null, [Validators.maxLength(100)]],
-      tel: [null, [Validators.required, Validators.pattern(/^(?:(?:\+|00)\d{1,4}[-.\s]?|0)\d{1,4}([-.\s]?\d{1,4})*$/)]],
-      mail: [null, [Validators.required, Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/), Validators.maxLength(255)]],
+      tel: [null, [Validators.required, Validators.pattern(/^(?:(?:\+|00)\d{1,4}[-.\s]?|0)\d{1,4}([-.\s]?\d{1,4})*$/), Validators.maxLength(50)]],
+      mail: [null, [Validators.required, Validators.pattern(REGEX.EMAIL), Validators.maxLength(255)]],
       fax: [null, [Validators.maxLength(50)]],
     });
 
