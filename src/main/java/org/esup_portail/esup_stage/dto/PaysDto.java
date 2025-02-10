@@ -6,7 +6,8 @@ public class PaysDto {
     private String libelle;
     private String temEnServ;
 
-    public PaysDto() {}
+    public PaysDto() {
+    }
 
     public PaysDto(int id, String libelle, String temEnServ) {
         this.id = id;

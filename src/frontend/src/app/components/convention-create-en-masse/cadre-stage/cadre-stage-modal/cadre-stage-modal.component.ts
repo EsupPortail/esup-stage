@@ -17,7 +17,11 @@ import { ConsigneService } from "../../../../services/consigne.service";
 import * as FileSaver from "file-saver";
 import { Router } from "@angular/router";
 import {REGEX} from "../../../../utils/regex.utils";
+<<<<<<< HEAD
 import { MatDialog, MatDialogRef,MAT_DIALOG_DATA } from '@angular/material/dialog';
+=======
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
+>>>>>>> feature/dockerisation
 
 @Component({
   selector: 'app-cadre-stage-modal',

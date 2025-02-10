@@ -1,7 +1,6 @@
 package org.esup_portail.esup_stage.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.*;
 
 @Entity
@@ -34,16 +33,16 @@ public class EtudiantGroupeEtudiant implements Exportable {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public int getEtudiantId() {
         return etudiant.getId();
     }
 
     public String getEtudiantNumEtudiant() {
         return etudiant.getNumEtudiant();
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public Etudiant getEtudiant() {

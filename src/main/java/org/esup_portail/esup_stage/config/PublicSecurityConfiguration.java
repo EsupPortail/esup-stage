@@ -1,8 +1,7 @@
 package org.esup_portail.esup_stage.config;
 
-import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
+
 import org.esup_portail.esup_stage.config.filters.PublicTokenFilter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -15,9 +14,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @Order(1)
 public class PublicSecurityConfiguration {
-
-    @Autowired
-    ApplicationBootstrap applicationBootstrap;
 
     @Bean
     public SecurityFilterChain filterChainPublic(HttpSecurity http) throws Exception {
@@ -37,6 +33,6 @@ public class PublicSecurityConfiguration {
 
 
     public PublicTokenFilter tokenFilter() {
-        return new PublicTokenFilter(applicationBootstrap);
+        return new PublicTokenFilter();
     }
 }

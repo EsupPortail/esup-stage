@@ -1,14 +1,13 @@
 package org.esup_portail.esup_stage.dto;
 
-import org.esup_portail.esup_stage.model.*;
-
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+
 import java.util.Date;
 
 public class AvenantDto {
-    
+
     @NotNull
     private int idConvention;
 
@@ -75,7 +74,7 @@ public class AvenantDto {
 
     @Size(max = 50)
     private String monnaieGratification;
-    
+
     private int idUniteDuree;
 
     public int getIdConvention() {
@@ -250,6 +249,10 @@ public class AvenantDto {
         return modificationMontantGratification;
     }
 
+    public void setModificationMontantGratification(boolean modificationMontantGratification) {
+        this.modificationMontantGratification = modificationMontantGratification;
+    }
+
     public int getIdModeVersGratification() {
         return idModeVersGratification;
     }
@@ -264,10 +267,6 @@ public class AvenantDto {
 
     public void setIdDevise(int idDevise) {
         this.idDevise = idDevise;
-    }
-
-    public void setModificationMontantGratification(boolean modificationMontantGratification) {
-        this.modificationMontantGratification = modificationMontantGratification;
     }
 
     public Date getDateRupture() {

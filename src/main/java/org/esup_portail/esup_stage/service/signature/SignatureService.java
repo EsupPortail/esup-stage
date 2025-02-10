@@ -2,8 +2,8 @@ package org.esup_portail.esup_stage.service.signature;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
-import org.esup_portail.esup_stage.docaposte.DocaposteClient;
+import org.esup_portail.esup_stage.config.properties.AppliProperties;
+import org.esup_portail.esup_stage.config.properties.SignatureProperties;
 import org.esup_portail.esup_stage.dto.IdsListDto;
 import org.esup_portail.esup_stage.dto.MetadataDto;
 import org.esup_portail.esup_stage.dto.MetadataSignataireDto;
@@ -40,34 +40,29 @@ import java.util.List;
 @Service
 public class SignatureService {
 
-    private static final Logger logger	= LogManager.getLogger(SignatureService.class);
-
-    @Autowired
-    ApplicationBootstrap applicationBootstrap;
-
+    private static final Logger logger = LogManager.getLogger(SignatureService.class);
+    private final WebClient webClient;
     @Autowired
     ConventionJpaRepository conventionJpaRepository;
-
     @Autowired
     AvenantJpaRepository avenantJpaRepository;
-
     @Autowired
     CentreGestionJpaRepository centreGestionJpaRepository;
-
     @Lazy
     @Autowired
     ConventionService conventionService;
-
     @Autowired
     ImpressionService impressionService;
-
-    @Autowired
-    DocaposteClient docaposteClient;
-
     @Autowired
     WebhookService webhookService;
 
-    private final WebClient webClient;
+    @Autowired
+    SignatureProperties signatureProperties;
+
+    @Autowired
+    AppliProperties appliProperties;
+    @Autowired
+    private SignatureClient signatureClient;
 
     public SignatureService(WebClient.Builder builder) {
         this.webClient = builder.build();
@@ -160,7 +155,7 @@ public class SignatureService {
     }
 
     public int upload(IdsListDto idsListDto, boolean isAvenant) {
-        AppSignatureEnum appSignature = applicationBootstrap.getAppConfig().getAppSignatureEnabled();
+        AppSignatureEnum appSignature = signatureProperties.getAppSignatureType();
         if (appSignature == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La signature électronique n'est pas configurée");
         }
@@ -183,18 +178,18 @@ public class SignatureService {
                 continue;
             }
             ResponseDto controles = conventionService.controleEmailTelephone(convention);
-            if (controles.getError().size() > 0) {
+            if (!controles.getError().isEmpty()) {
                 continue;
             }
             switch (appSignature) {
                 case DOCAPOSTE:
-                    docaposteClient.upload(convention, avenant);
+                    signatureClient.upload(convention, avenant);
                     break;
                 case ESUPSIGNATURE:
                 case EXTERNE:
                     String documentId = webClient.post()
-                            .uri(applicationBootstrap.getAppConfig().getWebhookSignatureUri() + "?" + queryParam + "=" + id)
-                            .header("Authorization", "Bearer " + applicationBootstrap.getAppConfig().getWebhookSignatureToken())
+                            .uri(signatureProperties.getWebhook().getUri() + "?" + queryParam + "=" + id)
+                            .header("Authorization", "Bearer " + signatureProperties.getWebhook().getToken())
                             .retrieve()
                             .bodyToMono(String.class)
                             .block();
@@ -205,10 +200,10 @@ public class SignatureService {
                             // Pour ESUP-Signature, on supprime l'ancien avant de renseigner le nouveau
                             if (appSignature == AppSignatureEnum.ESUPSIGNATURE) {
                                 webClient.delete()
-                                    .uri(applicationBootstrap.getAppConfig().getEsupSignatureUri() + "/signrequests/soft/" + previousDocumentId)
-                                    .retrieve()
-                                    .bodyToMono(String.class)
-                                    .block();
+                                        .uri(signatureProperties.getEsupsignature().getUri() + "/signrequests/soft/" + previousDocumentId)
+                                        .retrieve()
+                                        .bodyToMono(String.class)
+                                        .block();
                             }
                         }
                         if (isAvenant) {
@@ -239,7 +234,7 @@ public class SignatureService {
         if (convention.getDateActualisationSignature() != null && nowMinus30.before(convention.getDateActualisationSignature())) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Le rafraichissement des données n'est possible que toutes les 30 minutes");
         }
-        AppSignatureEnum appSignature = applicationBootstrap.getAppConfig().getAppSignatureEnabled();
+        AppSignatureEnum appSignature = signatureProperties.getAppSignatureType();
         if (appSignature == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La signature électronique n'est pas configurée");
         }
@@ -251,7 +246,7 @@ public class SignatureService {
             List<Historique> historiques = new ArrayList<>();
             switch (appSignature) {
                 case DOCAPOSTE:
-                    historiques = docaposteClient.getHistorique(convention.getDocumentId(), convention.getCentreGestion().getSignataires());
+                    historiques = signatureClient.getHistorique(convention.getDocumentId(), convention.getCentreGestion().getSignataires());
                     break;
                 case ESUPSIGNATURE:
                     historiques = webhookService.getHistorique(convention.getDocumentId(), convention);
@@ -275,7 +270,7 @@ public class SignatureService {
         if (avenant.getDateActualisationSignature() != null && nowMinus30.before(avenant.getDateActualisationSignature())) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Le rafraichissement des données n'est possible que toutes les 30 minutes");
         }
-        AppSignatureEnum appSignature = applicationBootstrap.getAppConfig().getAppSignatureEnabled();
+        AppSignatureEnum appSignature = signatureProperties.getAppSignatureType();
         if (appSignature == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La signature électronique n'est pas configurée");
         }
@@ -287,7 +282,7 @@ public class SignatureService {
             List<Historique> historiques = new ArrayList<>();
             switch (appSignature) {
                 case DOCAPOSTE:
-                    historiques = docaposteClient.getHistorique(avenant.getDocumentId(), avenant.getConvention().getCentreGestion().getSignataires());
+                    historiques = signatureClient.getHistorique(avenant.getDocumentId(), avenant.getConvention().getCentreGestion().getSignataires());
                     break;
                 case ESUPSIGNATURE:
                     historiques = webhookService.getHistorique(avenant.getDocumentId(), avenant.getConvention());
@@ -405,14 +400,14 @@ public class SignatureService {
     }
 
     public String getSignatureFilePath(String filename) {
-        return applicationBootstrap.getAppConfig().getDataDir() + FolderEnum.SIGNATURES + "/" + filename + "_signe.pdf";
+        return appliProperties.getDataDir() + FolderEnum.SIGNATURES + "/" + filename + "_signe.pdf";
     }
 
     public void downloadSignedPdf(String documentId, MetadataDto metadataDto) {
         InputStream inputStream = null;
-        switch (applicationBootstrap.getAppConfig().getAppSignatureEnabled()) {
+        switch (signatureProperties.getAppSignatureType()) {
             case DOCAPOSTE:
-                inputStream = docaposteClient.download(documentId);
+                inputStream = signatureClient.download(documentId);
                 break;
             case ESUPSIGNATURE:
                 inputStream = webhookService.download(documentId);

@@ -2,7 +2,7 @@ package org.esup_portail.esup_stage.service.ldap;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
+import org.esup_portail.esup_stage.config.properties.ReferentielProperties;
 import org.esup_portail.esup_stage.dto.LdapSearchDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
@@ -15,40 +15,41 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Service
 public class LdapService {
     private static final Logger LOGGER = LoggerFactory.getLogger(LdapService.class);
 
-    @Autowired
-    ApplicationBootstrap applicationBootstrap;
-
     private final WebClient webClient;
+    @Autowired
+    private ReferentielProperties referentielProperties;
 
     public LdapService(WebClient.Builder builder) {
         this.webClient = builder.build();
     }
 
     private String call(String api, String method, Object params) {
+        if (referentielProperties.getLogin() == null || referentielProperties.getPassword() == null) {
+            LOGGER.error("Erreur lors de l'appel au ws LDAP " + api + ": login ou mot de passe non renseigné");
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
+        }
         try {
             if (method.equals("GET")) {
                 return webClient.get()
-                        .uri(applicationBootstrap.getAppConfig().getReferentielWsLdapUrl() + api, uri -> {
+                        .uri(referentielProperties.getLdapUrl() + api, uri -> {
                             ((Map<String, String>) params).forEach(uri::queryParam);
-                             return uri.build();
+                            return uri.build();
                         })
-                        .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((applicationBootstrap.getAppConfig().getReferentielWsLogin() + ":" + applicationBootstrap.getAppConfig().getReferentielWsPassword()).getBytes()))
+                        .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((referentielProperties.getLogin() + ":" + referentielProperties.getPassword()).getBytes()))
                         .accept(MediaType.APPLICATION_JSON)
                         .retrieve()
                         .bodyToMono(String.class)
                         .block();
             } else {
                 return webClient.post()
-                        .uri(applicationBootstrap.getAppConfig().getReferentielWsLdapUrl() + api)
-                        .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((applicationBootstrap.getAppConfig().getReferentielWsLogin() + ":" + applicationBootstrap.getAppConfig().getReferentielWsPassword()).getBytes()))
+                        .uri(referentielProperties.getLdapUrl() + api)
+                        .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((referentielProperties.getLogin() + ":" + referentielProperties.getPassword()).getBytes()))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(BodyInserters.fromValue(params))
@@ -77,6 +78,10 @@ public class LdapService {
     }
 
     public LdapUser searchByLogin(String login) {
+        if (login == null || login.isEmpty()) {
+            LOGGER.error("Erreur lors de la recherche de l'utilisateur par login: login est null ou vide");
+            return null;
+        }
         Map<String, String> params = new HashMap<>();
         params.put("login", login);
         String response = call("/bySupannAliasLogin", "GET", params);

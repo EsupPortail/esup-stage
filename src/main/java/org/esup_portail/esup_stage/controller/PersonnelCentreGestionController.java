@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -103,8 +104,7 @@ public class PersonnelCentreGestionController {
             utilisateur.setActif(true);
             utilisateur.setRoles(roles);
             utilisateurJpaRepository.saveAndFlush(utilisateur);
-        }
-        else {
+        } else {
             List<Role> roles = utilisateur.getRoles();
             // si utilisateur existe en base, check s'il est GES ou resp GES
             if (!UtilisateurHelper.isRole(utilisateur, Role.RESP_GES) && !UtilisateurHelper.isRole(utilisateur, Role.GES)) {

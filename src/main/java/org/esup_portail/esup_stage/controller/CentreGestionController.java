@@ -1,12 +1,11 @@
 package org.esup_portail.esup_stage.controller;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
+import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
@@ -31,8 +30,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
+
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -48,7 +49,7 @@ import java.util.stream.Collectors;
 @ApiController
 @RequestMapping("/centre-gestion")
 public class CentreGestionController {
-    private static final Logger logger	= LogManager.getLogger(CentreGestionController.class);
+    private static final Logger logger = LogManager.getLogger(CentreGestionController.class);
 
     @Autowired
     CentreGestionRepository centreGestionRepository;
@@ -84,15 +85,14 @@ public class CentreGestionController {
     ApogeeService apogeeService;
 
     @Autowired
-    ApplicationBootstrap applicationBootstrap;
-
-    @Autowired
     ConsigneJpaRepository consigneJpaRepository;
 
     @Autowired
     ConventionService conventionService;
+
     @Autowired
-    private ConsigneDocumentJpaRepository consigneDocumentJpaRepository;
+    AppliProperties appliProperties;
+
 
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
@@ -109,7 +109,7 @@ public class CentreGestionController {
 
         if (predicate.equals("personnels")) {
             Utilisateur currentUser = ServiceContext.getUtilisateur();
-            List<CentreGestion> list =  paginatedResponse.getData();
+            List<CentreGestion> list = paginatedResponse.getData();
             Predicate<PersonnelCentreGestion> condition = value -> value.getUidPersonnel().equals(currentUser.getUid());
             list.sort((a, b) -> Boolean.compare(a.getPersonnels().stream().anyMatch(condition), b.getPersonnels().stream().anyMatch(condition)));
 
@@ -475,7 +475,7 @@ public class CentreGestionController {
     }
 
     private String getFilePath(String filename) {
-        return applicationBootstrap.getAppConfig().getDataDir() + FolderEnum.CENTRE_GESTION_LOGOS + "/" + filename;
+        return appliProperties.getDataDir() + FolderEnum.CENTRE_GESTION_LOGOS + "/" + filename;
     }
 
     private String getNomFichier(int idFichier, String nomFichier) {

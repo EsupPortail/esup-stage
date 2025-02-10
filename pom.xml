@@ -27,27 +27,21 @@
 	<profiles>
 		<profile>
 			<id>dev</id>
-			<properties>
-				<application.configfilepath>classpath:estage.properties</application.configfilepath>
-			</properties>
 			<build>
 				<plugins>
 					<plugin>
 						<groupId>com.github.eirslett</groupId>
 						<artifactId>frontend-maven-plugin</artifactId>
-						<version>1.6</version>
+						<version>1.15.1</version>
 						<executions>
 							<execution>
 								<id>install-node-and-npm</id>
-								<phase>none</phase>
 							</execution>
 							<execution>
 								<id>npm install</id>
-								<phase>none</phase>
 							</execution>
 							<execution>
 								<id>npm build</id>
-								<phase>none</phase>
 							</execution>
 						</executions>
 					</plugin>
@@ -59,9 +53,38 @@
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
-			<properties>
-				<application.configfilepath>file:///etc/${project.name}/estage.properties</application.configfilepath>
-			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.github.eirslett</groupId>
+						<artifactId>frontend-maven-plugin</artifactId>
+						<version>1.15.1</version>
+						<executions>
+							<execution>
+								<id>install node and npm</id>
+								<goals>
+									<goal>install-node-and-npm</goal>
+								</goals>
+								<configuration>
+									<nodeVersion>v20.17.0</nodeVersion>
+									<workingDirectory>${project.basedir}/src/frontend</workingDirectory>
+								</configuration>
+							</execution>
+							<execution>
+								<id>npm install</id>
+								<goals>
+									<goal>npm</goal>
+								</goals>
+								<configuration>
+									<arguments>install --loglevel info</arguments>
+									<workingDirectory>${project.basedir}/src/frontend</workingDirectory>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+
+				</plugins>
+			</build>
 		</profile>
 	</profiles>
 
@@ -115,6 +138,11 @@
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-ui</artifactId>
 			<version>1.7.0</version>
+		</dependency>
+		<!-- Outils de développement -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
 		</dependency>
         <dependency>
             <groupId>com.googlecode.libphonenumber</groupId>
@@ -317,7 +345,7 @@
                 <directory>src/main/resources</directory>
 				<filtering>false</filtering>
             </resource>
-            <!-- interpreter le fichier 'application.properties' -->
+            <!-- interpreter le fichier 'default.properties' -->
             <resource>
             <!-- interprete les valeurs en ${xxx} en fonction des attributs maven -->
                 <directory>src/main/resources-filtered</directory>
@@ -334,6 +362,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
 				<configuration>
+					<encoding>UTF-8</encoding>
 					<delimiters>
 						<delimiter>${*}</delimiter>
 						<delimiter>@</delimiter>
@@ -449,6 +478,20 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.1</version>
+				<configuration>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+							<version>1.18.30</version>
+						</path>
+					</annotationProcessorPaths>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

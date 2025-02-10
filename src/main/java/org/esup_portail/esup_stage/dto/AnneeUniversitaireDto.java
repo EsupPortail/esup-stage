@@ -5,7 +5,8 @@ public class AnneeUniversitaireDto {
     private String libelle;
     private boolean anneeEnCours = false;
 
-    public AnneeUniversitaireDto() { }
+    public AnneeUniversitaireDto() {
+    }
 
     public AnneeUniversitaireDto(String annee, String libelle) {
         this.annee = annee;

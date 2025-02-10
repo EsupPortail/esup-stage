@@ -1,13 +1,13 @@
 package org.esup_portail.esup_stage.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.esup_portail.esup_stage.enums.NbJoursHebdoEnum;
-import org.esup_portail.esup_stage.model.Pays;
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.esup_portail.esup_stage.enums.NbJoursHebdoEnum;
+import org.esup_portail.esup_stage.model.Pays;
+
 import java.math.BigDecimal;
 import java.util.Date;
 

@@ -8,5 +8,7 @@ import jakarta.persistence.EntityManager;
 @Repository
 public class PeriodeInterruptionStageRepository extends PaginationRepository<PeriodeInterruptionStage> {
 
-    public PeriodeInterruptionStageRepository(EntityManager em) {super(em, PeriodeInterruptionStage.class, "pis");}
+    public PeriodeInterruptionStageRepository(EntityManager em) {
+        super(em, PeriodeInterruptionStage.class, "pis");
+    }
 }

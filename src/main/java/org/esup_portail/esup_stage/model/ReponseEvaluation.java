@@ -2,9 +2,8 @@ package org.esup_portail.esup_stage.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
-import org.esup_portail.esup_stage.dto.view.Views;
-
 import jakarta.persistence.*;
+import org.esup_portail.esup_stage.dto.view.Views;
 
 @Entity
 @Table(name = "ReponseEvaluation")
@@ -16,13 +15,13 @@ public class ReponseEvaluation {
     @JsonIgnore
     @ManyToOne
     @MapsId("idFicheEvaluation")
-    @JoinColumn(name="idFicheEvaluation")
+    @JoinColumn(name = "idFicheEvaluation")
     private FicheEvaluation ficheEvaluation;
 
     @JsonIgnore
     @OneToOne
     @MapsId("idConvention")
-    @JoinColumn(name="idConvention")
+    @JoinColumn(name = "idConvention")
     private Convention convention;
 
     @JsonView(Views.List.class)

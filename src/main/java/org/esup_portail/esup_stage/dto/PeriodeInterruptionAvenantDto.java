@@ -1,6 +1,7 @@
 package org.esup_portail.esup_stage.dto;
 
 import jakarta.validation.constraints.NotNull;
+
 import java.util.Date;
 
 public class PeriodeInterruptionAvenantDto {

@@ -2,6 +2,7 @@ package org.esup_portail.esup_stage.enums;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
+
 import java.util.stream.Stream;
 
 @Converter(autoApply = true)

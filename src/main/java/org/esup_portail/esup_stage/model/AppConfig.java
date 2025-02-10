@@ -1,8 +1,7 @@
 package org.esup_portail.esup_stage.model;
 
-import org.esup_portail.esup_stage.enums.AppConfigCodeEnum;
-
 import jakarta.persistence.*;
+import org.esup_portail.esup_stage.enums.AppConfigCodeEnum;
 
 @Entity
 @Table(name = "AppConfig")

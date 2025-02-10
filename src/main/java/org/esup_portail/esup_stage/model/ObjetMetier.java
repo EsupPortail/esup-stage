@@ -1,8 +1,8 @@
 package org.esup_portail.esup_stage.model;
 
+import jakarta.persistence.*;
 import org.esup_portail.esup_stage.security.ServiceContext;
 
-import jakarta.persistence.*;
 import java.util.Date;
 
 @MappedSuperclass
@@ -21,6 +21,14 @@ public abstract class ObjetMetier {
     @Temporal(TemporalType.TIMESTAMP)
     @Column
     private Date dateModif;
+
+    private static String getUtilisateurLogin() {
+        if (ServiceContext.getUtilisateur() != null) {
+            return ServiceContext.getUtilisateur().getLogin();
+        } else {
+            return ("(auto)");
+        }
+    }
 
     public String getLoginCreation() {
         return loginCreation;
@@ -66,13 +74,5 @@ public abstract class ObjetMetier {
     public void preUpdate() {
         setDateModif(new Date());
         setLoginModif(getUtilisateurLogin());
-    }
-
-    private static String getUtilisateurLogin() {
-        if (ServiceContext.getUtilisateur() != null) {
-            return ServiceContext.getUtilisateur().getLogin();
-        } else {
-            return ("(auto)");
-        }
     }
 }

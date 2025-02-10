@@ -1,12 +1,11 @@
 package org.esup_portail.esup_stage.model;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import org.esup_portail.esup_stage.dto.view.Views;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import org.esup_portail.esup_stage.dto.view.Views;
 
 @Entity
 @Table(name = "Ufr")

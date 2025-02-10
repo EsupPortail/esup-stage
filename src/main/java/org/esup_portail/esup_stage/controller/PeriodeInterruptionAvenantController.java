@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -131,7 +132,7 @@ public class PeriodeInterruptionAvenantController {
             throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvé");
         }
         List<PeriodeInterruptionAvenant> periodeInterruptionAvenants = periodeInterruptionAvenantJpaRepository.findByAvenant(id);
-        for(PeriodeInterruptionAvenant periodeInterruptionAvenant : periodeInterruptionAvenants){
+        for (PeriodeInterruptionAvenant periodeInterruptionAvenant : periodeInterruptionAvenants) {
             periodeInterruptionAvenantJpaRepository.delete(periodeInterruptionAvenant);
             periodeInterruptionAvenantJpaRepository.flush();
         }
