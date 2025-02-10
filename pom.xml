@@ -10,13 +10,16 @@
 	</parent>
 	<groupId>org.esup_portail.esup_stage</groupId>
 	<artifactId>esup-stage</artifactId>
-	<version>3.0.0</version>
+	<version>${revision}${sha1}${changelist}</version>
 	<packaging>war</packaging>
-	<name>estage</name>
+	<name>esup-stage</name>
 	<description>Application ESUP-Stage</description>
 
 	<properties>
-		<buildname>ROOT</buildname>
+		<revision>3.0.0</revision>
+		<sha1></sha1>
+		<changelist>-SNAPSHOT</changelist>
+
 		<java.version>21</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -336,23 +339,6 @@
 	</dependencies>
 
 	<build>
-		<finalName>${buildname}</finalName>
-		<sourceDirectory>src/main/java</sourceDirectory>
-
-		<resources>
-			<!-- resources classic -->
-            <resource>
-                <directory>src/main/resources</directory>
-				<filtering>false</filtering>
-            </resource>
-            <!-- interpreter le fichier 'default.properties' -->
-            <resource>
-            <!-- interprete les valeurs en ${xxx} en fonction des attributs maven -->
-                <directory>src/main/resources-filtered</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
-
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

@@ -6,8 +6,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 @ApiController
 public class ConfigurationController {
 
+    @Value("${application.version}")
+    private String version;
+
     @GetMapping("/version")
-    public String testApp() {
-        return "2.1.9";
+    public String version() {
+        return version;
     }
 }
