@@ -1,0 +1,47 @@
+= Architecture de l'application
+:author: Université Lorraine
+:imagesdir: ../images/
+
+[plantuml]
+----
+@startuml
+skinparam componentStyle rectangle
+
+Node "Esup - Stage" {
+
+
+    
+    
+    Node "Frontend" as frontend {
+        [Angular 14] as angular
+        [Node 16] as Node
+    }
+    
+    Node "Backend" as backend {
+        [Spring boot 2.5.4] as spring
+        [Java 11] as java
+    }
+    
+
+}
+
+    note top of "Esup - Stage"
+    Tomcat 9
+    end note
+    
+
+database "Esup-Stage BD" as db {
+    component "MariaDB" as mariadb
+}
+
+frontend -[hidden]d- backend
+backend -[hidden]d- db
+
+frontend -down-> backend
+backend -up-> frontend
+backend -down-> db
+db -up-> backend
+
+center footer Architecture de Esup-Stage
+@enduml
+----
