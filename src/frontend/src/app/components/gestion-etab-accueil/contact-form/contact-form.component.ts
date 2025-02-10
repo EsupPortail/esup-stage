@@ -5,6 +5,7 @@ import { PaysService } from "../../../services/pays.service";
 import { ContactService } from "../../../services/contact.service";
 import { MessageService } from "../../../services/message.service";
 import { AuthService } from "../../../services/auth.service";
+import {REGEX} from "../../../utils/regex.utils";
 
 @Component({
   selector: 'app-contact-form',
@@ -34,7 +35,7 @@ export class ContactFormComponent implements OnInit {
       idCivilite: [null, []],
       fonction: [null, [Validators.required, Validators.maxLength(100)]],
       tel: [null, [Validators.required, Validators.maxLength(50)]],
-      mail: [null, [Validators.required, Validators.pattern('[^@ ]+@[^@. ]+\\.[^@ ]+'), Validators.maxLength(255)]],
+      mail: [null, [Validators.required, Validators.pattern(REGEX.EMAIL), Validators.maxLength(255)]],
       fax: [null, [Validators.maxLength(50)]],
     });
 
