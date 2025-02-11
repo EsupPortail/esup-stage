@@ -120,15 +120,6 @@ export class ConfigGeneraleComponent implements OnInit {
       warningColor: this.configTheme.warningColor,
       successColor: this.configTheme.successColor
     });
-
-    console.log('Valeurs appliquées au formulaire:');
-    console.log('Police de caractères:', this.formTheme.get('fontFamily')?.value);
-    console.log('Taille de police:', this.formTheme.get('fontSize')?.value);
-    console.log('Couleur principale:', this.formTheme.get('primaryColor')?.value);
-    console.log('Couleur secondaire:', this.formTheme.get('secondaryColor')?.value);
-    console.log('Couleur danger:', this.formTheme.get('dangerColor')?.value);
-    console.log('Couleur avertissement:', this.formTheme.get('warningColor')?.value);
-    console.log('Couleur succès:', this.formTheme.get('successColor')?.value);
   }
 
   canEdit(): boolean {
@@ -202,5 +193,4 @@ export class ConfigGeneraleComponent implements OnInit {
     }
   }
 
-  protected readonly focus = focus;
 }

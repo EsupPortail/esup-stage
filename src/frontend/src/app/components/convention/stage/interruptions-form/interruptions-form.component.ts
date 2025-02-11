@@ -51,7 +51,6 @@ export class InterruptionsFormComponent implements OnInit  {
 
         let disable = false;
 
-        //disable dates already chosen
         for (const periode of this.periodes) {
             if (date >= periode.dateDebutInterruption && date <= periode.dateFinInterruption){
               disable = true;
@@ -62,7 +61,7 @@ export class InterruptionsFormComponent implements OnInit  {
               disable = true;
             }
         }
-        //disable dates not within stage period
+
         if (date < this.dateFromBackend(this.convention.dateDebutStage) || date > this.dateFromBackend(this.convention.dateFinStage)){
           disable = true;
         }

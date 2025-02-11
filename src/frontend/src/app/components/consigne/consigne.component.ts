@@ -92,8 +92,6 @@ import translations from 'ckeditor5/translations/fr.js';
 })
 export class ConsigneComponent implements OnInit, OnChanges, AfterViewInit {
 
-
-  //public Editor = Editor;
   public Editor = ClassicEditor;
   public config: EditorConfig = {};
   public isLayoutReady = false;

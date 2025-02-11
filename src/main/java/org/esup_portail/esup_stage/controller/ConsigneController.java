@@ -84,7 +84,7 @@ public class ConsigneController {
 
     @PostMapping("/{idConsigne}/add-doc")
     @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL, AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.MODIFICATION})
-    public Consigne addDocument(@PathVariable("idConsigne") int idConsigne, @RequestParam MultipartFile doc) {
+    public Consigne addDocument(@PathVariable("idConsigne") int idConsigne, @RequestParam(value="doc") MultipartFile doc) {
         Consigne consigne = consigneJpaRepository.findById(idConsigne);
         if (consigne == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Consigne non trouvée");

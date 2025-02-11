@@ -152,7 +152,7 @@ export class TemplateConventionComponent implements OnInit {
 
   public isLayoutReady = false;
   public Editor = ClassicEditor;
-  public config: EditorConfig = {}; // CKEditor needs the DOM tree before calculating the configuration.
+  public config: EditorConfig = {};
   public ngAfterViewInit():void{
     this.config = {
       toolbar: {

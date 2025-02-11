@@ -392,7 +392,7 @@ public class CentreGestionController {
 
     @PostMapping("/{id}/logo-centre")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.MODIFICATION})
-    public CentreGestion insertLogoCentre(@PathVariable("id") int id, @RequestParam(required = true) MultipartFile logo) {
+    public CentreGestion insertLogoCentre(@PathVariable("id") int id, @RequestParam(value="logo",required = true) MultipartFile logo) {
         CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
         String extension = FilenameUtils.getExtension(logo.getOriginalFilename());
         String nomFichier = DigestUtils.md5Hex(logo.getOriginalFilename()) + "." + extension;

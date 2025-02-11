@@ -63,7 +63,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private langueConventionService: LangueConventionService,
     private typeConventionService: TypeConventionService,
   ) {
-    // Initialize empty arrays
     this.columns = [];
     this.filters = [];
     this.selected = [];
@@ -253,7 +252,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             fonctionsEtTaches: { title: 'Fonctions et tâches' },
             details: { title: 'Détail du projet' },
             dureeExceptionnelle: { title: 'Durée du stage' },
-            nbJoursHebdo: { title: 'Nbre de jours de travail' },//?
+            nbJoursHebdo: { title: 'Nbre de jours de travail' },
             nbHeuresHebdo: { title: 'Nbre d’heures hebdomadaire' },
             gratification: { title: 'Gratification' },
             uniteDuree: { title: 'Unité Durée gratification' },
@@ -395,7 +394,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         permanent: true
       });
 
-      // Forcer la mise à jour du tableau
+      // mise à jour du tableau
       this.appTable.update();
       this.countConvention();
     }
@@ -484,7 +483,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
 
     Object.entries(this.savedFilters).forEach(([key, filterValue]: [string, any]) => {
-      // Skip validation creation as it's handled separately
       if (key === 'validationCreation') return;
       try {
         switch (key) {
@@ -503,16 +501,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 .map((value: any) => {
 
                   // Vérifie que la donnée filtrée contient un champ 'code'
-                  const ufrCode = value.code; // Extrait le code à comparer
+                  const ufrCode = value.code;
                   if (!ufrCode) {
                     return null;
                   }
 
                   // Recherche dans la liste ufrList en comparant les codes
                   const found = this.ufrList.find((ufr: any) => ufr.id.code === ufrCode);
-                  if (!found) {
-                    console.log(`UFR with code ${ufrCode} not found in ufrList`);
-                  }
                   return found;
                 })
                 .filter(Boolean);  // Supprime les éléments null ou undefined
@@ -523,11 +518,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
                   value: ufrSelectedList.map((ufr: { id: any; }) => ufr.id),
                   specific:true
                 });
-              } else {
-                console.log('No matching UFRs found for the filter.');
               }
-            } else {
-              console.log('Filter value for UFR is empty or not an array:', filterValue.value);
             }
             break;
 
@@ -535,11 +526,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
             if (Array.isArray(filterValue.value) && filterValue.value.length > 0) {
               const etapeSelectedList = filterValue.value
                 .map((etape: any) => {
-                  // Handle both ID object and direct ID cases
                   const etapeId = etape.id || etape;
                   const found = this.etapeList.find((e: any) =>
                     JSON.stringify(e.id) === JSON.stringify(etapeId));
-                  if (!found) console.log(`Etape not found:`, etapeId);
                   return found;
                 })
                 .filter(Boolean);
@@ -570,7 +559,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       }
     });
 
-    // Force table update after all filters are set
     if (this.appTable) {
       this.appTable.update();
     }
