@@ -130,6 +130,31 @@ form, .mat-cell {
   }
 }
 
+.mat-mdc-icon-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  --mdc-icon-button-icon-size: 16px;
+  line-height: 1;
+  overflow: visible;
+}
+
+.mat-mdc-icon-button .fa {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: var(--mdc-icon-button-icon-size);
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+}
+
+
 .convention, .centre-gestion {
   .mat-tab-label {
     min-width: unset;
@@ -185,11 +210,11 @@ label.required::after {
   padding-left: 5px;
 }
 
-.mat-chip-remove mat-icon {
-  font-size: 18px;
-  height: 18px;
-  width: 18px;
-}
+//.mat-chip-remove mat-icon {
+//  font-size: 18px;
+//  height: 18px;
+//  width: 18px;
+//}
 
 .content-editor{
   border: 1px solid lightgrey;
