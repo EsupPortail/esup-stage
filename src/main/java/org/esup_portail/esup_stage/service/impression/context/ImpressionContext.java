@@ -170,7 +170,8 @@ public class ImpressionContext {
         private String conventionValidee;
         private String codeCaisse;
 
-        public ConventionContext() { }
+        public ConventionContext() {
+        }
 
         public ConventionContext(Convention convention, CentreGestion centreEtablissement) {
             DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
@@ -185,7 +186,7 @@ public class ImpressionContext {
             this.codePostalEtudiant = convention.getCodePostalEtudiant();
             this.commentaireDureeTravail = convention.getCommentaireDureeTravail();
             this.courrielPersoEtudiant = convention.getCourrielPersoEtudiant();
-            this.creditECTS = String.valueOf(convention.getCreditECTS() != null ? convention.getCreditECTS(): "");
+            this.creditECTS = String.valueOf(convention.getCreditECTS() != null ? convention.getCreditECTS() : "");
             this.dateDebutStage = convention.getDateDebutStage() != null ? df.format(convention.getDateDebutStage()) : null;
             this.dateFinStage = convention.getDateFinStage() != null ? df.format(convention.getDateFinStage()) : null;
             this.details = convention.getDetails();
@@ -194,7 +195,7 @@ public class ImpressionContext {
             this.etapeLibelle = convention.getEtape() != null ? convention.getEtape().getLibelle() : null;
             this.etapeCode = convention.getEtape() != null ? convention.getEtape().getId().getCode() : null;
             this.fonctionsEtTaches = convention.getFonctionsEtTaches();
-            this.interruptionStage = (convention.getInterruptionStage() != null && convention.getInterruptionStage())  ? "Oui" : "Non";
+            this.interruptionStage = (convention.getInterruptionStage() != null && convention.getInterruptionStage()) ? "Oui" : "Non";
             this.libelleCPAM = convention.getLibelleCPAM();
             this.regionCPAM = convention.getRegionCPAM();
             this.adresseCPAM = convention.getAdresseCPAM();
@@ -224,7 +225,7 @@ public class ImpressionContext {
             this.themeLibelle = convention.getNomenclature() != null ? convention.getNomenclature().getTheme() : null;
             this.travailNuitFerie = convention.getTravailNuitFerie();
             this.ufrLibelle = convention.getUfr() != null ? convention.getUfr().getLibelle() : null;
-            this.ufrCode = convention.getUfr() != null ? convention.getUfr().getId().getCode() :null;
+            this.ufrCode = convention.getUfr() != null ? convention.getUfr().getId().getCode() : null;
             this.villeEtudiant = convention.getVilleEtudiant();
             this.volumeHoraireFormation = convention.getVolumeHoraireFormation();
             this.dureeStageHeurePeriode = convention.getDureeExceptionnellePeriode();
@@ -243,7 +244,7 @@ public class ImpressionContext {
                 validationConvention = centreEtablissement.getValidationConvention() ? Boolean.valueOf(validationConvention != null ?
                         validationConvention && convention.getValidationConvention() : convention.getValidationConvention()) : validationConvention;
             }
-            this.conventionValidee = validationConvention != null && validationConvention ? "Oui" :"Non";
+            this.conventionValidee = validationConvention != null && validationConvention ? "Oui" : "Non";
             this.codeCaisse = convention.getLibelleCPAM();
         }
 
@@ -254,6 +255,7 @@ public class ImpressionContext {
         public void setCodeCaisse(String codeCaisse) {
             this.codeCaisse = codeCaisse;
         }
+
         public String getId() {
             return id != null ? id : "";
         }
@@ -399,9 +401,13 @@ public class ImpressionContext {
             this.etapeLibelle = etapeLibelle;
         }
 
-        public String getEtapeCode() {return etapeCode;}
+        public String getEtapeCode() {
+            return etapeCode;
+        }
 
-        public void setEtapeCode(String etapeCode) {this.etapeCode = etapeCode;}
+        public void setEtapeCode(String etapeCode) {
+            this.etapeCode = etapeCode;
+        }
 
         public String getFonctionsEtTaches() {
             return fonctionsEtTaches != null ? fonctionsEtTaches : "";
@@ -614,12 +620,18 @@ public class ImpressionContext {
         public String getUfrLibelle() {
             return ufrLibelle != null ? ufrLibelle : "";
         }
-        public String getUfrCode() {return ufrCode != null ? ufrCode : "";}
 
         public void setUfrLibelle(String ufrLibelle) {
             this.ufrLibelle = ufrLibelle;
         }
-        public void setUfrCode(String ufrCode) {this.ufrCode = ufrCode;}
+
+        public String getUfrCode() {
+            return ufrCode != null ? ufrCode : "";
+        }
+
+        public void setUfrCode(String ufrCode) {
+            this.ufrCode = ufrCode;
+        }
 
         public String getUniteGratificationLibelle() {
             return uniteGratificationLibelle != null ? uniteGratificationLibelle : "";
@@ -669,25 +681,45 @@ public class ImpressionContext {
             this.periodesInterruptions = periodesInterruptions;
         }
 
-        public String getTypeConventionLibelle() {return typeConventionLibelle!= null ? typeConventionLibelle : "";}
+        public String getTypeConventionLibelle() {
+            return typeConventionLibelle != null ? typeConventionLibelle : "";
+        }
 
-        public void setTypeConventionLibelle(String typeConventionLibelle) {this.typeConventionLibelle = typeConventionLibelle;}
+        public void setTypeConventionLibelle(String typeConventionLibelle) {
+            this.typeConventionLibelle = typeConventionLibelle;
+        }
 
-        public String getLangueConvention() {return langueConvention != null ? langueConvention : "";}
+        public String getLangueConvention() {
+            return langueConvention != null ? langueConvention : "";
+        }
 
-        public void setLangueConvention(String langueConvention) {this.langueConvention = langueConvention;}
+        public void setLangueConvention(String langueConvention) {
+            this.langueConvention = langueConvention;
+        }
 
-        public String getConfidentiel() {return confidentiel;}
+        public String getConfidentiel() {
+            return confidentiel;
+        }
 
-        public void setConfidentiel(String confidentiel) {this.confidentiel = confidentiel;}
+        public void setConfidentiel(String confidentiel) {
+            this.confidentiel = confidentiel;
+        }
 
-        public String getLieuStage() {return lieuStage != null ? lieuStage : "";}
+        public String getLieuStage() {
+            return lieuStage != null ? lieuStage : "";
+        }
 
-        public void setLieuStage(String lieuStage) {this.lieuStage = lieuStage;}
+        public void setLieuStage(String lieuStage) {
+            this.lieuStage = lieuStage;
+        }
 
-        public String getConventionValidee() {return conventionValidee != null ? conventionValidee : "";}
+        public String getConventionValidee() {
+            return conventionValidee != null ? conventionValidee : "";
+        }
 
-        public void setConventionValidee(String conventionValidee) {this.conventionValidee = conventionValidee;}
+        public void setConventionValidee(String conventionValidee) {
+            this.conventionValidee = conventionValidee;
+        }
     }
 
     public static class CentreGestionContext {
@@ -706,7 +738,8 @@ public class ImpressionContext {
         private String nomPresidentEtab;
         private String qualitePresidentEtab;
 
-        public CentreGestionContext() { }
+        public CentreGestionContext() {
+        }
 
         public CentreGestionContext(CentreGestion centreGestion, CentreGestion centreEtablissement) {
             this.adresse = centreGestion.getAdresse();
@@ -848,7 +881,8 @@ public class ImpressionContext {
         private String prenom;
         private String tel;
 
-        public ContactContext() { }
+        public ContactContext() {
+        }
 
         public ContactContext(Contact contact) {
             this.civiliteLibelle = contact.getCivilite() != null ? contact.getCivilite().getLibelle() : null;
@@ -1149,14 +1183,14 @@ public class ImpressionContext {
         }
 
         public SignataireContext(Contact signataire) {
-            if(signataire == null){
+            if (signataire == null) {
                 this.civiliteLibelle = "";
                 this.fonction = "";
                 this.mail = "";
                 this.nom = "";
                 this.prenom = "";
                 this.tel = "";
-            }else{
+            } else {
                 this.civiliteLibelle = signataire.getCivilite() != null ? signataire.getCivilite().getLibelle() : null;
                 this.fonction = signataire.getFonction();
                 this.mail = signataire.getMail();

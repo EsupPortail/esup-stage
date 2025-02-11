@@ -1,11 +1,12 @@
 package org.esup_portail.esup_stage.config;
 
-import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
+import org.apereo.cas.client.session.SingleSignOutFilter;
+import org.apereo.cas.client.validation.Cas20ServiceTicketValidator;
+import org.apereo.cas.client.validation.TicketValidator;
+import org.apereo.cas.client.validation.json.Cas30JsonServiceTicketValidator;
+import org.esup_portail.esup_stage.config.properties.AppliProperties;
+import org.esup_portail.esup_stage.config.properties.CasProperties;
 import org.esup_portail.esup_stage.security.userdetails.CasUserDetailsServiceImpl;
-import org.jasig.cas.client.session.SingleSignOutFilter;
-import org.jasig.cas.client.validation.TicketValidator;
-import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
-import org.jasig.cas.client.validation.json.Cas30JsonServiceTicketValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +18,7 @@ import org.springframework.security.cas.authentication.CasAuthenticationProvider
 import org.springframework.security.cas.web.CasAuthenticationEntryPoint;
 import org.springframework.security.cas.web.CasAuthenticationFilter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
@@ -30,12 +32,15 @@ import java.util.Collections;
 public class SecurityConfiguration {
 
     @Autowired
-    ApplicationBootstrap applicationBootstrap;
+    AppliProperties appliProperties;
+
+    @Autowired
+    CasProperties casProperties;
 
     @Bean
     public ServiceProperties serviceProperties() {
         ServiceProperties serviceProperties = new ServiceProperties();
-        serviceProperties.setService(applicationBootstrap.getAppConfig().getPrefix() + "/login/cas");
+        serviceProperties.setService(appliProperties.getPrefix() + "/login/cas");
         serviceProperties.setSendRenew(false);
         return serviceProperties;
     }
@@ -43,18 +48,20 @@ public class SecurityConfiguration {
     @Bean
     public AuthenticationEntryPoint casEntryPoint() {
         CasAuthenticationEntryPoint entryPoint = new CasAuthenticationEntryPoint();
-        entryPoint.setLoginUrl(applicationBootstrap.getAppConfig().getCasUrlLogin());
+        entryPoint.setLoginUrl(casProperties.getUrl().getLogin());
         entryPoint.setServiceProperties(serviceProperties());
         return entryPoint;
     }
 
     @Bean
     public TicketValidator ticketValidator() {
-        
-        if (applicationBootstrap.getAppConfig().getCasResponseType().equals("xml")) {
-            return new Cas20ServiceTicketValidator(applicationBootstrap.getAppConfig().getCasUrlService());
+
+        if (casProperties.getResponseType() != null && casProperties.getResponseType().equals("xml")) {
+            return new Cas20ServiceTicketValidator(casProperties.getUrl().getService());
+        } else {
+            return new Cas30JsonServiceTicketValidator(casProperties.getUrl().getService());
         }
-        return new Cas30JsonServiceTicketValidator(applicationBootstrap.getAppConfig().getCasUrlService());
+
     }
 
     @Bean
@@ -89,24 +96,26 @@ public class SecurityConfiguration {
 
     @Bean
     public LogoutFilter logoutFilter() {
-        LogoutFilter logoutFilter = new LogoutFilter(applicationBootstrap.getAppConfig().getCasUrlLogout(), new SecurityContextLogoutHandler());
+        LogoutFilter logoutFilter = new LogoutFilter(casProperties.getUrl().getLogout(), new SecurityContextLogoutHandler());
         logoutFilter.setFilterProcessesUrl("/logout");
         return logoutFilter;
     }
 
     @Bean
     public SecurityFilterChain filterChainPrivate(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers("/login/cas", "/api/version", "/error", "/theme.css").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .exceptionHandling().authenticationEntryPoint(casEntryPoint())
-                .and()
-                .addFilter(casAuthenticationFilter())
-                .addFilterBefore(singleSignOutFilter(), CasAuthenticationFilter.class)
-                .addFilterBefore(logoutFilter(), LogoutFilter.class);
+        http
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/login/cas", "/api/version").permitAll()  // Autoriser ces URLs sans authentification
+                        .anyRequest().authenticated()  // Toutes les autres requêtes doivent être authentifiées
+                )
+                .exceptionHandling(exception ->
+                        exception.authenticationEntryPoint(casEntryPoint())  // Gestion des exceptions d'authentification
+                )
+                .addFilter(casAuthenticationFilter())  // Ajouter le filtre d'authentification CAS
+                .addFilterBefore(singleSignOutFilter(), CasAuthenticationFilter.class)  // Ajouter le filtre de déconnexion avant le filtre CAS
+                .addFilterBefore(logoutFilter(), LogoutFilter.class)  // Ajouter le filtre de déconnexion
 
-        http.csrf().disable();
+                .csrf(AbstractHttpConfigurer::disable);  // Désactiver CSRF
 
         return http.build();
     }

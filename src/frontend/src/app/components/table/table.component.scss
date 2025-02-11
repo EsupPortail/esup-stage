@@ -9,12 +9,17 @@
   background-color: #f8d7da;
 }
 
+
+
 .app-table {
   overflow-x: auto;
   max-height: 650px;
+  display: block; /* Ajout pour forcer le conteneur à être un bloc */
 
   .mat-table {
-    max-width: 100%;
+    width: 100%; /* Force le tableau à occuper 100% de la largeur disponible */
+    table-layout: auto; /* Permet une répartition automatique des colonnes */
+    word-wrap: break-word; /* Gère les longues chaînes sans débordement */
   }
 }
 

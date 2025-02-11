@@ -6,13 +6,13 @@
       <mat-label>Raison sociale</mat-label>
       <input matInput formControlName="raisonSociale" required />
       <mat-icon matSuffix class="icon-help" matTooltip="Nom de l'organisme">help</mat-icon>
-      <mat-error><app-form-error [field]="form.get('raisonSociale')"></app-form-error></mat-error>
+      <mat-error *ngIf="form.get('raisonSociale')"></mat-error>
     </mat-form-field>
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill" [hidden]="!isFr()">
       <mat-label>Numéro Siret</mat-label>
       <input matInput formControlName="numeroSiret" [required]="numeroSiretRequired() && isFr()" />
       <mat-icon matSuffix class="icon-help" matTooltip="Code INSEE à demander à votre établissement d'accueil ou consultable sur des sites de référencement d'entreprises. Correspond à l'identifiant géographique de l'établissement. (format : 14 chiffres consécutifs sans espace - ex: 12345678912345)">help</mat-icon>
-      <mat-error><app-form-error [field]="form.get('numeroSiret')"></app-form-error></mat-error>
+      <mat-error *ngIf="form.get('numeroSiret')"></mat-error>
     </mat-form-field>
   </div>
   <div class="row">
@@ -21,14 +21,14 @@
       <mat-select formControlName="idEffectif" required>
         <mat-option *ngFor="let effectif of effectifs" [value]="effectif.id">{{effectif.libelle}}</mat-option>
       </mat-select>
-      <mat-error><app-form-error [field]="form.get('idEffectif')"></app-form-error></mat-error>
+      <mat-error *ngIf="form.get('idEffectif')"></mat-error>
     </mat-form-field>
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Type d'établissement</mat-label>
       <mat-select formControlName="idTypeStructure" required>
         <mat-option *ngFor="let typeStructure of typeStructures" [value]="typeStructure.id">{{typeStructure.libelle}}</mat-option>
       </mat-select>
-      <mat-error><app-form-error [field]="form.get('idTypeStructure')"></app-form-error></mat-error>
+      <mat-error *ngIf="form.get('idTypeStructure')"></mat-error>
     </mat-form-field>
   </div>
   <div class="row">
@@ -46,7 +46,7 @@
       <mat-select formControlName="idStatutJuridique" required>
         <mat-option *ngFor="let statutJuridique of statutJuridiques" (click)="setTypeStructure(statutJuridique)" [value]="statutJuridique.id">{{statutJuridique.libelle}}</mat-option>
       </mat-select>
-      <mat-error><app-form-error [field]="form.get('idStatutJuridique')"></app-form-error></mat-error>
+      <mat-error *ngIf="form.get('idStatutJuridique')"></mat-error>
     </mat-form-field>
   </div>
 
@@ -78,7 +78,17 @@
 
     <div class="col-sm-12 col-md-6 mb-2">
       <label>Activité principale</label>
-      <quill-editor formControlName="activitePrincipale"></quill-editor>
+      <div>
+        <div class="main-container">
+          <div class="editor-container editor-container_classic-editor editor-container_include-style" #editorContainerElement>
+            <div class="editor-container__editor">
+              <div #editorElement>
+                <ckeditor [editor]="Editor" [config]="config"  formControlName="activitePrincipale" *ngIf="isLayoutReady" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <mat-error><div *ngIf="!form.get('activitePrincipale')?.value && !form.get('codeNafN5')?.value">Le code APE ou l'activité principale doit être renseigné</div></mat-error>
     </div>
   </div>
@@ -89,7 +99,7 @@
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Voie</mat-label>
       <input matInput formControlName="voie" required />
-      <mat-error><app-form-error [field]="form.get('voie')"></app-form-error></mat-error>
+      <mat-error *ngIf="form.get('voie')"></mat-error>
     </mat-form-field>
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Bâtiment / Résidence / Z.I</mat-label>
@@ -106,7 +116,7 @@
       <mat-select formControlName="idPays" required>
         <mat-option *ngFor="let country of countries" [value]="country.id">{{country.libelle}}</mat-option>
       </mat-select>
-      <mat-error><app-form-error [field]="form.get('idPays')"></app-form-error></mat-error>
+      <mat-error *ngIf="form.get('idPays')"></mat-error>
     </mat-form-field>
   </div>
   <div class="row">
@@ -116,25 +126,25 @@
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill" *ngIf="!isFr()">
       <mat-label>code Postal</mat-label>
       <input matInput formControlName="codePostal" required />
-      <mat-error><app-form-error [field]="form.get('codePostal')"></app-form-error></mat-error>
+      <mat-error *ngIf="form.get('codePostal')"></mat-error>
     </mat-form-field>
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Commune</mat-label>
       <input matInput formControlName="commune" required />
-      <mat-error><app-form-error [field]="form.get('commune')"></app-form-error></mat-error>
+      <mat-error *ngIf="form.get('commune')"></mat-error>
     </mat-form-field>
   </div>
   <div class="row">
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Adresse mail</mat-label>
       <input matInput formControlName="mail" />
-      <mat-hint>Sous cette forme adresse@domain.fr</mat-hint>
+      <mat-hint>Sous cette forme adresse&#64;domaine.fr</mat-hint>
       <mat-error><app-form-error [field]="form.get('email')"></app-form-error></mat-error>
     </mat-form-field>
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Téléphone</mat-label>
       <input matInput formControlName="telephone" required />
-      <mat-error><app-form-error [field]="form.get('telephone')"></app-form-error></mat-error>
+      <mat-error *ngIf="form.get('telephone')"> Numéro de téléphone invalide. </mat-error>
     </mat-form-field>
   </div>
   <div class="row">
@@ -142,7 +152,7 @@
       <mat-label>Site internet</mat-label>
       <input type="url" matInput formControlName="siteWeb" />
       <mat-hint>Sous cette forme http://siteinternet.fr/...</mat-hint>
-      <mat-error><app-form-error [field]="form.get('siteWeb')"></app-form-error></mat-error>
+      <mat-error *ngIf="form.get('siteWeb')"> Site web invalide. </mat-error>
     </mat-form-field>
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Fax</mat-label>

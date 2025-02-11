@@ -3,7 +3,8 @@ package org.esup_portail.esup_stage.repository;
 import org.esup_portail.esup_stage.model.TemplateConvention;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
+
 import java.util.Arrays;
 
 @Repository

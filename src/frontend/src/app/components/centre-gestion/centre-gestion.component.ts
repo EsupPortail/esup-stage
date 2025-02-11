@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import {Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import { ActivatedRoute, Router } from "@angular/router";
 import { CentreGestionService } from "../../services/centre-gestion.service";
 import { MessageService } from "../../services/message.service";
@@ -11,7 +11,7 @@ import {REGEX} from "../../utils/regex.utils";
 @Component({
   selector: 'app-centre-gestion',
   templateUrl: './centre-gestion.component.html',
-  styleUrls: ['./centre-gestion.component.scss']
+  styleUrls: ['./centre-gestion.component.scss'],
 })
 export class CentreGestionComponent implements OnInit {
 
@@ -138,9 +138,9 @@ export class CentreGestionComponent implements OnInit {
   majAllValid(): void {
     this.allValid = true;
     for (let key in this.tabs) {
-        if ((key == '0' || key == '1') && this.tabs[key].statut == 0) {
-          this.allValid = false;
-        }
+      if ((key == '0' || key == '1') && this.tabs[key].statut == 0) {
+        this.allValid = false;
+      }
     }
   }
 
@@ -307,8 +307,8 @@ export class CentreGestionComponent implements OnInit {
     // Les ordres de validations doivent être 1, 2 ou 3, et on ne peut pas avoir le même ordre
     let ordres = [1, 2, 3, null];
     return (!ordres.some(o => o === this.centreGestion.validationPedagogiqueOrdre)
-          || !ordres.some(o => o === this.centreGestion.validationConventionOrdre)
-          || !ordres.some(o => o === this.centreGestion.verificationAdministrativeOrdre)
+      || !ordres.some(o => o === this.centreGestion.validationConventionOrdre)
+      || !ordres.some(o => o === this.centreGestion.verificationAdministrativeOrdre)
     )
   }
 }

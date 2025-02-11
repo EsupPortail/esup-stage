@@ -1,6 +1,7 @@
 package org.esup_portail.esup_stage.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+
 import java.util.List;
 
 @Entity
@@ -12,10 +13,10 @@ public class GroupeEtudiant extends ObjetMetier implements Exportable {
     @Column(name = "idGroupeEtudiant", nullable = false)
     private int id;
 
-    @Column(name = "code",nullable = false, length = 100, unique = true)
+    @Column(name = "code", nullable = false, length = 100, unique = true)
     private String code;
 
-    @Column(name = "nom",nullable = false, length = 100)
+    @Column(name = "nom", nullable = false, length = 100)
     private String nom;
 
     @OneToMany(mappedBy = "groupeEtudiant", fetch = FetchType.EAGER, cascade = {CascadeType.MERGE}, orphanRemoval = true)

@@ -21,8 +21,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+
 import java.io.*;
 import java.lang.reflect.Field;
 import java.util.*;
@@ -34,7 +35,7 @@ import java.util.zip.ZipOutputStream;
 @RequestMapping("/groupeEtudiant")
 public class GroupeEtudiantController {
 
-    private static final Logger logger	= LogManager.getLogger(ConsigneController.class);
+    private static final Logger logger = LogManager.getLogger(ConsigneController.class);
 
     @Autowired
     GroupeEtudiantRepository groupeEtudiantRepository;
@@ -77,6 +78,19 @@ public class GroupeEtudiantController {
 
     @Autowired
     ConventionService conventionService;
+
+    public static <T> T mergeObjects(T first, T second) throws IllegalAccessException {
+        Class<?> clazz = first.getClass();
+        Field[] fields = clazz.getDeclaredFields();
+        for (Field field : fields) {
+            field.setAccessible(true);
+            Object value1 = field.get(first);
+            Object value2 = field.get(second);
+            Object value = (value1 != null) ? value1 : value2;
+            field.set(first, value);
+        }
+        return first;
+    }
 
     @GetMapping
     @Secure
@@ -157,7 +171,7 @@ public class GroupeEtudiantController {
             throw new AppException(HttpStatus.NOT_FOUND, "GroupeEtudiant non trouvée");
         }
         Convention groupeConvention = groupeEtudiant.getConvention();
-        for (EtudiantGroupeEtudiant etudiant : groupeEtudiant.getEtudiantGroupeEtudiants()){
+        for (EtudiantGroupeEtudiant etudiant : groupeEtudiant.getEtudiantGroupeEtudiants()) {
 
             Convention etudiantConvention = etudiant.getConvention();
             Convention etudiantMergedConvention = new Convention();
@@ -181,24 +195,11 @@ public class GroupeEtudiantController {
             Convention previousConvention = etudiant.getMergedConvention();
             etudiant.setMergedConvention(etudiantMergedConvention);
             etudiantGroupeEtudiantJpaRepository.save(etudiant);
-            if(previousConvention != null)
+            if (previousConvention != null)
                 conventionJpaRepository.delete(previousConvention);
         }
         groupeEtudiant.setValidationCreation(true);
         return groupeEtudiantJpaRepository.saveAndFlush(groupeEtudiant);
-    }
-
-    public static <T> T mergeObjects(T first, T second) throws IllegalAccessException {
-        Class<?> clazz = first.getClass();
-        Field[] fields = clazz.getDeclaredFields();
-        for (Field field : fields) {
-            field.setAccessible(true);
-            Object value1 = field.get(first);
-            Object value2 = field.get(second);
-            Object value = (value1 != null) ? value1 : value2;
-            field.set(first, value);
-        }
-        return first;
     }
 
     @GetMapping("/brouillon")
@@ -233,7 +234,7 @@ public class GroupeEtudiantController {
         List<String> numEtudiants = groupeEtudiant.getEtudiantGroupeEtudiants().stream().map(EtudiantGroupeEtudiant::getEtudiantNumEtudiant).collect(Collectors.toList());
 
         List<EtudiantDiplomeEtapeResponse> etudiantsAdded = new ArrayList<>();
-        for(String numEtudiant : numEtudiants){
+        for (String numEtudiant : numEtudiants) {
             EtudiantDiplomeEtapeResponse etudiant = new EtudiantDiplomeEtapeResponse();
             etudiant.setCodEtu(numEtudiant);
             etudiantsAdded.add(etudiant);
@@ -313,7 +314,7 @@ public class GroupeEtudiantController {
         ByteArrayOutputStream archiveOutputStream = new ByteArrayOutputStream();
         ZipOutputStream zos = new ZipOutputStream(archiveOutputStream);
         try {
-            for(int conventionId : idsListDto.getIds()){
+            for (int conventionId : idsListDto.getIds()) {
 
                 Convention convention = conventionJpaRepository.findById(conventionId);
                 if (convention == null) {
@@ -321,10 +322,10 @@ public class GroupeEtudiantController {
                 }
 
                 ByteArrayOutputStream pdfOutputStream = new ByteArrayOutputStream();
-                impressionService.generateConventionAvenantPDF(convention, null, pdfOutputStream,false);
+                impressionService.generateConventionAvenantPDF(convention, null, pdfOutputStream, false);
 
                 byte[] pdf = pdfOutputStream.toByteArray();
-                String filename = "Convention_" + convention.getEtudiant().getNom() + "_" +convention.getEtudiant().getPrenom() + ".pdf";
+                String filename = "Convention_" + convention.getEtudiant().getNom() + "_" + convention.getEtudiant().getPrenom() + ".pdf";
                 ZipEntry entry = new ZipEntry(filename);
                 zos.putNextEntry(entry);
                 zos.write(pdf);
@@ -347,19 +348,19 @@ public class GroupeEtudiantController {
         if (groupeEtudiant == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "GroupeEtudiant non trouvée");
         }
-        HashMap<Structure,ArrayList<EtudiantGroupeEtudiant>> etudiantsByStructure = new HashMap<>();
+        HashMap<Structure, ArrayList<EtudiantGroupeEtudiant>> etudiantsByStructure = new HashMap<>();
 
-        for(EtudiantGroupeEtudiant ege : groupeEtudiant.getEtudiantGroupeEtudiants()){
-            if(idsListDto.getIds().contains(ege.getId())){
+        for (EtudiantGroupeEtudiant ege : groupeEtudiant.getEtudiantGroupeEtudiants()) {
+            if (idsListDto.getIds().contains(ege.getId())) {
                 Structure structure = ege.getMergedConvention().getStructure();
-                if(!etudiantsByStructure.containsKey(structure)){
-                    etudiantsByStructure.put(structure,new ArrayList<>());
+                if (!etudiantsByStructure.containsKey(structure)) {
+                    etudiantsByStructure.put(structure, new ArrayList<>());
                 }
                 etudiantsByStructure.get(structure).add(ege);
             }
         }
 
-        for(Structure structure : etudiantsByStructure.keySet()){
+        for (Structure structure : etudiantsByStructure.keySet()) {
 
             String mailto = structure.getMail();
 
@@ -374,7 +375,7 @@ public class GroupeEtudiantController {
             try {
                 ByteArrayOutputStream archiveOutputStream = new ByteArrayOutputStream();
                 ZipOutputStream zos = new ZipOutputStream(archiveOutputStream);
-                for(EtudiantGroupeEtudiant ege : etudiantsByStructure.get(structure)){
+                for (EtudiantGroupeEtudiant ege : etudiantsByStructure.get(structure)) {
 
                     Convention convention = ege.getMergedConvention();
 
@@ -382,7 +383,7 @@ public class GroupeEtudiantController {
                     impressionService.generateConventionAvenantPDF(convention, null, pdfOutputStream, false);
 
                     byte[] pdf = pdfOutputStream.toByteArray();
-                    String filename = "Convention_" + ege.getEtudiant().getNom() + "_" +ege.getEtudiant().getPrenom() + ".pdf";
+                    String filename = "Convention_" + ege.getEtudiant().getNom() + "_" + ege.getEtudiant().getPrenom() + ".pdf";
                     ZipEntry entry = new ZipEntry(filename);
                     zos.putNextEntry(entry);
                     zos.write(pdf);
@@ -404,9 +405,9 @@ public class GroupeEtudiantController {
         return true;
     }
 
-    @PostMapping(value = "/import/{id}", consumes ="text/csv")
+    @PostMapping(value = "/import/{id}", consumes = "text/csv")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.MODIFICATION})
-    public void importStructures(InputStream inputStream,@PathVariable("id") int groupeId) {
+    public void importStructures(InputStream inputStream, @PathVariable("id") int groupeId) {
 
         logger.info("import start");
 
@@ -424,29 +425,29 @@ public class GroupeEtudiantController {
 
             while ((line = br.readLine()) != null) {
                 lineno++;
-                if(isHeader){
+                if (isHeader) {
                     isHeader = false;
-                }else{
+                } else {
 
                     Structure structure;
 
                     String[] columns = line.split(separator, -1);
                     String RNE = columns[indexRNE];
-                    if(!RNE.isEmpty()){
+                    if (!RNE.isEmpty()) {
                         structure = structureJpaRepository.findByRNE(RNE);
                         if (structure == null) {
                             throw new AppException(HttpStatus.NOT_FOUND, "Aucune structure trouvée pour le RNE fournit : " +
                                     RNE + ", à la line : " + lineno);
                         }
-                    }else{
+                    } else {
                         String SIRET = columns[indexSIRET];
-                        if(!SIRET.isEmpty()){
+                        if (!SIRET.isEmpty()) {
                             structure = structureJpaRepository.findBySiret(SIRET);
                             if (structure == null) {
                                 throw new AppException(HttpStatus.NOT_FOUND, "Aucune structure trouvée pour le SIRET fournit : " +
                                         RNE + ", à la line : " + lineno);
                             }
-                        }else{
+                        } else {
                             throw new AppException(HttpStatus.NOT_FOUND, "Aucun numéro SIRET ou RNE fournit pour la line : " + lineno);
                         }
                     }
@@ -457,7 +458,7 @@ public class GroupeEtudiantController {
                                 numEtu + ", à la line : " + lineno);
                     }
 
-                    EtudiantGroupeEtudiant ege = etudiantGroupeEtudiantJpaRepository.findByEtudiantAndGroupe(etudiant.getId(),groupeId);
+                    EtudiantGroupeEtudiant ege = etudiantGroupeEtudiantJpaRepository.findByEtudiantAndGroupe(etudiant.getId(), groupeId);
                     if (ege == null) {
                         throw new AppException(HttpStatus.NOT_FOUND, "Aucune etudiant trouvé dans le groupe pour le numero " +
                                 "etudiant fournit : " + numEtu + ", à la line : " + lineno);
@@ -489,8 +490,8 @@ public class GroupeEtudiantController {
         List<EtudiantDiplomeEtapeResponse> addedEtudiants = new ArrayList<>();
         List<Integer> removedEtudiants = groupeEtudiantDto.getEtudiantRemovedIds();
 
-        for(EtudiantDiplomeEtapeResponse etudiant : newEtudiants){
-            if(!oldEtudiants.contains(etudiant.getCodEtu())){
+        for (EtudiantDiplomeEtapeResponse etudiant : newEtudiants) {
+            if (!oldEtudiants.contains(etudiant.getCodEtu())) {
                 addedEtudiants.add(etudiant);
             }
         }
@@ -499,9 +500,9 @@ public class GroupeEtudiantController {
 
         //removed etudiants
         Iterator<EtudiantGroupeEtudiant> it = etudiantGroupeEtudiants.iterator();
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             EtudiantGroupeEtudiant etudiantGroupeEtudiant = it.next();
-            if(removedEtudiants.contains(etudiantGroupeEtudiant.getId())){
+            if (removedEtudiants.contains(etudiantGroupeEtudiant.getId())) {
                 it.remove();
                 etudiantGroupeEtudiantJpaRepository.delete(etudiantGroupeEtudiant);
                 conventionJpaRepository.delete(etudiantGroupeEtudiant.getConvention());
@@ -509,7 +510,7 @@ public class GroupeEtudiantController {
         }
 
         //added etudiants
-        for(EtudiantDiplomeEtapeResponse etudiant : addedEtudiants){
+        for (EtudiantDiplomeEtapeResponse etudiant : addedEtudiants) {
             EtudiantGroupeEtudiant etudiantGroupeEtudiant = createNewEtudiantGroupeEtudiant(groupeEtudiant, etudiant);
             etudiantGroupeEtudiants.add(etudiantGroupeEtudiant);
         }
@@ -592,7 +593,7 @@ public class GroupeEtudiantController {
         Convention convention = new Convention();
         convention.setValidationCreation(false);
         convention.setCreationEnMasse(true);
-        conventionService.setConventionData(convention,conventionFormDto);
+        conventionService.setConventionData(convention, conventionFormDto);
 
         return conventionJpaRepository.save(convention);
     }

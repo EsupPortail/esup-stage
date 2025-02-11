@@ -16,8 +16,8 @@ import { ConfigService } from "../../../../services/config.service";
 import { ConsigneService } from "../../../../services/consigne.service";
 import * as FileSaver from "file-saver";
 import { Router } from "@angular/router";
-import { MatDialog, MatDialogConfig, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {REGEX} from "../../../../utils/regex.utils";
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 
 @Component({
   selector: 'app-cadre-stage-modal',
@@ -33,7 +33,7 @@ export class CadreStageModalComponent implements OnInit {
   centreGestion: any;
   sansElp: boolean = false;
 
-  formConvention: FormGroup;
+  formConvention!: FormGroup;
 
   typeConventions: any[] = [];
   langueConventions: any[] = [];

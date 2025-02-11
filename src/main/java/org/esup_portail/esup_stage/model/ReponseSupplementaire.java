@@ -1,8 +1,7 @@
 package org.esup_portail.esup_stage.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "ReponseSupplementaire")
@@ -14,13 +13,13 @@ public class ReponseSupplementaire {
     @JsonIgnore
     @ManyToOne
     @MapsId("idQuestionSupplementaire")
-    @JoinColumn(name="idQuestionSupplementaire", nullable = false)
+    @JoinColumn(name = "idQuestionSupplementaire", nullable = false)
     private QuestionSupplementaire questionSupplementaire;
 
     @JsonIgnore
     @ManyToOne
     @MapsId("idConvention")
-    @JoinColumn(name="idConvention", nullable = false)
+    @JoinColumn(name = "idConvention", nullable = false)
     private Convention convention;
 
     @Lob

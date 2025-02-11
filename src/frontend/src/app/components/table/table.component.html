@@ -27,7 +27,7 @@
                 </ng-container>
                 <ng-container *ngSwitchCase="'list'">
                   <mat-select [name]="filter.id" multiple [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()">
-                    <mat-option *ngFor="let option of filter.options" [value]="option[filter.keyId]" [matTooltip]="filter.infoBulleCentre ? option[filter.keyLibelle] : ''">{{option[filter.keyLibelle]}}</mat-option>
+                    <mat-option *ngFor="let option of filter.options" [value]="option[filter.keyId]" [matTooltip]="filter.infoBulleCentre ? option[filter.keyLibelle] : ''">{{option[filter.keyLibelle]|| 'Valeur indisponible' }}</mat-option>
                   </mat-select>
                 </ng-container>
                 <ng-container *ngSwitchCase="'temEnServ'">
@@ -47,19 +47,33 @@
                   <input matInput [name]="filter.id" [matDatepicker]="datepicker" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()" />
                 </ng-container>
                 <ng-container *ngSwitchCase="'autocomplete'">
-                  <mat-chip-list #chipList>
-                    <mat-chip *ngFor="let v of filterValues[filter.id].value" [selectable]="true" [removable]="true" (removed)="removeAutocomplete(filter, v)">
-                      {{v[filter.keyLibelle]}}
+                  <mat-chip-grid #chipList aria-label="Etape">
+                    <mat-chip
+                      *ngFor="let value of filterValues[filter.id].value"
+                      [removable]="true"
+                      (removed)="removeAutocomplete(filter, value)">
+                      {{value[filter.keyLibelle]}}
                       <span matChipRemove>
-                      <mat-icon>cancel</mat-icon>
-                    </span>
+                        <mat-icon>cancel</mat-icon>
+                      </span>
                     </mat-chip>
-                  </mat-chip-list>
-                  <input [name]="filter.id + '-autocomplete'" [(ngModel)]="filterValues[filter.id].autocomplete" (ngModelChange)="searchAutocomplete(filter, $event)"
-                         [matAutocomplete]="auto" [matChipInputFor]="chipList" />
-                  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="autocompleteSelected(filter, $event)">
-                    <mat-option *ngFor="let v of autocompleteData[filter.id]" [value]="v">
-                      {{v[filter.keyLibelle]}}
+                  </mat-chip-grid>
+
+                  <input
+                    [name]="filter.id + '-autocomplete'"
+                    [(ngModel)]="filterValues[filter.id].autocomplete"
+                    (ngModelChange)="searchAutocomplete(filter, $event)"
+                    [matAutocomplete]="auto"
+                    [matChipInputFor]="chipList"
+                    matInput />
+
+                  <mat-autocomplete
+                    #auto="matAutocomplete"
+                    (optionSelected)="autocompleteSelected(filter, $event)">
+                    <mat-option
+                      *ngFor="let option of autocompleteData[filter.id]"
+                      [value]="option">
+                      {{option[filter.keyLibelle]}}
                     </mat-option>
                   </mat-autocomplete>
                 </ng-container>

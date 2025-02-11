@@ -1,8 +1,7 @@
 package org.esup_portail.esup_stage.model;
 
+import jakarta.persistence.*;
 import org.esup_portail.esup_stage.dto.TemplateMailInterface;
-
-import javax.persistence.*;
 
 @Entity
 @Table(name = "TemplateMail")

@@ -11,7 +11,7 @@
   <mat-sidenav mode="side" [opened]="isOpened()" *ngIf="isConnected()">
     <div class="app-menu">
       <mat-nav-list>
-        <app-menu *ngFor="let item of items" [item]="item"></app-menu>
+        <app-menu *ngFor="let item of items" [item]="item"> </app-menu>
       </mat-nav-list>
       <div class="app-version">
         Version {{getAppVersion()}}

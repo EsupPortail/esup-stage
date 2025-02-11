@@ -1,6 +1,6 @@
 package org.esup_portail.esup_stage.config;
 
-import nz.net.ultraq.thymeleaf.LayoutDialect;
+import nz.net.ultraq.thymeleaf.layoutdialect.LayoutDialect;
 import org.esup_portail.esup_stage.controller.ApiController;
 import org.esup_portail.esup_stage.controller.apipublic.ApiPublicController;
 import org.springframework.context.annotation.Bean;

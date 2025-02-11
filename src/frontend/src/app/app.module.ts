@@ -1,6 +1,5 @@
 import { APP_INITIALIZER, Injectable, LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from "./app-routing.module";
 import { HeaderComponent } from './components/header/header.component';
@@ -11,7 +10,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatButtonModule } from "@angular/material/button";
 import { MenuComponent } from './components/menu/menu.component';
 import { MatListModule } from "@angular/material/list";
-import { HTTP_INTERCEPTORS, HttpClientModule } from "@angular/common/http";
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import { CookieService } from "ngx-cookie-service";
 import { TechnicalInterceptor } from "./interceptors/technical.interceptor";
 import { HomeComponent } from './components/home/home.component';
@@ -19,11 +18,6 @@ import { TitleComponent } from './components/title/title.component';
 import { MessageComponent } from './components/message/message.component';
 import { MatDialogModule } from "@angular/material/dialog";
 import { MatTabsModule } from "@angular/material/tabs";
-import {
-  MAT_COLOR_FORMATS,
-  NGX_MAT_COLOR_FORMATS,
-  NgxMatColorPickerModule
-} from "@angular-material-components/color-picker";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatInputModule } from "@angular/material/input";
@@ -32,14 +26,11 @@ import { MatTableModule } from "@angular/material/table";
 import { MatSortModule } from "@angular/material/sort";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatPaginatorIntl, MatPaginatorModule } from "@angular/material/paginator";
-
 import { DatePipe, registerLocaleData } from "@angular/common";
 import localeFr from '@angular/common/locales/fr';
 import {
   DateAdapter,
-  MAT_DATE_FORMATS,
   MAT_DATE_LOCALE,
-  MatDateFormats,
   MatNativeDateModule, NativeDateAdapter
 } from "@angular/material/core";
 import { PaginatorIntl } from "./paginator-intl";
@@ -69,7 +60,6 @@ import { EtudiantComponent } from './components/convention/etudiant/etudiant.com
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { LoaderComponent } from './components/loader/loader.component';
 import { AdminNomenclaturesCreationComponent } from './components/admin/admin-nomenclatures/admin-nomenclatures-creation/admin-nomenclatures-creation.component';
-import { QuillModule } from "ngx-quill";
 import { FormErrorComponent } from './components/form-error/form-error.component';
 import { MatProgressBarModule } from "@angular/material/progress-bar";
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -136,10 +126,9 @@ import { TruncatePipe } from './pipes/truncate.pipe';
 import { FormAutocompleteFieldComponent } from './components/form-autocomplete-field/form-autocomplete-field.component';
 import { SignatureElectroniqueComponent } from './components/convention/signature-electronique/signature-electronique.component';
 import { MatTabNavChangeDirective } from './directives/mat-tab-nav-change.directive';
-import {
-  CentreSignatureElectroniqueComponent
-} from "./components/centre-gestion/signature-electronique/signature-electronique.component";
+import {CentreSignatureElectroniqueComponent} from "./components/centre-gestion/signature-electronique/signature-electronique.component";
 import { SignatureElectroniqueViewComponent } from './components/convention/signature-electronique/signature-electronique-view/signature-electronique-view.component';
+import {ColorPickerModule} from "ngx-color-picker";
 
 registerLocaleData(localeFr, 'fr');
 
@@ -157,151 +146,143 @@ export class FrenchDateProvider extends NativeDateAdapter {
     return null;
   }
 
-  format(date: Date, displayFormat: Object): string {
+  format(date: Date): string {
     return date.getDate().toString().padStart(2, '0') + '/' + (date.getMonth() + 1).toString().padStart(2, '0') + '/' + date.getFullYear();
   }
 }
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    HeaderComponent,
-    MenuComponent,
-    HomeComponent,
-    TitleComponent,
-    MessageComponent,
-    AdminUserComponent,
-    TableComponent,
-    BooleanPipe,
-    RoleLibellePipe,
-    DashboardComponent,
-    ConventionComponent,
-    AdminNomenclaturesComponent,
-    AdminNomenclaturesEditionComponent,
-    AdminRoleComponent,
-    ConfirmComponent,
-    ConfigGeneraleComponent,
-    ContenuComponent,
-    ContenuPipe,
-    CentreGestionSearchComponent,
-    EtabAccueilComponent,
-    CentreGestionComponent,
-    EtudiantComponent,
-    LoaderComponent,
-    AdminNomenclaturesCreationComponent,
-    FormErrorComponent,
-    ServiceAccueilComponent,
-    CoordCentreComponent,
-    TuteurProComponent,
-    SignataireComponent,
-    EnseignantReferentComponent,
-    TemplateMailComponent,
-    ParamCentreComponent,
-    MailTesterComponent,
-    CreateDialogComponent,
-    GestionEtabAccueilComponent,
-    EtabAccueilFormComponent,
-    StageComponent,
-    ServiceAccueilFormComponent,
-    ContactFormComponent,
-    GestionnairesComponent,
-    RecapitulatifComponent,
-    AvenantComponent,
-    AvenantFormComponent,
-    ValidationComponent,
-    ValidationCardComponent,
-    LogoCentreComponent,
-    AvenantViewComponent,
-    CalendrierComponent,
-    TemplateConventionComponent,
-    InterruptionsFormComponent,
-    ConsigneComponent,
-    RetourListeComponent,
-    FicheEvaluationComponent,
-    QuestionSupplementaireFormComponent,
-    EvalStageComponent,
-    EvaluationStageComponent,
-    ConventionCreateEnMasseComponent,
-    SelectionGroupeEtuComponent,
-    CadreStageComponent,
-    InfosStageComponent,
-    EtabAccueilGroupeComponent,
-    EtabAccueilGroupeModalComponent,
-    ServiceAccueilGroupeComponent,
-    ServiceAccueilGroupeModalComponent,
-    TuteurAccueilGroupeComponent,
-    TuteurAccueilGroupeModalComponent,
-    EnseignantGroupeComponent,
-    EnseignantGroupeModalComponent,
-    SignataireGroupeComponent,
-    SignataireGroupeModalComponent,
-    InfosStageModalComponent,
-    CadreStageModalComponent,
-    ValidationCreationComponent,
-    GestionGroupeComponent,
-    TemplateMailGroupeComponent,
-    ConfirmDeleteCentreComponent,
-    TruncatePipe,
-    FormAutocompleteFieldComponent,
-    SignatureElectroniqueComponent,
-    MatTabNavChangeDirective,
-    CentreSignatureElectroniqueComponent,
-    SignatureElectroniqueViewComponent,
-  ],
-  imports: [
-    BrowserModule,
-    HttpClientModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    ReactiveFormsModule,
-    FormsModule,
-    MatSidenavModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatButtonModule,
-    MatListModule,
-    MatDialogModule,
-    MatTabsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    NgxMatColorPickerModule,
-    MatTableModule,
-    MatSortModule,
-    MatPaginatorModule,
-    MatTooltipModule,
-    MatCardModule,
-    MatSelectModule,
-    MatCheckboxModule,
-    MatStepperModule,
-    MatRadioModule,
-    MatExpansionModule,
-    MatProgressSpinnerModule,
-    QuillModule.forRoot(),
-    MatProgressBarModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    NgxMatSelectSearchModule,
-    MatChipsModule,
-    MatAutocompleteModule,
-    MatMenuModule,
-    DragDropModule,
-    CKEditorModule,
-    MatSnackBarModule,
-    MatBadgeModule,
-  ],
-  providers: [
-    CookieService,
-    ContenuService,
-    ContenuPipe,
-    DatePipe,
-    { provide: LOCALE_ID, useValue: 'fr' },
-    { provide: HTTP_INTERCEPTORS, useClass: TechnicalInterceptor, multi: true },
-    { provide: MAT_COLOR_FORMATS, useValue: NGX_MAT_COLOR_FORMATS },
-    { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' },
-    { provide: DateAdapter, useClass: FrenchDateProvider },
-    { provide: MatPaginatorIntl, useClass: PaginatorIntl },
-    { provide: APP_INITIALIZER, useFactory: (cs: ContenuService) => () => cs.getAllLibelle(), deps: [ContenuService], multi: true },
-  ],
-  bootstrap: [AppComponent]
-})
+@NgModule({ declarations: [
+        AppComponent,
+        HeaderComponent,
+        MenuComponent,
+        HomeComponent,
+        TitleComponent,
+        MessageComponent,
+        AdminUserComponent,
+        TableComponent,
+        BooleanPipe,
+        RoleLibellePipe,
+        DashboardComponent,
+        ConventionComponent,
+        AdminNomenclaturesComponent,
+        AdminNomenclaturesEditionComponent,
+        AdminRoleComponent,
+        ConfirmComponent,
+        ConfigGeneraleComponent,
+        ContenuComponent,
+        ContenuPipe,
+        CentreGestionSearchComponent,
+        EtabAccueilComponent,
+        CentreGestionComponent,
+        EtudiantComponent,
+        LoaderComponent,
+        AdminNomenclaturesCreationComponent,
+        FormErrorComponent,
+        ServiceAccueilComponent,
+        CoordCentreComponent,
+        TuteurProComponent,
+        SignataireComponent,
+        EnseignantReferentComponent,
+        TemplateMailComponent,
+        ParamCentreComponent,
+        MailTesterComponent,
+        CreateDialogComponent,
+        GestionEtabAccueilComponent,
+        EtabAccueilFormComponent,
+        StageComponent,
+        ServiceAccueilFormComponent,
+        ContactFormComponent,
+        GestionnairesComponent,
+        RecapitulatifComponent,
+        AvenantComponent,
+        AvenantFormComponent,
+        ValidationComponent,
+        ValidationCardComponent,
+        LogoCentreComponent,
+        AvenantViewComponent,
+        CalendrierComponent,
+        TemplateConventionComponent,
+        InterruptionsFormComponent,
+        ConsigneComponent,
+        RetourListeComponent,
+        FicheEvaluationComponent,
+        QuestionSupplementaireFormComponent,
+        EvalStageComponent,
+        EvaluationStageComponent,
+        ConventionCreateEnMasseComponent,
+        SelectionGroupeEtuComponent,
+        CadreStageComponent,
+        InfosStageComponent,
+        EtabAccueilGroupeComponent,
+        EtabAccueilGroupeModalComponent,
+        ServiceAccueilGroupeComponent,
+        ServiceAccueilGroupeModalComponent,
+        TuteurAccueilGroupeComponent,
+        TuteurAccueilGroupeModalComponent,
+        EnseignantGroupeComponent,
+        EnseignantGroupeModalComponent,
+        SignataireGroupeComponent,
+        SignataireGroupeModalComponent,
+        InfosStageModalComponent,
+        CadreStageModalComponent,
+        ValidationCreationComponent,
+        GestionGroupeComponent,
+        TemplateMailGroupeComponent,
+        ConfirmDeleteCentreComponent,
+        TruncatePipe,
+        FormAutocompleteFieldComponent,
+        SignatureElectroniqueComponent,
+        MatTabNavChangeDirective,
+        CentreSignatureElectroniqueComponent,
+        SignatureElectroniqueViewComponent,
+    ],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        ReactiveFormsModule,
+        FormsModule,
+        MatSidenavModule,
+        MatToolbarModule,
+        MatIconModule,
+        MatButtonModule,
+        MatListModule,
+        MatDialogModule,
+        MatTabsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatTableModule,
+        MatSortModule,
+        MatPaginatorModule,
+        MatTooltipModule,
+        MatCardModule,
+        MatSelectModule,
+        MatCheckboxModule,
+        MatStepperModule,
+        MatRadioModule,
+        MatExpansionModule,
+        MatProgressSpinnerModule,
+        MatProgressBarModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
+        NgxMatSelectSearchModule,
+        MatChipsModule,
+        MatAutocompleteModule,
+        MatMenuModule,
+        DragDropModule,
+        CKEditorModule,
+        MatSnackBarModule,
+        MatBadgeModule,
+        ColorPickerModule], providers: [
+        CookieService,
+        ContenuService,
+        ContenuPipe,
+        DatePipe,
+        { provide: LOCALE_ID, useValue: 'fr' },
+        { provide: HTTP_INTERCEPTORS, useClass: TechnicalInterceptor, multi: true },
+        { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' },
+        { provide: DateAdapter, useClass: FrenchDateProvider },
+        { provide: MatPaginatorIntl, useClass: PaginatorIntl },
+        { provide: APP_INITIALIZER, useFactory: (cs: ContenuService) => () => cs.getAllLibelle(), deps: [ContenuService], multi: true },
+        provideHttpClient(withInterceptorsFromDi()),
+    ] })
 export class AppModule { }

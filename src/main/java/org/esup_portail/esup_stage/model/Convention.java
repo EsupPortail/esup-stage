@@ -1,14 +1,13 @@
 package org.esup_portail.esup_stage.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
+import jakarta.persistence.*;
 import org.esup_portail.esup_stage.dto.view.Views;
 import org.esup_portail.esup_stage.enums.NbJoursHebdoEnum;
 import org.esup_portail.esup_stage.service.PeriodeService;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -16,6 +15,7 @@ import java.util.*;
 
 @Entity
 @Table(name = "Convention")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Convention extends ObjetMetier implements Exportable {
 
     @JsonView(Views.List.class)
@@ -30,7 +30,7 @@ public class Convention extends ObjetMetier implements Exportable {
     private Etudiant etudiant;
 
     @JsonView(Views.List.class)
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "idCentreGestion")
     private CentreGestion centreGestion;
 
@@ -64,11 +64,11 @@ public class Convention extends ObjetMetier implements Exportable {
     @JoinColumn(name = "idStructure")
     private Structure structure;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idService")
     private Service service;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idContact")
     private Contact contact;
 
@@ -77,11 +77,11 @@ public class Convention extends ObjetMetier implements Exportable {
     @JoinColumn(name = "idSignataire")
     private Contact signataire;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idTypeConvention")
     private TypeConvention typeConvention;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idOffre")
     private Offre offre;
 
@@ -105,21 +105,21 @@ public class Convention extends ObjetMetier implements Exportable {
     @Column()
     private NbJoursHebdoEnum nbJoursHebdo;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idTempsTravail")
     private TempsTravail tempsTravail;
 
     private String commentaireDureeTravail;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "codeLangueConvention")
     private LangueConvention langueConvention;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idOrigineStage")
     private OrigineStage origineStage;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idTheme")
     private Theme theme;
 
@@ -160,7 +160,7 @@ public class Convention extends ObjetMetier implements Exportable {
     @Column
     private String telPortableEtudiant;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idIndemnisation")
     private Indemnisation indemnisation;
 
@@ -183,17 +183,17 @@ public class Convention extends ObjetMetier implements Exportable {
 
     private String modeEncadreSuivi;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idModeVersGratification")
     private ModeVersGratification modeVersGratification;
 
     private String avantagesNature;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idNatureTravail")
     private NatureTravail natureTravail;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idModeValidationStage")
     private ModeValidationStage modeValidationStage;
 
@@ -236,11 +236,11 @@ public class Convention extends ObjetMetier implements Exportable {
     @Column
     private String dureeExceptionnelle;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idUniteDureeExceptionnelle")
     private UniteDuree uniteDureeExceptionnelle;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idUniteGratification")
     private UniteGratification uniteGratification;
 
@@ -294,7 +294,7 @@ public class Convention extends ObjetMetier implements Exportable {
     private String nbConges;
     private String competences;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idUniteDureeGratification")
     private UniteDuree uniteDureeGratification;
 
@@ -307,7 +307,7 @@ public class Convention extends ObjetMetier implements Exportable {
     @Column
     private String typePresence;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idDevise")
     private Devise devise;
 
@@ -321,7 +321,7 @@ public class Convention extends ObjetMetier implements Exportable {
     @Column(nullable = false)
     private boolean creationEnMasse = false;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idPays")
     private Pays paysConvention;
 
@@ -335,30 +335,30 @@ public class Convention extends ObjetMetier implements Exportable {
     private Boolean confidentiel;
 
     @JsonView(Views.List.class)
-    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE})
+    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE}, fetch = FetchType.LAZY)
     private List<Avenant> avenants = new ArrayList<>();
 
     @OneToOne(mappedBy = "convention", cascade = {CascadeType.MERGE, CascadeType.REMOVE, CascadeType.PERSIST})
     private ConventionNomenclature nomenclature;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE})
+    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE}, fetch = FetchType.LAZY)
     private List<HistoriqueValidation> historiqueValidations = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE})
+    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE}, fetch = FetchType.LAZY)
     private List<PeriodeInterruptionStage> periodeInterruptionStages = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE})
+    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE}, fetch = FetchType.LAZY)
     private List<ReponseEvaluation> reponseEvaluations = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE})
+    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE}, fetch = FetchType.LAZY)
     private List<ReponseSupplementaire> reponseSupplementaires = new ArrayList<>();
 
     @JsonView(Views.List.class)
-    @OneToOne(mappedBy = "convention", cascade = {CascadeType.MERGE, CascadeType.REMOVE, CascadeType.PERSIST},fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "convention", cascade = {CascadeType.MERGE, CascadeType.REMOVE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
     private ReponseEvaluation reponseEvaluation;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -1357,9 +1357,7 @@ public class Convention extends ObjetMetier implements Exportable {
                 calendar.set(Calendar.SECOND, 0);
                 calendar.set(Calendar.MILLISECOND, 0);
                 Date dateAlerte = calendar.getTime();
-                if (now.after(dateAlerte) || now.compareTo(dateAlerte) == 0) {
-                    return true;
-                }
+                return now.after(dateAlerte) || now.compareTo(dateAlerte) == 0;
             }
         }
         return false;
@@ -1453,7 +1451,7 @@ public class Convention extends ObjetMetier implements Exportable {
                 break;
             case "interruptionStage":
                 if (getInterruptionStage() != null) {
-                    value = getInterruptionStage()?"Oui":"Non";
+                    value = getInterruptionStage() ? "Oui" : "Non";
                 }
                 break;
             case "theme":
@@ -1568,7 +1566,7 @@ public class Convention extends ObjetMetier implements Exportable {
             case "avenant":
                 if (getAvenants() != null) {
                     value = getAvenants().isEmpty() ? "Non" : "Oui";
-                break;
+                    break;
                 }
             case "dateCreation":
                 if (getDateCreation() != null) {

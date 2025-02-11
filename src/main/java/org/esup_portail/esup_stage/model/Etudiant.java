@@ -1,9 +1,9 @@
 package org.esup_portail.esup_stage.model;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import jakarta.persistence.*;
 import org.esup_portail.esup_stage.dto.view.Views;
 
-import javax.persistence.*;
 import java.util.Date;
 
 @Entity

@@ -22,8 +22,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,7 +35,7 @@ import java.util.Date;
 @RequestMapping("/structures")
 public class StructureController {
 
-    private static final Logger logger	= LogManager.getLogger(ConsigneController.class);
+    private static final Logger logger = LogManager.getLogger(ConsigneController.class);
 
     @Autowired
     StructureRepository structureRepository;
@@ -84,7 +85,7 @@ public class StructureController {
         return ResponseEntity.ok().body(csv.toString());
     }
 
-    @PostMapping(value = "/import", consumes ="text/csv")
+    @PostMapping(value = "/import", consumes = "text/csv")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.MODIFICATION})
     public void importStructures(InputStream inputStream) {
 
@@ -130,9 +131,9 @@ public class StructureController {
             boolean isHeader = true;
 
             while ((line = br.readLine()) != null) {
-                if(isHeader){
+                if (isHeader) {
                     isHeader = false;
-                }else{
+                } else {
                     Structure structure = new Structure();
 
                     structure.setNafN5(nafN5);
@@ -142,39 +143,39 @@ public class StructureController {
                     structure.setPays(pays);
 
                     String[] columns = line.split(separator, -1);
-                    for(int i = 0;i< columns.length;i++){
+                    for (int i = 0; i < columns.length; i++) {
 
-                        if(i==indexNumeroRNE){
+                        if (i == indexNumeroRNE) {
                             structure.setNumeroRNE(columns[indexNumeroRNE]);
                         }
-                        if(i==indexRaisonSociale){
+                        if (i == indexRaisonSociale) {
                             structure.setRaisonSociale(columns[indexRaisonSociale]);
                         }
-                        if(i==indexNumeroSiret){
+                        if (i == indexNumeroSiret) {
                             structure.setNumeroSiret(columns[indexNumeroSiret]);
                         }
-                        if(i==indexActivitePrincipale){
+                        if (i == indexActivitePrincipale) {
                             structure.setActivitePrincipale(columns[indexActivitePrincipale]);
                         }
-                        if(i==indexVoie){
+                        if (i == indexVoie) {
                             structure.setVoie(columns[indexVoie]);
                         }
-                        if(i==indexCodePostal){
+                        if (i == indexCodePostal) {
                             structure.setCodePostal(columns[indexCodePostal]);
                         }
-                        if(i==indexCommune){
+                        if (i == indexCommune) {
                             structure.setCommune(columns[indexCommune]);
                         }
-                        if(i==indexMail){
+                        if (i == indexMail) {
                             structure.setMail(columns[indexMail]);
                         }
-                        if(i==indexTelephone){
+                        if (i == indexTelephone) {
                             structure.setTelephone(columns[indexTelephone]);
                         }
-                        if(i==indexSiteWeb){
+                        if (i == indexSiteWeb) {
                             structure.setSiteWeb(columns[indexSiteWeb]);
                         }
-                        if(i==indexFax){
+                        if (i == indexFax) {
                             structure.setFax(columns[indexFax]);
                         }
                     }
@@ -183,7 +184,7 @@ public class StructureController {
 
                     if (existant == null) {
                         structureJpaRepository.save(structure);
-                    }else{
+                    } else {
                         logger.info("skipped existing structure with RNE : " + existant.getNumeroRNE());
                     }
                 }
@@ -248,7 +249,7 @@ public class StructureController {
         if (structureFormDto.getNumeroSiret() != null) {
             if (structureFormDto.getNumeroSiret().startsWith("356000000")) {
                 int total = 0;
-                for (int i = 0 ; i < structureFormDto.getNumeroSiret().length(); ++i) {
+                for (int i = 0; i < structureFormDto.getNumeroSiret().length(); ++i) {
                     try {
                         total += Integer.parseInt(String.valueOf(structureFormDto.getNumeroSiret().charAt(i)));
                     } catch (NumberFormatException e) {

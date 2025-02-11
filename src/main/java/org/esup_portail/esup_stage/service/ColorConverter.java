@@ -1,6 +1,7 @@
 package org.esup_portail.esup_stage.service;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,12 +17,13 @@ public class ColorConverter {
             int s = Integer.parseInt(matcher.group(2));
             int l = Integer.parseInt(matcher.group(3));
             String rgbColor = hslToRgb(h, s, l);
-            matcher.appendReplacement(stringBuffer, "color:" + rgbColor );
+            matcher.appendReplacement(stringBuffer, "color:" + rgbColor);
         }
         matcher.appendTail(stringBuffer);
 
         return stringBuffer.toString();
     }
+
     public static String hslToRgb(int h, int s, int l) {
         double hue = h / 360.0;
         double saturation = s / 100.0;

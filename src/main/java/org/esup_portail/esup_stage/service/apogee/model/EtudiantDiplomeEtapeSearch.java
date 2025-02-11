@@ -1,8 +1,7 @@
 package org.esup_portail.esup_stage.service.apogee.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EtudiantDiplomeEtapeSearch {

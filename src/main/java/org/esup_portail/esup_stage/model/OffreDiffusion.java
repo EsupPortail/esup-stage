@@ -1,6 +1,6 @@
 package org.esup_portail.esup_stage.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "OffreDiffusion")
@@ -11,12 +11,12 @@ public class OffreDiffusion {
 
     @ManyToOne
     @MapsId("idOffre")
-    @JoinColumn(name="idOffre")
+    @JoinColumn(name = "idOffre")
     private Offre offre;
 
     @ManyToOne
     @MapsId("idCentreGestion")
-    @JoinColumn(name="idCentreGestion")
+    @JoinColumn(name = "idCentreGestion")
     private CentreGestion centreGestion;
 
     @Column(nullable = false)

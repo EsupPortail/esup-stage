@@ -42,7 +42,17 @@
           <div class="row">
             <div class="col-md-12" *ngIf="form.controls.libelle.value === false">
               <label>Texte</label>
-              <ckeditor [editor]="Editor" formControlName="texte"></ckeditor>
+              <div>
+                <div class="main-container">
+                  <div class="editor-container editor-container_classic-editor editor-container_include-style" #editorContainerElement>
+                    <div class="editor-container__editor">
+                      <div #editorElement>
+                        <ckeditor [editor]="Editor" [config]="config"  formControlName="texte" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             <mat-form-field *ngIf="form.controls.libelle.value === true" class="col-md-12" appearance="fill">
               <mat-label>Texte</mat-label>

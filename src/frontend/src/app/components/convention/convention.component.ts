@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import { ActivatedRoute, Router } from "@angular/router";
 import { ConventionService } from "../../services/convention.service";
 import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";

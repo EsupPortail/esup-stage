@@ -12,8 +12,8 @@ export class CalendrierComponent implements OnInit  {
   periodes: any[] = [];
   interruptionsStage: any[] = [];
 
-  periodesForm: FormGroup;
-  heuresJournalieresForm: FormGroup;
+  periodesForm!: FormGroup;
+  heuresJournalieresForm!: FormGroup;
 
   convention: any;
   idPeriod : number = 0;

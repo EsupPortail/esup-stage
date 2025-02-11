@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener } from '@angular/core';
+import {Component, ElementRef, HostListener, ViewContainerRef} from '@angular/core';
 import { MenuService } from "./services/menu.service";
 import { AuthService } from "./services/auth.service";
 import { AppFonction } from "./constants/app-fonction";
@@ -163,6 +163,7 @@ export class AppComponent {
     private configService: ConfigService,
     private el: ElementRef,
     private technicalService: TechnicalService,
+    public viewContainerRef : ViewContainerRef,
   ) {
     this.configService.getConfigTheme();
     this.configService.themeModified.subscribe((config: any) => {

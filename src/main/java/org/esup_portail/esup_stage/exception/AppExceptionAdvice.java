@@ -12,7 +12,7 @@ import java.util.Map;
 @ControllerAdvice
 public class AppExceptionAdvice {
 
-    private static final Logger LOGGER	= LogManager.getLogger(AppExceptionAdvice.class);
+    private static final Logger LOGGER = LogManager.getLogger(AppExceptionAdvice.class);
 
     @ExceptionHandler(AppException.class)
     public ResponseEntity<Object> handleAppException(AppException e) {

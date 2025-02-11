@@ -5,7 +5,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
+import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.dto.ConsigneFormDto;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
@@ -13,6 +13,7 @@ import org.esup_portail.esup_stage.enums.FolderEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.Consigne;
 import org.esup_portail.esup_stage.model.ConsigneDocument;
+import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.ConsigneDocumentJpaRepository;
 import org.esup_portail.esup_stage.repository.ConsigneJpaRepository;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
@@ -23,7 +24,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -35,16 +37,18 @@ import java.nio.file.StandardCopyOption;
 @RequestMapping("/consignes")
 public class ConsigneController {
 
-    private static final Logger logger	= LogManager.getLogger(ConsigneController.class);
+    private static final Logger logger = LogManager.getLogger(ConsigneController.class);
 
     @Autowired
-    ApplicationBootstrap applicationBootstrap;
+    AppliProperties appliProperties;
 
     @Autowired
     ConsigneJpaRepository consigneJpaRepository;
 
     @Autowired
     ConsigneDocumentJpaRepository consigneDocumentJpaRepository;
+    @Autowired
+    private CentreGestionJpaRepository centreGestionJpaRepository;
 
     @GetMapping("/centres/{idCentreGestion}")
     @Secure
@@ -60,6 +64,7 @@ public class ConsigneController {
     @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL, AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.CREATION})
     public Consigne create(@Valid @RequestBody ConsigneFormDto consigneFormDto) {
         Consigne consigne = new Consigne();
+        consigne.setCentreGestion(centreGestionJpaRepository.findById(consigneFormDto.getIdCentreGestion()));
         consigne.setTexte(ColorConverter.convertHslToRgb(consigneFormDto.getTexte()));
         consigne = consigneJpaRepository.saveAndFlush(consigne);
         return consigne;
@@ -79,7 +84,7 @@ public class ConsigneController {
 
     @PostMapping("/{idConsigne}/add-doc")
     @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL, AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.MODIFICATION})
-    public Consigne addDocument(@PathVariable("idConsigne") int idConsigne, @RequestParam MultipartFile doc) {
+    public Consigne addDocument(@PathVariable("idConsigne") int idConsigne, @RequestParam(value="doc") MultipartFile doc) {
         Consigne consigne = consigneJpaRepository.findById(idConsigne);
         if (consigne == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Consigne non trouvée");
@@ -159,7 +164,7 @@ public class ConsigneController {
     }
 
     private String getFilePath(String filename) {
-        return applicationBootstrap.getAppConfig().getDataDir() + FolderEnum.CENTRE_GESTION_CONSIGNE_DOCS + "/" + filename;
+        return appliProperties.getDataDir() + FolderEnum.CENTRE_GESTION_CONSIGNE_DOCS + "/" + filename;
     }
 
     private String getNomDocument(int idFichier, String nomFichier) {

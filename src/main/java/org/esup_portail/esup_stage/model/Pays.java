@@ -1,9 +1,8 @@
 package org.esup_portail.esup_stage.model;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import jakarta.persistence.*;
 import org.esup_portail.esup_stage.dto.view.Views;
-
-import javax.persistence.*;
 
 @Entity
 @Table(name = "Pays")
@@ -20,10 +19,10 @@ public class Pays implements Exportable {
 
     /**
      * Code actualité du pays ou du territoire.
-     1	actuel
-     2	périmé (dont le code a disparu du C.O.G.)
-     3	territoire n'ayant pas son propre code officiel géographique
-     4	territoire ayant son propre code officiel géographique
+     * 1	actuel
+     * 2	périmé (dont le code a disparu du C.O.G.)
+     * 3	territoire n'ayant pas son propre code officiel géographique
+     * 4	territoire ayant son propre code officiel géographique
      */
     @Column(nullable = false)
     private Integer actual;

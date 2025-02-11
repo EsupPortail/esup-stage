@@ -1,15 +1,17 @@
 package org.esup_portail.esup_stage.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.esup_portail.esup_stage.enums.NbJoursHebdoEnum;
 import org.esup_portail.esup_stage.model.Pays;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.util.Date;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ConventionFormDto {
 
     @NotNull
@@ -234,6 +236,8 @@ public class ConventionFormDto {
     private int idDevise;
 
     private Pays paysConvention;
+
+    private String inscriptionElp;
 
     private boolean horairesReguliers;
 
@@ -968,5 +972,13 @@ public class ConventionFormDto {
 
     public void setConfidentiel(boolean confidentiel) {
         this.confidentiel = confidentiel;
+    }
+
+    public String getInscriptionElp() {
+        return inscriptionElp;
+    }
+
+    public void setInscriptionElp(String inscriptionElp) {
+        this.inscriptionElp = inscriptionElp;
     }
 }

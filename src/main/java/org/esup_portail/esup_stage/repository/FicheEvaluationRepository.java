@@ -3,10 +3,12 @@ package org.esup_portail.esup_stage.repository;
 import org.esup_portail.esup_stage.model.FicheEvaluation;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 @Repository
 public class FicheEvaluationRepository extends PaginationRepository<FicheEvaluation> {
 
-    public FicheEvaluationRepository(EntityManager em) {super(em, FicheEvaluation.class, "fe");}
+    public FicheEvaluationRepository(EntityManager em) {
+        super(em, FicheEvaluation.class, "fe");
+    }
 }

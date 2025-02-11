@@ -1,6 +1,7 @@
 package org.esup_portail.esup_stage.dto;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
+
 import java.util.Date;
 
 public class UpdateDatesRequest {

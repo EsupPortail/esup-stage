@@ -4,8 +4,9 @@ import org.esup_portail.esup_stage.model.Etape;
 import org.json.JSONObject;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+
 import java.util.Arrays;
 import java.util.List;
 
