@@ -10,13 +10,16 @@
 	</parent>
 	<groupId>org.esup_portail.esup_stage</groupId>
 	<artifactId>esup-stage</artifactId>
-	<version>3.0.0</version>
+	<version>${revision}${sha1}${changelist}</version>
 	<packaging>war</packaging>
-	<name>estage</name>
+	<name>esup-stage</name>
 	<description>Application ESUP-Stage</description>
 
 	<properties>
-		<buildname>ROOT</buildname>
+		<revision>3.0.0</revision>
+		<sha1></sha1>
+		<changelist>-SNAPSHOT</changelist>
+
 		<java.version>21</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -25,29 +28,6 @@
 
         <!-- environnement local(dev: config interne) et default(config externe) -->
 	<profiles>
-		<profile>
-			<id>dev</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>com.github.eirslett</groupId>
-						<artifactId>frontend-maven-plugin</artifactId>
-						<version>1.15.1</version>
-						<executions>
-							<execution>
-								<id>install-node-and-npm</id>
-							</execution>
-							<execution>
-								<id>npm install</id>
-							</execution>
-							<execution>
-								<id>npm build</id>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
 		<profile>
 			<id>default</id>
 			<activation>
@@ -82,7 +62,6 @@
 							</execution>
 						</executions>
 					</plugin>
-
 				</plugins>
 			</build>
 		</profile>
@@ -119,6 +98,15 @@
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-cas</artifactId>
 		</dependency>
@@ -129,10 +117,6 @@
 		<dependency>
 			<groupId>org.springframework.ws</groupId>
 			<artifactId>spring-ws-support</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-webflux</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springdoc</groupId>
@@ -190,7 +174,6 @@
 			<version>6.1.0</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/nz.net.ultraq.thymeleaf/thymeleaf-layout-dialect -->
 		<dependency>
 			<groupId>nz.net.ultraq.thymeleaf</groupId>
 			<artifactId>thymeleaf-layout-dialect</artifactId>
@@ -202,11 +185,6 @@
 			<artifactId>mariadb-java-client</artifactId>
 			<version>3.5.1</version>
 			<!-- <scope>runtime</scope> -->
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
 		</dependency>
 
 		<dependency>
@@ -256,7 +234,6 @@
 			<artifactId>layout</artifactId>
 			<version>8.0.5</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.itextpdf/html2pdf -->
 		<dependency>
 			<groupId>com.itextpdf</groupId>
 			<artifactId>html2pdf</artifactId>
@@ -269,27 +246,23 @@
 			<artifactId>poi</artifactId>
 			<version>5.3.0</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
 			<version>5.3.0</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-text</artifactId>
 			<version>1.12.0</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>2.11.0</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/commons-validator/commons-validator -->
 		<dependency>
 			<groupId>commons-validator</groupId>
 			<artifactId>commons-validator</artifactId>
@@ -302,13 +275,11 @@
 			<version>4.0.3</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/jakarta.security.auth.message/jakarta.security.auth.message-api -->
 		<dependency>
 			<groupId>jakarta.security.auth.message</groupId>
 			<artifactId>jakarta.security.auth.message-api</artifactId>
 			<version>2.0.0-RC1</version>
 		</dependency>
-
 
 		<dependency>
 			<groupId>jakarta.xml.ws</groupId>
@@ -323,12 +294,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>jakarta.persistence</groupId>
-			<artifactId>jakarta.persistence-api</artifactId>
-			<version>3.1.0</version>
-		</dependency>
-
-		<dependency>
 			<groupId>org.glassfish.metro</groupId>
 			<artifactId>webservices-rt</artifactId>
 			<version>4.0.4</version>
@@ -336,23 +301,6 @@
 	</dependencies>
 
 	<build>
-		<finalName>${buildname}</finalName>
-		<sourceDirectory>src/main/java</sourceDirectory>
-
-		<resources>
-			<!-- resources classic -->
-            <resource>
-                <directory>src/main/resources</directory>
-				<filtering>false</filtering>
-            </resource>
-            <!-- interpreter le fichier 'default.properties' -->
-            <resource>
-            <!-- interprete les valeurs en ${xxx} en fonction des attributs maven -->
-                <directory>src/main/resources-filtered</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
-
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
@@ -495,5 +443,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>
