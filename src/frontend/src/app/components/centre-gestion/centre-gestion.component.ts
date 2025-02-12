@@ -182,16 +182,22 @@ export class CentreGestionComponent implements OnInit {
 
   updateOnChanges(): void {
     this.coordCentreForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
-      this.setCentreGestionCoordCentre();
-      this.update();
+      if (this.coordCentreForm.valid) {
+        this.setCentreGestionCoordCentre();
+        this.update();
+      }
     });
     this.paramCentreForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
-      this.setCentreGestionParamCentre();
-      this.update();
+      if(this.paramCentreForm.valid){
+        this.setCentreGestionParamCentre();
+        this.update();
+      }
     });
     this.signatureElectroniqueForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
-      this.setCentreGestionSignatureElectronique();
-      this.update();
+      if(this.signatureElectroniqueForm.valid){
+        this.setCentreGestionSignatureElectronique();
+        this.update();
+      }
     });
   }
 
