@@ -83,21 +83,24 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     @Column()
     private boolean autoriserImpressionConvention;
 
-    @Column
-    private Integer conditionValidationImpression;
+    @Column()
+    private Integer conditionValidationImpression = 0;
 
     @ManyToOne
     @JoinColumn(name = "idFichier")
     private Fichier fichier;
 
     @JsonView(Views.List.class)
-    private Boolean validationPedagogique;
+    @Column()
+    private Boolean validationPedagogique = false;
 
     @JsonView(Views.List.class)
-    private Boolean validationConvention;
+    @Column()
+    private Boolean validationConvention = false;
 
     @JsonView(Views.List.class)
-    private Boolean verificationAdministrative;
+    @Column()
+    private Boolean verificationAdministrative = false;
 
     @JsonView(Views.List.class)
     private Integer validationPedagogiqueOrdre;
@@ -115,11 +118,13 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     @JoinColumn(name = "idModeValidationStage")
     private ModeValidationStage modeValidationStage;
 
-    private Boolean visibiliteEvalPro;
+    @Column()
+    private Boolean visibiliteEvalPro = false;
 
-    private Boolean recupInscriptionAnterieure;
+    @Column()
+    private Boolean recupInscriptionAnterieure = false;
 
-    private Integer dureeRecupInscriptionAnterieure;
+    private Integer dureeRecupInscriptionAnterieure = 0;
 
     @Column
     private String adresse;
@@ -137,14 +142,14 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     @JsonManagedReference
     private List<PersonnelCentreGestion> personnels = new ArrayList<>();
 
-    @Column(nullable = false)
-    private boolean validationCreation;
+    @Column()
+    private boolean validationCreation = false;
 
     @JsonIgnore
     @OneToMany(mappedBy = "centreGestion", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<CritereGestion> criteres = new ArrayList<>();
 
-    @Column
+    @Column()
     private Integer delaiAlerteConvention = 0;
 
     @OneToOne(mappedBy = "centreGestion", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, orphanRemoval = true)
@@ -163,6 +168,7 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     private List<CentreGestionSignataire> signataires = new ArrayList<>();
 
     @JsonView(Views.List.class)
+    @Column()
     private Boolean onlyMailCentreGestion = false;
 
     @Column

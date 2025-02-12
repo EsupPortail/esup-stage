@@ -217,14 +217,29 @@ export class CentreGestionComponent implements OnInit {
     this.coordCentreForm = this.fb.group({
       nomCentre: [null, [Validators.required, Validators.maxLength(100)]],
       niveauCentre: [null, [Validators.required]],
-      siteWeb: [null, [Validators.maxLength(50)]],
-      mail: [null, [Validators.required, Validators.pattern(REGEX.EMAIL), Validators.maxLength(255)]],
-      telephone: [null, [Validators.required, Validators.maxLength(20)]],
+      siteWeb: [null, [
+        Validators.maxLength(50),
+        Validators.pattern(/^(https?:\/\/)?([a-zA-Z0-9.-]+)\.([a-zA-Z]{2,})(:[0-9]{1,5})?(\/.*)?$/)
+      ]],
+      mail: [null, [
+        Validators.required,
+        Validators.maxLength(255),
+        Validators.pattern(REGEX.EMAIL)
+      ]],
+      telephone: [null, [
+        Validators.required,
+        Validators.maxLength(20),
+        Validators.pattern(/^(?:(?:\+|00)\d{1,4}[-.\s]?|0)\d{1,4}([-.\s]?\d{1,4})*$/)
+      ]],
       fax: [null, [Validators.maxLength(20)]],
       adresse: [null, [Validators.maxLength(200)]],
       voie: [null, [Validators.required, Validators.maxLength(200)]],
       commune: [null, [Validators.required, Validators.maxLength(200)]],
-      codePostal: [null, [Validators.required, Validators.maxLength(10)]],
+      codePostal: [null, [
+        Validators.required,
+        Validators.maxLength(10),
+        Validators.pattern(/^\d{5}$/)
+      ]],
     });
   }
 
