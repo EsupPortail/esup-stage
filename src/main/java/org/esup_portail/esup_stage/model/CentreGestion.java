@@ -142,7 +142,7 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     @JsonManagedReference
     private List<PersonnelCentreGestion> personnels = new ArrayList<>();
 
-    @Column()
+    @Column(nullable = false)
     private boolean validationCreation = false;
 
     @JsonIgnore
