@@ -9,7 +9,7 @@
     <div class="add-period-section">
       <form [formGroup]="periodesForm" novalidate>
         <div class="row input-group">
-          <mat-form-field class="col-6 date-range-field" appearance="fill">
+          <mat-form-field class="col-9 date-range-field" appearance="fill">
             <mat-label>Sélectionnez une nouvelle période</mat-label>
             <mat-date-range-input [dateFilter]="calendarDateFilter" [rangePicker]="calendrierPicker">
               <input matStartDate formControlName="dateDebut" placeholder="Date de début">
@@ -36,7 +36,7 @@
             Période du {{periode.dateDebut|date:'shortDate'}} au {{periode.dateFin|date:'shortDate'}} :
           </div>
           <div class="row input-group">
-            <mat-form-field class="col-6" appearance="fill">
+            <mat-form-field class="col-9" appearance="fill">
               <mat-label>Nombre d'heures journalières sur cette période</mat-label>
               <input matInput [formControlName]="periode.formControlName" required />
               <mat-error>
