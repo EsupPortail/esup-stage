@@ -1,48 +1,64 @@
-<form [formGroup]="periodesForm" novalidate>
-  <div class="text-title">Calendrier du nombre d'heures de stage</div>
-  <mat-divider class="mb-3"></mat-divider>
-  <div class="row">
-    <mat-form-field class="col-6" appearance="fill">
-      <mat-label>Sélectionnez une nouvelle période</mat-label>
-      <mat-date-range-input [dateFilter]="calendarDateFilter" [rangePicker]="calendrierPicker">
-        <input matStartDate formControlName="dateDebut" placeholder="Date de début">
-        <input matEndDate formControlName="dateFin" placeholder="Date de fin">
-      </mat-date-range-input>
-      <mat-datepicker-toggle matSuffix [for]="calendrierPicker"></mat-datepicker-toggle>
-      <mat-date-range-picker #calendrierPicker></mat-date-range-picker>
+<div class="modal-overlay">
+  <div class="modal-container">
+    <!-- En-tête fixe -->
+    <div class="header-banner">
+      <h1>Calendrier du nombre d'heures de stage</h1>
+    </div>
 
-      <mat-error><app-form-error [field]="periodesForm.get('dateFin')"></app-form-error></mat-error>
-    </mat-form-field>
+    <!-- Section d'ajout de période fixe -->
+    <div class="add-period-section">
+      <form [formGroup]="periodesForm" novalidate>
+        <div class="row input-group">
+          <mat-form-field class="col-9 date-range-field" appearance="fill">
+            <mat-label>Sélectionnez une nouvelle période</mat-label>
+            <mat-date-range-input [dateFilter]="calendarDateFilter" [rangePicker]="calendrierPicker">
+              <input matStartDate formControlName="dateDebut" placeholder="Date de début">
+              <input matEndDate formControlName="dateFin" placeholder="Date de fin">
+            </mat-date-range-input>
+            <mat-datepicker-toggle matSuffix [for]="calendrierPicker"></mat-datepicker-toggle>
+            <mat-date-range-picker #calendrierPicker></mat-date-range-picker>
+            <mat-error><app-form-error [field]="periodesForm.get('dateFin')"></app-form-error></mat-error>
+          </mat-form-field>
 
-    <button type="button" mat-fab color="primary" matTooltip="Ajouter" (click)="addPeriode()">
-      <i class="fa fa-plus"></i>
-    </button>
-  </div>
-</form>
+          <button type="button" mat-fab class="add-button" matTooltip="Ajouter" (click)="addPeriode()">
+            <i class="fa fa-plus"></i>
+          </button>
+        </div>
+      </form>
+    </div>
 
-<form [formGroup]="heuresJournalieresForm" novalidate (submit)="save()">
-  <div *ngFor="let periode of periodes" >
-    <mat-divider class="mb-2"></mat-divider>
-    <div class="mb-3">Période du {{periode.dateDebut|date:'shortDate'}} au {{periode.dateFin|date:'shortDate'}} :</div>
-    <div class="row">
-      <mat-form-field class="col-6 mb-2" appearance="fill">
-        <mat-label>Nombre d’heures journalières sur cette période</mat-label>
-        <input matInput formControlName={{periode.formControlName}} required />
-        <mat-error><app-form-error [field]="heuresJournalieresForm.get('periode.formControlName')"></app-form-error></mat-error>
-      </mat-form-field>
-      <button type="button" mat-fab color="warn" matTooltip="Supprimer" (click)="removePeriode(periode)" >
-        <i class="fa fa-trash-alt"></i>
+    <!-- Contenu scrollable -->
+    <div class="scrollable-content">
+      <form [formGroup]="heuresJournalieresForm" novalidate (submit)="save()">
+        <div *ngFor="let periode of periodes" class="periode-section">
+          <mat-divider class="mb-2"></mat-divider>
+          <div class="periode-header">
+            Période du {{periode.dateDebut|date:'shortDate'}} au {{periode.dateFin|date:'shortDate'}} :
+          </div>
+          <div class="row input-group">
+            <mat-form-field class="col-9" appearance="fill">
+              <mat-label>Nombre d'heures journalières sur cette période</mat-label>
+              <input matInput [formControlName]="periode.formControlName" required />
+              <mat-error>
+                <app-form-error [field]="heuresJournalieresForm.get(periode.formControlName)"></app-form-error>
+              </mat-error>
+            </mat-form-field>
+            <button type="button" mat-fab color="warn" class="delete-button" matTooltip="Supprimer" (click)="removePeriode(periode)">
+              <i class="fa fa-trash-alt"></i>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Footer fixe -->
+    <div class="modal-footer">
+      <button type="button" mat-stroked-button class="cancel-button" (click)="close()">
+        {{'BOUTON_ANNULER'|contenu}}
+      </button>
+      <button type="submit" mat-flat-button class="submit-button" (click)="save()">
+        {{'BOUTON_VALIDER'|contenu}}
       </button>
     </div>
   </div>
-
-  <div class="row">
-    <div class="col-sm-6">
-      <button type="button" mat-button mat-stroked-button color="warn" (click)="close()">{{'BOUTON_ANNULER'|contenu}}</button>
-    </div>
-    <div class="col-sm-6 text-right">
-      <button mat-button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
-    </div>
-  </div>
-</form>
-
+</div>
