@@ -20,7 +20,7 @@ export class SignatureElectroniqueComponent implements OnInit {
   profils: any[] = [];
   data: any[] = [];
   isGestionnaire = false;
-  signatureType: string;
+  signatureType: string | undefined;
 
   constructor(
     private technicalService: TechnicalService,
