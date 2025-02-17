@@ -45,7 +45,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class SignatureService {
@@ -113,7 +112,7 @@ public class SignatureService {
         List<MetadataObservateurDto> observateurs = new ArrayList<>();
 
         // ajouté l'utilisateur de l'application en tant qu'observateur du parapheur au moment de l'envoie
-        LdapUser ldapUser = ldapService.searchByLogin(Objects.requireNonNull(ServiceContext.getUtilisateur()).getLogin());
+        LdapUser ldapUser = ldapService.searchByLogin(convention.getLoginExpediteurSignature());
         if (ldapUser != null && ldapUser.getMail() != null) {
             observateurs.add(new MetadataObservateurDto(ldapUser.getMail()));
         }

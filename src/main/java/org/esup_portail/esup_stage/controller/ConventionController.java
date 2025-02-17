@@ -19,6 +19,8 @@ import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.ConventionService;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
+import org.esup_portail.esup_stage.service.ldap.LdapService;
+import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
 import org.esup_portail.esup_stage.service.signature.SignatureService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,6 +110,9 @@ public class ConventionController {
 
     @Autowired
     SignatureProperties signatureProperties;
+
+    @Autowired
+    LdapService ldapService;
 
     @JsonView(Views.List.class)
     @GetMapping
@@ -518,6 +523,14 @@ public class ConventionController {
     @PostMapping("/signature-electronique")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.VALIDATION})
     public int envoiSignatureElectroniqueMultiple(@RequestBody IdsListDto idsListDto) {
+        // permet d'ajouter l'utilisateur courant comme Expéditeur de la convention
+        idsListDto.getIds().forEach(id->{
+                    Convention convention = conventionJpaRepository.findById(id).orElse(null);
+                    assert convention != null;
+                    convention.setLoginExpediteurSignature(Objects.requireNonNull(ServiceContext.getUtilisateur()).getLogin());
+                    conventionJpaRepository.save(convention);
+                });
+
         return signatureService.upload(idsListDto, false);
     }
 
