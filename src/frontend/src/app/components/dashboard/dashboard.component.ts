@@ -361,7 +361,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       { id: 'enseignant', libelle: 'Enseignant', specific: true },
       { id: 'avenant', libelle: 'Avenant', type: 'boolean', specific: true },
       { id: 'etatValidation', libelle: 'État de validation de la convention', type: 'list', options: this.validationsOptions, keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
-      { id: 'annee', libelle: 'Année', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'libelle', value: [] },
+      { id: 'annee', libelle: 'Année', type: 'annee', options: [], keyLibelle: 'libelle', keyId: 'libelle', value: [] },
     ];
 
     this.exportColumns = {

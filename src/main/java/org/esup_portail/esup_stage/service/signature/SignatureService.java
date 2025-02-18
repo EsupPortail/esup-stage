@@ -159,7 +159,7 @@ public class SignatureService {
         if (appSignature == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La signature électronique n'est pas configurée");
         }
-        if (idsListDto.getIds().size() == 0) {
+        if (idsListDto.getIds().isEmpty()) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La liste est vide");
         }
         int count = 0;

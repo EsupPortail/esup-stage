@@ -37,6 +37,11 @@
                     <mat-option [value]="'N'">Non</mat-option>
                   </mat-select>
                 </ng-container>
+                <ng-container *ngSwitchCase="'annee'">
+                  <mat-select [name]="filter.id" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()">
+                    <mat-option *ngFor="let option of filter.options" [value]="option[filter.keyId]" [matTooltip]="filter.infoBulleCentre ? option[filter.keyLibelle] : ''">{{option[filter.keyLibelle]|| 'Valeur indisponible' }}</mat-option>
+                  </mat-select>
+                </ng-container>
                 <ng-container *ngSwitchCase="'date'">
                   <input matInput [name]="filter.id" [matDatepicker]="datepicker" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()" />
                 </ng-container>

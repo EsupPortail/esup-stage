@@ -27,7 +27,7 @@
         Docaposte et ESUP-Signature : les informations de signature sont mises à jour automatiquement tous les jours à 1h.<br/>
         Solutions externes : les informations de signature sont mis à jour automatiquement via webhook.<br/>
         L'actualisation des données n'est possible que toutes les 30 minutes.
-        <div class="mt-2 text-center" *ngIf="isGestionnaire">
+        <div class="mt-2 text-center">
           <button mat-button mat-flat-button color="primary" (click)="updateSignatureInfos()" [disabled]="isActualisationActif()">
             Mettre à jour les informations et récupérer le document signé
           </button>
@@ -81,7 +81,6 @@
 
 <mat-card *ngFor="let avenant of convention.avenants">
   <app-signature-electronique-view *ngIf="profils.length > 0"
-                                   [isGestionnaire]="isGestionnaire"
                                    [isMobile]="isMobile"
                                    [profils]="profils"
                                    [avenant]="avenant"
