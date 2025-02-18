@@ -76,7 +76,7 @@ public class PersonnelCentreGestionController {
     }
 
     @PostMapping("/{idCentre}")
-    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.CREATION})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.MODIFICATION})
     public PersonnelCentreGestion create(@PathVariable("idCentre") int idCentre, @Valid @RequestBody PersonnelCentreGestion personnelCentreGestion) {
         CentreGestion centreGestion = centreGestionJpaRepository.findById(idCentre);
         List<PersonnelCentreGestion> personnels = centreGestion.getPersonnels();
