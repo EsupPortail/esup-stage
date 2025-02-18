@@ -7,5 +7,5 @@ databaseChangeLog:
         tableName: convention
         columns:
         - column:
-            name: loginExpediteurSignature
+            name: loginEnvoiSignature
             type: VARCHAR(255)

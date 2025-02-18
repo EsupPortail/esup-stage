@@ -527,7 +527,7 @@ public class ConventionController {
         idsListDto.getIds().forEach(id->{
                     Convention convention = conventionJpaRepository.findById(id).orElse(null);
                     assert convention != null;
-                    convention.setLoginExpediteurSignature(Objects.requireNonNull(ServiceContext.getUtilisateur()).getLogin());
+                    convention.setLoginEnvoiSignature(Objects.requireNonNull(ServiceContext.getUtilisateur()).getLogin());
                     conventionJpaRepository.save(convention);
                 });
 

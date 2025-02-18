@@ -403,7 +403,7 @@ public class Convention extends ObjetMetier implements Exportable {
     private Date dateActualisationSignature;
 
     @Column
-    private String loginExpediteurSignature;
+    private String loginEnvoiSignature;
 
     @JsonView(Views.List.class)
     @Transient

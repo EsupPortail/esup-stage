@@ -112,7 +112,7 @@ public class SignatureService {
         List<MetadataObservateurDto> observateurs = new ArrayList<>();
 
         // ajouté l'utilisateur de l'application en tant qu'observateur du parapheur au moment de l'envoie
-        LdapUser ldapUser = ldapService.searchByLogin(convention.getLoginExpediteurSignature());
+        LdapUser ldapUser = ldapService.searchByLogin(convention.getLoginEnvoiSignature());
         if (ldapUser != null && ldapUser.getMail() != null) {
             observateurs.add(new MetadataObservateurDto(ldapUser.getMail()));
         }
