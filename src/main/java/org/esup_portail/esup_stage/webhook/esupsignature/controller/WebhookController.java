@@ -15,13 +15,14 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class WebhookController {
 
     private final WebClient webClient;
-    @Autowired
-    WebhookService webhookService;
-    @Autowired
-    AppliProperties appliProperties;
+    private final WebhookService webhookService;
+    private final AppliProperties appliProperties;
 
-    public WebhookController(WebClient.Builder builder) {
+    @Autowired
+    public WebhookController(WebClient.Builder builder, WebhookService webhookService, AppliProperties appliProperties) {
         this.webClient = builder.build();
+        this.webhookService = webhookService;
+        this.appliProperties = appliProperties;
     }
 
     @PostMapping("/webhook/esup-signature")

@@ -1,5 +1,7 @@
 package org.esup_portail.esup_stage.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -30,10 +32,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
-
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;

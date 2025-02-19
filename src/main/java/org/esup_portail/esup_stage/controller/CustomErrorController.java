@@ -1,5 +1,7 @@
 package org.esup_portail.esup_stage.controller;
 
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.http.HttpServletRequest;
 import org.esup_portail.esup_stage.dto.ConfigThemeDto;
 import org.esup_portail.esup_stage.service.AppConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,9 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 public class CustomErrorController implements ErrorController {

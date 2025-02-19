@@ -1,6 +1,7 @@
 package org.esup_portail.esup_stage.service;
 
 import freemarker.template.Template;
+import jakarta.mail.internet.MimeMessage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
@@ -16,8 +17,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
-
-import jakarta.mail.internet.MimeMessage;
 
 import java.io.StringWriter;
 import java.text.DateFormat;
