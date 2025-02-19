@@ -159,8 +159,8 @@ export class StageComponent implements OnInit {
       fonctionsEtTaches: [this.convention.fonctionsEtTaches],
       details: [this.convention.details],
       // - Partie Dates / horaires
-      dateDebutStage: [this.convention.dateDebutStage, [Validators.required]],
-      dateFinStage: [this.convention.dateFinStage, [Validators.required]],
+      dateDebutStage: [this.convention.dateDebutStage ? new Date(this.convention.dateDebutStage) : null, [Validators.required]],
+      dateFinStage: [this.convention.dateFinStage ? new Date(this.convention.dateFinStage) : null, [Validators.required]],
       interruptionStage: [this.convention.interruptionStage, [Validators.required]],
       horairesReguliers: [this.convention.horairesReguliers, [Validators.required]],
       nbHeuresHebdo: [this.convention.nbHeuresHebdo, this.fieldValidators['nbHeuresHebdo']],
