@@ -334,7 +334,7 @@ public class ConventionController {
         if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
             ConfigAlerteMailDto configAlerteMailDto = appConfigService.getConfigAlerteMail();
             boolean sendMailEtudiant = configAlerteMailDto.getAlerteEtudiant().isCreationConventionEtudiant();
-            boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isCreationConventionGestionnaire();
+            boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isCreationConventionEtudiant();;
             boolean sendMailGestionnaire = configAlerteMailDto.getAlerteGestionnaire().isCreationConventionEtudiant();
             boolean sendMailRespGestionnaire = configAlerteMailDto.getAlerteRespGestionnaire().isCreationConventionEtudiant();
             conventionService.sendValidationMail(convention, null, utilisateur, TemplateMail.CODE_ETU_CREA_CONVENTION, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire); //ICI : ATTENTION IL Y AVAIT DEJA UN SENDMAILGESTIONNAIRE EN PARAM2 DE LA FONCTION
