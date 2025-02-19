@@ -52,11 +52,18 @@ public class MailerService {
      */
 
     public void sendAlerteValidation(String to, Convention convention, Avenant avenant, Utilisateur userModif, String templateMailCode) {
+        /*-------------------------------------------------------TODO à supprimer------------------------------------------------------------------*/
+        logger.info("------------------------------------------MailerService--------------------------------------------------");
+        logger.info("Envoi de l'email : " + templateMailCode + " à " + to);
+        logger.info("Convention : " + convention.toString());
+        logger.info("Utilisateur : " + userModif.toString());
+        logger.info("---------------------------------------------------------------------------------------------------------");
+        /*-----------------------------------------------------------------------------------------------------------------------------------------*/
         TemplateMail templateMail = templateMailJpaRepository.findByCode(templateMailCode);
         if (templateMail == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Template mail " + templateMailCode + " non trouvé");
         }
-        if (to == null || to.equals("")) {
+        if (to == null || to.isEmpty() || to.equals("null")) {
             logger.info("Aucun destinataire défini pour l'envoie de l'email.");
         } else {
             MailContext mailContext = new MailContext(appliProperties, convention, avenant, userModif);

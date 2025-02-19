@@ -29,43 +29,45 @@
         <!-- environnement local(dev: config interne) et default(config externe) -->
 	<profiles>
 		<profile>
-			<id>default</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
+			<id>dev</id>
+			<properties>
+				<application.configfilepath>classpath:estage.properties</application.configfilepath>
+			</properties>
 			<build>
 				<plugins>
 					<plugin>
 						<groupId>com.github.eirslett</groupId>
 						<artifactId>frontend-maven-plugin</artifactId>
-						<version>1.15.1</version>
+						<version>1.6</version>
 						<executions>
 							<execution>
-								<id>install node and npm</id>
-								<goals>
-									<goal>install-node-and-npm</goal>
-								</goals>
-								<configuration>
-									<nodeVersion>v20.17.0</nodeVersion>
-									<workingDirectory>${project.basedir}/src/frontend</workingDirectory>
-								</configuration>
+								<id>install-node-and-npm</id>
+								<phase>none</phase>
 							</execution>
 							<execution>
 								<id>npm install</id>
-								<goals>
-									<goal>npm</goal>
-								</goals>
-								<configuration>
-									<arguments>install --loglevel info</arguments>
-									<workingDirectory>${project.basedir}/src/frontend</workingDirectory>
-								</configuration>
+								<phase>none</phase>
+							</execution>
+							<execution>
+								<id>npm build</id>
+								<phase>none</phase>
 							</execution>
 						</executions>
 					</plugin>
 				</plugins>
 			</build>
 		</profile>
+		<profile>
+			<id>default</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<application.configfilepath>file:///etc/${project.name}/estage.properties</application.configfilepath>
+			</properties>
+		</profile>
 	</profiles>
+
 
 	<dependencies>
 		<dependency>

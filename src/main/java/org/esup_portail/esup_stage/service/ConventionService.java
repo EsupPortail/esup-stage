@@ -415,6 +415,19 @@ public class ConventionService {
         List<PersonnelCentreGestion> personnels = convention.getCentreGestion().getPersonnels();
         personnels = personnels.stream().filter(p -> p.getAlertesMail() != null && p.getAlertesMail()).collect(Collectors.toList());
 
+        //log de test
+        //TODO à supprimer
+        logger.info("sendValidationMail : sendMailEtudiant : " + sendMailEtudiant);
+        logger.info("sendValidationMail : sendMailEnseignant : " + sendMailEnseignant);
+        logger.info("sendValidationMail : sendMailGestionnaire : " + sendMailGestionnaire);
+        logger.info("sendValidationMail : sendMailRespGestionnaire : " + sendMailRespGestionnaire);
+        logger.info("sendValidationMail : templateMailCode : " + templateMailCode);
+        logger.info("sendValidationMail : personnels : " + personnels);
+        logger.info("sendValidationMail : convention : " + convention);
+        logger.info("sendValidationMail : convention GetMail : "+convention.getCentreGestion().getMail().toString());
+        logger.info("sendValidationMail : convention GetMail Enseignant : "+convention.getEnseignant().getMail());
+        logger.info("sendValidationMail : convention GetMail Etudiant : "+convention.getEtudiant().getMail());
+
         // Récupération de la fiche utilisateur des personnels
         if (sendMailGestionnaire || sendMailRespGestionnaire) {
             List<Utilisateur> utilisateurPersonnels = utilisateurJpaRepository.findByUids(personnels.stream().map(PersonnelCentreGestion::getUidPersonnel).collect(Collectors.toList()));
