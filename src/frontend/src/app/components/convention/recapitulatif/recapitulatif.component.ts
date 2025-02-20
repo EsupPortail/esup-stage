@@ -16,7 +16,8 @@ export class RecapitulatifComponent implements OnInit {
   @Input() convention: any;
   tmpConvention: any;
   interruptionsStage: any[] = [];
-  canPrint: boolean = true;
+  canPrint: boolean = false;
+  printDisabledReason: string = '';
 
   constructor(private periodeInterruptionStageService: PeriodeInterruptionStageService,
               private conventionService: ConventionService,
@@ -40,30 +41,74 @@ export class RecapitulatifComponent implements OnInit {
       natureTravailLibelle: this.getNomenclatureValue('natureTravail'),
       modeValidationStageLibelle: this.getNomenclatureValue('modeValidationStage'),
     };
+
     if(this.tmpConvention.interruptionStage){
       this.loadInterruptionsStage();
     }
 
-    if(this.authService.isEtudiant()){
+    this.updateCanPrintStatus();
+  }
+
+  updateCanPrintStatus(): void {
+    // Vérifier d'abord si la convention a été validée
+    if (!this.tmpConvention.validationCreation) {
       this.canPrint = false;
-      const centreGestion : any = this.convention.centreGestion;
-      if(centreGestion.autoriserImpressionConvention){
-        if(centreGestion.conditionValidationImpression == 0){
-          this.canPrint = true;
-        }
-        if(centreGestion.conditionValidationImpression == 1 && this.convention.validationPedagogique){
-          this.canPrint = true;
-        }
-        if(centreGestion.conditionValidationImpression == 2 && this.convention.validationConvention){
-          this.canPrint = true;
-        }
-        if(centreGestion.conditionValidationImpression == 3 && this.convention.validationPedagogique && this.convention.validationConvention){
-          this.canPrint = true;
-        }
-        if(centreGestion.conditionValidationImpression == 4 && this.convention.verificationAdministrative){
-          this.canPrint = true;
-        }
+      this.printDisabledReason = 'Vous devez d\'abord valider la convention';
+      return;
+    }
+
+    // Si l'utilisateur est un étudiant, appliquer les règles spécifiques
+    if (this.authService.isEtudiant()) {
+      const centreGestion: any = this.convention.centreGestion;
+
+      // Vérifier si l'impression est autorisée pour ce centre de gestion
+      if (!centreGestion.autoriserImpressionConvention) {
+        this.canPrint = false;
+        this.printDisabledReason = 'L\'impression n\'est pas autorisée pour ce centre de gestion';
+        return;
       }
+
+      // Appliquer les conditions de validation selon la configuration du centre
+      switch (centreGestion.conditionValidationImpression) {
+        case 0:
+          // Aucune condition
+          this.canPrint = true;
+          break;
+        case 1:
+          // Validation pédagogique requise
+          this.canPrint = !!this.convention.validationPedagogique;
+          if (!this.canPrint) {
+            this.printDisabledReason = 'La validation pédagogique est requise avant impression';
+          }
+          break;
+        case 2:
+          // Validation administrative requise
+          this.canPrint = !!this.convention.validationConvention;
+          if (!this.canPrint) {
+            this.printDisabledReason = 'La validation administrative est requise avant impression';
+          }
+          break;
+        case 3:
+          // Validations pédagogique et administrative requises
+          this.canPrint = !!this.convention.validationPedagogique && !!this.convention.validationConvention;
+          if (!this.canPrint) {
+            this.printDisabledReason = 'Les validations pédagogique et administrative sont requises avant impression';
+          }
+          break;
+        case 4:
+          // Vérification administrative requise
+          this.canPrint = !!this.convention.verificationAdministrative;
+          if (!this.canPrint) {
+            this.printDisabledReason = 'La vérification administrative est requise avant impression';
+          }
+          break;
+        default:
+          this.canPrint = false;
+          this.printDisabledReason = 'Configuration de validation non reconnue';
+      }
+    } else {
+      // Pour les autres types d'utilisateurs (non-étudiants), l'impression est autorisée par défaut
+      this.canPrint = true;
     }
   }
 
@@ -83,7 +128,9 @@ export class RecapitulatifComponent implements OnInit {
   validate(): void {
     this.conventionService.validationCreation(this.tmpConvention.id).subscribe((response: any) => {
       this.messageService.setSuccess('Convention créée avec succès');
-      this.router.navigate([`/conventions/${this.tmpConvention.id}`], )
+      this.tmpConvention.validationCreation = true;
+      this.updateCanPrintStatus();
+      this.router.navigate([`/conventions/${this.tmpConvention.id}`]);
     });
   }
 
@@ -94,5 +141,4 @@ export class RecapitulatifComponent implements OnInit {
       FileSaver.saveAs(blob, filename);
     });
   }
-
 }

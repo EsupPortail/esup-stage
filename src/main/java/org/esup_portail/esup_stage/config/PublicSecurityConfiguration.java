@@ -2,6 +2,7 @@ package org.esup_portail.esup_stage.config;
 
 
 import org.esup_portail.esup_stage.config.filters.PublicTokenFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -15,24 +16,24 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Order(1)
 public class PublicSecurityConfiguration {
 
+    public static String PATH_FILTER = "/public";
+
+    @Autowired
+    public PublicTokenFilter tokenFilter;
+
     @Bean
     public SecurityFilterChain filterChainPublic(HttpSecurity http) throws Exception {
         http
-                .securityMatcher("/public/**")
+                .securityMatcher(PATH_FILTER+"/**")
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/public/api-docs/**", "/public/swagger-ui.html", "/public/swagger-ui/**").permitAll()
+                        .requestMatchers(PATH_FILTER+"/api-docs/**", PATH_FILTER+"/swagger-ui.html", PATH_FILTER+"/swagger-ui/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(tokenFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
-    }
-
-
-    public PublicTokenFilter tokenFilter() {
-        return new PublicTokenFilter();
     }
 }

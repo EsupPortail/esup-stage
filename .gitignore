@@ -3,6 +3,8 @@
 /application.properties
 application.properties
 etc/estage/application.properties
+compose.env
+.env
 /data*
 **/~*.docx
 **/~*.tmp

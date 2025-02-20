@@ -40,7 +40,7 @@ public class SecurityConfiguration {
     @Bean
     public ServiceProperties serviceProperties() {
         ServiceProperties serviceProperties = new ServiceProperties();
-        serviceProperties.setService(appliProperties.getPrefix() + "/login/cas");
+        serviceProperties.setService(appliProperties.getUrl() + "/login/cas");
         serviceProperties.setSendRenew(false);
         return serviceProperties;
     }

@@ -1,5 +1,6 @@
 package org.esup_portail.esup_stage.controller;
 
+import jakarta.validation.Valid;
 import org.esup_portail.esup_stage.dto.ReponseEnseignantFormDto;
 import org.esup_portail.esup_stage.dto.ReponseEntrepriseFormDto;
 import org.esup_portail.esup_stage.dto.ReponseEtudiantFormDto;
@@ -21,8 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import jakarta.validation.Valid;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Date;

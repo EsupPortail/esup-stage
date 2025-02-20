@@ -3,6 +3,7 @@ package org.esup_portail.esup_stage.config.properties;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
@@ -10,19 +11,17 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 @Data
 @NoArgsConstructor
 @ConfigurationProperties(prefix = "appli")
+@Component
 public class AppliProperties {
     private DatasourceProperties datasource;
     private MailerProperties mailer;
-    private String prefix;
     private String url;
-    private String localapi;
     private String adminTechnique;
     private String dataDir;
-    private List<String> publicTokens;
+    private List<String> tokens;
 
     public Set<String> getAdminTechnique() {
         if (adminTechnique == null || adminTechnique.trim().isEmpty()) {
@@ -34,14 +33,13 @@ public class AppliProperties {
     }
 
     public String[] getPublicTokens() {
-        if (publicTokens == null || publicTokens.isEmpty()) {
+        if (tokens == null || tokens.isEmpty()) {
             return new String[]{};
         }
-
-        return publicTokens.stream()
+        return tokens.stream()
                 .filter(StringUtils::hasText) // Filtre les tokens non vides
                 .flatMap(token -> Stream.of(token.split(";"))) // Divise les tokens par ";"
-                .toArray(String[]::new); // Retourne un tableau
+                .toArray(String[]::new);
     }
 
     @Data

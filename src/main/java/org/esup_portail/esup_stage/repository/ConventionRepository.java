@@ -1,15 +1,16 @@
 package org.esup_portail.esup_stage.repository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import org.esup_portail.esup_stage.model.Convention;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Repository;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
-
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 @Repository
 public class ConventionRepository extends PaginationRepository<Convention> {

@@ -202,13 +202,31 @@
     <div class="row">
       <div class="col-sm-12 text-center">
         <mat-card-actions>
-          <button mat-button mat-flat-button color="primary" (click)="validate()" *ngIf="!tmpConvention.validationCreation">{{'BOUTON_VALIDER'|contenu}}</button>
-          <button mat-button mat-flat-button color="primary" (click)="printConvention(false)"
-          *ngIf="canPrint">
-             Imprimer la convention
+          <button mat-button mat-flat-button color="primary" (click)="validate()" *ngIf="!tmpConvention.validationCreation">
+            {{'BOUTON_VALIDER'|contenu}}
           </button>
-          <button mat-button mat-flat-button color="primary" (click)="printConvention(true)"
-          *ngIf="canPrint">Imprimer le récapitulatif</button>
+
+          <!-- Affichage conditionnel des boutons d'impression -->
+          <ng-container *ngIf="tmpConvention.validationCreation">
+            <button mat-button mat-flat-button color="primary"
+                    (click)="printConvention(false)"
+                    [disabled]="!canPrint"
+                    [matTooltip]="!canPrint ? printDisabledReason : ''">
+              Imprimer la convention
+            </button>
+
+            <button mat-button mat-flat-button color="primary"
+                    (click)="printConvention(true)"
+                    [disabled]="!canPrint"
+                    [matTooltip]="!canPrint ? printDisabledReason : ''">
+              Imprimer le récapitulatif
+            </button>
+          </ng-container>
+
+          <!-- Message d'erreur affiché lorsque les boutons sont désactivés -->
+          <div *ngIf="tmpConvention.validationCreation && !canPrint" class="error-message mat-caption">
+            {{ printDisabledReason }}
+          </div>
         </mat-card-actions>
       </div>
     </div>

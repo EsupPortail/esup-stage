@@ -1,6 +1,7 @@
 package org.esup_portail.esup_stage.config;
 
 import org.esup_portail.esup_stage.config.filters.WebhookEsupSignatureTokenFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -14,23 +15,23 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Order(2)
 public class EsupSignatureConfiguration {
 
+    public static String PATH_FILTER = "/webhook";
+
+    @Autowired
+    public WebhookEsupSignatureTokenFilter tokenFilter;
+
     @Bean
     public SecurityFilterChain filterChainWebhookEsupSignature(HttpSecurity http) throws Exception {
         http
-                .securityMatcher("/webhook/**")
+                .securityMatcher(PATH_FILTER + "/**")
                 .authorizeHttpRequests(authorize -> authorize
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(tokenFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));  // Sessions stateless
 
         return http.build();
-    }
-
-
-    public WebhookEsupSignatureTokenFilter tokenFilter() {
-        return new WebhookEsupSignatureTokenFilter();
     }
 }
