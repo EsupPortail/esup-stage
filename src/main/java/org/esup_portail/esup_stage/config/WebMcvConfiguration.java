@@ -30,7 +30,7 @@ public class WebMcvConfiguration implements WebMvcConfigurer {
     @Override
     public void configurePathMatch(PathMatchConfigurer configurer) {
         configurer.addPathPrefix("/api", HandlerTypePredicate.forAnnotation(ApiController.class));
-        configurer.addPathPrefix("/public/api", HandlerTypePredicate.forAnnotation(ApiPublicController.class));
+        configurer.addPathPrefix(PublicSecurityConfiguration.PATH_FILTER + "/api", HandlerTypePredicate.forAnnotation(ApiPublicController.class));
     }
 
     @Bean

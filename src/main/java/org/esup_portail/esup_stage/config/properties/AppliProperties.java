@@ -18,9 +18,7 @@ import java.util.stream.Stream;
 public class AppliProperties {
     private DatasourceProperties datasource;
     private MailerProperties mailer;
-    private String prefix;
     private String url;
-    private String localapi;
     private String adminTechnique;
     private String dataDir;
     private List<String> tokens;
