@@ -6,64 +6,60 @@ ESUP STAGE est la refonte de l'application pStage. L'application a été complè
 
 Documentation technique link:src/docs/modules/ROOT/pages/index.adoc[(source)]
 
-ifndef::env-github[]
-include::src/docs/modules/ROOT/pages/ESUP-STAGE.adoc[tag=compilation]
-endif::[]
-ifdef::env-github[]
-== link:src/docs/modules/ROOT/pages/ESUP-STAGE.adoc#compilation[→ Compilation]
-endif::[]
+// ifndef::env-github[]
+// include::src/docs/modules/ROOT/pages/ESUP-STAGE.adoc[tag=compilation]
+// endif::[]
+// ifdef::env-github[]
+// == link:src/docs/modules/ROOT/pages/ESUP-STAGE.adoc#compilation[→ Compilation]
+// endif::[]
 
+== Modifications apportées au fichier de configuration pour la version 3
 
+Pour éviter les répétitions de valeurs, les champs suivant ont été modifiés :
 
-== Integration
+* `cas.url.login` : ne contient maintenant que le path de connexion :  `/login`
+* `cas.url.logout` : ne contient maintenant que le path de déconnexion :  `/logout`
+* `appli.prefix` : supprimé car en doublon avec `appli.url`
+* `appli.localapi` : supprimé car en doublon avec `appli.url`
+* `appli.tokens` : précédement `appli.public.tokens`, renommage pour cause technique (le mot clé `public` étant réservé)
 
-* Build war
+== Génération de l'application
 
-[,console]
-----
-[user@pc ~/git/eStage]$ mvn clean package
-...
-[user@pc ~/git/eStage]$ ls target/*.war
-target/ROOT.war
-[user@pc ~/git/eStage]$
-----
-
-* Execution devel
-
-Cette execution passe par le fichier de configuration "src/main/resources-filtered/application.properties"
+* Build du war de l'application : esup-stage-3.x.x.war
 
 [,console]
 ----
-[user@pc ~/git/eStage]$ mvn -Pdev clean package cargo:run
-...
+mvn clean package
 ----
 
-== Pré-requis
+* Exécution en local de l'application
 
-* la variable appli.data_dir dans estage.properties pointe sur le dossier d'upload du projet. Ce dossier doit contenir la structure suivante :
- ** `centregestion`
-  *** `consigne-documents`
-  *** `logos`
- ** `images`
- ** `signatures`
+A la racine de l'application, renommer et complèter le fichier `application-example.properties` en `application.properties`, puis exécuter :
 
-Par exemple si `appli.data_dir=/etc/eStage/uploads` on aura :
+[,console]
+----
+mvn clean package cargo:run
+----
+
+== Stockage de fichiers
+
+* La variable `appli.data_dir` dans `application.properties` définie le répertoire de stockage des fichiers.
+L'application se charge de créer les répertoires suivants : si `appli.data_dir=/volume/data` on aura :
 
 ----
-/etc
-|_/eStage
-   |_/uploads
-     |_/centregestion
-       |_/consigne-documents
-       |_/logos
-     |_/images
-     |_/signatures
+/volume
+    |_/data
+    |_/centregestion
+        |_/consigne-documents
+        |_/logos
+    |_/images
+    |_/signatures
 ----
 
 == CAS
 
-Par défaut, l'application attend du serveur CAS une réponse au format JSON. Si le serveur CAS répond au format XML,
-il faut ajouter la ligne suivante au fichier `estage.properties` :
+* Par défaut, l'application attend du serveur CAS une réponse au format JSON. Si le serveur CAS répond au format XML,
+il faut ajouter la ligne suivante au fichier `application.properties` :
 
 [,properties]
 ----
@@ -72,74 +68,27 @@ cas.response_type=xml
 
 == link:src/docs/modules/ROOT/pages/signature.adoc[→ Signature électronique (optionnel)]
 
-== Procédure d'installation en environnement de dev
+== Procédure d'exécution en environnement de dev
 
-* ajouter un fichier src/main/resources/estage.properties basé sur le fichier src/main/resources/estage-example.properties
-* dans ce fichier, paramétrer la variable `appli.admin_technique` en ajoutant votre login cas (les logins sont séparés par des ;)
-* lancer la génération des classes java pour le client Docaposte avec la commande maven `-Pdev jaxb2:generate` : les classes sont générées dans `org/esup_portail/esup_stage/docaposte/gen`
-* lancer le serveur avec une commande maven `-Pdev clean package cargo:run`. Le profil `dev` permet de désactiver l'installation de node, npm et du build angular. Si besoin, il suffit de commenter la partie `execution` se trouvant au niveau du profil `dev`.
-* pour lancer le frontend dev :
- ** sans Docker : lancer la commande `ng serve --host localhost.dauphine.fr --proxy-config src/proxy.conf.json` au niveau du dossier frontend (node et npm devront être installés)
- ** avec Docker :
-  *** se positionner au niveau du dossier `frontend`
-  *** lancer les commandes suivantes pour initier et installer les nodes modules :
-   **** `docker-compose build`
-   **** `docker-compose run --rm --entrypoint=npm frontend ci`
-  *** lancer la commande suivante pour lancer le fontend en dev : `docker-compose up -d`
-* aller sur l'application à l'adresse http://localhost.dauphine.fr:8080/frontend/#/ et se connecter une première fois
-* ouvrir un nouvel onglet sur http://localhost.dauphine.fr:8700 (ou http://localhost.dauphine.fr:4200) pour accéder à l'application en mode angular dev
-* pour se déconnecter, aller sur http://localhost.dauphine.fr:4200/logout
+* Créer un fichier `application.properties` basé sur le fichier `application-example.properties`
+* Lancer le serveur avec une commande maven `clean package cargo:run`
+** L'application est alors accessible sur : `http://localhost:8080/`
 
-== Procédure d'installation
+* Pour lancer le frontend avec le mode dev d'angular, en hotreload (rechargement à chaud en cas de modification du code) :
+ ** Exécuter la commande `ng serve --host localhost --proxy-config src/proxy.conf.json` au niveau du dossier frontend (node et npm devront être installés)
+* Se rendre sur l'application à l'adresse `http://localhost:8080/` pour se connecter une première fois
+* Puis se rendre sur `http://localhost:4200`
+* Pour se déconnecter, aller sur `http://localhost:4200/logout`
 
-https://github.com/EsupPortail/esup-stage/wiki
+== Déploiement de l'application sur tomcat
 
-== Installation de ckeditor5
+* TODO
+* Le fichier application.properties peut être positionné à la racine du tomcat et renseigné dans la commande d'exécution avec `-Dspring.config.location=$HOMEDIR/application.properties`
 
-* aller sur le site https://ckeditor.com/ckeditor-5/online-builder/ pour générer ckeditor5 avec des plugins personnalisés
-* choisir l'éditeur "Classic" (le plugin "Source code" ne fonctionne actuellement qu'avec l'éditeur Classic)
-* enlever les plugins nécessitants une license PRO
-* ci-dessous la liste des plugins actuelle de l'application (* : obligatoire pour le bon fonctionnement minimal) :
- ** Alignement *
- ** Autoformat
- ** Base64 upload adapter *
- ** Block quote *
- ** Bold *
- ** Find and replace *
- ** Font background color *
- ** Font color *
- ** Font family *
- ** Font size *
- ** Heading *
- ** Highlight
- ** Horizontal line
- ** Image *
- ** Image caption *
- ** Image resize *
- ** Image style *
- ** Image toolbar *
- ** Image upload *
- ** Indent *
- ** Indent block *
- ** Italic *
- ** Link
- ** List *
- ** List properties *
- ** Media embed
- ** Page break *
- ** Paste front Office
- ** Remove format *
- ** Source editing *
- ** Strikethrough *
- ** Table *
- ** Table cell properties *
- ** Table column resize *
- ** Table properties *
- ** Table toolbar *
- ** Text transformation *
- ** To-do list
- ** Underline *
-* à l'étape suivante, disposer comme voulu les éléments de la barre d'outils de l'éditeur
-* une fois terminé, choisir la langue française et télécharger la librairie
-* supprimer tout le contenu de `src/frontend/src/custom-ck5` pour y mettre celui du dossier `build/` de la librairie téléchargée
-* mettre à jour ou installer si nécessaire la librairie `@ckeditor/ckeditor5-angular` et les builds `@ckeditor/ckeditor5-build-classic` ou autre correspondant au type d'éditeur choisi à la 1ère étape
+== Procédure d'exécution avec docker
+
+* Créer un fichier `.env` basé sur le fichier `example.env`
+** Adapter les paramètres, notamment `DATA_PATH` qui doit correspondre au volume de stockage des fichiers
+* Lancer la commande `docker-compose up`
+** L'exécution récupère une image docker publique de l'application disponible sur `https://harbor.esup-portail.org/`
+* L'application est alors accessible sur : `http://localhost:8080/`

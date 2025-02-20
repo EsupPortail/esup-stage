@@ -32,10 +32,10 @@ import java.util.Collections;
 public class SecurityConfiguration {
 
     @Autowired
-    AppliProperties appliProperties;
+    private AppliProperties appliProperties;
 
     @Autowired
-    CasProperties casProperties;
+    private CasProperties casProperties;
 
     @Bean
     public ServiceProperties serviceProperties() {
@@ -48,20 +48,18 @@ public class SecurityConfiguration {
     @Bean
     public AuthenticationEntryPoint casEntryPoint() {
         CasAuthenticationEntryPoint entryPoint = new CasAuthenticationEntryPoint();
-        entryPoint.setLoginUrl(casProperties.getUrl().getLogin());
+        entryPoint.setLoginUrl(casProperties.getUrl().getService()+casProperties.getUrl().getLogin());
         entryPoint.setServiceProperties(serviceProperties());
         return entryPoint;
     }
 
     @Bean
     public TicketValidator ticketValidator() {
-
         if (casProperties.getResponseType() != null && casProperties.getResponseType().equals("xml")) {
             return new Cas20ServiceTicketValidator(casProperties.getUrl().getService());
         } else {
             return new Cas30JsonServiceTicketValidator(casProperties.getUrl().getService());
         }
-
     }
 
     @Bean
@@ -96,7 +94,7 @@ public class SecurityConfiguration {
 
     @Bean
     public LogoutFilter logoutFilter() {
-        LogoutFilter logoutFilter = new LogoutFilter(casProperties.getUrl().getLogout(), new SecurityContextLogoutHandler());
+        LogoutFilter logoutFilter = new LogoutFilter(casProperties.getUrl().getService()+casProperties.getUrl().getLogout(), new SecurityContextLogoutHandler());
         logoutFilter.setFilterProcessesUrl("/logout");
         return logoutFilter;
     }
