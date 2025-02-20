@@ -113,4 +113,9 @@ public interface ConventionJpaRepository extends JpaRepository<Convention, Integ
 
     @Query("SELECT c FROM Convention c WHERE c.documentId IS NOT NULL AND (c.dateSignatureEtudiant IS NULL OR c.dateDepotEtudiant IS NULL OR c.dateSignatureEnseignant IS NULL OR c.dateDepotEnseignant IS NULL OR c.dateSignatureTuteur IS NULL OR c.dateDepotTuteur IS NULL OR c.dateSignatureSignataire IS NULL OR c.dateDepotSignataire IS NULL OR c.dateSignatureViseur IS NULL OR c.dateDepotViseur IS NULL)")
     List<Convention> getSignatureInfoToUpdate();
+
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM ConventionNomenclature cn WHERE cn.convention.id = :idConvention")
+    void deleteNomenclature(@Param("idConvention") int idConvention);
 }
