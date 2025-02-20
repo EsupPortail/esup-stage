@@ -30,9 +30,6 @@
 	<profiles>
 		<profile>
 			<id>dev</id>
-			<properties>
-				<application.configfilepath>classpath:estage.properties</application.configfilepath>
-			</properties>
 			<build>
 				<plugins>
 					<plugin>
