@@ -52,13 +52,6 @@ public class MailerService {
      */
 
     public void sendAlerteValidation(String to, Convention convention, Avenant avenant, Utilisateur userModif, String templateMailCode) {
-        /*-------------------------------------------------------TODO à supprimer------------------------------------------------------------------*/
-        logger.info("------------------------------------------MailerService--------------------------------------------------");
-        logger.info("Envoi de l'email : " + templateMailCode + " à " + to);
-        logger.info("Convention : " + convention.toString());
-        logger.info("Utilisateur : " + userModif.toString());
-        logger.info("---------------------------------------------------------------------------------------------------------");
-        /*-----------------------------------------------------------------------------------------------------------------------------------------*/
         TemplateMail templateMail = templateMailJpaRepository.findByCode(templateMailCode);
         if (templateMail == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Template mail " + templateMailCode + " non trouvé");
