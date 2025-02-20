@@ -181,24 +181,34 @@ export class CentreGestionComponent implements OnInit {
   }
 
   updateOnChanges(): void {
+    // Ajout d'un flag pour suivre si le formulaire a été modifié
+    let isChanged = false;
+
     this.coordCentreForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
-      if (this.coordCentreForm.valid) {
+      if (this.coordCentreForm.dirty) {  // Vérifie si le formulaire a été modifié
         this.setCentreGestionCoordCentre();
-        this.update();
+        isChanged = true;  // Marquer comme modifié
       }
     });
+
     this.paramCentreForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
-      if(this.paramCentreForm.valid){
+      if (this.paramCentreForm.dirty) {  // Vérifie si le formulaire a été modifié
         this.setCentreGestionParamCentre();
-        this.update();
+        isChanged = true;  // Marquer comme modifié
       }
     });
+
     this.signatureElectroniqueForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
-      if(this.signatureElectroniqueForm.valid){
+      if (this.signatureElectroniqueForm.dirty) {  // Vérifie si le formulaire a été modifié
         this.setCentreGestionSignatureElectronique();
-        this.update();
+        isChanged = true;  // Marquer comme modifié
       }
     });
+
+    // Si une modification a été détectée, appeler update()
+    if (isChanged) {
+      this.update();
+    }
   }
 
   validationCreation() {
