@@ -62,9 +62,6 @@
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
-			<properties>
-				<application.configfilepath>file:///etc/${project.name}/estage.properties</application.configfilepath>
-			</properties>
 		</profile>
 	</profiles>
 
