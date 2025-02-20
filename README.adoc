@@ -89,6 +89,7 @@ cas.response_type=xml
 
 * Créer un fichier `.env` basé sur le fichier `example.env`
 ** Adapter les paramètres, notamment `DATA_PATH` qui doit correspondre au volume de stockage des fichiers
-* Lancer la commande `docker-compose up`
+* Lancer la commande `docker-compose up` depuis la racine du projet
+** docker-compose utilisera les fichiers de configuration `.env` et `application.properties` présent à la racine du projet
 ** L'exécution récupère une image docker publique de l'application disponible sur `https://harbor.esup-portail.org/`
 * L'application est alors accessible sur : `http://localhost:8080/`
