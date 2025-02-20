@@ -209,6 +209,7 @@ public class ConventionController {
         convention.setNomenclature(new ConventionNomenclature());
         convention.setValidationCreation(false);
         conventionService.setConventionData(convention, conventionFormDto);
+        convention.setValeurNomenclature();
         convention = conventionJpaRepository.saveAndFlush(convention);
         return convention;
     }
@@ -220,9 +221,7 @@ public class ConventionController {
         Convention convention = conventionJpaRepository.findById(id);
         conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
         conventionService.setConventionData(convention, conventionFormDto);
-        if (convention.isValidationCreation()) {
-            convention.setValeurNomenclature();
-        }
+        convention.setValeurNomenclature();
         convention = conventionJpaRepository.saveAndFlush(convention);
 
         if (convention.isValidationCreation()) {
@@ -255,9 +254,7 @@ public class ConventionController {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
         setSingleFieldData(convention, conventionSingleFieldDto, utilisateur);
-        if (convention.isValidationCreation()) {
-            convention.setValeurNomenclature();
-        }
+        convention.setValeurNomenclature();
         convention = conventionJpaRepository.saveAndFlush(convention);
         return convention;
     }
