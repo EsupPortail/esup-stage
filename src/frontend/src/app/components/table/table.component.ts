@@ -330,7 +330,12 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
                 codeUniversite: f[key].value.codeUniversite,
               };
             }
-          } else {
+          }else if (key === 'annee') {
+            if (Array.isArray(f[key].value)) {
+              f[key].value = String(f[key].value[0]);
+            }
+          }
+          else {
             // Traitement normal pour les autres listes
             if (Array.isArray(f[key].value)) {
               f[key].value = f[key].value

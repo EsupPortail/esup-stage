@@ -155,7 +155,7 @@ public class CentreGestionController {
     }
 
     @GetMapping("/{id}")
-    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
+    @Secure
     public CentreGestion getById(@PathVariable("id") int id) {
         CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
         if (centreGestion == null) {

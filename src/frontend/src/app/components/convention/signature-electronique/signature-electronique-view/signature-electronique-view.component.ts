@@ -11,7 +11,6 @@ export class SignatureElectroniqueViewComponent implements OnInit {
 
   @Input() avenant!: any;
   @Input() convention!: any;
-  @Input() isGestionnaire: any;
   @Input() isMobile: any;
   @Input() profils: any[] = [];
 
