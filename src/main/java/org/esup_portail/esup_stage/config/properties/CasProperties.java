@@ -16,21 +16,23 @@ public class CasProperties {
     @NoArgsConstructor
     public static class UrlProperties {
         private String service;
-        private String login="/login";
-        private String logout="/logout";
+        private String login = "/login";
+        private String logout = "/logout";
 
         public String getLoginUrl() {
-            if(StringUtils.hasText(login) && !login.startsWith("http")) {
-                return service + login;
+            String url = service + login;
+            if (StringUtils.hasText(login) && login.startsWith("http")) {
+                url = login;
             }
-            return service;
+            return url;
         }
 
         public String getLogoutUrl() {
-            if(StringUtils.hasText(logout) && !logout.startsWith("http")) {
-                return service + logout;
+            String url = service + logout;
+            if (StringUtils.hasText(logout) && logout.startsWith("http")) {
+                url = logout;
             }
-            return service;
+            return url;
         }
     }
 }
