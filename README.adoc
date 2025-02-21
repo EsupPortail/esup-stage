@@ -16,7 +16,7 @@ Documentation technique link:src/docs/modules/ROOT/pages/index.adoc[(source)]
 == Modifications apportées au fichier de configuration pour la version 3
 
 * Renommage du fichier de config `estage.properties` en `application.properties`
-** __A placer à la racine du projet__, il sera interprété automatiquement par Spring Boot
+** *__A placer à la racine du projet__*, il sera interprété automatiquement par Spring Boot
 * `appli.tokens` : précédement `appli.public.tokens`, *renommé* pour cause technique (le mot clé `public` étant réservé)
 * Pour éviter les redondances de valeurs, les champs suivants ont été modifiés :
 ** `cas.url.login` : devient *optionnel* et ne peut maintenant contenir que le path de connexion :  `/login` (saisie de l'url entière toujours possible)
