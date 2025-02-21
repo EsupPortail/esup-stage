@@ -48,7 +48,7 @@ public class SecurityConfiguration {
     @Bean
     public AuthenticationEntryPoint casEntryPoint() {
         CasAuthenticationEntryPoint entryPoint = new CasAuthenticationEntryPoint();
-        entryPoint.setLoginUrl(casProperties.getUrl().getService()+casProperties.getUrl().getLogin());
+        entryPoint.setLoginUrl(casProperties.getUrl().getLoginUrl());
         entryPoint.setServiceProperties(serviceProperties());
         return entryPoint;
     }
@@ -94,7 +94,7 @@ public class SecurityConfiguration {
 
     @Bean
     public LogoutFilter logoutFilter() {
-        LogoutFilter logoutFilter = new LogoutFilter(casProperties.getUrl().getService()+casProperties.getUrl().getLogout(), new SecurityContextLogoutHandler());
+        LogoutFilter logoutFilter = new LogoutFilter(casProperties.getUrl().getLogoutUrl(), new SecurityContextLogoutHandler());
         logoutFilter.setFilterProcessesUrl("/logout");
         return logoutFilter;
     }

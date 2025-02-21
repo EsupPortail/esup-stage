@@ -16,12 +16,12 @@ Documentation technique link:src/docs/modules/ROOT/pages/index.adoc[(source)]
 == Modifications apportées au fichier de configuration pour la version 3
 
 
-* `appli.tokens` : précédement `appli.public.tokens`, renommage pour cause technique (le mot clé `public` étant réservé)
-* Pour éviter les répétitions de valeurs, les champs suivant ont été modifiés :
-** `cas.url.login` : ne contient maintenant que le path de connexion :  `/login`
-** `cas.url.logout` : ne contient maintenant que le path de déconnexion :  `/logout`
-** `appli.prefix` : supprimé car en doublon avec `appli.url`
-** `appli.localapi` : supprimé car en doublon avec `appli.url`
+* `appli.tokens` : précédement `appli.public.tokens`, *renommé* pour cause technique (le mot clé `public` étant réservé)
+* Pour éviter les redondances de valeurs, les champs suivants ont été modifiés :
+** `cas.url.login` : devient *optionnel* et ne peut maintenant contenir que le path de connexion :  `/login` (saisie de l'url entière toujours possible)
+** `cas.url.logout` : devient *optionnel* et ne peut maintenant contenir que le path de déconnexion :  `/logout` (saisie de l'url entière toujours possible)
+** `appli.prefix` : *supprimé*, car en doublon avec `appli.url`
+** `appli.localapi` : *supprimé*, car en doublon avec `appli.url`
 
 == Génération de l'application
 
