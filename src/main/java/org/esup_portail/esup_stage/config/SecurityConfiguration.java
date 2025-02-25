@@ -22,6 +22,8 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
@@ -100,21 +102,27 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public SecurityFilterChain filterChainPrivate(HttpSecurity http) throws Exception {
-        http
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/login/cas", "/api/version").permitAll()  // Autoriser ces URLs sans authentification
-                        .anyRequest().authenticated()  // Toutes les autres requêtes doivent être authentifiées
-                )
-                .exceptionHandling(exception ->
-                        exception.authenticationEntryPoint(casEntryPoint())  // Gestion des exceptions d'authentification
-                )
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        /* Configure les autorisations d'accès */
+        http.authorizeHttpRequests(authorize -> authorize
+                .requestMatchers("/login/cas", "/api/version").permitAll()
+                /* Les autres requêtes doivent être authentifiées */
+                .anyRequest().authenticated());
+
+        // Gestion des exceptions d'authentification
+        http.exceptionHandling(exception -> exception.accessDeniedHandler(accessDeniedHandler()).authenticationEntryPoint(casEntryPoint()))
                 .addFilter(casAuthenticationFilter())  // Ajouter le filtre d'authentification CAS
                 .addFilterBefore(singleSignOutFilter(), CasAuthenticationFilter.class)  // Ajouter le filtre de déconnexion avant le filtre CAS
                 .addFilterBefore(logoutFilter(), LogoutFilter.class)  // Ajouter le filtre de déconnexion
-
                 .csrf(AbstractHttpConfigurer::disable);  // Désactiver CSRF
 
         return http.build();
+    }
+
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler() {
+        return (request, response, accessDeniedException) -> {
+            response.sendRedirect("/error-401");
+        };
     }
 }

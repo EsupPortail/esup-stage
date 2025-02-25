@@ -16,12 +16,15 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@Service
 public class CasUserDetailsServiceImpl implements AuthenticationUserDetailsService<CasAssertionAuthenticationToken> {
 
     @Autowired
@@ -58,34 +61,40 @@ public class CasUserDetailsServiceImpl implements AuthenticationUserDetailsServi
         if (utilisateur == null) {
             List<LdapUser> users = ldapService.search("/etudiant", ldapSearchDto);
             String role = Role.ETU;
-            if (users.size() == 0) {
+            if (users.isEmpty()) {
                 users = ldapService.search("/tuteur", ldapSearchDto);
                 role = Role.ENS;
+            }
+            if (users.isEmpty()) {
+                users = ldapService.search("/staff", ldapSearchDto);
+                role = null;
             }
 
             if (users.size() == 1) {
                 // Création de l'utilisateur
                 List<Role> roles = new ArrayList<>();
-                roles.add(roleJpaRepository.findOneByCode(role));
-                // si l'enseignant est rattaché à un centre de gestion, on lui ajoute le rôle gestionnaire
-                if (role.equals(Role.ENS)) {
-                    long count = personnelCentreGestionJpaRepository.countPersonnelByLogin(users.get(0).getUid());
-                    if (count > 0) {
-                        roles.add(roleJpaRepository.findOneByCode(Role.GES));
+                if (StringUtils.hasText(role)) {
+                    roles.add(roleJpaRepository.findOneByCode(role));
+                    // si l'enseignant est rattaché à un centre de gestion, on lui ajoute le rôle gestionnaire
+                    if (role.equals(Role.ENS)) {
+                        long count = personnelCentreGestionJpaRepository.countPersonnelByLogin(users.getFirst().getUid());
+                        if (count > 0) {
+                            roles.add(roleJpaRepository.findOneByCode(Role.GES));
+                        }
                     }
                 }
                 utilisateur = new Utilisateur();
                 utilisateur.setLogin(username);
-                utilisateur.setNom(String.join(" ", users.get(0).getSn()));
-                utilisateur.setPrenom(String.join(" ", users.get(0).getGivenName()));
+                utilisateur.setNom(String.join(" ", users.getFirst().getSn()));
+                utilisateur.setPrenom(String.join(" ", users.getFirst().getGivenName()));
                 utilisateur.setActif(true);
                 utilisateur.setRoles(roles);
-                utilisateur.setUid(users.get(0).getUid());
+                utilisateur.setUid(users.getFirst().getUid());
                 utilisateur = utilisateurJpaRepository.saveAndFlush(utilisateur);
             }
         }
 
-        // éventuel mise à jour de son nom/prénom si non existant
+        // Mise à jour de son nom/prénom si non existant
         if (utilisateur != null) {
             LdapUser ldapUser = ldapService.searchByLogin(utilisateur.getLogin());
             if (ldapUser == null) {
@@ -155,8 +164,8 @@ public class CasUserDetailsServiceImpl implements AuthenticationUserDetailsServi
         if (obj != null) {
             if (obj instanceof String)
                 value = (String) obj;
-            else if (obj instanceof List && ((List<?>) obj).size() > 0 && ((List<?>) obj).get(0) instanceof String)
-                value = (String) ((List<?>) obj).get(0);
+            else if (obj instanceof List && !((List<?>) obj).isEmpty() && ((List<?>) obj).getFirst() instanceof String)
+                value = (String) ((List<?>) obj).getFirst();
 
         }
         return value;

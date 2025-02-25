@@ -32,7 +32,7 @@ public class Utilisateur implements Exportable {
     private String prenom;
 
     @Column(nullable = false)
-    private Boolean actif;
+    private Boolean actif=false;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
