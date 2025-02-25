@@ -50,11 +50,11 @@ L'application se charge de créer les répertoires suivants : si `appli.data_dir
 ----
 /volume
     |_/data
-    |_/centregestion
-        |_/consigne-documents
-        |_/logos
-    |_/images
-    |_/signatures
+        |_/centregestion
+            |_/consigne-documents
+            |_/logos
+        |_/images
+        |_/signatures
 ----
 
 == CAS
