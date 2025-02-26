@@ -1,6 +1,6 @@
 = ESUP Stage
 
-ESUP STAGE est la refonte de l'application pStage. L'application a été complètement réécrite pour reprendre et améliorer les grandes et fonctionnalités : produire une convention de stage et ses avenants dans le cadre d'un processus de validation adapté.
+ESUP STAGE est la refonte de l'application PStage. L'application a été complètement réécrite pour reprendre et améliorer les grandes et fonctionnalités : produire une convention de stage et ses avenants dans le cadre d'un processus de validation adapté.
 
 == https://esupportail.github.io/esup-stage/[→ Documentation technique Esup-Stage]
 
@@ -15,37 +15,19 @@ Documentation technique link:src/docs/modules/ROOT/pages/index.adoc[(source)]
 
 == Modifications apportées au fichier de configuration pour la version 3
 
-* Renommage du fichier de config `estage.properties` en `application.properties`
+* *Renommage* du fichier de config `estage.properties` en `application.properties`
 ** *__A placer à la racine du projet__*, il sera interprété automatiquement par Spring Boot
 * `appli.tokens` : précédement `appli.public.tokens`, *renommé* pour cause technique (le mot clé `public` étant réservé)
-* Pour éviter les redondances de valeurs, les champs suivants ont été modifiés :
+* Pour *éviter les redondances* de valeurs, les champs suivants ont été modifiés :
 ** `cas.url.login` : devient *optionnel* et ne peut maintenant contenir que le path de connexion :  `/login` (saisie de l'url entière toujours possible)
 ** `cas.url.logout` : devient *optionnel* et ne peut maintenant contenir que le path de déconnexion :  `/logout` (saisie de l'url entière toujours possible)
 ** `appli.prefix` : *supprimé*, car en doublon avec `appli.url`
 ** `appli.localapi` : *supprimé*, car en doublon avec `appli.url`
 
-== Génération de l'application
-
-* Build du war de l'application : esup-stage-3.x.x.war
-
-[,console]
-----
-mvn clean package
-----
-
-* Exécution en local de l'application
-
-A la racine de l'application, renommer et complèter le fichier `application-example.properties` en `application.properties`, puis exécuter :
-
-[,console]
-----
-mvn clean package cargo:run
-----
-
 == Stockage de fichiers
 
 * La variable `appli.data_dir` dans `application.properties` définie le répertoire de stockage des fichiers.
-L'application se charge de créer les répertoires suivants : si `appli.data_dir=/volume/data` on aura :
+L'application *se charge de créer les répertoires* suivants : si `appli.data_dir=/volume/data` on aura :
 
 ----
 /volume
@@ -57,36 +39,27 @@ L'application se charge de créer les répertoires suivants : si `appli.data_dir
         |_/signatures
 ----
 
-== CAS
-
-* Par défaut, l'application attend du serveur CAS une réponse au format JSON. Si le serveur CAS répond au format XML,
-il faut ajouter la ligne suivante au fichier `application.properties` :
-
-[,properties]
-----
-cas.response_type=xml
-----
-
 == link:src/docs/modules/ROOT/pages/signature.adoc[→ Signature électronique (optionnel)]
 
-== Procédure d'exécution en environnement de dev
+== Génération de l'application (.war)
 
-* Créer un fichier `application.properties` basé sur le fichier `application-example.properties`
-* Lancer le serveur avec une commande maven `clean package cargo:run`
-** L'application est alors accessible sur : `http://localhost:8080/`
+* Build du war de l'application : esup-stage-3.x.x.war
 
-* Pour lancer le frontend avec le mode dev d'angular, en hotreload (rechargement à chaud en cas de modification du code) :
- ** Exécuter la commande `ng serve --host localhost --proxy-config src/proxy.conf.json` au niveau du dossier frontend (node et npm devront être installés)
-* Se rendre sur l'application à l'adresse `http://localhost:8080/` pour se connecter une première fois
-* Puis se rendre sur `http://localhost:4200`
-* Pour se déconnecter, aller sur `http://localhost:4200/logout`
+[,console]
+----
+mvn clean package
+----
 
-== Déploiement de l'application sur tomcat
+* Pour une exécution en local de l'application
 
-* TODO
-* Le fichier application.properties peut être positionné à la racine du tomcat et renseigné dans la commande d'exécution avec `-Dspring.config.location=$HOMEDIR/application.properties`
+A la racine de l'application, *renommer* et *complèter* le fichier `application-example.properties` en `application.properties`, puis exécuter :
 
-== Procédure d'exécution avec docker
+[,console]
+----
+mvn clean package cargo:run
+----
+
+== Exécution de l'application avec __Docker__
 
 * Créer un fichier `.env` basé sur le fichier `example.env`
 ** Adapter les paramètres, notamment `DATA_PATH` qui doit correspondre au volume de stockage des fichiers
@@ -94,3 +67,20 @@ cas.response_type=xml
 ** docker-compose utilisera les fichiers de configuration `.env` et `application.properties` présent à la racine du projet
 ** L'exécution récupère une image docker publique de l'application disponible sur `https://harbor.esup-portail.org/`
 * L'application est alors accessible sur : `http://localhost:8080/`
+
+== Exécution de l'application avec __Tomcat__
+
+* *TODO*
+* Le fichier application.properties peut être positionné à la racine du tomcat et renseigné dans la commande d'exécution avec `-Dspring.config.location=$HOMEDIR/application.properties`
+
+== Exécution local en mode pour __dév__ avec l'__hot reload d'angular__
+
+* Créer un fichier `application.properties` basé sur le fichier `application-example.properties`
+* Lancer le serveur avec une commande maven `clean package cargo:run`
+** L'application est alors accessible sur : `http://localhost:8080/`
+
+* Pour lancer le frontend avec le mode dev d'angular, en *hot reload* (rechargement à chaud en cas de modification du code) :
+ ** Exécuter la commande `ng serve --host localhost --proxy-config src/proxy.conf.json` au niveau du dossier frontend (node et npm devront être installés)
+* Se rendre sur l'application à l'adresse `http://localhost:8080/` pour se connecter une première fois
+* Puis se rendre sur `http://localhost:4200`
+* Pour se déconnecter, aller sur `http://localhost:4200/logout`

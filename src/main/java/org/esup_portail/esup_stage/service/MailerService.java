@@ -69,7 +69,7 @@ public class MailerService {
         if (templateMailGroupe == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Template mail " + templateMailCode + " non trouvé");
         }
-        if (to == null || to.equals("")) {
+        if (to == null || to.isEmpty()) {
             logger.info("Aucun destinataire défini pour l'envoie de l'email.");
         } else {
             MailContext mailContext = new MailContext(appliProperties, convention, null, userModif);
