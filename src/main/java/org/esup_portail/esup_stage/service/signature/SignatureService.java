@@ -7,16 +7,24 @@ import org.esup_portail.esup_stage.config.properties.SignatureProperties;
 import org.esup_portail.esup_stage.dto.IdsListDto;
 import org.esup_portail.esup_stage.dto.MetadataDto;
 import org.esup_portail.esup_stage.dto.MetadataSignataireDto;
+import org.esup_portail.esup_stage.dto.MetadataObservateurDto;
 import org.esup_portail.esup_stage.dto.ResponseDto;
 import org.esup_portail.esup_stage.enums.AppSignatureEnum;
 import org.esup_portail.esup_stage.enums.FolderEnum;
 import org.esup_portail.esup_stage.exception.AppException;
-import org.esup_portail.esup_stage.model.*;
+import org.esup_portail.esup_stage.model.Avenant;
+import org.esup_portail.esup_stage.model.CentreGestion;
+import org.esup_portail.esup_stage.model.Contact;
+import org.esup_portail.esup_stage.model.Enseignant;
+import org.esup_portail.esup_stage.model.Etudiant;
+import org.esup_portail.esup_stage.model.Convention;
 import org.esup_portail.esup_stage.repository.AvenantJpaRepository;
 import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
+import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.service.ConventionService;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
+import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
 import org.esup_portail.esup_stage.service.signature.model.Historique;
 import org.esup_portail.esup_stage.webhook.esupsignature.service.WebhookService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +32,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.esup_portail.esup_stage.service.ldap.LdapService;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -63,6 +72,8 @@ public class SignatureService {
     AppliProperties appliProperties;
     @Autowired
     private SignatureClient signatureClient;
+    @Autowired
+    private LdapService ldapService;
 
     public SignatureService(WebClient.Builder builder) {
         this.webClient = builder.build();
@@ -98,6 +109,13 @@ public class SignatureService {
         metadata.setSchool(convention.getEtape().getLibelle());
         metadata.setWorkflowId(convention.getCentreGestion().getCircuitSignature());
         List<MetadataSignataireDto> signataires = new ArrayList<>();
+        List<MetadataObservateurDto> observateurs = new ArrayList<>();
+
+        // ajouté l'utilisateur de l'application en tant qu'observateur du parapheur au moment de l'envoie
+        LdapUser ldapUser = ldapService.searchByLogin(convention.getLoginEnvoiSignature());
+        if (ldapUser != null && ldapUser.getMail() != null) {
+            observateurs.add(new MetadataObservateurDto(ldapUser.getMail()));
+        }
 
         convention.getCentreGestion().getSignataires().forEach(s -> {
             MetadataSignataireDto signataireDto = new MetadataSignataireDto();
@@ -151,6 +169,7 @@ public class SignatureService {
         });
 
         metadata.setSignatory(signataires);
+        metadata.setWatchers(observateurs);
         return metadata;
     }
 
@@ -159,7 +178,7 @@ public class SignatureService {
         if (appSignature == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La signature électronique n'est pas configurée");
         }
-        if (idsListDto.getIds().isEmpty()) {
+        if (idsListDto!=null && idsListDto.getIds().isEmpty()) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La liste est vide");
         }
         int count = 0;

@@ -179,3 +179,6 @@ databaseChangeLog:
   - include:
       file: 2.1.8-docaposte-envoi-doc.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 3.0.0-add-login-sender-signature.yaml
+      relativeToChangelogFile: true

@@ -1,0 +1,11 @@
+databaseChangeLog:
+- changeSet:
+    id: 3.0.0-add-login-sender-signature
+    author: thouveno9
+    changes:
+    - addColumn:
+        tableName: convention
+        columns:
+        - column:
+            name: loginEnvoiSignature
+            type: VARCHAR(255)
