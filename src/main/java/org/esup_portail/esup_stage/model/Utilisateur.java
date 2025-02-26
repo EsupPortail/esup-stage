@@ -1,12 +1,14 @@
 package org.esup_portail.esup_stage.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Data
 @Entity
 @Table(name = "Utilisateur")
 public class Utilisateur implements Exportable {
@@ -49,89 +51,9 @@ public class Utilisateur implements Exportable {
     @Column(unique = true)
     private String numEtudiant;
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getNom() {
-        return nom;
-    }
-
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
-
-    public String getPrenom() {
-        return prenom;
-    }
-
-    public void setPrenom(String prenom) {
-        this.prenom = prenom;
-    }
-
-    public Boolean isActif() {
-        return actif;
-    }
-
-    public void setActif(Boolean actif) {
-        this.actif = actif;
-    }
-
-    public Date getDateCreation() {
-        return dateCreation;
-    }
-
-    public void setDateCreation(Date dateCreation) {
-        this.dateCreation = dateCreation;
-    }
-
-    public List<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
-    }
-
     @PrePersist
     public void prePersist() {
         setDateCreation(new Date());
-    }
-
-    public String getNumEtudiant() {
-        return numEtudiant;
-    }
-
-    public void setNumEtudiant(String numEtudiant) {
-        this.numEtudiant = numEtudiant;
     }
 
     @Override
@@ -153,7 +75,7 @@ public class Utilisateur implements Exportable {
                 }
                 break;
             case "actif":
-                value = isActif() != null && isActif() ? "Oui" : "Non";
+                value = getActif() != null && getActif() ? "Oui" : "Non";
                 break;
             default:
                 break;

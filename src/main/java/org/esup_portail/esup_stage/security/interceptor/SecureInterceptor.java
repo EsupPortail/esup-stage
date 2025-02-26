@@ -48,7 +48,7 @@ public class SecureInterceptor {
         }
 
         // Utilisateur not active
-        if (!utilisateur.isActif()) {
+        if (utilisateur.getActif()!=null && !utilisateur.getActif()) {
             throw new AppException(HttpStatus.NOT_ACCEPTABLE, "Votre compte est inactif");
         }
 

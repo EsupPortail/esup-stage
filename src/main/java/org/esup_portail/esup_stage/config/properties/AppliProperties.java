@@ -32,6 +32,10 @@ public class AppliProperties {
                 .collect(Collectors.toSet());
     }
 
+    public boolean isAdminTechnique(final String login){
+        return getAdminTechnique().contains(login);
+    }
+
     public String[] getPublicTokens() {
         if (tokens == null || tokens.isEmpty()) {
             return new String[]{};

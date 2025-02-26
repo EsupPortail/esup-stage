@@ -52,6 +52,6 @@ public class CasUserDetailsImpl implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return utilisateur.isActif();
+        return utilisateur.getActif();
     }
 }

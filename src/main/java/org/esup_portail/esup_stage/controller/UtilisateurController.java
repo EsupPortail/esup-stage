@@ -84,8 +84,8 @@ public class UtilisateurController {
             dbRoles.add(roleJpaRepository.findById(role.getId()));
         }
         utilisateur.setRoles(dbRoles);
-        if (requestUtilisateur.isActif() != null) {
-            utilisateur.setActif(requestUtilisateur.isActif());
+        if (requestUtilisateur.getActif() != null) {
+            utilisateur.setActif(requestUtilisateur.getActif());
         }
         utilisateur = utilisateurJpaRepository.saveAndFlush(utilisateur);
         return utilisateur;
@@ -98,7 +98,7 @@ public class UtilisateurController {
         if (utilisateur != null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Utilisateur déjà existant");
         }
-        if (requestUtilisateur.isActif() == null) {
+        if (requestUtilisateur.getActif() == null) {
             requestUtilisateur.setActif(false);
         }
         List<Role> dbRoles = new ArrayList<>();
