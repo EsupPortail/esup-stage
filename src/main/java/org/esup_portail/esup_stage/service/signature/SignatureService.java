@@ -206,18 +206,32 @@ public class SignatureService {
                                             .bodyToMono(String.class)
                                             .block();
                                 }
-                                // remet à 0 les informations de singature de la convention
-                                convention.setDateActualisationSignature(null);
-                                convention.setDateSignatureEtudiant(null);
-                                convention.setDateDepotEtudiant(null);
-                                convention.setDateSignatureEnseignant(null);
-                                convention.setDateDepotEnseignant(null);
-                                convention.setDateSignatureTuteur(null);
-                                convention.setDateDepotTuteur(null);
-                                convention.setDateSignatureSignataire(null);
-                                convention.setDateDepotSignataire(null);
-                                convention.setDateSignatureViseur(null);
-                                convention.setDateDepotViseur(null);
+                                // remet à 0 les informations de signature
+                                if(isAvenant){
+                                    avenant.setDateActualisationSignature(null);
+                                    avenant.setDateSignatureEtudiant(null);
+                                    avenant.setDateDepotEtudiant(null);
+                                    avenant.setDateSignatureEnseignant(null);
+                                    avenant.setDateDepotEnseignant(null);
+                                    avenant.setDateSignatureTuteur(null);
+                                    avenant.setDateDepotTuteur(null);
+                                    avenant.setDateSignatureSignataire(null);
+                                    avenant.setDateDepotSignataire(null);
+                                    avenant.setDateSignatureViseur(null);
+                                    avenant.setDateDepotViseur(null);
+                                }else{
+                                    convention.setDateActualisationSignature(null);
+                                    convention.setDateSignatureEtudiant(null);
+                                    convention.setDateDepotEtudiant(null);
+                                    convention.setDateSignatureEnseignant(null);
+                                    convention.setDateDepotEnseignant(null);
+                                    convention.setDateSignatureTuteur(null);
+                                    convention.setDateDepotTuteur(null);
+                                    convention.setDateSignatureSignataire(null);
+                                    convention.setDateDepotSignataire(null);
+                                    convention.setDateSignatureViseur(null);
+                                    convention.setDateDepotViseur(null);
+                                }
                             }
                             if (isAvenant) {
                                 avenant.setDateEnvoiSignature(new Date());
