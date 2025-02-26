@@ -1,6 +1,7 @@
 package org.esup_portail.esup_stage.service;
 
 import freemarker.template.Template;
+import jakarta.mail.internet.MimeMessage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
@@ -16,8 +17,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
-
-import jakarta.mail.internet.MimeMessage;
 
 import java.io.StringWriter;
 import java.text.DateFormat;
@@ -56,7 +55,7 @@ public class MailerService {
         if (templateMail == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Template mail " + templateMailCode + " non trouvé");
         }
-        if (to == null || to.equals("")) {
+        if (to == null || to.isEmpty() || to.equals("null")) {
             logger.info("Aucun destinataire défini pour l'envoie de l'email.");
         } else {
             MailContext mailContext = new MailContext(appliProperties, convention, avenant, userModif);
@@ -70,7 +69,7 @@ public class MailerService {
         if (templateMailGroupe == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Template mail " + templateMailCode + " non trouvé");
         }
-        if (to == null || to.equals("")) {
+        if (to == null || to.isEmpty()) {
             logger.info("Aucun destinataire défini pour l'envoie de l'email.");
         } else {
             MailContext mailContext = new MailContext(appliProperties, convention, null, userModif);

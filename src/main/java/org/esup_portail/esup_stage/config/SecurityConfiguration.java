@@ -22,6 +22,8 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
@@ -32,15 +34,15 @@ import java.util.Collections;
 public class SecurityConfiguration {
 
     @Autowired
-    AppliProperties appliProperties;
+    private AppliProperties appliProperties;
 
     @Autowired
-    CasProperties casProperties;
+    private CasProperties casProperties;
 
     @Bean
     public ServiceProperties serviceProperties() {
         ServiceProperties serviceProperties = new ServiceProperties();
-        serviceProperties.setService(appliProperties.getPrefix() + "/login/cas");
+        serviceProperties.setService(appliProperties.getUrl() + "/login/cas");
         serviceProperties.setSendRenew(false);
         return serviceProperties;
     }
@@ -48,20 +50,18 @@ public class SecurityConfiguration {
     @Bean
     public AuthenticationEntryPoint casEntryPoint() {
         CasAuthenticationEntryPoint entryPoint = new CasAuthenticationEntryPoint();
-        entryPoint.setLoginUrl(casProperties.getUrl().getLogin());
+        entryPoint.setLoginUrl(casProperties.getUrl().getLoginUrl());
         entryPoint.setServiceProperties(serviceProperties());
         return entryPoint;
     }
 
     @Bean
     public TicketValidator ticketValidator() {
-
         if (casProperties.getResponseType() != null && casProperties.getResponseType().equals("xml")) {
             return new Cas20ServiceTicketValidator(casProperties.getUrl().getService());
         } else {
             return new Cas30JsonServiceTicketValidator(casProperties.getUrl().getService());
         }
-
     }
 
     @Bean
@@ -96,27 +96,33 @@ public class SecurityConfiguration {
 
     @Bean
     public LogoutFilter logoutFilter() {
-        LogoutFilter logoutFilter = new LogoutFilter(casProperties.getUrl().getLogout(), new SecurityContextLogoutHandler());
+        LogoutFilter logoutFilter = new LogoutFilter(casProperties.getUrl().getLogoutUrl(), new SecurityContextLogoutHandler());
         logoutFilter.setFilterProcessesUrl("/logout");
         return logoutFilter;
     }
 
     @Bean
-    public SecurityFilterChain filterChainPrivate(HttpSecurity http) throws Exception {
-        http
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/login/cas", "/api/version").permitAll()  // Autoriser ces URLs sans authentification
-                        .anyRequest().authenticated()  // Toutes les autres requêtes doivent être authentifiées
-                )
-                .exceptionHandling(exception ->
-                        exception.authenticationEntryPoint(casEntryPoint())  // Gestion des exceptions d'authentification
-                )
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        /* Configure les autorisations d'accès */
+        http.authorizeHttpRequests(authorize -> authorize
+                .requestMatchers("/login/cas", "/api/version").permitAll()
+                /* Les autres requêtes doivent être authentifiées */
+                .anyRequest().authenticated());
+
+        // Gestion des exceptions d'authentification
+        http.exceptionHandling(exception -> exception.accessDeniedHandler(accessDeniedHandler()).authenticationEntryPoint(casEntryPoint()))
                 .addFilter(casAuthenticationFilter())  // Ajouter le filtre d'authentification CAS
                 .addFilterBefore(singleSignOutFilter(), CasAuthenticationFilter.class)  // Ajouter le filtre de déconnexion avant le filtre CAS
                 .addFilterBefore(logoutFilter(), LogoutFilter.class)  // Ajouter le filtre de déconnexion
-
                 .csrf(AbstractHttpConfigurer::disable);  // Désactiver CSRF
 
         return http.build();
+    }
+
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler() {
+        return (request, response, accessDeniedException) -> {
+            response.sendRedirect("/error-401");
+        };
     }
 }

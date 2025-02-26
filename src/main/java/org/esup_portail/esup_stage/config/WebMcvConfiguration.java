@@ -22,15 +22,14 @@ public class WebMcvConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/").setViewName("redirect:/frontend");
-        registry.addViewController("/frontend").setViewName("redirect:/frontend/");
+        registry.addViewController("/").setViewName("redirect:/frontend/");
         registry.addViewController("/frontend/").setViewName("forward:/frontend/index.html");
     }
 
     @Override
     public void configurePathMatch(PathMatchConfigurer configurer) {
         configurer.addPathPrefix("/api", HandlerTypePredicate.forAnnotation(ApiController.class));
-        configurer.addPathPrefix("/public/api", HandlerTypePredicate.forAnnotation(ApiPublicController.class));
+        configurer.addPathPrefix(PublicSecurityConfiguration.PATH_FILTER + "/api", HandlerTypePredicate.forAnnotation(ApiPublicController.class));
     }
 
     @Bean

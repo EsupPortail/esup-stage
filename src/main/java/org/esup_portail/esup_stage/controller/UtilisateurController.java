@@ -1,5 +1,6 @@
 package org.esup_portail.esup_stage.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
@@ -16,8 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,8 +84,8 @@ public class UtilisateurController {
             dbRoles.add(roleJpaRepository.findById(role.getId()));
         }
         utilisateur.setRoles(dbRoles);
-        if (requestUtilisateur.isActif() != null) {
-            utilisateur.setActif(requestUtilisateur.isActif());
+        if (requestUtilisateur.getActif() != null) {
+            utilisateur.setActif(requestUtilisateur.getActif());
         }
         utilisateur = utilisateurJpaRepository.saveAndFlush(utilisateur);
         return utilisateur;
@@ -99,7 +98,7 @@ public class UtilisateurController {
         if (utilisateur != null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Utilisateur déjà existant");
         }
-        if (requestUtilisateur.isActif() == null) {
+        if (requestUtilisateur.getActif() == null) {
             requestUtilisateur.setActif(false);
         }
         List<Role> dbRoles = new ArrayList<>();

@@ -1,7 +1,6 @@
 package org.esup_portail.esup_stage.repository;
 
 import org.esup_portail.esup_stage.model.NafN5;
-import org.esup_portail.esup_stage.model.Pays;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

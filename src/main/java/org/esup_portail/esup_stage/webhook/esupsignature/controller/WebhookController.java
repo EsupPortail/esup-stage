@@ -1,5 +1,6 @@
 package org.esup_portail.esup_stage.webhook.esupsignature.controller;
 
+import org.esup_portail.esup_stage.config.PublicSecurityConfiguration;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.dto.PdfMetadataDto;
 import org.esup_portail.esup_stage.exception.AppException;
@@ -15,13 +16,14 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class WebhookController {
 
     private final WebClient webClient;
-    @Autowired
-    WebhookService webhookService;
-    @Autowired
-    AppliProperties appliProperties;
+    private final WebhookService webhookService;
+    private final AppliProperties appliProperties;
 
-    public WebhookController(WebClient.Builder builder) {
+    @Autowired
+    public WebhookController(WebClient.Builder builder, WebhookService webhookService, AppliProperties appliProperties) {
         this.webClient = builder.build();
+        this.webhookService = webhookService;
+        this.appliProperties = appliProperties;
     }
 
     @PostMapping("/webhook/esup-signature")
@@ -38,7 +40,7 @@ public class WebhookController {
         }
         // Récupération du PDF et des metadata
         PdfMetadataDto content = webClient.get()
-                .uri(appliProperties.getLocalapi() + "/public/api/" + type + "/" + id)
+                .uri(appliProperties.getUrl() + PublicSecurityConfiguration.PATH_FILTER + "/api/" + type + "/" + id)
                 .headers(httpHeaders -> httpHeaders.setBearerAuth(token))
                 .retrieve()
                 .bodyToMono(PdfMetadataDto.class)

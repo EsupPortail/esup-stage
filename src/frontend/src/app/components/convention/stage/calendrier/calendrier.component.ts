@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, FormControl, Validators } from "@angular/forms";
 
@@ -32,44 +32,42 @@ export class CalendrierComponent implements OnInit  {
     this.periodesForm = this.fb.group({
       dateDebut: [null, [Validators.required]],
       dateFin: [null, [Validators.required]],
-    })
-    this.heuresJournalieresForm = this.fb.group({})
+    });
+    this.heuresJournalieresForm = this.fb.group({});
 
     this.calendarDateFilter = (d: Date | null): boolean => {
-        const date = (d || new Date());
+      const date = (d || new Date());
 
-        let disable = false;
-        //disable dates already chosen
-        for (const periode of this.periodes) {
-            if (date >= periode.dateDebut && date <= periode.dateFin){
-              disable = true;
-            }
-        }
-        //disable dates not within stage period
-        if (date < this.dateFromBackend(this.convention.dateDebutStage) || date > this.dateFromBackend(this.convention.dateFinStage)){
+      let disable = false;
+      // Disable dates already chosen
+      for (const periode of this.periodes) {
+        if (date >= periode.dateDebut && date <= periode.dateFin) {
           disable = true;
         }
-        //disable dates within stage interruption period
-        for (const periode of this.interruptionsStage) {
-            if (date >= this.dateFromBackend(periode.dateDebutInterruption) && date <= this.dateFromBackend(periode.dateFinInterruption)){
-              disable = true;
-            }
+      }
+      // Disable dates not within stage period
+      if (date < this.dateFromBackend(this.convention.dateDebutStage) || date > this.dateFromBackend(this.convention.dateFinStage)) {
+        disable = true;
+      }
+      // Disable dates within stage interruption period
+      for (const periode of this.interruptionsStage) {
+        if (date >= this.dateFromBackend(periode.dateDebutInterruption) && date <= this.dateFromBackend(periode.dateFinInterruption)) {
+          disable = true;
         }
-        return !disable;
+      }
+      return !disable;
     };
-
   }
 
-  //fix new date('2021-02-02') != new date(2021,2,2)
-  dateFromBackend(dateString: string):Date{
-    let date = new Date(dateString)
-    date = new Date(date.getFullYear(),date.getMonth(),date.getDate());
+  dateFromBackend(dateString: string): Date {
+    let date = new Date(dateString);
+    date = new Date(date.getFullYear(), date.getMonth(), date.getDate());
     return date;
   }
 
   addPeriode(): void {
-    if (this.periodesForm.valid){
-      const data = {...this.periodesForm.value};
+    if (this.periodesForm.valid) {
+      const data = { ...this.periodesForm.value };
       data.formControlName = 'heuresJournalieres' + this.idPeriod;
       this.idPeriod += 1;
       this.periodes.push(data);
@@ -78,13 +76,12 @@ export class CalendrierComponent implements OnInit  {
     }
   }
 
-
   removePeriode(periode: any): void {
-    this.removeItemOnce(this.periodes,periode);
+    this.removeItemOnce(this.periodes, periode);
     this.heuresJournalieresForm.removeControl(periode.formControlName);
   }
 
-  removeItemOnce(arr : any[], value : any) : any[] {
+  removeItemOnce(arr: any[], value: any): any[] {
     const index = arr.indexOf(value);
     if (index > -1) {
       arr.splice(index, 1);
@@ -98,11 +95,10 @@ export class CalendrierComponent implements OnInit  {
 
   save(): void {
     if (this.heuresJournalieresForm.valid) {
-      for(let periode of this.periodes){
-        periode.nbHeuresJournalieres = parseInt(this.heuresJournalieresForm.get(periode.formControlName)!.value);
+      for (let periode of this.periodes) {
+        periode.nbHeuresJournalieres = parseFloat(this.heuresJournalieresForm.get(periode.formControlName)!.value);
       }
       this.dialogRef.close(this.periodes);
     }
   }
-
 }

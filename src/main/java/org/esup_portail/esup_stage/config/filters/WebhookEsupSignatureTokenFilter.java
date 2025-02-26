@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.esup_portail.esup_stage.config.EsupSignatureConfiguration;
 import org.esup_portail.esup_stage.config.properties.SignatureProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,14 +20,17 @@ import java.util.ArrayList;
 public class WebhookEsupSignatureTokenFilter extends OncePerRequestFilter {
 
     @Autowired
-    SignatureProperties signatureProperties;
+    private SignatureProperties signatureProperties;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authorizationHeader = request.getHeader("Authorization");
         if (authorizationHeader != null) {
-            String token = authorizationHeader.substring(7);
-            if (!authorizationHeader.startsWith("Bearer") || !token.equals(signatureProperties.getWebhook().getToken())) {
+            String token = authorizationHeader;
+            if (authorizationHeader.startsWith("Bearer ")) {
+                token = authorizationHeader.substring(7);
+            }
+            if (!token.equals(signatureProperties.getWebhook().getToken())) {
                 throw new AccessDeniedException("Access denied");
             }
 
@@ -35,5 +39,11 @@ public class WebhookEsupSignatureTokenFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        // Éviter d'exécuter le filtre si l'URL n'est pas "/webhook"
+        return !request.getRequestURI().startsWith(EsupSignatureConfiguration.PATH_FILTER);
     }
 }

@@ -1,0 +1,20 @@
+mat-card-actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  margin: 16px 0;
+  padding: 8px;
+}
+
+button[mat-flat-button] {
+  margin: 0; /* Remplace les marges par défaut de Material */
+  min-width: 180px; /* Assure une largeur minimale uniforme */
+}
+
+.error-message {
+  width: 100%;
+  color: #f44336;
+  margin-top: 12px;
+  font-size: 14px;
+}

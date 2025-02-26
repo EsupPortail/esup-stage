@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.esup_portail.esup_stage.config.PublicSecurityConfiguration;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,16 +20,22 @@ import java.util.Arrays;
 @Component
 public class PublicTokenFilter extends OncePerRequestFilter {
 
-    @Autowired
-    AppliProperties appliProperties;
+    private final AppliProperties appliProperties;
 
+    @Autowired
+    public PublicTokenFilter(AppliProperties appliProperties) {
+        this.appliProperties = appliProperties;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authorizationHeader = request.getHeader("Authorization");
         if (authorizationHeader != null) {
-            String token = authorizationHeader.substring(7);
-            if (!authorizationHeader.startsWith("Bearer") || Arrays.stream(appliProperties.getPublicTokens()).noneMatch(token::equals)) {
+            String token = authorizationHeader;
+            if (authorizationHeader.startsWith("Bearer ")) {
+                token = authorizationHeader.substring(7);
+            }
+            if (Arrays.stream(appliProperties.getPublicTokens()).noneMatch(token::equals)) {
                 throw new AccessDeniedException("Access denied");
             }
 
@@ -37,5 +44,11 @@ public class PublicTokenFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        // Éviter d'exécuter le filtre si l'URL n'est pas "/public"
+        return !request.getRequestURI().startsWith(PublicSecurityConfiguration.PATH_FILTER);
     }
 }
