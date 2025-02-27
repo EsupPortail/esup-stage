@@ -195,7 +195,6 @@ public class SignatureService {
                                 .bodyToMono(String.class)
                                 .block();
                         if (documentId != null) {
-                            // Que fait-on si un précédent envoi a déjà été fait avant ?
                             String previousDocumentId = isAvenant ? avenant.getDocumentId() : convention.getDocumentId();
                             if (previousDocumentId != null) {
                                 // Pour ESUP-Signature, on supprime l'ancien avant de renseigner le nouveau
@@ -247,8 +246,7 @@ public class SignatureService {
                 }
                 count++;
             }catch(Exception e){
-                logger.error(e);
-                throw new AppException(HttpStatus.BAD_REQUEST, "Erreur lors de l'envoie en signature");
+                logger.error("Une erreur est survenue lors du traitement de la convention {} : {}",id,e);
             }
 
         }
