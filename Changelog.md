@@ -9,7 +9,6 @@
 - Permettre aux étudiants et aux gestionnaires d'accéder au suivi des signatures #231
 - L'impression du récapitulatif et de la convention en mode brouillon n'est plus possible
 - Ne plus requêter sur Apogée après création de la convention #190
-- Problème de mise à jour des infos de signature de la convention lors d'un nouvel envoi #227
 
 ### Corrections
 - Correction des actions du dashboard qui outrepassaient le processus de validation #230
@@ -18,3 +17,4 @@
 - Correction de l'erreur de calcul des horaires de travail irréguliers #219
 - Correction du problème de notification des enseignants #193
 - En mode brouillon, initialisation des données dans la table ConventionNomenclature
+- Correction du problème de mise à jour des infos de signature de signature électronique #227
