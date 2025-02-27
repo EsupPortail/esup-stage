@@ -200,44 +200,74 @@ public class SignatureService {
             if (!controles.getError().isEmpty()) {
                 continue;
             }
-            switch (appSignature) {
-                case DOCAPOSTE:
-                    signatureClient.upload(convention, avenant);
-                    break;
-                case ESUPSIGNATURE:
-                case EXTERNE:
-                    String documentId = webClient.post()
-                            .uri(signatureProperties.getWebhook().getUri() + "?" + queryParam + "=" + id)
-                            .header("Authorization", "Bearer " + signatureProperties.getWebhook().getToken())
-                            .retrieve()
-                            .bodyToMono(String.class)
-                            .block();
-                    if (documentId != null) {
-                        // Que fait-on si un précédent envoi a déjà été fait avant ?
-                        String previousDocumentId = isAvenant ? avenant.getDocumentId() : convention.getDocumentId();
-                        if (previousDocumentId != null) {
-                            // Pour ESUP-Signature, on supprime l'ancien avant de renseigner le nouveau
-                            if (appSignature == AppSignatureEnum.ESUPSIGNATURE) {
-                                webClient.delete()
-                                        .uri(signatureProperties.getEsupsignature().getUri() + "/signrequests/soft/" + previousDocumentId)
-                                        .retrieve()
-                                        .bodyToMono(String.class)
-                                        .block();
+            try{
+                switch (appSignature) {
+                    case DOCAPOSTE:
+                        signatureClient.upload(convention, avenant);
+                        break;
+                    case ESUPSIGNATURE:
+                    case EXTERNE:
+                        String documentId = webClient.post()
+                                .uri(signatureProperties.getWebhook().getUri() + "?" + queryParam + "=" + id)
+                                .header("Authorization", "Bearer " + signatureProperties.getWebhook().getToken())
+                                .retrieve()
+                                .bodyToMono(String.class)
+                                .block();
+                        if (documentId != null) {
+                            String previousDocumentId = isAvenant ? avenant.getDocumentId() : convention.getDocumentId();
+                            if (previousDocumentId != null) {
+                                // Pour ESUP-Signature, on supprime l'ancien avant de renseigner le nouveau
+                                if (appSignature == AppSignatureEnum.ESUPSIGNATURE) {
+                                    webClient.delete()
+                                            .uri(signatureProperties.getEsupsignature().getUri() + "/signrequests/soft/" + previousDocumentId)
+                                            .retrieve()
+                                            .bodyToMono(String.class)
+                                            .block();
+                                }
+                                // remet à 0 les informations de signature
+                                if(isAvenant){
+                                    avenant.setDateActualisationSignature(null);
+                                    avenant.setDateSignatureEtudiant(null);
+                                    avenant.setDateDepotEtudiant(null);
+                                    avenant.setDateSignatureEnseignant(null);
+                                    avenant.setDateDepotEnseignant(null);
+                                    avenant.setDateSignatureTuteur(null);
+                                    avenant.setDateDepotTuteur(null);
+                                    avenant.setDateSignatureSignataire(null);
+                                    avenant.setDateDepotSignataire(null);
+                                    avenant.setDateSignatureViseur(null);
+                                    avenant.setDateDepotViseur(null);
+                                }else{
+                                    convention.setDateActualisationSignature(null);
+                                    convention.setDateSignatureEtudiant(null);
+                                    convention.setDateDepotEtudiant(null);
+                                    convention.setDateSignatureEnseignant(null);
+                                    convention.setDateDepotEnseignant(null);
+                                    convention.setDateSignatureTuteur(null);
+                                    convention.setDateDepotTuteur(null);
+                                    convention.setDateSignatureSignataire(null);
+                                    convention.setDateDepotSignataire(null);
+                                    convention.setDateSignatureViseur(null);
+                                    convention.setDateDepotViseur(null);
+                                }
+                            }
+                            if (isAvenant) {
+                                avenant.setDateEnvoiSignature(new Date());
+                                avenant.setDocumentId(documentId);
+                                avenantJpaRepository.saveAndFlush(avenant);
+                            } else {
+                                convention.setDateEnvoiSignature(new Date());
+                                convention.setDocumentId(documentId);
+                                conventionJpaRepository.saveAndFlush(convention);
                             }
                         }
-                        if (isAvenant) {
-                            avenant.setDateEnvoiSignature(new Date());
-                            avenant.setDocumentId(documentId);
-                            avenantJpaRepository.saveAndFlush(avenant);
-                        } else {
-                            convention.setDateEnvoiSignature(new Date());
-                            convention.setDocumentId(documentId);
-                            conventionJpaRepository.saveAndFlush(convention);
-                        }
-                    }
-                    break;
+                        break;
+                }
+                count++;
+            }catch(Exception e){
+                logger.error("Une erreur est survenue lors du traitement de la convention {} : {}",id,e);
             }
-            count++;
+
         }
         return count;
     }
