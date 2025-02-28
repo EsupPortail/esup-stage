@@ -3,7 +3,7 @@
 
 ## ESUP-Stage v3.0.0 (A venir)
 ### Nouveauté
-- RAS
+- Ajout d'un témoin de suivi de la signature électronique dans le tableau de bord #173
 
 ### Améliorations
 - Permettre aux étudiants et aux gestionnaires d'accéder au suivi des signatures #231
@@ -17,4 +17,4 @@
 - Correction de l'erreur de calcul des horaires de travail irréguliers #219
 - Correction du problème de notification des enseignants #193
 - En mode brouillon, initialisation des données dans la table ConventionNomenclature
-- Correction du problème de mise à jour des infos de signature de signature électronique #227
+- Correction du problème de mise à jour des infos de signature de signature électronique #22
