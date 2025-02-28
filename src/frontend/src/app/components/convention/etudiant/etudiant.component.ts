@@ -236,6 +236,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
       this.formConvention.get('telEtudiant')?.setValue(this.convention.telEtudiant);
       this.formConvention.get('telPortableEtudiant')?.setValue(this.convention.telPortableEtudiant);
       this.formConvention.get('courrielPersoEtudiant')?.setValue(this.convention.courrielPersoEtudiant);
+      this.centreGestion = this.convention.centreGestion;
 
       if (this.convention.etape) {
         // Recrée un objet inscription avec les données de la convention existante
