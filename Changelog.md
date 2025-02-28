@@ -1,7 +1,7 @@
 ## Version stable
 [Esup-Stage v2.1.9](https://github.com/EsupPortail/esup-stage/releases/tag/2.1.9)
 
-## ESUP-Stage v3.0.x (A venir)
+## ESUP-Stage v3.0.0 (A venir)
 ### Nouveauté
 - RAS
 
