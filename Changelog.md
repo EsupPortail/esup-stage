@@ -2,10 +2,12 @@
 [Esup-Stage v2.1.9](https://github.com/EsupPortail/esup-stage/releases/tag/2.1.9)
 ***
 ##  ESUP-Stage v3.0.1 (A venir)
+### Nouveauté
 - Evolution de la gestion des établissements d'accueil (API Sirene)
 - Créer la variable convention.horaireIrregulier #219
+### Améliorations
 - Permettre de saisir manuellement la durée en mois, jour(s) et heure(s) #212
-
+***
 ## ESUP-Stage v3.0.0 (A venir)
 ### Nouveauté
 - Ajout d'un témoin de suivi de la signature électronique dans le tableau de bord #173
