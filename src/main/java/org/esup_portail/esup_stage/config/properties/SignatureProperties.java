@@ -35,12 +35,10 @@ public class SignatureProperties {
 
         if (docaposteEnabled) {
             appSignatureType = AppSignatureEnum.DOCAPOSTE;
-        } else {
-            if (StringUtils.hasText(webhook.getUri()) && StringUtils.hasText(webhook.getToken())) {
-                appSignatureType = AppSignatureEnum.EXTERNE;
-                if (StringUtils.hasText(esupsignature.getUri())) {
-                    appSignatureType = AppSignatureEnum.ESUPSIGNATURE;
-                }
+        } else if (StringUtils.hasText(webhook.getUri()) && StringUtils.hasText(webhook.getToken())) {
+            appSignatureType = AppSignatureEnum.EXTERNE;
+            if (StringUtils.hasText(esupsignature.getUri())) {
+                appSignatureType = AppSignatureEnum.ESUPSIGNATURE;
             }
         }
     }

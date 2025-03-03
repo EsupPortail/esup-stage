@@ -4,7 +4,7 @@ databaseChangeLog:
     author: thouveno9
     changes:
     - addColumn:
-        tableName: convention
+        tableName: Convention
         columns:
         - column:
             name: loginEnvoiSignature

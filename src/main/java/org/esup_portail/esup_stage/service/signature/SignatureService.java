@@ -52,24 +52,22 @@ public class SignatureService {
     private static final Logger logger = LogManager.getLogger(SignatureService.class);
     private final WebClient webClient;
     @Autowired
-    ConventionJpaRepository conventionJpaRepository;
+    private ConventionJpaRepository conventionJpaRepository;
     @Autowired
-    AvenantJpaRepository avenantJpaRepository;
+    private AvenantJpaRepository avenantJpaRepository;
     @Autowired
-    CentreGestionJpaRepository centreGestionJpaRepository;
+    private CentreGestionJpaRepository centreGestionJpaRepository;
     @Lazy
     @Autowired
-    ConventionService conventionService;
+    private ConventionService conventionService;
     @Autowired
-    ImpressionService impressionService;
+    private ImpressionService impressionService;
     @Autowired
-    WebhookService webhookService;
-
+    private WebhookService webhookService;
     @Autowired
-    SignatureProperties signatureProperties;
-
+    private SignatureProperties signatureProperties;
     @Autowired
-    AppliProperties appliProperties;
+    private AppliProperties appliProperties;
     @Autowired
     private SignatureClient signatureClient;
     @Autowired
