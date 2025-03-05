@@ -1,5 +1,6 @@
 package org.esup_portail.esup_stage.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apereo.cas.client.session.SingleSignOutFilter;
 import org.apereo.cas.client.validation.Cas20ServiceTicketValidator;
 import org.apereo.cas.client.validation.TicketValidator;
@@ -31,6 +32,7 @@ import java.util.Collections;
 
 @Configuration
 @Order(3)
+@Slf4j
 public class SecurityConfiguration {
 
     @Autowired
@@ -41,6 +43,7 @@ public class SecurityConfiguration {
 
     @Bean
     public ServiceProperties serviceProperties() {
+        log.info("serviceProperties : {}/login/cas", appliProperties.getUrl());
         ServiceProperties serviceProperties = new ServiceProperties();
         serviceProperties.setService(appliProperties.getUrl() + "/login/cas");
         serviceProperties.setSendRenew(false);
@@ -49,6 +52,7 @@ public class SecurityConfiguration {
 
     @Bean
     public AuthenticationEntryPoint casEntryPoint() {
+        log.info("casEntryPoint : " + casProperties.getUrl().getLoginUrl());
         CasAuthenticationEntryPoint entryPoint = new CasAuthenticationEntryPoint();
         entryPoint.setLoginUrl(casProperties.getUrl().getLoginUrl());
         entryPoint.setServiceProperties(serviceProperties());
@@ -57,6 +61,7 @@ public class SecurityConfiguration {
 
     @Bean
     public TicketValidator ticketValidator() {
+        log.info("ticketValidator : {}", casProperties.getUrl().getService());
         if (casProperties.getResponseType() != null && casProperties.getResponseType().equals("xml")) {
             return new Cas20ServiceTicketValidator(casProperties.getUrl().getService());
         } else {
@@ -96,6 +101,7 @@ public class SecurityConfiguration {
 
     @Bean
     public LogoutFilter logoutFilter() {
+        log.info("logoutFilter : {}", casProperties.getUrl().getLogoutUrl());
         LogoutFilter logoutFilter = new LogoutFilter(casProperties.getUrl().getLogoutUrl(), new SecurityContextLogoutHandler());
         logoutFilter.setFilterProcessesUrl("/logout");
         return logoutFilter;

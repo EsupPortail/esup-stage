@@ -21,8 +21,8 @@ Documentation technique link:src/docs/modules/ROOT/pages/index.adoc[(source)]
 * Pour *éviter les redondances* de valeurs, les champs suivants ont été modifiés :
 ** `cas.url.login` : devient *optionnel* et ne peut maintenant contenir que le path de connexion :  `/login` (saisie de l'url entière toujours possible)
 ** `cas.url.logout` : devient *optionnel* et ne peut maintenant contenir que le path de déconnexion :  `/logout` (saisie de l'url entière toujours possible)
+** `appli.localapi` : devient *optionnel*, sera utilisé en remplacement de `appli.url` lors des appels api sur elle-même (cas d'un reverse proxy par exemple)
 ** `appli.prefix` : *supprimé*, car en doublon avec `appli.url`
-** `appli.localapi` : *supprimé*, car en doublon avec `appli.url`
 
 == Stockage de fichiers
 

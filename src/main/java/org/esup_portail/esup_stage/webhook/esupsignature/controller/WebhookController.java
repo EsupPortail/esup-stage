@@ -40,7 +40,7 @@ public class WebhookController {
         }
         // Récupération du PDF et des metadata
         PdfMetadataDto content = webClient.get()
-                .uri(appliProperties.getUrl() + PublicSecurityConfiguration.PATH_FILTER + "/api/" + type + "/" + id)
+                .uri(appliProperties.getLocalApi() + PublicSecurityConfiguration.PATH_FILTER + "/api/" + type + "/" + id)
                 .headers(httpHeaders -> httpHeaders.setBearerAuth(token))
                 .retrieve()
                 .bodyToMono(PdfMetadataDto.class)

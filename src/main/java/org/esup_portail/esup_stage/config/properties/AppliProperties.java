@@ -19,9 +19,18 @@ public class AppliProperties {
     private DatasourceProperties datasource;
     private MailerProperties mailer;
     private String url;
+    private String localApi;
     private String adminTechnique;
     private String dataDir;
     private List<String> tokens;
+
+    public String getLocalApi() {
+        String result = url;
+        if (StringUtils.hasText(localApi)) {
+            result = localApi;
+        }
+        return result;
+    }
 
     public Set<String> getAdminTechnique() {
         if (adminTechnique == null || adminTechnique.trim().isEmpty()) {
