@@ -1,6 +1,7 @@
 package org.esup_portail.esup_stage.security.userdetails;
 
 import org.esup_portail.esup_stage.dto.LdapSearchDto;
+import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.Etudiant;
 import org.esup_portail.esup_stage.model.Role;
 import org.esup_portail.esup_stage.model.Utilisateur;
@@ -96,7 +97,12 @@ public class CasUserDetailsServiceImpl implements AuthenticationUserDetailsServi
 
         // Mise à jour de son nom/prénom si non existant
         if (utilisateur != null) {
-            LdapUser ldapUser = ldapService.searchByLogin(utilisateur.getLogin());
+            LdapUser ldapUser = null;
+            try {
+                ldapUser = ldapService.searchByLogin(utilisateur.getLogin());
+            } catch (AppException e) {
+                /* Nothing */
+            }
             if (ldapUser == null) {
                 throw new UsernameNotFoundException("Utilisateur LDAP non trouvé à partir du login " + utilisateur.getLogin());
             }

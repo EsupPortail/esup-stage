@@ -1,11 +1,10 @@
 package org.esup_portail.esup_stage.repository;
 
-import org.esup_portail.esup_stage.model.Affectation;
-import org.springframework.stereotype.Repository;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
+import org.esup_portail.esup_stage.model.Affectation;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class AffectationRepository {

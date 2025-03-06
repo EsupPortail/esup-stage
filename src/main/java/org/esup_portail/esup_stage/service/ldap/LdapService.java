@@ -7,8 +7,6 @@ import org.esup_portail.esup_stage.config.properties.ReferentielProperties;
 import org.esup_portail.esup_stage.dto.LdapSearchDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -59,8 +57,8 @@ public class LdapService {
                         .block();
             }
         } catch (Exception e) {
-            log.error("context",e);
             log.error("Erreur lors de l'appel au ws LDAP {}", api);
+            log.error("context",e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
         }
     }

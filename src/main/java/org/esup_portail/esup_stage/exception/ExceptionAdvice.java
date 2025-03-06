@@ -1,24 +1,21 @@
 package org.esup_portail.esup_stage.exception;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@ControllerAdvice
-public class AppExceptionAdvice {
+@RestControllerAdvice
+@Slf4j
+public class ExceptionAdvice {
 
-    private static final Logger LOGGER = LogManager.getLogger(AppExceptionAdvice.class);
-
-    @ExceptionHandler(AppException.class)
+    @ExceptionHandler({AppException.class, UsernameNotFoundException.class})
     public ResponseEntity<Object> handleAppException(AppException e) {
-        LOGGER.error(e.getMessage(), e);
+        log.error(e.getMessage(), e);
         Map<String, Object> body = new HashMap<>();
         body.put("code", e.getHttpStatus());
         body.put("message", e.getMessage());

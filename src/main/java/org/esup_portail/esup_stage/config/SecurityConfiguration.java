@@ -24,7 +24,6 @@ import org.springframework.security.core.userdetails.AuthenticationUserDetailsSe
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
@@ -111,7 +110,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         /* Configure les autorisations d'accès */
         http.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/login/cas", "/api/version").permitAll()
+                .requestMatchers("/login/cas", "/api/version", "/error/**").permitAll()
                 /* Les autres requêtes doivent être authentifiées */
                 .anyRequest().authenticated());
 

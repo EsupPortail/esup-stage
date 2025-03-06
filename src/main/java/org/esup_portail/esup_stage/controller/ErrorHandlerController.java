@@ -12,10 +12,10 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-public class CustomErrorController implements ErrorController {
+public class ErrorHandlerController implements ErrorController {
 
     @Autowired
-    AppConfigService appConfigService;
+    private AppConfigService appConfigService;
 
     @RequestMapping("/error")
     public String handleError(HttpServletRequest request, ModelMap model) {
@@ -33,9 +33,9 @@ public class CustomErrorController implements ErrorController {
         if (status != null) {
             int statusCode = Integer.parseInt(status.toString());
             if (statusCode == HttpStatus.UNAUTHORIZED.value()) {
-                return "error-401";
+                return "error/401";
             }
         }
-        return "error-500";
+        return "error";
     }
 }

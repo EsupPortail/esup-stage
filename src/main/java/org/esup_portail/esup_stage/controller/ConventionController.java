@@ -22,7 +22,6 @@ import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.ConventionService;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
 import org.esup_portail.esup_stage.service.ldap.LdapService;
-import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
 import org.esup_portail.esup_stage.service.signature.SignatureService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;

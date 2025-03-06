@@ -1,12 +1,11 @@
 package org.esup_portail.esup_stage.repository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import org.esup_portail.esup_stage.model.Utilisateur;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Repository;
-
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
 
 import java.util.ArrayList;
 import java.util.Arrays;
