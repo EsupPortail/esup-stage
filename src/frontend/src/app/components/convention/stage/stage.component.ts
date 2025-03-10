@@ -423,13 +423,24 @@ export class StageComponent implements OnInit {
 
   openCalendar(): void {
     this.openCalendarModal();
+    console.log(this.periodesCalculHeuresStage);
   }
 
   openCalendarModal(): void {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.width = '1000px';
-    dialogConfig.data = {convention: this.convention,interruptionsStage: this.interruptionsStage};
+    dialogConfig.data = {
+      convention: this.convention,
+      interruptionsStage: this.interruptionsStage,
+      periodes: this.periodesCalculHeuresStage // Passer les périodes existantes
+    };
     const modalDialog = this.matDialog.open(CalendrierComponent, dialogConfig);
+
+    // S'abonner à l'EventEmitter de periodesChange
+    modalDialog.componentInstance.periodesChange.subscribe((periodes: any[]) => {
+      this.periodesCalculHeuresStage = periodes;
+    });
+
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse) {
         this.periodesCalculHeuresStage = dialogResponse;

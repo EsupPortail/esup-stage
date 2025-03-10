@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, Output, EventEmitter } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, FormControl, Validators } from "@angular/forms";
 
@@ -20,12 +20,18 @@ export class CalendrierComponent implements OnInit  {
 
   calendarDateFilter: any;
 
+  @Output() periodesChange = new EventEmitter<any[]>();
+
   constructor(private fb: FormBuilder,
               private dialogRef: MatDialogRef<CalendrierComponent>,
               @Inject(MAT_DIALOG_DATA) data: any
   ) {
     this.convention = data.convention;
     this.interruptionsStage = data.interruptionsStage;
+    if (data.periodes) {
+      this.periodes = data.periodes;
+      this.idPeriod = this.periodes.length;
+    }
   }
 
   ngOnInit(): void {
@@ -34,6 +40,16 @@ export class CalendrierComponent implements OnInit  {
       dateFin: [null, [Validators.required]],
     });
     this.heuresJournalieresForm = this.fb.group({});
+
+    // Initialize form controls for existing periodes
+    this.periodes.forEach((periode, index) => {
+      const controlName = 'heuresJournalieres' + index;
+      periode.formControlName = controlName;
+      this.heuresJournalieresForm.addControl(
+        controlName,
+        new FormControl(periode.nbHeuresJournalieres, Validators.required)
+      );
+    });
 
     this.calendarDateFilter = (d: Date | null): boolean => {
       const date = (d || new Date());
@@ -98,6 +114,7 @@ export class CalendrierComponent implements OnInit  {
       for (let periode of this.periodes) {
         periode.nbHeuresJournalieres = parseFloat(this.heuresJournalieresForm.get(periode.formControlName)!.value);
       }
+      this.periodesChange.emit(this.periodes);
       this.dialogRef.close(this.periodes);
     }
   }
