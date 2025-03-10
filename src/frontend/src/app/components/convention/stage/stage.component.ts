@@ -62,6 +62,12 @@ export class StageComponent implements OnInit {
   periodesCalculHeuresStage : any[] = [];
   joursFeries : any[] = [];
 
+  dureeStage = {
+    dureeMois: 0,
+    dureeJours: 0,
+    dureeHeures: 0
+  };
+
   @Input() convention: any;
   @Input() groupeConvention: any;
 
@@ -149,6 +155,8 @@ export class StageComponent implements OnInit {
       this.convention = this.mergeObject(this.convention, this.groupeConvention);
     }
 
+    this.setDureeStageFromExceptionnelle();
+
     this.form = this.fb.group({
       // - Modèle de la convention
       idPays: [this.convention.paysConvention ? this.convention.paysConvention.id : null, [Validators.required]],
@@ -168,6 +176,9 @@ export class StageComponent implements OnInit {
       dureeExceptionnelle: [this.convention.dureeExceptionnelle, this.fieldValidators['dureeExceptionnelle']],
       idTempsTravail: [this.convention.tempsTravail ? this.convention.tempsTravail.id : null, [Validators.required]],
       commentaireDureeTravail: [this.convention.commentaireDureeTravail],
+      periodeStageMois:[this.dureeStage.dureeMois],
+      periodeStageJours:[this.dureeStage.dureeJours],
+      periodeStageHeures:[this.dureeStage.dureeHeures],
       // - Partie Gratification
       gratificationStage: [this.convention.gratificationStage, [Validators.required]],
       montantGratification: [this.convention.montantGratification, this.fieldValidators['montantGratification']],
@@ -545,6 +556,24 @@ export class StageComponent implements OnInit {
       }
     }
 
+    this.updateDureeExceptionnelle();
+
     return Math.round(heuresTravails * 100) / 100;
   }
+
+  setDureeStageFromExceptionnelle(): void {
+    const totalHours = this.convention.dureeExceptionnelle;
+    this.dureeStage.dureeMois = Math.floor(totalHours / (30 * 24));
+    this.dureeStage.dureeJours = Math.floor((totalHours % (30 * 24)) / 24);
+    this.dureeStage.dureeHeures = totalHours % 24;
+  }
+
+  updateDureeExceptionnelle(): void {
+    const moisToHours = this.dureeStage.dureeMois * 30 * 24;
+    const joursToHours = this.dureeStage.dureeJours * 24;
+    this.convention.dureeExceptionnelle = moisToHours + joursToHours + this.dureeStage.dureeHeures;
+    console.log(this.dureeStage);
+    console.log(this.convention.dureeExceptionnelle);
+  }
+
 }

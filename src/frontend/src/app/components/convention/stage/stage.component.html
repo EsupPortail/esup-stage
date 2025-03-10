@@ -141,7 +141,20 @@
             <input type="number" step="any" matInput formControlName="dureeExceptionnelle" required />
             <mat-error><app-form-error [field]="form.get('dureeExceptionnelle')"></app-form-error></mat-error>
           </mat-form-field>
-          <mat-label *ngIf="!updatingPeriode && !enMasse">{{convention.dureeExceptionnellePeriode}}</mat-label>
+          <div class="col-6 mb-2" style="align-items: baseline" *ngIf="!updatingPeriode && !enMasse">
+            <mat-form-field class="col-2 mb-2" appearance="fill">
+              <mat-label>Mois</mat-label>
+              <input type="number" matInput formControlName="periodeStageMois" (change)="updateDureeExceptionnelle()" />
+            </mat-form-field>
+            <mat-form-field class="col-2 mb-2" appearance="fill">
+              <mat-label>Jours</mat-label>
+              <input type="number" matInput formControlName="periodeStageJours" (change)="updateDureeExceptionnelle()" />
+            </mat-form-field>
+            <mat-form-field class="col-2 mb-2" appearance="fill">
+              <mat-label>Heures</mat-label>
+              <input type="number" matInput formControlName="periodeStageHeures" (change)="updateDureeExceptionnelle()" />
+            </mat-form-field>
+          </div>
         </div>
         <div class="row">
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
