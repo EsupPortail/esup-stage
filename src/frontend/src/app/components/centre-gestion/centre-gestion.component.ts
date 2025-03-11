@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from "@angular/router";
 import { CentreGestionService } from "../../services/centre-gestion.service";
 import { MessageService } from "../../services/message.service";
@@ -181,34 +181,18 @@ export class CentreGestionComponent implements OnInit {
   }
 
   updateOnChanges(): void {
-    // Ajout d'un flag pour suivre si le formulaire a été modifié
-    let isChanged = false;
-
     this.coordCentreForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
-      if (this.coordCentreForm.dirty) {  // Vérifie si le formulaire a été modifié
-        this.setCentreGestionCoordCentre();
-        isChanged = true;  // Marquer comme modifié
-      }
-    });
-
-    this.paramCentreForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
-      if (this.paramCentreForm.dirty) {  // Vérifie si le formulaire a été modifié
-        this.setCentreGestionParamCentre();
-        isChanged = true;  // Marquer comme modifié
-      }
-    });
-
-    this.signatureElectroniqueForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
-      if (this.signatureElectroniqueForm.dirty) {  // Vérifie si le formulaire a été modifié
-        this.setCentreGestionSignatureElectronique();
-        isChanged = true;  // Marquer comme modifié
-      }
-    });
-
-    // Si une modification a été détectée, appeler update()
-    if (isChanged) {
+      this.setCentreGestionCoordCentre();
       this.update();
-    }
+    });
+    this.paramCentreForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
+      this.setCentreGestionParamCentre();
+      this.update();
+    });
+    this.signatureElectroniqueForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
+      this.setCentreGestionSignatureElectronique();
+      this.update();
+    });
   }
 
   validationCreation() {

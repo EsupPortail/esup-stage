@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, isFormControl, Validators} from "@angular/forms";
+import { FormBuilder, FormControl, FormGroup } from "@angular/forms";
 import { CentreGestionService } from "../../../services/centre-gestion.service";
 import { CommuneService } from "../../../services/commune.service";
 import { NiveauCentreService } from "../../../services/niveau-centre.service";
@@ -65,7 +65,6 @@ export class CoordCentreComponent implements OnInit {
       }
       this.niveauxCentre = response;
     });
-
     if (this.centreGestion.id) {
       this.setFormData();
       if (this.centreGestion.niveauCentre.libelle == 'UFR') {
@@ -228,25 +227,5 @@ export class CoordCentreComponent implements OnInit {
   updateCommune(commune : any): void {
     this.form.get('commune')?.setValue(commune.split(' - ')[0]);
     this.form.get('codePostal')?.setValue(commune.split(' - ')[1]);
-  }
-
-  isCodePostalValid() {
-    let codePostal = this.form.get('codePostal')?.value;
-    if (codePostal) {
-      let commune = this.communes.find(c => c.codePostal === codePostal);
-      if (commune)
-        return true;
-    }
-    return false;
-  }
-
-  isCommuneValid() {
-    let commune = this.form.get('commune')?.value;
-    if (commune) {
-      let c = this.communes.find(c => c.libelle === commune);
-      if (c)
-        return true;
-    }
-    return false;
   }
 }
