@@ -558,4 +558,11 @@ export class StageComponent implements OnInit {
 
     return Math.round(heuresTravails * 100) / 100;
   }
+
+  deletePeriodeTravail(index: number): void {
+    const periodesUpdated = [...this.periodesCalculHeuresStage];
+    periodesUpdated.splice(index, 1);
+    this.periodesCalculHeuresStage = periodesUpdated;
+    this.updateHeuresTravail();
+  }
 }

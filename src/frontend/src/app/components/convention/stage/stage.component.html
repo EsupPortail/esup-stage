@@ -123,28 +123,6 @@
             <input type="number" step="any" matInput formControlName="nbHeuresHebdo" required />
             <mat-error><app-form-error [field]="form.get('nbHeuresHebdo')"></app-form-error></mat-error>
           </mat-form-field>
-          <div class="col-md-12 mb-3" *ngIf="periodesCalculHeuresStage.length > 0">
-            <div class="text-title">Périodes de travail actuelles :</div>
-            <table mat-table [dataSource]="periodesCalculHeuresStage">
-              <ng-container matColumnDef="dateDebut">
-                <th mat-header-cell *matHeaderCellDef>Date de début</th>
-                <td mat-cell *matCellDef="let row">{{row.dateDebut|date:'dd/MM/yyyy'}}</td>
-              </ng-container>
-
-              <ng-container matColumnDef="dateFin">
-                <th mat-header-cell *matHeaderCellDef>Date de fin</th>
-                <td mat-cell *matCellDef="let row">{{row.dateFin|date:'dd/MM/yyyy'}}</td>
-              </ng-container>
-
-              <ng-container matColumnDef="nbHeuresJournalieres">
-                <th mat-header-cell *matHeaderCellDef>Heures par jour</th>
-                <td mat-cell *matCellDef="let row">{{row.nbHeuresJournalieres}}</td>
-              </ng-container>
-
-              <tr mat-header-row *matHeaderRowDef="periodesTableColumns"></tr>
-              <tr mat-row *matRowDef="let row; columns: periodesTableColumns;"></tr>
-            </table>
-          </div>
           <mat-form-field class="col-sm-6 col-md-6 mb-2" appearance="fill">
             <mat-label>Nombre de jours de congés autorisés</mat-label>
             <input type="text" step="any" matInput formControlName="nbConges" />
@@ -152,9 +130,39 @@
             <mat-error><app-form-error [field]="form.get('nbConges')"></app-form-error></mat-error>
           </mat-form-field>
         </div>
-        <div class="row" *ngIf="!form.value.horairesReguliers && modifiable">
+        <div class="row" *ngIf="!form.value.horairesReguliers">
           <div class="col-6 mb-3">
             <button mat-button mat-flat-button type="button" color="primary" (click)="openCalendar()">Calcul du nombre d'heures de stages</button>
+            <mat-error *ngIf="periodesCalculHeuresStage.length === 0">Veuillez définir au moins une période de travail</mat-error>
+          </div>
+          <div class="col-md-12 mb-3" *ngIf="periodesCalculHeuresStage.length > 0">
+            <div class="text-title">Périodes de travail actuelles :</div>
+            <table mat-table [dataSource]="periodesCalculHeuresStage">
+              <ng-container matColumnDef="dateDebut">
+                <th mat-header-cell *matHeaderCellDef>Date de début</th>
+                <td mat-cell *matCellDef="let row">{{row.dateDebut | date:'dd/MM/yyyy'}}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="dateFin">
+                <th mat-header-cell *matHeaderCellDef>Date de fin</th>
+                <td mat-cell *matCellDef="let row">{{row.dateFin | date:'dd/MM/yyyy'}}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="nbHeuresJournalieres">
+                <th mat-header-cell *matHeaderCellDef>Heures par jour</th>
+                <td mat-cell *matCellDef="let row">{{row.nbHeuresJournalieres}}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let row; let i = index">
+                  <button mat-icon-button matTooltip="Supprimer" (click)="deletePeriodeTravail(i)" color="warn" *ngIf="modifiable"><i class="fa fa-trash-alt"></i></button>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="['dateDebut', 'dateFin', 'nbHeuresJournalieres', 'actions']"></tr>
+              <tr mat-row *matRowDef="let row; columns: ['dateDebut', 'dateFin', 'nbHeuresJournalieres', 'actions'];"></tr>
+            </table>
           </div>
         </div>
         <div class="row" style="align-items: baseline">
