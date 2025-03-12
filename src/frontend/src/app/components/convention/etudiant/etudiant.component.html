@@ -53,7 +53,7 @@
     <mat-expansion-panel-header>
       <mat-panel-title>Cadre du stage</mat-panel-title>
     </mat-expansion-panel-header>
-    <form *ngIf="etudiant && formConvention" [formGroup]="formConvention" novalidate (submit)="validate()">
+    <form *ngIf="etudiant && formConvention && consigneEtablissement" [formGroup]="formConvention" novalidate (submit)="validate()">
       <div class="convention-etudiant-details">
         <div class="row">
           <div class="col-sm-12 col-md-6">
