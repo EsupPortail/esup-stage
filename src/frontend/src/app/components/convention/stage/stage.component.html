@@ -137,31 +137,27 @@
           </div>
           <div class="col-md-12 mb-3" *ngIf="periodesCalculHeuresStage.length > 0">
             <div class="text-title">Périodes de travail actuelles :</div>
-            <table mat-table [dataSource]="periodesCalculHeuresStage">
-              <ng-container matColumnDef="dateDebut">
-                <th mat-header-cell *matHeaderCellDef>Date de début</th>
-                <td mat-cell *matCellDef="let row">{{row.dateDebut | date:'dd/MM/yyyy'}}</td>
-              </ng-container>
-
-              <ng-container matColumnDef="dateFin">
-                <th mat-header-cell *matHeaderCellDef>Date de fin</th>
-                <td mat-cell *matCellDef="let row">{{row.dateFin | date:'dd/MM/yyyy'}}</td>
-              </ng-container>
-
-              <ng-container matColumnDef="nbHeuresJournalieres">
-                <th mat-header-cell *matHeaderCellDef>Heures par jour</th>
-                <td mat-cell *matCellDef="let row">{{row.nbHeuresJournalieres}}</td>
-              </ng-container>
-
-              <ng-container matColumnDef="actions">
-                <th mat-header-cell *matHeaderCellDef>Actions</th>
-                <td mat-cell *matCellDef="let row; let i = index">
-                  <button mat-icon-button matTooltip="Supprimer" (click)="deletePeriodeTravail(i)" color="warn" *ngIf="modifiable"><i class="fa fa-trash-alt"></i></button>
+            <table class="table table-striped">
+              <thead>
+              <tr>
+                <th>Date de début</th>
+                <th>Date de fin</th>
+                <th>Heures par jour</th>
+                <th>Actions</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let periode of periodesCalculHeuresStage; let i = index">
+                <td>{{periode.dateDebut | date:'dd/MM/yyyy'}}</td>
+                <td>{{periode.dateFin | date:'dd/MM/yyyy'}}</td>
+                <td>{{periode.nbHeuresJournalieres}}</td>
+                <td>
+                  <button class="btn btn-sm btn-danger" (click)="deletePeriodeTravail(i)" *ngIf="modifiable">
+                    <i class="fa fa-trash-alt"></i>
+                  </button>
                 </td>
-              </ng-container>
-
-              <tr mat-header-row *matHeaderRowDef="['dateDebut', 'dateFin', 'nbHeuresJournalieres', 'actions']"></tr>
-              <tr mat-row *matRowDef="let row; columns: ['dateDebut', 'dateFin', 'nbHeuresJournalieres', 'actions'];"></tr>
+              </tr>
+              </tbody>
             </table>
           </div>
         </div>
