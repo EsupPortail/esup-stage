@@ -143,17 +143,17 @@
           </mat-form-field>
           <div class="col-6 mb-2" style="align-items: baseline" *ngIf="!updatingPeriode && !enMasse">
             <mat-form-field class="col-2 mb-2" appearance="fill">
-              <mat-label>Mois</mat-label>
-              <input type="number" matInput formControlName="periodeStageMois" (change)="updateDureeExceptionnelle()" />
+              <input type="number" matInput formControlName="periodeStageMois" />
             </mat-form-field>
+            <mat-label>Mois</mat-label>
             <mat-form-field class="col-2 mb-2" appearance="fill">
-              <mat-label>Jours</mat-label>
-              <input type="number" matInput formControlName="periodeStageJours" (change)="updateDureeExceptionnelle()" />
+              <input type="number" matInput formControlName="periodeStageJours" />
             </mat-form-field>
+            <mat-label>Jour(s)</mat-label>
             <mat-form-field class="col-2 mb-2" appearance="fill">
-              <mat-label>Heures</mat-label>
-              <input type="number" matInput formControlName="periodeStageHeures" (change)="updateDureeExceptionnelle()" />
+              <input type="number" matInput formControlName="periodeStageHeures" />
             </mat-form-field>
+            <mat-label>Heure(s)</mat-label>
           </div>
         </div>
         <div class="row">

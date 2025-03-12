@@ -29,20 +29,20 @@ import { InterruptionsFormComponent } from './interruptions-form/interruptions-f
 export class StageComponent implements OnInit {
 
   fieldValidators : any = {
-      'nbHeuresHebdo': [Validators.required, Validators.pattern('[0-9]{1,2}([,.][0-9]{1,2})?')],
-      'dureeExceptionnelle': [Validators.required, Validators.pattern('[0-9]+([,.][0-9]{1,2})?')],
-      'montantGratification': [Validators.required, Validators.pattern('[0-9]{1,10}([,.][0-9]{1,2})?')],
-      'sujetStage': [Validators.required],
-      'competences': [Validators.required],
-      'fonctionsEtTaches': [Validators.required],
-      'idUniteGratification': [Validators.required],
-      'idUniteDuree': [Validators.required],
-      'idDevise': [Validators.required],
-      'idModeVersGratification': [Validators.required],
-      'idOrigineStage': [Validators.required],
-      'confidentiel': [Validators.required],
-      'idNatureTravail': [Validators.required],
-      'idModeValidationStage': [Validators.required],
+    'nbHeuresHebdo': [Validators.required, Validators.pattern('[0-9]{1,2}([,.][0-9]{1,2})?')],
+    'dureeExceptionnelle': [Validators.required, Validators.pattern('[0-9]+([,.][0-9]{1,2})?')],
+    'montantGratification': [Validators.required, Validators.pattern('[0-9]{1,10}([,.][0-9]{1,2})?')],
+    'sujetStage': [Validators.required],
+    'competences': [Validators.required],
+    'fonctionsEtTaches': [Validators.required],
+    'idUniteGratification': [Validators.required],
+    'idUniteDuree': [Validators.required],
+    'idDevise': [Validators.required],
+    'idModeVersGratification': [Validators.required],
+    'idOrigineStage': [Validators.required],
+    'confidentiel': [Validators.required],
+    'idNatureTravail': [Validators.required],
+    'idModeValidationStage': [Validators.required],
   }
   interruptionsStageTableColumns = ['dateDebutInterruption', 'dateFinInterruption', 'actions'];
 
@@ -84,6 +84,7 @@ export class StageComponent implements OnInit {
   singleFieldUpdateLock: boolean = false;
   singleFieldUpdateQueue : any[] = [];
   updatingPeriode = false;
+  totalHours!:any;
 
   @Output() validated = new EventEmitter<number>();
   @Output() updateField = new EventEmitter<any>();
@@ -176,9 +177,9 @@ export class StageComponent implements OnInit {
       dureeExceptionnelle: [this.convention.dureeExceptionnelle, this.fieldValidators['dureeExceptionnelle']],
       idTempsTravail: [this.convention.tempsTravail ? this.convention.tempsTravail.id : null, [Validators.required]],
       commentaireDureeTravail: [this.convention.commentaireDureeTravail],
-      periodeStageMois:[this.dureeStage.dureeMois],
-      periodeStageJours:[this.dureeStage.dureeJours],
-      periodeStageHeures:[this.dureeStage.dureeHeures],
+      periodeStageMois: [this.dureeStage.dureeMois, [Validators.min(0), Validators.max(30)]],
+      periodeStageJours: [this.dureeStage.dureeJours, [Validators.min(0), Validators.max(31)]],
+      periodeStageHeures: [this.dureeStage.dureeHeures, [Validators.min(0), Validators.max(23)]],
       // - Partie Gratification
       gratificationStage: [this.convention.gratificationStage, [Validators.required]],
       montantGratification: [this.convention.montantGratification, this.fieldValidators['montantGratification']],
@@ -195,6 +196,34 @@ export class StageComponent implements OnInit {
       modeEncadreSuivi: [this.convention.modeEncadreSuivi],
       avantagesNature: [this.convention.avantagesNature],
       travailNuitFerie: [this.convention.travailNuitFerie],
+    });
+
+    this.form.get('periodeStageMois')!.valueChanges.subscribe(value => {
+      this.dureeStage.dureeMois = value;
+      this.logDureeStage();
+    });
+
+    this.form.get('periodeStageJours')!.valueChanges.subscribe(value => {
+      this.dureeStage.dureeJours = value;
+      this.logDureeStage();
+    });
+
+    this.form.get('periodeStageHeures')!.valueChanges.subscribe(value => {
+      this.dureeStage.dureeHeures = value;
+      this.logDureeStage();
+    });
+
+    this.form.get('dureeExceptionnelle')!.valueChanges.subscribe((value) => {
+      this.convention.dureeExceptionnelle = value;
+      this.setDureeStageFromExceptionnelle();
+
+      this.form.patchValue({
+        periodeStageMois: this.dureeStage.dureeMois,
+        periodeStageJours: this.dureeStage.dureeJours,
+        periodeStageHeures: this.dureeStage.dureeHeures
+      }, { emitEvent: false });
+
+      this.logDureeStage();
     });
 
     //Set default value for booleans
@@ -228,13 +257,13 @@ export class StageComponent implements OnInit {
         // controle du chevauchement avant mise à jour
         if (['dateDebutStage','dateFinStage'].includes(key)) {
           this.conventionService.controleChevauchement(this.convention.id, this.form.get('dateDebutStage')!.value, this.form.get('dateFinStage')!.value).subscribe((response) => {
-              if (!response) {
-                this.updateHeuresTravail();
-                this.updateSingleField(key,res[key]);
-              } else {
-                this.form.get(key)!.setErrors({dateStageChevauchement: true});
-              }
-            });
+            if (!response) {
+              this.updateHeuresTravail();
+              this.updateSingleField(key,res[key]);
+            } else {
+              this.form.get(key)!.setErrors({dateStageChevauchement: true});
+            }
+          });
         } else {
           this.updateSingleField(key,res[key]);
         }
@@ -450,14 +479,14 @@ export class StageComponent implements OnInit {
   }
 
   loadJoursFeries():void {
-      let anneeUniversitaire = this.convention.annee;
-      const currentYear = (anneeUniversitaire != null && anneeUniversitaire !== '') ? parseInt(anneeUniversitaire.split('/')[0]) : new Date().getFullYear();
-      const nextYear = currentYear+1;
+    let anneeUniversitaire = this.convention.annee;
+    const currentYear = (anneeUniversitaire != null && anneeUniversitaire !== '') ? parseInt(anneeUniversitaire.split('/')[0]) : new Date().getFullYear();
+    const nextYear = currentYear+1;
 
-      this.joursFeries = this.getJoursFeries(currentYear);
-      const nexYearJoursFeries = this.getJoursFeries(nextYear);
+    this.joursFeries = this.getJoursFeries(currentYear);
+    const nexYearJoursFeries = this.getJoursFeries(nextYear);
 
-      this.joursFeries.push(...nexYearJoursFeries);
+    this.joursFeries.push(...nexYearJoursFeries);
   }
 
   getJoursFeries(annee: number){
@@ -504,21 +533,21 @@ export class StageComponent implements OnInit {
     setTimeout(() => {
       this.updatingPeriode = false;
     }, 2000);
-      if (this.form.get('horairesReguliers')!.value){
+    if (this.form.get('horairesReguliers')!.value){
 
-        const dateDebutStage = this.dateFromBackend(this.form.get('dateDebutStage')!.value);
-        const dateFinStage = this.dateFromBackend(this.form.get('dateFinStage')!.value);
-        if (this.form.get('nbHeuresHebdo')?.valid) {
-          const nbHeuresJournalieres = this.form.get('nbHeuresHebdo')!.value/5;
+      const dateDebutStage = this.dateFromBackend(this.form.get('dateDebutStage')!.value);
+      const dateFinStage = this.dateFromBackend(this.form.get('dateFinStage')!.value);
+      if (this.form.get('nbHeuresHebdo')?.valid) {
+        const nbHeuresJournalieres = this.form.get('nbHeuresHebdo')!.value/5;
 
-          const periodes = [{'dateDebut':dateDebutStage,'dateFin':dateFinStage,'nbHeuresJournalieres':nbHeuresJournalieres}];
+        const periodes = [{'dateDebut':dateDebutStage,'dateFin':dateFinStage,'nbHeuresJournalieres':nbHeuresJournalieres}];
 
-          this.form.get('dureeExceptionnelle')?.setValue(this.calculHeuresTravails(periodes));
-        }
-
-      }else{
-        this.form.get('dureeExceptionnelle')?.setValue(this.calculHeuresTravails(this.periodesCalculHeuresStage));
+        this.form.get('dureeExceptionnelle')?.setValue(this.calculHeuresTravails(periodes));
       }
+
+    }else{
+      this.form.get('dureeExceptionnelle')?.setValue(this.calculHeuresTravails(this.periodesCalculHeuresStage));
+    }
   }
 
   calculHeuresTravails(periodes: any[]):number {
@@ -537,16 +566,16 @@ export class StageComponent implements OnInit {
         //skip périodes d'interruptions
         if (this.form.get('interruptionStage')!.value){
           for (const interruptionStage of this.interruptionsStage) {
-              if (loopDate >= this.dateFromBackend(interruptionStage.dateDebutInterruption) && loopDate <= this.dateFromBackend(interruptionStage.dateFinInterruption)){
-                valid = false;
-              }
+            if (loopDate >= this.dateFromBackend(interruptionStage.dateDebutInterruption) && loopDate <= this.dateFromBackend(interruptionStage.dateFinInterruption)){
+              valid = false;
+            }
           }
         }
         //skip jours fériés
         for (const joursFerie of this.joursFeries) {
-            if (loopDate.getTime() === joursFerie.getTime()){
-              valid = false;
-            }
+          if (loopDate.getTime() === joursFerie.getTime()){
+            valid = false;
+          }
         }
 
         if (valid){
@@ -555,25 +584,19 @@ export class StageComponent implements OnInit {
         loopDate.setDate(loopDate.getDate() + 1);
       }
     }
-
-    this.updateDureeExceptionnelle();
-
     return Math.round(heuresTravails * 100) / 100;
   }
 
   setDureeStageFromExceptionnelle(): void {
-    const totalHours = this.convention.dureeExceptionnelle;
-    this.dureeStage.dureeMois = Math.floor(totalHours / (30 * 24));
-    this.dureeStage.dureeJours = Math.floor((totalHours % (30 * 24)) / 24);
-    this.dureeStage.dureeHeures = totalHours % 24;
+    this.totalHours = this.convention.dureeExceptionnelle;
+    this.dureeStage.dureeMois = Math.floor(this.totalHours / (30 * 24));
+    this.dureeStage.dureeJours = Math.floor((this.totalHours % (30 * 24)) / 24);
+    this.dureeStage.dureeHeures = this.totalHours % 24;
   }
 
-  updateDureeExceptionnelle(): void {
-    const moisToHours = this.dureeStage.dureeMois * 30 * 24;
-    const joursToHours = this.dureeStage.dureeJours * 24;
-    this.convention.dureeExceptionnelle = moisToHours + joursToHours + this.dureeStage.dureeHeures;
-    console.log(this.dureeStage);
-    console.log(this.convention.dureeExceptionnelle);
+  logDureeStage(): void {
+    const dureeString = `${this.dureeStage.dureeMois} mois ${this.dureeStage.dureeJours} jour(s) ${this.dureeStage.dureeHeures} heure(s)`;
+    console.log(dureeString);
   }
 
 }
