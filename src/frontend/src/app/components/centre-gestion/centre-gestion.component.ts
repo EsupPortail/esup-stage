@@ -64,10 +64,10 @@ export class CentreGestionComponent implements OnInit {
           this.centreGestion = response;
           this.consigneCentre = this.centreGestion.consigne;
           this.centreGestionInited = true;
-          if (this.centreGestion.id) {
-            this.updateOnChanges();
-          }
           this.majStatus();
+          if (this.centreGestion.id) {
+            setTimeout(() => this.updateOnChanges(), 0);
+          }
         });
       } else {
         this.isCreate = false;
@@ -75,10 +75,10 @@ export class CentreGestionComponent implements OnInit {
           this.centreGestion = response;
           this.consigneCentre = this.centreGestion.consigne;
           this.centreGestionInited = true;
-          if (this.centreGestion.id) {
-            this.updateOnChanges();
-          }
           this.majStatus();
+          if (this.centreGestion.id) {
+            setTimeout(() => this.updateOnChanges(), 0);
+          }
         });
       }
     });
