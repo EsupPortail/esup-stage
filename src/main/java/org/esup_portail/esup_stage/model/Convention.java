@@ -413,7 +413,7 @@ public class Convention extends ObjetMetier implements Exportable {
     @Transient
     private boolean depasseDelaiValidation = false;
 
-    @Transient
+    @Column(name = "dureeExceptionnellePeriode")
     private String dureeExceptionnellePeriode;
 
     public void setNomenclature(ConventionNomenclature nomenclature) {
@@ -429,9 +429,11 @@ public class Convention extends ObjetMetier implements Exportable {
     }
 
     public String getDureeExceptionnellePeriode() {
-        if (this.getNbHeuresHebdo() != null && !this.getNbHeuresHebdo().equals("")
-                && this.getDureeExceptionnelle() != null && !this.getDureeExceptionnelle().equals("")) {
-            this.setDureeExceptionnellePeriode(PeriodeService.calculPeriodeOuvree(Float.parseFloat(this.getNbHeuresHebdo()), Float.parseFloat(this.getDureeExceptionnelle())));
+        if(dureeExceptionnellePeriode == null){
+            if (this.getNbHeuresHebdo() != null && !this.getNbHeuresHebdo().equals("")
+                    && this.getDureeExceptionnelle() != null && !this.getDureeExceptionnelle().equals("")) {
+                return PeriodeService.calculPeriodeOuvree(Float.parseFloat(this.getNbHeuresHebdo()), Float.parseFloat(this.getDureeExceptionnelle()));
+            }
         }
         return dureeExceptionnellePeriode;
     }

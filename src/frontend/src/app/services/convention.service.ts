@@ -109,4 +109,7 @@ export class ConventionService implements PaginatedService {
     return this.http.get(`${environment.apiUrl}/conventions/${id}/download-signed-doc`, { responseType: 'blob'});
   }
 
+  updatePeriodes(id: number, periodes: String): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/conventions/${id}/periodes`, periodes);
+  }
 }
