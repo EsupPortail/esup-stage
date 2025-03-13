@@ -200,17 +200,14 @@ export class StageComponent implements OnInit {
 
     this.form.get('periodeStageMois')!.valueChanges.subscribe(value => {
       this.dureeStage.dureeMois = value;
-      this.logDureeStage();
     });
 
     this.form.get('periodeStageJours')!.valueChanges.subscribe(value => {
       this.dureeStage.dureeJours = value;
-      this.logDureeStage();
     });
 
     this.form.get('periodeStageHeures')!.valueChanges.subscribe(value => {
       this.dureeStage.dureeHeures = value;
-      this.logDureeStage();
     });
 
     this.form.get('dureeExceptionnelle')!.valueChanges.subscribe((value) => {
@@ -222,8 +219,6 @@ export class StageComponent implements OnInit {
         periodeStageJours: this.dureeStage.dureeJours,
         periodeStageHeures: this.dureeStage.dureeHeures
       }, { emitEvent: false });
-
-      this.logDureeStage();
     });
 
     //Set default value for booleans
@@ -332,6 +327,9 @@ export class StageComponent implements OnInit {
       if (!this.singleFieldUpdateLock){
         this.singleFieldUpdateLock = true;
         this.updateField.emit(data);
+        if (key === 'dureeExceptionnelle' || key === 'periodeStageMois' || key === 'periodeStageJours' || key === 'periodeStageHeures') {
+          this.updateDureeStage();
+        }
       }else{
         this.singleFieldUpdateQueue.push(data);
       }
@@ -607,7 +605,7 @@ export class StageComponent implements OnInit {
     this.dureeStage.dureeHeures = Math.round(this.totalHours - ((this.dureeStage.dureeMois * NB_JOUR_MOIS + this.dureeStage.dureeJours) * nbHeuresJournalieres));
   }
 
-  logDureeStage(): void {
+  updateDureeStage(): void {
     const dureeString = `${this.dureeStage.dureeMois} mois ${this.dureeStage.dureeJours} jour(s) ${this.dureeStage.dureeHeures} heure(s)`;
     this.conventionService.updatePeriodes(this.convention.id, dureeString)
       .subscribe({
