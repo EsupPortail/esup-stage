@@ -210,9 +210,13 @@ export class StageComponent implements OnInit {
       this.dureeStage.dureeHeures = value;
     });
 
+    this.form.get('nbHeuresHebdo')!.valueChanges.subscribe((value) => {
+      this.convention.nbHeuresHebdo = value;
+    });
+
     this.form.get('dureeExceptionnelle')!.valueChanges.subscribe((value) => {
       this.convention.dureeExceptionnelle = value;
-      this.setDureeStageFromExceptionnelle();
+      this.calculPeriode(this.convention.nbHeuresHebdo,this.convention.dureeExceptionnelle);
 
       this.form.patchValue({
         periodeStageMois: this.dureeStage.dureeMois,
@@ -586,23 +590,16 @@ export class StageComponent implements OnInit {
   }
 
   setDureeStageFromExceptionnelle(): void {
-    const NB_JOUR_MOIS = 22;
-
-    this.totalHours = this.convention.dureeExceptionnelle;
-
-    // Calcul du nombre d'heures journalières
-    const nbHeuresHebdo = this.convention.nbHeuresHebdo
-    const nbHeuresJournalieres = nbHeuresHebdo / 5; // nombre d'heures travaillées par jour (5 jours ouvrés/semaine)
-
-    // Calcul du nombre total de jours ouvrés
-    const nbJours = Math.floor(this.totalHours / nbHeuresJournalieres);
-
-    // Conversion en mois et jours ouvrés (1 mois = 22 jours ouvrés)
-    this.dureeStage.dureeMois = Math.floor(nbJours / NB_JOUR_MOIS);
-    this.dureeStage.dureeJours = nbJours % NB_JOUR_MOIS;
-
-    // Calcul des heures restantes
-    this.dureeStage.dureeHeures = Math.round(this.totalHours - ((this.dureeStage.dureeMois * NB_JOUR_MOIS + this.dureeStage.dureeJours) * nbHeuresJournalieres));
+    if(this.convention.dureeExceptionnellePeriode != null){
+      const matches = this.convention.dureeExceptionnellePeriode.match(/(\d+)\smois\s(\d+)\sjour\(s\)\s(\d+)\sheure\(s\)/);
+      if (matches) {
+        this.dureeStage.dureeMois = parseInt(matches[1], 10);
+        this.dureeStage.dureeJours = parseInt(matches[2], 10);
+        this.dureeStage.dureeHeures = parseInt(matches[3], 10);
+      }
+    }else{
+      this.calculPeriode(this.convention.nbHeuresHebdo,this.convention.dureeExceptionnelle)
+    }
   }
 
   updateDureeStage(): void {
@@ -613,6 +610,23 @@ export class StageComponent implements OnInit {
           this.convention.dureeExceptionnellePeriode = dureeString;
         },
       });
+  }
+
+  calculPeriode(nbHeuresHebdo: number, nbHeures: number): void {
+    const NB_JOUR_MOIS = 22; // 1 mois = 22 jours ouvrés
+    const NB_JOUR_SEMAINE = 5; // 1 semaine = 5 jours ouvrés
+
+    const nbHeuresJournalieres = nbHeuresHebdo / NB_JOUR_SEMAINE; // Heures par jour ouvré
+
+    const nbJours = Math.floor(nbHeures / nbHeuresJournalieres); // Nombre de jours ouvrés nécessaires
+
+    this.dureeStage.dureeMois = Math.floor(nbJours / NB_JOUR_MOIS); // Nombre de mois ouvrés complets
+
+    this.dureeStage.dureeJours = nbJours % NB_JOUR_MOIS; // Jours ouvrés restants
+
+    const heuresDecomptees = nbJours * nbHeuresJournalieres;
+
+    this.dureeStage.dureeHeures = Math.round(nbHeures - heuresDecomptees);
   }
 
 }
