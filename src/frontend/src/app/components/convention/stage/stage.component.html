@@ -152,7 +152,10 @@
                 <td>{{periode.dateFin | date:'dd/MM/yyyy'}}</td>
                 <td>{{periode.nbHeuresJournalieres}}</td>
                 <td>
-                  <button class="btn btn-sm btn-danger" (click)="deletePeriodeTravail(i)" *ngIf="modifiable">
+                  <button mat-icon-button matTooltip="Éditer" (click)="openCalendar()" color="primary" *ngIf="modifiable">
+                    <i class="fa fa-pen"></i>
+                  </button>
+                  <button class="btn btn-sm btn-danger" (click)="deletePeriodeStage(i)" *ngIf="modifiable">
                     <i class="fa fa-trash-alt"></i>
                   </button>
                 </td>

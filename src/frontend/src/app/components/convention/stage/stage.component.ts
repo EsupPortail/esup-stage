@@ -20,6 +20,7 @@ import { ConventionService } from "../../../services/convention.service";
 import { debounceTime } from 'rxjs/operators'
 import { CalendrierComponent } from './calendrier/calendrier.component';
 import { InterruptionsFormComponent } from './interruptions-form/interruptions-form.component';
+import { PeriodeStageService } from'../../../services/periode-stage.service';
 
 @Component({
   selector: 'app-stage',
@@ -102,6 +103,7 @@ export class StageComponent implements OnInit {
               private modeValidationStageService: ModeValidationStageService,
               private typeConventionService: TypeConventionService,
               private periodeInterruptionStageService: PeriodeInterruptionStageService,
+              private periodeStageService : PeriodeStageService,
               public matDialog: MatDialog,
   ) {
   }
@@ -205,6 +207,7 @@ export class StageComponent implements OnInit {
     this.toggleValidators(['sujetStage','competences','fonctionsEtTaches','idOrigineStage','confidentiel','idNatureTravail','idModeValidationStage'],!this.enMasse);
 
     this.loadInterruptionsStage();
+    this.loadPeriodesStage();
 
     this.previousValues={...this.form.value}
     this.form.valueChanges.pipe(debounceTime(1000)).subscribe(res=>{
@@ -331,8 +334,17 @@ export class StageComponent implements OnInit {
 
   }
 
-  setHorairesReguliersFormControls(event : any): void {
-    this.toggleValidators(['nbHeuresHebdo',],event.value);
+  setHorairesReguliersFormControls(event: any): void {
+    this.toggleValidators(['nbHeuresHebdo'], event.value);
+    if (!event.value) {
+      this.loadPeriodesStage();
+    } else {
+      if (this.periodesCalculHeuresStage.length > 0) {
+        this.deletePeriodeStageByConvention();
+      }
+      this.periodesCalculHeuresStage = [];
+      this.updateHeuresTravail();
+    }
   }
 
   setGratificationStageFormControls(event : any): void {
@@ -421,6 +433,45 @@ export class StageComponent implements OnInit {
     }
   }
 
+  loadPeriodesStage() : void {
+    this.periodeStageService.getByConvention(this.convention.id).subscribe((response: any) => {
+      console.log(" loadPeriodesStage : ",response);
+      this.periodesCalculHeuresStage = response;
+      this.updateHeuresTravail();
+    });
+  }
+
+  refreshPeriodesStage() : void {
+    this.periodeStageService.getByConvention(this.convention.id).subscribe((response: any) => {
+      console.log("refreshPeriodesStage : ",response);
+      this.periodesCalculHeuresStage = response;
+      this.updateHeuresTravail();
+    });
+  }
+
+  deletePeriodeStage(index: number): void {
+    const periodeToDelete = this.periodesCalculHeuresStage[index];
+    this.periodeStageService.delete(periodeToDelete.id).subscribe({
+      next: () => {
+        const periodesUpdated = [...this.periodesCalculHeuresStage];
+        periodesUpdated.splice(index, 1);
+        this.periodesCalculHeuresStage = periodesUpdated;
+        this.updateHeuresTravail();
+      },
+      error: (error) => {
+        console.error("Error deleting period:", error);
+      }
+    });
+  }
+
+  deletePeriodeStageByConvention(): void {
+    if (this.periodesCalculHeuresStage.length >= 1) {
+      this.periodeStageService.deleteByConvention(this.convention.id).subscribe((response: any) => {
+        this.refreshPeriodesStage();
+      });
+    }
+  }
+
   openCalendar(): void {
     this.openCalendarModal();
     console.log(this.periodesCalculHeuresStage);
@@ -432,21 +483,60 @@ export class StageComponent implements OnInit {
     dialogConfig.data = {
       convention: this.convention,
       interruptionsStage: this.interruptionsStage,
-      periodes: this.periodesCalculHeuresStage // Passer les périodes existantes
+      periodes: this.periodesCalculHeuresStage,
+      joursFeries: this.joursFeries
     };
-    const modalDialog = this.matDialog.open(CalendrierComponent, dialogConfig);
 
-    // S'abonner à l'EventEmitter de periodesChange
-    modalDialog.componentInstance.periodesChange.subscribe((periodes: any[]) => {
-      this.periodesCalculHeuresStage = periodes;
-    });
+    const modalDialog = this.matDialog.open(CalendrierComponent, dialogConfig);
 
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse) {
-        this.periodesCalculHeuresStage = dialogResponse;
-        this.updateHeuresTravail();
+        // Handle irregular hours
+        if (this.form.get('horairesReguliers')?.value === false) {
+          // Handle the case where there are new periods
+          if (dialogResponse.length > 0) {
+            const newPeriodes = dialogResponse.map((periode: any) => {
+              return {
+                id: periode.id, // Include id if it exists
+                idConvention: this.convention.id,
+                dateDebut: periode.dateDebut,
+                dateFin: periode.dateFin,
+                nbHeuresJournalieres: parseFloat(periode.nbHeuresJournalieres)
+              };
+            });
+            this.savePeriodesStage(newPeriodes);
+          } else {
+            // Handle the case where there are no periods
+            this.periodesCalculHeuresStage = [];
+            this.updateHeuresTravail();
+          }
+        } else {
+          // For regular hours, just update the calculation
+          this.periodesCalculHeuresStage = dialogResponse;
+          this.updateHeuresTravail();
+        }
       }
     });
+  }
+  savePeriodesStage(periodes: any[]): void {
+    let finished = 0;
+    for (const periode of periodes) {
+      if (periode.id) {
+        this.periodeStageService.update(periode.id, periode).subscribe((response: any) => {
+          finished++;
+          if (finished === periodes.length) {
+            this.refreshPeriodesStage();
+          }
+        });
+      } else {
+        this.periodeStageService.create(periode).subscribe((response: any) => {
+          finished++;
+          if (finished === periodes.length) {
+            this.refreshPeriodesStage();
+          }
+        });
+      }
+    }
   }
 
   loadJoursFeries():void {
@@ -521,48 +611,39 @@ export class StageComponent implements OnInit {
       }
   }
 
-  calculHeuresTravails(periodes: any[]):number {
+  calculHeuresTravails(periodes: any[]): number {
     let heuresTravails = 0;
-    for (const periode of periodes){
-      let loopDate = periode.dateDebut;
-      let endDate = periode.dateFin;
-      let nbHeuresJournalieres = periode.nbHeuresJournalieres;
-      while(loopDate <= endDate){
+    for (const periode of periodes) {
+      let loopDate = new Date(periode.dateDebut);
+      const endDate = new Date(periode.dateFin);
+      const nbHeuresJournalieres = periode.nbHeuresJournalieres;
+      while (loopDate <= endDate) {
         let valid = true;
-        let dayOfWeek = loopDate.getDay();
-        //skip weekends
-        if ((dayOfWeek === 6) || (dayOfWeek  === 0)){
+        const dayOfWeek = loopDate.getDay();
+        // Skip weekends
+        if (dayOfWeek === 6 || dayOfWeek === 0) {
           valid = false;
         }
-        //skip périodes d'interruptions
-        if (this.form.get('interruptionStage')!.value){
+        // Skip périodes d'interruptions
+        if (this.form.get('interruptionStage')!.value) {
           for (const interruptionStage of this.interruptionsStage) {
-              if (loopDate >= this.dateFromBackend(interruptionStage.dateDebutInterruption) && loopDate <= this.dateFromBackend(interruptionStage.dateFinInterruption)){
-                valid = false;
-              }
-          }
-        }
-        //skip jours fériés
-        for (const joursFerie of this.joursFeries) {
-            if (loopDate.getTime() === joursFerie.getTime()){
+            if (loopDate >= new Date(interruptionStage.dateDebutInterruption) && loopDate <= new Date(interruptionStage.dateFinInterruption)) {
               valid = false;
             }
+          }
         }
-
-        if (valid){
-          heuresTravails = heuresTravails + nbHeuresJournalieres
+        // Skip jours fériés
+        for (const joursFerie of this.joursFeries) {
+          if (loopDate.getTime() === joursFerie.getTime()) {
+            valid = false;
+          }
+        }
+        if (valid) {
+          heuresTravails += nbHeuresJournalieres;
         }
         loopDate.setDate(loopDate.getDate() + 1);
       }
     }
-
     return Math.round(heuresTravails * 100) / 100;
-  }
-
-  deletePeriodeTravail(index: number): void {
-    const periodesUpdated = [...this.periodesCalculHeuresStage];
-    periodesUpdated.splice(index, 1);
-    this.periodesCalculHeuresStage = periodesUpdated;
-    this.updateHeuresTravail();
   }
 }
