@@ -435,7 +435,6 @@ export class StageComponent implements OnInit {
 
   loadPeriodesStage() : void {
     this.periodeStageService.getByConvention(this.convention.id).subscribe((response: any) => {
-      console.log(" loadPeriodesStage : ",response);
       this.periodesCalculHeuresStage = response;
       this.updateHeuresTravail();
     });
@@ -443,7 +442,6 @@ export class StageComponent implements OnInit {
 
   refreshPeriodesStage() : void {
     this.periodeStageService.getByConvention(this.convention.id).subscribe((response: any) => {
-      console.log("refreshPeriodesStage : ",response);
       this.periodesCalculHeuresStage = response;
       this.updateHeuresTravail();
     });
@@ -473,11 +471,6 @@ export class StageComponent implements OnInit {
   }
 
   openCalendar(): void {
-    this.openCalendarModal();
-    console.log(this.periodesCalculHeuresStage);
-  }
-
-  openCalendarModal(): void {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.width = '1000px';
     dialogConfig.data = {
@@ -518,6 +511,7 @@ export class StageComponent implements OnInit {
       }
     });
   }
+
   savePeriodesStage(periodes: any[]): void {
     let finished = 0;
     for (const periode of periodes) {
