@@ -618,68 +618,130 @@ export class StageComponent implements OnInit {
     return new Array(JourAn, Paques, LundiPaques, FeteTravail, Victoire1945, Ascension, Pentecote, LundiPentecote, FeteNationale, Assomption, Toussaint, Armistice, Noel);
   }
 
-  //fix new date('2021-02-02') != new date(2021,2,2)
-  dateFromBackend(dateString: string):Date{
-    let date = new Date(dateString)
-    date = new Date(date.getFullYear(),date.getMonth(),date.getDate());
-    return date;
+  dateFromBackend(dateString: string | Date): Date {
+    if (!dateString) {
+      return new Date();
+    }
+    
+    let date: Date;
+    if (dateString instanceof Date) {
+      date = new Date(dateString.getTime());
+    } else {
+      date = new Date(dateString);
+    }
+    
+    // Normalize to start of day
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
   }
 
-  updateHeuresTravail():void {
+  updateHeuresTravail(): void {
     this.updatingPeriode = true;
     setTimeout(() => {
       this.updatingPeriode = false;
     }, 2000);
-    if (this.form.get('horairesReguliers')!.value){
-
-      const dateDebutStage = this.dateFromBackend(this.form.get('dateDebutStage')!.value);
-      const dateFinStage = this.dateFromBackend(this.form.get('dateFinStage')!.value);
+    
+    // Check if form controls are valid
+    if (!this.form.get('dateDebutStage')?.value || !this.form.get('dateFinStage')?.value) {
+      return;
+    }
+    
+    if (this.form.get('horairesReguliers')!.value) {
+      // For regular hours
       if (this.form.get('nbHeuresHebdo')?.valid) {
-        const nbHeuresJournalieres = this.form.get('nbHeuresHebdo')!.value/5;
-
-        const periodes = [{'dateDebut':dateDebutStage,'dateFin':dateFinStage,'nbHeuresJournalieres':nbHeuresJournalieres}];
-
-        this.form.get('dureeExceptionnelle')?.setValue(this.calculHeuresTravails(periodes));
+        const dateDebutStage = this.dateFromBackend(this.form.get('dateDebutStage')!.value);
+        const dateFinStage = this.dateFromBackend(this.form.get('dateFinStage')!.value);
+        const nbHeuresHebdo = parseFloat(this.form.get('nbHeuresHebdo')!.value);
+        const nbHeuresJournalieres = nbHeuresHebdo / 5;
+        
+        const periodes = [{
+          'dateDebut': dateDebutStage,
+          'dateFin': dateFinStage,
+          'nbHeuresJournalieres': nbHeuresJournalieres
+        }];
+        
+        // Calculate total hours
+        const totalHeures = this.calculHeuresTravails(periodes);
+        this.form.get('dureeExceptionnelle')?.setValue(totalHeures);
       }
-
-    }else{
-      this.form.get('dureeExceptionnelle')?.setValue(this.calculHeuresTravails(this.periodesCalculHeuresStage));
+    } else {
+      // For irregular hours
+      const totalHeures = this.calculHeuresTravails(this.periodesCalculHeuresStage);
+      this.form.get('dureeExceptionnelle')?.setValue(totalHeures);
     }
   }
 
   calculHeuresTravails(periodes: any[]): number {
     let heuresTravails = 0;
+    if (!periodes || periodes.length === 0) {
+      return 0;
+    }
+    
     for (const periode of periodes) {
-      let loopDate = new Date(periode.dateDebut);
+      if (!periode.dateDebut || !periode.dateFin || periode.nbHeuresJournalieres === undefined) {
+        continue;
+      }
+      
+      // Ensure we're working with Date objects
+      let startDate = new Date(periode.dateDebut);
       const endDate = new Date(periode.dateFin);
-      const nbHeuresJournalieres = periode.nbHeuresJournalieres;
-      while (loopDate <= endDate) {
+      const nbHeuresJournalieres = parseFloat(periode.nbHeuresJournalieres);
+      
+      // Normalize dates to start of day to avoid time comparison issues
+      startDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+      const normalizedEndDate = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+      
+      // Create an array of interruption date ranges for faster checking
+      const interruptionRanges = [];
+      if (this.form.get('interruptionStage')!.value && this.interruptionsStage) {
+        for (const interruption of this.interruptionsStage) {
+          const startInterruption = new Date(interruption.dateDebutInterruption);
+          const endInterruption = new Date(interruption.dateFinInterruption);
+          interruptionRanges.push({
+            start: new Date(startInterruption.getFullYear(), startInterruption.getMonth(), startInterruption.getDate()),
+            end: new Date(endInterruption.getFullYear(), endInterruption.getMonth(), endInterruption.getDate())
+          });
+        }
+      }
+      
+      // Map jours fériés to normalized dates for faster checking
+      const joursFeriesMap = new Set();
+      for (const jourFerie of this.joursFeries) {
+        joursFeriesMap.add(new Date(jourFerie.getFullYear(), jourFerie.getMonth(), jourFerie.getDate()).getTime());
+      }
+      
+      while (startDate <= normalizedEndDate) {
         let valid = true;
-        const dayOfWeek = loopDate.getDay();
+        const dayOfWeek = startDate.getDay();
+        
         // Skip weekends
         if (dayOfWeek === 6 || dayOfWeek === 0) {
           valid = false;
         }
-        // Skip périodes d'interruptions
-        if (this.form.get('interruptionStage')!.value) {
-          for (const interruptionStage of this.interruptionsStage) {
-            if (loopDate >= this.dateFromBackend(interruptionStage.dateDebutInterruption) && loopDate <= this.dateFromBackend(interruptionStage.dateFinInterruption)){
+        
+        // Skip holidays
+        if (valid && joursFeriesMap.has(startDate.getTime())) {
+          valid = false;
+        }
+        
+        // Skip interruption periods
+        if (valid && this.form.get('interruptionStage')!.value) {
+          for (const range of interruptionRanges) {
+            if (startDate >= range.start && startDate <= range.end) {
               valid = false;
+              break;
             }
           }
         }
-        // Skip jours fériés
-        for (const joursFerie of this.joursFeries) {
-          if (loopDate.getTime() === joursFerie.getTime()){
-            valid = false;
-          }
-        }
+        
         if (valid) {
           heuresTravails += nbHeuresJournalieres;
         }
-        loopDate.setDate(loopDate.getDate() + 1);
+        
+        // Move to next day
+        startDate = new Date(startDate.setDate(startDate.getDate() + 1));
       }
     }
+    
     return Math.round(heuresTravails * 100) / 100;
   }
 
@@ -707,20 +769,36 @@ export class StageComponent implements OnInit {
   }
 
   calculPeriode(nbHeuresHebdo: number, nbHeures: number): void {
+    // Avoid calculations with invalid inputs
+    if (!nbHeuresHebdo || !nbHeures || isNaN(nbHeuresHebdo) || isNaN(nbHeures)) {
+      this.dureeStage = { dureeMois: 0, dureeJours: 0, dureeHeures: 0 };
+      return;
+    }
+  
     const NB_JOUR_MOIS = 22; // 1 mois = 22 jours ouvrés
     const NB_JOUR_SEMAINE = 5; // 1 semaine = 5 jours ouvrés
-
-    const nbHeuresJournalieres = nbHeuresHebdo / NB_JOUR_SEMAINE; // Heures par jour ouvré
-
-    const nbJours = Math.floor(nbHeures / nbHeuresJournalieres); // Nombre de jours ouvrés nécessaires
-
-    this.dureeStage.dureeMois = Math.floor(nbJours / NB_JOUR_MOIS); // Nombre de mois ouvrés complets
-
-    this.dureeStage.dureeJours = nbJours % NB_JOUR_MOIS; // Jours ouvrés restants
-
-    const heuresDecomptees = nbJours * nbHeuresJournalieres;
-
-    this.dureeStage.dureeHeures = Math.round(nbHeures - heuresDecomptees);
+  
+    // Parse as floats to handle decimal values
+    const parsedNbHeuresHebdo = parseFloat(nbHeuresHebdo.toString());
+    const parsedNbHeures = parseFloat(nbHeures.toString());
+    
+    const nbHeuresJournalieres = parsedNbHeuresHebdo / NB_JOUR_SEMAINE; // Heures par jour ouvré
+    
+    if (nbHeuresJournalieres === 0) {
+      this.dureeStage = { dureeMois: 0, dureeJours: 0, dureeHeures: parsedNbHeures };
+      return;
+    }
+    
+    const totalJours = parsedNbHeures / nbHeuresJournalieres;
+    
+    const nbJoursEntiers = Math.floor(totalJours);
+    
+    this.dureeStage.dureeMois = Math.floor(nbJoursEntiers / NB_JOUR_MOIS);
+    
+    this.dureeStage.dureeJours = nbJoursEntiers % NB_JOUR_MOIS;
+    
+    const heuresRestantes = parsedNbHeures - (nbJoursEntiers * nbHeuresJournalieres);
+    this.dureeStage.dureeHeures = Math.round(heuresRestantes * 100) / 100; // Round to 2 decimal places
   }
 
 }
