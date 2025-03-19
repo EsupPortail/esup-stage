@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { PeriodeInterruptionStageService } from "../../../services/periode-interruption-stage.service";
+import { PeriodeStageService } from "../../../services/periode-stage.service"
 import { ConventionService } from "../../../services/convention.service";
 import { MessageService } from "../../../services/message.service";
 import { AuthService } from "../../../services/auth.service";
@@ -16,10 +17,12 @@ export class RecapitulatifComponent implements OnInit {
   @Input() convention: any;
   tmpConvention: any;
   interruptionsStage: any[] = [];
+  periodesStage: any[] = [];
   canPrint: boolean = false;
   printDisabledReason: string = '';
 
   constructor(private periodeInterruptionStageService: PeriodeInterruptionStageService,
+              private periodeStageService: PeriodeStageService,
               private conventionService: ConventionService,
               private messageService: MessageService,
               private authService: AuthService,
@@ -44,6 +47,10 @@ export class RecapitulatifComponent implements OnInit {
 
     if(this.tmpConvention.interruptionStage){
       this.loadInterruptionsStage();
+    }
+
+    if(!this.tmpConvention.horairesReguliers){
+      this.loadPeriodesStage()
     }
 
     this.updateCanPrintStatus();
@@ -123,6 +130,12 @@ export class RecapitulatifComponent implements OnInit {
     this.periodeInterruptionStageService.getByConvention(this.tmpConvention.id).subscribe((response: any) => {
       this.interruptionsStage = response;
     });
+  }
+
+  loadPeriodesStage() : void{
+    this.periodeStageService.getByConvention(this.tmpConvention.id).subscribe((response : any) => {
+      this.periodesStage = response;
+    })
   }
 
   validate(): void {

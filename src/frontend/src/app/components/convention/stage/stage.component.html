@@ -130,9 +130,38 @@
             <mat-error><app-form-error [field]="form.get('nbConges')"></app-form-error></mat-error>
           </mat-form-field>
         </div>
-        <div class="row" *ngIf="!form.value.horairesReguliers && modifiable">
+        <div class="row" *ngIf="!form.value.horairesReguliers">
           <div class="col-6 mb-3">
             <button mat-button mat-flat-button type="button" color="primary" (click)="openCalendar()">Calcul du nombre d'heures de stages</button>
+            <mat-error *ngIf="periodesCalculHeuresStage.length === 0">Veuillez définir au moins une période de travail</mat-error>
+          </div>
+          <div class="col-md-12 mb-3" *ngIf="periodesCalculHeuresStage.length > 0">
+            <div class="text-title">Périodes de travail actuelles :</div>
+            <table class="table table-striped">
+              <thead>
+              <tr>
+                <th>Date de début</th>
+                <th>Date de fin</th>
+                <th>Heures par jour</th>
+                <th>Actions</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let periode of periodesCalculHeuresStage; let i = index">
+                <td>{{periode.dateDebut | date:'dd/MM/yyyy'}}</td>
+                <td>{{periode.dateFin | date:'dd/MM/yyyy'}}</td>
+                <td>{{periode.nbHeuresJournalieres}}</td>
+                <td>
+                  <button mat-icon-button matTooltip="Éditer" (click)="openCalendar()" color="primary" *ngIf="modifiable">
+                    <i class="fa fa-pen"></i>
+                  </button>
+                  <button class="btn btn-sm btn-danger" (click)="deletePeriodeStage(i)" *ngIf="modifiable">
+                    <i class="fa fa-trash-alt"></i>
+                  </button>
+                </td>
+              </tr>
+              </tbody>
+            </table>
           </div>
         </div>
         <div class="row" style="align-items: baseline">
