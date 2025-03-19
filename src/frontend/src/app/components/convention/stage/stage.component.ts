@@ -29,20 +29,20 @@ import { InterruptionsFormComponent } from './interruptions-form/interruptions-f
 export class StageComponent implements OnInit {
 
   fieldValidators : any = {
-      'nbHeuresHebdo': [Validators.required, Validators.pattern('[0-9]{1,2}([,.][0-9]{1,2})?')],
-      'dureeExceptionnelle': [Validators.required, Validators.pattern('[0-9]+([,.][0-9]{1,2})?')],
-      'montantGratification': [Validators.required, Validators.pattern('[0-9]{1,10}([,.][0-9]{1,2})?')],
-      'sujetStage': [Validators.required],
-      'competences': [Validators.required],
-      'fonctionsEtTaches': [Validators.required],
-      'idUniteGratification': [Validators.required],
-      'idUniteDuree': [Validators.required],
-      'idDevise': [Validators.required],
-      'idModeVersGratification': [Validators.required],
-      'idOrigineStage': [Validators.required],
-      'confidentiel': [Validators.required],
-      'idNatureTravail': [Validators.required],
-      'idModeValidationStage': [Validators.required],
+    'nbHeuresHebdo': [Validators.required, Validators.pattern('[0-9]{1,2}([,.][0-9]{1,2})?')],
+    'dureeExceptionnelle': [Validators.required, Validators.pattern('[0-9]+([,.][0-9]{1,2})?')],
+    'montantGratification': [Validators.required, Validators.pattern('[0-9]{1,10}([,.][0-9]{1,2})?')],
+    'sujetStage': [Validators.required],
+    'competences': [Validators.required],
+    'fonctionsEtTaches': [Validators.required],
+    'idUniteGratification': [Validators.required],
+    'idUniteDuree': [Validators.required],
+    'idDevise': [Validators.required],
+    'idModeVersGratification': [Validators.required],
+    'idOrigineStage': [Validators.required],
+    'confidentiel': [Validators.required],
+    'idNatureTravail': [Validators.required],
+    'idModeValidationStage': [Validators.required],
   }
   interruptionsStageTableColumns = ['dateDebutInterruption', 'dateFinInterruption', 'actions'];
 
@@ -62,6 +62,12 @@ export class StageComponent implements OnInit {
   periodesCalculHeuresStage : any[] = [];
   joursFeries : any[] = [];
 
+  dureeStage = {
+    dureeMois: 0,
+    dureeJours: 0,
+    dureeHeures: 0
+  };
+
   @Input() convention: any;
   @Input() groupeConvention: any;
 
@@ -78,6 +84,7 @@ export class StageComponent implements OnInit {
   singleFieldUpdateLock: boolean = false;
   singleFieldUpdateQueue : any[] = [];
   updatingPeriode = false;
+  totalHours!:any;
 
   @Output() validated = new EventEmitter<number>();
   @Output() updateField = new EventEmitter<any>();
@@ -149,6 +156,8 @@ export class StageComponent implements OnInit {
       this.convention = this.mergeObject(this.convention, this.groupeConvention);
     }
 
+    this.setDureeStageFromExceptionnelle();
+
     this.form = this.fb.group({
       // - Modèle de la convention
       idPays: [this.convention.paysConvention ? this.convention.paysConvention.id : null, [Validators.required]],
@@ -168,6 +177,9 @@ export class StageComponent implements OnInit {
       dureeExceptionnelle: [this.convention.dureeExceptionnelle, this.fieldValidators['dureeExceptionnelle']],
       idTempsTravail: [this.convention.tempsTravail ? this.convention.tempsTravail.id : null, [Validators.required]],
       commentaireDureeTravail: [this.convention.commentaireDureeTravail],
+      periodeStageMois: [this.dureeStage.dureeMois, [Validators.min(0), Validators.max(30)]],
+      periodeStageJours: [this.dureeStage.dureeJours, [Validators.min(0), Validators.max(31)]],
+      periodeStageHeures: [this.dureeStage.dureeHeures, [Validators.min(0), Validators.max(23)]],
       // - Partie Gratification
       gratificationStage: [this.convention.gratificationStage, [Validators.required]],
       montantGratification: [this.convention.montantGratification, this.fieldValidators['montantGratification']],
@@ -184,6 +196,33 @@ export class StageComponent implements OnInit {
       modeEncadreSuivi: [this.convention.modeEncadreSuivi],
       avantagesNature: [this.convention.avantagesNature],
       travailNuitFerie: [this.convention.travailNuitFerie],
+    });
+
+    this.form.get('periodeStageMois')!.valueChanges.subscribe(value => {
+      this.dureeStage.dureeMois = value;
+    });
+
+    this.form.get('periodeStageJours')!.valueChanges.subscribe(value => {
+      this.dureeStage.dureeJours = value;
+    });
+
+    this.form.get('periodeStageHeures')!.valueChanges.subscribe(value => {
+      this.dureeStage.dureeHeures = value;
+    });
+
+    this.form.get('nbHeuresHebdo')!.valueChanges.subscribe((value) => {
+      this.convention.nbHeuresHebdo = value;
+    });
+
+    this.form.get('dureeExceptionnelle')!.valueChanges.subscribe((value) => {
+      this.convention.dureeExceptionnelle = value;
+      this.calculPeriode(this.convention.nbHeuresHebdo,this.convention.dureeExceptionnelle);
+
+      this.form.patchValue({
+        periodeStageMois: this.dureeStage.dureeMois,
+        periodeStageJours: this.dureeStage.dureeJours,
+        periodeStageHeures: this.dureeStage.dureeHeures
+      }, { emitEvent: false });
     });
 
     //Set default value for booleans
@@ -217,13 +256,13 @@ export class StageComponent implements OnInit {
         // controle du chevauchement avant mise à jour
         if (['dateDebutStage','dateFinStage'].includes(key)) {
           this.conventionService.controleChevauchement(this.convention.id, this.form.get('dateDebutStage')!.value, this.form.get('dateFinStage')!.value).subscribe((response) => {
-              if (!response) {
-                this.updateHeuresTravail();
-                this.updateSingleField(key,res[key]);
-              } else {
-                this.form.get(key)!.setErrors({dateStageChevauchement: true});
-              }
-            });
+            if (!response) {
+              this.updateHeuresTravail();
+              this.updateSingleField(key,res[key]);
+            } else {
+              this.form.get(key)!.setErrors({dateStageChevauchement: true});
+            }
+          });
         } else {
           this.updateSingleField(key,res[key]);
         }
@@ -292,6 +331,9 @@ export class StageComponent implements OnInit {
       if (!this.singleFieldUpdateLock){
         this.singleFieldUpdateLock = true;
         this.updateField.emit(data);
+        if (key === 'dureeExceptionnelle' || key === 'periodeStageMois' || key === 'periodeStageJours' || key === 'periodeStageHeures') {
+          this.updateDureeStage();
+        }
       }else{
         this.singleFieldUpdateQueue.push(data);
       }
@@ -439,14 +481,14 @@ export class StageComponent implements OnInit {
   }
 
   loadJoursFeries():void {
-      let anneeUniversitaire = this.convention.annee;
-      const currentYear = (anneeUniversitaire != null && anneeUniversitaire !== '') ? parseInt(anneeUniversitaire.split('/')[0]) : new Date().getFullYear();
-      const nextYear = currentYear+1;
+    let anneeUniversitaire = this.convention.annee;
+    const currentYear = (anneeUniversitaire != null && anneeUniversitaire !== '') ? parseInt(anneeUniversitaire.split('/')[0]) : new Date().getFullYear();
+    const nextYear = currentYear+1;
 
-      this.joursFeries = this.getJoursFeries(currentYear);
-      const nexYearJoursFeries = this.getJoursFeries(nextYear);
+    this.joursFeries = this.getJoursFeries(currentYear);
+    const nexYearJoursFeries = this.getJoursFeries(nextYear);
 
-      this.joursFeries.push(...nexYearJoursFeries);
+    this.joursFeries.push(...nexYearJoursFeries);
   }
 
   getJoursFeries(annee: number){
@@ -493,21 +535,21 @@ export class StageComponent implements OnInit {
     setTimeout(() => {
       this.updatingPeriode = false;
     }, 2000);
-      if (this.form.get('horairesReguliers')!.value){
+    if (this.form.get('horairesReguliers')!.value){
 
-        const dateDebutStage = this.dateFromBackend(this.form.get('dateDebutStage')!.value);
-        const dateFinStage = this.dateFromBackend(this.form.get('dateFinStage')!.value);
-        if (this.form.get('nbHeuresHebdo')?.valid) {
-          const nbHeuresJournalieres = this.form.get('nbHeuresHebdo')!.value/5;
+      const dateDebutStage = this.dateFromBackend(this.form.get('dateDebutStage')!.value);
+      const dateFinStage = this.dateFromBackend(this.form.get('dateFinStage')!.value);
+      if (this.form.get('nbHeuresHebdo')?.valid) {
+        const nbHeuresJournalieres = this.form.get('nbHeuresHebdo')!.value/5;
 
-          const periodes = [{'dateDebut':dateDebutStage,'dateFin':dateFinStage,'nbHeuresJournalieres':nbHeuresJournalieres}];
+        const periodes = [{'dateDebut':dateDebutStage,'dateFin':dateFinStage,'nbHeuresJournalieres':nbHeuresJournalieres}];
 
-          this.form.get('dureeExceptionnelle')?.setValue(this.calculHeuresTravails(periodes));
-        }
-
-      }else{
-        this.form.get('dureeExceptionnelle')?.setValue(this.calculHeuresTravails(this.periodesCalculHeuresStage));
+        this.form.get('dureeExceptionnelle')?.setValue(this.calculHeuresTravails(periodes));
       }
+
+    }else{
+      this.form.get('dureeExceptionnelle')?.setValue(this.calculHeuresTravails(this.periodesCalculHeuresStage));
+    }
   }
 
   calculHeuresTravails(periodes: any[]):number {
@@ -526,16 +568,16 @@ export class StageComponent implements OnInit {
         //skip périodes d'interruptions
         if (this.form.get('interruptionStage')!.value){
           for (const interruptionStage of this.interruptionsStage) {
-              if (loopDate >= this.dateFromBackend(interruptionStage.dateDebutInterruption) && loopDate <= this.dateFromBackend(interruptionStage.dateFinInterruption)){
-                valid = false;
-              }
+            if (loopDate >= this.dateFromBackend(interruptionStage.dateDebutInterruption) && loopDate <= this.dateFromBackend(interruptionStage.dateFinInterruption)){
+              valid = false;
+            }
           }
         }
         //skip jours fériés
         for (const joursFerie of this.joursFeries) {
-            if (loopDate.getTime() === joursFerie.getTime()){
-              valid = false;
-            }
+          if (loopDate.getTime() === joursFerie.getTime()){
+            valid = false;
+          }
         }
 
         if (valid){
@@ -544,7 +586,47 @@ export class StageComponent implements OnInit {
         loopDate.setDate(loopDate.getDate() + 1);
       }
     }
-
     return Math.round(heuresTravails * 100) / 100;
   }
+
+  setDureeStageFromExceptionnelle(): void {
+    if(this.convention.dureeExceptionnellePeriode != null){
+      const matches = this.convention.dureeExceptionnellePeriode.match(/(\d+)\smois\s(\d+)\sjour\(s\)\s(\d+)\sheure\(s\)/);
+      if (matches) {
+        this.dureeStage.dureeMois = parseInt(matches[1], 10);
+        this.dureeStage.dureeJours = parseInt(matches[2], 10);
+        this.dureeStage.dureeHeures = parseInt(matches[3], 10);
+      }
+    }else{
+      this.calculPeriode(this.convention.nbHeuresHebdo,this.convention.dureeExceptionnelle)
+    }
+  }
+
+  updateDureeStage(): void {
+    const dureeString = `${this.dureeStage.dureeMois} mois ${this.dureeStage.dureeJours} jour(s) ${this.dureeStage.dureeHeures} heure(s)`;
+    this.conventionService.updatePeriodes(this.convention.id, dureeString)
+      .subscribe({
+        next: (response) => {
+          this.convention.dureeExceptionnellePeriode = dureeString;
+        },
+      });
+  }
+
+  calculPeriode(nbHeuresHebdo: number, nbHeures: number): void {
+    const NB_JOUR_MOIS = 22; // 1 mois = 22 jours ouvrés
+    const NB_JOUR_SEMAINE = 5; // 1 semaine = 5 jours ouvrés
+
+    const nbHeuresJournalieres = nbHeuresHebdo / NB_JOUR_SEMAINE; // Heures par jour ouvré
+
+    const nbJours = Math.floor(nbHeures / nbHeuresJournalieres); // Nombre de jours ouvrés nécessaires
+
+    this.dureeStage.dureeMois = Math.floor(nbJours / NB_JOUR_MOIS); // Nombre de mois ouvrés complets
+
+    this.dureeStage.dureeJours = nbJours % NB_JOUR_MOIS; // Jours ouvrés restants
+
+    const heuresDecomptees = nbJours * nbHeuresJournalieres;
+
+    this.dureeStage.dureeHeures = Math.round(nbHeures - heuresDecomptees);
+  }
+
 }

@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.0.1-add-duree-exceptionnelle-periode
+      author: thouveno9
+      changes:
+        - addColumn:
+            tableName: Convention
+            columns:
+              - column:
+                  name: dureeExceptionnellePeriode
+                  type: VARCHAR(255)

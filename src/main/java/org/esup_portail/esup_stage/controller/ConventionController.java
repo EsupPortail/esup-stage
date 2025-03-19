@@ -899,4 +899,16 @@ public class ConventionController {
             throw new AppException(HttpStatus.NOT_FOUND, "Fichier non trouvé");
         }
     }
+
+    @PostMapping("/{id}/periodes")
+    @Secure
+    public Convention updatePeriodes(@PathVariable("id") int id, @RequestBody PeriodesDto periodes) {
+        Convention convention = conventionJpaRepository.findById(id);
+        if (convention == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        }
+        convention.setDureeExceptionnellePeriode(periodes.getPeriodes());
+        convention = conventionJpaRepository.saveAndFlush(convention);
+        return convention;
+    }
 }
