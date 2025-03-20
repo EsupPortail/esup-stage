@@ -18,6 +18,7 @@ import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
+import org.esup_portail.esup_stage.service.siren.SirenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -60,6 +61,9 @@ public class StructureController {
     @Autowired
     AppConfigService appConfigService;
 
+    @Autowired
+    SirenService sirenService;
+
     @JsonView(Views.List.class)
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
@@ -67,6 +71,10 @@ public class StructureController {
         PaginatedResponse<Structure> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(structureRepository.count(filters));
         paginatedResponse.setData(structureRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
+        //TODO ajouter les validations nécessaire dans le if
+        if(paginatedResponse.getData().isEmpty()){
+            paginatedResponse.setData(sirenService.getEtablissementFiltered(filters));
+        }
         return paginatedResponse;
     }
 

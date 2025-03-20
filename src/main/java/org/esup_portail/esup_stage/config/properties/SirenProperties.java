@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 @NoArgsConstructor
 @ConfigurationProperties(prefix = "siren")
-public class ReferentielProperties {
+public class SirenProperties {
     private String url;
     private String token;
 }

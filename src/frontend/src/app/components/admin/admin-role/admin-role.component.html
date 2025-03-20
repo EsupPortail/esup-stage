@@ -51,7 +51,7 @@
               <ng-container matColumnDef="droits">
                 <th mat-header-cell *matHeaderCellDef>Droits</th>
                 <td mat-cell *matCellDef="let appFonction" class="role-droit-icons" [ngClass]="{disabled: !canEdit()}">
-                  <ng-container *ngIf="[AppFonction.CONVENTION, AppFonction.AVENANT].indexOf(appFonction.code) === -1; else sipmplify">
+                  <ng-container *ngIf="[AppFonction.CONVENTION, AppFonction.AVENANT, AppFonction.ORGA_ACC, AppFonction.SERVICE_CONTACT_ACC].indexOf(appFonction.code) === -1; else sipmplify">
                     <i class="fa fa-eye mr-2" [ngClass]="{activate: hasRight(appFonction.code, Droit.LECTURE)}" (click)="toggleRight(appFonction.code, Droit.LECTURE)" [matTooltip]="hasRight(appFonction.code, Droit.LECTURE) ? 'visible' : 'non visible'"></i>
                     <i class="fa fa-edit" [ngClass]="{activate: hasRight(appFonction.code, Droit.ECRITURE)}" (click)="toggleRight(appFonction.code, Droit.ECRITURE)" [matTooltip]="hasRight(appFonction.code, Droit.ECRITURE) ? 'modifiable' : 'non modifiable'"></i>
                   </ng-container>

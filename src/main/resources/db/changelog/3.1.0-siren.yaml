@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.1.0-droit-service-contact-etab-accueil
+      author: thouveno9
+      changes:
+        - sql:
+            dbms: mysql
+            sql: |
+              INSERT INTO estage.AppFonction (codeAppFonction, libelleAppFonction)
+              SELECT 'SERVICE_CONTACT_ACC', 'Paramétrage des services et contacts d''un établissement'
+              WHERE NOT EXISTS (
+                  SELECT 1 FROM estage.AppFonction WHERE libelleAppFonction = 'Paramétrage des services et contacts d''un établissement'
+              );
+  - changeSet:
+      id: 3.1.0-ajout-temoin-siren
+      author: thouveno9
+      changes:
+            - addColumn:
+                columns:
+                    - column:
+                        name: temSiren
+                        type: BOOLEAN
+                        defaultValueBoolean: false
+                tableName: Structure
