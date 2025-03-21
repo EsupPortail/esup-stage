@@ -23,11 +23,8 @@ public class SirenResponse {
         @JsonProperty("siret")
         private String siret;
 
-        @JsonProperty("activitePrincipaleEtablissement")
-        private String activitePrincipale;
-
         @JsonProperty("denominationUsuelleEtablissement")
-        private String raisonSociale;
+        private String denominationUsuelleEtablissement;
 
         @JsonProperty("uniteLegale")
         private UniteLegale uniteLegale;
@@ -47,6 +44,13 @@ public class SirenResponse {
 
             @JsonProperty("trancheEffectifsUniteLegale")
             private String effectif;
+
+            @JsonProperty("activitePrincipaleUniteLegale")
+            private String naf_n5;
+
+            @JsonProperty("categorieEntreprise")
+            private String categorieEntreprise;
+
         }
 
         @JsonIgnoreProperties(ignoreUnknown = true)

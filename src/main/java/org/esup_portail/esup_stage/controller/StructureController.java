@@ -74,6 +74,7 @@ public class StructureController {
         //TODO ajouter les validations nécessaire dans le if
         if(paginatedResponse.getData().isEmpty()){
             paginatedResponse.setData(sirenService.getEtablissementFiltered(filters));
+            paginatedResponse.setTotal((long) paginatedResponse.getData().size());
         }
         return paginatedResponse;
     }
@@ -236,6 +237,18 @@ public class StructureController {
         return structure;
     }
 
+    @PostMapping("/getOrCreate")
+    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
+    public Structure getOrCreate(@Valid @RequestBody StructureFormDto structureFormDto){
+        Structure structure = structureJpaRepository.findBySiret(structureFormDto.getNumeroSiret());
+        if (structure !=null){
+            return structure;
+        }
+        structure = new Structure();
+        setStructureData(structure,structureFormDto);
+        return structureJpaRepository.saveAndFlush(structure);
+    }
+
     private void check(StructureFormDto structureFormDto) {
         if (structureFormDto.getCodeNafN5() == null && structureFormDto.getActivitePrincipale() == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "L'un des 2 champs \"code APE\" ou \"activité principale\" doit être renseigné");
@@ -316,4 +329,5 @@ public class StructureController {
         structure.setFax(structureFormDto.getFax());
         structure.setNumeroRNE(structureFormDto.getNumeroRNE());
     }
+
 }

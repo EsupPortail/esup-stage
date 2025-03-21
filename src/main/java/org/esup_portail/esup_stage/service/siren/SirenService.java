@@ -13,6 +13,8 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -97,14 +99,15 @@ public class SirenService {
 
             if (rootNode.has("raisonSociale")) {
                 String value = rootNode.get("raisonSociale").get("value").asText();
-                queryParts.add("denominationUniteLegale:\"" + value + "\"");
+                String encodedValue = URLEncoder.encode(value, StandardCharsets.UTF_8);
+                queryParts.add("denominationUniteLegale:\"" + encodedValue + "\"");
             }
             if (rootNode.has("pays.id")) {
                 JsonNode valuesNode = rootNode.get("pays.id").get("value");
                 if (valuesNode.isArray()) {
                     List<String> paysIds = new ArrayList<>();
                     for (JsonNode idNode : valuesNode) {
-                        paysIds.add(idNode.asText());
+                        paysIds.add(URLEncoder.encode(idNode.asText(), StandardCharsets.UTF_8));
                     }
                     queryParts.add("paysUniteLegale:(" + String.join(" OR ", paysIds) + ")");
                 }

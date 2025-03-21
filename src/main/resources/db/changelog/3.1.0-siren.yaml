@@ -22,3 +22,17 @@ databaseChangeLog:
                         type: BOOLEAN
                         defaultValueBoolean: false
                 tableName: Structure
+  - changeSet:
+      id: 3.1.0-ajout-code-statutjuridique
+      author: thouveno9
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  name: code
+                  type: VARCHAR(20)
+            tableName: StatutJuridique
+        - sqlFile:
+            path: 3.1.0-code-statut-juridique.sql
+            relativeToChangelogFile: true
+            encoding: utf8

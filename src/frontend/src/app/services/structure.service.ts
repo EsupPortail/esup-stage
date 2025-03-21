@@ -50,4 +50,8 @@ export class StructureService implements PaginatedService, AutocompleteService {
     return `${row.id} - ${row.raisonSociale}`;
   }
 
+  getOrCreate(data: any): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/structures/getOrCreate`, data);
+  }
+
 }

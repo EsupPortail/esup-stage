@@ -121,13 +121,20 @@ export class EtabAccueilComponent implements OnInit {
   choose(row: any): void {
     this.modif = false;
     this.selectedRow = row;
-    this.structureService.getById(row.id).subscribe((response: any) => {
-      this.etab = response;
-      if (this.firstPanel) {
-        this.firstPanel.expanded = false;
-      }
-      this.validated.emit(this.etab);
-    });
+    // this.structureService.getById(row.id).subscribe((response: any) => {
+    //   this.etab = response;
+    //   if (this.firstPanel) {
+    //     this.firstPanel.expanded = false;
+    //   }
+    //   this.validated.emit(this.etab);
+    // });
+    this.structureService.getOrCreate(row).subscribe((response:any)=>{
+        this.etab = response;
+        if (this.firstPanel) {
+          this.firstPanel.expanded = false;
+        }
+        this.validated.emit(this.etab);
+    })
   }
 
   initCreate(): void {
