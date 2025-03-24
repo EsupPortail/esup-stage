@@ -99,8 +99,8 @@ public class Structure extends ObjetMetier implements Exportable {
     @Column
     private String prenomDirigeant;
 
-    @Column(length = 1)
-    private String temEnServStructure;
+    @Column
+    private Boolean temEnServStructure;
 
     @Column
     private String batimentResidence;

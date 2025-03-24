@@ -63,21 +63,13 @@ public class SirenMapper {
             structure.setTypeStructure(typeStructureJpaRepository.findByid(3));
         }
 
-
-
-        // Effectif
-//        if (etablissement.getUniteLegale() != null) { // no
-//            structure.setEffectif(new Effectif());
-//            structure.getEffectif().setLibelle(etablissement.getUniteLegale().getEffectif());
-//        }
-
-        //Effectif (Aléatoire pour test)
+        //Effectif par défaut, non disponible dans l'api siren
         structure.setEffectif(effectifJpaRepository.findById(1));
 
         // Valeurs par défaut
         structure.setPays(paysJpaRepository.findById(82)); // France
         structure.setEstValidee(false);
-        structure.setTemEnServStructure("O");
+        structure.setTemEnServStructure(true);
         structure.setTemSiren(true);
 
         return structure;

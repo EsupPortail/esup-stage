@@ -67,7 +67,6 @@ export class EtabAccueilComponent implements OnInit {
     this.configService.getConfigGenerale().subscribe((response: any) => {
       this.autorisationModification = response.autoriserEtudiantAModifierEntreprise;
       this.autorisationCreation = response.autoriserEtudiantACreerEntreprise;
-      console.log("autoriserEtudiantACreerEntreprise",response.autoriserEtudiantACreerEntreprise);
     });
     this.filters = [
       { id: 'raisonSociale', libelle: 'Raison sociale' },
@@ -110,7 +109,6 @@ export class EtabAccueilComponent implements OnInit {
     if (this.authService.isEtudiant() && !this.autorisationCreation) {
       hasRight = false;
     }
-    console.log("canCreate : ",this.modifiable && hasRight,", modifiable : ",this.modifiable,", hasright : ",hasRight);
     return this.modifiable && hasRight;
   }
 
@@ -125,13 +123,6 @@ export class EtabAccueilComponent implements OnInit {
   choose(row: any): void {
     this.modif = false;
     this.selectedRow = row;
-    // this.structureService.getById(row.id).subscribe((response: any) => {
-    //   this.etab = response;
-    //   if (this.firstPanel) {
-    //     this.firstPanel.expanded = false;
-    //   }
-    //   this.validated.emit(this.etab);
-    // });
     this.structureService.getOrCreate(row).subscribe((response:any)=>{
         this.etab = response;
         if (this.firstPanel) {

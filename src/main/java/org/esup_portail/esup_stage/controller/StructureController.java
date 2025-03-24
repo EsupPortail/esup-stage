@@ -238,14 +238,18 @@ public class StructureController {
 
     @PostMapping("/getOrCreate")
     @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
-    public Structure getOrCreate(@Valid @RequestBody StructureFormDto structureFormDto){
-        Structure structure = structureJpaRepository.findBySiret(structureFormDto.getNumeroSiret());
+    public Structure getOrCreate(@Valid @RequestBody Structure structureBody){
+        Structure structure = structureJpaRepository.findBySiret(structureBody.getNumeroSiret());
         if (structure !=null){
             return structure;
         }
-        structure = new Structure();
-        setStructureData(structure,structureFormDto);
-        return structureJpaRepository.saveAndFlush(structure);
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
+        if (!UtilisateurHelper.isRole(utilisateur, Role.ETU) || appConfigService.getConfigGenerale().isAutoriserValidationAutoOrgaAccCreaEtu()) {
+            structureBody.setLoginValidation(utilisateur.getLogin());
+            structureBody.setEstValidee(true);
+            structureBody.setDateValidation(new Date());
+        }
+        return structureJpaRepository.saveAndFlush(structureBody);
     }
 
     private void check(StructureFormDto structureFormDto) {
