@@ -71,8 +71,7 @@ public class StructureController {
         PaginatedResponse<Structure> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(structureRepository.count(filters));
         paginatedResponse.setData(structureRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
-        //TODO ajouter les validations nécessaire dans le if
-        if(paginatedResponse.getData().isEmpty()){
+        if(paginatedResponse.getData().isEmpty() && !appConfigService.getConfigGenerale().isAutoriserEtudiantACreerEntreprise()){
             paginatedResponse.setData(sirenService.getEtablissementFiltered(filters));
             paginatedResponse.setTotal((long) paginatedResponse.getData().size());
         }

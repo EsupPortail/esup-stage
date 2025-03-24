@@ -40,6 +40,7 @@ export class EtabAccueilComponent implements OnInit {
   @Input() modifiable!: boolean;
 
   autorisationModification = false;
+  autorisationCreation=false;
 
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
   @ViewChild(MatExpansionPanel) firstPanel: MatExpansionPanel|undefined;
@@ -65,6 +66,8 @@ export class EtabAccueilComponent implements OnInit {
   ngOnInit(): void {
     this.configService.getConfigGenerale().subscribe((response: any) => {
       this.autorisationModification = response.autoriserEtudiantAModifierEntreprise;
+      this.autorisationCreation = response.autoriserEtudiantACreerEntreprise;
+      console.log("autoriserEtudiantACreerEntreprise",response.autoriserEtudiantACreerEntreprise);
     });
     this.filters = [
       { id: 'raisonSociale', libelle: 'Raison sociale' },
@@ -103,10 +106,11 @@ export class EtabAccueilComponent implements OnInit {
   }
 
   canCreate(): boolean {
-    let hasRight = this.modifiable && this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.CREATION]});
-    if (this.authService.isEtudiant() && !this.autorisationModification) {
+    let hasRight = this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.CREATION]});
+    if (this.authService.isEtudiant() && !this.autorisationCreation) {
       hasRight = false;
     }
+    console.log("canCreate : ",this.modifiable && hasRight,", modifiable : ",this.modifiable,", hasright : ",hasRight);
     return this.modifiable && hasRight;
   }
 
