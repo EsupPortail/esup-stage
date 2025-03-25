@@ -18,6 +18,7 @@ import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
+import org.esup_portail.esup_stage.service.Structure.StructureService;
 import org.esup_portail.esup_stage.service.siren.SirenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,31 +39,34 @@ public class StructureController {
     private static final Logger logger = LogManager.getLogger(ConsigneController.class);
 
     @Autowired
-    StructureRepository structureRepository;
+    private StructureRepository structureRepository;
 
     @Autowired
-    StructureJpaRepository structureJpaRepository;
+    private StructureJpaRepository structureJpaRepository;
 
     @Autowired
-    EffectifJpaRepository effectifJpaRepository;
+    private EffectifJpaRepository effectifJpaRepository;
 
     @Autowired
-    TypeStructureJpaRepository typeStructureJpaRepository;
+    private TypeStructureJpaRepository typeStructureJpaRepository;
 
     @Autowired
-    StatutJuridiqueJpaRepository statutJuridiqueJpaRepository;
+    private StatutJuridiqueJpaRepository statutJuridiqueJpaRepository;
 
     @Autowired
-    NafN5JpaRepository nafN5JpaRepository;
+    private NafN5JpaRepository nafN5JpaRepository;
 
     @Autowired
-    PaysJpaRepository paysJpaRepository;
+    private PaysJpaRepository paysJpaRepository;
 
     @Autowired
-    AppConfigService appConfigService;
+    private AppConfigService appConfigService;
 
     @Autowired
-    SirenService sirenService;
+    private SirenService sirenService;
+
+    @Autowired
+    private StructureService structureService;
 
     @JsonView(Views.List.class)
     @GetMapping
@@ -190,7 +194,7 @@ public class StructureController {
                     Structure existant = structureJpaRepository.findByRNE(structure.getNumeroRNE());
 
                     if (existant == null) {
-                        structureJpaRepository.save(structure);
+                        structureService.save(structure);
                     } else {
                         logger.info("skipped existing structure with RNE : " + existant.getNumeroRNE());
                     }
@@ -224,7 +228,7 @@ public class StructureController {
             structure.setEstValidee(true);
             structure.setDateValidation(new Date());
         }
-        return structureJpaRepository.saveAndFlush(structure);
+        return structureService.save(structure);
     }
 
     @PutMapping("/{id}")
@@ -232,7 +236,7 @@ public class StructureController {
     public Structure update(@PathVariable("id") int id, @Valid @RequestBody StructureFormDto structureFormDto) {
         Structure structure = structureJpaRepository.findById(id);
         setStructureData(structure, structureFormDto);
-        structure = structureJpaRepository.saveAndFlush(structure);
+        structure = structureService.save(structure);
         return structure;
     }
 
@@ -249,7 +253,7 @@ public class StructureController {
             structureBody.setEstValidee(true);
             structureBody.setDateValidation(new Date());
         }
-        return structureJpaRepository.saveAndFlush(structureBody);
+        return structureService.save(structureBody);
     }
 
     private void check(StructureFormDto structureFormDto) {

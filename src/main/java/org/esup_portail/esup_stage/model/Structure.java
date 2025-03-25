@@ -16,7 +16,7 @@ public class Structure extends ObjetMetier implements Exportable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idStructure", nullable = false)
-    private int id;
+    private Integer id;
 
     @Column
     private String libCedex;

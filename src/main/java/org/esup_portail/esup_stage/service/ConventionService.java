@@ -17,6 +17,7 @@ import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
 import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.ServiceContext;
+import org.esup_portail.esup_stage.service.Structure.StructureService;
 import org.esup_portail.esup_stage.service.apogee.ApogeeService;
 import org.esup_portail.esup_stage.service.apogee.model.EtudiantRef;
 import org.esup_portail.esup_stage.service.ldap.LdapService;
@@ -49,9 +50,6 @@ public class ConventionService {
 
     @Autowired
     CritereGestionJpaRepository critereGestionJpaRepository;
-
-    @Autowired
-    StructureJpaRepository structureJpaRepository;
 
     @Autowired
     ServiceJpaRepository serviceJpaRepository;
@@ -93,6 +91,9 @@ public class ConventionService {
     @Autowired
     MailerService mailerService;
 
+    @Autowired
+    private StructureService structureService;
+
     public void validationAutoDonnees(Convention convention, Utilisateur utilisateur) {
         // Validation automatique de l'établissement d'accueil, le service d'accueil et du tuteur de stage à la validation de la convention
         if (
@@ -107,7 +108,7 @@ public class ConventionService {
                 structure.setLoginValidation(utilisateur.getLogin());
                 structure.setInfosAJour(new Date());
                 structure.setLoginInfosAJour(utilisateur.getLogin());
-                structureJpaRepository.save(structure);
+                structureService.save(structure);
             }
             org.esup_portail.esup_stage.model.Service service = convention.getService();
             if (service != null) {

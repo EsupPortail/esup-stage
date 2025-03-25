@@ -36,3 +36,43 @@ databaseChangeLog:
             path: 3.1.0-code-statut-juridique.sql
             relativeToChangelogFile: true
             encoding: utf8
+  - changeSet:
+      id: 3.1.0-ajout-historique_structure
+      author: thouveno9
+      changes:
+        - createTable:
+            tableName: historiqueStructure
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: structure_id
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: utilisateur_id
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: operation_type
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: operation_date
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: etat_precedent
+                  type: TEXT
+              - column:
+                  name: etat_actuel
+                  type: TEXT

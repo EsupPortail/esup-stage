@@ -86,6 +86,7 @@ import {
   TextTransformation, TodoList, Underline, Undo
 } from "ckeditor5";
 import translations from 'ckeditor5/translations/fr.js';
+import { AuthService } from "../../../services/auth.service"
 
 @Component({
   selector: 'app-etab-accueil-form',
@@ -123,6 +124,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
     private nafN5Service: NafN5Service,
     private statutJuridiqueService: StatutJuridiqueService,
     private effectifService: EffectifService,
+    private authService: AuthService,
     private fb: FormBuilder,
     private messageService: MessageService,
     private changeDetector: ChangeDetectorRef
@@ -422,19 +424,19 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
 
   ngOnChanges(changes: SimpleChanges): void {
     this.form = this.fb.group({
-      raisonSociale: [this.etab.raisonSociale, [Validators.required, Validators.maxLength(150)]],
-      numeroSiret: [this.etab.numeroSiret, [Validators.maxLength(14), Validators.pattern('[0-9]{14}')]],
+      raisonSociale: [{ value: this.etab.raisonSociale, disabled: !this.canEdit() }, [Validators.required, Validators.maxLength(150)]],
+      numeroSiret: [{ value: this.etab.numeroSiret, disabled: !this.canEdit() }, [Validators.maxLength(14), Validators.pattern('[0-9]{14}')]],
       idEffectif: [this.etab.effectif ? this.etab.effectif.id : null, [Validators.required]],
       idTypeStructure: [this.etab.typeStructure ? this.etab.typeStructure.id : null, [Validators.required]],
-      idStatutJuridique: [this.etab.statutJuridique ? this.etab.statutJuridique.id : null, [Validators.required]],
-      codeNafN5: [this.etab.nafN5 ? this.etab.nafN5.code : null, []],
+      idStatutJuridique: [{ value: this.etab.statutJuridique ? this.etab.statutJuridique.id : null, disabled: !this.canEdit() }, [Validators.required]],
+      codeNafN5: [{ value: this.etab.nafN5 ? this.etab.nafN5.code : null, disabled: !this.canEdit() }, []],
       activitePrincipale: [this.etab.activitePrincipale, []],
       voie: [this.etab.voie, [Validators.required, Validators.maxLength(200)]],
-      codePostal: [this.etab.codePostal, [Validators.required, Validators.maxLength(10)]],
+      codePostal: [{ value: this.etab.codePostal, disabled: !this.canEdit() }, [Validators.required, Validators.maxLength(10)]],
       batimentResidence: [this.etab.batimentResidence, [Validators.maxLength(200)]],
       commune: [this.etab.commune, [Validators.required, Validators.maxLength(200)]],
       libCedex: [this.etab.libCedex, [Validators.maxLength(20)]],
-      idPays: [this.etab.pays ? this.etab.pays.id : null, [Validators.required]],
+      idPays: [{value: this.etab.pays ? this.etab.pays.id : null, disabled: !this.canEdit() }, [Validators.required]],
       mail: [this.etab.mail, [Validators.pattern(REGEX.EMAIL), Validators.maxLength(255)]],
       telephone: [this.etab.telephone, [Validators.required,Validators.pattern(/^(?:(?:\+|00)\d{1,4}[-.\s]?|0)\d{1,4}([-.\s]?\d{1,4})*$/), Validators.maxLength(50)]],
       siteWeb: [this.etab.siteWeb, [Validators.maxLength(200), Validators.pattern('^https?://(\\w([\\w\\-]{0,61}\\w)?\\.)+[a-zA-Z]{2,6}([/]{1}.*)?$')]],
@@ -594,5 +596,10 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
         return true;
     }
     return false;
+  }
+
+  canEdit(){
+    console.log("canEdit : ",!this.authService.isEtudiant() && this.etab.temSiren,", ",!this.authService.isEtudiant(),", ",this.etab.temSiren)
+    return !this.authService.isEtudiant() && this.etab.temSiren
   }
 }
