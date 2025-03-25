@@ -105,6 +105,15 @@ public class ConventionRepository extends PaginationRepository<Convention> {
                     case "nonValidationConvention":
                         clauseAnd.add("c.validationConvention = FALSE");
                         break;
+                    case "signe":
+                        clauseAnd.add("c.dateSignatureEnseignant IS NOT NULL AND c.dateSignatureEtudiant IS NOT NULL AND c.dateSignatureSignataire IS NOT NULL AND c.dateSignatureTuteur IS NOT NULL AND c.dateSignatureViseur IS NOT NULL");
+                        break;
+                    case "enCours":
+                        clauseAnd.add("(c.dateSignatureEnseignant IS NOT NULL OR c.dateSignatureEtudiant IS NOT NULL OR c.dateSignatureSignataire IS NOT NULL OR c.dateSignatureTuteur IS NOT NULL OR c.dateSignatureViseur IS NOT NULL) AND (c.dateSignatureEnseignant IS NULL OR c.dateSignatureEtudiant IS NULL OR c.dateSignatureSignataire IS NULL OR c.dateSignatureTuteur IS NULL OR c.dateSignatureViseur IS NULL)");
+                        break;
+                    case "nonSigne":
+                        clauseAnd.add("c.dateSignatureEnseignant IS NULL AND c.dateSignatureEtudiant IS NULL AND c.dateSignatureSignataire IS NULL AND c.dateSignatureTuteur IS NULL AND c.dateSignatureViseur IS NULL");
+                        break;
                     default:
                         break;
                 }

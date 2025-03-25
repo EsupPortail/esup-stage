@@ -29,9 +29,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     { id: 'validationConvention', libelle: 'Validée administrativement' },
     { id: 'nonValidationPedagogique', libelle: 'Non validée pédagogiquement' },
     { id: 'nonValidationConvention', libelle: 'Non validée administrativement' },
-    { id: 'signé', libelle: 'Signé' },
+    { id: 'signe', libelle: 'Signé' },
     { id: 'enCours', libelle: 'En cours de signature' },
-    { id: 'nonSigné', libelle: 'Non signé' },
+    { id: 'nonSigne', libelle: 'Non signé' },
   ];
   exportColumns = {};
   tableCanLoad = false;
