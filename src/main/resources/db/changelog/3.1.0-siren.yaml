@@ -51,28 +51,28 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: structure_id
+                  name: structureId
                   type: INT
                   constraints:
                     nullable: false
               - column:
-                  name: utilisateur_id
+                  name: utilisateurId
                   type: INT
                   constraints:
                     nullable: false
               - column:
-                  name: operation_type
+                  name: operationType
                   type: VARCHAR(50)
                   constraints:
                     nullable: false
               - column:
-                  name: operation_date
+                  name: operationDate
                   type: timestamp
                   constraints:
                     nullable: false
               - column:
-                  name: etat_precedent
+                  name: etatPrecedent
                   type: TEXT
               - column:
-                  name: etat_actuel
+                  name: etatActuel
                   type: TEXT

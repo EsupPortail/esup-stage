@@ -267,9 +267,9 @@ public class StructureController {
             throw new AppException(HttpStatus.NOT_FOUND, "Structure non trouvée");
         }
         // Contrôle SIRET non déjà existant
-        if (structureFormDto.getNumeroSiret() != null && structureRepository.existsSiret(structure, structureFormDto.getNumeroSiret())) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Le numéro SIRET existe déjà");
-        }
+//        if (structureFormDto.getNumeroSiret() != null && structureRepository.existsSiret(structure, structureFormDto.getNumeroSiret())) {
+//            throw new AppException(HttpStatus.BAD_REQUEST, "Le numéro SIRET existe déjà");
+//        }
         // Contrôle de la validité du SIRET
         // - cas de La Poste (SIREN commençant par 356000000) : la somme des 14 chiffres du SIRET doit être un multiple de 5
         // - cas classique : algorithme de Luhn

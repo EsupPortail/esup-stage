@@ -15,11 +15,11 @@ public class HistoriqueStructure {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "structure_id")
+    @JoinColumn(name = "structureId")
     private Structure structure;
 
     @ManyToOne
-    @JoinColumn(name = "utilisateur_id")
+    @JoinColumn(name = "utilisateurId")
     private Utilisateur utilisateur;
 
     @Column

@@ -19,7 +19,7 @@ public class StructureService {
     private ApplicationEventPublisher eventPublisher;
 
     public Structure save(Structure structure) {
-        boolean isNew = structure.getId() == null;
+        boolean isNew = structure.getId() == null || structure.getId() == 0;
         Structure oldStructure = null;
 
         if (!isNew) {
@@ -37,11 +37,8 @@ public class StructureService {
         return savedStructure;
     }
 
-    public void delete(Integer id) {
-        Structure structure = structureJpaRepository.findById(id).orElse(null);
-        if (structure != null) {
-            structureJpaRepository.delete(structure);
-            eventPublisher.publishEvent(new StructureDeletedEvent(structure));
-        }
+    public void delete(Structure structure) {
+        structureJpaRepository.delete(structure);
+        eventPublisher.publishEvent(new StructureDeletedEvent(structure));
     }
 }
