@@ -15,4 +15,7 @@ public interface StructureJpaRepository extends JpaRepository<Structure, Integer
 
     @Query("SELECT s FROM Structure s WHERE s.numeroSiret = :siret")
     Structure findBySiret(@Param("siret") String siret);
+
+    @Query("SELECT s FROM Structure s WHERE s.raisonSociale = :raisonSociale")
+    Structure findByRaisonSociale(String raisonSociale);
 }

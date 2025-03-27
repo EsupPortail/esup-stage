@@ -599,7 +599,6 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   }
 
   canEdit(){
-    console.log("canEdit : ",!this.authService.isEtudiant() && this.etab.temSiren,", ",!this.authService.isEtudiant(),", ",this.etab.temSiren)
     return !this.authService.isEtudiant() && this.etab.temSiren
   }
 }

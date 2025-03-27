@@ -30,6 +30,7 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
   @Input() service: any;
   modif: boolean = false;
   form: FormGroup;
+  isNewService: boolean = false;
 
   autorisationModification = false;
 
@@ -37,7 +38,7 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
 
   @Output() validated = new EventEmitter<number>();
 
-  @Input() modifiable: boolean;
+  @Input() modifiable!: boolean;
 
   constructor(public serviceService: ServiceService,
               public communeService: CommuneService,
@@ -80,14 +81,14 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
     this.refreshServices();
   }
 
-  refreshServices(): void{
+  refreshServices(): void {
     this.serviceService.getByStructure(this.etab.id, this.centreGestion.id).subscribe((response: any) => {
-      this.services = response;
+      this.services = response.sort((a: any, b: any) => a.nom.localeCompare(b.nom));
     });
   }
 
   canCreate(): boolean {
-    let hasRight = this.modifiable && this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.CREATION]});
+    let hasRight = this.authService.checkRights({fonction: AppFonction.SERVICE_CONTACT_ACC, droits: [Droit.CREATION]});
     if (this.authService.isEtudiant() && !this.autorisationModification) {
       hasRight = false;
     }
@@ -95,7 +96,7 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
   }
 
   canEdit(): boolean {
-    let hasRight = this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.MODIFICATION]});
+    let hasRight = this.authService.checkRights({fonction: AppFonction.SERVICE_CONTACT_ACC, droits: [Droit.MODIFICATION]});
     if (this.authService.isEtudiant() && !this.autorisationModification) {
       hasRight = false;
     }
@@ -123,6 +124,7 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
       telephone: this.etab.telephone,
     });
     this.modif = true;
+    this.isNewService = true;
   }
 
   edit(): void {
@@ -136,6 +138,7 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
       telephone: this.service.telephone,
     });
     this.modif = true;
+    this.isNewService = false;
   }
 
   cancelEdit(): void {

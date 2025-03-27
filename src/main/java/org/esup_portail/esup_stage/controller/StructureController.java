@@ -30,7 +30,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @ApiController
 @RequestMapping("/structures")
@@ -68,17 +71,28 @@ public class StructureController {
     @Autowired
     private StructureService structureService;
 
+    @Autowired
+    private ConventionJpaRepository conventionJpaRepository;
+
     @JsonView(Views.List.class)
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<Structure> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         PaginatedResponse<Structure> paginatedResponse = new PaginatedResponse<>();
-        paginatedResponse.setTotal(structureRepository.count(filters));
-        paginatedResponse.setData(structureRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
-        if(paginatedResponse.getData().isEmpty() && !appConfigService.getConfigGenerale().isAutoriserEtudiantACreerEntreprise()){
-            paginatedResponse.setData(sirenService.getEtablissementFiltered(filters));
-            paginatedResponse.setTotal((long) paginatedResponse.getData().size());
+        List<Structure> structures = structureRepository.findPaginated(page, perPage, predicate, sortOrder, filters);
+
+        if(structures.size() < 1 && !appConfigService.getConfigGenerale().isAutoriserEtudiantACreerEntreprise()){
+            List<String> existingSirets = new ArrayList<String>();
+            structures.forEach(s -> existingSirets.add(s.getNumeroSiret()));
+            List<Structure> additionalStructures = sirenService.getEtablissementFiltered(filters);
+            additionalStructures = additionalStructures.stream()
+                    .filter(s -> s.getNumeroSiret() == null || !existingSirets.contains(s.getNumeroSiret()))
+                    .toList();
+            structures.addAll(additionalStructures);
         }
+
+        paginatedResponse.setTotal((long) structures.size());
+        paginatedResponse.setData(structures);
         return paginatedResponse;
     }
 
@@ -224,6 +238,8 @@ public class StructureController {
         setStructureData(structure, structureFormDto);
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
         if (!UtilisateurHelper.isRole(utilisateur, Role.ETU) || appConfigService.getConfigGenerale().isAutoriserValidationAutoOrgaAccCreaEtu()) {
+            structure.setLoginCreation(utilisateur.getLogin());
+            structure.setDateValidation(new Date());
             structure.setLoginValidation(utilisateur.getLogin());
             structure.setEstValidee(true);
             structure.setDateValidation(new Date());
@@ -242,18 +258,48 @@ public class StructureController {
 
     @PostMapping("/getOrCreate")
     @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
-    public Structure getOrCreate(@Valid @RequestBody Structure structureBody){
-        Structure structure = structureJpaRepository.findBySiret(structureBody.getNumeroSiret());
-        if (structure !=null){
-            return structure;
+    public Structure getOrCreate(@Valid @RequestBody Structure structureBody) {
+        Structure structure;
+        // Contrôle pour les établissements sans SIRET (ONG)
+        if (structureBody.getNumeroSiret().isEmpty()) {
+            structure = structureJpaRepository.findByRaisonSociale(structureBody.getRaisonSociale());
+            if (structure != null) {
+                return structure;
+            }
+            throw new AppException(HttpStatus.BAD_REQUEST,"Le numero de Siret est manquant");
         }
+        // Gestion du cas où le SIRET est déjà utilisé
+        structure = structureJpaRepository.findBySiret(structureBody.getNumeroSiret());
+        if (structure != null) {
+            // Si la structure existe mais est désactivée, on la réactive
+            if (!structure.getTemEnServStructure()) {
+                structure.setTemEnServStructure(true);
+                return structureService.save(structure);
+            }
+        }
+
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
         if (!UtilisateurHelper.isRole(utilisateur, Role.ETU) || appConfigService.getConfigGenerale().isAutoriserValidationAutoOrgaAccCreaEtu()) {
+            structure.setLoginCreation(utilisateur.getLogin());
+            structure.setDateValidation(new Date());
             structureBody.setLoginValidation(utilisateur.getLogin());
             structureBody.setEstValidee(true);
             structureBody.setDateValidation(new Date());
         }
         return structureService.save(structureBody);
+    }
+
+    @DeleteMapping("/{id}")
+    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.SUPPRESSION})
+    public void delete(@PathVariable("id") int id) {
+        Structure structure = structureJpaRepository.findById(id);
+        if (structure == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Structure non trouvée");
+        }
+        if(!conventionJpaRepository.findByStructureId(structure.getId()).isEmpty()) {
+            throw new AppException(HttpStatus.FORBIDDEN, "La structure est relier à une convention");
+        }
+        structureService.delete(structure);
     }
 
     private void check(StructureFormDto structureFormDto) {

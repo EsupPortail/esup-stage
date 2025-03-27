@@ -54,4 +54,8 @@ export class StructureService implements PaginatedService, AutocompleteService {
     return this.http.post(`${environment.apiUrl}/structures/getOrCreate`, data);
   }
 
+  delete(id: number): Observable<any> {
+    return this.http.delete(`${environment.apiUrl}/structures/${id}`);
+  }
+
 }

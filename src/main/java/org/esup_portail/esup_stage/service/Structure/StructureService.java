@@ -4,6 +4,7 @@ import org.esup_portail.esup_stage.events.StructureCreatedEvent;
 import org.esup_portail.esup_stage.events.StructureDeletedEvent;
 import org.esup_portail.esup_stage.events.StructureUpdatedEvent;
 import org.esup_portail.esup_stage.model.Structure;
+import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
 import org.esup_portail.esup_stage.repository.StructureJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -17,6 +18,9 @@ public class StructureService {
 
     @Autowired
     private ApplicationEventPublisher eventPublisher;
+
+    @Autowired
+    private ConventionJpaRepository conventionJpaRepository;
 
     public Structure save(Structure structure) {
         boolean isNew = structure.getId() == null || structure.getId() == 0;
@@ -38,7 +42,8 @@ public class StructureService {
     }
 
     public void delete(Structure structure) {
-        structureJpaRepository.delete(structure);
+        structure.setTemEnServStructure(false);
+        structureJpaRepository.saveAndFlush(structure);
         eventPublisher.publishEvent(new StructureDeletedEvent(structure));
     }
 }

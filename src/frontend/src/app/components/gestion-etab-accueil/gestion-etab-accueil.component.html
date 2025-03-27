@@ -36,9 +36,15 @@
         <td mat-cell *matCellDef="let row">{{row.statutJuridique ? row.statutJuridique.libelle : ''}}</td>
       </ng-container>
       <ng-container matColumnDef="action">
-        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <th mat-header-cell *matHeaderCellDef >Actions</th>
         <td mat-cell *matCellDef="let row">
-          <button mat-icon-button matTooltip="Éditer" *ngIf="canEdit()" (click)="edit(row)" color="primary"><i class="fa fa-pen"></i></button>
+          <div class="row" *ngIf="!isFromSiren(row)">
+            <button mat-icon-button matTooltip="Éditer" *ngIf="canEdit()" (click)="edit(row)" color="primary"><i class="fa fa-pen"></i></button>
+            <button mat-icon-button matTooltip="Supprimer" *ngIf="canDelete()" (click)="delete(row)" color="warn"><i class="fa fa-trash-alt"></i></button>
+          </div>
+          <div class="row" *ngIf="isFromSiren(row)">
+            <button mat-icon-button matTooltip="Créer" *ngIf="canCreate()" (click)="create(row)" color="primary"><i class="fa fa-plus"></i></button>
+          </div>
         </td>
       </ng-container>
     </app-table>

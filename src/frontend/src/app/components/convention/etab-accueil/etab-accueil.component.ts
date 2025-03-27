@@ -13,6 +13,7 @@ import { Droit } from "../../../constants/droit";
 import { AuthService } from "../../../services/auth.service";
 import { ConfigService } from "../../../services/config.service";
 import {Checkbox, CheckboxChangeEvent} from "primeng/checkbox";
+import {ContenuService} from "../../../services/contenu.service";
 
 @Component({
   selector: 'app-etab-accueil',
@@ -29,7 +30,7 @@ export class EtabAccueilComponent implements OnInit {
   data: any;
 
   createButton = {
-    libelle: 'Créer un établissement d\'accueil',
+    libelle: 'Créer un établissement',
     action: () => this.initCreate(),
   }
 
@@ -59,6 +60,7 @@ export class EtabAccueilComponent implements OnInit {
               private nafN5Service: NafN5Service,
               private statutJuridiqueService: StatutJuridiqueService,
               private messageService: MessageService,
+              private contenuService: ContenuService,
               private authService: AuthService,
               private configService: ConfigService,
   ) { }
@@ -67,6 +69,9 @@ export class EtabAccueilComponent implements OnInit {
     this.configService.getConfigGenerale().subscribe((response: any) => {
       this.autorisationModification = response.autoriserEtudiantAModifierEntreprise;
       this.autorisationCreation = response.autoriserEtudiantACreerEntreprise;
+    });
+    this.contenuService.get('BOUTON_CREER_ETAB_ACCUEIL').subscribe((response: any) => {
+      this.createButton.libelle = response.texte
     });
     this.filters = [
       { id: 'raisonSociale', libelle: 'Raison sociale' },

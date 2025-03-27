@@ -116,11 +116,17 @@ export class GestionEtabAccueilComponent implements OnInit {
   }
 
   canCreate(): boolean {
-    return this.authService.checkRights({fonction: AppFonction.NOMENCLATURE, droits: [Droit.CREATION]});
+    return this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.CREATION]});
+  }
+
+  create(row: any): void {
+    this.structureService.getOrCreate(row).subscribe((response: any) => {
+      this.appTable?.update();
+    });
   }
 
   canEdit(): boolean {
-    const hasRight = this.authService.checkRights({fonction: AppFonction.NOMENCLATURE, droits: [Droit.MODIFICATION]});
+    const hasRight = this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.MODIFICATION]});
     return !this.authService.isEtudiant() && hasRight;
   }
 
@@ -132,6 +138,22 @@ export class GestionEtabAccueilComponent implements OnInit {
       this.data = response;
       this.refreshServices();
     });
+  }
+
+  canDelete() : boolean{
+    const hasRight = this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.SUPPRESSION]});
+    return !this.authService.isEtudiant() && hasRight;
+  }
+
+  delete(row: any): void{
+    this.structureService.delete(row.id).subscribe((response: any) => {
+      this.messageService.setSuccess('Etablissement supprimé');
+      this.appTable?.update();
+    });
+  }
+
+  isFromSiren(row: any): boolean {
+    return row.loginCreation == null && row.dateCreation == null && !row.estValidee && row.temSiren ;
   }
 
   refreshServices(): void{

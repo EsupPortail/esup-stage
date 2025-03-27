@@ -41,6 +41,7 @@ export class TuteurProComponent implements OnInit, OnChanges {
   searchForm: FormGroup;
 
   autorisationModification = false;
+  isNewContact: boolean = false;
 
   @ViewChild(MatExpansionPanel) firstPanel: MatExpansionPanel|undefined;
 
@@ -84,16 +85,16 @@ export class TuteurProComponent implements OnInit, OnChanges {
     this.refreshContacts();
   }
 
-  refreshContacts(): void{
-    if (this.service){
+  refreshContacts(): void {
+    if (this.service) {
       this.contactService.getByService(this.service.id, this.centreGestion.id).subscribe((response: any) => {
-        this.contacts = response;
+        this.contacts = response.sort((a: any, b: any) => a.nom.localeCompare(b.nom));
       });
     }
   }
 
   canCreate(): boolean {
-    let hasRight = this.modifiable && this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.CREATION]});
+    let hasRight = this.authService.checkRights({fonction: AppFonction.SERVICE_CONTACT_ACC, droits: [Droit.CREATION]});
     if (this.authService.isEtudiant() && !this.autorisationModification) {
       hasRight = false;
     }
@@ -101,7 +102,7 @@ export class TuteurProComponent implements OnInit, OnChanges {
   }
 
   canEdit(): boolean {
-    let hasRight = this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.MODIFICATION]});
+    let hasRight = this.authService.checkRights({fonction: AppFonction.SERVICE_CONTACT_ACC, droits: [Droit.MODIFICATION]});
     if (this.authService.isEtudiant() && !this.autorisationModification) {
       hasRight = false;
     }
@@ -135,6 +136,7 @@ export class TuteurProComponent implements OnInit, OnChanges {
     this.contact = {};
     this.form.reset();
     this.modif = true;
+    this.isNewContact = true;
   }
 
   edit(): void {
@@ -148,6 +150,7 @@ export class TuteurProComponent implements OnInit, OnChanges {
       mail: this.contact.mail,
     });
     this.modif = true;
+    this.isNewContact = false;
   }
 
   cancelEdit(): void {

@@ -20,6 +20,24 @@ public class StructureRepository extends PaginationRepository<Structure> {
     }
 
     @Override
+    public List<Structure> findPaginated(int page, int perPage, String predicate, String sortOrder, String filters) {
+        JSONObject jsonFilters = new JSONObject(filters);
+
+        if (!jsonFilters.has("temEnServStructure")) {
+            JSONObject temEnServParam = new JSONObject();
+            temEnServParam.put("value", true);
+            temEnServParam.put("type", "boolean");
+            jsonFilters.put("temEnServStructure", temEnServParam);
+
+            filters = jsonFilters.toString();
+        }
+
+        return super.findPaginated(page, perPage, predicate, sortOrder, filters);
+    }
+
+
+
+    @Override
     protected void addSpecificParameter(String key, JSONObject parameter, List<String> clauses) {
         if (key.equals("nafN1.code")) {
             clauses.add("s.nafN5.nafN1.code IN :" + key.replace(".", ""));

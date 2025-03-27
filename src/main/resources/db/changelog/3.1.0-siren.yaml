@@ -3,14 +3,16 @@ databaseChangeLog:
       id: 3.1.0-droit-service-contact-etab-accueil
       author: thouveno9
       changes:
-        - sql:
-            dbms: mysql
-            sql: |
-              INSERT INTO estage.AppFonction (codeAppFonction, libelleAppFonction)
-              SELECT 'SERVICE_CONTACT_ACC', 'Paramétrage des services et contacts d''un établissement'
-              WHERE NOT EXISTS (
-                  SELECT 1 FROM estage.AppFonction WHERE libelleAppFonction = 'Paramétrage des services et contacts d''un établissement'
-              );
+        - insert:
+            tableName: AppFonction
+            schemaName: estage
+            columns:
+              - column:
+                  name: codeAppFonction
+                  value: SERVICE_CONTACT_ACC
+              - column:
+                  name: libelleAppFonction
+                  value: Paramétrage des services et contacts
   - changeSet:
       id: 3.1.0-ajout-temoin-siren
       author: thouveno9
@@ -76,3 +78,41 @@ databaseChangeLog:
               - column:
                   name: etatActuel
                   type: TEXT
+  - changeSet:
+      id: 3.1.0-contenu-bouton-creer-etab
+      author: thouveno9
+      changes:
+        - insert:
+            columns:
+              - column:
+                  name: codeContenu
+                  value: BOUTON_CREER_ETAB_ACCUEIL
+              - column:
+                  name: libelle
+                  valueBoolean: true
+              - column:
+                  name: texte
+                  value: Créer un établissement d'accueil
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: dateCreation
+                  value: now()
+            tableName: Contenu
+  - changeSet:
+      id: 3.1.0-maj-temEnServStructure
+      author: thouveno9
+      changes:
+        - update:
+            tableName: Structure
+            columns:
+              - column:
+                  name: temEnServStructure
+                  valueBoolean: true
+  - changeSet:
+      id: 3.1.0-maj-temEnServStructureDefault
+      author: thouveno9
+      changes:
+        - sql: ALTER TABLE Structure MODIFY COLUMN temEnServStructure BOOLEAN NOT NULL DEFAULT 1;
+

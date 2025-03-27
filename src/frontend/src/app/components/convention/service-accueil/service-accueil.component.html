@@ -5,9 +5,10 @@
     </mat-expansion-panel-header>
 
     <div class="row mt-3">
-      <mat-form-field class="col-md-12" appearance="fill" [hidden]="services.length == 0">
-        <mat-label>Sélectionnez un service :</mat-label>
-        <mat-select [(value)]="service" (selectionChange)="choose($event.value)">
+      <mat-form-field class="col-md-12" appearance="fill">
+        <mat-label *ngIf="services.length > 0">Sélectionnez un service existant :</mat-label>
+        <mat-label *ngIf="services.length == 0">Aucun service existant</mat-label>
+        <mat-select [(value)]="service" (selectionChange)="choose($event.value)" [disabled]="services.length == 0">
           <mat-option *ngFor="let service of services" [value]="service">{{service.nom}}</mat-option>
         </mat-select>
       </mat-form-field>
@@ -49,7 +50,7 @@
           <div class="col-sm-9">{{service.telephone}}</div>
         </div>
       </div>
-      <div *ngIf="modif && canEdit()">
+      <div *ngIf="modif && (canEdit() || (isNewService && canCreate()))">
         <div class="text-title">Général</div>
         <mat-divider class="mb-2"></mat-divider>
           <div class="row">
@@ -99,7 +100,7 @@
       </div>
       <div class="row mt-3" *ngIf="canEdit() || canCreate()">
         <div class="col-6">
-          <button mat-button mat-stroked-button color="primary" *ngIf="service.id && !modif" (click)="edit()">Modifier ces informations</button>
+          <button mat-button mat-stroked-button color="primary" *ngIf="service.id && !modif && canEdit()" (click)="edit()">Modifier ces informations</button>
           <button mat-button mat-stroked-button color="warn" *ngIf="service.id && modif" (click)="cancelEdit()">{{'BOUTON_ANNULER'|contenu}}</button>
         </div>
         <div class="col-6 text-right" *ngIf="modif">
