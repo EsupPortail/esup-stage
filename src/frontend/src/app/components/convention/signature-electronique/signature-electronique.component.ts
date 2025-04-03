@@ -5,6 +5,7 @@ import { CentreGestionService } from "../../../services/centre-gestion.service";
 import { TechnicalService } from "../../../services/technical.service";
 import * as FileSaver from 'file-saver';
 import { ConfigService } from '../../../services/config.service';
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-signature-electronique',
@@ -21,6 +22,7 @@ export class SignatureElectroniqueComponent implements OnInit {
   data: any[] = [];
   isGestionnaire = false;
   signatureType: string | undefined;
+  NomPrenomEnvoiSignature: string | undefined;
 
   constructor(
     private technicalService: TechnicalService,
@@ -28,6 +30,7 @@ export class SignatureElectroniqueComponent implements OnInit {
     private conventionService: ConventionService,
     private centreGestionService: CentreGestionService,
     private configService: ConfigService,
+    private userService: UserService
   ) { }
 
   ngOnInit(): void {
@@ -38,6 +41,7 @@ export class SignatureElectroniqueComponent implements OnInit {
       this.signatureType = response.signatureType;
     });
     this.isGestionnaire = this.authService.isAdmin() || this.authService.isGestionnaire();
+    this.getNomPrenomEnvoieSignature()
     this.centreGestionService.getById(this.convention.centreGestion.id).subscribe((response: any) => {
       for (let p of response.signataires) {
         const profil = p.id.signataire;
@@ -85,6 +89,7 @@ export class SignatureElectroniqueComponent implements OnInit {
     this.conventionService.updateSignatureInfo(this.convention.id).subscribe((response: any) => {
       this.convention = response;
       this.updateData();
+      this.getNomPrenomEnvoieSignature()
       this.conventionChanged.emit(this.convention);
     });
   }
@@ -102,6 +107,16 @@ export class SignatureElectroniqueComponent implements OnInit {
     const date = new Date();
     date.setMinutes(date.getMinutes() - 30);
     return new Date(this.convention.dateActualisationSignature) >= date;
+  }
+
+  getNomPrenomEnvoieSignature(): void {
+    if (this.convention.loginEnvoiSignature) {
+      this.userService.findOneByLogin(this.convention.loginEnvoiSignature).subscribe((response: any) => {
+        if (response) {
+          this.NomPrenomEnvoiSignature = response.nom + ' ' + response.prenom;
+        }
+      });
+    }
   }
 
 }
