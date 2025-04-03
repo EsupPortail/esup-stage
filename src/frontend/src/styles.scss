@@ -260,5 +260,15 @@ mat-progress-bar .mat-progress-buffer-bar {
   font-size: 0.9rem;
 }
 
+.custom-dialog-container {
+  .mat-dialog-container {
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    overflow: hidden;
+  }
+}
+
 
 

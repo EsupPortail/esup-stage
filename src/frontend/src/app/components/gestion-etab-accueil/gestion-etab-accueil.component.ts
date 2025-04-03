@@ -17,6 +17,7 @@ import { Droit } from "../../constants/droit";
 import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
 import { ServiceAccueilFormComponent } from './service-accueil-form/service-accueil-form.component';
 import { ContactFormComponent } from './contact-form/contact-form.component';
+import {HistoriqueEtabAccueilComponent} from "./historique-etab-accueil/historique-etab-accueil.component";
 
 @Component({
   selector: 'app-gestion-etab-accueil',
@@ -29,7 +30,7 @@ export class GestionEtabAccueilComponent implements OnInit {
   sortColumn = 'raisonSociale';
   serviceTableColumns = ['nom', 'voie', 'codePostal','batimentResidence', 'commune', 'pays', 'telephone',  'actions'];
   contactTableColumns = ['centreGestionnaire', 'civilite', 'nom','prenom', 'telephone', 'mail', 'fax',  'actions'];
-  historiqueTableColumns=['date et heure', 'login','type d\'action', 'action'];
+  historiqueTableColumns = ['date', 'utilisateur', 'type', 'action'];
   filters: any[] = [];
   countries: any[] = [];
   civilites: any[] = [];
@@ -68,6 +69,7 @@ export class GestionEtabAccueilComponent implements OnInit {
     private messageService: MessageService,
     private authService: AuthService,
     public matDialog: MatDialog,
+
   ) { }
 
   ngOnInit(): void {
@@ -260,9 +262,47 @@ export class GestionEtabAccueilComponent implements OnInit {
   loadHistorique(): void {
     if (this.data && this.data.id) {
       this.structureService.getHistorique(this.data.id).subscribe((response: any) => {
-        this.historique = response;
+        this.historique = response.map((item: any) => {
+          if (Array.isArray(item.operationDate)) {
+            item.operationDate = new Date(
+              item.operationDate[0],         // année
+              item.operationDate[1] - 1,     // mois (0-11)
+              item.operationDate[2],         // jour
+              item.operationDate[3],         // heure
+              item.operationDate[4],         // minute
+              item.operationDate[5]          // seconde
+            );
+          }
+          if (item.operationType === 'MODIFICATION') {
+            if (typeof item.etatPrecedent === 'object') {
+              item.etatPrecedent = JSON.stringify(item.etatPrecedent);
+            }
+            if (typeof item.etatActuel === 'object') {
+              item.etatActuel = JSON.stringify(item.etatActuel);
+            }
+          }
+
+          return item;
+        });
+        this.historique.sort((a, b) => {
+          const dateA = a.operationDate instanceof Date ? a.operationDate : new Date();
+          const dateB = b.operationDate instanceof Date ? b.operationDate : new Date();
+          return dateB.getTime() - dateA.getTime();
+        });
       });
     }
   }
 
+  openHistoriqueDetails(row: any): void {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.panelClass = 'custom-dialog-container';
+    dialogConfig.hasBackdrop = false;
+    dialogConfig.maxWidth = '100vw';
+    dialogConfig.maxHeight = '100vh';
+    dialogConfig.height = '100%';
+    dialogConfig.width = '100%';
+    dialogConfig.data = row;
+
+    this.matDialog.open(HistoriqueEtabAccueilComponent, dialogConfig);
+  }
 }
