@@ -3,7 +3,7 @@ package org.esup_portail.esup_stage.service.Structure;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.esup_portail.esup_stage.model.HistoriqueStructure;
-import org.esup_portail.esup_stage.repository.HistoriqueStructureRepository;
+import org.esup_portail.esup_stage.repository.HistoriqueStructureJpaRepository;
 import org.esup_portail.esup_stage.repository.StructureJpaRepository;
 import org.esup_portail.esup_stage.events.StructureCreatedEvent;
 import org.esup_portail.esup_stage.events.StructureUpdatedEvent;
@@ -17,7 +17,7 @@ import org.esup_portail.esup_stage.enums.OperationType;
 public class HistoriqueStructureEventListener {
 
     @Autowired
-    private HistoriqueStructureRepository historyRepository;
+    private HistoriqueStructureJpaRepository historiqueStructureJpaRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -34,7 +34,7 @@ public class HistoriqueStructureEventListener {
         history.setUtilisateur(event.getUtilisateur());
         history.setEtatActuel(objectMapper.writeValueAsString(event.getStructure()));
 
-        historyRepository.save(history);
+        historiqueStructureJpaRepository.save(history);
     }
 
     @EventListener
@@ -47,7 +47,7 @@ public class HistoriqueStructureEventListener {
         history.setEtatActuel(objectMapper.writeValueAsString(event.getNewStructure()));
         history.setEtatPrecedent(objectMapper.writeValueAsString(event.getOldStructure()));
 
-        historyRepository.save(history);
+        historiqueStructureJpaRepository.save(history);
     }
 
     @EventListener
@@ -59,6 +59,6 @@ public class HistoriqueStructureEventListener {
         history.setUtilisateur(event.getUtilisateur());
         history.setEtatActuel(objectMapper.writeValueAsString(event.getStructure()));
 
-        historyRepository.save(history);
+        historiqueStructureJpaRepository.save(history);
     }
 }

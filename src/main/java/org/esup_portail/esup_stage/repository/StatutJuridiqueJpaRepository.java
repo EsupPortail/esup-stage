@@ -15,5 +15,5 @@ public interface StatutJuridiqueJpaRepository extends JpaRepository<StatutJuridi
     StatutJuridique findByLibelle(@Param("lib") String lib);
 
     @Query("SELECT s FROM StatutJuridique s WHERE s.code = :code")
-    StatutJuridique findByCode(String code);
+    StatutJuridique findByCode(@Param("code")String code);
 }

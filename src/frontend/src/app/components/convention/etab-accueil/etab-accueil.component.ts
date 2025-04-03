@@ -147,4 +147,10 @@ export class EtabAccueilComponent implements OnInit {
     this.modif = true;
   }
 
+  changeOnglet(): void {
+    if (this.firstPanel) {
+      this.firstPanel.expanded = true;
+    }
+  }
+
 }

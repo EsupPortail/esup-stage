@@ -31,9 +31,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @ApiController
 @RequestMapping("/structures")
@@ -73,6 +73,9 @@ public class StructureController {
 
     @Autowired
     private ConventionJpaRepository conventionJpaRepository;
+
+    @Autowired
+    private HistoriqueStructureJpaRepository historiqueStructureJpaRepository;
 
     @JsonView(Views.List.class)
     @GetMapping
@@ -276,12 +279,12 @@ public class StructureController {
                 structure.setTemEnServStructure(true);
                 return structureService.save(structure);
             }
-        }
 
+        }
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
         if (!UtilisateurHelper.isRole(utilisateur, Role.ETU) || appConfigService.getConfigGenerale().isAutoriserValidationAutoOrgaAccCreaEtu()) {
-            structure.setLoginCreation(utilisateur.getLogin());
-            structure.setDateValidation(new Date());
+            structureBody.setLoginCreation(utilisateur.getLogin());
+            structureBody.setDateValidation(new Date());
             structureBody.setLoginValidation(utilisateur.getLogin());
             structureBody.setEstValidee(true);
             structureBody.setDateValidation(new Date());
@@ -300,6 +303,18 @@ public class StructureController {
             throw new AppException(HttpStatus.FORBIDDEN, "La structure est relier à une convention");
         }
         structureService.delete(structure);
+    }
+
+    @GetMapping("/{id}/historique")
+    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.MODIFICATION})
+    private List<HistoriqueStructure> getHistorique(@PathVariable("id") int id) {
+        Structure structure = structureJpaRepository.findById(id);
+        if(structure == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Structure non trouvée");
+        }
+        List<HistoriqueStructure> historiqueStructures = historiqueStructureJpaRepository.findByStructure(structure);
+        historiqueStructures.sort(Comparator.comparing(HistoriqueStructure::getOperationDate).reversed());
+        return historiqueStructures;
     }
 
     private void check(StructureFormDto structureFormDto) {

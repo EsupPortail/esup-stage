@@ -178,6 +178,42 @@
           </div>
         </div>
       </mat-expansion-panel>
+      <mat-expansion-panel (opened)="loadHistorique()" *ngIf="data.id">
+        <mat-expansion-panel-header>Historique</mat-expansion-panel-header>
+        <div class="row mt-3">
+          <div class="col-md-12" *ngIf="historique.length === 0">
+            <p>Aucun historique disponible.</p>
+          </div>
+          <div class="col-md-12" *ngIf="historique.length > 0">
+            <table mat-table [dataSource]="historique">
+              <ng-container matColumnDef="date">
+                <th mat-header-cell *matHeaderCellDef>Date</th>
+                <td mat-cell *matCellDef="let row">{{row.date | date:'dd/MM/yyyy hh:mm:ss'}}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="utilisateur">
+                <th mat-header-cell *matHeaderCellDef>Utilisateur</th>
+                <td mat-cell *matCellDef="let row">{{row.utilisateur}}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="type">
+                <th mat-header-cell *matHeaderCellDef>Type</th>
+                <td mat-cell *matCellDef="let row">{{row.type}}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="action">
+                <th mat-header-cell *matHeaderCellDef>Action</th>
+                <td mat-cell *matCellDef="let row">
+                  <button type="button" mat-icon-button matTooltip="Visualiser" matTooltipPosition="left" color="primary"><i class="fa fa-eye"></i></button>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="historiqueTableColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: historiqueTableColumns;"></tr>
+            </table>
+          </div>
+        </div>
+      </mat-expansion-panel>
     </mat-accordion>
   </mat-tab>
   <mat-tab label="Import">

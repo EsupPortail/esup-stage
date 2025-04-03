@@ -29,6 +29,7 @@ export class GestionEtabAccueilComponent implements OnInit {
   sortColumn = 'raisonSociale';
   serviceTableColumns = ['nom', 'voie', 'codePostal','batimentResidence', 'commune', 'pays', 'telephone',  'actions'];
   contactTableColumns = ['centreGestionnaire', 'civilite', 'nom','prenom', 'telephone', 'mail', 'fax',  'actions'];
+  historiqueTableColumns=['date et heure', 'login','type d\'action', 'action'];
   filters: any[] = [];
   countries: any[] = [];
   civilites: any[] = [];
@@ -41,6 +42,7 @@ export class GestionEtabAccueilComponent implements OnInit {
     typeStructure: { title: 'Type d\'organisme' },
     statutJuridique: { title: 'Forme juridique' },
   };
+  historique: any[] = [];
 
   formTabIndex = 1;
   data: any = {};
@@ -253,6 +255,14 @@ export class GestionEtabAccueilComponent implements OnInit {
     this.structureService.import(event.target.files[0]).subscribe((response: any) => {
       this.messageService.setSuccess('Etablissements d\'enseignement importés avec succès');
     });
+  }
+
+  loadHistorique(): void {
+    if (this.data && this.data.id) {
+      this.structureService.getHistorique(this.data.id).subscribe((response: any) => {
+        this.historique = response;
+      });
+    }
   }
 
 }
