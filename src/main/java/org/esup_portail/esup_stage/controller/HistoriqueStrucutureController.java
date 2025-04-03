@@ -28,7 +28,7 @@ public class HistoriqueStrucutureController {
     private StructureJpaRepository structureJpaRepository;
 
     @GetMapping("/structures/{id}")
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.MODIFICATION})
+    //@Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.MODIFICATION})
     private List<HistoriqueStructure> getHistorique(@PathVariable("id") int id) {
         Structure structure = structureJpaRepository.findById(id);
         if(structure == null) {
