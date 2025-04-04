@@ -57,6 +57,12 @@ public class SirenResponse {
         @Data
         public static class AdresseEtablissement {
 
+            @JsonProperty("numeroVoieEtablissement")
+            private String numeroVoie;
+
+            @JsonProperty("typeVoieEtablissement")
+            private String typeVoie;
+
             @JsonProperty("libelleVoieEtablissement")
             private String voie;
 

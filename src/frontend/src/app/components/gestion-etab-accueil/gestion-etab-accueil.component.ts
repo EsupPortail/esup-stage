@@ -18,6 +18,7 @@ import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
 import { ServiceAccueilFormComponent } from './service-accueil-form/service-accueil-form.component';
 import { ContactFormComponent } from './contact-form/contact-form.component';
 import {HistoriqueEtabAccueilComponent} from "./historique-etab-accueil/historique-etab-accueil.component";
+import {CalendrierComponent} from "../convention/stage/calendrier/calendrier.component";
 
 @Component({
   selector: 'app-gestion-etab-accueil',
@@ -263,16 +264,25 @@ export class GestionEtabAccueilComponent implements OnInit {
     if (this.data && this.data.id) {
       this.structureService.getHistorique(this.data.id).subscribe((response: any) => {
         this.historique = response.map((item: any) => {
-          if (Array.isArray(item.operationDate)) {
-            item.operationDate = new Date(
-              item.operationDate[0],         // année
-              item.operationDate[1] - 1,     // mois (0-11)
-              item.operationDate[2],         // jour
-              item.operationDate[3],         // heure
-              item.operationDate[4],         // minute
-              item.operationDate[5]          // seconde
-            );
+          // Vérifier si operationDate est défini
+          if (item.operationDate) {
+            // Si c'est un tableau, convertir en Date
+            if (Array.isArray(item.operationDate)) {
+              item.operationDate = new Date(
+                item.operationDate[0],
+                item.operationDate[1] - 1,
+                item.operationDate[2],
+                item.operationDate[3] || 0,
+                item.operationDate[4] || 0,
+                item.operationDate[5] || 0
+              );
+            }
+            else if (typeof item.operationDate === 'string') {
+              item.operationDate = new Date(item.operationDate);
+            }
           }
+
+          // Le reste du traitement...
           if (item.operationType === 'MODIFICATION') {
             if (typeof item.etatPrecedent === 'object') {
               item.etatPrecedent = JSON.stringify(item.etatPrecedent);
@@ -284,10 +294,10 @@ export class GestionEtabAccueilComponent implements OnInit {
 
           return item;
         });
+
+        // Trier l'historique
         this.historique.sort((a, b) => {
-          const dateA = a.operationDate instanceof Date ? a.operationDate : new Date();
-          const dateB = b.operationDate instanceof Date ? b.operationDate : new Date();
-          return dateB.getTime() - dateA.getTime();
+          return new Date(b.operationDate).getTime() - new Date(a.operationDate).getTime();
         });
       });
     }
@@ -295,12 +305,7 @@ export class GestionEtabAccueilComponent implements OnInit {
 
   openHistoriqueDetails(row: any): void {
     const dialogConfig = new MatDialogConfig();
-    dialogConfig.panelClass = 'custom-dialog-container';
-    dialogConfig.hasBackdrop = false;
-    dialogConfig.maxWidth = '100vw';
-    dialogConfig.maxHeight = '100vh';
-    dialogConfig.height = '100%';
-    dialogConfig.width = '100%';
+    dialogConfig.width = '1000px';
     dialogConfig.data = row;
 
     this.matDialog.open(HistoriqueEtabAccueilComponent, dialogConfig);

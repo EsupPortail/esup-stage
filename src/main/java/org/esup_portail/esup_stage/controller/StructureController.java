@@ -305,18 +305,6 @@ public class StructureController {
         structureService.delete(structure);
     }
 
-    @GetMapping("/{id}/historique")
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.MODIFICATION})
-    private List<HistoriqueStructure> getHistorique(@PathVariable("id") int id) {
-        Structure structure = structureJpaRepository.findById(id);
-        if(structure == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Structure non trouvée");
-        }
-        List<HistoriqueStructure> historiqueStructures = historiqueStructureJpaRepository.findByStructure(structure);
-        historiqueStructures.sort(Comparator.comparing(HistoriqueStructure::getOperationDate).reversed());
-        return historiqueStructures;
-    }
-
     private void check(StructureFormDto structureFormDto) {
         if (structureFormDto.getCodeNafN5() == null && structureFormDto.getActivitePrincipale() == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "L'un des 2 champs \"code APE\" ou \"activité principale\" doit être renseigné");

@@ -39,8 +39,8 @@ public class SirenMapper {
 
         // Adresse
         if (etablissement.getAdresse() != null) {
-            structure.setVoie(etablissement.getAdresse().getVoie());
-            structure.setCommune(etablissement.getAdresse().getCommune());
+            structure.setVoie(etablissement.getAdresse().getNumeroVoie() + " " + etablissement.getAdresse().getTypeVoie() + " " + etablissement.getAdresse().getVoie());
+            structure.setCommune(etablissement.getAdresse().getCommune());            structure.setCommune(etablissement.getAdresse().getCommune());
             structure.setCodePostal(etablissement.getAdresse().getCodePostal());
             structure.setCodeCommune(etablissement.getAdresse().getCodeCommune());
         }

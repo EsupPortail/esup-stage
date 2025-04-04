@@ -1,5 +1,7 @@
 package org.esup_portail.esup_stage.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
@@ -28,8 +30,8 @@ public class HistoriqueStrucutureController {
     private StructureJpaRepository structureJpaRepository;
 
     @GetMapping("/structures/{id}")
-    //@Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.MODIFICATION})
-    private List<HistoriqueStructure> getHistorique(@PathVariable("id") int id) {
+    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.MODIFICATION})
+    public List<HistoriqueStructure> getHistorique(@PathVariable("id") int id) {
         Structure structure = structureJpaRepository.findById(id);
         if(structure == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Structure non trouvée");
@@ -37,7 +39,6 @@ public class HistoriqueStrucutureController {
         List<HistoriqueStructure> historiqueStructures = historiqueStructureJpaRepository.findByStructure(structure);
         historiqueStructures.sort(Comparator.comparing(HistoriqueStructure::getOperationDate).reversed());
         return historiqueStructures;
+
     }
-
-
 }

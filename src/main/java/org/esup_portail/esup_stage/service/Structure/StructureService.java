@@ -1,5 +1,6 @@
 package org.esup_portail.esup_stage.service.Structure;
 
+import jakarta.persistence.EntityManager;
 import org.esup_portail.esup_stage.events.StructureCreatedEvent;
 import org.esup_portail.esup_stage.events.StructureDeletedEvent;
 import org.esup_portail.esup_stage.events.StructureUpdatedEvent;
@@ -20,7 +21,7 @@ public class StructureService {
     private ApplicationEventPublisher eventPublisher;
 
     @Autowired
-    private ConventionJpaRepository conventionJpaRepository;
+    private EntityManager entityManager;
 
     public Structure save(Structure structure) {
         boolean isNew = structure.getId() == null || structure.getId() == 0;
@@ -28,9 +29,10 @@ public class StructureService {
 
         if (!isNew) {
             oldStructure = structureJpaRepository.findById(structure.getId()).orElse(null);
+            entityManager.detach(oldStructure);
         }
 
-        Structure savedStructure = structureJpaRepository.saveAndFlush(structure);
+        Structure savedStructure = structureJpaRepository.save(structure);
 
         if (isNew) {
             eventPublisher.publishEvent(new StructureCreatedEvent(savedStructure));

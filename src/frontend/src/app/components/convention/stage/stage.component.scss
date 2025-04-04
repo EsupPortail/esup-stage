@@ -1,3 +1,35 @@
-.mat-card .mat-divider-horizontal {
-    position: relative;
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+
+.table-header {
+  color: black;
+  font-weight: normal;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+}
+
+.actions-container {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.delete-button {
+  color: #ef4444 !important;
+}
+
+.delete-button i {
+  color: #ef4444 !important;
+}
+
+[mat-icon-button] {
+  width: 36px;
+  height: 36px;
+  line-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }

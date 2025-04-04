@@ -11,13 +11,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class SirenService {
@@ -38,8 +38,6 @@ public class SirenService {
 
     public Structure getEtablissement(String siret) {
         String url = sirenProperties.getUrl() + "/siret/" + siret;
-        logger.info("Requête vers {}", url);
-
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-INSEE-Api-Key-Integration", sirenProperties.getToken());
         headers.set("Accept", "application/json");
@@ -67,7 +65,6 @@ public class SirenService {
         String baseUrl = sirenProperties.getUrl();
         String query = buildQueryFromFilters(filters);
         String url = baseUrl + "?q=" + query;
-        logger.info("Requête filtrée vers {}", url);
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-INSEE-Api-Key-Integration", sirenProperties.getToken());
@@ -86,6 +83,8 @@ public class SirenService {
                 logger.warn("Réponse non valide pour la requête filtrée : {}", response.getStatusCode());
                 return new ArrayList<>();
             }
+        } catch (HttpClientErrorException.NotFound e) {
+            return new ArrayList<>();
         } catch (Exception e) {
             logger.error("Erreur lors de la récupération des établissements filtrés", e);
             return new ArrayList<>();
@@ -114,7 +113,6 @@ public class SirenService {
             }
 
             String query = String.join(" AND ", queryParts);
-            logger.info("Requête construite depuis les filtres : {}", query);
             return query;
         } catch (Exception e) {
             logger.error("Erreur lors de la construction de la requête à partir des filtres JSON", e);
@@ -124,7 +122,6 @@ public class SirenService {
 
     public List<Structure> getAllEtablissements() {
         String url = sirenProperties.getUrl() + "/siret";
-        logger.info("Requête pour récupérer tous les établissements : {}", url);
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-INSEE-Api-Key-Integration", sirenProperties.getToken());

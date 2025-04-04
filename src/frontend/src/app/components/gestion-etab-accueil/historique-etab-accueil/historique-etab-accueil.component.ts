@@ -61,69 +61,68 @@ export class HistoriqueEtabAccueilComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    if (this.data && this.data.etatPrecedent && this.data.etatActuel) {
-      // Parse les deux états JSON
-      const previousState = JSON.parse(this.data.etatPrecedent);
-      const currentState = JSON.parse(this.data.etatActuel);
+    if (this.data.operationType === 'MODIFICATION') {
+      try {
+        let previousState = this.data.etatPrecedent;
+        let currentState = this.data.etatActuel;
 
-      // Compare les objets et extrait les différences
-      this.differences = this.compareObjects(previousState, currentState);
+        // Si les états sont des chaînes, on les parse
+        if (typeof previousState === 'string') {
+          previousState = JSON.parse(previousState);
+        }
+        if (typeof currentState === 'string') {
+          currentState = JSON.parse(currentState);
+        }
+
+        // Affiche les objets pour le debug
+        console.log('Previous state:', previousState);
+        console.log('Current state:', currentState);
+
+        // Compare les objets et stocke les différences
+        this.differences = this.compareObjects(previousState, currentState);
+
+        // Affiche les différences pour le debug
+        console.log('Differences:', this.differences);
+      } catch (error) {
+        console.error('Erreur lors du parsing JSON:', error);
+      }
     }
   }
 
-  /**
-   * Compare deux objets et retourne les différences
-   */
-  compareObjects(oldObj: any, newObj: any, parentPath: string = ''): JsonDifference[] {
+  private compareObjects(prev: any, curr: any, path: string = ''): JsonDifference[] {
     const differences: JsonDifference[] = [];
 
-    // Récupère toutes les clés des deux objets
-    const allKeys = new Set([
-      ...Object.keys(oldObj || {}),
-      ...Object.keys(newObj || {})
-    ]);
+    // Parcourt toutes les clés de l'objet
+    Object.keys({...prev, ...curr}).forEach(key => {
+      const fullPath = path ? `${path}.${key}` : key;
+      const prevValue = prev[key];
+      const currValue = curr[key];
 
-    // Vérifie chaque clé
-    allKeys.forEach(key => {
-      const oldValue = oldObj?.[key];
-      const newValue = newObj?.[key];
-
-      // Construit le chemin complet pour cette propriété
-      const currentPath = parentPath ? `${parentPath}.${key}` : key;
-
-      // Si les valeurs sont différentes
-      if (!this.areEqual(oldValue, newValue)) {
-        // Si nous avons des objets non-null, comparer récursivement
-        if (
-          oldValue && newValue &&
-          typeof oldValue === 'object' && typeof newValue === 'object' &&
-          !Array.isArray(oldValue) && !Array.isArray(newValue)
-        ) {
-          // Ajoute les différences des objets enfants
-          differences.push(...this.compareObjects(oldValue, newValue, currentPath));
-        } else {
-          // Ajoute la différence pour cette propriété primitive ou tableau
-          const displayName = this.getDisplayName(currentPath);
-
-          // Détermine le type de valeur
+      // Si la clé existe dans le mapping d'affichage
+      if (this.displayFieldMapping[fullPath]) {
+        // Compare les valeurs
+        if (JSON.stringify(prevValue) !== JSON.stringify(currValue)) {
+          // Détermine le type de la différence
           let type: 'object' | 'array' | 'primitive' = 'primitive';
-          if (Array.isArray(oldValue) || Array.isArray(newValue)) {
+          if (Array.isArray(prevValue) || Array.isArray(currValue)) {
             type = 'array';
-          } else if (
-            (oldValue && typeof oldValue === 'object') ||
-            (newValue && typeof newValue === 'object')
-          ) {
+          } else if (typeof prevValue === 'object' || typeof currValue === 'object') {
             type = 'object';
           }
 
-          // Ajoute la différence
-          differences.push({
-            field: currentPath,
-            displayName,
-            previousValue: oldValue,
-            currentValue: newValue,
-            type
-          });
+          // Formatage des valeurs pour l'affichage
+          const formattedPrev = this.formatValue(prevValue);
+          const formattedCurr = this.formatValue(currValue);
+
+          if (formattedPrev !== formattedCurr) {
+            differences.push({
+              field: fullPath,
+              displayName: this.displayFieldMapping[fullPath],
+              previousValue: formattedPrev,
+              currentValue: formattedCurr,
+              type
+            });
+          }
         }
       }
     });
@@ -131,106 +130,16 @@ export class HistoriqueEtabAccueilComponent implements OnInit {
     return differences;
   }
 
-  /**
-   * Vérifie si deux valeurs sont égales
-   */
-  areEqual(value1: any, value2: any): boolean {
-    // Si les deux sont des dates
-    if (value1 instanceof Date && value2 instanceof Date) {
-      return value1.getTime() === value2.getTime();
-    }
-
-    // Si un des deux est null ou undefined
-    if (value1 === null || value1 === undefined || value2 === null || value2 === undefined) {
-      return value1 === value2;
-    }
-
-    // Si les deux sont des objets
-    if (typeof value1 === 'object' && typeof value2 === 'object') {
-      // Si les deux sont des tableaux
-      if (Array.isArray(value1) && Array.isArray(value2)) {
-        if (value1.length !== value2.length) return false;
-
-        for (let i = 0; i < value1.length; i++) {
-          if (!this.areEqual(value1[i], value2[i])) return false;
-        }
-
-        return true;
-      }
-
-      // Si l'un est un tableau et l'autre non
-      if (Array.isArray(value1) !== Array.isArray(value2)) return false;
-
-      // Comparer les clés des objets
-      const keys1 = Object.keys(value1);
-      const keys2 = Object.keys(value2);
-
-      if (keys1.length !== keys2.length) return false;
-
-      for (const key of keys1) {
-        if (!keys2.includes(key)) return false;
-        if (!this.areEqual(value1[key], value2[key])) return false;
-      }
-
-      return true;
-    }
-
-    // Pour les valeurs primitives
-    return value1 === value2;
-  }
-
-  /**
-   * Obtient un nom d'affichage convivial pour un champ
-   */
-  getDisplayName(fieldPath: string): string {
-    // Utilise le mapping si disponible
-    if (this.displayFieldMapping[fieldPath]) {
-      return this.displayFieldMapping[fieldPath];
-    }
-
-    // Sinon, fait un formatage basique
-    return fieldPath
-      .split('.')
-      .pop()!
-      .replace(/([A-Z])/g, ' $1')
-      .replace(/^./, str => str.toUpperCase());
-  }
-
-  /**
-   * Formate une valeur pour l'affichage
-   */
-  formatValue(value: any): string {
-    if (value === null || value === undefined) {
-      return 'Non défini';
-    }
-
-    if (typeof value === 'boolean') {
-      return value ? 'Oui' : 'Non';
-    }
-
-    if (typeof value === 'number' && (String(value).length === 13 || String(value).length === 10)) {
-      // C'est probablement un timestamp
-      const date = new Date(value);
-      if (!isNaN(date.getTime())) {
-        return date.toLocaleString('fr-FR');
-      }
-    }
-
-    if (typeof value === 'object') {
-      // Si c'est un objet, on renvoie sa représentation JSON
-      if (value.libelle) {
-        return value.libelle;
-      } else if (value.lib) {
-        return value.lib;
-      } else {
-        return JSON.stringify(value);
-      }
-    }
-
+  private formatValue(value: any): string {
+    if (value === null || value === undefined) return 'Non renseigné';
+    if (typeof value === 'object' && value.libelle) return value.libelle;
+    if (typeof value === 'boolean') return value ? 'Oui' : 'Non';
+    if (value instanceof Date) return new Date(value).toLocaleDateString('fr-FR');
     return String(value);
   }
 
   close(): void {
+    console.log(this.differences);
     this.dialogRef.close();
   }
 }
