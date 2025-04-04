@@ -351,10 +351,10 @@ public class ConventionService {
             put(keyMail, convention.getSignataire().getMail());
             put(keyTel, convention.getSignataire().getTel());
         }});
-       data.put("directeur du département", new HashMap<>() {{
-           put(keyMail, convention.getCentreGestion().getMailViseur());
-           put(keyTel, convention.getCentreGestion().getTelephone());
-       }});
+        data.put("directeur du département", new HashMap<>() {{
+            put(keyMail, convention.getCentreGestion().getMailViseur());
+            put(keyTel, convention.getCentreGestion().getTelephone());
+        }});
 
         for (Map.Entry<String, Map<String, String>> entry : data.entrySet()) {
             Map<String, String> values = entry.getValue();
