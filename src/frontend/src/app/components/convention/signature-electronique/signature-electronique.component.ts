@@ -41,7 +41,7 @@ export class SignatureElectroniqueComponent implements OnInit {
       this.signatureType = response.signatureType;
     });
     this.isGestionnaire = this.authService.isAdmin() || this.authService.isGestionnaire();
-    this.getNomPrenomEnvoieSignature()
+    this.getNomPrenomEnvoiSignature()
     this.centreGestionService.getById(this.convention.centreGestion.id).subscribe((response: any) => {
       for (let p of response.signataires) {
         const profil = p.id.signataire;
@@ -89,7 +89,7 @@ export class SignatureElectroniqueComponent implements OnInit {
     this.conventionService.updateSignatureInfo(this.convention.id).subscribe((response: any) => {
       this.convention = response;
       this.updateData();
-      this.getNomPrenomEnvoieSignature()
+      this.getNomPrenomEnvoiSignature()
       this.conventionChanged.emit(this.convention);
     });
   }
@@ -109,7 +109,7 @@ export class SignatureElectroniqueComponent implements OnInit {
     return new Date(this.convention.dateActualisationSignature) >= date;
   }
 
-  getNomPrenomEnvoieSignature(): void {
+  getNomPrenomEnvoiSignature(): void {
     if (this.convention.loginEnvoiSignature) {
       this.userService.findOneByLogin(this.convention.loginEnvoiSignature).subscribe((response: any) => {
         if (response) {
