@@ -383,7 +383,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   changeAnnee(): void {
     if (!this.appTable || !this.anneeEnCours){
       console.error("erreur lors du chargement du tableau")
-    }else {
+    }else if(this.appTable?.getFilters().annee?.value === "Toutes les années"){
+      delete this.appTable.filterValues['annee'];
+      this.appTable?.update();
+      this.countConvention();
+    } else {
 
       // Mettre à jour le filtre
       this.appTable?.setFilter({
