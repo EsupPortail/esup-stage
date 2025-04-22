@@ -9,3 +9,13 @@ databaseChangeLog:
         - column:
             name: loginEnvoiSignature
             type: VARCHAR(255)
+- changeSet:
+      id: 3.0.0-add-login-sender-signature-avenant
+      author: thouveno9
+      changes:
+        - addColumn:
+            tableName: Avenant
+            columns:
+            - column:
+                name: loginEnvoiSignature
+                type: VARCHAR(255)
