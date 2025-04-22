@@ -152,10 +152,19 @@ export class CentreGestionComponent implements OnInit {
 
   refreshCentreGestion(value: any): void {
     this.centreGestion = value;
-    this.consigneService.getConsigneByCentre(this.centreGestion.id).subscribe((response: any) => {
-      this.consigneCentre = response;
-      this.majStatus();
+    this.consigneService.getConsigneByCentre(this.centreGestion.id).subscribe({
+      next: (response: any) => {
+        if (response && response.texte) {
+          this.consigneCentre = response;
+        } else {
+          console.info('Pas de consigne disponible pour ce centre');
+        }
+      },
+      error: (err) => {
+        console.warn('Erreur lors du chargement de la consigne', err);
+      }
     });
+    this.majStatus()
     this.updateOnChanges();
   }
 
