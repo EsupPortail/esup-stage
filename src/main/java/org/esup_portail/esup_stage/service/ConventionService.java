@@ -108,7 +108,7 @@ public class ConventionService {
                 structure.setLoginValidation(utilisateur.getLogin());
                 structure.setInfosAJour(new Date());
                 structure.setLoginInfosAJour(utilisateur.getLogin());
-                structureService.save(structure);
+                structureService.save(null,structure);
             }
             org.esup_portail.esup_stage.model.Service service = convention.getService();
             if (service != null) {

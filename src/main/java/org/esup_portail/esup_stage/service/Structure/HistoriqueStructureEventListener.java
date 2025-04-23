@@ -40,12 +40,12 @@ public class HistoriqueStructureEventListener {
     @EventListener
     public void handleStructureUpdated(StructureUpdatedEvent event) throws JsonProcessingException {
         HistoriqueStructure history = new HistoriqueStructure();
-        history.setStructure(structureRepository.findById(event.getNewStructure().getId()).orElse(null));
+        history.setStructure(structureRepository.findById(event.getStructure().getId()).orElse(null));
         history.setOperationType(OperationType.MODIFICATION);
         history.setOperationDate(event.getTimestamp());
         history.setUtilisateur(event.getUtilisateur());
-        history.setEtatActuel(objectMapper.writeValueAsString(event.getNewStructure()));
-        history.setEtatPrecedent(objectMapper.writeValueAsString(event.getOldStructure()));
+        history.setEtatActuel(event.getNewStructure());
+        history.setEtatPrecedent(event.getOldStructure());
 
         historiqueStructureJpaRepository.save(history);
     }

@@ -1,6 +1,8 @@
 package org.esup_portail.esup_stage.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.apache.commons.validator.routines.checkdigit.LuhnCheckDigit;
@@ -31,7 +33,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -75,7 +76,7 @@ public class StructureController {
     private ConventionJpaRepository conventionJpaRepository;
 
     @Autowired
-    private HistoriqueStructureJpaRepository historiqueStructureJpaRepository;
+    private ObjectMapper objectMapper;
 
     @JsonView(Views.List.class)
     @GetMapping
@@ -211,7 +212,7 @@ public class StructureController {
                     Structure existant = structureJpaRepository.findByRNE(structure.getNumeroRNE());
 
                     if (existant == null) {
-                        structureService.save(structure);
+                        structureService.save(null,structure);
                     } else {
                         logger.info("skipped existing structure with RNE : " + existant.getNumeroRNE());
                     }
@@ -247,15 +248,24 @@ public class StructureController {
             structure.setEstValidee(true);
             structure.setDateValidation(new Date());
         }
-        return structureService.save(structure);
+        return structureService.save(null,structure);
     }
 
     @PutMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.MODIFICATION})
     public Structure update(@PathVariable("id") int id, @Valid @RequestBody StructureFormDto structureFormDto) {
         Structure structure = structureJpaRepository.findById(id);
+        if (structure == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Structure non trouvée");
+        }
+        String oldStructure;
+        try {
+            oldStructure = objectMapper.writeValueAsString(structure);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Erreur lors de la sérialisation de la structure d'origine", e);
+        }
         setStructureData(structure, structureFormDto);
-        structure = structureService.save(structure);
+        structure = structureService.save(oldStructure,structure);
         return structure;
     }
 
@@ -277,7 +287,7 @@ public class StructureController {
             // Si la structure existe mais est désactivée, on la réactive
             if (!structure.getTemEnServStructure()) {
                 structure.setTemEnServStructure(true);
-                return structureService.save(structure);
+                return structureService.save(null,structure);
             }
 
         }
@@ -289,7 +299,7 @@ public class StructureController {
             structureBody.setEstValidee(true);
             structureBody.setDateValidation(new Date());
         }
-        return structureService.save(structureBody);
+        return structureService.save(null,structureBody);
     }
 
     @DeleteMapping("/{id}")

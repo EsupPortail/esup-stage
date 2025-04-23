@@ -5,6 +5,7 @@ import org.esup_portail.esup_stage.model.Structure;
 
 @Data
 public class StructureUpdatedEvent extends StructureEvent {
-    private final Structure oldStructure;
-    private final Structure newStructure;
+    private final Structure structure;
+    private final String oldStructure;
+    private final String newStructure;
 }
