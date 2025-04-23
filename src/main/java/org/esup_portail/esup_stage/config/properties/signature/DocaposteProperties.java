@@ -10,9 +10,23 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class DocaposteProperties {
     private String uri;
     private String siren;
-    private String keystorePath;
-    private String keystorePassword;
-    private String truststorePath;
-    private String truststorePassword;
+    private keystoreProperties keystore;
+    private truststoreProperties truststore;
+
+    @Data
+    @NoArgsConstructor
+    public static class keystoreProperties {
+        private String path;
+        private String password;
+    }
+
+    @Data
+    @NoArgsConstructor
+    public static class truststoreProperties {
+        private String path;
+        private String password;
+    }
+
+
 }
 

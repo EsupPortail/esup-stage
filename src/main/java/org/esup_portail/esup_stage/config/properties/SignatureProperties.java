@@ -30,8 +30,8 @@ public class SignatureProperties {
 
     public void initializeProperties() {
         boolean docaposteEnabled = docaposte.getUri() != null && docaposte.getSiren() != null &&
-                docaposte.getKeystorePath() != null && docaposte.getKeystorePassword() != null &&
-                docaposte.getTruststorePath() != null && docaposte.getTruststorePassword() != null;
+                docaposte.getKeystore().getPath() != null && docaposte.getKeystore().getPassword() != null &&
+                docaposte.getTruststore().getPath() != null && docaposte.getTruststore().getPassword() != null;
 
         if (docaposteEnabled) {
             appSignatureType = AppSignatureEnum.DOCAPOSTE;

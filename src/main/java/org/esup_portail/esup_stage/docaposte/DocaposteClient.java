@@ -89,9 +89,9 @@ public class DocaposteClient extends WebServiceGatewaySupport {
 
     private KeyStore loadKeyStore() throws Exception {
         KeyStore ks = KeyStore.getInstance("PKCS12");
-        logger.debug("Loading keystore from: {}", signatureProperties.getDocaposte().getKeystorePath());
-        try (InputStream is = new FileInputStream(signatureProperties.getDocaposte().getKeystorePath())) {
-            ks.load(is, signatureProperties.getDocaposte().getKeystorePassword().toCharArray());
+        logger.debug("Loading keystore from: {}", signatureProperties.getDocaposte().getKeystore().getPath());
+        try (InputStream is = new FileInputStream(signatureProperties.getDocaposte().getKeystore().getPath())) {
+            ks.load(is, signatureProperties.getDocaposte().getKeystore().getPassword().toCharArray());
             logger.info("Keystore loaded successfully");
             return ks;
         }
@@ -99,9 +99,9 @@ public class DocaposteClient extends WebServiceGatewaySupport {
 
     private KeyStore loadTrustStore() throws Exception {
         KeyStore ts = KeyStore.getInstance("JKS");
-        logger.debug("Loading truststore from: {}", signatureProperties.getDocaposte().getTruststorePassword());
-        try (InputStream is = new FileInputStream(signatureProperties.getDocaposte().getTruststorePassword())) {
-            ts.load(is, signatureProperties.getDocaposte().getTruststorePassword().toCharArray());
+        logger.debug("Loading truststore from: {}", signatureProperties.getDocaposte().getTruststore().getPath());
+        try (InputStream is = new FileInputStream(signatureProperties.getDocaposte().getTruststore().getPath())) {
+            ts.load(is, signatureProperties.getDocaposte().getTruststore().getPassword().toCharArray());
             logger.info("Truststore loaded successfully");
             return ts;
         }
@@ -109,7 +109,7 @@ public class DocaposteClient extends WebServiceGatewaySupport {
 
     private KeyManagerFactory initializeKeyManagerFactory(KeyStore ks) throws Exception {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-        keyManagerFactory.init(ks, signatureProperties.getDocaposte().getKeystorePassword().toCharArray());
+        keyManagerFactory.init(ks, signatureProperties.getDocaposte().getKeystore().getPassword().toCharArray());
         return keyManagerFactory;
     }
 
