@@ -80,6 +80,7 @@ export class CoordCentreComponent implements OnInit {
         this.form.get('niveauCentre')?.disable();
       }
     }
+    this.refreshCentreGestion.emit(this.centreGestion)
   }
 
   getComposantes(): void {
@@ -192,6 +193,7 @@ export class CoordCentreComponent implements OnInit {
     } else {
       this.deleteEtape(etape.code, etape.codeVrsEtp);
     }
+    this.refreshCentreGestion.emit(this.centreGestion)
   }
 
   deleteEtape(code: string, codeVrsEtp: string) {
@@ -204,6 +206,7 @@ export class CoordCentreComponent implements OnInit {
       if (this.appTable)
         this.appTable.update();
     });
+    this.refreshCentreGestion.emit(this.centreGestion)
   }
 
   filterEtapes() {

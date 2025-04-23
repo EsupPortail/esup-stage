@@ -52,3 +52,14 @@ button:focus {
   }
 }
 
+.mdc-card{
+  box-shadow: none !important; // Supprime l'ombre portée (contour)
+  border: none !important;     // Supprime toute bordure
+  border-radius: 0 !important; // Supprime les bords arrondis
+}
+
+.no-result-text {
+  font-size: 1.2em;
+  padding-left: 30px;
+  padding-top: 5px;
+}

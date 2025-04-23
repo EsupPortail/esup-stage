@@ -38,3 +38,9 @@ i.inProgress {
 i.done {
   color: var(--successColor) !important;
 }
+
+.mdc-card{
+  box-shadow: none !important; // Supprime l'ombre portée (contour)
+  border: none !important;     // Supprime toute bordure
+  border-radius: 0 !important; // Supprime les bords arrondis
+}

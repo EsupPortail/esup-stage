@@ -13,7 +13,6 @@ public class Contenu extends ObjetMetier implements Exportable {
     @Column(nullable = false)
     private boolean libelle = true;
 
-    @Lob
     @Column(nullable = false)
     private String texte;
 

@@ -72,8 +72,17 @@ export class CadreStageModalComponent implements OnInit {
     this.centreGestionService.getCentreEtablissement().subscribe((response: any) => {
       this.centreGestionEtablissement = response;
       if (this.centreGestionEtablissement) {
-        this.consigneService.getConsigneByCentre(this.centreGestionEtablissement.id).subscribe((response: any) => {
-          this.consigneEtablissement = response;
+        this.consigneService.getConsigneByCentre(this.centreGestionEtablissement.id).subscribe({
+          next: (response: any) => {
+            if (response && response.texte) {
+              this.consigneEtablissement = response;
+            } else {
+              console.info('Pas de consigne disponible pour ce centre');
+            }
+          },
+          error: (err) => {
+            console.warn('Erreur lors du chargement de la consigne', err);
+          }
         });
       }
     });
