@@ -56,7 +56,7 @@ export class EvalStageComponent implements OnInit, OnDestroy {
       this.columns = ['id', 'etudiant.nom_etudiant.prenom', 'structure.raisonSociale', 'dateDebutStage', 'dateFinStage', 'ufr.libelle',
      'etape.libelle', 'annee','reponseEvaluationEtudiant','reponseEvaluationEnseignant','reponseEvaluationEntreprise', 'action'];
 
-      this.filters.push({ id: 'annee', libelle: 'Année', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'libelle', value: [] });
+      this.filters.push({ id: 'annee', libelle: 'Année', type: 'annee', options: [], keyLibelle: 'libelle', keyId: 'libelle', value: [] });
       this.filters.push({ id: 'centreGestion.nomCentre', libelle: 'Centres de gestion', type: 'list', options: [], keyId: 'nomCentre', keyLibelle: 'nomCentre', colSpan: 6, infoBulleCentre: true });
       this.filters.push({ id: 'stageTermine', libelle: 'N\'afficher que les stages terminés ?', type: 'boolean', specific: true });
 
@@ -64,7 +64,7 @@ export class EvalStageComponent implements OnInit, OnDestroy {
         this.annees = response;
         this.anneeEnCours = this.annees.find((a: any) => { return a.anneeEnCours === true });
         this.appTable?.setFilterOption('annee', this.annees);
-        this.appTable?.setFilterValue('annee', [this.anneeEnCours.libelle]);
+        this.appTable?.setFilterValue('annee', this.anneeEnCours.libelle);
 
         if (this.savedFilters) {
           this.restoreFilters();
@@ -128,7 +128,7 @@ export class EvalStageComponent implements OnInit, OnDestroy {
       sortColumn: this.appTable?.sortColumn,
       sortOrder: this.appTable?.sortOrder
     };
-    const filterValues = this.appTable?.getFilterValues();
+    const filterValues = this.appTable?.getFilters();
 
     sessionStorage.setItem('evalstages-paging', JSON.stringify(pagingData));
     sessionStorage.setItem('evalstages-filters', JSON.stringify(filterValues));
