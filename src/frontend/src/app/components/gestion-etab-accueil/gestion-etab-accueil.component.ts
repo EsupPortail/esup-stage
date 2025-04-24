@@ -310,4 +310,12 @@ export class GestionEtabAccueilComponent implements OnInit {
 
     this.matDialog.open(HistoriqueEtabAccueilComponent, dialogConfig);
   }
+
+  canCreateServiceOrContact(): boolean {
+    return this.authService.checkRights({fonction: AppFonction.SERVICE_CONTACT_ACC, droits: [Droit.CREATION]});
+  }
+
+  canEditServiceOrContact(): boolean {
+    return this.authService.checkRights({fonction: AppFonction.SERVICE_CONTACT_ACC, droits: [Droit.MODIFICATION]});
+  }
 }

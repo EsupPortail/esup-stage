@@ -253,6 +253,8 @@ public class StructureController {
             structure.setLoginValidation(utilisateur.getLogin());
             structure.setEstValidee(true);
             structure.setDateValidation(new Date());
+            structure.setTemEnServStructure(true);
+            structure.setTemSiren(false);
         }
         return structureService.save(null,structure);
     }

@@ -601,7 +601,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   }
 
   canEdit(){
-    return !this.authService.isEtudiant() && this.etab.temSiren
+    return !this.authService.isEtudiant() && !this.etab.temSiren
   }
 
   canCreate(): boolean {
