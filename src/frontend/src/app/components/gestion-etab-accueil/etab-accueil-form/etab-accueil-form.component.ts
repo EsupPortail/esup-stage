@@ -87,6 +87,8 @@ import {
 } from "ckeditor5";
 import translations from 'ckeditor5/translations/fr.js';
 import { AuthService } from "../../../services/auth.service"
+import {AppFonction} from "../../../constants/app-fonction";
+import {Droit} from "../../../constants/droit";
 
 @Component({
   selector: 'app-etab-accueil-form',
@@ -424,24 +426,24 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
 
   ngOnChanges(changes: SimpleChanges): void {
     this.form = this.fb.group({
-      raisonSociale: [{ value: this.etab.raisonSociale, disabled: !this.canEdit() }, [Validators.required, Validators.maxLength(150)]],
-      numeroSiret: [{ value: this.etab.numeroSiret, disabled: !this.canEdit() }, [Validators.maxLength(14), Validators.pattern('[0-9]{14}')]],
+      raisonSociale: [{ value: this.etab.raisonSociale, disabled: this.isFieldDisabled() }, [Validators.required, Validators.maxLength(150)]],
+      numeroSiret: [{ value: this.etab.numeroSiret, disabled: this.isFieldDisabled() }, [Validators.maxLength(14), Validators.pattern('[0-9]{14}')]],
       idEffectif: [this.etab.effectif ? this.etab.effectif.id : null, [Validators.required]],
       idTypeStructure: [this.etab.typeStructure ? this.etab.typeStructure.id : null, [Validators.required]],
-      idStatutJuridique: [{ value: this.etab.statutJuridique ? this.etab.statutJuridique.id : null, disabled: !this.canEdit() }, [Validators.required]],
-      codeNafN5: [{ value: this.etab.nafN5 ? this.etab.nafN5.code : null, disabled: !this.canEdit() }, []],
+      idStatutJuridique: [{ value: this.etab.statutJuridique?.id ?? null, disabled: this.isFieldDisabled() }, [Validators.required]],
+      codeNafN5: [{ value: this.etab.nafN5?.code ?? null, disabled: this.isFieldDisabled() }, []],
       activitePrincipale: [this.etab.activitePrincipale, []],
       voie: [this.etab.voie, [Validators.required, Validators.maxLength(200)]],
-      codePostal: [{ value: this.etab.codePostal, disabled: !this.canEdit() }, [Validators.required, Validators.maxLength(10)]],
+      codePostal: [{ value: this.etab.codePostal, disabled: this.isFieldDisabled() }, [Validators.required, Validators.maxLength(10)]],
       batimentResidence: [this.etab.batimentResidence, [Validators.maxLength(200)]],
       commune: [this.etab.commune, [Validators.required, Validators.maxLength(200)]],
       libCedex: [this.etab.libCedex, [Validators.maxLength(20)]],
-      idPays: [{value: this.etab.pays ? this.etab.pays.id : null, disabled: !this.canEdit() }, [Validators.required]],
+      idPays: [{ value: this.etab.pays?.id ?? null, disabled: this.isFieldDisabled() }, [Validators.required]],
       mail: [this.etab.mail, [Validators.pattern(REGEX.EMAIL), Validators.maxLength(255)]],
-      telephone: [this.etab.telephone, [Validators.required,Validators.pattern(/^(?:(?:\+|00)\d{1,4}[-.\s]?|0)\d{1,4}([-.\s]?\d{1,4})*$/), Validators.maxLength(50)]],
+      telephone: [this.etab.telephone, [Validators.required, Validators.pattern(/^(?:(?:\+|00)\d{1,4}[-.\s]?|0)\d{1,4}([-.\s]?\d{1,4})*$/), Validators.maxLength(50)]],
       siteWeb: [this.etab.siteWeb, [Validators.maxLength(200), Validators.pattern('^https?://(\\w([\\w\\-]{0,61}\\w)?\\.)+[a-zA-Z]{2,6}([/]{1}.*)?$')]],
       fax: [this.etab.fax, [Validators.maxLength(20)]],
-      numeroRNE: [this.etab.numeroRNE, [Validators.maxLength(8),  Validators.pattern('[0-9]{7}[a-zA-Z]')]],
+      numeroRNE: [this.etab.numeroRNE, [Validators.maxLength(8), Validators.pattern('[0-9]{7}[a-zA-Z]')]],
     });
 
     this.form.get('idTypeStructure')?.disable();
@@ -601,4 +603,13 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   canEdit(){
     return !this.authService.isEtudiant() && this.etab.temSiren
   }
+
+  canCreate(): boolean {
+    return this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.CREATION]});
+  }
+
+  isFieldDisabled(): boolean {
+      return !!this.etab?.id ? !this.canEdit() : !this.canCreate();
+  }
+
 }

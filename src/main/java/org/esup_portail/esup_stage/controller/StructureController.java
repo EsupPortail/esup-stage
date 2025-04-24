@@ -272,35 +272,47 @@ public class StructureController {
     @PostMapping("/getOrCreate")
     @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
     public Structure getOrCreate(@Valid @RequestBody Structure structureBody) {
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
         Structure structure;
-        // Contrôle pour les établissements sans SIRET (ONG)
-        if (structureBody.getNumeroSiret().isEmpty()) {
-            structure = structureJpaRepository.findByRaisonSociale(structureBody.getRaisonSociale());
-            if (structure != null) {
-                return structure;
-            }
-            throw new AppException(HttpStatus.BAD_REQUEST,"Le numero de Siret est manquant");
-        }
-        // Gestion du cas où le SIRET est déjà utilisé
-        structure = structureJpaRepository.findBySiret(structureBody.getNumeroSiret());
-        if (structure != null) {
-            // Si la structure existe mais est désactivée, on la réactive
-            if (!structure.getTemEnServStructure()) {
-                structure.setTemEnServStructure(true);
-                return structureService.save(null,structure);
+
+        boolean hasSiret = structureBody.getNumeroSiret() != null && !structureBody.getNumeroSiret().isEmpty();
+
+        if (hasSiret) {
+            // Cas structure avec SIRET
+            structure = structureJpaRepository.findBySiret(structureBody.getNumeroSiret());
+
+            if (structure != null && structure.getTemEnServStructure()) {
+                // SIRET déjà utilisé par une structure active
+                throw new AppException(HttpStatus.CONFLICT, "Le numéro de SIRET est déjà utilisé par la structure " + structure.getRaisonSociale());
             }
 
+            // Sinon : SIRET non trouvé ou structure désactivée → on autorise la création
+        } else {
+            // Cas structure sans SIRET (ONG, asso, international)
+            structure = structureJpaRepository.findByRaisonSociale(structureBody.getRaisonSociale());
+            if (structure != null) {
+                // Si une structure sans SIRET et avec même nom existe, on la retourne
+                return structure;
+            }
+
+            // Si pas de raison sociale fournie : erreur
+            if (structureBody.getRaisonSociale() == null || structureBody.getRaisonSociale().isEmpty()) {
+                throw new AppException(HttpStatus.BAD_REQUEST, "La raison sociale est obligatoire si le SIRET est vide");
+            }
         }
-        Utilisateur utilisateur = ServiceContext.getUtilisateur();
+
+        // Cas création d'une nouvelle structure
         if (!UtilisateurHelper.isRole(utilisateur, Role.ETU) || appConfigService.getConfigGenerale().isAutoriserValidationAutoOrgaAccCreaEtu()) {
+            Date now = new Date();
             structureBody.setLoginCreation(utilisateur.getLogin());
-            structureBody.setDateValidation(new Date());
             structureBody.setLoginValidation(utilisateur.getLogin());
+            structureBody.setDateValidation(now);
             structureBody.setEstValidee(true);
-            structureBody.setDateValidation(new Date());
         }
-        return structureService.save(null,structureBody);
+
+        return structureService.save(null, structureBody);
     }
+
 
     @DeleteMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.SUPPRESSION})
