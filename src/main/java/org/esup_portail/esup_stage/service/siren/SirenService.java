@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.esup_portail.esup_stage.config.properties.SirenProperties;
 import org.esup_portail.esup_stage.model.Structure;
+import org.esup_portail.esup_stage.repository.StructureJpaRepository;
 import org.esup_portail.esup_stage.service.siren.model.SirenResponse;
 import org.esup_portail.esup_stage.service.siren.utils.SirenMapper;
 import org.slf4j.Logger;
@@ -31,6 +32,8 @@ public class SirenService {
 
     @Autowired
     private SirenProperties sirenProperties;
+    @Autowired
+    private StructureJpaRepository structureJpaRepository;
 
     public SirenService() {
         this.restTemplate = new RestTemplate();
@@ -62,7 +65,7 @@ public class SirenService {
     }
 
     public List<Structure> getEtablissementFiltered(String filters) {
-        String baseUrl = sirenProperties.getUrl();
+        String baseUrl = sirenProperties.getUrl() + "/siret";
         String query = buildQueryFromFilters(filters);
         String url = baseUrl + "?q=" + query;
 
@@ -143,6 +146,27 @@ public class SirenService {
         } catch (Exception e) {
             logger.error("Erreur lors de la récupération de tous les établissements", e);
             return new ArrayList<>();
+        }
+    }
+
+    public void update(Structure structure) {
+        String url = sirenProperties.getUrl() + "/siret/" + structure.getNumeroSiret();
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-INSEE-Api-Key-Integration", sirenProperties.getToken());
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        try {
+            ResponseEntity<SirenResponse> response = restTemplate.exchange(
+                    url, HttpMethod.GET, entity, SirenResponse.class
+            );
+            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                structure = sirenMapper.updateStructure(response.getBody(), structure);
+                structureJpaRepository.save(structure);
+            } else {
+                logger.warn("Erreur lors de la mise à jour de l'établissement {} avec l'id {} : {}", structure.getRaisonSociale(),structure.getId(), response.getStatusCode());
+            }
+        } catch (Exception e) {
+            logger.error("Erreur lors de la mise à jour de l'établissement {}, id : {}", structure.getRaisonSociale(),structure.getId(), e);
         }
     }
 }

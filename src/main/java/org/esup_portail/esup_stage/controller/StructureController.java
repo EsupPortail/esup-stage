@@ -238,6 +238,12 @@ public class StructureController {
     @PostMapping
     @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.CREATION})
     public Structure create(@Valid @RequestBody StructureFormDto structureFormDto) {
+        if (structureFormDto.getNumeroSiret() != null && !structureFormDto.getNumeroSiret().isEmpty()) {
+            Structure existingStructure = structureJpaRepository.findBySiret(structureFormDto.getNumeroSiret());
+            if (existingStructure != null && existingStructure.getTemEnServStructure()) {
+                throw new AppException(HttpStatus.CONFLICT, "Le numéro de SIRET est déjà utilisé par une structure active : " + existingStructure.getRaisonSociale());
+            }
+        }
         Structure structure = new Structure();
         setStructureData(structure, structureFormDto);
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
@@ -274,6 +280,15 @@ public class StructureController {
     public Structure getOrCreate(@Valid @RequestBody Structure structureBody) {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
         Structure structure;
+        if(structureBody.getId() != null) {
+            structure = structureJpaRepository.findById(structureBody.getId()).orElse(null);
+            if (structure != null && structure.getTemEnServStructure()) {
+                if(structure.isTemSiren()){
+                    sirenService.update(structure);
+                }
+                return structure;
+            }
+        }
 
         boolean hasSiret = structureBody.getNumeroSiret() != null && !structureBody.getNumeroSiret().isEmpty();
 

@@ -157,4 +157,39 @@ public class SirenMapper {
         // Retourne l'objet TypeStructure au lieu de l'ID
         return typeStructureJpaRepository.findById(typeStructureId);
     }
+
+    public Structure updateStructure(SirenResponse sirenResponse, Structure structure) {
+        if (sirenResponse == null || structure == null) {
+            throw new IllegalArgumentException("Les paramètres sirenResponse et structure ne doivent pas être null");
+        }
+
+        SirenResponse.EtablissementSiren etablissement = sirenResponse.getEtablissement();
+        if (etablissement == null) {
+            throw new IllegalArgumentException("Aucun établissement trouvé dans la réponse Siren");
+        }
+
+        structure.setRaisonSociale(etablissement.getUniteLegale().getDenominationUniteLegale());
+
+        if (etablissement.getAdresse() != null) {
+            structure.setVoie(etablissement.getAdresse().getNumeroVoie() + " " + etablissement.getAdresse().getTypeVoie() + " " + etablissement.getAdresse().getVoie());
+            structure.setCommune(etablissement.getAdresse().getCommune());
+            structure.setCodePostal(etablissement.getAdresse().getCodePostal());
+            structure.setCodeCommune(etablissement.getAdresse().getCodeCommune());
+        }
+
+        if (etablissement.getUniteLegale().getNaf_n5() != null) {
+            structure.setNafN5(nafN5JpaRepository.findByCode(etablissement.getUniteLegale().getNaf_n5()));
+            if (structure.getNafN5() != null) {
+                structure.setActivitePrincipale(structure.getNafN5().getLibelle());
+            }
+        }
+
+        if (etablissement.getUniteLegale().getStatutJuridique() != null) {
+            String codeJuridique = etablissement.getUniteLegale().getStatutJuridique();
+            structure.setStatutJuridique(statutJuridiqueJpaRepository.findByCode(codeJuridique));
+            structure.setTypeStructure(determinerTypeStructure(codeJuridique));
+        }
+
+        return structure;
+    }
 }

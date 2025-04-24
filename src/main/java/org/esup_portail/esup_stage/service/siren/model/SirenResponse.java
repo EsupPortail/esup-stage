@@ -13,6 +13,9 @@ public class SirenResponse {
     @JsonProperty("etablissements")
     private List<EtablissementSiren> etablissements;
 
+    @JsonProperty("etablissement")
+    private EtablissementSiren etablissement;
+
     @JsonIgnoreProperties(ignoreUnknown = true)
     @Data
     public static class EtablissementSiren {

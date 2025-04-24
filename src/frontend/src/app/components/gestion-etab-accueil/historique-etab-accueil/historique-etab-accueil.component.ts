@@ -93,8 +93,14 @@ export class HistoriqueEtabAccueilComponent implements OnInit {
     const differences: JsonDifference[] = [];
 
     // Parcourt toutes les clés de l'objet
-    Object.keys({...prev, ...curr}).forEach(key => {
+    Object.keys({ ...prev, ...curr }).forEach(key => {
       const fullPath = path ? `${path}.${key}` : key;
+
+      // Ignore la clé "dateModif"
+      if (fullPath === 'dateModif') {
+        return;
+      }
+
       const prevValue = prev[key];
       const currValue = curr[key];
 

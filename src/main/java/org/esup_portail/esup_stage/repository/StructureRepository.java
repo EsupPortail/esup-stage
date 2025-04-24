@@ -57,7 +57,7 @@ public class StructureRepository extends PaginationRepository<Structure> {
     }
 
     public boolean existsSiret(Structure structure, String siret) {
-        String queryString = "SELECT id FROM Structure WHERE LOWER(numeroSiret) = LOWER(:siret)";
+        String queryString = "SELECT id FROM Structure WHERE LOWER(numeroSiret) = LOWER(:siret) AND temEnServStructure = true";
         TypedQuery<Integer> query = em.createQuery(queryString, Integer.class);
         query.setParameter("siret", siret);
         List<Integer> results = query.getResultList();
