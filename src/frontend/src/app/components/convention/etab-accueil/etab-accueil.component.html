@@ -114,7 +114,7 @@
           </div>
         </div>
       </div>
-      <div *ngIf="modif && canEdit()">
+      <div *ngIf="(modif && canEdit()) || (modif && canCreate())">
         <app-etab-accueil-form [etab]="etab" (submitted)="choose($event)" (canceled)="modif = false"></app-etab-accueil-form>
       </div>
     </div>

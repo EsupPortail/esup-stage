@@ -253,9 +253,9 @@ public class StructureController {
             structure.setLoginValidation(utilisateur.getLogin());
             structure.setEstValidee(true);
             structure.setDateValidation(new Date());
-            structure.setTemEnServStructure(true);
-            structure.setTemSiren(false);
         }
+        structure.setTemEnServStructure(true);
+        structure.setTemSiren(false);
         return structureService.save(null,structure);
     }
 
@@ -326,7 +326,8 @@ public class StructureController {
             structureBody.setDateValidation(now);
             structureBody.setEstValidee(true);
         }
-
+        structureBody.setTemEnServStructure(true);
+        structureBody.setTemSiren(true);
         return structureService.save(null, structureBody);
     }
 
