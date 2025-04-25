@@ -260,5 +260,13 @@ mat-progress-bar .mat-progress-buffer-bar {
   font-size: 0.9rem;
 }
 
+mat-form-field {
+  display: flex;
+
+  .mat-mdc-form-field-error{
+    display: flex;
+  }
+}
+
 
 
