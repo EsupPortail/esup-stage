@@ -197,6 +197,13 @@ public class CentreGestionController {
         if (centreGestion.getConsigne() != null) {
             centreGestion.getConsigne().setCentreGestion(centreGestion);
         }
+        //conserve les criteregestion sélectionnés lors de la mise à jour
+        CentreGestion centreGestionActuel = centreGestionJpaRepository.findById(centreGestion.getId());
+        if(centreGestionActuel != null && centreGestionActuel.getCriteres() != null) {
+            if(centreGestion.getCriteres().isEmpty()) {
+                centreGestion.setCriteres(centreGestionActuel.getCriteres());
+            }
+        }
         return centreGestionJpaRepository.saveAndFlush(centreGestion);
     }
 
@@ -208,7 +215,6 @@ public class CentreGestionController {
         if (centreGestion.getConsigne() != null) {
             centreGestion.getConsigne().setCentreGestion(centreGestion);
         }
-
         return centreGestionJpaRepository.saveAndFlush(centreGestion);
     }
 

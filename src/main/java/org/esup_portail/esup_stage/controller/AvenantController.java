@@ -29,6 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @ApiController
 @RequestMapping("/avenant")
@@ -299,6 +300,12 @@ public class AvenantController {
     @PostMapping("/signature-electronique")
     @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.VALIDATION})
     public int envoiSignatureElectroniqueMultiple(@RequestBody IdsListDto idsListDto) {
+        idsListDto.getIds().forEach(id->{
+            Avenant avenant = avenantJpaRepository.findById(id).orElse(null);
+            assert avenant != null;
+            avenant.setLoginEnvoiSignature(Objects.requireNonNull(ServiceContext.getUtilisateur()).getLogin());
+            avenantJpaRepository.save(avenant);
+        });
         return signatureService.upload(idsListDto, true);
     }
 

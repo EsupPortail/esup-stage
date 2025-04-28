@@ -101,7 +101,13 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
         });
       }
 
-      if (this.loadWithoutFilters || (filters && Object.keys(filters).length >= 2)) {
+      const nonPermanentFiltersCount = Object.entries(filters)
+        .filter(([key, val]) => {
+          const f = val as any;
+          return !f.permanent && f.value !== undefined && f.value !== null && f.value !== '';
+        }).length;
+
+      if (this.loadWithoutFilters || nonPermanentFiltersCount > 0) {
         this.filterValuesToSend = filters;
         this.getPaginated();
       }

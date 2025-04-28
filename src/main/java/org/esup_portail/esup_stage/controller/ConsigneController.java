@@ -52,11 +52,7 @@ public class ConsigneController {
     @GetMapping("/centres/{idCentreGestion}")
     @Secure
     public Consigne getByCentreGestion(@PathVariable("idCentreGestion") int idCentreGestion) {
-        Consigne consigne = consigneJpaRepository.findByIdCentreGestion(idCentreGestion);
-        if (consigne == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Consigne non trouvée");
-        }
-        return consigne;
+        return consigneJpaRepository.findByIdCentreGestion(idCentreGestion);
     }
 
     @PostMapping

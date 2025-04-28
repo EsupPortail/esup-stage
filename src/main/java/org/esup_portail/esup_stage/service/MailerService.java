@@ -99,7 +99,7 @@ public class MailerService {
         boolean disableDelivery = appliProperties.getMailer().isDisableDelivery();
         if (!disableDelivery) {
             String deliveryAddress = appliProperties.getMailer().getDeliveryAddress();
-            if (!forceTo && deliveryAddress != null && !deliveryAddress.isEmpty()) {
+            if (!forceTo && deliveryAddress != null && !deliveryAddress.isEmpty() && !deliveryAddress.equals("null")) {
                 to = deliveryAddress;
                 logger.info("Mail redirigé vers : " + to);
             }

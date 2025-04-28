@@ -88,9 +88,13 @@ public class SignatureService {
     }
 
     public MetadataDto getPublicMetadata(Convention convention, Integer idAvenant) {
+        Avenant avenant = null;
+        if (idAvenant != null) {
+            avenant = avenantJpaRepository.findById(idAvenant).orElse(null);
+        }
         MetadataDto metadata = new MetadataDto();
         metadata.setTitle("Convention_" + convention.getId() + "_" + convention.getEtudiant().getNom() + "_" + convention.getEtudiant().getPrenom());
-        if (idAvenant != null) {
+        if (avenant != null) {
             metadata.setTitle("Avenant_" + idAvenant + "_" + convention.getEtudiant().getNom() + "_" + convention.getEtudiant().getPrenom());
         }
         metadata.setCompanyname(convention.getNomEtabRef());
@@ -100,7 +104,13 @@ public class SignatureService {
         List<MetadataObservateurDto> observateurs = new ArrayList<>();
 
         // Ajoute la personne ayant envoyé la convention en signature en tant qu'observateur du parapheur
-        LdapUser ldapUser = ldapService.searchByLogin(convention.getLoginEnvoiSignature());
+        LdapUser ldapUser;
+        if (avenant != null) {
+            ldapUser = ldapService.searchByLogin(avenant.getLoginEnvoiSignature());
+
+        }else{
+            ldapUser = ldapService.searchByLogin(convention.getLoginEnvoiSignature());
+        }
         if (ldapUser != null && ldapUser.getMail() != null) {
             observateurs.add(new MetadataObservateurDto(ldapUser.getMail()));
         }

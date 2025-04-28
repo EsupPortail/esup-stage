@@ -11,6 +11,8 @@
         <div class="col-sm-9">{{convention.documentId ? 'Envoyé' : ''}}</div>
         <div class="col-sm-3 font-weight-bold">Date d'actualisation</div>
         <div class="col-sm-9">{{convention.dateActualisationSignature|date:'dd/MM/YYYY HH:mm:ss'}}</div>
+        <div class="col-sm-3 font-weight-bold">Envoyé par</div>
+        <div class="col-sm-9">{{this.NomPrenomEnvoiSignature}}</div>
         <ng-container *ngIf="convention.allSignedDateSetted">
           <div class="col-sm-3 font-weight-bold">Document signé</div>
           <div class="col-sm-9"><a href (click)="downloadSignedDoc($event, convention)">Télécharger</a></div>
