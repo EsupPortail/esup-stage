@@ -5,9 +5,9 @@
     </mat-expansion-panel-header>
 
     <app-table [service]="serviceService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters"
-               matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'"
+               matSort [matSortActive]="sortColumn" [sortOrder]="sortDirection" [matSortDirection]="sortDirection"
                (matSortChange)="appTable ? appTable.sorting($event) : null" [actionButton]="canCreate() ? createButton : undefined"
-               [selectedRow]="service"
+               [selectedRow]="service" [pagination]="true"
                [noResultText]="'Aucun service trouvé'">
       <ng-container matColumnDef="nom">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Nom</th>
