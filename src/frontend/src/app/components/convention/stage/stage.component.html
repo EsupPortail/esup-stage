@@ -137,31 +137,37 @@
           </div>
           <div class="col-md-12 mb-3" *ngIf="periodesCalculHeuresStage.length > 0">
             <div class="text-title">Périodes de travail actuelles :</div>
-            <table class="table table-striped">
-              <thead>
-              <tr>
-                <th>Date de début</th>
-                <th>Date de fin</th>
-                <th>Heures par jour</th>
-                <th>Actions</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr *ngFor="let periode of periodesCalculHeuresStage; let i = index">
-                <td>{{periode.dateDebut | date:'dd/MM/yyyy'}}</td>
-                <td>{{periode.dateFin | date:'dd/MM/yyyy'}}</td>
-                <td>{{periode.nbHeuresJournalieres}}</td>
-                <td>
-                  <button mat-icon-button matTooltip="Éditer" (click)="openCalendar()" color="primary" *ngIf="modifiable">
-                    <i class="fa fa-pen"></i>
-                  </button>
-                  <button class="btn btn-sm btn-danger" (click)="deletePeriodeStage(i)" *ngIf="modifiable">
-                    <i class="fa fa-trash-alt"></i>
-                  </button>
-                </td>
-              </tr>
-              </tbody>
-            </table>
+            <div class="scrollable-content">
+              <div class="detail-section">
+                <table class="table">
+                  <thead>
+                  <tr class="header-row">
+                    <th class="table-header">Date de début</th>
+                    <th class="table-header">Date de fin</th>
+                    <th class="table-header">Heures par jour</th>
+                    <th class="table-header">Actions</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr *ngFor="let periode of periodesCalculHeuresStage; let i = index" class="detail-row">
+                    <td class="detail-value">{{periode.dateDebut | date:'dd/MM/yyyy'}}</td>
+                    <td class="detail-value">{{periode.dateFin | date:'dd/MM/yyyy'}}</td>
+                    <td class="detail-value">{{periode.nbHeuresJournalieres}}</td>
+                    <td class="detail-value">
+                      <div class="actions-container">
+                        <button mat-icon-button matTooltip="Éditer" (click)="openCalendar()" color="primary" *ngIf="modifiable">
+                          <i class="fa fa-pen"></i>
+                        </button>
+                        <button mat-icon-button matTooltip="Supprimer" (click)="deletePeriodeStage(i)" class="delete-button" *ngIf="modifiable">
+                          <i class="fa fa-trash-alt"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
         <div class="row" style="align-items: baseline">

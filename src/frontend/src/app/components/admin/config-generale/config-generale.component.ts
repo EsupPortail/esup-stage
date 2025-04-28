@@ -69,6 +69,7 @@ export class ConfigGeneraleComponent implements OnInit {
       validationPedagogiqueLibelle: [null, [Validators.required]],
       validationAdministrativeLibelle: [null, [Validators.required]],
       codeCesure: [null],
+      autoriserEtudiantACreerEntreprise: [null, [Validators.required]],
     });
 
     this.formTheme = this.fb.group({

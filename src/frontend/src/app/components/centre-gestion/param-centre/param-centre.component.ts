@@ -217,7 +217,6 @@ export class ParamCentreComponent implements OnInit {
     this.centreGestion.qualiteViseur = null;
 
     this.form.markAsDirty();
-    console.log()
     this.update.emit(this.form.getRawValue());
   }
 
@@ -233,7 +232,6 @@ export class ParamCentreComponent implements OnInit {
     this.centreGestion.qualiteViseur = null;
 
     this.form.markAsDirty();
-    console.log(this.form.getRawValue());
     this.update.emit(this.form.getRawValue());
   }
 

@@ -1,0 +1,69 @@
+<div class="modal-overlay">
+  <div class="modal-container">
+    <!-- En-tête fixe -->
+    <div class="header-banner">
+      <h1>Détails des modifications</h1>
+    </div>
+
+    <!-- Contenu scrollable -->
+    <div class="scrollable-content">
+      <div class="detail-section">
+        <!-- Informations générales -->
+        <div class="detail-row">
+          <div class="detail-label">Date:</div>
+          <div class="detail-value">{{data.operationDate | date:'dd/MM/yyyy HH:mm:ss'}}</div>
+        </div>
+
+        <mat-divider class="mb-2 mt-2"></mat-divider>
+
+        <div class="detail-row">
+          <div class="detail-label">Utilisateur:</div>
+          <div class="detail-value">{{data.utilisateur.nom}} {{data.utilisateur.prenom}}</div>
+        </div>
+
+        <mat-divider class="mb-2 mt-2"></mat-divider>
+
+        <div class="detail-row">
+          <div class="detail-label">Type d'opération:</div>
+          <div class="detail-value">{{data.operationType}}</div>
+        </div>
+
+        <div *ngIf="data.operationType == 'MODIFICATION'">
+          <mat-divider class="section-divider"></mat-divider>
+          <h2 class="changes-title">Modifications effectuées</h2>
+          <!-- Pas de différences -->
+          <div *ngIf="differences.length === 0" class="no-changes">
+            Aucune modification détectée.
+          </div>
+
+          <!-- Liste des différences -->
+          <div *ngFor="let diff of differences" class="change-item">
+            <div class="change-header">{{diff.displayName}}</div>
+            <div class="change-content">
+              <div class="previous-value">
+                <div class="value-label">Avant:</div>
+                <div class="value-content" [ngClass]="{'deleted': diff.previousValue && !diff.currentValue}">
+                  {{formatValue(diff.previousValue)}}
+                </div>
+              </div>
+              <div class="new-value">
+                <div class="value-label">Après:</div>
+                <div class="value-content" [ngClass]="{'added': !diff.previousValue && diff.currentValue}">
+                  {{formatValue(diff.currentValue)}}
+                </div>
+              </div>
+            </div>
+            <mat-divider class="mb-3 mt-3"></mat-divider>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer fixe -->
+    <div class="modal-footer">
+      <button type="button" mat-stroked-button class="cancel-button" (click)="close()">
+        Fermer
+      </button>
+    </div>
+  </div>
+</div>

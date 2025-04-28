@@ -4,18 +4,36 @@
       Choix du service dans lequel le stage sera effectué - Établissement d'accueil : {{etab.raisonSociale}}
     </mat-expansion-panel-header>
 
-    <div class="row mt-3">
-      <mat-form-field class="col-md-12" appearance="fill" [hidden]="services.length == 0">
-        <mat-label>Sélectionnez un service :</mat-label>
-        <mat-select [(value)]="service" (selectionChange)="choose($event.value)">
-          <mat-option *ngFor="let service of services" [value]="service">{{service.nom}}</mat-option>
-        </mat-select>
-      </mat-form-field>
-      <div class="col-md-12" *ngIf="canCreate()">
-        <button mat-flat-button (click)="initCreate()" color="primary">Créer un nouveau service d'accueil</button>
-      </div>
-    </div>
-
+    <app-table [service]="serviceService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters"
+               matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'"
+               (matSortChange)="appTable ? appTable.sorting($event) : null" [actionButton]="canCreate() ? createButton : undefined"
+               [selectedRow]="service"
+               [noResultText]="'Aucun service trouvé'">
+      <ng-container matColumnDef="nom">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Nom</th>
+        <td mat-cell *matCellDef="let row">{{row.nom}}</td>
+      </ng-container>
+      <ng-container matColumnDef="voie">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Voie</th>
+        <td mat-cell *matCellDef="let row">{{row.voie}}</td>
+      </ng-container>
+      <ng-container matColumnDef="commune">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Commune</th>
+        <td mat-cell *matCellDef="let row">{{row.commune}}</td>
+      </ng-container>
+      <ng-container matColumnDef="pays">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Pays</th>
+        <td mat-cell *matCellDef="let row">{{row.pays.lib}}</td>
+      </ng-container>
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row">
+          <button mat-button mat-stroked-button (click)="choose(row)" color="primary">
+            <i class="fa fa-check"></i> Sélectionner
+          </button>
+        </td>
+      </ng-container>
+    </app-table>
   </mat-expansion-panel>
 
   <mat-expansion-panel [expanded]="service" [disabled]="!service">
@@ -49,7 +67,7 @@
           <div class="col-sm-9">{{service.telephone}}</div>
         </div>
       </div>
-      <div *ngIf="modif && canEdit()">
+      <div *ngIf="modif && (canEdit() || (isNewService && canCreate()))">
         <div class="text-title">Général</div>
         <mat-divider class="mb-2"></mat-divider>
           <div class="row">
@@ -99,7 +117,7 @@
       </div>
       <div class="row mt-3" *ngIf="canEdit() || canCreate()">
         <div class="col-6">
-          <button mat-button mat-stroked-button color="primary" *ngIf="service.id && !modif" (click)="edit()">Modifier ces informations</button>
+          <button mat-button mat-stroked-button color="primary" *ngIf="service.id && !modif && canEdit()" (click)="edit()">Modifier ces informations</button>
           <button mat-button mat-stroked-button color="warn" *ngIf="service.id && modif" (click)="cancelEdit()">{{'BOUTON_ANNULER'|contenu}}</button>
         </div>
         <div class="col-6 text-right" *ngIf="modif">

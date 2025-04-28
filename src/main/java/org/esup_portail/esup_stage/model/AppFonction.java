@@ -1,10 +1,12 @@
 package org.esup_portail.esup_stage.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 
 @Entity
 @Table(name = "AppFonction")
+@Data
 public class AppFonction {
 
     @Id
@@ -19,27 +21,4 @@ public class AppFonction {
     @Column(name = "libelleAppFonction", nullable = false, unique = true)
     private String libelle;
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public AppFonctionEnum getCode() {
-        return code;
-    }
-
-    public void setCode(AppFonctionEnum code) {
-        this.code = code;
-    }
-
-    public String getLibelle() {
-        return libelle;
-    }
-
-    public void setLibelle(String libelle) {
-        this.libelle = libelle;
-    }
 }

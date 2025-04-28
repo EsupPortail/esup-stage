@@ -1,6 +1,8 @@
 package org.esup_portail.esup_stage.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.apache.commons.validator.routines.checkdigit.LuhnCheckDigit;
@@ -18,6 +20,8 @@ import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
+import org.esup_portail.esup_stage.service.Structure.StructureService;
+import org.esup_portail.esup_stage.service.siren.SirenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -28,7 +32,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @ApiController
 @RequestMapping("/structures")
@@ -37,36 +43,60 @@ public class StructureController {
     private static final Logger logger = LogManager.getLogger(ConsigneController.class);
 
     @Autowired
-    StructureRepository structureRepository;
+    private StructureRepository structureRepository;
 
     @Autowired
-    StructureJpaRepository structureJpaRepository;
+    private StructureJpaRepository structureJpaRepository;
 
     @Autowired
-    EffectifJpaRepository effectifJpaRepository;
+    private EffectifJpaRepository effectifJpaRepository;
 
     @Autowired
-    TypeStructureJpaRepository typeStructureJpaRepository;
+    private TypeStructureJpaRepository typeStructureJpaRepository;
 
     @Autowired
-    StatutJuridiqueJpaRepository statutJuridiqueJpaRepository;
+    private StatutJuridiqueJpaRepository statutJuridiqueJpaRepository;
 
     @Autowired
-    NafN5JpaRepository nafN5JpaRepository;
+    private NafN5JpaRepository nafN5JpaRepository;
 
     @Autowired
-    PaysJpaRepository paysJpaRepository;
+    private PaysJpaRepository paysJpaRepository;
 
     @Autowired
-    AppConfigService appConfigService;
+    private AppConfigService appConfigService;
+
+    @Autowired
+    private SirenService sirenService;
+
+    @Autowired
+    private StructureService structureService;
+
+    @Autowired
+    private ConventionJpaRepository conventionJpaRepository;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @JsonView(Views.List.class)
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<Structure> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         PaginatedResponse<Structure> paginatedResponse = new PaginatedResponse<>();
-        paginatedResponse.setTotal(structureRepository.count(filters));
-        paginatedResponse.setData(structureRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
+        List<Structure> structures = structureRepository.findPaginated(page, perPage, predicate, sortOrder, filters);
+
+        if(structures.size() < 1 && !appConfigService.getConfigGenerale().isAutoriserEtudiantACreerEntreprise()){
+            List<String> existingSirets = new ArrayList<String>();
+            structures.forEach(s -> existingSirets.add(s.getNumeroSiret()));
+            List<Structure> additionalStructures = sirenService.getEtablissementFiltered(filters);
+            additionalStructures = additionalStructures.stream()
+                    .filter(s -> s.getNumeroSiret() == null || !existingSirets.contains(s.getNumeroSiret()))
+                    .toList();
+            structures.addAll(additionalStructures);
+        }
+
+        paginatedResponse.setTotal((long) structures.size());
+        paginatedResponse.setData(structures);
         return paginatedResponse;
     }
 
@@ -182,7 +212,7 @@ public class StructureController {
                     Structure existant = structureJpaRepository.findByRNE(structure.getNumeroRNE());
 
                     if (existant == null) {
-                        structureJpaRepository.save(structure);
+                        structureService.save(null,structure);
                     } else {
                         logger.info("skipped existing structure with RNE : " + existant.getNumeroRNE());
                     }
@@ -208,24 +238,111 @@ public class StructureController {
     @PostMapping
     @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.CREATION})
     public Structure create(@Valid @RequestBody StructureFormDto structureFormDto) {
+        if (structureFormDto.getNumeroSiret() != null && !structureFormDto.getNumeroSiret().isEmpty()) {
+            Structure existingStructure = structureJpaRepository.findBySiret(structureFormDto.getNumeroSiret());
+            if (existingStructure != null && existingStructure.getTemEnServStructure()) {
+                throw new AppException(HttpStatus.CONFLICT, "Le numéro de SIRET est déjà utilisé par une structure active : " + existingStructure.getRaisonSociale());
+            }
+        }
         Structure structure = new Structure();
         setStructureData(structure, structureFormDto);
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
         if (!UtilisateurHelper.isRole(utilisateur, Role.ETU) || appConfigService.getConfigGenerale().isAutoriserValidationAutoOrgaAccCreaEtu()) {
+            structure.setLoginCreation(utilisateur.getLogin());
+            structure.setDateValidation(new Date());
             structure.setLoginValidation(utilisateur.getLogin());
             structure.setEstValidee(true);
             structure.setDateValidation(new Date());
         }
-        return structureJpaRepository.saveAndFlush(structure);
+        structure.setTemEnServStructure(true);
+        structure.setTemSiren(false);
+        return structureService.save(null,structure);
     }
 
     @PutMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.MODIFICATION})
     public Structure update(@PathVariable("id") int id, @Valid @RequestBody StructureFormDto structureFormDto) {
         Structure structure = structureJpaRepository.findById(id);
+        if (structure == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Structure non trouvée");
+        }
+        String oldStructure;
+        try {
+            oldStructure = objectMapper.writeValueAsString(structure);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Erreur lors de la sérialisation de la structure d'origine", e);
+        }
         setStructureData(structure, structureFormDto);
-        structure = structureJpaRepository.saveAndFlush(structure);
+        structure = structureService.save(oldStructure,structure);
         return structure;
+    }
+
+    @PostMapping("/getOrCreate")
+    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
+    public Structure getOrCreate(@Valid @RequestBody Structure structureBody) {
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
+        Structure structure;
+        if(structureBody.getId() != null) {
+            structure = structureJpaRepository.findById(structureBody.getId()).orElse(null);
+            if (structure != null && structure.getTemEnServStructure()) {
+                if(structure.isTemSiren()){
+                    sirenService.update(structure);
+                }
+                return structure;
+            }
+        }
+
+        boolean hasSiret = structureBody.getNumeroSiret() != null && !structureBody.getNumeroSiret().isEmpty();
+
+        if (hasSiret) {
+            // Cas structure avec SIRET
+            structure = structureJpaRepository.findBySiret(structureBody.getNumeroSiret());
+
+            if (structure != null && structure.getTemEnServStructure()) {
+                // SIRET déjà utilisé par une structure active
+                throw new AppException(HttpStatus.CONFLICT, "Le numéro de SIRET est déjà utilisé par la structure " + structure.getRaisonSociale());
+            }
+
+            // Sinon : SIRET non trouvé ou structure désactivée → on autorise la création
+        } else {
+            // Cas structure sans SIRET (ONG, asso, international)
+            structure = structureJpaRepository.findByRaisonSociale(structureBody.getRaisonSociale());
+            if (structure != null) {
+                // Si une structure sans SIRET et avec même nom existe, on la retourne
+                return structure;
+            }
+
+            // Si pas de raison sociale fournie : erreur
+            if (structureBody.getRaisonSociale() == null || structureBody.getRaisonSociale().isEmpty()) {
+                throw new AppException(HttpStatus.BAD_REQUEST, "La raison sociale est obligatoire si le SIRET est vide");
+            }
+        }
+
+        // Cas création d'une nouvelle structure
+        if (!UtilisateurHelper.isRole(utilisateur, Role.ETU) || appConfigService.getConfigGenerale().isAutoriserValidationAutoOrgaAccCreaEtu()) {
+            Date now = new Date();
+            structureBody.setLoginCreation(utilisateur.getLogin());
+            structureBody.setLoginValidation(utilisateur.getLogin());
+            structureBody.setDateValidation(now);
+            structureBody.setEstValidee(true);
+        }
+        structureBody.setTemEnServStructure(true);
+        structureBody.setTemSiren(true);
+        return structureService.save(null, structureBody);
+    }
+
+
+    @DeleteMapping("/{id}")
+    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.SUPPRESSION})
+    public void delete(@PathVariable("id") int id) {
+        Structure structure = structureJpaRepository.findById(id);
+        if (structure == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Structure non trouvée");
+        }
+        if(!conventionJpaRepository.findByStructureId(structure.getId()).isEmpty()) {
+            throw new AppException(HttpStatus.FORBIDDEN, "La structure est relier à une convention");
+        }
+        structureService.delete(structure);
     }
 
     private void check(StructureFormDto structureFormDto) {
@@ -239,9 +356,9 @@ public class StructureController {
             throw new AppException(HttpStatus.NOT_FOUND, "Structure non trouvée");
         }
         // Contrôle SIRET non déjà existant
-        if (structureFormDto.getNumeroSiret() != null && structureRepository.existsSiret(structure, structureFormDto.getNumeroSiret())) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Le numéro SIRET existe déjà");
-        }
+//        if (structureFormDto.getNumeroSiret() != null && structureRepository.existsSiret(structure, structureFormDto.getNumeroSiret())) {
+//            throw new AppException(HttpStatus.BAD_REQUEST, "Le numéro SIRET existe déjà");
+//        }
         // Contrôle de la validité du SIRET
         // - cas de La Poste (SIREN commençant par 356000000) : la somme des 14 chiffres du SIRET doit être un multiple de 5
         // - cas classique : algorithme de Luhn
@@ -308,4 +425,5 @@ public class StructureController {
         structure.setFax(structureFormDto.getFax());
         structure.setNumeroRNE(structureFormDto.getNumeroRNE());
     }
+
 }

@@ -2,10 +2,12 @@ package org.esup_portail.esup_stage.model;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
+import lombok.Data;
 import org.esup_portail.esup_stage.dto.view.Views;
 
 @Entity
 @Table(name = "StatutJuridique")
+@Data
 public class StatutJuridique implements Exportable {
 
     @JsonView(Views.List.class)
@@ -27,45 +29,8 @@ public class StatutJuridique implements Exportable {
 
     private Boolean modifiable;
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getLibelle() {
-        return libelle;
-    }
-
-    public void setLibelle(String libelle) {
-        this.libelle = libelle;
-    }
-
-    public String getTemEnServ() {
-        return temEnServ;
-    }
-
-    public void setTemEnServ(String temEnServ) {
-        this.temEnServ = temEnServ;
-    }
-
-    public TypeStructure getTypeStructure() {
-        return typeStructure;
-    }
-
-    public void setTypeStructure(TypeStructure typeStructure) {
-        this.typeStructure = typeStructure;
-    }
-
-    public Boolean getModifiable() {
-        return modifiable;
-    }
-
-    public void setModifiable(Boolean modifiable) {
-        this.modifiable = modifiable;
-    }
+    @Column
+    private String code;
 
     @Override
     public String getExportValue(String key) {

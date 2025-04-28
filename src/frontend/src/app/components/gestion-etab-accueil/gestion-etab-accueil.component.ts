@@ -17,6 +17,8 @@ import { Droit } from "../../constants/droit";
 import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
 import { ServiceAccueilFormComponent } from './service-accueil-form/service-accueil-form.component';
 import { ContactFormComponent } from './contact-form/contact-form.component';
+import {HistoriqueEtabAccueilComponent} from "./historique-etab-accueil/historique-etab-accueil.component";
+import {CalendrierComponent} from "../convention/stage/calendrier/calendrier.component";
 
 @Component({
   selector: 'app-gestion-etab-accueil',
@@ -29,6 +31,7 @@ export class GestionEtabAccueilComponent implements OnInit {
   sortColumn = 'raisonSociale';
   serviceTableColumns = ['nom', 'voie', 'codePostal','batimentResidence', 'commune', 'pays', 'telephone',  'actions'];
   contactTableColumns = ['centreGestionnaire', 'civilite', 'nom','prenom', 'telephone', 'mail', 'fax',  'actions'];
+  historiqueTableColumns = ['date', 'utilisateur', 'type', 'action'];
   filters: any[] = [];
   countries: any[] = [];
   civilites: any[] = [];
@@ -41,6 +44,7 @@ export class GestionEtabAccueilComponent implements OnInit {
     typeStructure: { title: 'Type d\'organisme' },
     statutJuridique: { title: 'Forme juridique' },
   };
+  historique: any[] = [];
 
   formTabIndex = 1;
   data: any = {};
@@ -66,6 +70,7 @@ export class GestionEtabAccueilComponent implements OnInit {
     private messageService: MessageService,
     private authService: AuthService,
     public matDialog: MatDialog,
+
   ) { }
 
   ngOnInit(): void {
@@ -116,11 +121,17 @@ export class GestionEtabAccueilComponent implements OnInit {
   }
 
   canCreate(): boolean {
-    return this.authService.checkRights({fonction: AppFonction.NOMENCLATURE, droits: [Droit.CREATION]});
+    return this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.CREATION]});
+  }
+
+  create(row: any): void {
+    this.structureService.getOrCreate(row).subscribe((response: any) => {
+      this.appTable?.update();
+    });
   }
 
   canEdit(): boolean {
-    const hasRight = this.authService.checkRights({fonction: AppFonction.NOMENCLATURE, droits: [Droit.MODIFICATION]});
+    const hasRight = this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.MODIFICATION]});
     return !this.authService.isEtudiant() && hasRight;
   }
 
@@ -132,6 +143,22 @@ export class GestionEtabAccueilComponent implements OnInit {
       this.data = response;
       this.refreshServices();
     });
+  }
+
+  canDelete() : boolean{
+    const hasRight = this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.SUPPRESSION]});
+    return !this.authService.isEtudiant() && hasRight;
+  }
+
+  delete(row: any): void{
+    this.structureService.delete(row.id).subscribe((response: any) => {
+      this.messageService.setSuccess('Etablissement supprimé');
+      this.appTable?.update();
+    });
+  }
+
+  isFromSiren(row: any): boolean {
+    return row.loginCreation == null && row.dateCreation == null && !row.estValidee && row.temSiren ;
   }
 
   refreshServices(): void{
@@ -233,4 +260,62 @@ export class GestionEtabAccueilComponent implements OnInit {
     });
   }
 
+  loadHistorique(): void {
+    if (this.data && this.data.id) {
+      this.structureService.getHistorique(this.data.id).subscribe((response: any) => {
+        this.historique = response.map((item: any) => {
+          // Vérifier si operationDate est défini
+          if (item.operationDate) {
+            // Si c'est un tableau, convertir en Date
+            if (Array.isArray(item.operationDate)) {
+              item.operationDate = new Date(
+                item.operationDate[0],
+                item.operationDate[1] - 1,
+                item.operationDate[2],
+                item.operationDate[3] || 0,
+                item.operationDate[4] || 0,
+                item.operationDate[5] || 0
+              );
+            }
+            else if (typeof item.operationDate === 'string') {
+              item.operationDate = new Date(item.operationDate);
+            }
+          }
+
+          // Le reste du traitement...
+          if (item.operationType === 'MODIFICATION') {
+            if (typeof item.etatPrecedent === 'object') {
+              item.etatPrecedent = JSON.stringify(item.etatPrecedent);
+            }
+            if (typeof item.etatActuel === 'object') {
+              item.etatActuel = JSON.stringify(item.etatActuel);
+            }
+          }
+
+          return item;
+        });
+
+        // Trier l'historique
+        this.historique.sort((a, b) => {
+          return new Date(b.operationDate).getTime() - new Date(a.operationDate).getTime();
+        });
+      });
+    }
+  }
+
+  openHistoriqueDetails(row: any): void {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.width = '1000px';
+    dialogConfig.data = row;
+
+    this.matDialog.open(HistoriqueEtabAccueilComponent, dialogConfig);
+  }
+
+  canCreateServiceOrContact(): boolean {
+    return this.authService.checkRights({fonction: AppFonction.SERVICE_CONTACT_ACC, droits: [Droit.CREATION]});
+  }
+
+  canEditServiceOrContact(): boolean {
+    return this.authService.checkRights({fonction: AppFonction.SERVICE_CONTACT_ACC, droits: [Droit.MODIFICATION]});
+  }
 }

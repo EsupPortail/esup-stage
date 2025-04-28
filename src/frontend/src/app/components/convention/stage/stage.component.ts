@@ -85,7 +85,7 @@ export class StageComponent implements OnInit {
   singleFieldUpdateLock: boolean = false;
   singleFieldUpdateQueue : any[] = [];
   updatingPeriode = false;
-  totalHours!:any;
+  initialLoading: boolean = true;
 
   @Output() validated = new EventEmitter<number>();
   @Output() updateField = new EventEmitter<any>();
@@ -198,7 +198,7 @@ export class StageComponent implements OnInit {
       modeEncadreSuivi: [this.convention.modeEncadreSuivi],
       avantagesNature: [this.convention.avantagesNature],
       travailNuitFerie: [this.convention.travailNuitFerie],
-    });
+    }, { emitEvent: false });
 
     this.form.get('periodeStageMois')!.valueChanges.subscribe(value => {
       this.dureeStage.dureeMois = value;
@@ -218,13 +218,15 @@ export class StageComponent implements OnInit {
 
     this.form.get('dureeExceptionnelle')!.valueChanges.subscribe((value) => {
       this.convention.dureeExceptionnelle = value;
-      this.calculPeriode(this.convention.nbHeuresHebdo,this.convention.dureeExceptionnelle);
+      if (!this.initialLoading) {
+        this.calculPeriode(this.convention.nbHeuresHebdo, this.convention.dureeExceptionnelle);
 
-      this.form.patchValue({
-        periodeStageMois: this.dureeStage.dureeMois,
-        periodeStageJours: this.dureeStage.dureeJours,
-        periodeStageHeures: this.dureeStage.dureeHeures
-      }, { emitEvent: false });
+        this.form.patchValue({
+          periodeStageMois: this.dureeStage.dureeMois,
+          periodeStageJours: this.dureeStage.dureeJours,
+          periodeStageHeures: this.dureeStage.dureeHeures
+        }, { emitEvent: false });
+      }
     });
 
     //Set default value for booleans
@@ -295,6 +297,10 @@ export class StageComponent implements OnInit {
       this.maxDateFinStage = new Date(new Date().getFullYear()+2, 0, 1);
     }
 
+    //le timeout permet de laisser le temps aux données d'être chargées
+    setTimeout(() => {
+      this.initialLoading = false;
+    }, 1000);
   }
 
   ngOnChanges(): void{
@@ -622,29 +628,31 @@ export class StageComponent implements OnInit {
     if (!dateString) {
       return new Date();
     }
-    
+
     let date: Date;
     if (dateString instanceof Date) {
       date = new Date(dateString.getTime());
     } else {
       date = new Date(dateString);
     }
-    
+
     // Normalize to start of day
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
   }
 
   updateHeuresTravail(): void {
+    if (this.initialLoading) return;
+
     this.updatingPeriode = true;
     setTimeout(() => {
       this.updatingPeriode = false;
     }, 2000);
-    
+
     // Check if form controls are valid
     if (!this.form.get('dateDebutStage')?.value || !this.form.get('dateFinStage')?.value) {
       return;
     }
-    
+
     if (this.form.get('horairesReguliers')!.value) {
       // For regular hours
       if (this.form.get('nbHeuresHebdo')?.valid) {
@@ -652,13 +660,13 @@ export class StageComponent implements OnInit {
         const dateFinStage = this.dateFromBackend(this.form.get('dateFinStage')!.value);
         const nbHeuresHebdo = parseFloat(this.form.get('nbHeuresHebdo')!.value);
         const nbHeuresJournalieres = nbHeuresHebdo / 5;
-        
+
         const periodes = [{
           'dateDebut': dateDebutStage,
           'dateFin': dateFinStage,
           'nbHeuresJournalieres': nbHeuresJournalieres
         }];
-        
+
         // Calculate total hours
         const totalHeures = this.calculHeuresTravails(periodes);
         this.form.get('dureeExceptionnelle')?.setValue(totalHeures);
@@ -675,21 +683,21 @@ export class StageComponent implements OnInit {
     if (!periodes || periodes.length === 0) {
       return 0;
     }
-    
+
     for (const periode of periodes) {
       if (!periode.dateDebut || !periode.dateFin || periode.nbHeuresJournalieres === undefined) {
         continue;
       }
-      
+
       // Ensure we're working with Date objects
       let startDate = new Date(periode.dateDebut);
       const endDate = new Date(periode.dateFin);
       const nbHeuresJournalieres = parseFloat(periode.nbHeuresJournalieres);
-      
+
       // Normalize dates to start of day to avoid time comparison issues
       startDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
       const normalizedEndDate = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
-      
+
       // Create an array of interruption date ranges for faster checking
       const interruptionRanges = [];
       if (this.form.get('interruptionStage')!.value && this.interruptionsStage) {
@@ -702,27 +710,27 @@ export class StageComponent implements OnInit {
           });
         }
       }
-      
+
       // Map jours fériés to normalized dates for faster checking
       const joursFeriesMap = new Set();
       for (const jourFerie of this.joursFeries) {
         joursFeriesMap.add(new Date(jourFerie.getFullYear(), jourFerie.getMonth(), jourFerie.getDate()).getTime());
       }
-      
+
       while (startDate <= normalizedEndDate) {
         let valid = true;
         const dayOfWeek = startDate.getDay();
-        
+
         // Skip weekends
         if (dayOfWeek === 6 || dayOfWeek === 0) {
           valid = false;
         }
-        
+
         // Skip holidays
         if (valid && joursFeriesMap.has(startDate.getTime())) {
           valid = false;
         }
-        
+
         // Skip interruption periods
         if (valid && this.form.get('interruptionStage')!.value) {
           for (const range of interruptionRanges) {
@@ -732,29 +740,29 @@ export class StageComponent implements OnInit {
             }
           }
         }
-        
+
         if (valid) {
           heuresTravails += nbHeuresJournalieres;
         }
-        
+
         // Move to next day
         startDate = new Date(startDate.setDate(startDate.getDate() + 1));
       }
     }
-    
+
     return Math.round(heuresTravails * 100) / 100;
   }
 
   setDureeStageFromExceptionnelle(): void {
-    if(this.convention.dureeExceptionnellePeriode != null){
+    if(this.convention.dureeExceptionnellePeriode != null) {
       const matches = this.convention.dureeExceptionnellePeriode.match(/(\d+)\smois\s(\d+)\sjour\(s\)\s(\d+)\sheure\(s\)/);
       if (matches) {
         this.dureeStage.dureeMois = parseInt(matches[1], 10);
         this.dureeStage.dureeJours = parseInt(matches[2], 10);
         this.dureeStage.dureeHeures = parseInt(matches[3], 10);
       }
-    }else{
-      this.calculPeriode(this.convention.nbHeuresHebdo,this.convention.dureeExceptionnelle)
+    } else if (this.convention.dureeExceptionnelle) {
+      this.calculPeriode(this.convention.nbHeuresHebdo, this.convention.dureeExceptionnelle);
     }
   }
 
@@ -774,29 +782,29 @@ export class StageComponent implements OnInit {
       this.dureeStage = { dureeMois: 0, dureeJours: 0, dureeHeures: 0 };
       return;
     }
-  
+
     const NB_JOUR_MOIS = 22; // 1 mois = 22 jours ouvrés
     const NB_JOUR_SEMAINE = 5; // 1 semaine = 5 jours ouvrés
-  
+
     // Parse as floats to handle decimal values
     const parsedNbHeuresHebdo = parseFloat(nbHeuresHebdo.toString());
     const parsedNbHeures = parseFloat(nbHeures.toString());
-    
+
     const nbHeuresJournalieres = parsedNbHeuresHebdo / NB_JOUR_SEMAINE; // Heures par jour ouvré
-    
+
     if (nbHeuresJournalieres === 0) {
       this.dureeStage = { dureeMois: 0, dureeJours: 0, dureeHeures: parsedNbHeures };
       return;
     }
-    
+
     const totalJours = parsedNbHeures / nbHeuresJournalieres;
-    
+
     const nbJoursEntiers = Math.floor(totalJours);
-    
+
     this.dureeStage.dureeMois = Math.floor(nbJoursEntiers / NB_JOUR_MOIS);
-    
+
     this.dureeStage.dureeJours = nbJoursEntiers % NB_JOUR_MOIS;
-    
+
     const heuresRestantes = parsedNbHeures - (nbJoursEntiers * nbHeuresJournalieres);
     this.dureeStage.dureeHeures = Math.round(heuresRestantes * 100) / 100; // Round to 2 decimal places
   }

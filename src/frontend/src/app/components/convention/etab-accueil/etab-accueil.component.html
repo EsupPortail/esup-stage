@@ -105,17 +105,20 @@
           <div class="col-sm-3 font-weight-bold">Code APE</div>
           <div class="col-sm-9">{{etab.nafN5 ? (etab.nafN5.code + ' (' + etab.nafN5.libelle + ')') : ''}}</div>
         </div>
-        <div class="row mt-3" *ngIf="canEdit()">
-          <div class="col-sm-6">
-            <button mat-button mat-stroked-button color="primary" *ngIf="etab.id && !modif" (click)="edit()">Modifier ces informations</button>
+        <div class="row mt-3">
+          <div class="col-md-3">
+            <button mat-button mat-stroked-button color="primary" *ngIf="etab.id" (click)="changeOnglet()">Changer d'établissement</button>
+          </div>
+          <div class="col-md-3">
+            <button mat-button mat-stroked-button color="primary" *ngIf="etab.id && !modif && canEdit()" (click)="edit()">Modifier ces informations</button>
           </div>
         </div>
       </div>
-      <div *ngIf="modif && canEdit()">
+      <div *ngIf="(modif && canEdit()) || (modif && canCreate())">
         <app-etab-accueil-form [etab]="etab" (submitted)="choose($event)" (canceled)="modif = false"></app-etab-accueil-form>
       </div>
     </div>
   </mat-expansion-panel>
- 
+
 
 </mat-accordion>

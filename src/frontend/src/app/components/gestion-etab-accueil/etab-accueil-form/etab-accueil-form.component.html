@@ -4,13 +4,13 @@
   <div class="row">
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Raison sociale</mat-label>
-      <input matInput formControlName="raisonSociale" required />
+      <input matInput formControlName="raisonSociale" [disabled]="isFieldDisabled()" required />
       <mat-icon matSuffix class="icon-help" matTooltip="Nom de l'organisme">help</mat-icon>
       <mat-error *ngIf="form.get('raisonSociale')"></mat-error>
     </mat-form-field>
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill" [hidden]="!isFr()">
       <mat-label>Numéro Siret</mat-label>
-      <input matInput formControlName="numeroSiret" [required]="numeroSiretRequired() && isFr()" />
+      <input matInput formControlName="numeroSiret" [disabled]="isFieldDisabled()" [required]="numeroSiretRequired() && isFr()" />
       <mat-icon matSuffix class="icon-help" matTooltip="Code INSEE à demander à votre établissement d'accueil ou consultable sur des sites de référencement d'entreprises. Correspond à l'identifiant géographique de l'établissement. (format : 14 chiffres consécutifs sans espace - ex: 12345678912345)">help</mat-icon>
       <mat-error *ngIf="form.get('numeroSiret')"></mat-error>
     </mat-form-field>
@@ -43,7 +43,7 @@
     </mat-form-field>
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Statut juridique</mat-label>
-      <mat-select formControlName="idStatutJuridique" required>
+      <mat-select formControlName="idStatutJuridique" [disabled]="isFieldDisabled()" required>
         <mat-option *ngFor="let statutJuridique of statutJuridiques" (click)="setTypeStructure(statutJuridique)" [value]="statutJuridique.id">{{statutJuridique.libelle}}</mat-option>
       </mat-select>
       <mat-error *ngIf="form.get('idStatutJuridique')"></mat-error>
@@ -60,7 +60,7 @@
       <label>Code APE</label>
       <mat-form-field appearance="fill" style="display: block">
         <mat-label>Code APE</mat-label>
-        <mat-select formControlName="codeNafN5">
+        <mat-select formControlName="codeNafN5" [disabled]="isFieldDisabled()">
           <mat-option>
             <ngx-mat-select-search [formControl]="nafN5FilterCtrl" placeholderLabel="Filtrer par code APE" noEntriesFoundLabel="Aucun code trouvé"></ngx-mat-select-search>
           </mat-option>
@@ -113,7 +113,7 @@
     </mat-form-field>
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Pays</mat-label>
-      <mat-select formControlName="idPays" required>
+      <mat-select formControlName="idPays" [disabled]="isFieldDisabled()" required>
         <mat-option *ngFor="let country of countries" [value]="country.id">{{country.libelle}}</mat-option>
       </mat-select>
       <mat-error *ngIf="form.get('idPays')"></mat-error>
@@ -125,7 +125,7 @@
     </div>
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill" *ngIf="!isFr()">
       <mat-label>code Postal</mat-label>
-      <input matInput formControlName="codePostal" required />
+      <input matInput formControlName="codePostal" [disabled]="isFieldDisabled()" required />
       <mat-error *ngIf="form.get('codePostal')"></mat-error>
     </mat-form-field>
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
