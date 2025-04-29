@@ -1,8 +1,6 @@
 package org.esup_portail.esup_stage.service.siren;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.http.HttpException;
 import org.esup_portail.esup_stage.config.properties.SirenProperties;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.Structure;
