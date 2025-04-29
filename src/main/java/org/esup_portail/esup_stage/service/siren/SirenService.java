@@ -2,11 +2,14 @@ package org.esup_portail.esup_stage.service.siren;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.http.HttpException;
 import org.esup_portail.esup_stage.config.properties.SirenProperties;
+import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.Structure;
 import org.esup_portail.esup_stage.repository.StructureJpaRepository;
 import org.esup_portail.esup_stage.service.siren.model.SirenResponse;
 import org.esup_portail.esup_stage.service.siren.utils.SirenMapper;
+import org.esup_portail.esup_stage.service.siren.utils.SireneQueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +17,13 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -64,64 +70,48 @@ public class SirenService {
         }
     }
 
-    public List<Structure> getEtablissementFiltered(String filters) {
+    public List<Structure> getEtablissementFiltered(String filtersJson) {
         String baseUrl = sirenProperties.getUrl() + "/siret";
-        String query = buildQueryFromFilters(filters);
-        String url = baseUrl + "?q=" + query;
+        String lucene = SireneQueryBuilder.buildLuceneQuery(filtersJson);
+
+        UriComponents components = UriComponentsBuilder
+                .fromHttpUrl(baseUrl)
+                .queryParam("q", lucene)
+                .queryParam("nombre", 50)
+                .queryParam("page", 1)
+                .build()
+                .encode(StandardCharsets.UTF_8);
+
+        String url = components.toUriString().replaceAll("%20", " ");
+
+        System.out.println("URL encodée : " + url);
+        System.out.println("lucene (raw) : " + lucene);
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-INSEE-Api-Key-Integration", sirenProperties.getToken());
         headers.set("Accept", "application/json");
-
-        HttpEntity<String> entity = new HttpEntity<>(headers);
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
 
         try {
-            ResponseEntity<SirenResponse> response = restTemplate.exchange(
-                    url, HttpMethod.GET, entity, SirenResponse.class
-            );
+            ResponseEntity<SirenResponse> resp = restTemplate.exchange(url, HttpMethod.GET, entity, SirenResponse.class);
 
-            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                return sirenMapper.toStructureList(response.getBody());
-            } else {
-                logger.warn("Réponse non valide pour la requête filtrée : {}", response.getStatusCode());
-                return new ArrayList<>();
+            if (resp.getStatusCode().is2xxSuccessful() && resp.getBody() != null) {
+                return sirenMapper.toStructureList(resp.getBody());
             }
-        } catch (HttpClientErrorException.NotFound e) {
-            return new ArrayList<>();
+        } catch (HttpClientErrorException.NotFound ignored) {
+        } catch (HttpClientErrorException.BadRequest e) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Erreur lors de la récupération des établissements, vérifiez vos filtres");
+        } catch (HttpClientErrorException e) {
+            logger.error("Erreur d'authentification lors de la récupération des établissements : {}", e.getMessage());
+            throw new AppException(HttpStatus.NOT_FOUND, "Erreur lors de la récupération des établissements");
         } catch (Exception e) {
-            logger.error("Erreur lors de la récupération des établissements filtrés", e);
-            return new ArrayList<>();
+            logger.error("Erreur lors de la récupération des établissements : {}", e.getMessage());
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de la récupération des établissements");
         }
+        return Collections.emptyList();
     }
 
-    private String buildQueryFromFilters(String filtersJson) {
-        try {
-            JsonNode rootNode = objectMapper.readTree(filtersJson);
-            List<String> queryParts = new ArrayList<>();
 
-            if (rootNode.has("raisonSociale")) {
-                String value = rootNode.get("raisonSociale").get("value").asText();
-                String encodedValue = URLEncoder.encode(value, StandardCharsets.UTF_8);
-                queryParts.add("denominationUniteLegale:\"" + encodedValue + "\"");
-            }
-            if (rootNode.has("pays.id")) {
-                JsonNode valuesNode = rootNode.get("pays.id").get("value");
-                if (valuesNode.isArray()) {
-                    List<String> paysIds = new ArrayList<>();
-                    for (JsonNode idNode : valuesNode) {
-                        paysIds.add(URLEncoder.encode(idNode.asText(), StandardCharsets.UTF_8));
-                    }
-                    queryParts.add("paysUniteLegale:(" + String.join(" OR ", paysIds) + ")");
-                }
-            }
-
-            String query = String.join(" AND ", queryParts);
-            return query;
-        } catch (Exception e) {
-            logger.error("Erreur lors de la construction de la requête à partir des filtres JSON", e);
-            return "";
-        }
-    }
 
     public List<Structure> getAllEtablissements() {
         String url = sirenProperties.getUrl() + "/siret";

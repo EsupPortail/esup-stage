@@ -85,10 +85,11 @@ public class StructureController {
         PaginatedResponse<Structure> paginatedResponse = new PaginatedResponse<>();
         List<Structure> structures = structureRepository.findPaginated(page, perPage, predicate, sortOrder, filters);
 
-        if(structures.size() < 1 && !appConfigService.getConfigGenerale().isAutoriserEtudiantACreerEntreprise()){
+        if(structures.size() < 3 && !appConfigService.getConfigGenerale().isAutoriserEtudiantACreerEntreprise()){
             List<String> existingSirets = new ArrayList<String>();
             structures.forEach(s -> existingSirets.add(s.getNumeroSiret()));
             List<Structure> additionalStructures = sirenService.getEtablissementFiltered(filters);
+            System.out.println("filter  : " + filters);
             additionalStructures = additionalStructures.stream()
                     .filter(s -> s.getNumeroSiret() == null || !existingSirets.contains(s.getNumeroSiret()))
                     .toList();
