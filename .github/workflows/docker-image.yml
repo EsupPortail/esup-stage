@@ -17,8 +17,9 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Test NPM availability
-        run: npm --version
+      - name: Clean node_modules and lockfile
+        run: |
+          rm -rf src/main/frontend/node_modules src/main/frontend/package-lock.json
 
       - name: Setup Java JDK
         uses: actions/setup-java@v3.14.1
