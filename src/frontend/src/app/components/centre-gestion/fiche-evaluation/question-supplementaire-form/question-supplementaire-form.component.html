@@ -1,24 +1,34 @@
-<form [formGroup]="form" novalidate (submit)="save()">
-  <div class="row">
-    <mat-form-field class="col-sm-12 col-md-12 mb-2" appearance="fill">
-      <mat-label>Lbellé de la question</mat-label>
-      <textarea matInput formControlName="question" required></textarea>
-      <mat-error><app-form-error [field]="form.get('question')"></app-form-error></mat-error>
-    </mat-form-field>
-    <mat-form-field class="col-sm-12 col-md-12 mb-2" appearance="fill">
-      <mat-label>Type de la réponse demandée</mat-label>
-      <mat-select formControlName="typeQuestion">
-        <mat-option *ngFor="let typeQuestion of typeQuestions" [value]="typeQuestion.code">{{typeQuestion.libelle}}</mat-option>
-      </mat-select>
-      <mat-error><app-form-error [field]="form.get('civilite')"></app-form-error></mat-error>
-    </mat-form-field>
-  </div>
-  <div class="row mt-3">
-    <div class="col-6">
-      <button type="button" mat-button mat-stroked-button color="warn" (click)="close()">{{'BOUTON_ANNULER'|contenu}}</button>
+<div class="modal-overlay">
+  <div class="modal-container">
+    <!-- En-tête fixe -->
+    <div class="header-banner">
+      <h2>Question supplémentaire</h2>
     </div>
-    <div class="col-6 text-right">
-      <button mat-button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
+
+    <!-- Contenu scrollable -->
+    <div class="scrollable-content">
+      <form [formGroup]="form" novalidate (submit)="save()">
+        <div class="row">
+          <mat-form-field class="col-sm-12 col-md-12 mb-2" appearance="fill">
+            <mat-label>Libellé de la question</mat-label>
+            <textarea matInput formControlName="question" required></textarea>
+            <mat-error><app-form-error [field]="form.get('question')"></app-form-error></mat-error>
+          </mat-form-field>
+          <mat-form-field class="col-sm-12 col-md-12 mb-2" appearance="fill">
+            <mat-label>Type de la réponse demandée</mat-label>
+            <mat-select formControlName="typeQuestion">
+              <mat-option *ngFor="let typeQuestion of typeQuestions" [value]="typeQuestion.code">{{typeQuestion.libelle}}</mat-option>
+            </mat-select>
+            <mat-error><app-form-error [field]="form.get('typeQuestion')"></app-form-error></mat-error>
+          </mat-form-field>
+        </div>
+      </form>
+    </div>
+
+    <!-- Footer fixe -->
+    <div class="modal-footer">
+      <button type="button" mat-flat-button color="warn" (click)="close()">{{'BOUTON_ANNULER'|contenu}}</button>
+      <button mat-flat-button color="primary" (click)="save()">{{'BOUTON_VALIDER'|contenu}}</button>
     </div>
   </div>
-</form>
+</div>
