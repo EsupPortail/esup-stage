@@ -1,49 +1,75 @@
-<form [formGroup]="form" novalidate (submit)="save()">
-  <div class="row">
-    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-      <mat-label>Nom</mat-label>
-      <input matInput formControlName="nom" required />
-      <mat-error><app-form-error [field]="form.get('nom')"></app-form-error></mat-error>
-    </mat-form-field>
-    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-      <mat-label>Prénom</mat-label>
-      <input matInput formControlName="prenom" required />
-      <mat-error><app-form-error [field]="form.get('prenom')"></app-form-error></mat-error>
-    </mat-form-field>
-    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-      <mat-label>Civilité</mat-label>
-      <mat-select formControlName="idCivilite">
-        <mat-option *ngFor="let civilite of civilites" [value]="civilite.id">{{civilite.libelle}}</mat-option>
-      </mat-select>
-      <mat-error><app-form-error [field]="form.get('civilite')"></app-form-error></mat-error>
-    </mat-form-field>
-    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-      <mat-label>Fonction</mat-label>
-      <input matInput formControlName="fonction" required />
-      <mat-error><app-form-error [field]="form.get('fonction')"></app-form-error></mat-error>
-    </mat-form-field>
-    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-      <mat-label>Téléphone</mat-label>
-      <input matInput formControlName="tel" required />
-      <mat-error><app-form-error [field]="form.get('tel')"></app-form-error></mat-error>
-    </mat-form-field>
-    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-      <mat-label>Email</mat-label>
-      <input matInput formControlName="mail" required />
-      <mat-error><app-form-error [field]="form.get('mail')"></app-form-error></mat-error>
-    </mat-form-field>
-    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-      <mat-label>Fax</mat-label>
-      <input matInput formControlName="fax" />
-      <mat-error><app-form-error [field]="form.get('fax')"></app-form-error></mat-error>
-    </mat-form-field>
-  </div>
-  <div class="row mt-3">
-    <div class="col-sm-6">
-      <button type="button" mat-button mat-stroked-button color="warn" (click)="close()">{{'BOUTON_ANNULER'|contenu}}</button>
+<div class="modal-overlay">
+  <div class="modal-container">
+    <!-- En-tête fixe -->
+    <div class="header-banner">
+      <h1>Formulaire de contact</h1>
     </div>
-    <div class="col-sm-6 text-right">
-      <button mat-button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
+
+    <!-- Contenu scrollable -->
+    <div class="scrollable-content">
+      <form [formGroup]="form" novalidate (submit)="save()">
+        <div class="row input-group">
+          <mat-form-field class="col-12" appearance="fill">
+            <mat-label>Nom</mat-label>
+            <input matInput formControlName="nom" required />
+            <mat-error><app-form-error [field]="form.get('nom')"></app-form-error></mat-error>
+          </mat-form-field>
+        </div>
+        <div class="row input-group">
+          <mat-form-field class="col-12" appearance="fill">
+            <mat-label>Prénom</mat-label>
+            <input matInput formControlName="prenom" required />
+            <mat-error><app-form-error [field]="form.get('prenom')"></app-form-error></mat-error>
+          </mat-form-field>
+        </div>
+        <div class="row input-group">
+          <mat-form-field class="col-12" appearance="fill">
+            <mat-label>Civilité</mat-label>
+            <mat-select formControlName="idCivilite">
+              <mat-option *ngFor="let civilite of civilites" [value]="civilite.id">{{civilite.libelle}}</mat-option>
+            </mat-select>
+            <mat-error><app-form-error [field]="form.get('idCivilite')"></app-form-error></mat-error>
+          </mat-form-field>
+        </div>
+        <div class="row input-group">
+          <mat-form-field class="col-12" appearance="fill">
+            <mat-label>Fonction</mat-label>
+            <input matInput formControlName="fonction" required />
+            <mat-error><app-form-error [field]="form.get('fonction')"></app-form-error></mat-error>
+          </mat-form-field>
+        </div>
+        <div class="row input-group">
+          <mat-form-field class="col-12" appearance="fill">
+            <mat-label>Téléphone</mat-label>
+            <input matInput formControlName="tel" required />
+            <mat-error><app-form-error [field]="form.get('tel')"></app-form-error></mat-error>
+          </mat-form-field>
+        </div>
+        <div class="row input-group">
+          <mat-form-field class="col-12" appearance="fill">
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="mail" required />
+            <mat-error><app-form-error [field]="form.get('mail')"></app-form-error></mat-error>
+          </mat-form-field>
+        </div>
+        <div class="row input-group">
+          <mat-form-field class="col-12" appearance="fill">
+            <mat-label>Fax</mat-label>
+            <input matInput formControlName="fax" />
+            <mat-error><app-form-error [field]="form.get('fax')"></app-form-error></mat-error>
+          </mat-form-field>
+        </div>
+      </form>
+    </div>
+
+    <!-- Footer fixe -->
+    <div class="modal-footer">
+      <button type="button" mat-stroked-button class="cancel-button" (click)="close()">
+        {{'BOUTON_ANNULER'|contenu}}
+      </button>
+      <button type="submit" mat-flat-button class="submit-button" (click)="save()">
+        {{'BOUTON_VALIDER'|contenu}}
+      </button>
     </div>
   </div>
-</form>
+</div>
