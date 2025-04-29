@@ -7,6 +7,7 @@ import org.esup_portail.esup_stage.config.properties.SirenProperties;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.Structure;
 import org.esup_portail.esup_stage.repository.StructureJpaRepository;
+import org.esup_portail.esup_stage.service.siren.model.ListStructureSirenDTO;
 import org.esup_portail.esup_stage.service.siren.model.SirenResponse;
 import org.esup_portail.esup_stage.service.siren.utils.SirenMapper;
 import org.esup_portail.esup_stage.service.siren.utils.SireneQueryBuilder;
@@ -70,19 +71,19 @@ public class SirenService {
         }
     }
 
-    public List<Structure> getEtablissementFiltered(String filtersJson) {
+    public ListStructureSirenDTO getEtablissementFiltered(int page, int perpage, String filtersJson) {
         String baseUrl = sirenProperties.getUrl() + "/siret";
         String lucene = SireneQueryBuilder.buildLuceneQuery(filtersJson);
 
         UriComponents components = UriComponentsBuilder
                 .fromHttpUrl(baseUrl)
                 .queryParam("q", lucene)
-                .queryParam("nombre", 50)
-                .queryParam("page", 1)
+                .queryParam("nombre",  perpage)
+                .queryParam("page",  page)
                 .build()
                 .encode(StandardCharsets.UTF_8);
 
-        String url = components.toUriString().replaceAll("%20", " ");
+        String url = components.toUriString().replaceAll("(?<=AND)%20|%20(?=AND)", " ");
 
         System.out.println("URL encodée : " + url);
         System.out.println("lucene (raw) : " + lucene);
@@ -96,9 +97,12 @@ public class SirenService {
             ResponseEntity<SirenResponse> resp = restTemplate.exchange(url, HttpMethod.GET, entity, SirenResponse.class);
 
             if (resp.getStatusCode().is2xxSuccessful() && resp.getBody() != null) {
-                return sirenMapper.toStructureList(resp.getBody());
+                System.out.println("Réponse : " + resp.getBody());
+                System.out.println("Total : " + resp.getBody().getHeader().getTotal());
+                return new ListStructureSirenDTO(resp.getBody().getHeader().getTotal(), sirenMapper.toStructureList(resp.getBody()));
             }
         } catch (HttpClientErrorException.NotFound ignored) {
+            return new ListStructureSirenDTO(0,Collections.emptyList());
         } catch (HttpClientErrorException.BadRequest e) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Erreur lors de la récupération des établissements, vérifiez vos filtres");
         } catch (HttpClientErrorException e) {
@@ -108,7 +112,7 @@ public class SirenService {
             logger.error("Erreur lors de la récupération des établissements : {}", e.getMessage());
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de la récupération des établissements");
         }
-        return Collections.emptyList();
+        return new ListStructureSirenDTO(0,Collections.emptyList());
     }
 
 

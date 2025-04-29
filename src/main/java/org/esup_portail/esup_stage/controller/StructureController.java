@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import org.apache.commons.validator.routines.checkdigit.LuhnCheckDigit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.esup_portail.esup_stage.config.properties.SirenProperties;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.dto.StructureFormDto;
 import org.esup_portail.esup_stage.dto.view.Views;
@@ -22,6 +23,7 @@ import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.Structure.StructureService;
 import org.esup_portail.esup_stage.service.siren.SirenService;
+import org.esup_portail.esup_stage.service.siren.model.ListStructureSirenDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -78,25 +80,50 @@ public class StructureController {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private SirenProperties sirenProperties;
+
     @JsonView(Views.List.class)
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<Structure> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         PaginatedResponse<Structure> paginatedResponse = new PaginatedResponse<>();
         List<Structure> structures = structureRepository.findPaginated(page, perPage, predicate, sortOrder, filters);
-
-        if(structures.size() < 3 && !appConfigService.getConfigGenerale().isAutoriserEtudiantACreerEntreprise()){
-            List<String> existingSirets = new ArrayList<String>();
+        paginatedResponse.setTotal(structureRepository.count(filters));
+        if(structures.size() < sirenProperties.getNombreMinimumResultats() && !appConfigService.getConfigGenerale().isAutoriserEtudiantACreerEntreprise()){
+            List<String> existingSirets = new ArrayList<>();
             structures.forEach(s -> existingSirets.add(s.getNumeroSiret()));
-            List<Structure> additionalStructures = sirenService.getEtablissementFiltered(filters);
-            System.out.println("filter  : " + filters);
-            additionalStructures = additionalStructures.stream()
-                    .filter(s -> s.getNumeroSiret() == null || !existingSirets.contains(s.getNumeroSiret()))
-                    .toList();
-            structures.addAll(additionalStructures);
+            if (page == 1 && structures.size() < sirenProperties.getNombreMinimumResultats()) {
+                int manque = perPage - structures.size();
+                ListStructureSirenDTO result = sirenService.getEtablissementFiltered(1, manque, filters);
+                System.out.println("result.getStructures() = " + result.getStructures());
+                System.out.println("result.getTotal() = " + result.getTotal());
+                if (manque > 0) {
+                    List<Structure> additional = result
+                            .getStructures()
+                            .stream()
+                            .filter(s -> s.getNumeroSiret() == null
+                                    || !existingSirets.contains(s.getNumeroSiret()))
+                            .toList();
+                    structures.addAll(additional);
+                    paginatedResponse.setTotal(paginatedResponse.getTotal()+result.getTotal());
+                }
+            }
+            else if (page > 1) {
+                ListStructureSirenDTO result = sirenService.getEtablissementFiltered(page, perPage, filters);
+                System.out.println("result.getStructures() = " + result.getStructures());
+                System.out.println("result.getTotal() = " + result.getTotal());
+                List<Structure> apiPage = result
+                        .getStructures()
+                        .stream()
+                        .filter(s -> s.getNumeroSiret() == null
+                                || !(existingSirets.contains(s.getNumeroSiret())))
+                        .toList();
+                structures.clear();
+                structures.addAll(apiPage);
+                paginatedResponse.setTotal(paginatedResponse.getTotal()+result.getTotal());
+            }
         }
-
-        paginatedResponse.setTotal((long) structures.size());
         paginatedResponse.setData(structures);
         return paginatedResponse;
     }
