@@ -1,0 +1,33 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "dev" ]
+  pull_request:
+    branches: [ "dev" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v3.14.1
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Get Maven version
+        id: maven_version
+        run: echo "version=$(mvn help:evaluate -Dexpression='project.version' -q -DforceStdout -Dsha1=${GITHUB_SHA::7} -Dchangelist=-dev)" >> $GITHUB_OUTPUT
+
+      - name: Build with Maven
+        run: mvn -Dsha1=${GITHUB_SHA::7} -Dchangelist=-dev clean package -DskipTests
+
+      - name: Build the Docker image
+        run: docker build --build-arg VERSION=${{steps.maven_version.outputs.version}} -t harbor.esup-portail.org/esup-stage/esup-stage:${{steps.maven_version.outputs.version}} .
+
+
