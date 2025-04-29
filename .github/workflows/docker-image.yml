@@ -12,27 +12,34 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-
-      - name: Clean node_modules and lockfile
-        run: |
-          rm -rf src/main/frontend/node_modules src/main/frontend/package-lock.json
-
       - name: Setup Java JDK
         uses: actions/setup-java@v3.14.1
         with:
           java-version: '21'
           distribution: 'temurin'
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Clean npm cache + modules + lock
+        run: |
+          cd src/frontend
+          rm -rf node_modules package-lock.json
+          npm cache clean --force
+
+      - name: Install npm dependencies (sans dépendances optionnelles)
+        run: |
+          cd src/frontend
+          npm install --omit=optional
+
       - name: Get Maven version
         id: maven_version
         run: echo "version=$(mvn help:evaluate -Dexpression='project.version' -q -DforceStdout -Dsha1=${GITHUB_SHA::7} -Dchangelist=-dev)" >> $GITHUB_OUTPUT
 
       - name: Build with Maven
-        run: mvn -Dsha1=${GITHUB_SHA::7} -Dchangelist=-dev clean package -DskipTests
+        run: mvn -Dsha1=${GITHUB_SHA::7} -Dchangelist=-dev clean package -DskipTests -Dskip.npm.install=true --no-transfer-progress
 
       - name: Build the Docker image
         run: docker build --build-arg VERSION=${{steps.maven_version.outputs.version}} -t harbor.esup-portail.org/esup-stage/esup-stage:${{steps.maven_version.outputs.version}} .
