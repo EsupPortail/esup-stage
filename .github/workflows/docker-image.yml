@@ -17,6 +17,9 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Test NPM availability
+        run: npm --version
+
       - name: Setup Java JDK
         uses: actions/setup-java@v3.14.1
         with:
