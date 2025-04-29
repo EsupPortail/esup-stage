@@ -23,6 +23,7 @@ import {MatAutocompleteSelectedEvent} from "@angular/material/autocomplete";
 import {AuthService} from "../../services/auth.service";
 import * as FileSaver from "file-saver";
 import {TechnicalService} from "../../services/technical.service";
+import {update} from "lodash";
 
 @Component({
   selector: 'app-table',
@@ -122,7 +123,9 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
       this.pageSize = 0;
     }
     this.initFilters(false);
-    this.update();
+    if(this.loadWithoutFilters){
+      this.update();
+    }
   }
 
   ngAfterContentInit() {
@@ -192,14 +195,12 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
 
         if (filter.type === 'autocomplete') {
           this.autocmpleteChanged[filter.id] = new Subject();
-          // Initialize autocomplete value as an array if it's undefined
           if (!this.filterValues[filter.id].value) {
             this.filterValues[filter.id].value = [];
           }
         }
       }
     });
-    this.filterChanged.next(this.filterValues);
   }
 
   reset(): void {

@@ -120,7 +120,7 @@
       <i *ngIf="row.centreGestion.verificationAdministrative" class="fa fa-check"
          [class.activate]="row.verificationAdministrative"
          matTooltip="{{row.verificationAdministrative ? validationLibelles.verificationAdministrative + ' effectuée' : 'en attente ' + validationLibelles.verificationAdministrative}}"></i>
-      <i class="fa-solid fa-pen"
+      <i class="fa-solid fa-signature"
          [ngClass]="getValidationIconStatus(row)"
          [matTooltip]="getValidationTooltip(row)">
       </i>
