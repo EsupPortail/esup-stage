@@ -16,6 +16,17 @@ public class SirenResponse {
     @JsonProperty("etablissement")
     private EtablissementSiren etablissement;
 
+    @JsonProperty("header")
+    private Header header;
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @Data
+    public static class Header {
+        @JsonProperty("total")
+        private Integer total;
+    }
+
+
     @JsonIgnoreProperties(ignoreUnknown = true)
     @Data
     public static class EtablissementSiren {

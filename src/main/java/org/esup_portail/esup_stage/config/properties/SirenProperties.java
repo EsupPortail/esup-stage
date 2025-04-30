@@ -10,4 +10,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class SirenProperties {
     private String url;
     private String token;
+    private Integer nombreMinimumResultats;
 }

@@ -129,6 +129,7 @@ import { MatTabNavChangeDirective } from './directives/mat-tab-nav-change.direct
 import {CentreSignatureElectroniqueComponent} from "./components/centre-gestion/signature-electronique/signature-electronique.component";
 import { SignatureElectroniqueViewComponent } from './components/convention/signature-electronique/signature-electronique-view/signature-electronique-view.component';
 import {ColorPickerModule} from "ngx-color-picker";
+import {ConfirmDeleteDialogComponent} from "./components/gestion-etab-accueil/confirm-delete-dialog/confirm-delete-dialog.component";
 
 registerLocaleData(localeFr, 'fr');
 
@@ -235,6 +236,7 @@ export class FrenchDateProvider extends NativeDateAdapter {
         MatTabNavChangeDirective,
         CentreSignatureElectroniqueComponent,
         SignatureElectroniqueViewComponent,
+        ConfirmDeleteDialogComponent
     ],
     bootstrap: [AppComponent], imports: [BrowserModule,
         AppRoutingModule,

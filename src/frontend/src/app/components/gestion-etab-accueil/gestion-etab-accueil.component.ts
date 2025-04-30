@@ -19,6 +19,7 @@ import { ServiceAccueilFormComponent } from './service-accueil-form/service-accu
 import { ContactFormComponent } from './contact-form/contact-form.component';
 import {HistoriqueEtabAccueilComponent} from "./historique-etab-accueil/historique-etab-accueil.component";
 import {CalendrierComponent} from "../convention/stage/calendrier/calendrier.component";
+import {ConfirmDeleteDialogComponent} from "./confirm-delete-dialog/confirm-delete-dialog.component";
 
 @Component({
   selector: 'app-gestion-etab-accueil',
@@ -150,10 +151,19 @@ export class GestionEtabAccueilComponent implements OnInit {
     return !this.authService.isEtudiant() && hasRight;
   }
 
-  delete(row: any): void{
-    this.structureService.delete(row.id).subscribe((response: any) => {
-      this.messageService.setSuccess('Etablissement supprimé');
-      this.appTable?.update();
+  delete(row: any): void {
+    const dialogRef = this.matDialog.open(ConfirmDeleteDialogComponent, {
+      width: '600px',
+      data: { message: 'Êtes-vous sûr de vouloir supprimer "'+ row.raisonSociale +' " ?' },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.structureService.delete(row.id).subscribe(() => {
+          this.messageService.setSuccess('Établissement supprimé');
+          this.appTable?.update();
+        });
+      }
     });
   }
 

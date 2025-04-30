@@ -10,6 +10,7 @@ import { Droit } from "../../../constants/droit";
 import { AuthService } from "../../../services/auth.service";
 import { ConfigService } from "../../../services/config.service";
 import { TableComponent } from '../../table/table.component';
+import {SortDirection} from "@angular/material/sort";
 
 @Component({
   selector: 'app-service-accueil',
@@ -30,6 +31,7 @@ export class ServiceAccueilComponent implements OnInit,OnChanges {
   filters: any[] = [];
   columns = ['nom', 'voie', 'commune', 'pays', 'action'];
   sortColumn = 'nom';
+  sortDirection: SortDirection = 'asc';
   createButton = {
     libelle: 'Créer un nouveau service',
     action: () => this.initCreate(),
