@@ -445,9 +445,6 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
       fax: [this.etab.fax, [Validators.maxLength(20)]],
       numeroRNE: [this.etab.numeroRNE, [Validators.maxLength(8), Validators.pattern('[0-9]{7}[a-zA-Z]')]],
     });
-
-    this.form.get('idTypeStructure')?.disable();
-
     this.toggleCommune();
     this.form.get('idPays')?.valueChanges.subscribe((idPays: any) => {
       this.toggleCommune();

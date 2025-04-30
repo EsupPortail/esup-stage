@@ -24,6 +24,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.test.skip>true</maven.test.skip>
+		<skip.npm.install>false</skip.npm.install>
 	</properties>
 
 	<!-- environnement local(dev: config interne) et default(config externe) -->
@@ -58,6 +59,7 @@
 								<configuration>
 									<arguments>install --loglevel info</arguments>
 									<workingDirectory>${project.basedir}/src/frontend</workingDirectory>
+									<skip>${skip.npm.install}</skip>
 								</configuration>
 							</execution>
 						</executions>
@@ -372,6 +374,7 @@
 						</goals>
 						<configuration>
 							<arguments>install</arguments>
+							<skip>${skip.npm.install}</skip>
 						</configuration>
 					</execution>
 					<execution>
