@@ -367,9 +367,6 @@ public class StructureController {
         if (structure == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Structure non trouvée");
         }
-        if(!conventionJpaRepository.findByStructureId(structure.getId()).isEmpty()) {
-            throw new AppException(HttpStatus.FORBIDDEN, "La structure est relier à une convention");
-        }
         structureService.delete(structure);
     }
 
