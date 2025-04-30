@@ -21,6 +21,9 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Upgrade npm to latest (workaround bug with optional deps)
+        run: npm install -g npm@latest
+
       - name: Clean npm cache + modules + lock
         run: |
           cd src/frontend
