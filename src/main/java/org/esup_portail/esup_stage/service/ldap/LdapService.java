@@ -88,7 +88,7 @@ public class LdapService {
         String response = call("/bySupannAliasLogin", "GET", params);
         try {
             ObjectMapper mapper = new ObjectMapper();
-            if (!response.isEmpty()) {
+            if (response!= null && !response.isEmpty()) {
                 log.info("Utilisateur login = {} trouvé", login);
                 return mapper.readValue(response, LdapUser.class);
             } else {
