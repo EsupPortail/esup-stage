@@ -232,8 +232,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
           columns: {
             id: { title: 'N° de la convention' },
             numEtudiant: { title: 'N° étudiant' },
-            etudiant: { title: 'Étudiant (NOM Prénom)' },
-            courrielPersoEtudiant: { title: 'Mail perso étudiant' },
+            "etudiant.nom": { title: 'Nom Étudiant' },
+            "etudiant.prenom": { title: 'Prénom Étudiant' },
+            elPersoEtudiant: { title: 'Mail perso étudiant' },
             mailUniEtudiant: { title: 'Mail universitaire étudiant' },
             telEtudiant: { title: 'Téléphone perso étudiant' },
             telPortableEtudiant: { title: 'Téléphone portable étudiant' },
