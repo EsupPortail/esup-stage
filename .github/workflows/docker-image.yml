@@ -30,7 +30,7 @@ jobs:
       - name: Install npm dependencies (sans dépendances optionnelles)
         run: |
           cd src/frontend
-          npm install --omit=optional
+          npm install --no-optional
 
       - name: Build Angular app
         run: |
