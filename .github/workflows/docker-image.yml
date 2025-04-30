@@ -21,10 +21,7 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Upgrade npm to latest (workaround bug with optional deps)
-        run: npm install -g npm@latest
-
-      - name: Clean npm cache + modules + lock
+      - name: Clean npm environment > cache + modules + lock
         run: |
           cd src/frontend
           rm -rf node_modules package-lock.json
@@ -35,12 +32,17 @@ jobs:
           cd src/frontend
           npm install --omit=optional
 
+      - name: Build Angular app
+        run: |
+          cd src/frontend
+          npm run buildProduction
+
       - name: Get Maven version
         id: maven_version
         run: echo "version=$(mvn help:evaluate -Dexpression='project.version' -q -DforceStdout -Dsha1=${GITHUB_SHA::7} -Dchangelist=-dev)" >> $GITHUB_OUTPUT
 
       - name: Build with Maven
-        run: mvn -Dsha1=${GITHUB_SHA::7} -Dchangelist=-dev clean package -DskipTests -Dskip.npm.install=true --no-transfer-progress
+        run: mvn -Dsha1=${GITHUB_SHA::7} -Dchangelist=-dev clean package -DskipTests -Dskip.npm.install=true -Dskip.frontend=true --no-transfer-progress
 
       - name: Build the Docker image
         run: docker build --build-arg VERSION=${{steps.maven_version.outputs.version}} -t harbor.esup-portail.org/esup-stage/esup-stage:${{steps.maven_version.outputs.version}} .
