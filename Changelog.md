@@ -29,4 +29,4 @@
 - Correction de l'erreur de calcul des horaires de travail irréguliers (#219).  
 - Correction d'un problème de notification des enseignants (#193).  
 - Initialisation des données dans la table `ConventionNomenclature` en mode brouillon.  
-- Correction du problème de mise à jour des informations de signature électronique (#22).  
+- Correction du problème de mise à jour des informations de signature électronique (#227).  
