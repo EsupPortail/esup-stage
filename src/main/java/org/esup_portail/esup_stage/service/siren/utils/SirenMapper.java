@@ -17,9 +17,6 @@ public class SirenMapper {
     private StatutJuridiqueJpaRepository statutJuridiqueJpaRepository;
 
     @Autowired
-    private EffectifJpaRepository effectifJpaRepository;
-
-    @Autowired
     private NafN5JpaRepository nafN5JpaRepository;
 
     @Autowired
@@ -62,9 +59,6 @@ public class SirenMapper {
             structure.setStatutJuridique(statutJuridiqueJpaRepository.findByLibelle("Autre"));
             structure.setTypeStructure(typeStructureJpaRepository.findByid(3));
         }
-
-        //Effectif par défaut, non disponible dans l'api siren
-        structure.setEffectif(effectifJpaRepository.findById(1));
 
         // Valeurs par défaut
         structure.setPays(paysJpaRepository.findById(82)); // France

@@ -428,7 +428,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
     this.form = this.fb.group({
       raisonSociale: [{ value: this.etab.raisonSociale, disabled: this.isFieldDisabled() }, [Validators.required, Validators.maxLength(150)]],
       numeroSiret: [{ value: this.etab.numeroSiret, disabled: this.isFieldDisabled() }, [Validators.maxLength(14), Validators.pattern('[0-9]{14}')]],
-      idEffectif: [this.etab.effectif ? this.etab.effectif.id : null, [Validators.required]],
+      idEffectif: [this.etab.effectif ? this.etab.effectif.id : null],
       idTypeStructure: [this.etab.typeStructure ? this.etab.typeStructure.id : null, [Validators.required]],
       idStatutJuridique: [{ value: this.etab.statutJuridique?.id ?? null, disabled: this.isFieldDisabled() }, [Validators.required]],
       codeNafN5: [{ value: this.etab.nafN5?.code ?? null, disabled: this.isFieldDisabled() }, []],

@@ -115,4 +115,9 @@ databaseChangeLog:
       author: thouveno9
       changes:
         - sql: ALTER TABLE Structure MODIFY COLUMN temEnServStructure BOOLEAN NOT NULL DEFAULT 1;
+  - changeSet:
+      id: 3.1.0-maj-idEffectifStructure
+      author: thouveno9
+      changes:
+        - sql: ALTER TABLE Structure CHANGE `idEffectif` `idEffectif` INT(11) NULL DEFAULT NULL;
 

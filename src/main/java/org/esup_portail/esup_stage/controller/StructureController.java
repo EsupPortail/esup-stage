@@ -161,9 +161,6 @@ public class StructureController {
         int indexMail = 22;
 
         Effectif effectif = effectifJpaRepository.findByLibelle("Inconnu");
-        if (effectif == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Effectif non trouvé");
-        }
         TypeStructure typeStructure = typeStructureJpaRepository.findByLibelle("Etablissement d'enseignement");
         if (typeStructure == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Type de structure non trouvé");
@@ -407,9 +404,6 @@ public class StructureController {
             }
         }
         Effectif effectif = effectifJpaRepository.findById(structureFormDto.getIdEffectif());
-        if (effectif == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Effectif non trouvé");
-        }
         TypeStructure typeStructure = typeStructureJpaRepository.findById(structureFormDto.getIdTypeStructure());
         if (typeStructure == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Type de structure non trouvé");

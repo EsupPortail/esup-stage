@@ -80,7 +80,7 @@ public class Structure extends ObjetMetier implements Exportable {
     private String loginInfosAJour;
 
     @ManyToOne
-    @JoinColumn(name = "idEffectif", nullable = false)
+    @JoinColumn(name = "idEffectif")
     private Effectif effectif;
 
     @JsonView(Views.List.class)
