@@ -43,7 +43,7 @@ databaseChangeLog:
       author: thouveno9
       changes:
         - createTable:
-            tableName: historiqueStructure
+            tableName: HistoriqueStructure
             columns:
               - column:
                   name: id
@@ -120,4 +120,29 @@ databaseChangeLog:
       author: thouveno9
       changes:
         - sql: ALTER TABLE Structure CHANGE `idEffectif` `idEffectif` INT(11) NULL DEFAULT NULL;
+  - changeSet:
+      id: 3.1.0-ajout-template-mail-convention-signee
+      author: thouveno9
+      changes:
+        - insert:
+            columns:
+              - column:
+                  name: code
+                  value: CONVENTION_SIGNEE
+              - column:
+                  name: libelle
+                  value: Convention signée par toutes les parties
+              - column:
+                  name: objet
+                  value: Convention signée
+              - column:
+                  name: texte
+                  value: Texte à modifier
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: dateCreation
+                  value: now()
+            tableName: Templatemail
 
