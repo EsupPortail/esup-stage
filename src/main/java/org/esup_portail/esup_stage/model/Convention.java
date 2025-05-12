@@ -517,6 +517,16 @@ public class Convention extends ObjetMetier implements Exportable {
                     value = getEtudiant().getPrenom() + " " + getEtudiant().getNom();
                 }
                 break;
+            case "etudiantNom":
+                if (getEtudiant() != null) {
+                    value = getEtudiant().getNom();
+                }
+                break;
+            case "etudiantPrenom":
+                if (getEtudiant() != null) {
+                    value = getEtudiant().getPrenom();
+                }
+                break;
             case "courrielPersoEtudiant":
                 value = getCourrielPersoEtudiant();
                 break;

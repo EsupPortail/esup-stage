@@ -232,8 +232,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
           columns: {
             id: { title: 'N° de la convention' },
             numEtudiant: { title: 'N° étudiant' },
-            "etudiant.nom": { title: 'Nom Étudiant' },
-            "etudiant.prenom": { title: 'Prénom Étudiant' },
+            etudiantNom: { title: 'Nom Étudiant' },
+            etudiantPrenom: { title: 'Prénom Étudiant' },
             elPersoEtudiant: { title: 'Mail perso étudiant' },
             mailUniEtudiant: { title: 'Mail universitaire étudiant' },
             telEtudiant: { title: 'Téléphone perso étudiant' },
@@ -286,7 +286,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
           columns: {
             id: { title: 'N° de la convention' },
             numEtudiant: { title: 'N° étudiant' },
-            etudiant: { title: 'Étudiant (NOM Prénom)' },
+            etudiantNom: { title: 'Nom Étudiant' },
+            etudiantPrenom: { title: 'Prénom Étudiant' },
             structure: { title: 'Nom structure d\’accueil' },
             structureSiret: { title: 'SIRET' },
             structureAdresse: { title: 'Adresse' },
@@ -335,14 +336,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   this.exportColumns = {
     id: { title: 'N° de la convention' },
-    etudiant: { title: 'Étudiant' },
+    etudiantNom: { title: 'Nom Étudiant' },
+    etudiantPrenom: { title: 'Prénom Étudiant' },
     ufr: { title: 'Composante' },
     etape: { title: 'Étape' },
     dateDebutStage: { title: 'Date début du stage' },
     dateFinStage: { title: 'Date fin du stage' },
     structure: { title: 'Établissement d\'accueil' },
     sujetStage: { title: 'Sujet du stage' },
-    lieuStage: { title: 'Sujet du stage' },
+    lieuStage: { title: 'Lieu du stage' },
     avenant: { title: 'Avenant' },
     validationPedagogique: { title: this.validationLibelles.validationPedagogique },
     validationConvention: { title: this.validationLibelles.validationConvention },
