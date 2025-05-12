@@ -34,9 +34,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @ApiController
 @RequestMapping("/structures")
@@ -90,14 +88,18 @@ public class StructureController {
         PaginatedResponse<Structure> paginatedResponse = new PaginatedResponse<>();
         List<Structure> structures = structureRepository.findPaginated(page, perPage, predicate, sortOrder, filters);
         paginatedResponse.setTotal(structureRepository.count(filters));
-        if(structures.size() < sirenProperties.getNombreMinimumResultats() && !appConfigService.getConfigGenerale().isAutoriserEtudiantACreerEntreprise()){
+        Map filterMap;
+        try {
+            filterMap = objectMapper.readValue(filters, Map.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        if(structures.size() < sirenProperties.getNombreMinimumResultats() && !appConfigService.getConfigGenerale().isAutoriserEtudiantACreerEntreprise() && filterMap.size()>1){
             List<String> existingSirets = new ArrayList<>();
             structures.forEach(s -> existingSirets.add(s.getNumeroSiret()));
             if (page == 1 && structures.size() < sirenProperties.getNombreMinimumResultats()) {
                 int manque = perPage - structures.size();
                 ListStructureSirenDTO result = sirenService.getEtablissementFiltered(1, manque, filters);
-                System.out.println("result.getStructures() = " + result.getStructures());
-                System.out.println("result.getTotal() = " + result.getTotal());
                 if (manque > 0) {
                     List<Structure> additional = result
                             .getStructures()
@@ -111,8 +113,6 @@ public class StructureController {
             }
             else if (page > 1) {
                 ListStructureSirenDTO result = sirenService.getEtablissementFiltered(page, perPage, filters);
-                System.out.println("result.getStructures() = " + result.getStructures());
-                System.out.println("result.getTotal() = " + result.getTotal());
                 List<Structure> apiPage = result
                         .getStructures()
                         .stream()

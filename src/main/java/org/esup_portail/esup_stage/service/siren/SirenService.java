@@ -83,9 +83,6 @@ public class SirenService {
 
         String url = components.toUriString().replaceAll("(?<=AND)%20|%20(?=AND)", " ");
 
-        System.out.println("URL encodée : " + url);
-        System.out.println("lucene (raw) : " + lucene);
-
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-INSEE-Api-Key-Integration", sirenProperties.getToken());
         headers.set("Accept", "application/json");
@@ -95,8 +92,6 @@ public class SirenService {
             ResponseEntity<SirenResponse> resp = restTemplate.exchange(url, HttpMethod.GET, entity, SirenResponse.class);
 
             if (resp.getStatusCode().is2xxSuccessful() && resp.getBody() != null) {
-                System.out.println("Réponse : " + resp.getBody());
-                System.out.println("Total : " + resp.getBody().getHeader().getTotal());
                 return new ListStructureSirenDTO(resp.getBody().getHeader().getTotal(), sirenMapper.toStructureList(resp.getBody()));
             }
         } catch (HttpClientErrorException.NotFound ignored) {

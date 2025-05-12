@@ -43,7 +43,7 @@ databaseChangeLog:
       author: thouveno9
       changes:
         - createTable:
-            tableName: historiqueStructure
+            tableName: HistoriqueStructure
             columns:
               - column:
                   name: id
