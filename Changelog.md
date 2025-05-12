@@ -3,13 +3,14 @@
 
 ---
 
-## ESUP-Stage v3.0.1 (À venir)  
+## ESUP-Stage v3.1.0 (À venir)  
 ### Nouveautés  
 - Évolution de la gestion des établissements d'accueil (API Sirene).  
 - Création de la variable `convention.horaireIrregulier` (#219).  
 
 ### Améliorations  
-- Possibilité de saisir manuellement la durée en mois, jour(s) et heure(s) (#212).  
+- Possibilité de saisir manuellement la durée en mois, jour(s) et heure(s) (#212).
+- Amélioration de l'export Excel #233
 
 ---
 
