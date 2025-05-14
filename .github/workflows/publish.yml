@@ -1,43 +1,70 @@
-name: Publish to GitHub Pages
+name: Publish on Github Pages (main + dev)
+
 on:
   push:
-    branches:
-    - main
-    #- dev
-    #- feature/**
-  # Allows you to run this workflow manually from the Actions tab
+    branches: 
+      - main
+      - dev 
+
   workflow_dispatch:
-concurrency:
-  group: github-pages
-  cancel-in-progress: false
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+
 permissions:
   contents: read
   pages: write
   id-token: write
+
 jobs:
   build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Build prod (main)
+      - name: Install Antora (prod)
+        run: (cd src/docs && npm ci)
+      - name: Build prod site
+        run: (cd src/docs && npm run prestart)
+      - name: Move prod site to /prod
+        run: |
+          mkdir -p final-site/prod
+          mv src/docs/build/site/* final-site/prod/
+
+      # Build dev branch
+      - name: Checkout dev branch
+        run: |
+          git fetch origin dev
+          git worktree add dev-branch origin/dev
+
+      - name: Install Antora (dev)
+        run: (cd dev-branch/src/docs && npm ci)
+      - name: Build dev site
+        run: (cd dev-branch/src/docs && npm run prestart)
+      - name: Move dev site to /dev
+        run: |
+          mkdir -p final-site/dev
+          mv dev-branch/src/docs/build/site/* final-site/dev/
+
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: final-site
+
+  deploy:
+    needs: build
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-    - name: Configure Pages
-      uses: actions/configure-pages@v5
-    - name: Install Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20.x'
-    - name: Install Antora
-      run: (cd src/docs && npm ci)
-    - name: Generate Site
-      run: (cd src/docs && npm run prestart)
-    - name: Upload Artifacts
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: build/site
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

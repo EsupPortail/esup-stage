@@ -42,14 +42,34 @@ vocation à être signé).
 
 TIP: il est définitif une fois signé.
 
-==== Signature de la Convention
+=== Signature de la Convention
+
+La gestion des signatures de convention peut être réalisée via la plateforme **Esup-Stage**.
+
+La convention doit être signée par :
+
+* L'étudiant ou le stagiaire,
+* L'enseignant référent,
+* Le tuteur de stage,
+* Le viseur du centre de gestion auquel est rattachée l'étape de la convention,
+* Le signataire de l'établissement d'accueil.
+
+Pour envoyer une convention en signature une fois celle-ci validée, il faut se rendre sur la fiche de la convention, dans l’onglet **"Validation"**. Ensuite, cliquer sur le bouton **"Envoi pour signature électronique"**.
+
+Le suivi des signatures s’effectue dans l’onglet **"Signature électronique"** de la convention. Un témoin de signature est également présent sur le tableau de bord, il peut s'afficher de plusieurs couleurs :
+
+- 🔴 Rouge : aucune signature reçue,
+- 🟠 Orange : au moins une signature reçue,
+- 🟢 Vert : la convention a été entièrement signée.
+
+TIP: Il est possible de voir les signatures manquantes en survolant l’icône de statut avec la souris lorsqu’elle est orange.
+
+
+==== Type de convention
 #TODO: À DÉFINIR#
 
-=== Type de convention
-#TODO: À DÉFINIR#
-
-=== Avenant
-#TODO: À DÉFINIR#
+==== Avenant
+Modification de la convention de stage après sa validation.
 
 ==== Validation de l'avenant
 #TODO: À DÉFINIR#
@@ -90,7 +110,16 @@ gestionnaires.
 Le template de convention est actuellement choisi pour chaque groupe.
 
 == Évaluation de stage
-#TODO: À DÉFINIR#
+
+Esup-Stage propose une fonctionnalité d’évaluation des stages. Il s’agit de listes de questions, pouvant être celles proposées par défaut par l’application, ou bien des questions personnalisées ajoutées par un utilisateur.
+
+Trois types d’évaluations sont disponibles :
+
+* **Évaluation par l’étudiant** : elle peut avoir lieu avant, pendant et après le stage.
+* **Évaluation par l’enseignant référent** : elle peut porter sur le suivi du stagiaire pendant le stage et sur une évaluation globale du stage.
+* **Appréciation du tuteur professionnel** : elle peut concerner le savoir-être, le savoir-faire du stagiaire, ainsi qu’une appréciation générale du stage.
+
+TIP: Vous pouvez accéder à cette fonctionnalité via la page **"Évaluation des stages"**, ou directement dans l’onglet **"Évaluation du stage"** d’une convention.
 
 == Centre de gestion
 est une entité de l'établissement qui :
