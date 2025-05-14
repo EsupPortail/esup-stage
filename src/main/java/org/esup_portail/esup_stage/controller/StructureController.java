@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.config.properties.SirenProperties;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
+import org.esup_portail.esup_stage.dto.SireneInfoDto;
 import org.esup_portail.esup_stage.dto.StructureFormDto;
 import org.esup_portail.esup_stage.dto.view.Views;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
@@ -94,7 +95,14 @@ public class StructureController {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        if(structures.size() < sirenProperties.getNombreMinimumResultats() && !appConfigService.getConfigGenerale().isAutoriserEtudiantACreerEntreprise() && filterMap.size()>1){
+        boolean estEtudiant = UtilisateurHelper.isRole(Objects.requireNonNull(ServiceContext.getUtilisateur()), Role.ETU);
+        boolean creationEtudiantInterdite = !appConfigService.getConfigGenerale().isAutoriserEtudiantACreerEntreprise();
+        if (
+                        sirenProperties.isApiSireneActive() &&
+                        structures.size() < sirenProperties.getNombreMinimumResultats() &&
+                        (creationEtudiantInterdite || !estEtudiant) &&
+                        filterMap.size() > 1
+        ) {
             List<String> existingSirets = new ArrayList<>();
             structures.forEach(s -> existingSirets.add(s.getNumeroSiret()));
             if (page == 1 && structures.size() < sirenProperties.getNombreMinimumResultats()) {
@@ -443,6 +451,14 @@ public class StructureController {
         structure.setSiteWeb(structureFormDto.getSiteWeb());
         structure.setFax(structureFormDto.getFax());
         structure.setNumeroRNE(structureFormDto.getNumeroRNE());
+    }
+
+    @GetMapping("/sirene")
+    public SireneInfoDto getSireneInfo(){
+        SireneInfoDto sireneInfoDto = new SireneInfoDto();
+        sireneInfoDto.setIsApiSireneActive(sirenProperties.isApiSireneActive());
+        sireneInfoDto.setNombreResultats(sirenProperties.getNombreMinimumResultats());
+        return sireneInfoDto;
     }
 
 }

@@ -66,4 +66,8 @@ export class StructureService implements PaginatedService, AutocompleteService {
     return this.http.get(`${environment.apiUrl}/historique_structures/structures/${id}`);
   }
 
+  getSireneInfo(): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/structures/sirene`);
+  }
+
 }

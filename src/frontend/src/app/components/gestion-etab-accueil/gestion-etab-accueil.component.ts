@@ -55,6 +55,9 @@ export class GestionEtabAccueilComponent implements OnInit {
 
   contacts:any[] = [];
 
+  isSireneAcitve: boolean = false;
+  nbMinResultats: number = 0;
+
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
   @ViewChild('tabs') tabs: MatTabGroup | undefined;
 
@@ -112,6 +115,10 @@ export class GestionEtabAccueilComponent implements OnInit {
     });
     this.civiliteService.getPaginated(1, 0, 'libelle', 'asc','').subscribe((response: any) => {
       this.civilites = response.data;
+    });
+    this.structureService.getSireneInfo().subscribe((response: any) => {
+      this.isSireneAcitve = response.isApiSireneActive;
+      this.nbMinResultats = response.nombreResultats;
     });
   }
 

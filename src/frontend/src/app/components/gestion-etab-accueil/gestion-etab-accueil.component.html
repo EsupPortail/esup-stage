@@ -1,5 +1,18 @@
 <mat-tab-group #tabs (selectedTabChange)="tabChanged($event)">
   <mat-tab label="Liste">
+    <div class="siren-info-box" *ngIf="isSireneAcitve">
+      <div class="siren-info-title">
+        <mat-icon color="info">info</mat-icon>
+        <span class="m-2">La recherche via l’API Sirene est déclenchée uniquement si :</span>
+      </div>
+      <div class="siren-info-details">
+        <ul>
+          <li>au moins <strong>2 champs de filtre</strong> sont remplis</li>
+          <li>le nombre de résultats est <strong>inférieur à {{nbMinResultats}}</strong></li>
+          <li>ou une <strong>recherche directe par SIRET</strong> est effectuée</li>
+        </ul>
+      </div>
+    </div>
     <app-table [service]="structureService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters" [exportColumns]="exportColumns"
                matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'"
                (matSortChange)="appTable ? appTable.sorting($event) : null" [noResultText]="'Aucun établissement trouvé'">

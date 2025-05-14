@@ -100,10 +100,8 @@ public class SirenService {
             throw new AppException(HttpStatus.BAD_REQUEST, "Erreur lors de la récupération des établissements, vérifiez vos filtres");
         } catch (HttpClientErrorException e) {
             logger.error("Erreur d'authentification lors de la récupération des établissements : {}", e.getMessage());
-            throw new AppException(HttpStatus.NOT_FOUND, "Erreur lors de la récupération des établissements");
         } catch (Exception e) {
             logger.error("Erreur lors de la récupération des établissements : {}", e.getMessage());
-            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de la récupération des établissements");
         }
         return new ListStructureSirenDTO(0,Collections.emptyList());
     }
