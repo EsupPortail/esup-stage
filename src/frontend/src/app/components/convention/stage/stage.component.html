@@ -170,25 +170,27 @@
             </div>
           </div>
         </div>
-        <div class="row" style="align-items: baseline">
-          <mat-form-field class="col-6 mb-2" appearance="fill">
+        <div class="form-row row align-items-start">
+          <mat-form-field class="duree-field col-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Durée effective du stage en nombre d'heures</mat-label>
             <input type="number" step="any" matInput formControlName="dureeExceptionnelle" required />
-            <mat-error><app-form-error [field]="form.get('dureeExceptionnelle')"></app-form-error></mat-error>
+            <mat-error>
+              <app-form-error [field]="form.get('dureeExceptionnelle')"></app-form-error>
+            </mat-error>
           </mat-form-field>
-          <div class="col-6 mb-2" style="align-items: baseline" *ngIf="!updatingPeriode && !enMasse">
-            <mat-form-field class="col-2 mb-2" appearance="fill">
+          <div class="periode-wrapper col-12 col-md-6 mb-2" *ngIf="!updatingPeriode && !enMasse">
+            <mat-form-field class="periode-field" appearance="fill">
+              <mat-label>Mois</mat-label>
               <input type="number" matInput formControlName="periodeStageMois" />
             </mat-form-field>
-            <mat-label>Mois</mat-label>
-            <mat-form-field class="col-2 mb-2" appearance="fill">
+            <mat-form-field class="periode-field" appearance="fill">
+              <mat-label>Jour(s)</mat-label>
               <input type="number" matInput formControlName="periodeStageJours" />
             </mat-form-field>
-            <mat-label>Jour(s)</mat-label>
-            <mat-form-field class="col-2 mb-2" appearance="fill">
+            <mat-form-field class="periode-field" appearance="fill">
+              <mat-label>Heure(s)</mat-label>
               <input type="number" matInput formControlName="periodeStageHeures" />
             </mat-form-field>
-            <mat-label>Heure(s)</mat-label>
           </div>
         </div>
         <div class="row">

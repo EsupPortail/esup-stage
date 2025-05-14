@@ -179,9 +179,9 @@ export class StageComponent implements OnInit {
       dureeExceptionnelle: [this.convention.dureeExceptionnelle, this.fieldValidators['dureeExceptionnelle']],
       idTempsTravail: [this.convention.tempsTravail ? this.convention.tempsTravail.id : null, [Validators.required]],
       commentaireDureeTravail: [this.convention.commentaireDureeTravail],
-      periodeStageMois: [this.dureeStage.dureeMois, [Validators.min(0), Validators.max(30)]],
-      periodeStageJours: [this.dureeStage.dureeJours, [Validators.min(0), Validators.max(31)]],
-      periodeStageHeures: [this.dureeStage.dureeHeures, [Validators.min(0), Validators.max(23)]],
+      periodeStageMois: [this.dureeStage.dureeMois, [Validators.min(0), Validators.max(30),Validators.required]],
+      periodeStageJours: [this.dureeStage.dureeJours, [Validators.min(0), Validators.max(31),Validators.required]],
+      periodeStageHeures: [this.dureeStage.dureeHeures, [Validators.min(0), Validators.max(23),Validators.required]],
       // - Partie Gratification
       gratificationStage: [this.convention.gratificationStage, [Validators.required]],
       montantGratification: [this.convention.montantGratification, this.fieldValidators['montantGratification']],
