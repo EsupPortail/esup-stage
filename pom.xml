@@ -57,7 +57,7 @@
 									<goal>npm</goal>
 								</goals>
 								<configuration>
-									<arguments>install --loglevel info</arguments>
+									<arguments>install --loglevel info --omit=optional</arguments>
 									<workingDirectory>${project.basedir}/src/frontend</workingDirectory>
 									<skip>${skip.npm.install}</skip>
 								</configuration>

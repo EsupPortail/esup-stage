@@ -15,7 +15,7 @@ Documentation technique link:src/docs/modules/ROOT/pages/index.adoc[(source)]
 
 == Prérequis
 
-.Les xref:Prerequis.adoc[prérequis] sont les suivants sur votre serveur :
+.Les xref:src\docs\modules\ROOT\pages\Prerequis.adoc[prérequis] sont les suivants sur votre serveur :
 * Git
 * Java OpenJdk 21
 * Apache Maven
@@ -63,14 +63,27 @@ git clone https://github.com/EsupPortail/esup-stage.git
 [source,shell]
 ----
 mkdir -p /etc/estage
-cp /opt/esup-stage/etc/estage/estage-example.properties /etc/estage/estage.properties
+cp /opt/esup-stage/application-example.properties /etc/estage/application.properties
 ----
+
+
 
 == Modification du fichier de configuration
 
+=== Modifications apportées au fichier de configuration pour la version 3
+
+* *Renommage* du fichier de config `estage.properties` en `application.properties`
+** *__A placer à la racine du projet__*, il sera interprété automatiquement par Spring Boot
+* `appli.tokens` : précédement `appli.public.tokens`, *renommé* pour cause technique (le mot clé `public` étant réservé)
+* Pour *éviter les redondances* de valeurs, les champs suivants ont été modifiés :
+** `cas.url.login` : devient *optionnel* et ne peut maintenant contenir que le path de connexion :  `/login` (saisie de l'url entière toujours possible)
+** `cas.url.logout` : devient *optionnel* et ne peut maintenant contenir que le path de déconnexion :  `/logout` (saisie de l'url entière toujours possible)
+** `appli.localapi` : devient *optionnel*, sera utilisé en remplacement de `appli.url` lors des appels api sur elle-même (cas d'un reverse proxy par exemple)
+** `appli.prefix` : *supprimé*, car en doublon avec `appli.url`
+
 
 [source,properties]
-./etc/estage/estage.properties
+./etc/estage/application.properties
 ----
 # parametres des URLs pour l'authentication CAS
 cas.url.login=https://cas.monuniv.fr/cas/login?service={service}
@@ -117,18 +130,6 @@ appli.data_dir=/data_esup_stage
 ----
 
 NOTE: il faut que l'utilisateur faisant tourner votre *Tomcat puisse avoir les droits en écriture sur le répertoire data_esup_stage*
-
-
-== Modifications apportées au fichier de configuration pour la version 3
-
-* *Renommage* du fichier de config `estage.properties` en `application.properties`
-** *__A placer à la racine du projet__*, il sera interprété automatiquement par Spring Boot
-* `appli.tokens` : précédement `appli.public.tokens`, *renommé* pour cause technique (le mot clé `public` étant réservé)
-* Pour *éviter les redondances* de valeurs, les champs suivants ont été modifiés :
-** `cas.url.login` : devient *optionnel* et ne peut maintenant contenir que le path de connexion :  `/login` (saisie de l'url entière toujours possible)
-** `cas.url.logout` : devient *optionnel* et ne peut maintenant contenir que le path de déconnexion :  `/logout` (saisie de l'url entière toujours possible)
-** `appli.localapi` : devient *optionnel*, sera utilisé en remplacement de `appli.url` lors des appels api sur elle-même (cas d'un reverse proxy par exemple)
-** `appli.prefix` : *supprimé*, car en doublon avec `appli.url`
 
 == Stockage de fichiers
 
@@ -182,11 +183,41 @@ Après la compilation, le chemin complet du fichier de déploiement est le suiva
 == Exécution de l'application avec __Tomcat__
 
 NOTE: Cette documentation ne va pas décrire l'installation d'un Tomcat.
-ESUP STAGE a été déployé et testé sur une version TOMCAT 9
+ESUP STAGE a été déployé et testé sur une version TOMCAT 10
 
-TIP: Vous pouvez télécharger tomcat ici : https://tomcat.apache.org/download-90.cgi
+TIP: Vous pouvez télécharger tomcat ici : https://tomcat.apache.org/download-10.cgi
 
 Nous considérons par exemple le chemin du répertoire tomcat ainsi : `/opt/tomcat-esup-stage`
+
+//wget https://dlcdn.apache.org/tomcat/tomcat-10/v10.1.41/bin/apache-tomcat-10.1.41.tar.gz
+
+//tar xzf apache-tomcat-10.1.41.tar.gz
+
+//ln -sfn apache-tomcat-10.1.41.tar.gz tomcat-esup-stage
+
+
+
+=== Paramétré __Tomcat__
+
+Pour exécuter l'application avec Tomcat, il faut lui renseigné les paramètre de jvm nécessaire. Pour ce faire, créer un fichier setenv.sh :
+
+[source,shell]
+----
+nano /opt/tomcat-esup-stage/bin/setenv.sh
+----
+
+Renseigné les paramètres suivant dans le fichier, les deux premiers étant les options de jvm et la troisième le répertoire où trouver l'application.properties.
+
+[source,shell]
+----
+export JAVA_OPTS="-Xms1024m -Xmx1024m -Dspring.config.location=/etc/estage/application.properties"
+----
+
+Cela permet d'éviter de devoir penser a remettre les options a chaque fois qu'on relance Tomcat.
+
+TIP: Vous pouvez placer le .properties dans le répertoire de votre choix, il suffit de le renseigner dans Dspring.config.location
+
+=== Exécution avec __Tomcat__
 
 Supprimer (ou déplacer une sauvegarde) votre répertoire `/opt/tomcat-esup-stage/webapp/ROOT` avant le déploiement
 
@@ -194,7 +225,7 @@ Copier directement votre fichier `/opt/estage/target/ROOT.war` dans votre réper
 
 [source,shell]
 ----
-cp /opt/esupstage/target/ROOT.war /opt/tomcat-esup-stage/webapp/
+cp /opt/esup-stage/target/esup-stage-3.0.0.4.war /opt/tomcat-esup-stage/webapps/
 ----
 
 On arrête le tomcat avant et on le redémarre ensuite
@@ -203,8 +234,6 @@ On arrête le tomcat avant et on le redémarre ensuite
 ----
 /opt/tomcat-esup-stage/bin/shutdown.sh
 ----
-
-Pensez à paramétrer les espaces mémoire JVM : `export JAVA_OPTS="-Xms1024m -Xmx1024m -XX:MaxPermSize=256m"`
 
 Démarrage :
 

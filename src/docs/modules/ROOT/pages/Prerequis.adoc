@@ -65,26 +65,26 @@ source /etc/profile.d/java11.sh
 Version officiel : 
 [source,shell]
 ----
-$ sudo apt update
-$ sudo apt install openjdk-21-jdk
+sudo apt update
+sudo apt install openjdk-21-jdk
 ----
 ou
 
 Version Temurin : 
 [source,shell]
 ----
-$ mkdir -p /etc/apt/keyrings
-$ curl -fsSL https://packages.adoptium.net/artifactory/api/gpg/key/public | tee /etc/apt/keyrings/adoptium.asc > /dev/null
-$ echo "deb [signed-by=/etc/apt/keyrings/adoptium.asc] https://packages.adoptium.net/artifactory/deb bookworm main" > /etc/apt/sources.list.d/adoptium.list
-$ sudo apt update
-$ sudo apt install openjdk-21-jdk
+mkdir -p /etc/apt/keyrings
+curl -fsSL https://packages.adoptium.net/artifactory/api/gpg/key/public | tee /etc/apt/keyrings/adoptium.asc > /dev/null
+echo "deb [signed-by=/etc/apt/keyrings/adoptium.asc] https://packages.adoptium.net/artifactory/deb bookworm main" > /etc/apt/sources.list.d/adoptium.list
+sudo apt update
+sudo apt install temurin-21-jdk
 ----
 
 Vous pouvez vérifier l'installation :
 
 [source,shell]
 ----
-$ java -version
+java -version
 openjdk version "21.0.7" 2025-04-15
 OpenJDK Runtime Environment (build 21.0.7+6-Ubuntu-0ubuntu124.04)
 OpenJDK 64-Bit Server VM (build 21.0.7+6-Ubuntu-0ubuntu124.04, mixed mode, sharing)
@@ -130,7 +130,8 @@ et ajoutez le contenu suivant :
 
 [source,shell]
 ----
-export M2_HOME=/opt/maven export PATH=${M2_HOME}/bin:${PATH}
+export MAVEN_HOME=/opt/maven
+export PATH=$MAVEN_HOME/bin:$PATH
 ----
 
 Chargez maintenant les variables d'environnement dans le shell actuel à l'aide de la commande suivante :
