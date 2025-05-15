@@ -28,13 +28,15 @@ TIP: Est liée à un centre de gestion via les critères du centre de gestion.
 selon le paramétrage effectué au niveau du centre de gestion.
 * S’il s’agit d’une
 convention issue d’une création en masse par le gestionnaire, elle est déjà validée.
-Suivant le paramétrage défini dans centre de gestion : #TODO: À PRÉCISER MIEUX s.v.p.#
+Suivant le paramétrage défini dans centre de gestion.
 
 ==== Validation pédagogique
-#TODO: À DÉFINIR#
+
+Validation de la convention par l’enseignant référent.
 
 ==== Validation administrative
-#TODO: À DÉFINIR#
+
+Validation de la convention par un gestionnaire du centre de gestion auquel elle est rattachée.
 
 === PDF Convention
 document écrit dématérialisé de la convention de stage (a
@@ -66,17 +68,27 @@ TIP: Il est possible de voir les signatures manquantes en survolant l’icône d
 
 
 ==== Type de convention
-#TODO: À DÉFINIR#
+
+Chaque convention est associée à un type, permettant de déterminer son cadre, ses obligations et le modèle (template) de document utilisé pour sa génération.
+
+Les types de convention les plus courants sont :
+
+* **Stage obligatoire** : Convention liée à une période de stage intégrée dans le cursus de formation. Elle utilise un modèle standard défini par l’établissement.
+* **Stage facultatif** : Stage réalisé à l’initiative de l’étudiant, en dehors des périodes obligatoires. Il peut avoir un modèle simplifié.
+* **Alternance** : Concerne les contrats d’apprentissage ou de professionnalisation. Modèle spécifique basé sur la législation en vigueur.
+* **Stage à l’étranger** : Contient des clauses supplémentaires sur les assurances, la sécurité, et le pays d’accueil. Modèle adapté fourni par l’établissement.
+* **Projet tutoré / mission encadrée** : Utilisé dans le cadre de collaborations pédagogiques, avec un modèle spécifique validé par l’établissement.
 
 ==== Avenant
 Modification de la convention de stage après sa validation.
 
 ==== Validation de l'avenant
-#TODO: À DÉFINIR#
+
+Validation de l'avenant par un gestionnaire du centre de gestion auquel la convention est rattachée.
 
 ==== PDF Avenant
 document écrit dématérialisé d'un avenant à la convention
-(a vocation à être signé aussi). #TODO: À PRÉCISER UN PEU PLUS#
+(a vocation à être signé aussi).
 
 === Etablissement d’accueil
 entreprise, administration, établissement scolaire, association ou tout autre

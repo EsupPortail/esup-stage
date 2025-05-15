@@ -46,7 +46,7 @@ Définir les variables d'environnement Java
 
 [source,shell]
 ----
-sudo tee /etc/profile.d/java11.sh <<EOF
+$ sudo tee /etc/profile.d/java11.sh <<EOF
 export JAVA_HOME=\$(dirname \$(dirname \$(readlink \$(readlink \$(which javac)))))
 export PATH=\$PATH:\$JAVA_HOME/bin
 export CLASSPATH=.:\$JAVA_HOME/jre/lib:\$JAVA_HOME/lib:\$JAVA_HOME/lib/tools.jar
@@ -62,10 +62,22 @@ source /etc/profile.d/java11.sh
 //-------------------------------------
 *Sous Debian / Ubuntu*
 
+Version officiel : 
 [source,shell]
 ----
-sudo apt update
-sudo apt install openjdk-21-jdk
+$ sudo apt update
+$ sudo apt install openjdk-21-jdk
+----
+ou
+
+Version Temurin : 
+[source,shell]
+----
+$ mkdir -p /etc/apt/keyrings
+$ curl -fsSL https://packages.adoptium.net/artifactory/api/gpg/key/public | tee /etc/apt/keyrings/adoptium.asc > /dev/null
+$ echo "deb [signed-by=/etc/apt/keyrings/adoptium.asc] https://packages.adoptium.net/artifactory/deb bookworm main" > /etc/apt/sources.list.d/adoptium.list
+$ sudo apt update
+$ sudo apt install openjdk-21-jdk
 ----
 
 Vous pouvez vérifier l'installation :
@@ -135,7 +147,7 @@ Apache Maven a été configuré avec succès sur votre système. Utilisez la com
 
 [source,shell]
 ----
-mvn -version
+mvn -v
 Apache Maven 3.9.9 (8e8579a9e76f7d015ee5ec7bfcdc97d260186937)
 Maven home: /opt/maven
 Java version: 21.0.7, vendor: Ubuntu, runtime: /usr/lib/jvm/java-21-openjdk-amd64
@@ -147,7 +159,7 @@ Enfin, supprimez le fichier d'archive téléchargé du système pour libérer de
 
 [source,shell]
 ----
-rm -f apache-maven-3.6.2-bin.tar.gz
+rm -f apache-maven-3.9.9-bin.tar.gz
 ----
 
 == Installation Mariadb
