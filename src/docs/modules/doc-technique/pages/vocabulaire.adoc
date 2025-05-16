@@ -32,11 +32,15 @@ Suivant le paramétrage défini dans centre de gestion.
 
 ==== Validation pédagogique
 
-Validation de la convention par l’enseignant référent.
+Validation lorsque le projet de stage saisi par l'étudiant a été vérifié. Elle permet à l'étudiant d'imprimer la convention.
+
+TIP: le nom de cette validation est personnalisable dans les paramètres généraux de l'application
 
 ==== Validation administrative
 
 Validation de la convention par un gestionnaire du centre de gestion auquel elle est rattachée.
+
+TIP: le nom de cette validation est personnalisable dans les paramètres généraux de l'application
 
 === PDF Convention
 document écrit dématérialisé de la convention de stage (a

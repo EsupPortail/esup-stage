@@ -210,7 +210,7 @@ Renseigné les paramètres suivant dans le fichier, les deux premiers étant les
 
 [source,shell]
 ----
-export JAVA_OPTS="-Xms1024m -Xmx1024m -Dspring.config.location=/etc/estage/application.properties"
+export JAVA_OPTS="-Xms1024m -Xmx1024m -Dspring.config.additional-location=/etc/estage/application.properties"
 ----
 
 Cela permet d'éviter de devoir penser a remettre les options a chaque fois qu'on relance Tomcat.
