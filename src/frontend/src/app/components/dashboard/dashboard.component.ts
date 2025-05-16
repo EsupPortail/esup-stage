@@ -23,8 +23,8 @@ import { LangueConventionService } from "../../services/langue-convention.servic
 export class DashboardComponent implements OnInit, OnDestroy {
 
   columns: string[] = [];
-  sortColumn = 'etudiant.nom';
-  sortDirection: SortDirection = 'asc';
+  sortColumn = 'id';
+  sortDirection: SortDirection = 'desc';
   filters: any[] = [];
   validationsOptions: any[] = [
     { id: 'validationPedagogique', libelle: 'Validée pédagogiquement' },
