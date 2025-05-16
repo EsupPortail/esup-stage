@@ -7,6 +7,7 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { debounceTime } from 'rxjs/operators';
 import { ConsigneService } from "../../services/consigne.service";
 import {REGEX} from "../../utils/regex.utils";
+import { CoordCentreComponent } from './coord-centre/coord-centre.component';
 
 @Component({
   selector: 'app-centre-gestion',
@@ -47,6 +48,7 @@ export class CentreGestionComponent implements OnInit {
   signatureElectroniqueForm!: FormGroup;
 
   @ViewChild('matTabs') matTabs: MatTabGroup | undefined;
+  @ViewChild('coordCentre') coordCentreComponent!: CoordCentreComponent;
 
   constructor(private activatedRoute: ActivatedRoute, private centreGestionService: CentreGestionService, private messageService: MessageService, private fb: FormBuilder, private router: Router, private consigneService: ConsigneService) {
     this.setCoordCentreForm();
@@ -191,8 +193,11 @@ export class CentreGestionComponent implements OnInit {
 
   updateOnChanges(): void {
     this.coordCentreForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
-      this.setCentreGestionCoordCentre();
-      this.update();
+      if (this.coordCentreForm.valid || (this.centreGestion.id == 0 && this.coordCentreForm.get('nomCentre')?.valid && this.coordCentreForm.get('niveauCentre')?.valid )){
+        this.setCentreGestionCoordCentre();
+        this.update();
+        this.coordCentreComponent.chargerEtapes();
+      }
     });
     this.paramCentreForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
       this.setCentreGestionParamCentre();

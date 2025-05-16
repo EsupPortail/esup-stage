@@ -10,7 +10,7 @@
         </mat-progress-bar>
       </div>
     </ng-template>
-    <app-coord-centre *ngIf="centreGestionInited && (coordCentreTab.isActive || tabs[0]?.init)"
+    <app-coord-centre #coordCentre *ngIf="centreGestionInited && (coordCentreTab.isActive || tabs[0]?.init)"
                       [form]="coordCentreForm"
                       [centreGestion]="centreGestion"
                       (update)="update()"
