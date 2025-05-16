@@ -464,7 +464,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
     const ids = this.selected.map((s: any) => s.id);
     this.conventionService.validationAdministrative(ids).subscribe((response: any) => {
-      this.messageService.setSuccess(`${response} convention(s) validée(s)`);
+      if(response && !isNaN(Number(response.message.charAt(0)))){
+        this.messageService.setSuccess(response.message);
+      }else{
+        this.messageService.setWarning(response.message);
+      }
       this.selected = [];
       this.countConvention();
       this.appTable?.update();

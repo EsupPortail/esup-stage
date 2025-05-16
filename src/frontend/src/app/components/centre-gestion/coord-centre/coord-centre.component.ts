@@ -66,19 +66,7 @@ export class CoordCentreComponent implements OnInit {
       this.niveauxCentre = response;
     });
     if (this.centreGestion.id) {
-      this.setFormData();
-      if (this.centreGestion.niveauCentre.libelle == 'UFR') {
-        this.getComposantes();
-        this.getCentreComposante();
-      }
-      else if (this.centreGestion.niveauCentre.libelle == 'ETAPE') {
-        this.getEtapes();
-        this.getCentreEtapes();
-        this.filters.push({id: 'centreGestion.id', value: this.centreGestion.id, type: 'int', hidden: true});
-      }
-      if (this.centreGestion.niveauCentre && this.centreGestion.niveauCentre.libelle === 'ETABLISSEMENT') {
-        this.form.get('niveauCentre')?.disable();
-      }
+      this.chargerEtapes()
     }
     this.refreshCentreGestion.emit(this.centreGestion)
   }
@@ -230,5 +218,21 @@ export class CoordCentreComponent implements OnInit {
   updateCommune(commune : any): void {
     this.form.get('commune')?.setValue(commune.split(' - ')[0]);
     this.form.get('codePostal')?.setValue(commune.split(' - ')[1]);
+  }
+
+  chargerEtapes(){
+    this.setFormData();
+    if (this.centreGestion.niveauCentre.libelle == 'UFR') {
+      this.getComposantes();
+      this.getCentreComposante();
+    }
+    else if (this.centreGestion.niveauCentre.libelle == 'ETAPE') {
+      this.getEtapes();
+      this.getCentreEtapes();
+      this.filters.push({id: 'centreGestion.id', value: this.centreGestion.id, type: 'int', hidden: true});
+    }
+    if (this.centreGestion.niveauCentre && this.centreGestion.niveauCentre.libelle === 'ETABLISSEMENT') {
+      this.form.get('niveauCentre')?.disable();
+    }
   }
 }

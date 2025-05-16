@@ -120,7 +120,7 @@
       <i *ngIf="row.centreGestion.verificationAdministrative" class="fa fa-check"
          [class.activate]="row.verificationAdministrative"
          matTooltip="{{row.verificationAdministrative ? validationLibelles.verificationAdministrative + ' effectuée' : 'en attente ' + validationLibelles.verificationAdministrative}}"></i>
-      <i class="fa-solid fa-signature"
+      <i *ngIf="row.dateEnvoiSignature" class="fa-solid fa-signature"
          [ngClass]="getValidationIconStatus(row)"
          [matTooltip]="getValidationTooltip(row)">
       </i>
@@ -208,7 +208,7 @@
         <i *ngIf="row.centreGestion.validationConvention" class="fa fa-scroll"
            [class.activate]="row.validationConvention"
            matTooltip="{{row.validationConvention ? validationLibelles.validationConvention + ' effectuée' : 'en attente ' + validationLibelles.validationConvention}}"></i>
-        <i class="fa-solid fa-pen"
+        <i *ngIf="row.dateEnvoiSignature" class="fa-solid fa-signature"
            [ngClass]="getValidationIconStatus(row)"
            [matTooltip]="getValidationTooltip(row)">
         </i>

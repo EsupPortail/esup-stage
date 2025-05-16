@@ -13,7 +13,64 @@ Documentation technique link:src/docs/modules/ROOT/pages/index.adoc[(source)]
 // == link:src/docs/modules/ROOT/pages/ESUP-STAGE.adoc#compilation[→ Compilation]
 // endif::[]
 
-== Modifications apportées au fichier de configuration pour la version 3
+== Prérequis
+
+.Les xref:src\docs\modules\ROOT\pages\Prerequis.adoc[prérequis] sont les suivants sur votre serveur :
+* Git
+* Java OpenJdk 21
+* Apache Maven
+* Installation Mariadb
+* Installation du projet Esup-SIscol (sur le même serveur ou sur un serveur dédié)
+
+[#la-base-de-donnees]
+== La base de données
+
+=== Création de la base et de l'utilisateur
+
+[source,SQL]
+----
+CREATE DATABASE estage;
+CREATE USER 'esupstage_user'@'%' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON estage.* TO 'esupstage_user'@'%';
+FLUSH PRIVILEGES;
+----
+
+=== Import de la base pStage et passage du patch
+
+TIP: Si vous n'avez pas de base pStage a reprendre, cette partie est inutile
+
+Pour importer votre base pStage d'une installation en production, vous devez réaliser un dump, ici le fichier : +
+`mysql-pstage-2022-01-25-16h00.sql.gz`
+
+CAUTION: Votre dump ne doit pas comporter de `CREATE DATABASE` ou `USE DATABASE`
+
+Les commandes suivantes permettent d'importer votre dump (pStage) dans votre base estage (ESUP STAGE) :
+
+[source,shell]
+----
+zcat /opt/estage/mysql-pstage-2022-01-25-16h00.sql.gz | mysql -u esupstage_user -p estage
+cat /opt/estage/src/main/resources/db/changelog/init-changelog.sql | mysql -u esupstage_user -p estage
+----
+
+== Clonage du projet
+
+[source,shell]
+----
+cd /opt
+git clone https://github.com/EsupPortail/esup-stage.git
+----
+
+[source,shell]
+----
+mkdir -p /etc/estage
+cp /opt/esup-stage/application-example.properties /etc/estage/application.properties
+----
+
+
+
+== Modification du fichier de configuration
+
+=== Modifications apportées au fichier de configuration pour la version 3
 
 * *Renommage* du fichier de config `estage.properties` en `application.properties`
 ** *__A placer à la racine du projet__*, il sera interprété automatiquement par Spring Boot
@@ -23,6 +80,56 @@ Documentation technique link:src/docs/modules/ROOT/pages/index.adoc[(source)]
 ** `cas.url.logout` : devient *optionnel* et ne peut maintenant contenir que le path de déconnexion :  `/logout` (saisie de l'url entière toujours possible)
 ** `appli.localapi` : devient *optionnel*, sera utilisé en remplacement de `appli.url` lors des appels api sur elle-même (cas d'un reverse proxy par exemple)
 ** `appli.prefix` : *supprimé*, car en doublon avec `appli.url`
+
+
+[source,properties]
+./etc/estage/application.properties
+----
+# parametres des URLs pour l'authentication CAS
+cas.url.login=https://cas.monuniv.fr/cas/login?service={service}
+cas.url.service=https://cas.monuniv.fr/cas/p3/serviceValidate?service={service}&ticket={ticket}&format=json
+cas.url.logout=https://cas.monuniv.fr/cas/logout
+
+# parametres base de donnees
+appli.datasource.url=jdbc:mariadb://monserversql.monuniv.fr:3306/estage
+appli.datasource.username=estage
+appli.datasource.password=xxx
+appli.datasource.driver=org.mariadb.jdbc.Driver
+
+# url de l'application (notamment utilisée pour envoyer des liens par mail)
+appli.url=http://esupstage.monuniv.fr:8080/frontend/#/
+
+# logins des admin technique, séparés par des ; (utilisateurs à créer au 1er lancement pour paramétrer l'application)
+appli.admin_technique=xxx;yyy
+
+# identifiant pour l'accès au web services référentiel (cela correspond aux identifiants du WS esup-SIscol)
+referentiel.ws.login=root
+referentiel.ws.password=xxx
+# url du service LDAP
+referentiel.ws.ldap_url=https://referentiel.monuniv.fr/ldap
+# url du service Apogée
+referentiel.ws.apogee_url=https://referentiel.monuniv.fr/apogee
+
+# mailer
+appli.mailer.protocol=smtp
+appli.mailer.host=smtp.monuniv.fr
+appli.mailer.port=25
+appli.mailer.auth=true
+appli.mailer.username=username@monuniv.fr
+appli.mailer.password=xxx
+appli.mailer.from=from@monuniv.fr
+appli.mailer.disable_delivery=true
+# paramètres pour le développement, par défaut disable_delivery=false, delivery_address=null
+# si appli.mailer.disable_delivery=true alors l'envoi de mail est désactivé sinon si false alors l'envoi de mail est activé
+appli.mailer.delivery_address=user@monuniv.fr
+# Permet de rediriger les mails vers une adresse mail. Si adresse mail renseignée alors les mails sont redirigés vers cette adresse. Si null alors les mails sont envoyés aux utilisateurs.
+
+# chemin vers le dossier contenant les uploads
+# pour les logos des centres de gestion il faut que le dossier ${appli.data_dir}/centregestion/logos soit existant sur le serveur
+appli.data_dir=/data_esup_stage
+----
+
+NOTE: il faut que l'utilisateur faisant tourner votre *Tomcat puisse avoir les droits en écriture sur le répertoire data_esup_stage*
 
 == Stockage de fichiers
 
@@ -59,6 +166,11 @@ A la racine de l'application, *renommer* et *complèter* le fichier `application
 mvn clean package cargo:run
 ----
 
+
+== Déploiement / Lancement de l'application
+
+Après la compilation, le chemin complet du fichier de déploiement est le suivant : `/opt/estage/target/ROOT.war`
+
 == Exécution de l'application avec __Docker__
 
 * Créer un fichier `.env` basé sur le fichier `example.env`
@@ -70,8 +182,87 @@ mvn clean package cargo:run
 
 == Exécution de l'application avec __Tomcat__
 
-* *TODO*
-* Le fichier application.properties peut être positionné à la racine du tomcat et renseigné dans la commande d'exécution avec `-Dspring.config.location=$HOMEDIR/application.properties`
+NOTE: Cette documentation ne va pas décrire l'installation d'un Tomcat.
+ESUP STAGE a été déployé et testé sur une version TOMCAT 10
+
+TIP: Vous pouvez télécharger tomcat ici : https://tomcat.apache.org/download-10.cgi
+
+Nous considérons par exemple le chemin du répertoire tomcat ainsi : `/opt/tomcat-esup-stage`
+
+//wget https://dlcdn.apache.org/tomcat/tomcat-10/v10.1.41/bin/apache-tomcat-10.1.41.tar.gz
+
+//tar xzf apache-tomcat-10.1.41.tar.gz
+
+//ln -sfn apache-tomcat-10.1.41.tar.gz tomcat-esup-stage
+
+
+
+=== Paramétré __Tomcat__
+
+Pour exécuter l'application avec Tomcat, il faut lui renseigné les paramètre de jvm nécessaire. Pour ce faire, créer un fichier setenv.sh :
+
+[source,shell]
+----
+nano /opt/tomcat-esup-stage/bin/setenv.sh
+----
+
+Renseigné les paramètres suivant dans le fichier, les deux premiers étant les options de jvm et la troisième le répertoire où trouver l'application.properties.
+
+[source,shell]
+----
+export JAVA_OPTS="-Xms1024m -Xmx1024m -Dspring.config.additional-location=/etc/estage/application.properties"
+----
+
+Cela permet d'éviter de devoir penser a remettre les options a chaque fois qu'on relance Tomcat.
+
+TIP: Vous pouvez placer le .properties dans le répertoire de votre choix, il suffit de le renseigner dans Dspring.config.location
+
+=== Exécution avec __Tomcat__
+
+Supprimer (ou déplacer une sauvegarde) votre répertoire `/opt/tomcat-esup-stage/webapp/ROOT` avant le déploiement
+
+Copier directement votre fichier `/opt/estage/target/ROOT.war` dans votre répertoire *`webapp` de tomcat*
+
+[source,shell]
+----
+cp /opt/esup-stage/target/esup-stage-3.0.0.4.war /opt/tomcat-esup-stage/webapps/
+----
+
+On arrête le tomcat avant et on le redémarre ensuite
+
+[source,shell]
+----
+/opt/tomcat-esup-stage/bin/shutdown.sh
+----
+
+Démarrage :
+
+[source,shell]
+----
+/opt/tomcat-esup-stage/bin/startup.sh
+----
+
+Bravo, l'installation est terminée ! Vous pouvez y accéder sur http://localhost:8080
+
+Lancement direct du `war` (ne pas utiliser : en cours de debug) `java -jar /opt/estage/target/ROOT.war`
+
+Dans le cas de l'utilisation d'un proxy (apache proxypass par exemple) il est conseillé d'utiliser le protocole AJP.
+
+[source,apacheconf]
+.Exemple de configuration Apache :
+----
+<VirtualHost *:80>
+    ServerAdmin admin@monuniv.fr
+    ServerName esup-stage.monuniv.fr
+    DefaultType text/html
+    ProxyRequests off
+    ProxyPreserveHost On
+    ProxyPass / http://localhost:8080/
+    ProxyPassReverse / http://localhost:8080/
+</VirtualHost>
+----
+
+TIP: Le fichier application.properties peut être positionné à la racine du tomcat et renseigné dans la commande d'exécution avec `-Dspring.config.location=$HOMEDIR/application.properties`
 
 == Exécution local en mode pour __dév__ avec l'__hot reload d'angular__
 
@@ -84,3 +275,5 @@ mvn clean package cargo:run
 * Se rendre sur l'application à l'adresse `http://localhost:8080/` pour se connecter une première fois
 * Puis se rendre sur `http://localhost:4200`
 * Pour se déconnecter, aller sur `http://localhost:4200/logout`
+
+

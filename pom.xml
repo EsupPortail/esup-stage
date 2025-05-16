@@ -17,7 +17,7 @@
 
 	<properties>
 		<revision>3.0.0</revision>
-		<sha1>.3</sha1>
+		<sha1>.4</sha1>
 		<changelist></changelist>
 
 		<java.version>21</java.version>
@@ -57,7 +57,7 @@
 									<goal>npm</goal>
 								</goals>
 								<configuration>
-									<arguments>install --loglevel info</arguments>
+									<arguments>install --loglevel info --omit=optional</arguments>
 									<workingDirectory>${project.basedir}/src/frontend</workingDirectory>
 									<skip>${skip.npm.install}</skip>
 								</configuration>
