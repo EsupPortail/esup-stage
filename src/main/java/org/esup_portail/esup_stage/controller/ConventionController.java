@@ -37,6 +37,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @ApiController
 @RequestMapping("/conventions")
@@ -351,27 +352,45 @@ public class ConventionController {
 
     @PostMapping("/validation-administrative")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.VALIDATION})
-    public int validationAdministrativeMultiple(@RequestBody IdsListDto idsListDto) {
-        // Un enseignant n'a les droits que sur la validation pédagogique
+    public ResponseEntity<Map<String, String>> validationAdministrativeMultiple(@RequestBody IdsListDto idsListDto) {
         if (UtilisateurHelper.isRole(ServiceContext.getUtilisateur(), Role.ENS)) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Type de validation inconnu");
         }
-        if (idsListDto.getIds().size() == 0) {
+        if (idsListDto.getIds().isEmpty()) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La liste est vide");
         }
+
+        List<Integer> idConventionsErreur = new ArrayList<>();
         ConfigAlerteMailDto configAlerteMailDto = appConfigService.getConfigAlerteMail();
         int count = 0;
+
         for (int id : idsListDto.getIds()) {
             Convention convention = conventionJpaRepository.findById(id);
-            // On ne traite pas les convention déjà validée administrativement
-            if (convention == null || (convention.getValidationConvention() != null && convention.getValidationConvention())) {
+            if (convention == null || Boolean.TRUE.equals(convention.getValidationConvention())) {
+                continue;
+            }
+            if (Boolean.TRUE.equals(convention.getCentreGestion().getValidationPedagogique()) &&
+                    !Boolean.TRUE.equals(convention.getValidationPedagogique())) {
+                idConventionsErreur.add(convention.getId());
                 continue;
             }
             validationAdministrative(convention, configAlerteMailDto, ServiceContext.getUtilisateur(), true);
             conventionService.validationAutoDonnees(convention, ServiceContext.getUtilisateur());
             count++;
         }
-        return count;
+
+        Map<String, String> response = new HashMap<>();
+        if (!idConventionsErreur.isEmpty()) {
+            String list = idConventionsErreur.stream().map(String::valueOf).collect(Collectors.joining(", "));
+            String message = idConventionsErreur.size() == 1
+                    ? "La convention suivante n'a pas pu être validée administrativement car elle n'a pas été validée pédagogiquement : "
+                    : "Les conventions suivantes n'ont pas pu être validées administrativement car elles n'ont pas été validées pédagogiquement : ";
+            response.put("message", message + list);
+        } else {
+            response.put("message", count + " convention(s) validée(s)");
+        }
+
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/{id}/valider/{type}")
