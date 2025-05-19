@@ -694,7 +694,7 @@
                 <mat-panel-title>Savoir être du stagiaire</mat-panel-title>
               </mat-expansion-panel-header>
               <div class="mt-2 mb-2" *ngFor="let question of FicheEntrepriseIQuestions">
-                <div *ngIf="ficheEvaluation['question' + question.controlName]">
+                <div *ngIf="ficheEvaluation && ('question' + question.controlName) in ficheEvaluation">
                   <div class="row mb-2" *ngIf="question.type == 'boolean'">
                     <div class="col-md-12">
                       <div class="mb-2"><b>{{question.title}}</b></div>
