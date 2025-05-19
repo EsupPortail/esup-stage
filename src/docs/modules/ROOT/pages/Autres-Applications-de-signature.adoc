@@ -4,7 +4,7 @@ WARNING: Les paramètres ne doivent pas être ajoutés s'ils ne sont pas utilis�
 
 ESUP-Stage met à disposition des api "public" accessible avec un des tokens paramétrés dans `appli.public.tokens`. La liste des api se trouve dans `/public/swagger-ui.html`.
 
-Le paramétrage "webhook" correspondent à l'appel vers une api externe pour la signature électronique (cette solution est à mettre en place par chaque établissement). Les api vers ESUP-Signature sont intégrés dans ESUP-Stage mais la configuration est la même pour une solution externe.
+Le paramétrage "webhook" correspondent à l'appel vers une api externe pour la signature électronique (cette solution est à mettre en place par chaque établissement).
 
 `webhook.signature.uri` : uri de l'api externe +
 `webhook.signature.token` : token d'accès
@@ -20,10 +20,6 @@ webhook.signature.uri=http://localhost:8080/webhook/esup-signature
 # token permettant d'accéder au webhook signature
 webhook.signature.token=yyyyy
 ### -------------------- ###
-
-### Paramétrage esup-signature ###
-# numero du circuit
-esupsignature.uri=http://localhost:8880/ws
-esupsignature.circuit=123
-### -------------------- ###
 ----
+
+// Experience UL ? 

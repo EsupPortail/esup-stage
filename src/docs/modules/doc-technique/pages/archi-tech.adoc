@@ -1,5 +1,5 @@
 = Architecture de l'application
-:author: Université Lorraine
+:author: Université de Lorraine
 :imagesdir: ../images/
 
 [plantuml]

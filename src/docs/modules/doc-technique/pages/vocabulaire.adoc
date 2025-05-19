@@ -1,5 +1,5 @@
 = Vocabulaire du domaine de Esup-Stage
-:author: Université Lorraine
+:author: Université de Lorraine
 :imagesdir: ../images/
 :reftext: Vocabulaire
 :navtitle: Vocabulaire
