@@ -1,0 +1,41 @@
+<mat-tab-group>
+  <mat-tab label="Tâches planifiées">
+    <mat-card>
+      <mat-card-content>
+        <table class="table table-bordered table-hover">
+          <thead class="thead-light">
+          <tr>
+            <th>ID</th>
+            <th>Nom</th>
+            <th>Expression Cron</th>
+            <th>Active</th>
+            <th>Dernière Exécution</th>
+            <th>Date Création</th>
+            <th>Login Création</th>
+            <th>Date dernière modification</th>
+            <th>Login dernière modification</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let task of cronTasks">
+            <td>{{ task.id }}</td>
+            <td><input class="form-control" [(ngModel)]="task.nom" /></td>
+            <td><input class="form-control" [(ngModel)]="task.expressionCron" /></td>
+            <td class="text-center">
+              <mat-slide-toggle [(ngModel)]="task.active"></mat-slide-toggle>
+            </td>
+            <td>{{ task.dateDernierExecution | date: 'short' }}</td>
+            <td>{{ task.dateCreation | date: 'short' }}</td>
+            <td>{{ task.loginCreation }}</td>
+            <td>{{ task.dateModification | date: 'short'  }}</td>
+            <td>{{ task.loginModification }}</td>
+          </tr>
+          </tbody>
+        </table>
+        <div class="text-end mt-3">
+          <button class="btn" (click)="saveAll()">Enregistrer les modifications</button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </mat-tab>
+</mat-tab-group>

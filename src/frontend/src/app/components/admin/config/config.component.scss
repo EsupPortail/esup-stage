@@ -1,0 +1,14 @@
+thead.thead-light th {
+  background-color: var(--primaryColor);
+  color: white;
+}
+
+.btn {
+  background-color: var(--primaryColor);
+  color: white;
+}
+
+.btn:hover {
+  filter: brightness(90%);
+  color: white;
+}
