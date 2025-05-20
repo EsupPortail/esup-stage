@@ -2,18 +2,44 @@
   <mat-tab label="Tâches planifiées">
     <mat-card>
       <mat-card-content>
+        <form class="form-filters" (ngSubmit)="$event.preventDefault()">
+          <mat-form-field>
+            <mat-label>ID</mat-label>
+            <input matInput type="number" [(ngModel)]="filtersObj.id" name="id" (ngModelChange)="onFilterChange()" autocomplete="off"/>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Nom</mat-label>
+            <input matInput [(ngModel)]="filtersObj.nom" name="nom" (ngModelChange)="onFilterChange()" autocomplete="off"/>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Actif</mat-label>
+            <mat-select
+              [(ngModel)]="filtersObj.active"
+              name="active"
+              (selectionChange)="onFilterChange()"
+            >
+              <mat-option [value]="''">Tous</mat-option>
+              <mat-option [value]="true">Oui</mat-option>
+              <mat-option [value]="false">Non</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </form>
+
+        <div class="totTask">
+          <mat-icon>format_list_numbered</mat-icon>
+          Nombre de résultats : {{ totalTasks }}
+        </div>
+
         <table class="table table-bordered table-hover">
           <thead class="thead-light">
-          <tr>
-            <th>ID</th>
-            <th>Nom</th>
-            <th>Expression Cron</th>
+          <tr >
+            <th (click)="sort('id')" [class.sortable]="true">ID <mat-icon *ngIf="sortPredicate==='id'">{{sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}}</mat-icon></th>
+            <th (click)="sort('nom')" [class.sortable]="true">Nom <mat-icon *ngIf="sortPredicate==='nom'">{{sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}}</mat-icon></th>
+            <th (click)="sort('expressionCron')" [class.sortable]="true">Expression Cron <mat-icon *ngIf="sortPredicate==='expressionCron'">{{sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}}</mat-icon></th>
             <th>Active</th>
-            <th>Dernière Exécution</th>
-            <th>Date Création</th>
-            <th>Login Création</th>
-            <th>Date dernière modification</th>
-            <th>Login dernière modification</th>
+            <th (click)="sort('dateDernierExecution')" [class.sortable]="true">Dernière Exécution <mat-icon *ngIf="sortPredicate==='dateDernierExecution'">{{sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}}</mat-icon></th>
+            <th (click)="sort('dateModification')" [class.sortable]="true">Date dernière modification <mat-icon *ngIf="sortPredicate==='dateModification'">{{sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}}</mat-icon></th>
+            <th (click)="sort('loginModification')" [class.sortable]="true">Login dernière modification <mat-icon *ngIf="sortPredicate==='loginModification'">{{sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}}</mat-icon></th>
           </tr>
           </thead>
           <tbody>
@@ -25,13 +51,18 @@
               <mat-slide-toggle [(ngModel)]="task.active"></mat-slide-toggle>
             </td>
             <td>{{ task.dateDernierExecution | date: 'short' }}</td>
-            <td>{{ task.dateCreation | date: 'short' }}</td>
-            <td>{{ task.loginCreation }}</td>
             <td>{{ task.dateModification | date: 'short'  }}</td>
             <td>{{ task.loginModification }}</td>
           </tr>
           </tbody>
         </table>
+        <mat-paginator
+          [pageSizeOptions]="[10, 25, 50, 100]"
+          [pageSize]="itemsPerPage"
+          [length]="totalTasks"
+          [showFirstLastButtons]="true"
+          (page)="onPageChange($event)">
+        </mat-paginator>
         <div class="text-right mt-3">
           <button class="btn btn-reset" (click)="resetChanges()">Réinitialiser</button>
           <button class="btn btn-save" (click)="saveAll()">Enregistrer les modifications</button>
