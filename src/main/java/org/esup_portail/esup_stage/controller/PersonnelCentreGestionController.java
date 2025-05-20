@@ -159,5 +159,6 @@ public class PersonnelCentreGestionController {
         personnelCentreGestion.setValidationAdministrativeConvention(requestPersonnelCentreGestion.getValidationAdministrativeConvention());
         personnelCentreGestion.setVerificationAdministrativeConvention(requestPersonnelCentreGestion.getVerificationAdministrativeConvention());
         personnelCentreGestion.setValidationAvenant(requestPersonnelCentreGestion.getValidationAvenant());
+        personnelCentreGestion.setConventionSignee(requestPersonnelCentreGestion.getConventionSignee());
     }
 }

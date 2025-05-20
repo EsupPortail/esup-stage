@@ -118,4 +118,7 @@ public interface ConventionJpaRepository extends JpaRepository<Convention, Integ
 
     @Query("SELECT c FROM Convention c WHERE c.structure.id = :structureId")
     List<Convention> findByStructureId(@Param("structureId") int structureId);
+
+    @Query("SELECT c FROM Convention c WHERE c.temConventionSignee = false AND c.validationConvention = TRUE AND c.dateEnvoiSignature IS NOT NULL")
+    List<Convention> findConventionNonSignees();
 }

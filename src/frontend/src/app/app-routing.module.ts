@@ -21,6 +21,7 @@ import { EvalStageComponent } from './components/eval-stage/eval-stage.component
 import { ConventionCreateEnMasseComponent } from './components/convention-create-en-masse/convention-create-en-masse.component';
 import { GestionGroupeComponent } from './components/convention-create-en-masse/gestion-groupe/gestion-groupe.component';
 import { TemplateMailGroupeComponent } from './components/convention-create-en-masse/template-mail-groupe/template-mail-groupe.component';
+import {ConfigComponent} from "./components/admin/config/config.component";
 
 const routes: Routes = [
   {path: '', component: HomeComponent, canActivate: [AuthGuard], data: {role: {}, title: 'Accueil'}},
@@ -139,6 +140,15 @@ const routes: Routes = [
     data: {
       role: {fonction: AppFonction.PARAM_CENTRE, droits: [Droit.CREATION, Droit.VALIDATION, Droit.LECTURE, Droit.MODIFICATION]},
       title: 'Modification d\'un centre de gestion'
+    }
+  },
+  {
+    path: 'param-global/config',
+    component: ConfigComponent,
+    canActivate:[AuthGuard],
+    data:{
+      role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.CREATION, Droit.VALIDATION, Droit.LECTURE, Droit.MODIFICATION,Droit.SUPPRESSION],},
+      title: 'Configuration'
     }
   }
 ];

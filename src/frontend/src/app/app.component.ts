@@ -129,6 +129,11 @@ export class AppComponent {
           path: 'param-global/conventions',
           icon: 'fa-file',
         },
+        {
+          libelle: 'Configuration tecnhique',
+          path: 'param-global/config',
+          icon: 'fa-cogs',
+        }
       ]
     },
     {
