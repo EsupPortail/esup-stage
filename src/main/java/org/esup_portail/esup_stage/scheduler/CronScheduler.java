@@ -1,8 +1,12 @@
 package org.esup_portail.esup_stage.scheduler;
 
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.esup_portail.esup_stage.model.CronTask;
+import org.esup_portail.esup_stage.scheduler.SchedulableTasks.SchedulableTask;
 import org.esup_portail.esup_stage.service.crontask.CronTaskService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
@@ -12,13 +16,16 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 
+@Slf4j
 @Component
 public class CronScheduler {
 
     private final CronTaskService taskService;
     private final TaskScheduler scheduler = new ConcurrentTaskScheduler();
-
     private final Map<Integer, ScheduledFuture<?>> scheduledTasks = new ConcurrentHashMap<>();
+
+    @Autowired
+    private ApplicationContext applicationContext; // Pour injecter dynamiquement les tasks
 
     public CronScheduler(CronTaskService taskService) {
         this.taskService = taskService;
@@ -30,8 +37,19 @@ public class CronScheduler {
     }
 
     public void scheduleTask(CronTask task) {
+        // Trouve la task par son nom (le champ 'nom' doit matcher le bean Spring !)
+        SchedulableTask schedulableTask = null;
+        try {
+            schedulableTask = (SchedulableTask) applicationContext.getBean(task.getNom());
+        } catch (Exception e) {
+            log.error("Aucune tâche SchedulableTask trouvée pour le nom : {}", task.getNom());
+            return;
+        }
+
+        SchedulableTask finalSchedulableTask = schedulableTask;
         Runnable runnable = () -> {
-            System.out.println("Exécution tâche : " + task.getNom());
+            log.info("Exécution de la tâche : {}", task.getNom());
+            finalSchedulableTask.getRunnable().run();
             taskService.updateLastExecution(task.getId());
         };
         ScheduledFuture<?> future = scheduler.schedule(runnable, new CronTrigger(task.getExpressionCron()));
@@ -44,17 +62,14 @@ public class CronScheduler {
     }
 
     public void reloadTask(int taskId) {
-        // Annuler l’ancienne tâche si elle existe
         ScheduledFuture<?> future = scheduledTasks.get(taskId);
         if (future != null) {
             future.cancel(false);
             scheduledTasks.remove(taskId);
         }
 
-        // Récupérer la tâche depuis le service
         CronTask task = taskService.getById(taskId);
 
-        // Reprogrammer la tâche si elle est active
         if (task != null && task.isActive()) {
             scheduleTask(task);
         }

@@ -13,6 +13,7 @@ import { MessageService } from '../../../services/message.service';
 export class ConfigComponent implements OnInit {
 
   cronTasks: any[] = [];
+  private originalCronTasks: any;
 
   constructor(private cronService: CronService,private messageService: MessageService) {}
 
@@ -23,17 +24,42 @@ export class ConfigComponent implements OnInit {
   getPaginated(page: number, perPage: number, predicate: string, sortOrder: string, filters: string) {
     this.cronService.getPaginated(page, perPage, predicate, sortOrder, filters).subscribe((response: any) => {
       this.cronTasks = response.data;
-      console.log(this.cronTasks)
+      // Deep clone pour garder l'original
+      this.originalCronTasks = JSON.parse(JSON.stringify(response.data));
     });
   }
 
+  resetChanges() {
+    // Deep clone pour éviter que les deux tableaux ne pointent vers la même référence
+    this.cronTasks = JSON.parse(JSON.stringify(this.originalCronTasks));
+  }
+
   saveAll() {
-    const requests = this.cronTasks.map(task =>
+    // Ne garde que les tâches qui ont été modifiées
+    const modifiedTasks = this.cronTasks.filter((task, i) => {
+      const original = this.originalCronTasks[i];
+      return (
+        task.nom !== original.nom ||
+        task.expressionCron !== original.expressionCron ||
+        task.active !== original.active
+      );
+    });
+
+    if (modifiedTasks.length === 0) {
+      this.messageService.setWarning('Aucune modification détectée.');
+      return;
+    }
+
+    const requests = modifiedTasks.map(task =>
       this.cronService.update(task.id, task)
     );
 
     forkJoin(requests).subscribe({
-      next: () => this.messageService.setSuccess('Sauvegarde réussie'),
+      next: () => {
+        this.messageService.setSuccess('Sauvegarde réussie');
+        // Recharge l'original si tu veux garder le front synchro
+        this.getPaginated(1, 10, 'id', 'asc', '');
+      },
       error: err => this.messageService.setError('Erreur lors de la sauvegarde'),
     });
   }

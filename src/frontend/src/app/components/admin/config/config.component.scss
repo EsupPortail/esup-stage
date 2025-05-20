@@ -4,11 +4,20 @@ thead.thead-light th {
 }
 
 .btn {
-  background-color: var(--primaryColor);
-  color: white;
+  margin: 1em;
 }
 
 .btn:hover {
   filter: brightness(90%);
+  color: white;
+}
+
+.btn-save {
+  background-color: var(--primaryColor);
+  color: white;
+}
+
+.btn-reset{
+  background-color: var(--dangerColor);
   color: white;
 }

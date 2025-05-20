@@ -235,3 +235,14 @@ databaseChangeLog:
                 - column:
                     name: loginCreation
                     value: liquibase
+  - changeSet:
+      id: 3.1.0-ajout-temAvenantSigne
+      author: thouveno9
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  name: temAvenantSigne
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+            tableName: Avenant

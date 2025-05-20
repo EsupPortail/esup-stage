@@ -15,6 +15,7 @@ import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
 import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.ConventionService;
+import org.esup_portail.esup_stage.service.MailerService;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
 import org.esup_portail.esup_stage.service.ldap.LdapService;
 import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
@@ -69,6 +70,8 @@ public class SignatureService {
     AppConfigJpaRepository appConfigJpaRepository;
     @Autowired
     private AppConfigService appConfigService;
+    @Autowired
+    private MailerService mailerService;
 
     public SignatureService(WebClient.Builder builder) {
         this.webClient = builder.build();
@@ -452,46 +455,65 @@ public class SignatureService {
         }
     }
 
-//    @Scheduled()
-//    public void updateAuto(){
-//       List<Convention> conventionsNonSignee = conventionJpaRepository.findConventionNonSignees();
-//         if(!conventionsNonSignee.isEmpty()){
-//              for(Convention convention : conventionsNonSignee){
-//                  update(convention);
-//                  if(convention.getDateSignatureEtudiant() != null
-//                          && convention.getDateSignatureTuteur() != null
-//                          && convention.getDateSignatureEnseignant() != null
-//                          && convention.getDateSignatureSignataire() != null
-//                          && convention.getDateSignatureViseur() != null){
-//                      // set le champ temConventionSignee à true si la convention est totalement signée
-//                      convention.setTemConventionSignee(true);
-//                      conventionJpaRepository.save(convention);
-//                      // on envoi le mail aux gestionnaires
-//                        // TODO : envoyer le mail au gestionnaire
-//                      List<PersonnelCentreGestion> personnels = convention.getCentreGestion().getPersonnels();
-//                      for(PersonnelCentreGestion personnel : personnels){
-//                          // on regarde si le gestionnaire a coché la case pour recevoir les alertes
-//                          if(personnel.getConventionSignee()){
-//
-//                          }
-//                      }
-//                  }
-//              }
-//         }
-//    }
+    public void updateAuto(){
+       List<Convention> conventionsNonSignee = conventionJpaRepository.findConventionNonSignees();
+         if(!conventionsNonSignee.isEmpty()) {
+             for (Convention convention : conventionsNonSignee) {
+                 update(convention);
+                 if (convention.getDateSignatureEtudiant() != null
+                         && convention.getDateSignatureTuteur() != null
+                         && convention.getDateSignatureEnseignant() != null
+                         && convention.getDateSignatureSignataire() != null
+                         && convention.getDateSignatureViseur() != null) {
+                     // set le champ temConventionSignee à true si la convention est totalement signée
+                     convention.setTemConventionSignee(true);
+                     conventionJpaRepository.save(convention);
+                     // on envoi le mail aux gestionnaires
+                     List<PersonnelCentreGestion> personnels = convention.getCentreGestion().getPersonnels();
+                     for (PersonnelCentreGestion personnel : personnels) {
+                         // on regarde si le gestionnaire a coché la case pour recevoir les alertes
+                         if (mailerService.isAlerteActif(personnel, "CODE_CONVENTION_SIGNEE")) {
+                             mailerService.sendAlerteValidation(personnel.getMail(), convention, null, null, "CODE_CONVENTION_SIGNEE");
+                         }
+                     }
+                 }
+             }
+         }
+//        List<Avenant> avenantsNonSignes = avenantJpaRepository.findAvenantNonSignes();
+//        if (avenantsNonSignes != null && !avenantsNonSignes.isEmpty()) {
+//            for (Avenant avenant : avenantsNonSignes) {
+//                update(avenant);
+//                if (avenant.getDateSignatureEtudiant() != null
+//                        && avenant.getDateSignatureTuteur() != null
+//                        && avenant.getDateSignatureEnseignant() != null
+//                        && avenant.getDateSignatureSignataire() != null
+//                        && avenant.getDateSignatureViseur() != null) {
+//                    avenant.setTemAvenantSigne(true);
+//                    avenantJpaRepository.save(avenant);
+//                    Convention convention = avenant.getConvention();
+//                    if (convention != null) {
+//                        List<PersonnelCentreGestion> personnels = convention.getCentreGestion().getPersonnels();
+//                        for (PersonnelCentreGestion personnel : personnels) {
+//                            if (mailerService.isAlerteActif(personnel, "CODE_AVENANT_SIGNE")) {
+//                                mailerService.sendAlerteValidation(personnel.getMail(), convention, avenant, null, "CODE_AVENANT_SIGNE");
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+    }
 
     public void update(Convention convention){
         AppSignatureEnum appSignature = signatureProperties.getAppSignatureType();
         try {
             List<Historique> historiques = new ArrayList<>();
-            switch (appSignature) {
-                case DOCAPOSTE:
-                    historiques = signatureClient.getHistorique(convention.getDocumentId(), convention.getCentreGestion().getSignataires());
-                    break;
-                case ESUPSIGNATURE:
-                    historiques = webhookService.getHistorique(convention.getDocumentId(), convention);
-                    break;
-            }
+            historiques = switch (appSignature) {
+                case DOCAPOSTE ->
+                        signatureClient.getHistorique(convention.getDocumentId(), convention.getCentreGestion().getSignataires());
+                case ESUPSIGNATURE -> webhookService.getHistorique(convention.getDocumentId(), convention);
+                default -> historiques;
+            };
             setSignatureHistorique(convention, historiques);
         } catch (Exception e) {
             logger.error(e);
@@ -503,14 +525,12 @@ public class SignatureService {
         AppSignatureEnum appSignature = signatureProperties.getAppSignatureType();
         try {
             List<Historique> historiques = new ArrayList<>();
-            switch (appSignature) {
-                case DOCAPOSTE:
-                    historiques = signatureClient.getHistorique(avenant.getDocumentId(), avenant.getConvention().getCentreGestion().getSignataires());
-                    break;
-                case ESUPSIGNATURE:
-                    historiques = webhookService.getHistorique(avenant.getDocumentId(), avenant.getConvention());
-                    break;
-            }
+            historiques = switch (appSignature) {
+                case DOCAPOSTE ->
+                        signatureClient.getHistorique(avenant.getDocumentId(), avenant.getConvention().getCentreGestion().getSignataires());
+                case ESUPSIGNATURE -> webhookService.getHistorique(avenant.getDocumentId(), avenant.getConvention());
+                default -> historiques;
+            };
             setSignatureHistorique(avenant, historiques);
         } catch (Exception e) {
             logger.error(e);

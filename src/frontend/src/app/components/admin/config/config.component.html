@@ -19,7 +19,7 @@
           <tbody>
           <tr *ngFor="let task of cronTasks">
             <td>{{ task.id }}</td>
-            <td><input class="form-control" [(ngModel)]="task.nom" /></td>
+            <td>{{ task.nom }}</td>
             <td><input class="form-control" [(ngModel)]="task.expressionCron" /></td>
             <td class="text-center">
               <mat-slide-toggle [(ngModel)]="task.active"></mat-slide-toggle>
@@ -32,8 +32,9 @@
           </tr>
           </tbody>
         </table>
-        <div class="text-end mt-3">
-          <button class="btn" (click)="saveAll()">Enregistrer les modifications</button>
+        <div class="text-right mt-3">
+          <button class="btn btn-reset" (click)="resetChanges()">Réinitialiser</button>
+          <button class="btn btn-save" (click)="saveAll()">Enregistrer les modifications</button>
         </div>
       </mat-card-content>
     </mat-card>
