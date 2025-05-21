@@ -475,7 +475,8 @@ public class SignatureService {
                         assert personnels != null;
                         for (PersonnelCentreGestion personnel : personnels) {
                             if (mailerService.isAlerteActif(personnel, "CONVENTION_SIGNEE")) {
-                                mailerService.sendAlerteValidation(personnel.getMail(), convention, null, utilisateurJpaRepository.findByLogin(convention.getLoginEnvoiSignature()), "CONVENTION_SIGNEE");
+                                Utilisateur utilisateur = convention.getLoginEnvoiSignature() != null? utilisateurJpaRepository.findByLogin(convention.getLoginEnvoiSignature()): utilisateurJpaRepository.findOneByLogin(convention.getLoginValidation()) ;
+                                mailerService.sendAlerteValidation(personnel.getMail(), convention, null, utilisateur, "CONVENTION_SIGNEE");
                             }
                         }
                     }
