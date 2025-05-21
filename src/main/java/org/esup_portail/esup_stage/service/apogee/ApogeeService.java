@@ -335,7 +335,6 @@ public class ApogeeService {
 
     public EtudiantDiplomeEtapeResponse[] getEtudiantsParDiplomeEtape(EtudiantDiplomeEtapeSearch search) {
         Map<String, String> params = new HashMap<>();
-        params.put("codeComposante", search.getCodeComposante());
         params.put("annee", search.getAnnee());
         params.put("codeEtape", search.getCodeEtape());
         params.put("versionEtape", search.getVersionEtape());

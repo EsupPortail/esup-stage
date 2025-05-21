@@ -267,3 +267,22 @@ image:001a98b2-ec5e-4a2c-b24e-b6a0911f6196.png[image]
 
 .Même exemple de workflow avec 4 signatures OTP et une signature avec un certificat personnel du côté de Fast
 image:366f4814-a881-435b-9fcd-57195695b1bd.png[image]
+
+== Paramétrer Esup-Stage pour Docaposte
+
+WARNING: Les paramètres ne doivent pas être ajoutés s'ils ne sont pas utilisés
+
+Les paramètres Docaposte se trouve dans le fichier `estage.properties` :
+
+[,properties]
+----
+# docaposte
+docaposte.uri=https://demo-parapheur.dfast.fr/parapheur-soap/soap/v1/Documents
+docaposte.siren=xxx
+docaposte.keystore.path=<chemin du fichier .p12>
+docaposte.keystore.password=xxx
+docaposte.truststore.path=<chemin du fichier .jks>
+docaposte.truststore.password=xxx
+----
+
+Les certificats pour Docaposte peuvent être déposés où vous le souhaitez en dehors du projet.
