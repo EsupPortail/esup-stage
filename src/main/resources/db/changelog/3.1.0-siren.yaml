@@ -163,10 +163,10 @@ databaseChangeLog:
       - addColumn:
           columns:
             - column:
-                name: ConventionSignee
-                type: BOOLEAN
+                name: conventionSignee
+                type: BIT
                 defaultValueBoolean: false
-          tableName: Personnelcentregestion
+          tableName: PersonnelCentreGestion
   - changeSet:
       id: 3.1.0-table-cron
       author: thouveno9

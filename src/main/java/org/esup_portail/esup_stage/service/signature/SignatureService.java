@@ -1,5 +1,6 @@
 package org.esup_portail.esup_stage.service.signature;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
@@ -9,10 +10,7 @@ import org.esup_portail.esup_stage.enums.AppSignatureEnum;
 import org.esup_portail.esup_stage.enums.FolderEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
-import org.esup_portail.esup_stage.repository.AppConfigJpaRepository;
-import org.esup_portail.esup_stage.repository.AvenantJpaRepository;
-import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
-import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
+import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.ConventionService;
 import org.esup_portail.esup_stage.service.MailerService;
@@ -24,8 +22,8 @@ import org.esup_portail.esup_stage.webhook.esupsignature.service.WebhookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.ByteArrayOutputStream;
@@ -35,11 +33,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
+@Slf4j
 @Service
 public class SignatureService {
 
@@ -67,9 +63,7 @@ public class SignatureService {
     @Autowired
     private LdapService ldapService;
     @Autowired
-    AppConfigJpaRepository appConfigJpaRepository;
-    @Autowired
-    private AppConfigService appConfigService;
+    private UtilisateurJpaRepository utilisateurJpaRepository;
     @Autowired
     private MailerService mailerService;
 
@@ -455,53 +449,44 @@ public class SignatureService {
         }
     }
 
+    @Transactional
     public void updateAuto(){
-       List<Convention> conventionsNonSignee = conventionJpaRepository.findConventionNonSignees();
-         if(!conventionsNonSignee.isEmpty()) {
-             for (Convention convention : conventionsNonSignee) {
-                 update(convention);
-                 if (convention.getDateSignatureEtudiant() != null
-                         && convention.getDateSignatureTuteur() != null
-                         && convention.getDateSignatureEnseignant() != null
-                         && convention.getDateSignatureSignataire() != null
-                         && convention.getDateSignatureViseur() != null) {
-                     // set le champ temConventionSignee à true si la convention est totalement signée
-                     convention.setTemConventionSignee(true);
-                     conventionJpaRepository.save(convention);
-                     // on envoi le mail aux gestionnaires
-                     List<PersonnelCentreGestion> personnels = convention.getCentreGestion().getPersonnels();
-                     for (PersonnelCentreGestion personnel : personnels) {
-                         // on regarde si le gestionnaire a coché la case pour recevoir les alertes
-                         if (mailerService.isAlerteActif(personnel, "CODE_CONVENTION_SIGNEE")) {
-                             mailerService.sendAlerteValidation(personnel.getMail(), convention, null, null, "CODE_CONVENTION_SIGNEE");
-                         }
-                     }
-                 }
-             }
-         }
-//        List<Avenant> avenantsNonSignes = avenantJpaRepository.findAvenantNonSignes();
-//        if (avenantsNonSignes != null && !avenantsNonSignes.isEmpty()) {
-//            for (Avenant avenant : avenantsNonSignes) {
-//                update(avenant);
-//                if (avenant.getDateSignatureEtudiant() != null
-//                        && avenant.getDateSignatureTuteur() != null
-//                        && avenant.getDateSignatureEnseignant() != null
-//                        && avenant.getDateSignatureSignataire() != null
-//                        && avenant.getDateSignatureViseur() != null) {
-//                    avenant.setTemAvenantSigne(true);
-//                    avenantJpaRepository.save(avenant);
-//                    Convention convention = avenant.getConvention();
-//                    if (convention != null) {
-//                        List<PersonnelCentreGestion> personnels = convention.getCentreGestion().getPersonnels();
-//                        for (PersonnelCentreGestion personnel : personnels) {
-//                            if (mailerService.isAlerteActif(personnel, "CODE_AVENANT_SIGNE")) {
-//                                mailerService.sendAlerteValidation(personnel.getMail(), convention, avenant, null, "CODE_AVENANT_SIGNE");
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
+        log.info("Début de updateAuto()");
+        List<Convention> conventionsNonSignee = conventionJpaRepository.findConventionNonSignees();
+        log.info("Conventions à traiter trouvées : {}",
+                conventionsNonSignee != null ? conventionsNonSignee.size() : "null");
+
+        if (conventionsNonSignee != null && !conventionsNonSignee.isEmpty()) {
+            int idx = 0;
+            for (Convention convention : conventionsNonSignee) {
+                try {
+                    update(convention);
+                    if (convention.getDateSignatureEtudiant() != null
+                            && convention.getDateSignatureTuteur() != null
+                            && convention.getDateSignatureEnseignant() != null
+                            && convention.getDateSignatureSignataire() != null
+                            && convention.getDateSignatureViseur() != null) {
+                        // set le champ temConventionSignee à true si la convention est totalement signée
+                        convention.setTemConventionSignee(true);
+                        conventionJpaRepository.save(convention);
+                        log.info("Convention signée complètement. ID = {}", convention.getId());
+                        // on envoi le mail aux gestionnaires
+                        List<PersonnelCentreGestion> personnels = convention.getCentreGestion().getPersonnels();
+                        assert personnels != null;
+                        for (PersonnelCentreGestion personnel : personnels) {
+                            if (mailerService.isAlerteActif(personnel, "CONVENTION_SIGNEE")) {
+                                mailerService.sendAlerteValidation(personnel.getMail(), convention, null, utilisateurJpaRepository.findByLogin(convention.getLoginEnvoiSignature()), "CONVENTION_SIGNEE");
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    log.error("Erreur lors du traitement de la convention id={} : {}",
+                            convention != null ? convention.getId() : "null", e.getMessage(), e);
+                }
+                idx++;
+            }
+        }
+        log.info("Fin de updateAuto()");
     }
 
     public void update(Convention convention){

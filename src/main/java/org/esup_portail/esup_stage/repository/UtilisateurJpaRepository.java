@@ -36,4 +36,6 @@ public interface UtilisateurJpaRepository extends JpaRepository<Utilisateur, Int
 
     @Query("SELECT u FROM Utilisateur u WHERE u.uid IS NULL AND u.actif = TRUE")
     List<Utilisateur> findNoUid();
+
+    Utilisateur findByLogin(String loginEnvoiSignature);
 }
