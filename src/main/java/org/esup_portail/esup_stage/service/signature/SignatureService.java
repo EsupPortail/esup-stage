@@ -460,7 +460,10 @@ public class SignatureService {
             int idx = 0;
             for (Convention convention : conventionsNonSignee) {
                 try {
+
+                    //TODO : mettre a jour le update pour aller chercher les données (pour toutes les app de signature)
                     update(convention);
+
                     if (convention.getDateSignatureEtudiant() != null
                             && convention.getDateSignatureTuteur() != null
                             && convention.getDateSignatureEnseignant() != null
