@@ -4,8 +4,8 @@
 * xref:ESUP-STAGE.adoc[]
 * xref:signature.adoc[]
 ** xref:Docaposte_Signature-electronique.adoc[]
-** xref:ESUP-Signature.daoc[]
-** xref:Autres-Applications-de-signature[]
+** xref:ESUP-Signature.adoc[]
+** xref:Autres-Applications-de-signature.adoc[]
 
 .Autres documents
 * xref:Processus-de-creation-d-un-utilisateur.adoc[]
