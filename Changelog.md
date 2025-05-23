@@ -6,17 +6,22 @@
 ## ESUP-Stage v3.1.0 (À venir)  
 ### Nouveautés  
 - Évolution de la gestion des établissements d'accueil (API Sirene).  
-- Création de la variable `convention.horaireIrregulier` (#219).  
+- Création de la variable `convention.horaireIrregulier` (#219).
+- Ajout d'une bulle d'aide près du bouton d'import des organismes d'accueil.
+- Intégration de la nouvelle API de consultation des étapes de signatures dans Esup-Signature.
+- Alerte des gestionnaire lorsqu'une convention est signée électroniquement.
 
 ### Améliorations  
 - Possibilité de saisir manuellement la durée en mois, jour(s) et heure(s) (#212).
-- Amélioration de l'export Excel #233
+- Amélioration de l'export Excel (#233).
+- Tri des thématiques de stage par ordre alphabétique.
 
 ---
 
 ## ESUP-Stage v3.0.0 (À venir)  
 ### Nouveautés  
-- Ajout d'un indicateur de suivi de la signature électronique dans le tableau de bord (#173).  
+- Ajout d'un indicateur de suivi de la signature électronique dans le tableau de bord (#173).
+- Ajout d'un filtre de recherche par état de signature électronique dans le tableau de bord (#213).
 
 ### Améliorations  
 - Accès au suivi des signatures pour les étudiants et les gestionnaires (#231).  
@@ -30,4 +35,5 @@
 - Correction de l'erreur de calcul des horaires de travail irréguliers (#219).  
 - Correction d'un problème de notification des enseignants (#193).  
 - Initialisation des données dans la table `ConventionNomenclature` en mode brouillon.  
-- Correction du problème de mise à jour des informations de signature électronique (#227).  
+- Correction du problème de mise à jour des informations de signature électronique (#227).
+- Le département n'était pas affiché lors de la recherche d'un enseignant référent.
