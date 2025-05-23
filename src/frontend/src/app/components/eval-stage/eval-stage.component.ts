@@ -6,6 +6,8 @@ import { Router } from "@angular/router";
 import { SortDirection } from "@angular/material/sort";
 import { TitleService } from "../../services/title.service";
 import { CentreGestionService } from "../../services/centre-gestion.service";
+import { UfrService } from "../../services/ufr.service";
+
 
 @Component({
   selector: 'app-eval-stage',
@@ -35,6 +37,7 @@ export class EvalStageComponent implements OnInit, OnDestroy {
     private router: Router,
     private titleService: TitleService,
     private centreGestionService: CentreGestionService,
+    private ufrService: UfrService,
   ) {
   }
 
@@ -56,9 +59,14 @@ export class EvalStageComponent implements OnInit, OnDestroy {
       this.columns = ['id', 'etudiant.nom_etudiant.prenom', 'structure.raisonSociale', 'dateDebutStage', 'dateFinStage', 'ufr.libelle',
      'etape.libelle', 'annee','reponseEvaluationEtudiant','reponseEvaluationEnseignant','reponseEvaluationEntreprise', 'action'];
 
-      this.filters.push({ id: 'annee', libelle: 'Année', type: 'annee', options: [], keyLibelle: 'libelle', keyId: 'libelle', value: [] });
-      this.filters.push({ id: 'centreGestion.nomCentre', libelle: 'Centres de gestion', type: 'list', options: [], keyId: 'nomCentre', keyLibelle: 'nomCentre', colSpan: 6, infoBulleCentre: true });
-      this.filters.push({ id: 'stageTermine', libelle: 'N\'afficher que les stages terminés ?', type: 'boolean', specific: true });
+      this.filters.push(
+        { id: 'annee', libelle: 'Année', type: 'annee', options: [], keyLibelle: 'libelle', keyId: 'libelle', value: [] },
+        { id: 'id', libelle: 'N° de la convention', type: 'int' },
+        { id: 'etudiant', libelle: 'Étudiant', specific: true },
+        { id: 'ufr.id', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
+        { id: 'centreGestion.nomCentre', libelle: 'Centres de gestion', type: 'list', options: [], keyId: 'nomCentre', keyLibelle: 'nomCentre', colSpan: 6, infoBulleCentre: true },
+        { id: 'stageTermine', libelle: 'N\'afficher que les stages terminés ?', type: 'boolean', specific: true }
+      );
 
       this.conventionService.getListAnnee().subscribe(response => {
         this.annees = response;
@@ -90,6 +98,9 @@ export class EvalStageComponent implements OnInit, OnDestroy {
         this.restoreFilters();
       }
     }
+    this.ufrService.getPaginated(1, 0, 'libelle', '', '').subscribe((response: any) => {
+      this.appTable?.setFilterOption('ufr.id', response.data);
+    });
     window.addEventListener('beforeunload', this.saveSessionData.bind(this));
   }
 

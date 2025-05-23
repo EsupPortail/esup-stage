@@ -1,5 +1,5 @@
 = Flux
-:author: Université Lorraine
+:author: Université de Lorraine
 :imagesdir: ../images/
 
 == Flux Entrant

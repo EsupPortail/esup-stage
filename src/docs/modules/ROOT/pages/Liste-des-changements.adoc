@@ -2,7 +2,7 @@
 
 == Versions stables
 
-* https://github.com/EsupPortail/esup-stage[ESUP-Stage 2.1.9]
+* https://github.com/EsupPortail/esup-stage[ESUP-Stage 3.0.0]
 * https://github.com/EsupPortail/esup-siscol[ESUP-SIScol 1.0.28]
 
 '''
@@ -13,12 +13,6 @@
 
 * Page d'erreur personnalisée - Gestion des cas ou favicon et logo possiblement null
 * A la connexion : récupération du nom et prénom depuis le LDAP au lieu de pointer sur le retour du CAS
-
-=== ESUP-SIScol
-
-* {blank}
-
-== RAS
 
 == Releases passées
 
