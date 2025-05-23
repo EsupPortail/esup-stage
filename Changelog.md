@@ -8,7 +8,7 @@
 - Évolution de la gestion des établissements d'accueil (API Sirene).  
 - Création de la variable `convention.horaireIrregulier` (#219).
 - Ajout d'une bulle d'aide près du bouton d'import des organismes d'accueil.
-- Intégration de la nouvelle API de consultation des étapes de signatures dans Esup-Signature.
+- Intégration de la nouvelle API de consultation des étapes de signature dans Esup-Signature.
 - Alerte des gestionnaire lorsqu'une convention est signée électroniquement.
 
 ### Améliorations  
