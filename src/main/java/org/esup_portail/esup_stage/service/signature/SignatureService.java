@@ -61,7 +61,7 @@ public class SignatureService {
     private AppliProperties appliProperties;
     @Autowired
     private LdapService ldapService;
-    @Autowired
+    @Autowired(required = false)
     private DocaposteClient docaposteClient;
 
     public SignatureService(WebClient.Builder builder) {
