@@ -121,7 +121,9 @@ export class StageComponent implements OnInit {
       this.countries = response.data;
     });
     this.themeService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
-      this.thematiques = response.data;
+      this.thematiques = response.data.sort((a: { libelle: string; }, b: { libelle: any; }) =>
+        a.libelle.localeCompare(b.libelle, 'fr', { sensitivity: 'base' })
+      );
     });
     this.langueConventionService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
       this.langueConventions = response.data;
