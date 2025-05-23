@@ -60,8 +60,6 @@ public class SignatureService {
     @Autowired
     private AppliProperties appliProperties;
     @Autowired
-    private SignatureClient signatureClient;
-    @Autowired
     private LdapService ldapService;
     @Autowired
     private DocaposteClient docaposteClient;
@@ -296,7 +294,7 @@ public class SignatureService {
             List<Historique> historiques = new ArrayList<>();
             switch (appSignature) {
                 case DOCAPOSTE:
-                    historiques = signatureClient.getHistorique(convention.getDocumentId(), convention.getCentreGestion().getSignataires());
+                    historiques = docaposteClient.getHistorique(convention.getDocumentId(), convention.getCentreGestion().getSignataires());
                     break;
                 case ESUPSIGNATURE:
                     historiques = webhookService.getHistorique(convention.getDocumentId(), convention);
@@ -332,7 +330,7 @@ public class SignatureService {
             List<Historique> historiques = new ArrayList<>();
             switch (appSignature) {
                 case DOCAPOSTE:
-                    historiques = signatureClient.getHistorique(avenant.getDocumentId(), avenant.getConvention().getCentreGestion().getSignataires());
+                    historiques = docaposteClient.getHistorique(avenant.getDocumentId(), avenant.getConvention().getCentreGestion().getSignataires());
                     break;
                 case ESUPSIGNATURE:
                     historiques = webhookService.getHistorique(avenant.getDocumentId(), avenant.getConvention());
@@ -457,7 +455,7 @@ public class SignatureService {
         InputStream inputStream = null;
         switch (signatureProperties.getAppSignatureType()) {
             case DOCAPOSTE:
-                inputStream = signatureClient.download(documentId);
+                inputStream = docaposteClient.download(documentId);
                 break;
             case ESUPSIGNATURE:
                 inputStream = webhookService.download(documentId);
