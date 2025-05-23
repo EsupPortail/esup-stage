@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.config.properties.SignatureProperties;
+import org.esup_portail.esup_stage.docaposte.DocaposteClient;
 import org.esup_portail.esup_stage.dto.*;
 import org.esup_portail.esup_stage.enums.AppSignatureEnum;
 import org.esup_portail.esup_stage.enums.FolderEnum;
@@ -62,6 +63,8 @@ public class SignatureService {
     private SignatureClient signatureClient;
     @Autowired
     private LdapService ldapService;
+    @Autowired
+    private DocaposteClient docaposteClient;
 
     public SignatureService(WebClient.Builder builder) {
         this.webClient = builder.build();
@@ -201,7 +204,7 @@ public class SignatureService {
             try{
                 switch (appSignature) {
                     case DOCAPOSTE:
-                        signatureClient.upload(convention, avenant);
+                        docaposteClient.upload(convention, avenant);
                         break;
                     case ESUPSIGNATURE:
                     case EXTERNE:
