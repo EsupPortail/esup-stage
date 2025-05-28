@@ -45,7 +45,7 @@ jobs:
         run: mvn -Dsha1=-${GITHUB_SHA::7} -Dchangelist=-${GITHUB_REF##*/} clean package -DskipTests -Dskip.npm.install=true -Dskip.frontend=true --no-transfer-progress
 
       - name: Log in to Harbor
-        if: ${{GITHUB_REF != 'refs/heads/main'}}
+        if: ${{github.ref != 'refs/heads/main'}}
         uses: docker/login-action@v2
         with:
           registry: ${{secrets.HARBOR_URL}}
