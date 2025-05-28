@@ -44,7 +44,8 @@ jobs:
       - name: Build with Maven
         run: mvn -Dsha1=${GITHUB_SHA::7} -Dchangelist=-${GITHUB_REF##*/} clean package -DskipTests -Dskip.npm.install=true -Dskip.frontend=true --no-transfer-progress
 
-      - uses: docker/login-action@v2
+      - name: Log in to Harbor
+        uses: docker/login-action@v2
         with:
           registry: ${{secrets.HARBOR_URL}}
           username: ${{secrets.HARBOR_USERNAME}}
@@ -52,7 +53,7 @@ jobs:
 
       - name: Build and Push the Docker image
         run: | 
-          docker build --build-arg VERSION=${{steps.maven_version.outputs.version}} -t harbor.esup-portail.org/esup-stage/esup-stage:${{steps.maven_version.outputs.version}} .
+          docker build --build-arg VERSION=${{steps.maven_version.outputs.version}} -t ${{secrets.HARBOR_URL}}/esup-stage/esup-stage:${{steps.maven_version.outputs.version}} .
           docker push ${{secrets.HARBOR_URL}}/esup-stage/esup-stage:${{steps.maven_version.outputs.version}}
 
 
