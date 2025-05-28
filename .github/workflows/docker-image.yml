@@ -44,14 +44,6 @@ jobs:
       - name: Build with Maven
         run: mvn -Dsha1=${GITHUB_SHA::7} -Dchangelist=-${GITHUB_REF##*/} clean package -DskipTests -Dskip.npm.install=true -Dskip.frontend=true --no-transfer-progress
 
-      - name: Debug secrets
-        env:
-          HARBOR_USERNAME: ${{ secrets.HARBOR_USERNAME }}
-          HARBOR_PASSWORD: ${{ secrets.HARBOR_PASSWORD }}
-        run: |
-          echo "Username length: ${#HARBOR_USERNAME}"
-          echo "Password length: ${#HARBOR_PASSWORD}"
-
       - name: Log in to Harbor
         uses: docker/login-action@v2
         with:
