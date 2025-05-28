@@ -39,7 +39,7 @@ jobs:
 
       - name: Get Maven version and build
         if: ${{github.ref == 'refs/heads/main'}}
-        id: maven_version
+        id: maven_version_main
         run: | 
           echo "version=$(mvn help:evaluate -Dexpression='project.version' -q -DforceStdout -Dsha1=-${GITHUB_SHA::7} -Dchangelist=)" >> $GITHUB_OUTPUT
           mvn -Dsha1=-${GITHUB_SHA::7} -Dchangelist= clean package -DskipTests -Dskip.npm.install=true -Dskip.frontend=true --no-transfer-progress
