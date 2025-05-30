@@ -59,7 +59,6 @@ export class CoordCentreComponent implements OnInit {
       this.communes = response;
     });
     this.niveauCentreService.findList().subscribe((response: any) => {
-      // Si c'est un centre de type établissement, on ajoute le niveau centre ETABLISSEMENT pour qu'il apparaisse au niveau du select
       if (this.centreGestion.niveauCentre && this.centreGestion.niveauCentre.libelle === 'ETABLISSEMENT') {
         response.push(this.centreGestion.niveauCentre);
       }

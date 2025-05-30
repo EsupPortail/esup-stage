@@ -23,7 +23,7 @@
     <div class="row" *ngIf="centreGestion.id && form.get('niveauCentre')?.value.libelle == 'UFR'">
       <mat-form-field class="col-sm-12 col-md-12" appearance="fill">
         <mat-label>Composante</mat-label>
-        <mat-select multiple [(ngModel)]="selectedComposante" (selectionChange)="composanteChange($event.value)" [compareWith]="compareCode">
+        <mat-select multiple [(ngModel)]="selectedComposante" (openedChange)="chargerEtapes()" (selectionChange)="composanteChange($event.value)" [compareWith]="compareCode">
           <mat-option *ngFor="let composante of composantes" [value]="composante">{{composante.code}} - {{composante.libelle}}</mat-option>
         </mat-select>
       </mat-form-field>
@@ -31,7 +31,7 @@
     <div class="row" *ngIf="centreGestion.id && form.get('niveauCentre')?.value.libelle == 'ETAPE'">
       <mat-form-field class="col-sm-12 col-md-12" appearance="fill">
         <mat-label>Étapes</mat-label>
-        <mat-select [(ngModel)]="selectedValues" multiple #multiSelect [compareWith]="compareCode">
+        <mat-select [(ngModel)]="selectedValues" (openedChange)="chargerEtapes()"  multiple #multiSelect [compareWith]="compareCode">
           <mat-option>
             <ngx-mat-select-search [formControl]="etapeFilterCtrl" placeholderLabel="Filtrer par code ou libellé VET" noEntriesFoundLabel="Aucune étape trouvée"></ngx-mat-select-search>
           </mat-option>

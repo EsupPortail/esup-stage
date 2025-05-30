@@ -158,12 +158,7 @@ export class CentreGestionComponent implements OnInit {
       next: (response: any) => {
         if (response && response.texte) {
           this.consigneCentre = response;
-        } else {
-          console.info('Pas de consigne disponible pour ce centre');
         }
-      },
-      error: (err) => {
-        console.warn('Erreur lors du chargement de la consigne', err);
       }
     });
     this.majStatus()
@@ -196,7 +191,6 @@ export class CentreGestionComponent implements OnInit {
       if (this.coordCentreForm.valid || (this.centreGestion.id == 0 && this.coordCentreForm.get('nomCentre')?.valid && this.coordCentreForm.get('niveauCentre')?.valid )){
         this.setCentreGestionCoordCentre();
         this.update();
-        this.coordCentreComponent.chargerEtapes();
       }
     });
     this.paramCentreForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
