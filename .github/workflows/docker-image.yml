@@ -64,9 +64,15 @@ jobs:
           docker push ${{secrets.HARBOR_URL}}/esup-stage/esup-stage:latest-dev
           docker push ${{secrets.HARBOR_URL}}/esup-stage/esup-stage:${{steps.maven_version.outputs.version}}
 
-      - name: Print tag in summary
-        run: | 
-          echo "::notice::Tag créé : $TAG_NAME"
-          echo "::notice::Tag mis à jour : esup-stage:latest-dev"
+      - name: Summary
+        run: |
+          echo "## 📦 Image Docker publiée" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Repo | Nom | Tag | Image |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------------------------------|----------|------------------|" >> $GITHUB_STEP_SUMMARY
+          echo "| \`$IMAGE_REPO\` | \`$IMAGE_NAME\` | \`$IMAGE_TAG\` | \`$IMAGE_REPO\`\`$IMAGE_NAME\`:\`$IMAGE_TAG\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| \`$IMAGE_REPO\` | \`$IMAGE_NAME\` | latest | \`$IMAGE_REPO\`\`$IMAGE_NAME\`:latest |" >> $GITHUB_STEP_SUMMARY
         env:
-          TAG_NAME: ${{steps.maven_version.outputs.version}}
+          IMAGE_REPO: ${{env.IMAGE_REPO}}
+          IMAGE_NAME: ${{env.IMAGE_NAME}}
+          IMAGE_TAG: ${{steps.maven_version.outputs.version}}
