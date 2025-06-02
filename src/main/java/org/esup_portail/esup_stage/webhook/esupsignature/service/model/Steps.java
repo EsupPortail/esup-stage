@@ -3,6 +3,7 @@ package org.esup_portail.esup_stage.webhook.esupsignature.service.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -15,13 +16,13 @@ public class Steps {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     @Data
-    static class RecipientAction {
+    public static class RecipientAction {
         private String userEppn;
         private String userEmail;
         private String userName;
         private String userFirstname;
         private int stepNumber;
-        private String actionDate;
+        private Date actionDate;
         private String actionType;
         private String refuseComment;
         private Integer signPageNumber;

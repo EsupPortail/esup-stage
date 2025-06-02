@@ -4,6 +4,7 @@ import com.itextpdf.commons.utils.Base64;
 import org.esup_portail.esup_stage.config.properties.SignatureProperties;
 import org.esup_portail.esup_stage.dto.MetadataDto;
 import org.esup_portail.esup_stage.dto.PdfMetadataDto;
+import org.esup_portail.esup_stage.enums.SignataireEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.CentreGestionSignataire;
 import org.esup_portail.esup_stage.model.Convention;
@@ -131,11 +132,23 @@ public class WebhookService {
                 .block();
     }
 
-    public Steps updateSignatureStatus(String documentId) {
-        return webClient.get()
+    public List<Historique> getHistoriqueStatus(String documentId) {
+        List<Historique> historiques = new ArrayList<>();
+
+        Steps steps = webClient.get()
                 .uri(signatureProperties.getEsupsignature().getUri() + "/signrequests/" + documentId + "/steps")
                 .retrieve()
                 .bodyToMono(Steps.class)
                 .block();
+
+        if (steps != null) {
+            for(Steps.RecipientAction recipientAction : steps.getRecipientsActions()) {
+                Historique historique = new Historique();
+                historique.setTypeSignataire(SignataireEnum.valueOf(recipientAction.getSignType().toUpperCase()));
+                historiques.add(historique);
+            }
+        }
+
+        return historiques;
     }
 }
