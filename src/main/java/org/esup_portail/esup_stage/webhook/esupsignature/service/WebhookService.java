@@ -8,10 +8,7 @@ import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.CentreGestionSignataire;
 import org.esup_portail.esup_stage.model.Convention;
 import org.esup_portail.esup_stage.service.signature.model.Historique;
-import org.esup_portail.esup_stage.webhook.esupsignature.service.model.AuditStep;
-import org.esup_portail.esup_stage.webhook.esupsignature.service.model.AuditTrail;
-import org.esup_portail.esup_stage.webhook.esupsignature.service.model.Recipient;
-import org.esup_portail.esup_stage.webhook.esupsignature.service.model.WorkflowStep;
+import org.esup_portail.esup_stage.webhook.esupsignature.service.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -131,6 +128,14 @@ public class WebhookService {
                         throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de la récupération du document signé");
                     }
                 })
+                .block();
+    }
+
+    public Steps updateSignatureStatus(String documentId) {
+        return webClient.get()
+                .uri(signatureProperties.getEsupsignature().getUri() + "/signrequests/" + documentId + "/steps")
+                .retrieve()
+                .bodyToMono(Steps.class)
                 .block();
     }
 }
