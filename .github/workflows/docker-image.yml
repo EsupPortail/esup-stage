@@ -59,8 +59,14 @@ jobs:
           password: ${{secrets.HARBOR_PASSWORD}}
 
       - name: Build and Push the Docker image
-        run: | 
-          docker build --build-arg VERSION=${{steps.maven_version.outputs.version}} -t ${{secrets.HARBOR_URL}}/esup-stage/esup-stage:${{steps.maven_version.outputs.version}} .
+        run: |
+          docker build --build-arg VERSION=${{steps.maven_version.outputs.version}} -t ${{secrets.HARBOR_URL}}/esup-stage/esup-stage:latest-dev -t ${{secrets.HARBOR_URL}}/esup-stage/esup-stage:${{steps.maven_version.outputs.version}} .
+          docker push ${{secrets.HARBOR_URL}}/esup-stage/esup-stage:latest-dev
           docker push ${{secrets.HARBOR_URL}}/esup-stage/esup-stage:${{steps.maven_version.outputs.version}}
 
-
+      - name: Print tag in summary
+        run: | 
+          echo "::notice::Tag créé : $TAG_NAME"
+          echo "::notice::Tag mis à jour : esup-stage:latest-dev"
+        env:
+          TAG_NAME: ${{steps.maven_version.outputs.version}}
