@@ -73,6 +73,6 @@ jobs:
           echo "| \`$IMAGE_REPO\` | \`$IMAGE_NAME\` | \`$IMAGE_TAG\` | \`$IMAGE_REPO\`\`$IMAGE_NAME\`:\`$IMAGE_TAG\` |" >> $GITHUB_STEP_SUMMARY
           echo "| \`$IMAGE_REPO\` | \`$IMAGE_NAME\` | latest | \`$IMAGE_REPO\`\`$IMAGE_NAME\`:latest |" >> $GITHUB_STEP_SUMMARY
         env:
-          IMAGE_REPO: ${{env.IMAGE_REPO}}
-          IMAGE_NAME: ${{env.IMAGE_NAME}}
+          IMAGE_REPO: ${{vars.IMAGE_REPO}}
+          IMAGE_NAME: ${{vars.IMAGE_NAME}}
           IMAGE_TAG: ${{steps.maven_version.outputs.version}}
