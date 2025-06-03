@@ -13,14 +13,13 @@
         </mat-form-field>
         <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
           <mat-label>Type de centre</mat-label>
-          <mat-select formControlName="niveauCentre" [compareWith]="compare" required>
-            <mat-option *ngFor="let niveauCentre of niveauxCentre" [value]="niveauCentre">{{niveauCentre.libelle}}</mat-option>
+          <mat-select formControlName="niveauCentre" [compareWith]="compare" (selectionChange)="niveauChange()" required>            <mat-option *ngFor="let niveauCentre of niveauxCentre" [value]="niveauCentre">{{niveauCentre.libelle}}</mat-option>
           </mat-select>
           <mat-error><app-form-error [field]="form.get('niveauCentre')"></app-form-error></mat-error>
         </mat-form-field>
       </div>
     </form>
-    <div class="row" *ngIf="centreGestion.id && form.get('niveauCentre')?.value.libelle == 'UFR'">
+    <div class="row" *ngIf="centreGestion.id && centreGestion.niveauCentre && centreGestion.niveauCentre.libelle === 'UFR'">
       <mat-form-field class="col-sm-12 col-md-12" appearance="fill">
         <mat-label>Composante</mat-label>
         <mat-select multiple [(ngModel)]="selectedComposante" (openedChange)="chargerEtapes()" (selectionChange)="composanteChange($event.value)" [compareWith]="compareCode">
@@ -28,10 +27,10 @@
         </mat-select>
       </mat-form-field>
     </div>
-    <div class="row" *ngIf="centreGestion.id && form.get('niveauCentre')?.value.libelle == 'ETAPE'">
+    <div class="row" *ngIf="centreGestion.id && centreGestion.niveauCentre && centreGestion.niveauCentre.libelle === 'ETAPE'">
       <mat-form-field class="col-sm-12 col-md-12" appearance="fill">
         <mat-label>Étapes</mat-label>
-        <mat-select [(ngModel)]="selectedValues" (openedChange)="chargerEtapes()"  multiple #multiSelect [compareWith]="compareCode">
+        <mat-select [(ngModel)]="selectedValues" (openedChange)="chargerEtapes()" multiple #multiSelect [compareWith]="compareCode">
           <mat-option>
             <ngx-mat-select-search [formControl]="etapeFilterCtrl" placeholderLabel="Filtrer par code ou libellé VET" noEntriesFoundLabel="Aucune étape trouvée"></ngx-mat-select-search>
           </mat-option>
@@ -39,11 +38,10 @@
         </mat-select>
       </mat-form-field>
     </div>
-    <div *ngIf="centreGestion.id && form.get('niveauCentre')?.value.libelle == 'ETAPE' && selectedValues.length > 0">
+    <div *ngIf="centreGestion.id && centreGestion.niveauCentre && centreGestion.niveauCentre.libelle === 'ETAPE' && selectedValues && selectedValues.length > 0">
       <mat-panel-title>Liste des étapes rattachées au centre</mat-panel-title>
       <app-table [service]="critereGestionService" [columns]="displayedEtapesColumns" [sortColumn]="sortColumn" [filters]="filters"
                  matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'" (matSortChange)="appTable ? appTable.sorting($event) : null" [hideDeleteFilters]="true">
-
         <ng-container matColumnDef="id.code">
           <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Code</th>
           <td mat-cell *matCellDef="let row"> {{row.id.code}} </td>
