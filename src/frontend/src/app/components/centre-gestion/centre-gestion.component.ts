@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import { ActivatedRoute, Router } from "@angular/router";
 import { CentreGestionService } from "../../services/centre-gestion.service";
 import { MessageService } from "../../services/message.service";
@@ -8,13 +8,14 @@ import { debounceTime } from 'rxjs/operators';
 import { ConsigneService } from "../../services/consigne.service";
 import {REGEX} from "../../utils/regex.utils";
 import { CoordCentreComponent } from './coord-centre/coord-centre.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-centre-gestion',
   templateUrl: './centre-gestion.component.html',
   styleUrls: ['./centre-gestion.component.scss'],
 })
-export class CentreGestionComponent implements OnInit {
+export class CentreGestionComponent implements OnInit,OnDestroy {
 
   statuts: any = {
     statutCoordCentre: 0,
@@ -41,6 +42,8 @@ export class CentreGestionComponent implements OnInit {
 
   isCreate!: boolean;
   pathId: any;
+
+  private subscriptions: Subscription[] = [];
 
   coordCentreForm!: FormGroup;
   paramCentreForm!: FormGroup;
@@ -187,21 +190,35 @@ export class CentreGestionComponent implements OnInit {
   }
 
   updateOnChanges(): void {
-    this.coordCentreForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
-      if (this.coordCentreForm.valid || (this.centreGestion.id == 0 && this.coordCentreForm.get('nomCentre')?.valid && this.coordCentreForm.get('niveauCentre')?.valid )){
-        this.setCentreGestionCoordCentre();
+    // Nettoyer les anciennes subscriptions
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions = [];
+
+    // Ajouter les nouvelles subscriptions
+    this.subscriptions.push(
+      this.coordCentreForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
+        if (this.coordCentreForm.valid || (this.centreGestion.id == 0 && this.coordCentreForm.get('nomCentre')?.valid && this.coordCentreForm.get('niveauCentre')?.valid )){
+          this.setCentreGestionCoordCentre();
+          this.update();
+        }
+      })
+    );
+
+    this.subscriptions.push(
+      this.paramCentreForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
+        this.setCentreGestionParamCentre();
         this.update();
-      }
-    });
-    this.paramCentreForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
-      this.setCentreGestionParamCentre();
-      this.update();
-    });
-    this.signatureElectroniqueForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
-      this.setCentreGestionSignatureElectronique();
-      this.update();
-    });
+      })
+    );
+
+    this.subscriptions.push(
+      this.signatureElectroniqueForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
+        this.setCentreGestionSignatureElectronique();
+        this.update();
+      })
+    );
   }
+
 
   validationCreation() {
     if (!this.allValid) {
@@ -333,5 +350,9 @@ export class CentreGestionComponent implements OnInit {
       || !ordres.some(o => o === this.centreGestion.validationConventionOrdre)
       || !ordres.some(o => o === this.centreGestion.verificationAdministrativeOrdre)
     )
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 }
