@@ -54,13 +54,25 @@ jobs:
       - name: Log in to Harbor
         uses: docker/login-action@v2
         with:
-          registry: ${{secrets.HARBOR_URL}}
+          registry: ${{vars.IMAGE_REPO}}
           username: ${{secrets.HARBOR_USERNAME}}
           password: ${{secrets.HARBOR_PASSWORD}}
 
       - name: Build and Push the Docker image
-        run: | 
-          docker build --build-arg VERSION=${{steps.maven_version.outputs.version}} -t ${{secrets.HARBOR_URL}}/esup-stage/esup-stage:${{steps.maven_version.outputs.version}} .
-          docker push ${{secrets.HARBOR_URL}}/esup-stage/esup-stage:${{steps.maven_version.outputs.version}}
+        run: |
+          docker build --build-arg VERSION=${{steps.maven_version.outputs.version}} -t ${{vars.IMAGE_REPO}}/esup-stage:latest-dev -t ${{vars.IMAGE_REPO}}/esup-stage:${{steps.maven_version.outputs.version}} .
+          docker push ${{vars.IMAGE_REPO}}/esup-stage:latest-dev
+          docker push ${{vars.IMAGE_REPO}}/esup-stage:${{steps.maven_version.outputs.version}}
 
-
+      - name: Summary
+        run: |
+          echo "## 📦 Images Docker publiées" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Repo | Nom | Tag | Image |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------------------------------|----------|------------------|-------------------------------------------------------------|" >> $GITHUB_STEP_SUMMARY
+          echo "| \`$IMAGE_REPO\` | \`$IMAGE_NAME\` | \`$IMAGE_TAG\` | \`$IMAGE_REPO/$IMAGE_NAME:$IMAGE_TAG\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| \`$IMAGE_REPO\` | \`$IMAGE_NAME\` | \`latest\` | \`$IMAGE_REPO/$IMAGE_NAME:latest\` |" >> $GITHUB_STEP_SUMMARY
+        env:
+          IMAGE_REPO: ${{vars.IMAGE_REPO}}
+          IMAGE_NAME: ${{vars.IMAGE_NAME}}
+          IMAGE_TAG: ${{steps.maven_version.outputs.version}}

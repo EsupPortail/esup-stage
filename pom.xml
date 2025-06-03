@@ -17,7 +17,7 @@
 
 	<properties>
 		<revision>3.0.0</revision>
-		<sha1>.4</sha1>
+		<sha1></sha1>
 		<changelist></changelist>
 
 		<java.version>21</java.version>
