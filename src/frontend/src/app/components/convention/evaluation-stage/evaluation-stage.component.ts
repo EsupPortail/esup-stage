@@ -949,14 +949,17 @@ export class EvaluationStageComponent implements OnInit {
     this.reponseSupplementaireEntrepriseForm = this.fb.group({});
   }
 
-  toggleValidators(form: FormGroup, keys: string[],toggle: boolean): void {
+  toggleValidators(form: FormGroup, keys: string[], toggle: boolean): void {
     keys.forEach((key: string) => {
-      if (toggle){
-        form.get(key)!.addValidators(Validators.required);
-      }else{
-        form.get(key)!.clearValidators();
+      const control = form.get(key);
+      if (control) {
+        if (toggle) {
+          control.addValidators(Validators.required);
+        } else {
+          control.clearValidators();
+        }
+        control.updateValueAndValidity();
       }
-      form.get(key)!.updateValueAndValidity();
     });
   }
 
@@ -970,17 +973,28 @@ export class EvaluationStageComponent implements OnInit {
 
       this.ficheEvaluation = response;
 
-      for(let question of this.FicheEtudiantIQuestions.concat(this.FicheEtudiantIIQuestions).concat(this.FicheEtudiantIIIQuestions)){
-        let questionKey = 'question' + question.controlName;
-        if(!this.ficheEvaluation[questionKey]){
-          if(question.type == 'multiple-boolean'){
-            for (var i = 0; i < question.texte.length; i++) {
-              let key = "reponse" + question.controlName + this.controlsIndexToLetter[i];
-              this.toggleValidators(this.reponseEtudiantForm,[key],false);
+      const allQuestions = this.FicheEtudiantIQuestions
+        .concat(this.FicheEtudiantIIQuestions)
+        .concat(this.FicheEtudiantIIIQuestions);
+
+      for (let question of allQuestions) {
+        const questionKey = 'question' + question.controlName;
+        if (!this.ficheEvaluation[questionKey]) {
+          const key = 'reponse' + question.controlName;
+
+          if (question.type === 'multiple-boolean') {
+            for (let i = 0; i < question.texte.length; i++) {
+              const multipleKey = key + this.controlsIndexToLetter[i];
+              this.toggleValidators(this.reponseEtudiantForm, [multipleKey], false);
             }
-          }else{
-            let key = 'reponse' + question.controlName;
-            this.toggleValidators(this.reponseEtudiantForm,[key],false);
+          } else {
+            this.toggleValidators(this.reponseEtudiantForm, [key], false);
+
+            // Gestion des champs bis
+            if (question.bisQuestionLowNotation || question.bisQuestionTrue || question.bisQuestionFalse) {
+              const bisKey = key + 'bis';
+              this.toggleValidators(this.reponseEtudiantForm, [bisKey], false);
+            }
           }
         }
       }
@@ -1230,6 +1244,13 @@ export class EvaluationStageComponent implements OnInit {
     }
 
     const valid = reponseForm.valid && reponseSupplementaireForm.valid
+
+    console.log("reponseSupplementaireForm : ",reponseSupplementaireForm.valid);
+    console.log("reponseForm : ",reponseForm.valid);
+    console.log("EtuFrom : ",this.reponseEtudiantForm.valid);
+    console.log("EnsFrom : ",this.reponseEnseignantForm.valid);
+    console.log("EntFrom : ",this.reponseEntrepriseForm.valid);
+    console.log("valid : ",valid);
 
     const data = {...reponseForm.value};
 
