@@ -197,7 +197,7 @@ export class CentreGestionComponent implements OnInit,OnDestroy {
     // Ajouter les nouvelles subscriptions
     this.subscriptions.push(
       this.coordCentreForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
-        if (this.coordCentreForm.valid || (this.centreGestion.id == 0 && this.coordCentreForm.get('nomCentre')?.valid && this.coordCentreForm.get('niveauCentre')?.valid )){
+        if (this.coordCentreForm.valid){
           this.setCentreGestionCoordCentre();
           this.update();
         }

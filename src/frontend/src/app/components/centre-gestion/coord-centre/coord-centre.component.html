@@ -13,7 +13,8 @@
         </mat-form-field>
         <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
           <mat-label>Type de centre</mat-label>
-          <mat-select formControlName="niveauCentre" [compareWith]="compare" (selectionChange)="niveauChange()" required>            <mat-option *ngFor="let niveauCentre of niveauxCentre" [value]="niveauCentre">{{niveauCentre.libelle}}</mat-option>
+          <mat-select formControlName="niveauCentre" [compareWith]="compare" (selectionChange)="niveauChange()" required>
+            <mat-option *ngFor="let niveauCentre of niveauxCentre" [value]="niveauCentre">{{niveauCentre.libelle}}</mat-option>
           </mat-select>
           <mat-error><app-form-error [field]="form.get('niveauCentre')"></app-form-error></mat-error>
         </mat-form-field>
@@ -128,9 +129,6 @@
           <input matInput formControlName="fax">
         </mat-form-field>
       </div>
-      <mat-dialog-actions *ngIf="!centreGestion.id">
-        <button mat-flat-button color="primary" (click)="validate()">{{'BOUTON_VALIDER'|contenu}}</button>
-      </mat-dialog-actions>
     </form>
   </mat-expansion-panel>
 </mat-accordion>
