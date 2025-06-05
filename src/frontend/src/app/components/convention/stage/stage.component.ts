@@ -250,7 +250,9 @@ export class StageComponent implements OnInit {
     this.toggleValidators(['sujetStage','competences','fonctionsEtTaches','idOrigineStage','confidentiel','idNatureTravail','idModeValidationStage'],!this.enMasse);
 
     this.loadInterruptionsStage();
-    this.loadPeriodesStage();
+    if (!this.form.get('horairesReguliers')?.value) {
+      this.loadPeriodesStage();
+    }
 
     this.previousValues={...this.form.value}
     this.form.valueChanges.pipe(debounceTime(1000)).subscribe(res=>{
@@ -756,15 +758,22 @@ export class StageComponent implements OnInit {
   }
 
   setDureeStageFromExceptionnelle(): void {
-    if(this.convention.dureeExceptionnellePeriode != null) {
-      const matches = this.convention.dureeExceptionnellePeriode.match(/(\d+)\smois\s(\d+)\sjour\(s\)\s(\d+)\sheure\(s\)/);
+    if (this.convention.dureeExceptionnellePeriode != null) {
+      const matches = this.convention.dureeExceptionnellePeriode.match(/(\d+)\s*mois\s*(\d+)\s*jour\(s\)\s*(\d+\.?\d*)\s*heure\(s\)/);
       if (matches) {
-        this.dureeStage.dureeMois = parseInt(matches[1], 10);
-        this.dureeStage.dureeJours = parseInt(matches[2], 10);
-        this.dureeStage.dureeHeures = parseInt(matches[3], 10);
+        this.dureeStage = {
+          dureeMois: parseInt(matches[1], 10),
+          dureeJours: parseInt(matches[2], 10),
+          dureeHeures: parseFloat(matches[3])
+        };
+        if (this.form) {
+          this.form.patchValue({
+            periodeStageMois: this.dureeStage.dureeMois,
+            periodeStageJours: this.dureeStage.dureeJours,
+            periodeStageHeures: this.dureeStage.dureeHeures
+          });
+        }
       }
-    } else if (this.convention.dureeExceptionnelle) {
-      this.calculPeriode(this.convention.nbHeuresHebdo, this.convention.dureeExceptionnelle);
     }
   }
 
@@ -779,36 +788,160 @@ export class StageComponent implements OnInit {
   }
 
   calculPeriode(nbHeuresHebdo: number, nbHeures: number): void {
-    // Avoid calculations with invalid inputs
-    if (!nbHeuresHebdo || !nbHeures || isNaN(nbHeuresHebdo) || isNaN(nbHeures)) {
+    if (!nbHeures || isNaN(nbHeures)) {
       this.dureeStage = { dureeMois: 0, dureeJours: 0, dureeHeures: 0 };
       return;
     }
 
+    const parsedNbHeures = parseFloat(nbHeures.toString());
+
+    // Calculer selon le type d'horaires
+    if (!this.form.get('horairesReguliers')?.value && this.periodesCalculHeuresStage && this.periodesCalculHeuresStage.length > 0) {
+      this.calculPeriodeIrreguliere(parsedNbHeures);
+    } else {
+      this.calculPeriodeReguliere(nbHeuresHebdo, parsedNbHeures);
+    }
+  }
+
+  private calculPeriodeReguliere(nbHeuresHebdo: number, nbHeures: number): void {
     const NB_JOUR_MOIS = 22; // 1 mois = 22 jours ouvrés
     const NB_JOUR_SEMAINE = 5; // 1 semaine = 5 jours ouvrés
 
-    // Parse as floats to handle decimal values
-    const parsedNbHeuresHebdo = parseFloat(nbHeuresHebdo.toString());
-    const parsedNbHeures = parseFloat(nbHeures.toString());
-
-    const nbHeuresJournalieres = parsedNbHeuresHebdo / NB_JOUR_SEMAINE; // Heures par jour ouvré
-
-    if (nbHeuresJournalieres === 0) {
-      this.dureeStage = { dureeMois: 0, dureeJours: 0, dureeHeures: parsedNbHeures };
+    if (!nbHeuresHebdo || isNaN(nbHeuresHebdo)) {
+      this.dureeStage = { dureeMois: 0, dureeJours: 0, dureeHeures: nbHeures };
       return;
     }
 
-    const totalJours = parsedNbHeures / nbHeuresJournalieres;
+    const parsedNbHeuresHebdo = parseFloat(nbHeuresHebdo.toString());
+    const nbHeuresJournalieres = parsedNbHeuresHebdo / NB_JOUR_SEMAINE;
 
+    if (nbHeuresJournalieres === 0) {
+      this.dureeStage = { dureeMois: 0, dureeJours: 0, dureeHeures: nbHeures };
+      return;
+    }
+
+    const totalJours = nbHeures / nbHeuresJournalieres;
     const nbJoursEntiers = Math.floor(totalJours);
 
     this.dureeStage.dureeMois = Math.floor(nbJoursEntiers / NB_JOUR_MOIS);
-
     this.dureeStage.dureeJours = nbJoursEntiers % NB_JOUR_MOIS;
 
-    const heuresRestantes = parsedNbHeures - (nbJoursEntiers * nbHeuresJournalieres);
-    this.dureeStage.dureeHeures = Math.round(heuresRestantes * 100) / 100; // Round to 2 decimal places
+    const heuresRestantes = nbHeures - (nbJoursEntiers * nbHeuresJournalieres);
+    this.dureeStage.dureeHeures = Math.round(heuresRestantes * 100) / 100;
+  }
+
+  private calculPeriodeIrreguliere(nbHeures: number): void {
+    const NB_JOUR_MOIS = 22; // 1 mois = 22 jours ouvrés
+
+    // Calculer le nombre total de jours ouvrés réellement travaillés
+    const totalJoursOuvres = this.calculerJoursOuvresTotal();
+
+    // Utiliser le nombre réel de jours ouvrés pour le calcul
+    this.dureeStage.dureeMois = Math.floor(totalJoursOuvres / NB_JOUR_MOIS);
+    this.dureeStage.dureeJours = totalJoursOuvres % NB_JOUR_MOIS;
+
+    // Calculer les heures restantes
+    this.dureeStage.dureeHeures = this.calculerHeuresRestantesIrregulieres(nbHeures, totalJoursOuvres);
+  }
+
+  private calculerJoursOuvresTotal(): number {
+    let totalJoursOuvres = 0;
+
+    for (const periode of this.periodesCalculHeuresStage) {
+      if (!periode.dateDebut || !periode.dateFin) continue;
+      totalJoursOuvres += this.calculerJoursOuvresPourPeriode(periode);
+    }
+
+    return totalJoursOuvres;
+  }
+
+  private calculerJoursOuvresPourPeriode(periode: any): number {
+    let joursOuvres = 0;
+    let startDate = new Date(periode.dateDebut);
+    const endDate = new Date(periode.dateFin);
+
+    // Normaliser les dates
+    startDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+    const normalizedEndDate = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+
+    // Préparer les données pour les vérifications
+    const interruptionRanges = this.getInterruptionRanges();
+    const joursFeriesMap = this.getJoursFeriesMap();
+
+    // Compter les jours ouvrés dans cette période
+    while (startDate <= normalizedEndDate) {
+      if (this.isJourOuvre(startDate, interruptionRanges, joursFeriesMap)) {
+        joursOuvres++;
+      }
+      // Passer au jour suivant
+      startDate = new Date(startDate.setDate(startDate.getDate() + 1));
+    }
+
+    return joursOuvres;
+  }
+
+  private getInterruptionRanges(): Array<{start: Date, end: Date}> {
+    const interruptionRanges = [];
+
+    if (this.form.get('interruptionStage')!.value && this.interruptionsStage) {
+      for (const interruption of this.interruptionsStage) {
+        const startInterruption = new Date(interruption.dateDebutInterruption);
+        const endInterruption = new Date(interruption.dateFinInterruption);
+        interruptionRanges.push({
+          start: new Date(startInterruption.getFullYear(), startInterruption.getMonth(), startInterruption.getDate()),
+          end: new Date(endInterruption.getFullYear(), endInterruption.getMonth(), endInterruption.getDate())
+        });
+      }
+    }
+
+    return interruptionRanges;
+  }
+
+  private getJoursFeriesMap(): Set<number> {
+    const joursFeriesMap = new Set<number>();
+
+    for (const jourFerie of this.joursFeries) {
+      joursFeriesMap.add(new Date(jourFerie.getFullYear(), jourFerie.getMonth(), jourFerie.getDate()).getTime());
+    }
+
+    return joursFeriesMap;
+  }
+
+  private isJourOuvre(date: Date, interruptionRanges: Array<{start: Date, end: Date}>, joursFeriesMap: Set<number>): boolean {
+    const dayOfWeek = date.getDay();
+
+    // Ignorer les weekends
+    if (dayOfWeek === 6 || dayOfWeek === 0) {
+      return false;
+    }
+
+    // Ignorer les jours fériés
+    if (joursFeriesMap.has(date.getTime())) {
+      return false;
+    }
+
+    // Ignorer les périodes d'interruption
+    if (this.form.get('interruptionStage')!.value) {
+      for (const range of interruptionRanges) {
+        if (date >= range.start && date <= range.end) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
+  private calculerHeuresRestantesIrregulieres(nbHeures: number, totalJoursOuvres: number): number {
+    if (totalJoursOuvres === 0) {
+      return nbHeures;
+    }
+
+    // Calculer la moyenne des heures journalières et voir s'il y a un reste
+    const moyenneHeuresJournalieres = nbHeures / totalJoursOuvres;
+    const heuresNormales = Math.floor(moyenneHeuresJournalieres) * totalJoursOuvres;
+
+    return Math.round((nbHeures - heuresNormales) * 100) / 100;
   }
 
 }
