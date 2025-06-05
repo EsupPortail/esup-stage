@@ -11,7 +11,6 @@ import org.esup_portail.esup_stage.enums.FolderEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.*;
-import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.ConventionService;
 import org.esup_portail.esup_stage.service.MailerService;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
@@ -500,7 +499,7 @@ public class SignatureService {
             historiques = switch (appSignature) {
                 case DOCAPOSTE ->
                         signatureClient.getHistorique(convention.getDocumentId(), convention.getCentreGestion().getSignataires());
-                case ESUPSIGNATURE -> webhookService.getHistorique(convention.getDocumentId(), convention);
+                case ESUPSIGNATURE -> webhookService.getHistoriqueStatus(convention.getDocumentId());
                 default -> historiques;
             };
             setSignatureHistorique(convention, historiques);

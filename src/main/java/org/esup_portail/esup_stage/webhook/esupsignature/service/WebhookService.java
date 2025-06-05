@@ -1,6 +1,7 @@
 package org.esup_portail.esup_stage.webhook.esupsignature.service;
 
 import com.itextpdf.commons.utils.Base64;
+import lombok.extern.slf4j.Slf4j;
 import org.esup_portail.esup_stage.config.properties.SignatureProperties;
 import org.esup_portail.esup_stage.dto.MetadataDto;
 import org.esup_portail.esup_stage.dto.PdfMetadataDto;
@@ -10,6 +11,7 @@ import org.esup_portail.esup_stage.model.CentreGestionSignataire;
 import org.esup_portail.esup_stage.model.Convention;
 import org.esup_portail.esup_stage.service.signature.model.Historique;
 import org.esup_portail.esup_stage.webhook.esupsignature.service.model.*;
+import org.esup_portail.esup_stage.webhook.esupsignature.service.model.Steps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,14 +31,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class WebhookService {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebhookService.class);
     private final WebClient webClient;
     @Autowired
     SignatureProperties signatureProperties;
+
+    private Logger logger = LoggerFactory.getLogger(WebhookService.class);
 
     public WebhookService(WebClient.Builder builder) {
         this.webClient = builder.build();
@@ -80,13 +86,16 @@ public class WebhookService {
         builder.part("recipientsEmails", String.join(",", recipients));
         builder.part("stepsJsonString", workflowSteps);
 
-        return webClient.post()
+         String result = webClient.post()
                 .uri(signatureProperties.getEsupsignature().getUri() + "/workflows/" + metadataDto.getWorkflowId() + "/new")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
+
+         logger.info("Upload dans esup-signature de la convention ou de l'avenant : {}", result);
+         return result;
     }
 
     public List<Historique> getHistorique(String documentId, Convention convention) {
@@ -135,20 +144,36 @@ public class WebhookService {
     public List<Historique> getHistoriqueStatus(String documentId) {
         List<Historique> historiques = new ArrayList<>();
 
-        Steps steps = webClient.get()
+        List<Steps> steps = Objects.requireNonNull(webClient.get()
                 .uri(signatureProperties.getEsupsignature().getUri() + "/signrequests/" + documentId + "/steps")
                 .retrieve()
-                .bodyToMono(Steps.class)
-                .block();
+                .bodyToFlux(Steps.class)
+                .collectList()
+                .block());
 
-        if (steps != null) {
-            for(Steps.RecipientAction recipientAction : steps.getRecipientsActions()) {
-                Historique historique = new Historique();
-                historique.setTypeSignataire(SignataireEnum.valueOf(recipientAction.getSignType().toUpperCase()));
-                historiques.add(historique);
+        for(Steps step : steps) {
+            if (step != null) {
+                for(Steps.RecipientAction recipientAction : step.getRecipientsActions()) {
+                    Historique historique = new Historique();
+                    historique.setDateDepot(
+                            recipientAction.getActionDate() != null ? recipientAction.getActionDate() : null
+                    );
+                    historique.setDateSignature(
+                            recipientAction.getActionDate() != null ? recipientAction.getActionDate() : null
+                    );
+                    historique.setTypeSignataire(
+                            recipientAction.getSignType() != null
+                                    ? SignataireEnum.valueOf(recipientAction.getSignType().toUpperCase())
+                                    : null
+                    );
+                    if(historique.getDateDepot() != null && historique.getDateSignature() != null && historique.getTypeSignataire() != null) {
+                        historiques.add(historique);
+                    }
+                }
             }
         }
 
         return historiques;
     }
+
 }
