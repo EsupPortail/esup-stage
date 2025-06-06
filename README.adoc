@@ -1,3 +1,5 @@
+:branch: {env-BRANCH_NAME}
+
 = ESUP Stage
 
 ESUP STAGE est la refonte de l'application PStage. L'application a été complètement réécrite pour reprendre et améliorer les grandes et fonctionnalités : produire une convention de stage et ses avenants dans le cadre d'un processus de validation adapté.
@@ -171,11 +173,16 @@ Après la compilation, le chemin complet du fichier de déploiement est le suiva
 
 == Exécution de l'application avec __Docker__
 
+
 * Créer un fichier `.env` basé sur le fichier `example.env`
 ** Adapter les paramètres, notamment `DATA_PATH` qui doit correspondre au volume de stockage des fichiers
 * Lancer la commande `docker-compose up` depuis la racine du projet
 ** docker-compose utilisera les fichiers de configuration `.env` et `application.properties` présent à la racine du projet
 ** L'exécution récupère une image docker publique de l'application disponible sur `https://harbor.esup-portail.org/`
+
+TIP: Pour utiliser un tag particulier, consultez le dernier tag à utiliser https://github.com/EsupPortail/esup-stage/actions/workflows/docker-image.yml?query=branch%3A{branch}[ici]
+
+
 * L'application est alors accessible sur : `http://localhost:8080/`
 
 == Exécution de l'application avec __Tomcat__
