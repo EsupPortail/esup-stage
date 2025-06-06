@@ -145,7 +145,7 @@ public class ConventionFormDto {
 
     private int idModeValidationStage;
 
-    @Size(max = 8)
+    @Size(max = 255)
     private String codeElp;
 
     @Size(max = 60)
