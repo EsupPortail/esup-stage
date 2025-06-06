@@ -191,7 +191,10 @@ export class ConventionComponent implements OnInit {
   }
 
   updateEnseignant(data: any): void {
-    this.updateSingleField('idEnseignant',data.id);
+    this.conventionService.changeEnseignantReferent(this.convention.id, data.id).subscribe((response: any) => {
+      this.convention = response;
+      this.majStatus();
+    });
   }
 
   updateSignataire(data: any): void {

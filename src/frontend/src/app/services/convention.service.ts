@@ -112,4 +112,8 @@ export class ConventionService implements PaginatedService {
   updatePeriodes(id: number, periodes: String): Observable<any> {
     return this.http.post(`${environment.apiUrl}/conventions/${id}/periodes`, {periodes});
   }
+
+  changeEnseignantReferent(idConvention: number, idEnseignant: number): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/conventions/${idConvention}/change-enseignant-referent`, { idEnseignant });
+  }
 }

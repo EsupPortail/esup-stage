@@ -20,6 +20,7 @@ import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.ConventionService;
+import org.esup_portail.esup_stage.service.MailerService;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
 import org.esup_portail.esup_stage.service.ldap.LdapService;
 import org.esup_portail.esup_stage.service.signature.SignatureService;
@@ -111,7 +112,9 @@ public class ConventionController {
     SignatureProperties signatureProperties;
 
     @Autowired
-    LdapService ldapService;
+    MailerService mailerService;
+
+
 
     @JsonView(Views.List.class)
     @GetMapping
@@ -928,6 +931,48 @@ public class ConventionController {
         }
         convention.setDureeExceptionnellePeriode(periodes.getPeriodes());
         convention = conventionJpaRepository.saveAndFlush(convention);
+        return convention;
+    }
+
+    //********************************************************************************
+    // Changement de l'enseignant référent d'une convention et notification par mail
+    //********************************************************************************
+
+    @PutMapping("/{id}/change-enseignant-referent")
+    @Secure
+    public Convention changeEnseignantReferent(@PathVariable int id, @RequestBody Map<String, Integer> body) {
+        Enseignant enseignant = enseignantJpaRepository.findById(body.get("idEnseignant")).orElse(null);
+        if (enseignant == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Enseignant non trouvé");
+        }
+        Convention convention = conventionJpaRepository.findById(id);
+        // Pour les étudiants on vérifie que c'est une de ses conventions
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
+        if (convention == null || (UtilisateurHelper.isRole(Objects.requireNonNull(utilisateur), Role.ETU) && !utilisateur.getUid().equals(convention.getEtudiant().getIdentEtudiant()))) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        }
+        convention.setEnseignant(enseignant);
+        conventionJpaRepository.saveAndFlush(convention);
+
+        // Envoi de l'alerte de changement d'enseignant référent aux gestionnaires
+        List<PersonnelCentreGestion> personnels = convention.getCentreGestion().getPersonnels();
+        assert personnels != null;
+        for (PersonnelCentreGestion personnel : personnels) {
+            if (mailerService.isAlerteActif(personnel, "CHANGEMENT_ENS")) {
+                mailerService.sendAlerteValidation(personnel.getMail(), convention, null, utilisateur, "CHANGEMENT_ENS");
+            }
+        }
+
+        // Envoi de l'alerte de changement d'enseignant référent à l'enseignant
+        if(appConfigService.getConfigAlerteMail().getAlerteEnseignant().isChangementEnseignant()){
+            mailerService.sendAlerteValidation(enseignant.getMail(), convention, null, utilisateur, "CHANGEMENT_ENS");
+        }
+
+        // Envoi de l'alerte de changement d'enseignant référent à l'étudiant
+        if(appConfigService.getConfigAlerteMail().getAlerteEtudiant().isChangementEnseignant()){
+            mailerService.sendAlerteValidation(convention.getEtudiant().getMail(), convention, null, utilisateur, "CHANGEMENT_ENS");
+        }
+
         return convention;
     }
 }
