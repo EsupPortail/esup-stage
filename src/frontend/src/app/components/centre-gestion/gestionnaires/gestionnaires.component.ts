@@ -58,6 +58,7 @@ export class GestionnairesComponent implements OnInit {
     {id: 'validationAdministrativeConvention', libelle: 'Validation administrative d\'une convention'},
     {id: 'verificationAdministrativeConvention', libelle: 'Vérification administrative d\'une convention'},
     {id: 'validationAvenant', libelle: 'Validation d\'un avenant '},
+    {id: 'changementEnseignant', libelle: 'Changement d\'enseignant référent'},
   ];
 
   configAlertes: any;
@@ -218,7 +219,7 @@ export class GestionnairesComponent implements OnInit {
         }
       }
     })
-    
+
     for (let alerte of this.alertesMail) {
       if (this.form.get(alerte.id)?.value == true) {
         this.toggleAlertes = false;
