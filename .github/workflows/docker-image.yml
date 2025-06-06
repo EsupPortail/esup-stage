@@ -37,19 +37,16 @@ jobs:
           cd src/frontend
           npm run buildProduction
 
-      - name: Get Maven version and build for main branch
-        if: ${{github.ref == 'refs/heads/main'}}
-        id: maven_version_main
-        run: | 
-          echo "version=$(mvn help:evaluate -Dexpression='project.version' -q -DforceStdout -Dsha1=-${GITHUB_SHA::7} -Dchangelist=)" >> $GITHUB_OUTPUT
-          mvn -Dsha1=-${GITHUB_SHA::7} -Dchangelist= clean package -DskipTests -Dskip.npm.install=true -Dskip.frontend=true --no-transfer-progress
-
-      - name: Get Maven version and build for non-main branches
-        if: ${{github.ref != 'refs/heads/main'}}
+      - name: Get Maven version and build
         id: maven_version
-        run: | 
-          echo "version=$(mvn help:evaluate -Dexpression='project.version' -q -DforceStdout -Dsha1=-${GITHUB_SHA::7} -Dchangelist=-${GITHUB_REF##*/})" >> $GITHUB_OUTPUT
-          mvn -Dsha1=-${GITHUB_SHA::7} -Dchangelist=-${GITHUB_REF##*/} clean package -DskipTests -Dskip.npm.install=true -Dskip.frontend=true --no-transfer-progress
+        run: |
+          if [[ "${GITHUB_REF}" != "refs/heads/main" ]]; then
+            echo "version=$(mvn help:evaluate -Dexpression='project.version' -q -DforceStdout -Dsha1=-${GITHUB_SHA::7} -Dchangelist=-${GITHUB_REF##*/})" >> $GITHUB_OUTPUT
+            mvn -Dsha1=-${GITHUB_SHA::7} -Dchangelist=-${GITHUB_REF##*/} clean package -DskipTests -Dskip.npm.install=true -Dskip.frontend=true --no-transfer-progress
+          else
+            echo "version=$(mvn help:evaluate -Dexpression='project.version' -q -DforceStdout -Dsha1=-${GITHUB_SHA::7} -Dchangelist=)" >> $GITHUB_OUTPUT
+            mvn -Dsha1=-${GITHUB_SHA::7} -Dchangelist= clean package -DskipTests -Dskip.npm.install=true -Dskip.frontend=true --no-transfer-progress
+          fi
 
       - name: Log in to Harbor
         uses: docker/login-action@v2
