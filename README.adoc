@@ -4,8 +4,6 @@ ESUP STAGE est la refonte de l'application PStage. L'application a été complè
 
 == https://esupportail.github.io/esup-stage/[→ Documentation technique Esup-Stage]
 
-Documentation technique link:src/docs/modules/ROOT/pages/index.adoc[(source)]
-
 // ifndef::env-github[]
 // include::src/docs/modules/ROOT/pages/ESUP-STAGE.adoc[tag=compilation]
 // endif::[]
