@@ -7,10 +7,10 @@ content:
   - url: ./
     start_path: src/docs
     branches:
-    #- main
+    - main
     - dev
     version:
-      #main: ''
+      main: main
       dev: dev
 ui:
   bundle:
