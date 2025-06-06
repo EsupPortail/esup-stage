@@ -2,12 +2,14 @@
 
 == Versions stables
 
-* https://github.com/EsupPortail/esup-stage[ESUP-Stage 3.0.0]
+* https://github.com/EsupPortail/esup-stage/tree/main[ESUP-Stage 3.0.0]
 * https://github.com/EsupPortail/esup-siscol[ESUP-SIScol 1.0.28]
 
 '''
 
 == Version(s) à venir
+
+* https://github.com/EsupPortail/esup-stage/tree/dev-3.1.0[ESUP-Stage 3.1.0]
 
 === ESUP-Stage
 
