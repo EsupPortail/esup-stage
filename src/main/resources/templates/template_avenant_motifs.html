@@ -151,9 +151,30 @@
             <td style="border:1px solid hsl(0, 0%, 0%);vertical-align:top;">
                 <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>Anciennes valeurs :</u></span>
                 <p>
-                    <span class="text-small"><strong>Montant : </strong>${convention.montantGratification} ${convention.uniteGratificationLibelle} ${convention.uniteDureeGratificationLibelle}</span><br/>
-                    <span class="text-small"><strong>Monnaie utilisée pour le paiement : </strong>${convention.deviseGratification}</span><br/>
-                    <span class="text-small"><strong>Modalité de versement de la gratification : </strong>${convention.modeVersGratificationLibelle}</span>
+                    <span class="text-small">
+                        <strong>Montant : </strong>
+                        <#if convention.montantGratification?has_content>
+                            ${convention.montantGratification} ${convention.uniteGratificationLibelle} ${convention.uniteDureeGratificationLibelle}
+                        <#else>
+                            Néant
+                        </#if>
+                    </span><br/>
+                    <span class="text-small">
+                        <strong>Monnaie utilisée pour le paiement : </strong>
+                        <#if convention.deviseGratification?has_content>
+                            ${convention.deviseGratification}
+                        <#else>
+                            Néant
+                        </#if>
+                    </span><br/>
+                    <span class="text-small">
+                        <strong>Modalité de versement de la gratification : </strong>
+                        <#if convention.modeVersGratificationLibelle?has_content>
+                                ${convention.modeVersGratificationLibelle}
+                        <#else>
+                            Néant
+                        </#if>
+                    </span>
                 </p>
             </td>
             <td style="border:1px solid hsl(0, 0%, 0%);vertical-align:top;">
