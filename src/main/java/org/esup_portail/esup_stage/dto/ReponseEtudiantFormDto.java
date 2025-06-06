@@ -1,117 +1,115 @@
 package org.esup_portail.esup_stage.dto;
 
-import javax.validation.constraints.NotNull;
-
 public class ReponseEtudiantFormDto {
 
     private Integer reponseEtuI1;
-    
+
     private String reponseEtuI1bis;
-    
+
     private Integer reponseEtuI2;
-    
+
     private Integer reponseEtuI3;
-    
+
     private Boolean reponseEtuI4a;
-    
+
     private Boolean reponseEtuI4b;
-    
+
     private Boolean reponseEtuI4c;
-    
+
     private Boolean reponseEtuI4d;
-    
+
     private Integer reponseEtuI5;
-    
+
     private Integer reponseEtuI6;
-    
+
     private Boolean reponseEtuI7;
-    
+
     private Integer reponseEtuI7bis1;
-    
+
     private Integer reponseEtuI7bis1a;
-    
+
     private String reponseEtuI7bis1b;
-    
+
     private Integer reponseEtuI7bis2;
-    
+
     private Boolean reponseEtuI8;
-    
+
     private Integer reponseEtuII1;
-    
+
     private String reponseEtuII1bis;
-    
+
     private Integer reponseEtuII2;
-    
+
     private String reponseEtuII2bis;
-    
+
     private Integer reponseEtuII3;
-    
+
     private String reponseEtuII3bis;
-    
+
     private Integer reponseEtuII4;
-    
+
     private Boolean reponseEtuII5;
-    
+
     private Integer reponseEtuII5a;
-    
+
     private Boolean reponseEtuII5b;
-    
+
     private Boolean reponseEtuII6;
-    
+
     private Boolean reponseEtuIII1;
-    
+
     private String reponseEtuIII1bis;
-    
+
     private Boolean reponseEtuIII2;
-    
+
     private String reponseEtuIII2bis;
-    
+
     private Boolean reponseEtuIII3;
-    
+
     private String reponseEtuIII3bis;
-    
+
     private Integer reponseEtuIII4;
-    
+
     private Boolean reponseEtuIII5a;
-    
+
     private Boolean reponseEtuIII5b;
-    
+
     private Boolean reponseEtuIII5c;
-    
+
     private String reponseEtuIII5bis;
-    
+
     private Integer reponseEtuIII6;
-    
+
     private String reponseEtuIII6bis;
-    
+
     private Integer reponseEtuIII7;
-    
+
     private String reponseEtuIII7bis;
-    
+
     private Boolean reponseEtuIII8;
-    
+
     private String reponseEtuIII8bis;
-    
+
     private Boolean reponseEtuIII9;
-    
+
     private String reponseEtuIII9bis;
-    
+
     private Boolean reponseEtuIII10;
-    
+
     private Boolean reponseEtuIII11;
-    
+
     private Boolean reponseEtuIII12;
-    
+
     private Boolean reponseEtuIII13;
-    
+
     private Boolean reponseEtuIII14;
-    
+
     private Integer reponseEtuIII15;
-    
+
     private String reponseEtuIII15bis;
-    
+
     private Integer reponseEtuIII16;
-    
+
     private String reponseEtuIII16bis;
 
     public Integer getReponseEtuI1() {

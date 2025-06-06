@@ -1,14 +1,14 @@
 package org.esup_portail.esup_stage.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
+import jakarta.persistence.*;
+import lombok.Data;
 import org.esup_portail.esup_stage.dto.view.Views;
 import org.esup_portail.esup_stage.enums.NbJoursHebdoEnum;
 import org.esup_portail.esup_stage.service.PeriodeService;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -16,6 +16,8 @@ import java.util.*;
 
 @Entity
 @Table(name = "Convention")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@Data
 public class Convention extends ObjetMetier implements Exportable {
 
     @JsonView(Views.List.class)
@@ -30,7 +32,7 @@ public class Convention extends ObjetMetier implements Exportable {
     private Etudiant etudiant;
 
     @JsonView(Views.List.class)
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "idCentreGestion")
     private CentreGestion centreGestion;
 
@@ -64,11 +66,11 @@ public class Convention extends ObjetMetier implements Exportable {
     @JoinColumn(name = "idStructure")
     private Structure structure;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idService")
     private Service service;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idContact")
     private Contact contact;
 
@@ -77,11 +79,11 @@ public class Convention extends ObjetMetier implements Exportable {
     @JoinColumn(name = "idSignataire")
     private Contact signataire;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idTypeConvention")
     private TypeConvention typeConvention;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idOffre")
     private Offre offre;
 
@@ -105,21 +107,21 @@ public class Convention extends ObjetMetier implements Exportable {
     @Column()
     private NbJoursHebdoEnum nbJoursHebdo;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idTempsTravail")
     private TempsTravail tempsTravail;
 
     private String commentaireDureeTravail;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "codeLangueConvention")
     private LangueConvention langueConvention;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idOrigineStage")
     private OrigineStage origineStage;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idTheme")
     private Theme theme;
 
@@ -160,7 +162,7 @@ public class Convention extends ObjetMetier implements Exportable {
     @Column
     private String telPortableEtudiant;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idIndemnisation")
     private Indemnisation indemnisation;
 
@@ -183,17 +185,17 @@ public class Convention extends ObjetMetier implements Exportable {
 
     private String modeEncadreSuivi;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idModeVersGratification")
     private ModeVersGratification modeVersGratification;
 
     private String avantagesNature;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idNatureTravail")
     private NatureTravail natureTravail;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idModeValidationStage")
     private ModeValidationStage modeValidationStage;
 
@@ -236,11 +238,11 @@ public class Convention extends ObjetMetier implements Exportable {
     @Column
     private String dureeExceptionnelle;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idUniteDureeExceptionnelle")
     private UniteDuree uniteDureeExceptionnelle;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idUniteGratification")
     private UniteGratification uniteGratification;
 
@@ -294,7 +296,7 @@ public class Convention extends ObjetMetier implements Exportable {
     private String nbConges;
     private String competences;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idUniteDureeGratification")
     private UniteDuree uniteDureeGratification;
 
@@ -307,7 +309,7 @@ public class Convention extends ObjetMetier implements Exportable {
     @Column
     private String typePresence;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idDevise")
     private Devise devise;
 
@@ -321,7 +323,7 @@ public class Convention extends ObjetMetier implements Exportable {
     @Column(nullable = false)
     private boolean creationEnMasse = false;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idPays")
     private Pays paysConvention;
 
@@ -335,30 +337,30 @@ public class Convention extends ObjetMetier implements Exportable {
     private Boolean confidentiel;
 
     @JsonView(Views.List.class)
-    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE})
+    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE}, fetch = FetchType.LAZY)
     private List<Avenant> avenants = new ArrayList<>();
 
     @OneToOne(mappedBy = "convention", cascade = {CascadeType.MERGE, CascadeType.REMOVE, CascadeType.PERSIST})
     private ConventionNomenclature nomenclature;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE})
+    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE}, fetch = FetchType.LAZY)
     private List<HistoriqueValidation> historiqueValidations = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE})
+    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE}, fetch = FetchType.LAZY)
     private List<PeriodeInterruptionStage> periodeInterruptionStages = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE})
+    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE}, fetch = FetchType.LAZY)
     private List<ReponseEvaluation> reponseEvaluations = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE})
+    @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE}, fetch = FetchType.LAZY)
     private List<ReponseSupplementaire> reponseSupplementaires = new ArrayList<>();
 
     @JsonView(Views.List.class)
-    @OneToOne(mappedBy = "convention", cascade = {CascadeType.MERGE, CascadeType.REMOVE, CascadeType.PERSIST},fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "convention", cascade = {CascadeType.MERGE, CascadeType.REMOVE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
     private ReponseEvaluation reponseEvaluation;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -400,6 +402,9 @@ public class Convention extends ObjetMetier implements Exportable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateActualisationSignature;
 
+    @Column
+    private String loginEnvoiSignature;
+
     @JsonView(Views.List.class)
     @Transient
     private String lieuStage;
@@ -411,869 +416,9 @@ public class Convention extends ObjetMetier implements Exportable {
     @Transient
     private String dureeExceptionnellePeriode;
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public Etudiant getEtudiant() {
-        return etudiant;
-    }
-
-    public void setEtudiant(Etudiant etudiant) {
-        this.etudiant = etudiant;
-    }
-
-    public CentreGestion getCentreGestion() {
-        return centreGestion;
-    }
-
-    public void setCentreGestion(CentreGestion centreGestion) {
-        this.centreGestion = centreGestion;
-    }
-
-    public Ufr getUfr() {
-        return ufr;
-    }
-
-    public void setUfr(Ufr ufr) {
-        this.ufr = ufr;
-    }
-
-    public Etape getEtape() {
-        return etape;
-    }
-
-    public void setEtape(Etape etape) {
-        this.etape = etape;
-    }
-
-    public String getCodeDepartement() {
-        return codeDepartement;
-    }
-
-    public void setCodeDepartement(String codeDepartement) {
-        this.codeDepartement = codeDepartement;
-    }
-
-    public Enseignant getEnseignant() {
-        return enseignant;
-    }
-
-    public void setEnseignant(Enseignant enseignant) {
-        this.enseignant = enseignant;
-    }
-
-    public Structure getStructure() {
-        return structure;
-    }
-
-    public void setStructure(Structure structure) {
-        this.structure = structure;
-    }
-
-    public Service getService() {
-        return service;
-    }
-
-    public void setService(Service service) {
-        this.service = service;
-    }
-
-    public Contact getContact() {
-        return contact;
-    }
-
-    public void setContact(Contact contact) {
-        this.contact = contact;
-    }
-
-    public Contact getSignataire() {
-        return signataire;
-    }
-
-    public void setSignataire(Contact signataire) {
-        this.signataire = signataire;
-    }
-
-    public TypeConvention getTypeConvention() {
-        return typeConvention;
-    }
-
-    public void setTypeConvention(TypeConvention typeConvention) {
-        this.typeConvention = typeConvention;
-    }
-
-    public Offre getOffre() {
-        return offre;
-    }
-
-    public void setOffre(Offre offre) {
-        this.offre = offre;
-    }
-
-    public String getSujetStage() {
-        return sujetStage;
-    }
-
-    public void setSujetStage(String sujetStage) {
-        this.sujetStage = sujetStage;
-    }
-
-    public Date getDateDebutStage() {
-        return dateDebutStage;
-    }
-
-    public void setDateDebutStage(Date dateDebutStage) {
-        this.dateDebutStage = dateDebutStage;
-    }
-
-    public Date getDateFinStage() {
-        return dateFinStage;
-    }
-
-    public void setDateFinStage(Date dateFinStage) {
-        this.dateFinStage = dateFinStage;
-    }
-
-    public Boolean getInterruptionStage() {
-        return interruptionStage;
-    }
-
-    public void setInterruptionStage(Boolean interruptionStage) {
-        this.interruptionStage = interruptionStage;
-    }
-
-    public NbJoursHebdoEnum getNbJoursHebdo() {
-        return nbJoursHebdo;
-    }
-
-    public void setNbJoursHebdo(NbJoursHebdoEnum nbJoursHebdo) {
-        this.nbJoursHebdo = nbJoursHebdo;
-    }
-
-    public TempsTravail getTempsTravail() {
-        return tempsTravail;
-    }
-
-    public void setTempsTravail(TempsTravail tempsTravail) {
-        this.tempsTravail = tempsTravail;
-    }
-
-    public String getCommentaireDureeTravail() {
-        return commentaireDureeTravail;
-    }
-
-    public void setCommentaireDureeTravail(String commentaireDureeTravail) {
-        this.commentaireDureeTravail = commentaireDureeTravail;
-    }
-
-    public LangueConvention getLangueConvention() {
-        return langueConvention;
-    }
-
-    public void setLangueConvention(LangueConvention langueConvention) {
-        this.langueConvention = langueConvention;
-    }
-
-    public OrigineStage getOrigineStage() {
-        return origineStage;
-    }
-
-    public void setOrigineStage(OrigineStage origineStage) {
-        this.origineStage = origineStage;
-    }
-
-    public Theme getTheme() {
-        return theme;
-    }
-
-    public void setTheme(Theme theme) {
-        this.theme = theme;
-    }
-
-    public Boolean getConventionStructure() {
-        return conventionStructure;
-    }
-
-    public void setConventionStructure(Boolean conventionStructure) {
-        this.conventionStructure = conventionStructure;
-    }
-
-    public Boolean getValidationPedagogique() {
-        return validationPedagogique;
-    }
-
-    public void setValidationPedagogique(Boolean validationPedagogique) {
-        this.validationPedagogique = validationPedagogique;
-    }
-
-    public Boolean getValidationConvention() {
-        return validationConvention;
-    }
-
-    public void setValidationConvention(Boolean validationConvention) {
-        this.validationConvention = validationConvention;
-    }
-
-    public Boolean getVerificationAdministrative() {
-        return verificationAdministrative;
-    }
-
-    public void setVerificationAdministrative(Boolean verificationAdministrative) {
-        this.verificationAdministrative = verificationAdministrative;
-    }
-
-    public Boolean getConversionEnContrat() {
-        return conversionEnContrat;
-    }
-
-    public void setConversionEnContrat(Boolean conversionEnContrat) {
-        this.conversionEnContrat = conversionEnContrat;
-    }
-
-    public String getCommentaireStage() {
-        return commentaireStage;
-    }
-
-    public void setCommentaireStage(String commentaireStage) {
-        this.commentaireStage = commentaireStage;
-    }
-
-    public String getAdresseEtudiant() {
-        return adresseEtudiant;
-    }
-
-    public void setAdresseEtudiant(String adresseEtudiant) {
-        this.adresseEtudiant = adresseEtudiant;
-    }
-
-    public String getCodePostalEtudiant() {
-        return codePostalEtudiant;
-    }
-
-    public void setCodePostalEtudiant(String codePostalEtudiant) {
-        this.codePostalEtudiant = codePostalEtudiant;
-    }
-
-    public String getVilleEtudiant() {
-        return villeEtudiant;
-    }
-
-    public void setVilleEtudiant(String villeEtudiant) {
-        this.villeEtudiant = villeEtudiant;
-    }
-
-    public String getPaysEtudiant() {
-        return paysEtudiant;
-    }
-
-    public void setPaysEtudiant(String paysEtudiant) {
-        this.paysEtudiant = paysEtudiant;
-    }
-
-    public String getCourrielPersoEtudiant() {
-        return courrielPersoEtudiant;
-    }
-
-    public void setCourrielPersoEtudiant(String courrielPersoEtudiant) {
-        this.courrielPersoEtudiant = courrielPersoEtudiant;
-    }
-
-    public String getTelEtudiant() {
-        return telEtudiant;
-    }
-
-    public void setTelEtudiant(String telEtudiant) {
-        this.telEtudiant = telEtudiant;
-    }
-
-    public String getTelPortableEtudiant() {
-        return telPortableEtudiant;
-    }
-
-    public void setTelPortableEtudiant(String telPortableEtudiant) {
-        this.telPortableEtudiant = telPortableEtudiant;
-    }
-
-    public Indemnisation getIndemnisation() {
-        return indemnisation;
-    }
-
-    public void setIndemnisation(Indemnisation indemnisation) {
-        this.indemnisation = indemnisation;
-    }
-
-    public String getMontantGratification() {
-        return montantGratification;
-    }
-
-    public void setMontantGratification(String montantGratification) {
-        this.montantGratification = montantGratification;
-    }
-
-    public String getFonctionsEtTaches() {
-        return fonctionsEtTaches;
-    }
-
-    public void setFonctionsEtTaches(String fonctionsEtTaches) {
-        this.fonctionsEtTaches = fonctionsEtTaches;
-    }
-
-    public String getDetails() {
-        return details;
-    }
-
-    public void setDetails(String details) {
-        this.details = details;
-    }
-
-    public String getAnnee() {
-        return annee;
-    }
-
-    public void setAnnee(String annee) {
-        this.annee = annee;
-    }
-
-    public String getTemConfSujetTeme() {
-        return temConfSujetTeme;
-    }
-
-    public void setTemConfSujetTeme(String temConfSujetTeme) {
-        this.temConfSujetTeme = temConfSujetTeme;
-    }
-
-    public String getNbHeuresHebdo() {
-        return nbHeuresHebdo != null ? nbHeuresHebdo.replaceAll("[a-zA-Z ]*", "") : null;
-    }
-
-    public void setNbHeuresHebdo(String nbHeuresHebdo) {
-        this.nbHeuresHebdo = nbHeuresHebdo;
-    }
-
-    public String getModeEncadreSuivi() {
-        return modeEncadreSuivi;
-    }
-
-    public void setModeEncadreSuivi(String modeEncadreSuivi) {
-        this.modeEncadreSuivi = modeEncadreSuivi;
-    }
-
-    public ModeVersGratification getModeVersGratification() {
-        return modeVersGratification;
-    }
-
-    public void setModeVersGratification(ModeVersGratification modeVersGratification) {
-        this.modeVersGratification = modeVersGratification;
-    }
-
-    public String getAvantagesNature() {
-        return avantagesNature;
-    }
-
-    public void setAvantagesNature(String avantagesNature) {
-        this.avantagesNature = avantagesNature;
-    }
-
-    public NatureTravail getNatureTravail() {
-        return natureTravail;
-    }
-
-    public void setNatureTravail(NatureTravail natureTravail) {
-        this.natureTravail = natureTravail;
-    }
-
-    public ModeValidationStage getModeValidationStage() {
-        return modeValidationStage;
-    }
-
-    public void setModeValidationStage(ModeValidationStage modeValidationStage) {
-        this.modeValidationStage = modeValidationStage;
-    }
-
-    public String getCodeElp() {
-        return codeElp;
-    }
-
-    public void setCodeElp(String codeElp) {
-        this.codeElp = codeElp;
-    }
-
-    public String getLibelleELP() {
-        return libelleELP;
-    }
-
-    public void setLibelleELP(String libelleELP) {
-        this.libelleELP = libelleELP;
-    }
-
-    public BigDecimal getCreditECTS() {
-        return creditECTS;
-    }
-
-    public void setCreditECTS(BigDecimal creditECTS) {
-        this.creditECTS = creditECTS;
-    }
-
-    public String getTravailNuitFerie() {
-        return travailNuitFerie;
-    }
-
-    public void setTravailNuitFerie(String travailNuitFerie) {
-        this.travailNuitFerie = travailNuitFerie;
-    }
-
-    public Integer getDureeStage() {
-        return dureeStage;
-    }
-
-    public void setDureeStage(Integer dureeStage) {
-        this.dureeStage = dureeStage;
-    }
-
-    public String getNomEtabRef() {
-        return nomEtabRef;
-    }
-
-    public void setNomEtabRef(String nomEtabRef) {
-        this.nomEtabRef = nomEtabRef;
-    }
-
-    public String getAdresseEtabRef() {
-        return adresseEtabRef;
-    }
-
-    public void setAdresseEtabRef(String adresseEtabRef) {
-        this.adresseEtabRef = adresseEtabRef;
-    }
-
-    public String getNomSignataireComposante() {
-        return nomSignataireComposante;
-    }
-
-    public void setNomSignataireComposante(String nomSignataireComposante) {
-        this.nomSignataireComposante = nomSignataireComposante;
-    }
-
-    public String getQualiteSignataire() {
-        return qualiteSignataire;
-    }
-
-    public void setQualiteSignataire(String qualiteSignataire) {
-        this.qualiteSignataire = qualiteSignataire;
-    }
-
-    public String getLibelleCPAM() {
-        return libelleCPAM;
-    }
-
-    public void setLibelleCPAM(String libelleCPAM) {
-        this.libelleCPAM = libelleCPAM;
-    }
-
-    public String getRegionCPAM() {
-        return regionCPAM;
-    }
-
-    public void setRegionCPAM(String regionCPAM) {
-        this.regionCPAM = regionCPAM;
-    }
-
-    public String getAdresseCPAM() {
-        return adresseCPAM;
-    }
-
-    public void setAdresseCPAM(String adresseCPAM) {
-        this.adresseCPAM = adresseCPAM;
-    }
-
-    public String getDureeExceptionnelle() {
-        return dureeExceptionnelle;
-    }
-
-    public void setDureeExceptionnelle(String dureeExceptionnelle) {
-        this.dureeExceptionnelle = dureeExceptionnelle;
-    }
-
-    public UniteDuree getUniteDureeExceptionnelle() {
-        return uniteDureeExceptionnelle;
-    }
-
-    public void setUniteDureeExceptionnelle(UniteDuree uniteDureeExceptionnelle) {
-        this.uniteDureeExceptionnelle = uniteDureeExceptionnelle;
-    }
-
-    public UniteGratification getUniteGratification() {
-        return uniteGratification;
-    }
-
-    public void setUniteGratification(UniteGratification uniteGratification) {
-        this.uniteGratification = uniteGratification;
-    }
-
-    public String getCodeFinalite() {
-        return codeFinalite;
-    }
-
-    public void setCodeFinalite(String codeFinalite) {
-        this.codeFinalite = codeFinalite;
-    }
-
-    public String getLibelleFinalite() {
-        return libelleFinalite;
-    }
-
-    public void setLibelleFinalite(String libelleFinalite) {
-        this.libelleFinalite = libelleFinalite;
-    }
-
-    public String getCodeCursusLMD() {
-        return codeCursusLMD;
-    }
-
-    public void setCodeCursusLMD(String codeCursusLMD) {
-        this.codeCursusLMD = codeCursusLMD;
-    }
-
-    public Boolean getPriseEnChargeFraisMission() {
-        return priseEnChargeFraisMission;
-    }
-
-    public void setPriseEnChargeFraisMission(Boolean priseEnChargeFraisMission) {
-        this.priseEnChargeFraisMission = priseEnChargeFraisMission;
-    }
-
-    public String getCodeRGI() {
-        return codeRGI;
-    }
-
-    public void setCodeRGI(String codeRGI) {
-        this.codeRGI = codeRGI;
-    }
-
-    public String getLoginValidation() {
-        return loginValidation;
-    }
-
-    public void setLoginValidation(String loginValidation) {
-        this.loginValidation = loginValidation;
-    }
-
-    public Date getDateValidation() {
-        return dateValidation;
-    }
-
-    public void setDateValidation(Date dateValidation) {
-        this.dateValidation = dateValidation;
-    }
-
-    public String getLoginSignature() {
-        return loginSignature;
-    }
-
-    public void setLoginSignature(String loginSignature) {
-        this.loginSignature = loginSignature;
-    }
-
-    public Date getDateSignature() {
-        return dateSignature;
-    }
-
-    public void setDateSignature(Date dateSignature) {
-        this.dateSignature = dateSignature;
-    }
-
-    public Boolean getEnvoiMailEtudiant() {
-        return envoiMailEtudiant;
-    }
-
-    public void setEnvoiMailEtudiant(Boolean envoiMailEtudiant) {
-        this.envoiMailEtudiant = envoiMailEtudiant;
-    }
-
-    public Date getDateEnvoiMailEtudiant() {
-        return dateEnvoiMailEtudiant;
-    }
-
-    public void setDateEnvoiMailEtudiant(Date dateEnvoiMailEtudiant) {
-        this.dateEnvoiMailEtudiant = dateEnvoiMailEtudiant;
-    }
-
-    public Boolean getEnvoiMailTuteurPedago() {
-        return envoiMailTuteurPedago;
-    }
-
-    public void setEnvoiMailTuteurPedago(Boolean envoiMailTuteurPedago) {
-        this.envoiMailTuteurPedago = envoiMailTuteurPedago;
-    }
-
-    public Date getDateEnvoiMailTuteurPedago() {
-        return dateEnvoiMailTuteurPedago;
-    }
-
-    public void setDateEnvoiMailTuteurPedago(Date dateEnvoiMailTuteurPedago) {
-        this.dateEnvoiMailTuteurPedago = dateEnvoiMailTuteurPedago;
-    }
-
-    public Boolean getEnvoiMailTuteurPro() {
-        return envoiMailTuteurPro;
-    }
-
-    public void setEnvoiMailTuteurPro(Boolean envoiMailTuteurPro) {
-        this.envoiMailTuteurPro = envoiMailTuteurPro;
-    }
-
-    public Date getDateEnvoiMailTuteurPro() {
-        return dateEnvoiMailTuteurPro;
-    }
-
-    public void setDateEnvoiMailTuteurPro(Date dateEnvoiMailTuteurPro) {
-        this.dateEnvoiMailTuteurPro = dateEnvoiMailTuteurPro;
-    }
-
-    public String getNbConges() {
-        return nbConges;
-    }
-
-    public void setNbConges(String nbConges) {
-        this.nbConges = nbConges;
-    }
-
-    public String getCompetences() {
-        return competences;
-    }
-
-    public void setCompetences(String competences) {
-        this.competences = competences;
-    }
-
-    public UniteDuree getUniteDureeGratification() {
-        return uniteDureeGratification;
-    }
-
-    public void setUniteDureeGratification(UniteDuree uniteDureeGratification) {
-        this.uniteDureeGratification = uniteDureeGratification;
-    }
-
-    public String getMonnaieGratification() {
-        return monnaieGratification;
-    }
-
-    public void setMonnaieGratification(String monnaieGratification) {
-        this.monnaieGratification = monnaieGratification;
-    }
-
-    public String getVolumeHoraireFormation() {
-        return volumeHoraireFormation;
-    }
-
-    public void setVolumeHoraireFormation(String volumeHoraireFormation) {
-        this.volumeHoraireFormation = volumeHoraireFormation;
-    }
-
-    public String getTypePresence() {
-        return typePresence;
-    }
-
-    public void setTypePresence(String typePresence) {
-        this.typePresence = typePresence;
-    }
-
-    public Devise getDevise() {
-        return devise;
-    }
-
-    public void setDevise(Devise devise) {
-        this.devise = devise;
-    }
-
-    public boolean isValidationCreation() {
-        return validationCreation;
-    }
-
-    public void setValidationCreation(boolean validationCreation) {
-        this.validationCreation = validationCreation;
-    }
-
-    public Date getDateValidationCreation() {
-        return dateValidationCreation;
-    }
-
-    public void setDateValidationCreation(Date dateValidationCreation) {
-        this.dateValidationCreation = dateValidationCreation;
-    }
-
-    public boolean isCreationEnMasse() {
-        return creationEnMasse;
-    }
-
-    public void setCreationEnMasse(boolean creationEnMasse) {
-        this.creationEnMasse = creationEnMasse;
-    }
-
-    public Pays getPaysConvention() {
-        return paysConvention;
-    }
-
-    public void setPaysConvention(Pays paysConvention) {
-        this.paysConvention = paysConvention;
-    }
-
-    public Boolean isHorairesReguliers() {
-        return horairesReguliers;
-    }
-
-    public void setHorairesReguliers(Boolean horairesReguliers) {
-        this.horairesReguliers = horairesReguliers;
-    }
-
-    public Boolean getGratificationStage() {
-        return gratificationStage;
-    }
-
-    public void setGratificationStage(Boolean gratificationStage) {
-        this.gratificationStage = gratificationStage;
-    }
-
-    public Boolean getConfidentiel() {
-        return confidentiel;
-    }
-
-    public void setConfidentiel(Boolean confidentiel) {
-        this.confidentiel = confidentiel;
-    }
-
-    public List<Avenant> getAvenants() {
-        return avenants;
-    }
-
-    public void setAvenants(List<Avenant> avenants) {
-        this.avenants = avenants;
-    }
-
-    public ConventionNomenclature getNomenclature() {
-        return nomenclature;
-    }
-
     public void setNomenclature(ConventionNomenclature nomenclature) {
         this.nomenclature = nomenclature;
         this.nomenclature.setConvention(this);
-    }
-
-    public ReponseEvaluation getReponseEvaluation() {
-        return reponseEvaluation;
-    }
-
-    public void setReponseEvaluation(ReponseEvaluation reponseEvaluation) {
-        this.reponseEvaluation = reponseEvaluation;
-    }
-
-    public Date getDateEnvoiSignature() {
-        return dateEnvoiSignature;
-    }
-
-    public void setDateEnvoiSignature(Date dateEnvoiSignature) {
-        this.dateEnvoiSignature = dateEnvoiSignature;
-    }
-
-    public String getDocumentId() {
-        return documentId;
-    }
-
-    public void setDocumentId(String documentId) {
-        this.documentId = documentId;
-    }
-
-    public Date getDateSignatureEtudiant() {
-        return dateSignatureEtudiant;
-    }
-
-    public void setDateSignatureEtudiant(Date dateSignatureEtudiant) {
-        this.dateSignatureEtudiant = dateSignatureEtudiant;
-    }
-
-    public Date getDateDepotEtudiant() {
-        return dateDepotEtudiant;
-    }
-
-    public void setDateDepotEtudiant(Date dateDepotEtudiant) {
-        this.dateDepotEtudiant = dateDepotEtudiant;
-    }
-
-    public Date getDateSignatureEnseignant() {
-        return dateSignatureEnseignant;
-    }
-
-    public void setDateSignatureEnseignant(Date dateSignatureEnseignant) {
-        this.dateSignatureEnseignant = dateSignatureEnseignant;
-    }
-
-    public Date getDateDepotEnseignant() {
-        return dateDepotEnseignant;
-    }
-
-    public void setDateDepotEnseignant(Date dateDepotEnseignant) {
-        this.dateDepotEnseignant = dateDepotEnseignant;
-    }
-
-    public Date getDateSignatureTuteur() {
-        return dateSignatureTuteur;
-    }
-
-    public void setDateSignatureTuteur(Date dateSignatureTuteur) {
-        this.dateSignatureTuteur = dateSignatureTuteur;
-    }
-
-    public Date getDateDepotTuteur() {
-        return dateDepotTuteur;
-    }
-
-    public void setDateDepotTuteur(Date dateDepotTuteur) {
-        this.dateDepotTuteur = dateDepotTuteur;
-    }
-
-    public Date getDateSignatureSignataire() {
-        return dateSignatureSignataire;
-    }
-
-    public void setDateSignatureSignataire(Date dateSignatureSignataire) {
-        this.dateSignatureSignataire = dateSignatureSignataire;
-    }
-
-    public Date getDateDepotSignataire() {
-        return dateDepotSignataire;
-    }
-
-    public void setDateDepotSignataire(Date dateDepotSignataire) {
-        this.dateDepotSignataire = dateDepotSignataire;
-    }
-
-    public Date getDateSignatureViseur() {
-        return dateSignatureViseur;
-    }
-
-    public void setDateSignatureViseur(Date dateSignatureViseur) {
-        this.dateSignatureViseur = dateSignatureViseur;
-    }
-
-    public Date getDateDepotViseur() {
-        return dateDepotViseur;
-    }
-
-    public void setDateDepotViseur(Date dateDepotViseur) {
-        this.dateDepotViseur = dateDepotViseur;
-    }
-
-    public Date getDateActualisationSignature() {
-        return dateActualisationSignature;
-    }
-
-    public void setDateActualisationSignature(Date dateActualisationSignature) {
-        this.dateActualisationSignature = dateActualisationSignature;
     }
 
     public String getLieuStage() {
@@ -1281,10 +426,6 @@ public class Convention extends ObjetMetier implements Exportable {
             return getService().getNom() + " " + getService().getCommune() + (getService().getPays() != null ? " " + getService().getPays().getLib() : "");
         }
         return null;
-    }
-
-    public void setLieuStage(String lieuStage) {
-        this.lieuStage = lieuStage;
     }
 
     public String getDureeExceptionnellePeriode() {
@@ -1295,44 +436,12 @@ public class Convention extends ObjetMetier implements Exportable {
         return dureeExceptionnellePeriode;
     }
 
-    public void setDureeExceptionnellePeriode(String dureeExceptionnellePeriode) {
-        this.dureeExceptionnellePeriode = dureeExceptionnellePeriode;
-    }
-
-    public List<HistoriqueValidation> getHistoriqueValidations() {
-        return historiqueValidations;
-    }
-
-    public void setHistoriqueValidations(List<HistoriqueValidation> historiqueValidations) {
-        this.historiqueValidations = historiqueValidations;
-    }
-
     public List<PeriodeInterruptionStage> getPeriodeInterruptionStages() {
         if (periodeInterruptionStages != null) {
             // Ordonne par ordre de début asc
             periodeInterruptionStages.sort(Comparator.comparing(PeriodeInterruptionStage::getDateDebutInterruption));
         }
         return periodeInterruptionStages;
-    }
-
-    public void setPeriodeInterruptionStages(List<PeriodeInterruptionStage> periodeInterruptionStages) {
-        this.periodeInterruptionStages = periodeInterruptionStages;
-    }
-
-    public List<ReponseEvaluation> getReponseEvaluations() {
-        return reponseEvaluations;
-    }
-
-    public void setReponseEvaluations(List<ReponseEvaluation> reponseEvaluations) {
-        this.reponseEvaluations = reponseEvaluations;
-    }
-
-    public List<ReponseSupplementaire> getReponseSupplementaires() {
-        return reponseSupplementaires;
-    }
-
-    public void setReponseSupplementaires(List<ReponseSupplementaire> reponseSupplementaires) {
-        this.reponseSupplementaires = reponseSupplementaires;
     }
 
     public boolean isDepasseDelaiValidation() {
@@ -1357,9 +466,7 @@ public class Convention extends ObjetMetier implements Exportable {
                 calendar.set(Calendar.SECOND, 0);
                 calendar.set(Calendar.MILLISECOND, 0);
                 Date dateAlerte = calendar.getTime();
-                if (now.after(dateAlerte) || now.compareTo(dateAlerte) == 0) {
-                    return true;
-                }
+                return now.after(dateAlerte) || now.compareTo(dateAlerte) == 0;
             }
         }
         return false;
@@ -1453,7 +560,7 @@ public class Convention extends ObjetMetier implements Exportable {
                 break;
             case "interruptionStage":
                 if (getInterruptionStage() != null) {
-                    value = getInterruptionStage()?"Oui":"Non";
+                    value = getInterruptionStage() ? "Oui" : "Non";
                 }
                 break;
             case "theme":
@@ -1568,7 +675,7 @@ public class Convention extends ObjetMetier implements Exportable {
             case "avenant":
                 if (getAvenants() != null) {
                     value = getAvenants().isEmpty() ? "Non" : "Oui";
-                break;
+                    break;
                 }
             case "dateCreation":
                 if (getDateCreation() != null) {

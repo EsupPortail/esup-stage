@@ -1,0 +1,187 @@
+= ESUP SISCOL
+
+Cette application expose à l'application ESUP-STAGE
+des API REST (OPEN API - Swagger).
+Ainsi seule ESUP SIScol fait des accès au SI de l'établissement
+(Annuaire LDAP et Apogée). 
+
+== Versions
+
+* APOGEE `6.4.x`
+* JDK `11`, `8`
+* APOGEE WS `62031` ...`62070`
+
+== Installation du JAR client WS-APOGEE
+
+NOTE: Avant de commencer l'installation, il faut vous procurer le client Web
+service Apogée soit auprès des collègues qui déploient Apogée dans votre
+établissement ou directement auprès de l'AMUE. Les WebServices Apogée doivent
+être installés selon les préconisations de l'AMUE et fonctionnelles sinon, il
+n'est pas nécessaire d'aller plus loin...
+
+****
+Le jar client apo-webservices-client doit correspondre au web-service Apogée
+installé.
+****
+
+Votre fichier `apo-webservices-client__{mettre la version}__.jar` doit être
+installé ainsi :
+
+[source,shell]
+----
+mvn install:install-file -Dfile=apo-webservices-client-version.jar -DgroupId=gouv.education.apogee -DartifactId=apo-webservices-client -Dversion={mettre la version} -Dpackaging=jar
+----
+
+== Clonage et installation
+
+[source,shell]
+----
+cd /opt
+git clone https://github.com/EsupPortail/esup-siscol.git esup-siscol
+----
+
+[source,xml]
+.pom.xml
+----
+<dependency>
+	<groupId>gouv.education.apogee</groupId>
+	<artifactId>apo-webservices-client</artifactId>
+	<version>x.y.z</version> <!--1-->
+</dependency>
+----
+<1> Il faut ajouter la bonne dépendance
+vers votre numéro de version du client Apogée, +
+ex. `62070` au lieu de `x.y.z` dans le `pom.xml`.
+
+
+== Fichier de paramétrage
+
+Nous allons créer un répertoire où nous placerons les fichiers de configurations de l'application esup-siscol :
+
+[source,shell]
+----
+mkdir /etc/esup-siscol
+cp /opt/esup-siscol/src/main/resources/application.yml.sample /etc/esup-siscol/application.yml
+----
+
+./etc/esup-siscol/application.yml
+[source,yaml]
+----
+spring:
+ ldap:
+    urls:
+    - ldap://ldap-paris.fr:389
+    username: uid=xxxx,ou=admins,dc=u-paris10,dc=fr
+    password: xxxx
+    base: dc=u-paris10,dc=fr
+
+springdoc:
+  version: '@springdoc.version@'
+  api-docs:
+    groups:
+      enabled: true
+  swagger-ui:
+
+    display-request-duration: true
+    groups-order: ASC
+    operationsSorter: method
+    disable-swagger-default-url: true
+    use-root-path: true
+    path: /swagger-ui.html
+    url: /api-docs.yaml
+
+server:
+  error:
+    include-exception: true
+    whitelabel:
+      enabled: true
+    path: /error.html
+    include-stacktrace: always
+
+app:
+ ldap:
+    stringFilterTeacher: (|(eduPersonAffiliation=teacher)(eduPersonAffiliation=faculty))
+    stringFilterStudent: (eduPersonAffiliation=student)
+    stringFilterStaff: (eduPersonAffiliation=staff)
+    repoStringFilterStudent: (eduPersonAffiliation=student)
+    repoStringFilterStudentBySn: (&(eduPersonAffiliation=student)(sn={0}))
+    repoStringFilterStudentByUId: (&(eduPersonAffiliation=student)(uid={0}))
+    repoStringFilterStudentByNumEtu: (&(eduPersonAffiliation=student)(numlEtu={0}))
+    dnPeople: ou=people
+
+ apogee:
+    startYearMonth: 09
+    startYearDay: 01
+    universityCode: UPN
+    urlService:
+      administratifMetier: http://wsapogee.monuniv.fr/aws/services/AdministratifMetier
+      etudiantMetier: http://wsapogee.monuniv.fr/aws/services/EtudiantMetier
+      pedagogiqueMetier: http://wsapogee.monuniv.fr/aws/services/PedagogiqueMetier
+      geographieMetier: http://wsapogee.monuniv.fr/aws/services/GeographieMetier
+      referentielMetier: http://wsapogee.monuniv.fr/aws/services/ReferentielMetier
+      offreFormationMetier: http://wsapogee.monuniv.fr/aws/services/OffreFormationMetier
+
+ credential:
+  userscredential:
+    root:
+      username: root
+      password: un-super-mot-de-passe-a-remplacer-ici
+      roles:
+        - ADMIN
+        - USER
+        - USER_APOGEE
+        - USER_LDAP
+  autorisation:
+    supann:
+      - USER_LDAP
+      - ADMIN
+    referentiel:
+      - USER_APOGEE
+      - ADMIN
+
+ cache:
+    # Chargement au demarrage des caches
+    onStartup:
+        # Active ou non, par defaut : false
+        enabled: true
+    # Time-To-Live du cache temporaire, en minutes, par defaut : 60 [minutes]
+    #ttl-tmp:
+    # Time-To-Live du cache permanent, en heures, par defaut : 0 [heures]
+    # Si 0, aucune limite de temps
+    #ttl-permanent:
+    # Cron pour un rechargement periodique des caches
+    scheduling:
+        # Active ou non, par defaut : false
+        enabled: false
+        # Expression cron, par defaut : aucune
+        cron: 0 0 7-22 * * *
+----
+
+Vous devez modifier en cohérence avec vos spécificités :
+
+* la section "LDAP"
+* la section "APOGEE" en indiquant vos URL côté serveur WebService Apogée (installé en général par les administrateurs techniques Apogée)
+* la section "credential" en modifiant votre mot de passe qui devra être renseigné aussi dans le fichier de configuration de l'application ESUP-STAGE
+
+== Compilation et génération du WAR
+
+Pour compiler le projet et générer le WAR dans le répertoire "./target/", lancez les commandes :
+
+[source,shell]
+----
+mvn clean compile
+mvn install
+----
+
+== Déploiement sur un serveur Tomcat :
+
+Si vous n'avez pas déjà installé votre serveur Tomcat, vous pouvez vous aider des prérequis de cette documentation. L'application ESUP SIScol peut-être déployée sur un serveur Tomcat indépendant (même serveur ou sur un autre serveur) ou utilisé le même serveur Tomcat que l'application ESUP Stage.
+
+Si votre Tomcat est installé sur le chemin suivant : \{tomcat_path}=/usr/share/tomcat, il faut copier votre fichier esup-siscol-x.x.x.war dans le webapp pour son déploiement :
+
+[source,shell]
+----
+cp target/esup-siscol-x.x.x.war {tomcat_path}/webapps/esup-siscol.war
+----
+
+Après déploiement, vous pourrez y accéder à l'adresse : http://localhost:8080/esup-siscol

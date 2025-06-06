@@ -4,6 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Parameter;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -17,10 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Parameter;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
@@ -32,8 +32,8 @@ public class PaginationRepository<T extends Exportable> {
 
     protected final EntityManager em;
     protected final Class<T> typeClass;
-    protected JSONObject filters;
     protected final String alias;
+    protected JSONObject filters;
     protected List<String> predicateWhitelist = new ArrayList<>(); // whitelist pour éviter l'injection sql au niveau du order by
     protected List<String> joins = new ArrayList<>();
     protected JsonObject headers;
@@ -86,7 +86,7 @@ public class PaginationRepository<T extends Exportable> {
         setParameters(query);
 
         if (page > 0) {
-            query.setFirstResult((page-1) * perPage);
+            query.setFirstResult((page - 1) * perPage);
         }
         if (perPage > 0) {
             query.setMaxResults(perPage);
@@ -121,7 +121,7 @@ public class PaginationRepository<T extends Exportable> {
 
     private List<String> getClauses() {
         List<String> clauses = new ArrayList<>();
-        for (int i = 0; i < filters.length(); ++ i) {
+        for (int i = 0; i < filters.length(); ++i) {
             String key = filters.names().getString(i);
             String column = alias + "." + key;
             JSONObject condition = filters.getJSONObject(key);
@@ -157,7 +157,7 @@ public class PaginationRepository<T extends Exportable> {
     }
 
     private void setParameters(Query query) {
-        for (int i = 0; i < filters.length(); ++ i) {
+        for (int i = 0; i < filters.length(); ++i) {
             String key = filters.names().getString(i);
             JSONObject condition = filters.getJSONObject(key);
             if (condition.has("specific") && condition.getBoolean("specific")) {
@@ -179,7 +179,7 @@ public class PaginationRepository<T extends Exportable> {
                     case "list":
                         List<Object> values = new ArrayList<>();
                         JSONArray jsonArray = condition.getJSONArray("value");
-                        for (int j = 0 ; j < jsonArray.length(); ++j) {
+                        for (int j = 0; j < jsonArray.length(); ++j) {
                             values.add(jsonArray.get(j));
                         }
                         query.setParameter(key.replace(".", ""), values);
@@ -204,8 +204,11 @@ public class PaginationRepository<T extends Exportable> {
         return results.stream().anyMatch(i -> i != id);
     }
 
-    protected void addSpecificParameter(String key, JSONObject parameter, List<String> clauses) {}
-    protected void setSpecificParameterValue(String key, JSONObject parameter, Query query) {}
+    protected void addSpecificParameter(String key, JSONObject parameter, List<String> clauses) {
+    }
+
+    protected void setSpecificParameterValue(String key, JSONObject parameter, Query query) {
+    }
 
     protected void formatHeaders(String headerString) {
         headers = new Gson().fromJson(headerString, JsonObject.class);
@@ -217,22 +220,21 @@ public class PaginationRepository<T extends Exportable> {
 
         formatHeaders(headerString);
 
-        if (headers.has("multipleExcelSheets")){
+        if (headers.has("multipleExcelSheets")) {
             JsonArray sheets = headers.getAsJsonArray("multipleExcelSheets");
-            for(int i = 0; i < sheets.size(); i++)
-            {
+            for (int i = 0; i < sheets.size(); i++) {
                 JsonObject object = sheets.get(i).getAsJsonObject();
                 String title = object.get("title").getAsString();
                 JsonObject columns = object.get("columns").getAsJsonObject();
                 Set<Map.Entry<String, JsonElement>> entrySet = columns.entrySet();
 
-                createSheet(wb,data,title,entrySet);
+                createSheet(wb, data, title, entrySet);
             }
-        }else{
+        } else {
             String title = "Export";
             JsonObject columns = headers;
             Set<Map.Entry<String, JsonElement>> entrySet = columns.entrySet();
-            createSheet(wb,data,title,entrySet);
+            createSheet(wb, data, title, entrySet);
         }
 
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
@@ -245,7 +247,7 @@ public class PaginationRepository<T extends Exportable> {
         }
     }
 
-    public void createSheet(Workbook wb,List<T> data, String title, Set<Map.Entry<String, JsonElement>> entrySet) {
+    public void createSheet(Workbook wb, List<T> data, String title, Set<Map.Entry<String, JsonElement>> entrySet) {
 
         Sheet sheet = wb.createSheet(title);
         int rowNum = 0;
@@ -280,23 +282,21 @@ public class PaginationRepository<T extends Exportable> {
         formatHeaders(headerString);
 
         JsonObject columns = null;
-        if (headers.has("multipleExcelSheets")){
+        if (headers.has("multipleExcelSheets")) {
             JsonArray sheets = headers.getAsJsonArray("multipleExcelSheets");
-            for(int i = 0; i < sheets.size(); i++)
-            {
+            for (int i = 0; i < sheets.size(); i++) {
                 JsonObject object = sheets.get(i).getAsJsonObject();
-                if(columns == null)
+                if (columns == null)
                     columns = object.get("columns").getAsJsonObject();
-                else{
+                else {
                     JsonObject newColumns = object.get("columns").getAsJsonObject();
-                    for(String key : newColumns.keySet())
-                    {
-                        if(!columns.has(key))
-                            columns.add(key,newColumns.get(key));
+                    for (String key : newColumns.keySet()) {
+                        if (!columns.has(key))
+                            columns.add(key, newColumns.get(key));
                     }
                 }
             }
-        }else{
+        } else {
             columns = headers;
         }
 

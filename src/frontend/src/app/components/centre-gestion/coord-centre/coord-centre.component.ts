@@ -58,27 +58,48 @@ export class CoordCentreComponent implements OnInit {
     this.communeService.getPaginated(1, 0, 'lib', 'asc', "").subscribe((response: any) => {
       this.communes = response;
     });
+
     this.niveauCentreService.findList().subscribe((response: any) => {
-      // Si c'est un centre de type établissement, on ajoute le niveau centre ETABLISSEMENT pour qu'il apparaisse au niveau du select
       if (this.centreGestion.niveauCentre && this.centreGestion.niveauCentre.libelle === 'ETABLISSEMENT') {
         response.push(this.centreGestion.niveauCentre);
       }
       this.niveauxCentre = response;
+      this.synchroniserNiveau();
     });
     if (this.centreGestion.id) {
-      this.setFormData();
-      if (this.centreGestion.niveauCentre.libelle == 'UFR') {
-        this.getComposantes();
-        this.getCentreComposante();
+      this.chargerEtapes();
+    }
+    this.form.get('nomCentre')?.valueChanges.subscribe(() => this.autoValidate());
+    this.form.get('niveauCentre')?.valueChanges.subscribe(() => this.autoValidate());
+    this.refreshCentreGestion.emit(this.centreGestion);
+  }
+
+  /**
+   * Synchronise le niveau entre l'objet centreGestion et le formulaire
+   */
+  synchroniserNiveau(): void {
+    if (this.centreGestion.niveauCentre && this.niveauxCentre.length > 0) {
+      // Trouver le niveau correspondant dans la liste
+      const niveauCorrespondant = this.niveauxCentre.find(niveau =>
+        niveau.id === this.centreGestion.niveauCentre.id ||
+        niveau.libelle === this.centreGestion.niveauCentre.libelle
+      );
+
+      if (niveauCorrespondant) {
+        this.centreGestion.niveauCentre = niveauCorrespondant;
+        this.form.get('niveauCentre')?.setValue(niveauCorrespondant);
+        if (niveauCorrespondant.libelle === 'ETABLISSEMENT') {
+          this.form.get('niveauCentre')?.disable();
+        }
       }
-      else if (this.centreGestion.niveauCentre.libelle == 'ETAPE') {
-        this.getEtapes();
-        this.getCentreEtapes();
-        this.filters.push({id: 'centreGestion.id', value: this.centreGestion.id, type: 'int', hidden: true});
-      }
-      if (this.centreGestion.niveauCentre && this.centreGestion.niveauCentre.libelle === 'ETABLISSEMENT') {
-        this.form.get('niveauCentre')?.disable();
-      }
+    }
+  }
+
+  private autoValidate(): void {
+    if (!this.centreGestion.id &&
+      this.form.get('nomCentre')?.valid &&
+      this.form.get('niveauCentre')?.valid) {
+      setTimeout(() => this.validate(), 300);
     }
   }
 
@@ -113,11 +134,28 @@ export class CoordCentreComponent implements OnInit {
   }
 
   validate(): void {
-    const data = {...this.form.value}
+    const data = {...this.form.value};
+    if (this.form.get('niveauCentre')?.value) {
+      data.niveauCentre = this.form.get('niveauCentre')?.value;
+      this.centreGestion.niveauCentre = this.form.get('niveauCentre')?.value;
+    }
     if (this.centreGestion.id) {
       this.update.emit();
     } else {
-      if (!this.form.valid) {
+      if (this.form.get('nomCentre')?.valid && this.form.get('niveauCentre')?.valid) {
+        this.centreGestionService.create(data).subscribe((response: any) => {
+          this.centreGestion = response;
+          this.synchroniserNiveau();
+          this.refreshCentreGestion.emit(this.centreGestion);
+          if (this.centreGestion.niveauCentre && this.centreGestion.niveauCentre.libelle === 'ETABLISSEMENT') {
+            this.form.get('niveauCentre')?.disable();
+          }
+          this.getComposantes();
+          this.getEtapes();
+          this.getCentreEtapes();
+          this.filters.push({id: 'centreGestion.id', value: this.centreGestion.id, type: 'int', hidden: true});
+        });
+      }else{
         this.messageService.setError("Veuillez remplir les champs obligatoires");
         if (this.form.get('nomCentre')?.invalid || this.form.get('niveauCentre')?.invalid) {
           this.pannels.first.open();
@@ -126,18 +164,6 @@ export class CoordCentreComponent implements OnInit {
         }
         return;
       }
-      this.centreGestionService.create(data).subscribe((response: any) => {
-        this.messageService.setSuccess("Centre de gestion créé");
-        this.centreGestion = response;
-        this.refreshCentreGestion.emit(this.centreGestion);
-        if (this.centreGestion.niveauCentre && this.centreGestion.niveauCentre.libelle === 'ETABLISSEMENT') {
-          this.form.get('niveauCentre')?.disable();
-        }
-        this.getComposantes();
-        this.getEtapes();
-        this.getCentreEtapes();
-        this.filters.push({id: 'centreGestion.id', value: this.centreGestion.id, type: 'int', hidden: true});
-      });
     }
   }
 
@@ -163,17 +189,18 @@ export class CoordCentreComponent implements OnInit {
   }
 
   setFormData(): void {
+    this.synchroniserNiveau();
     this.form.setValue({
-      nomCentre: this.centreGestion.nomCentre,
-      niveauCentre: this.centreGestion.niveauCentre,
-      siteWeb: this.centreGestion.siteWeb,
-      mail: this.centreGestion.mail,
-      telephone: this.centreGestion.telephone,
-      fax: this.centreGestion.fax,
-      adresse: this.centreGestion.adresse,
-      voie: this.centreGestion.voie,
-      commune: this.centreGestion.commune,
-      codePostal: this.centreGestion.codePostal,
+      nomCentre: this.centreGestion.nomCentre || '',
+      niveauCentre: this.centreGestion.niveauCentre || null,
+      siteWeb: this.centreGestion.siteWeb || '',
+      mail: this.centreGestion.mail || '',
+      telephone: this.centreGestion.telephone || '',
+      fax: this.centreGestion.fax || '',
+      adresse: this.centreGestion.adresse || '',
+      voie: this.centreGestion.voie || '',
+      commune: this.centreGestion.commune || '',
+      codePostal: this.centreGestion.codePostal || '',
     });
   }
 
@@ -192,6 +219,7 @@ export class CoordCentreComponent implements OnInit {
     } else {
       this.deleteEtape(etape.code, etape.codeVrsEtp);
     }
+    this.refreshCentreGestion.emit(this.centreGestion);
   }
 
   deleteEtape(code: string, codeVrsEtp: string) {
@@ -204,6 +232,7 @@ export class CoordCentreComponent implements OnInit {
       if (this.appTable)
         this.appTable.update();
     });
+    this.refreshCentreGestion.emit(this.centreGestion);
   }
 
   filterEtapes() {
@@ -224,28 +253,66 @@ export class CoordCentreComponent implements OnInit {
     );
   }
 
-  updateCommune(commune : any): void {
+  updateCommune(commune: any): void {
     this.form.get('commune')?.setValue(commune.split(' - ')[0]);
     this.form.get('codePostal')?.setValue(commune.split(' - ')[1]);
   }
 
-  isCodePostalValid() {
-    let codePostal = this.form.get('codePostal')?.value;
-    if (codePostal) {
-      let commune = this.communes.find(c => c.codePostal === codePostal);
-      if (commune)
-        return true;
+  chargerEtapes(): void {
+    this.setFormData();
+    if (this.centreGestion.niveauCentre && this.centreGestion.niveauCentre.libelle == 'UFR') {
+      this.getComposantes();
+      this.getCentreComposante();
     }
-    return false;
+    else if (this.centreGestion.niveauCentre && this.centreGestion.niveauCentre.libelle == 'ETAPE') {
+      this.getEtapes();
+      this.getCentreEtapes();
+      this.filters.push({id: 'centreGestion.id', value: this.centreGestion.id, type: 'int', hidden: true});
+    }
+    if (this.centreGestion.niveauCentre && this.centreGestion.niveauCentre.libelle === 'ETABLISSEMENT') {
+      this.form.get('niveauCentre')?.disable();
+    }
   }
 
-  isCommuneValid() {
-    let commune = this.form.get('commune')?.value;
-    if (commune) {
-      let c = this.communes.find(c => c.libelle === commune);
-      if (c)
-        return true;
+  niveauChange(): void {
+    const niveauSelectionne = this.form.get('niveauCentre')?.value;
+
+    if (niveauSelectionne) {
+      // Mettre à jour l'objet centreGestion
+      this.centreGestion.niveauCentre = niveauSelectionne;
+
+      // Réinitialiser les données liées au niveau précédent côté backend
+      if (this.centreGestion.id) {
+        if (niveauSelectionne.libelle === 'ETAPE') {
+          // Suppression des composantes si on passe à ETAPE
+          this.centreGestionService.setComposante([],this.centreGestion.id).subscribe(() => {
+            this.selectedComposante = null;
+            this.composantes = [];
+          });
+        } else if (niveauSelectionne.libelle === 'UFR') {
+          // Suppression des étapes si on passe à UFR
+          this.centreGestionService.deleteAllEtapes(this.centreGestion.id).subscribe(() => {
+            this.selectedValues = [];
+            this.etapes = [];
+          });
+        }
+      } else {
+        // Si pas d'id, juste reset local
+        this.selectedValues = [];
+        this.selectedComposante = null;
+        this.composantes = [];
+        this.etapes = [];
+      }
+      this.filters = this.filters.filter(f => f.id !== 'centreGestion.id');
+
+
+      // Charger les données appropriées selon le nouveau niveau
+      if (this.centreGestion.id) {
+        this.chargerEtapes();
+      }
+
+      // Émettre le changement
+      this.refreshCentreGestion.emit(this.centreGestion);
     }
-    return false;
   }
 }

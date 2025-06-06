@@ -1,8 +1,9 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import { MatDialog, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MessageService } from "../../../../services/message.service";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { TemplateMailService } from "../../../../services/template-mail.service";
+import {REGEX} from "../../../../utils/regex.utils";
 
 @Component({
   selector: 'app-mail-tester',
@@ -21,7 +22,7 @@ export class MailTesterComponent implements OnInit {
     private messageService: MessageService,
   ) {
     this.form = this.fb.group({
-      email: [null, [Validators.required, Validators.pattern('[^@ ]+@[^@. ]+\\.[^@ ]+')]],
+      email: [null, [Validators.required, Validators.pattern(REGEX.EMAIL)]],
     });
   }
 

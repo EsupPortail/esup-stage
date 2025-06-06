@@ -1,5 +1,7 @@
 package org.esup_portail.esup_stage.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.esup_portail.esup_stage.dto.LdapSearchDto;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
@@ -21,8 +23,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,7 +75,7 @@ public class PersonnelCentreGestionController {
     }
 
     @PostMapping("/{idCentre}")
-    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.CREATION})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.MODIFICATION})
     public PersonnelCentreGestion create(@PathVariable("idCentre") int idCentre, @Valid @RequestBody PersonnelCentreGestion personnelCentreGestion) {
         CentreGestion centreGestion = centreGestionJpaRepository.findById(idCentre);
         List<PersonnelCentreGestion> personnels = centreGestion.getPersonnels();
@@ -103,8 +103,7 @@ public class PersonnelCentreGestionController {
             utilisateur.setActif(true);
             utilisateur.setRoles(roles);
             utilisateurJpaRepository.saveAndFlush(utilisateur);
-        }
-        else {
+        } else {
             List<Role> roles = utilisateur.getRoles();
             // si utilisateur existe en base, check s'il est GES ou resp GES
             if (!UtilisateurHelper.isRole(utilisateur, Role.RESP_GES) && !UtilisateurHelper.isRole(utilisateur, Role.GES)) {

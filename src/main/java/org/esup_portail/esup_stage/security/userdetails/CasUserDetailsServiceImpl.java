@@ -1,6 +1,7 @@
 package org.esup_portail.esup_stage.security.userdetails;
 
 import org.esup_portail.esup_stage.dto.LdapSearchDto;
+import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.Etudiant;
 import org.esup_portail.esup_stage.model.Role;
 import org.esup_portail.esup_stage.model.Utilisateur;
@@ -9,7 +10,6 @@ import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.ldap.LdapService;
 import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
-import org.jasig.cas.client.authentication.AttributePrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.cas.authentication.CasAssertionAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,9 +17,15 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
+@Service
 public class CasUserDetailsServiceImpl implements AuthenticationUserDetailsService<CasAssertionAuthenticationToken> {
 
     @Autowired
@@ -45,11 +51,7 @@ public class CasUserDetailsServiceImpl implements AuthenticationUserDetailsServi
 
     @Override
     public UserDetails loadUserDetails(CasAssertionAuthenticationToken authentication) throws UsernameNotFoundException {
-        AttributePrincipal principal = authentication.getAssertion().getPrincipal();
         String username = authentication.getName();
-        Map<String, Object> attributes = principal.getAttributes();
-        String nom = getStringValue(attributes.get("sn"));
-        String prenom = getStringValue(attributes.get("givenName"));
 
         // Recherche de l'utilisateur
         Utilisateur utilisateur = utilisateurJpaRepository.findOneByLogin(username);
@@ -60,39 +62,52 @@ public class CasUserDetailsServiceImpl implements AuthenticationUserDetailsServi
         if (utilisateur == null) {
             List<LdapUser> users = ldapService.search("/etudiant", ldapSearchDto);
             String role = Role.ETU;
-            if (users.size() == 0) {
+            if (users.isEmpty()) {
                 users = ldapService.search("/tuteur", ldapSearchDto);
                 role = Role.ENS;
+            }
+            if (users.isEmpty()) {
+                users = ldapService.search("/staff", ldapSearchDto);
+                role = null;
             }
 
             if (users.size() == 1) {
                 // Création de l'utilisateur
                 List<Role> roles = new ArrayList<>();
-                roles.add(roleJpaRepository.findOneByCode(role));
-                // si l'enseignant est rattaché à un centre de gestion, on lui ajoute le rôle gestionnaire
-                if (role.equals(Role.ENS)) {
-                    long count = personnelCentreGestionJpaRepository.countPersonnelByLogin(users.get(0).getUid());
-                    if (count > 0) {
-                        roles.add(roleJpaRepository.findOneByCode(Role.GES));
+                if (StringUtils.hasText(role)) {
+                    roles.add(roleJpaRepository.findOneByCode(role));
+                    // si l'enseignant est rattaché à un centre de gestion, on lui ajoute le rôle gestionnaire
+                    if (role.equals(Role.ENS)) {
+                        long count = personnelCentreGestionJpaRepository.countPersonnelByLogin(users.getFirst().getUid());
+                        if (count > 0) {
+                            roles.add(roleJpaRepository.findOneByCode(Role.GES));
+                        }
                     }
                 }
                 utilisateur = new Utilisateur();
                 utilisateur.setLogin(username);
-                utilisateur.setNom(nom);
-                utilisateur.setPrenom(prenom);
+                utilisateur.setNom(String.join(" ", users.getFirst().getSn()));
+                utilisateur.setPrenom(String.join(" ", users.getFirst().getGivenName()));
                 utilisateur.setActif(true);
                 utilisateur.setRoles(roles);
-                utilisateur.setUid(users.get(0).getUid());
+                utilisateur.setUid(users.getFirst().getUid());
                 utilisateur = utilisateurJpaRepository.saveAndFlush(utilisateur);
             }
         }
 
-        // éventuel mise à jour de son nom/prénom si non existant
+        // Mise à jour de son nom/prénom si non existant
         if (utilisateur != null) {
-            LdapUser ldapUser = ldapService.searchByLogin(utilisateur.getLogin());
+            LdapUser ldapUser = null;
+            try {
+                ldapUser = ldapService.searchByLogin(utilisateur.getLogin());
+            } catch (AppException e) {
+                /* Nothing */
+            }
             if (ldapUser == null) {
                 throw new UsernameNotFoundException("Utilisateur LDAP non trouvé à partir du login " + utilisateur.getLogin());
             }
+            String nom = String.join(" ", ldapUser.getSn());
+            String prenom = String.join(" ", ldapUser.getGivenName());
             // Si c'est un étudiant on lui créé une ligne dans la table Etudiant s'il n'existe pas
             if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
                 Etudiant etudiant = etudiantRepository.findByNumEtudiant(ldapUser.getCodEtu());
@@ -155,8 +170,8 @@ public class CasUserDetailsServiceImpl implements AuthenticationUserDetailsServi
         if (obj != null) {
             if (obj instanceof String)
                 value = (String) obj;
-            else if (obj instanceof List && ((List<?>) obj).size() > 0 && ((List<?>) obj).get(0) instanceof String)
-                value = (String) ((List<?>) obj).get(0);
+            else if (obj instanceof List && !((List<?>) obj).isEmpty() && ((List<?>) obj).getFirst() instanceof String)
+                value = (String) ((List<?>) obj).getFirst();
 
         }
         return value;

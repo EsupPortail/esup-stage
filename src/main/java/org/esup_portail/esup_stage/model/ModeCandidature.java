@@ -1,6 +1,7 @@
 package org.esup_portail.esup_stage.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.List;
 

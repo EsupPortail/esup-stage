@@ -1,13 +1,17 @@
 package org.esup_portail.esup_stage.model;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.esup_portail.esup_stage.dto.view.Views;
 
-import javax.persistence.*;
 import java.util.List;
 
+@Data
 @Entity
 @Table(name = "Role")
+@EqualsAndHashCode(of = {"code"})
 public class Role implements Exportable {
 
     public static final String ADM = "ADM";
@@ -38,34 +42,6 @@ public class Role implements Exportable {
     @OneToMany(mappedBy = "role", fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<RoleAppFonction> roleAppFonctions;
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getLibelle() {
-        return libelle;
-    }
-
-    public void setLibelle(String libelle) {
-        this.libelle = libelle;
-    }
-
-    public List<RoleAppFonction> getRoleAppFonctions() {
-        return roleAppFonctions;
-    }
-
     public void setRoleAppFonctions(List<RoleAppFonction> roleAppFonctions) {
         this.roleAppFonctions = roleAppFonctions;
         for (RoleAppFonction roleAppFonction : this.roleAppFonctions) {
@@ -89,13 +65,5 @@ public class Role implements Exportable {
                 break;
         }
         return value;
-    }
-
-    public String getOrigine() {
-        return origine;
-    }
-
-    public void setOrigine(String origine) {
-        this.origine = origine;
     }
 }

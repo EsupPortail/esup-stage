@@ -1,14 +1,13 @@
 package org.esup_portail.esup_stage.repository;
 
-import org.esup_portail.esup_stage.model.Pays;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 import org.esup_portail.esup_stage.model.Structure;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,7 +16,7 @@ import java.util.List;
 public class StructureRepository extends PaginationRepository<Structure> {
     public StructureRepository(EntityManager em) {
         super(em, Structure.class, "s");
-        this.predicateWhitelist = Arrays.asList("raisonSociale", "numeroSiret", "numeroUAI" , "nafN5.nafN1.libelle", "pays.lib", "commune", "typeStructure.libelle", "statutJuridique.libelle");
+        this.predicateWhitelist = Arrays.asList("raisonSociale", "numeroSiret", "numeroUAI", "nafN5.nafN1.libelle", "pays.lib", "commune", "typeStructure.libelle", "statutJuridique.libelle");
     }
 
     @Override
@@ -32,7 +31,7 @@ public class StructureRepository extends PaginationRepository<Structure> {
         if (key.equals("nafN1.code")) {
             List<Object> values = new ArrayList<>();
             JSONArray jsonArray = parameter.getJSONArray("value");
-            for (int j = 0 ; j < jsonArray.length(); ++j) {
+            for (int j = 0; j < jsonArray.length(); ++j) {
                 values.add(jsonArray.get(j));
             }
             query.setParameter(key.replace(".", ""), values);

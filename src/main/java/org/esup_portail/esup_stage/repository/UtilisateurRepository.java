@@ -1,12 +1,12 @@
 package org.esup_portail.esup_stage.repository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import org.esup_portail.esup_stage.model.Utilisateur;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,7 +38,7 @@ public class UtilisateurRepository extends PaginationRepository<Utilisateur> {
         if (key.equals("roles")) {
             List<Object> values = new ArrayList<>();
             JSONArray jsonArray = parameter.getJSONArray("value");
-            for (int j = 0 ; j < jsonArray.length(); ++j) {
+            for (int j = 0; j < jsonArray.length(); ++j) {
                 values.add(jsonArray.get(j));
             }
             query.setParameter(key.replace(".", ""), values);

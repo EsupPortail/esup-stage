@@ -1,10 +1,11 @@
 package org.esup_portail.esup_stage.model;
 
+import jakarta.persistence.*;
+import lombok.Data;
 import org.esup_portail.esup_stage.dto.TemplateMailInterface;
 
-import javax.persistence.*;
-
 @Entity
+@Data
 @Table(name = "TemplateMail")
 public class TemplateMail extends ObjetMetier implements TemplateMailInterface, Exportable {
 
@@ -44,49 +45,8 @@ public class TemplateMail extends ObjetMetier implements TemplateMailInterface, 
     @Column(nullable = false)
     private String objet;
 
-    @Lob
     @Column(nullable = false)
     private String texte;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getLibelle() {
-        return libelle;
-    }
-
-    public void setLibelle(String libelle) {
-        this.libelle = libelle;
-    }
-
-    public String getObjet() {
-        return objet;
-    }
-
-    public void setObjet(String objet) {
-        this.objet = objet;
-    }
-
-    public String getTexte() {
-        return texte;
-    }
-
-    public void setTexte(String texte) {
-        this.texte = texte;
-    }
 
     @Override
     public String getExportValue(String key) {

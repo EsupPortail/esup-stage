@@ -1,5 +1,7 @@
 package org.esup_portail.esup_stage.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.dto.ServiceFormDto;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
@@ -14,8 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,9 +82,9 @@ public class ServiceController {
                 throw new AppException(HttpStatus.NOT_FOUND, "CentreGestion non trouvé");
             }
             List<Service> filteredservices = new ArrayList<Service>();
-            for(Service service : services){
+            for (Service service : services) {
                 if (service.getCentreGestion().getCodeConfidentialite().getCode().equals("0") || service.getCentreGestion().getId() == centreGestion.getId() ||
-                        service.getCentreGestion().getNiveauCentre().getLibelle().equals("ETABLISSEMENT")){
+                        service.getCentreGestion().getNiveauCentre().getLibelle().equals("ETABLISSEMENT")) {
                     filteredservices.add(service);
                 }
             }

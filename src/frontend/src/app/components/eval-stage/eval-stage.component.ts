@@ -6,6 +6,8 @@ import { Router } from "@angular/router";
 import { SortDirection } from "@angular/material/sort";
 import { TitleService } from "../../services/title.service";
 import { CentreGestionService } from "../../services/centre-gestion.service";
+import { UfrService } from "../../services/ufr.service";
+
 
 @Component({
   selector: 'app-eval-stage',
@@ -35,12 +37,8 @@ export class EvalStageComponent implements OnInit, OnDestroy {
     private router: Router,
     private titleService: TitleService,
     private centreGestionService: CentreGestionService,
+    private ufrService: UfrService,
   ) {
-  }
-
-  ngOnDestroy(): void {
-    sessionStorage.setItem('evalstages-paging', JSON.stringify({page: this.appTable?.page, pageSize: this.appTable?.pageSize, sortColumn: this.appTable?.sortColumn, sortOrder: this.appTable?.sortOrder}));
-    sessionStorage.setItem('evalstages-filters', JSON.stringify(this.appTable?.getFilterValues()))
   }
 
   ngOnInit(): void {
@@ -61,15 +59,20 @@ export class EvalStageComponent implements OnInit, OnDestroy {
       this.columns = ['id', 'etudiant.nom_etudiant.prenom', 'structure.raisonSociale', 'dateDebutStage', 'dateFinStage', 'ufr.libelle',
      'etape.libelle', 'annee','reponseEvaluationEtudiant','reponseEvaluationEnseignant','reponseEvaluationEntreprise', 'action'];
 
-      this.filters.push({ id: 'annee', libelle: 'Année', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'libelle', value: [] });
-      this.filters.push({ id: 'centreGestion.nomCentre', libelle: 'Centres de gestion', type: 'list', options: [], keyId: 'nomCentre', keyLibelle: 'nomCentre', colSpan: 6, infoBulleCentre: true });
-      this.filters.push({ id: 'stageTermine', libelle: 'N\'afficher que les stages terminés ?', type: 'boolean', specific: true });
+      this.filters.push(
+        { id: 'annee', libelle: 'Année', type: 'annee', options: [], keyLibelle: 'libelle', keyId: 'libelle', value: [] },
+        { id: 'id', libelle: 'N° de la convention', type: 'int' },
+        { id: 'etudiant', libelle: 'Étudiant', specific: true },
+        { id: 'ufr.id', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
+        { id: 'centreGestion.nomCentre', libelle: 'Centres de gestion', type: 'list', options: [], keyId: 'nomCentre', keyLibelle: 'nomCentre', colSpan: 6, infoBulleCentre: true },
+        { id: 'stageTermine', libelle: 'N\'afficher que les stages terminés ?', type: 'boolean', specific: true }
+      );
 
       this.conventionService.getListAnnee().subscribe(response => {
         this.annees = response;
         this.anneeEnCours = this.annees.find((a: any) => { return a.anneeEnCours === true });
         this.appTable?.setFilterOption('annee', this.annees);
-        this.appTable?.setFilterValue('annee', [this.anneeEnCours.libelle]);
+        this.appTable?.setFilterValue('annee', this.anneeEnCours.libelle);
 
         if (this.savedFilters) {
           this.restoreFilters();
@@ -95,6 +98,10 @@ export class EvalStageComponent implements OnInit, OnDestroy {
         this.restoreFilters();
       }
     }
+    this.ufrService.getPaginated(1, 0, 'libelle', '', '').subscribe((response: any) => {
+      this.appTable?.setFilterOption('ufr.id', response.data);
+    });
+    window.addEventListener('beforeunload', this.saveSessionData.bind(this));
   }
 
   goToConvention(id: number): void {
@@ -102,10 +109,20 @@ export class EvalStageComponent implements OnInit, OnDestroy {
   }
 
   restoreFilters() {
-    Object.keys(this.savedFilters).forEach((key: any) => {
-      if (this.savedFilters[key].value)
-        this.appTable?.setFilterValue(key, this.savedFilters[key].value);
+    Object.entries(this.savedFilters).forEach(([key, filterData]: [string, any]) => {
+      if (filterData.value) {
+        let value = filterData.value;
+
+        if (filterData.type === 'list') {
+          value = Array.isArray(value) ?
+            value.map((v: string) => v.trim()) :
+            value;
+        }
+
+        this.appTable?.setFilterValue(key, value);
+      }
     });
+
     const pagingString: string|null = sessionStorage.getItem('evalstages-paging');
     if (pagingString) {
       const pagingConfig = JSON.parse(pagingString);
@@ -113,6 +130,24 @@ export class EvalStageComponent implements OnInit, OnDestroy {
       this.sortDirection = pagingConfig.sortOrder;
       this.appTable?.setBackConfig(pagingConfig);
     }
+  }
+
+  saveSessionData(): void {
+    const pagingData = {
+      page: this.appTable?.page,
+      pageSize: this.appTable?.pageSize,
+      sortColumn: this.appTable?.sortColumn,
+      sortOrder: this.appTable?.sortOrder
+    };
+    const filterValues = this.appTable?.getFilters();
+
+    sessionStorage.setItem('evalstages-paging', JSON.stringify(pagingData));
+    sessionStorage.setItem('evalstages-filters', JSON.stringify(filterValues));
+  }
+
+  ngOnDestroy(): void {
+    this.saveSessionData();
+    window.removeEventListener('beforeunload', this.saveSessionData.bind(this));
   }
 
 }

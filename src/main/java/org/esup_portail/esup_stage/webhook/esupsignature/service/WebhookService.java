@@ -1,7 +1,7 @@
 package org.esup_portail.esup_stage.webhook.esupsignature.service;
 
 import com.itextpdf.commons.utils.Base64;
-import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
+import org.esup_portail.esup_stage.config.properties.SignatureProperties;
 import org.esup_portail.esup_stage.dto.MetadataDto;
 import org.esup_portail.esup_stage.dto.PdfMetadataDto;
 import org.esup_portail.esup_stage.exception.AppException;
@@ -36,14 +36,23 @@ import java.util.stream.Collectors;
 @Service
 public class WebhookService {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebhookService.class);
-
-    @Autowired
-    ApplicationBootstrap applicationBootstrap;
-
     private final WebClient webClient;
+    @Autowired
+    SignatureProperties signatureProperties;
 
     public WebhookService(WebClient.Builder builder) {
         this.webClient = builder.build();
+    }
+
+    private static Resource geMultipartFile(String filename, byte[] bytes) {
+        try {
+            Path tmpFile = Files.createTempFile(filename, ".pdf");
+            Files.write(tmpFile, bytes);
+            return new FileSystemResource(tmpFile.toFile());
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
+        }
     }
 
     public String upload(PdfMetadataDto content) {
@@ -62,7 +71,7 @@ public class WebhookService {
             recipient.setEmail(s.getMail());
             recipient.setFirstName(s.getGivenname());
             recipient.setName(s.getName());
-//            recipient.setPhone(s.getPhone());
+            //            recipient.setPhone(s.getPhone());
             step.getRecipients().add(recipient);
         });
 
@@ -74,7 +83,7 @@ public class WebhookService {
         builder.part("stepsJsonString", workflowSteps);
 
         return webClient.post()
-                .uri(applicationBootstrap.getAppConfig().getEsupSignatureUri() + "/workflows/" + metadataDto.getWorkflowId() + "/new")
+                .uri(signatureProperties.getEsupsignature().getUri() + "/workflows/" + metadataDto.getWorkflowId() + "/new")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .retrieve()
@@ -84,7 +93,7 @@ public class WebhookService {
 
     public List<Historique> getHistorique(String documentId, Convention convention) {
         AuditTrail response = webClient.get()
-                .uri(applicationBootstrap.getAppConfig().getEsupSignatureUri() + "/signrequests/audit-trail/" + documentId)
+                .uri(signatureProperties.getEsupsignature().getUri() + "/signrequests/audit-trail/" + documentId)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(AuditTrail.class)
@@ -93,7 +102,7 @@ public class WebhookService {
         List<Historique> historiques = new ArrayList<>();
         if (response != null) {
             List<CentreGestionSignataire> signataires = convention.getCentreGestion().getSignataires();
-            for (int ordre = 1 ; ordre <= response.getAuditSteps().size() ; ++ordre) {
+            for (int ordre = 1; ordre <= response.getAuditSteps().size(); ++ordre) {
                 AuditStep step = response.getAuditSteps().get(ordre - 1);
                 int finalOrdre = ordre;
                 CentreGestionSignataire signataire = signataires.stream().filter(s -> s.getOrdre() == finalOrdre).findAny().orElse(null);
@@ -111,7 +120,7 @@ public class WebhookService {
 
     public InputStream download(String documentId) {
         return webClient.get()
-                .uri(applicationBootstrap.getAppConfig().getEsupSignatureUri() + "/signrequests/get-last-file/" + documentId)
+                .uri(signatureProperties.getEsupsignature().getUri() + "/signrequests/get-last-file/" + documentId)
                 .accept(MediaType.APPLICATION_PDF)
                 .exchangeToMono(clientResponse -> clientResponse.bodyToMono(InputStreamResource.class))
                 .map(inputStreamResource -> {
@@ -123,16 +132,5 @@ public class WebhookService {
                     }
                 })
                 .block();
-    }
-
-    private static Resource geMultipartFile(String filename, byte[] bytes) {
-        try {
-            Path tmpFile = Files.createTempFile(filename, ".pdf");
-            Files.write(tmpFile, bytes);
-            return new FileSystemResource(tmpFile.toFile());
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
-        }
     }
 }

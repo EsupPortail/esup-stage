@@ -10,6 +10,7 @@ import { AuthService } from "../../../services/auth.service";
 import { ConfigService } from "../../../services/config.service";
 import { debounceTime } from "rxjs/operators";
 import { LdapService } from "../../../services/ldap.service";
+import {REGEX} from "../../../utils/regex.utils";
 
 @Component({
   selector: 'app-tuteur-pro',
@@ -26,10 +27,12 @@ export class TuteurProComponent implements OnInit, OnChanges {
   @Input() service: any;
   @Input() etab: any;
   @Input() centreGestion: any;
-
   @Input() contact: any;
-  contacts:any[] = [];
+  @Input() modifiable!: boolean;
+  @Input() enMasse!: boolean;
+  @Output() validated = new EventEmitter<number>();
 
+  contacts:any[] = [];
   staffs: any[] = [];
   staff: any;
 
@@ -40,11 +43,6 @@ export class TuteurProComponent implements OnInit, OnChanges {
   autorisationModification = false;
 
   @ViewChild(MatExpansionPanel) firstPanel: MatExpansionPanel|undefined;
-
-  @Output() validated = new EventEmitter<number>();
-
-  @Input() modifiable: boolean;
-  @Input() enMasse: boolean;
 
   constructor(public contactService: ContactService,
               private fb: FormBuilder,
@@ -59,8 +57,8 @@ export class TuteurProComponent implements OnInit, OnChanges {
       prenom: [null, [Validators.required, Validators.maxLength(50)]],
       idCivilite: [null, []],
       fonction: [null, [Validators.maxLength(100)]],
-      tel: [null, [Validators.required, Validators.maxLength(50)]],
-      mail: [null, [Validators.required, Validators.pattern('[^@ ]+@[^@. ]+\\.[^@ ]+'), Validators.maxLength(255)]],
+      tel: [null, [Validators.required, Validators.pattern(/^(?:(?:\+|00)\d{1,4}[-.\s]?|0)\d{1,4}([-.\s]?\d{1,4})*$/), Validators.maxLength(50)]],
+      mail: [null, [Validators.required, Validators.pattern(REGEX.EMAIL), Validators.maxLength(255)]],
       fax: [null, [Validators.maxLength(50)]],
     });
 
@@ -89,7 +87,7 @@ export class TuteurProComponent implements OnInit, OnChanges {
   refreshContacts(): void{
     if (this.service){
       this.contactService.getByService(this.service.id, this.centreGestion.id).subscribe((response: any) => {
-        this.contacts = response;
+        this.contacts = response.sort((a: any, b: any) => a.nom.localeCompare(b.nom));
       });
     }
   }

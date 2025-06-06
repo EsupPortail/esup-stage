@@ -1,0 +1,187 @@
+= Prérequis
+:sectnums: 
+
+_Avant de lancer les installations, il est nécessaire de mettre en place un "écosystème" permettant de compiler, déployer et exécuter nos applications._
+
+== Git
+//-------------------------------------
+Sur RHEL 9
+
+[source,shell]
+----
+yum install git
+----
+//-------------------------------------
+Sur Ubuntu 24.04 / Debian
+
+[source,shell]
+----
+apt-get install git
+----
+
+== Java
+
+Version de java minimale : Java OpenJdk 21 (seul cette version a été testé pour ESUP Stage)
+
+=== Installation java OpenJdk 21
+//-------------------------------------
+*Sous RHEL 9*
+
+[source,shell]
+----
+sudo yum -y install  java-21-openjdk java-21-openjdk-devel
+----
+
+Vérification de l'installation
+
+[,console]
+----
+$ java -version
+openjdk version "21.0.7" 2025-04-15 LTS
+OpenJDK Runtime Environment (Red_Hat-21.0.7.0.6-1) (build 21.0.7+6-LTS)
+OpenJDK 64-Bit Server VM (Red_Hat-21.0.7.0.6-1) (build 21.0.7+6-LTS, mixed mode, sharing)
+----
+
+Définir les variables d'environnement Java
+
+[source,shell]
+----
+$ sudo tee /etc/profile.d/java11.sh <<EOF
+export JAVA_HOME=\$(dirname \$(dirname \$(readlink \$(readlink \$(which javac)))))
+export PATH=\$PATH:\$JAVA_HOME/bin
+export CLASSPATH=.:\$JAVA_HOME/jre/lib:\$JAVA_HOME/lib:\$JAVA_HOME/lib/tools.jar
+EOF
+----
+
+Appliquer cette commande pour charger vos variables et commencer à utiliser Java
+
+[source,shell]
+----
+source /etc/profile.d/java11.sh
+----
+//-------------------------------------
+*Sous Debian / Ubuntu*
+
+Version officiel : 
+[source,shell]
+----
+sudo apt update
+sudo apt install openjdk-21-jdk
+----
+ou
+
+Version Temurin : 
+[source,shell]
+----
+mkdir -p /etc/apt/keyrings
+curl -fsSL https://packages.adoptium.net/artifactory/api/gpg/key/public | tee /etc/apt/keyrings/adoptium.asc > /dev/null
+echo "deb [signed-by=/etc/apt/keyrings/adoptium.asc] https://packages.adoptium.net/artifactory/deb bookworm main" > /etc/apt/sources.list.d/adoptium.list
+sudo apt update
+sudo apt install temurin-21-jdk
+----
+
+Vous pouvez vérifier l'installation :
+
+[source,shell]
+----
+java -version
+openjdk version "21.0.7" 2025-04-15
+OpenJDK Runtime Environment (build 21.0.7+6-Ubuntu-0ubuntu124.04)
+OpenJDK 64-Bit Server VM (build 21.0.7+6-Ubuntu-0ubuntu124.04, mixed mode, sharing)
+----
+
+Remarque : pour changer la version par défaut (en cas de version multiple)
+
+[source,shell]
+----
+sudo update-alternatives --config java
+----
+
+== Apache Maven
+
+=== Installation
+
+Téléchargez Apache Maven depuis son site officiel ou utilisez la commande suivante pour télécharger Apache Maven 3.6.3.
+
+[source,shell]
+----
+cd /opt 
+wget https://dlcdn.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz
+----
+
+Extraire maintenant l'archive téléchargée à l'aide de la commande suivante :
+
+[source,shell]
+----
+sudo tar xzf apache-maven-3.9.9-bin.tar.gz 
+sudo ln -sfn apache-maven-3.9.9 maven
+----
+
+=== Configuration des variables d'environnement
+
+Définissez maintenant les variables d'environnement en créant un nouveau fichier /etc/profile.d/maven.sh
+
+[source,shell]
+----
+sudo nano /etc/profile.d/maven.sh
+----
+
+et ajoutez le contenu suivant :
+
+[source,shell]
+----
+export MAVEN_HOME=/opt/maven
+export PATH=$MAVEN_HOME/bin:$PATH
+----
+
+Chargez maintenant les variables d'environnement dans le shell actuel à l'aide de la commande suivante :
+
+[source,shell]
+----
+sudo chmod +x /etc/profile.d/maven.sh
+source /etc/profile.d/maven.sh
+----
+
+=== Vérifier la version de Maven
+
+Apache Maven a été configuré avec succès sur votre système. Utilisez la commande suivante pour vérifier la version de Maven installé sur votre système.
+
+[source,shell]
+----
+mvn -v
+Apache Maven 3.9.9 (8e8579a9e76f7d015ee5ec7bfcdc97d260186937)
+Maven home: /opt/maven
+Java version: 21.0.7, vendor: Ubuntu, runtime: /usr/lib/jvm/java-21-openjdk-amd64
+Default locale: en_US, platform encoding: UTF-8
+OS name: "linux", version: "5.15.167.4-microsoft-standard-wsl2", arch: "amd64", family: "unix"
+----
+
+Enfin, supprimez le fichier d'archive téléchargé du système pour libérer de l'espace disque.
+
+[source,shell]
+----
+rm -f apache-maven-3.9.9-bin.tar.gz
+----
+
+== Installation Mariadb
+
+L'installation et la sécurisation de votre base de donnée ne sont pas décrites dans cette documentation.
+
+La création de la base et d'un utilisateur sont décrit dans la partie xref:ESUP-STAGE.adoc#la-base-de-donnees[La base de données]
+
+== Installation du projet Esup-SIscol
+
+ESUP Stage dépend de ce module pour interroger le SI de scolarité (Apogée) et l'annuaire LDAP
+
+* Le projet est hébergé ici : https://github.com/EsupPortail/esup-siscol
+* La procédure d'installation xref:ESUP-SISCOL.adoc[ESUP-SISCOL]
+
+Après installation, vous avez 2 URLs qui seront utilisés dans le fichier de configuration d'ESUP-STAGE :
+
+[source,properties]
+----
+# url du service LDAP
+referentiel.ws.ldap_url=https://referentiel.monuniv.fr/ldap
+# url du service Apogée
+referentiel.ws.apogee_url=https://referentiel.monuniv.fr/apogee
+----

@@ -204,6 +204,12 @@ export class ParamCentreComponent implements OnInit {
     this.form.get('prenomViseur')?.setValue(enseignant.prenom);
     this.form.get('mailViseur')?.setValue(enseignant.mail);
     this.form.get('qualiteViseur')?.reset();
+
+    this.centreGestion.nomViseur = enseignant.nom;
+    this.centreGestion.prenomViseur = enseignant.prenom;
+    this.centreGestion.mailViseur = enseignant.mail;
+    this.centreGestion.qualiteViseur = null;
+
   }
 
   resetViseur() {
@@ -211,6 +217,12 @@ export class ParamCentreComponent implements OnInit {
     this.form.get('prenomViseur')?.reset();
     this.form.get('mailViseur')?.reset();
     this.form.get('qualiteViseur')?.reset();
+
+    this.centreGestion.nomViseur = null;
+    this.centreGestion.prenomViseur = null;
+    this.centreGestion.mailViseur = null;
+    this.centreGestion.qualiteViseur = null;
+
   }
 
   compareCode(option: any, value: any): boolean {

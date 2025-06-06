@@ -1,8 +1,7 @@
 package org.esup_portail.esup_stage.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 public class PdfMetadataDto {
 

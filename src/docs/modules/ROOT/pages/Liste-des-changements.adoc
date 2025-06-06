@@ -1,0 +1,8 @@
+= Liste des changements
+
+include::CHANGELOG.adoc[]
+
+== Releases passées
+
+* https://github.com/EsupPortail/esup-stage/releases[ESUP-Stage]
+* https://github.com/EsupPortail/esup-siscol/releases[ESUP-SIScol]

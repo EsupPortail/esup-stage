@@ -3,6 +3,7 @@ package org.esup_portail.esup_stage.repository;
 import org.esup_portail.esup_stage.model.Contenu;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,5 +15,5 @@ public interface ContenuJpaRepository extends JpaRepository<Contenu, String> {
     List<Contenu> getLibelle();
 
     @Query("SELECT c FROM Contenu c WHERE c.code = :code")
-    Contenu findByCode(String code);
+    Contenu findByCode(@Param("code") String code);
 }

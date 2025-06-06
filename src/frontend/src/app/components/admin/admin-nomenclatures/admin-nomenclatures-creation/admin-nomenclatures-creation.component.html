@@ -1,60 +1,61 @@
-<h2>Ajout d'un élément</h2>
-<mat-card>
-  <mat-card-content>
-    <form [formGroup]="form" (submit)="save()">
-      <div class="row">
-        <div class="col-sm-12" *ngIf="form.get('libelle')">
-          <mat-form-field appearance="fill" style="width: 100%">
-            <mat-label>Libellé</mat-label>
-            <input matInput formControlName="libelle">
-            <mat-error><app-form-error [field]="form.get('libelle')"></app-form-error></mat-error>
-          </mat-form-field>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-sm-6" *ngIf="form.get('code')">
-          <mat-form-field appearance="fill">
-            <mat-label>Code</mat-label>
-            <input matInput formControlName="code">
-            <mat-error><app-form-error [field]="form.get('code')"></app-form-error></mat-error>
-          </mat-form-field>
-        </div>
-        <div class="col-sm-6" *ngIf="form.get('codeCtrl')">
-          <mat-form-field appearance="fill">
-            <mat-label>Saisir un code unique</mat-label>
-            <input matInput oninput="this.value = this.value.toUpperCase()" formControlName="codeCtrl">
-            <mat-error><app-form-error [field]="form.get('codeCtrl')"></app-form-error></mat-error>
-          </mat-form-field>
-        </div>
-      </div>
+<div class="modal-overlay">
+  <div class="modal-container">
+    <!-- En-tête fixe -->
+    <div class="header-banner">
+      <h2>Ajout d'un élément</h2>
+    </div>
 
-      <div *ngIf="form.get('typeStructure')">
-        <mat-form-field appearance="fill">
-          <mat-label>Type d'établissement</mat-label>
-          <mat-select formControlName="typeStructure" [compareWith]="compare">
-            <mat-option *ngFor="let typeStructure of typeStructures" [value]="typeStructure">{{typeStructure.libelle}}</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div *ngIf="form.get('typeOffre')">
-        <mat-form-field appearance="fill">
-          <mat-label>Type d'offre</mat-label>
-          <mat-select formControlName="typeOffre" [compareWith]="compare">
-            <mat-option *ngFor="let typeOffre of typeOffres" [value]="typeOffre">{{typeOffre.libelle}}</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div *ngIf="form.get('siretObligatoire')">
-        <mat-label id="siret-label">Numéro SIRET obligatoire ?</mat-label><br>
-        <mat-radio-group formControlName="siretObligatoire">
-          <mat-radio-button [value]=true>Oui</mat-radio-button>
-          <mat-radio-button [value]=false>Non</mat-radio-button>
-        </mat-radio-group>
-      </div>
-      <mat-dialog-actions>
-        <button type="button" mat-flat-button color="warn" (click)="close()">{{'BOUTON_ANNULER'|contenu}}</button>
-        <button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
-      </mat-dialog-actions>
-    </form>
-  </mat-card-content>
-</mat-card>
+    <!-- Contenu scrollable -->
+    <div class="scrollable-content">
+      <form [formGroup]="form" (submit)="save()">
+        <div class="row">
+          <div class="col-sm-12" *ngIf="form.get('libelle')">
+            <mat-form-field appearance="fill" style="width: 100%">
+              <mat-label>Libellé</mat-label>
+              <input matInput formControlName="libelle">
+              <mat-error><app-form-error [field]="form.get('libelle')"></app-form-error></mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-6" *ngIf="form.get('code')">
+            <mat-form-field appearance="fill">
+              <mat-label>Code</mat-label>
+              <input matInput formControlName="code">
+              <mat-error><app-form-error [field]="form.get('code')"></app-form-error></mat-error>
+            </mat-form-field>
+          </div>
+          <div class="col-sm-6" *ngIf="form.get('codeCtrl')">
+            <mat-form-field appearance="fill">
+              <mat-label>Saisir un code unique</mat-label>
+              <input matInput oninput="this.value = this.value.toUpperCase()" formControlName="codeCtrl">
+              <mat-error><app-form-error [field]="form.get('codeCtrl')"></app-form-error></mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+        <div *ngIf="form.get('typeStructure')">
+          <mat-form-field appearance="fill">
+            <mat-label>Type d'établissement</mat-label>
+            <mat-select formControlName="typeStructure" [compareWith]="compare">
+              <mat-option *ngFor="let typeStructure of typeStructures" [value]="typeStructure">{{typeStructure.libelle}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div *ngIf="form.get('typeOffre')">
+          <mat-form-field appearance="fill">
+            <mat-label>Type d'offre</mat-label>
+            <mat-select formControlName="typeOffre" [compareWith]="compare">
+              <mat-option *ngFor="let typeOffre of typeOffres" [value]="typeOffre">{{typeOffre.libelle}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </form>
+    </div>
+
+    <!-- Footer fixe -->
+    <div class="modal-footer">
+      <button type="button" mat-flat-button color="warn" (click)="close()">{{'BOUTON_ANNULER'|contenu}}</button>
+      <button mat-flat-button color="primary" (click)="save()">{{'BOUTON_VALIDER'|contenu}}</button>
+    </div>
+  </div>
+</div>

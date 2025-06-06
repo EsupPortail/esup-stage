@@ -4,16 +4,18 @@
     <mat-divider></mat-divider>
     <div class="mt-3 mb-3">
         <div class="row">
-            <div class="col-sm-3 font-weight-bold">Date d'envoi {{avenant}}</div>
-            <div class="col-sm-9">{{avenant.dateEnvoiSignature|date:'dd/MM/YYYY HH:mm:ss'}}</div>
-            <div class="col-sm-3 font-weight-bold">Statut d'envoi</div>
-            <div class="col-sm-9">{{avenant.documentId ? 'Envoyé' : ''}}</div>
-            <div class="col-sm-3 font-weight-bold">Date d'actualisation</div>
-            <div class="col-sm-9">{{avenant.dateActualisationSignature|date:'dd/MM/YYYY HH:mm:ss'}}</div>
-            <ng-container *ngIf="avenant.allSignedDateSetted">
-                <div class="col-sm-3 font-weight-bold">Document signé</div>
-                <div class="col-sm-9"><a href (click)="downloadSignedDoc($event, avenant)">Télécharger</a></div>
-            </ng-container>
+          <div class="col-sm-3 font-weight-bold">Date d'envoi</div>
+          <div class="col-sm-9">{{avenant.dateEnvoiSignature|date:'dd/MM/YYYY HH:mm:ss'}}</div>
+          <div class="col-sm-3 font-weight-bold">Statut d'envoi</div>
+          <div class="col-sm-9">{{avenant.documentId ? 'Envoyé' : ''}}</div>
+          <div class="col-sm-3 font-weight-bold">Date d'actualisation</div>
+          <div class="col-sm-9">{{avenant.dateActualisationSignature|date:'dd/MM/YYYY HH:mm:ss'}}</div>
+          <div class="col-sm-3 font-weight-bold">Envoyé par</div>
+          <div class="col-sm-9">{{this.NomPrenomEnvoiSignature}}</div>
+          <ng-container *ngIf="avenant.allSignedDateSetted">
+            <div class="col-sm-3 font-weight-bold">Document signé</div>
+            <div class="col-sm-9"><a href (click)="downloadSignedDoc($event, avenant)">Télécharger</a></div>
+          </ng-container>
         </div>
     </div>
     <div class="text-title"><i class="fa fa-pencil"></i>&nbsp;Signatures</div>
@@ -26,7 +28,7 @@
           Docaposte et ESUP-Signature : les informations de signature sont mises à jour automatiquement tous les jours à 1h.<br/>
           Solutions externes : les informations de signature sont mis à jour automatiquement via webhook.<br/>
           L'actualisation des données n'est possible que toutes les 30 minutes.
-            <div class="mt-2 text-center" *ngIf="isGestionnaire">
+            <div class="mt-2 text-center">
                 <button mat-button mat-flat-button color="primary" (click)="updateSignatureInfos()" [disabled]="isActualisationActif()">
                   Mettre à jour les informations et récupérer le document signé
                 </button>

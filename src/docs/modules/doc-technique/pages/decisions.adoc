@@ -1,0 +1,7 @@
+= Décisions stratégique
+:author: Université de Lorraine
+:imagesdir: ../images/
+
+****
+Un stage a toujours une convention
+****

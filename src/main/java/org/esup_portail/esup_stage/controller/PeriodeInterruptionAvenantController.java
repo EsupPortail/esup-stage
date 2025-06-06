@@ -1,6 +1,8 @@
 package org.esup_portail.esup_stage.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.dto.PeriodeInterruptionAvenantDto;
 import org.esup_portail.esup_stage.dto.view.Views;
@@ -20,8 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -131,7 +131,7 @@ public class PeriodeInterruptionAvenantController {
             throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvé");
         }
         List<PeriodeInterruptionAvenant> periodeInterruptionAvenants = periodeInterruptionAvenantJpaRepository.findByAvenant(id);
-        for(PeriodeInterruptionAvenant periodeInterruptionAvenant : periodeInterruptionAvenants){
+        for (PeriodeInterruptionAvenant periodeInterruptionAvenant : periodeInterruptionAvenants) {
             periodeInterruptionAvenantJpaRepository.delete(periodeInterruptionAvenant);
             periodeInterruptionAvenantJpaRepository.flush();
         }

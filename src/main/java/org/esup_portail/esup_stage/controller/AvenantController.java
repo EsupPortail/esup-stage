@@ -1,9 +1,10 @@
 package org.esup_portail.esup_stage.controller;
 
+import jakarta.validation.Valid;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
+import org.esup_portail.esup_stage.config.properties.SignatureProperties;
 import org.esup_portail.esup_stage.dto.*;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.AppSignatureEnum;
@@ -22,19 +23,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @ApiController
 @RequestMapping("/avenant")
 public class AvenantController {
 
-    private static final Logger logger	= LogManager.getLogger(AvenantController.class);
+    private static final Logger logger = LogManager.getLogger(AvenantController.class);
 
     @Autowired
     ConventionJpaRepository conventionJpaRepository;
@@ -69,7 +70,7 @@ public class AvenantController {
     SignatureService signatureService;
 
     @Autowired
-    ApplicationBootstrap applicationBootstrap;
+    SignatureProperties signatureProperties;
 
     @GetMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.LECTURE})
@@ -153,15 +154,14 @@ public class AvenantController {
             boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isCreationAvenantEtudiant();
             boolean sendMailGestionnaire = configAlerteMailDto.getAlerteGestionnaire().isCreationAvenantEtudiant();
             boolean sendMailRespGestionnaire = configAlerteMailDto.getAlerteRespGestionnaire().isCreationAvenantEtudiant();
-            conventionService.sendValidationMail(avenant.getConvention(), avenant, utilisateur,TemplateMail.CODE_ETU_CREA_AVENANT, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
-        }
-        else if (UtilisateurHelper.isRole(utilisateur, Role.GES)) {
+            conventionService.sendValidationMail(avenant.getConvention(), avenant, utilisateur, TemplateMail.CODE_ETU_CREA_AVENANT, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
+        } else if (UtilisateurHelper.isRole(utilisateur, Role.GES)) {
             ConfigAlerteMailDto configAlerteMailDto = appConfigService.getConfigAlerteMail();
             boolean sendMailEtudiant = configAlerteMailDto.getAlerteEtudiant().isCreationAvenantGestionnaire();
             boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isCreationAvenantGestionnaire();
             boolean sendMailGestionnaire = configAlerteMailDto.getAlerteGestionnaire().isCreationAvenantGestionnaire();
             boolean sendMailRespGestionnaire = configAlerteMailDto.getAlerteRespGestionnaire().isCreationAvenantGestionnaire();
-            conventionService.sendValidationMail(avenant.getConvention(), avenant, utilisateur,TemplateMail.CODE_GES_CREA_AVENANT, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
+            conventionService.sendValidationMail(avenant.getConvention(), avenant, utilisateur, TemplateMail.CODE_GES_CREA_AVENANT, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
         }
         return avenant;
     }
@@ -183,15 +183,14 @@ public class AvenantController {
             boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isModificationAvenantEtudiant();
             boolean sendMailGestionnaire = configAlerteMailDto.getAlerteGestionnaire().isModificationAvenantEtudiant();
             boolean sendMailRespGestionnaire = configAlerteMailDto.getAlerteRespGestionnaire().isModificationAvenantEtudiant();
-            conventionService.sendValidationMail(avenant.getConvention(), avenant, utilisateur,TemplateMail.CODE_ETU_MODIF_AVENANT, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
-        }
-        else if (UtilisateurHelper.isRole(utilisateur, Role.GES)) {
+            conventionService.sendValidationMail(avenant.getConvention(), avenant, utilisateur, TemplateMail.CODE_ETU_MODIF_AVENANT, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
+        } else if (UtilisateurHelper.isRole(utilisateur, Role.GES)) {
             ConfigAlerteMailDto configAlerteMailDto = appConfigService.getConfigAlerteMail();
             boolean sendMailEtudiant = configAlerteMailDto.getAlerteEtudiant().isModificationAvenantGestionnaire();
             boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isModificationAvenantGestionnaire();
             boolean sendMailGestionnaire = configAlerteMailDto.getAlerteGestionnaire().isModificationAvenantGestionnaire();
             boolean sendMailRespGestionnaire = configAlerteMailDto.getAlerteRespGestionnaire().isModificationAvenantGestionnaire();
-            conventionService.sendValidationMail(avenant.getConvention(), avenant, utilisateur,TemplateMail.CODE_GES_MODIF_AVENANT, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
+            conventionService.sendValidationMail(avenant.getConvention(), avenant, utilisateur, TemplateMail.CODE_GES_MODIF_AVENANT, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
         }
         return avenant;
     }
@@ -204,7 +203,7 @@ public class AvenantController {
             throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvé");
         }
         List<PeriodeInterruptionAvenant> periodeInterruptionAvenants = periodeInterruptionAvenantJpaRepository.findByAvenant(id);
-        for(PeriodeInterruptionAvenant periodeInterruptionAvenant : periodeInterruptionAvenants){
+        for (PeriodeInterruptionAvenant periodeInterruptionAvenant : periodeInterruptionAvenants) {
             periodeInterruptionAvenantJpaRepository.delete(periodeInterruptionAvenant);
             periodeInterruptionAvenantJpaRepository.flush();
         }
@@ -301,6 +300,12 @@ public class AvenantController {
     @PostMapping("/signature-electronique")
     @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.VALIDATION})
     public int envoiSignatureElectroniqueMultiple(@RequestBody IdsListDto idsListDto) {
+        idsListDto.getIds().forEach(id->{
+            Avenant avenant = avenantJpaRepository.findById(id).orElse(null);
+            assert avenant != null;
+            avenant.setLoginEnvoiSignature(Objects.requireNonNull(ServiceContext.getUtilisateur()).getLogin());
+            avenantJpaRepository.save(avenant);
+        });
         return signatureService.upload(idsListDto, true);
     }
 
@@ -314,10 +319,10 @@ public class AvenantController {
         if (avenant == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvé");
         }
-        if(!avenant.isValidationAvenant()){
+        if (!avenant.isValidationAvenant()) {
             throw new AppException(HttpStatus.BAD_REQUEST, "L'avenant n'a pas été préalablement validé");
         }
-        if (applicationBootstrap.getAppConfig().getAppSignatureEnabled() == AppSignatureEnum.DOCAPOSTE && avenant.getConvention().getCentreGestion().getCircuitSignature() == null) {
+        if (signatureProperties.getAppSignatureType() == AppSignatureEnum.DOCAPOSTE && avenant.getConvention().getCentreGestion().getCircuitSignature() == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Le centre de gestion " + avenant.getConvention().getCentreGestion().getNomCentre() + " n'a pas de circuit de signature");
         }
         return conventionService.controleEmailTelephone(avenant.getConvention());

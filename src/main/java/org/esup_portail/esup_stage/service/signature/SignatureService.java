@@ -2,12 +2,10 @@ package org.esup_portail.esup_stage.service.signature;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
+import org.esup_portail.esup_stage.config.properties.AppliProperties;
+import org.esup_portail.esup_stage.config.properties.SignatureProperties;
 import org.esup_portail.esup_stage.docaposte.DocaposteClient;
-import org.esup_portail.esup_stage.dto.IdsListDto;
-import org.esup_portail.esup_stage.dto.MetadataDto;
-import org.esup_portail.esup_stage.dto.MetadataSignataireDto;
-import org.esup_portail.esup_stage.dto.ResponseDto;
+import org.esup_portail.esup_stage.dto.*;
 import org.esup_portail.esup_stage.enums.AppSignatureEnum;
 import org.esup_portail.esup_stage.enums.FolderEnum;
 import org.esup_portail.esup_stage.exception.AppException;
@@ -17,9 +15,12 @@ import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
 import org.esup_portail.esup_stage.service.ConventionService;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
+import org.esup_portail.esup_stage.service.ldap.LdapService;
+import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
 import org.esup_portail.esup_stage.service.signature.model.Historique;
 import org.esup_portail.esup_stage.webhook.esupsignature.service.WebhookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -39,33 +40,29 @@ import java.util.List;
 @Service
 public class SignatureService {
 
-    private static final Logger logger	= LogManager.getLogger(SignatureService.class);
-
-    @Autowired
-    ApplicationBootstrap applicationBootstrap;
-
-    @Autowired
-    ConventionJpaRepository conventionJpaRepository;
-
-    @Autowired
-    AvenantJpaRepository avenantJpaRepository;
-
-    @Autowired
-    CentreGestionJpaRepository centreGestionJpaRepository;
-
-    @Autowired
-    ConventionService conventionService;
-
-    @Autowired
-    ImpressionService impressionService;
-
-    @Autowired
-    DocaposteClient docaposteClient;
-
-    @Autowired
-    WebhookService webhookService;
-
+    private static final Logger logger = LogManager.getLogger(SignatureService.class);
     private final WebClient webClient;
+    @Autowired
+    private ConventionJpaRepository conventionJpaRepository;
+    @Autowired
+    private AvenantJpaRepository avenantJpaRepository;
+    @Autowired
+    private CentreGestionJpaRepository centreGestionJpaRepository;
+    @Lazy
+    @Autowired
+    private ConventionService conventionService;
+    @Autowired
+    private ImpressionService impressionService;
+    @Autowired
+    private WebhookService webhookService;
+    @Autowired
+    private SignatureProperties signatureProperties;
+    @Autowired
+    private AppliProperties appliProperties;
+    @Autowired
+    private LdapService ldapService;
+    @Autowired(required = false)
+    private DocaposteClient docaposteClient;
 
     public SignatureService(WebClient.Builder builder) {
         this.webClient = builder.build();
@@ -92,15 +89,32 @@ public class SignatureService {
     }
 
     public MetadataDto getPublicMetadata(Convention convention, Integer idAvenant) {
+        Avenant avenant = null;
+        if (idAvenant != null) {
+            avenant = avenantJpaRepository.findById(idAvenant).orElse(null);
+        }
         MetadataDto metadata = new MetadataDto();
         metadata.setTitle("Convention_" + convention.getId() + "_" + convention.getEtudiant().getNom() + "_" + convention.getEtudiant().getPrenom());
-        if (idAvenant != null) {
+        if (avenant != null) {
             metadata.setTitle("Avenant_" + idAvenant + "_" + convention.getEtudiant().getNom() + "_" + convention.getEtudiant().getPrenom());
         }
         metadata.setCompanyname(convention.getNomEtabRef());
         metadata.setSchool(convention.getEtape().getLibelle());
         metadata.setWorkflowId(convention.getCentreGestion().getCircuitSignature());
         List<MetadataSignataireDto> signataires = new ArrayList<>();
+        List<MetadataObservateurDto> observateurs = new ArrayList<>();
+
+        // Ajoute la personne ayant envoyé la convention en signature en tant qu'observateur du parapheur
+        LdapUser ldapUser;
+        if (avenant != null) {
+            ldapUser = ldapService.searchByLogin(avenant.getLoginEnvoiSignature());
+
+        }else{
+            ldapUser = ldapService.searchByLogin(convention.getLoginEnvoiSignature());
+        }
+        if (ldapUser != null && ldapUser.getMail() != null) {
+            observateurs.add(new MetadataObservateurDto(ldapUser.getMail()));
+        }
 
         convention.getCentreGestion().getSignataires().forEach(s -> {
             MetadataSignataireDto signataireDto = new MetadataSignataireDto();
@@ -154,15 +168,16 @@ public class SignatureService {
         });
 
         metadata.setSignatory(signataires);
+        metadata.setWatchers(observateurs);
         return metadata;
     }
 
     public int upload(IdsListDto idsListDto, boolean isAvenant) {
-        AppSignatureEnum appSignature = applicationBootstrap.getAppConfig().getAppSignatureEnabled();
+        AppSignatureEnum appSignature = signatureProperties.getAppSignatureType();
         if (appSignature == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La signature électronique n'est pas configurée");
         }
-        if (idsListDto.getIds().size() == 0) {
+        if (idsListDto!=null && idsListDto.getIds().isEmpty()) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La liste est vide");
         }
         int count = 0;
@@ -181,47 +196,77 @@ public class SignatureService {
                 continue;
             }
             ResponseDto controles = conventionService.controleEmailTelephone(convention);
-            if (controles.getError().size() > 0) {
+            if (!controles.getError().isEmpty()) {
                 continue;
             }
-            switch (appSignature) {
-                case DOCAPOSTE:
-                    docaposteClient.upload(convention, avenant);
-                    break;
-                case ESUPSIGNATURE:
-                case EXTERNE:
-                    String documentId = webClient.post()
-                            .uri(applicationBootstrap.getAppConfig().getWebhookSignatureUri() + "?" + queryParam + "=" + id)
-                            .header("Authorization", "Bearer " + applicationBootstrap.getAppConfig().getWebhookSignatureToken())
-                            .retrieve()
-                            .bodyToMono(String.class)
-                            .block();
-                    if (documentId != null) {
-                        // Que fait-on si un précédent envoi a déjà été fait avant ?
-                        String previousDocumentId = isAvenant ? avenant.getDocumentId() : convention.getDocumentId();
-                        if (previousDocumentId != null) {
-                            // Pour ESUP-Signature, on supprime l'ancien avant de renseigner le nouveau
-                            if (appSignature == AppSignatureEnum.ESUPSIGNATURE) {
-                                webClient.delete()
-                                    .uri(applicationBootstrap.getAppConfig().getEsupSignatureUri() + "/signrequests/soft/" + previousDocumentId)
-                                    .retrieve()
-                                    .bodyToMono(String.class)
-                                    .block();
+            try{
+                switch (appSignature) {
+                    case DOCAPOSTE:
+                        docaposteClient.upload(convention, avenant);
+                        break;
+                    case ESUPSIGNATURE:
+                    case EXTERNE:
+                        String documentId = webClient.post()
+                                .uri(signatureProperties.getWebhook().getUri() + "?" + queryParam + "=" + id)
+                                .header("Authorization", "Bearer " + signatureProperties.getWebhook().getToken())
+                                .retrieve()
+                                .bodyToMono(String.class)
+                                .block();
+                        if (documentId != null) {
+                            String previousDocumentId = isAvenant ? avenant.getDocumentId() : convention.getDocumentId();
+                            if (previousDocumentId != null) {
+                                // Pour ESUP-Signature, on supprime l'ancien avant de renseigner le nouveau
+                                if (appSignature == AppSignatureEnum.ESUPSIGNATURE) {
+                                    webClient.delete()
+                                            .uri(signatureProperties.getEsupsignature().getUri() + "/signrequests/soft/" + previousDocumentId)
+                                            .retrieve()
+                                            .bodyToMono(String.class)
+                                            .block();
+                                }
+                                // remet à 0 les informations de signature
+                                if(isAvenant){
+                                    avenant.setDateActualisationSignature(null);
+                                    avenant.setDateSignatureEtudiant(null);
+                                    avenant.setDateDepotEtudiant(null);
+                                    avenant.setDateSignatureEnseignant(null);
+                                    avenant.setDateDepotEnseignant(null);
+                                    avenant.setDateSignatureTuteur(null);
+                                    avenant.setDateDepotTuteur(null);
+                                    avenant.setDateSignatureSignataire(null);
+                                    avenant.setDateDepotSignataire(null);
+                                    avenant.setDateSignatureViseur(null);
+                                    avenant.setDateDepotViseur(null);
+                                }else{
+                                    convention.setDateActualisationSignature(null);
+                                    convention.setDateSignatureEtudiant(null);
+                                    convention.setDateDepotEtudiant(null);
+                                    convention.setDateSignatureEnseignant(null);
+                                    convention.setDateDepotEnseignant(null);
+                                    convention.setDateSignatureTuteur(null);
+                                    convention.setDateDepotTuteur(null);
+                                    convention.setDateSignatureSignataire(null);
+                                    convention.setDateDepotSignataire(null);
+                                    convention.setDateSignatureViseur(null);
+                                    convention.setDateDepotViseur(null);
+                                }
+                            }
+                            if (isAvenant) {
+                                avenant.setDateEnvoiSignature(new Date());
+                                avenant.setDocumentId(documentId);
+                                avenantJpaRepository.saveAndFlush(avenant);
+                            } else {
+                                convention.setDateEnvoiSignature(new Date());
+                                convention.setDocumentId(documentId);
+                                conventionJpaRepository.saveAndFlush(convention);
                             }
                         }
-                        if (isAvenant) {
-                            avenant.setDateEnvoiSignature(new Date());
-                            avenant.setDocumentId(documentId);
-                            avenantJpaRepository.saveAndFlush(avenant);
-                        } else {
-                            convention.setDateEnvoiSignature(new Date());
-                            convention.setDocumentId(documentId);
-                            conventionJpaRepository.saveAndFlush(convention);
-                        }
-                    }
-                    break;
+                        break;
+                }
+                count++;
+            }catch(Exception e){
+                logger.error("Une erreur est survenue lors du traitement de la convention {} : {}",id,e);
             }
-            count++;
+
         }
         return count;
     }
@@ -237,7 +282,7 @@ public class SignatureService {
         if (convention.getDateActualisationSignature() != null && nowMinus30.before(convention.getDateActualisationSignature())) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Le rafraichissement des données n'est possible que toutes les 30 minutes");
         }
-        AppSignatureEnum appSignature = applicationBootstrap.getAppConfig().getAppSignatureEnabled();
+        AppSignatureEnum appSignature = signatureProperties.getAppSignatureType();
         if (appSignature == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La signature électronique n'est pas configurée");
         }
@@ -273,7 +318,7 @@ public class SignatureService {
         if (avenant.getDateActualisationSignature() != null && nowMinus30.before(avenant.getDateActualisationSignature())) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Le rafraichissement des données n'est possible que toutes les 30 minutes");
         }
-        AppSignatureEnum appSignature = applicationBootstrap.getAppConfig().getAppSignatureEnabled();
+        AppSignatureEnum appSignature = signatureProperties.getAppSignatureType();
         if (appSignature == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La signature électronique n'est pas configurée");
         }
@@ -403,12 +448,12 @@ public class SignatureService {
     }
 
     public String getSignatureFilePath(String filename) {
-        return applicationBootstrap.getAppConfig().getDataDir() + FolderEnum.SIGNATURES + "/" + filename + "_signe.pdf";
+        return appliProperties.getDataDir() + FolderEnum.SIGNATURES + "/" + filename + "_signe.pdf";
     }
 
     public void downloadSignedPdf(String documentId, MetadataDto metadataDto) {
         InputStream inputStream = null;
-        switch (applicationBootstrap.getAppConfig().getAppSignatureEnabled()) {
+        switch (signatureProperties.getAppSignatureType()) {
             case DOCAPOSTE:
                 inputStream = docaposteClient.download(documentId);
                 break;

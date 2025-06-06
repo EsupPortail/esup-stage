@@ -12,15 +12,13 @@ import com.itextpdf.layout.element.Image;
 import freemarker.template.Template;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
+import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.enums.FolderEnum;
 import org.esup_portail.esup_stage.enums.TypeSignatureEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
-import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateConventionJpaRepository;
-import org.esup_portail.esup_stage.service.ConventionService;
 import org.esup_portail.esup_stage.service.impression.context.ImpressionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,7 +33,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class ImpressionService {
-    private static final Logger logger	= LogManager.getLogger(ImpressionService.class);
+    private static final Logger logger = LogManager.getLogger(ImpressionService.class);
 
     @Autowired
     TemplateConventionJpaRepository templateConventionJpaRepository;
@@ -47,13 +45,13 @@ public class ImpressionService {
     FreeMarkerConfigurer freeMarkerConfigurer;
 
     @Autowired
-    ApplicationBootstrap applicationBootstrap;
+    AppliProperties appliProperties;
 
-    @Autowired
-    ConventionService conventionService;
-
-    @Autowired
-    ConventionJpaRepository conventionJpaRepository;
+    //    @Autowired
+    //    ConventionService conventionService;
+    //
+    //    @Autowired
+    //    ConventionJpaRepository conventionJpaRepository;
 
     public void generateConventionAvenantPDF(Convention convention, Avenant avenant, ByteArrayOutputStream ou, boolean isRecap) {
         if (convention.getNomenclature() == null) {
@@ -70,7 +68,7 @@ public class ImpressionService {
         try {
 
             String htmlTexte = avenant != null ? this.getHtmlText(templateConvention.getTexteAvenant(), false, isRecap) : this.getHtmlText(templateConvention.getTexte(), true, isRecap);
-            
+
             htmlTexte = manageIfElse(htmlTexte);
 
             Template template = new Template("template_convention_texte" + templateConvention.getId(), htmlTexte, freeMarkerConfigurer.getConfiguration());
@@ -131,11 +129,11 @@ public class ImpressionService {
             PdfDocument pdfDoc = new PdfDocument(new PdfReader(tempFile), new PdfWriter(ou));
             FooterPageEvent event = new FooterPageEvent(dateGeneration);
             pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE, event);
-            Document document=new Document(pdfDoc);
+            Document document = new Document(pdfDoc);
 
             if (imageData != null) {
                 Image img = new Image(imageData);
-                if (img.getImageWidth()>240) img.setWidth(240);
+                if (img.getImageWidth() > 240) img.setWidth(240);
                 document.add(img);
             }
             document.close();
@@ -239,7 +237,7 @@ public class ImpressionService {
         sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
         sb.append("<meta-data-list>");
         if (typeSignatureEnum == TypeSignatureEnum.otp) {
-            for (int i = 0 ; i < otp.size() ; ++i) {
+            for (int i = 0; i < otp.size(); ++i) {
                 sb.append("<meta-data name=\"OTP_firstname_").append(i).append("\" value=\"").append(otp.get(i).get("firstname")).append("\"/>");
                 sb.append("<meta-data name=\"OTP_lastname_").append(i).append("\" value=\"").append(otp.get(i).get("lastname")).append("\"/>");
                 sb.append("<meta-data name=\"OTP_phonenumber_").append(i).append("\" value=\"").append(otp.get(i).get("phoneNumber")).append("\"/>");
@@ -259,35 +257,35 @@ public class ImpressionService {
 
     private String getHtmlText(String texte, boolean isConvention, boolean isRecap) {
 
-            if (texte == null) {
-                texte = getDefaultText(isConvention);
-            }
+        if (texte == null) {
+            texte = getDefaultText(isConvention);
+        }
 
-            String htmlTexte = getDefaultText("/templates/template_style.html");
-            htmlTexte = htmlTexte.replaceAll("__project_fonts_dir__", this.getClass().getResource("/static/fonts").getPath());
-            
-            if(isRecap){
-                htmlTexte += getDefaultText("/templates/template_recapitulatif.html");
-            }else {
-                String periodesInterruptionsStage = getDefaultText("/templates/template_convention_periodesInterruptions.html");
-                texte = texte.replace("${convention.periodesInterruptions}", periodesInterruptionsStage);
+        String htmlTexte = getDefaultText("/templates/template_style.html");
+        htmlTexte = htmlTexte.replaceAll("__project_fonts_dir__", this.getClass().getResource("/static/fonts").getPath());
 
-                // Remplacement ${avenant.motifs} par le template html contenant tous les motifs
-                String motifTexte = getDefaultText("/templates/template_avenant_motifs.html");
-                texte = texte.replace("${avenant.motifs}", motifTexte);
+        if (isRecap) {
+            htmlTexte += getDefaultText("/templates/template_recapitulatif.html");
+        } else {
+            String periodesInterruptionsStage = getDefaultText("/templates/template_convention_periodesInterruptions.html");
+            texte = texte.replace("${convention.periodesInterruptions}", periodesInterruptionsStage);
 
-                // Style par défaut des tables dans les templates
-                htmlTexte += texte;
-            }
-                // Remplacement de tags et styles générés par l'éditeur qui ne sont pas convertis correctement
-                htmlTexte = htmlTexte.replace("<figure", "<div");
-                htmlTexte = htmlTexte.replace("</figure>", "</div>");
+            // Remplacement ${avenant.motifs} par le template html contenant tous les motifs
+            String motifTexte = getDefaultText("/templates/template_avenant_motifs.html");
+            texte = texte.replace("${avenant.motifs}", motifTexte);
 
-            return htmlTexte;
+            // Style par défaut des tables dans les templates
+            htmlTexte += texte;
+        }
+        // Remplacement de tags et styles générés par l'éditeur qui ne sont pas convertis correctement
+        htmlTexte = htmlTexte.replace("<figure", "<div");
+        htmlTexte = htmlTexte.replace("</figure>", "</div>");
+
+        return htmlTexte;
     }
 
     private String getLogoFilePath(String filename) {
-        return applicationBootstrap.getAppConfig().getDataDir() + FolderEnum.CENTRE_GESTION_LOGOS + "/" + filename;
+        return appliProperties.getDataDir() + FolderEnum.CENTRE_GESTION_LOGOS + "/" + filename;
     }
 
     private String getNomFichier(int idFichier, String nomFichier) {
@@ -295,7 +293,7 @@ public class ImpressionService {
     }
 
     public String getOtpDataPhoneNumber(String phoneNumber) {
-        String deliveryAddress = applicationBootstrap.getAppConfig().getMailerDeliveryAddress();
+        String deliveryAddress = appliProperties.getMailer().getDeliveryAddress();
         if (deliveryAddress != null && !deliveryAddress.isEmpty()) {
             return "";
         }
@@ -303,7 +301,7 @@ public class ImpressionService {
     }
 
     public String getOtpDataEmail(String email) {
-        String deliveryAddress = applicationBootstrap.getAppConfig().getMailerDeliveryAddress();
+        String deliveryAddress = appliProperties.getMailer().getDeliveryAddress();
         if (deliveryAddress != null && !deliveryAddress.isEmpty()) {
             return deliveryAddress;
         }

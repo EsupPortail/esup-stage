@@ -73,7 +73,7 @@ public class AppConfigController {
 
         // ajout de code université dans la table Affectation si elle n'existe pas
         List<Affectation> affectations = affectationJpaRepository.findByCodeUniversite(configGeneraleDto.getCodeUniversite());
-        if (affectations.size() == 0) {
+        if (affectations.isEmpty()) {
             Affectation affectation = new Affectation();
             AffectationId affectationId = new AffectationId();
             affectationId.setCode("");
@@ -87,7 +87,7 @@ public class AppConfigController {
     }
 
     @GetMapping("/alerte-mail")
-    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE}, forbiddenEtu = true)
+    @Secure(forbiddenEtu = true)
     public ConfigAlerteMailDto getConfigAlerteMail() {
         return appConfigService.getConfigAlerteMail();
     }
@@ -114,7 +114,7 @@ public class AppConfigController {
 
     @PostMapping("/theme")
     @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.MODIFICATION}, forbiddenEtu = true)
-    public ConfigThemeDto updateTheme(@RequestParam String data, @RequestParam(required = false) MultipartFile logo, @RequestParam(required = false) MultipartFile favicon) throws IOException, URISyntaxException {
+    public ConfigThemeDto updateTheme(@RequestParam("data") String data, @RequestParam(value="logo",required = false) MultipartFile logo, @RequestParam(value="favicon",required = false) MultipartFile favicon) throws IOException, URISyntaxException {
         ObjectMapper mapper = new ObjectMapper();
         ConfigThemeDto configThemeDto = mapper.readValue(data, ConfigThemeDto.class);
         ConfigThemeDto configThemeDtoOrigin = appConfigService.getConfigTheme();

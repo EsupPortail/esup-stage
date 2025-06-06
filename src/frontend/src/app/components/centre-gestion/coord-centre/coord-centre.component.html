@@ -13,25 +13,25 @@
         </mat-form-field>
         <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
           <mat-label>Type de centre</mat-label>
-          <mat-select formControlName="niveauCentre" [compareWith]="compare" required>
+          <mat-select formControlName="niveauCentre" [compareWith]="compare" (selectionChange)="niveauChange()" required>
             <mat-option *ngFor="let niveauCentre of niveauxCentre" [value]="niveauCentre">{{niveauCentre.libelle}}</mat-option>
           </mat-select>
           <mat-error><app-form-error [field]="form.get('niveauCentre')"></app-form-error></mat-error>
         </mat-form-field>
       </div>
     </form>
-    <div class="row" *ngIf="centreGestion.id && form.get('niveauCentre')?.value.libelle == 'UFR'">
+    <div class="row" *ngIf="centreGestion.id && centreGestion.niveauCentre && centreGestion.niveauCentre.libelle === 'UFR'">
       <mat-form-field class="col-sm-12 col-md-12" appearance="fill">
         <mat-label>Composante</mat-label>
-        <mat-select multiple [(ngModel)]="selectedComposante" (selectionChange)="composanteChange($event.value)" [compareWith]="compareCode">
+        <mat-select multiple [(ngModel)]="selectedComposante" (openedChange)="chargerEtapes()" (selectionChange)="composanteChange($event.value)" [compareWith]="compareCode">
           <mat-option *ngFor="let composante of composantes" [value]="composante">{{composante.code}} - {{composante.libelle}}</mat-option>
         </mat-select>
       </mat-form-field>
     </div>
-    <div class="row" *ngIf="centreGestion.id && form.get('niveauCentre')?.value.libelle == 'ETAPE'">
+    <div class="row" *ngIf="centreGestion.id && centreGestion.niveauCentre && centreGestion.niveauCentre.libelle === 'ETAPE'">
       <mat-form-field class="col-sm-12 col-md-12" appearance="fill">
         <mat-label>Étapes</mat-label>
-        <mat-select [(ngModel)]="selectedValues" multiple #multiSelect [compareWith]="compareCode">
+        <mat-select [(ngModel)]="selectedValues" (openedChange)="chargerEtapes()" multiple #multiSelect [compareWith]="compareCode">
           <mat-option>
             <ngx-mat-select-search [formControl]="etapeFilterCtrl" placeholderLabel="Filtrer par code ou libellé VET" noEntriesFoundLabel="Aucune étape trouvée"></ngx-mat-select-search>
           </mat-option>
@@ -39,11 +39,10 @@
         </mat-select>
       </mat-form-field>
     </div>
-    <div *ngIf="centreGestion.id && form.get('niveauCentre')?.value.libelle == 'ETAPE' && selectedValues.length > 0">
+    <div *ngIf="centreGestion.id && centreGestion.niveauCentre && centreGestion.niveauCentre.libelle === 'ETAPE' && selectedValues && selectedValues.length > 0">
       <mat-panel-title>Liste des étapes rattachées au centre</mat-panel-title>
       <app-table [service]="critereGestionService" [columns]="displayedEtapesColumns" [sortColumn]="sortColumn" [filters]="filters"
                  matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'" (matSortChange)="appTable ? appTable.sorting($event) : null" [hideDeleteFilters]="true">
-
         <ng-container matColumnDef="id.code">
           <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Code</th>
           <td mat-cell *matCellDef="let row"> {{row.id.code}} </td>
@@ -97,27 +96,39 @@
         <mat-form-field class="col-sm12 col-md-6" appearance="fill">
           <mat-label>Adresse mail</mat-label>
           <input matInput formControlName="mail" required>
-          <mat-error><app-form-error [field]="form.get('mail')"></app-form-error></mat-error>
+          <mat-error *ngIf="form.get('mail')?.hasError('required')">
+            Ce champ est requis.
+          </mat-error>
+          <mat-error *ngIf="form.get('mail')?.hasError('pattern')">
+            Adresse email invalide.
+          </mat-error>
         </mat-form-field>
         <mat-form-field class="col-sm12 col-md-6" appearance="fill">
-          <mat-label>Téléphone</mat-label>
+          <mat-label>Numéro de téléphone</mat-label>
           <input matInput formControlName="telephone" required>
-          <mat-error><app-form-error [field]="form.get('telephone')"></app-form-error></mat-error>
+          <mat-error *ngIf="form.get('telephone')?.hasError('required')">
+            Ce champ est requis.
+          </mat-error>
+          <mat-error *ngIf="form.get('telephone')?.hasError('pattern')">
+            Numéro de téléphone invalide.
+          </mat-error>
         </mat-form-field>
+
       </div>
       <div class="row">
         <mat-form-field class="col-sm12 col-md-6" appearance="fill">
           <mat-label>Site Internet</mat-label>
           <input matInput formControlName="siteWeb">
+          <mat-error *ngIf="form.get('siteWeb')?.hasError('pattern')">
+            URL invalide. Veuillez entrer une URL valide (ex. https://example.com).
+          </mat-error>
         </mat-form-field>
+
         <mat-form-field class="col-sm12 col-md-6" appearance="fill">
           <mat-label>Fax</mat-label>
           <input matInput formControlName="fax">
         </mat-form-field>
       </div>
-      <mat-dialog-actions *ngIf="!centreGestion.id">
-        <button mat-flat-button color="primary" (click)="validate()">{{'BOUTON_VALIDER'|contenu}}</button>
-      </mat-dialog-actions>
     </form>
   </mat-expansion-panel>
 </mat-accordion>

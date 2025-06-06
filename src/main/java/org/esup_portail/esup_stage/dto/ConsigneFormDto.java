@@ -1,6 +1,6 @@
 package org.esup_portail.esup_stage.dto;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 public class ConsigneFormDto {
     @NotNull

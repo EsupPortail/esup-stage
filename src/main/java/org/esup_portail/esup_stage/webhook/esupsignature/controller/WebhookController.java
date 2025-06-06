@@ -1,6 +1,7 @@
 package org.esup_portail.esup_stage.webhook.esupsignature.controller;
 
-import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
+import org.esup_portail.esup_stage.config.PublicSecurityConfiguration;
+import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.dto.PdfMetadataDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.webhook.esupsignature.service.WebhookService;
@@ -14,16 +15,15 @@ import org.springframework.web.reactive.function.client.WebClient;
 @RestController
 public class WebhookController {
 
-    @Autowired
-    WebhookService webhookService;
-
-    @Autowired
-    ApplicationBootstrap applicationBootstrap;
-
     private final WebClient webClient;
+    private final WebhookService webhookService;
+    private final AppliProperties appliProperties;
 
-    public WebhookController(WebClient.Builder builder) {
+    @Autowired
+    public WebhookController(WebClient.Builder builder, WebhookService webhookService, AppliProperties appliProperties) {
         this.webClient = builder.build();
+        this.webhookService = webhookService;
+        this.appliProperties = appliProperties;
     }
 
     @PostMapping("/webhook/esup-signature")
@@ -31,7 +31,7 @@ public class WebhookController {
         if ((conventionId == null && avenantId == null) || (conventionId != null && avenantId != null)) {
             throw new AppException(HttpStatus.BAD_REQUEST, "conventionid OU avenantid obligatoire");
         }
-        String token = applicationBootstrap.getAppConfig().getAppPublicTokens()[0];
+        String token = appliProperties.getPublicTokens()[0];
         String type = "conventions";
         Integer id = conventionId;
         if (avenantId != null) {
@@ -40,7 +40,7 @@ public class WebhookController {
         }
         // Récupération du PDF et des metadata
         PdfMetadataDto content = webClient.get()
-                .uri(applicationBootstrap.getAppConfig().getLocalApi() + "/public/api/" + type + "/" + id)
+                .uri(appliProperties.getLocalApi() + PublicSecurityConfiguration.PATH_FILTER + "/api/" + type + "/" + id)
                 .headers(httpHeaders -> httpHeaders.setBearerAuth(token))
                 .retrieve()
                 .bodyToMono(PdfMetadataDto.class)

@@ -1,0 +1,15 @@
+= Processus de création d'un utilisateur
+
+Voici la procédure de création des utilisateurs dans ESUP-Stage. Un utilisateur se connecte à l'application :
+
+. On recherche dans l'application s'il existe déjà
+** S'il existe déjà alors il hérite du même rôle et des mêmes droits
+** S'il n'existe pas, on passe à l'étape 2
+. On recherche l'utilisateur dans l'annuaire LDAP
+** Ce sera un étudiant si /ldap/etudiant indique qu'il s'agit d'un étudiant
+** Ce sera un enseignant si /ldap/tuteur/ indique qu'il s'agit d'un enseignant
+** Ce sera un enseignant et gestionnaire si /ldap/tuteur/ indique qu'il s'agit d'un enseignant et qu'il est rattaché à un centre de gestion
+** Si l'utilisateur n'est dans aucun des cas précédents alors on passe à l'étape 3
+. On doit créer à la main l'utilisateur via le menu de création de la gestion des utilisateurs
+
+Vous pouvez visualiser les appels /ldap/etudiant et  /ldap/tuteur/ via le Swagger UI mis à disposition avec ESUP-SIScol.

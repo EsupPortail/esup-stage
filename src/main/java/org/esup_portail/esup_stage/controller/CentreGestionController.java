@@ -1,11 +1,13 @@
 package org.esup_portail.esup_stage.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
+import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
@@ -25,12 +27,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -46,7 +47,7 @@ import java.util.stream.Collectors;
 @ApiController
 @RequestMapping("/centre-gestion")
 public class CentreGestionController {
-    private static final Logger logger	= LogManager.getLogger(CentreGestionController.class);
+    private static final Logger logger = LogManager.getLogger(CentreGestionController.class);
 
     @Autowired
     CentreGestionRepository centreGestionRepository;
@@ -82,13 +83,14 @@ public class CentreGestionController {
     ApogeeService apogeeService;
 
     @Autowired
-    ApplicationBootstrap applicationBootstrap;
-
-    @Autowired
     ConsigneJpaRepository consigneJpaRepository;
 
     @Autowired
     ConventionService conventionService;
+
+    @Autowired
+    AppliProperties appliProperties;
+
 
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
@@ -105,7 +107,7 @@ public class CentreGestionController {
 
         if (predicate.equals("personnels")) {
             Utilisateur currentUser = ServiceContext.getUtilisateur();
-            List<CentreGestion> list =  paginatedResponse.getData();
+            List<CentreGestion> list = paginatedResponse.getData();
             Predicate<PersonnelCentreGestion> condition = value -> value.getUidPersonnel().equals(currentUser.getUid());
             list.sort((a, b) -> Boolean.compare(a.getPersonnels().stream().anyMatch(condition), b.getPersonnels().stream().anyMatch(condition)));
 
@@ -153,7 +155,7 @@ public class CentreGestionController {
     }
 
     @GetMapping("/{id}")
-    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
+    @Secure
     public CentreGestion getById(@PathVariable("id") int id) {
         CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
         if (centreGestion == null) {
@@ -195,6 +197,13 @@ public class CentreGestionController {
         if (centreGestion.getConsigne() != null) {
             centreGestion.getConsigne().setCentreGestion(centreGestion);
         }
+        //conserve les criteregestion sélectionnés lors de la mise à jour
+        CentreGestion centreGestionActuel = centreGestionJpaRepository.findById(centreGestion.getId());
+        if(centreGestionActuel != null && centreGestionActuel.getCriteres() != null) {
+            if(centreGestion.getCriteres().isEmpty()) {
+                centreGestion.setCriteres(centreGestionActuel.getCriteres());
+            }
+        }
         return centreGestionJpaRepository.saveAndFlush(centreGestion);
     }
 
@@ -206,7 +215,6 @@ public class CentreGestionController {
         if (centreGestion.getConsigne() != null) {
             centreGestion.getConsigne().setCentreGestion(centreGestion);
         }
-
         return centreGestionJpaRepository.saveAndFlush(centreGestion);
     }
 
@@ -229,6 +237,7 @@ public class CentreGestionController {
         return centreGestion.getCriteres().size();
     }
 
+    @Transactional
     @DeleteMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.SUPPRESSION})
     public void delete(@PathVariable("id") int id) {
@@ -236,8 +245,7 @@ public class CentreGestionController {
         critereGestionJpaRepository.deleteCriteresByCentreId(id);
         personnelCentreGestionJpaRepository.deletePersonnelsByCentreId(id);
 
-        centreGestionJpaRepository.deleteById(id);
-        centreGestionJpaRepository.flush();
+        centreGestionJpaRepository.deleteById(id); // Suppression du CentreGestion
     }
 
     @GetMapping("/{id}/composantes")
@@ -373,6 +381,23 @@ public class CentreGestionController {
         critereGestionJpaRepository.flush();
     }
 
+    @DeleteMapping("/delete-etapes-centre/{id}")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.SUPPRESSION})
+    public void deleteEtapesCentre(@PathVariable("id") int id) {
+        CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
+        if (centreGestion == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion non trouvé");
+        }
+
+        List<CritereGestion> critereGestions = critereGestionJpaRepository.findEtapesByCentreId(id);
+        for (CritereGestion critereGestion : critereGestions) {
+            if (conventionJpaRepository.countConventionRattacheEtape(id, critereGestion.getId().getCode(), critereGestion.getId().getCodeVersionEtape()) > 0) {
+                throw new AppException(HttpStatus.FORBIDDEN, "Une convention est déjà rattachée à cette étape");
+            }
+            critereGestionJpaRepository.delete(critereGestion);
+        }
+    }
+
     @GetMapping("/confidentialite")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public List<Confidentialite> getConfidentialites() {
@@ -388,7 +413,7 @@ public class CentreGestionController {
 
     @PostMapping("/{id}/logo-centre")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.MODIFICATION})
-    public CentreGestion insertLogoCentre(@PathVariable("id") int id, @RequestParam(required = true) MultipartFile logo) {
+    public CentreGestion insertLogoCentre(@PathVariable("id") int id, @RequestParam(value="logo",required = true) MultipartFile logo) {
         CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
         String extension = FilenameUtils.getExtension(logo.getOriginalFilename());
         String nomFichier = DigestUtils.md5Hex(logo.getOriginalFilename()) + "." + extension;
@@ -471,7 +496,7 @@ public class CentreGestionController {
     }
 
     private String getFilePath(String filename) {
-        return applicationBootstrap.getAppConfig().getDataDir() + FolderEnum.CENTRE_GESTION_LOGOS + "/" + filename;
+        return appliProperties.getDataDir() + FolderEnum.CENTRE_GESTION_LOGOS + "/" + filename;
     }
 
     private String getNomFichier(int idFichier, String nomFichier) {

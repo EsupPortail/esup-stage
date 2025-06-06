@@ -1,0 +1,23 @@
+.description-editor {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 14px;
+  font-family: Arial, sans-serif;
+  resize: vertical;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.preview-container {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.preview-image {
+  max-width: 100%;
+  max-height: 200px;
+  border: 1px solid #ddd;
+  padding: 5px;
+  border-radius: 4px;
+}

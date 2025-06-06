@@ -1,8 +1,22 @@
-HELP.md
+### local dev ###
+/application.yml
+/application.properties
+application.properties
+etc/estage/application.properties
+compose.env
+.env
+/data*
+**/~*.docx
+**/~*.tmp
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+application.properties
+etc/estage/application.properties
+
+### HTTP files ###
+*rest.http
 
 ### STS ###
 .apt_generated
@@ -39,3 +53,8 @@ src/main/resources/estage.properties
 
 ### Docaposte gen code ###
 src/main/java/org/esup_portail/esup_stage/docaposte/gen/*
+
+### Docker ###
+compose.env
+compose.dev.env
+dev.docker-compose.yml

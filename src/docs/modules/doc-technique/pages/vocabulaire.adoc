@@ -1,0 +1,182 @@
+= Vocabulaire du domaine de Esup-Stage
+:author: Université de Lorraine
+:imagesdir: ../images/
+:reftext: Vocabulaire
+:navtitle: Vocabulaire
+
+== Établissement
+Organisme d'enseignement ou formation
+qui gère administrativement les stages dans l'application Esup-Stage.
+
+== Stage
+est effectué par un étudiant dans un établissement d’accueil pour une durée
+limitée.
+
+TIP: Dans l'application,
+c'est la convention qui articule la gestion administrative du stage.
+
+== Convention (de stage)
+description administrative d'un stage qui définit les responsabilités des
+différentes parties, en général adossé à un document écrit contractuel.
+Les données saisies pour la convention sont utilisées
+pour le suivi administratif du stage.
+
+TIP: Est liée à un centre de gestion via les critères du centre de gestion.
+
+=== Validation
+* S’il s’agit d’une convention saisie par l’étudiant, la convention est validée
+selon le paramétrage effectué au niveau du centre de gestion.
+* S’il s’agit d’une
+convention issue d’une création en masse par le gestionnaire, elle est déjà validée.
+Suivant le paramétrage défini dans centre de gestion.
+
+==== Validation pédagogique
+
+Validation lorsque le projet de stage saisi par l'étudiant a été vérifié. Elle permet à l'étudiant d'imprimer la convention.
+
+TIP: le nom de cette validation est personnalisable dans les paramètres généraux de l'application
+
+==== Validation administrative
+
+Validation de la convention par un gestionnaire du centre de gestion auquel elle est rattachée.
+
+TIP: le nom de cette validation est personnalisable dans les paramètres généraux de l'application
+
+=== PDF Convention
+document écrit dématérialisé de la convention de stage (a
+vocation à être signé).
+
+TIP: il est définitif une fois signé.
+
+=== Signature de la Convention
+
+La gestion des signatures de convention peut être réalisée via la plateforme **Esup-Stage**.
+
+La convention doit être signée par :
+
+* L'étudiant ou le stagiaire,
+* L'enseignant référent,
+* Le tuteur de stage,
+* Le viseur du centre de gestion auquel est rattachée l'étape de la convention,
+* Le signataire de l'établissement d'accueil.
+
+Pour envoyer une convention en signature une fois celle-ci validée, il faut se rendre sur la fiche de la convention, dans l’onglet **"Validation"**. Ensuite, cliquer sur le bouton **"Envoi pour signature électronique"**.
+
+Le suivi des signatures s’effectue dans l’onglet **"Signature électronique"** de la convention. Un témoin de signature est également présent sur le tableau de bord, il peut s'afficher de plusieurs couleurs :
+
+- 🔴 Rouge : aucune signature reçue,
+- 🟠 Orange : au moins une signature reçue,
+- 🟢 Vert : la convention a été entièrement signée.
+
+TIP: Il est possible de voir les signatures manquantes en survolant l’icône de statut avec la souris lorsqu’elle est orange.
+
+
+==== Type de convention
+
+Chaque convention est associée à un type, permettant de déterminer son cadre, ses obligations et le modèle (template) de document utilisé pour sa génération.
+
+Les types de convention les plus courants sont :
+
+* **Stage obligatoire** : Convention liée à une période de stage intégrée dans le cursus de formation. Elle utilise un modèle standard défini par l’établissement.
+* **Stage facultatif** : Stage réalisé à l’initiative de l’étudiant, en dehors des périodes obligatoires. Il peut avoir un modèle simplifié.
+* **Alternance** : Concerne les contrats d’apprentissage ou de professionnalisation. Modèle spécifique basé sur la législation en vigueur.
+* **Stage à l’étranger** : Contient des clauses supplémentaires sur les assurances, la sécurité, et le pays d’accueil. Modèle adapté fourni par l’établissement.
+* **Projet tutoré / mission encadrée** : Utilisé dans le cadre de collaborations pédagogiques, avec un modèle spécifique validé par l’établissement.
+
+==== Avenant
+Modification de la convention de stage après sa validation.
+
+==== Validation de l'avenant
+
+Validation de l'avenant par un gestionnaire du centre de gestion auquel la convention est rattachée.
+
+==== PDF Avenant
+document écrit dématérialisé d'un avenant à la convention
+(a vocation à être signé aussi).
+
+=== Etablissement d’accueil
+entreprise, administration, établissement scolaire, association ou tout autre
+organisme amené à accueillir des étudiants en stage.
+
+=== Enseignant référent pour le stage
+l’enseignant référent est un enseignant de
+l’Université responsable du stage. Il s’agit souvent de l’enseignant responsable
+de l’étape (ou de la formation). Il est habilité à consulter tous les rapports
+déposés (rapports de visites et rapport du tuteur professionnel) pour les stages
+dont il est responsable.
+
+=== Tuteur professionnel
+le tuteur appartient à l’établissement d’accueil. Il
+n’accède pas à l’application ESUP-Stage. Il ne dispose pas nécessairement d’un
+compte à l’université. Il n’accède pas à l’application ESUP-Stage.
+
+== Étudiant
+de l’université inscrit à au moins une version d’étape
+et pouvant effectuer des stages facultatifs ou obligatoires.
+
+== Groupe
+groupe d’étudiants *créé dans l'application*
+à partir d’une sélection d’étudiants.
+
+=== Conventions en masse
+facilité de gestion administrative de création des
+conventions par groupe d’étudiants losque la mise en stage est effectuée par des
+gestionnaires.
+
+Le template de convention est actuellement choisi pour chaque groupe.
+
+== Évaluation de stage
+
+Esup-Stage propose une fonctionnalité d’évaluation des stages. Il s’agit de listes de questions, pouvant être celles proposées par défaut par l’application, ou bien des questions personnalisées ajoutées par un utilisateur.
+
+Trois types d’évaluations sont disponibles :
+
+* **Évaluation par l’étudiant** : elle peut avoir lieu avant, pendant et après le stage.
+* **Évaluation par l’enseignant référent** : elle peut porter sur le suivi du stagiaire pendant le stage et sur une évaluation globale du stage.
+* **Appréciation du tuteur professionnel** : elle peut concerner le savoir-être, le savoir-faire du stagiaire, ainsi qu’une appréciation générale du stage.
+
+TIP: Vous pouvez accéder à cette fonctionnalité via la page **"Évaluation des stages"**, ou directement dans l’onglet **"Évaluation du stage"** d’une convention.
+
+== Centre de gestion
+est une entité de l'établissement qui :
+* regoupe un ensemble d’utilisateurs qui a la charge de gérer les stages
+d’une partie de l’établissement : les gestionnaires.
+* est associé à des étapes via des critères :
+
+=== Critères de gestion
+un centre de gestion peut être associé
+au niveau d'une UFR ou au niveau d'une étape.
+
+==== Etape : VET (version d'étape)
+fractionnement dans le temps d’un enseignement
+conduisant éventuellement à un diplôme. +
+Issue d’APOGEE.
+
+==== UFR
+Composante ou Unité de formation de l'établissement.
+
+=== Gestionnaire (de scolarité)
+utilisateur actuellement habilité dans ESUP-Stage à gérer les stages pour un ou plusieurs centres de gestion.
+
+== Modèles
+Paramétrables dans l'application avec des champs
+-- substitués à l'édition (ou l'envoi) --
+qui peuvent être placés dans du texte enrichi.
+
+=== Modèle de convention
+Définit l'édition du PDF de la convention.
+
+[TIP]
+.Pour les fonctionnaires stagiaires :
+====
+un INSPÉ créera un modèle de convention « INSPÉ stage sans convention ».
+Ainsi même s’il n’y a pas de convention écrite pour le(s) stage(s),
+ce modèle vide pourra être utilisé.
+====
+
+=== Modèle d’avenant
+Définit l'édition du PDF d'un avenant.
+
+=== Modèle de mail
+Définit les message de notifications par courriel.
+

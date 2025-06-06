@@ -12,6 +12,7 @@ import { AppFonction } from "../../../constants/app-fonction";
 import { Droit } from "../../../constants/droit";
 import { AuthService } from "../../../services/auth.service";
 import { ConfigService } from "../../../services/config.service";
+import {Checkbox, CheckboxChangeEvent} from "primeng/checkbox";
 
 @Component({
   selector: 'app-etab-accueil',
@@ -36,7 +37,7 @@ export class EtabAccueilComponent implements OnInit {
   modif: boolean = false;
   selectedRow: any = undefined;
 
-  @Input() modifiable: boolean;
+  @Input() modifiable!: boolean;
 
   autorisationModification = false;
 
@@ -44,6 +45,11 @@ export class EtabAccueilComponent implements OnInit {
   @ViewChild(MatExpansionPanel) firstPanel: MatExpansionPanel|undefined;
 
   @Output() validated = new EventEmitter<any>();
+  @Output() cbyChange = new EventEmitter<any>();
+  @Output() cbnChange = new EventEmitter<any>();
+
+
+
 
   constructor(public structureService: StructureService,
               private paysService: PaysService,

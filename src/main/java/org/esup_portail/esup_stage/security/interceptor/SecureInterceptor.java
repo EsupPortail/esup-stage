@@ -1,5 +1,6 @@
 package org.esup_portail.esup_stage.security.interceptor;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -18,7 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 @Aspect
@@ -48,7 +48,7 @@ public class SecureInterceptor {
         }
 
         // Utilisateur not active
-        if (!utilisateur.isActif()) {
+        if (utilisateur.getActif()!=null && !utilisateur.getActif()) {
             throw new AppException(HttpStatus.NOT_ACCEPTABLE, "Votre compte est inactif");
         }
 

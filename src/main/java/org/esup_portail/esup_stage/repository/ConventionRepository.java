@@ -1,14 +1,16 @@
 package org.esup_portail.esup_stage.repository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import org.esup_portail.esup_stage.model.Convention;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 @Repository
 public class ConventionRepository extends PaginationRepository<Convention> {
@@ -43,7 +45,7 @@ public class ConventionRepository extends PaginationRepository<Convention> {
         if (key.equals("etape.id")) {
             JSONArray jsonArray = parameter.getJSONArray("value");
             List<String> clauseOr = new ArrayList<>();
-            for (int i = 0 ; i < jsonArray.length(); ++i) {
+            for (int i = 0; i < jsonArray.length(); ++i) {
                 clauseOr.add("(c.etape.id.code = :codeEtape" + i + " AND c.etape.id.codeUniversite = :codeUnivEtape" + i + " AND c.etape.id.codeVersionEtape = :versionEtape" + i + ")");
             }
             if (clauseOr.size() > 0) {
@@ -53,7 +55,7 @@ public class ConventionRepository extends PaginationRepository<Convention> {
         if (key.equals("ufr.id")) {
             JSONArray jsonArray = parameter.getJSONArray("value");
             List<String> clauseOr = new ArrayList<>();
-            for (int i = 0 ; i < jsonArray.length(); ++i) {
+            for (int i = 0; i < jsonArray.length(); ++i) {
                 clauseOr.add("(c.ufr.id.code = :codeUfr" + i + " AND c.ufr.id.codeUniversite = :codeUnivUfr" + i + ")");
             }
             clauses.add("(" + String.join(" OR ", clauseOr) + ")");
@@ -88,7 +90,7 @@ public class ConventionRepository extends PaginationRepository<Convention> {
         if (key.equals("etatValidation")) {
             JSONArray jsonArray = parameter.getJSONArray("value");
             List<String> clauseAnd = new ArrayList<>();
-            for (int i = 0 ; i < jsonArray.length(); ++i) {
+            for (int i = 0; i < jsonArray.length(); ++i) {
                 String code = jsonArray.getString(i);
                 switch (code) {
                     case "validationPedagogique":
@@ -102,6 +104,15 @@ public class ConventionRepository extends PaginationRepository<Convention> {
                         break;
                     case "nonValidationConvention":
                         clauseAnd.add("c.validationConvention = FALSE");
+                        break;
+                    case "signe":
+                        clauseAnd.add("c.dateSignatureEnseignant IS NOT NULL AND c.dateSignatureEtudiant IS NOT NULL AND c.dateSignatureSignataire IS NOT NULL AND c.dateSignatureTuteur IS NOT NULL AND c.dateSignatureViseur IS NOT NULL");
+                        break;
+                    case "enCours":
+                        clauseAnd.add("(c.dateSignatureEnseignant IS NOT NULL OR c.dateSignatureEtudiant IS NOT NULL OR c.dateSignatureSignataire IS NOT NULL OR c.dateSignatureTuteur IS NOT NULL OR c.dateSignatureViseur IS NOT NULL) AND (c.dateSignatureEnseignant IS NULL OR c.dateSignatureEtudiant IS NULL OR c.dateSignatureSignataire IS NULL OR c.dateSignatureTuteur IS NULL OR c.dateSignatureViseur IS NULL)");
+                        break;
+                    case "nonSigne":
+                        clauseAnd.add("c.dateSignatureEnseignant IS NULL AND c.dateSignatureEtudiant IS NULL AND c.dateSignatureSignataire IS NULL AND c.dateSignatureTuteur IS NULL AND c.dateSignatureViseur IS NULL");
                         break;
                     default:
                         break;
@@ -147,7 +158,7 @@ public class ConventionRepository extends PaginationRepository<Convention> {
         }
         if (key.equals("etape.id")) {
             JSONArray jsonArray = parameter.getJSONArray("value");
-            for (int i = 0 ; i < jsonArray.length(); ++i) {
+            for (int i = 0; i < jsonArray.length(); ++i) {
                 JSONObject jsonEtapeId = jsonArray.getJSONObject(i);
                 query.setParameter("codeEtape" + i, jsonEtapeId.getString("code"));
                 query.setParameter("codeUnivEtape" + i, jsonEtapeId.getString("codeUniversite"));
@@ -156,7 +167,7 @@ public class ConventionRepository extends PaginationRepository<Convention> {
         }
         if (key.equals("ufr.id")) {
             JSONArray jsonArray = parameter.getJSONArray("value");
-            for (int i = 0 ; i < jsonArray.length(); ++i) {
+            for (int i = 0; i < jsonArray.length(); ++i) {
                 JSONObject jsonUfrId = jsonArray.getJSONObject(i);
                 query.setParameter("codeUfr" + i, jsonUfrId.getString("code"));
                 query.setParameter("codeUnivUfr" + i, jsonUfrId.getString("codeUniversite"));

@@ -16,7 +16,8 @@ import { ConfigService } from "../../../../services/config.service";
 import { ConsigneService } from "../../../../services/consigne.service";
 import * as FileSaver from "file-saver";
 import { Router } from "@angular/router";
-import { MatDialog, MatDialogConfig, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import {REGEX} from "../../../../utils/regex.utils";
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 
 @Component({
   selector: 'app-cadre-stage-modal',
@@ -32,7 +33,7 @@ export class CadreStageModalComponent implements OnInit {
   centreGestion: any;
   sansElp: boolean = false;
 
-  formConvention: FormGroup;
+  formConvention!: FormGroup;
 
   typeConventions: any[] = [];
   langueConventions: any[] = [];
@@ -71,8 +72,17 @@ export class CadreStageModalComponent implements OnInit {
     this.centreGestionService.getCentreEtablissement().subscribe((response: any) => {
       this.centreGestionEtablissement = response;
       if (this.centreGestionEtablissement) {
-        this.consigneService.getConsigneByCentre(this.centreGestionEtablissement.id).subscribe((response: any) => {
-          this.consigneEtablissement = response;
+        this.consigneService.getConsigneByCentre(this.centreGestionEtablissement.id).subscribe({
+          next: (response: any) => {
+            if (response && response.texte) {
+              this.consigneEtablissement = response;
+            } else {
+              console.info('Pas de consigne disponible pour ce centre');
+            }
+          },
+          error: (err) => {
+            console.warn('Erreur lors du chargement de la consigne', err);
+          }
         });
       }
     });
@@ -85,7 +95,7 @@ export class CadreStageModalComponent implements OnInit {
         paysEtudiant: [this.convention.paysEtudiant, [Validators.required]],
         telEtudiant: [this.convention.telEtudiant, []],
         telPortableEtudiant: [this.convention.telPortableEtudiant, []],
-        courrielPersoEtudiant: [this.convention.courrielPersoEtudiant, [Validators.required, Validators.pattern('[^@ ]+@[^@. ]+\\.[^@ ]+'), Validators.maxLength(255)]],
+        courrielPersoEtudiant: [this.convention.courrielPersoEtudiant, [Validators.required, Validators.pattern(REGEX.EMAIL), Validators.maxLength(255)]],
         regionCPAM: [this.convention.regionCPAM, []],
         libelleCPAM: [this.convention.libelleCPAM, []],
         adresseCPAM: [this.convention.adresseCPAM, []],

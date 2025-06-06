@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import { ActivatedRoute, Router } from "@angular/router";
 import { CentreGestionService } from "../../services/centre-gestion.service";
 import { MessageService } from "../../services/message.service";
@@ -6,13 +6,16 @@ import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { debounceTime } from 'rxjs/operators';
 import { ConsigneService } from "../../services/consigne.service";
+import {REGEX} from "../../utils/regex.utils";
+import { CoordCentreComponent } from './coord-centre/coord-centre.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-centre-gestion',
   templateUrl: './centre-gestion.component.html',
-  styleUrls: ['./centre-gestion.component.scss']
+  styleUrls: ['./centre-gestion.component.scss'],
 })
-export class CentreGestionComponent implements OnInit {
+export class CentreGestionComponent implements OnInit,OnDestroy {
 
   statuts: any = {
     statutCoordCentre: 0,
@@ -40,12 +43,15 @@ export class CentreGestionComponent implements OnInit {
   isCreate!: boolean;
   pathId: any;
 
+  private subscriptions: Subscription[] = [];
+
   coordCentreForm!: FormGroup;
   paramCentreForm!: FormGroup;
   consigneCentre: any;
   signatureElectroniqueForm!: FormGroup;
 
   @ViewChild('matTabs') matTabs: MatTabGroup | undefined;
+  @ViewChild('coordCentre') coordCentreComponent!: CoordCentreComponent;
 
   constructor(private activatedRoute: ActivatedRoute, private centreGestionService: CentreGestionService, private messageService: MessageService, private fb: FormBuilder, private router: Router, private consigneService: ConsigneService) {
     this.setCoordCentreForm();
@@ -63,10 +69,10 @@ export class CentreGestionComponent implements OnInit {
           this.centreGestion = response;
           this.consigneCentre = this.centreGestion.consigne;
           this.centreGestionInited = true;
-          if (this.centreGestion.id) {
-            this.updateOnChanges();
-          }
           this.majStatus();
+          if (this.centreGestion.id) {
+            setTimeout(() => this.updateOnChanges(), 0);
+          }
         });
       } else {
         this.isCreate = false;
@@ -74,10 +80,10 @@ export class CentreGestionComponent implements OnInit {
           this.centreGestion = response;
           this.consigneCentre = this.centreGestion.consigne;
           this.centreGestionInited = true;
-          if (this.centreGestion.id) {
-            this.updateOnChanges();
-          }
           this.majStatus();
+          if (this.centreGestion.id) {
+            setTimeout(() => this.updateOnChanges(), 0);
+          }
         });
       }
     });
@@ -137,9 +143,9 @@ export class CentreGestionComponent implements OnInit {
   majAllValid(): void {
     this.allValid = true;
     for (let key in this.tabs) {
-        if ((key == '0' || key == '1') && this.tabs[key].statut == 0) {
-          this.allValid = false;
-        }
+      if ((key == '0' || key == '1') && this.tabs[key].statut == 0) {
+        this.allValid = false;
+      }
     }
   }
 
@@ -151,10 +157,14 @@ export class CentreGestionComponent implements OnInit {
 
   refreshCentreGestion(value: any): void {
     this.centreGestion = value;
-    this.consigneService.getConsigneByCentre(this.centreGestion.id).subscribe((response: any) => {
-      this.consigneCentre = response;
-      this.majStatus();
+    this.consigneService.getConsigneByCentre(this.centreGestion.id).subscribe({
+      next: (response: any) => {
+        if (response && response.texte) {
+          this.consigneCentre = response;
+        }
+      }
     });
+    this.majStatus()
     this.updateOnChanges();
   }
 
@@ -180,19 +190,35 @@ export class CentreGestionComponent implements OnInit {
   }
 
   updateOnChanges(): void {
-    this.coordCentreForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
-      this.setCentreGestionCoordCentre();
-      this.update();
-    });
-    this.paramCentreForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
-      this.setCentreGestionParamCentre();
-      this.update();
-    });
-    this.signatureElectroniqueForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
-      this.setCentreGestionSignatureElectronique();
-      this.update();
-    });
+    // Nettoyer les anciennes subscriptions
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions = [];
+
+    // Ajouter les nouvelles subscriptions
+    this.subscriptions.push(
+      this.coordCentreForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
+        if (this.coordCentreForm.valid){
+          this.setCentreGestionCoordCentre();
+          this.update();
+        }
+      })
+    );
+
+    this.subscriptions.push(
+      this.paramCentreForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
+        this.setCentreGestionParamCentre();
+        this.update();
+      })
+    );
+
+    this.subscriptions.push(
+      this.signatureElectroniqueForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
+        this.setCentreGestionSignatureElectronique();
+        this.update();
+      })
+    );
   }
+
 
   validationCreation() {
     if (!this.allValid) {
@@ -216,14 +242,29 @@ export class CentreGestionComponent implements OnInit {
     this.coordCentreForm = this.fb.group({
       nomCentre: [null, [Validators.required, Validators.maxLength(100)]],
       niveauCentre: [null, [Validators.required]],
-      siteWeb: [null, [Validators.maxLength(50)]],
-      mail: [null, [Validators.required, Validators.pattern('[^@ ]+@[^@. ]+\\.[^@ ]+'), Validators.maxLength(255)]],
-      telephone: [null, [Validators.required, Validators.maxLength(20)]],
+      siteWeb: [null, [
+        Validators.maxLength(50),
+        Validators.pattern(/^(https?:\/\/)?([a-zA-Z0-9.-]+)\.([a-zA-Z]{2,})(:[0-9]{1,5})?(\/.*)?$/)
+      ]],
+      mail: [null, [
+        Validators.required,
+        Validators.maxLength(255),
+        Validators.pattern(REGEX.EMAIL)
+      ]],
+      telephone: [null, [
+        Validators.required,
+        Validators.maxLength(20),
+        Validators.pattern(/^(?:(?:\+|00)\d{1,4}[-.\s]?|0)\d{1,4}([-.\s]?\d{1,4})*$/)
+      ]],
       fax: [null, [Validators.maxLength(20)]],
       adresse: [null, [Validators.maxLength(200)]],
       voie: [null, [Validators.required, Validators.maxLength(200)]],
       commune: [null, [Validators.required, Validators.maxLength(200)]],
-      codePostal: [null, [Validators.required, Validators.maxLength(10)]],
+      codePostal: [null, [
+        Validators.required,
+        Validators.maxLength(10),
+        Validators.pattern(/^\d{5}$/)
+      ]],
     });
   }
 
@@ -306,8 +347,12 @@ export class CentreGestionComponent implements OnInit {
     // Les ordres de validations doivent être 1, 2 ou 3, et on ne peut pas avoir le même ordre
     let ordres = [1, 2, 3, null];
     return (!ordres.some(o => o === this.centreGestion.validationPedagogiqueOrdre)
-          || !ordres.some(o => o === this.centreGestion.validationConventionOrdre)
-          || !ordres.some(o => o === this.centreGestion.verificationAdministrativeOrdre)
+      || !ordres.some(o => o === this.centreGestion.validationConventionOrdre)
+      || !ordres.some(o => o === this.centreGestion.verificationAdministrativeOrdre)
     )
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 }

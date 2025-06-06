@@ -80,9 +80,9 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
     this.refreshServices();
   }
 
-  refreshServices(): void{
+  refreshServices(): void {
     this.serviceService.getByStructure(this.etab.id, this.centreGestion.id).subscribe((response: any) => {
-      this.services = response;
+      this.services = response.sort((a: any, b: any) => a.nom.localeCompare(b.nom));
     });
   }
 

@@ -1,8 +1,7 @@
 package org.esup_portail.esup_stage.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "EtudiantGroupeEtudiant", uniqueConstraints = {@UniqueConstraint(name = "uniq_EtudiantGroupeEtudiant_Etudiant_GroupeEtudiant", columnNames = {"idEtudiant", "idGroupeEtudiant"})})
@@ -34,16 +33,16 @@ public class EtudiantGroupeEtudiant implements Exportable {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public int getEtudiantId() {
         return etudiant.getId();
     }
 
     public String getEtudiantNumEtudiant() {
         return etudiant.getNumEtudiant();
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public Etudiant getEtudiant() {

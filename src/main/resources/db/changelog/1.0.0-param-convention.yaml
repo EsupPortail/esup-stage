@@ -148,6 +148,7 @@ databaseChangeLog:
 - changeSet:
     id: paramConvention-insert-2
     author: jwang
+    validCheckSum: 8:56ad64efbf50225405cfa3ce4f85c85d
     changes:
     - insert:
         columns:

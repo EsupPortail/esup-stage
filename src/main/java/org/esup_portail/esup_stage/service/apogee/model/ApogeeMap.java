@@ -8,10 +8,10 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ApogeeMap {
     private List<RegimeInscription> regimeInscription;
-    private LinkedHashMap<String,String> StudentSteps;
+    private LinkedHashMap<String, String> StudentSteps;
     private LinkedHashMap<String, String> StudentsEtapesVets;
     private LinkedHashMap<String, String> StudentsEtapesVetsPedago;
-    private LinkedHashMap<String,String> StudentStudys;
+    private LinkedHashMap<String, String> StudentStudys;
     private List<ElementPedagogique> listeELPs;
     private List<EtapeInscription> listeEtapeInscriptions;
 

@@ -21,13 +21,13 @@ export class EnseignantReferentComponent implements OnInit {
   enseignants: any[] = [];
   @Input() enseignant: any;
 
-  formAdresse: FormGroup;
+  formAdresse!: FormGroup;
 
   @ViewChild(MatExpansionPanel) searchEnseignantPanel: MatExpansionPanel|undefined;
 
   @Output() validated = new EventEmitter<number>();
 
-  @Input() modifiable: boolean;
+  @Input() modifiable!: boolean;
 
   constructor(private authService: AuthService,
               private fb: FormBuilder,

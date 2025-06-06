@@ -1,6 +1,6 @@
 package org.esup_portail.esup_stage.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "FAP_N2")

@@ -12,17 +12,18 @@ import {
   TemplateRef,
   ViewChild
 } from '@angular/core';
-import { Sort, SortDirection } from "@angular/material/sort";
-import { MatPaginator, PageEvent } from "@angular/material/paginator";
-import { MatColumnDef, MatTable } from "@angular/material/table";
-import { PaginatedService } from "../../services/paginated.service";
-import { Subject } from "rxjs";
-import { debounceTime } from "rxjs/operators";
+import {Sort, SortDirection} from "@angular/material/sort";
+import {MatPaginator, PageEvent} from "@angular/material/paginator";
+import {MatColumnDef, MatTable} from "@angular/material/table";
+import {PaginatedService} from "../../services/paginated.service";
+import {Subject} from "rxjs";
+import {debounceTime} from "rxjs/operators";
 import * as _ from "lodash";
-import { MatAutocompleteSelectedEvent } from "@angular/material/autocomplete";
-import { AuthService } from "../../services/auth.service";
+import {MatAutocompleteSelectedEvent} from "@angular/material/autocomplete";
+import {AuthService} from "../../services/auth.service";
 import * as FileSaver from "file-saver";
-import { TechnicalService } from "../../services/technical.service";
+import {TechnicalService} from "../../services/technical.service";
+import {update} from "lodash";
 
 @Component({
   selector: 'app-table',
@@ -45,6 +46,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   @Input() setAlerte: boolean = false;
   @Input() exportColumns: any;
   @Input() templateMobile?: TemplateRef<any>;
+  @Input() loadWithoutFilters: boolean = true;
 
   @Output() onUpdated = new EventEmitter<any>();
 
@@ -72,6 +74,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
     this.technicalService.isMobile.subscribe((value: boolean) => {
       this.isMobile = value;
     });
+
     this.filterChanged.pipe(debounceTime(1000)).subscribe(() => {
       const filters = this.getFilters();
       if (this.backConfig) {
@@ -79,23 +82,36 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
         this.pageSize = this.backConfig.pageSize;
         this.sortColumn = this.backConfig.sortColumn;
         this.sortOrder = this.backConfig.sortOrder;
-        this.paginatorTop.pageIndex = this.page - 1;
-        this.paginatorBottom.pageIndex = this.page - 1;
+        if (this.paginatorTop) this.paginatorTop.pageIndex = this.page - 1;
+        if (this.paginatorBottom) this.paginatorBottom.pageIndex = this.page - 1;
       } else {
         this.resetPage();
       }
 
       for (const key of Object.keys(this.autocmpleteChanged)) {
         this.autocmpleteChanged[key].pipe(debounceTime(1000)).subscribe(async (event: any) => {
-          if (event.value.length >= 2) {
-            this.autocompleteData[event.filter.id] = await event.filter.autocompleteService.getAutocompleteData(event.value).toPromise();
-            this.autocompleteData[event.filter.id] = this.autocompleteData[event.filter.id].data;
+          if (event.value?.length >= 2) {
+            try {
+              const result = await event.filter.autocompleteService.getAutocompleteData(event.value).toPromise();
+              this.autocompleteData[event.filter.id] = result?.data || [];
+            } catch (error) {
+              console.error('Error fetching autocomplete data:', error);
+              this.autocompleteData[event.filter.id] = [];
+            }
           }
         });
       }
 
-      this.filterValuesToSend = filters;
-      this.getPaginated();
+      const nonPermanentFiltersCount = Object.entries(filters)
+        .filter(([key, val]) => {
+          const f = val as any;
+          return !f.permanent && f.value !== undefined && f.value !== null && f.value !== '';
+        }).length;
+
+      if (this.loadWithoutFilters || nonPermanentFiltersCount > 0) {
+        this.filterValuesToSend = filters;
+        this.getPaginated();
+      }
     });
   }
 
@@ -107,7 +123,9 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
       this.pageSize = 0;
     }
     this.initFilters(false);
-    this.update();
+    if(this.loadWithoutFilters){
+      this.update();
+    }
   }
 
   ngAfterContentInit() {
@@ -124,7 +142,9 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   }
 
   getPaginated(): void {
+
     this.service.getPaginated(this.page, this.pageSize, this.sortColumn, this.sortOrder, JSON.stringify(this.filterValuesToSend)).subscribe((results: any) => {
+
       this.total = results.total;
       this.data = results.data;
       if (this.setAlerte) {
@@ -133,14 +153,16 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
           if (!this.isEtudiant()) {
             row.depasseDelaiValidation = (row.centreGestion.validationPedagogique && !row.validationPedagogique) ||
               (row.centreGestion.verificationAdministrative && !row.verificationAdministrative) ||
-              (row.centreGestion.validationConvention && !row.validationConvention)
+              (row.centreGestion.validationConvention && !row.validationConvention);
           }
         });
       }
+
       this.backConfig = undefined;
       this.onUpdated.emit(results);
     });
   }
+
 
   update(): void {
     this.filterChanged.next(this.filterValues);
@@ -163,16 +185,22 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   }
 
   initFilters(emptyValues: boolean): void {
-    for (const filter of this.filters) {
-      this.filterValues[filter.id] = {
-        type: filter.type ?? 'text',
-        value: (emptyValues && !filter.permanent) ? undefined : filter.value,
-        specific: filter.specific
+    this.filters.forEach(filter => {
+      if (filter && filter.id) {
+        this.filterValues[filter.id] = {
+          type: filter.type ?? 'text',
+          value: (emptyValues && !filter.permanent) ? undefined : filter.value,
+          specific: filter.specific
+        };
+
+        if (filter.type === 'autocomplete') {
+          this.autocmpleteChanged[filter.id] = new Subject();
+          if (!this.filterValues[filter.id].value) {
+            this.filterValues[filter.id].value = [];
+          }
+        }
       }
-      if (filter.type === 'autocomplete') {
-        this.autocmpleteChanged[filter.id] = new Subject();
-      }
-    }
+    });
   }
 
   reset(): void {
@@ -193,20 +221,52 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   }
 
   setFilterValue(id: string, value: any): void {
-    this.filterValues[id].value = value;
+    if (!this.filterValues[id]) {
+      console.warn(`Filter ${id} not initialized`);
+      return;
+    }
+
+    // Pour les filtres de type liste
+    if (this.filterValues[id].type === 'list') {
+      // Si la valeur est null ou undefined, initialiser avec un tableau vide
+      if (value === null || value === undefined) {
+        this.filterValues[id].value = [];
+      }
+      // Si c'est déjà un tableau, le garder tel quel
+      else if (Array.isArray(value)) {
+        this.filterValues[id].value = value;
+      }
+      // Si c'est une valeur unique, la mettre dans un tableau
+      else {
+        this.filterValues[id].value = [value];
+      }
+    } else {
+      this.filterValues[id].value = value;
+    }
+
+    this.filterChanged.next(this.filterValues);
   }
 
   getFilterValues(): any {
-    let f = {...this.filterValues};
-    return f;
+    return {...this.filterValues};
   }
 
   setFilterOption(id: string, options: any[]): void {
-    const filter = this.filters.find((f: any) => { return f.id === id; });
+    // Recherche du filtre par ID
+    const filter = this.filters.find((f: any) => f.id === id);
+
     if (filter) {
-      filter.options = options;
+      if (Array.isArray(options)) {
+        filter.options = options;
+        this.filterChanged.next(this.filterValues);
+      } else {
+        console.warn(`Les options fournies pour le filtre ${id} ne sont pas un tableau.`);
+      }
+    } else {
+      console.warn(`Aucun filtre trouvé avec l'ID : ${id}`);
     }
   }
+
 
   searchAutocomplete(filter: any, value: string): void {
     this.autocmpleteChanged[filter.id].next({filter, value});
@@ -227,32 +287,105 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   }
 
   getFilters(): any {
-    let f: any = {};
-    for (let key of Object.keys(this.filterValues)) {
-      if (this.filterValues[key].value !== undefined && this.filterValues[key].value !== '' && this.filterValues[key].value !== null && (!Array.isArray(this.filterValues[key].value) || this.filterValues[key].value.length > 0)) {
-        f[key] = {...this.filterValues[key]};
-        if (['date', 'date-min', 'date-max'].indexOf(f[key].type) > -1) {
-          f[key].value = f[key].value.getTime();
-        }
-        // conversion de l'array d'objets en array de keyId
-        if (['autocomplete'].indexOf(f[key].type) > -1) {
-          f[key].type = 'list';
-          const filter = this.filters.find((filter: any) => { return filter.id === key; });
-          if (filter) {
-            f[key].value = f[key].value.map((v: any) => { return v[filter.keyId]; });
+    const f: any = {};
+    for (const key of Object.keys(this.filterValues)) {
+      const filterValue = this.filterValues[key];
+
+      if (
+        filterValue?.value !== undefined &&
+        filterValue.value !== '' &&
+        filterValue.value !== null &&
+        (!Array.isArray(filterValue.value) || filterValue.value.length > 0)
+      ) {
+        f[key] = { ...filterValue };
+
+        // Traitement spécifique pour les listes
+        if (f[key].type === 'list') {
+          if (key === 'ufr.id') {
+            if (Array.isArray(f[key].value)) {
+              f[key].value = f[key].value
+                .filter((v: any) => v !== undefined)
+                .map((item: any) => {
+                  // Si l'item a une structure d'ID complète
+                  if (item?.id?.code && item?.id?.codeUniversite) {
+                    return {
+                      code: item.id.code,
+                      codeUniversite: item.id.codeUniversite,
+                    };
+                  }
+                  // Si l'item est directement la structure d'ID
+                  else if (item?.code && item?.codeUniversite) {
+                    return {
+                      code: item.code,
+                      codeUniversite: item.codeUniversite,
+                    };
+                  }
+                  // Fallback pour les autres cas
+                  return item;
+                })
+                .filter(Boolean); // Enlève les valeurs null/undefined
+            } else if (f[key].value?.id?.code && f[key].value?.id?.codeUniversite) {
+              // Cas d'une seule valeur avec structure complète
+              f[key].value = {
+                code: f[key].value.id.code,
+                codeUniversite: f[key].value.id.codeUniversite,
+              };
+            } else if (f[key].value?.code && f[key].value?.codeUniversite) {
+              // Cas d'une seule valeur avec structure d'ID directe
+              f[key].value = {
+                code: f[key].value.code,
+                codeUniversite: f[key].value.codeUniversite,
+              };
+            }
+          }else if (key === 'annee') {
+            if (Array.isArray(f[key].value)) {
+              f[key].value = String(f[key].value[0]);
+            }
+          }
+          else {
+            // Traitement normal pour les autres listes
+            if (Array.isArray(f[key].value)) {
+              f[key].value = f[key].value
+                .filter((v: any) => v !== undefined)
+                .map((item: any) => {
+                  if (typeof item === 'object' && item.id) {
+                    return item;
+                  }
+                  return item;
+                });
+            }
           }
         }
-        if (f[key].value !== undefined && (f[key].value instanceof String || typeof f[key].value === 'string')) {
+
+        // Gestion des dates
+        if (['date', 'date-min', 'date-max'].includes(f[key].type)) {
+          f[key].value = f[key].value instanceof Date ? f[key].value.getTime() : f[key].value;
+        }
+
+        // Gestion de l'autocomplete
+        if (f[key].type === 'autocomplete') {
+          if (Array.isArray(f[key].value)) {
+            f[key].value = f[key].value
+              .filter((v: undefined) => v !== undefined)
+              .map((item: { id: any }) => item.id || item);
+          }
+        }
+
+        // Nettoyage des chaînes de caractères
+        if (typeof f[key].value === 'string') {
           f[key].value = f[key].value.trim();
         }
+
+        // Suppression du specific si undefined
         if (f[key].specific === undefined) {
           delete f[key].specific;
         }
       }
     }
-
     return f;
   }
+
+
 
   isEtudiant(): boolean {
     return this.authService.isEtudiant();
@@ -261,7 +394,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   export(format: string): void {
     this.service.exportData(format, JSON.stringify(this.exportColumns), this.sortColumn, this.sortOrder, JSON.stringify(this.filterValuesToSend)).subscribe((response: any) => {
       const type = format === 'excel' ? 'application/vnd.ms-excel' : 'text/csv';
-      var blob = new Blob([response as BlobPart], {type: type});
+      let blob = new Blob([response as BlobPart], {type: type});
       let filename = 'export_' + (new Date()).getTime() + '.' + (format === 'excel' ? 'xls' : 'csv');
       FileSaver.saveAs(blob, filename);
     });

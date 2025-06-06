@@ -1,9 +1,10 @@
 package org.esup_portail.esup_stage.service;
 
 import freemarker.template.Template;
+import jakarta.mail.internet.MimeMessage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.esup_portail.esup_stage.bootstrap.ApplicationBootstrap;
+import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.dto.SendMailTestDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
@@ -17,17 +18,16 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
-import javax.mail.internet.MimeMessage;
 import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 @Service
 public class MailerService {
-    private static final Logger logger	= LogManager.getLogger(MailerService.class);
+    private static final Logger logger = LogManager.getLogger(MailerService.class);
 
     @Autowired
-    ApplicationBootstrap applicationBootstrap;
+    AppliProperties appliProperties;
 
     @Autowired
     JavaMailSender javaMailSender;
@@ -42,7 +42,7 @@ public class MailerService {
     TemplateMailGroupeJpaRepository templateMailGroupeJpaRepository;
 
     private void sendMail(String to, TemplateMail templateMail, MailContext mailContext) {
-        sendMail(to,templateMail.getId(),templateMail.getObjet(),templateMail.getTexte(),templateMail.getCode(), mailContext, false,null,null);
+        sendMail(to, templateMail.getId(), templateMail.getObjet(), templateMail.getTexte(), templateMail.getCode(), mailContext, false, null, null);
     }
 
     /**
@@ -55,26 +55,26 @@ public class MailerService {
         if (templateMail == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Template mail " + templateMailCode + " non trouvé");
         }
-        if(to == null || to.equals("")){
+        if (to == null || to.isEmpty() || to.equals("null")) {
             logger.info("Aucun destinataire défini pour l'envoie de l'email.");
-        }else{
-            MailContext mailContext = new MailContext(applicationBootstrap, convention, avenant, userModif);
-            sendMail(to, templateMail.getId(),templateMail.getObjet(),templateMail.getTexte(),templateMail.getCode(),
-                    mailContext, false ,null,null);
+        } else {
+            MailContext mailContext = new MailContext(appliProperties, convention, avenant, userModif);
+            sendMail(to, templateMail.getId(), templateMail.getObjet(), templateMail.getTexte(), templateMail.getCode(),
+                    mailContext, false, null, null);
         }
     }
 
-    public void sendMailGroupe(String to, Convention convention, Utilisateur userModif, String templateMailCode,byte[] archive) {
+    public void sendMailGroupe(String to, Convention convention, Utilisateur userModif, String templateMailCode, byte[] archive) {
         TemplateMailGroupe templateMailGroupe = templateMailGroupeJpaRepository.findByCode(templateMailCode);
         if (templateMailGroupe == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Template mail " + templateMailCode + " non trouvé");
         }
-        if(to == null || to.equals("")){
+        if (to == null || to.isEmpty()) {
             logger.info("Aucun destinataire défini pour l'envoie de l'email.");
-        }else{
-            MailContext mailContext = new MailContext(applicationBootstrap, convention, null, userModif);
+        } else {
+            MailContext mailContext = new MailContext(appliProperties, convention, null, userModif);
             sendMail(to, templateMailGroupe.getId(), templateMailGroupe.getObjet(), templateMailGroupe.getTexte(), templateMailGroupe.getCode(),
-                    mailContext, false , "conventions.zip", archive);
+                    mailContext, false, "conventions.zip", archive);
         }
     }
 
@@ -83,37 +83,37 @@ public class MailerService {
         if (templateMail == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Template mail " + sendMailTestDto.getTemplateMail() + " non trouvé");
         }
-        if(sendMailTestDto.getTo() == null || sendMailTestDto.getTo().equals("")){
+        if (sendMailTestDto.getTo() == null || sendMailTestDto.getTo().equals("")) {
             logger.info("Aucun destinataire défini pour l'envoie de l'email.");
-        }else{
-        MailContext mailContext = new MailContext();
-        mailContext.setModifiePar(new MailContext.ModifieParContext(utilisateur));
-        sendMail(sendMailTestDto.getTo(),templateMail.getId(),templateMail.getObjet(),templateMail.getTexte(),
-                templateMail.getCode(), mailContext, true,null,null);
+        } else {
+            MailContext mailContext = new MailContext();
+            mailContext.setModifiePar(new MailContext.ModifieParContext(utilisateur));
+            sendMail(sendMailTestDto.getTo(), templateMail.getId(), templateMail.getObjet(), templateMail.getTexte(),
+                    templateMail.getCode(), mailContext, true, null, null);
         }
     }
 
     private void sendMail(String to, int templateMailId, String templateMailObject, String templateMailTexte, String templateMailCode,
-                          MailContext mailContext, boolean forceTo, String attachmentLibelle,byte[] attachment) {
+                          MailContext mailContext, boolean forceTo, String attachmentLibelle, byte[] attachment) {
         logger.info("Mail " + templateMailCode + ", destinataires : " + to);
-        boolean disableDelivery = applicationBootstrap.getAppConfig().getMailerDisableDelivery();
+        boolean disableDelivery = appliProperties.getMailer().isDisableDelivery();
         if (!disableDelivery) {
-            String deliveryAddress = applicationBootstrap.getAppConfig().getMailerDeliveryAddress();
-            if (!forceTo && deliveryAddress != null && !deliveryAddress.isEmpty()) {
+            String deliveryAddress = appliProperties.getMailer().getDeliveryAddress();
+            if (!forceTo && deliveryAddress != null && !deliveryAddress.isEmpty() && !deliveryAddress.equals("null")) {
                 to = deliveryAddress;
                 logger.info("Mail redirigé vers : " + to);
             }
 
             try {
-                Template templateObjet = new Template("template_mail_objet"+templateMailId, templateMailObject, freeMarkerConfigurer.getConfiguration());
+                Template templateObjet = new Template("template_mail_objet" + templateMailId, templateMailObject, freeMarkerConfigurer.getConfiguration());
                 StringWriter objet = new StringWriter();
                 templateObjet.process(mailContext, objet);
 
                 templateMailTexte = manageIfElse(templateMailTexte);
-                templateMailTexte = templateMailTexte.replace("class=\"ql-font-serif\"" ,"style = \" font-family: serif\"")
-                        .replace("class=\"ql-font-monospace\"" ,"style = \" font-family: monospace\"");
+                templateMailTexte = templateMailTexte.replace("class=\"ql-font-serif\"", "style = \" font-family: serif\"")
+                        .replace("class=\"ql-font-monospace\"", "style = \" font-family: monospace\"");
 
-                Template templateText = new Template("template_mail_text"+templateMailId, templateMailTexte, freeMarkerConfigurer.getConfiguration());
+                Template templateText = new Template("template_mail_text" + templateMailId, templateMailTexte, freeMarkerConfigurer.getConfiguration());
                 StringWriter text = new StringWriter();
                 templateText.process(mailContext, text);
 
@@ -121,10 +121,10 @@ public class MailerService {
                 boolean multipart = attachment != null;
                 MimeMessageHelper helper = new MimeMessageHelper(message, multipart, "utf-8");
                 helper.setTo(to);
-                helper.setFrom(applicationBootstrap.getAppConfig().getMailerFrom());
+                helper.setFrom(appliProperties.getMailer().getFrom());
                 helper.setSubject(objet.toString());
                 helper.setText(text.toString(), true);
-                if(attachment != null){
+                if (attachment != null) {
                     helper.addAttachment(attachmentLibelle, new ByteArrayResource(attachment));
                 }
                 javaMailSender.send(message);
@@ -167,9 +167,9 @@ public class MailerService {
                 return false;
         }
     }
-    
+
     private String manageIfElse(String templateMailTexte) {
-       return templateMailTexte
+        return templateMailTexte
                 .replaceAll("\\$IF", "<#if")
                 .replaceAll("\\$EQUALS ", "==\\\"")
                 .replaceAll(" \\$FI", " >")
@@ -186,11 +186,12 @@ public class MailerService {
         private EtudiantContext etudiant = new EtudiantContext();
         private AvenantContext avenant = new AvenantContext();
 
-        public MailContext() { }
+        public MailContext() {
+        }
 
-        public MailContext(ApplicationBootstrap applicationBootstrap, Convention convention, Avenant avenant, Utilisateur userModif) {
+        public MailContext(AppliProperties appliProperties, Convention convention, Avenant avenant, Utilisateur userModif) {
             if (convention != null) {
-                this.convention = new ConventionContext(applicationBootstrap, convention);
+                this.convention = new ConventionContext(appliProperties, convention);
                 this.tuteurPro = new TuteurProContext(convention.getContact(), convention.getStructure(), convention.getService());
                 this.signataire = new SignataireContext(convention.getSignataire());
                 this.etudiant = new EtudiantContext(convention.getEtudiant(), convention.getCourrielPersoEtudiant(), convention.getTelEtudiant());
@@ -262,9 +263,10 @@ public class MailerService {
             private String tempsTravailComment;
             private String lien;
 
-            public ConventionContext() { }
+            public ConventionContext() {
+            }
 
-            public ConventionContext(ApplicationBootstrap applicationBootstrap, Convention convention) {
+            public ConventionContext(AppliProperties appliProperties, Convention convention) {
                 DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
 
                 this.numero = String.valueOf(convention.getId());
@@ -277,7 +279,7 @@ public class MailerService {
                 this.dateFin = convention.getDateFinStage() != null ? df.format(convention.getDateFinStage()) : null;
                 this.tempsTravail = convention.getTempsTravail() != null ? convention.getTempsTravail().getLibelle() : null;
                 this.tempsTravailComment = convention.getCommentaireDureeTravail();
-                this.lien = applicationBootstrap.getAppConfig().getUrl() + "/conventions/" + convention.getId();
+                this.lien = appliProperties.getUrl() + "/conventions/" + convention.getId();
             }
 
             public String getNumero() {
@@ -379,7 +381,8 @@ public class MailerService {
             private String serviceAccueil;
             private String fonction;
 
-            public TuteurProContext() { }
+            public TuteurProContext() {
+            }
 
             public TuteurProContext(Contact contact, Structure structure, org.esup_portail.esup_stage.model.Service service) {
                 if (contact != null) {
@@ -457,7 +460,8 @@ public class MailerService {
             private String tel;
             private String fonction;
 
-            public SignataireContext() { }
+            public SignataireContext() {
+            }
 
             public SignataireContext(Contact contact) {
                 if (contact != null) {
@@ -516,7 +520,8 @@ public class MailerService {
             private String mail;
             private String tel;
 
-            public EtudiantContext() { }
+            public EtudiantContext() {
+            }
 
             public EtudiantContext(Etudiant etudiant, String mailPerso, String tel) {
                 this.nom = etudiant.getNom();
@@ -562,7 +567,8 @@ public class MailerService {
             private String nom;
             private String prenom;
 
-            public ModifieParContext() { }
+            public ModifieParContext() {
+            }
 
             public ModifieParContext(Utilisateur utilisateur) {
                 this.nom = utilisateur.getNom();
@@ -589,7 +595,8 @@ public class MailerService {
         public static class AvenantContext {
             private String numero;
 
-            public AvenantContext() { }
+            public AvenantContext() {
+            }
 
             public AvenantContext(Avenant avenant) {
                 this.numero = String.valueOf(avenant.getId());

@@ -1,0 +1,15 @@
+services:
+  esup-stage:
+    image: ${IMAGE_REPO}${IMAGE_NAME}:${IMAGE_TAG}
+    container_name: ${IMAGE_NAME}
+    restart: always
+    env_file:
+      - application.properties
+      - .env
+    ports:
+      - "8080:8080"
+    volumes:
+      - data:${DATA_PATH}
+volumes:
+  data:
+    driver: local
