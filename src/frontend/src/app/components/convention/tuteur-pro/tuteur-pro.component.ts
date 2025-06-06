@@ -87,7 +87,7 @@ export class TuteurProComponent implements OnInit, OnChanges {
   refreshContacts(): void{
     if (this.service){
       this.contactService.getByService(this.service.id, this.centreGestion.id).subscribe((response: any) => {
-        this.contacts = response;
+        this.contacts = response.sort((a: any, b: any) => a.nom.localeCompare(b.nom));
       });
     }
   }
