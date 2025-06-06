@@ -75,8 +75,15 @@ jobs:
           echo "| Repo | Nom | Tag | Image |" >> $GITHUB_STEP_SUMMARY
           echo "|-----------------------------------|----------|------------------|-------------------------------------------------------------|" >> $GITHUB_STEP_SUMMARY
           echo "| \`$IMAGE_REPO\` | \`$IMAGE_NAME\` | \`$IMAGE_TAG\` | \`$IMAGE_REPO/$IMAGE_NAME:$IMAGE_TAG\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| \`$IMAGE_REPO\` | \`$IMAGE_NAME\` | \`latest\` | \`$IMAGE_REPO/$IMAGE_NAME:latest\` |" >> $GITHUB_STEP_SUMMARY
         env:
           IMAGE_REPO: ${{vars.IMAGE_REPO}}
           IMAGE_NAME: ${{vars.IMAGE_NAME}}
           IMAGE_TAG: ${{steps.maven_version.outputs.version}}
+
+      - name: Summary for non main branch
+        if: ${{github.ref != 'refs/heads/main'}}
+        run: echo "| \`$IMAGE_REPO\` | \`$IMAGE_NAME\` | \`$IMAGE_TAG_LATEST\` | \`$IMAGE_REPO/$IMAGE_NAME:$IMAGE_TAG_LATEST\` |" >> $GITHUB_STEP_SUMMARY
+        env:
+          IMAGE_REPO: ${{vars.IMAGE_REPO}}
+          IMAGE_NAME: ${{vars.IMAGE_NAME}}
+          IMAGE_TAG_LATEST: latest-${GITHUB_REF##*/}
