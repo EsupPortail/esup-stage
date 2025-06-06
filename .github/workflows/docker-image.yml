@@ -37,14 +37,14 @@ jobs:
           cd src/frontend
           npm run buildProduction
 
-      - name: Get Maven version and build
+      - name: Get Maven version and build for main branch
         if: ${{github.ref == 'refs/heads/main'}}
         id: maven_version_main
         run: | 
           echo "version=$(mvn help:evaluate -Dexpression='project.version' -q -DforceStdout -Dsha1=-${GITHUB_SHA::7} -Dchangelist=)" >> $GITHUB_OUTPUT
           mvn -Dsha1=-${GITHUB_SHA::7} -Dchangelist= clean package -DskipTests -Dskip.npm.install=true -Dskip.frontend=true --no-transfer-progress
 
-      - name: Get Maven version and build
+      - name: Get Maven version and build for non-main branches
         if: ${{github.ref != 'refs/heads/main'}}
         id: maven_version
         run: | 
@@ -58,11 +58,15 @@ jobs:
           username: ${{secrets.HARBOR_USERNAME}}
           password: ${{secrets.HARBOR_PASSWORD}}
 
-      - name: Build and Push the Docker image
-        run: |
-          docker build --build-arg VERSION=${{steps.maven_version.outputs.version}} -t ${{vars.IMAGE_REPO}}/esup-stage:latest-dev -t ${{vars.IMAGE_REPO}}/esup-stage:${{steps.maven_version.outputs.version}} .
-          docker push ${{vars.IMAGE_REPO}}/esup-stage:latest-dev
-          docker push ${{vars.IMAGE_REPO}}/esup-stage:${{steps.maven_version.outputs.version}}
+      - name: Build the Docker image
+        run: docker build --build-arg VERSION=${{steps.maven_version.outputs.version}} -t ${{vars.IMAGE_REPO}}/esup-stage:latest-${GITHUB_REF##*/} -t ${{vars.IMAGE_REPO}}/esup-stage:${{steps.maven_version.outputs.version}} .
+
+      - name: Push the Docker image
+        run: docker push ${{vars.IMAGE_REPO}}/esup-stage:${{steps.maven_version.outputs.version}}
+
+      - name: Push the Docker image latest for non-main branches
+        if: ${{github.ref != 'refs/heads/main'}}
+        run: docker push ${{vars.IMAGE_REPO}}/esup-stage:latest-${GITHUB_REF##*/}
 
       - name: Summary
         run: |
