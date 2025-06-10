@@ -7,19 +7,18 @@ https://github.com/EsupPortail/esup-stage/releases/tag/3.0.0[Esup-Stage v3.0.0]
 - Création de la variable `convention.horaireIrregulier` (#219).
 - Ajout d'une bulle d'aide près du bouton d'import des organismes d'accueil.
 - Intégration de la nouvelle API de consultation des étapes de signature dans Esup-Signature.
-- Alerte des gestionnaire lorsqu'une convention est signée électroniquement.
-- Notifier le changement d'enseignant référent.
-- Création d'un bouton pour supprimer le logo déposé #91
 - Alerter les gestionnaires lorsqu'une convention est signée électroniquement #213
-- Intégrer la nouvelle API de consultation des étapes de signature dans Esup-Signature
+- Création d'un bouton pour supprimer le logo déposé #91
+- Ajouter le mode de versement de la gratification, le code postal et la ville de l'étudiant au récapitulatif de la convention.
 
 === Améliorations
 - Possibilité de saisir manuellement la durée en mois, jour(s) et heure(s) (#212).
 - Amélioration de l'export Excel (#233).
 - Tri des thématiques de stage par ordre alphabétique.
-- Ajouter le mode de versement de la gratification, le code postal et la ville de l'étudiant au récapitulatif de la convention.
 - Décorréler l'impression du récapitulatif de celle de la convention #208
 - Suppression de la convention de Esup-Signature une fois récupérée dans Esup-Stage #222
+- Afficher Néant sur les anciennes valeurs de la gratification #229
+- Notifier le changement d'enseignant référent.
 
 == ESUP-Stage v3.2.0 (À venir)
 === Nouveautés
