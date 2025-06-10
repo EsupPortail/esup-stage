@@ -17,7 +17,6 @@ https://github.com/EsupPortail/esup-stage/releases/tag/3.0.0[Esup-Stage v3.0.0]
 - Possibilité de saisir manuellement la durée en mois, jour(s) et heure(s) (#212).
 - Amélioration de l'export Excel (#233).
 - Tri des thématiques de stage par ordre alphabétique.
-- Visualiser une bulle d'aide près du bouton d'import csv des établissements.
 - Ajouter le mode de versement de la gratification, le code postal et la ville de l'étudiant au récapitulatif de la convention.
 - Décorréler l'impression du récapitulatif de celle de la convention #208
 - Suppression de la convention de Esup-Signature une fois récupérée dans Esup-Stage #222
