@@ -141,7 +141,7 @@ public class WebhookService {
                 .block();
     }
 
-    public List<Historique> getHistoriqueStatus(String documentId) {
+    public List<Historique> getHistoriqueStatus(String documentId, Convention convention) {
         List<Historique> historiques = new ArrayList<>();
 
         List<Steps> steps = Objects.requireNonNull(webClient.get()
@@ -151,23 +151,29 @@ public class WebhookService {
                 .collectList()
                 .block());
 
-        for(Steps step : steps) {
-            if (step != null) {
-                for(Steps.RecipientAction recipientAction : step.getRecipientsActions()) {
-                    Historique historique = new Historique();
-                    historique.setDateDepot(
-                            recipientAction.getActionDate() != null ? recipientAction.getActionDate() : null
-                    );
-                    historique.setDateSignature(
-                            recipientAction.getActionDate() != null ? recipientAction.getActionDate() : null
-                    );
-                    historique.setTypeSignataire(
-                            recipientAction.getSignType() != null
-                                    ? SignataireEnum.valueOf(recipientAction.getSignType().toUpperCase())
-                                    : null
-                    );
-                    if(historique.getDateDepot() != null && historique.getDateSignature() != null && historique.getTypeSignataire() != null) {
-                        historiques.add(historique);
+        if (steps != null) {
+            List<CentreGestionSignataire> signataires = convention.getCentreGestion().getSignataires();
+            for (int ordre = 1; ordre <= steps.size(); ++ordre) {
+                Steps step = steps.get(ordre - 1);
+                int finalOrdre = ordre;
+                CentreGestionSignataire signataire = signataires.stream()
+                        .filter(s -> s.getOrdre() == finalOrdre)
+                        .findAny()
+                        .orElse(null);
+
+                for (Steps.RecipientAction recipientAction : step.getRecipientsActions()) {
+                    if ( signataire != null && Objects.equals(recipientAction.getActionType(), "signed")) {
+                        Historique historique = new Historique();
+                        historique.setDateDepot(
+                                recipientAction.getActionDate() != null ? recipientAction.getActionDate() : null
+                        );
+                        historique.setDateSignature(
+                                recipientAction.getActionDate() != null ? recipientAction.getActionDate() : null
+                        );
+                        historique.setTypeSignataire(signataire.getId().getSignataire());
+                        if (historique.getDateDepot() != null && historique.getDateSignature() != null && historique.getTypeSignataire() != null) {
+                            historiques.add(historique);
+                        }
                     }
                 }
             }

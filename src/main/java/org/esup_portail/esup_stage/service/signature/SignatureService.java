@@ -482,6 +482,9 @@ public class SignatureService {
                             }
                         }
                     }
+
+                    //TODO : Suppression de la convention pour esup-signature si elle est signée et que le paramètre de suppression automatique est activé
+
                 } catch (Exception e) {
                     log.error("Erreur lors du traitement de la convention id={} : {}",
                             convention != null ? convention.getId() : "null", e.getMessage(), e);
@@ -499,7 +502,7 @@ public class SignatureService {
             historiques = switch (appSignature) {
                 case DOCAPOSTE ->
                         signatureClient.getHistorique(convention.getDocumentId(), convention.getCentreGestion().getSignataires());
-                case ESUPSIGNATURE -> webhookService.getHistoriqueStatus(convention.getDocumentId());
+                case ESUPSIGNATURE -> webhookService.getHistoriqueStatus(convention.getDocumentId(), convention);
                 default -> historiques;
             };
             setSignatureHistorique(convention, historiques);
