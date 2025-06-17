@@ -17,6 +17,7 @@ export class ConfigGeneraleComponent implements OnInit {
   configGenerale: any;
   configAlerte: any;
   configTheme: any;
+  configSignature: any;
 
   formGenerale: FormGroup;
   alertes = [
@@ -49,6 +50,8 @@ export class ConfigGeneraleComponent implements OnInit {
   dangerColor: string | WritableSignal<string> | undefined;
   warningColor: string | WritableSignal<string> | undefined;
   successColor: string | WritableSignal<string> | undefined;
+
+  formSignature: FormGroup;
 
   constructor(
     private configService: ConfigService,
@@ -84,6 +87,10 @@ export class ConfigGeneraleComponent implements OnInit {
       warningColor: [null, [Validators.required]],
       successColor: [null, [Validators.required]],
     });
+
+    this.formSignature = this.fb.group({
+      SupprimerConventionUneFoisSigneEsupSignature: [null, [Validators.required]]
+    });
   }
 
   ngOnInit(): void {
@@ -110,6 +117,11 @@ export class ConfigGeneraleComponent implements OnInit {
       this.setFormThemeValue();
     });
 
+    // Récupération de la configuration de la signature
+    this.configService.getConfigSignature().subscribe((response: any) => {
+      this.configSignature = response;
+      this.formSignature.patchValue(this.configSignature);
+    });
   }
 
   setFormThemeValue(): void {
@@ -193,6 +205,14 @@ export class ConfigGeneraleComponent implements OnInit {
       this.faviconFile = undefined;
       return;
     }
+  }
+
+  saveSignature(): void {
+    this.configService.updateConfigSignature(this.configSignature).subscribe((response: any) => {
+      this.configSignature = response;
+      this.messageService.setSuccess('Configuration de la signature modifiée');
+      this.formSignature.patchValue(this.configSignature);
+    });
   }
 
 }

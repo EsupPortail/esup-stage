@@ -130,7 +130,7 @@ export class AppComponent {
           icon: 'fa-file',
         },
         {
-          libelle: 'Configuration tecnhique',
+          libelle: 'Configuration technique',
           path: 'param-global/config',
           icon: 'fa-cogs',
         }

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.esup_portail.esup_stage.dto.ConfigAlerteMailDto;
 import org.esup_portail.esup_stage.dto.ConfigGeneraleDto;
+import org.esup_portail.esup_stage.dto.ConfigSignatureDto;
 import org.esup_portail.esup_stage.dto.ConfigThemeDto;
 import org.esup_portail.esup_stage.dto.view.Views;
 import org.esup_portail.esup_stage.enums.AppConfigCodeEnum;
@@ -173,4 +174,25 @@ public class AppConfigController {
         appConfigService.updateTheme();
         return appConfigService.getConfigTheme();
     }
+
+    @GetMapping("/signature")
+    @Secure(forbiddenEtu = true)
+    public ConfigSignatureDto getSignature() {
+        return appConfigService.getConfigSignature();
+    }
+
+    @PostMapping("/signature")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.MODIFICATION}, forbiddenEtu = true)
+    public ConfigSignatureDto updateSignature(@RequestBody ConfigSignatureDto configSignatureDto) throws JsonProcessingException {
+        AppConfig appConfig = appConfigJpaRepository.findByCode(AppConfigCodeEnum.SIGNATURE);
+        if (appConfig == null) {
+            appConfig = new AppConfig();
+            appConfig.setCode(AppConfigCodeEnum.SIGNATURE);
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        appConfig.setParametres(mapper.writeValueAsString(configSignatureDto));
+        appConfigJpaRepository.saveAndFlush(appConfig);
+        return appConfigService.getConfigSignature();
+    }
+
 }

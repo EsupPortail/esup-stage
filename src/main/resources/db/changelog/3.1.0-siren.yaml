@@ -246,3 +246,16 @@ databaseChangeLog:
                   type: BOOLEAN
                   defaultValueBoolean: false
             tableName: Avenant
+  - changeSet:
+      id: 3.1.0-ajout-config-signature
+      author: thouveno9
+      changes:
+        - insert:
+            tableName: Appconfig
+            columns:
+              - column:
+                    name: codeAppConfig
+                    value: SIGNATURE
+              - column:
+                    name: parametres
+                    value: ''

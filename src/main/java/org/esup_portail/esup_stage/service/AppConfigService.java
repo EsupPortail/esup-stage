@@ -9,6 +9,7 @@ import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.config.properties.SignatureProperties;
 import org.esup_portail.esup_stage.dto.ConfigAlerteMailDto;
 import org.esup_portail.esup_stage.dto.ConfigGeneraleDto;
+import org.esup_portail.esup_stage.dto.ConfigSignatureDto;
 import org.esup_portail.esup_stage.dto.ConfigThemeDto;
 import org.esup_portail.esup_stage.enums.AppConfigCodeEnum;
 import org.esup_portail.esup_stage.enums.FolderEnum;
@@ -109,6 +110,20 @@ public class AppConfigService {
         } catch (IOException e) {
             logger.error(e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "ConfigGeneraleDto::getConfigGenerale ERROR: JsonProcessingException");
+        }
+    }
+
+    public ConfigSignatureDto getConfigSignature() {
+        AppConfig appConfig = appConfigJpaRepository.findByCode(AppConfigCodeEnum.SIGNATURE);
+        if (appConfig == null) {
+            return new ConfigSignatureDto();
+        }
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            return objectMapper.readValue(appConfig.getParametres(), ConfigSignatureDto.class);
+        } catch (JsonProcessingException e) {
+            logger.error(e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "ConfigSignatureDto::getConfigSignature ERROR: JsonProcessingException");
         }
     }
 
