@@ -11,6 +11,7 @@ import org.esup_portail.esup_stage.enums.FolderEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.*;
+import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.ConventionService;
 import org.esup_portail.esup_stage.service.MailerService;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
@@ -65,6 +66,8 @@ public class SignatureService {
     private UtilisateurJpaRepository utilisateurJpaRepository;
     @Autowired
     private MailerService mailerService;
+    @Autowired
+    private AppConfigService appConfigService;
 
     public SignatureService(WebClient.Builder builder) {
         this.webClient = builder.build();
@@ -448,6 +451,11 @@ public class SignatureService {
         }
     }
 
+    /**
+     * Méthode pour mettre à jour automatiquement les conventions non signées.
+     * Cette méthode est appelée par un scheduler pour mettre à jour les conventions non signées
+     */
+
     @Transactional
     public void updateAuto(){
         log.info("Début de updateAuto()");
@@ -459,8 +467,6 @@ public class SignatureService {
             int idx = 0;
             for (Convention convention : conventionsNonSignee) {
                 try {
-
-                    //TODO : mettre a jour le update pour aller chercher les données (pour toutes les app de signature)
                     update(convention);
 
                     if (convention.getDateSignatureEtudiant() != null
@@ -483,7 +489,16 @@ public class SignatureService {
                         }
                     }
 
-                    //TODO : Suppression de la convention pour esup-signature si elle est signée et que le paramètre de suppression automatique est activé
+                    //Suppression de la convention pour esup-signature si elle est signée et que le paramètre de suppression automatique est activé
+                    if (signatureProperties.getAppSignatureType() == AppSignatureEnum.ESUPSIGNATURE) {
+                        if( convention.isTemConventionSignee() && appConfigService.getConfigSignature().isSupprimerConventionUneFoisSigneEsupSignature()){
+                            webClient.delete()
+                                    .uri(signatureProperties.getEsupsignature().getUri() + "/signrequests/soft/" + convention.getDocumentId())
+                                    .retrieve()
+                                    .bodyToMono(String.class)
+                                    .block();
+                        }
+                    }
 
                 } catch (Exception e) {
                     log.error("Erreur lors du traitement de la convention id={} : {}",
@@ -495,13 +510,13 @@ public class SignatureService {
         log.info("Fin de updateAuto()");
     }
 
+    //TODO : mettre a jour le update pour aller chercher les données (pour toutes les app de signature)
     public void update(Convention convention){
         AppSignatureEnum appSignature = signatureProperties.getAppSignatureType();
         try {
             List<Historique> historiques = new ArrayList<>();
             historiques = switch (appSignature) {
-                case DOCAPOSTE ->
-                        signatureClient.getHistorique(convention.getDocumentId(), convention.getCentreGestion().getSignataires());
+                case DOCAPOSTE -> signatureClient.getHistorique(convention.getDocumentId(), convention.getCentreGestion().getSignataires());
                 case ESUPSIGNATURE -> webhookService.getHistoriqueStatus(convention.getDocumentId(), convention);
                 default -> historiques;
             };
@@ -512,13 +527,13 @@ public class SignatureService {
         }
     }
 
+    //TODO : mettre a jour le update pour aller chercher les données (pour toutes les app de signature)
     public void update(Avenant avenant){
         AppSignatureEnum appSignature = signatureProperties.getAppSignatureType();
         try {
             List<Historique> historiques = new ArrayList<>();
             historiques = switch (appSignature) {
-                case DOCAPOSTE ->
-                        signatureClient.getHistorique(avenant.getDocumentId(), avenant.getConvention().getCentreGestion().getSignataires());
+                case DOCAPOSTE -> signatureClient.getHistorique(avenant.getDocumentId(), avenant.getConvention().getCentreGestion().getSignataires());
                 case ESUPSIGNATURE -> webhookService.getHistorique(avenant.getDocumentId(), avenant.getConvention());
                 default -> historiques;
             };
@@ -528,5 +543,4 @@ public class SignatureService {
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur de la récupération de l'historique");
         }
     }
-
 }
