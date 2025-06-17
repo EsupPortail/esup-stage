@@ -304,22 +304,28 @@
       </mat-card-content>
     </mat-card>
   </mat-tab>
-  <mat-tab label="Signature &eacute;lectronique">
-    <mat-card>
+  <mat-tab label="Signature électronique">
+    <mat-card class="my-3">
       <mat-card-content>
-        <form [formGroup]="formSignature" novalidate (submit)="saveSignature()">
-          <h2> Esup-Signature </h2>
-          <div class="row mb-2">
-            <div class="col-md-12">
-              <div class="mb-2">Supprimer les conventions une fois sign&eacute; par toutes les parties ?</div>
-              <mat-radio-group formControlName="SupprimerConventionUneFoisSigneEsupSignature">
-                <mat-radio-button [value]="true">Oui</mat-radio-button>
-                <mat-radio-button [value]="false">Non</mat-radio-button>
-              </mat-radio-group>
-            </div>
+        <form [formGroup]="formSignature" (ngSubmit)="saveSignature()" novalidate>
+          <h3 class="mat-headline mb-2">Esup-Signature</h3>
+          <div class="underline mb-4"></div>
+
+          <div class="mb-3">
+            <label class="d-block mb-2 fw-bold">
+              Supprimer les conventions une fois signées par toutes les parties ?
+            </label>
+            <mat-radio-group
+              formControlName="supprimerConventionUneFoisSigneEsupSignature"
+              class="d-flex gap-4"
+            >
+              <mat-radio-button [value]="true">Oui</mat-radio-button>
+              <mat-radio-button [value]="false">Non</mat-radio-button>
+            </mat-radio-group>
           </div>
-          <div class="mt-3" *ngIf="canEdit()">
-            <button mat-flat-button color="primary">Valider</button>
+
+          <div class="text-end mt-4" *ngIf="canEdit()">
+            <button mat-flat-button color="primary" type="submit">Valider</button>
           </div>
         </form>
       </mat-card-content>

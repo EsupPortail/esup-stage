@@ -90,7 +90,7 @@ export class ConfigGeneraleComponent implements OnInit {
     });
 
     this.formSignature = this.fb.group({
-      SupprimerConventionUneFoisSigneEsupSignature: [null, [Validators.required]]
+      supprimerConventionUneFoisSigneEsupSignature: [null, [Validators.required]]
     });
   }
 
@@ -209,6 +209,7 @@ export class ConfigGeneraleComponent implements OnInit {
   }
 
   saveSignature(): void {
+    this.configSignature = this.formSignature.value;
     this.configService.updateConfigSignature(this.configSignature).subscribe((response: any) => {
       this.configSignature = response;
       this.messageService.setSuccess('Configuration de la signature modifiée');

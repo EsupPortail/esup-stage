@@ -130,9 +130,9 @@ export class AppComponent {
           icon: 'fa-file',
         },
         {
-          libelle: 'Configuration technique',
+          libelle: 'Tâches planifiées',
           path: 'param-global/config',
-          icon: 'fa-cogs',
+          icon: "fa-calendar",
         }
       ]
     },

@@ -6,10 +6,10 @@ import { PageEvent } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-config',
-  templateUrl: './config.component.html',
-  styleUrl: './config.component.scss'
+  templateUrl: './tache-planifie.component.html',
+  styleUrl: './tache-planifie.component.scss'
 })
-export class ConfigComponent implements OnInit {
+export class TachePlanifieComponent implements OnInit {
   cronTasks: any[] = [];
   private originalCronTasks: any;
   page: number = 1;

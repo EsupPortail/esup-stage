@@ -21,7 +21,7 @@ import { EvalStageComponent } from './components/eval-stage/eval-stage.component
 import { ConventionCreateEnMasseComponent } from './components/convention-create-en-masse/convention-create-en-masse.component';
 import { GestionGroupeComponent } from './components/convention-create-en-masse/gestion-groupe/gestion-groupe.component';
 import { TemplateMailGroupeComponent } from './components/convention-create-en-masse/template-mail-groupe/template-mail-groupe.component';
-import {ConfigComponent} from "./components/admin/config/config.component";
+import {TachePlanifieComponent} from "./components/admin/config/tache-planifie.component";
 
 const routes: Routes = [
   {path: '', component: HomeComponent, canActivate: [AuthGuard], data: {role: {}, title: 'Accueil'}},
@@ -144,7 +144,7 @@ const routes: Routes = [
   },
   {
     path: 'param-global/config',
-    component: ConfigComponent,
+    component: TachePlanifieComponent,
     canActivate:[AuthGuard],
     data:{
       role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.CREATION, Droit.VALIDATION, Droit.LECTURE, Droit.MODIFICATION,Droit.SUPPRESSION],},
