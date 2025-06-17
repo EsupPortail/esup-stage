@@ -8,12 +8,10 @@ content:
     start_path: src/docs
     branches:
     #- main
-    #- develop
-    - feature/*
+    - dev
     version:
       #main: ''
-      dev: develop
-      feature/(*): $1
+      dev: dev
 ui:
   bundle:
     url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable

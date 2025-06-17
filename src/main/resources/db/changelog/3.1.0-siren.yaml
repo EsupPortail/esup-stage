@@ -120,6 +120,33 @@ databaseChangeLog:
       author: thouveno9
       changes:
         - sql: ALTER TABLE Structure CHANGE `idEffectif` `idEffectif` INT(11) NULL DEFAULT NULL;
+
+  - changeSet:
+      id: 3.1.0-modele-mail-notif-nouvel-ensignant
+      author: thouveno9
+      changes:
+        - insert:
+            columns:
+              - column:
+                  name: code
+                  value: CHANGEMENT_ENS
+              - column:
+                  name: libelle
+                  value: Changement d'enseignant
+              - column:
+                  name: objet
+                  value: Changement d'enseignant pour le stage
+              - column:
+                  name: texte
+                  value: Texte à modifier
+              - column:
+                  name: dateCreation
+                  value: now()
+              - column:
+                  name: loginCreation
+                  value: liquibase
+            tableName: TemplateMail
+
   - changeSet:
       id: 3.1.0-ajout-template-mail-convention-signee
       author: thouveno9

@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.config.properties.SirenProperties;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
+import org.esup_portail.esup_stage.dto.SireneInfoDto;
 import org.esup_portail.esup_stage.dto.StructureFormDto;
 import org.esup_portail.esup_stage.dto.view.Views;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
@@ -34,9 +35,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @ApiController
 @RequestMapping("/structures")
@@ -90,14 +89,25 @@ public class StructureController {
         PaginatedResponse<Structure> paginatedResponse = new PaginatedResponse<>();
         List<Structure> structures = structureRepository.findPaginated(page, perPage, predicate, sortOrder, filters);
         paginatedResponse.setTotal(structureRepository.count(filters));
-        if(structures.size() < sirenProperties.getNombreMinimumResultats() && !appConfigService.getConfigGenerale().isAutoriserEtudiantACreerEntreprise()){
+        Map filterMap;
+        try {
+            filterMap = objectMapper.readValue(filters, Map.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        boolean estEtudiant = UtilisateurHelper.isRole(Objects.requireNonNull(ServiceContext.getUtilisateur()), Role.ETU);
+        boolean creationEtudiantInterdite = !appConfigService.getConfigGenerale().isAutoriserEtudiantACreerEntreprise();
+        if (
+                        sirenProperties.isApiSireneActive() &&
+                        structures.size() < sirenProperties.getNombreMinimumResultats() &&
+                        (creationEtudiantInterdite || !estEtudiant) &&
+                        filterMap.size() > 1
+        ) {
             List<String> existingSirets = new ArrayList<>();
             structures.forEach(s -> existingSirets.add(s.getNumeroSiret()));
             if (page == 1 && structures.size() < sirenProperties.getNombreMinimumResultats()) {
                 int manque = perPage - structures.size();
                 ListStructureSirenDTO result = sirenService.getEtablissementFiltered(1, manque, filters);
-                System.out.println("result.getStructures() = " + result.getStructures());
-                System.out.println("result.getTotal() = " + result.getTotal());
                 if (manque > 0) {
                     List<Structure> additional = result
                             .getStructures()
@@ -111,8 +121,6 @@ public class StructureController {
             }
             else if (page > 1) {
                 ListStructureSirenDTO result = sirenService.getEtablissementFiltered(page, perPage, filters);
-                System.out.println("result.getStructures() = " + result.getStructures());
-                System.out.println("result.getTotal() = " + result.getTotal());
                 List<Structure> apiPage = result
                         .getStructures()
                         .stream()
@@ -443,6 +451,14 @@ public class StructureController {
         structure.setSiteWeb(structureFormDto.getSiteWeb());
         structure.setFax(structureFormDto.getFax());
         structure.setNumeroRNE(structureFormDto.getNumeroRNE());
+    }
+
+    @GetMapping("/sirene")
+    public SireneInfoDto getSireneInfo(){
+        SireneInfoDto sireneInfoDto = new SireneInfoDto();
+        sireneInfoDto.setIsApiSireneActive(sirenProperties.isApiSireneActive());
+        sireneInfoDto.setNombreResultats(sirenProperties.getNombreMinimumResultats());
+        return sireneInfoDto;
     }
 
 }

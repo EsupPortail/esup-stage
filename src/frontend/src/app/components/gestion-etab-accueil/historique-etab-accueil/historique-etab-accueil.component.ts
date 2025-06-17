@@ -92,43 +92,30 @@ export class HistoriqueEtabAccueilComponent implements OnInit {
   private compareObjects(prev: any, curr: any, path: string = ''): JsonDifference[] {
     const differences: JsonDifference[] = [];
 
-    // Parcourt toutes les clés de l'objet
-    Object.keys({ ...prev, ...curr }).forEach(key => {
+    const allKeys = new Set([...Object.keys(prev || {}), ...Object.keys(curr || {})]);
+
+    allKeys.forEach(key => {
       const fullPath = path ? `${path}.${key}` : key;
+      const prevValue = prev?.[key];
+      const currValue = curr?.[key];
 
       // Ignore la clé "dateModif"
-      if (fullPath === 'dateModif') {
-        return;
-      }
+      if (fullPath === 'dateModif') return;
 
-      const prevValue = prev[key];
-      const currValue = curr[key];
+      const isObject = (val: any) => val && typeof val === 'object' && !Array.isArray(val);
 
-      // Si la clé existe dans le mapping d'affichage
-      if (this.displayFieldMapping[fullPath]) {
-        // Compare les valeurs
-        if (JSON.stringify(prevValue) !== JSON.stringify(currValue)) {
-          // Détermine le type de la différence
-          let type: 'object' | 'array' | 'primitive' = 'primitive';
-          if (Array.isArray(prevValue) || Array.isArray(currValue)) {
-            type = 'array';
-          } else if (typeof prevValue === 'object' || typeof currValue === 'object') {
-            type = 'object';
-          }
-
-          // Formatage des valeurs pour l'affichage
-          const formattedPrev = this.formatValue(prevValue);
-          const formattedCurr = this.formatValue(currValue);
-
-          if (formattedPrev !== formattedCurr) {
-            differences.push({
-              field: fullPath,
-              displayName: this.displayFieldMapping[fullPath],
-              previousValue: formattedPrev,
-              currentValue: formattedCurr,
-              type
-            });
-          }
+      if (isObject(prevValue) || isObject(currValue)) {
+        // Recursion si sous-objet
+        differences.push(...this.compareObjects(prevValue || {}, currValue || {}, fullPath));
+      } else {
+        if (this.displayFieldMapping[fullPath] && JSON.stringify(prevValue) !== JSON.stringify(currValue)) {
+          differences.push({
+            field: fullPath,
+            displayName: this.displayFieldMapping[fullPath],
+            previousValue: this.formatValue(prevValue),
+            currentValue: this.formatValue(currValue),
+            type: Array.isArray(prevValue) || Array.isArray(currValue) ? 'array' : 'primitive'
+          });
         }
       }
     });

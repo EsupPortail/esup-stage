@@ -1,5 +1,5 @@
 = Décisions stratégique
-:author: Université Lorraine
+:author: Université de Lorraine
 :imagesdir: ../images/
 
 ****

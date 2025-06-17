@@ -428,6 +428,26 @@ public class CentreGestionController {
         return centreGestionJpaRepository.saveAndFlush(centreGestion);
     }
 
+    @DeleteMapping("/{id}/logo-centre")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.SUPPRESSION})
+    public void deleteLogoCentre(@PathVariable("id") int id) {
+        CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
+        if (centreGestion.getFichier() != null) {
+            try {
+                String filename = this.getNomFichier(centreGestion.getFichier().getId(), centreGestion.getFichier().getNom());
+                File file = new File(this.getFilePath(filename));
+                if (file.exists()) {
+                    FileUtils.forceDelete(file);
+                }
+            } catch (IOException e) {
+                logger.error(e);
+                throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de la suppression du fichier : " + e.getMessage());
+            }
+            centreGestion.setFichier(null);
+            centreGestionJpaRepository.saveAndFlush(centreGestion);
+        }
+    }
+
     @GetMapping(value = "/{id}/logo-centre", produces = MediaType.IMAGE_PNG_VALUE)
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public ResponseEntity<byte[]> getLogoCentre(@PathVariable("id") int id) {

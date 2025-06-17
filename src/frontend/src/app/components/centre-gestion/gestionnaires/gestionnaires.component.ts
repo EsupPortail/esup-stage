@@ -59,6 +59,7 @@ export class GestionnairesComponent implements OnInit {
     {id: 'verificationAdministrativeConvention', libelle: 'Vérification administrative d\'une convention'},
     {id: 'validationAvenant', libelle: 'Validation d\'un avenant '},
     {id: 'conventionSignee', libelle: 'Convention signée par toutes les parties'},
+    {id: 'changementEnseignant', libelle: 'Changement d\'enseignant référent'},
   ];
 
   configAlertes: any;
