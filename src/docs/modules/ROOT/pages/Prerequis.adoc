@@ -101,20 +101,20 @@ sudo update-alternatives --config java
 
 === Installation
 
-Téléchargez Apache Maven depuis son site officiel ou utilisez la commande suivante pour télécharger Apache Maven 3.6.3.
+Téléchargez Apache Maven depuis son site officiel ou utilisez la commande suivante pour télécharger Apache Maven 3.9.10.
 
 [source,shell]
 ----
 cd /opt 
-wget https://dlcdn.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz
+wget https://dlcdn.apache.org/maven/maven-3/3.9.10/binaries/apache-maven-3.9.10-bin.tar.gz
 ----
 
 Extraire maintenant l'archive téléchargée à l'aide de la commande suivante :
 
 [source,shell]
 ----
-sudo tar xzf apache-maven-3.9.9-bin.tar.gz 
-sudo ln -sfn apache-maven-3.9.9 maven
+sudo tar xzf apache-maven-3.9.10-bin.tar.gz
+sudo ln -sfn apache-maven-3.9.10 maven
 ----
 
 === Configuration des variables d'environnement

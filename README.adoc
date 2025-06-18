@@ -279,5 +279,3 @@ TIP: Le fichier application.properties peut être positionné à la racine du to
 * Se rendre sur l'application à l'adresse `http://localhost:8080/` pour se connecter une première fois
 * Puis se rendre sur `http://localhost:4200`
 * Pour se déconnecter, aller sur `http://localhost:4200/logout`
-
-
