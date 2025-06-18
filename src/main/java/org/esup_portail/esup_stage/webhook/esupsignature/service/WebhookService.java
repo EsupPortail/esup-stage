@@ -42,7 +42,7 @@ public class WebhookService {
     @Autowired
     SignatureProperties signatureProperties;
 
-    private Logger logger = LoggerFactory.getLogger(WebhookService.class);
+    private final Logger logger = LoggerFactory.getLogger(WebhookService.class);
 
     public WebhookService(WebClient.Builder builder) {
         this.webClient = builder.build();
@@ -60,6 +60,7 @@ public class WebhookService {
     }
 
     public String upload(PdfMetadataDto content) {
+        logger.debug("Upload dans esup-signature de la convention ou de l'avenant : {}",content.getMetadata().getTitle());
         MetadataDto metadataDto = content.getMetadata();
         List<String> recipients = metadataDto.getSignatory().stream().map(s -> s.getOrder() + "*" + s.getMail()).collect(Collectors.toList());
         List<WorkflowStep> workflowSteps = new ArrayList<>();
@@ -79,6 +80,11 @@ public class WebhookService {
             step.getRecipients().add(recipient);
         });
 
+        logger.debug(" - WorkflowId : {} ", content.getMetadata().getWorkflowId());
+        logger.debug(" - Pdf : {} ", content.getPdf64() != null);
+        for(WorkflowStep step : workflowSteps) {
+            logger.debug(" - Step {} : {}", step.getStepNumber(), step.getRecipients().stream().map(Recipient::getEmail).collect(Collectors.joining(",")));
+        }
 
         MultipartBodyBuilder builder = new MultipartBodyBuilder();
         builder.part("multipartFiles", geMultipartFile(metadataDto.getTitle(), Base64.decode(content.getPdf64())));
@@ -86,7 +92,7 @@ public class WebhookService {
         builder.part("recipientsEmails", String.join(",", recipients));
         builder.part("stepsJsonString", workflowSteps);
 
-         String result = webClient.post()
+        String result = webClient.post()
                 .uri(signatureProperties.getEsupsignature().getUri() + "/workflows/" + metadataDto.getWorkflowId() + "/new")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
@@ -94,7 +100,7 @@ public class WebhookService {
                 .bodyToMono(String.class)
                 .block();
 
-         logger.info("Upload dans esup-signature de la convention ou de l'avenant : {}", result);
+        logger.debug(" - Retour de l'application de signature : {} ", result);
          return result;
     }
 
