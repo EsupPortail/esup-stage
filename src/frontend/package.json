@@ -62,7 +62,7 @@
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "~1.7.0",
     "style-loader": "^4.0.0",
-    "typescript": "^5.4.5"
+    "typescript": "~5.5.4"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "^4.40.1"
