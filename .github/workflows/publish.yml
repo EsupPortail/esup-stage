@@ -21,26 +21,43 @@
         name: github-pages
         url: ${{ steps.deployment.outputs.page_url }}
       steps:
-        - name: Checkout repository
-          uses: actions/checkout@v4
-        - name: duplicate readme
+        - name: Setup branches for Antora
+          run: |
+            # Créer des branches locales trackant les branches distantes
+            git fetch origin main
+            git fetch origin dev
+            git checkout dev
+            git checkout main
+
+        - name: duplicate readme (main)
           run: cp README.adoc src/docs/modules/ROOT/pages/README.adoc
-        - name: duplicate changelog
+
+        - name: duplicate changelog (main)
           run: cp CHANGELOG.adoc src/docs/modules/ROOT/pages/CHANGELOG.adoc
-        - name: Set branch env variable
-          run: echo "BRANCH_NAME=${GITHUB_REF_NAME}" >> $GITHUB_ENV
+
+        - name: duplicate files for dev branch
+          run: |
+            git checkout dev
+            cp README.adoc src/docs/modules/ROOT/pages/README.adoc
+            cp CHANGELOG.adoc src/docs/modules/ROOT/pages/CHANGELOG.adoc
+            git checkout main
+
         - name: Install Node.js
           uses: actions/setup-node@v4
           with:
             node-version: '20.x'
+
         - name: Install Antora
           run: (cd src/docs && npm ci)
+
         - name: Generate Site
           run: (cd src/docs && BRANCH_NAME=${BRANCH_NAME} npm run prestart)
+
         - name: Upload Artifacts
           uses: actions/upload-pages-artifact@v3
           with:
             path: build/site
+
         - name: Publish on Github Pages (main + dev)
           id: deployment
           uses: actions/deploy-pages@v4
