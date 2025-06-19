@@ -21,26 +21,37 @@
         name: github-pages
         url: ${{ steps.deployment.outputs.page_url }}
       steps:
+        - name : clone reposiory
+          run : git clone https://github.com/EsupPortail/esup-stage.git
+
         - name: Setup branches for Antora
           run: |
-            # Créer des branches locales trackant les branches distantes
-            git fetch origin main
+            ls
+            git config --global user.email "lucas.thouvenot@univ-lorraine.fr"
+            git config --global user.name "GitHub Actions"
             git fetch origin dev
             git checkout dev
             git checkout main
+          working-directory: esup-stage
 
         - name: duplicate readme (main)
-          run: cp README.adoc src/docs/modules/ROOT/pages/README.adoc
-
-        - name: duplicate changelog (main)
-          run: cp CHANGELOG.adoc src/docs/modules/ROOT/pages/CHANGELOG.adoc
+          run: |
+            ls
+            cp README.adoc src/docs/modules/ROOT/pages/README.adoc
+            cp CHANGELOG.adoc src/docs/modules/ROOT/pages/CHANGELOG.adoc
+            git add src/docs/modules/ROOT/pages/README.adoc src/docs/modules/ROOT/pages/CHANGELOG.adoc
+            git commit -m "Update README and CHANGELOG for Antora"
+          working-directory: esup-stage
 
         - name: duplicate files for dev branch
           run: |
             git checkout dev
             cp README.adoc src/docs/modules/ROOT/pages/README.adoc
             cp CHANGELOG.adoc src/docs/modules/ROOT/pages/CHANGELOG.adoc
+            git add src/docs/modules/ROOT/pages/README.adoc src/docs/modules/ROOT/pages/CHANGELOG.adoc
+            git commit -m "Update README and CHANGELOG for Antora"
             git checkout main
+          working-directory: esup-stage
 
         - name: Install Node.js
           uses: actions/setup-node@v4
@@ -49,14 +60,16 @@
 
         - name: Install Antora
           run: (cd src/docs && npm ci)
+          working-directory: esup-stage
 
         - name: Generate Site
           run: (cd src/docs && BRANCH_NAME=${BRANCH_NAME} npm run prestart)
+          working-directory: esup-stage
 
         - name: Upload Artifacts
           uses: actions/upload-pages-artifact@v3
           with:
-            path: build/site
+            path: ./build/site
 
         - name: Publish on Github Pages (main + dev)
           id: deployment

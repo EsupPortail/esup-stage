@@ -4,7 +4,7 @@ site:
   robots: allow
 content:
   sources:
-  - url: https://github.com/EsupPortail/esup-stage.git
+  - url: ./
     start_path: src/docs
     branches:
     - main
