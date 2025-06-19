@@ -69,7 +69,7 @@
         - name: Upload Artifacts
           uses: actions/upload-pages-artifact@v3
           with:
-            path: ./build/site
+            path: esup-stage/build/site
 
         - name: Publish on Github Pages (main + dev)
           id: deployment
