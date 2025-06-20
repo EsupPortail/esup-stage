@@ -16,6 +16,7 @@ public class TemplateMail extends ObjetMetier implements TemplateMailInterface, 
     public static final String CODE_CONVENTION_DEVALID_PEDAGOGIQUE = "CONVENTION_DEVALID_PEDAGOGIQUE";
     public static final String CODE_CONVENTION_VERIF_ADMINISTRATIVE = "CONVENTION_VERIF_ADMINISTRATIVE";
     public static final String CODE_CONVENTION_DEVERIF_ADMINISTRATIVE = "CONVENTION_DEVERIF_ADMINISTRATIVE";
+    public static final String CODE_CONVENTION_SIGNEE = "CONVENTION_SIGNEE";
     public static final String CODE_ETU_CREA_AVENANT = "ETU_CREA_AVENANT";
     public static final String CODE_ETU_CREA_CONVENTION = "ETU_CREA_CONVENTION";
     public static final String CODE_ETU_MODIF_AVENANT = "ETU_MODIF_AVENANT";

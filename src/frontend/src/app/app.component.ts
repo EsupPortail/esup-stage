@@ -129,6 +129,11 @@ export class AppComponent {
           path: 'param-global/conventions',
           icon: 'fa-file',
         },
+        {
+          libelle: 'Tâches planifiées',
+          path: 'param-global/config',
+          icon: "fa-calendar",
+        }
       ]
     },
     {

@@ -16,4 +16,10 @@
   flex-grow: 1 !important;
 }
 
+.underline {
+  height: 3px;
+  background-color: var(--primaryColor); // ou la couleur que tu veux (Material primary par ex)
+  width: 100%;
+  border-radius: 2px;
+}
 

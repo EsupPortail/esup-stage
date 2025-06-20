@@ -58,6 +58,7 @@ export class GestionnairesComponent implements OnInit {
     {id: 'validationAdministrativeConvention', libelle: 'Validation administrative d\'une convention'},
     {id: 'verificationAdministrativeConvention', libelle: 'Vérification administrative d\'une convention'},
     {id: 'validationAvenant', libelle: 'Validation d\'un avenant '},
+    {id: 'conventionSignee', libelle: 'Convention signée par toutes les parties'},
     {id: 'changementEnseignant', libelle: 'Changement d\'enseignant référent'},
   ];
 
@@ -109,6 +110,7 @@ export class GestionnairesComponent implements OnInit {
       validationAdministrativeConvention: [null, []],
       verificationAdministrativeConvention: [null, []],
       validationAvenant: [null, []],
+      conventionSignee: [null, []],
     });
     this.searchForm = this.fb.group({
       nom: [null, []],
@@ -280,7 +282,10 @@ export class GestionnairesComponent implements OnInit {
 
   toggleAll() {
     for (let alerte of this.alertesMail) {
-      this.form.get(alerte.id)?.setValue(this.toggleAlertes);
+      const control = this.form.get(alerte.id);
+      if (control && !control.disabled) {
+        control.setValue(this.toggleAlertes);
+      }
     }
     this.toggleAlertes = !this.toggleAlertes;
   }

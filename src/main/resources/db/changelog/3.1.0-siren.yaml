@@ -146,3 +146,130 @@ databaseChangeLog:
                   name: loginCreation
                   value: liquibase
             tableName: TemplateMail
+
+  - changeSet:
+      id: 3.1.0-ajout-template-mail-convention-signee
+      author: thouveno9
+      changes:
+        - insert:
+            columns:
+              - column:
+                  name: code
+                  value: CONVENTION_SIGNEE
+              - column:
+                  name: libelle
+                  value: Convention signée par toutes les parties
+              - column:
+                  name: objet
+                  value: Convention signée
+              - column:
+                  name: texte
+                  value: Texte à modifier
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: dateCreation
+                  value: now()
+            tableName: Templatemail
+  - changeSet:
+      id: 3.1.0-ajout-temConventionSignee
+      author: thouveno9
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  name: temConventionSignee
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+            tableName: Convention
+  - changeSet:
+     id: 3.1.0-ajout-parametre-notification-gestionnaire-convention-signee
+     author: thouveno9
+     changes:
+      - addColumn:
+          columns:
+            - column:
+                name: conventionSignee
+                type: BIT
+                defaultValueBoolean: false
+          tableName: PersonnelCentreGestion
+  - changeSet:
+      id: 3.1.0-table-cron
+      author: thouveno9
+      changes:
+        - createTable:
+            tableName: CronTask
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: nom
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expressionCron
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: dateCreation
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: loginCreation
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: dateModification
+                  type: TIMESTAMP
+              - column:
+                    name: loginModification
+                    type: VARCHAR(255)
+              - column:
+                    name: dateDernierExecution
+                    type: TIMESTAMP
+              - column:
+                    name: active
+                    type: BOOLEAN
+                    constraints:
+                      nullable: false
+                    defaultValueBoolean: true
+  - changeSet:
+        id: 3.1.0-add-cron-update-signature
+        author: thouveno9
+        changes:
+          - insert:
+              tableName: CronTask
+              columns:
+                - column:
+                    name: nom
+                    value: UpdateSignature
+                - column:
+                    name: expressionCron
+                    value: 0 0 * * * ?
+                - column:
+                    name: dateCreation
+                    valueDate: now()
+                - column:
+                    name: loginCreation
+                    value: liquibase
+  - changeSet:
+      id: 3.1.0-ajout-temAvenantSigne
+      author: thouveno9
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  name: temAvenantSigne
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+            tableName: Avenant

@@ -54,4 +54,12 @@ export class ConfigService {
     return this.configTheme;
   }
 
+  getConfigSignature(): Observable<any> {
+    return this.http.get(environment.apiUrl + "/config/signature");
+  }
+
+  updateConfigSignature(data: any): Observable<any> {
+    return this.http.post(environment.apiUrl + `/config/signature`, data);
+  }
+
 }

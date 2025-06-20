@@ -164,6 +164,9 @@ public class Avenant extends ObjetMetier implements Exportable {
     @Column
     private String loginEnvoiSignature;
 
+    @Column
+    private boolean temAvenantSigne;
+
     public List<PeriodeInterruptionAvenant> getPeriodeInterruptionAvenants() {
         if (periodeInterruptionAvenants != null) {
             // Ordonne par ordre de début asc

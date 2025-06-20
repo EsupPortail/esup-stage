@@ -420,6 +420,9 @@ public class Convention extends ObjetMetier implements Exportable {
     @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE}, fetch = FetchType.LAZY)
     private List<PeriodeStage> stagePeriods;
 
+    @Column
+    private boolean temConventionSignee;
+
     public void setNomenclature(ConventionNomenclature nomenclature) {
         this.nomenclature = nomenclature;
         this.nomenclature.setConvention(this);

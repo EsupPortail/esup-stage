@@ -4,4 +4,5 @@ public enum AppConfigCodeEnum {
     GENERAL,
     ALERTE,
     THEME,
+    SIGNATURE,
 }

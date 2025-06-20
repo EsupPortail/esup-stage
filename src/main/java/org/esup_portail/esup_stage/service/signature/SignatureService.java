@@ -1,5 +1,6 @@
 package org.esup_portail.esup_stage.service.signature;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
@@ -9,10 +10,10 @@ import org.esup_portail.esup_stage.enums.AppSignatureEnum;
 import org.esup_portail.esup_stage.enums.FolderEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
-import org.esup_portail.esup_stage.repository.AvenantJpaRepository;
-import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
-import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
+import org.esup_portail.esup_stage.repository.*;
+import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.ConventionService;
+import org.esup_portail.esup_stage.service.MailerService;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
 import org.esup_portail.esup_stage.service.ldap.LdapService;
 import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
@@ -22,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.ByteArrayOutputStream;
@@ -31,11 +33,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
+@Slf4j
 @Service
 public class SignatureService {
 
@@ -62,6 +62,12 @@ public class SignatureService {
     private SignatureClient signatureClient;
     @Autowired
     private LdapService ldapService;
+    @Autowired
+    private UtilisateurJpaRepository utilisateurJpaRepository;
+    @Autowired
+    private MailerService mailerService;
+    @Autowired
+    private AppConfigService appConfigService;
 
     public SignatureService(WebClient.Builder builder) {
         this.webClient = builder.build();
@@ -288,22 +294,7 @@ public class SignatureService {
         if (appSignature == AppSignatureEnum.EXTERNE) {
             throw new AppException(HttpStatus.NO_CONTENT, "La récupération de l'historique sera faite automatiquement");
         }
-
-        try {
-            List<Historique> historiques = new ArrayList<>();
-            switch (appSignature) {
-                case DOCAPOSTE:
-                    historiques = signatureClient.getHistorique(convention.getDocumentId(), convention.getCentreGestion().getSignataires());
-                    break;
-                case ESUPSIGNATURE:
-                    historiques = webhookService.getHistorique(convention.getDocumentId(), convention);
-                    break;
-            }
-            setSignatureHistorique(convention, historiques);
-        } catch (Exception e) {
-            logger.error(e);
-            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur de la récupération de l'historique");
-        }
+       update(convention);
     }
 
     public void updateHistorique(Avenant avenant) {
@@ -324,22 +315,7 @@ public class SignatureService {
         if (appSignature == AppSignatureEnum.EXTERNE) {
             throw new AppException(HttpStatus.NO_CONTENT, "La récupération de l'historique sera faite automatiquement");
         }
-
-        try {
-            List<Historique> historiques = new ArrayList<>();
-            switch (appSignature) {
-                case DOCAPOSTE:
-                    historiques = signatureClient.getHistorique(avenant.getDocumentId(), avenant.getConvention().getCentreGestion().getSignataires());
-                    break;
-                case ESUPSIGNATURE:
-                    historiques = webhookService.getHistorique(avenant.getDocumentId(), avenant.getConvention());
-                    break;
-            }
-            setSignatureHistorique(avenant, historiques);
-        } catch (Exception e) {
-            logger.error(e);
-            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur de la récupération de l'historique");
-        }
+       update(avenant);
     }
 
     public void setSignatureHistorique(Convention convention, List<Historique> historiques) {
@@ -472,6 +448,99 @@ public class SignatureService {
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de l'enregistrement du PDF");
+        }
+    }
+
+    /**
+     * Méthode pour mettre à jour automatiquement les conventions non signées.
+     * Cette méthode est appelée par un scheduler pour mettre à jour les conventions non signées
+     */
+
+    @Transactional
+    public void updateAuto(){
+        log.info("Début de updateAuto()");
+        List<Convention> conventionsNonSignee = conventionJpaRepository.findConventionNonSignees();
+        log.info("Conventions à traiter trouvées : {}",
+                conventionsNonSignee != null ? conventionsNonSignee.size() : "null");
+
+        if (conventionsNonSignee != null && !conventionsNonSignee.isEmpty()) {
+            int idx = 0;
+            for (Convention convention : conventionsNonSignee) {
+                try {
+                    update(convention);
+
+                    if (convention.getDateSignatureEtudiant() != null
+                            && convention.getDateSignatureTuteur() != null
+                            && convention.getDateSignatureEnseignant() != null
+                            && convention.getDateSignatureSignataire() != null
+                            && convention.getDateSignatureViseur() != null) {
+                        // set le champ temConventionSignee à true si la convention est totalement signée
+                        convention.setTemConventionSignee(true);
+                        conventionJpaRepository.save(convention);
+                        log.info("Convention signée complètement. ID = {}", convention.getId());
+                        // on envoi le mail aux gestionnaires
+                        List<PersonnelCentreGestion> personnels = convention.getCentreGestion().getPersonnels();
+                        assert personnels != null;
+                        for (PersonnelCentreGestion personnel : personnels) {
+                            if (mailerService.isAlerteActif(personnel, "CONVENTION_SIGNEE")) {
+                                Utilisateur utilisateur = convention.getLoginEnvoiSignature() != null? utilisateurJpaRepository.findByLogin(convention.getLoginEnvoiSignature()): utilisateurJpaRepository.findOneByLogin(convention.getLoginValidation()) ;
+                                mailerService.sendAlerteValidation(personnel.getMail(), convention, null, utilisateur, "CONVENTION_SIGNEE");
+                            }
+                        }
+                    }
+
+                    //Suppression de la convention pour esup-signature si elle est signée et que le paramètre de suppression automatique est activé
+                    if (signatureProperties.getAppSignatureType() == AppSignatureEnum.ESUPSIGNATURE) {
+                        if( convention.isTemConventionSignee() && appConfigService.getConfigSignature().isSupprimerConventionUneFoisSigneEsupSignature()){
+                            webClient.delete()
+                                    .uri(signatureProperties.getEsupsignature().getUri() + "/signrequests/soft/" + convention.getDocumentId())
+                                    .retrieve()
+                                    .bodyToMono(String.class)
+                                    .block();
+                        }
+                    }
+
+                } catch (Exception e) {
+                    log.error("Erreur lors du traitement de la convention id={} : {}",
+                            convention != null ? convention.getId() : "null", e.getMessage(), e);
+                }
+                idx++;
+            }
+        }
+        log.info("Fin de updateAuto()");
+    }
+
+    //TODO : mettre a jour le update pour aller chercher les données (pour toutes les app de signature)
+    public void update(Convention convention){
+        AppSignatureEnum appSignature = signatureProperties.getAppSignatureType();
+        try {
+            List<Historique> historiques = new ArrayList<>();
+            historiques = switch (appSignature) {
+                case DOCAPOSTE -> signatureClient.getHistorique(convention.getDocumentId(), convention.getCentreGestion().getSignataires());
+                case ESUPSIGNATURE -> webhookService.getHistoriqueStatus(convention.getDocumentId(), convention);
+                default -> historiques;
+            };
+            setSignatureHistorique(convention, historiques);
+        } catch (Exception e) {
+            logger.error(e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur de la récupération de l'historique");
+        }
+    }
+
+    //TODO : mettre a jour le update pour aller chercher les données (pour toutes les app de signature)
+    public void update(Avenant avenant){
+        AppSignatureEnum appSignature = signatureProperties.getAppSignatureType();
+        try {
+            List<Historique> historiques = new ArrayList<>();
+            historiques = switch (appSignature) {
+                case DOCAPOSTE -> signatureClient.getHistorique(avenant.getDocumentId(), avenant.getConvention().getCentreGestion().getSignataires());
+                case ESUPSIGNATURE -> webhookService.getHistorique(avenant.getDocumentId(), avenant.getConvention());
+                default -> historiques;
+            };
+            setSignatureHistorique(avenant, historiques);
+        } catch (Exception e) {
+            logger.error(e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur de la récupération de l'historique");
         }
     }
 }

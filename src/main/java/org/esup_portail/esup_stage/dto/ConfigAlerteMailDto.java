@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @Data
 public class ConfigAlerteMailDto {
 
-    private Alerte alerteEtudiant = new Alerte(true, false, true, true, true, false, true, true, true, true, true, true, true);
-    private Alerte alerteGestionnaire = new Alerte(true, true, false, false, true, true, false, false, true, false, false, false, true);
-    private Alerte alerteRespGestionnaire = new Alerte(false, false, false, false, false, false, false, false, false, false, false, false, false);
-    private Alerte alerteEnseignant = new Alerte(false, false, false, false, false, false, false, false, true, false, false, false, true);
+    private Alerte alerteEtudiant = new Alerte(true, false, true, true, true, false, true, true, true, true, true, true, false,true);
+    private Alerte alerteGestionnaire = new Alerte(true, true, false, false, true, true, false, false, true, false, false, false, true,true);
+    private Alerte alerteRespGestionnaire = new Alerte(false, false, false, false, false, false, false, false, false, false, false, false,false,false);
+    private Alerte alerteEnseignant = new Alerte(false, false, false, false, false, false, false, false, true, false, false, false,false,true);
 
     @Data
     @AllArgsConstructor
@@ -30,6 +30,7 @@ public class ConfigAlerteMailDto {
         private boolean validationAdministrativeConvention;
         private boolean verificationAdministrativeConvention;
         private boolean validationAvenant;
+        private boolean conventionSignee;
         private boolean changementEnseignant;
 
     }
