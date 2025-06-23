@@ -35,6 +35,13 @@ public class SireneQueryBuilder {
             if (raw.isEmpty()) continue;
             String field = mapToApiField(key);
 
+            if ("raisonSociale".equals(key)) {
+                String cleaned = raw.replaceAll("\"", "").trim();
+                String clause = field + ":\"" + cleaned + "*\"";
+                clauses.add("(" + clause + ")");
+                continue;
+            }
+
             if ("statutJuridique.id".equals(key)) {
                 JSONArray arr = cond.getJSONArray("value");
                 List<Integer> ids = new ArrayList<>();
