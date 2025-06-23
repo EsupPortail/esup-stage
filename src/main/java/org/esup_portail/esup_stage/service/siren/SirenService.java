@@ -73,15 +73,9 @@ public class SirenService {
         String baseUrl = sirenProperties.getUrl() + "/siret";
         String lucene = SireneQueryBuilder.buildLuceneQuery(filtersJson);
 
-        UriComponents components = UriComponentsBuilder
-                .fromHttpUrl(baseUrl)
-                .queryParam("q", lucene)
-                .queryParam("nombre",  perpage)
-                .queryParam("page",  page)
-                .build()
-                .encode(StandardCharsets.UTF_8);
+        String url = baseUrl + "?q=" + lucene + "&nombre=" + perpage + "&page=" + page;
 
-        String url = components.toUriString().replaceAll("(?<=AND)%20|%20(?=AND)", " ");
+        System.out.println("url = " + url);
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-INSEE-Api-Key-Integration", sirenProperties.getToken());

@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface StatutJuridiqueJpaRepository extends JpaRepository<StatutJuridique, Integer> {
 
@@ -16,4 +18,8 @@ public interface StatutJuridiqueJpaRepository extends JpaRepository<StatutJuridi
 
     @Query("SELECT s FROM StatutJuridique s WHERE s.code = :code")
     StatutJuridique findByCode(@Param("code")String code);
+
+    @Query("SELECT s.code FROM StatutJuridique s WHERE s.id IN :ids")
+    List<String> findCodeByIdIn(@Param("ids") List<Integer> ids);
+
 }

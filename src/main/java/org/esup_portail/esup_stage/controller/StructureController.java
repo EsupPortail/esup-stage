@@ -97,11 +97,10 @@ public class StructureController {
         }
         boolean estEtudiant = UtilisateurHelper.isRole(Objects.requireNonNull(ServiceContext.getUtilisateur()), Role.ETU);
         boolean creationEtudiantInterdite = !appConfigService.getConfigGenerale().isAutoriserEtudiantACreerEntreprise();
-        if (
-                        sirenProperties.isApiSireneActive() &&
-                        structures.size() < sirenProperties.getNombreMinimumResultats() &&
-                        (creationEtudiantInterdite || !estEtudiant) &&
-                        filterMap.size() > 1
+        if (sirenProperties.isApiSireneActive()
+                && structures.size() < sirenProperties.getNombreMinimumResultats()
+                && (creationEtudiantInterdite || !estEtudiant)
+                && (filterMap.size() >= 2 || filterMap.size() == 1 && filterMap.containsKey("numeroSiret"))
         ) {
             List<String> existingSirets = new ArrayList<>();
             structures.forEach(s -> existingSirets.add(s.getNumeroSiret()));
