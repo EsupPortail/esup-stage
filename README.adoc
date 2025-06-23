@@ -1,10 +1,9 @@
+
 = ESUP Stage
 
 ESUP STAGE est la refonte de l'application PStage. L'application a été complètement réécrite pour reprendre et améliorer les grandes et fonctionnalités : produire une convention de stage et ses avenants dans le cadre d'un processus de validation adapté.
 
 == https://esupportail.github.io/esup-stage/[→ Documentation technique Esup-Stage]
-
-Documentation technique link:src/docs/modules/ROOT/pages/index.adoc[(source)]
 
 // ifndef::env-github[]
 // include::src/docs/modules/ROOT/pages/ESUP-STAGE.adoc[tag=compilation]
@@ -173,11 +172,16 @@ Après la compilation, le chemin complet du fichier de déploiement est le suiva
 
 == Exécution de l'application avec __Docker__
 
+
 * Créer un fichier `.env` basé sur le fichier `example.env`
 ** Adapter les paramètres, notamment `DATA_PATH` qui doit correspondre au volume de stockage des fichiers
 * Lancer la commande `docker-compose up` depuis la racine du projet
 ** docker-compose utilisera les fichiers de configuration `.env` et `application.properties` présent à la racine du projet
 ** L'exécution récupère une image docker publique de l'application disponible sur `https://harbor.esup-portail.org/`
+
+TIP: Pour utiliser un tag particulier, consultez le dernier tag à utiliser https://github.com/EsupPortail/esup-stage/actions/workflows/docker-image.yml[ici]
+
+
 * L'application est alors accessible sur : `http://localhost:8080/`
 
 == Exécution de l'application avec __Tomcat__
@@ -275,5 +279,3 @@ TIP: Le fichier application.properties peut être positionné à la racine du to
 * Se rendre sur l'application à l'adresse `http://localhost:8080/` pour se connecter une première fois
 * Puis se rendre sur `http://localhost:4200`
 * Pour se déconnecter, aller sur `http://localhost:4200/logout`
-
-

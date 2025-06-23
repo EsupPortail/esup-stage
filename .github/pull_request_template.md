@@ -24,7 +24,7 @@ Veuillez également énumérer tous les détails pertinents de votre configurati
 - [ ] Test A: Étant donné <!--situation--> Quand <!--action--> Alors <!--attendu-->
 - [ ] Test B: Étant donné <!--situation--> Quand <!--action--> Alors <!--attendu-->
 
-<!-- Mentionnez si il y a des tests automatisés pour ce changement 🙏 -->
+<!-- Mentionnez s'il y a des tests automatisés pour ce changement 🙏 -->
 <!-- Joindre des captures d'écran (le cas échéant) -->
 
 ## Type
@@ -33,12 +33,12 @@ Veuillez également énumérer tous les détails pertinents de votre configurati
 - [ ] Correction de bogue (modification non cassante qui résout un problème).
 - [ ] Nouvelle fonctionnalité (changement non cassant qui ajoute une fonctionnalité).
 - [ ] Changement cassant (correction qui entraînerait la/une fonctionnalité existante à ne pas fonctionner comme précédemment).
-- [ ] Changement nécessitant une mise à jour de la documentation utilisteur.
+- [ ] Changement nécessitant une mise à jour de la documentation utilisateur.
 
 ## Definition du fini
 
 - [ ] Les cas d'acceptance ci-dessus ont été vérifiés.
 - [ ] Revue par au moins un⋅e relecteur⋅ice autorisé⋅e.
-- [ ] Documentation(s) mise(s) à jour (utilisteur, technique, commentaires de code compris).
-- [ ] Si des changements _cassants_ sont introduits, ils sont dûement décrits
+- [ ] Documentation(s) mise(s) à jour (utilisateur, technique, commentaires de code compris).
+- [ ] Si des changements _cassants_ sont introduits, ils sont dûment décrits
 et les étapes de montée de version décrites (éventuellement scriptés).

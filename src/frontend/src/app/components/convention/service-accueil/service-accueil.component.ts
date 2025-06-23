@@ -104,6 +104,12 @@ export class ServiceAccueilComponent implements OnInit,OnChanges {
     }
   }
 
+  refreshServices(): void {
+    this.serviceService.getByStructure(this.etab.id, this.centreGestion.id).subscribe((response: any) => {
+      this.services = response.sort((a: any, b: any) => a.nom.localeCompare(b.nom));
+    });
+  }
+
   canCreate(): boolean {
     let hasRight = this.authService.checkRights({fonction: AppFonction.SERVICE_CONTACT_ACC, droits: [Droit.CREATION]});
     if (this.authService.isEtudiant() && !this.autorisationModification) {

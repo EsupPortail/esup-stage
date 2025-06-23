@@ -260,8 +260,6 @@ export class ParamCentreComponent implements OnInit {
         this.form.get(validation + 'Ordre')?.setValue(++lastOrdre);
       }
     }
-
-    this.update.emit(this.form.getRawValue());
   }
 
   addValidation(validation: string): void {

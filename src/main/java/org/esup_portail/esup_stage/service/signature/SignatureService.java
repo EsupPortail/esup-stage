@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.config.properties.SignatureProperties;
+import org.esup_portail.esup_stage.docaposte.DocaposteClient;
 import org.esup_portail.esup_stage.dto.*;
 import org.esup_portail.esup_stage.enums.AppSignatureEnum;
 import org.esup_portail.esup_stage.enums.FolderEnum;
@@ -68,6 +69,8 @@ public class SignatureService {
     private MailerService mailerService;
     @Autowired
     private AppConfigService appConfigService;
+    @Autowired(required = false)
+    private DocaposteClient docaposteClient;
 
     public SignatureService(WebClient.Builder builder) {
         this.webClient = builder.build();
@@ -207,7 +210,7 @@ public class SignatureService {
             try{
                 switch (appSignature) {
                     case DOCAPOSTE:
-                        signatureClient.upload(convention, avenant);
+                        docaposteClient.upload(convention, avenant);
                         break;
                     case ESUPSIGNATURE:
                     case EXTERNE:
@@ -294,7 +297,22 @@ public class SignatureService {
         if (appSignature == AppSignatureEnum.EXTERNE) {
             throw new AppException(HttpStatus.NO_CONTENT, "La récupération de l'historique sera faite automatiquement");
         }
-       update(convention);
+
+        try {
+            List<Historique> historiques = new ArrayList<>();
+            switch (appSignature) {
+                case DOCAPOSTE:
+                    historiques = docaposteClient.getHistorique(convention.getDocumentId(), convention.getCentreGestion().getSignataires());
+                    break;
+                case ESUPSIGNATURE:
+                    historiques = webhookService.getHistorique(convention.getDocumentId(), convention);
+                    break;
+            }
+            setSignatureHistorique(convention, historiques);
+        } catch (Exception e) {
+            logger.error(e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur de la récupération de l'historique");
+        }
     }
 
     public void updateHistorique(Avenant avenant) {
@@ -315,7 +333,22 @@ public class SignatureService {
         if (appSignature == AppSignatureEnum.EXTERNE) {
             throw new AppException(HttpStatus.NO_CONTENT, "La récupération de l'historique sera faite automatiquement");
         }
-       update(avenant);
+
+        try {
+            List<Historique> historiques = new ArrayList<>();
+            switch (appSignature) {
+                case DOCAPOSTE:
+                    historiques = docaposteClient.getHistorique(avenant.getDocumentId(), avenant.getConvention().getCentreGestion().getSignataires());
+                    break;
+                case ESUPSIGNATURE:
+                    historiques = webhookService.getHistorique(avenant.getDocumentId(), avenant.getConvention());
+                    break;
+            }
+            setSignatureHistorique(avenant, historiques);
+        } catch (Exception e) {
+            logger.error(e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur de la récupération de l'historique");
+        }
     }
 
     public void setSignatureHistorique(Convention convention, List<Historique> historiques) {
@@ -430,7 +463,7 @@ public class SignatureService {
         InputStream inputStream = null;
         switch (signatureProperties.getAppSignatureType()) {
             case DOCAPOSTE:
-                inputStream = signatureClient.download(documentId);
+                inputStream = docaposteClient.download(documentId);
                 break;
             case ESUPSIGNATURE:
                 inputStream = webhookService.download(documentId);

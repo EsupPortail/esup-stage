@@ -181,7 +181,7 @@ export class GestionEtabAccueilComponent implements OnInit {
   refreshServices(): void{
     if (this.data){
       this.serviceService.getByStructure(this.data.id, -1).subscribe((response: any) => {
-        this.services = response;
+        this.services = response.sort((a: any, b: any) => a.nom.localeCompare(b.nom));
       });
     }
   }
@@ -209,7 +209,7 @@ export class GestionEtabAccueilComponent implements OnInit {
   refreshContacts(): void{
     if (this.service){
       this.contactService.getByService(this.service.id, -1).subscribe((response: any) => {
-        this.contacts = response;
+        this.contacts = response.sort((a: any, b: any) => a.nom.localeCompare(b.nom));
       });
     }
   }

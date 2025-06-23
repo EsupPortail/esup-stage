@@ -381,6 +381,23 @@ public class CentreGestionController {
         critereGestionJpaRepository.flush();
     }
 
+    @DeleteMapping("/delete-etapes-centre/{id}")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.SUPPRESSION})
+    public void deleteEtapesCentre(@PathVariable("id") int id) {
+        CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
+        if (centreGestion == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion non trouvé");
+        }
+
+        List<CritereGestion> critereGestions = critereGestionJpaRepository.findEtapesByCentreId(id);
+        for (CritereGestion critereGestion : critereGestions) {
+            if (conventionJpaRepository.countConventionRattacheEtape(id, critereGestion.getId().getCode(), critereGestion.getId().getCodeVersionEtape()) > 0) {
+                throw new AppException(HttpStatus.FORBIDDEN, "Une convention est déjà rattachée à cette étape");
+            }
+            critereGestionJpaRepository.delete(critereGestion);
+        }
+    }
+
     @GetMapping("/confidentialite")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public List<Confidentialite> getConfidentialites() {
