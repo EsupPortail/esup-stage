@@ -27,7 +27,7 @@
         - name: Setup branches for Antora
           run: |
             ls
-            git config --global user.email "lucas.thouvenot@univ-lorraine.fr"
+            git config --global user.email "githubaction@esup-portail.org"
             git config --global user.name "GitHub Actions"
             git fetch origin dev
             git checkout dev
