@@ -78,6 +78,7 @@ export class ServiceAccueilComponent implements OnInit,OnChanges {
       const filter = this.filters.find((f: any) => f.id === 'pays.id');
       if (filter) {
         filter.options = response.data;
+        this.countries = response.data;
       }
     });
     this.communeService.getPaginated(1, 0, 'lib', 'asc', "").subscribe((response: any) => {

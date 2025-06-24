@@ -939,8 +939,8 @@ public class ConventionController {
     //********************************************************************************
 
     @PutMapping("/{id}/change-enseignant-referent")
-    @Secure
-    public Convention changeEnseignantReferent(@PathVariable int id, @RequestBody Map<String, Integer> body) {
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.MODIFICATION})
+    public Convention changeEnseignantReferent(@PathVariable("id") int id, @RequestBody Map<String, Integer> body) {
         Enseignant enseignant = enseignantJpaRepository.findById(body.get("idEnseignant")).orElse(null);
         if (enseignant == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Enseignant non trouvé");
