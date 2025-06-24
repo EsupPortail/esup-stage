@@ -25,6 +25,7 @@ import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.Structure.StructureService;
 import org.esup_portail.esup_stage.service.siren.SirenService;
 import org.esup_portail.esup_stage.service.siren.model.ListStructureSirenDTO;
+import org.esup_portail.esup_stage.service.siren.utils.TaskQueue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -36,6 +37,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 @ApiController
 @RequestMapping("/structures")
@@ -82,6 +86,9 @@ public class StructureController {
     @Autowired
     private SirenProperties sirenProperties;
 
+    private static final Set<String> enCours = ConcurrentHashMap.newKeySet();
+
+
     @JsonView(Views.List.class)
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
@@ -102,33 +109,74 @@ public class StructureController {
                 && (creationEtudiantInterdite || !estEtudiant)
                 && (filterMap.size() >= 2 || filterMap.size() == 1 && filterMap.containsKey("numeroSiret"))
         ) {
-            List<String> existingSirets = new ArrayList<>();
-            structures.forEach(s -> existingSirets.add(s.getNumeroSiret()));
+            List<String> existingSirets = structures.stream()
+                    .map(Structure::getNumeroSiret)
+                    .filter(Objects::nonNull)
+                    .toList();
+
+
             if (page == 1 && structures.size() < sirenProperties.getNombreMinimumResultats()) {
                 int manque = perPage - structures.size();
-                ListStructureSirenDTO result = sirenService.getEtablissementFiltered(1, manque, filters);
+
                 if (manque > 0) {
-                    List<Structure> additional = result
-                            .getStructures()
-                            .stream()
-                            .filter(s -> s.getNumeroSiret() == null
-                                    || !existingSirets.contains(s.getNumeroSiret()))
-                            .toList();
-                    structures.addAll(additional);
-                    paginatedResponse.setTotal(paginatedResponse.getTotal()+result.getTotal());
+                    CompletableFuture<ListStructureSirenDTO> future = new CompletableFuture<>();
+
+                    String cacheKey = page + "|" + filters;
+                    if (enCours.add(cacheKey)) {
+                        TaskQueue.submit(() -> {
+                            try {
+                                ListStructureSirenDTO result = sirenService.getEtablissementFiltered(1, manque, filters);
+                                future.complete(result);
+                            } catch (Exception e) {
+                                future.completeExceptionally(e);
+                            } finally {
+                                enCours.remove(cacheKey);
+                            }
+                        });
+                    }
+
+                    try {
+                        ListStructureSirenDTO result = future.get(60, TimeUnit.SECONDS); // attend 1min
+                        List<Structure> additional = result.getStructures().stream()
+                                .filter(s -> s.getNumeroSiret() == null || !existingSirets.contains(s.getNumeroSiret()))
+                                .toList();
+
+                        structures.addAll(additional);
+                        paginatedResponse.setTotal(paginatedResponse.getTotal() + result.getTotal());
+                    } catch (Exception e) {
+                        logger.info("L'API Sirene à mis trop de temps à répondre, veuillez réessayer plus tard.");
+                    }
                 }
             }
             else if (page > 1) {
-                ListStructureSirenDTO result = sirenService.getEtablissementFiltered(page, perPage, filters);
-                List<Structure> apiPage = result
-                        .getStructures()
-                        .stream()
-                        .filter(s -> s.getNumeroSiret() == null
-                                || !(existingSirets.contains(s.getNumeroSiret())))
-                        .toList();
-                structures.clear();
-                structures.addAll(apiPage);
-                paginatedResponse.setTotal(paginatedResponse.getTotal()+result.getTotal());
+                CompletableFuture<ListStructureSirenDTO> future = new CompletableFuture<>();
+
+                String cacheKey = page + "|" + filters;
+                if (enCours.add(cacheKey)) {
+                    TaskQueue.submit(() -> {
+                        try {
+                            ListStructureSirenDTO result = sirenService.getEtablissementFiltered(page, perPage, filters);
+                            future.complete(result);
+                        } catch (Exception e) {
+                            future.completeExceptionally(e);
+                        } finally {
+                            enCours.remove(cacheKey);
+                        }
+                    });
+                }
+
+                try {
+                    ListStructureSirenDTO result = future.get(60, TimeUnit.SECONDS);
+                    List<Structure> apiPage = result.getStructures().stream()
+                            .filter(s -> s.getNumeroSiret() == null || !existingSirets.contains(s.getNumeroSiret()))
+                            .toList();
+
+                    structures.clear();
+                    structures.addAll(apiPage);
+                    paginatedResponse.setTotal(paginatedResponse.getTotal() + result.getTotal());
+                } catch (Exception e) {
+                    logger.info("L'API Sirene à mis trop de temps à répondre, veuillez réessayer plus tard.");
+                }
             }
         }
         paginatedResponse.setData(structures);

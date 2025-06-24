@@ -1,5 +1,6 @@
 package org.esup_portail.esup_stage;
 
+import jakarta.annotation.PostConstruct;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.config.properties.signature.WebhookProperties;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -7,6 +8,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.esup_portail.esup_stage.service.siren.utils.ApiSireneWorker;
 
 /**
  * Point d'entrée de l'application Spring Boot.
@@ -38,6 +40,13 @@ public class Application extends SpringBootServletInitializer {
     @Override
     protected SpringApplicationBuilder configure(final SpringApplicationBuilder builder) {
         return build(builder).sources(Application.class);
+    }
+
+    @PostConstruct
+    public void startWorker() {
+        Thread worker = new Thread(new ApiSireneWorker());
+        worker.setDaemon(true); // termine avec l'appli
+        worker.start();
     }
 
 }

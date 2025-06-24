@@ -75,8 +75,6 @@ public class SirenService {
 
         String url = baseUrl + "?q=" + lucene + "&nombre=" + perpage + "&page=" + page;
 
-        System.out.println("url = " + url);
-
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-INSEE-Api-Key-Integration", sirenProperties.getToken());
         headers.set("Accept", "application/json");
