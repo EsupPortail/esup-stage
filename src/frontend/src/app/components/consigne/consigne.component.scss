@@ -175,3 +175,9 @@ body, html {
   color: #000;
   box-shadow: 5px 5px 0 #b3b3b3;
 }
+
+.buttons{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}

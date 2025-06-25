@@ -33,4 +33,8 @@ export class ConsigneService {
   getDocument(idConsigne: number, idDoc: number): Observable<any> {
     return this.http.get(`${environment.apiUrl}/consignes/${idConsigne}/documents/${idDoc}/download`, { responseType: 'blob'});
   }
+
+  deleteConsigne(id: number): Observable<any> {
+    return this.http.delete(`${environment.apiUrl}/consignes/${id}`);
+  }
 }

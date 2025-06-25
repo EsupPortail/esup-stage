@@ -1,5 +1,6 @@
 package org.esup_portail.esup_stage.controller;
 
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
@@ -31,6 +32,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
 
 @ApiController
 @RequestMapping("/consignes")
@@ -157,6 +160,36 @@ public class ConsigneController {
             throw new AppException(HttpStatus.NOT_FOUND, "Fichier non trouvé");
         }
     }
+
+    @DeleteMapping("/{id}")
+    @Secure
+    @Transactional
+    public void deleteConsigne(@PathVariable("id") int id){
+        Consigne consigne = consigneJpaRepository.findById(id);
+        if (consigne == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Consigne non trouvée");
+        }
+
+        List<String> filePaths = new ArrayList<>();
+        for (ConsigneDocument consigneDocument : consigne.getDocuments()) {
+            filePaths.add(getFilePath(getNomDocument(consigneDocument.getId(), consigneDocument.getNom())));
+        }
+
+        consigneJpaRepository.delete(consigne);
+
+        for (String filePath : filePaths) {
+            try {
+                Path path = Paths.get(filePath);
+                if (Files.exists(path)) {
+                    Files.delete(path);
+                }
+            } catch (IOException e) {
+                logger.error("Erreur lors de la suppression du fichier", e);
+                throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de la suppression du fichier");
+            }
+        }
+    }
+
 
     private String getFilePath(String filename) {
         return appliProperties.getDataDir() + FolderEnum.CENTRE_GESTION_CONSIGNE_DOCS + "/" + filename;
