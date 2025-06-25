@@ -4,6 +4,7 @@
       branches:
         - main
         - dev
+        - dev-3.1.0
     # Allows you to run this workflow manually from the Actions tab
     workflow_dispatch:
   concurrency:
@@ -30,8 +31,10 @@
             git config --global user.email "lucas.thouvenot@univ-lorraine.fr"
             git config --global user.name "GitHub Actions"
             git fetch origin dev
+            git fetch origin dev-3.1.0
             git checkout dev
             git checkout main
+            git checkout dev-3.1.0
           working-directory: esup-stage
 
         - name: duplicate readme (main)
