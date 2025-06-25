@@ -9,9 +9,11 @@ content:
     branches:
     - main
     - dev
+    - dev-3.1.0
     version:
       main: main
       dev: dev
+      dev-3.1.0: dev-3.1.0
 ui:
   bundle:
     url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable

@@ -262,7 +262,7 @@ public class ImpressionService {
         }
 
         String htmlTexte = getDefaultText("/templates/template_style.html");
-        htmlTexte = htmlTexte.replaceAll("__project_fonts_dir__", this.getClass().getResource("/static/fonts").getPath());
+        htmlTexte = htmlTexte.replaceAll("__project_fonts_dir__", this.getClass().getResource("/static/fonts/").getPath());
 
         if (isRecap) {
             htmlTexte += getDefaultText("/templates/template_recapitulatif.html");
