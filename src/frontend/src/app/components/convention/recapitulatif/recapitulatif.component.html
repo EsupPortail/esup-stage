@@ -2,12 +2,12 @@
   <mat-card-content>
     <div class="col-sm-12 text-center">
       <mat-card-actions>
-        <button mat-button mat-flat-button color="primary" (click)="printConvention(false)"
-                *ngIf="canPrint">
+        <button mat-button mat-flat-button color="primary" (click)="printConvention(false)" *ngIf="canPrint">
           Imprimer la convention
         </button>
-        <button mat-button mat-flat-button color="primary" (click)="printConvention(true)"
-        *ngIf="canPrint">Imprimer le récapitulatif</button>
+        <button mat-button mat-flat-button color="primary" (click)="printConvention(true)">
+          Imprimer le récapitulatif
+        </button>
       </mat-card-actions>
     </div>
     <div class="mt-3 mb-3">
@@ -103,13 +103,25 @@
         </div>
         <div class="row" *ngIf="tmpConvention.interruptionStage">
           <div class="col-sm-3 font-weight-bold">Périodes d'interruption du stage</div>
-          <div class="col-sm-9"><span *ngFor="let interruption of interruptionsStage">
-            {{(interruptionsStage.length>1?'- Du ':'Du ') + (interruption.dateDebutInterruption|date:'shortDate') + ' au '+ (interruption.dateFinInterruption|date:'shortDate')}}<br></span>
+          <div class="col-sm-9">
+            <div *ngFor="let interruption of interruptionsStage" class="mb-2 pl-2 border-left border-danger">
+              {{'Du ' + (interruption.dateDebutInterruption|date:'shortDate') + ' au '+ (interruption.dateFinInterruption|date:'shortDate')}}
+            </div>
+          </div>
+        </div>
+        <div class="row" *ngIf="tmpConvention.horairesReguliers || tmpConvention.horairesReguliers == null">
+          <div class="col-sm-3 font-weight-bold">Nombre d'heures hebdomadaires</div>
+          <div class="col-sm-9">{{tmpConvention.nbHeuresHebdo}}</div>
+        </div>
+        <div class="row" *ngIf="tmpConvention.horairesReguliers == false">
+          <div class="col-sm-3 font-weight-bold">Périodes de stage</div>
+          <div class="col-sm-9">
+            <div *ngFor="let periodeStage of periodesStage" class="mb-2 pl-2 border-left border-success">
+              {{'Du ' + (periodeStage.dateDebut|date:'shortDate') + ' au '+ (periodeStage.dateFin|date:'shortDate')}}
+            </div>
           </div>
         </div>
         <div class="row">
-          <div class="col-sm-3 font-weight-bold">Nombre d'heures hebdomadaires</div>
-          <div class="col-sm-9">{{tmpConvention.nbHeuresHebdo}}</div>
           <div class="col-sm-3 font-weight-bold">Durée effective du stage</div>
           <div class="col-sm-9">{{tmpConvention.dureeExceptionnelle}} heures</div>
           <div class="col-sm-3 font-weight-bold">Durée effective du stage en mois/jours/année</div>
@@ -215,10 +227,7 @@
               Imprimer la convention
             </button>
 
-            <button mat-button mat-flat-button color="primary"
-                    (click)="printConvention(true)"
-                    [disabled]="!canPrint"
-                    [matTooltip]="!canPrint ? printDisabledReason : ''">
+            <button mat-button mat-flat-button color="primary" (click)="printConvention(true)">
               Imprimer le récapitulatif
             </button>
           </ng-container>

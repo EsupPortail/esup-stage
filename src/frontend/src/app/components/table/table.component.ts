@@ -23,7 +23,8 @@ import {MatAutocompleteSelectedEvent} from "@angular/material/autocomplete";
 import {AuthService} from "../../services/auth.service";
 import * as FileSaver from "file-saver";
 import {TechnicalService} from "../../services/technical.service";
-import {update} from "lodash";
+import { MatDialog } from '@angular/material/dialog';
+import { ColumnSelectorComponent } from './column-selector/column-selector.component';
 
 @Component({
   selector: 'app-table',
@@ -42,15 +43,15 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   @Input() hideDeleteFilters!: boolean;
   @Input() selectedRow: any;
   @Input() noResultText: string = 'Aucun élément trouvé';
-  @Input() customTemplateRef: TemplateRef<any>|undefined;
+  @Input() customTemplateRef: TemplateRef<any> | undefined;
   @Input() setAlerte: boolean = false;
-  @Input() exportColumns: any;
+  @Input() exportColumns: any = null;
   @Input() templateMobile?: TemplateRef<any>;
   @Input() loadWithoutFilters: boolean = true;
 
   @Output() onUpdated = new EventEmitter<any>();
 
-  @ViewChild(MatTable, { static: true }) table: MatTable<any> | undefined;
+  @ViewChild(MatTable, {static: true}) table: MatTable<any> | undefined;
   @ViewChild("paginatorTop") paginatorTop!: MatPaginator;
   @ViewChild("paginatorBottom") paginatorBottom!: MatPaginator;
   @ContentChildren(MatColumnDef) columnDefs: QueryList<MatColumnDef> | undefined;
@@ -70,6 +71,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   constructor(
     private authService: AuthService,
     private technicalService: TechnicalService,
+    private dialog: MatDialog,
   ) {
     this.technicalService.isMobile.subscribe((value: boolean) => {
       this.isMobile = value;
@@ -123,7 +125,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
       this.pageSize = 0;
     }
     this.initFilters(false);
-    if(this.loadWithoutFilters){
+    if (this.loadWithoutFilters) {
       this.update();
     }
   }
@@ -138,13 +140,10 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
     }
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-  }
+  ngOnChanges(changes: SimpleChanges): void {}
 
   getPaginated(): void {
-
     this.service.getPaginated(this.page, this.pageSize, this.sortColumn, this.sortOrder, JSON.stringify(this.filterValuesToSend)).subscribe((results: any) => {
-
       this.total = results.total;
       this.data = results.data;
       if (this.setAlerte) {
@@ -157,12 +156,10 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
           }
         });
       }
-
       this.backConfig = undefined;
       this.onUpdated.emit(results);
     });
   }
-
 
   update(): void {
     this.filterChanged.next(this.filterValues);
@@ -225,25 +222,17 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
       console.warn(`Filter ${id} not initialized`);
       return;
     }
-
-    // Pour les filtres de type liste
     if (this.filterValues[id].type === 'list') {
-      // Si la valeur est null ou undefined, initialiser avec un tableau vide
       if (value === null || value === undefined) {
         this.filterValues[id].value = [];
-      }
-      // Si c'est déjà un tableau, le garder tel quel
-      else if (Array.isArray(value)) {
+      } else if (Array.isArray(value)) {
         this.filterValues[id].value = value;
-      }
-      // Si c'est une valeur unique, la mettre dans un tableau
-      else {
+      } else {
         this.filterValues[id].value = [value];
       }
     } else {
       this.filterValues[id].value = value;
     }
-
     this.filterChanged.next(this.filterValues);
   }
 
@@ -252,9 +241,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   }
 
   setFilterOption(id: string, options: any[]): void {
-    // Recherche du filtre par ID
     const filter = this.filters.find((f: any) => f.id === id);
-
     if (filter) {
       if (Array.isArray(options)) {
         filter.options = options;
@@ -267,7 +254,6 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
     }
   }
 
-
   searchAutocomplete(filter: any, value: string): void {
     this.autocmpleteChanged[filter.id].next({filter, value});
   }
@@ -279,7 +265,9 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   }
 
   removeAutocomplete(filter: any, value: any): void {
-    const index = this.filterValues[filter.id].value.findIndex((v: any) => { return v[filter.keyId] === value[filter.keyId]; });
+    const index = this.filterValues[filter.id].value.findIndex((v: any) => {
+      return v[filter.keyId] === value[filter.keyId];
+    });
     if (index > -1) {
       this.filterValues[filter.id].value.splice(index, 1);
       this.filterChanged.next(this.filterValues);
@@ -290,79 +278,21 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
     const f: any = {};
     for (const key of Object.keys(this.filterValues)) {
       const filterValue = this.filterValues[key];
-
       if (
         filterValue?.value !== undefined &&
         filterValue.value !== '' &&
         filterValue.value !== null &&
         (!Array.isArray(filterValue.value) || filterValue.value.length > 0)
       ) {
-        f[key] = { ...filterValue };
-
-        // Traitement spécifique pour les listes
+        f[key] = {...filterValue};
         if (f[key].type === 'list') {
-          if (key === 'ufr.id') {
-            if (Array.isArray(f[key].value)) {
-              f[key].value = f[key].value
-                .filter((v: any) => v !== undefined)
-                .map((item: any) => {
-                  // Si l'item a une structure d'ID complète
-                  if (item?.id?.code && item?.id?.codeUniversite) {
-                    return {
-                      code: item.id.code,
-                      codeUniversite: item.id.codeUniversite,
-                    };
-                  }
-                  // Si l'item est directement la structure d'ID
-                  else if (item?.code && item?.codeUniversite) {
-                    return {
-                      code: item.code,
-                      codeUniversite: item.codeUniversite,
-                    };
-                  }
-                  // Fallback pour les autres cas
-                  return item;
-                })
-                .filter(Boolean); // Enlève les valeurs null/undefined
-            } else if (f[key].value?.id?.code && f[key].value?.id?.codeUniversite) {
-              // Cas d'une seule valeur avec structure complète
-              f[key].value = {
-                code: f[key].value.id.code,
-                codeUniversite: f[key].value.id.codeUniversite,
-              };
-            } else if (f[key].value?.code && f[key].value?.codeUniversite) {
-              // Cas d'une seule valeur avec structure d'ID directe
-              f[key].value = {
-                code: f[key].value.code,
-                codeUniversite: f[key].value.codeUniversite,
-              };
-            }
-          }else if (key === 'annee') {
-            if (Array.isArray(f[key].value)) {
-              f[key].value = String(f[key].value[0]);
-            }
-          }
-          else {
-            // Traitement normal pour les autres listes
-            if (Array.isArray(f[key].value)) {
-              f[key].value = f[key].value
-                .filter((v: any) => v !== undefined)
-                .map((item: any) => {
-                  if (typeof item === 'object' && item.id) {
-                    return item;
-                  }
-                  return item;
-                });
-            }
+          if (key === 'annee' && Array.isArray(f[key].value)) {
+            f[key].value = String(f[key].value[0]);
           }
         }
-
-        // Gestion des dates
         if (['date', 'date-min', 'date-max'].includes(f[key].type)) {
           f[key].value = f[key].value instanceof Date ? f[key].value.getTime() : f[key].value;
         }
-
-        // Gestion de l'autocomplete
         if (f[key].type === 'autocomplete') {
           if (Array.isArray(f[key].value)) {
             f[key].value = f[key].value
@@ -370,13 +300,9 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
               .map((item: { id: any }) => item.id || item);
           }
         }
-
-        // Nettoyage des chaînes de caractères
         if (typeof f[key].value === 'string') {
           f[key].value = f[key].value.trim();
         }
-
-        // Suppression du specific si undefined
         if (f[key].specific === undefined) {
           delete f[key].specific;
         }
@@ -384,8 +310,6 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
     }
     return f;
   }
-
-
 
   isEtudiant(): boolean {
     return this.authService.isEtudiant();
@@ -414,7 +338,87 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
     return this.service.getMobileTitle(row);
   }
 
-  updateNumber(){
+  updateNumber() {
     this.filterValues.id.value = this.filterValues.id.value.replace(/\D/g, '');
+  }
+
+  private normalizeExportColumns(raw: any): { sheets: any[] } {
+    if (raw?.multipleExcelSheets && Array.isArray(raw.multipleExcelSheets)) {
+      return {
+        sheets: raw.multipleExcelSheets.map((sheet: { title?: string; columns: Record<string, { title: string }> }) => ({
+          title: sheet.title || 'Feuille',
+          availableColumns: Object.entries(sheet.columns).map(([key, col]: [string, any]) => ({
+            key,
+            title: col.title
+          }))
+        }))
+      };
+    }
+
+    if (typeof raw === 'object' && !Array.isArray(raw)) {
+      return {
+        sheets: [
+          {
+            title: 'Colonnes disponibles',
+            availableColumns: Object.entries(raw).map(([key, col]: [string, any]) => ({
+              key,
+              title: col.title
+            }))
+          }
+        ]
+      };
+    }
+
+    return { sheets: [] };
+  }
+
+  openExportDialog() {
+    const normalized = this.normalizeExportColumns(this.exportColumns);
+
+    const dialogRef = this.dialog.open(ColumnSelectorComponent, {
+      width: '900px',
+      data: { sheets: normalized.sheets }
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        const exportData = result.map((sheet: any) => ({
+          title: sheet.title,
+          columns: sheet.selectedColumns.reduce((acc: any, col: any) => {
+            acc[col.key] = { title: col.title };
+            return acc;
+          }, {})
+        }));
+
+        this.exportWithCustomColumns({ multipleExcelSheets: exportData });
+      }
+    });
+  }
+
+  exportWithCustomColumns(columnsConfig: { multipleExcelSheets: any[] }) {
+    this.service.exportData(
+      'excel',
+      JSON.stringify(columnsConfig),
+      this.sortColumn,
+      this.sortOrder,
+      JSON.stringify(this.filterValuesToSend)
+    ).subscribe((response: any) => {
+      const blob = new Blob([response], { type: 'application/vnd.ms-excel' });
+      FileSaver.saveAs(blob, `export_${Date.now()}.xls`);
+    });
+  }
+
+  hasExportableColumns(): boolean {
+    if (!this.exportColumns) return false;
+
+    // Cas avec plusieurs feuilles
+    if ('multipleExcelSheets' in this.exportColumns && Array.isArray(this.exportColumns.multipleExcelSheets)) {
+      return this.exportColumns.multipleExcelSheets.some((sheet: any) =>
+        sheet.columns && Object.keys(sheet.columns).length > 0
+      );
+    }
+
+    // Cas simple : un seul objet plat
+    return typeof this.exportColumns === 'object' && Object.keys(this.exportColumns).length > 0;
   }
 }

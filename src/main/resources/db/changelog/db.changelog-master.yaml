@@ -182,3 +182,12 @@ databaseChangeLog:
   - include:
       file: 3.0.0-add-login-sender-signature.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 3.0.1-add-duree-exceptionnelle-periode.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 3.0.1-add-periode-stage.yml
+      relativeToChangelogFile: true
+  - include:
+      file: 3.1.0-siren.yaml
+      relativeToChangelogFile: true

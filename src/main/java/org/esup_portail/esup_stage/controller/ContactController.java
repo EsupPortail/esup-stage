@@ -42,7 +42,7 @@ public class ContactController {
 
     @JsonView(Views.List.class)
     @GetMapping
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<Contact> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         PaginatedResponse<Contact> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(contactRepository.count(filters));
@@ -51,7 +51,7 @@ public class ContactController {
     }
 
     @GetMapping("/{id}")
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.LECTURE})
     public Contact getById(@PathVariable("id") int id) {
         Contact contact = contactJpaRepository.findById(id);
         if (contact == null) {
@@ -61,7 +61,7 @@ public class ContactController {
     }
 
     @GetMapping("/getByService/{id}")
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.LECTURE})
     public List<Contact> getByService(@PathVariable("id") int id, @RequestParam(value = "idCentreGestion", required = false, defaultValue = "-1") Integer idCentreGestion) {
         List<Contact> contacts = contactJpaRepository.findByService(id);
 
@@ -95,7 +95,7 @@ public class ContactController {
     }
 
     @PostMapping
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.CREATION})
+    @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.CREATION})
     public Contact create(@Valid @RequestBody ContactFormDto contactFormDto) {
         Contact contact = new Contact();
         setContactData(contact, contactFormDto);
@@ -128,7 +128,7 @@ public class ContactController {
     }
 
     @PutMapping("/{id}")
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.MODIFICATION})
+    @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.MODIFICATION})
     public Contact update(@PathVariable("id") int id, @Valid @RequestBody ContactFormDto contactFormDto) {
         Contact contact = contactJpaRepository.findById(id);
         setContactData(contact, contactFormDto);
@@ -137,7 +137,7 @@ public class ContactController {
     }
 
     @DeleteMapping("/{id}")
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.SUPPRESSION})
+    @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.SUPPRESSION})
     public boolean delete(@PathVariable("id") int id) {
         Contact contact = contactJpaRepository.findById(id);
         if (contact == null) {

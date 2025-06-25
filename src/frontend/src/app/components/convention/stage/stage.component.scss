@@ -1,3 +1,57 @@
-.mat-card .mat-divider-horizontal {
-    position: relative;
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
 }
+
+.table-header {
+  color: black;
+  font-weight: normal;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+}
+
+.actions-container {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.delete-button {
+  color: #ef4444 !important;
+}
+
+.delete-button i {
+  color: #ef4444 !important;
+}
+
+[mat-icon-button] {
+  width: 36px;
+  height: 36px;
+  line-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.periode-wrapper {
+  display: flex;
+  flex-wrap: wrap;         /* retourne à la ligne automatiquement */
+  gap: 1rem;
+  align-items: flex-end;
+}
+
+.duree-field {
+  flex: 0.98 1 250px;
+
+}
+
+
+.periode-field {
+  display: inline-block;
+  flex: 1 1 100px;          /* largeur minimale, s’adapte */
+  min-width: 100px;
+  max-width: 150px;        /* largeur maximale */
+  margin-left: 1rem;
+}
+

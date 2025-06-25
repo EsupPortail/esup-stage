@@ -6,6 +6,7 @@ public enum AppFonctionEnum {
     CONVENTION,
     AVENANT,
     ORGA_ACC,
+    SERVICE_CONTACT_ACC,
     NOMENCLATURE,
     CREATION_EN_MASSE_CONVENTION,
 }

@@ -1,0 +1,41 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.0.1-add-periode-stage
+      author: thouveno9
+      changes:
+        - createTable:
+            tableName: PeriodeStage
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: dateDebut
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: dateFin
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: nbHeuresJournalieres
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: convention_id
+                  type: INT
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: PeriodeStage
+            baseColumnNames: convention_id
+            referencedTableName: Convention
+            referencedColumnNames: idConvention
+            constraintName: fk_periode_stage_convention

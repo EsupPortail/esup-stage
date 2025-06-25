@@ -1,0 +1,275 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.1.0-droit-service-contact-etab-accueil
+      author: thouveno9
+      changes:
+        - insert:
+            tableName: AppFonction
+            schemaName: estage
+            columns:
+              - column:
+                  name: codeAppFonction
+                  value: SERVICE_CONTACT_ACC
+              - column:
+                  name: libelleAppFonction
+                  value: Paramétrage des services et contacts
+  - changeSet:
+      id: 3.1.0-ajout-temoin-siren
+      author: thouveno9
+      changes:
+            - addColumn:
+                columns:
+                    - column:
+                        name: temSiren
+                        type: BOOLEAN
+                        defaultValueBoolean: false
+                tableName: Structure
+  - changeSet:
+      id: 3.1.0-ajout-code-statutjuridique
+      author: thouveno9
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  name: code
+                  type: VARCHAR(20)
+            tableName: StatutJuridique
+        - sqlFile:
+            path: 3.1.0-code-statut-juridique.sql
+            relativeToChangelogFile: true
+            encoding: utf8
+  - changeSet:
+      id: 3.1.0-ajout-historique_structure
+      author: thouveno9
+      changes:
+        - createTable:
+            tableName: HistoriqueStructure
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: structureId
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: utilisateurId
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: operationType
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: operationDate
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: etatPrecedent
+                  type: TEXT
+              - column:
+                  name: etatActuel
+                  type: TEXT
+  - changeSet:
+      id: 3.1.0-contenu-bouton-creer-etab
+      author: thouveno9
+      changes:
+        - insert:
+            columns:
+              - column:
+                  name: codeContenu
+                  value: BOUTON_CREER_ETAB_ACCUEIL
+              - column:
+                  name: libelle
+                  valueBoolean: true
+              - column:
+                  name: texte
+                  value: Créer un établissement d'accueil
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: dateCreation
+                  value: now()
+            tableName: Contenu
+  - changeSet:
+      id: 3.1.0-maj-temEnServStructure
+      author: thouveno9
+      changes:
+        - update:
+            tableName: Structure
+            columns:
+              - column:
+                  name: temEnServStructure
+                  valueBoolean: true
+  - changeSet:
+      id: 3.1.0-maj-temEnServStructureDefault
+      author: thouveno9
+      changes:
+        - sql: ALTER TABLE Structure MODIFY COLUMN temEnServStructure BOOLEAN NOT NULL DEFAULT 1;
+  - changeSet:
+      id: 3.1.0-maj-idEffectifStructure
+      author: thouveno9
+      changes:
+        - sql: ALTER TABLE Structure CHANGE `idEffectif` `idEffectif` INT(11) NULL DEFAULT NULL;
+
+  - changeSet:
+      id: 3.1.0-modele-mail-notif-nouvel-ensignant
+      author: thouveno9
+      changes:
+        - insert:
+            columns:
+              - column:
+                  name: code
+                  value: CHANGEMENT_ENS
+              - column:
+                  name: libelle
+                  value: Changement d'enseignant
+              - column:
+                  name: objet
+                  value: Changement d'enseignant pour le stage
+              - column:
+                  name: texte
+                  value: Texte à modifier
+              - column:
+                  name: dateCreation
+                  value: now()
+              - column:
+                  name: loginCreation
+                  value: liquibase
+            tableName: TemplateMail
+
+  - changeSet:
+      id: 3.1.0-ajout-template-mail-convention-signee
+      author: thouveno9
+      changes:
+        - insert:
+            columns:
+              - column:
+                  name: code
+                  value: CONVENTION_SIGNEE
+              - column:
+                  name: libelle
+                  value: Convention signée par toutes les parties
+              - column:
+                  name: objet
+                  value: Convention signée
+              - column:
+                  name: texte
+                  value: Texte à modifier
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: dateCreation
+                  value: now()
+            tableName: Templatemail
+  - changeSet:
+      id: 3.1.0-ajout-temConventionSignee
+      author: thouveno9
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  name: temConventionSignee
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+            tableName: Convention
+  - changeSet:
+     id: 3.1.0-ajout-parametre-notification-gestionnaire-convention-signee
+     author: thouveno9
+     changes:
+      - addColumn:
+          columns:
+            - column:
+                name: conventionSignee
+                type: BIT
+                defaultValueBoolean: false
+          tableName: PersonnelCentreGestion
+  - changeSet:
+      id: 3.1.0-table-cron
+      author: thouveno9
+      changes:
+        - createTable:
+            tableName: CronTask
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: nom
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expressionCron
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: dateCreation
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: loginCreation
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: dateModification
+                  type: TIMESTAMP
+              - column:
+                    name: loginModification
+                    type: VARCHAR(255)
+              - column:
+                    name: dateDernierExecution
+                    type: TIMESTAMP
+              - column:
+                    name: active
+                    type: BOOLEAN
+                    constraints:
+                      nullable: false
+                    defaultValueBoolean: true
+  - changeSet:
+        id: 3.1.0-add-cron-update-signature
+        author: thouveno9
+        changes:
+          - insert:
+              tableName: CronTask
+              columns:
+                - column:
+                    name: nom
+                    value: UpdateSignature
+                - column:
+                    name: expressionCron
+                    value: 0 0 * * * ?
+                - column:
+                    name: dateCreation
+                    valueDate: now()
+                - column:
+                    name: loginCreation
+                    value: liquibase
+  - changeSet:
+      id: 3.1.0-ajout-temAvenantSigne
+      author: thouveno9
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  name: temAvenantSigne
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+            tableName: Avenant

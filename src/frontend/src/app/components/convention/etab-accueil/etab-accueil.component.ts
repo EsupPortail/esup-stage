@@ -13,6 +13,7 @@ import { Droit } from "../../../constants/droit";
 import { AuthService } from "../../../services/auth.service";
 import { ConfigService } from "../../../services/config.service";
 import {Checkbox, CheckboxChangeEvent} from "primeng/checkbox";
+import {ContenuService} from "../../../services/contenu.service";
 
 @Component({
   selector: 'app-etab-accueil',
@@ -29,7 +30,7 @@ export class EtabAccueilComponent implements OnInit {
   data: any;
 
   createButton = {
-    libelle: 'Créer un établissement d\'accueil',
+    libelle: 'Créer un établissement',
     action: () => this.initCreate(),
   }
 
@@ -40,6 +41,7 @@ export class EtabAccueilComponent implements OnInit {
   @Input() modifiable!: boolean;
 
   autorisationModification = false;
+  autorisationCreation=false;
 
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
   @ViewChild(MatExpansionPanel) firstPanel: MatExpansionPanel|undefined;
@@ -58,6 +60,7 @@ export class EtabAccueilComponent implements OnInit {
               private nafN5Service: NafN5Service,
               private statutJuridiqueService: StatutJuridiqueService,
               private messageService: MessageService,
+              private contenuService: ContenuService,
               private authService: AuthService,
               private configService: ConfigService,
   ) { }
@@ -65,6 +68,10 @@ export class EtabAccueilComponent implements OnInit {
   ngOnInit(): void {
     this.configService.getConfigGenerale().subscribe((response: any) => {
       this.autorisationModification = response.autoriserEtudiantAModifierEntreprise;
+      this.autorisationCreation = response.autoriserEtudiantACreerEntreprise;
+    });
+    this.contenuService.get('BOUTON_CREER_ETAB_ACCUEIL').subscribe((response: any) => {
+      this.createButton.libelle = response.texte
     });
     this.filters = [
       { id: 'raisonSociale', libelle: 'Raison sociale' },
@@ -103,8 +110,8 @@ export class EtabAccueilComponent implements OnInit {
   }
 
   canCreate(): boolean {
-    let hasRight = this.modifiable && this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.CREATION]});
-    if (this.authService.isEtudiant() && !this.autorisationModification) {
+    let hasRight = this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.CREATION]});
+    if (this.authService.isEtudiant() && !this.autorisationCreation) {
       hasRight = false;
     }
     return this.modifiable && hasRight;
@@ -121,13 +128,13 @@ export class EtabAccueilComponent implements OnInit {
   choose(row: any): void {
     this.modif = false;
     this.selectedRow = row;
-    this.structureService.getById(row.id).subscribe((response: any) => {
-      this.etab = response;
-      if (this.firstPanel) {
-        this.firstPanel.expanded = false;
-      }
-      this.validated.emit(this.etab);
-    });
+    this.structureService.getOrCreate(row).subscribe((response:any)=>{
+        this.etab = response;
+        if (this.firstPanel) {
+          this.firstPanel.expanded = false;
+        }
+        this.validated.emit(this.etab);
+    })
   }
 
   initCreate(): void {
@@ -138,6 +145,12 @@ export class EtabAccueilComponent implements OnInit {
 
   edit(): void {
     this.modif = true;
+  }
+
+  changeOnglet(): void {
+    if (this.firstPanel) {
+      this.firstPanel.expanded = true;
+    }
   }
 
 }

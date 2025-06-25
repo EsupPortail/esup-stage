@@ -43,7 +43,7 @@ public class ServiceController {
 
 
     @GetMapping
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<Service> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         PaginatedResponse<Service> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(serviceRepository.count(filters));
@@ -52,7 +52,7 @@ public class ServiceController {
     }
 
     @GetMapping("/{id}")
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.LECTURE})
     public Service getById(@PathVariable("id") int id) {
         Service service = serviceJpaRepository.findById(id);
         if (service == null) {
@@ -62,7 +62,7 @@ public class ServiceController {
     }
 
     @GetMapping("/getByStructure/{id}")
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.LECTURE})
     public List<Service> getByStructure(@PathVariable("id") int id, @RequestParam(value = "idCentreGestion", required = false, defaultValue = "-1") Integer idCentreGestion) {
         List<Service> services = serviceJpaRepository.findByStructure(id);
         if (services == null) {
@@ -96,7 +96,7 @@ public class ServiceController {
     }
 
     @PostMapping
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.CREATION})
+    @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.CREATION})
     public Service create(@Valid @RequestBody ServiceFormDto serviceFormDto) {
         Service service = new Service();
         setServiceData(service, serviceFormDto);
@@ -129,7 +129,7 @@ public class ServiceController {
     }
 
     @PutMapping("/{id}")
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.MODIFICATION})
+    @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.MODIFICATION})
     public Service update(@PathVariable("id") int id, @Valid @RequestBody ServiceFormDto serviceFormDto) {
         Service service = serviceJpaRepository.findById(id);
         setServiceData(service, serviceFormDto);

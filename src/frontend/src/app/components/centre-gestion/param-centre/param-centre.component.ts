@@ -76,6 +76,12 @@ export class ParamCentreComponent implements OnInit {
         }
       });
     }
+    this.form.get('qualiteViseur')?.valueChanges.pipe(debounceTime(500)).subscribe((val) => {
+      if (this.form.get('qualiteViseur')?.dirty) {
+        this.centreGestion.qualiteViseur = val;
+        this.update.emit(this.form.getRawValue());
+      }
+    });
   }
 
   getConfidentialites() {
@@ -210,6 +216,8 @@ export class ParamCentreComponent implements OnInit {
     this.centreGestion.mailViseur = enseignant.mail;
     this.centreGestion.qualiteViseur = null;
 
+    this.form.markAsDirty();
+    this.update.emit(this.form.getRawValue());
   }
 
   resetViseur() {
@@ -223,6 +231,8 @@ export class ParamCentreComponent implements OnInit {
     this.centreGestion.mailViseur = null;
     this.centreGestion.qualiteViseur = null;
 
+    this.form.markAsDirty();
+    this.update.emit(this.form.getRawValue());
   }
 
   compareCode(option: any, value: any): boolean {

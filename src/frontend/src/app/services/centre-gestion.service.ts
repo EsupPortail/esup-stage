@@ -114,4 +114,8 @@ export class CentreGestionService implements PaginatedService {
   getMobileTitle(row: any): string {
     return `${row.id} - ${row.nomCentre}`;
   }
+
+  deleteLogoCentre(id: number): Observable<any> {
+    return this.http.delete(`${environment.apiUrl}/centre-gestion/${id}/logo-centre`);
+  }
 }

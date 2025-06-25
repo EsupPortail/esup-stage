@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, OnChanges, Input, Output, ViewChild } from '@angular/core';
+import {Component, EventEmitter, OnInit, OnChanges, Input, Output, ViewChild, SimpleChanges} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { PaysService } from "../../../services/pays.service";
 import { ServiceService } from "../../../services/service.service";
@@ -9,13 +9,15 @@ import { AppFonction } from "../../../constants/app-fonction";
 import { Droit } from "../../../constants/droit";
 import { AuthService } from "../../../services/auth.service";
 import { ConfigService } from "../../../services/config.service";
+import { TableComponent } from '../../table/table.component';
+import {SortDirection} from "@angular/material/sort";
 
 @Component({
   selector: 'app-service-accueil',
   templateUrl: './service-accueil.component.html',
   styleUrls: ['./service-accueil.component.scss']
 })
-export class ServiceAccueilComponent implements OnInit, OnChanges {
+export class ServiceAccueilComponent implements OnInit,OnChanges {
 
   countries: any[] = [];
   communes: any[] = [];
@@ -26,18 +28,28 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
 
   @Input() etab: any;
   services:any[] = [];
+  filters: any[] = [];
+  columns = ['nom', 'voie', 'commune', 'pays', 'action'];
+  sortColumn = 'nom';
+  sortDirection: SortDirection = 'asc';
+  createButton = {
+    libelle: 'Créer un nouveau service',
+    action: () => this.initCreate(),
+  };
 
   @Input() service: any;
   modif: boolean = false;
   form: FormGroup;
+  isNewService: boolean = false;
 
   autorisationModification = false;
 
+  @ViewChild(TableComponent) appTable: TableComponent | undefined;
   @ViewChild(MatExpansionPanel) firstPanel: MatExpansionPanel|undefined;
 
   @Output() validated = new EventEmitter<number>();
 
-  @Input() modifiable: boolean;
+  @Input() modifiable!: boolean;
 
   constructor(public serviceService: ServiceService,
               public communeService: CommuneService,
@@ -63,7 +75,11 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
       this.autorisationModification = response.autoriserEtudiantAModifierEntreprise;
     });
     this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServPays: {value: 'O', type: 'text'}})).subscribe((response: any) => {
-      this.countries = response.data;
+      const filter = this.filters.find((f: any) => f.id === 'pays.id');
+      if (filter) {
+        filter.options = response.data;
+        this.countries = response.data;
+      }
     });
     this.communeService.getPaginated(1, 0, 'lib', 'asc', "").subscribe((response: any) => {
       this.communes = response;
@@ -74,10 +90,19 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
       if(this.modif)
         this.clearCommune();
     });
+    this.filters = [
+      { id: 'nom', libelle: 'Nom' },
+      { id: 'voie', libelle: 'Voie' },
+      { id: 'commune', libelle: 'Commune' },
+      { id: 'pays.id', libelle: 'Pays', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id' },
+      { id: 'structure.id', type: 'int', valueType: 'number', value: this.etab.id, hidden: true }
+    ];
   }
 
-  ngOnChanges(): void{
-    this.refreshServices();
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['etab'] && changes['etab'].currentValue) {
+      this.appTable?.setFilterValue('structure.id', this.etab.id);
+    }
   }
 
   refreshServices(): void {
@@ -87,7 +112,7 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
   }
 
   canCreate(): boolean {
-    let hasRight = this.modifiable && this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.CREATION]});
+    let hasRight = this.authService.checkRights({fonction: AppFonction.SERVICE_CONTACT_ACC, droits: [Droit.CREATION]});
     if (this.authService.isEtudiant() && !this.autorisationModification) {
       hasRight = false;
     }
@@ -95,7 +120,7 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
   }
 
   canEdit(): boolean {
-    let hasRight = this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.MODIFICATION]});
+    let hasRight = this.authService.checkRights({fonction: AppFonction.SERVICE_CONTACT_ACC, droits: [Droit.MODIFICATION]});
     if (this.authService.isEtudiant() && !this.autorisationModification) {
       hasRight = false;
     }
@@ -103,6 +128,7 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
   }
 
   choose(row: any): void {
+    this.service = row;
     this.modif = false;
     if (this.firstPanel) {
       this.firstPanel.expanded = false;
@@ -123,6 +149,7 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
       telephone: this.etab.telephone,
     });
     this.modif = true;
+    this.isNewService = true;
   }
 
   edit(): void {
@@ -136,6 +163,7 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
       telephone: this.service.telephone,
     });
     this.modif = true;
+    this.isNewService = false;
   }
 
   cancelEdit(): void {
@@ -157,7 +185,6 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
         this.serviceService.update(this.service.id, data).subscribe((response: any) => {
           this.messageService.setSuccess('Service modifié');
           this.service = response;
-          this.refreshServices();
           this.modif = false;
         });
       } else {
@@ -169,7 +196,6 @@ export class ServiceAccueilComponent implements OnInit, OnChanges {
         this.serviceService.create(data).subscribe((response: any) => {
           this.messageService.setSuccess('Service créé');
           this.service = response;
-          this.refreshServices();
           this.choose(this.service);
         });
       }

@@ -6,6 +6,7 @@
 ** xref:Docaposte_Signature-electronique.adoc[]
 ** xref:ESUP-Signature.adoc[]
 ** xref:Autres-Applications-de-signature.adoc[]
+* xref:Activer-sirene.adoc[]
 * xref:Liste-des-changements.adoc[]
 
 .Autres documents

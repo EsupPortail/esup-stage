@@ -17,6 +17,7 @@ export class ConfigGeneraleComponent implements OnInit {
   configGenerale: any;
   configAlerte: any;
   configTheme: any;
+  configSignature: any;
 
   formGenerale: FormGroup;
   alertes = [
@@ -32,6 +33,8 @@ export class ConfigGeneraleComponent implements OnInit {
     {code: 'validationAdministrativeConvention', libelle: 'Validation administrative d\'une convention'},
     {code: 'verificationAdministrativeConvention', libelle: 'Vérification administrative d\'une convention'},
     {code: 'validationAvenant', libelle: 'Validation d\'un avenant'},
+    {code: 'conventionSignee', libelle: 'Convention signée par toutes les parties'},
+    {code: 'changementEnseignant', libelle:' Changement d\'enseignant référent'},
   ];
   alerteColumns = ['alertes', 'alerteEtudiant', 'alerteGestionnaire', 'alerteRespGestionnaire', 'alerteEnseignant'];
 
@@ -48,6 +51,8 @@ export class ConfigGeneraleComponent implements OnInit {
   dangerColor: string | WritableSignal<string> | undefined;
   warningColor: string | WritableSignal<string> | undefined;
   successColor: string | WritableSignal<string> | undefined;
+
+  formSignature: FormGroup;
 
   constructor(
     private configService: ConfigService,
@@ -69,6 +74,7 @@ export class ConfigGeneraleComponent implements OnInit {
       validationPedagogiqueLibelle: [null, [Validators.required]],
       validationAdministrativeLibelle: [null, [Validators.required]],
       codeCesure: [null],
+      autoriserEtudiantACreerEntreprise: [null, [Validators.required]],
     });
 
     this.formTheme = this.fb.group({
@@ -81,6 +87,10 @@ export class ConfigGeneraleComponent implements OnInit {
       dangerColor: [null, [Validators.required]],
       warningColor: [null, [Validators.required]],
       successColor: [null, [Validators.required]],
+    });
+
+    this.formSignature = this.fb.group({
+      supprimerConventionUneFoisSigneEsupSignature: [null, [Validators.required]]
     });
   }
 
@@ -108,6 +118,11 @@ export class ConfigGeneraleComponent implements OnInit {
       this.setFormThemeValue();
     });
 
+    // Récupération de la configuration de la signature
+    this.configService.getConfigSignature().subscribe((response: any) => {
+      this.configSignature = response;
+      this.formSignature.patchValue(this.configSignature);
+    });
   }
 
   setFormThemeValue(): void {
@@ -191,6 +206,15 @@ export class ConfigGeneraleComponent implements OnInit {
       this.faviconFile = undefined;
       return;
     }
+  }
+
+  saveSignature(): void {
+    this.configSignature = this.formSignature.value;
+    this.configService.updateConfigSignature(this.configSignature).subscribe((response: any) => {
+      this.configSignature = response;
+      this.messageService.setSuccess('Configuration de la signature modifiée');
+      this.formSignature.patchValue(this.configSignature);
+    });
   }
 
 }

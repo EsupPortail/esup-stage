@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { CentreGestionService } from "../../../services/centre-gestion.service";
 import { MessageService } from "../../../services/message.service";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
@@ -13,6 +13,7 @@ import { HttpClient } from '@angular/common/http';
 export class LogoCentreComponent implements OnInit {
   @Input() centreGestion: any;
   @Output() refreshCentreGestion = new EventEmitter<any>();
+  @ViewChild('logoInput') logoInput!: ElementRef<HTMLInputElement>;
 
   logoFile: File | undefined;
   previewUrl: string | ArrayBuffer | null = null;
@@ -30,7 +31,7 @@ export class LogoCentreComponent implements OnInit {
     private httpClient: HttpClient
   ) {
     this.form = this.fb.group({
-      content: [null, Validators.required] // Valide que le contenu n'est pas vide
+      content: [null, Validators.required]
     });
   }
 
@@ -47,7 +48,6 @@ export class LogoCentreComponent implements OnInit {
       return;
     }
 
-
     this.logoFile = file;
 
     // Génération de la preview
@@ -63,7 +63,7 @@ export class LogoCentreComponent implements OnInit {
     }
 
     // Ajout au FormData après vérification stricte
-    const selectedFile = this.logoFile; // Crée une variable temporaire pour éviter "undefined"
+    const selectedFile = this.logoFile;
     if (selectedFile) {
       const formData = new FormData();
       formData.append('logo', selectedFile, selectedFile.name);
@@ -90,13 +90,11 @@ export class LogoCentreComponent implements OnInit {
     });
   }
 
-
-
   getLogo() {
     this.centreGestionService.getLogoCentre(this.centreGestion.id).subscribe((response: any) => {
       this.currentFile = response;
 
-      if (this.currentFile.size > 0) {
+      if (this.currentFile && this.currentFile.size > 0) {
         const reader = new FileReader();
         reader.readAsDataURL(this.currentFile);
         reader.onload = (_event) => {
@@ -119,6 +117,22 @@ export class LogoCentreComponent implements OnInit {
           this.getLogo();
         });
       }
+    });
+  }
+
+  removeLogo() {
+    this.centreGestionService.deleteLogoCentre(this.centreGestion.id).subscribe((response: any) => {
+      this.previewUrl = null;
+      this.currentFile = null;
+      this.logoFile = undefined;
+      this.form.get('content')?.setValue('');
+      if (this.logoInput && this.logoInput.nativeElement) {
+        this.logoInput.nativeElement.value = '';
+      }
+      this.messageService.setSuccess("Logo supprimé avec succès");
+      this.refreshCentreGestion.emit(this.centreGestion);
+    }, error => {
+      this.messageService.setError("Erreur lors de la suppression du logo");
     });
   }
 }

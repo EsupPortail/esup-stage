@@ -15,7 +15,7 @@
 	<description>Application ESUP-Stage</description>
 
 	<properties>
-		<revision>3.0.0</revision>
+		<revision>3.1.0</revision>
 		<sha1></sha1>
 		<changelist></changelist>
 
@@ -24,7 +24,6 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.test.skip>true</maven.test.skip>
 		<skip.npm.install>false</skip.npm.install>
-		<skip.frontend>false</skip.frontend>
 	</properties>
 
 	<!-- environnement local(dev: config interne) et default(config externe) -->
@@ -109,9 +108,9 @@
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
 		<dependency>
- 			<groupId>org.springframework.boot</groupId>
- 			<artifactId>spring-boot-starter-tomcat</artifactId>
- 			<scope>provided</scope> <!-- This is important. -->
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<scope>provided</scope> <!-- This is important. -->
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -156,11 +155,11 @@
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 		</dependency>
-        <dependency>
-            <groupId>com.googlecode.libphonenumber</groupId>
-            <artifactId>libphonenumber</artifactId>
-            <version>8.13.50</version>
-        </dependency>
+		<dependency>
+			<groupId>com.googlecode.libphonenumber</groupId>
+			<artifactId>libphonenumber</artifactId>
+			<version>8.13.50</version>
+		</dependency>
 
         <dependency>
 			<groupId>org.liquibase</groupId>
@@ -384,7 +383,6 @@
 						</goals>
 						<configuration>
 							<arguments>run buildProduction</arguments>
-							<skip>${skip.frontend}</skip>
 						</configuration>
 						<phase>generate-resources</phase>
 					</execution>

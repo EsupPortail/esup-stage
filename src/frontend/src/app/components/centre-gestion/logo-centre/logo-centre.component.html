@@ -1,3 +1,4 @@
+
 <mat-card>
   <mat-card-content>
     <p>Le logo est utilisé lors de l'impression des conventions, des avenants et des offres de stage et d'emploi.</p>
@@ -5,17 +6,19 @@
     <p>Le logo du centre de gestion au niveau ETABLISSEMENT sera également imprimé sur les conventions.</p>
 
     <mat-card-actions class="text-center">
-      <button mat-stroked-button color="primary" (click)="logoInput.click()">
+      <button class="action-bt" mat-stroked-button color="primary" (click)="logoInput.click()">
         <span>{{currentFile && currentFile.size > 0 ? 'Changer de logo' : 'Insérer un logo'}}</span>
         <input #logoInput type="file" (change)="onLogoChange($event)" accept="image/*" style="display:none">
       </button>
+
+      <button class="action-bt" mat-stroked-button color="warn" (click)="removeLogo()" *ngIf="currentFile && currentFile.size > 0">
+        Supprimer le logo
+      </button>
     </mat-card-actions>
 
-    <!-- Preview de l'image -->
     <div *ngIf="previewUrl" class="preview-container">
       <img [src]="previewUrl" alt="Preview du logo" class="preview-image" />
     </div>
-
 
   </mat-card-content>
 </mat-card>
