@@ -174,7 +174,7 @@ export class GestionEtabAccueilComponent implements OnInit {
     });
   }
 
-  isFromSiren(row: any): boolean {
+  isFromSirene(row: any): boolean {
     return row.loginCreation == null && row.dateCreation == null && !row.estValidee && row.temSiren ;
   }
 

@@ -1,4 +1,4 @@
-package org.esup_portail.esup_stage.service.siren.utils;
+package org.esup_portail.esup_stage.service.sirene.utils;
 
 import org.esup_portail.esup_stage.repository.NafN5JpaRepository;
 import org.esup_portail.esup_stage.repository.StatutJuridiqueJpaRepository;

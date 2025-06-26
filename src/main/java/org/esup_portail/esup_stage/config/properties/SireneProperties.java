@@ -7,8 +7,8 @@ import org.springframework.util.StringUtils;
 
 @Data
 @NoArgsConstructor
-@ConfigurationProperties(prefix = "siren")
-public class SirenProperties {
+@ConfigurationProperties(prefix = "sirene")
+public class SireneProperties {
     private String url;
     private String token;
     private Integer nombreMinimumResultats;

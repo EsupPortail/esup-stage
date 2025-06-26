@@ -8,7 +8,7 @@ import jakarta.validation.Valid;
 import org.apache.commons.validator.routines.checkdigit.LuhnCheckDigit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.esup_portail.esup_stage.config.properties.SirenProperties;
+import org.esup_portail.esup_stage.config.properties.SireneProperties;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.dto.SireneInfoDto;
 import org.esup_portail.esup_stage.dto.StructureFormDto;
@@ -23,8 +23,8 @@ import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.Structure.StructureService;
-import org.esup_portail.esup_stage.service.siren.SirenService;
-import org.esup_portail.esup_stage.service.siren.model.ListStructureSirenDTO;
+import org.esup_portail.esup_stage.service.sirene.SireneService;
+import org.esup_portail.esup_stage.service.sirene.model.ListStructureSireneDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -68,19 +68,16 @@ public class StructureController {
     private AppConfigService appConfigService;
 
     @Autowired
-    private SirenService sirenService;
+    private SireneService sireneService;
 
     @Autowired
     private StructureService structureService;
 
     @Autowired
-    private ConventionJpaRepository conventionJpaRepository;
-
-    @Autowired
     private ObjectMapper objectMapper;
 
     @Autowired
-    private SirenProperties sirenProperties;
+    private SireneProperties sireneProperties;
 
     @JsonView(Views.List.class)
     @GetMapping
@@ -97,16 +94,16 @@ public class StructureController {
         }
         boolean estEtudiant = UtilisateurHelper.isRole(Objects.requireNonNull(ServiceContext.getUtilisateur()), Role.ETU);
         boolean creationEtudiantInterdite = !appConfigService.getConfigGenerale().isAutoriserEtudiantACreerEntreprise();
-        if (sirenProperties.isApiSireneActive()
-                && structures.size() < sirenProperties.getNombreMinimumResultats()
+        if (sireneProperties.isApiSireneActive()
+                && structures.size() < sireneProperties.getNombreMinimumResultats()
                 && (creationEtudiantInterdite || !estEtudiant)
                 && (filterMap.size() >= 2 || filterMap.size() == 1 && filterMap.containsKey("numeroSiret"))
         ) {
             List<String> existingSirets = new ArrayList<>();
             structures.forEach(s -> existingSirets.add(s.getNumeroSiret()));
-            if (page == 1 && structures.size() < sirenProperties.getNombreMinimumResultats()) {
+            if (page == 1 && structures.size() < sireneProperties.getNombreMinimumResultats()) {
                 int manque = perPage - structures.size();
-                ListStructureSirenDTO result = sirenService.getEtablissementFiltered(1, manque, filters);
+                ListStructureSireneDTO result = sireneService.getEtablissementFiltered(1, manque, filters);
                 if (manque > 0) {
                     List<Structure> additional = result
                             .getStructures()
@@ -119,7 +116,7 @@ public class StructureController {
                 }
             }
             else if (page > 1) {
-                ListStructureSirenDTO result = sirenService.getEtablissementFiltered(page, perPage, filters);
+                ListStructureSireneDTO result = sireneService.getEtablissementFiltered(page, perPage, filters);
                 List<Structure> apiPage = result
                         .getStructures()
                         .stream()
@@ -318,7 +315,7 @@ public class StructureController {
             structure = structureJpaRepository.findById(structureBody.getId()).orElse(null);
             if (structure != null && structure.getTemEnServStructure()) {
                 if(structure.isTemSiren()){
-                    sirenService.update(structure);
+                    sireneService.update(structure);
                 }
                 return structure;
             }
@@ -455,8 +452,8 @@ public class StructureController {
     @GetMapping("/sirene")
     public SireneInfoDto getSireneInfo(){
         SireneInfoDto sireneInfoDto = new SireneInfoDto();
-        sireneInfoDto.setIsApiSireneActive(sirenProperties.isApiSireneActive());
-        sireneInfoDto.setNombreResultats(sirenProperties.getNombreMinimumResultats());
+        sireneInfoDto.setIsApiSireneActive(sireneProperties.isApiSireneActive());
+        sireneInfoDto.setNombreResultats(sireneProperties.getNombreMinimumResultats());
         return sireneInfoDto;
     }
 

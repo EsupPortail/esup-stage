@@ -1,11 +1,11 @@
 <mat-tab-group #tabs (selectedTabChange)="tabChanged($event)">
   <mat-tab label="Liste">
-    <div class="siren-info-box" *ngIf="isSireneAcitve">
-      <div class="siren-info-title">
+    <div class="sirene-info-box" *ngIf="isSireneAcitve">
+      <div class="sirene-info-title">
         <mat-icon color="info">info</mat-icon>
         <span class="m-2">La recherche via l’API Sirene est déclenchée uniquement si :</span>
       </div>
-      <div class="siren-info-details">
+      <div class="sirene-info-details">
         <ul>
           <li>au moins <strong>2 champs de filtre</strong> sont remplis</li>
           <li>le nombre de résultats est <strong>inférieur à {{nbMinResultats}}</strong></li>
@@ -51,11 +51,11 @@
       <ng-container matColumnDef="action">
         <th mat-header-cell *matHeaderCellDef >Actions</th>
         <td mat-cell *matCellDef="let row">
-          <div class="row" *ngIf="!isFromSiren(row)">
+          <div class="row" *ngIf="!isFromSirene(row)">
             <button mat-icon-button matTooltip="Éditer" *ngIf="canEdit()" (click)="edit(row)" color="primary"><i class="fa fa-pen"></i></button>
             <button mat-icon-button matTooltip="Supprimer" *ngIf="canDelete()" (click)="delete(row)" color="warn"><i class="fa fa-trash-alt"></i></button>
           </div>
-          <div class="row" *ngIf="isFromSiren(row)">
+          <div class="row" *ngIf="isFromSirene(row)">
             <button mat-icon-button matTooltip="Créer" *ngIf="canCreate()" (click)="create(row)" color="primary"><i class="fa fa-plus"></i></button>
           </div>
         </td>

@@ -1,14 +1,14 @@
-package org.esup_portail.esup_stage.service.siren;
+package org.esup_portail.esup_stage.service.sirene;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.esup_portail.esup_stage.config.properties.SirenProperties;
+import org.esup_portail.esup_stage.config.properties.SireneProperties;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.Structure;
 import org.esup_portail.esup_stage.repository.StructureJpaRepository;
-import org.esup_portail.esup_stage.service.siren.model.ListStructureSirenDTO;
-import org.esup_portail.esup_stage.service.siren.model.SirenResponse;
-import org.esup_portail.esup_stage.service.siren.utils.SirenMapper;
-import org.esup_portail.esup_stage.service.siren.utils.SireneQueryBuilder;
+import org.esup_portail.esup_stage.service.sirene.model.ListStructureSireneDTO;
+import org.esup_portail.esup_stage.service.sirene.model.SirenResponse;
+import org.esup_portail.esup_stage.service.sirene.utils.SireneMapper;
+import org.esup_portail.esup_stage.service.sirene.utils.SireneQueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,38 +16,35 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 @Service
-public class SirenService {
+public class SireneService {
 
-    private static final Logger logger = LoggerFactory.getLogger(SirenService.class);
+    private static final Logger logger = LoggerFactory.getLogger(SireneService.class);
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
-    private SirenMapper sirenMapper;
+    private SireneMapper sirenMapper;
 
     @Autowired
-    private SirenProperties sirenProperties;
+    private SireneProperties sireneProperties;
+
     @Autowired
     private StructureJpaRepository structureJpaRepository;
 
-    public SirenService() {
+    public SireneService() {
         this.restTemplate = new RestTemplate();
     }
 
     public Structure getEtablissement(String siret) {
-        String url = sirenProperties.getUrl() + "/siret/" + siret;
+        String url = sireneProperties.getUrl() + "/siret/" + siret;
         HttpHeaders headers = new HttpHeaders();
-        headers.set("X-INSEE-Api-Key-Integration", sirenProperties.getToken());
+        headers.set("X-INSEE-Api-Key-Integration", sireneProperties.getToken());
         headers.set("Accept", "application/json");
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
@@ -69,8 +66,8 @@ public class SirenService {
         }
     }
 
-    public ListStructureSirenDTO getEtablissementFiltered(int page, int perpage, String filtersJson) {
-        String baseUrl = sirenProperties.getUrl() + "/siret";
+    public ListStructureSireneDTO getEtablissementFiltered(int page, int perpage, String filtersJson) {
+        String baseUrl = sireneProperties.getUrl() + "/siret";
         String lucene = SireneQueryBuilder.buildLuceneQuery(filtersJson);
 
         String url = baseUrl + "?q=" + lucene + "&nombre=" + perpage + "&page=" + page;
@@ -78,7 +75,7 @@ public class SirenService {
         System.out.println("url = " + url);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("X-INSEE-Api-Key-Integration", sirenProperties.getToken());
+        headers.set("X-INSEE-Api-Key-Integration", sireneProperties.getToken());
         headers.set("Accept", "application/json");
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
@@ -86,10 +83,10 @@ public class SirenService {
             ResponseEntity<SirenResponse> resp = restTemplate.exchange(url, HttpMethod.GET, entity, SirenResponse.class);
 
             if (resp.getStatusCode().is2xxSuccessful() && resp.getBody() != null) {
-                return new ListStructureSirenDTO(resp.getBody().getHeader().getTotal(), sirenMapper.toStructureList(resp.getBody()));
+                return new ListStructureSireneDTO(resp.getBody().getHeader().getTotal(), sirenMapper.toStructureList(resp.getBody()));
             }
         } catch (HttpClientErrorException.NotFound ignored) {
-            return new ListStructureSirenDTO(0,Collections.emptyList());
+            return new ListStructureSireneDTO(0,Collections.emptyList());
         } catch (HttpClientErrorException.BadRequest e) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Erreur lors de la récupération des établissements, vérifiez vos filtres");
         } catch (HttpClientErrorException e) {
@@ -97,16 +94,16 @@ public class SirenService {
         } catch (Exception e) {
             logger.error("Erreur lors de la récupération des établissements : {}", e.getMessage());
         }
-        return new ListStructureSirenDTO(0,Collections.emptyList());
+        return new ListStructureSireneDTO(0,Collections.emptyList());
     }
 
 
 
     public List<Structure> getAllEtablissements() {
-        String url = sirenProperties.getUrl() + "/siret";
+        String url = sireneProperties.getUrl() + "/siret";
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("X-INSEE-Api-Key-Integration", sirenProperties.getToken());
+        headers.set("X-INSEE-Api-Key-Integration", sireneProperties.getToken());
         headers.set("Accept", "application/json");
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
@@ -129,9 +126,9 @@ public class SirenService {
     }
 
     public void update(Structure structure) {
-        String url = sirenProperties.getUrl() + "/siret/" + structure.getNumeroSiret();
+        String url = sireneProperties.getUrl() + "/siret/" + structure.getNumeroSiret();
         HttpHeaders headers = new HttpHeaders();
-        headers.set("X-INSEE-Api-Key-Integration", sirenProperties.getToken());
+        headers.set("X-INSEE-Api-Key-Integration", sireneProperties.getToken());
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<>(headers);
         try {

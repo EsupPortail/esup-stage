@@ -1,9 +1,9 @@
-package org.esup_portail.esup_stage.service.siren.utils;
+package org.esup_portail.esup_stage.service.sirene.utils;
 
 import org.esup_portail.esup_stage.model.Structure;
 import org.esup_portail.esup_stage.model.TypeStructure;
 import org.esup_portail.esup_stage.repository.*;
-import org.esup_portail.esup_stage.service.siren.model.SirenResponse;
+import org.esup_portail.esup_stage.service.sirene.model.SirenResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class SirenMapper {
+public class SireneMapper {
 
     @Autowired
     private StatutJuridiqueJpaRepository statutJuridiqueJpaRepository;

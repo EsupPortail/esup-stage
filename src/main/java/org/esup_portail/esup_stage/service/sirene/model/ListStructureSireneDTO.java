@@ -1,4 +1,4 @@
-package org.esup_portail.esup_stage.service.siren.model;
+package org.esup_portail.esup_stage.service.sirene.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class ListStructureSirenDTO {
+public class ListStructureSireneDTO {
     private Integer total;
     private List<Structure> structures;
 }

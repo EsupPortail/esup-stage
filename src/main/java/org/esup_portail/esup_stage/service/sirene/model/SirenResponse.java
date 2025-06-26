@@ -1,4 +1,4 @@
-package org.esup_portail.esup_stage.service.siren.model;
+package org.esup_portail.esup_stage.service.sirene.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
