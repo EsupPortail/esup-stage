@@ -565,7 +565,7 @@ public class ConventionController {
     }
 
     @PostMapping("/{id}/update-signature-electronique-info")
-    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.VALIDATION})
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public Convention updateSignatureElectroniqueInfo(@PathVariable("id") int id) {
         if (!appConfigService.getConfigGenerale().isSignatureEnabled()) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La signature électronique n'est pas configurée");

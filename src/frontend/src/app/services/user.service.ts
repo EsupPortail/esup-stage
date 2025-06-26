@@ -34,4 +34,8 @@ export class UserService implements PaginatedService {
   getMobileTitle(row: any): string {
     return `${row.id} - ${row.login}`;
   }
+
+  getPersonneByLogin(login: string): Observable<any> {
+    return this.http.get(environment.apiUrl + '/users/personne/' + login);
+  }
 }
