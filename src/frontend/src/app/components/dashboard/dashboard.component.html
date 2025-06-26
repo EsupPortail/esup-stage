@@ -1,4 +1,4 @@
-<mat-card *ngIf="typeDashboard === 2 || typeDashboard === 1" class="dashboard-summary">
+ <mat-card *ngIf="typeDashboard === 2 || typeDashboard === 1" class="dashboard-summary">
   <mat-card-content>
     <div class="row">
       <div class="col-md-6 col-sm-12">
@@ -120,6 +120,9 @@
       <i *ngIf="row.centreGestion.verificationAdministrative" class="fa fa-check"
          [class.activate]="row.verificationAdministrative"
          matTooltip="{{row.verificationAdministrative ? validationLibelles.verificationAdministrative + ' effectuée' : 'en attente ' + validationLibelles.verificationAdministrative}}"></i>
+      <i *ngIf="row.centreGestion.validationConvention" class="fa fa-scroll"
+         [class.activate]="row.validationConvention"
+         matTooltip="{{row.validationConvention ? validationLibelles.validationConvention + ' effectuée' : 'en attente ' + validationLibelles.validationConvention}}"></i>
       <i *ngIf="row.dateEnvoiSignature" class="fa-solid fa-signature"
          [ngClass]="getValidationIconStatus(row)"
          [matTooltip]="getValidationTooltip(row)">
