@@ -46,7 +46,7 @@
         <button mat-flat-button color="primary">
           {{ (consigne ? 'BOUTON_VALIDER' : 'Créer') | contenu }}
         </button>
-        <button *ngIf="consigne" mat-flat-button color="warn" (click)="deleteConsigne()">
+        <button type="button" *ngIf="consigne" mat-flat-button color="warn" (click)="deleteConsigne()">
           Supprimer
         </button>
       </div>

@@ -448,11 +448,17 @@ export class ConsigneComponent implements OnInit, OnChanges, AfterViewInit {
     this.changeDetector.detectChanges();
   }
 
-  deleteConsigne(){
+  deleteConsigne() {
     if (this.consigne) {
-      this.consigneService.deleteConsigne(this.consigne.id).subscribe(() => {
-        this.messageService.setSuccess('Consigne supprimée');
-        this.sumitted.emit(null);
+      this.consigneService.deleteConsigne(this.consigne.id).subscribe({
+        next: () => {
+          this.messageService.setSuccess('Consigne supprimée');
+          this.consigne = null;
+          this.sumitted.emit(null);
+        },
+        error: (err) => {
+          this.messageService.setError('Erreur lors de la suppression');
+        }
       });
     }
   }

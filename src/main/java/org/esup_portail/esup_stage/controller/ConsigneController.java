@@ -13,6 +13,7 @@ import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.enums.FolderEnum;
 import org.esup_portail.esup_stage.exception.AppException;
+import org.esup_portail.esup_stage.model.CentreGestion;
 import org.esup_portail.esup_stage.model.Consigne;
 import org.esup_portail.esup_stage.model.ConsigneDocument;
 import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
@@ -169,6 +170,13 @@ public class ConsigneController {
         if (consigne == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Consigne non trouvée");
         }
+
+        CentreGestion centreGestion = consigne.getCentreGestion();
+        if (centreGestion == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion non trouvé");
+        }
+        centreGestion.setConsigne(null);
+        centreGestionJpaRepository.saveAndFlush(centreGestion);
 
         List<String> filePaths = new ArrayList<>();
         for (ConsigneDocument consigneDocument : consigne.getDocuments()) {
