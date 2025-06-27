@@ -149,6 +149,7 @@ export class GestionEtabAccueilComponent implements OnInit {
     }
     this.structureService.getById(row.id).subscribe((response: any) => {
       this.data = response;
+      this.service = null;
       this.refreshServices();
     });
   }
