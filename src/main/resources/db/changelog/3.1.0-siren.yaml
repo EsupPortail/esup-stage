@@ -170,7 +170,7 @@ databaseChangeLog:
               - column:
                   name: dateCreation
                   value: now()
-            tableName: Templatemail
+            tableName: TemplateMail
   - changeSet:
       id: 3.1.0-ajout-temConventionSignee
       author: thouveno9
