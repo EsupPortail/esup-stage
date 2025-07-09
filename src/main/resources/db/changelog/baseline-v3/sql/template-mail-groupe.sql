@@ -1,0 +1,2 @@
+INSERT INTO TemplateMailGroupe (code, libelle, objet, texte, dateCreation, loginCreation) VALUES
+('DEFAULT','Template par Défault','Création de convention en masse','Texte à modifier',NOW(),'liquibase');

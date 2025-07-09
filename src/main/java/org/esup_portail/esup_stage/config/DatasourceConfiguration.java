@@ -36,6 +36,7 @@ public class DatasourceConfiguration {
         SpringLiquibase springLiquibase = new SpringLiquibase();
         springLiquibase.setChangeLog("classpath:/db/changelog/db.changelog-master.yaml");
         springLiquibase.setDataSource(getDataSource());
+        springLiquibase.setContexts(appliProperties.getDatasource().getContext());
         return springLiquibase;
     }
 }
