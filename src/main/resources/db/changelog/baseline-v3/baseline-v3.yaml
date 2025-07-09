@@ -6323,20 +6323,6 @@ databaseChangeLog:
                 relativeToChangelogFile: true
                 encoding: utf8
 - changeSet:
-      id: init-data-typeconvention
-      author: ssound
-      validCheckSum: ANY
-      preConditions:
-          - onFail: MARK_RAN
-          - sqlCheck:
-                expectedResult: 0
-                sql: SELECT COUNT(*) FROM TypeConvention
-      changes:
-          - sqlFile:
-                path: ../init-insert/typeconvention.sql
-                relativeToChangelogFile: true
-                encoding: utf8
-- changeSet:
       id: init-data-langueconvention
       author: ssound
       validCheckSum: ANY
@@ -6533,6 +6519,20 @@ databaseChangeLog:
                 relativeToChangelogFile: true
                 encoding: utf8
 - changeSet:
+      id: init-data-cpam
+      author: ssound
+      validCheckSum: ANY
+      preConditions:
+          - onFail: MARK_RAN
+          - sqlCheck:
+                expectedResult: 0
+                sql: SELECT COUNT(*) FROM CPAM
+      changes:
+          - sqlFile:
+                path: ../init-insert/cpam.sql
+                relativeToChangelogFile: true
+                encoding: utf8
+- changeSet:
       id: init-data-pays
       author: ssound
       validCheckSum: ANY
@@ -6544,6 +6544,20 @@ databaseChangeLog:
       changes:
           - sqlFile:
                 path: ../init-insert/pays.sql
+                relativeToChangelogFile: true
+                encoding: utf8
+- changeSet:
+      id: init-data-commune
+      author: ssound
+      validCheckSum: ANY
+      preConditions:
+          - onFail: MARK_RAN
+          - sqlCheck:
+                expectedResult: 0
+                sql: SELECT COUNT(*) FROM Commune
+      changes:
+          - sqlFile:
+                path: ../init-insert/commune.sql
                 relativeToChangelogFile: true
                 encoding: utf8
 - changeSet:
@@ -6583,15 +6597,6 @@ databaseChangeLog:
       changes:
           - sql:
                 sql: INSERT INTO TemplateConvention (idTypeConvention, codeLangueConvention, dateCreation, loginCreation) SELECT idTypeConvention, codeLangueConvention, NOW(), 'liquibase' FROM TypeConvention, LangueConvention WHERE temEnServTypeConvention = 'O' AND temEnServLangue = 'O'
-- changeSet:
-      id: init-data-typeconvention-apogee
-      author: jwang
-      validCheckSum: ANY
-      changes:
-          - sqlFile:
-                path: ../init-insert/typeconventionapogee.sql
-                relativeToChangelogFile: true
-                encoding: utf8
 - changeSet:
       id: templateConvention-insert-typeConventionApogee
       author: ssound
@@ -6635,6 +6640,9 @@ databaseChangeLog:
       relativeToChangelogFile: true
 - include:
       file: sql/role-appfonction.sql
+      relativeToChangelogFile: true
+- include:
+      file: sql/type-convention.sql
       relativeToChangelogFile: true
 
 - changeSet:

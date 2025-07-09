@@ -44,7 +44,7 @@ INSERT INTO ParamConvention (code, libelle, exemple) VALUES
 ('convention.interruptionStage', 'Interruption stage', 'Oui'),
 ('convention.qualiteSignataire', 'Qualité du signataire', 'Le Directeur de l''IUT'),
 ('convention.tempsTravailLibelle', 'Temps travail', 'Temps Complet'),
-('convention.dureeExceptionnelle', 'Durée exceptionnelle', '5'),
+('convention.dureeStageHeure', 'Durée effective du stage en nombre d''heures', '5'),
 ('convention.codeDepartement', 'Code département', '922'),
 ('convention.dateDebutStage', 'Date de début de stage', '03/01/2011'),
 ('convention.commentaireDureeTravail', 'Commentaire durée travail', 'travail en groupe'),
