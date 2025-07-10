@@ -1,5 +1,5 @@
-import { Component, EventEmitter, OnInit, OnChanges, Input, Output, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import {Component, EventEmitter, OnInit, OnChanges, Input, Output, ViewChild, OnDestroy} from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
 import { CiviliteService } from "../../../services/civilite.service";
 import { ContactService } from "../../../services/contact.service";
 import { MessageService } from "../../../services/message.service";
@@ -8,16 +8,17 @@ import { AppFonction } from "../../../constants/app-fonction";
 import { Droit } from "../../../constants/droit";
 import { AuthService } from "../../../services/auth.service";
 import { ConfigService } from "../../../services/config.service";
-import { debounceTime } from "rxjs/operators";
+import { debounceTime, takeUntil } from "rxjs/operators";
 import { LdapService } from "../../../services/ldap.service";
 import {REGEX} from "../../../utils/regex.utils";
+import { ReplaySubject, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-tuteur-pro',
   templateUrl: './tuteur-pro.component.html',
   styleUrls: ['./tuteur-pro.component.scss']
 })
-export class TuteurProComponent implements OnInit, OnChanges {
+export class TuteurProComponent implements OnInit, OnChanges, OnDestroy {
 
   civilites: any[] = [];
   columns = ['nomprenom', 'mail', 'departement', 'action'];
@@ -42,6 +43,10 @@ export class TuteurProComponent implements OnInit, OnChanges {
 
   autorisationModification = false;
   isNewContact: boolean = false;
+
+  contactFilterCtrl: FormControl = new FormControl();
+  filteredContacts: ReplaySubject<any> = new ReplaySubject<any>(1);
+  _onDestroy = new Subject<void>();
 
   @ViewChild(MatExpansionPanel) firstPanel: MatExpansionPanel|undefined;
 
@@ -89,6 +94,12 @@ export class TuteurProComponent implements OnInit, OnChanges {
     if (this.service) {
       this.contactService.getByService(this.service.id, this.centreGestion.id).subscribe((response: any) => {
         this.contacts = response.sort((a: any, b: any) => a.nom.localeCompare(b.nom));
+        this.filteredContacts.next(this.contacts.slice());
+        this.contactFilterCtrl.valueChanges
+          .pipe(takeUntil(this._onDestroy))
+          .subscribe(() => {
+            this.filterContacts();
+          });
       });
     }
   }
@@ -204,6 +215,32 @@ export class TuteurProComponent implements OnInit, OnChanges {
         this.chooseStaff(this.staffs[0]);
       }
     });
+  }
+
+  private filterContacts() {
+    if (!this.contacts) {
+      return;
+    }
+
+    let search = this.contactFilterCtrl.value;
+    if (!search) {
+      this.filteredContacts.next(this.contacts.slice());
+      return;
+    } else {
+      search = search.toLowerCase();
+    }
+
+    this.filteredContacts.next(
+      this.contacts.filter(contact =>
+        contact.nom.toLowerCase().includes(search) ||
+        contact.prenom.toLowerCase().includes(search)
+      )
+    );
+  }
+
+  ngOnDestroy() {
+    this._onDestroy.next();
+    this._onDestroy.complete();
   }
 
 }
