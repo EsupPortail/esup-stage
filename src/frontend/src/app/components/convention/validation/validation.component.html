@@ -104,4 +104,5 @@
   </mat-card-content>
 </mat-card>
 
-<div #confirmComponent (confirm)="envoiSignatureElectronique()" [confirmMessage]="confirmMessage"></div>
+<div #confirmComponent (confirm)="confirmerRenvoiSignatureElectronique()" [confirmMessage]="confirmMessage"></div>
+<div #confirmReenvoi (confirm)="envoiSignatureElectronique()" [confirmMessage]="confirmReenvoiMessage"></div>
