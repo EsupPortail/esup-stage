@@ -22,8 +22,10 @@ export class ValidationComponent implements OnInit, OnChanges {
   signatureEnabled = false;
 
   @ViewChild('confirmComponent') confirmComponent!: ConfirmComponent;
+  @ViewChild('confirmReenvoi') confirmReenvoi!: ConfirmComponent;
   confirmMessage: string = `L'adresse mail ou le numéro de téléphone n'est pas renseigné pour les profils suivants :<div>__profils__</div>Souhaitez-vous continuer ?`;
   errorMessage: string = `L'adresse mail ou le numéro de téléphone doit être renseigné pour les profils suivants :<div>__profils__</div>`;
+  confirmReenvoiMessage: string = `Ce document a déjà été envoyé en signature, voulez-vous continuer ?`;
 
   constructor(
     private configService: ConfigService,
@@ -82,7 +84,14 @@ export class ValidationComponent implements OnInit, OnChanges {
         this.envoiSignatureElectronique();
       }
     });
+  }
 
+  confirmerRenvoiSignatureElectronique(): void {
+    if(this.convention.documentId){
+      this.confirmReenvoi.onClick();
+    }else{
+      this.envoiSignatureElectronique()
+    }
   }
 
   envoiSignatureElectronique(): void {
