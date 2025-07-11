@@ -53,7 +53,7 @@
     <mat-expansion-panel-header>
       <mat-panel-title>Cadre du stage</mat-panel-title>
     </mat-expansion-panel-header>
-    <form *ngIf="etudiant && formConvention && consigneEtablissement" [formGroup]="formConvention" novalidate (submit)="validate()">
+    <form *ngIf="etudiant && formConvention" [formGroup]="formConvention" novalidate (submit)="validate()">
       <div class="convention-etudiant-details">
         <div class="row">
           <div class="col-sm-12 col-md-6">
@@ -225,7 +225,7 @@
               </ng-template>
             </div>
 
-            <div *ngIf="selectedInscription">
+            <div *ngIf="selectedInscription && (consigneEtablissement || centreGestion.consigne)">
               <div class="text-title"><i class="fa fa-book-open"></i> Consignes</div>
               <mat-divider></mat-divider>
               <div class="mt-2" [innerHTML]="trustHtml(consigneEtablissement.texte)"></div>
@@ -233,7 +233,7 @@
                 <a href (click)="downloadDoc($event, doc)"><i class="fa fa-paperclip"></i> {{doc.nomReel}}</a>
               </div>
               <div class="mt-3" *ngIf="centreGestion && centreGestion.niveauCentre.libelle !== 'ETABLISSEMENT' && centreGestion.consigne">
-                <div [innerHTML]="trustHtml(centreGestion.consigne.texte)"></div>
+                <div [innerHTML]="trustHtml(centreGestion.consigne?.texte)"></div>
                 <div *ngFor="let doc of centreGestion.consigne.documents">
                   <a href (click)="downloadDoc($event, doc)"><i class="fa fa-paperclip"></i> {{doc.nomReel}}</a>
                 </div>
