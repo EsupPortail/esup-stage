@@ -34,6 +34,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -128,7 +129,7 @@ public class DocaposteClient extends WebServiceGatewaySupport {
 
 
     public void upload(Convention convention, Avenant avenant) {
-        String filename = "Convention_" + convention.getId() + "_" + convention.getEtudiant().getPrenom() + "_" + convention.getEtudiant().getNom();
+        String filename = "Convention_" + convention.getId() + "_" + convention.getEtudiant().getPrenom() + "_" + convention.getEtudiant().getNom() + "_" + new SimpleDateFormat("ddMMyyyy_HHmmss").format(new Date());
         String label = "conventions";
         String documentId = convention.getDocumentId();
         if (avenant != null) {
@@ -141,7 +142,7 @@ public class DocaposteClient extends WebServiceGatewaySupport {
 
         DataFileVO documentFile = new DataFileVO();
         documentFile.setDataHandler(ou.toByteArray());
-        documentFile.setFilename(filename + ".pdf");
+        documentFile.setFilename(filename +".pdf");
 
         // Dépôt du PDF dans Docaposte
         Upload uploadRequest = new Upload();
