@@ -9,7 +9,12 @@
         <mat-label *ngIf="contacts.length > 0">Sélectionnez un tuteur existant :</mat-label>
         <mat-label *ngIf="contacts.length == 0">Aucun tuteur existant</mat-label>
         <mat-select [(value)]="contact" (selectionChange)="choose($event.value)" [disabled]="contacts.length == 0">
-          <mat-option *ngFor="let contact of contacts" [value]="contact">{{contact.nom+' '+contact.prenom}}</mat-option>
+          <mat-option>
+            <ngx-mat-select-search [formControl]="contactFilterCtrl" placeholderLabel="Rechercher un tuteur" noEntriesFoundLabel="Aucun tuteur trouvé"></ngx-mat-select-search>
+          </mat-option>
+          <mat-option *ngFor="let contact of filteredContacts | async" [value]="contact">
+            {{contact.nom + ' ' + contact.prenom}}
+          </mat-option>
         </mat-select>
       </mat-form-field>
       <div class="col-md-12" *ngIf="canCreate()">
