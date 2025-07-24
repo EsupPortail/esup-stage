@@ -14,6 +14,7 @@ https://github.com/EsupPortail/esup-stage/releases/tag/3.0.3[Esup-Stage v3.0.3]
 
 == ESUP-Stage v3.2.0 (À venir)
 === Nouveautés
+- Afficher dans les conventions le prénom, sexe d'état civil et prenom2 #309, #186, #114, #4
 - Ajout d'un filtre "Pays" dans le tableau de bord (#125).
 - Mise à jour de l'interface de sélection des établissements d'accueil, service, tuteur professionnel et signataire (#220).
 - Ajout d'un paramètre permettant d'autoriser ou non l'impression d'une convention suite à la validation d'un avenant.
