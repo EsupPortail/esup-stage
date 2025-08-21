@@ -257,14 +257,21 @@ export class StageComponent implements OnInit {
         }
         // controle du chevauchement avant mise à jour
         if (['dateDebutStage','dateFinStage'].includes(key)) {
-          this.conventionService.controleChevauchement(this.convention.id, this.form.get('dateDebutStage')!.value, this.form.get('dateFinStage')!.value).subscribe((response) => {
-            if (!response) {
-              this.updateHeuresTravail();
-              this.updateSingleField(key,res[key]);
-            } else {
-              this.form.get(key)!.setErrors({dateStageChevauchement: true});
-            }
-          });
+          if (!this.convention.centreGestion.autoriserChevauchement) {
+            // On fait le contrôle uniquement si le chevauchement n'est pas autorisé
+            this.conventionService.controleChevauchement(this.convention.id, this.form.get('dateDebutStage')!.value, this.form.get('dateFinStage')!.value).subscribe((response) => {
+              if (!response) {
+                this.updateHeuresTravail();
+                this.updateSingleField(key,res[key]);
+              } else {
+                this.form.get(key)!.setErrors({dateStageChevauchement: true});
+              }
+            });
+          } else {
+            // Si le chevauchement est autorisé, on met à jour directement sans contrôle
+            this.updateHeuresTravail();
+            this.updateSingleField(key,res[key]);
+          }
         } else {
           this.updateSingleField(key,res[key]);
         }

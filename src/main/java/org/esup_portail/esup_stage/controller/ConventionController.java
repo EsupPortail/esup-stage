@@ -789,6 +789,7 @@ public class ConventionController {
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.MODIFICATION})
     public boolean isChevauchement(@PathVariable("id") int id, @RequestBody DateStageDto dateStageDto) {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
+        //TODO vérifier cette condition, Ce code vérifie si l'utilisateur actuel n'est pas un étudiant (Role.ETU), et si c'est le cas, retourne false.
         if (!UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
             return false;
         }
