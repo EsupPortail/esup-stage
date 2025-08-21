@@ -408,7 +408,7 @@ export class StageComponent implements OnInit {
   }
 
   updateDateFinBounds(dateDebut: Date): void {
-    this.minDateFinStage = new Date(dateDebut.getTime() + (1000 * 60 * 60 * 24));
+    this.minDateFinStage = new Date(dateDebut);
     this.maxDateFinStage = new Date(dateDebut.getTime() + (1000 * 60 * 60 * 24 * 365));
     this.form.get('dateFinStage')!.markAsTouched();
     this.form.get('dateFinStage')!.updateValueAndValidity();
