@@ -93,6 +93,8 @@ cp /opt/esup-stage/application-example.properties /etc/estage/application.proper
 ** `cas.url.logout` : devient *optionnel* et ne peut maintenant contenir que le path de déconnexion :  `/logout` (saisie de l'url entière toujours possible)
 ** `appli.localapi` : devient *optionnel*, sera utilisé en remplacement de `appli.url` lors des appels api sur elle-même (cas d'un reverse proxy par exemple)
 ** `appli.prefix` : *supprimé*, car en doublon avec `appli.url`
+* *Ajout d'une nouvelle propriété*
+** Ajout de la propriété `appli.datasource.context` à partir de la *version 3.1.0*, qui permet de choisir entre la création d'une nouvelle base de données vide ou la reprise d'une base de données existante (comme avant l'introduction de ce paramètre). Cette propriété doit *obligatoirement* être renseignée.
 
 
 [source,properties]
