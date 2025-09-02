@@ -52,6 +52,15 @@ public class Etudiant extends ObjetMetier implements Exportable {
     @Temporal(TemporalType.DATE)
     private Date dateNais;
 
+    @Column
+    private String prenomEtatCivil;
+
+    @Column
+    private String sexEtatCivil;
+
+    @Column
+    private String prenom2;
+
     @Override
     public String getExportValue(String key) {
         return null;

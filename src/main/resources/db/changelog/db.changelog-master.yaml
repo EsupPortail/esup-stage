@@ -264,3 +264,6 @@ databaseChangeLog:
   - include:
       file: 3.2.0-contenu-confirm-message-etab-accueil.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 3.2.0-ajout-donnee-etudiant.yaml
+      relativeToChangelogFile: true

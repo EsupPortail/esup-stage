@@ -356,4 +356,21 @@ public class ApogeeService {
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
         }
     }
+
+    public InfosAdmEtu getInfosAdmEtudiant(String numEtud) {
+        Map<String, String> params = new HashMap<>();
+        params.put("numEtud", numEtud);
+        String response = call("/infosAdmEtu", params);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            InfosAdmEtu infoAdmEtudiant = mapper.readValue(response, InfosAdmEtu.class);
+            if (infoAdmEtudiant == null) {
+                LOGGER.info("Aucune donnée trouvée");
+            }
+            return infoAdmEtudiant;
+        } catch (JsonProcessingException e) {
+            LOGGER.error("Erreur lors de la lecture de la réponse sur l'api infoAdmEtudiant: " + e.getMessage(), e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
+        }
+    }
 }

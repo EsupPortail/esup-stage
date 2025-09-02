@@ -20,6 +20,7 @@ import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.service.Structure.StructureService;
 import org.esup_portail.esup_stage.service.apogee.ApogeeService;
 import org.esup_portail.esup_stage.service.apogee.model.EtudiantRef;
+import org.esup_portail.esup_stage.service.apogee.model.InfosAdmEtu;
 import org.esup_portail.esup_stage.service.ldap.LdapService;
 import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
 import org.esup_portail.esup_stage.service.signature.SignatureService;
@@ -168,6 +169,14 @@ public class ConventionService {
         etudiant.setMail(ldapEtudiant.get(0).getMail());
         etudiant.setCodeSexe(etudiantRef.getCodeSexe());
         etudiant.setDateNais(etudiantRef.getDateNais());
+
+        InfosAdmEtu infosAdmEtu = apogeeService.getInfosAdmEtudiant(etudiant.getNumEtudiant());
+        if (infosAdmEtu != null) {
+            etudiant.setPrenomEtatCivil(infosAdmEtu.getPrenomEtatCivil());
+            etudiant.setSexEtatCivil(infosAdmEtu.getSexEtatCivil());
+            etudiant.setPrenom2(infosAdmEtu.getPrenom2());
+        }
+
         etudiant = etudiantJpaRepository.saveAndFlush(etudiant);
 
         // Ajout du pays de la convention à France si non renseigné
