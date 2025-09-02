@@ -82,6 +82,7 @@
     <app-table [service]="structureService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters"
                matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'"
                (matSortChange)="appTable ? appTable.sorting($event) : null" [actionButton]="canCreate() ? createButton : undefined" [selectedRow]="selectedRow"
+               confirmMessage= "{{'CONFIRM_MESSAGE_ETAB_ACCUEIL'|contenu}}"
                [noResultText]="'Aucun établissement trouvé'">
       <ng-container matColumnDef="raisonSociale">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Raison sociale</th>

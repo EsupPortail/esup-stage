@@ -31,7 +31,7 @@ export class EtabAccueilComponent implements OnInit {
   data: any;
 
   createButton = {
-    libelle: 'Créer un établissement',
+    libelle: 'Créer un nouvel établissement d’accueil',
     action: () => this.initCreate(),
   }
 

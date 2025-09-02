@@ -48,6 +48,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   @Input() exportColumns: any = null;
   @Input() templateMobile?: TemplateRef<any>;
   @Input() loadWithoutFilters: boolean = true;
+  @Input() confirmMessage: string = "";
 
   @Output() onUpdated = new EventEmitter<any>();
 
