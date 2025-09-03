@@ -58,7 +58,7 @@ public class Etudiant extends ObjetMetier implements Exportable {
     @Column
     private String sexEtatCivil;
 
-    @Column
+    @Column(name = "prenom2")
     private String prenom2;
 
     @Override

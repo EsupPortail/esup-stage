@@ -267,3 +267,6 @@ databaseChangeLog:
   - include:
       file: 3.2.0-ajout-donnee-etudiant.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 3.2.0-ajout-param-convention.yaml
+      relativeToChangelogFile: true
