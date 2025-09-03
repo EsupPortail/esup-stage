@@ -9,6 +9,7 @@ import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Image;
+import freemarker.template.Configuration;
 import freemarker.template.Template;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -71,7 +72,9 @@ public class ImpressionService {
 
             htmlTexte = manageIfElse(htmlTexte);
 
-            Template template = new Template("template_convention_texte" + templateConvention.getId(), htmlTexte, freeMarkerConfigurer.getConfiguration());
+            Configuration freeMarkerConfig = freeMarkerConfigurer.getConfiguration();
+            freeMarkerConfig.setClassicCompatible(true);
+            Template template = new Template("template_convention_texte" + templateConvention.getId(), htmlTexte, freeMarkerConfig);
             StringWriter texte = new StringWriter();
             template.process(impressionContext, texte);
 
