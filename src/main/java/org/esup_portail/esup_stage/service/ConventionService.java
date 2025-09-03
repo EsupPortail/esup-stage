@@ -160,13 +160,13 @@ public class ConventionService {
         Etudiant etudiant = etudiantRepository.findByNumEtudiant(conventionFormDto.getNumEtudiant());
         if (etudiant == null) {
             etudiant = new Etudiant();
-            etudiant.setIdentEtudiant(ldapEtudiant.get(0).getUid());
+            etudiant.setIdentEtudiant(ldapEtudiant.getFirst().getUid());
             etudiant.setNumEtudiant(conventionFormDto.getNumEtudiant());
             etudiant.setCodeUniversite(appConfigService.getConfigGenerale().getCodeUniversite());
         }
-        etudiant.setNom(String.join(" ", ldapEtudiant.get(0).getSn()));
-        etudiant.setPrenom(String.join(" ", ldapEtudiant.get(0).getGivenName()));
-        etudiant.setMail(ldapEtudiant.get(0).getMail());
+        etudiant.setNom(String.join(" ", etudiantRef.getNompatro()));
+        etudiant.setPrenom(String.join(" ", etudiantRef.getPrenom()));
+        etudiant.setMail(etudiantRef.getMail());
         etudiant.setCodeSexe(etudiantRef.getCodeSexe());
         etudiant.setDateNais(etudiantRef.getDateNais());
 
