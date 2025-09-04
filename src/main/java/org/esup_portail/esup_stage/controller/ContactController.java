@@ -100,20 +100,16 @@ public class ContactController {
         Contact contact = new Contact();
         setContactData(contact, contactFormDto);
 
+        // Vérifie que le service existe
         Service service = serviceJpaRepository.findById(contactFormDto.getIdService());
         if (service == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Service non trouvé");
         }
 
-        Utilisateur utilisateur = ServiceContext.getUtilisateur();
+        // Prend en compte idCentreGestion si renseigné, sinon centre de l'établissement
         CentreGestion centreGestion;
-        //Ajoute le centreGestion de l'utilisateur qui a créé le contact pour les utilisateurs gestionnaires.
-        if (UtilisateurHelper.isRole(utilisateur, Role.GES) || UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)) {
-            if (contactFormDto.getIdCentreGestion() != null) {
-                centreGestion = centreGestionJpaRepository.findById(contactFormDto.getIdCentreGestion().intValue());
-            } else {
-                centreGestion = centreGestionJpaRepository.getCentreEtablissement();
-            }
+        if (contactFormDto.getIdCentreGestion() != null) {
+            centreGestion = centreGestionJpaRepository.findById(contactFormDto.getIdCentreGestion().intValue());
         } else {
             centreGestion = centreGestionJpaRepository.getCentreEtablissement();
         }
@@ -131,7 +127,24 @@ public class ContactController {
     @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.MODIFICATION})
     public Contact update(@PathVariable("id") int id, @Valid @RequestBody ContactFormDto contactFormDto) {
         Contact contact = contactJpaRepository.findById(id);
+        if (contact == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Contact non trouvé");
+        }
         setContactData(contact, contactFormDto);
+
+        // Prend en compte idCentreGestion si renseigné, sinon centre de l'établissement
+        CentreGestion centreGestion;
+        if (contactFormDto.getIdCentreGestion() != null) {
+            centreGestion = centreGestionJpaRepository.findById(contactFormDto.getIdCentreGestion().intValue());
+        } else {
+            centreGestion = centreGestionJpaRepository.getCentreEtablissement();
+        }
+        if (centreGestion == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "CentreGestion non trouvé");
+        }
+
+        contact.setCentreGestion(centreGestion);
+
         contact = contactJpaRepository.saveAndFlush(contact);
         return contact;
     }
