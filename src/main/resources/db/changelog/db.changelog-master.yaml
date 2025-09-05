@@ -270,3 +270,6 @@ databaseChangeLog:
   - include:
       file: 3.2.0-ajout-param-convention.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 3.2.0-autoriser-impression-convention-apres-creation-avenant.yaml
+      relativeToChangelogFile: true

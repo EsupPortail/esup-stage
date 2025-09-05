@@ -2,7 +2,10 @@
   <mat-card-content>
     <div class="col-sm-12 text-center">
       <mat-card-actions>
-        <button mat-button mat-flat-button color="primary" (click)="printConvention(false)" *ngIf="canPrint">
+        <button mat-button mat-flat-button color="primary"
+                (click)="printConvention(false)"
+                [disabled]="!canPrint"
+                [matTooltip]="!canPrint ? printDisabledReason : ''">
           Imprimer la convention
         </button>
         <button mat-button mat-flat-button color="primary" (click)="printConvention(true)">

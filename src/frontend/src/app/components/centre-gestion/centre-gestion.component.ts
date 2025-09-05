@@ -304,6 +304,7 @@ export class CentreGestionComponent implements OnInit,OnDestroy {
       delaiAlerteConvention: [null, [Validators.required, Validators.min(0)]],
       onlyMailCentreGestion: [null],
       autoriserChevauchement: [null],
+      autoriserImpressionConventionApresCreationAvenant: [null],
     });
   }
 

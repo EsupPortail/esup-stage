@@ -125,6 +125,7 @@ export class ParamCentreComponent implements OnInit {
       delaiAlerteConvention: this.centreGestion.delaiAlerteConvention,
       onlyMailCentreGestion: this.centreGestion.onlyMailCentreGestion,
       autoriserChevauchement : this.centreGestion.autoriserChevauchement,
+      autoriserImpressionConventionApresCreationAvenant : this.centreGestion.autoriserImpressionConventionApresCreationAvenant
     }, {
       emitEvent: false,
     });
