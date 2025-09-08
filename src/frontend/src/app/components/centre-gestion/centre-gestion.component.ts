@@ -118,7 +118,7 @@ export class CentreGestionComponent implements OnInit,OnDestroy {
     }
 
     if (this.consigneCentre) {
-      if (this.consigneCentre.texte) this.setStatus(4, 2);
+      if (this.consigneCentre.texte || this.consigneCentre.documents) this.setStatus(4, 2);
       else this.setStatus(4, 1);
     } else {
       this.setStatus(4, 0);

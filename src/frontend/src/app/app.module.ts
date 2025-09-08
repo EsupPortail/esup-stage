@@ -96,7 +96,7 @@ import { TemplateConventionComponent } from './components/admin/template-convent
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { InterruptionsFormComponent } from './components/convention/stage/interruptions-form/interruptions-form.component';
 import { MatBadgeModule } from "@angular/material/badge";
-import { ConsigneComponent } from './components/consigne/consigne.component';
+import { ConsigneComponent } from './components/centre-gestion/consigne/consigne.component';
 import { RetourListeComponent } from './components/retour-liste/retour-liste.component';
 import { FicheEvaluationComponent } from './components/centre-gestion/fiche-evaluation/fiche-evaluation.component';
 import { QuestionSupplementaireFormComponent } from './components/centre-gestion/fiche-evaluation/question-supplementaire-form/question-supplementaire-form.component';

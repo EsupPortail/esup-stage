@@ -11,8 +11,8 @@ import {
 } from '@angular/core';
 import * as FileSaver from "file-saver";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { ConsigneService } from "../../services/consigne.service";
-import { MessageService } from "../../services/message.service";
+import { ConsigneService } from "../../../services/consigne.service";
+import { MessageService } from "../../../services/message.service";
 import {
   ClassicEditor,
   AccessibilityHelp,
@@ -114,7 +114,7 @@ export class ConsigneComponent implements OnInit, OnChanges, AfterViewInit {
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      texte: [this.consigne ? this.consigne.texte : null, [Validators.required]],
+      texte: [this.consigne ? this.consigne.texte : null],
       idCentreGestion: [this.idCentreGestion, [Validators.required]],
     });
   }
@@ -389,7 +389,7 @@ export class ConsigneComponent implements OnInit, OnChanges, AfterViewInit {
           reversed: true
         }
       },
-      placeholder: 'Type or paste your content here!',
+      placeholder: 'Tapez ou collez votre contenu ici…',
       style: {
         definitions: [
           {
