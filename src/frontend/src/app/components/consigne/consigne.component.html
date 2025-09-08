@@ -43,7 +43,7 @@
       </div>
 
       <div class="buttons">
-        <button mat-flat-button color="primary">
+        <button type="submit" mat-flat-button color="primary" [disabled]="form.invalid">
           {{ (consigne ? 'BOUTON_VALIDER' : 'Créer') | contenu }}
         </button>
         <button type="button" *ngIf="consigne" mat-flat-button color="warn" (click)="deleteConsigne()">
