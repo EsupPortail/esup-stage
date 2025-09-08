@@ -47,13 +47,13 @@ public class DocaposteClient extends WebServiceGatewaySupport {
     @Autowired
     private SignatureProperties signatureProperties;
     @Autowired
-    private AppliProperties appliProperties;
+    AppliProperties appliProperties;
     @Autowired
-    private ImpressionService impressionService;
+    ImpressionService impressionService;
     @Autowired
-    private ConventionJpaRepository conventionJpaRepository;
+    ConventionJpaRepository conventionJpaRepository;
     @Autowired
-    private AvenantJpaRepository avenantJpaRepository;
+    AvenantJpaRepository avenantJpaRepository;
 
     public DocaposteClient(SignatureProperties signatureProperties) {
         this.signatureProperties = signatureProperties;
