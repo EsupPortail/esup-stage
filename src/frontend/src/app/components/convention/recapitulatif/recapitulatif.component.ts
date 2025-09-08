@@ -6,6 +6,7 @@ import { MessageService } from "../../../services/message.service";
 import { AuthService } from "../../../services/auth.service";
 import { Router } from "@angular/router";
 import * as FileSaver from 'file-saver';
+import {AvenantService} from "../../../services/avenant.service";
 
 @Component({
   selector: 'app-recapitulatif',
@@ -20,12 +21,15 @@ export class RecapitulatifComponent implements OnInit {
   periodesStage: any[] = [];
   canPrint: boolean = false;
   printDisabledReason: string = '';
+  avenants: any[] = [];
+  loadingAvenants = true;
 
   constructor(private periodeInterruptionStageService: PeriodeInterruptionStageService,
               private periodeStageService: PeriodeStageService,
               private conventionService: ConventionService,
               private messageService: MessageService,
               private authService: AuthService,
+              private avenantService: AvenantService,
               private router: Router) {
   }
 
@@ -53,7 +57,7 @@ export class RecapitulatifComponent implements OnInit {
       this.loadPeriodesStage()
     }
 
-    this.updateCanPrintStatus();
+    this.loadAvenants();
   }
 
   updateCanPrintStatus(): void {
@@ -72,6 +76,20 @@ export class RecapitulatifComponent implements OnInit {
       if (!centreGestion.autoriserImpressionConvention) {
         this.canPrint = false;
         this.printDisabledReason = 'L\'impression n\'est pas autorisée pour ce centre de gestion';
+        return;
+      }
+
+      if (this.hasValidatedAvenant()) {
+        this.canPrint = false;
+        this.printDisabledReason =
+          'L’impression n\'est pas disponible car un avenant a été validé. '
+        return;
+      }
+
+      if (this.avenants.length > 0 && !centreGestion.autoriserImpressionConventionApresCreationAvenant) {
+        this.canPrint = false;
+        this.printDisabledReason =
+          'L’impression n’est pas autorisée par votre centre après la création d’un avenant.';
         return;
       }
 
@@ -154,4 +172,27 @@ export class RecapitulatifComponent implements OnInit {
       FileSaver.saveAs(blob, filename);
     });
   }
+
+  private hasValidatedAvenant(): boolean {
+    return Array.isArray(this.avenants) && this.avenants.some(a => a.validationAvenant);
+  }
+
+  private loadAvenants(): void {
+    this.loadingAvenants = true;
+    this.avenantService.getByConvention(this.tmpConvention.id).subscribe({
+      next: (res: any) => {
+        this.avenants = Array.isArray(res) ? res : (res?.content ?? []);
+        this.loadingAvenants = false;
+        this.updateCanPrintStatus();
+      },
+      error : (err: any) => {
+        this.loadingAvenants = false;
+        this.messageService.setError('Une erreur est survenue lors du chargement des avenants : ' + err.message);
+        if (this.authService.isEtudiant()) {
+          this.canPrint = false;
+        }
+      }
+    });
+  }
+
 }
