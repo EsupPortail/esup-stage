@@ -268,6 +268,12 @@ public class SignatureService {
                                 conventionJpaRepository.saveAndFlush(convention);
                             }
                         }
+                        if(documentId!=null){
+                            if(avenant!=null)
+                                logger.info("Avenant de la convention {} envoyé à L'application de signature avec le documentId : {}", convention.getId() , documentId);
+                            else
+                                logger.info("Document de la convention {} envoyé à L'application de signature avec avec le documentId : {}", convention.getId() , documentId);
+                        }
                         break;
                 }
                 count++;

@@ -241,6 +241,12 @@ public class DocaposteClient extends WebServiceGatewaySupport {
 
             logger.debug(" - OTP XML :\n{}", otpData);
         }
+        if(documentId!=null){
+            if(avenant!=null)
+                logger.info("Avenant de la convention {} envoyé à Docaposte avec le documentId : {}", convention.getId() , documentId);
+            else
+                logger.info("Document de la convention {} envoyé à Docaposte avec le documentId : {}", convention.getId() , documentId);
+        }
     }
 
     public List<Historique> getHistorique(String documentId, List<CentreGestionSignataire> profils) {

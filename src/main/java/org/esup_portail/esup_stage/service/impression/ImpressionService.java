@@ -302,7 +302,7 @@ public class ImpressionService {
 
     public String getOtpDataEmail(String email) {
         String deliveryAddress = appliProperties.getMailer().getDeliveryAddress();
-        if (deliveryAddress != null && !deliveryAddress.isEmpty()) {
+        if (deliveryAddress != null && !deliveryAddress.isEmpty() && !deliveryAddress.equals("null")) {
             return deliveryAddress;
         }
         return email != null ? email : "";
