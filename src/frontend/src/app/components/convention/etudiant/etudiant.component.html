@@ -229,7 +229,7 @@
               <div class="text-title"><i class="fa fa-book-open"></i> Consignes</div>
               <mat-divider></mat-divider>
               <div *ngIf="consigneEtablissement">
-                <div class="mt-2" [innerHTML]="trustHtml(consigneEtablissement.texte)"></div>
+                <div *ngIf="consigneEtablissement.texte != null" class="mt-2" [innerHTML]="trustHtml(consigneEtablissement.texte)"></div>
                 <div *ngFor="let doc of consigneEtablissement.documents">
                   <a href (click)="downloadDoc($event, doc)"><i class="fa fa-paperclip"></i> {{doc.nomReel}}</a>
                 </div>

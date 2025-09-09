@@ -261,3 +261,6 @@ databaseChangeLog:
   - include:
       file : 3.1.0-fix-update-signature-default-value.yaml
       relativeToChangelogFile: true
+  - include:
+        file: 3.1.1-text-consigne-nullable.yml
+        relativeToChangelogFile: true
