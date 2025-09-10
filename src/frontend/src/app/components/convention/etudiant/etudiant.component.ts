@@ -310,7 +310,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
       // Récupérer les inscriptions
       this.etudiantService.getApogeeInscriptions(row.codEtu, this.convention ? this.convention.annee : null).subscribe((response: any) => {
         this.inscriptions = response;
-
+        this.inscriptions.sort((a,b) => a.annee < b.annee ? 1 : -1);
         if (this.inscriptions.length === 1) {
           this.formConvention.get('inscription')?.setValue(this.inscriptions[0]);
         }
