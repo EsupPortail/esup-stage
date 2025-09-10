@@ -23,7 +23,7 @@ public class Consigne extends ObjetMetier {
     private CentreGestion centreGestion;
 
     @Lob
-    @Column(nullable = false)
+    @Column
     private String texte;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "consigne", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE,CascadeType.ALL,CascadeType.DETACH}, orphanRemoval = true)

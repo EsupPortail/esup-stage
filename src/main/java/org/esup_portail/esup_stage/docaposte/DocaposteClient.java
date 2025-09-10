@@ -47,13 +47,13 @@ public class DocaposteClient extends WebServiceGatewaySupport {
     @Autowired
     private SignatureProperties signatureProperties;
     @Autowired
-    private AppliProperties appliProperties;
+    AppliProperties appliProperties;
     @Autowired
-    private ImpressionService impressionService;
+    ImpressionService impressionService;
     @Autowired
-    private ConventionJpaRepository conventionJpaRepository;
+    ConventionJpaRepository conventionJpaRepository;
     @Autowired
-    private AvenantJpaRepository avenantJpaRepository;
+    AvenantJpaRepository avenantJpaRepository;
 
     public DocaposteClient(SignatureProperties signatureProperties) {
         this.signatureProperties = signatureProperties;
@@ -240,6 +240,12 @@ public class DocaposteClient extends WebServiceGatewaySupport {
             ((JAXBElement<UploadOTPInformationResponse>) getWebServiceTemplate().marshalSendAndReceive(new ObjectFactory().createUploadOTPInformation(requestUploadOtpInformation))).getValue();
 
             logger.debug(" - OTP XML :\n{}", otpData);
+        }
+        if(documentId!=null){
+            if(avenant!=null)
+                logger.info("Avenant de la convention {} envoyé à Docaposte avec le documentId : {}", convention.getId() , documentId);
+            else
+                logger.info("Document de la convention {} envoyé à Docaposte avec le documentId : {}", convention.getId() , documentId);
         }
     }
 
