@@ -6,4 +6,4 @@ databaseChangeLog:
         - dropNotNullConstraint:
             columnName: texte
             tableName: Consigne
-            columnDataType: varchar(255)
+            columnDataType: MEDIUMTEXT
