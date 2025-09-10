@@ -5,5 +5,5 @@ databaseChangeLog:
       changes:
         - dropNotNullConstraint:
             columnName: texte
-            tableName: consigne
+            tableName: Consigne
             columnDataType: varchar(255)
