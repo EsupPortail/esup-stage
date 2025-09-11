@@ -453,6 +453,9 @@ export class ConsigneComponent implements OnInit, OnChanges, AfterViewInit {
       this.consigneService.deleteConsigne(this.consigne.id).subscribe({
         next: () => {
           this.messageService.setSuccess('Consigne supprimée');
+          this.form.get('texte')?.setValue('');     // ou this.form.patchValue({ texte: '' });
+          this.form.markAsPristine();
+          this.form.markAsUntouched();
           this.consigne = null;
           this.sumitted.emit(null);
         },
