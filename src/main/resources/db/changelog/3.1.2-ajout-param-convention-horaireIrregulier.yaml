@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.1.2-ajout-param-convention-horaireIrregulier
+      author: thouveno9
+      changes:
+        - insert:
+            columns:
+              - column:
+                  name: code
+                  value: convention.horaireIrregulier
+              - column:
+                  name: libelle
+                  value: Horaires irréguliers du stage
+            tableName: ParamConvention
