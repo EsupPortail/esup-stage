@@ -33,3 +33,36 @@
 .sirene-info-details li {
   margin-bottom: 0.3rem;
 }
+
+.import-info-box {
+  background-color: #f1f5fb; /* bleu-gris très sobre */
+  border-left: 4px solid #2196f3; /* petite touche de bleu */
+  padding: 1rem 1.5rem;
+  border-radius: 6px;
+  margin-top: 2vh;
+  margin-bottom: 2vh;
+  font-size: 14px;
+  color: #333;
+}
+
+.import-info-title {
+  display: flex;
+  align-items: center; /* centre verticalement icône + texte */
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.import-info-title mat-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 0.75rem;
+  font-size: 24px;
+}
+
+.import-info-title .text-block {
+  display: flex;
+  flex-direction: column; /* empile les spans verticalement */
+}
+
+
