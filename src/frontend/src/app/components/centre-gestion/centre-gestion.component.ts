@@ -330,6 +330,7 @@ export class CentreGestionComponent implements OnInit,OnDestroy {
     this.centreGestion.delaiAlerteConvention = this.paramCentreForm.get('delaiAlerteConvention')?.value;
     this.centreGestion.onlyMailCentreGestion = this.paramCentreForm.get('onlyMailCentreGestion')?.value;
     this.centreGestion.autoriserChevauchement = this.paramCentreForm.get('autoriserChevauchement')?.value;
+    this.centreGestion.autoriserImpressionConventionApresCreationAvenant = this.paramCentreForm.get('autoriserImpressionConventionApresCreationAvenant')?.value;
   }
 
   setSignatureElectroniqueForm() {

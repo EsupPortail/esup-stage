@@ -36,6 +36,14 @@ public class ImpressionContext {
         }
         if (avenant != null) {
             this.avenant = new AvenantContext(avenant);
+
+            if (this.avenant.isModificationSalarie() && avenant.getContact() != null) {
+                this.contact = new ContactContext(avenant.getContact());
+            }
+
+            if (this.avenant.isModificationEnseignant() && avenant.getEnseignant() != null) {
+                this.enseignant = new EnseignantContext(avenant.getEnseignant());
+            }
         }
     }
 
@@ -227,6 +235,7 @@ public class ImpressionContext {
         private String tel;
 
         public ContactContext(Contact contact) {
+            if (contact == null) { this.civiliteLibelle = this.fonction = this.mail = this.nom = this.prenom = this.tel = ""; return; }
             this.civiliteLibelle = contact.getCivilite() != null ? contact.getCivilite().getLibelle() : null;
             this.fonction = contact.getFonction();
             this.mail = contact.getMail();
@@ -234,6 +243,7 @@ public class ImpressionContext {
             this.prenom = contact.getPrenom();
             this.tel = contact.getTel();
         }
+
     }
 
     @Data
@@ -248,6 +258,7 @@ public class ImpressionContext {
         private String fonction;
 
         public EnseignantContext(Enseignant enseignant) {
+            if (enseignant == null) { this.affectationLibelle = this.bureau = this.nom = this.prenom = this.tel = this.mail = this.fonction = ""; return; }
             this.affectationLibelle = enseignant.getAffectation() != null ? enseignant.getAffectation().getLibelle() : null;
             this.bureau = enseignant.getBureau();
             this.nom = enseignant.getNom();
