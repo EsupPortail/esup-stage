@@ -94,7 +94,7 @@ export class ServiceAccueilComponent implements OnInit,OnChanges {
       { id: 'nom', libelle: 'Nom' },
       { id: 'voie', libelle: 'Voie' },
       { id: 'commune', libelle: 'Commune' },
-      { id: 'pays.id', libelle: 'Pays', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id' },
+      { id: 'pays.id', libelle: 'Pays', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', searchable: true },
       { id: 'structure.id', type: 'int', valueType: 'number', value: this.etab.id, hidden: true }
     ];
   }
