@@ -64,7 +64,8 @@ public class ConsigneController {
     public Consigne create(@Valid @RequestBody ConsigneFormDto consigneFormDto) {
         Consigne consigne = new Consigne();
         consigne.setCentreGestion(centreGestionJpaRepository.findById(consigneFormDto.getIdCentreGestion()));
-        consigne.setTexte(ColorConverter.convertHslToRgb(consigneFormDto.getTexte()));
+        String texte = consigneFormDto.getTexte() == null ? null : ColorConverter.convertHslToRgb(consigneFormDto.getTexte());
+        consigne.setTexte(texte);
         consigne = consigneJpaRepository.saveAndFlush(consigne);
         return consigne;
     }

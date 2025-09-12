@@ -273,6 +273,9 @@ public class ImpressionService {
             String periodesInterruptionsStage = getDefaultText("/templates/template_convention_periodesInterruptions.html");
             texte = texte.replace("${convention.periodesInterruptions}", periodesInterruptionsStage);
 
+            String horaireIrregulier = getDefaultText("/templates/template_convention_horaireIrregulier.html");
+            texte = texte.replace("${convention.horaireIrregulier}", horaireIrregulier);
+
             // Remplacement ${avenant.motifs} par le template html contenant tous les motifs
             String motifTexte = getDefaultText("/templates/template_avenant_motifs.html");
             texte = texte.replace("${avenant.motifs}", motifTexte);
@@ -297,7 +300,7 @@ public class ImpressionService {
 
     public String getOtpDataPhoneNumber(String phoneNumber) {
         String deliveryAddress = appliProperties.getMailer().getDeliveryAddress();
-        if (deliveryAddress != null && !deliveryAddress.isEmpty()) {
+        if (deliveryAddress != null && !deliveryAddress.isEmpty()  && !deliveryAddress.equals("null")) {
             return "";
         }
         return phoneNumber;
@@ -305,7 +308,7 @@ public class ImpressionService {
 
     public String getOtpDataEmail(String email) {
         String deliveryAddress = appliProperties.getMailer().getDeliveryAddress();
-        if (deliveryAddress != null && !deliveryAddress.isEmpty()) {
+        if (deliveryAddress != null && !deliveryAddress.isEmpty() && !deliveryAddress.equals("null")) {
             return deliveryAddress;
         }
         return email != null ? email : "";

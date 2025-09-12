@@ -78,7 +78,7 @@ export class EtabAccueilComponent implements OnInit {
       { id: 'numeroSiret', libelle: 'Numéro SIRET' },
       { id: 'numeroRNE', libelle: 'Numéro UAI' },
       { id: 'nafN1.code', libelle: 'Activité', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'code', specific: true },
-      { id: 'pays.id', libelle: 'Pays', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id' },
+      { id: 'pays.id', libelle: 'Pays', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', searchable: true },
       { id: 'commune', libelle: 'Commune' },
       { id: 'typeStructure.id', libelle: 'Type d\'organisme', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id' },
       { id: 'statutJuridique.id', libelle: 'Forme juridique', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id' },

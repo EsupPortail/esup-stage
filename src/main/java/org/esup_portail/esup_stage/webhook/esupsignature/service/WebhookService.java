@@ -1,9 +1,12 @@
 package org.esup_portail.esup_stage.webhook.esupsignature.service;
 
 import com.itextpdf.commons.utils.Base64;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.esup_portail.esup_stage.config.properties.SignatureProperties;
 import org.esup_portail.esup_stage.dto.MetadataDto;
+import org.esup_portail.esup_stage.dto.MetadataObservateurDto;
+import org.esup_portail.esup_stage.dto.MetadataSignataireDto;
 import org.esup_portail.esup_stage.dto.PdfMetadataDto;
 import org.esup_portail.esup_stage.enums.SignataireEnum;
 import org.esup_portail.esup_stage.exception.AppException;
@@ -82,6 +85,13 @@ public class WebhookService {
 
         logger.debug(" - WorkflowId : {} ", content.getMetadata().getWorkflowId());
         logger.debug(" - Pdf : {} ", content.getPdf64() != null);
+        logger.debug(" - Titre : {} ", metadataDto.getTitle());
+        logger.debug(" - Entreprise : {} ", metadataDto.getCompanyname());
+        logger.debug(" - Etablissement : {} ", metadataDto.getSchool());
+        logger.debug(" - WorkflowId : {} ", metadataDto.getWorkflowId());
+        logger.debug(" - Observateurs : {} ", metadataDto.getWatchers() != null ? metadataDto.getWatchers().stream().map(MetadataObservateurDto::getMail).collect(Collectors.joining(",")) : "0");
+        logger.debug(" - Signataires : {} ",metadataDto.getSignatory() != null ? metadataDto.getSignatory().stream().map(MetadataSignataireDto::getMail).collect(Collectors.joining(",")) : "0");
+        logger.debug("Ordre : ");
         for(WorkflowStep step : workflowSteps) {
             logger.debug(" - Step {} : {}", step.getStepNumber(), step.getRecipients().stream().map(Recipient::getEmail).collect(Collectors.joining(",")));
         }

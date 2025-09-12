@@ -228,9 +228,11 @@
             <div *ngIf="selectedInscription && (consigneEtablissement || centreGestion.consigne)">
               <div class="text-title"><i class="fa fa-book-open"></i> Consignes</div>
               <mat-divider></mat-divider>
-              <div class="mt-2" [innerHTML]="trustHtml(consigneEtablissement.texte)"></div>
-              <div *ngFor="let doc of consigneEtablissement.documents">
-                <a href (click)="downloadDoc($event, doc)"><i class="fa fa-paperclip"></i> {{doc.nomReel}}</a>
+              <div *ngIf="consigneEtablissement">
+                <div *ngIf="consigneEtablissement.texte != null" class="mt-2" [innerHTML]="trustHtml(consigneEtablissement.texte)"></div>
+                <div *ngFor="let doc of consigneEtablissement.documents">
+                  <a href (click)="downloadDoc($event, doc)"><i class="fa fa-paperclip"></i> {{doc.nomReel}}</a>
+                </div>
               </div>
               <div class="mt-3" *ngIf="centreGestion && centreGestion.niveauCentre.libelle !== 'ETABLISSEMENT' && centreGestion.consigne">
                 <div [innerHTML]="trustHtml(centreGestion.consigne?.texte)"></div>

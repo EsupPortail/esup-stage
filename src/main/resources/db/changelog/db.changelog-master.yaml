@@ -259,6 +259,15 @@ databaseChangeLog:
       file: 3.1.0-siren.yaml
       relativeToChangelogFile: true
   - include:
+      file : 3.1.0-fix-update-signature-default-value.yaml
+      relativeToChangelogFile: true
+  - include:
+        file: 3.1.1-text-consigne-nullable.yml
+        relativeToChangelogFile: true
+  - include:
+        file: 3.1.2-ajout-param-convention-horaireIrregulier.yaml
+        relativeToChangelogFile: true
+  - include:
       file: 3.2.0-autoriser-chevauchement.yaml
       relativeToChangelogFile: true
   - include:

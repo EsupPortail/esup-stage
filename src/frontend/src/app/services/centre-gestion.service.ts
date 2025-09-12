@@ -118,4 +118,8 @@ export class CentreGestionService implements PaginatedService {
   deleteLogoCentre(id: number): Observable<any> {
     return this.http.delete(`${environment.apiUrl}/centre-gestion/${id}/logo-centre`);
   }
+
+  getAll(): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/centre-gestion/all`);
+  }
 }

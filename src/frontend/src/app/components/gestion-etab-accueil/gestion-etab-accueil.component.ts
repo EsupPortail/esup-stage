@@ -83,7 +83,7 @@ export class GestionEtabAccueilComponent implements OnInit {
       { id: 'numeroSiret', libelle: 'Numéro SIRET' },
       { id: 'numeroRNE', libelle: 'Numéro UAI' },
       { id: 'nafN1.code', libelle: 'Activité', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'code', specific: true },
-      { id: 'pays.id', libelle: 'Pays', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id' },
+      { id: 'pays.id', libelle: 'Pays', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', searchable: true },
       { id: 'commune', libelle: 'Commune' },
       { id: 'typeStructure.id', libelle: 'Type d\'organisme', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id' },
       { id: 'statutJuridique.id', libelle: 'Forme juridique', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id' },
@@ -275,6 +275,12 @@ export class GestionEtabAccueilComponent implements OnInit {
   importCsv(event: any): void {
     this.structureService.import(event.target.files[0]).subscribe((response: any) => {
       this.messageService.setSuccess('Etablissements d\'enseignement importés avec succès');
+    }, error => {
+      if(error.status == 415){
+        this.messageService.setError('Le fichier doit être au format CSV');
+        return;
+      }
+      this.messageService.setError('Erreur lors de l\'import des établissements d\'enseignement');
     });
   }
 

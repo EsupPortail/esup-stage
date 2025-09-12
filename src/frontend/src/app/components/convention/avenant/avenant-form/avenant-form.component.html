@@ -228,7 +228,7 @@
       <ng-container matColumnDef="choix">
         <th mat-header-cell *matHeaderCellDef>Choix</th>
         <td mat-cell *matCellDef="let row">
-          <mat-checkbox class="col-12" (click)="$event.preventDefault();selectService(row)"
+          <mat-checkbox class="col-12" (change)="selectService(row)"
             [checked]="row.id === service.id"></mat-checkbox>
         </td>
       </ng-container>
@@ -296,7 +296,7 @@
       <ng-container matColumnDef="choix">
         <th mat-header-cell *matHeaderCellDef>Choix</th>
         <td mat-cell *matCellDef="let row">
-          <mat-checkbox class="col-12" (click)="$event.preventDefault();selectContact(row)"
+          <mat-checkbox class="col-12" (change)="selectContact(row)"
             [checked]="row.id === contact.id"></mat-checkbox>
         </td>
       </ng-container>

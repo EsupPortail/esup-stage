@@ -63,3 +63,21 @@ button:focus {
   padding-left: 30px;
   padding-top: 5px;
 }
+
+/* cache la pseudo-checkbox sur l’option de recherche (mode multiple) */
+::ng-deep .mat-select-panel .search-option .mat-pseudo-checkbox {
+  display: none !important;
+}
+
+/* l’input prend toute la largeur de l’option */
+::ng-deep .mat-select-panel .search-option .mat-option-text {
+  width: 100%;
+}
+
+::ng-deep .mat-select-panel .search-option input[matInput] {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+}
+

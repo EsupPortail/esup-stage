@@ -109,6 +109,7 @@ public class ImpressionContext {
         private String lieuStage;
         private String conventionValidee;
         private String codeCaisse;
+        private List<HoraireIrregulierContext> horaireIrregulier = new ArrayList<>();
 
         public ConventionContext(Convention convention, CentreGestion centreEtablissement) {
             DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
@@ -183,6 +184,14 @@ public class ImpressionContext {
             }
             this.conventionValidee = validationConvention != null && validationConvention ? "Oui" : "Non";
             this.codeCaisse = convention.getLibelleCPAM();
+            for (PeriodeStage periode : convention.getPeriodeStage()) {
+                this.horaireIrregulier.add(new HoraireIrregulierContext(
+                        df.format(periode.getDateDebut()),
+                        df.format(periode.getDateFin()),
+                        periode.getNbHeuresJournalieres()
+                ));
+            }
+
         }
     }
 
@@ -457,5 +466,46 @@ public class ImpressionContext {
     public static class PeriodeInterruptionContext {
         private String dateDebutInterruption;
         private String dateFinInterruption;
+    }
+
+    public static class HoraireIrregulierContext {
+        private String dateDebutPeriode;
+        private String dateFinPeriode;
+        private Integer nbHeuresJournalieres;
+
+        public HoraireIrregulierContext() {
+
+        }
+
+        public HoraireIrregulierContext(String dateDebutPeriode, String dateFinPeriode, Integer nbHeuresJournalieres) {
+            this.dateDebutPeriode = dateDebutPeriode;
+            this.dateFinPeriode = dateFinPeriode;
+            this.nbHeuresJournalieres = nbHeuresJournalieres;
+        }
+
+        public String getDateDebutPeriode() {
+            return dateDebutPeriode != null ? dateDebutPeriode : "";
+        }
+
+        public void setDateDebutPeriode(String dateDebutPeriode) {
+            this.dateDebutPeriode = dateDebutPeriode;
+        }
+
+        public String getDateFinPeriode() {
+            return dateFinPeriode != null ? dateFinPeriode : "";
+        }
+
+        public void setDateFinPeriode(String dateFinPeriode) {
+            this.dateFinPeriode = dateFinPeriode;
+        }
+
+        public Integer getNbHeuresJournalieres() {
+            return this.nbHeuresJournalieres;
+        }
+
+        public void setNbHeuresJournalieres(Integer nbHeuresJournalieres) {
+            this.nbHeuresJournalieres = nbHeuresJournalieres;
+        }
+
     }
 }

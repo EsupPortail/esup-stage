@@ -36,6 +36,8 @@ FLUSH PRIVILEGES;
 
 === Import de la base pStage et passage du patch
 
+TIP: Si vous n'avez pas de base pStage a reprendre, cette partie est inutile
+
 Pour importer votre base pStage d'une installation en production, vous devez réaliser un dump, ici le fichier : +
 `mysql-pstage-2022-01-25-16h00.sql.gz`
 
@@ -92,7 +94,8 @@ cp /opt/esup-stage/application-example.properties /etc/estage/application.proper
 ** `cas.url.login` : devient *optionnel* et ne peut maintenant contenir que le path de connexion :  `/login` (saisie de l'url entière toujours possible)
 ** `cas.url.logout` : devient *optionnel* et ne peut maintenant contenir que le path de déconnexion :  `/logout` (saisie de l'url entière toujours possible)
 ** `appli.localapi` : devient *optionnel*, sera utilisé en remplacement de `appli.url` lors des appels api sur elle-même (cas d'un reverse proxy par exemple)
-** `appli.prefix` : *supprimé*, car en doublon avec `appli.url`
+* *Ajout d'une nouvelle propriété*
+** Ajout de la propriété `appli.datasource.context` à partir de la *version 3.1.0*, qui permet de choisir entre la création d'une nouvelle base de données vide ou la reprise d'une base de données existante (comme avant l'introduction de ce paramètre). Cette propriété doit *obligatoirement* être renseignée.
 
 
 [source,properties]
@@ -116,8 +119,11 @@ appli.datasource.driver=org.mariadb.jdbc.Driver
 # ============================================================================
 appli.datasource.context=baseline
 
-# url de l'application (notamment utilisée pour envoyer des liens par mail)
+# url de l'application utilisée pour envoyer des liens par mail
 appli.url=http://esupstage.monuniv.fr:8080/frontend/#/
+
+# url de l'application
+appli.prefix=http://esupstage.monuniv.fr:8080
 
 # logins des admin technique, séparés par des ; (utilisateurs à créer au 1er lancement pour paramétrer l'application)
 appli.admin_technique=xxx;yyy

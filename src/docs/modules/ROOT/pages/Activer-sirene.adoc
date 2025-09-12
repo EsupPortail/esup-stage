@@ -62,3 +62,20 @@ siren.url=https://api.insee.fr/api-sirene/3.11
 siren.token=[votre_token]
 siren.nombre_minimum_resultats=3
 ----
+
+== Problèmes techniques connus
+
+=== Échec des appels à l’API Sirene
+
+*Symptôme* ::
+Les appels vers l’API Sirene échouent avec une erreur « connexion refusée ».
+
+*Cause identifiée* ::
+La JVM ne connaît pas le proxy réseau à utiliser.
+Le serveur devait passer par un proxy non configuré dans Java.
+
+=== Solutions possibles
+
+. Ouvrir les accès réseau sortants
+. Configurer le proxy dans les options Java
+

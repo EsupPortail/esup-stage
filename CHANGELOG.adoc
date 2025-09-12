@@ -1,5 +1,33 @@
 == Version stable
-https://github.com/EsupPortail/esup-stage/releases/tag/2.1.9[Esup-Stage v2.1.9]
+https://github.com/EsupPortail/esup-stage/releases/tag/3.0.3[Esup-Stage v3.0.3]
+
+== ESUP-Stage v3.3.0 (À venir)
+=== Nouveautés
+- Permettre d'associer de 1 à n régimes d'inscription par type de convention.
+- Ajout d'un paramètre autorisant l'impression d'un avenant sous conditions (#293).
+
+=== Améliorations
+- N/A
+
+=== Corrections
+- N/A
+
+== ESUP-Stage v3.2.0 (À venir)
+=== Nouveautés
+- Afficher dans les conventions le prénom, sexe d'état civil et prenom2 #309, #186, #114, #4
+- Ajout d'un filtre "Pays" dans le tableau de bord (#125).
+- Mise à jour de l'interface de sélection des établissements d'accueil, service, tuteur professionnel et signataire (#220).
+- Ajout d'un paramètre permettant d'autoriser ou non l'impression d'une convention suite à la validation d'un avenant.
+- Ajout d'un paramètre autorisant le chevauchement de dates de convention pour les étudiants (#176 #117)
+
+=== Améliorations
+- Permettre de saisir un stage d'une durée de 1 jour (#200).
+- Suppression du champ "Pays de la convention" dans l'onglet Stage.
+- Finalisation du module de gestion des évaluations de stage (#97).
+
+=== Corrections
+- Correction du problème de mise à jour des signataires suite à la création d'un avenant pour changement de tuteur.
+- Correction du problème de création d'un avenant avant validation de la convention (#207).
 
 == ESUP-Stage v3.1.0 (À venir)
 === Nouveautés
@@ -7,29 +35,23 @@ https://github.com/EsupPortail/esup-stage/releases/tag/2.1.9[Esup-Stage v2.1.9]
 - Création de la variable `convention.horaireIrregulier` (#219).
 - Ajout d'une bulle d'aide près du bouton d'import des organismes d'accueil.
 - Intégration de la nouvelle API de consultation des étapes de signature dans Esup-Signature.
-- Alerte des gestionnaire lorsqu'une convention est signée électroniquement.
+- Alerter les gestionnaires lorsqu'une convention est signée électroniquement #213
+- Création d'un bouton pour supprimer le logo déposé #91
+- Ajouter le mode de versement de la gratification, le code postal et la ville de l'étudiant au récapitulatif de la convention.
+- Suppression de la variable `appli.url` du fichier .properties
 
 === Améliorations
+- Possibilité de saisir du texte dans les listes déroulantes de sélection d'un service, tuteur professionnel et signataire.
 - Possibilité de saisir manuellement la durée en mois, jour(s) et heure(s) (#212).
 - Amélioration de l'export Excel (#233).
 - Tri des thématiques de stage par ordre alphabétique.
-
-== ESUP-Stage v3.0.0 (À venir)
-=== Nouveautés
-- Ajout d'un indicateur de suivi de la signature électronique dans le tableau de bord (#173).
-- Ajout d'un filtre de recherche par état de signature électronique dans le tableau de bord (#213).
-
-=== Améliorations
-- Accès au suivi des signatures pour les étudiants et les gestionnaires (#231).  
-- Suppression de l'impression du récapitulatif et de la convention en mode brouillon.  
-- Suppression des requêtes sur Apogée après la création d'une convention (#190).
+- Décorréler l'impression du récapitulatif de celle de la convention #208
+- Suppression de la convention de Esup-Signature une fois récupérée dans Esup-Stage #222
+- Afficher Néant sur les anciennes valeurs de la gratification #229
+- Notifier le changement d'enseignant référent.
+- Possibilité de renvoyer une convention en signature électronique si elle existe déjà dans Fast parapheur de Docaposte.
+- Vérification du format de la date de naissance récupérée de Esup-Siscol est au bon format dans la base de données.
 
 === Corrections
-- Correction des actions du tableau de bord qui contournaient le processus de validation (#230).  
-- Correction d'un problème d'initialisation des valeurs dans la table `CentreGestion` (#191).  
-- Correction de l'affichage erroné du message d'erreur "Ce rôle ne donne pas accès..." lorsque le paramétrage du centre de gestion est activé (#185).  
-- Correction de l'erreur de calcul des horaires de travail irréguliers (#219).  
-- Correction d'un problème de notification des enseignants (#193).  
-- Initialisation des données dans la table `ConventionNomenclature` en mode brouillon.  
-- Correction du problème de mise à jour des informations de signature électronique (#227).
-- Le département n'était pas affiché lors de la recherche d'un enseignant référent.
+- Correction de l'impossibilité de supprimer la consigne du centre Etablissement.
+- Correction de l'affichage persistant du service dans le menu des établissements d'accueil.

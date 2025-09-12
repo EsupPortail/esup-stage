@@ -418,7 +418,7 @@ public class Convention extends ObjetMetier implements Exportable {
 
     @JsonIgnore
     @OneToMany(mappedBy = "convention", cascade = {CascadeType.REMOVE}, fetch = FetchType.LAZY)
-    private List<PeriodeStage> stagePeriods;
+    private List<PeriodeStage> PeriodeStage;
 
     @Column
     private boolean temConventionSignee;

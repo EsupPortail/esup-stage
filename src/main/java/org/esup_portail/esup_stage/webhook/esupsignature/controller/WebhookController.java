@@ -3,6 +3,7 @@ package org.esup_portail.esup_stage.webhook.esupsignature.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.esup_portail.esup_stage.config.PublicSecurityConfiguration;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
+import org.esup_portail.esup_stage.dto.MetadataSignataireDto;
 import org.esup_portail.esup_stage.dto.PdfMetadataDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.webhook.esupsignature.service.WebhookService;
@@ -51,7 +52,7 @@ public class WebhookController {
                 .retrieve()
                 .bodyToMono(PdfMetadataDto.class)
                 .block();
-        logger.info("Récupération du PDF et des metadata pour l'upload dans esup-signature : {}", content);
+        logger.info("Récupération du PDF et des metadata pour l'upload dans esup-signature : {}", content.getMetadata().getSignatory().stream().map(MetadataSignataireDto::getMail).reduce((s1, s2)->s1+","+s2).orElse("aucun signataire"));
         // Dépôt dans esup-signature
         if (content != null) {
             return webhookService.upload(content);

@@ -106,9 +106,6 @@ export class TuteurProComponent implements OnInit, OnChanges, OnDestroy {
 
   canCreate(): boolean {
     let hasRight = this.authService.checkRights({fonction: AppFonction.SERVICE_CONTACT_ACC, droits: [Droit.CREATION]});
-    if (this.authService.isEtudiant() && !this.autorisationModification) {
-      hasRight = false;
-    }
     return this.modifiable && hasRight;
   }
 

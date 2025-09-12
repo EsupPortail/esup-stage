@@ -37,7 +37,7 @@ public class CronTaskController {
     }
 
     @GetMapping("/{id}")
-    public CronTask get(@PathVariable Integer id) {
+    public CronTask get(@PathVariable("id") Integer id) {
         CronTask cronTask = cronTaskJpaRepository.findById(id).orElse(null);
         if (cronTask == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "CronTask not found");
@@ -46,7 +46,7 @@ public class CronTaskController {
     }
 
     @PutMapping("/{id}")
-    public CronTask update(@PathVariable Integer id, @RequestBody CronTask cronTask) {
+    public CronTask update(@PathVariable("id") Integer id, @RequestBody CronTask cronTask) {
         CronTask cronTaskUpdated = cronTaskService.update(id, cronTask.getNom(), cronTask.getExpressionCron(), cronTask.isActive());
         if (cronTaskUpdated == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "CronTask not found");

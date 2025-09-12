@@ -181,6 +181,7 @@ public class SignatureService {
     }
 
     public int upload(IdsListDto idsListDto, boolean isAvenant) {
+        logger.debug("----------------------------------| Envoi en signature de {} {} |----------------------------------", idsListDto.getIds().size(), isAvenant ? "avenants" : "conventions");
         AppSignatureEnum appSignature = signatureProperties.getAppSignatureType();
         if (appSignature == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La signature électronique n'est pas configurée");
@@ -210,10 +211,12 @@ public class SignatureService {
             try{
                 switch (appSignature) {
                     case DOCAPOSTE:
+                        logger.debug(" - Envoi de la convention {} dans Docaposte", convention.getId());
                         docaposteClient.upload(convention, avenant);
                         break;
                     case ESUPSIGNATURE:
                     case EXTERNE:
+                        logger.debug(" - Envoi de la convention {} dans l'application de signature", convention.getId());
                         String documentId = webClient.post()
                                 .uri(signatureProperties.getWebhook().getUri() + "?" + queryParam + "=" + id)
                                 .header("Authorization", "Bearer " + signatureProperties.getWebhook().getToken())
@@ -268,6 +271,12 @@ public class SignatureService {
                                 conventionJpaRepository.saveAndFlush(convention);
                             }
                         }
+                        if(documentId!=null){
+                            if(avenant!=null)
+                                logger.info("Avenant de la convention {} envoyé à L'application de signature avec le documentId : {}", convention.getId() , documentId);
+                            else
+                                logger.info("Document de la convention {} envoyé à L'application de signature avec avec le documentId : {}", convention.getId() , documentId);
+                        }
                         break;
                 }
                 count++;
@@ -276,6 +285,7 @@ public class SignatureService {
             }
 
         }
+        logger.debug("----------------------------------| Fin de l'envoie en signature |----------------------------------");
         return count;
     }
 

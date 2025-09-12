@@ -6,6 +6,7 @@ import { MessageService } from "../../../services/message.service";
 import { AuthService } from "../../../services/auth.service";
 import { Router } from "@angular/router";
 import * as FileSaver from 'file-saver';
+import { UserService } from '../../../services/user.service';
 import {AvenantService} from "../../../services/avenant.service";
 
 @Component({
@@ -21,6 +22,8 @@ export class RecapitulatifComponent implements OnInit {
   periodesStage: any[] = [];
   canPrint: boolean = false;
   printDisabledReason: string = '';
+  nomPrenomCreation: string = '';
+  nomPrenomModification: string = '';
   avenants: any[] = [];
   loadingAvenants = true;
 
@@ -29,8 +32,9 @@ export class RecapitulatifComponent implements OnInit {
               private conventionService: ConventionService,
               private messageService: MessageService,
               private authService: AuthService,
-              private avenantService: AvenantService,
-              private router: Router) {
+              private router: Router,
+              private userService: UserService,
+              private avenantService: AvenantService) {
   }
 
   ngOnInit(): void {
@@ -57,6 +61,15 @@ export class RecapitulatifComponent implements OnInit {
       this.loadPeriodesStage()
     }
 
+    this.updateCanPrintStatus();
+
+    if (this.convention.loginCreation) {
+      this.getNomPrenomEnvoiSignature(this.convention.loginCreation, 'creation');
+    }
+
+    if (this.convention.loginModif) {
+      this.getNomPrenomEnvoiSignature(this.convention.loginModif, 'modif');
+    }
     this.loadAvenants();
   }
 
@@ -170,6 +183,32 @@ export class RecapitulatifComponent implements OnInit {
       var blob = new Blob([response as BlobPart], {type: "application/pdf"});
       let filename = 'Convention_' + this.tmpConvention.id + '_' + this.tmpConvention.etudiant.prenom + '_' + this.tmpConvention.etudiant.nom + '.pdf';
       FileSaver.saveAs(blob, filename);
+    });
+  }
+
+  getNomPrenomEnvoiSignature(login: string, type: 'creation' | 'modif'): void {
+    if (login == '(auto)'){
+      if (type === 'creation') {
+        this.nomPrenomCreation = 'Création automatique';
+      } else if (type === 'modif') {
+        this.nomPrenomModification = 'Modification automatique';
+      }
+      return;
+    }
+    this.userService.getPersonneByLogin(login).subscribe((response: any) => {
+      if (response) {
+        if (type === 'creation') {
+          this.nomPrenomCreation = response.nom + ' ' + response.prenom;
+        } else if (type === 'modif') {
+          this.nomPrenomModification = response.nom + ' ' + response.prenom;
+        }
+      } else {
+        if (type === 'creation') {
+          this.nomPrenomCreation = login;
+        } else if (type === 'modif') {
+          this.nomPrenomModification = login;
+        }
+      }
     });
   }
 
