@@ -111,8 +111,11 @@ export class SignatureElectroniqueComponent implements OnInit {
 
   getNomPrenomEnvoiSignature(): void {
     if (this.convention.loginEnvoiSignature) {
-      this.userService.findOneByLogin(this.convention.loginEnvoiSignature).subscribe((response: any) => {
+      this.userService.getPersonneByLogin(this.convention.loginEnvoiSignature).subscribe((response: any) => {
         if (response) {
+          if(response.nom == null || response.prenom == null) {
+            this.NomPrenomEnvoiSignature = '';
+          }
           this.NomPrenomEnvoiSignature = response.nom + ' ' + response.prenom;
         }
       });

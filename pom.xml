@@ -24,6 +24,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.test.skip>true</maven.test.skip>
 		<skip.npm.install>false</skip.npm.install>
+		<skip.frontend>false</skip.frontend>
 	</properties>
 
 	<!-- environnement local(dev: config interne) et default(config externe) -->
@@ -387,6 +388,7 @@
 						</goals>
 						<configuration>
 							<arguments>run buildProduction</arguments>
+							<skip>${skip.frontend}</skip>
 						</configuration>
 						<phase>generate-resources</phase>
 					</execution>
