@@ -229,7 +229,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       { id: 'etape.id', libelle: 'Étape', type: 'autocomplete', autocompleteService: this.etapeService, options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true, colSpan: 9 },
       { id: 'langueConvention.code', libelle: 'Langue de convention', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'code', value: [] },
       { id: 'typeConvention.id', libelle: 'Type de convention', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
-      { id: 'structure.pays.id', libelle: 'Pays de l’établissement d\'accueil', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
+      { id: 'structure.pays.id', libelle: 'Pays de l’établissement d\'accueil', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], searchable: true },
     ];
 
     this.exportColumns = {
@@ -339,7 +339,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     { id: 'etatValidation', libelle: 'État de validation de la convention', type: 'list', options: this.validationsOptions, keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
     { id: 'langueConvention.code', libelle: 'Langue de convention', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'code', value: [] },
     { id: 'typeConvention.id', libelle: 'Type de convention', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
-    { id: 'structure.pays.id', libelle: 'Pays de l’établissement d\'accueil', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
+    { id: 'structure.pays.id', libelle: 'Pays de l’établissement d\'accueil', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [],searchable: true },
   ];
 
   this.exportColumns = {
@@ -373,7 +373,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       { id: 'avenant', libelle: 'Avenant', type: 'boolean', specific: true },
       { id: 'etatValidation', libelle: 'État de validation de la convention', type: 'list', options: this.validationsOptions, keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
       { id: 'annee', libelle: 'Année', type: 'annee', options: [], keyLibelle: 'libelle', keyId: 'libelle', value: [] },
-      { id: 'structure.pays.id', libelle: 'Pays de l’établissement d\'accueil', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
+      { id: 'structure.pays.id', libelle: 'Pays de l’établissement d\'accueil', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], searchable: true },
     ];
 
     this.exportColumns = {
