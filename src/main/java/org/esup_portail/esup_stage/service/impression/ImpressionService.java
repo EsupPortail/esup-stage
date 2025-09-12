@@ -270,6 +270,9 @@ public class ImpressionService {
             String periodesInterruptionsStage = getDefaultText("/templates/template_convention_periodesInterruptions.html");
             texte = texte.replace("${convention.periodesInterruptions}", periodesInterruptionsStage);
 
+            String horaireIrregulier = getDefaultText("/templates/template_convention_horaireIrregulier.html");
+            texte = texte.replace("${convention.horaireIrregulier}", horaireIrregulier);
+
             // Remplacement ${avenant.motifs} par le template html contenant tous les motifs
             String motifTexte = getDefaultText("/templates/template_avenant_motifs.html");
             texte = texte.replace("${avenant.motifs}", motifTexte);

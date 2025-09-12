@@ -10,19 +10,21 @@ import {
   QueryList,
   SimpleChanges,
   TemplateRef,
-  ViewChild
+  ViewChild,
+  OnDestroy
 } from '@angular/core';
-import {Sort, SortDirection} from "@angular/material/sort";
-import {MatPaginator, PageEvent} from "@angular/material/paginator";
-import {MatColumnDef, MatTable} from "@angular/material/table";
-import {PaginatedService} from "../../services/paginated.service";
-import {Subject} from "rxjs";
-import {debounceTime} from "rxjs/operators";
-import * as _ from "lodash";
-import {MatAutocompleteSelectedEvent} from "@angular/material/autocomplete";
-import {AuthService} from "../../services/auth.service";
-import * as FileSaver from "file-saver";
-import {TechnicalService} from "../../services/technical.service";
+import { FormControl } from '@angular/forms';
+import { Sort, SortDirection } from '@angular/material/sort';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatColumnDef, MatTable } from '@angular/material/table';
+import { PaginatedService } from '../../services/paginated.service';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import * as _ from 'lodash';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { AuthService } from '../../services/auth.service';
+import * as FileSaver from 'file-saver';
+import { TechnicalService } from '../../services/technical.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ColumnSelectorComponent } from './column-selector/column-selector.component';
 
@@ -67,6 +69,11 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   autocompleteData: any = [];
   backConfig: any;
   isMobile: boolean = false;
+
+  // --- recherche pour toutes les listes ---
+  listFilterCtrls: Record<string, FormControl> = {};
+  filteredListOptions: Record<string, any[]> = {};
+  private _destroy$ = new Subject<void>();
 
   constructor(
     private authService: AuthService,
@@ -142,6 +149,35 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {}
 
+  ngOnDestroy(): void {
+    this._destroy$.next();
+    this._destroy$.complete();
+  }
+
+  // --- utils recherche list ---
+  private norm(v: any): string {
+    return (v ?? '')
+      .toString()
+      .normalize('NFD')
+      .replace(/\p{Diacritic}/gu, '')
+      .toLowerCase();
+  }
+
+  private applyListFilter(id: string, q: string) {
+    const filter = this.filters.find((f: any) => f.id === id);
+    const all = filter?.options ?? [];
+    if (!q || q.trim() === '') {
+      this.filteredListOptions[id] = all.slice();
+      return;
+    }
+    const keyLib = filter?.keyLibelle ?? 'libelle';
+    const nq = this.norm(q);
+    this.filteredListOptions[id] = all.filter((o: any) =>
+      this.norm(o?.[keyLib]).includes(nq)
+    );
+  }
+
+
   getPaginated(): void {
     this.service.getPaginated(this.page, this.pageSize, this.sortColumn, this.sortOrder, JSON.stringify(this.filterValuesToSend)).subscribe((results: any) => {
       this.total = results.total;
@@ -196,12 +232,31 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
             this.filterValues[filter.id].value = [];
           }
         }
+
+        if (filter.type === 'list') {
+          if (!this.listFilterCtrls[filter.id]) {
+            this.listFilterCtrls[filter.id] = new FormControl('');
+            this.listFilterCtrls[filter.id].valueChanges
+              .pipe(debounceTime(200), distinctUntilChanged())
+              .subscribe((q: string) =>
+                this.applyListFilter(filter.id, q || '')
+              );
+          }
+          this.filteredListOptions[filter.id] = (filter.options ?? []).slice();
+          if (emptyValues) {
+            this.listFilterCtrls[filter.id].setValue('', { emitEvent: false });
+          }
+        }
       }
     });
   }
 
   reset(): void {
     this.initFilters(true);
+    Object.keys(this.listFilterCtrls).forEach((id) => {
+      this.listFilterCtrls[id].setValue('', { emitEvent: false });
+      this.applyListFilter(id, '');
+    });
     this.update();
   }
 
@@ -242,15 +297,17 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
 
   setFilterOption(id: string, options: any[]): void {
     const filter = this.filters.find((f: any) => f.id === id);
-    if (filter) {
-      if (Array.isArray(options)) {
-        filter.options = options;
-        this.filterChanged.next(this.filterValues);
-      } else {
-        console.warn(`Les options fournies pour le filtre ${id} ne sont pas un tableau.`);
+    if (filter && Array.isArray(options)) {
+      filter.options = options;
+
+      if (filter.type === 'list') {
+        const q = this.listFilterCtrls[id]?.value || '';
+        this.applyListFilter(id, q);
       }
+
+      this.filterChanged.next(this.filterValues);
     } else {
-      console.warn(`Aucun filtre trouvé avec l'ID : ${id}`);
+      console.warn(`Aucun filtre trouvé avec l'ID : ${id} ou options invalides`);
     }
   }
 
@@ -420,5 +477,11 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
 
     // Cas simple : un seul objet plat
     return typeof this.exportColumns === 'object' && Object.keys(this.exportColumns).length > 0;
+  }
+
+  onListOpenedChange(id: string, opened: boolean) {
+    if (!opened) return;
+    const q = this.listFilterCtrls[id]?.value || '';
+    this.applyListFilter(id, q);   // ← vide => toutes les options
   }
 }
