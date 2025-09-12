@@ -297,7 +297,7 @@ public class ImpressionService {
 
     public String getOtpDataPhoneNumber(String phoneNumber) {
         String deliveryAddress = appliProperties.getMailer().getDeliveryAddress();
-        if (deliveryAddress != null && !deliveryAddress.isEmpty()) {
+        if (deliveryAddress != null && !deliveryAddress.isEmpty()  && !deliveryAddress.equals("null")) {
             return "";
         }
         return phoneNumber;

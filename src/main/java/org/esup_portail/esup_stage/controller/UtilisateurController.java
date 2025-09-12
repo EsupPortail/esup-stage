@@ -2,6 +2,7 @@ package org.esup_portail.esup_stage.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
+import org.esup_portail.esup_stage.dto.PersonneDto;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
@@ -108,5 +109,18 @@ public class UtilisateurController {
         requestUtilisateur.setRoles(dbRoles);
         requestUtilisateur = utilisateurJpaRepository.saveAndFlush(requestUtilisateur);
         return requestUtilisateur;
+    }
+
+    @GetMapping("/personne/{login}")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
+    public PersonneDto getPersonneByLogin(@PathVariable("login") String login) {
+        PersonneDto personneDto = new PersonneDto();
+        Utilisateur utilisateur = utilisateurJpaRepository.findOneByLogin(login);
+        if(utilisateur == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Utilisateur non trouvé");
+        }
+        personneDto.setNom(utilisateur.getNom());
+        personneDto.setPrenom(utilisateur.getPrenom());
+        return personneDto;
     }
 }
