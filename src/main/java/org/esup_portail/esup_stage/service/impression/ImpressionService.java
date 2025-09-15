@@ -280,6 +280,14 @@ public class ImpressionService {
             String motifTexte = getDefaultText("/templates/template_avenant_motifs.html");
             texte = texte.replace("${avenant.motifs}", motifTexte);
 
+            // Remplacement ${avenant.contact} par le bon signataire (nom & prénom) si il a ete change
+            String avenantContact = getDefaultText("/templates/template_avenant_contact.html");
+            texte = texte.replace("${avenant.contact}", avenantContact);
+
+            // Remplacement ${avenant.enseignant} par le bon signataire (nom & prénom) si il a ete change
+            String avenantEnseignant = getDefaultText("/templates/template_avenant_enseignant.html");
+            texte = texte.replace("${avenant.enseignant}", avenantEnseignant);
+
             // Style par défaut des tables dans les templates
             htmlTexte += texte;
         }
