@@ -172,6 +172,11 @@ app:
           url: https://ins.partenaires.pc-scol.fr/api/ins/ext/v2
       chcExterne:
         url: https://chc.partenaires.pc-scol.fr/api/ext/chc/v1
+      insGestion:
+        url: https://ins.test-partenaires.pc-scol.fr/api/v5/ins
+      insInterne:
+        url: https://ins.test-partenaires.pc-scol.fr/api/ins/v1
+
     # Permet de cibler un dossier par dfaut. /!\ Attention /!\ A renseigner uniquement pour une démonstration ou en phase de test/dveloppement.
     demo:
       codeapprenant: 000000001
