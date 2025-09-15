@@ -97,9 +97,11 @@ public class SignatureService {
     }
 
     public MetadataDto getPublicMetadata(Convention convention, Integer idAvenant) {
-        Avenant avenant = null;
+        Avenant avenant;
         if (idAvenant != null) {
             avenant = avenantJpaRepository.findById(idAvenant).orElse(null);
+        } else {
+            avenant = null;
         }
         MetadataDto metadata = new MetadataDto();
         metadata.setTitle("Convention_" + convention.getId() + "_" + convention.getEtudiant().getNom() + "_" + convention.getEtudiant().getPrenom());
@@ -137,6 +139,17 @@ public class SignatureService {
                     signataireDto.setOrder(s.getOrdre());
                     break;
                 case enseignant:
+                    if(avenant != null){
+                        if(avenant.getEnseignant() != null) {
+                            Enseignant enseignantAvenant = avenant.getEnseignant();
+                            signataireDto.setName(enseignantAvenant.getNom());
+                            signataireDto.setGivenname(enseignantAvenant.getPrenom());
+                            signataireDto.setMail(impressionService.getOtpDataEmail(enseignantAvenant.getMail()));
+                            phone = impressionService.getOtpDataPhoneNumber(enseignantAvenant.getTel());
+                            signataireDto.setOrder(s.getOrdre());
+                            break;
+                        }
+                    }
                     Enseignant enseignant = convention.getEnseignant();
                     signataireDto.setName(enseignant.getNom());
                     signataireDto.setGivenname(enseignant.getPrenom());
@@ -145,6 +158,17 @@ public class SignatureService {
                     signataireDto.setOrder(s.getOrdre());
                     break;
                 case tuteur:
+                    if(avenant != null){
+                        if(avenant.getContact() != null) {
+                            Contact tuteurAvenant = avenant.getContact();
+                            signataireDto.setName(tuteurAvenant.getNom());
+                            signataireDto.setGivenname(tuteurAvenant.getPrenom());
+                            signataireDto.setMail(impressionService.getOtpDataEmail(tuteurAvenant.getMail()));
+                            phone = impressionService.getOtpDataPhoneNumber(tuteurAvenant.getTel());
+                            signataireDto.setOrder(s.getOrdre());
+                            break;
+                        }
+                    }
                     Contact tuteur = convention.getContact();
                     signataireDto.setName(tuteur.getNom());
                     signataireDto.setGivenname(tuteur.getPrenom());

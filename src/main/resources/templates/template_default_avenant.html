@@ -158,18 +158,27 @@ ${avenant.motifs}
                 <p>
                     <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>Tuteur Organisme d'accueil :</u></span>
                 </p>
-                <p>
-                    <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><strong>${contact.nom} ${contact.prenom}</strong></span>
-                </p>
-                <p>
-                    &nbsp;
-                </p>
+                <#if avenant.modificationSalarie>
+                    <p>
+                        <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><strong>${avenant.contact.nom} ${avenant.contact.prenom}</strong></span>
+                    </p>
+                <#else>
+                    <p>
+                        <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><strong>${contact.nom} ${contact.prenom}</strong></span>
+                    </p>
+                </#if>
                 <p>
                     <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>Tuteur Etablissement d'enseignement sup. :</u></span>
                 </p>
-                <p>
-                    <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><strong>${enseignant.nom} ${enseignant.prenom}</strong></span>
-                </p>
+                <#if avenant.modificationEnseignant>
+                    <p>
+                        <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><strong>${avenant.enseignant.nom} ${avenant.enseignant.prenom}</strong></span>
+                    </p>
+                <#else>
+                    <p>
+                        <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><strong>${contact.nom} ${contact.prenom}</strong></span>
+                    </p>
+                </#if>
                 <p>
                     &nbsp;
                 </p>

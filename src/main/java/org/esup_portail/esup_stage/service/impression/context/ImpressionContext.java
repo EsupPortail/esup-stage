@@ -36,14 +36,6 @@ public class ImpressionContext {
         }
         if (avenant != null) {
             this.avenant = new AvenantContext(avenant);
-
-            if (this.avenant.isModificationSalarie() && avenant.getContact() != null) {
-                this.contact = new ContactContext(avenant.getContact());
-            }
-
-            if (this.avenant.isModificationEnseignant() && avenant.getEnseignant() != null) {
-                this.enseignant = new EnseignantContext(avenant.getEnseignant());
-            }
         }
     }
 
