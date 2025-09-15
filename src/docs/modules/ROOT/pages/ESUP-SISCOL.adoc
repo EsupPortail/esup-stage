@@ -2,8 +2,7 @@
 
 Cette application expose à l'application ESUP-STAGE
 des API REST (OPEN API - Swagger).
-Ainsi seule ESUP SIscol fait des accès au SI de l'établissement
-(Annuaire LDAP, Apogée et PCScol). 
+Ainsi seule ESUP SIscol fait des accès au SI de l'établissement (Annuaire LDAP, Apogée et Pégase). 
 
 == Versions
 * JDK `21`
