@@ -38,4 +38,8 @@ export class TemplateMailService implements PaginatedService {
   getMobileTitle(row: any): string {
     return `${row.id} - ${row.code}`;
   }
+
+  getTemplateMailByType(type: number,idConvention: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/template-mails/type/${type}?idConvention=${idConvention}`);
+  }
 }

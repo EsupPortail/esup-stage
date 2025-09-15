@@ -1,0 +1,43 @@
+<div class="modal-overlay">
+  <div class="modal-container">
+    <!-- En-tête fixe -->
+    <div class="header-banner">
+      @switch (typeFiche){
+        @case (0){
+          <h1>Confirmation de l'envoie à l'étudiant ({{convention.etudiant.mail}})</h1>
+        }
+        @case (1){
+          <h1>Confirmation de l'envoie à l'enseignant ({{convention.enseignant.mail}})</h1>
+        }
+        @case (2){
+          <h1>Confirmation de l'envoie au tuteur professionnel ({{convention.contact.mail}})</h1>
+        }
+        @default {
+          <h1>Confirmation de l'envoie</h1>
+        }
+      }
+
+    </div>
+
+    <div class="modal-content">
+      <span>Modèle de mail utilisé : </span>
+      <div class="mail-box">
+        <div class="mail-header">
+          <span>Sujet : {{templateMail.objet}} </span>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="mail-body" [innerHTML]="templateMail.texte"></div>
+      </div>
+    </div>
+
+    <!-- Footer fixe -->
+    <div class="modal-footer">
+      <button type="button" mat-stroked-button class="cancel-button" (click)="close()">
+        {{'BOUTON_ANNULER'|contenu}}
+      </button>
+      <button type="submit" mat-flat-button class="submit-button" (click)="send()">
+        {{'BOUTON_VALIDER'|contenu}}
+      </button>
+    </div>
+  </div>
+</div>

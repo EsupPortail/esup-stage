@@ -9,8 +9,10 @@ import org.esup_portail.esup_stage.dto.TemplateMailInterface;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
+import org.esup_portail.esup_stage.model.Convention;
 import org.esup_portail.esup_stage.model.ParamMail;
 import org.esup_portail.esup_stage.model.TemplateMail;
+import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
 import org.esup_portail.esup_stage.repository.ParamMailJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateMailJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateMailRepository;
@@ -43,6 +45,9 @@ public class TemplateMailController {
 
     @Autowired
     MailerService mailerService;
+
+    @Autowired
+    ConventionJpaRepository conventionJpaRepository;
 
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
@@ -139,5 +144,43 @@ public class TemplateMailController {
     public boolean testSendMail(@Valid @RequestBody SendMailTestDto sendMailTestDto) {
         mailerService.sendTest(sendMailTestDto, ServiceContext.getUtilisateur());
         return true;
+    }
+
+    @GetMapping("/type/{type}")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
+    public TemplateMail getByType(@PathVariable("type") String type, @RequestParam(name = "idConvention") Integer idConvention) {
+        TemplateMail templateMail;
+        Convention convention = null;
+        System.out.println("type = " + type + ", idConvention = " + idConvention);
+        convention = conventionJpaRepository.findById(idConvention).orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée"));
+        switch (type) {
+            case "0":
+                if(convention.getDateEnvoiMailEtudiant() != null){
+                    templateMail = templateMailJpaRepository.findByCode("RAPPEL_FICHE_EVAL_ETU");
+                }else {
+                    templateMail = templateMailJpaRepository.findByCode("FICHE_EVAL_ETU");
+                }
+                break;
+            case "1":
+                if(convention.getDateEnvoiMailTuteurPedago() != null){
+                    templateMail = templateMailJpaRepository.findByCode("RAPPEL_FICHE_EVAL_ENSEIGNANT");
+                }else {
+                    templateMail = templateMailJpaRepository.findByCode("FICHE_EVAL_ENSEIGNANT");
+                }
+                break;
+            case "2":
+                if(convention.getDateEnvoiMailTuteurPro() != null){
+                    templateMail = templateMailJpaRepository.findByCode("RAPPEL_FICHE_EVAL_TUTEUR");
+                }else {
+                    templateMail = templateMailJpaRepository.findByCode("FICHE_EVAL_TUTEUR");
+                }
+                break;
+            default:
+                throw new AppException(HttpStatus.BAD_REQUEST, "Type de mail inconnu");
+        }
+        if(templateMail == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Modèle de mail non trouvé");
+        }
+        return templateMail;
     }
 }

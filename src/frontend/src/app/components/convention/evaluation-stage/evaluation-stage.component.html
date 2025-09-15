@@ -412,12 +412,18 @@
       <div *ngIf="isGestionnaireOrAdmin && ficheEvaluation && ficheEvaluation.validationEtudiant && (!reponseEvaluation || !reponseEvaluation.validationEtudiant)" class="alert alert-secondary mt-3">
         <div class="mb-2">Cliquez sur le bouton ci-dessous afin d'envoyer un mail prévenant l'étudiant ({{convention.etudiant.mail}}) qu'il peut remplir sa fiche.</div>
         <div class="text-center">
-          <span (confirm)="envoiMailEvaluation(0)" [confirmMessage]="'Vous vous apprêtez à envoyer un mail à ' + convention.etudiant.mail + '. Cette action est définitive. Etes vous sur de vouloir continuer ?'">
-            <button class="mat-btn-small" mat-button mat-stroked-button color="primary">
-              <i style="vertical-align: initial;" class="fa fa-envelope"></i>&nbsp;{{'Envoyer' + (convention.envoiMailEtudiant ? ' un rappel' : '')}}
-            </button>
-          </span>
+          <button class="mat-btn-small" mat-button mat-stroked-button color="primary" (click)="openConfirmEnvoiMailEvaluation(0)">
+            <i style="vertical-align: initial;" class="fa fa-envelope"></i>&nbsp;{{'Envoyer' + (convention.envoiMailEtudiant ? ' un rappel' : '')}}
+          </button>
         </div>
+        @if(convention.envoiMailEtudiant && convention.dateEnvoiMailEtudiant){
+          <div class="mail-info-box">
+            <div class="mail-info-title">
+              <mat-icon color="info">info</mat-icon>
+              <span>Le dernier mail a été envoyé le {{convention.dateEnvoiMailEtudiant| date:'dd/MM/yyyy' }} à {{convention.dateEnvoiMailEtudiant| date:'HH:mm' }}</span>
+            </div>
+          </div>
+        }
       </div>
 
     </div>
@@ -661,12 +667,18 @@
       <div *ngIf="isGestionnaireOrAdmin && ficheEvaluation && ficheEvaluation.validationEnseignant && (!reponseEvaluation || !reponseEvaluation.validationEnseignant)" class="alert alert-secondary mt-3">
         <div class="mb-2">Cliquez sur le bouton ci-dessous afin d'envoyer un mail prévenant l'enseignant ({{convention.enseignant.mail}}) qu'il peut remplir sa fiche.</div>
         <div class="text-center">
-          <span (confirm)="envoiMailEvaluation(1)" [confirmMessage]="'Vous vous apprêtez à envoyer un mail à ' + convention.enseignant.mail + '. Cette action est définitive. Etes vous sur de vouloir continuer ?'">
-            <button class="mat-btn-small" mat-button mat-stroked-button color="primary">
-              <i style="vertical-align: initial;" class="fa fa-envelope"></i>&nbsp;{{'Envoyer' + (convention.envoiMailTuteurPedago ? ' un rappel' : '')}}
-            </button>
-          </span>
+          <button class="mat-btn-small" mat-button mat-stroked-button color="primary" (click)="openConfirmEnvoiMailEvaluation(1)">
+            <i style="vertical-align: initial;" class="fa fa-envelope"></i>&nbsp;{{'Envoyer' + (convention.envoiMailTuteurPedago ? ' un rappel' : '')}}
+          </button>
         </div>
+        @if(convention.envoiMailTuteurPedago && convention.dateEnvoiMailTuteurPedago){
+          <div class="mail-info-box">
+            <div class="mail-info-title">
+              <mat-icon color="info">info</mat-icon>
+              <span>Le dernier mail a été envoyé le {{convention.dateEnvoiMailTuteurPedago| date:'dd/MM/yyyy' }} à {{convention.dateEnvoiMailTuteurPedago| date:'HH:mm' }}</span>
+            </div>
+          </div>
+        }
       </div>
     </div>
 
@@ -1013,12 +1025,18 @@
       <div *ngIf="isGestionnaireOrAdmin && ficheEvaluation && ficheEvaluation.validationEntreprise && (!reponseEvaluation || !reponseEvaluation.validationEntreprise)" class="alert alert-secondary mt-3">
         <div class="mb-2">Cliquez sur le bouton ci-dessous afin d'envoyer un mail prévenant le tuteur professionnel ({{convention.contact.mail}}) qu'il peut remplir sa fiche.</div>
         <div class="text-center">
-          <span (confirm)="envoiMailEvaluation(2)" [confirmMessage]="'Vous vous apprêtez à envoyer un mail à ' + convention.contact.mail + '. Cette action est définitive. Etes vous sur de vouloir continuer ?'">
-            <button class="mat-btn-small" mat-button mat-stroked-button color="primary">
+            <button class="mat-btn-small" mat-button mat-stroked-button color="primary" (click)="openConfirmEnvoiMailEvaluation(2)">
               <i style="vertical-align: initial;" class="fa fa-envelope"></i>&nbsp;{{'Envoyer' + (convention.envoiMailTuteurPro ? ' un rappel' : '')}}
             </button>
-          </span>
         </div>
+        @if(convention.envoiMailTuteurPro && convention.dateEnvoiMailTuteurPro){
+          <div class="mail-info-box">
+            <div class="mail-info-title">
+              <mat-icon color="info">info</mat-icon>
+              <span>Le dernier mail a été envoyé le {{convention.dateEnvoiMailTuteurPro| date:'dd/MM/yyyy' }} à {{convention.dateEnvoiMailTuteurPro| date:'HH:mm' }}</span>
+            </div>
+          </div>
+        }
       </div>
     </div>
   </mat-card-content>

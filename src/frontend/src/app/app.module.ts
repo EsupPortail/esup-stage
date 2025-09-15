@@ -133,6 +133,7 @@ import {ConfirmDeleteDialogComponent} from "./components/gestion-etab-accueil/co
 import {ColumnSelectorComponent} from "./components/table/column-selector/column-selector.component";
 import {TachePlanifieComponent} from "./components/admin/config/tache-planifie.component";
 import {MatSlideToggle} from "@angular/material/slide-toggle";
+import {ConfirmEnvoieMailComponent} from "./components/convention/evaluation-stage/confirm-envoie-mail/confirm-envoie-mail.component";
 
 registerLocaleData(localeFr, 'fr');
 
@@ -244,7 +245,8 @@ export class FrenchDateProvider extends NativeDateAdapter {
         SignatureElectroniqueViewComponent,
         ConfirmDeleteDialogComponent,
         ColumnSelectorComponent,
-        TachePlanifieComponent
+        TachePlanifieComponent,
+        ConfirmEnvoieMailComponent
     ],
     bootstrap: [AppComponent], imports: [BrowserModule,
     AppRoutingModule,

@@ -1,13 +1,14 @@
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import {Component, OnInit, Input, ViewChild, Output, EventEmitter} from '@angular/core';
 import { FormBuilder, FormGroup, FormControl, Validators } from "@angular/forms";
 import { ReponseEvaluationService } from "../../../services/reponse-evaluation.service";
 import { FicheEvaluationService } from "../../../services/fiche-evaluation.service";
 import { MessageService } from "../../../services/message.service";
 import { MatExpansionPanel } from "@angular/material/expansion";
-import { AppFonction } from "../../../constants/app-fonction";
-import { Droit } from "../../../constants/droit";
 import { AuthService } from "../../../services/auth.service";
 import * as FileSaver from 'file-saver';
+import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
+import {ConfirmEnvoieMailComponent} from "./confirm-envoie-mail/confirm-envoie-mail.component";
+import {ConventionService} from "../../../services/convention.service";
 
 @Component({
   selector: 'app-evaluation-stage',
@@ -20,6 +21,7 @@ export class EvaluationStageComponent implements OnInit {
   reponseEvaluation: any;
   questionsSupplementaires: any;
   @Input() convention: any;
+  @Output() conventionChange = new EventEmitter<any>();
 
   reponseEtudiantForm: FormGroup;
   reponseEnseignantForm: FormGroup;
@@ -757,6 +759,7 @@ export class EvaluationStageComponent implements OnInit {
               private fb: FormBuilder,
               private messageService: MessageService,
               private authService: AuthService,
+              private matDialog: MatDialog,
   ) {
     this.reponseEtudiantForm = this.fb.group({
       reponseEtuI1: [null, [Validators.required]],
@@ -1573,17 +1576,19 @@ export class EvaluationStageComponent implements OnInit {
     });
   }
 
-  envoiMailEvaluation(typeFiche: number): void {
-    this.reponseEvaluationService.sendMailEvaluation(this.convention.id, typeFiche).subscribe((response: any) => {
-      this.messageService.setSuccess('Mail envoyé avec succès');
-      if (typeFiche == 0)
-        this.convention.envoiMailEtudiant = true
-      if (typeFiche == 1)
-        this.convention.envoiMailTuteurPedago = true
-      if (typeFiche == 2)
-        this.convention.envoiMailTuteurPro = true
+  openConfirmEnvoiMailEvaluation(typeFiche: number): void {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.width = '1000px';
+    dialogConfig.disableClose = true;
+    dialogConfig.data = { typeFiche, convention: this.convention };
+
+    const modalDialog = this.matDialog.open(ConfirmEnvoieMailComponent, dialogConfig);
+
+    modalDialog.afterClosed().subscribe((result?: { convention?: any }) => {
+      if (result?.convention) {
+        this.convention = result.convention;
+        this.conventionChange.emit(result.convention);
+      }
     });
   }
-
 }
-

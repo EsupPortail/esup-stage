@@ -17,3 +17,33 @@
   border-color: #c6c8ca;
   font-size: 0.9em;
 }
+
+.mail-info-box {
+  background-color: #f1f5fb; /* bleu-gris très sobre */
+  border-left: 4px solid #2196f3; /* petite touche de bleu */
+  padding: 0.25rem 0.25rem;
+  border-radius: 6px;
+  margin-top: 2vh;
+  margin-bottom: 2vh;
+  font-size: 14px;
+  color: #333;
+}
+
+.mail-info-title {
+  display: flex;
+  align-items: center; /* centre verticalement icône + texte */
+  font-weight: 500;
+}
+
+.mail-info-title mat-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 0.75rem;
+  font-size: 24px;
+}
+
+.mail-info-title .text-block {
+  display: flex;
+  flex-direction: column; /* empile les spans verticalement */
+}
