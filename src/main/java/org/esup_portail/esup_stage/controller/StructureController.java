@@ -187,6 +187,7 @@ public class StructureController {
             String line = "";
             String separator = ";";
             boolean isHeader = true;
+            boolean exist = false;
 
             while ((line = br.readLine()) != null) {
                 if (isHeader) {
@@ -238,12 +239,23 @@ public class StructureController {
                         }
                     }
 
-                    Structure existant = structureJpaRepository.findByRNE(structure.getNumeroRNE());
+                    if (structure.getNumeroRNE() == null || structure.getNumeroRNE().isEmpty()) {
+                        exist = structureJpaRepository.existByNumeroSiret(structure.getNumeroSiret());
+                        if (exist) {
+                            logger.info("Une sturcture est déjà présente avec le SIRET : " + structure.getNumeroSiret());
+                        }
+                    }else {
+                        exist = structureJpaRepository.existByNumeroRNE(structure.getNumeroRNE());
+                        if (exist) {
+                            logger.info("Une sturcture est déjà présente avec le numéro RNE : " + structure.getNumeroRNE());
+                        }
+                    }
 
-                    if (existant == null) {
+                    if (!exist) {
+                        structure.setTemEnServStructure(true);
                         structureService.save(null,structure);
-                    } else {
-                        logger.info("skipped existing structure with RNE : " + existant.getNumeroRNE());
+                    }else{
+                        logger.info("Structure non importée : " + structure.getRaisonSociale());
                     }
                 }
             }

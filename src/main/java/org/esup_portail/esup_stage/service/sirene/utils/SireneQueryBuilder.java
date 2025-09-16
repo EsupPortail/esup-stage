@@ -21,6 +21,12 @@ public class SireneQueryBuilder {
         SireneQueryBuilder.nafN5JpaRepository = nafN5JpaRepository;
     }
 
+    //    TODO enlever les société fermées
+//    Société (unité légale)
+//        → uniteLegale.etatAdministratifUniteLegale
+//            A = Active
+//            C = Cessée (donc société fermée)
+
     public static String buildLuceneQuery(String filtersJson) {
         JSONObject filters = new JSONObject(filtersJson);
         List<String> clauses = new ArrayList<>();

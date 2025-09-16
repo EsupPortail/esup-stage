@@ -275,12 +275,6 @@ export class GestionEtabAccueilComponent implements OnInit {
   importCsv(event: any): void {
     this.structureService.import(event.target.files[0]).subscribe((response: any) => {
       this.messageService.setSuccess('Etablissements d\'enseignement importés avec succès');
-    }, error => {
-      if(error.status == 415){
-        this.messageService.setError('Le fichier doit être au format CSV');
-        return;
-      }
-      this.messageService.setError('Erreur lors de l\'import des établissements d\'enseignement');
     });
   }
 
