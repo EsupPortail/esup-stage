@@ -94,9 +94,11 @@ public class StructureController {
         }
         boolean estEtudiant = UtilisateurHelper.isRole(Objects.requireNonNull(ServiceContext.getUtilisateur()), Role.ETU);
         boolean creationEtudiantInterdite = !appConfigService.getConfigGenerale().isAutoriserEtudiantACreerEntreprise();
+        boolean paysOk = !(filterMap != null && filterMap.containsKey("pays.id") && !"82".equals(String.valueOf(((Map<?,?>) filterMap.get("pays.id")).get("value"))));
         if (sireneProperties.isApiSireneActive()
                 && structures.size() < sireneProperties.getNombreMinimumResultats()
                 && (creationEtudiantInterdite || !estEtudiant)
+                && paysOk
                 && (filterMap.size() >= 2 || filterMap.size() == 1 && filterMap.containsKey("numeroSiret"))
 
         ) {
