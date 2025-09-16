@@ -89,6 +89,7 @@ import translations from 'ckeditor5/translations/fr.js';
 import { AuthService } from "../../../services/auth.service"
 import {AppFonction} from "../../../constants/app-fonction";
 import {Droit} from "../../../constants/droit";
+import {ConfigService} from "../../../services/config.service";
 
 @Component({
   selector: 'app-etab-accueil-form',
@@ -110,6 +111,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   effectifs: any[] = [];
   selectedNafN5: any;
   nafN5List: any[] = [];
+  creationSeulementHorsFrance = false;
 
   nafN5FilterCtrl: FormControl = new FormControl();
   filteredNafN5List: ReplaySubject<any> = new ReplaySubject<any>(1);
@@ -129,12 +131,21 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
     private authService: AuthService,
     private fb: FormBuilder,
     private messageService: MessageService,
-    private changeDetector: ChangeDetectorRef
+    private changeDetector: ChangeDetectorRef,
+    private configService: ConfigService
   ) { }
 
   ngOnInit(): void {
+    this.configService.getConfigGenerale().subscribe(response=>{
+      const autorisationCreationHorsFrance = response.autoriserEtudiantACreerEntrepriseHorsFrance;
+      const autorisationCreation = response.autoriserEtudiantACreerEntreprise;
+      this.creationSeulementHorsFrance = autorisationCreationHorsFrance && !autorisationCreation;
+    })
     this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServPays: {value: 'O', type: 'text'}})).subscribe((response: any) => {
       this.countries = response.data;
+      if(this.authService.isEtudiant() && this.creationSeulementHorsFrance){
+        this.countries = this.countries.filter(c => c.libelle !== 'FRANCE');
+      }
     });
     this.communeService.getPaginated(1, 0, 'lib', 'asc', "").subscribe((response: any) => {
       this.communes = response;

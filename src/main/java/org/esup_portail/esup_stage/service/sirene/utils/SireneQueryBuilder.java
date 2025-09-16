@@ -21,12 +21,6 @@ public class SireneQueryBuilder {
         SireneQueryBuilder.nafN5JpaRepository = nafN5JpaRepository;
     }
 
-    //    TODO enlever les société fermées
-//    Société (unité légale)
-//        → uniteLegale.etatAdministratifUniteLegale
-//            A = Active
-//            C = Cessée (donc société fermée)
-
     public static String buildLuceneQuery(String filtersJson) {
         JSONObject filters = new JSONObject(filtersJson);
         List<String> clauses = new ArrayList<>();
@@ -161,7 +155,8 @@ public class SireneQueryBuilder {
 
             clauses.add("(" + clause + ")");
         }
-
+        // Ne prendre que les sociétés actives
+        clauses.add("(etatAdministratifUniteLegale:A)");
         String query = String.join(" AND ", clauses);
         return query.isEmpty() ? "" : query;
     }

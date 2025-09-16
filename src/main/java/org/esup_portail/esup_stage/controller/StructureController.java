@@ -98,6 +98,7 @@ public class StructureController {
                 && structures.size() < sireneProperties.getNombreMinimumResultats()
                 && (creationEtudiantInterdite || !estEtudiant)
                 && (filterMap.size() >= 2 || filterMap.size() == 1 && filterMap.containsKey("numeroSiret"))
+
         ) {
             List<String> existingSirets = new ArrayList<>();
             structures.forEach(s -> existingSirets.add(s.getNumeroSiret()));
