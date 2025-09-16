@@ -17,12 +17,19 @@ export class CentreGestionSearchComponent implements OnInit, OnDestroy, AfterVie
 
   columns = ['personnels', 'id', 'nomCentre', 'niveauCentre.libelle', 'validationPedagogique', 'codeConfidentialite', 'action'];
   exportColumns = {
-    id: { title: 'Id' },
-    nomCentre: { title: 'Nom du centre' },
-    niveauCentre: { title: 'Type' },
-    validationPedagogique: { title: 'Validation pédagogique' },
-    codeConfidentialite: { title: 'Confidentialité' },
-  };
+    multipleExcelSheets: [
+      {
+        title: 'Centres de gestion',
+        columns: {
+          id: {title: 'Id'},
+          nomCentre: {title: 'Nom du centre'},
+          niveauCentre: {title: 'Type'},
+          validationPedagogique: {title: 'Validation pédagogique'},
+          codeConfidentialite: {title: 'Confidentialité'},
+        }
+      }
+    ]
+  }
   sortColumn = 'id';
   sortDirection: SortDirection = 'asc';
   filters = [

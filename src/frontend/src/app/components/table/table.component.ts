@@ -11,7 +11,6 @@ import {
   SimpleChanges,
   TemplateRef,
   ViewChild,
-  OnDestroy
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Sort, SortDirection } from '@angular/material/sort';
