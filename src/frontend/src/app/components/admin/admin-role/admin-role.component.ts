@@ -22,8 +22,11 @@ export class AdminRoleComponent implements OnInit {
     { id: 'libelle', libelle: 'Libellé' },
   ];
   exportColumns = {
-    code: { title: 'Code' },
-    libelle: { title: 'Libelle' },
+    title: 'utilisateur',
+    columns:{
+      code: { title: 'Code' },
+      libelle: { title: 'Libelle' },
+    },
   };
 
   formTabIndex = 1;

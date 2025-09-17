@@ -226,9 +226,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     ];
 
     this.exportColumns = {
-      multipleExcelSheets: [
+      singleExcelSheet: [
         {
-          title: 'Données stage + structure d\'accueil',
+          title: 'Données stage',
           columns: {
             id: { title: 'N° de la convention' },
             numEtudiant: { title: 'N° étudiant' },
@@ -279,7 +279,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
             avenant: { title: 'Avenant(s) à la convention' },
             dateCreation: { title: 'Date création convention' },
             dateModif: { title: 'Date modification convention' },
-            structure: { title: 'Nom structure d\'accueil' },
+          }
+        },
+        {
+          title: 'Données structure d\’accueil',
+          columns: {
+            id: { title: 'N° de la convention' },
+            numEtudiant: { title: 'N° étudiant' },
+            etudiantNom: { title: 'Nom Étudiant' },
+            etudiantPrenom: { title: 'Prénom Étudiant' },
+            structure: { title: 'Nom structure d\’accueil' },
             structureSiret: { title: 'SIRET' },
             structureAdresse: { title: 'Adresse' },
             structureCP: { title: 'Code postal' },
@@ -292,11 +301,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
             structurePhone: { title: 'Téléphone' },
             structureMail: { title: 'Mail' },
             structureSiteWeb: { title: 'Site web' },
-            service: { title: 'Service d\'accueil – Nom' },
-            serviceAdresse: { title: 'Service d\'accueil – Adresse' },
-            serviceCP: { title: 'Service d\'accueil – Code postal' },
-            serviceCommune: { title: 'Service d\'accueil - Commune' },
-            servicePays: { title: 'Service d\'accueil – Pays' },
+            service: { title: 'Service d\’accueil – Nom' },
+            serviceAdresse: { title: 'Service d\’accueil – Adresse' },
+            serviceCP: { title: 'Service d\’accueil – Code postal' },
+            serviceCommune: { title: 'Service d\’accueil - Commune' },
+            servicePays: { title: 'Service d\’accueil – Pays' },
             tuteur: { title: 'Tuteur professionnel (Nom Prénom)' },
             tuteurMail: { title: 'Mail tuteur professionnel' },
             tuteurPhone: { title: 'Téléphone tuteur professionnel' },

@@ -14,10 +14,12 @@
       <div class="column-selector-scrollable">
         <div class="column-selector-container">
           <!-- LISTE DISPONIBLES -->
-          <div class="column-list" cdkDropList id="availableList"
+          <div class="column-list"
+               cdkDropList
+               #availableList="cdkDropList"
                [cdkDropListData]="currentSheet.availableColumns"
-               [cdkDropListConnectedTo]="['selectedList']"
-               (cdkDropListDropped)="drop($event, currentSheet, false)">
+               [cdkDropListConnectedTo]="[selectedList]"
+               (cdkDropListDropped)="drop($event, currentSheet)">
             <div class="list-header">
               <h3 class="list-title">
                 <mat-checkbox
@@ -31,8 +33,7 @@
 
             <div class="list">
               <div class="list-item"
-                   *ngFor="let col of currentSheet.availableColumns"
-                   cdkDrag
+                   *ngFor="let col of currentSheet?.availableColumns; trackBy: trackByKey"                   cdkDrag
                    [cdkDragData]="col"
                    [class.selected]="selectedAvailableKeys.has(col.key)"
                    (click)="toggleAvailable(col)">
@@ -58,10 +59,12 @@
           </div>
 
           <!-- LISTE SÉLECTIONNÉES -->
-          <div class="column-list" cdkDropList id="selectedList"
+          <div class="column-list"
+               cdkDropList
+               #selectedList="cdkDropList"
                [cdkDropListData]="currentSheet.selectedColumns"
-               [cdkDropListConnectedTo]="['availableList']"
-               (cdkDropListDropped)="drop($event, currentSheet, true)">
+               [cdkDropListConnectedTo]="[availableList]"
+               (cdkDropListDropped)="drop($event, currentSheet)">
             <div class="list-header">
               <h3 class="list-title">
                 <mat-checkbox

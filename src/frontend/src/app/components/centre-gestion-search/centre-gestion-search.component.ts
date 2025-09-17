@@ -17,7 +17,7 @@ export class CentreGestionSearchComponent implements OnInit, OnDestroy, AfterVie
 
   columns = ['personnels', 'id', 'nomCentre', 'niveauCentre.libelle', 'validationPedagogique', 'codeConfidentialite', 'action'];
   exportColumns = {
-    multipleExcelSheets: [
+    singleExcelSheet: [
       {
         title: 'Centres de gestion',
         columns: {
