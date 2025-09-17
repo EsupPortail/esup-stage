@@ -273,8 +273,37 @@ export class GestionEtabAccueilComponent implements OnInit {
   }
 
   importCsv(event: any): void {
-    this.structureService.import(event.target.files[0]).subscribe((response: any) => {
-      this.messageService.setSuccess('Etablissements d\'enseignement importés avec succès');
+    const input = event.target as HTMLInputElement;
+    const file = input.files && input.files[0];
+    if (!file) { return; }
+
+    this.structureService.import(event.target.files[0]).subscribe({
+      next: () => {
+        this.messageService.setSuccess("Etablissements d'enseignement importés avec succès");
+      },
+      error: (err) => {
+        const report = err?.error;
+        if (report?.fatalError) {
+          this.messageService.setError(report.fatalError);
+          return;
+        }
+
+        if (report?.errors?.length) {
+          const preview = report.errors.slice(0, 5).map((e: any) =>
+            `Ligne ${e.line} — ${e.field} : ${e.message}${e.value ? ` (valeur: ${e.value})` : ''}`
+          ).join('\n');
+
+          this.messageService.setError(
+            `Erreurs d'import (${report.errors.length} au total, ` +
+            `${report.imported || 0} importées) :\n` +
+            preview +
+            (report.errors.length > 5 ? `\n…et ${report.errors.length - 5} autres.` : '')
+          );
+
+        } else {
+          this.messageService.setError("Erreur lors de l'import du fichier CSV");
+        }
+      }
     });
   }
 
@@ -331,9 +360,5 @@ export class GestionEtabAccueilComponent implements OnInit {
 
   canCreateServiceOrContact(): boolean {
     return this.authService.checkRights({fonction: AppFonction.SERVICE_CONTACT_ACC, droits: [Droit.CREATION]});
-  }
-
-  canEditServiceOrContact(): boolean {
-    return this.authService.checkRights({fonction: AppFonction.SERVICE_CONTACT_ACC, droits: [Droit.MODIFICATION]});
   }
 }

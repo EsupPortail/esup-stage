@@ -13,6 +13,8 @@ import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.dto.SireneInfoDto;
 import org.esup_portail.esup_stage.dto.StructureFormDto;
 import org.esup_portail.esup_stage.dto.view.Views;
+import org.esup_portail.esup_stage.dto.ImportReportDto;
+import org.esup_portail.esup_stage.dto.LineErrorDto;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
@@ -23,6 +25,7 @@ import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.Structure.StructureService;
+import org.esup_portail.esup_stage.service.Structure.utils.CsvStructureImportUtils;
 import org.esup_portail.esup_stage.service.sirene.SireneService;
 import org.esup_portail.esup_stage.service.sirene.model.ListStructureSireneDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,6 +81,9 @@ public class StructureController {
 
     @Autowired
     private SireneProperties sireneProperties;
+
+    @Autowired
+    private CsvStructureImportUtils csvUtils;
 
     @JsonView(Views.List.class)
     @GetMapping
@@ -156,122 +162,85 @@ public class StructureController {
 
     @PostMapping(value = "/import", consumes = "text/csv")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.MODIFICATION})
-    public void importStructures(InputStream inputStream) {
-
+    public ResponseEntity<?> importStructures(InputStream inputStream) {
         logger.info("import start");
 
-        int indexNumeroRNE = 0;
-        int indexRaisonSociale = 1;
-        int indexNumeroSiret = 39;
-        int indexActivitePrincipale = 62;
-        int indexVoie = 4;
-        int indexCodePostal = 7;
-        int indexCommune = 10;
-        int indexTelephone = 19;
-        int indexFax = 20;
-        int indexSiteWeb = 21;
-        int indexMail = 22;
+        final String separator = ";";
+        ImportReportDto report = new ImportReportDto();
+        int lineNumber = 0;
+        boolean isHeader = true;
 
-        Effectif effectif = effectifJpaRepository.findByLibelle("Inconnu");
-        TypeStructure typeStructure = typeStructureJpaRepository.findByLibelle("Etablissement d'enseignement");
-        if (typeStructure == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Type de structure non trouvé");
-        }
-        StatutJuridique statutJuridique = statutJuridiqueJpaRepository.findByLibelle("public");
-        if (statutJuridique == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Statut juridique non trouvé");
-        }
-        NafN5 nafN5 = nafN5JpaRepository.findByCode("85.59B");
-        if (nafN5 == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Code non trouvé");
-        }
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, java.nio.charset.StandardCharsets.UTF_8))) {
 
-        Pays pays = paysJpaRepository.findByIso2("FR");
-        if (pays == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Pays non trouvé");
-        }
+            // Référentiels (fatals si manquants)
+            Effectif effectif = effectifJpaRepository.findByLibelle("Inconnu");
+            TypeStructure typeStructure = typeStructureJpaRepository.findByLibelle("Etablissement d'enseignement");
+            if (typeStructure == null) throw new IllegalStateException("Type de structure non trouvé");
+            StatutJuridique statutJuridique = statutJuridiqueJpaRepository.findByLibelle("public");
+            if (statutJuridique == null) throw new IllegalStateException("Statut juridique non trouvé");
+            NafN5 nafN5 = nafN5JpaRepository.findByCode("85.59B");
+            if (nafN5 == null) throw new IllegalStateException("Code NAF non trouvé (85.59B)");
+            Pays pays = paysJpaRepository.findByIso2("FR");
+            if (pays == null) throw new IllegalStateException("Pays non trouvé (FR)");
 
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
-            String line = "";
-            String separator = ";";
-            boolean isHeader = true;
-            boolean exist = false;
+            String line;
+            CsvStructureImportUtils.Indices I = null;
 
             while ((line = br.readLine()) != null) {
+                lineNumber++;
+
+                // Entête -> mapping indices
                 if (isHeader) {
                     isHeader = false;
-                } else {
-                    Structure structure = new Structure();
-
-                    structure.setNafN5(nafN5);
-                    structure.setEffectif(effectif);
-                    structure.setStatutJuridique(statutJuridique);
-                    structure.setTypeStructure(typeStructure);
-                    structure.setPays(pays);
-
-                    String[] columns = line.split(separator, -1);
-                    for (int i = 0; i < columns.length; i++) {
-
-                        if (i == indexNumeroRNE) {
-                            structure.setNumeroRNE(columns[indexNumeroRNE]);
-                        }
-                        if (i == indexRaisonSociale) {
-                            structure.setRaisonSociale(columns[indexRaisonSociale]);
-                        }
-                        if (i == indexNumeroSiret) {
-                            structure.setNumeroSiret(columns[indexNumeroSiret]);
-                        }
-                        if (i == indexActivitePrincipale) {
-                            structure.setActivitePrincipale(columns[indexActivitePrincipale]);
-                        }
-                        if (i == indexVoie) {
-                            structure.setVoie(columns[indexVoie]);
-                        }
-                        if (i == indexCodePostal) {
-                            structure.setCodePostal(columns[indexCodePostal]);
-                        }
-                        if (i == indexCommune) {
-                            structure.setCommune(columns[indexCommune]);
-                        }
-                        if (i == indexMail) {
-                            structure.setMail(columns[indexMail]);
-                        }
-                        if (i == indexTelephone) {
-                            structure.setTelephone(columns[indexTelephone]);
-                        }
-                        if (i == indexSiteWeb) {
-                            structure.setSiteWeb(columns[indexSiteWeb]);
-                        }
-                        if (i == indexFax) {
-                            structure.setFax(columns[indexFax]);
-                        }
+                    try {
+                        I = csvUtils.mapHeaderIndices(line, separator);
+                    } catch (IllegalArgumentException iae) {
+                        report.setFatalError(iae.getMessage());
+                        break;
                     }
-
-                    if (structure.getNumeroRNE() == null || structure.getNumeroRNE().isEmpty()) {
-                        exist = structureJpaRepository.existByNumeroSiret(structure.getNumeroSiret());
-                        if (exist) {
-                            logger.info("Une sturcture est déjà présente avec le SIRET : " + structure.getNumeroSiret());
-                        }
-                    }else {
-                        exist = structureJpaRepository.existByNumeroRNE(structure.getNumeroRNE());
-                        if (exist) {
-                            logger.info("Une sturcture est déjà présente avec le numéro RNE : " + structure.getNumeroRNE());
-                        }
-                    }
-
-                    if (!exist) {
-                        structure.setTemEnServStructure(true);
-                        structureService.save(null,structure);
-                    }else{
-                        logger.info("Structure non importée : " + structure.getRaisonSociale());
-                    }
+                    continue;
                 }
+
+                report.setTotalLines(report.getTotalLines() + 1);
+
+                if (line.isEmpty()) {
+                    report.getErrors().add(new LineErrorDto(lineNumber, "Ligne", "Ligne vide", null));
+                    continue;
+                }
+
+                String[] columns = line.split(separator, -1);
+                var col = csvUtils.colAccessor(columns);
+
+                // 1) Validation
+                var lineErrors = csvUtils.validateRow(lineNumber, col, I);
+
+                // 2) Doublons (en erreur)
+                csvUtils.duplicateError(lineNumber, col, I, structureJpaRepository)
+                        .ifPresent(lineErrors::add);
+
+                if (!lineErrors.isEmpty()) {
+                    report.getErrors().addAll(lineErrors);
+                    continue;
+                }
+
+                // 3) Build & save
+                Structure structure = csvUtils.buildStructure(col, I, nafN5, effectif, statutJuridique, typeStructure, pays);
+                structureService.save(null, structure);
+                report.setImported(report.getImported() + 1);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+
+        } catch (Exception e) {
+            logger.error("Erreur fatale import CSV", e);
+            report.setFatalError("Erreur import : " + e.getMessage());
+        } finally {
+            structureJpaRepository.flush();
+            logger.info("import end");
         }
-        structureJpaRepository.flush();
-        logger.info("import end");
+
+        if (report.hasErrors()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(report);
+        }
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{id}")
