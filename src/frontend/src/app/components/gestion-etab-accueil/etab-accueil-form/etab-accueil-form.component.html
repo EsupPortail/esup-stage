@@ -113,10 +113,24 @@
     </mat-form-field>
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Pays</mat-label>
-      <mat-select formControlName="idPays" required>
-        <mat-option *ngFor="let country of countries" [value]="country.id">{{country.libelle}}</mat-option>
+      <mat-select formControlName="idPays" [disabled]="isFieldDisabled()" required>
+        <!-- Barre de recherche -->
+        <mat-option>
+          <ngx-mat-select-search
+            [formControl]="paysFilterCtrl"
+            [placeholderLabel]="'Rechercher…'"
+            [noEntriesFoundLabel]="'Aucun pays trouvé'"
+          ></ngx-mat-select-search>
+        </mat-option>
+        <!-- Options filtrées -->
+        <mat-option *ngFor="let country of filteredCountries | async" [value]="country.id" [matTooltip]="country.libelle">
+          {{ country.libelle || 'Valeur indisponible' }}
+        </mat-option>
       </mat-select>
-      <mat-error *ngIf="form.get('idPays')"></mat-error>
+      <!-- Gestion des erreurs -->
+      <mat-error *ngIf="form.get('idPays')?.hasError('required') && form.get('idPays')?.touched">
+        Le pays est obligatoire.
+      </mat-error>
     </mat-form-field>
   </div>
   <div class="row">

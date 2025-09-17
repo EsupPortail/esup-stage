@@ -1,13 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges,
-  ChangeDetectorRef, ViewEncapsulation, AfterViewInit
-} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ChangeDetectorRef, ViewEncapsulation, AfterViewInit, OnDestroy} from '@angular/core';
 import { FormBuilder, FormControl, Validators } from "@angular/forms";
 import { StructureService } from "../../../services/structure.service";
 import { CommuneService } from "../../../services/commune.service";
@@ -97,7 +88,7 @@ import {ConfigService} from "../../../services/config.service";
   styleUrls: ['./etab-accueil-form.component.scss'],
   encapsulation:ViewEncapsulation.None
 })
-export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewInit {
+export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
 
   @Input() etab: any;
   @Output() submitted = new EventEmitter<any>();
@@ -115,6 +106,8 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
 
   nafN5FilterCtrl: FormControl = new FormControl();
   filteredNafN5List: ReplaySubject<any> = new ReplaySubject<any>(1);
+  paysFilterCtrl: FormControl = new FormControl('');
+  filteredCountries: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
   _onDestroy = new Subject<void>();
 
   form: any;
@@ -141,11 +134,19 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
       const autorisationCreation = response.autoriserEtudiantACreerEntreprise;
       this.creationSeulementHorsFrance = autorisationCreationHorsFrance && !autorisationCreation;
     })
-    this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServPays: {value: 'O', type: 'text'}})).subscribe((response: any) => {
-      this.countries = response.data;
-      if(this.authService.isEtudiant() && this.creationSeulementHorsFrance){
-        this.countries = this.countries.filter(c => c.libelle !== 'FRANCE');
-      }
+    this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({ temEnServPays: { value: 'O', type: 'text' } })).subscribe((response: any) => {
+        this.countries = response.data;
+
+        // Restriction étudiant : enlever la France si nécessaire
+        if (this.authService.isEtudiant() && this.creationSeulementHorsFrance) {
+          this.countries = this.countries.filter(c => c.libelle !== 'FRANCE');
+        }
+
+        // Alimente la liste filtrée initiale
+        this.filteredCountries.next(this.countries.slice());
+
+        // Met en place le filtrage par saisie
+        this.paysFilterCtrl.valueChanges.pipe(takeUntil(this._onDestroy)).subscribe(() => this.filterCountries());
     });
     this.communeService.getPaginated(1, 0, 'lib', 'asc', "").subscribe((response: any) => {
       this.communes = response;
@@ -620,4 +621,27 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
       return !!this.etab?.id ? !this.canEdit() : !this.canCreate();
   }
 
+  private filterCountries(): void {
+    if (!this.countries || !Array.isArray(this.countries)) {
+      this.filteredCountries.next([]);
+      return;
+    }
+    let search = this.paysFilterCtrl.value;
+    if (!search) {
+      this.filteredCountries.next(this.countries.slice());
+      return;
+    }
+    search = ('' + search).toLowerCase().trim();
+    this.filteredCountries.next(
+      this.countries.filter(c =>
+        (c.libelle ?? '').toLowerCase().includes(search) ||
+        (c.code ?? '').toLowerCase().includes(search)
+      )
+    );
+  }
+
+  ngOnDestroy(): void {
+    this._onDestroy.next();
+    this._onDestroy.complete();
+  }
 }
