@@ -98,8 +98,13 @@ public class StructureController {
         if (sireneProperties.isApiSireneActive()
                 && structures.size() < sireneProperties.getNombreMinimumResultats()
                 && (creationEtudiantInterdite || !estEtudiant)
-                && paysOk
-                && (filterMap.size() >= 2 || filterMap.size() == 1 && filterMap.containsKey("numeroSiret"))
+                && (
+                filterMap.size() >= 2
+                        || (filterMap.size() == 1 && (
+                        filterMap.containsKey("numeroSiret")
+                                || (filterMap.containsKey("pays.id") && paysOk) // ← autorise 1 filtre pays=FR
+                ))
+        )
 
         ) {
             List<String> existingSirets = new ArrayList<>();
