@@ -25,3 +25,30 @@
 .action-bt{
   margin-left:1em;
 }
+
+.import-info-box {
+  background-color: #f1f5fb; /* bleu-gris très sobre */
+  border-left: 4px solid #2196f3; /* petite touche de bleu */
+  padding: 1rem 1.5rem;
+  border-radius: 6px;
+  margin-top: 2vh;
+  margin-bottom: 2vh;
+  font-size: 14px;
+  color: #333;
+}
+
+.import-info-title {
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.import-info-details ul {
+  padding-left: 1.5rem;
+  margin: 0;
+}
+
+.import-info-details li {
+  margin-bottom: 0.3rem;
+}
