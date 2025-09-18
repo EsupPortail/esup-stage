@@ -7,6 +7,8 @@ import { SortDirection } from "@angular/material/sort";
 import { TitleService } from "../../services/title.service";
 import { CentreGestionService } from "../../services/centre-gestion.service";
 import { UfrService } from "../../services/ufr.service";
+import {EnvoiMailEnMasseEvalComponent} from "./envoi-mail-en-masse-eval/envoi-mail-en-masse-eval.component";
+import {MatDialog} from "@angular/material/dialog";
 
 
 @Component({
@@ -38,6 +40,7 @@ export class EvalStageComponent implements OnInit, OnDestroy {
     private titleService: TitleService,
     private centreGestionService: CentreGestionService,
     private ufrService: UfrService,
+    private dialog: MatDialog
   ) {
   }
 
@@ -150,4 +153,10 @@ export class EvalStageComponent implements OnInit, OnDestroy {
     window.removeEventListener('beforeunload', this.saveSessionData.bind(this));
   }
 
+  openEnvoiMailModal() {
+    this.dialog.open(EnvoiMailEnMasseEvalComponent, {
+      width: '800px',
+      data: {}
+    });
+  }
 }

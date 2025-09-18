@@ -183,4 +183,40 @@ public class TemplateMailController {
         }
         return templateMail;
     }
+
+    @GetMapping("/template")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
+    public TemplateMail getByType(@RequestParam(name = "type") Integer type, @RequestParam(name = "rappel") Integer rappel) {
+        TemplateMail templateMail;
+        final Boolean isRappel = rappel != null && rappel == 1;
+        switch (type) {
+            case 0:
+                if(isRappel){
+                    templateMail = templateMailJpaRepository.findByCode("RAPPEL_FICHE_EVAL_ETU");
+                }else {
+                    templateMail = templateMailJpaRepository.findByCode("FICHE_EVAL_ETU");
+                }
+                break;
+            case 1:
+                if(isRappel){
+                    templateMail = templateMailJpaRepository.findByCode("RAPPEL_FICHE_EVAL_ENSEIGNANT");
+                }else {
+                    templateMail = templateMailJpaRepository.findByCode("FICHE_EVAL_ENSEIGNANT");
+                }
+                break;
+            case 2:
+                if(isRappel){
+                    templateMail = templateMailJpaRepository.findByCode("RAPPEL_FICHE_EVAL_TUTEUR");
+                }else {
+                    templateMail = templateMailJpaRepository.findByCode("FICHE_EVAL_TUTEUR");
+                }
+                break;
+            default:
+                throw new AppException(HttpStatus.BAD_REQUEST, "Type de mail inconnu");
+        }
+        if(templateMail == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Modèle de mail non trouvé");
+        }
+        return templateMail;
+    }
 }

@@ -135,6 +135,7 @@ import {TachePlanifieComponent} from "./components/admin/config/tache-planifie.c
 import {MatSlideToggle} from "@angular/material/slide-toggle";
 import {ConfirmEnvoieMailComponent} from "./components/convention/evaluation-stage/confirm-envoie-mail/confirm-envoie-mail.component";
 import { ImageCropperComponent } from 'ngx-image-cropper';
+import { EnvoiMailEnMasseEvalComponent } from "./components/eval-stage/envoi-mail-en-masse-eval/envoi-mail-en-masse-eval.component";
 
 registerLocaleData(localeFr, 'fr');
 
@@ -247,7 +248,8 @@ export class FrenchDateProvider extends NativeDateAdapter {
         ConfirmDeleteDialogComponent,
         ColumnSelectorComponent,
         TachePlanifieComponent,
-        ConfirmEnvoieMailComponent
+        ConfirmEnvoieMailComponent,
+        EnvoiMailEnMasseEvalComponent
     ],
     bootstrap: [AppComponent], imports: [BrowserModule,
     AppRoutingModule,
