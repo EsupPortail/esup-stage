@@ -133,6 +133,7 @@ import {ConfirmDeleteDialogComponent} from "./components/gestion-etab-accueil/co
 import {ColumnSelectorComponent} from "./components/table/column-selector/column-selector.component";
 import {TachePlanifieComponent} from "./components/admin/config/tache-planifie.component";
 import {MatSlideToggle} from "@angular/material/slide-toggle";
+import { ImageCropperComponent } from 'ngx-image-cropper';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -282,6 +283,7 @@ export class FrenchDateProvider extends NativeDateAdapter {
     CKEditorModule,
     MatSnackBarModule,
     MatBadgeModule,
+    ImageCropperComponent,
     ColorPickerModule, MatSlideToggle], providers: [
         CookieService,
         ContenuService,

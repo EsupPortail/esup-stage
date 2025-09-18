@@ -9,6 +9,7 @@ import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Image;
+import com.itextpdf.layout.properties.HorizontalAlignment;
 import freemarker.template.Template;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -132,8 +133,7 @@ public class ImpressionService {
             Document document = new Document(pdfDoc);
 
             if (imageData != null) {
-                Image img = new Image(imageData);
-                if (img.getImageWidth() > 240) img.setWidth(240);
+                Image img = prepareLogoImage(imageData);
                 document.add(img);
             }
             document.close();
@@ -319,5 +319,32 @@ public class ImpressionService {
                 .replaceAll("\\?\\?\\$", "\\?\\?>")
                 .replaceAll("\\$ENDIF", "</#if>");
 
+    }
+
+    /**
+     * Prépare l'image du logo pour l'ajout dans le PDF.
+     *
+     * @param imageData les données de l'image
+     * @return l'image prête à être ajoutée au document
+     */
+    private Image prepareLogoImage(ImageData imageData) {
+        Image img = new Image(imageData);
+
+        float maxWidth = 155f;
+        float maxHeight = 75f;
+
+        float width = img.getImageWidth();
+        float height = img.getImageHeight();
+
+        float widthRatio = maxWidth / width;
+        float heightRatio = maxHeight / height;
+        float scale = Math.min(1f, Math.min(widthRatio, heightRatio));
+
+        img.scale(scale, scale);
+
+        img.setHorizontalAlignment(HorizontalAlignment.LEFT);
+
+        img.setMarginBottom(10f);
+        return img;
     }
 }

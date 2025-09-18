@@ -107,7 +107,7 @@
         </div>
         <div class="row mt-3">
           <div class="col-md-3">
-            <button mat-button mat-stroked-button color="primary" *ngIf="etab.id" (click)="changeOnglet()">Changer d'établissement</button>
+            <button mat-button mat-stroked-button color="primary" *ngIf="etab.id && modifiable" (click)="changeOnglet()">Changer d'établissement</button>
           </div>
           <div class="col-md-3">
             <button mat-button mat-stroked-button color="primary" *ngIf="etab.id && !modif && canEdit()" (click)="edit()">Modifier ces informations</button>

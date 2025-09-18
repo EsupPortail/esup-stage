@@ -42,6 +42,7 @@ export class EtabAccueilComponent implements OnInit {
 
   autorisationModification = false;
   autorisationCreation=false;
+  autorisationCreationHorsFrance = false;
 
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
   @ViewChild(MatExpansionPanel) firstPanel: MatExpansionPanel|undefined;
@@ -69,6 +70,7 @@ export class EtabAccueilComponent implements OnInit {
     this.configService.getConfigGenerale().subscribe((response: any) => {
       this.autorisationModification = response.autoriserEtudiantAModifierEntreprise;
       this.autorisationCreation = response.autoriserEtudiantACreerEntreprise;
+      this.autorisationCreationHorsFrance = response.autoriserEtudiantACreerEntrepriseHorsFrance;
     });
     this.contenuService.get('BOUTON_CREER_ETAB_ACCUEIL').subscribe((response: any) => {
       this.createButton.libelle = response.texte
@@ -111,8 +113,10 @@ export class EtabAccueilComponent implements OnInit {
 
   canCreate(): boolean {
     let hasRight = this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.CREATION]});
-    if (this.authService.isEtudiant() && !this.autorisationCreation) {
-      hasRight = false;
+    if(!this.autorisationCreation){
+      if(this.authService.isEtudiant() && !this.autorisationCreationHorsFrance){
+        hasRight = false;
+      }
     }
     return this.modifiable && hasRight;
   }

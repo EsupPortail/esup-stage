@@ -1,9 +1,24 @@
-
 <mat-card>
   <mat-card-content>
     <p>Le logo est utilisé lors de l'impression des conventions, des avenants et des offres de stage et d'emploi.</p>
     <p>Ce centre de gestion possède un critère de gestion de type {{centreGestion.niveauCentre.libelle}}</p>
     <p>Le logo du centre de gestion au niveau ETABLISSEMENT sera également imprimé sur les conventions.</p>
+
+    <div class="import-info-box">
+      <div class="import-info-title">
+        <mat-icon color="info">info</mat-icon>
+        <span class="m-2">Recommendations pour un résultat optimal</span>
+      </div>
+
+      <div class="import-info-details">
+        <ul>
+          <li>Pour un logo rectangulaire : 320 × 160 px minimum</li>
+          <li>Pour un logo carré : 160 × 160 px minimum</li>
+          <li>Format PNG ou SVG avec fond transparent</li>
+        </ul>
+      </div>
+    </div>
+
 
     <mat-card-actions class="text-center">
       <button class="action-bt" mat-stroked-button color="primary" (click)="logoInput.click()">
@@ -16,9 +31,44 @@
       </button>
     </mat-card-actions>
 
-    <div *ngIf="previewUrl" class="preview-container">
-      <img [src]="previewUrl" alt="Preview du logo" class="preview-image" />
+    <!-- Zone de recadrage -->
+    <div *ngIf="imageChangedEvent" class="cropper-section">
+      <h3>Recadrer votre image</h3>
+
+      <image-cropper
+        [imageChangedEvent]="imageChangedEvent"
+        [maintainAspectRatio]="false"
+        [cropperMinWidth]="100"
+        [cropperMinHeight]="100"
+        [resizeToWidth]="600"
+        [format]="outputFormat"
+        [roundCropper]="false"
+        (imageCropped)="imageCropped($event)"
+        (loadImageFailed)="loadImageFailed()">
+      </image-cropper>
+
+      <!-- Aperçu de l'image recadrée -->
+      <div *ngIf="croppedImage" class="preview-container">
+        <h4>Aperçu :</h4>
+        <img [src]="croppedImage" alt="Logo recadré" class="preview-image" style="max-width: 300px; max-height: 300px;" />
+      </div>
+
+      <!-- Boutons d'action -->
+      <div class="cropper-actions" style="margin-top: 15px;">
+        <button mat-raised-button color="primary" (click)="uploadCroppedLogo()" [disabled]="!croppedBlob">
+          Valider et enregistrer
+        </button>
+        <button mat-stroked-button color="warn" (click)="cancelCrop()" style="margin-left: 10px;">
+          Annuler
+        </button>
+      </div>
     </div>
 
+    <!-- Aperçu du logo actuel -->
+    <div *ngIf="previewUrl && !imageChangedEvent" class="current-logo-preview">
+      <div class="preview-container">
+        <img [src]="previewUrl" alt="Preview du logo" class="preview-image" style="max-width: 300px; max-height: 300px;" />
+      </div>
+    </div>
   </mat-card-content>
 </mat-card>

@@ -11,7 +11,6 @@ import {
   SimpleChanges,
   TemplateRef,
   ViewChild,
-  OnDestroy
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Sort, SortDirection } from '@angular/material/sort';
@@ -412,6 +411,18 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
       };
     }
 
+    if (raw?.singleExcelSheet && Array.isArray(raw.singleExcelSheet)){
+      return {
+        sheets: raw.singleExcelSheet.map((sheet: { title?: string; columns: Record<string, { title: string }> }) => ({
+          title: sheet.title || 'Feuille',
+          availableColumns: Object.entries(sheet.columns).map(([key, col]: [string, any]) => ({
+            key,
+            title: col.title
+          }))
+        }))
+      };
+    }
+
     if (typeof raw === 'object' && !Array.isArray(raw)) {
       return {
         sheets: [
@@ -453,9 +464,21 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   }
 
   exportWithCustomColumns(columnsConfig: { multipleExcelSheets: any[] }) {
+    let finalConfig: any;
+
+    if (this.exportColumns?.singleExcelSheet) {
+      finalConfig = {
+        singleExcelSheet: columnsConfig.multipleExcelSheets
+      };
+    } else {
+      finalConfig = columnsConfig;
+    }
+
+    console.log('Config envoyée:', JSON.stringify(finalConfig, null, 2));
+
     this.service.exportData(
       'excel',
-      JSON.stringify(columnsConfig),
+      JSON.stringify(finalConfig),
       this.sortColumn,
       this.sortOrder,
       JSON.stringify(this.filterValuesToSend)
@@ -471,6 +494,12 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
     // Cas avec plusieurs feuilles
     if ('multipleExcelSheets' in this.exportColumns && Array.isArray(this.exportColumns.multipleExcelSheets)) {
       return this.exportColumns.multipleExcelSheets.some((sheet: any) =>
+        sheet.columns && Object.keys(sheet.columns).length > 0
+      );
+    }
+
+    if('singleExcelSheet' in this.exportColumns && Array.isArray(this.exportColumns.singleExcelSheet)) {
+      return this.exportColumns.singleExcelSheet.some((sheet: any) =>
         sheet.columns && Object.keys(sheet.columns).length > 0
       );
     }

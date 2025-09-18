@@ -10,6 +10,7 @@ import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/dr
 export class ColumnSelectorComponent {
   sheets: any[] = [];
   selectedSheetIndex = 0;
+  trackByKey = (_: number, item: any) => item?.key;
 
   selectedAvailableKeys = new Set<string>();
   selectedChosenKeys = new Set<string>();
@@ -37,22 +38,19 @@ export class ColumnSelectorComponent {
   }
 
   // --- Drag & drop
-  drop(event: CdkDragDrop<any[]>, sheet: any, isSelectedList: boolean) {
-    const fromSelectedList = event.previousContainer.id === 'selectedList';
-    const toSelectedList = event.container.id === 'selectedList';
-
-    // Si on reste dans la même liste, on laisse le comportement standard (réordonnancement simple).
+  drop(event: CdkDragDrop<any[]>, sheet: any) {
+    // même liste -> simple réordonnancement
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
       return;
     }
 
-    // On récupère la colonne effectivement dragguée
+    const fromSelectedList = (event.previousContainer.data === sheet.selectedColumns);
+    const toSelectedList   = (event.container.data === sheet.selectedColumns);
+
     const draggedCol = event.item.data as any;
 
-    // Détermine l’ensemble de colonnes à déplacer :
-    // - si la colonne dragguée fait partie de la sélection de sa liste, on déplace TOUTE la sélection
-    // - sinon, on déplace juste la colonne dragguée
+    // bloc multi-sélection ou élément unique
     let keysToMove = new Set<string>();
     if (fromSelectedList) {
       keysToMove = (this.selectedChosenKeys.size && this.selectedChosenKeys.has(draggedCol.key))
@@ -64,43 +62,26 @@ export class ColumnSelectorComponent {
         : new Set([draggedCol.key]);
     }
 
-    // Références source/target selon le sens
     const source = fromSelectedList ? sheet.selectedColumns : sheet.availableColumns;
     const target = toSelectedList   ? sheet.selectedColumns : sheet.availableColumns;
 
-    // Conserver l’ordre d’apparition des éléments à déplacer
     const toMove = source.filter((c: any) => keysToMove.has(c.key));
     const remain = source.filter((c: any) => !keysToMove.has(c.key));
 
-    // Met à jour la source
-    if (fromSelectedList) {
-      sheet.selectedColumns = remain;
-    } else {
-      sheet.availableColumns = remain;
-    }
+    if (fromSelectedList) sheet.selectedColumns = remain; else sheet.availableColumns = remain;
 
-    // Insère le bloc à l’index de drop dans la cible
     const insertAt = event.currentIndex;
-    const newTarget = [
-      ...target.slice(0, insertAt),
-      ...toMove,
-      ...target.slice(insertAt)
-    ];
+    const newTarget = [...target.slice(0, insertAt), ...toMove, ...target.slice(insertAt)];
 
     if (toSelectedList) {
       sheet.selectedColumns = newTarget;
     } else {
-      // Si on remet dans "disponibles", on retrie A→Z comme avant
       sheet.availableColumns = newTarget.sort(this.sortByTitle);
     }
 
-    // Nettoie / met à jour la sélection
-    if (fromSelectedList) {
-      this.selectedChosenKeys.clear();
-     } else {
-      this.selectedAvailableKeys.clear();
-     }
+    if (fromSelectedList) this.selectedChosenKeys.clear(); else this.selectedAvailableKeys.clear();
   }
+
 
   // --- Sélection (toggle)
   toggleAvailable(col: any) {

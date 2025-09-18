@@ -4,6 +4,8 @@ import { MessageService } from "../../../services/message.service";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { debounceTime } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
+import { ImageCroppedEvent, ImageCropperComponent, LoadedImage } from 'ngx-image-cropper';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-logo-centre',
@@ -14,6 +16,7 @@ export class LogoCentreComponent implements OnInit {
   @Input() centreGestion: any;
   @Output() refreshCentreGestion = new EventEmitter<any>();
   @ViewChild('logoInput') logoInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('cropper') cropper?: ImageCropperComponent;
 
   logoFile: File | undefined;
   previewUrl: string | ArrayBuffer | null = null;
@@ -24,11 +27,18 @@ export class LogoCentreComponent implements OnInit {
   height: any;
   width: any;
 
+  // --- Intégration ngx-image-cropper ---
+  imageChangedEvent: Event | null = null;
+  croppedImage: SafeUrl | string = '';
+  croppedBlob: Blob | null = null; // Pour stocker le blob à envoyer
+  outputFormat: 'png' | 'jpeg' | 'webp' = 'png';
+
   constructor(
     private centreGestionService: CentreGestionService,
     private messageService: MessageService,
     private fb: FormBuilder,
-    private httpClient: HttpClient
+    private httpClient: HttpClient,
+    private sanitizer: DomSanitizer
   ) {
     this.form = this.fb.group({
       content: [null, Validators.required]
@@ -40,8 +50,12 @@ export class LogoCentreComponent implements OnInit {
     this.resizeLogoOnChange();
   }
 
-  onLogoChange(event: any): void {
-    const file = event.target.files.item(0);
+  /**
+   * Sélection d'un fichier
+   */
+  onLogoChange(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const file: File | null = target?.files?.item(0) ?? null;
 
     if (!file || file.type.indexOf('image/') === -1) {
       this.messageService.setError("Le fichier doit être au format image");
@@ -49,51 +63,97 @@ export class LogoCentreComponent implements OnInit {
     }
 
     this.logoFile = file;
+    this.imageChangedEvent = event;
+    this.croppedImage = '';
+    this.croppedBlob = null;
 
-    // Génération de la preview
+    // Preview brute (optionnel)
     const reader = new FileReader();
-    reader.onload = () => {
-      this.previewUrl = reader.result;
-    };
-
-    if (this.logoFile) {
-      reader.readAsDataURL(this.logoFile);
-    } else {
-      console.error("Aucun fichier sélectionné.");
-    }
-
-    // Ajout au FormData après vérification stricte
-    const selectedFile = this.logoFile;
-    if (selectedFile) {
-      const formData = new FormData();
-      formData.append('logo', selectedFile, selectedFile.name);
-
-      this.centreGestionService.insertLogoCentre(formData, this.centreGestion.id).subscribe((response: any) => {
-        this.centreGestion = response;
-        this.refreshCentreGestion.emit(this.centreGestion);
-        this.getLogo();
-      });
-    }
-  }
-
-  onLogoSelected(file: File): void {
-    const reader = new FileReader();
-    reader.onload = (e: any) => {
-      this.previewUrl = e.target.result;
-    };
+    reader.onload = () => { this.previewUrl = reader.result; };
     reader.readAsDataURL(file);
   }
 
-  loadLogo(): void {
-    this.httpClient.get('/api/logo', {responseType: 'text'}).subscribe((base64Data) => {
-      this.previewUrl = `data:image/png;base64,${base64Data}`;
+  /**
+   * Callback ngx-image-cropper : récupère la base64 ET le blob
+   */
+  imageCropped(event: ImageCroppedEvent): void {
+    // Récupération de l'URL sécurisée pour l'affichage
+    this.croppedImage = this.sanitizer.bypassSecurityTrustUrl(event.objectUrl || '');
+
+    // Stockage du blob pour l'envoi
+    this.croppedBlob = event.blob || null;
+
+    console.log('Image croppée:', !!this.croppedBlob, !!this.croppedImage);
+  }
+
+  /**
+   * Callback en cas d'erreur de chargement
+   */
+  loadImageFailed(): void {
+    this.messageService.setError("Impossible de charger l'image dans l'outil de recadrage");
+  }
+
+  /**
+   * Upload de l'image recadrée
+   */
+  uploadCroppedLogo(): void {
+    if (!this.croppedBlob) {
+      this.messageService.setError("Veuillez recadrer l'image avant d'enregistrer");
+      return;
+    }
+
+    const fileName = `logo_cropped.${this.outputFormat}`;
+    const file = new File([this.croppedBlob], fileName, { type: `image/${this.outputFormat}` });
+
+    const formData = new FormData();
+    formData.append('logo', file, file.name);
+    this._sendLogo(formData);
+  }
+
+  /**
+   * Annuler le recadrage
+   */
+  cancelCrop(): void {
+    this.imageChangedEvent = null;
+    this.croppedImage = '';
+    this.croppedBlob = null;
+    this.logoFile = undefined;
+    if (this.logoInput?.nativeElement) {
+      this.logoInput.nativeElement.value = '';
+    }
+  }
+
+  /**
+   * Envoi commun (inchangé côté backend)
+   */
+  private _sendLogo(formData: FormData): void {
+    this.centreGestionService.insertLogoCentre(formData, this.centreGestion.id).subscribe((response: any) => {
+      this.centreGestion = response;
+      this.refreshCentreGestion.emit(this.centreGestion);
+
+      // Reset du cropper / input
+      this.imageChangedEvent = null;
+      this.croppedImage = '';
+      this.croppedBlob = null;
+      this.logoFile = undefined;
+      if (this.logoInput?.nativeElement) {
+        this.logoInput.nativeElement.value = '';
+      }
+
+      this.getLogo();
+
+      this.messageService.setSuccess("Logo mis à jour avec succès");
+    }, _err => {
+      this.messageService.setError("Erreur lors de l'envoi du logo");
     });
   }
 
-  getLogo() {
+  /**
+   * Recharger le logo depuis le backend
+   */
+  getLogo(): void {
     this.centreGestionService.getLogoCentre(this.centreGestion.id).subscribe((response: any) => {
       this.currentFile = response;
-
       if (this.currentFile && this.currentFile.size > 0) {
         const reader = new FileReader();
         reader.readAsDataURL(this.currentFile);
@@ -105,12 +165,15 @@ export class LogoCentreComponent implements OnInit {
     });
   }
 
-  resizeLogoOnChange() {
+  /**
+   * Envoi de l'image redimensionnée au serveur
+   */
+  resizeLogoOnChange(): void {
     this.form.valueChanges.pipe(debounceTime(1000)).subscribe(() => {
       if (this.height != null && this.width != null) {
         this.dimensions.push(this.width);
         this.dimensions.push(this.height);
-        this.centreGestionService.resizeLogoCentre(this.centreGestion.id, this.dimensions).subscribe((response: any) => {
+        this.centreGestionService.resizeLogoCentre(this.centreGestion.id, this.dimensions).subscribe((_response: any) => {
           this.dimensions = [];
           this.height = null;
           this.width = null;
@@ -120,18 +183,24 @@ export class LogoCentreComponent implements OnInit {
     });
   }
 
-  removeLogo() {
-    this.centreGestionService.deleteLogoCentre(this.centreGestion.id).subscribe((response: any) => {
+  /**
+   * Suppression du logo
+   */
+  removeLogo(): void {
+    this.centreGestionService.deleteLogoCentre(this.centreGestion.id).subscribe((_response: any) => {
       this.previewUrl = null;
       this.currentFile = null;
       this.logoFile = undefined;
+      this.croppedImage = '';
+      this.croppedBlob = null;
+      this.imageChangedEvent = null;
       this.form.get('content')?.setValue('');
       if (this.logoInput && this.logoInput.nativeElement) {
         this.logoInput.nativeElement.value = '';
       }
       this.messageService.setSuccess("Logo supprimé avec succès");
       this.refreshCentreGestion.emit(this.centreGestion);
-    }, error => {
+    }, _error => {
       this.messageService.setError("Erreur lors de la suppression du logo");
     });
   }
