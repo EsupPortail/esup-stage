@@ -47,4 +47,7 @@ public class ConfigGeneraleDto {
 
     private boolean utiliserMailPersoEtudiant = false;
 
+    @JsonView(Views.Etu.class)
+    private boolean autoriserEtudiantACreerEntrepriseHorsFrance = false;
+
 }

@@ -155,7 +155,8 @@ public class SireneQueryBuilder {
 
             clauses.add("(" + clause + ")");
         }
-
+        // Ne prendre que les sociétés actives
+        clauses.add("(etatAdministratifUniteLegale:A)");
         String query = String.join(" AND ", clauses);
         return query.isEmpty() ? "" : query;
     }

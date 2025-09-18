@@ -3,19 +3,25 @@
     <div class="header-banner">
       <h1>Exporter</h1>
     </div>
+
     <div class="column-selector-dialog">
       <h2>Colonnes à exporter</h2>
+
       <mat-tab-group *ngIf="hasMultipleSheets" [(selectedIndex)]="selectedSheetIndex">
         <mat-tab *ngFor="let sheet of sheets; let i = index" [label]="sheet.title"></mat-tab>
       </mat-tab-group>
+
       <div class="column-selector-scrollable">
         <div class="column-selector-container">
-          <div class="column-list" cdkDropList id="availableList"
+          <!-- LISTE DISPONIBLES -->
+          <div class="column-list"
+               cdkDropList
+               #availableList="cdkDropList"
                [cdkDropListData]="currentSheet.availableColumns"
-               [cdkDropListConnectedTo]="['selectedList']"
-               (cdkDropListDropped)="drop($event, currentSheet, false)">
-            <div class="list-header" style="display:flex; align-items:center; justify-content:space-between;">
-              <h3 style="display:flex; align-items:center; gap:.5rem;">
+               [cdkDropListConnectedTo]="[selectedList]"
+               (cdkDropListDropped)="drop($event, currentSheet)">
+            <div class="list-header">
+              <h3 class="list-title">
                 <mat-checkbox
                   [checked]="isAllAvailableSelected(currentSheet)"
                   (change)="toggleAllAvailable($event.checked, currentSheet)"
@@ -24,10 +30,10 @@
                 Colonnes disponibles
               </h3>
             </div>
+
             <div class="list">
               <div class="list-item"
-                   *ngFor="let col of currentSheet.availableColumns"
-                   cdkDrag
+                   *ngFor="let col of currentSheet?.availableColumns; trackBy: trackByKey"                   cdkDrag
                    [cdkDragData]="col"
                    [class.selected]="selectedAvailableKeys.has(col.key)"
                    (click)="toggleAvailable(col)">
@@ -35,6 +41,7 @@
               </div>
             </div>
           </div>
+
           <!-- ACTIONS entre listes -->
           <div class="column-actions">
             <button mat-icon-button
@@ -50,12 +57,16 @@
               <mat-icon>arrow_back</mat-icon>
             </button>
           </div>
-          <div class="column-list" cdkDropList id="selectedList"
+
+          <!-- LISTE SÉLECTIONNÉES -->
+          <div class="column-list"
+               cdkDropList
+               #selectedList="cdkDropList"
                [cdkDropListData]="currentSheet.selectedColumns"
-               [cdkDropListConnectedTo]="['availableList']"
-               (cdkDropListDropped)="drop($event, currentSheet, true)">
-            <div class="list-header" style="display:flex; align-items:center; justify-content:space-between;">
-              <h3 style="display:flex; align-items:center; gap:.5rem;">
+               [cdkDropListConnectedTo]="[availableList]"
+               (cdkDropListDropped)="drop($event, currentSheet)">
+            <div class="list-header">
+              <h3 class="list-title">
                 <mat-checkbox
                   [checked]="isAllChosenSelected(currentSheet)"
                   (change)="toggleAllChosen($event.checked, currentSheet)"
@@ -64,6 +75,7 @@
                 Colonnes sélectionnées
               </h3>
             </div>
+
             <div class="list">
               <div class="list-item"
                    *ngFor="let col of currentSheet.selectedColumns"
@@ -76,10 +88,12 @@
             </div>
           </div>
         </div>
-        <div class="text-right mt-2" style="text-align:right; margin-top:.5rem;">
-          <button mat-stroked-button color="warn" (click)="reset(currentSheet)">Réinitialiser</button>
-        </div>
       </div>
+
+      <div class="reset-btn">
+        <button mat-stroked-button color="warn" (click)="reset(currentSheet)">Réinitialiser</button>
+      </div>
+
       <div class="actions">
         <button mat-flat-button color="warn" (click)="cancel()">Annuler</button>
         <button mat-flat-button color="primary" (click)="confirm()">Valider</button>

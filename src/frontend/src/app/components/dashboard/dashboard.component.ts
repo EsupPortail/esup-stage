@@ -233,7 +233,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     ];
 
     this.exportColumns = {
-      multipleExcelSheets: [
+      singleExcelSheet: [
         {
           title: 'Données stage',
           columns: {

@@ -134,6 +134,7 @@ import {ColumnSelectorComponent} from "./components/table/column-selector/column
 import {TachePlanifieComponent} from "./components/admin/config/tache-planifie.component";
 import {MatSlideToggle} from "@angular/material/slide-toggle";
 import {ConfirmEnvoieMailComponent} from "./components/convention/evaluation-stage/confirm-envoie-mail/confirm-envoie-mail.component";
+import { ImageCropperComponent } from 'ngx-image-cropper';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -284,6 +285,7 @@ export class FrenchDateProvider extends NativeDateAdapter {
     CKEditorModule,
     MatSnackBarModule,
     MatBadgeModule,
+    ImageCropperComponent,
     ColorPickerModule, MatSlideToggle], providers: [
         CookieService,
         ContenuService,
