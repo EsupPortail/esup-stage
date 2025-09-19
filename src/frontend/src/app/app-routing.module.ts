@@ -150,7 +150,16 @@ const routes: Routes = [
       role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.CREATION, Droit.VALIDATION, Droit.LECTURE, Droit.MODIFICATION,Droit.SUPPRESSION],},
       title: 'Configuration'
     }
-  }
+  },
+  {
+    path: 'evaluation-tuteur/:token',
+    loadChildren: () => import('./components/evaluation-tuteur/evaluation-tuteur.module')
+      .then(m => m.EvaluationTuteurModule),
+    data: {
+      title: 'Évaluation du stage',
+      layout: 'public'
+    }
+  },
 ];
 
 @NgModule({

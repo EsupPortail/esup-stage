@@ -9,7 +9,7 @@ import { ConfigService } from "../../services/config.service";
 })
 export class HeaderComponent implements OnInit {
 
-  @ViewChild('logo') logo: ElementRef;
+  @ViewChild('logo') logo !: ElementRef;
 
   constructor(private authService: AuthService, private configService: ConfigService) { }
 
@@ -19,6 +19,10 @@ export class HeaderComponent implements OnInit {
         this.logo.nativeElement.src = `data:${config.logo.contentType};base64,${config.logo.base64}`;
       }
     })
+  }
+
+  isConnected() {
+    return this.authService.userConnected;
   }
 
   logout(): void {

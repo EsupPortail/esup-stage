@@ -1,0 +1,47 @@
+.conteneur-acceuil-tuteur {
+  /* thème léger par défaut */
+  --card-bg: #ffffff;
+  --card-fg: #1f2937;      /* gris 800 */
+  --muted: #6b7280;        /* gris 500 */
+  --ring: #3b82f6;         /* bleu 500 */
+
+  background: var(--card-bg);
+  color: var(--card-fg);
+  max-width: 1000px;
+  margin: clamp(24px, 6vh, 72px) auto;
+  padding: clamp(20px, 3vw, 40px);
+  border-radius: 16px;
+  border: 1px solid rgba(0,0,0,.06);
+  box-shadow: 0 10px 30px rgba(0,0,0,.08);
+  line-height: 1.6;
+
+  .text-acceuil-tuteur {
+    font-size: clamp(1rem, 0.95rem + 0.3vw, 1.125rem);
+
+    p { margin: 0 0 1rem; }
+    ul, ol { margin: .5rem 0 1rem 1.25rem; }
+    a {
+      color: inherit;
+      text-decoration: underline;
+      text-underline-offset: .15em;
+    }
+    small, .muted { color: var(--muted); }
+  }
+
+  .btn-commencer-eval {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.25rem;
+
+    button {
+      transition: transform .06s ease, box-shadow .2s ease;
+      outline: none;
+
+      &:hover   { transform: translateY(-3px); }
+      &:active  { transform: translateY(0); }
+      &:focus-visible {
+        box-shadow: 1px 1px 1px 6px color-mix(in srgb, var(--ring) 25%, transparent);
+      }
+    }
+  }
+}

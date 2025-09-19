@@ -4,7 +4,7 @@
     <span class="app-name">{{'TITRE_APPLICATION'|contenu}}</span>
   </a>
   <span class="spacer"></span>
-  <button mat-icon-button (click)="logout()">
+  <button mat-icon-button (click)="logout()" *ngIf="isConnected()">
     <i class="fa fa-sign-out-alt"></i>
   </button>
 </mat-toolbar>

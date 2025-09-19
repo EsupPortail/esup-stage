@@ -1,5 +1,5 @@
 <app-header></app-header>
-<div class="menu-button">
+<div class="menu-button" *ngIf="isConnected()">
   <button mat-icon-button (click)="slideNavbar()" class="menu-open-button" [ngClass]="{visible: !menuService.navbarOpened}">
     <i class="fa fa-bars"></i>
   </button>

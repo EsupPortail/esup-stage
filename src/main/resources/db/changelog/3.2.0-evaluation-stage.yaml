@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.2.0-ajout-text-accueil-tuteur
+      author: thouveno9
+      changes:
+        - insert:
+            columns:
+              - column:
+                  name: codeContenu
+                  value: TEXTE_ACCUEIL_TUTEUR
+              - column:
+                  name: libelle
+                  valueBoolean: true
+              - column:
+                  name: texte
+                  value: "Bonjour et bienvenue sur notre module d'évaluation des stages. Pour remplir votre appréciation, cliquez ici :"
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: dateCreation
+                  value: now()
+            tableName: Contenu
