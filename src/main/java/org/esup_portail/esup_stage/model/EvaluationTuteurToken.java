@@ -1,0 +1,73 @@
+package org.esup_portail.esup_stage.model;
+
+import jakarta.persistence.*;
+import lombok.Data;
+
+import java.security.SecureRandom;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Base64;
+import java.util.Date;
+
+@Entity
+@Table(name = "EvaluationTuteurToken")
+@Data
+public class EvaluationTuteurToken {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "idEvaluationTuteurToken", nullable = false)
+    private Integer id;
+
+    @ManyToOne
+    @JoinColumn(name = "idConvention")
+    private Convention convention;
+
+    @ManyToOne
+    @JoinColumn(name = "idTuteur")
+    private Contact contact;
+
+    @Column(name = "Token", nullable = false, unique = true, length = 64)
+    private String token;
+
+    @Column(name = "DateExpiration", nullable = false, updatable = false)
+    private Date expiresAt;
+
+    @Column(name = "DateCreation", nullable = false, updatable = false)
+    private Date createdAt;
+
+    @Column(name = "DateUtilisation")
+    private Date usedAt;
+
+    @Column(name = "DateRevocation")
+    private Date revokedAt;
+
+    @Transient public boolean isUsed()    { return usedAt != null; }
+    @Transient public boolean isRevoked() { return revokedAt != null; }
+    @Transient public boolean isExpired() { return expiresAt != null && expiresAt.before(new Date()); }
+    @Transient public boolean isActive()  { return !isUsed() && !isRevoked() && !isExpired(); }
+
+    public EvaluationTuteurToken(Convention convention, Contact contact, Duration ttl) {
+        // validation des arguments
+        if (convention == null) throw new IllegalArgumentException("convention is null");
+        if (contact == null) throw new IllegalArgumentException("contact is null");
+        if (ttl == null || ttl.isNegative() || ttl.isZero()) throw new IllegalArgumentException("ttl must be positive");
+
+        this.convention = convention;
+        this.contact = contact;
+
+        Instant now = Instant.now();
+        this.createdAt = Date.from(now);
+        this.expiresAt = Date.from(now.plus(ttl));
+
+        this.token = generateToken();
+    }
+
+    private String generateToken(){
+        SecureRandom secureRandom = new SecureRandom();
+        Base64.Encoder base64Encoder = Base64.getUrlEncoder();
+        byte[] randomBytes = new byte[32];
+        secureRandom.nextBytes(randomBytes);
+        return base64Encoder.encodeToString(randomBytes);
+    }
+}
