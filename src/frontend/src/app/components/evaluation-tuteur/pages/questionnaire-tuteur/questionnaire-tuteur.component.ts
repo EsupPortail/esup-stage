@@ -1,8 +1,11 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ConventionService} from "../../../../services/convention.service";
 import {ReponseEvaluationService} from "../../../../services/reponse-evaluation.service";
 import {FicheEvaluationService} from "../../../../services/fiche-evaluation.service";
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {ActivatedRoute, Router} from "@angular/router";
+import { ViewportScroller } from '@angular/common';
+
 
 @Component({
   selector: 'app-questionnaire-tuteur',
@@ -263,15 +266,19 @@ export class QuestionnaireTuteurComponent implements OnInit{
 
   reponseEntrepriseForm: FormGroup;
 
-  protected reponseSupplementaireEntrepriseForm: FormGroup;
+  protected reponseSupplementaireEntrepriseForm !: FormGroup;
 
-  selectedTab: any;
+  selectedTab = 0;
+  totalTabs = 3;
 
   constructor(
     private conventionService : ConventionService,
     private reponseEvaluationService : ReponseEvaluationService,
     private ficheEvaluationService : FicheEvaluationService,
     private fb: FormBuilder,
+    private router: Router,
+    private route: ActivatedRoute,
+    private viewportScroller: ViewportScroller,
   ) {
     this.reponseEntrepriseForm = this.fb.group({
       reponseEnt1: [null, [Validators.required]],
@@ -317,12 +324,10 @@ export class QuestionnaireTuteurComponent implements OnInit{
     this.conventionService.getById(130186).subscribe(response => {
       this.convention = response;
       this.getFicheEvaluation();
-      console.log(this.convention);
     });
   }
 
   getFicheEvaluation(){
-    console.log(this.convention);
     this.ficheEvaluationService.getByCentreGestion(this.convention.centreGestion.id).subscribe((response: any) => {
 
       this.ficheEvaluation = response;
@@ -449,5 +454,38 @@ export class QuestionnaireTuteurComponent implements OnInit{
         control.updateValueAndValidity();
       }
     });
+  }
+
+  get isLastTab(): boolean {
+    return this.selectedTab >= this.totalTabs - 1;
+  }
+
+  prevTab(): void {
+    if (this.selectedTab > 0) {
+      this.selectedTab--;
+      this.scrollTop()
+    }
+  }
+
+  nextOrFinish(): void {
+    if (this.isLastTab) {
+      this.terminer();
+    } else {
+      this.selectedTab++;
+      this.scrollTop()
+    }
+  }
+
+  terminer(): void {
+    this.onSubmit();
+    this.router.navigate(['terminee'], { relativeTo: this.route.parent, replaceUrl: true });
+  }
+
+  onSubmit(): void {
+    console.log('Formulaire soumis');
+  }
+
+  private scrollTop(): void {
+    requestAnimationFrame(() => this.viewportScroller.scrollToAnchor('page-top'));
   }
 }

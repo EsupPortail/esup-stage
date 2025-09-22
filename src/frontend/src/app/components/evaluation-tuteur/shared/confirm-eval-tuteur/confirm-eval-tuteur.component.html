@@ -1,0 +1,9 @@
+<ng-content></ng-content>
+<ng-template #confirmDialog>
+  <h2 mat-dialog-title>Confirmation</h2>
+  <mat-dialog-content [innerHTML]="confirmMessage"></mat-dialog-content>
+  <mat-dialog-actions class="btn-block">
+    <button mat-flat-button color="warn" mat-dialog-close>{{textBoutonAnnuler}}</button>
+    <button mat-flat-button color="primary" (click)="confirmed()">{{textBoutonValider}}</button>
+  </mat-dialog-actions>
+</ng-template>

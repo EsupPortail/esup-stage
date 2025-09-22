@@ -21,3 +21,47 @@ databaseChangeLog:
                   name: dateCreation
                   value: now()
             tableName: Contenu
+  - changeSet:
+      id: 3.2.0-ajout-text-questionnaire-complet-tuteur
+      author: thouveno9
+      changes:
+        - insert:
+            columns:
+              - column:
+                  name: codeContenu
+                  value: TEXTE_QUESTIONNAIRE_COMPLET_TUTEUR
+              - column:
+                  name: libelle
+                  valueBoolean: true
+              - column:
+                  name: texte
+                  value: "Votre appréciation a bien été prise en compte et peut être imprimée : "
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: dateCreation
+                  value: now()
+            tableName: Contenu
+  - changeSet:
+      id: 3.2.0-ajout-text-demander-renouvellement-tuteur
+      author: thouveno9
+      changes:
+        - insert:
+            columns:
+              - column:
+                  name: codeContenu
+                  value: TEXTE_DEMANDER_RENOUVELLEMENT_TUTEUR
+              - column:
+                  name: libelle
+                  valueBoolean: true
+              - column:
+                  name: texte
+                  value: "Si vous souhaitez changer votre évaluation, cliquez ici : "
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: dateCreation
+                  value: now()
+            tableName: Contenu
