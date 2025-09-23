@@ -25,6 +25,10 @@ export class AccueilTuteurComponent implements OnInit {
   }
 
   commencerEvaluation(){
-    this.router.navigate(['questionnaire'], { relativeTo: this.route });
+    this.router.navigate(['questionnaire'],
+      {
+        relativeTo: this.route,
+        queryParamsHandling: 'merge'
+      });
   }
 }

@@ -11,21 +11,21 @@ const routes: Routes = [
     component: EvaluationTuteurComponent,
     children: [
       {
-        path: '',
+        path: ':idConvention',
         component: AccueilTuteurComponent,
         data:{
           title: 'Évaluation du stage',
         }
       },
       {
-        path: 'questionnaire',
+        path: ':idConvention/questionnaire',
         component: QuestionnaireTuteurComponent,
         data:{
           title: 'Évaluation du stage'
         }
       },
       {
-        path: 'terminee',
+        path: ':idConvention/terminee',
         component: QuestionnaireCompletTuteurComponent,
         data:{
           title: 'Évaluation du stage'

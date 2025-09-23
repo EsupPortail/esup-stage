@@ -2,6 +2,7 @@ package org.esup_portail.esup_stage.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.security.SecureRandom;
 import java.time.Duration;
@@ -12,6 +13,7 @@ import java.util.Date;
 @Entity
 @Table(name = "EvaluationTuteurToken")
 @Data
+@NoArgsConstructor
 public class EvaluationTuteurToken {
 
     @Id

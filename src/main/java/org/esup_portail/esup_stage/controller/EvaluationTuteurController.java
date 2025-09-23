@@ -1,11 +1,12 @@
 package org.esup_portail.esup_stage.controller;
 
+import org.esup_portail.esup_stage.dto.ConventionEvaluationTuteurDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.EvaluationTuteurToken;
+import org.esup_portail.esup_stage.repository.EvaluationTuteurTokenRepository;
 import org.esup_portail.esup_stage.service.evaluation.EvaluationTuteurService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,9 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Objects;
-
-@Controller
+@ApiController
 @RequestMapping("/evaluation-tuteur")
 public class EvaluationTuteurController {
 
@@ -24,13 +23,11 @@ public class EvaluationTuteurController {
     @Autowired
     private EvaluationTuteurService evaluationTuteurService;
 
-    @GetMapping("/access")
-    public Boolean accessEvaluationPage(@RequestParam(name = "token") String token) {
+    @Autowired
+    private EvaluationTuteurTokenRepository evaluationTuteurTokenRepository;
 
-        // pour le dev
-        if(Objects.equals(token, "1")){
-            return true;
-        }
+    @GetMapping("/access")
+    public ConventionEvaluationTuteurDto accessEvaluationPage(@RequestParam(name = "token") String token) {
 
         if(token == null || token.trim().isEmpty()) {
             logger.warn("Tentative d'accès avec token null ou vide");
@@ -42,11 +39,18 @@ public class EvaluationTuteurController {
 
         if (validToken == null) {
             logger.warn("Tentative d'accès avec token invalide: {}",
-                    token.substring(0, Math.min(8, token.length())) + "...");
+                    token.substring(0, Math.min(8, token.length())));
             throw new AppException(HttpStatus.FORBIDDEN, "Token invalide ou expiré");
         }
+        ConventionEvaluationTuteurDto convention = new ConventionEvaluationTuteurDto(
+                validToken.getConvention().getId(),
+                validToken.getConvention().getContact(),
+                validToken.getConvention().getEtudiant(),
+                validToken.getConvention().getCentreGestion(),
+                validToken.getConvention().getReponseEvaluation(),
+                validToken.getConvention().getReponseSupplementaires());
 
-        return true;
+        return convention;
     }
 
     @PostMapping("/submit")
@@ -65,5 +69,10 @@ public class EvaluationTuteurController {
         }
 
         return true;
+    }
+
+    @GetMapping("/test")
+    public String test() {
+        return "test";
     }
 }

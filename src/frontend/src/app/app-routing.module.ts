@@ -152,7 +152,7 @@ const routes: Routes = [
     }
   },
   {
-    path: 'evaluation-tuteur/:token',
+    path: 'evaluation-tuteur',
     loadChildren: () => import('./components/evaluation-tuteur/evaluation-tuteur.module')
       .then(m => m.EvaluationTuteurModule),
     data: {

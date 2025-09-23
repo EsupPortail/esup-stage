@@ -110,7 +110,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         /* Configure les autorisations d'accès */
         http.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/login/cas", "/api/version", "/error/**","/evaluation-tuteur/**").permitAll()
+                .requestMatchers("/login/cas", "/api/version", "/error/**","/evaluation-tuteur/**","/api/evaluation-tuteur/**").permitAll()
                 /* Les autres requêtes doivent être authentifiées */
                 .anyRequest().authenticated());
 

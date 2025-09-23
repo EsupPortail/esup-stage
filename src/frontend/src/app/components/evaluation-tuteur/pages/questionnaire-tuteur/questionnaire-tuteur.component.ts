@@ -1,10 +1,11 @@
 import {Component, OnInit} from '@angular/core';
-import {ConventionService} from "../../../../services/convention.service";
 import {ReponseEvaluationService} from "../../../../services/reponse-evaluation.service";
 import {FicheEvaluationService} from "../../../../services/fiche-evaluation.service";
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {ActivatedRoute, Router} from "@angular/router";
 import { ViewportScroller } from '@angular/common';
+import {ConventionEvaluationTuteur } from "../../models/convention-evaluation-tuteur.model";
+import {EvaluationTuteurContextService} from "../../services/evaluation-tuteur-context.service";
 
 
 @Component({
@@ -256,13 +257,10 @@ export class QuestionnaireTuteurComponent implements OnInit{
   ]
 
   controlsIndexToLetter:any = ['a','b','c','d','e','f','g','h']
-  conventionId : number = 130160; // pour test
-  convention : any;
+  convention !: ConventionEvaluationTuteur | null;
   ficheEvaluation: any;
   reponseEvaluation: any;
   questionsSupplementaires: any;
-  //@Input() convention: any;
-  //@Output() conventionChange = new EventEmitter<any>();
 
   reponseEntrepriseForm: FormGroup;
 
@@ -272,13 +270,13 @@ export class QuestionnaireTuteurComponent implements OnInit{
   totalTabs = 3;
 
   constructor(
-    private conventionService : ConventionService,
     private reponseEvaluationService : ReponseEvaluationService,
     private ficheEvaluationService : FicheEvaluationService,
     private fb: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
     private viewportScroller: ViewportScroller,
+    private ctx: EvaluationTuteurContextService
   ) {
     this.reponseEntrepriseForm = this.fb.group({
       reponseEnt1: [null, [Validators.required]],
@@ -321,13 +319,14 @@ export class QuestionnaireTuteurComponent implements OnInit{
   }
 
   ngOnInit(): void {
-    this.conventionService.getById(130186).subscribe(response => {
-      this.convention = response;
-      this.getFicheEvaluation();
+    this.ctx.convention$.subscribe(c=> {
+      this.convention = c;
     });
+    this.getFicheEvaluation();
   }
 
   getFicheEvaluation(){
+    if(this.convention == null) return;
     this.ficheEvaluationService.getByCentreGestion(this.convention.centreGestion.id).subscribe((response: any) => {
 
       this.ficheEvaluation = response;
@@ -350,6 +349,7 @@ export class QuestionnaireTuteurComponent implements OnInit{
       }
 
       if (this.ficheEvaluation) {
+        if(this.convention == null) return;
         this.reponseEvaluationService.getByConvention(this.convention.id).subscribe((response2: any) => {
           this.reponseEvaluation = response2;
           this.getQuestionSupplementaire();
@@ -416,6 +416,7 @@ export class QuestionnaireTuteurComponent implements OnInit{
         questionSupplementaire.formControlName = questionSupplementaireFormControlName
 
         if(this.reponseEvaluation){
+          if(this.convention == null) return;
           this.reponseEvaluationService.getReponseSupplementaire(this.convention.id, questionSupplementaire.id).subscribe((response2: any) => {
 
             questionSupplementaire.reponse = false;
@@ -477,8 +478,11 @@ export class QuestionnaireTuteurComponent implements OnInit{
   }
 
   terminer(): void {
+    if(this.convention == null) return;
     this.onSubmit();
-    this.router.navigate(['terminee'], { relativeTo: this.route.parent, replaceUrl: true });
+    this.router.navigate(['/evaluation-tuteur', this.convention.id, 'terminee'], {
+      relativeTo: this.route.parent,
+      replaceUrl: true });
   }
 
   onSubmit(): void {
