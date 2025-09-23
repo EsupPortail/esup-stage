@@ -65,7 +65,7 @@
   <mat-tab #signataireTab [disabled]="!groupeEtudiant || !allValidStructure()">
     <ng-template mat-tab-label>
       <div class="tabTitle">
-      Signataire
+        {{ "TITRE_TAB_SIGNATAIRE_CONVENTION_CREATE_EN_MASSE" | contenu }}
       <mat-progress-bar mode="determinate" [value]="getProgressValue(7)" [ngClass]="{editing: tabs[7].statut === 1, done: tabs[7].statut === 2,'empty':tabs[7]?.statut===0}"></mat-progress-bar>
       </div>
     </ng-template>

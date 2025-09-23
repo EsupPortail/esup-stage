@@ -1,0 +1,185 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.1.4-contenu-signataires
+      author: thouveno9
+      changes:
+        - insert:
+            columns:
+              - column:
+                  name: codeContenu
+                  value: TITRE_TAB_SIGNATAIRE_CONVENTION_CREATE_EN_MASSE
+              - column:
+                  name: libelle
+                  valueBoolean: true
+              - column:
+                  name: texte
+                  value: Signataire
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: dateCreation
+                  value: now()
+            tableName: Contenu
+        - insert:
+            columns:
+              - column:
+                  name: codeContenu
+                  value: TITRE_COLONNES_SIGNATAIRE_SIGNATAIRE_GROUPE
+              - column:
+                  name: libelle
+                  valueBoolean: true
+              - column:
+                  name: texte
+                  value: Signataire
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: dateCreation
+                  value: now()
+            tableName: Contenu
+        - insert:
+            columns:
+              - column:
+                  name: codeContenu
+                  value: SIGNATAIRE_NON_SELECTIONNE_SIGNATAIRE_GROUPE
+              - column:
+                  name: libelle
+                  valueBoolean: true
+              - column:
+                  name: texte
+                  value: Signataire non sélectionné
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: dateCreation
+                  value: now()
+            tableName: Contenu
+        - insert:
+            columns:
+              - column:
+                  name: codeContenu
+                  value: TITRE_TAB_SIGNATAIRE_CONVENTION
+              - column:
+                  name: libelle
+                  valueBoolean: true
+              - column:
+                  name: texte
+                  value: Signataire
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: dateCreation
+                  value: now()
+            tableName: Contenu
+        - insert:
+            columns:
+              - column:
+                  name: codeContenu
+                  value: SIGNATAIRE_RECAPITULATIF
+              - column:
+                  name: libelle
+                  valueBoolean: true
+              - column:
+                  name: texte
+                  value: Signataire
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: dateCreation
+                  value: now()
+            tableName: Contenu
+        - insert:
+            columns:
+              - column:
+                  name: codeContenu
+                  value: TITRE_SELECTION_SIGNATAIRE
+              - column:
+                  name: libelle
+                  valueBoolean: true
+              - column:
+                  name: texte
+                  value: Sélection du signataire
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: dateCreation
+                  value: now()
+            tableName: Contenu
+        - insert:
+            columns:
+              - column:
+                  name: codeContenu
+                  value: SELECTION_SERVICE_SIGNATAIRE
+              - column:
+                  name: libelle
+                  valueBoolean: true
+              - column:
+                  name: texte
+                  value: "Sélectionnez le service du signataire :"
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: dateCreation
+                  value: now()
+            tableName: Contenu
+        - insert:
+            columns:
+              - column:
+                  name: codeContenu
+                  value: SELECTIONER_SIGNATAIRE_EXISTANT
+              - column:
+                  name: libelle
+                  valueBoolean: true
+              - column:
+                  name: texte
+                  value: "Sélectionnez un signataire existant :"
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: dateCreation
+                  value: now()
+            tableName: Contenu
+        - insert:
+            columns:
+              - column:
+                  name: codeContenu
+                  value: BOUTON_CREER_NOUVEAU_SIGNATAIRE
+              - column:
+                  name: libelle
+                  valueBoolean: true
+              - column:
+                  name: texte
+                  value: "Créer un nouveau signataire"
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: dateCreation
+                  value: now()
+            tableName: Contenu
+        - insert:
+            columns:
+              - column:
+                  name: codeContenu
+                  value: TITRE-PANEL-SIGNATAIRE
+              - column:
+                  name: libelle
+                  valueBoolean: true
+              - column:
+                  name: texte
+                  value: Signataire
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: dateCreation
+                  value: now()
+            tableName: Contenu
