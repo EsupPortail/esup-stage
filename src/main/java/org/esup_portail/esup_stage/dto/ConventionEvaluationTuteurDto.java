@@ -12,7 +12,8 @@ public class ConventionEvaluationTuteurDto {
     private Integer id;
     private Contact tuteur;
     private Etudiant etudiant;
-    private CentreGestion centreGestion;
+    private FicheEvaluation ficheEvaluation;
+    private List<QuestionSupplementaire> questionSupplementaire;
     private ReponseEvaluation reponseEvaluation;
     private List<ReponseSupplementaire> reponseSupplementaire;
 }

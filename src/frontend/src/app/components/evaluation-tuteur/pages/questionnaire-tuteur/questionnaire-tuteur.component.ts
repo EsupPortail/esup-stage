@@ -269,15 +269,16 @@ export class QuestionnaireTuteurComponent implements OnInit{
   selectedTab = 0;
   totalTabs = 3;
 
+
   constructor(
-    private reponseEvaluationService : ReponseEvaluationService,
-    private ficheEvaluationService : FicheEvaluationService,
     private fb: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
     private viewportScroller: ViewportScroller,
     private ctx: EvaluationTuteurContextService
   ) {
+    this.reponseSupplementaireEntrepriseForm = this.fb.group({});
+
     this.reponseEntrepriseForm = this.fb.group({
       reponseEnt1: [null, [Validators.required]],
       reponseEnt1bis: [null],
@@ -318,129 +319,114 @@ export class QuestionnaireTuteurComponent implements OnInit{
     });
   }
 
+
   ngOnInit(): void {
     this.ctx.convention$.subscribe(c=> {
       this.convention = c;
+      if(c) {
+        this.getFicheEvaluation();
+        this.getQuestionSupplementaire();
+      }
     });
-    this.getFicheEvaluation();
   }
 
   getFicheEvaluation(){
     if(this.convention == null) return;
-    this.ficheEvaluationService.getByCentreGestion(this.convention.centreGestion.id).subscribe((response: any) => {
 
-      this.ficheEvaluation = response;
+    this.ficheEvaluation = this.convention.ficheEvaluation;
 
-
-      for (let question of this.FicheEntrepriseIQuestions.concat(this.FicheEntrepriseIIQuestions).concat(this.FicheEntrepriseIIIQuestions)) {
-        let key = 'reponse' + question.controlName;
-        let questionKey = 'question' + question.controlName;
-        if (!this.ficheEvaluation[questionKey]) {
-          if (question.type == 'multiple-boolean') {
-            for (var i = 0; i < question.texte.length; i++) {
-              let key = "reponse" + question.controlName + this.controlsIndexToLetter[i];
-              this.toggleValidators(this.reponseEntrepriseForm, [key], false);
-            }
-          } else {
-            let key = 'reponse' + question.controlName;
+    for (let question of this.FicheEntrepriseIQuestions.concat(this.FicheEntrepriseIIQuestions).concat(this.FicheEntrepriseIIIQuestions)) {
+      let key = 'reponse' + question.controlName;
+      let questionKey = 'question' + question.controlName;
+      if (!this.convention.ficheEvaluation[questionKey]) {
+        if (question.type == 'multiple-boolean') {
+          for (var i = 0; i < question.texte.length; i++) {
+            let key = "reponse" + question.controlName + this.controlsIndexToLetter[i];
             this.toggleValidators(this.reponseEntrepriseForm, [key], false);
           }
+        } else {
+          let key = 'reponse' + question.controlName;
+          this.toggleValidators(this.reponseEntrepriseForm, [key], false);
         }
       }
+    }
 
-      if (this.ficheEvaluation) {
-        if(this.convention == null) return;
-        this.reponseEvaluationService.getByConvention(this.convention.id).subscribe((response2: any) => {
-          this.reponseEvaluation = response2;
-          this.getQuestionSupplementaire();
-          if (this.reponseEvaluation) {
-            this.reponseEntrepriseForm.setValue({
-              reponseEnt1: this.reponseEvaluation.reponseEnt1,
-              reponseEnt1bis: this.reponseEvaluation.reponseEnt1bis,
-              reponseEnt2: this.reponseEvaluation.reponseEnt2,
-              reponseEnt2bis: this.reponseEvaluation.reponseEnt2bis,
-              reponseEnt3: this.reponseEvaluation.reponseEnt3,
-              reponseEnt4: this.reponseEvaluation.reponseEnt4,
-              reponseEnt4bis: this.reponseEvaluation.reponseEnt4bis,
-              reponseEnt5: this.reponseEvaluation.reponseEnt5,
-              reponseEnt5bis: this.reponseEvaluation.reponseEnt5bis,
-              reponseEnt6: this.reponseEvaluation.reponseEnt6,
-              reponseEnt6bis: this.reponseEvaluation.reponseEnt6bis,
-              reponseEnt7: this.reponseEvaluation.reponseEnt7,
-              reponseEnt7bis: this.reponseEvaluation.reponseEnt7bis,
-              reponseEnt8: this.reponseEvaluation.reponseEnt8,
-              reponseEnt8bis: this.reponseEvaluation.reponseEnt8bis,
-              reponseEnt9: this.reponseEvaluation.reponseEnt9,
-              reponseEnt9bis: this.reponseEvaluation.reponseEnt9bis,
-              reponseEnt10: this.reponseEvaluation.reponseEnt10,
-              reponseEnt10bis: this.reponseEvaluation.reponseEnt10bis,
-              reponseEnt11: this.reponseEvaluation.reponseEnt11,
-              reponseEnt11bis: this.reponseEvaluation.reponseEnt11bis,
-              reponseEnt12: this.reponseEvaluation.reponseEnt12,
-              reponseEnt12bis: this.reponseEvaluation.reponseEnt12bis,
-              reponseEnt13: this.reponseEvaluation.reponseEnt13,
-              reponseEnt13bis: this.reponseEvaluation.reponseEnt13bis,
-              reponseEnt14: this.reponseEvaluation.reponseEnt14,
-              reponseEnt14bis: this.reponseEvaluation.reponseEnt14bis,
-              reponseEnt15: this.reponseEvaluation.reponseEnt15,
-              reponseEnt15bis: this.reponseEvaluation.reponseEnt15bis,
-              reponseEnt16: this.reponseEvaluation.reponseEnt16,
-              reponseEnt16bis: this.reponseEvaluation.reponseEnt16bis,
-              reponseEnt17: this.reponseEvaluation.reponseEnt17,
-              reponseEnt17bis: this.reponseEvaluation.reponseEnt17bis,
-              reponseEnt18: this.reponseEvaluation.reponseEnt18,
-              reponseEnt18bis: this.reponseEvaluation.reponseEnt18bis,
-              reponseEnt19: this.reponseEvaluation.reponseEnt19,
-            });
-          }
-        });
-      }
-    });
+    if (this.convention.reponseEvaluation) {
+      this.reponseEntrepriseForm.setValue({
+        reponseEnt1:this.convention.reponseEvaluation.reponseEnt1,
+        reponseEnt1bis:this.convention.reponseEvaluation.reponseEnt1bis,
+        reponseEnt2:this.convention.reponseEvaluation.reponseEnt2,
+        reponseEnt2bis:this.convention.reponseEvaluation.reponseEnt2bis,
+        reponseEnt3:this.convention.reponseEvaluation.reponseEnt3,
+        reponseEnt4:this.convention.reponseEvaluation.reponseEnt4,
+        reponseEnt4bis:this.convention.reponseEvaluation.reponseEnt4bis,
+        reponseEnt5:this.convention.reponseEvaluation.reponseEnt5,
+        reponseEnt5bis:this.convention.reponseEvaluation.reponseEnt5bis,
+        reponseEnt6:this.convention.reponseEvaluation.reponseEnt6,
+        reponseEnt6bis:this.convention.reponseEvaluation.reponseEnt6bis,
+        reponseEnt7:this.convention.reponseEvaluation.reponseEnt7,
+        reponseEnt7bis:this.convention.reponseEvaluation.reponseEnt7bis,
+        reponseEnt8:this.convention.reponseEvaluation.reponseEnt8,
+        reponseEnt8bis:this.convention.reponseEvaluation.reponseEnt8bis,
+        reponseEnt9:this.convention.reponseEvaluation.reponseEnt9,
+        reponseEnt9bis:this.convention.reponseEvaluation.reponseEnt9bis,
+        reponseEnt10:this.convention.reponseEvaluation.reponseEnt10,
+        reponseEnt10bis:this.convention.reponseEvaluation.reponseEnt10bis,
+        reponseEnt11:this.convention.reponseEvaluation.reponseEnt11,
+        reponseEnt11bis:this.convention.reponseEvaluation.reponseEnt11bis,
+        reponseEnt12:this.convention.reponseEvaluation.reponseEnt12,
+        reponseEnt12bis:this.convention.reponseEvaluation.reponseEnt12bis,
+        reponseEnt13:this.convention.reponseEvaluation.reponseEnt13,
+        reponseEnt13bis:this.convention.reponseEvaluation.reponseEnt13bis,
+        reponseEnt14:this.convention.reponseEvaluation.reponseEnt14,
+        reponseEnt14bis:this.convention.reponseEvaluation.reponseEnt14bis,
+        reponseEnt15:this.convention.reponseEvaluation.reponseEnt15,
+        reponseEnt15bis:this.convention.reponseEvaluation.reponseEnt15bis,
+        reponseEnt16:this.convention.reponseEvaluation.reponseEnt16,
+        reponseEnt16bis:this.convention.reponseEvaluation.reponseEnt16bis,
+        reponseEnt17:this.convention.reponseEvaluation.reponseEnt17,
+        reponseEnt17bis:this.convention.reponseEvaluation.reponseEnt17bis,
+        reponseEnt18:this.convention.reponseEvaluation.reponseEnt18,
+        reponseEnt18bis:this.convention.reponseEvaluation.reponseEnt18bis,
+        reponseEnt19:this.convention.reponseEvaluation.reponseEnt19,
+      });
+    }
   }
 
+
   getQuestionSupplementaire(): void {
+    if(this.convention?.questionsSupplementaires == undefined) return;
 
-    this.ficheEvaluationService.getQuestionsSupplementaires(this.ficheEvaluation.id).subscribe((response: any) => {
+    let questionsSupplementaires = this.convention.questionsSupplementaires;
 
-      let questionsSupplementaires = response;
-
-      for(let questionSupplementaire of questionsSupplementaires){
-
-        let form = this.fb.group({});
-
-        if(questionSupplementaire.idPlacement == 5 || questionSupplementaire.idPlacement == 6 || questionSupplementaire.idPlacement == 7){
-          form = this.reponseSupplementaireEntrepriseForm;
-        }
+    for(let questionSupplementaire of questionsSupplementaires){
+      if(questionSupplementaire.idPlacement == 5 || questionSupplementaire.idPlacement == 6 || questionSupplementaire.idPlacement == 7){
         const questionSupplementaireFormControlName = 'questionSupplementaire' + questionSupplementaire.id
-        form.addControl(questionSupplementaireFormControlName,new FormControl(null, Validators.required));
+        this.reponseSupplementaireEntrepriseForm.addControl(questionSupplementaireFormControlName, new FormControl(null, Validators.required));
         questionSupplementaire.formControlName = questionSupplementaireFormControlName
 
         if(this.reponseEvaluation){
-          if(this.convention == null) return;
-          this.reponseEvaluationService.getReponseSupplementaire(this.convention.id, questionSupplementaire.id).subscribe((response2: any) => {
-
-            questionSupplementaire.reponse = false;
-            if (response2){
-              questionSupplementaire.reponse = true;
-              if(questionSupplementaire.typeQuestion == 'txt'){
-                form.get(questionSupplementaireFormControlName)!.setValue(response2.reponseTxt);
-              }
-              if(questionSupplementaire.typeQuestion == 'not'){
-                form.get(questionSupplementaireFormControlName)!.setValue(response2.reponseInt);
-              }
-              if(questionSupplementaire.typeQuestion == 'yn'){
-                form.get(questionSupplementaireFormControlName)!.setValue(response2.reponseBool);
-              }
+          questionSupplementaire.reponse = false;
+          if (this.convention.reponseSupplementaires){
+            questionSupplementaire.reponse = true;
+            if(questionSupplementaire.typeQuestion == 'txt'){
+              this.reponseSupplementaireEntrepriseForm.get(questionSupplementaireFormControlName)!.setValue(this.convention.reponseSupplementaires.reponseTxt);
             }
-          });
+            if(questionSupplementaire.typeQuestion == 'not'){
+              this.reponseSupplementaireEntrepriseForm.get(questionSupplementaireFormControlName)!.setValue(this.convention.reponseSupplementaires.reponseInt);
+            }
+            if(questionSupplementaire.typeQuestion == 'yn'){
+              this.reponseSupplementaireEntrepriseForm.get(questionSupplementaireFormControlName)!.setValue(this.convention.reponseSupplementaires.reponseBool);
+            }
+          }
         }
       }
+    }
 
-      this.questionsSupplementaires = [];
-      this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 5));
-      this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 6));
-      this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 7));
-    });
+    this.questionsSupplementaires = [];
+    this.questionsSupplementaires[5] = this.convention.questionsSupplementaires.filter((q: any) => q.idPlacement == 5);
+    this.questionsSupplementaires[6] = this.convention.questionsSupplementaires.filter((q: any) => q.idPlacement == 6);
+    this.questionsSupplementaires[7] = this.convention.questionsSupplementaires.filter((q: any) => q.idPlacement == 7);
   }
 
   toggleValidators(form: FormGroup, keys: string[], toggle: boolean): void {

@@ -4,6 +4,7 @@ import org.esup_portail.esup_stage.dto.ConventionEvaluationTuteurDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.EvaluationTuteurToken;
 import org.esup_portail.esup_stage.repository.EvaluationTuteurTokenRepository;
+import org.esup_portail.esup_stage.repository.QuestionSupplementaireJpaRepository;
 import org.esup_portail.esup_stage.service.evaluation.EvaluationTuteurService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,9 @@ public class EvaluationTuteurController {
 
     @Autowired
     private EvaluationTuteurService evaluationTuteurService;
+
+    @Autowired
+    private QuestionSupplementaireJpaRepository QSJpaRepository;
 
     @Autowired
     private EvaluationTuteurTokenRepository evaluationTuteurTokenRepository;
@@ -46,7 +50,8 @@ public class EvaluationTuteurController {
                 validToken.getConvention().getId(),
                 validToken.getConvention().getContact(),
                 validToken.getConvention().getEtudiant(),
-                validToken.getConvention().getCentreGestion(),
+                validToken.getConvention().getCentreGestion().getFicheEvaluation(),
+                QSJpaRepository.findByFicheEvaluation(validToken.getConvention().getCentreGestion().getFicheEvaluation().getId()),
                 validToken.getConvention().getReponseEvaluation(),
                 validToken.getConvention().getReponseSupplementaires());
 
