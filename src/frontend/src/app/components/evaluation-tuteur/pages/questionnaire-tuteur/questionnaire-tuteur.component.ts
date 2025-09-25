@@ -517,7 +517,7 @@ export class QuestionnaireTuteurComponent implements OnInit{
     console.log("terminer")
     this.router.navigate(['/evaluation-tuteur', this.convention.id, 'terminee'], {
       relativeTo: this.route.parent,
-      replaceUrl: true
+      replaceUrl: true,
     });
   }
 

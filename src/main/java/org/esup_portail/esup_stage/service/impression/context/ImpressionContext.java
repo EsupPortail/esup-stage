@@ -1,5 +1,6 @@
 package org.esup_portail.esup_stage.service.impression.context;
 
+import jakarta.persistence.Lob;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,8 +23,12 @@ public class ImpressionContext {
     private SignataireContext signataire = new SignataireContext();
     private StructureContext structure = new StructureContext();
     private AvenantContext avenant = new AvenantContext();
+    private ReponseEvaluationContext reponse = new ReponseEvaluationContext();
+    private FicheEvaluationContext ficheEvaluation = new FicheEvaluationContext();
+    private List<QuestionSupplementaireContext> questionsSupplementaires = new ArrayList<>();
+    private List<ReponseSupplementaireContext> reponsesSupplementaires = new ArrayList<>();
 
-    public ImpressionContext(Convention convention, Avenant avenant, CentreGestion centreEtablissement) {
+    public ImpressionContext(Convention convention, Avenant avenant, CentreGestion centreEtablissement, List<QuestionSupplementaire> questionSupplementaires) {
         if (convention != null) {
             this.convention = new ConventionContext(convention, centreEtablissement);
             this.centreGestion = new CentreGestionContext(convention.getCentreGestion(), centreEtablissement);
@@ -33,6 +38,15 @@ public class ImpressionContext {
             this.service = new ServiceContext(convention.getService());
             this.signataire = new SignataireContext(convention.getSignataire());
             this.structure = new StructureContext(convention.getStructure());
+            FicheEvaluation ficheEvaluation = convention.getCentreGestion().getFicheEvaluation();
+            if (ficheEvaluation != null) {
+                for (QuestionSupplementaire question : questionSupplementaires) {
+                    this.questionsSupplementaires.add(new QuestionSupplementaireContext(question));
+                }
+            }
+            for (ReponseSupplementaire reponse : convention.getReponseSupplementaires()) {
+                this.reponsesSupplementaires.add(new ReponseSupplementaireContext(reponse));
+            }
         }
         if (avenant != null) {
             this.avenant = new AvenantContext(avenant);
@@ -499,5 +513,120 @@ public class ImpressionContext {
             this.nbHeuresJournalieres = nbHeuresJournalieres;
         }
 
+    }
+
+    @Data
+    @NoArgsConstructor
+    private static class ReponseEvaluationContext {
+        private Integer reponseEnt1;
+        @Lob
+        private String reponseEnt1bis;
+        private Integer reponseEnt2;
+        @Lob
+        private String reponseEnt2bis;
+        private Integer reponseEnt3;
+        private Integer reponseEnt4;
+        @Lob
+        private String reponseEnt4bis;
+        private Integer reponseEnt5;
+        @Lob
+        private String reponseEnt5bis;
+        private Integer reponseEnt6;
+        @Lob
+        private String reponseEnt6bis;
+        private Integer reponseEnt7;
+        @Lob
+        private String reponseEnt7bis;
+        private Integer reponseEnt8;
+        @Lob
+        private String reponseEnt8bis;
+        private Integer reponseEnt9;
+        @Lob
+        private String reponseEnt9bis;
+        private Boolean reponseEnt10;
+        @Lob
+        private String reponseEnt10bis;
+        private Integer reponseEnt11;
+        @Lob
+        private String reponseEnt11bis;
+        private Integer reponseEnt12;
+        @Lob
+        private String reponseEnt12bis;
+        private Integer reponseEnt13;
+        @Lob
+        private String reponseEnt13bis;
+        private Integer reponseEnt14;
+        @Lob
+        private String reponseEnt14bis;
+        private Integer reponseEnt15;
+        @Lob
+        private String reponseEnt15bis;
+        private Integer reponseEnt16;
+        @Lob
+        private String reponseEnt16bis;
+        private Integer reponseEnt17;
+        @Lob
+        private String reponseEnt17bis;
+        private Boolean reponseEnt18;
+        @Lob
+        private String reponseEnt18bis;
+        @Lob
+        private String reponseEnt19;
+    }
+
+    @Data
+    @NoArgsConstructor
+    private static class FicheEvaluationContext {
+        private Boolean questionEnt1;
+        private Boolean questionEnt2;
+        private Boolean questionEnt3;
+        private Boolean questionEnt4;
+        private Boolean questionEnt5;
+        private Boolean questionEnt6;
+        private Boolean questionEnt7;
+        private Boolean questionEnt8;
+        private Boolean questionEnt9;
+        private Boolean questionEnt10;
+        private Boolean questionEnt11;
+        private Boolean questionEnt12;
+        private Boolean questionEnt13;
+        private Boolean questionEnt14;
+        private Boolean questionEnt15;
+        private Boolean questionEnt16;
+        private Boolean questionEnt17;
+        private Boolean questionEnt18;
+        private Boolean questionEnt19;
+    }
+
+    @Data
+    @NoArgsConstructor
+    private static class QuestionSupplementaireContext {
+        private int id;
+        private String question;
+        private String typeQuestion;
+
+        public QuestionSupplementaireContext(QuestionSupplementaire questionSupplementaire) {
+            this.id = questionSupplementaire.getId();
+            this.question = questionSupplementaire.getQuestion();
+            this.typeQuestion = questionSupplementaire.getTypeQuestion();
+        }
+    }
+
+    @Data
+    @NoArgsConstructor
+    private static class ReponseSupplementaireContext {
+        private int idQuestionSupplementaire;
+        private int idConvention;
+        private String reponseTxt;
+        private Integer reponseInt;
+        private Boolean reponseBool;
+
+        public ReponseSupplementaireContext(ReponseSupplementaire reponseSupplementaire) {
+            this.idQuestionSupplementaire = reponseSupplementaire.getId().getIdQuestionSupplementaire();
+            this.idConvention = reponseSupplementaire.getId().getIdConvention();
+            this.reponseTxt = reponseSupplementaire.getReponseTxt();
+            this.reponseInt = reponseSupplementaire.getReponseInt();
+            this.reponseBool = reponseSupplementaire.getReponseBool();
+        }
     }
 }

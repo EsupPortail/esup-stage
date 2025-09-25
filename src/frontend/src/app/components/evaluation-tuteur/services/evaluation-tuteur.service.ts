@@ -29,4 +29,8 @@ export class EvaluationTuteurService {
   validate(token : string, id: number, valid: boolean): Observable<any>{
     return this.http.post(`${environment.apiUrl}/evaluation-tuteur/${id}/validate/${valid}`,null,{params: {token}})
   }
+
+  getEvaluationPDF(token: string, id:number){
+    return this.http.get(`${environment.apiUrl}/evaluation-tuteur/${id}/pdf`,{params:{token}})
+  }
 }

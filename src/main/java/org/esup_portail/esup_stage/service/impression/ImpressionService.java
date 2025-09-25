@@ -20,6 +20,7 @@ import org.esup_portail.esup_stage.enums.TypeSignatureEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
+import org.esup_portail.esup_stage.repository.QuestionSupplementaireJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateConventionJpaRepository;
 import org.esup_portail.esup_stage.service.impression.context.ImpressionContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,9 @@ public class ImpressionService {
     @Autowired
     AppliProperties appliProperties;
 
+    @Autowired
+    QuestionSupplementaireJpaRepository QSJpaRepository;
+
     //    @Autowired
     //    ConventionService conventionService;
     //
@@ -63,13 +67,13 @@ public class ImpressionService {
         if (templateConvention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Template convention " + convention.getTypeConvention().getLibelle() + "-" + convention.getLangueConvention().getCode() + " non trouvé");
         }
-
         CentreGestion centreEtablissement = centreGestionJpaRepository.getCentreEtablissement();
-        ImpressionContext impressionContext = new ImpressionContext(convention, avenant, centreEtablissement);
+        List<QuestionSupplementaire> questionSupplementaire = QSJpaRepository.findByFicheEvaluation(centreEtablissement.getFicheEvaluation().getId());
+        ImpressionContext impressionContext = new ImpressionContext(convention, avenant, centreEtablissement, questionSupplementaire);
 
         try {
 
-            String htmlTexte = avenant != null ? this.getHtmlText(templateConvention.getTexteAvenant(), false, isRecap) : this.getHtmlText(templateConvention.getTexte(), true, isRecap);
+            String htmlTexte = avenant != null ? this.getHtmlText(templateConvention.getTexteAvenant(), false, isRecap,false) : this.getHtmlText(templateConvention.getTexte(), true, isRecap,false);
 
             htmlTexte = manageIfElse(htmlTexte);
 
@@ -258,7 +262,7 @@ public class ImpressionService {
         return sb.toString();
     }
 
-    private String getHtmlText(String texte, boolean isConvention, boolean isRecap) {
+    private String getHtmlText(String texte, boolean isConvention, boolean isRecap, boolean isEvalTuteur) {
 
         if (texte == null) {
             texte = getDefaultText(isConvention);
@@ -269,6 +273,8 @@ public class ImpressionService {
 
         if (isRecap) {
             htmlTexte += getDefaultText("/templates/template_recapitulatif.html");
+        } else if (isEvalTuteur) {
+            htmlTexte += getDefaultText("/templates/template_evaluation_tuteur.html");
         } else {
             String periodesInterruptionsStage = getDefaultText("/templates/template_convention_periodesInterruptions.html");
             texte = texte.replace("${convention.periodesInterruptions}", periodesInterruptionsStage);
@@ -357,5 +363,79 @@ public class ImpressionService {
 
         img.setMarginBottom(10f);
         return img;
+    }
+
+    /**
+     * Génère le pdf de l'évaluation du tuteur de stage
+     * @param convention
+     * @param avenant
+     * @param outputStream
+     */
+    public void generateEvaluationTuteurPDF(Convention convention, Avenant avenant, ByteArrayOutputStream outputStream) {
+        if (convention.getNomenclature() == null) {
+            convention.setValeurNomenclature();
+        }
+
+        // Récupération du template d'évaluation depuis les fichiers
+        String templatePath = "/templates/template_evaluation_tuteur";
+        if (convention.getLangueConvention() != null && !convention.getLangueConvention().getCode().equals("fr")) {
+            templatePath += "_" + convention.getLangueConvention().getCode();
+        }
+        templatePath += ".html";
+
+        CentreGestion centreEtablissement = centreGestionJpaRepository.getCentreEtablissement();
+        List<QuestionSupplementaire> questionSupplementaire = QSJpaRepository.findByFicheEvaluation(centreEtablissement.getFicheEvaluation().getId());
+        ImpressionContext impressionContext = new ImpressionContext(convention, avenant, centreEtablissement, questionSupplementaire);
+
+        try {
+            // Récupération du texte HTML directement depuis les fichiers
+            String htmlTexte = getDefaultText(templatePath);
+            htmlTexte = this.getHtmlText(htmlTexte, false, false,true);
+
+            // Traitement des conditions if/else comme dans generateConventionAvenantPDF
+            htmlTexte = manageIfElse(htmlTexte);
+
+            // Configuration FreeMarker
+            Configuration freeMarkerConfig = freeMarkerConfigurer.getConfiguration();
+            freeMarkerConfig.setClassicCompatible(true);
+            Template template = new Template("template_evaluation_tuteur", htmlTexte, freeMarkerConfig);
+
+            // Remplir le template avec les données
+            StringWriter texte = new StringWriter();
+            template.process(impressionContext, texte);
+
+            String filename = "evaluation_tuteur_" + convention.getId();
+            filename += "_" + convention.getEtudiant().getPrenom() + "_" + convention.getEtudiant().getNom() + ".pdf";
+
+            // Récupération du logo du centre gestion (même logique que generateConventionAvenantPDF)
+            String logoname;
+            Fichier fichier = convention.getCentreGestion().getFichier();
+            ImageData imageData = null;
+
+            if (fichier != null) {
+                logoname = this.getLogoFilePath(this.getNomFichier(fichier.getId(), fichier.getNom()));
+                if (Files.exists(Paths.get(logoname))) {
+                    imageData = ImageDataFactory.create(logoname);
+                }
+            }
+
+            // Si le centre de gestion n'a pas de logo ou qu'il n'existe pas physiquement, on prend celui du centre établissement
+            if (imageData == null) {
+                fichier = centreEtablissement.getFichier();
+                if (fichier != null) {
+                    logoname = this.getLogoFilePath(this.getNomFichier(fichier.getId(), fichier.getNom()));
+                    if (Files.exists(Paths.get(logoname))) {
+                        imageData = ImageDataFactory.create(logoname);
+                    }
+                }
+            }
+
+            // Génération du PDF
+            this.generatePDF(texte.toString(), filename, imageData, outputStream);
+
+        } catch (Exception e) {
+            logger.error("Une erreur est survenue lors de la génération du PDF d'évaluation du tuteur", e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
+        }
     }
 }

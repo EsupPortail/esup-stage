@@ -96,6 +96,26 @@ public class EvaluationService {
             return null;
         }
     }
+    /**
+     * Valide que le token existe et est déjà utilisé
+     * @param tokenValue le token à valider
+     * @return le token valide ou null si invalide
+     */
+    public EvaluationTuteurToken validateUsedToken(String tokenValue) {
+        if (tokenValue == null || tokenValue.trim().isEmpty()) {
+            return null;
+        }
+
+        try {
+            EvaluationTuteurToken token = tokenRepository.findByToken(tokenValue);
+            return (token != null && !token.isExpired() && token.getUtilise() && !token.getRevoque()) ? token : null;
+
+        } catch (Exception e) {
+            logger.error("Erreur lors de la validation du token", e);
+            return null;
+        }
+    }
+
 
     /**
      * Révoque un token

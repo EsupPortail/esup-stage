@@ -1,5 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {ContenuService} from "../../../../services/contenu.service";
+import {EvaluationTuteurService} from "../../services/evaluation-tuteur.service";
+import {EvaluationTuteurContextService} from "../../services/evaluation-tuteur-context.service";
+import {ConventionEvaluationTuteur} from "../../models/convention-evaluation-tuteur.model";
 
 @Component({
   selector: 'app-questionnaire-complet-tuteur',
@@ -10,9 +13,14 @@ export class QuestionnaireCompletTuteurComponent implements OnInit{
 
   texteQuestionnaireCompletTuteur !: string ;
   texteDemanderRenouvellementTuteur !: string;
+  convention!: ConventionEvaluationTuteur;
+  token!: string;
+
 
   constructor(
     private contenuService: ContenuService,
+    private evaluationTuteurService: EvaluationTuteurService,
+    private ctx : EvaluationTuteurContextService
   ) {
   }
 
@@ -23,10 +31,20 @@ export class QuestionnaireCompletTuteurComponent implements OnInit{
     this.contenuService.get('TEXTE_DEMANDER_RENOUVELLEMENT_TUTEUR').subscribe((response: any) => {
       this.texteDemanderRenouvellementTuteur = response.texte;
     })
+    this.ctx.convention$.subscribe(c=> {
+      if(c != null){
+        this.convention = c;
+      }
+    });
+    this.ctx.token$.subscribe(t=>{
+      if(t != null){
+        this.token = t
+      }
+    })
   }
 
   imprimer(){
-    console.log('imprimer')
+    this.evaluationTuteurService.getEvaluationPDF(this.token,this.convention.id).subscribe()
   }
 
   renouvellement() {
