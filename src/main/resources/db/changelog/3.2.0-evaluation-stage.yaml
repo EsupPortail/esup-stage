@@ -154,3 +154,16 @@ databaseChangeLog:
               - column:
                   name: Revoque
                   type: boolean
+  - changeSet:
+      id: 3.2.0-ajout-param-mail-lien-evaluation-tuteur
+      author: thouveno9
+      changes:
+        - insert:
+            columns:
+              - column:
+                  name: code
+                  value: lienEvaluationTuteur
+              - column:
+                  name: libelle
+                  value: Lien de l'application vers l'évaluation de stage pour le tuteur
+            tableName: ParamMail

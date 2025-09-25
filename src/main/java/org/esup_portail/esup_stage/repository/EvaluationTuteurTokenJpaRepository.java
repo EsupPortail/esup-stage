@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface EvaluationTuteurTokenRepository extends JpaRepository<EvaluationTuteurToken, Integer> {
+public interface EvaluationTuteurTokenJpaRepository extends JpaRepository<EvaluationTuteurToken, Integer> {
 
     EvaluationTuteurToken findById(int id);
 

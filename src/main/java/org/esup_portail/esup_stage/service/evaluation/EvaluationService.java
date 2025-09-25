@@ -3,6 +3,7 @@ package org.esup_portail.esup_stage.service.evaluation;
 import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.dto.*;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
@@ -10,6 +11,11 @@ import org.esup_portail.esup_stage.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
+
+
+import java.util.List;
+import java.time.Duration;
 
 @Service
 public class EvaluationService {
@@ -17,7 +23,7 @@ public class EvaluationService {
     private static final Logger logger = LogManager.getLogger(EvaluationService.class);
 
     @Autowired
-    private EvaluationTuteurTokenRepository tokenRepository;
+    private EvaluationTuteurTokenJpaRepository tokenRepository;
 
     @Autowired
     private ConventionJpaRepository conventionJpaRepository;
@@ -30,6 +36,9 @@ public class EvaluationService {
 
     @Autowired
     private FicheEvaluationJpaRepository ficheEvaluationJpaRepository;
+
+    @Autowired
+    private AppliProperties appliProperties;
 
     /**
      * Valide un token et le marque comme utilisé si valide
@@ -109,6 +118,100 @@ public class EvaluationService {
             return false;
         }
     }
+
+    /**
+     * Crée l'url de l'évaluation pour le tuteur à partir du token
+     * @param tokenValue String
+     * @return l'url de l'évaluation pour le tuteur
+     */
+    public String buildEvaluationTuteurUrl(String tokenValue) {
+
+        if (tokenValue == null || tokenValue.isBlank()) {
+            logger.warn("Impossible de construire l'URL d'évaluation : token manquant");
+            return "";
+        }
+        return UriComponentsBuilder
+                .fromHttpUrl(appliProperties.getPrefix())
+                .path("frontend/#/evaluation-tuteur")
+                .queryParam("token", tokenValue)
+                .build()
+                .toUriString();
+    }
+
+     /**
+     * Crée l'url de l'évaluation pour le tuteur à partir d'une convention
+     * Crée automatiquement un token si aucun token actif n'existe
+     * @param convention Convention
+     * @return l'url de l'évaluation pour le tuteur
+     */
+    @Transactional
+    public String buildEvaluationTuteurUrl(Convention convention) {
+        if (convention == null || convention.getContact() == null) {
+            return "";
+        }
+
+        // Chercher un token actif existant
+        List<EvaluationTuteurToken> tokens = tokenRepository.findByTuteurId(convention.getContact().getId());
+        EvaluationTuteurToken tokenActif = null;
+
+        if (tokens != null && !tokens.isEmpty()) {
+            for (EvaluationTuteurToken t : tokens) {
+                if (t != null && t.isActive()) {
+                    tokenActif = t;
+                    break;
+                }
+            }
+        }
+
+        // Si aucun token actif trouvé, en créer un nouveau
+        if (tokenActif == null) {
+            tokenActif = createToken(convention);
+        }
+
+        // Si on n'arrive toujours pas à avoir un token (erreur de création), retourner vide
+        if (tokenActif == null) {
+            logger.warn("Impossible de créer ou trouver un token actif pour tuteur ID: {}", convention.getContact().getId());
+            return "";
+        }
+
+        return buildEvaluationTuteurUrl(tokenActif.getToken());
+    }
+
+
+    /**
+     * Creation d'un token pour une convention
+     * @param convention Convention
+     * @return token EvaluationTuteurToken
+     */
+    @Transactional
+    public EvaluationTuteurToken createToken(Convention convention) {
+        if (convention == null || convention.getContact() == null) {
+            logger.warn("Impossible de créer un token : convention ou contact manquant");
+            return null;
+        }
+
+        try {
+            // Vérifier s'il existe déjà un token actif pour ce tuteur
+            List<EvaluationTuteurToken> existingTokens = tokenRepository.findByTuteurId(convention.getContact().getId());
+            for (EvaluationTuteurToken existingToken : existingTokens) {
+                if (existingToken.isActive()) {
+                    logger.info("Token actif existant trouvé pour tuteur ID: {}", convention.getContact().getId());
+                    return existingToken;
+                }
+            }
+
+            EvaluationTuteurToken newToken = new EvaluationTuteurToken(convention,convention.getContact(),Duration.ofDays(3));
+            EvaluationTuteurToken savedToken = tokenRepository.save(newToken);
+            logger.info("Nouveau token créé pour tuteur ID: {}", convention.getContact().getId());
+
+            return savedToken;
+
+        } catch (Exception e) {
+            logger.error("Erreur lors de la création du token pour tuteur ID: " + convention.getContact().getId(), e);
+            return null;
+        }
+    }
+
 
     public FicheEvaluation getByCentreGestion(Integer id) {
         FicheEvaluation ficheEvaluation = ficheEvaluationJpaRepository.findByCentreGestion(id);

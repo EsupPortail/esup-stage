@@ -11,15 +11,16 @@ import org.esup_portail.esup_stage.config.properties.ApplicationProperties;
 import org.esup_portail.esup_stage.dto.SendMailTestDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
+import org.esup_portail.esup_stage.repository.EvaluationTuteurTokenJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateMailGroupeJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateMailJpaRepository;
+import org.esup_portail.esup_stage.service.evaluation.EvaluationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
 import java.io.StringWriter;
@@ -48,6 +49,9 @@ public class MailerService {
     @Autowired
     ApplicationProperties applicationProperties;
 
+    @Autowired
+    EvaluationService evaluationService;
+
     private void sendMail(String to, TemplateMail templateMail, MailContext mailContext) {
         sendMail(to, templateMail.getId(), templateMail.getObjet(), templateMail.getTexte(), templateMail.getCode(), mailContext, false, null, null);
     }
@@ -65,7 +69,7 @@ public class MailerService {
         if (to == null || to.isEmpty() || to.equals("null")) {
             logger.info("Aucun destinataire défini pour l'envoie de l'email.");
         } else {
-            MailContext mailContext = new MailContext(appliProperties, applicationProperties,convention, avenant, userModif);
+            MailContext mailContext = new MailContext(appliProperties, applicationProperties,convention, avenant, userModif, evaluationService.buildEvaluationTuteurUrl(convention));
             sendMail(to, templateMail.getId(), templateMail.getObjet(), templateMail.getTexte(), templateMail.getCode(),
                     mailContext, false, null, null);
         }
@@ -79,7 +83,7 @@ public class MailerService {
         if (to == null || to.isEmpty()) {
             logger.info("Aucun destinataire défini pour l'envoie de l'email.");
         } else {
-            MailContext mailContext = new MailContext(appliProperties, applicationProperties,convention, null, userModif);
+            MailContext mailContext = new MailContext(appliProperties, applicationProperties,convention, null, userModif, evaluationService.buildEvaluationTuteurUrl(convention));
             sendMail(to, templateMailGroupe.getId(), templateMailGroupe.getObjet(), templateMailGroupe.getTexte(), templateMailGroupe.getCode(),
                     mailContext, false, "conventions.zip", archive);
         }
@@ -196,13 +200,15 @@ public class MailerService {
         private ModifieParContext modifiePar = new ModifieParContext();
         private EtudiantContext etudiant = new EtudiantContext();
         private AvenantContext avenant = new AvenantContext();
+        private String lienEvaluationTuteur= "";
 
-        public MailContext(AppliProperties appliProperties,ApplicationProperties applicationProperties,Convention convention, Avenant avenant, Utilisateur userModif) {
+        public MailContext(AppliProperties appliProperties,ApplicationProperties applicationProperties,Convention convention, Avenant avenant, Utilisateur userModif, String lienEvaluationTuteur) {
             if (convention != null) {
                 this.convention = new ConventionContext(appliProperties, applicationProperties, convention);
                 this.tuteurPro = new TuteurProContext(convention.getContact(), convention.getStructure(), convention.getService());
                 this.signataire = new SignataireContext(convention.getSignataire());
                 this.etudiant = new EtudiantContext(convention.getEtudiant(), convention.getCourrielPersoEtudiant(), convention.getTelEtudiant());
+                this.lienEvaluationTuteur =  lienEvaluationTuteur;
             }
             if (avenant != null) {
                 this.avenant = new AvenantContext(avenant);

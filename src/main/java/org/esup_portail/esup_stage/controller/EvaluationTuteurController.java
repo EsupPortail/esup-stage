@@ -35,7 +35,7 @@ public class EvaluationTuteurController {
     private ReponseSupplementaireJpaRepository reponseSupplementaireJpaRepository;
 
     @Autowired
-    private EvaluationTuteurTokenRepository evaluationTuteurTokenRepository;
+    private EvaluationTuteurTokenJpaRepository evaluationTuteurTokenRepository;
 
     @GetMapping("/access")
     public ConventionEvaluationTuteurDto accessEvaluationPage(@RequestParam(name = "token") String token) {
