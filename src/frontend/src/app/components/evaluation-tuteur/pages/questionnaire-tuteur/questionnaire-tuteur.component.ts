@@ -1,11 +1,11 @@
 import {Component, OnInit} from '@angular/core';
-import {ReponseEvaluationService} from "../../../../services/reponse-evaluation.service";
-import {FicheEvaluationService} from "../../../../services/fiche-evaluation.service";
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {ActivatedRoute, Router} from "@angular/router";
-import { ViewportScroller } from '@angular/common';
+import {ViewportScroller} from '@angular/common';
 import {ConventionEvaluationTuteur } from "../../models/convention-evaluation-tuteur.model";
 import {EvaluationTuteurContextService} from "../../services/evaluation-tuteur-context.service";
+import {MessageService} from "../../../../services/message.service";
+import {EvaluationTuteurService} from "../../services/evaluation-tuteur.service";
 
 
 @Component({
@@ -14,6 +14,20 @@ import {EvaluationTuteurContextService} from "../../services/evaluation-tuteur-c
   styleUrl: './questionnaire-tuteur.component.scss'
 })
 export class QuestionnaireTuteurComponent implements OnInit{
+
+  controlsIndexToLetter:any = ['a','b','c','d','e','f','g','h']
+  convention !: ConventionEvaluationTuteur;
+  token !: string;
+  ficheEvaluation: any;
+  reponseEvaluation: any;
+  questionsSupplementaires: any;
+
+  reponseEntrepriseForm: FormGroup;
+
+  protected reponseSupplementaireEntrepriseForm !: FormGroup;
+
+  selectedTab = 0;
+  totalTabs = 3;
 
   FicheEntrepriseIQuestions: any = [
     {
@@ -256,26 +270,14 @@ export class QuestionnaireTuteurComponent implements OnInit{
     },
   ]
 
-  controlsIndexToLetter:any = ['a','b','c','d','e','f','g','h']
-  convention !: ConventionEvaluationTuteur | null;
-  ficheEvaluation: any;
-  reponseEvaluation: any;
-  questionsSupplementaires: any;
-
-  reponseEntrepriseForm: FormGroup;
-
-  protected reponseSupplementaireEntrepriseForm !: FormGroup;
-
-  selectedTab = 0;
-  totalTabs = 3;
-
-
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
     private viewportScroller: ViewportScroller,
-    private ctx: EvaluationTuteurContextService
+    private ctx: EvaluationTuteurContextService,
+    private messageService: MessageService,
+    private evaluationTuteurService:EvaluationTuteurService,
   ) {
     this.reponseSupplementaireEntrepriseForm = this.fb.group({});
 
@@ -322,16 +324,22 @@ export class QuestionnaireTuteurComponent implements OnInit{
 
   ngOnInit(): void {
     this.ctx.convention$.subscribe(c=> {
-      this.convention = c;
-      if(c) {
-        this.getFicheEvaluation();
-        this.getQuestionSupplementaire();
+      if(c != null){
+        this.convention = c;
+        if(c) {
+          this.getFicheEvaluation();
+          this.getQuestionSupplementaire();
+        }
       }
     });
+    this.ctx.token$.subscribe(t=>{
+      if(t != null){
+        this.token = t
+      }
+    })
   }
 
   getFicheEvaluation(){
-    if(this.convention == null) return;
 
     this.ficheEvaluation = this.convention.ficheEvaluation;
 
@@ -463,16 +471,59 @@ export class QuestionnaireTuteurComponent implements OnInit{
     }
   }
 
-  terminer(): void {
-    if(this.convention == null) return;
-    this.onSubmit();
-    this.router.navigate(['/evaluation-tuteur', this.convention.id, 'terminee'], {
-      relativeTo: this.route.parent,
-      replaceUrl: true });
+  saveReponse(): void {
+    const source = Array.isArray(this.questionsSupplementaires) ? this.questionsSupplementaires : [];
+    const questionsSupplementaires = [5, 6, 7].reduce<any[]>((acc, i) => {
+      const arr = Array.isArray(source[i]) ? source[i] : [];
+      return acc.concat(arr);
+    }, []);
+
+    const data = {...this.reponseEntrepriseForm.value};
+
+    for(let questionSupplementaire of questionsSupplementaires){
+      let reponseSupplementaireData = {'reponseTxt':null,'reponseInt':null,'reponseBool':null,};
+      if(questionSupplementaire.typeQuestion == 'txt'){
+        reponseSupplementaireData.reponseTxt = this.reponseSupplementaireEntrepriseForm.get(questionSupplementaire.formControlName)!.value;
+      }
+      if(questionSupplementaire.typeQuestion == 'not'){
+        reponseSupplementaireData.reponseInt = this.reponseSupplementaireEntrepriseForm.get(questionSupplementaire.formControlName)!.value;
+      }
+      if(questionSupplementaire.typeQuestion == 'yn'){
+        reponseSupplementaireData.reponseBool = this.reponseSupplementaireEntrepriseForm.get(questionSupplementaire.formControlName)!.value;
+      }
+      if(questionSupplementaire.reponse){
+        this.evaluationTuteurService.updateReponseSupplementaire(this.token, this.convention.id, questionSupplementaire.id, reponseSupplementaireData).subscribe((response: any) => {
+        });
+      }else{
+        this.evaluationTuteurService.createReponseSupplementaire(this.token,this.convention.id, questionSupplementaire.id, reponseSupplementaireData).subscribe((response: any) => {
+        });
+      }
+    }
+    if(this.reponseEvaluation){
+      this.evaluationTuteurService.updateReponse(this.token,this.convention.id, data).subscribe((response: any) => {
+        this.reponseEvaluation = response;
+      });
+    }else{
+      this.evaluationTuteurService.createReponse(this.token,this.convention.id, data).subscribe((response: any) => {
+        this.reponseEvaluation = response;
+      });
+    }
   }
 
-  onSubmit(): void {
-    console.log('Formulaire soumis');
+  terminer(): void {
+    const valid = this.reponseEntrepriseForm.valid && this.reponseSupplementaireEntrepriseForm.valid
+    this.saveReponse()
+    this.evaluationTuteurService.validate(this.token,this.convention.id,valid).subscribe()
+    console.log("terminer")
+    this.router.navigate(['/evaluation-tuteur', this.convention.id, 'terminee'], {
+      relativeTo: this.route.parent,
+      replaceUrl: true
+    });
+  }
+
+  enregistrer(): void {
+    this.saveReponse();
+    this.messageService.setSuccess('Evaluation enregistrée avec succès');
   }
 
   private scrollTop(): void {

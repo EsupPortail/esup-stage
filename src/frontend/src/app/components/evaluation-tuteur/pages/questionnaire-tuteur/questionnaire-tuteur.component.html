@@ -369,6 +369,9 @@
       </mat-tab>
     </mat-tab-group>
   </form>
+  <div class="btn-container">
+    <button mat-raised-button color="primary" (click)="enregistrer()">Enregistrer</button>
+  </div>
 </div>
 <div class="btn-container">
     <button mat-stroked-button color="primary" (click)="prevTab()" [disabled]="selectedTab === 0">
@@ -379,7 +382,14 @@
                 Suivant <i class="fas fa-chevron-right ms-2"></i>
         </button>
     }@else{
-      <span (confirm)="nextOrFinish()" [confirmMessage]="'Voulez vous vraiment terminer le questionnaire ?'">
+      <span
+        (confirm)="nextOrFinish()"
+        [preset]="(reponseEntrepriseForm.valid && reponseSupplementaireEntrepriseForm.valid)
+        ? 'success'
+        : 'warning'"
+        [confirmMessage]="(reponseEntrepriseForm.valid && reponseSupplementaireEntrepriseForm.valid)
+        ? 'Tout est rempli. Valider définitivement ?'
+        : 'Certaines réponses manquent. Valider quand même ?'">
         <button mat-raised-button color="primary">Terminer</button>
       </span>
     }

@@ -38,16 +38,15 @@ public class EvaluationTuteurToken {
     @Column(name = "DateCreation", nullable = false, updatable = false)
     private Date createdAt;
 
-    @Column(name = "DateUtilisation")
-    private Date usedAt;
+    @Column(name = "Utilise")
+    private Boolean utilise = false;
 
-    @Column(name = "DateRevocation")
-    private Date revokedAt;
+    @Column(name = "Revoque")
+    private Boolean revoque = false;
 
-    @Transient public boolean isUsed()    { return usedAt != null; }
-    @Transient public boolean isRevoked() { return revokedAt != null; }
+
     @Transient public boolean isExpired() { return expiresAt != null && expiresAt.before(new Date()); }
-    @Transient public boolean isActive()  { return !isUsed() && !isRevoked() && !isExpired(); }
+    @Transient public boolean isActive()  { return !utilise && !revoque && !isExpired(); }
 
     public EvaluationTuteurToken(Convention convention, Contact contact, Duration ttl) {
         // validation des arguments

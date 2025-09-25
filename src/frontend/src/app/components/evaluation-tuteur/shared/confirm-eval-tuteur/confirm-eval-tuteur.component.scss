@@ -5,3 +5,25 @@
   margin: 16px 0 8px;
   flex-wrap: wrap;
 }
+
+/* Couleurs de texte (simples, indépendantes du thème) */
+.text-info    { color: #0288d1; }  /* bleu */
+.text-success { color: #2e7d32; }  /* vert */
+.text-warning { color: #ed6c02; }  /* orange */
+.text-danger  { color: #d32f2f; }  /* rouge */
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+
+.title-icon {
+  font-size: 24px;
+  line-height: 24px;
+}
+
+.message {
+  margin-top: .25rem;
+}
+

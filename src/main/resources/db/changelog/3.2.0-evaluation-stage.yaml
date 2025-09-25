@@ -135,3 +135,22 @@ databaseChangeLog:
             columns:
               - column:
                   name: idTuteur
+  - changeSet:
+      id: 3.2.0-changement-type-Utilisation-Revocation-Token
+      author: thouveno9
+      changes:
+        - dropColumn:
+            columnName: DateUtilisation
+            tableName: EvaluationTuteurToken
+        - dropColumn:
+            columnName: DateRevocation
+            tableName: EvaluationTuteurToken
+        - addColumn:
+            tableName: EvaluationTuteurToken
+            columns:
+              - column:
+                  name: Utilise
+                  type: boolean
+              - column:
+                  name: Revoque
+                  type: boolean

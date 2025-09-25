@@ -1,9 +1,21 @@
 <ng-content></ng-content>
+
 <ng-template #confirmDialog>
-  <h2 mat-dialog-title>Confirmation</h2>
-  <mat-dialog-content [innerHTML]="confirmMessage"></mat-dialog-content>
+  <h2 mat-dialog-title class="title" [ngClass]="resolvedColorClass">
+    <mat-icon class="title-icon">{{ resolvedIcon }}</mat-icon>
+    <span>{{ resolvedTitle }}</span>
+  </h2>
+
+  <mat-dialog-content>
+    <div class="message" [innerHTML]="confirmMessage"></div>
+  </mat-dialog-content>
+
   <mat-dialog-actions class="btn-block">
-    <button mat-flat-button color="warn" mat-dialog-close>{{textBoutonAnnuler}}</button>
-    <button mat-flat-button color="primary" (click)="confirmed()">{{textBoutonValider}}</button>
+    <button mat-stroked-button color="warn" mat-dialog-close>
+      {{ textBoutonAnnuler }}
+    </button>
+    <button mat-flat-button color="primary" (click)="confirmed()">
+      {{ textBoutonValider }}
+    </button>
   </mat-dialog-actions>
 </ng-template>

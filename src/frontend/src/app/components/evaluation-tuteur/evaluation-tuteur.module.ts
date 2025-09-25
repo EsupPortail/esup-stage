@@ -16,7 +16,8 @@ import { MatRadioModule} from "@angular/material/radio";
 import { MatDivider} from "@angular/material/divider";
 import {MatFormField} from "@angular/material/form-field";
 import {MatInput} from "@angular/material/input";
-import {MatDialogActions, MatDialogContent, MatDialogTitle} from "@angular/material/dialog";
+import {MatDialogActions, MatDialogClose, MatDialogContent, MatDialogTitle} from "@angular/material/dialog";
+import {MatIcon} from "@angular/material/icon";
 
 
 @NgModule({
@@ -44,6 +45,8 @@ import {MatDialogActions, MatDialogContent, MatDialogTitle} from "@angular/mater
     MatDialogActions,
     MatDialogContent,
     MatDialogTitle,
+    MatDialogClose,
+    MatIcon,
   ],
   providers: [ContenuService]
 })

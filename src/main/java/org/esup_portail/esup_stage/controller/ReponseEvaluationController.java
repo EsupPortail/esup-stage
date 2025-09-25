@@ -17,6 +17,7 @@ import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.MailerService;
+import org.esup_portail.esup_stage.service.evaluation.EvaluationService;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -54,6 +55,9 @@ public class ReponseEvaluationController {
     @Autowired
     AppConfigService appConfigService;
 
+    @Autowired
+    EvaluationService evaluationService;
+
     @GetMapping("/getByConvention/{id}")
     public ReponseEvaluation getByConvention(@PathVariable("id") int id) {
         ReponseEvaluation reponseEvaluation = reponseEvaluationJpaRepository.findByConvention(id);
@@ -62,9 +66,9 @@ public class ReponseEvaluationController {
 
     @PostMapping("/{id}/etudiant/valid/{valid}")
     public ReponseEvaluation createReponseEtudiant(@PathVariable("id") int id, @PathVariable("valid") boolean valid, @Valid @RequestBody ReponseEtudiantFormDto reponseEtudiantFormDto) {
-        ReponseEvaluation reponseEvaluation = initReponseEvaluation(id);
+        ReponseEvaluation reponseEvaluation = evaluationService.initReponseEvaluation(id);
         reponseEvaluation.setValidationEtudiant(valid);
-        setReponseEvaluationEtudiantData(reponseEvaluation, reponseEtudiantFormDto);
+        evaluationService.setReponseEvaluationEtudiantData(reponseEvaluation, reponseEtudiantFormDto);
         return reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
     }
 
@@ -75,15 +79,15 @@ public class ReponseEvaluationController {
             throw new AppException(HttpStatus.NOT_FOUND, "ReponseEvaluation non trouvé");
         }
         reponseEvaluation.setValidationEtudiant(valid);
-        setReponseEvaluationEtudiantData(reponseEvaluation, reponseEtudiantFormDto);
+        evaluationService.setReponseEvaluationEtudiantData(reponseEvaluation, reponseEtudiantFormDto);
         return reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
     }
 
     @PostMapping("/{id}/enseignant/valid/{valid}")
     public ReponseEvaluation createReponseEnseignant(@PathVariable("id") int id, @PathVariable("valid") boolean valid, @Valid @RequestBody ReponseEnseignantFormDto reponseEnseignantFormDto) {
-        ReponseEvaluation reponseEvaluation = initReponseEvaluation(id);
+        ReponseEvaluation reponseEvaluation = evaluationService.initReponseEvaluation(id);
         reponseEvaluation.setValidationEnseignant(valid);
-        setReponseEvaluationEnseignantData(reponseEvaluation, reponseEnseignantFormDto);
+        evaluationService.setReponseEvaluationEnseignantData(reponseEvaluation, reponseEnseignantFormDto);
         return reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
     }
 
@@ -94,15 +98,15 @@ public class ReponseEvaluationController {
             throw new AppException(HttpStatus.NOT_FOUND, "ReponseEvaluation non trouvé");
         }
         reponseEvaluation.setValidationEnseignant(valid);
-        setReponseEvaluationEnseignantData(reponseEvaluation, reponseEnseignantFormDto);
+        evaluationService.setReponseEvaluationEnseignantData(reponseEvaluation, reponseEnseignantFormDto);
         return reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
     }
 
     @PostMapping("/{id}/entreprise/valid/{valid}")
     public ReponseEvaluation createReponseEntreprise(@PathVariable("id") int id, @PathVariable("valid") boolean valid, @Valid @RequestBody ReponseEntrepriseFormDto reponseEntrepriseFormDto) {
-        ReponseEvaluation reponseEvaluation = initReponseEvaluation(id);
+        ReponseEvaluation reponseEvaluation = evaluationService.initReponseEvaluation(id);
         reponseEvaluation.setValidationEntreprise(valid);
-        setReponseEvaluationEntrepriseData(reponseEvaluation, reponseEntrepriseFormDto);
+        evaluationService.setReponseEvaluationEntrepriseData(reponseEvaluation, reponseEntrepriseFormDto);
         return reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
     }
 
@@ -113,7 +117,7 @@ public class ReponseEvaluationController {
             throw new AppException(HttpStatus.NOT_FOUND, "ReponseEvaluation non trouvé");
         }
         reponseEvaluation.setValidationEntreprise(valid);
-        setReponseEvaluationEntrepriseData(reponseEvaluation, reponseEntrepriseFormDto);
+        evaluationService.setReponseEvaluationEntrepriseData(reponseEvaluation, reponseEntrepriseFormDto);
         return reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
     }
 
@@ -213,8 +217,8 @@ public class ReponseEvaluationController {
 
     @PostMapping("/{idConvention}/reponseSupplementaire/{idQestion}")
     public ReponseSupplementaire createReponseSupplementaire(@PathVariable("idConvention") int idConvention, @PathVariable("idQestion") int idQestion, @Valid @RequestBody ReponseSupplementaireFormDto reponseSupplementaireFormDto) {
-        ReponseSupplementaire reponseSupplementaire = initReponseSupplementaire(idConvention, idQestion);
-        setReponseSupplementaireData(reponseSupplementaire, reponseSupplementaireFormDto);
+        ReponseSupplementaire reponseSupplementaire = evaluationService.initReponseSupplementaire(idConvention, idQestion);
+        evaluationService.setReponseSupplementaireData(reponseSupplementaire, reponseSupplementaireFormDto);
         return reponseSupplementaireJpaRepository.saveAndFlush(reponseSupplementaire);
     }
 
@@ -224,183 +228,7 @@ public class ReponseEvaluationController {
         if (reponseSupplementaire == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "ReponseSupplementaire non trouvé");
         }
-        setReponseSupplementaireData(reponseSupplementaire, reponseSupplementaireFormDto);
+        evaluationService.setReponseSupplementaireData(reponseSupplementaire, reponseSupplementaireFormDto);
         return reponseSupplementaireJpaRepository.saveAndFlush(reponseSupplementaire);
-    }
-
-    private ReponseEvaluation initReponseEvaluation(int id) {
-
-        Convention convention = conventionJpaRepository.findById(id);
-        if (convention == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
-        }
-        FicheEvaluation ficheEvaluation = ficheEvaluationController.getByCentreGestion(convention.getCentreGestion().getId());
-
-        if (ficheEvaluation == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "FicheEvaluation non trouvée");
-        }
-
-        ReponseEvaluation reponseEvaluation = new ReponseEvaluation();
-
-        ReponseEvaluationId reponseEvaluationId = new ReponseEvaluationId();
-        reponseEvaluationId.setIdConvention(convention.getId());
-        reponseEvaluationId.setIdFicheEvaluation(ficheEvaluation.getId());
-
-        reponseEvaluation.setReponseEvaluationId(reponseEvaluationId);
-        reponseEvaluation.setFicheEvaluation(ficheEvaluation);
-        reponseEvaluation.setConvention(convention);
-
-        return reponseEvaluation;
-    }
-
-    private ReponseSupplementaire initReponseSupplementaire(int idConvention, int idQestion) {
-
-        Convention convention = conventionJpaRepository.findById(idConvention);
-        if (convention == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
-        }
-        QuestionSupplementaire questionSupplementaire = questionSupplementaireJpaRepository.findById(idQestion);
-
-        if (questionSupplementaire == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "QuestionSupplementaire non trouvée");
-        }
-
-        ReponseSupplementaire reponseSupplementaire = new ReponseSupplementaire();
-
-        ReponseSupplementaireId reponseSupplementaireId = new ReponseSupplementaireId();
-        reponseSupplementaireId.setIdConvention(convention.getId());
-        reponseSupplementaireId.setIdQuestionSupplementaire(questionSupplementaire.getId());
-
-        reponseSupplementaire.setId(reponseSupplementaireId);
-        reponseSupplementaire.setQuestionSupplementaire(questionSupplementaire);
-        reponseSupplementaire.setConvention(convention);
-
-        return reponseSupplementaire;
-    }
-
-    private void setReponseEvaluationEtudiantData(ReponseEvaluation reponseEvaluation, ReponseEtudiantFormDto reponseEtudiantFormDto) {
-
-        reponseEvaluation.setReponseEtuI1(reponseEtudiantFormDto.getReponseEtuI1());
-        reponseEvaluation.setReponseEtuI1bis(reponseEtudiantFormDto.getReponseEtuI1bis());
-        reponseEvaluation.setReponseEtuI2(reponseEtudiantFormDto.getReponseEtuI2());
-        reponseEvaluation.setReponseEtuI3(reponseEtudiantFormDto.getReponseEtuI3());
-        reponseEvaluation.setReponseEtuI4a(reponseEtudiantFormDto.getReponseEtuI4a());
-        reponseEvaluation.setReponseEtuI4b(reponseEtudiantFormDto.getReponseEtuI4b());
-        reponseEvaluation.setReponseEtuI4c(reponseEtudiantFormDto.getReponseEtuI4c());
-        reponseEvaluation.setReponseEtuI4d(reponseEtudiantFormDto.getReponseEtuI4d());
-        reponseEvaluation.setReponseEtuI5(reponseEtudiantFormDto.getReponseEtuI5());
-        reponseEvaluation.setReponseEtuI6(reponseEtudiantFormDto.getReponseEtuI6());
-        reponseEvaluation.setReponseEtuI7(reponseEtudiantFormDto.getReponseEtuI7());
-        reponseEvaluation.setReponseEtuI7bis1(reponseEtudiantFormDto.getReponseEtuI7bis1());
-        reponseEvaluation.setReponseEtuI7bis1a(reponseEtudiantFormDto.getReponseEtuI7bis1a());
-        reponseEvaluation.setReponseEtuI7bis1b(reponseEtudiantFormDto.getReponseEtuI7bis1b());
-        reponseEvaluation.setReponseEtuI7bis2(reponseEtudiantFormDto.getReponseEtuI7bis2());
-        reponseEvaluation.setReponseEtuI8(reponseEtudiantFormDto.getReponseEtuI8());
-        reponseEvaluation.setReponseEtuII1(reponseEtudiantFormDto.getReponseEtuII1());
-        reponseEvaluation.setReponseEtuII1bis(reponseEtudiantFormDto.getReponseEtuII1bis());
-        reponseEvaluation.setReponseEtuII2(reponseEtudiantFormDto.getReponseEtuII2());
-        reponseEvaluation.setReponseEtuII2bis(reponseEtudiantFormDto.getReponseEtuII2bis());
-        reponseEvaluation.setReponseEtuII3(reponseEtudiantFormDto.getReponseEtuII3());
-        reponseEvaluation.setReponseEtuII3bis(reponseEtudiantFormDto.getReponseEtuII3bis());
-        reponseEvaluation.setReponseEtuII4(reponseEtudiantFormDto.getReponseEtuII4());
-        reponseEvaluation.setReponseEtuII5(reponseEtudiantFormDto.getReponseEtuII5());
-        reponseEvaluation.setReponseEtuII5a(reponseEtudiantFormDto.getReponseEtuII5a());
-        reponseEvaluation.setReponseEtuII5b(reponseEtudiantFormDto.getReponseEtuII5b());
-        reponseEvaluation.setReponseEtuII6(reponseEtudiantFormDto.getReponseEtuII6());
-        reponseEvaluation.setReponseEtuIII1(reponseEtudiantFormDto.getReponseEtuIII1());
-        reponseEvaluation.setReponseEtuIII1bis(reponseEtudiantFormDto.getReponseEtuIII1bis());
-        reponseEvaluation.setReponseEtuIII2(reponseEtudiantFormDto.getReponseEtuIII2());
-        reponseEvaluation.setReponseEtuIII2bis(reponseEtudiantFormDto.getReponseEtuIII2bis());
-        reponseEvaluation.setReponseEtuIII3(reponseEtudiantFormDto.getReponseEtuIII3());
-        reponseEvaluation.setReponseEtuIII3bis(reponseEtudiantFormDto.getReponseEtuIII3bis());
-        reponseEvaluation.setReponseEtuIII4(reponseEtudiantFormDto.getReponseEtuIII4());
-        reponseEvaluation.setReponseEtuIII5a(reponseEtudiantFormDto.getReponseEtuIII5a());
-        reponseEvaluation.setReponseEtuIII5b(reponseEtudiantFormDto.getReponseEtuIII5b());
-        reponseEvaluation.setReponseEtuIII5c(reponseEtudiantFormDto.getReponseEtuIII5c());
-        reponseEvaluation.setReponseEtuIII5bis(reponseEtudiantFormDto.getReponseEtuIII5bis());
-        reponseEvaluation.setReponseEtuIII6(reponseEtudiantFormDto.getReponseEtuIII6());
-        reponseEvaluation.setReponseEtuIII6bis(reponseEtudiantFormDto.getReponseEtuIII6bis());
-        reponseEvaluation.setReponseEtuIII7(reponseEtudiantFormDto.getReponseEtuIII7());
-        reponseEvaluation.setReponseEtuIII7bis(reponseEtudiantFormDto.getReponseEtuIII7bis());
-        reponseEvaluation.setReponseEtuIII8(reponseEtudiantFormDto.getReponseEtuIII8());
-        reponseEvaluation.setReponseEtuIII8bis(reponseEtudiantFormDto.getReponseEtuIII8bis());
-        reponseEvaluation.setReponseEtuIII9(reponseEtudiantFormDto.getReponseEtuIII9());
-        reponseEvaluation.setReponseEtuIII9bis(reponseEtudiantFormDto.getReponseEtuIII9bis());
-        reponseEvaluation.setReponseEtuIII10(reponseEtudiantFormDto.getReponseEtuIII10());
-        reponseEvaluation.setReponseEtuIII11(reponseEtudiantFormDto.getReponseEtuIII11());
-        reponseEvaluation.setReponseEtuIII12(reponseEtudiantFormDto.getReponseEtuIII12());
-        reponseEvaluation.setReponseEtuIII13(reponseEtudiantFormDto.getReponseEtuIII13());
-        reponseEvaluation.setReponseEtuIII14(reponseEtudiantFormDto.getReponseEtuIII14());
-        reponseEvaluation.setReponseEtuIII15(reponseEtudiantFormDto.getReponseEtuIII15());
-        reponseEvaluation.setReponseEtuIII15bis(reponseEtudiantFormDto.getReponseEtuIII15bis());
-        reponseEvaluation.setReponseEtuIII16(reponseEtudiantFormDto.getReponseEtuIII16());
-        reponseEvaluation.setReponseEtuIII16bis(reponseEtudiantFormDto.getReponseEtuIII16bis());
-    }
-
-    private void setReponseEvaluationEnseignantData(ReponseEvaluation reponseEvaluation, ReponseEnseignantFormDto reponseEnseignantFormDto) {
-
-        reponseEvaluation.setReponseEnsI1a(reponseEnseignantFormDto.getReponseEnsI1a());
-        reponseEvaluation.setReponseEnsI1b(reponseEnseignantFormDto.getReponseEnsI1b());
-        reponseEvaluation.setReponseEnsI1c(reponseEnseignantFormDto.getReponseEnsI1c());
-        reponseEvaluation.setReponseEnsI2a(reponseEnseignantFormDto.getReponseEnsI2a());
-        reponseEvaluation.setReponseEnsI2b(reponseEnseignantFormDto.getReponseEnsI2b());
-        reponseEvaluation.setReponseEnsI2c(reponseEnseignantFormDto.getReponseEnsI2c());
-        reponseEvaluation.setReponseEnsI3(reponseEnseignantFormDto.getReponseEnsI3());
-        reponseEvaluation.setReponseEnsII1(reponseEnseignantFormDto.getReponseEnsII1());
-        reponseEvaluation.setReponseEnsII2(reponseEnseignantFormDto.getReponseEnsII2());
-        reponseEvaluation.setReponseEnsII3(reponseEnseignantFormDto.getReponseEnsII3());
-        reponseEvaluation.setReponseEnsII4(reponseEnseignantFormDto.getReponseEnsII4());
-        reponseEvaluation.setReponseEnsII5(reponseEnseignantFormDto.getReponseEnsII5());
-        reponseEvaluation.setReponseEnsII6(reponseEnseignantFormDto.getReponseEnsII6());
-        reponseEvaluation.setReponseEnsII7(reponseEnseignantFormDto.getReponseEnsII7());
-        reponseEvaluation.setReponseEnsII8(reponseEnseignantFormDto.getReponseEnsII8());
-        reponseEvaluation.setReponseEnsII9(reponseEnseignantFormDto.getReponseEnsII9());
-        reponseEvaluation.setReponseEnsII10(reponseEnseignantFormDto.getReponseEnsII10());
-        reponseEvaluation.setReponseEnsII11(reponseEnseignantFormDto.getReponseEnsII11());
-    }
-
-    private void setReponseEvaluationEntrepriseData(ReponseEvaluation reponseEvaluation, ReponseEntrepriseFormDto reponseEntrepriseFormDto) {
-        reponseEvaluation.setReponseEnt1(reponseEntrepriseFormDto.getReponseEnt1());
-        reponseEvaluation.setReponseEnt1bis(reponseEntrepriseFormDto.getReponseEnt1bis());
-        reponseEvaluation.setReponseEnt2(reponseEntrepriseFormDto.getReponseEnt2());
-        reponseEvaluation.setReponseEnt2bis(reponseEntrepriseFormDto.getReponseEnt2bis());
-        reponseEvaluation.setReponseEnt3(reponseEntrepriseFormDto.getReponseEnt3());
-        reponseEvaluation.setReponseEnt4(reponseEntrepriseFormDto.getReponseEnt4());
-        reponseEvaluation.setReponseEnt4bis(reponseEntrepriseFormDto.getReponseEnt4bis());
-        reponseEvaluation.setReponseEnt5(reponseEntrepriseFormDto.getReponseEnt5());
-        reponseEvaluation.setReponseEnt5bis(reponseEntrepriseFormDto.getReponseEnt5bis());
-        reponseEvaluation.setReponseEnt6(reponseEntrepriseFormDto.getReponseEnt6());
-        reponseEvaluation.setReponseEnt6bis(reponseEntrepriseFormDto.getReponseEnt6bis());
-        reponseEvaluation.setReponseEnt7(reponseEntrepriseFormDto.getReponseEnt7());
-        reponseEvaluation.setReponseEnt7bis(reponseEntrepriseFormDto.getReponseEnt7bis());
-        reponseEvaluation.setReponseEnt8(reponseEntrepriseFormDto.getReponseEnt8());
-        reponseEvaluation.setReponseEnt8bis(reponseEntrepriseFormDto.getReponseEnt8bis());
-        reponseEvaluation.setReponseEnt9(reponseEntrepriseFormDto.getReponseEnt9());
-        reponseEvaluation.setReponseEnt9bis(reponseEntrepriseFormDto.getReponseEnt9bis());
-        reponseEvaluation.setReponseEnt10(reponseEntrepriseFormDto.getReponseEnt10());
-        reponseEvaluation.setReponseEnt10bis(reponseEntrepriseFormDto.getReponseEnt10bis());
-        reponseEvaluation.setReponseEnt11(reponseEntrepriseFormDto.getReponseEnt11());
-        reponseEvaluation.setReponseEnt11bis(reponseEntrepriseFormDto.getReponseEnt11bis());
-        reponseEvaluation.setReponseEnt12(reponseEntrepriseFormDto.getReponseEnt12());
-        reponseEvaluation.setReponseEnt12bis(reponseEntrepriseFormDto.getReponseEnt12bis());
-        reponseEvaluation.setReponseEnt13(reponseEntrepriseFormDto.getReponseEnt13());
-        reponseEvaluation.setReponseEnt13bis(reponseEntrepriseFormDto.getReponseEnt13bis());
-        reponseEvaluation.setReponseEnt14(reponseEntrepriseFormDto.getReponseEnt14());
-        reponseEvaluation.setReponseEnt14bis(reponseEntrepriseFormDto.getReponseEnt14bis());
-        reponseEvaluation.setReponseEnt15(reponseEntrepriseFormDto.getReponseEnt15());
-        reponseEvaluation.setReponseEnt15bis(reponseEntrepriseFormDto.getReponseEnt15bis());
-        reponseEvaluation.setReponseEnt16(reponseEntrepriseFormDto.getReponseEnt16());
-        reponseEvaluation.setReponseEnt16bis(reponseEntrepriseFormDto.getReponseEnt16bis());
-        reponseEvaluation.setReponseEnt17(reponseEntrepriseFormDto.getReponseEnt17());
-        reponseEvaluation.setReponseEnt17bis(reponseEntrepriseFormDto.getReponseEnt17bis());
-        reponseEvaluation.setReponseEnt18(reponseEntrepriseFormDto.getReponseEnt18());
-        reponseEvaluation.setReponseEnt18bis(reponseEntrepriseFormDto.getReponseEnt18bis());
-        reponseEvaluation.setReponseEnt19(reponseEntrepriseFormDto.getReponseEnt19());
-    }
-
-    private void setReponseSupplementaireData(ReponseSupplementaire reponseSupplementaire, ReponseSupplementaireFormDto reponseSupplementaireFormDto) {
-        reponseSupplementaire.setReponseTxt(reponseSupplementaireFormDto.getReponseTxt());
-        reponseSupplementaire.setReponseBool(reponseSupplementaireFormDto.getReponseBool());
-        reponseSupplementaire.setReponseInt(reponseSupplementaireFormDto.getReponseInt());
     }
 }

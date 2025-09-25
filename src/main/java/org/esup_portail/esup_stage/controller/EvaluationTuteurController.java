@@ -1,17 +1,18 @@
 package org.esup_portail.esup_stage.controller;
 
+import jakarta.validation.Valid;
 import org.esup_portail.esup_stage.dto.ConventionEvaluationTuteurDto;
+import org.esup_portail.esup_stage.dto.ReponseEntrepriseFormDto;
+import org.esup_portail.esup_stage.dto.ReponseSupplementaireFormDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.EvaluationTuteurToken;
-import org.esup_portail.esup_stage.repository.EvaluationTuteurTokenRepository;
-import org.esup_portail.esup_stage.repository.QuestionSupplementaireJpaRepository;
-import org.esup_portail.esup_stage.service.evaluation.EvaluationTuteurService;
+import org.esup_portail.esup_stage.model.ReponseEvaluation;
+import org.esup_portail.esup_stage.model.ReponseSupplementaire;
+import org.esup_portail.esup_stage.repository.*;
+import org.esup_portail.esup_stage.service.evaluation.EvaluationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,10 +23,16 @@ public class EvaluationTuteurController {
     private static final Logger logger = LogManager.getLogger(EvaluationTuteurController.class);
 
     @Autowired
-    private EvaluationTuteurService evaluationTuteurService;
+    private EvaluationService evaluationService;
 
     @Autowired
     private QuestionSupplementaireJpaRepository QSJpaRepository;
+
+    @Autowired
+    private ReponseEvaluationJpaRepository reponseEvaluationJpaRepository;
+
+    @Autowired
+    private ReponseSupplementaireJpaRepository reponseSupplementaireJpaRepository;
 
     @Autowired
     private EvaluationTuteurTokenRepository evaluationTuteurTokenRepository;
@@ -39,7 +46,7 @@ public class EvaluationTuteurController {
         }
 
         // Validation du token
-        EvaluationTuteurToken validToken = evaluationTuteurService.validateToken(token);
+        EvaluationTuteurToken validToken = evaluationService.validateToken(token);
 
         if (validToken == null) {
             logger.warn("Tentative d'accès avec token invalide: {}",
@@ -58,24 +65,75 @@ public class EvaluationTuteurController {
         return convention;
     }
 
-    @PostMapping("/submit")
-    public Boolean submitEvaluation(@RequestParam(name = "token") String token) {
+    @PostMapping("/{id}")
+    public ReponseEvaluation createReponseEntreprise(@RequestParam(name = "token") String token,@PathVariable("id") int id, @Valid @RequestBody ReponseEntrepriseFormDto reponseEntrepriseFormDto) {
+        ReponseEvaluation reponseEvaluation = evaluationService.initReponseEvaluation(id);
+        evaluationService.setReponseEvaluationEntrepriseData(reponseEvaluation, reponseEntrepriseFormDto);
+        return reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
+    }
 
+    @PutMapping("/{id}")
+    public ReponseEvaluation updateReponseEntreprise(@RequestParam(name = "token") String token,@PathVariable("id") int id, @Valid @RequestBody ReponseEntrepriseFormDto reponseEntrepriseFormDto) {
+        ReponseEvaluation reponseEvaluation = reponseEvaluationJpaRepository.findByConvention(id);
+        if (reponseEvaluation == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "ReponseEvaluation non trouvé");
+        }
+        evaluationService.setReponseEvaluationEntrepriseData(reponseEvaluation, reponseEntrepriseFormDto);
+        return reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
+    }
+
+    @PostMapping("/{idConvention}/reponseSupplementaire/{idQestion}")
+    public ReponseSupplementaire createReponseSupplementaire(@RequestParam(name = "token") String token,@PathVariable("idConvention") int idConvention, @PathVariable("idQestion") int idQestion, @Valid @RequestBody ReponseSupplementaireFormDto reponseSupplementaireFormDto) {
+        ReponseSupplementaire reponseSupplementaire = evaluationService.initReponseSupplementaire(idConvention, idQestion);
+        evaluationService.setReponseSupplementaireData(reponseSupplementaire, reponseSupplementaireFormDto);
+        return reponseSupplementaireJpaRepository.saveAndFlush(reponseSupplementaire);
+    }
+
+    @PutMapping("/{idConvention}/reponseSupplementaire/{idQestion}")
+    public ReponseSupplementaire updateReponseSupplementaire(@RequestParam(name = "token") String token,@PathVariable("idConvention") int idConvention, @PathVariable("idQestion") int idQestion, @Valid @RequestBody ReponseSupplementaireFormDto reponseSupplementaireFormDto) {
+        ReponseSupplementaire reponseSupplementaire = reponseSupplementaireJpaRepository.findByQuestionAndConvention(idConvention, idQestion);
+        if (reponseSupplementaire == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "ReponseSupplementaire non trouvé");
+        }
+        evaluationService.setReponseSupplementaireData(reponseSupplementaire, reponseSupplementaireFormDto);
+        return reponseSupplementaireJpaRepository.saveAndFlush(reponseSupplementaire);
+    }
+
+    private void checkToken(String token){
+        if(token == null || token.trim().isEmpty()) {
+            throw new AppException(HttpStatus.FORBIDDEN, "Token manquant");
+        }
+
+        EvaluationTuteurToken validToken = evaluationService.validateToken(token);
+
+        if (validToken == null) {
+            logger.warn("Tentative d'accès avec token invalide: {}",
+                    token.substring(0, Math.min(8, token.length())));
+            throw new AppException(HttpStatus.FORBIDDEN, "Token invalide ou expiré");
+        }
+    }
+
+    @PostMapping("{id}/validate/{valid}")
+    public boolean validate(@RequestParam(name = "token") String token, @PathVariable("id") int id,@PathVariable("valid") boolean valid){
+        logger.info("validate");
         if(token == null || token.trim().isEmpty()) {
             logger.warn("Tentative d'accès avec token null ou vide");
             throw new AppException(HttpStatus.FORBIDDEN, "Token manquant");
         }
-
-        // Re-valider le token pour la soumission
-        EvaluationTuteurToken validToken = evaluationTuteurService.validateAndUseToken(token);
-
+        ReponseEvaluation reponseEvaluation = reponseEvaluationJpaRepository.findByConvention(id);
+        if (reponseEvaluation == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "ReponseEvaluation non trouvé");
+        }
+        EvaluationTuteurToken validToken = evaluationService.validateAndUseToken(token);
+        reponseEvaluation.setValidationEntreprise(valid);
         if (validToken == null) {
             throw new AppException(HttpStatus.FORBIDDEN, "Token invalide, expiré ou déjà utilisé");
         }
-
         return true;
     }
 
+
+    //TODO: supprimer cette méthode de test
     @GetMapping("/test")
     public String test() {
         return "test";

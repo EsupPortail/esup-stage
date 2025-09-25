@@ -42,19 +42,6 @@ export class TokenAuthService {
     );
   }
 
-  /**
-   * Soumet l'évaluation
-   * @param token Le token à utiliser
-   * @returns Observable<boolean> true si succès
-   */
-  submitEvaluation(token: string): Observable<boolean> {
-    return this.http.post<boolean>(environment.apiUrl+`/evaluation-tuteur/submit`, null, {
-      params: { token }
-    }).pipe(
-      catchError(this.handleError)
-    );
-  }
-
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'Erreur de validation du token';
 
