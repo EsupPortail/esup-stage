@@ -1,27 +1,45 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { environment } from "../../environments/environment";
-import { Observable } from "rxjs";
+import {Observable, firstValueFrom, of, EMPTY} from "rxjs";
+import { catchError } from "rxjs/operators";
 import { TokenService } from "./token.service";
 import { Role } from "../constants/role";
-import { AppFonction } from "../constants/app-fonction";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-
   userConnected: any = undefined;
   appVersion: any = undefined;
+  private redirecting = false;
 
   constructor(private http: HttpClient, private tokenService: TokenService) { }
 
   getCurrentUser(): Observable<any> {
-    return this.http.get(environment.apiUrl + "/users/connected");
+    return this.http.get(environment.apiUrl + "/users/connected").pipe(
+      catchError(() => {
+        this.handleUnauthorized();
+        return EMPTY;
+      })
+    );
   }
 
   getAppVersion(): Observable<any> {
-    return this.http.get(environment.apiUrl + "/version", { responseType: 'text' });
+    return this.http.get(environment.apiUrl + "/version", { responseType: 'text' }).pipe(
+      catchError(() => EMPTY)
+    );
+  }
+
+  private handleUnauthorized() {
+    if (!this.redirecting) {
+      this.redirecting = true;
+      const currentPath = window.location.pathname;
+      if (currentPath !== '/login/cas') {
+        sessionStorage.setItem('redirectUrl', currentPath);
+        window.location.href = '/login/cas';
+      }
+    }
   }
 
   logout() {
@@ -31,17 +49,24 @@ export class AuthService {
     sessionStorage.clear();
   }
 
-  async secure(right: any) {
-    if (this.appVersion === undefined) {
-      this.appVersion = await this.getAppVersion().toPromise();
-    }
+  async secure(right: any): Promise<boolean> {
+    try {
+      if (this.appVersion === undefined) {
+        this.appVersion = await firstValueFrom(this.getAppVersion());
+      }
 
-    if (this.userConnected !== undefined) {
+      if (this.userConnected === undefined) {
+        const user = await firstValueFrom(this.getCurrentUser());
+        if (user) {
+          this.createUser(user);
+        } else {
+          return false;
+        }
+      }
+
       return this.checkRights(right);
-    } else {
-      let user = await this.getCurrentUser().toPromise();
-      this.createUser(user);
-      return this.checkRights(right);
+    } catch {
+      return false;
     }
   }
 
