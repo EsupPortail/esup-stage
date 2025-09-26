@@ -31,6 +31,6 @@ export class EvaluationTuteurService {
   }
 
   getEvaluationPDF(token: string, id:number){
-    return this.http.get(`${environment.apiUrl}/evaluation-tuteur/${id}/pdf`,{params:{token}})
+    return this.http.get(`${environment.apiUrl}/evaluation-tuteur/${id}/pdf`,{ responseType: 'blob',params:{token}})
   }
 }

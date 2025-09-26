@@ -3,6 +3,7 @@ import {ContenuService} from "../../../../services/contenu.service";
 import {EvaluationTuteurService} from "../../services/evaluation-tuteur.service";
 import {EvaluationTuteurContextService} from "../../services/evaluation-tuteur-context.service";
 import {ConventionEvaluationTuteur} from "../../models/convention-evaluation-tuteur.model";
+import * as FileSaver from "file-saver";
 
 @Component({
   selector: 'app-questionnaire-complet-tuteur',
@@ -44,7 +45,11 @@ export class QuestionnaireCompletTuteurComponent implements OnInit{
   }
 
   imprimer(){
-    this.evaluationTuteurService.getEvaluationPDF(this.token,this.convention.id).subscribe()
+    this.evaluationTuteurService.getEvaluationPDF(this.token,this.convention.id).subscribe(r=>{
+      var blob = new Blob([r as BlobPart], {type: "application/pdf"});
+      let filename = 'Questionnaire_'+this.convention.id + '.pdf';
+      FileSaver.saveAs(blob, filename);
+    });
   }
 
   renouvellement() {

@@ -39,6 +39,8 @@ public class ImpressionContext {
             this.signataire = new SignataireContext(convention.getSignataire());
             this.structure = new StructureContext(convention.getStructure());
             FicheEvaluation ficheEvaluation = convention.getCentreGestion().getFicheEvaluation();
+            this.ficheEvaluation = new FicheEvaluationContext(ficheEvaluation);
+            this.reponse = new ReponseEvaluationContext(convention.getReponseEvaluation());
             if (ficheEvaluation != null) {
                 for (QuestionSupplementaire question : questionSupplementaires) {
                     this.questionsSupplementaires.add(new QuestionSupplementaireContext(question));
@@ -316,6 +318,7 @@ public class ImpressionContext {
     }
 
     @Data
+    @NoArgsConstructor
     public static class ServiceContext {
         private String codePostal;
         private String commune;
@@ -323,9 +326,6 @@ public class ImpressionContext {
         private String paysLibelle;
         private String voie;
         private String batiment;
-
-        public ServiceContext() {
-        }
 
         public ServiceContext(Service service) {
             this.codePostal = service.getCodePostal();
@@ -474,50 +474,18 @@ public class ImpressionContext {
         private String dateFinInterruption;
     }
 
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class HoraireIrregulierContext {
         private String dateDebutPeriode;
         private String dateFinPeriode;
         private Integer nbHeuresJournalieres;
-
-        public HoraireIrregulierContext() {
-
-        }
-
-        public HoraireIrregulierContext(String dateDebutPeriode, String dateFinPeriode, Integer nbHeuresJournalieres) {
-            this.dateDebutPeriode = dateDebutPeriode;
-            this.dateFinPeriode = dateFinPeriode;
-            this.nbHeuresJournalieres = nbHeuresJournalieres;
-        }
-
-        public String getDateDebutPeriode() {
-            return dateDebutPeriode != null ? dateDebutPeriode : "";
-        }
-
-        public void setDateDebutPeriode(String dateDebutPeriode) {
-            this.dateDebutPeriode = dateDebutPeriode;
-        }
-
-        public String getDateFinPeriode() {
-            return dateFinPeriode != null ? dateFinPeriode : "";
-        }
-
-        public void setDateFinPeriode(String dateFinPeriode) {
-            this.dateFinPeriode = dateFinPeriode;
-        }
-
-        public Integer getNbHeuresJournalieres() {
-            return this.nbHeuresJournalieres;
-        }
-
-        public void setNbHeuresJournalieres(Integer nbHeuresJournalieres) {
-            this.nbHeuresJournalieres = nbHeuresJournalieres;
-        }
-
     }
 
     @Data
     @NoArgsConstructor
-    private static class ReponseEvaluationContext {
+    public static class ReponseEvaluationContext {
         private Integer reponseEnt1;
         @Lob
         private String reponseEnt1bis;
@@ -572,11 +540,50 @@ public class ImpressionContext {
         private String reponseEnt18bis;
         @Lob
         private String reponseEnt19;
+
+        public ReponseEvaluationContext(ReponseEvaluation reponseEvaluation) {
+            this.reponseEnt1 = reponseEvaluation.getReponseEnt1();
+            this.reponseEnt1bis = reponseEvaluation.getReponseEnt1bis();
+            this.reponseEnt2 = reponseEvaluation.getReponseEnt2();
+            this.reponseEnt2bis = reponseEvaluation.getReponseEnt2bis();
+            this.reponseEnt3 = reponseEvaluation.getReponseEnt3();
+            this.reponseEnt4 = reponseEvaluation.getReponseEnt4();
+            this.reponseEnt4bis = reponseEvaluation.getReponseEnt4bis();
+            this.reponseEnt5 = reponseEvaluation.getReponseEnt5();
+            this.reponseEnt5bis = reponseEvaluation.getReponseEnt5bis();
+            this.reponseEnt6 = reponseEvaluation.getReponseEnt6();
+            this.reponseEnt6bis = reponseEvaluation.getReponseEnt6bis();
+            this.reponseEnt7 = reponseEvaluation.getReponseEnt7();
+            this.reponseEnt7bis = reponseEvaluation.getReponseEnt7bis();
+            this.reponseEnt8 = reponseEvaluation.getReponseEnt8();
+            this.reponseEnt8bis = reponseEvaluation.getReponseEnt8bis();
+            this.reponseEnt9 = reponseEvaluation.getReponseEnt9();
+            this.reponseEnt9bis = reponseEvaluation.getReponseEnt9bis();
+            this.reponseEnt10 = reponseEvaluation.getReponseEnt10();
+            this.reponseEnt10bis = reponseEvaluation.getReponseEnt10bis();
+            this.reponseEnt11 = reponseEvaluation.getReponseEnt11();
+            this.reponseEnt11bis = reponseEvaluation.getReponseEnt11bis();
+            this.reponseEnt12 = reponseEvaluation.getReponseEnt12();
+            this.reponseEnt12bis = reponseEvaluation.getReponseEnt12bis();
+            this.reponseEnt13 = reponseEvaluation.getReponseEnt13();
+            this.reponseEnt13bis = reponseEvaluation.getReponseEnt13bis();
+            this.reponseEnt14 = reponseEvaluation.getReponseEnt14();
+            this.reponseEnt14bis = reponseEvaluation.getReponseEnt14bis();
+            this.reponseEnt15 = reponseEvaluation.getReponseEnt15();
+            this.reponseEnt15bis = reponseEvaluation.getReponseEnt15bis();
+            this.reponseEnt16 = reponseEvaluation.getReponseEnt16();
+            this.reponseEnt16bis = reponseEvaluation.getReponseEnt16bis();
+            this.reponseEnt17 = reponseEvaluation.getReponseEnt17();
+            this.reponseEnt17bis = reponseEvaluation.getReponseEnt17bis();
+            this.reponseEnt18 = reponseEvaluation.getReponseEnt18();
+            this.reponseEnt18bis = reponseEvaluation.getReponseEnt18bis();
+            this.reponseEnt19 = reponseEvaluation.getReponseEnt19();
+        }
     }
 
     @Data
     @NoArgsConstructor
-    private static class FicheEvaluationContext {
+    public static class FicheEvaluationContext {
         private Boolean questionEnt1;
         private Boolean questionEnt2;
         private Boolean questionEnt3;
@@ -596,11 +603,33 @@ public class ImpressionContext {
         private Boolean questionEnt17;
         private Boolean questionEnt18;
         private Boolean questionEnt19;
+
+        public FicheEvaluationContext(FicheEvaluation ficheEvaluation){
+            this.questionEnt1 = ficheEvaluation.getQuestionEnt1();
+            this.questionEnt2 = ficheEvaluation.getQuestionEnt2();
+            this.questionEnt3 = ficheEvaluation.getQuestionEnt3();
+            this.questionEnt4 = ficheEvaluation.getQuestionEnt4();
+            this.questionEnt5 = ficheEvaluation.getQuestionEnt5();
+            this.questionEnt6 = ficheEvaluation.getQuestionEnt6();
+            this.questionEnt7 = ficheEvaluation.getQuestionEnt7();
+            this.questionEnt8 = ficheEvaluation.getQuestionEnt8();
+            this.questionEnt9 = ficheEvaluation.getQuestionEnt9();
+            this.questionEnt10 = ficheEvaluation.getQuestionEnt10();
+            this.questionEnt11 = ficheEvaluation.getQuestionEnt11();
+            this.questionEnt12 = ficheEvaluation.getQuestionEnt12();
+            this.questionEnt13 = ficheEvaluation.getQuestionEnt13();
+            this.questionEnt14 = ficheEvaluation.getQuestionEnt14();
+            this.questionEnt15 = ficheEvaluation.getQuestionEnt15();
+            this.questionEnt16 = ficheEvaluation.getQuestionEnt16();
+            this.questionEnt17 = ficheEvaluation.getQuestionEnt17();
+            this.questionEnt18 = ficheEvaluation.getQuestionEnt18();
+            this.questionEnt19 = ficheEvaluation.getQuestionEnt19();
+        }
     }
 
     @Data
     @NoArgsConstructor
-    private static class QuestionSupplementaireContext {
+    public static class QuestionSupplementaireContext {
         private int id;
         private String question;
         private String typeQuestion;
@@ -614,7 +643,7 @@ public class ImpressionContext {
 
     @Data
     @NoArgsConstructor
-    private static class ReponseSupplementaireContext {
+    public static class ReponseSupplementaireContext {
         private int idQuestionSupplementaire;
         private int idConvention;
         private String reponseTxt;
