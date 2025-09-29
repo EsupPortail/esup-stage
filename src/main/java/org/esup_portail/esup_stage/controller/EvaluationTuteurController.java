@@ -7,6 +7,7 @@ import org.esup_portail.esup_stage.dto.ReponseSupplementaireFormDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.*;
+import org.esup_portail.esup_stage.service.MailerService;
 import org.esup_portail.esup_stage.service.evaluation.EvaluationService;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,9 @@ public class EvaluationTuteurController {
 
     @Autowired
     private ImpressionService impressionService;
+
+    @Autowired
+    private MailerService mailerService;
 
     @GetMapping("/access")
     public ConventionEvaluationTuteurDto accessEvaluationPage(@RequestParam(name = "token") String token) {
@@ -153,6 +157,28 @@ public class EvaluationTuteurController {
         return ResponseEntity.ok().body(pdf);
     }
 
+    @GetMapping("/{id}/renouvellement")
+    private void envoiMailRenouvellement(@RequestParam(name = "token") String token, @PathVariable(name="id") Integer id){
+        if(token == null || token.trim().isEmpty()) {
+            throw new AppException(HttpStatus.FORBIDDEN, "Token manquant");
+        }
+
+        EvaluationTuteurToken evToken = evaluationService.getToken(token);
+
+        if (evToken == null) {
+            throw new AppException(HttpStatus.FORBIDDEN,"Token invalide");
+        }
+
+        Convention convention = conventionJpaRepository.findById(id).orElse(null);
+        if (convention == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        }
+
+        evaluationService.revokeToken(evToken.getToken());
+        mailerService.sendAlerteValidation(evToken.getContact().getMail(),convention,convention.getAvenants().getLast(),new Utilisateur(),"RENOUVELLEMENT_EVAL_TUTEUR");
+    }
+
+
     private void checkToken(String token){
         if(token == null || token.trim().isEmpty()) {
             throw new AppException(HttpStatus.FORBIDDEN, "Token manquant");
@@ -180,4 +206,5 @@ public class EvaluationTuteurController {
             throw new AppException(HttpStatus.FORBIDDEN, "Token invalide ou expiré");
         }
     }
+
 }

@@ -41,6 +41,25 @@ public class EvaluationService {
     private AppliProperties appliProperties;
 
     /**
+     * Récupère le token et vérifie qu'il est valide
+     * @param tokenValue
+     * @return le token valide ou null
+     */
+    public EvaluationTuteurToken getToken(String tokenValue){
+        if(tokenValue == null){
+           return null;
+        }
+        EvaluationTuteurToken token = tokenRepository.findByToken(tokenValue);
+        if(token == null){
+            return null;
+        }
+        if(token.isExpired() || token.getRevoque()){
+            return null;
+        }
+        return token;
+    }
+
+    /**
      * Valide un token et le marque comme utilisé si valide
      * @param tokenValue le token à valider
      * @return le token valide ou null si invalide
@@ -54,7 +73,6 @@ public class EvaluationService {
 
         try {
             EvaluationTuteurToken token = tokenRepository.findByToken(tokenValue);
-            logger.info("oui oui oui !");
             if (token == null) {
                 logger.warn("Token non trouvé: {}", tokenValue.substring(0, Math.min(8, tokenValue.length())) + "...");
                 return null;
@@ -231,7 +249,6 @@ public class EvaluationService {
             return null;
         }
     }
-
 
     public FicheEvaluation getByCentreGestion(Integer id) {
         FicheEvaluation ficheEvaluation = ficheEvaluationJpaRepository.findByCentreGestion(id);

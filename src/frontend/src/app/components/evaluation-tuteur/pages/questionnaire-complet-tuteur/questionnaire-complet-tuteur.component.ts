@@ -3,6 +3,7 @@ import {ContenuService} from "../../../../services/contenu.service";
 import {EvaluationTuteurService} from "../../services/evaluation-tuteur.service";
 import {EvaluationTuteurContextService} from "../../services/evaluation-tuteur-context.service";
 import {ConventionEvaluationTuteur} from "../../models/convention-evaluation-tuteur.model";
+import {MessageService} from "../../../../services/message.service";
 import * as FileSaver from "file-saver";
 
 @Component({
@@ -21,7 +22,8 @@ export class QuestionnaireCompletTuteurComponent implements OnInit{
   constructor(
     private contenuService: ContenuService,
     private evaluationTuteurService: EvaluationTuteurService,
-    private ctx : EvaluationTuteurContextService
+    private ctx : EvaluationTuteurContextService,
+    private messageService: MessageService
   ) {
   }
 
@@ -53,6 +55,10 @@ export class QuestionnaireCompletTuteurComponent implements OnInit{
   }
 
   renouvellement() {
-
+    this.evaluationTuteurService.getReouvellement(this.token,this.convention.id).subscribe(
+      r => {
+        this.messageService.setSuccess('Renouvellement effectué avec succès.');
+      }
+    )
   }
 }

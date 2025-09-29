@@ -414,11 +414,9 @@ public class ImpressionService {
             // Récupération du logo du centre gestion (même logique que generateConventionAvenantPDF)
             String logoname;
             Fichier fichier = convention.getCentreGestion().getFichier();
-            logger.info("Fichier du centre de gestion : " + (fichier != null ? fichier.getNom() : "null"));
             ImageData imageData = null;
 
             if (fichier != null) {
-                logger.info("Tentative de récupération du logo pour l'évaluation");
                 logoname = this.getLogoFilePath(this.getNomFichier(fichier.getId(), fichier.getNom()));
                 if (Files.exists(Paths.get(logoname))) {
                     imageData = ImageDataFactory.create(logoname);
@@ -430,8 +428,6 @@ public class ImpressionService {
                 fichier = centreEtablissement.getFichier();
                 if (fichier != null) {
                     logoname = this.getLogoFilePath(this.getNomFichier(fichier.getId(), fichier.getNom()));
-                    logger.info("Chemin du logo : " + logoname);
-                    logger.info("Le fichier existe : " + Files.exists(Paths.get(logoname)));
                     if (Files.exists(Paths.get(logoname))) {
                         imageData = ImageDataFactory.create(logoname);
                     }

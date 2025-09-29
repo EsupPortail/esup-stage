@@ -167,3 +167,29 @@ databaseChangeLog:
                   name: libelle
                   value: Lien de l'application vers l'évaluation de stage pour le tuteur
             tableName: ParamMail
+
+  - changeSet:
+      id: 3.2.0-insert-template-mail-renouvellement
+      author: thouveno9
+      changes:
+        - insert:
+            tableName: TemplateMail
+            columns:
+              - column:
+                  name: code
+                  value: RENOUVELLEMENT_EVAL_TUTEUR
+              - column:
+                  name: libelle
+                  value: Envoi d'un nouveau lien au tuteur pour saisir son évaluation
+              - column:
+                  name: objet
+                  value: Renouvellement de l'évaluation
+              - column:
+                  name: texte
+                  value: Texte à modifier
+              - column:
+                  name: dateCreation
+                  value: now()
+              - column:
+                  name: loginCreation
+                  value: liquibase
