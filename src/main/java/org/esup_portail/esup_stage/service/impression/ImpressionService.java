@@ -109,7 +109,7 @@ public class ImpressionService {
                 }
             }
 
-            this.generatePDF(texte.toString(), filename, imageData, ou);
+            this.generatePDF(texte.toString(), filename, imageData, ou,false);
         } catch (Exception e) {
             logger.error("Une erreur est survenue lors de la génération du PDF", e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
@@ -119,14 +119,14 @@ public class ImpressionService {
     public void generateFichePDF(String htmlTexte, ByteArrayOutputStream ou) {
         try {
             String filename = "FicheEtudiant.pdf";
-            this.generatePDF(htmlTexte, filename, null, ou);
+            this.generatePDF(htmlTexte, filename, null, ou,false);
         } catch (Exception e) {
             logger.error("Une erreur est survenue lors de la génération du PDF", e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
         }
     }
 
-    public void generatePDF(String texte, String filename, ImageData imageData, ByteArrayOutputStream ou) {
+    public void generatePDF(String texte, String filename, ImageData imageData, ByteArrayOutputStream ou, boolean isEvaluation) {
         String tempFilePath = this.getClass().getResource("/templates").getPath();
         String tempFile = tempFilePath + "temp_" + filename;
         FileOutputStream fop = null;
@@ -140,7 +140,7 @@ public class ImpressionService {
             Document document = new Document(pdfDoc);
 
             if (imageData != null) {
-                Image img = prepareLogoImage(imageData);
+                Image img = prepareLogoImage(imageData, isEvaluation);
                 document.add(img);
             }
             document.close();
@@ -156,7 +156,6 @@ public class ImpressionService {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
     }
 
@@ -344,7 +343,7 @@ public class ImpressionService {
      * @param imageData les données de l'image
      * @return l'image prête à être ajoutée au document
      */
-    private Image prepareLogoImage(ImageData imageData) {
+    private Image prepareLogoImage(ImageData imageData, boolean isEvaluation) {
         Image img = new Image(imageData);
 
         float maxWidth = 155f;
@@ -359,7 +358,12 @@ public class ImpressionService {
 
         img.scale(scale, scale);
 
-        img.setHorizontalAlignment(HorizontalAlignment.LEFT);
+        if (isEvaluation) {
+            img.setHorizontalAlignment(HorizontalAlignment.CENTER);
+        } else {
+            img.setHorizontalAlignment(HorizontalAlignment.LEFT);
+        }
+
 
         img.setMarginBottom(10f);
         return img;
@@ -371,7 +375,7 @@ public class ImpressionService {
      * @param avenant
      * @param outputStream
      */
-    public void generateEvaluationTuteurPDF(Convention convention, Avenant avenant, ByteArrayOutputStream outputStream) {
+    public void generateEvaluationPDF(Convention convention, Avenant avenant, ByteArrayOutputStream outputStream) {
         if (convention.getNomenclature() == null) {
             convention.setValeurNomenclature();
         }
@@ -410,9 +414,11 @@ public class ImpressionService {
             // Récupération du logo du centre gestion (même logique que generateConventionAvenantPDF)
             String logoname;
             Fichier fichier = convention.getCentreGestion().getFichier();
+            logger.info("Fichier du centre de gestion : " + (fichier != null ? fichier.getNom() : "null"));
             ImageData imageData = null;
 
             if (fichier != null) {
+                logger.info("Tentative de récupération du logo pour l'évaluation");
                 logoname = this.getLogoFilePath(this.getNomFichier(fichier.getId(), fichier.getNom()));
                 if (Files.exists(Paths.get(logoname))) {
                     imageData = ImageDataFactory.create(logoname);
@@ -424,6 +430,8 @@ public class ImpressionService {
                 fichier = centreEtablissement.getFichier();
                 if (fichier != null) {
                     logoname = this.getLogoFilePath(this.getNomFichier(fichier.getId(), fichier.getNom()));
+                    logger.info("Chemin du logo : " + logoname);
+                    logger.info("Le fichier existe : " + Files.exists(Paths.get(logoname)));
                     if (Files.exists(Paths.get(logoname))) {
                         imageData = ImageDataFactory.create(logoname);
                     }
@@ -431,7 +439,7 @@ public class ImpressionService {
             }
 
             // Génération du PDF
-            this.generatePDF(texte.toString(), filename, imageData, outputStream);
+            this.generatePDF(texte.toString(), filename, imageData, outputStream,true);
 
         } catch (Exception e) {
             logger.error("Une erreur est survenue lors de la génération du PDF d'évaluation du tuteur", e);
