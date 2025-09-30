@@ -28,14 +28,27 @@ import { PeriodeStageService } from'../../../services/periode-stage.service';
   styleUrls: ['./stage.component.scss']
 })
 export class StageComponent implements OnInit {
+  readonly MAX = {
+    sujetStage: 1000,
+    competences: 1000,
+    fonctionsEtTaches: 1000,
+    details: 1000,
+    commentaireDureeTravail: 1000,
+    modeEncadreSuivi: 1000,
+    avantagesNature: 1000,
+    travailNuitFerie: 1000,
+  } as const;
+
+  focused: keyof typeof this.MAX | null = null;
 
   fieldValidators : any = {
     'nbHeuresHebdo': [Validators.required, Validators.pattern('[0-9]{1,2}([,.][0-9]{1,2})?')],
     'dureeExceptionnelle': [Validators.required, Validators.pattern('[0-9]+([,.][0-9]{1,2})?')],
     'montantGratification': [Validators.required, Validators.pattern('[0-9]{1,10}([,.][0-9]{1,2})?')],
-    'sujetStage': [Validators.required],
-    'competences': [Validators.required],
-    'fonctionsEtTaches': [Validators.required],
+    'sujetStage': [Validators.required,Validators.maxLength(this.MAX.sujetStage)],
+    'competences': [Validators.required, Validators.maxLength(this.MAX.competences)],
+    'fonctionsEtTaches': [Validators.required,Validators.maxLength(this.MAX.fonctionsEtTaches)],
+    'details':[Validators.maxLength(this.MAX.details)],
     'idUniteGratification': [Validators.required],
     'idUniteDuree': [Validators.required],
     'idDevise': [Validators.required],
@@ -44,9 +57,13 @@ export class StageComponent implements OnInit {
     'confidentiel': [Validators.required],
     'idNatureTravail': [Validators.required],
     'idModeValidationStage': [Validators.required],
+    'commentaireDureeTravail': [Validators.maxLength(this.MAX.commentaireDureeTravail)],
+    'modeEncadreSuivi':      [Validators.maxLength(this.MAX.modeEncadreSuivi)],
+    'avantagesNature':       [Validators.maxLength(this.MAX.avantagesNature)],
+    'travailNuitFerie':      [Validators.maxLength(this.MAX.travailNuitFerie)],
   }
-  interruptionsStageTableColumns = ['dateDebutInterruption', 'dateFinInterruption', 'actions'];
 
+  interruptionsStageTableColumns = ['dateDebutInterruption', 'dateFinInterruption', 'actions'];
   countries: any[] = [];
   thematiques: any[] = [];
   langueConventions: any[] = [];
@@ -942,6 +959,25 @@ export class StageComponent implements OnInit {
     const heuresNormales = Math.floor(moyenneHeuresJournalieres) * totalJoursOuvres;
 
     return Math.round((nbHeures - heuresNormales) * 100) / 100;
+  }
+
+  len(name: keyof StageComponent['MAX']): number {
+    const v = this.form.get(name)?.value as string | null;
+    return (v?.length ?? 0);
+  }
+
+  // Couleur HSL du vert (120) au rouge (0) en fonction du ratio
+  counterColor(name: keyof StageComponent['MAX']): string {
+    const max = this.MAX[name];
+    const l = this.len(name);
+    const ratio = Math.min(l / max, 1); // 0..1
+    const hue = 120 - 120 * ratio;      // 120 → 0
+    return `hsl(${hue}, 80%, 40%)`;
+  }
+
+  hasError(name: keyof StageComponent['MAX']): boolean {
+    const ctrl = this.form.get(name);
+    return !!(ctrl && ctrl.invalid && (ctrl.touched || ctrl.dirty));
   }
 
 }
