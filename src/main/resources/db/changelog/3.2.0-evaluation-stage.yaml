@@ -193,3 +193,11 @@ databaseChangeLog:
               - column:
                   name: loginCreation
                   value: liquibase
+  - changeSet:
+      id: 3.2.0-updtade-token
+      author: thouveno9
+      changes:
+        - modifyDataType:
+            tableName: EvaluationTuteurToken
+            columnName: Token
+            newDataType: VARCHAR(1024)

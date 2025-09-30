@@ -29,7 +29,7 @@ public class EvaluationTuteurToken {
     @JoinColumn(name = "idTuteur")
     private Contact contact;
 
-    @Column(name = "Token", nullable = false, unique = true, length = 64)
+    @Column(name = "Token", nullable = false, unique = true, length = 1024)
     private String token;
 
     @Column(name = "DateExpiration", nullable = false, updatable = false)
@@ -48,8 +48,9 @@ public class EvaluationTuteurToken {
     @Transient public boolean isExpired() { return expiresAt != null && expiresAt.before(new Date()); }
     @Transient public boolean isActive()  { return !utilise && !revoque && !isExpired(); }
 
-    public EvaluationTuteurToken(Convention convention, Contact contact, Duration ttl) {
-        // validation des arguments
+    public EvaluationTuteurToken(Convention convention, Contact contact, Duration ttl,
+                                 org.esup_portail.esup_stage.security.EvaluationJwtService jwtService) {
+
         if (convention == null) throw new IllegalArgumentException("convention is null");
         if (contact == null) throw new IllegalArgumentException("contact is null");
         if (ttl == null || ttl.isNegative() || ttl.isZero()) throw new IllegalArgumentException("ttl must be positive");
@@ -61,14 +62,6 @@ public class EvaluationTuteurToken {
         this.createdAt = Date.from(now);
         this.expiresAt = Date.from(now.plus(ttl));
 
-        this.token = generateToken();
-    }
-
-    private String generateToken(){
-        SecureRandom secureRandom = new SecureRandom();
-        Base64.Encoder base64Encoder = Base64.getUrlEncoder();
-        byte[] randomBytes = new byte[32];
-        secureRandom.nextBytes(randomBytes);
-        return base64Encoder.encodeToString(randomBytes);
+        this.token = jwtService.createToken(convention.getId(), contact.getId(), now, now.plus(ttl));
     }
 }

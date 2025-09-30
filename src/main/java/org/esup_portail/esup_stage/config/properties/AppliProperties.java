@@ -24,6 +24,8 @@ public class AppliProperties {
     private String adminTechnique;
     private String dataDir;
     private List<String> tokens;
+    private String jwtSecret;
+    private Long nbJoursValideToken;
 
     public String getLocalApi() {
         String result = prefix;

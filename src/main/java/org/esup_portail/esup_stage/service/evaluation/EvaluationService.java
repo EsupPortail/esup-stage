@@ -8,14 +8,14 @@ import org.esup_portail.esup_stage.dto.*;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.*;
+import org.esup_portail.esup_stage.security.EvaluationJwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
-
-import java.util.List;
 import java.time.Duration;
+import java.util.List;
 
 @Service
 public class EvaluationService {
@@ -40,111 +40,101 @@ public class EvaluationService {
     @Autowired
     private AppliProperties appliProperties;
 
+    @Autowired
+    private EvaluationJwtService evaluationJwtService;
+
+    /* ===================== Tokens: logique métier BDD ===================== */
+
     /**
-     * Récupère le token et vérifie qu'il est valide
-     * @param tokenValue
-     * @return le token valide ou null
+     * Récupère un token non expiré et non révoqué (peut être déjà utilisé).
+     * @param tokenValue valeur brute du token
+     * @return le token ou null s'il est absent/expiré/révoqué
      */
-    public EvaluationTuteurToken getToken(String tokenValue){
-        if(tokenValue == null){
-           return null;
-        }
+    public EvaluationTuteurToken getToken(String tokenValue) {
+        if (isBlank(tokenValue)) return null;
         EvaluationTuteurToken token = tokenRepository.findByToken(tokenValue);
-        if(token == null){
-            return null;
-        }
-        if(token.isExpired() || token.getRevoque()){
-            return null;
-        }
+        if (token == null) return null;
+        if (token.isExpired() || Boolean.TRUE.equals(token.getRevoque())) return null;
         return token;
     }
 
     /**
-     * Valide un token et le marque comme utilisé si valide
-     * @param tokenValue le token à valider
-     * @return le token valide ou null si invalide
+     * Valide qu'un token est actif (non expiré, non révoqué, non utilisé), puis le marque utilisé.
+     * @param tokenValue valeur brute du token
+     * @return le token si succès, sinon null
      */
     @Transactional
     public EvaluationTuteurToken validateAndUseToken(String tokenValue) {
-        if (tokenValue == null || tokenValue.trim().isEmpty()) {
+        if (isBlank(tokenValue)) {
             logger.warn("Tentative d'accès avec token null ou vide");
             return null;
         }
-
         try {
             EvaluationTuteurToken token = tokenRepository.findByToken(tokenValue);
             if (token == null) {
-                logger.warn("Token non trouvé: {}", tokenValue.substring(0, Math.min(8, tokenValue.length())) + "...");
+                warnInvalid(tokenValue);
                 return null;
             }
-
             if (!token.isActive()) {
                 logger.warn("Token inactif (expiré/utilisé/révoqué) pour tuteur ID: {}", token.getContact().getId());
                 return null;
             }
-
-            // Marquer le token comme utilisé
             token.setUtilise(true);
             tokenRepository.save(token);
-
-            logger.info("Token validé avec succès pour tuteur ID: {}", token.getContact().getId());
+            logger.info("Token validé et marqué utilisé pour tuteur ID: {}", token.getContact().getId());
             return token;
-
         } catch (Exception e) {
             logger.error("Erreur lors de la validation du token", e);
             return null;
         }
     }
+
     /**
-     * Valide un token sans le marquer comme utilisé (pour usage multiple)
-     * @param tokenValue le token à valider
-     * @return le token valide ou null si invalide
+     * Valide un token actif (non expiré, non révoqué, non utilisé) sans le marquer utilisé.
+     * @param tokenValue valeur brute du token
+     * @return le token actif ou null
      */
     public EvaluationTuteurToken validateToken(String tokenValue) {
-        if (tokenValue == null || tokenValue.trim().isEmpty()) {
-            return null;
-        }
-
+        if (isBlank(tokenValue)) return null;
         try {
             EvaluationTuteurToken token = tokenRepository.findByToken(tokenValue);
             return (token != null && token.isActive()) ? token : null;
-
         } catch (Exception e) {
             logger.error("Erreur lors de la validation du token", e);
             return null;
         }
     }
+
     /**
-     * Valide que le token existe et est déjà utilisé
-     * @param tokenValue le token à valider
-     * @return le token valide ou null si invalide
+     * Valide qu'un token existe, est non expiré, non révoqué ET déjà utilisé.
+     * @param tokenValue valeur brute du token
+     * @return le token ou null
      */
     public EvaluationTuteurToken validateUsedToken(String tokenValue) {
-        if (tokenValue == null || tokenValue.trim().isEmpty()) {
-            return null;
-        }
-
+        if (isBlank(tokenValue)) return null;
         try {
             EvaluationTuteurToken token = tokenRepository.findByToken(tokenValue);
-            return (token != null && !token.isExpired() && token.getUtilise() && !token.getRevoque()) ? token : null;
-
+            return (token != null
+                    && !token.isExpired()
+                    && Boolean.TRUE.equals(token.getUtilise())
+                    && !Boolean.TRUE.equals(token.getRevoque())) ? token : null;
         } catch (Exception e) {
             logger.error("Erreur lors de la validation du token", e);
             return null;
         }
     }
 
-
     /**
-     * Révoque un token
-     * @param tokenValue le token à révoquer
-     * @return true si révoqué avec succès
+     * Révoque un token s'il existe et n'est pas déjà révoqué.
+     * @param tokenValue valeur brute du token
+     * @return true si une révocation a eu lieu
      */
     @Transactional
     public boolean revokeToken(String tokenValue) {
+        if (isBlank(tokenValue)) return false;
         try {
             EvaluationTuteurToken token = tokenRepository.findByToken(tokenValue);
-            if (token != null && !token.getRevoque()) {
+            if (token != null && !Boolean.TRUE.equals(token.getRevoque())) {
                 token.setRevoque(true);
                 tokenRepository.save(token);
                 logger.info("Token révoqué pour tuteur ID: {}", token.getContact().getId());
@@ -158,13 +148,12 @@ public class EvaluationService {
     }
 
     /**
-     * Crée l'url de l'évaluation pour le tuteur à partir du token
-     * @param tokenValue String
-     * @return l'url de l'évaluation pour le tuteur
+     * Construit l'URL d'évaluation pour une convention.
+     * @param tokenValue token pour la construction de l'url
+     * @return String url vers la convention
      */
     public String buildEvaluationTuteurUrl(String tokenValue) {
-
-        if (tokenValue == null || tokenValue.isBlank()) {
+        if (isBlank(tokenValue)) {
             logger.warn("Impossible de construire l'URL d'évaluation : token manquant");
             return "";
         }
@@ -176,23 +165,20 @@ public class EvaluationService {
                 .toUriString();
     }
 
-     /**
-     * Crée l'url de l'évaluation pour le tuteur à partir d'une convention
-     * Crée automatiquement un token si aucun token actif n'existe
-     * @param convention Convention
-     * @return l'url de l'évaluation pour le tuteur
+    /**
+     * Construit l'URL d'évaluation pour une convention.
+     * Crée automatiquement un token si aucun token actif n'existe pour le tuteur.
+     * @param convention Convention de l'évaluation
+     * @return String url vers la convention
      */
     @Transactional
     public String buildEvaluationTuteurUrl(Convention convention) {
-        if (convention == null || convention.getContact() == null) {
-            return "";
-        }
+        if (convention == null || convention.getContact() == null) return "";
 
         // Chercher un token actif existant
         List<EvaluationTuteurToken> tokens = tokenRepository.findByTuteurId(convention.getContact().getId());
         EvaluationTuteurToken tokenActif = null;
-
-        if (tokens != null && !tokens.isEmpty()) {
+        if (tokens != null) {
             for (EvaluationTuteurToken t : tokens) {
                 if (t != null && t.isActive()) {
                     tokenActif = t;
@@ -201,12 +187,11 @@ public class EvaluationService {
             }
         }
 
-        // Si aucun token actif trouvé, en créer un nouveau
+        // Sinon en créer un
         if (tokenActif == null) {
             tokenActif = createToken(convention);
         }
 
-        // Si on n'arrive toujours pas à avoir un token (erreur de création), retourner vide
         if (tokenActif == null) {
             logger.warn("Impossible de créer ou trouver un token actif pour tuteur ID: {}", convention.getContact().getId());
             return "";
@@ -215,11 +200,10 @@ public class EvaluationService {
         return buildEvaluationTuteurUrl(tokenActif.getToken());
     }
 
-
     /**
-     * Creation d'un token pour une convention
-     * @param convention Convention
-     * @return token EvaluationTuteurToken
+     * Création d'un token pour une convention (si aucun actif n'existe déjà).
+     * @param convention convention à laquelle est relié le token
+     * @return evaluationTuteurToken token créé
      */
     @Transactional
     public EvaluationTuteurToken createToken(Convention convention) {
@@ -229,27 +213,38 @@ public class EvaluationService {
         }
 
         try {
-            // Vérifier s'il existe déjà un token actif pour ce tuteur
+            // Ne pas dupliquer si un actif existe déjà
             List<EvaluationTuteurToken> existingTokens = tokenRepository.findByTuteurId(convention.getContact().getId());
             for (EvaluationTuteurToken existingToken : existingTokens) {
                 if (existingToken.isActive()) {
-                    logger.info("Token actif existant trouvé pour tuteur ID: {}", convention.getContact().getId());
+                    logger.info("Token actif existant trouvé pour tuteur ID: {}, pas de token créé.", convention.getContact().getId());
                     return existingToken;
                 }
             }
 
-            EvaluationTuteurToken newToken = new EvaluationTuteurToken(convention,convention.getContact(),Duration.ofDays(3));
+            EvaluationTuteurToken newToken = new EvaluationTuteurToken(
+                    convention,
+                    convention.getContact(),
+                    Duration.ofDays(appliProperties.getNbJoursValideToken()),
+                    evaluationJwtService
+            );
             EvaluationTuteurToken savedToken = tokenRepository.save(newToken);
-            logger.info("Nouveau token créé pour tuteur ID: {}", convention.getContact().getId());
-
+            logger.info("Nouveau token créé pour le tuteur ID: {}", convention.getContact().getId());
             return savedToken;
 
         } catch (Exception e) {
-            logger.error("Erreur lors de la création du token pour tuteur ID: " + convention.getContact().getId(), e);
+            logger.error("Erreur lors de la création du token pour le tuteur ID: " + convention.getContact().getId(), e);
             return null;
         }
     }
 
+    /* ===================== Fiche / Réponses ===================== */
+
+    /**
+     * Récupère la fiche d'évaluation d'un centre de gestion
+     * @param id identifiant du centre de gestion
+     * @return FicheEvaluation du centre de gestion
+     */
     public FicheEvaluation getByCentreGestion(Integer id) {
         FicheEvaluation ficheEvaluation = ficheEvaluationJpaRepository.findByCentreGestion(id);
         if (ficheEvaluation == null) {
@@ -264,14 +259,17 @@ public class EvaluationService {
         return ficheEvaluation;
     }
 
+    /**
+     * initialise les objects qui stocks les réponses de l'utilisateur aux formulaires d'évaluation
+     * @param id identifiant de la convention
+     * @return ReponseEvaluation
+     */
     public ReponseEvaluation initReponseEvaluation(int id) {
-
         Convention convention = conventionJpaRepository.findById(id);
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
         FicheEvaluation ficheEvaluation = getByCentreGestion(convention.getCentreGestion().getId());
-
         if (ficheEvaluation == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "FicheEvaluation non trouvée");
         }
@@ -289,14 +287,18 @@ public class EvaluationService {
         return reponseEvaluation;
     }
 
-    public ReponseSupplementaire initReponseSupplementaire(int idConvention, int idQestion) {
-
+    /**
+     * initialise les objects qui stocks les réponses supplémentaires de l'utilisateur aux formulaires d'évaluation
+     * @param idConvention identifiant de la convention
+     * @param idQuestion identifiant de la question
+     * @return ReponseSupplementaire
+     */
+    public ReponseSupplementaire initReponseSupplementaire(int idConvention, int idQuestion) {
         Convention convention = conventionJpaRepository.findById(idConvention);
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
-        QuestionSupplementaire questionSupplementaire = questionSupplementaireJpaRepository.findById(idQestion);
-
+        QuestionSupplementaire questionSupplementaire = questionSupplementaireJpaRepository.findById(idQuestion);
         if (questionSupplementaire == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "QuestionSupplementaire non trouvée");
         }
@@ -347,9 +349,7 @@ public class EvaluationService {
         ficheEvaluation.setQuestionEtuIII16(ficheEtudiantDto.isQuestionEtuIII16());
     }
 
-
     public void setFicheEnseignantData(FicheEvaluation ficheEvaluation, FicheEnseignantDto ficheEnseignantDto) {
-
         ficheEvaluation.setQuestionEnsI1(ficheEnseignantDto.isQuestionEnsI1());
         ficheEvaluation.setQuestionEnsI2(ficheEnseignantDto.isQuestionEnsI2());
         ficheEvaluation.setQuestionEnsI3(ficheEnseignantDto.isQuestionEnsI3());
@@ -365,7 +365,6 @@ public class EvaluationService {
         ficheEvaluation.setQuestionEnsII10(ficheEnseignantDto.isQuestionEnsII10());
         ficheEvaluation.setQuestionEnsII11(ficheEnseignantDto.isQuestionEnsII11());
     }
-
 
     public void setFicheEntrepriseData(FicheEvaluation ficheEvaluation, FicheEntrepriseDto ficheEntreprisetDto) {
         ficheEvaluation.setQuestionEnt1(ficheEntreprisetDto.isQuestionEnt1());
@@ -396,7 +395,6 @@ public class EvaluationService {
     }
 
     public void setReponseEvaluationEtudiantData(ReponseEvaluation reponseEvaluation, ReponseEtudiantFormDto reponseEtudiantFormDto) {
-
         reponseEvaluation.setReponseEtuI1(reponseEtudiantFormDto.getReponseEtuI1());
         reponseEvaluation.setReponseEtuI1bis(reponseEtudiantFormDto.getReponseEtuI1bis());
         reponseEvaluation.setReponseEtuI2(reponseEtudiantFormDto.getReponseEtuI2());
@@ -455,7 +453,6 @@ public class EvaluationService {
     }
 
     public void setReponseEvaluationEnseignantData(ReponseEvaluation reponseEvaluation, ReponseEnseignantFormDto reponseEnseignantFormDto) {
-
         reponseEvaluation.setReponseEnsI1a(reponseEnseignantFormDto.getReponseEnsI1a());
         reponseEvaluation.setReponseEnsI1b(reponseEnseignantFormDto.getReponseEnsI1b());
         reponseEvaluation.setReponseEnsI1c(reponseEnseignantFormDto.getReponseEnsI1c());
@@ -476,7 +473,14 @@ public class EvaluationService {
         reponseEvaluation.setReponseEnsII11(reponseEnseignantFormDto.getReponseEnsII11());
     }
 
-    public void setReponseEvaluationEntrepriseData(ReponseEvaluation reponseEvaluation, ReponseEntrepriseFormDto reponseEntrepriseFormDto) {
+    public void setReponseSupplementaireData(ReponseSupplementaire reponseSupplementaire, ReponseSupplementaireFormDto reponseSupplementaireFormDto) {
+        reponseSupplementaire.setReponseTxt(reponseSupplementaireFormDto.getReponseTxt());
+        reponseSupplementaire.setReponseBool(reponseSupplementaireFormDto.getReponseBool());
+        reponseSupplementaire.setReponseInt(reponseSupplementaireFormDto.getReponseInt());
+    }
+
+    public void setReponseEvaluationEntrepriseData(ReponseEvaluation reponseEvaluation,
+                                                   ReponseEntrepriseFormDto reponseEntrepriseFormDto) {
         reponseEvaluation.setReponseEnt1(reponseEntrepriseFormDto.getReponseEnt1());
         reponseEvaluation.setReponseEnt1bis(reponseEntrepriseFormDto.getReponseEnt1bis());
         reponseEvaluation.setReponseEnt2(reponseEntrepriseFormDto.getReponseEnt2());
@@ -515,9 +519,15 @@ public class EvaluationService {
         reponseEvaluation.setReponseEnt19(reponseEntrepriseFormDto.getReponseEnt19());
     }
 
-    public void setReponseSupplementaireData(ReponseSupplementaire reponseSupplementaire, ReponseSupplementaireFormDto reponseSupplementaireFormDto) {
-        reponseSupplementaire.setReponseTxt(reponseSupplementaireFormDto.getReponseTxt());
-        reponseSupplementaire.setReponseBool(reponseSupplementaireFormDto.getReponseBool());
-        reponseSupplementaire.setReponseInt(reponseSupplementaireFormDto.getReponseInt());
+
+    /* ===================== Helpers ===================== */
+
+    private boolean isBlank(String s) {
+        return s == null || s.trim().isEmpty();
+    }
+
+    private void warnInvalid(String tokenValue) {
+        String shortTok = tokenValue == null ? "null" : tokenValue.substring(0, Math.min(8, tokenValue.length())) + "...";
+        logger.warn("Token non trouvé: {}", shortTok);
     }
 }
