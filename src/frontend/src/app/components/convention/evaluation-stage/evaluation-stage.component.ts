@@ -1463,104 +1463,104 @@ export class EvaluationStageComponent implements OnInit {
 
   printFiche(typeFiche: number): void {
 
-    let htmlTexte = "";
+    // let htmlTexte = "";
+    //
+    // if (typeFiche==0){
+    //   htmlTexte += "<p style=\"text-align:center;\"><span class=\"text-huge\"><strong>Evaluation du stage par l'étudiant</strong></span></p>";
+    //   htmlTexte += "<p style=\"text-align:center;\"><span class=\"text-small\"><strong>Convention de stage n°"+this.convention.id+"</strong></span></p>";
+    //   htmlTexte += "<p><span class=\"text-small\"><strong>I. <u>Avant le départ en stage</u></strong></span></p>";
+    //   for(let question of this.FicheEtudiantIQuestions){
+    //     if(this.ficheEvaluation['question' + question.controlName]){
+    //       htmlTexte += this.getQestionTexte(question);
+    //     }
+    //   }
+    //   let questionsSupplementaires = this.questionsSupplementaires[0];
+    //   for(let questionSupplementaire of questionsSupplementaires){
+    //     htmlTexte += this.getQuestionSupplementaireTexte(this.reponseSupplementaireEtudiantForm,questionSupplementaire);
+    //   }
+    //   htmlTexte += "<p><span class=\"text-small\"><strong>II. <u>Pendant le stage</u></strong></span></p>";
+    //   for(let question of this.FicheEtudiantIIQuestions){
+    //     if(this.ficheEvaluation['question' + question.controlName]){
+    //       htmlTexte += this.getQestionTexte(question);
+    //     }
+    //   }
+    //   questionsSupplementaires = this.questionsSupplementaires[1];
+    //   for(let questionSupplementaire of questionsSupplementaires){
+    //     htmlTexte += this.getQuestionSupplementaireTexte(this.reponseSupplementaireEtudiantForm,questionSupplementaire);
+    //   }
+    //   htmlTexte += "<p><span class=\"text-small\"><strong>III. <u>Après le stage</u></strong></span></p>";
+    //   for(let question of this.FicheEtudiantIIIQuestions){
+    //     if(this.ficheEvaluation['question' + question.controlName]){
+    //       htmlTexte += this.getQestionTexte(question);
+    //     }
+    //   }
+    //   questionsSupplementaires = this.questionsSupplementaires[2];
+    //   for(let questionSupplementaire of questionsSupplementaires){
+    //     htmlTexte += this.getQuestionSupplementaireTexte(this.reponseSupplementaireEtudiantForm,questionSupplementaire);
+    //   }
+    // }
+    //
+    // if (typeFiche==1){
+    //   htmlTexte += "<p style=\"text-align:center;\"><span class=\"text-huge\"><strong>Evaluation du stage par l'enseignant</strong></span></p>";
+    //   htmlTexte += "<p style=\"text-align:center;\"><span class=\"text-small\"><strong>Convention de stage n°"+this.convention.id+"</strong></span></p>";
+    //   htmlTexte += "<p><span class=\"text-small\"><strong>I. <u>Suivi du stagiaire pendant son stage</u></strong></span></p>";
+    //   for(let question of this.FicheEnseignantIQuestions){
+    //     if(this.ficheEvaluation['question' + question.controlName]){
+    //       htmlTexte += this.getQestionTexte(question);
+    //     }
+    //   }
+    //   let questionsSupplementaires = this.questionsSupplementaires[3];
+    //   for(let questionSupplementaire of questionsSupplementaires){
+    //     htmlTexte += this.getQuestionSupplementaireTexte(this.reponseSupplementaireEnseignantForm,questionSupplementaire);
+    //   }
+    //   htmlTexte += "<p><span class=\"text-small\"><strong>II. <u>Evaluation du stagiaire</u></strong></span></p>";
+    //   for(let question of this.FicheEnseignantIIQuestions){
+    //     if(this.ficheEvaluation['question' + question.controlName]){
+    //       htmlTexte += this.getQestionTexte(question);
+    //     }
+    //   }
+    //   questionsSupplementaires = this.questionsSupplementaires[4];
+    //   for(let questionSupplementaire of questionsSupplementaires){
+    //     htmlTexte += this.getQuestionSupplementaireTexte(this.reponseSupplementaireEnseignantForm,questionSupplementaire);
+    //   }
+    // }
+    //
+    // if (typeFiche==2){
+    //   htmlTexte += "<p style=\"text-align:center;\"><span class=\"text-huge\"><strong>Evaluation du stage par le tuteur professionnel</strong></span></p>";
+    //   htmlTexte += "<p style=\"text-align:center;\"><span class=\"text-small\"><strong>Convention de stage n°"+this.convention.id+"</strong></span></p>";
+    //   htmlTexte += "<p><span class=\"text-small\"><strong>I. <u>Savoir être du stagiaire</u></strong></span></p>";
+    //   for(let question of this.FicheEntrepriseIQuestions){
+    //     if(this.ficheEvaluation['question' + question.controlName]){
+    //       htmlTexte += this.getQestionTexte(question);
+    //     }
+    //   }
+    //   let questionsSupplementaires = this.questionsSupplementaires[5];
+    //   for(let questionSupplementaire of questionsSupplementaires){
+    //     htmlTexte += this.getQuestionSupplementaireTexte(this.reponseSupplementaireEntrepriseForm,questionSupplementaire);
+    //   }
+    //   htmlTexte += "<p><span class=\"text-small\"><strong>II. <u>Savoir faire du stagiaire</u></strong></span></p>";
+    //   for(let question of this.FicheEntrepriseIIQuestions){
+    //     if(this.ficheEvaluation['question' + question.controlName]){
+    //       htmlTexte += this.getQestionTexte(question);
+    //     }
+    //   }
+    //   questionsSupplementaires = this.questionsSupplementaires[6];
+    //   for(let questionSupplementaire of questionsSupplementaires){
+    //     htmlTexte += this.getQuestionSupplementaireTexte(this.reponseSupplementaireEntrepriseForm,questionSupplementaire);
+    //   }
+    //   htmlTexte += "<p><span class=\"text-small\"><strong>III. <u>Appréciation générale du stage</u></strong></span></p>";
+    //   for(let question of this.FicheEntrepriseIIIQuestions){
+    //     if(this.ficheEvaluation['question' + question.controlName]){
+    //       htmlTexte += this.getQestionTexte(question);
+    //     }
+    //   }
+    //   questionsSupplementaires = this.questionsSupplementaires[7];
+    //   for(let questionSupplementaire of questionsSupplementaires){
+    //     htmlTexte += this.getQuestionSupplementaireTexte(this.reponseSupplementaireEntrepriseForm,questionSupplementaire);
+    //   }
+    // }
 
-    if (typeFiche==0){
-      htmlTexte += "<p style=\"text-align:center;\"><span class=\"text-huge\"><strong>Evaluation du stage par l'étudiant</strong></span></p>";
-      htmlTexte += "<p style=\"text-align:center;\"><span class=\"text-small\"><strong>Convention de stage n°"+this.convention.id+"</strong></span></p>";
-      htmlTexte += "<p><span class=\"text-small\"><strong>I. <u>Avant le départ en stage</u></strong></span></p>";
-      for(let question of this.FicheEtudiantIQuestions){
-        if(this.ficheEvaluation['question' + question.controlName]){
-          htmlTexte += this.getQestionTexte(question);
-        }
-      }
-      let questionsSupplementaires = this.questionsSupplementaires[0];
-      for(let questionSupplementaire of questionsSupplementaires){
-        htmlTexte += this.getQuestionSupplementaireTexte(this.reponseSupplementaireEtudiantForm,questionSupplementaire);
-      }
-      htmlTexte += "<p><span class=\"text-small\"><strong>II. <u>Pendant le stage</u></strong></span></p>";
-      for(let question of this.FicheEtudiantIIQuestions){
-        if(this.ficheEvaluation['question' + question.controlName]){
-          htmlTexte += this.getQestionTexte(question);
-        }
-      }
-      questionsSupplementaires = this.questionsSupplementaires[1];
-      for(let questionSupplementaire of questionsSupplementaires){
-        htmlTexte += this.getQuestionSupplementaireTexte(this.reponseSupplementaireEtudiantForm,questionSupplementaire);
-      }
-      htmlTexte += "<p><span class=\"text-small\"><strong>III. <u>Après le stage</u></strong></span></p>";
-      for(let question of this.FicheEtudiantIIIQuestions){
-        if(this.ficheEvaluation['question' + question.controlName]){
-          htmlTexte += this.getQestionTexte(question);
-        }
-      }
-      questionsSupplementaires = this.questionsSupplementaires[2];
-      for(let questionSupplementaire of questionsSupplementaires){
-        htmlTexte += this.getQuestionSupplementaireTexte(this.reponseSupplementaireEtudiantForm,questionSupplementaire);
-      }
-    }
-
-    if (typeFiche==1){
-      htmlTexte += "<p style=\"text-align:center;\"><span class=\"text-huge\"><strong>Evaluation du stage par l'enseignant</strong></span></p>";
-      htmlTexte += "<p style=\"text-align:center;\"><span class=\"text-small\"><strong>Convention de stage n°"+this.convention.id+"</strong></span></p>";
-      htmlTexte += "<p><span class=\"text-small\"><strong>I. <u>Suivi du stagiaire pendant son stage</u></strong></span></p>";
-      for(let question of this.FicheEnseignantIQuestions){
-        if(this.ficheEvaluation['question' + question.controlName]){
-          htmlTexte += this.getQestionTexte(question);
-        }
-      }
-      let questionsSupplementaires = this.questionsSupplementaires[3];
-      for(let questionSupplementaire of questionsSupplementaires){
-        htmlTexte += this.getQuestionSupplementaireTexte(this.reponseSupplementaireEnseignantForm,questionSupplementaire);
-      }
-      htmlTexte += "<p><span class=\"text-small\"><strong>II. <u>Evaluation du stagiaire</u></strong></span></p>";
-      for(let question of this.FicheEnseignantIIQuestions){
-        if(this.ficheEvaluation['question' + question.controlName]){
-          htmlTexte += this.getQestionTexte(question);
-        }
-      }
-      questionsSupplementaires = this.questionsSupplementaires[4];
-      for(let questionSupplementaire of questionsSupplementaires){
-        htmlTexte += this.getQuestionSupplementaireTexte(this.reponseSupplementaireEnseignantForm,questionSupplementaire);
-      }
-    }
-
-    if (typeFiche==2){
-      htmlTexte += "<p style=\"text-align:center;\"><span class=\"text-huge\"><strong>Evaluation du stage par le tuteur professionnel</strong></span></p>";
-      htmlTexte += "<p style=\"text-align:center;\"><span class=\"text-small\"><strong>Convention de stage n°"+this.convention.id+"</strong></span></p>";
-      htmlTexte += "<p><span class=\"text-small\"><strong>I. <u>Savoir être du stagiaire</u></strong></span></p>";
-      for(let question of this.FicheEntrepriseIQuestions){
-        if(this.ficheEvaluation['question' + question.controlName]){
-          htmlTexte += this.getQestionTexte(question);
-        }
-      }
-      let questionsSupplementaires = this.questionsSupplementaires[5];
-      for(let questionSupplementaire of questionsSupplementaires){
-        htmlTexte += this.getQuestionSupplementaireTexte(this.reponseSupplementaireEntrepriseForm,questionSupplementaire);
-      }
-      htmlTexte += "<p><span class=\"text-small\"><strong>II. <u>Savoir faire du stagiaire</u></strong></span></p>";
-      for(let question of this.FicheEntrepriseIIQuestions){
-        if(this.ficheEvaluation['question' + question.controlName]){
-          htmlTexte += this.getQestionTexte(question);
-        }
-      }
-      questionsSupplementaires = this.questionsSupplementaires[6];
-      for(let questionSupplementaire of questionsSupplementaires){
-        htmlTexte += this.getQuestionSupplementaireTexte(this.reponseSupplementaireEntrepriseForm,questionSupplementaire);
-      }
-      htmlTexte += "<p><span class=\"text-small\"><strong>III. <u>Appréciation générale du stage</u></strong></span></p>";
-      for(let question of this.FicheEntrepriseIIIQuestions){
-        if(this.ficheEvaluation['question' + question.controlName]){
-          htmlTexte += this.getQestionTexte(question);
-        }
-      }
-      questionsSupplementaires = this.questionsSupplementaires[7];
-      for(let questionSupplementaire of questionsSupplementaires){
-        htmlTexte += this.getQuestionSupplementaireTexte(this.reponseSupplementaireEntrepriseForm,questionSupplementaire);
-      }
-    }
-
-    this.reponseEvaluationService.getFichePDF(this.convention.id, typeFiche, htmlTexte).subscribe((response: any) => {
+    this.reponseEvaluationService.getFichePDF(this.convention.id, typeFiche).subscribe((response: any) => {
       var blob = new Blob([response as BlobPart], {type: "application/pdf"});
       let filename;
       if (typeFiche==0){

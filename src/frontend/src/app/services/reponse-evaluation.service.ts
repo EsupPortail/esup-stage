@@ -53,8 +53,8 @@ export class ReponseEvaluationService {
     return this.http.put(`${environment.apiUrl}/reponseEvaluation/${idConvention}/reponseSupplementaire/${idQestion}`, data);
   }
 
-  getFichePDF(id: number,typeFiche: number, htmlTexte: string): Observable<any> {
-    return this.http.post(`${environment.apiUrl}/reponseEvaluation/${id}/getFichePDF/typeFiche/${typeFiche}`,htmlTexte, { responseType: 'blob'});
+  getFichePDF(id: number,typeFiche: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/reponseEvaluation/${id}/getFichePDF/typeFiche/${typeFiche}`, { responseType: 'blob'});
   }
 
   sendMailEvaluation(id: number,typeFiche: number): Observable<any> {

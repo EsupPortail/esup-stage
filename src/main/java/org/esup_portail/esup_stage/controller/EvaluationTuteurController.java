@@ -168,7 +168,7 @@ public class EvaluationTuteurController {
             conventionJpaRepository.saveAndFlush(convention);
         }
         ByteArrayOutputStream ou = new ByteArrayOutputStream();
-        impressionService.generateEvaluationPDF(convention, null, ou);
+        impressionService.generateEvaluationPDF(convention, null, ou,2);
 
         byte[] pdf = ou.toByteArray();
         return ResponseEntity.ok().body(pdf);

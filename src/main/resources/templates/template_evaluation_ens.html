@@ -1,0 +1,240 @@
+<style>
+  .header { text-align: center; }
+  h1 {margin-bottom: -15px; font-size: 28px; }
+  h2 { font-size: 20px; }
+  h3 { text-decoration: underline; margin-top: 1.25rem; }
+  .evaluation-item { margin-bottom: .75rem; }
+  .logo{ margin-top:95px;}
+</style>
+
+<figure class="logo">
+  <!-- laisser de la place pour le logo -->
+</figure>
+
+<figure class="header">
+  <h1>Appréciation du stage par l’enseignant</h1>
+  <h4>Convention de stage n° ${convention.id}</h4>
+</figure>
+
+<figure>
+  <div>
+    <h3>I. Suivi du stagiaire pendant son stage</h3>
+
+    <#-- I1 : avec le stagiaire -->
+    <#if ficheEvaluation.questionEnsI1>
+      <div class="evaluation-item">
+        <p><strong>Avec le stagiaire :</strong></p>
+        <p>• Téléphone :
+          <#if reponse.reponseEnsI1a??>
+            <#if reponse.reponseEnsI1a == true>Oui</#if>
+            <#if reponse.reponseEnsI1a == false>Non</#if>
+          </#if>
+        </p>
+        <p>• Mail :
+          <#if reponse.reponseEnsI1b??>
+            <#if reponse.reponseEnsI1b == true>Oui</#if>
+            <#if reponse.reponseEnsI1b == false>Non</#if>
+          </#if>
+        </p>
+        <p>• Rencontre :
+          <#if reponse.reponseEnsI1c??>
+            <#if reponse.reponseEnsI1c == true>Oui</#if>
+            <#if reponse.reponseEnsI1c == false>Non</#if>
+          </#if>
+        </p>
+      </div>
+    </#if>
+
+    <#-- I2 : avec le tuteur professionnel -->
+    <#if ficheEvaluation.questionEnsI2>
+      <div class="evaluation-item">
+        <p><strong>Avec le tuteur professionnel :</strong></p>
+        <p>• Téléphone :
+          <#if reponse.reponseEnsI2a??>
+            <#if reponse.reponseEnsI2a == true>Oui</#if>
+            <#if reponse.reponseEnsI2a == false>Non</#if>
+          </#if>
+        </p>
+        <p>• Mail :
+          <#if reponse.reponseEnsI2b??>
+            <#if reponse.reponseEnsI2b == true>Oui</#if>
+            <#if reponse.reponseEnsI2b == false>Non</#if>
+          </#if>
+        </p>
+        <p>• Rencontre :
+          <#if reponse.reponseEnsI2c??>
+            <#if reponse.reponseEnsI2c == true>Oui</#if>
+            <#if reponse.reponseEnsI2c == false>Non</#if>
+          </#if>
+        </p>
+      </div>
+    </#if>
+
+    <#-- I3 : Commentaire(s) -->
+    <#if ficheEvaluation.questionEnsI3>
+      <div class="evaluation-item">
+        <p><strong>Commentaire(s) :</strong></p>
+        <#if reponse.reponseEnsI3?? && reponse.reponseEnsI3 != "">
+          <p><em>${reponse.reponseEnsI3}</em></p>
+        </#if>
+      </div>
+    </#if>
+  </div>
+
+  <div>
+    <h3>II. Évaluation du stagiaire</h3>
+
+    <#-- barème : 0 Excellent / 1 Très bien / 2 Bien / 3 Satisfaisant / 4 Insuffisant -->
+
+    <#if ficheEvaluation.questionEnsII1>
+      <div class="evaluation-item">
+        <p><strong>- Impression générale et présentation de l’étudiant :</strong>
+          <#if reponse.reponseEnsII1??>
+            <#if reponse.reponseEnsII1 == 0>Excellent</#if>
+            <#if reponse.reponseEnsII1 == 1>Très bien</#if>
+            <#if reponse.reponseEnsII1 == 2>Bien</#if>
+            <#if reponse.reponseEnsII1 == 3>Satisfaisant</#if>
+            <#if reponse.reponseEnsII1 == 4>Insuffisant</#if>
+          </#if>
+        </p>
+      </div>
+    </#if>
+
+    <#if ficheEvaluation.questionEnsII2>
+      <div class="evaluation-item">
+        <p><strong>- Aptitude à cerner et situer le projet :</strong>
+          <#if reponse.reponseEnsII2??>
+            <#if reponse.reponseEnsII2 == 0>Excellent</#if>
+            <#if reponse.reponseEnsII2 == 1>Très bien</#if>
+            <#if reponse.reponseEnsII2 == 2>Bien</#if>
+            <#if reponse.reponseEnsII2 == 3>Satisfaisant</#if>
+            <#if reponse.reponseEnsII2 == 4>Insuffisant</#if>
+          </#if>
+        </p>
+      </div>
+    </#if>
+
+    <#if ficheEvaluation.questionEnsII3>
+      <div class="evaluation-item">
+        <p><strong>- Aptitude à appliquer ses connaissances :</strong>
+          <#if reponse.reponseEnsII3??>
+            <#if reponse.reponseEnsII3 == 0>Excellent</#if>
+            <#if reponse.reponseEnsII3 == 1>Très bien</#if>
+            <#if reponse.reponseEnsII3 == 2>Bien</#if>
+            <#if reponse.reponseEnsII3 == 3>Satisfaisant</#if>
+            <#if reponse.reponseEnsII3 == 4>Insuffisant</#if>
+          </#if>
+        </p>
+      </div>
+    </#if>
+
+    <#if ficheEvaluation.questionEnsII4>
+      <div class="evaluation-item">
+        <p><strong>- Maîtrise du sujet, argumentation, analyse :</strong>
+          <#if reponse.reponseEnsII4??>
+            <#if reponse.reponseEnsII4 == 0>Excellent</#if>
+            <#if reponse.reponseEnsII4 == 1>Très bien</#if>
+            <#if reponse.reponseEnsII4 == 2>Bien</#if>
+            <#if reponse.reponseEnsII4 == 3>Satisfaisant</#if>
+            <#if reponse.reponseEnsII4 == 4>Insuffisant</#if>
+          </#if>
+        </p>
+      </div>
+    </#if>
+
+    <#if ficheEvaluation.questionEnsII5>
+      <div class="evaluation-item">
+        <p><strong>- Mise en évidence des éléments importants de l’étude :</strong>
+          <#if reponse.reponseEnsII5??>
+            <#if reponse.reponseEnsII5 == 0>Excellent</#if>
+            <#if reponse.reponseEnsII5 == 1>Très bien</#if>
+            <#if reponse.reponseEnsII5 == 2>Bien</#if>
+            <#if reponse.reponseEnsII5 == 3>Satisfaisant</#if>
+            <#if reponse.reponseEnsII5 == 4>Insuffisant</#if>
+          </#if>
+        </p>
+      </div>
+    </#if>
+
+    <#if ficheEvaluation.questionEnsII6>
+      <div class="evaluation-item">
+        <p><strong>- Utilisation des moyens de communication :</strong>
+          <#if reponse.reponseEnsII6??>
+            <#if reponse.reponseEnsII6 == 0>Excellent</#if>
+            <#if reponse.reponseEnsII6 == 1>Très bien</#if>
+            <#if reponse.reponseEnsII6 == 2>Bien</#if>
+            <#if reponse.reponseEnsII6 == 3>Satisfaisant</#if>
+            <#if reponse.reponseEnsII6 == 4>Insuffisant</#if>
+          </#if>
+        </p>
+      </div>
+    </#if>
+
+    <#if ficheEvaluation.questionEnsII7>
+      <div class="evaluation-item">
+        <p><strong>- Qualité de l’expression orale :</strong>
+          <#if reponse.reponseEnsII7??>
+            <#if reponse.reponseEnsII7 == 0>Excellent</#if>
+            <#if reponse.reponseEnsII7 == 1>Très bien</#if>
+            <#if reponse.reponseEnsII7 == 2>Bien</#if>
+            <#if reponse.reponseEnsII7 == 3>Satisfaisant</#if>
+            <#if reponse.reponseEnsII7 == 4>Insuffisant</#if>
+          </#if>
+        </p>
+      </div>
+    </#if>
+
+    <#if ficheEvaluation.questionEnsII8>
+      <div class="evaluation-item">
+        <p><strong>- Capacité à intéresser l’auditoire :</strong>
+          <#if reponse.reponseEnsII8??>
+            <#if reponse.reponseEnsII8 == 0>Excellent</#if>
+            <#if reponse.reponseEnsII8 == 1>Très bien</#if>
+            <#if reponse.reponseEnsII8 == 2>Bien</#if>
+            <#if reponse.reponseEnsII8 == 3>Satisfaisant</#if>
+            <#if reponse.reponseEnsII8 == 4>Insuffisant</#if>
+          </#if>
+        </p>
+      </div>
+    </#if>
+
+    <#if ficheEvaluation.questionEnsII9>
+      <div class="evaluation-item">
+        <p><strong>- Pertinence des réponses :</strong>
+          <#if reponse.reponseEnsII9??>
+            <#if reponse.reponseEnsII9 == 0>Excellent</#if>
+            <#if reponse.reponseEnsII9 == 1>Très bien</#if>
+            <#if reponse.reponseEnsII9 == 2>Bien</#if>
+            <#if reponse.reponseEnsII9 == 3>Satisfaisant</#if>
+            <#if reponse.reponseEnsII9 == 4>Insuffisant</#if>
+          </#if>
+        </p>
+      </div>
+    </#if>
+
+    <#if ficheEvaluation.questionEnsII10>
+      <div class="evaluation-item">
+        <p><strong>- Respect du temps alloué :</strong>
+          <#if reponse.reponseEnsII10??>
+            <#if reponse.reponseEnsII10 == 0>Excellent</#if>
+            <#if reponse.reponseEnsII10 == 1>Très bien</#if>
+            <#if reponse.reponseEnsII10 == 2>Bien</#if>
+            <#if reponse.reponseEnsII10 == 3>Satisfaisant</#if>
+            <#if reponse.reponseEnsII10 == 4>Insuffisant</#if>
+          </#if>
+        </p>
+      </div>
+    </#if>
+
+    <#-- II11 : commentaire libre -->
+    <#if ficheEvaluation.questionEnsII11>
+      <div class="evaluation-item">
+        <p><strong>Commentaire(s) complémentaire(s) :</strong></p>
+        <#if reponse.reponseEnsII11?? && reponse.reponseEnsII11 != "">
+          <p><em>${reponse.reponseEnsII11}</em></p>
+        </#if>
+      </div>
+    </#if>
+
+  </div>
+</figure>

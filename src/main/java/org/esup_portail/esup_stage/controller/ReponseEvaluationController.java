@@ -38,13 +38,7 @@ public class ReponseEvaluationController {
     ConventionJpaRepository conventionJpaRepository;
 
     @Autowired
-    FicheEvaluationController ficheEvaluationController;
-
-    @Autowired
     ReponseSupplementaireJpaRepository reponseSupplementaireJpaRepository;
-
-    @Autowired
-    QuestionSupplementaireJpaRepository questionSupplementaireJpaRepository;
 
     @Autowired
     ImpressionService impressionService;
@@ -121,9 +115,9 @@ public class ReponseEvaluationController {
         return reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
     }
 
-    @PostMapping("/{id}/getFichePDF/typeFiche/{typeFiche}")
+    @GetMapping("/{id}/getFichePDF/typeFiche/{typeFiche}")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
-    public ResponseEntity<byte[]> getFichePDF(@PathVariable("id") int id, @PathVariable("typeFiche") int typeFiche, @RequestBody String htmlTexte) {
+    public ResponseEntity<byte[]> getFichePDF(@PathVariable("id") int id, @PathVariable("typeFiche") int typeFiche) {
         ReponseEvaluation reponseEvaluation = reponseEvaluationJpaRepository.findByConvention(id);
         if (reponseEvaluation == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "ReponseEvaluation non trouvé");
@@ -131,15 +125,15 @@ public class ReponseEvaluationController {
         ByteArrayOutputStream ou = new ByteArrayOutputStream();
 
         if (typeFiche == 0) {
-            impressionService.generateFichePDF(htmlTexte, ou);
+            impressionService.generateEvaluationPDF(reponseEvaluation.getConvention(),reponseEvaluation.getConvention().getAvenants().getLast(),ou,typeFiche);
             reponseEvaluation.setImpressionEtudiant(true);
         }
         if (typeFiche == 1) {
-            impressionService.generateFichePDF(htmlTexte, ou);
+            impressionService.generateEvaluationPDF(reponseEvaluation.getConvention(),reponseEvaluation.getConvention().getAvenants().getLast(),ou,typeFiche);
             reponseEvaluation.setImpressionEnseignant(true);
         }
         if (typeFiche == 2) {
-            impressionService.generateFichePDF(htmlTexte, ou);
+            impressionService.generateEvaluationPDF(reponseEvaluation.getConvention(),reponseEvaluation.getConvention().getAvenants().getLast(),ou,typeFiche);
             reponseEvaluation.setImpressionEntreprise(true);
         }
         reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);

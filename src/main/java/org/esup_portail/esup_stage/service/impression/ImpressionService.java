@@ -73,7 +73,7 @@ public class ImpressionService {
 
         try {
 
-            String htmlTexte = avenant != null ? this.getHtmlText(templateConvention.getTexteAvenant(), false, isRecap,false) : this.getHtmlText(templateConvention.getTexte(), true, isRecap,false);
+            String htmlTexte = avenant != null ? this.getHtmlText(templateConvention.getTexteAvenant(), false, isRecap) : this.getHtmlText(templateConvention.getTexte(), true, isRecap);
 
             htmlTexte = manageIfElse(htmlTexte);
 
@@ -261,7 +261,7 @@ public class ImpressionService {
         return sb.toString();
     }
 
-    private String getHtmlText(String texte, boolean isConvention, boolean isRecap, boolean isEvalTuteur) {
+    private String getHtmlText(String texte, boolean isConvention, boolean isRecap) {
 
         if (texte == null) {
             texte = getDefaultText(isConvention);
@@ -272,8 +272,6 @@ public class ImpressionService {
 
         if (isRecap) {
             htmlTexte += getDefaultText("/templates/template_recapitulatif.html");
-        } else if (isEvalTuteur) {
-            htmlTexte += getDefaultText("/templates/template_evaluation_tuteur.html");
         } else {
             String periodesInterruptionsStage = getDefaultText("/templates/template_convention_periodesInterruptions.html");
             texte = texte.replace("${convention.periodesInterruptions}", periodesInterruptionsStage);
@@ -375,17 +373,11 @@ public class ImpressionService {
      * @param avenant
      * @param outputStream
      */
-    public void generateEvaluationPDF(Convention convention, Avenant avenant, ByteArrayOutputStream outputStream) {
+    public void generateEvaluationPDF(Convention convention, Avenant avenant, ByteArrayOutputStream outputStream, Integer typeRole) {
         if (convention.getNomenclature() == null) {
             convention.setValeurNomenclature();
         }
-
-        // Récupération du template d'évaluation depuis les fichiers
-        String templatePath = "/templates/template_evaluation_tuteur";
-        if (convention.getLangueConvention() != null && !convention.getLangueConvention().getCode().equals("fr")) {
-            templatePath += "_" + convention.getLangueConvention().getCode();
-        }
-        templatePath += ".html";
+        String templatePath = getTemplatePath(convention, typeRole);
 
         CentreGestion centreEtablissement = centreGestionJpaRepository.getCentreEtablissement();
         List<QuestionSupplementaire> questionSupplementaire = QSJpaRepository.findByFicheEvaluation(centreEtablissement.getFicheEvaluation().getId());
@@ -394,7 +386,7 @@ public class ImpressionService {
         try {
             // Récupération du texte HTML directement depuis les fichiers
             String htmlTexte = getDefaultText(templatePath);
-            htmlTexte = this.getHtmlText(htmlTexte, false, false,true);
+            htmlTexte = this.getHtmlText(htmlTexte,typeRole);
 
             // Traitement des conditions if/else comme dans generateConventionAvenantPDF
             htmlTexte = manageIfElse(htmlTexte);
@@ -402,14 +394,15 @@ public class ImpressionService {
             // Configuration FreeMarker
             Configuration freeMarkerConfig = freeMarkerConfigurer.getConfiguration();
             freeMarkerConfig.setClassicCompatible(true);
-            Template template = new Template("template_evaluation_tuteur", htmlTexte, freeMarkerConfig);
+            String name = "";
+
+            Template template = new Template("template_"+name, htmlTexte, freeMarkerConfig);
 
             // Remplir le template avec les données
             StringWriter texte = new StringWriter();
             template.process(impressionContext, texte);
 
-            String filename = "evaluation_tuteur_" + convention.getId();
-            filename += "_" + convention.getEtudiant().getPrenom() + "_" + convention.getEtudiant().getNom() + ".pdf";
+            String filename = name + "_" + convention.getEtudiant().getPrenom() + "_" + convention.getEtudiant().getNom() + ".pdf";
 
             // Récupération du logo du centre gestion (même logique que generateConventionAvenantPDF)
             String logoname;
@@ -441,5 +434,33 @@ public class ImpressionService {
             logger.error("Une erreur est survenue lors de la génération du PDF d'évaluation du tuteur", e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
         }
+    }
+
+    private static String getTemplatePath(Convention convention, Integer typeRole) {
+        String name = switch (typeRole) {
+            case 0 -> "evaluation_etu";
+            case 1 -> "evaluation_ens";
+            case 2 -> "evaluation_tuteur";
+            default -> throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Template non trouvée");
+        };
+        // Récupération du template d'évaluation depuis les fichiers
+        String templatePath = "/templates/template_"+name;
+        if (convention.getLangueConvention() != null && !convention.getLangueConvention().getCode().equals("fr")) {
+            templatePath += "_" + convention.getLangueConvention().getCode();
+        }
+        templatePath += ".html";
+        return templatePath;
+    }
+
+    private String getHtmlText(String texte, Integer typeRole) {
+        String htmlTexte = getDefaultText("/templates/template_style.html");
+        htmlTexte = htmlTexte.replaceAll("__project_fonts_dir__", this.getClass().getResource("/static/fonts/").getPath());
+
+        htmlTexte += texte;
+
+        htmlTexte = htmlTexte.replace("<figure", "<div");
+        htmlTexte = htmlTexte.replace("</figure>", "</div>");
+
+        return htmlTexte;
     }
 }
