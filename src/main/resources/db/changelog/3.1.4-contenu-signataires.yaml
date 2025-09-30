@@ -183,3 +183,14 @@ databaseChangeLog:
                   name: dateCreation
                   value: now()
             tableName: Contenu
+  - changeSet:
+      id: 3.1.4-edit-droit-service-contact-etab-accueil-libelle
+      author: thouveno9
+      changes:
+        - update:
+            tableName: AppFonction
+            columns:
+              - column:
+                  name: libelleAppFonction
+                  value: Services et contacts
+            where: codeAppFonction = 'SERVICE_CONTACT_ACC'
