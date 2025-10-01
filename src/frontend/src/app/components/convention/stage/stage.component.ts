@@ -29,14 +29,8 @@ import { PeriodeStageService } from'../../../services/periode-stage.service';
 })
 export class StageComponent implements OnInit {
   readonly MAX = {
-    sujetStage: 1000,
     competences: 1000,
     fonctionsEtTaches: 1000,
-    details: 1000,
-    commentaireDureeTravail: 1000,
-    modeEncadreSuivi: 1000,
-    avantagesNature: 1000,
-    travailNuitFerie: 1000,
   } as const;
 
   focused: keyof typeof this.MAX | null = null;
@@ -45,10 +39,9 @@ export class StageComponent implements OnInit {
     'nbHeuresHebdo': [Validators.required, Validators.pattern('[0-9]{1,2}([,.][0-9]{1,2})?')],
     'dureeExceptionnelle': [Validators.required, Validators.pattern('[0-9]+([,.][0-9]{1,2})?')],
     'montantGratification': [Validators.required, Validators.pattern('[0-9]{1,10}([,.][0-9]{1,2})?')],
-    'sujetStage': [Validators.required,Validators.maxLength(this.MAX.sujetStage)],
+    'sujetStage': [Validators.required],
     'competences': [Validators.required, Validators.maxLength(this.MAX.competences)],
     'fonctionsEtTaches': [Validators.required,Validators.maxLength(this.MAX.fonctionsEtTaches)],
-    'details':[Validators.maxLength(this.MAX.details)],
     'idUniteGratification': [Validators.required],
     'idUniteDuree': [Validators.required],
     'idDevise': [Validators.required],
@@ -57,10 +50,6 @@ export class StageComponent implements OnInit {
     'confidentiel': [Validators.required],
     'idNatureTravail': [Validators.required],
     'idModeValidationStage': [Validators.required],
-    'commentaireDureeTravail': [Validators.maxLength(this.MAX.commentaireDureeTravail)],
-    'modeEncadreSuivi':      [Validators.maxLength(this.MAX.modeEncadreSuivi)],
-    'avantagesNature':       [Validators.maxLength(this.MAX.avantagesNature)],
-    'travailNuitFerie':      [Validators.maxLength(this.MAX.travailNuitFerie)],
   }
 
   interruptionsStageTableColumns = ['dateDebutInterruption', 'dateFinInterruption', 'actions'];

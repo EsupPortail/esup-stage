@@ -29,26 +29,8 @@
         <div class="row">
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Sujet</mat-label>
-            <textarea
-              matInput
-              formControlName="sujetStage"
-              maxlength="{{ MAX.sujetStage }}"
-              [required]="!enMasse"
-              (focus)="focused = 'sujetStage'"
-              (blur)="focused = focused === 'sujetStage' ? null : focused"
-            ></textarea>
-
-            <mat-error *ngIf="hasError('sujetStage')">
-              <app-form-error [field]="form.get('sujetStage')"></app-form-error>
-            </mat-error>
-
-            <mat-hint
-              align="end"
-              *ngIf="!hasError('sujetStage') && focused === 'sujetStage'"
-              [ngStyle]="{ color: counterColor('sujetStage') }"
-            >
-              {{ len('sujetStage') }}/{{ MAX.sujetStage }}
-            </mat-hint>
+            <textarea matInput formControlName="sujetStage" [required]="!enMasse"></textarea>
+            <mat-error><app-form-error [field]="form.get('sujetStage')"></app-form-error></mat-error>
           </mat-form-field>
 
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
@@ -101,26 +83,8 @@
 
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Détails</mat-label>
-            <textarea
-              matInput
-              formControlName="details"
-              maxlength="{{ MAX.details }}"
-              (focus)="focused = 'details'"
-              (blur)="focused = focused === 'details' ? null : focused"
-            ></textarea>
-
-            <mat-error *ngIf="hasError('details')">
-              <!-- petit correctif: ici c'était 'sujet' dans ton snippet -->
-              <app-form-error [field]="form.get('details')"></app-form-error>
-            </mat-error>
-
-            <mat-hint
-              align="end"
-              *ngIf="!hasError('details') && focused === 'details'"
-              [ngStyle]="{ color: counterColor('details') }"
-            >
-              {{ len('details') }}/{{ MAX.details }}
-            </mat-hint>
+            <textarea matInput formControlName="details"></textarea>
+            <mat-error><app-form-error [field]="form.get('sujet')"></app-form-error></mat-error>
           </mat-form-field>
         </div>
 
@@ -279,25 +243,8 @@
           </mat-form-field>
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Commentaire sur le temps de travail</mat-label>
-            <textarea
-              matInput
-              formControlName="commentaireDureeTravail"
-              [attr.maxlength]="MAX.commentaireDureeTravail"
-              (focus)="focused = 'commentaireDureeTravail'"
-              (blur)="focused = focused === 'commentaireDureeTravail' ? null : focused"
-            ></textarea>
-
-            <mat-error *ngIf="hasError('commentaireDureeTravail')">
-              <app-form-error [field]="form.get('commentaireDureeTravail')"></app-form-error>
-            </mat-error>
-
-            <mat-hint
-              align="end"
-              *ngIf="!hasError('commentaireDureeTravail') && focused === 'commentaireDureeTravail'"
-              [ngStyle]="{ color: counterColor('commentaireDureeTravail') }"
-            >
-              {{ len('commentaireDureeTravail') }}/{{ MAX.commentaireDureeTravail }}
-            </mat-hint>
+            <textarea matInput formControlName="commentaireDureeTravail"></textarea>
+            <mat-error><app-form-error [field]="form.get('commentaireDureeTravail')"></app-form-error></mat-error>
           </mat-form-field>
 
         </div>
@@ -395,71 +342,20 @@
           <div class="row col-sm-12 col-md-6">
             <mat-form-field class="col-12 mb-2" appearance="fill">
               <mat-label>Modalité de suivi du stagiaire</mat-label>
-              <textarea
-                matInput
-                formControlName="modeEncadreSuivi"
-                [attr.maxlength]="MAX.modeEncadreSuivi"
-                (focus)="focused = 'modeEncadreSuivi'"
-                (blur)="focused = focused === 'modeEncadreSuivi' ? null : focused"
-              ></textarea>
-
-              <mat-error *ngIf="hasError('modeEncadreSuivi')">
-                <app-form-error [field]="form.get('modeEncadreSuivi')"></app-form-error>
-              </mat-error>
-
-              <mat-hint
-                align="end"
-                *ngIf="!hasError('modeEncadreSuivi') && focused === 'modeEncadreSuivi'"
-                [ngStyle]="{ color: counterColor('modeEncadreSuivi') }"
-              >
-                {{ len('modeEncadreSuivi') }}/{{ MAX.modeEncadreSuivi }}
-              </mat-hint>
+              <textarea matInput formControlName="modeEncadreSuivi"></textarea>
+              <mat-error><app-form-error [field]="form.get('modeEncadreSuivi')"></app-form-error></mat-error>
             </mat-form-field>
             <mat-form-field class="col-12 mb-2" appearance="fill">
               <mat-label>Liste des avantages en nature</mat-label>
-              <textarea
-                matInput
-                formControlName="avantagesNature"
-                [attr.maxlength]="MAX.avantagesNature"
-                (focus)="focused = 'avantagesNature'"
-                (blur)="focused = focused === 'avantagesNature' ? null : focused"
-              ></textarea>
-
-              <mat-error *ngIf="hasError('avantagesNature')">
-                <app-form-error [field]="form.get('avantagesNature')"></app-form-error>
-              </mat-error>
-
-              <mat-hint
-                align="end"
-                *ngIf="!hasError('avantagesNature') && focused === 'avantagesNature'"
-                [ngStyle]="{ color: counterColor('avantagesNature') }"
-              >
-                {{ len('avantagesNature') }}/{{ MAX.avantagesNature }}
-              </mat-hint>
+              <textarea matInput formControlName="avantagesNature"></textarea>
+              <mat-error><app-form-error [field]="form.get('avantagesNature')"></app-form-error></mat-error>
             </mat-form-field>
 
             <mat-form-field class="col-12 mb-2" appearance="fill">
               <mat-label>Travail exceptionnel</mat-label>
-              <textarea
-                matInput
-                formControlName="travailNuitFerie"
-                [attr.maxlength]="MAX.travailNuitFerie"
-                (focus)="focused = 'travailNuitFerie'"
-                (blur)="focused = focused === 'travailNuitFerie' ? null : focused"
-              ></textarea>
+              <textarea matInput formControlName="travailNuitFerie"></textarea>
               <mat-hint>Si le stagiaire doit télétravailler, être présent la nuit, le dimanche ou un jour férié, préciser</mat-hint>
-
-              <mat-error *ngIf="hasError('travailNuitFerie')">
-                <app-form-error [field]="form.get('travailNuitFerie')"></app-form-error>
-              </mat-error>
-
-              <mat-hint
-                align="end"
-                *ngIf="!hasError('travailNuitFerie') && focused === 'travailNuitFerie'"
-                [ngStyle]="{ color: counterColor('travailNuitFerie') }"
-              >
-                {{ len('travailNuitFerie') }}/{{ MAX.travailNuitFerie }}
-              </mat-hint>
+              <mat-error><app-form-error [field]="form.get('travailNuitFerie')"></app-form-error></mat-error>
             </mat-form-field>
 
           </div>
