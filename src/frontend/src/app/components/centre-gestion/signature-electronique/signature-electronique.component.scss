@@ -10,3 +10,8 @@
     color: white;
   }
 }
+
+.no-drag-cursor .cdk-drag,
+.no-drag-cursor .cdk-drag-handle {
+  cursor: default !important;
+}
