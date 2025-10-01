@@ -281,28 +281,19 @@
         <form [formGroup]="formGenerale" novalidate (submit)="saveGenerale()">
           <div class="row mb-2">
             <div class="col-md-12">
-              <div class="mb-2">Autorisation des étudiants à modifier les données entreprise existantes (fiche signalétique, services, contacts) lorsqu'ils créent une convention ?</div>
-              <mat-radio-group formControlName="autoriserEtudiantAModifierEntreprise">
-                <mat-radio-button [value]="true">Oui</mat-radio-button>
-                <mat-radio-button [value]="false">Non</mat-radio-button>
+              <div class="mb-2" [class.section-disabled]="!isEtuAutoriseToCreate">Autorisation des étudiants à créer un établissement d'accueil en France ?</div>
+              <mat-radio-group formControlName="autoriserEtudiantACreerEntrepriseFrance">
+                <mat-radio-button [disabled]="!isEtuAutoriseToCreate" [value]="true">Oui</mat-radio-button>
+                <mat-radio-button [disabled]="!isEtuAutoriseToCreate" [value]="false">Non</mat-radio-button>
               </mat-radio-group>
             </div>
           </div>
           <div class="row mb-2">
             <div class="col-md-12">
-              <div class="mb-2">Autorisation des étudiants à créer un établissement d'accueil ?</div>
-              <mat-radio-group formControlName="autoriserEtudiantACreerEntreprise">
-                <mat-radio-button [value]="true">Oui</mat-radio-button>
-                <mat-radio-button [value]="false">Non</mat-radio-button>
-              </mat-radio-group>
-            </div>
-          </div>
-          <div *ngIf="formGenerale.get('autoriserEtudiantACreerEntreprise')?.value === false" class="row mb-2">
-            <div class="col-md-12">
-              <div class="mb-2"> Autorisation des étudiants à créer un établissement d'accueil à l'étranger (hors de France) ?</div>
+              <div class="mb-2" [class.section-disabled]="!isEtuAutoriseToCreate"> Autorisation des étudiants à créer un établissement d'accueil à l'étranger (hors de France) ?</div>
               <mat-radio-group formControlName="autoriserEtudiantACreerEntrepriseHorsFrance">
-                <mat-radio-button [value]="true">Oui</mat-radio-button>
-                <mat-radio-button [value]="false">Non</mat-radio-button>
+                <mat-radio-button [disabled]="!isEtuAutoriseToCreate" [value]="true">Oui</mat-radio-button>
+                <mat-radio-button [disabled]="!isEtuAutoriseToCreate" [value]="false">Non</mat-radio-button>
               </mat-radio-group>
             </div>
           </div>
@@ -317,7 +308,22 @@
     <mat-card class="my-3">
       <mat-card-content>
         <form [formGroup]="formSignature" (ngSubmit)="saveSignature()" novalidate>
-          <h3 class="mat-headline mb-2">Esup-Signature</h3>
+          <h4 class="mat-headline mb-2">Générale</h4>
+          <div class="underline mb-4"></div>
+          <div class="mb-3">
+            <label class="d-block mb-2 fw-bold">
+              Autoriser la modification de l'ordre de signature dans les centres de gestion ?  ?
+            </label>
+            <mat-radio-group
+              formControlName="authoriserModifOrdreSignatureCG"
+              class="d-flex gap-4"
+            >
+              <mat-radio-button [value]="true">Oui</mat-radio-button>
+              <mat-radio-button [value]="false">Non</mat-radio-button>
+            </mat-radio-group>
+          </div>
+
+          <h4 class="mat-headline mb-2">Esup-Signature</h4>
           <div class="underline mb-4"></div>
 
           <div class="mb-3">

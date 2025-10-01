@@ -6,6 +6,7 @@ import { MessageService } from "../../../services/message.service";
 import { CentreGestionService } from "../../../services/centre-gestion.service";
 import { AppFonction } from "../../../constants/app-fonction";
 import { Droit } from "../../../constants/droit";
+import {RoleService} from "../../../services/role.service";
 
 @Component({
   selector: 'app-config-generale',
@@ -54,12 +55,14 @@ export class ConfigGeneraleComponent implements OnInit {
 
   formSignature: FormGroup;
 
+  isEtuAutoriseToCreate!: boolean;
+
   constructor(
     private configService: ConfigService,
     private fb: FormBuilder,
     private authService: AuthService,
     private messageService: MessageService,
-    private centreGestionService: CentreGestionService,
+    private roleService: RoleService,
   ) {
     this.formGenerale = this.fb.group({
       codeUniversite: [null, [Validators.required]],
@@ -67,15 +70,14 @@ export class ConfigGeneraleComponent implements OnInit {
       anneeBasculeMois: [null, [Validators.required, Validators.min(1), Validators.max(12)]],
       autoriserConventionsOrphelines: [null, [Validators.required]],
       typeCentre: [null, [Validators.required]],
-      autoriserEtudiantAModifierEntreprise: [null, [Validators.required]],
       autoriserValidationAutoOrgaAccCreaEtu: [null, [Validators.required]],
       utiliserMailPersoEtudiant: [null, [Validators.required]],
       autoriserElementPedagogiqueFacultatif: [null, [Validators.required]],
       validationPedagogiqueLibelle: [null, [Validators.required]],
       validationAdministrativeLibelle: [null, [Validators.required]],
       codeCesure: [null],
-      autoriserEtudiantACreerEntreprise: [null, [Validators.required]],
-      autoriserEtudiantACreerEntrepriseHorsFrance: [null, [Validators.required]],
+      autoriserEtudiantACreerEntrepriseFrance: [null],
+      autoriserEtudiantACreerEntrepriseHorsFrance: [null],
     });
 
     this.formTheme = this.fb.group({
@@ -91,11 +93,16 @@ export class ConfigGeneraleComponent implements OnInit {
     });
 
     this.formSignature = this.fb.group({
-      supprimerConventionUneFoisSigneEsupSignature: [null, [Validators.required]]
+      supprimerConventionUneFoisSigneEsupSignature: [null, [Validators.required]],
+      verrouillerOrdreSignataireCG:[null,[Validators.required]]
     });
   }
 
   ngOnInit(): void {
+    this.roleService.getDroitsRole("ETU","ORGA_ACC").subscribe((res: any)=>{
+      this.isEtuAutoriseToCreate = res.creation;
+    })
+
     if (!this.canEdit()) {
       this.formGenerale.disable();
       this.formTheme.disable();
