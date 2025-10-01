@@ -542,13 +542,18 @@ public class SignatureService {
                 convention.setTemConventionSignee(true);
                 conventionJpaRepository.save(convention);
                 log.info("Convention signée complètement. ID = {}", convention.getId());
-                // on envoi le mail aux gestionnaires
-                List<PersonnelCentreGestion> personnels = convention.getCentreGestion().getPersonnels();
-                assert personnels != null;
-                for (PersonnelCentreGestion personnel : personnels) {
-                    if (mailerService.isAlerteActif(personnel, "CONVENTION_SIGNEE")) {
-                        Utilisateur utilisateur = convention.getLoginEnvoiSignature() != null? utilisateurJpaRepository.findByLogin(convention.getLoginEnvoiSignature()): utilisateurJpaRepository.findOneByLogin(convention.getLoginValidation()) ;
-                        mailerService.sendAlerteValidation(personnel.getMail(), convention, null, utilisateur, "CONVENTION_SIGNEE");
+                Utilisateur utilisateur = convention.getLoginEnvoiSignature() != null? utilisateurJpaRepository.findByLogin(convention.getLoginEnvoiSignature()): utilisateurJpaRepository.findOneByLogin(convention.getLoginValidation()) ;
+                if(convention.getCentreGestion().isOnlyMailCentreGestion()){
+                    //si le paramètre OnlyMailCentreGestion est activé on envoi à l'adresse du centre de gestion
+                    mailerService.sendAlerteValidation(convention.getCentreGestion().getMail() , convention, null, utilisateur, "CONVENTION_SIGNEE");
+                }else{
+                    // sinon on envoi le mail aux gestionnaires
+                    List<PersonnelCentreGestion> personnels = convention.getCentreGestion().getPersonnels();
+                    assert personnels != null;
+                    for (PersonnelCentreGestion personnel : personnels) {
+                        if (mailerService.isAlerteActif(personnel, "CONVENTION_SIGNEE")) {
+                            mailerService.sendAlerteValidation(personnel.getMail(), convention, null, utilisateur, "CONVENTION_SIGNEE");
+                        }
                     }
                 }
             }
