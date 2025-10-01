@@ -94,7 +94,7 @@ export class ConfigGeneraleComponent implements OnInit {
 
     this.formSignature = this.fb.group({
       supprimerConventionUneFoisSigneEsupSignature: [null, [Validators.required]],
-      verrouillerOrdreSignataireCG:[null,[Validators.required]]
+      autoriserModifOrdreSignataireCG:[null,[Validators.required]]
     });
   }
 

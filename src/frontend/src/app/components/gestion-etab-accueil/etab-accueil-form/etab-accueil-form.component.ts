@@ -102,7 +102,8 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   effectifs: any[] = [];
   selectedNafN5: any;
   nafN5List: any[] = [];
-  creationSeulementHorsFrance = false;
+  creationSeulementHorsFrance : boolean = false;
+  creationSeulementFrance : boolean = false;
 
   nafN5FilterCtrl: FormControl = new FormControl();
   filteredNafN5List: ReplaySubject<any> = new ReplaySubject<any>(1);
@@ -131,8 +132,9 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   ngOnInit(): void {
     this.configService.getConfigGenerale().subscribe(response=>{
       const autorisationCreationHorsFrance = response.autoriserEtudiantACreerEntrepriseHorsFrance;
-      const autorisationCreation = response.autoriserEtudiantACreerEntreprise;
-      this.creationSeulementHorsFrance = autorisationCreationHorsFrance && !autorisationCreation;
+      const autorisationCreationFrance = response.autoriserEtudiantACreerEntrepriseFrance;
+      this.creationSeulementHorsFrance = autorisationCreationHorsFrance && !autorisationCreationFrance;
+      this.creationSeulementFrance = !autorisationCreationHorsFrance && autorisationCreationFrance
     })
     this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({ temEnServPays: { value: 'O', type: 'text' } })).subscribe((response: any) => {
         this.countries = response.data;
@@ -140,6 +142,11 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
         // Restriction étudiant : enlever la France si nécessaire
         if (this.authService.isEtudiant() && this.creationSeulementHorsFrance) {
           this.countries = this.countries.filter(c => c.libelle !== 'FRANCE');
+        }
+
+        // Restriction étudiant : enlever les autres pays si nécessaire
+        if(this.authService.isEtudiant() && this .creationSeulementFrance){
+          this.countries = this.countries.filter(c => c.libelle == 'FRANCE');
         }
 
         // Alimente la liste filtrée initiale
