@@ -60,4 +60,8 @@ export class ReponseEvaluationService {
   sendMailEvaluation(id: number,typeFiche: number): Observable<any> {
     return this.http.get(`${environment.apiUrl}/reponseEvaluation/${id}/sendMailEvaluation/typeFiche/${typeFiche}`);
   }
+
+  sendMailEvaluationEnMasse(idConventions:number[],typeFiche:number):Observable<any>{
+    return this.http.post(`${environment.apiUrl}/reponseEvaluation/sendMailEvaluationEnMasse/typeFiche/${typeFiche}`,idConventions)
+  }
 }

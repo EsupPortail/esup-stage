@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import { finalize, startWith, combineLatest, filter, switchMap, tap } from 'rxjs';
 
 import { TemplateMailService } from '../../../services/template-mail.service';
@@ -22,8 +22,10 @@ export class EnvoiMailEnMasseEvalComponent implements OnInit {
   templateMail: templateMail | null = null;
   loadingTemplate = false;
   sending = false;
+  conventionIds !: any[];
 
   constructor(
+    @Inject(MAT_DIALOG_DATA) public data: { rows: any[] },
     private dialogRef: MatDialogRef<EnvoiMailEnMasseEvalComponent>,
     private fb: FormBuilder,
     private templateMailService: TemplateMailService,
@@ -36,6 +38,7 @@ export class EnvoiMailEnMasseEvalComponent implements OnInit {
 
   ngOnInit(): void {
     // Set up form value change listeners
+    this.conventionIds = this.data.rows.map(r => r.id);
     this.setupFormListeners();
   }
 
@@ -82,9 +85,42 @@ export class EnvoiMailEnMasseEvalComponent implements OnInit {
     if (this.form.valid) {
       this.sending = true;
       const formValue = this.form.value;
+      const idConventions: number[] = this.data.rows.map(r => r.id)
       console.log('Sending email with:', formValue);
-    } else {
-      this.form.markAllAsTouched();
+      console.log('conventions:', idConventions);
+      this.reponseEvaluationService.sendMailEvaluationEnMasse(idConventions, formValue.typeFiche).subscribe({
+        next: res => {
+          const requested = res?.summary?.requested ?? idConventions.length;
+          const sent = res?.summary?.sent ?? 0;
+          const failed = res?.summary?.failed ?? 0;
+
+          const errorRows = (res?.rows ?? []).filter((r: any) => r.status === 'ERROR');
+          const errorIds: number[] = errorRows
+            .map((r: any) => r.conventionId)
+            .filter((id: any) => id != null);
+
+          if (failed === 0 && sent > 0) {
+            this.messageService.setSuccess(`${sent}/${requested} email(s) envoyés avec succès.`);
+          } else if (sent > 0 && failed > 0) {
+            const LIMIT = 15;
+            const shown = errorIds.slice(0, LIMIT);
+            const more = errorIds.length > LIMIT ? `, ... (+${errorIds.length - LIMIT})` : '';
+            this.messageService.setWarning(
+              `${sent}/${requested} envoyés. Erreurs sur les conventions: ${shown.join(', ')}${more}`
+            );
+          } else {
+            this.messageService.setError(`Aucun email envoyé. ${failed} erreur(s).`);
+          }
+        },
+        error: (err) => {
+          console.error('[Mass Mail Eval] Appel backend en erreur :', err);
+          const msg = err?.error?.message || 'Erreur lors de l’envoi. Réessaie plus tard.';
+          this.messageService.setError(msg);
+        },
+        complete: () => {
+          this.sending = false;
+        }
+      });
     }
   }
 }

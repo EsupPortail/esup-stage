@@ -1,10 +1,9 @@
 package org.esup_portail.esup_stage.controller;
 
 import jakarta.validation.Valid;
-import org.esup_portail.esup_stage.dto.ReponseEnseignantFormDto;
-import org.esup_portail.esup_stage.dto.ReponseEntrepriseFormDto;
-import org.esup_portail.esup_stage.dto.ReponseEtudiantFormDto;
-import org.esup_portail.esup_stage.dto.ReponseSupplementaireFormDto;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.esup_portail.esup_stage.dto.*;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
@@ -25,11 +24,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayOutputStream;
-import java.util.Date;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @ApiController
 @RequestMapping("/reponseEvaluation")
 public class ReponseEvaluationController {
+
+    private static final Logger logger = LogManager.getLogger(ReponseEvaluationController.class);
 
     @Autowired
     ReponseEvaluationJpaRepository reponseEvaluationJpaRepository;
@@ -125,15 +127,15 @@ public class ReponseEvaluationController {
         ByteArrayOutputStream ou = new ByteArrayOutputStream();
 
         if (typeFiche == 0) {
-            impressionService.generateEvaluationPDF(reponseEvaluation.getConvention(),reponseEvaluation.getConvention().getAvenants().getLast(),ou,typeFiche);
+            impressionService.generateEvaluationPDF(reponseEvaluation.getConvention(), reponseEvaluation.getConvention().getAvenants().getLast(), ou, typeFiche);
             reponseEvaluation.setImpressionEtudiant(true);
         }
         if (typeFiche == 1) {
-            impressionService.generateEvaluationPDF(reponseEvaluation.getConvention(),reponseEvaluation.getConvention().getAvenants().getLast(),ou,typeFiche);
+            impressionService.generateEvaluationPDF(reponseEvaluation.getConvention(), reponseEvaluation.getConvention().getAvenants().getLast(), ou, typeFiche);
             reponseEvaluation.setImpressionEnseignant(true);
         }
         if (typeFiche == 2) {
-            impressionService.generateEvaluationPDF(reponseEvaluation.getConvention(),reponseEvaluation.getConvention().getAvenants().getLast(),ou,typeFiche);
+            impressionService.generateEvaluationPDF(reponseEvaluation.getConvention(), reponseEvaluation.getConvention().getAvenants().getLast(), ou, typeFiche);
             reponseEvaluation.setImpressionEntreprise(true);
         }
         reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
@@ -224,5 +226,142 @@ public class ReponseEvaluationController {
         }
         evaluationService.setReponseSupplementaireData(reponseSupplementaire, reponseSupplementaireFormDto);
         return reponseSupplementaireJpaRepository.saveAndFlush(reponseSupplementaire);
+    }
+
+    @PostMapping("/sendMailEvaluationEnMasse/typeFiche/{typeFiche}")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.MODIFICATION})
+    public  ResponseEntity<SendMailEvaluationEnMasseResponseDto> sendMailEvaluationEnMasse(@PathVariable("typeFiche") int typeFiche, @RequestBody List<Integer> idConventions) {
+        if (idConventions == null || idConventions.isEmpty()) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Aucune convention fournie");
+        }
+        if (typeFiche < 0 || typeFiche > 2) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Type fiche invalide");
+        }
+
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
+
+        List<Convention> conventions = conventionJpaRepository.findAllById(idConventions);
+
+        SendMailEvaluationEnMasseResponseDto resp = new SendMailEvaluationEnMasseResponseDto();
+        resp.setConventions(new ArrayList<>());
+        SendMailEvaluationEnMasseResponseDto.Summary sum = new SendMailEvaluationEnMasseResponseDto.Summary();
+        sum.requested = idConventions.size();
+        sum.found = (int) conventions.stream().filter(Objects::nonNull).count();
+        sum.typeFiche = typeFiche;
+
+        // IDs introuvables => ERROR
+        Set<Integer> foundIds = conventions.stream()
+                .filter(Objects::nonNull)
+                .map(Convention::getId)
+                .collect(Collectors.toSet());
+
+        idConventions.stream()
+                .filter(id -> !foundIds.contains(id))
+                .forEach(missingId -> {
+                    SendMailEvaluationEnMasseResponseDto.Row r = new SendMailEvaluationEnMasseResponseDto.Row();
+                    r.conventionId = missingId;
+                    r.status = "ERROR";
+                    r.reason = "not_found";
+                    resp.getConventions().add(r);
+                    sum.failed++;
+                });
+
+        for (Convention convention : conventions) {
+            if (convention == null) continue;
+
+            SendMailEvaluationEnMasseResponseDto.Row row = new SendMailEvaluationEnMasseResponseDto.Row();
+            row.conventionId = convention.getId();
+
+            try {
+                boolean centreOnly = convention.getCentreGestion() != null
+                        && convention.getCentreGestion().isOnlyMailCentreGestion();
+                String centreMail = convention.getCentreGestion() != null
+                        ? convention.getCentreGestion().getMail() : null;
+
+                boolean rappel;
+                String to;
+                String template;
+
+                switch (typeFiche) {
+                    case 0: // Étudiant
+                        rappel = Boolean.TRUE.equals(convention.getEnvoiMailEtudiant());
+                        String mailEtudiant = convention.getCourrielPersoEtudiant();
+                        if (mailEtudiant == null || !appConfigService.getConfigGenerale().isUtiliserMailPersoEtudiant()) {
+                            mailEtudiant = (convention.getEtudiant() != null) ? convention.getEtudiant().getMail() : null;
+                        }
+                        to = centreOnly ? centreMail : mailEtudiant;
+                        template = rappel ? TemplateMail.CODE_RAPPEL_FICHE_EVAL_ETU : TemplateMail.CODE_FICHE_EVAL_ETU;
+                        break;
+
+                    case 1: // Enseignant
+                        rappel = Boolean.TRUE.equals(convention.getEnvoiMailTuteurPedago());
+                        String mailEns = (convention.getEnseignant() != null) ? convention.getEnseignant().getMail() : null;
+                        to = centreOnly ? centreMail : mailEns;
+                        template = rappel ? TemplateMail.CODE_RAPPEL_FICHE_EVAL_ENSEIGNANT : TemplateMail.CODE_FICHE_EVAL_ENSEIGNANT;
+                        break;
+
+                    case 2: // Tuteur pro
+                        rappel = Boolean.TRUE.equals(convention.getEnvoiMailTuteurPro());
+                        String mailTuteur = (convention.getContact() != null) ? convention.getContact().getMail() : null;
+                        to = centreOnly ? centreMail : mailTuteur;
+                        template = rappel ? TemplateMail.CODE_RAPPEL_FICHE_EVAL_TUTEUR : TemplateMail.CODE_FICHE_EVAL_TUTEUR;
+                        break;
+
+                    default:
+                        throw new AppException(HttpStatus.BAD_REQUEST, "Type fiche invalide");
+                }
+
+                row.template = template;
+                row.rappel = rappel;
+                row.toCentreGestion = centreOnly;
+                row.to = to;
+
+                // Email manquant => ERROR
+                if (to == null || to.isBlank()) {
+                    row.status = "ERROR";
+                    row.reason = "no_email";
+                    resp.getConventions().add(row);
+                    sum.failed++;
+                    continue;
+                }
+
+                // Envoi
+                mailerService.sendAlerteValidation(to, convention, null, utilisateur, template);
+
+                // MAJ flags si envoi au destinataire final (pas au centre)
+                if (!centreOnly) {
+                    switch (typeFiche) {
+                        case 0 -> {
+                            convention.setEnvoiMailEtudiant(true);
+                            convention.setDateEnvoiMailEtudiant(new Date());
+                        }
+                        case 1 -> {
+                            convention.setEnvoiMailTuteurPedago(true);
+                            convention.setDateEnvoiMailTuteurPedago(new Date());
+                        }
+                        case 2 -> {
+                            convention.setEnvoiMailTuteurPro(true);
+                            convention.setDateEnvoiMailTuteurPro(new Date());
+                        }
+                    }
+                }
+
+                conventionJpaRepository.saveAndFlush(convention);
+
+                row.status = "SENT";
+                resp.getConventions().add(row);
+                sum.sent++;
+
+            } catch (Exception ex) {
+                row.status = "ERROR";
+                row.reason = "exception";
+                row.error = ex.getMessage();
+                resp.getConventions().add(row);
+                sum.failed++;
+            }
+        }
+
+        resp.setResume(sum);
+        return ResponseEntity.ok(resp);
     }
 }

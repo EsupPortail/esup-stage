@@ -23,6 +23,7 @@ export class EvalStageComponent implements OnInit, OnDestroy {
   sortDirection: SortDirection = 'desc';
   filters: any[] = [];
   savedFilters: any[] = [];
+  selected: any[] = [];
 
   anneeEnCours: any|undefined;
   annees: any[] = [];
@@ -59,7 +60,7 @@ export class EvalStageComponent implements OnInit, OnDestroy {
     this.filters = [{id: 'isConventionValide', value: 'true', hidden: true, permanent: true, specific: true}];
 
     if(this.isGestionnaireOrAdmin){
-      this.columns = ['id', 'etudiant.nom_etudiant.prenom', 'structure.raisonSociale', 'dateDebutStage', 'dateFinStage', 'ufr.libelle',
+      this.columns = ['select', 'id', 'etudiant.nom_etudiant.prenom', 'structure.raisonSociale', 'dateDebutStage', 'dateFinStage', 'ufr.libelle',
      'etape.libelle', 'annee','reponseEvaluationEtudiant','reponseEvaluationEnseignant','reponseEvaluationEntreprise', 'action'];
 
       this.filters.push(
@@ -156,7 +157,29 @@ export class EvalStageComponent implements OnInit, OnDestroy {
   openEnvoiMailModal() {
     this.dialog.open(EnvoiMailEnMasseEvalComponent, {
       width: '800px',
-      data: {}
+      data: {rows: this.selected}
     });
+  }
+
+  isSelected(row: any): boolean {
+    return this.selected.some((r: any) => r.id === row.id);
+  }
+  toggleSelected(row: any): void {
+    const i = this.selected.findIndex((r: any) => r.id === row.id);
+    if (i > -1) this.selected.splice(i, 1);
+    else this.selected.push(row);
+  }
+  masterToggle(): void {
+    if (this.isAllSelected()) { this.selected = []; return; }
+    this.appTable?.data.forEach((r: any) => {
+      if (!this.selected.some((s: any) => s.id === r.id)) this.selected.push(r);
+    });
+  }
+  isAllSelected(): boolean {
+    let all = true;
+    this.appTable?.data.forEach((r: any) => {
+      if (!this.selected.some((s: any) => s.id === r.id)) all = false;
+    });
+    return all;
   }
 }
