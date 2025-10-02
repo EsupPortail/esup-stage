@@ -11,9 +11,12 @@ WHERE IFNULL(temConventionSignee, 0) = 0
         OR dateSignatureSignataire IS NOT NULL OR dateSignatureViseur IS NOT NULL
     );
 
-DROP TABLE IF EXISTS tmp_ids_a_corriger;
+-- Backup
+SELECT * FROM backup_convention_dates;
 
-CREATE TEMPORARY TABLE tmp_ids_a_corriger
+DROP TABLE IF EXISTS __idConventionACorriger;
+
+CREATE TABLE __idConventionACorriger
 SELECT idConvention
 FROM Convention
 WHERE IFNULL(temConventionSignee, 0) = 0
@@ -24,8 +27,22 @@ WHERE IFNULL(temConventionSignee, 0) = 0
         OR dateSignatureSignataire IS NOT NULL OR dateSignatureViseur IS NOT NULL
     );
 
+DROP VIEW IF EXISTS __vueConventionACorriger;
+CREATE VIEW __vueConventionACorriger AS
+SELECT idConvention,
+       dateSignatureEtudiant,
+       dateSignatureEnseignant,
+       dateSignatureTuteur,
+       dateSignatureSignataire,
+       dateSignatureViseur
+FROM Convention
+WHERE idConvention IN (SELECT idConvention FROM __idConventionACorriger)
+;
+-- avant
+SELECT * FROM __vueConventionACorriger;
+
 UPDATE Convention c
-    JOIN tmp_ids_a_corriger t USING (idConvention)
+    JOIN __idConventionACorriger t USING (idConvention)
 SET c.dateDepotEtudiant = NULL,
     c.dateDepotEnseignant = NULL,
     c.dateDepotTuteur = NULL,
@@ -38,12 +55,11 @@ SET c.dateDepotEtudiant = NULL,
     c.dateSignatureViseur = NULL,
     c.dateActualisationSignature = NULL;
 
-SELECT c.*
-FROM Convention c
-         JOIN tmp_ids_a_corriger t USING (idConvention)
-ORDER BY c.idConvention;
+-- apres
+SELECT * FROM __vueConventionACorriger;
 
-DROP TABLE IF EXISTS tmp_ids_a_corriger;
+DROP TABLE IF EXISTS __idConventionACorriger;
+DROP VIEW IF EXISTS __vueConventionACorriger;
 
 -- COMMIT;
 ROLLBACK;
