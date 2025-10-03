@@ -267,3 +267,6 @@ databaseChangeLog:
   - include:
         file: 3.1.2-ajout-param-convention-horaireIrregulier.yaml
         relativeToChangelogFile: true
+  - include:
+        file: 3.1.4-contenu-signataires.yaml
+        relativeToChangelogFile: true

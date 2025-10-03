@@ -160,6 +160,10 @@ public class WebhookService {
     public List<Historique> getHistoriqueStatus(String documentId, Convention convention) {
         List<Historique> historiques = new ArrayList<>();
 
+        if(documentId == null || documentId.equals("null")){
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR,"Erreur lors de la mise jour des informations de signature : identifiant du document non trouvé");
+        }
+
         List<Steps> steps = Objects.requireNonNull(webClient.get()
                 .uri(signatureProperties.getEsupsignature().getUri() + "/signrequests/" + documentId + "/steps")
                 .retrieve()

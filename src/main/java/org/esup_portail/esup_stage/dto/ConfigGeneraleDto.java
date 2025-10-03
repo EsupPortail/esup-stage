@@ -25,9 +25,6 @@ public class ConfigGeneraleDto {
     @JsonView(Views.Etu.class)
     private AppSignatureEnum signatureType;
 
-    @JsonView(Views.Etu.class)
-    private boolean autoriserEtudiantAModifierEntreprise = false;
-
     private boolean autoriserValidationAutoOrgaAccCreaEtu = false;
 
     @JsonView(Views.Etu.class)
@@ -42,10 +39,11 @@ public class ConfigGeneraleDto {
     @JsonView(Views.Etu.class)
     private String codeCesure;
 
-    @JsonView(Views.Etu.class)
-    private boolean autoriserEtudiantACreerEntreprise = false;
-
     private boolean utiliserMailPersoEtudiant = false;
+
+
+    @JsonView(Views.Etu.class)
+    private boolean autoriserEtudiantACreerEntrepriseFrance = false;
 
     @JsonView(Views.Etu.class)
     private boolean autoriserEtudiantACreerEntrepriseHorsFrance = false;
