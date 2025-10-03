@@ -16,7 +16,9 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -70,9 +72,14 @@ public class SireneService {
         String baseUrl = sireneProperties.getUrl() + "/siret";
         String lucene = SireneQueryBuilder.buildLuceneQuery(filtersJson);
 
-        String url = baseUrl + "?q=" + lucene + "&nombre=" + perpage + "&page=" + page;
+        URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .queryParam("q", lucene)
+                .queryParam("nombre", perpage)
+                .queryParam("page", page)
+                .build(false)
+                .toUri();
 
-        logger.debug("url : " + url);
+        logger.debug("url : " + uri);
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-INSEE-Api-Key-Integration", sireneProperties.getToken());
@@ -80,7 +87,7 @@ public class SireneService {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
         try {
-            ResponseEntity<SirenResponse> resp = restTemplate.exchange(url, HttpMethod.GET, entity, SirenResponse.class);
+            ResponseEntity<SirenResponse> resp = restTemplate.exchange(uri, HttpMethod.GET, entity, SirenResponse.class);
 
             if (resp.getStatusCode().is2xxSuccessful() && resp.getBody() != null) {
                 return new ListStructureSireneDTO(resp.getBody().getHeader().getTotal(), sirenMapper.toStructureList(resp.getBody()));
