@@ -9,6 +9,7 @@ import { CentreGestionService } from "../../services/centre-gestion.service";
 import { UfrService } from "../../services/ufr.service";
 import {EnvoiMailEnMasseEvalComponent} from "./envoi-mail-en-masse-eval/envoi-mail-en-masse-eval.component";
 import {MatDialog} from "@angular/material/dialog";
+import {ExportEvaluationComponent} from "./export-evaluation/export-evaluation.component";
 
 
 @Component({
@@ -181,5 +182,12 @@ export class EvalStageComponent implements OnInit, OnDestroy {
       if (!this.selected.some((s: any) => s.id === r.id)) all = false;
     });
     return all;
+  }
+
+  openExportExcelModal() {
+    this.dialog.open(ExportEvaluationComponent, {
+      width: '800px',
+      data: { rows:this.appTable?.data }
+    });
   }
 }

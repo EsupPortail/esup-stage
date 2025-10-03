@@ -115,7 +115,10 @@
 </app-table>
 
 <div class="actions mb-3" *ngIf="isGestionnaireOrAdmin">
-  <button mat-raised-button color="primary" (click)="openEnvoiMailModal()" [disabled]="selected.length === 0">
-    <i class="fa fa-envelope"></i> Envoyer un mail en masse
+  <button class="button" mat-raised-button color="primary" (click)="openEnvoiMailModal()" [disabled]="selected.length === 0">
+    <i class="fa fa-envelope" aria-hidden="true"></i> Envoyer un mail en masse
+  </button>
+  <button class="button"  mat-raised-button color="primary" (click)="openExportExcelModal()">
+    <mat-icon>download</mat-icon> Export excel
   </button>
 </div>

@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.dto.*;
+import org.esup_portail.esup_stage.enums.ExportType;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.*;
@@ -42,6 +43,9 @@ public class EvaluationService {
 
     @Autowired
     private EvaluationJwtService evaluationJwtService;
+
+    @Autowired
+    private EvaluationExcelExporter evaluationExcelExporter;
 
     /* ===================== Tokens: logique métier BDD ===================== */
 
@@ -517,6 +521,27 @@ public class EvaluationService {
         reponseEvaluation.setReponseEnt18(reponseEntrepriseFormDto.getReponseEnt18());
         reponseEvaluation.setReponseEnt18bis(reponseEntrepriseFormDto.getReponseEnt18bis());
         reponseEvaluation.setReponseEnt19(reponseEntrepriseFormDto.getReponseEnt19());
+    }
+
+    /* ===================== Export Excel ===================== */
+
+    public byte[] getEvaluationToExcel(List<EvaluationDto> evaluationDtos, Integer typeFiche) {
+        byte[] file = null;
+        switch(typeFiche){
+            case 0:{
+                file = evaluationExcelExporter.export(evaluationDtos, ExportType.ETUDIANT);
+            }
+            case 1:{
+                file = evaluationExcelExporter.export(evaluationDtos,ExportType.ENSEIGNANT);
+            }
+            case 2:{
+                file = evaluationExcelExporter.export(evaluationDtos,ExportType.ENTREPRISE);
+            }
+            default:{
+                file = evaluationExcelExporter.export(evaluationDtos,ExportType.ALL_IN_ONE);
+            }
+        }
+        return file;
     }
 
 

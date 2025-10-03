@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 
 @ApiController
 @RequestMapping("/conventions")
-public class ConventionController {
+public class  ConventionController {
 
     private static final Logger logger = LogManager.getLogger(ConventionController.class);
 

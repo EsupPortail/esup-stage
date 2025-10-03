@@ -1,0 +1,36 @@
+<div class="modal-overlay">
+  <div class="modal-container">
+    <div class="header-banner">
+      <h1>Exporter</h1>
+    </div>
+
+    <div class="column-selector-dialog">
+      <div [formGroup]="form">
+        <div class="radio-block" role="group" aria-label="Choix du types d'évaluation">
+          <label class="block-label">Types d'évaluation : </label>
+          <mat-radio-group formControlName="typeFiche">
+            <mat-radio-button [value]="0">Étudiant</mat-radio-button>
+            <mat-radio-button [value]="1">Enseignant référent</mat-radio-button>
+            <mat-radio-button [value]="2">Tuteur professionnel</mat-radio-button>
+            <mat-radio-button [value]="3">Toutes les évaluations </mat-radio-button>
+          </mat-radio-group>
+        </div>
+      </div>
+
+      <div *ngIf="this.form.valid">
+
+        <div class="reset-btn">
+          <button mat-stroked-button color="warn" (click)="reset(null)">Réinitialiser</button>
+        </div>
+
+      </div>
+
+      <div class="actions">
+        <button mat-flat-button color="warn" (click)="cancel()">Annuler</button>
+        <span  [matTooltip]="'Veuillez d\'abord renseigner le type d\'évaluation'" [matTooltipDisabled]="form.valid" matTooltipPosition="above" [tabindex]="form.valid ? -1 : 0">
+          <button mat-flat-button color="primary" [disabled]="!this.form.valid" (click)="confirm()">Valider</button>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
