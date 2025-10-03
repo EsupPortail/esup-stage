@@ -577,7 +577,7 @@ public class ConventionController {
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
-        signatureService.updateHistorique(convention);
+        signatureService.update(convention);
         return convention;
     }
 

@@ -27,3 +27,5 @@ esupsignature.uri=http://localhost:8880/ws
 esupsignature.circuit=123
 ### -------------------- ###
 ----
+
+WARNING: Avec la version 3.1, vous pourriez rencontrer un problème avec les signatures électroniques déjà en cours lors de la mise à jour si vous avez activé la suppression automatique des conventions dans ESUP-Signature. Il est donc recommandé de tester un circuit de signature avant le passage en production. Pour résoudre d’éventuels problèmes, un script est disponible pour remettre les dates de signature à zéro et laisser l’application les mettre à jour. Vous le trouverez ici : esup-stage/src/main/resources/db/scripts/clean-dates-signature.sql.

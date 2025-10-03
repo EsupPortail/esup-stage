@@ -238,7 +238,7 @@ public class MailerService {
                 this.dateFin = convention.getDateFinStage() != null ? df.format(convention.getDateFinStage()) : null;
                 this.tempsTravail = convention.getTempsTravail() != null ? convention.getTempsTravail().getLibelle() : null;
                 this.tempsTravailComment = convention.getCommentaireDureeTravail();
-                this.lien = appliProperties.getUrl() + "conventions/" + convention.getId();
+                this.lien = appliProperties.getUrl() + "/frontend/#/conventions/" + convention.getId();
             }
         }
 

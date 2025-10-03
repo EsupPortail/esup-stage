@@ -57,7 +57,7 @@
   <mat-tab #signataireTab [disabled]="!convention.id || !convention.structure" *ngIf="!isConventionValide()">
     <ng-template mat-tab-label>
       <div class="tabTitle">
-      Signataire
+        {{ 'TITRE_TAB_SIGNATAIRE_CONVENTION'|contenu }}
       <mat-progress-bar mode="determinate" [value]="getProgressValue(6)" [ngClass]="{editing: tabs[6].statut === 1, done: tabs[6].statut === 2,'empty':tabs[6]?.statut===0}"></mat-progress-bar>
       </div>
     </ng-template>
