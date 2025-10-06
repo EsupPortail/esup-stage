@@ -30,16 +30,17 @@ export class ExportEvaluationComponent implements OnInit{
     console.log(this.data.rows);
   }
 
-  confirm(){
-    console.log(this.form.value.typeFiche)
-    this.evaluationService.getExportExcel(this.data.rows.map(r=>r.id),this.form.value.typeFiche).subscribe(response=>{
-      const type = 'application/vnd.ms-excel';
-      let blob = new Blob([response as BlobPart], {type: type});
-      let filename = 'export_' + (new Date()).getTime() + '.xls';
-      FileSaver.saveAs(blob, filename);
-    })
-    this.dialogRef.close();
+// composant
+  confirm() {
+    this.evaluationService
+      .getExportExcel(this.data.rows.map(r => r.id), this.form.value.typeFiche)
+      .subscribe((res) => {
+        const blob = res.body!;
+        FileSaver.saveAs(blob,'export_' + Date.now() + '.xlsx');
+        this.dialogRef.close();
+      });
   }
+
 
   cancel(){
     this.dialogRef.close();

@@ -53,7 +53,7 @@ public class EvaluationController {
         return getEvalsFromConventions(idConventions);
     }
 
-    @GetMapping(value = "/export/excel", produces = "application/vnd.ms-excel")
+    @GetMapping(value = "/excel", produces = "application/vnd.ms-excel")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public ResponseEntity<byte[]> exportExcel(@RequestParam("idConventions")List<Integer> idConventions,@RequestParam("typeFiche")Integer typeFiche) {
         byte[] bytes = evaluationService.getEvaluationToExcel(getEvalsFromConventions(idConventions),typeFiche);

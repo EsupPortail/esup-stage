@@ -14,12 +14,19 @@ export class EvaluationService {
     return this.http.get(`${environment.apiUrl}/evaluations`,{params:{idConventions}})
   }
 
-  getExportExcel(idConventions:number[],typeFiche:number):Observable<any>{
-    const params = new HttpParams()
-      .set('idConventions', idConventions.join(','))
-      .set('typeFiche', String(typeFiche));
+// service
+  getExportExcel(idConventions: number[], typeFiche: number) {
+    let params = new HttpParams().set('typeFiche', String(typeFiche));
+    idConventions.forEach(id => params = params.append('idConventions', String(id)));
 
-    return this.http.get(`${environment.apiUrl}/evaluations`,{params:{idConventions,typeFiche}})
+    // On observe la réponse et on attend un Blob
+    return this.http.get<Blob>(`${environment.apiUrl}/evaluations/excel`, {
+      params,
+      responseType: 'blob' as 'json',
+      observe: 'response'
+    });
   }
+
+
 
 }
