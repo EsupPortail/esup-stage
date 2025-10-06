@@ -90,13 +90,18 @@ export class EnvoiMailEnMasseEvalComponent implements OnInit {
       console.log('conventions:', idConventions);
       this.reponseEvaluationService.sendMailEvaluationEnMasse(idConventions, formValue.typeFiche).subscribe({
         next: res => {
-          const requested = res?.summary?.requested ?? idConventions.length;
-          const sent = res?.summary?.sent ?? 0;
-          const failed = res?.summary?.failed ?? 0;
+          // Supporte anciens/nouveaux schémas
+          const summary = res?.summary ?? res?.resume ?? {};
+          const rows = res?.rows ?? res?.conventions ?? [];
 
-          const errorRows = (res?.rows ?? []).filter((r: any) => r.status === 'ERROR');
-          const errorIds: number[] = errorRows
-            .map((r: any) => r.conventionId)
+          const requested = summary.requested ?? idConventions.length;
+          const sent = summary.sent ?? 0;
+          // Si le backend ne renvoie pas failed, calcule-le via les rows
+          const failed = summary.failed ?? rows.filter((r: any) => r?.status === 'ERROR').length;
+
+          const errorIds: number[] = rows
+            .filter((r: any) => r?.status === 'ERROR')
+            .map((r: any) => r?.conventionId)
             .filter((id: any) => id != null);
 
           if (failed === 0 && sent > 0) {
@@ -111,14 +116,6 @@ export class EnvoiMailEnMasseEvalComponent implements OnInit {
           } else {
             this.messageService.setError(`Aucun email envoyé. ${failed} erreur(s).`);
           }
-        },
-        error: (err) => {
-          console.error('[Mass Mail Eval] Appel backend en erreur :', err);
-          const msg = err?.error?.message || 'Erreur lors de l’envoi. Réessaie plus tard.';
-          this.messageService.setError(msg);
-        },
-        complete: () => {
-          this.sending = false;
         }
       });
     }
