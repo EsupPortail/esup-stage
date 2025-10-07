@@ -3,6 +3,7 @@ package org.esup_portail.esup_stage.service.evaluation;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.esup_portail.esup_stage.dto.EvaluationDto;
+import org.esup_portail.esup_stage.model.QuestionSupplementaire;
 import org.esup_portail.esup_stage.model.ReponseEvaluation;
 import org.esup_portail.esup_stage.model.FicheEvaluation;
 import org.esup_portail.esup_stage.model.ReponseSupplementaire;
@@ -13,7 +14,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class EvaluationExcelExporter {
@@ -279,11 +282,31 @@ public class EvaluationExcelExporter {
                 break;
         }
 
+        List<QuestionSupplementaire> questions = eval.getQuestionSupplementaires();
         List<ReponseSupplementaire> reps = eval.getReponseSupplementaires();
-        if (reps != null && !reps.isEmpty()) {
-            List<ReponseSupplementaire> sorted = new ArrayList<>(reps);
-            for (ReponseSupplementaire repSup : sorted) {
-                Object reponseValue = getReponseSupplementaireValue(repSup);
+
+        if (questions != null && !questions.isEmpty()) {
+            List<QuestionSupplementaire> filteredQuestions = questions.stream()
+                    .filter(q -> isQuestionForType(q.getIdPlacement(), type))
+                    .sorted(Comparator.comparingInt(QuestionSupplementaire::getIdPlacement))
+                    .toList();
+
+            // Pour chaque question filtrée, trouver la réponse correspondante
+            for (QuestionSupplementaire question : filteredQuestions) {
+                Object reponseValue = "";
+
+                if (reps != null) {
+                    ReponseSupplementaire repSup = reps.stream()
+                            .filter(r -> r.getQuestionSupplementaire() != null
+                                    && r.getQuestionSupplementaire().getId() == (question.getId()))
+                            .findFirst()
+                            .orElse(null);
+
+                    if (repSup != null) {
+                        reponseValue = getReponseSupplementaireValue(repSup);
+                    }
+                }
+
                 createCell(row, colNum++, reponseValue, dataStyle);
             }
         }
@@ -496,19 +519,35 @@ public class EvaluationExcelExporter {
         // Utiliser la première évaluation qui a des questions
         for (EvaluationDto eval : evaluations) {
             if (eval.getQuestionSupplementaires() != null && !eval.getQuestionSupplementaires().isEmpty()) {
-                // Filtrer selon le type
+                // Filtrer selon le type et l'idPlacement
                 eval.getQuestionSupplementaires().stream()
-                        .filter(q -> shouldIncludeQuestion(q, type))
-                        .sorted((q1, q2) -> Integer.compare(q1.getIdPlacement(), q2.getIdPlacement()))
+                        .filter(q -> isQuestionForType(q.getIdPlacement(), type))
+                        .sorted(Comparator.comparingInt(QuestionSupplementaire::getIdPlacement))
                         .forEach(q -> headers.add("QS" + q.getIdPlacement() + ": " + q.getQuestion()));
                 break;
             }
         }
     }
 
-    private boolean shouldIncludeQuestion(org.esup_portail.esup_stage.model.QuestionSupplementaire question, ExportType type) {
-        // Filtrer les questions selon le type si nécessaire
-        // Vous pouvez ajouter une logique ici si les questions ont un type spécifique
-        return true;
+    private boolean isQuestionForType(Integer idPlacement, ExportType type) {
+        if (idPlacement == null) {
+            return false;
+        }
+
+        return switch (type) {
+            case ETUDIANT ->
+                // idPlacement de 0 à 2 pour les étudiants
+                    idPlacement >= 0 && idPlacement <= 2;
+            case ENSEIGNANT ->
+                // idPlacement 3 et 4 pour les enseignants
+                    idPlacement >= 3 && idPlacement <= 4;
+            case ENTREPRISE ->
+                // idPlacement de 5 à 7 pour les tuteurs/entreprise
+                    idPlacement >= 5 && idPlacement <= 7;
+            case ALL_IN_ONE ->
+                // Pour ALL_IN_ONE, on inclut toutes les questions
+                    true;
+            default -> false;
+        };
     }
 }

@@ -51,6 +51,7 @@ public class EvaluationService {
 
     /**
      * Récupère un token non expiré et non révoqué (peut être déjà utilisé).
+     *
      * @param tokenValue valeur brute du token
      * @return le token ou null s'il est absent/expiré/révoqué
      */
@@ -64,6 +65,7 @@ public class EvaluationService {
 
     /**
      * Valide qu'un token est actif (non expiré, non révoqué, non utilisé), puis le marque utilisé.
+     *
      * @param tokenValue valeur brute du token
      * @return le token si succès, sinon null
      */
@@ -95,6 +97,7 @@ public class EvaluationService {
 
     /**
      * Valide un token actif (non expiré, non révoqué, non utilisé) sans le marquer utilisé.
+     *
      * @param tokenValue valeur brute du token
      * @return le token actif ou null
      */
@@ -111,6 +114,7 @@ public class EvaluationService {
 
     /**
      * Valide qu'un token existe, est non expiré, non révoqué ET déjà utilisé.
+     *
      * @param tokenValue valeur brute du token
      * @return le token ou null
      */
@@ -130,6 +134,7 @@ public class EvaluationService {
 
     /**
      * Révoque un token s'il existe et n'est pas déjà révoqué.
+     *
      * @param tokenValue valeur brute du token
      * @return true si une révocation a eu lieu
      */
@@ -153,6 +158,7 @@ public class EvaluationService {
 
     /**
      * Construit l'URL d'évaluation pour une convention.
+     *
      * @param tokenValue token pour la construction de l'url
      * @return String url vers la convention
      */
@@ -172,6 +178,7 @@ public class EvaluationService {
     /**
      * Construit l'URL d'évaluation pour une convention.
      * Crée automatiquement un token si aucun token actif n'existe pour le tuteur.
+     *
      * @param convention Convention de l'évaluation
      * @return String url vers la convention
      */
@@ -206,6 +213,7 @@ public class EvaluationService {
 
     /**
      * Création d'un token pour une convention (si aucun actif n'existe déjà).
+     *
      * @param convention convention à laquelle est relié le token
      * @return evaluationTuteurToken token créé
      */
@@ -246,6 +254,7 @@ public class EvaluationService {
 
     /**
      * Récupère la fiche d'évaluation d'un centre de gestion
+     *
      * @param id identifiant du centre de gestion
      * @return FicheEvaluation du centre de gestion
      */
@@ -265,6 +274,7 @@ public class EvaluationService {
 
     /**
      * initialise les objects qui stocks les réponses de l'utilisateur aux formulaires d'évaluation
+     *
      * @param id identifiant de la convention
      * @return ReponseEvaluation
      */
@@ -293,8 +303,9 @@ public class EvaluationService {
 
     /**
      * initialise les objects qui stocks les réponses supplémentaires de l'utilisateur aux formulaires d'évaluation
+     *
      * @param idConvention identifiant de la convention
-     * @param idQuestion identifiant de la question
+     * @param idQuestion   identifiant de la question
      * @return ReponseSupplementaire
      */
     public ReponseSupplementaire initReponseSupplementaire(int idConvention, int idQuestion) {
@@ -527,18 +538,22 @@ public class EvaluationService {
 
     public byte[] getEvaluationToExcel(List<EvaluationDto> evaluationDtos, Integer typeFiche) {
         byte[] file = null;
-        switch(typeFiche){
-            case 0:{
+        switch (typeFiche) {
+            case 0: {
                 file = evaluationExcelExporter.export(evaluationDtos, ExportType.ETUDIANT);
+                break;
             }
-            case 1:{
-                file = evaluationExcelExporter.export(evaluationDtos,ExportType.ENSEIGNANT);
+            case 1: {
+                file = evaluationExcelExporter.export(evaluationDtos, ExportType.ENSEIGNANT);
+                break;
             }
-            case 2:{
-                file = evaluationExcelExporter.export(evaluationDtos,ExportType.ENTREPRISE);
+            case 2: {
+                file = evaluationExcelExporter.export(evaluationDtos, ExportType.ENTREPRISE);
+                break;
             }
-            default:{
-                file = evaluationExcelExporter.export(evaluationDtos,ExportType.ALL_IN_ONE);
+            default: {
+                file = evaluationExcelExporter.export(evaluationDtos, ExportType.ALL_IN_ONE);
+                break;
             }
         }
         return file;
