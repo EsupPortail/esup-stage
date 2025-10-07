@@ -74,7 +74,6 @@ public class CsvStructureImportUtils {
         if (!missing.isEmpty()) {
             throw new IllegalArgumentException("Entête invalide : colonnes manquantes -> " + String.join(", ", missing));
         }
-        // ok si les optionnels ne sont pas là
         return new Indices(idx);
     }
 
@@ -94,7 +93,6 @@ public class CsvStructureImportUtils {
         String numeroRNE        = col.apply(I.numeroRNE);
         String raisonSociale    = col.apply(I.raisonSociale);
         String numeroSiret      = col.apply(I.numeroSiret);
-        String activitePrincipale = col.apply(I.activitePrincipale);
         String codeApe          = col.apply(I.codeApe);
         String codePostal       = col.apply(I.codePostal);
         String mail             = col.apply(I.mail);
@@ -102,7 +100,6 @@ public class CsvStructureImportUtils {
         boolean hasRne   = numeroRNE != null && !numeroRNE.isEmpty();
         boolean hasSiret = numeroSiret != null && !numeroSiret.isEmpty();
 
-        // Identifiants
         if (!hasRne && !hasSiret) {
             errs.add(new LineErrorDto(lineNumber, "Identifiant", "RNE ou SIRET doit être renseigné", null));
         }
@@ -146,8 +143,7 @@ public class CsvStructureImportUtils {
         return Optional.empty();
     }
 
-    /* ======= La fonction demandée : build uniquement depuis CSV ======= */
-
+    /** Crée une structure à partir des informations récupérées du csv */
     public Structure buildStructure(Function<Integer,String> col, Indices I) {
         // lire valeurs CSV
         String numeroRNE         = col.apply(I.numeroRNE);
@@ -180,7 +176,7 @@ public class CsvStructureImportUtils {
         return s;
     }
 
-    /* ===== Helpers de résolution (avec fallback doux) ===== */
+    /* ===== Helpers ===== */
 
     private Pays resolvePays(String code) {
         Pays p = paysJpaRepository.findByIso2(code);
