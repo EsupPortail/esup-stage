@@ -12,22 +12,18 @@ import java.util.function.Function;
 @Component
 public class CsvStructureImportUtils {
 
-    // Noms de colonnes attendus
-    private final List<String> requiredHeaders = List.of(
-            "NumeroRNE","RaisonSociale","NumeroSiret","ActivitePrincipale",
-            "Voie","CodePostal","Commune","Telephone","Fax","SiteWeb","Mail"
-    );
+    private final List<String> requiredHeaders = List.of("NumeroRNE","RaisonSociale","NumeroSiret","ActivitePrincipale", "CodeAPE", "Voie","CodePostal","Commune","Telephone","Fax","SiteWeb","Mail");
 
     /** Indices mappés depuis l’entête */
     public static final class Indices {
-        public final int numeroRNE, raisonSociale, numeroSiret, activitePrincipale,
-                voie, codePostal, commune, telephone, fax, siteWeb, mail;
+        public final int numeroRNE, raisonSociale, numeroSiret, activitePrincipale, codeApe, voie, codePostal, commune, telephone, fax, siteWeb, mail;
 
         public Indices(Map<String, Integer> idx) {
             this.numeroRNE          = idx.get("NumeroRNE");
             this.raisonSociale      = idx.get("RaisonSociale");
             this.numeroSiret        = idx.get("NumeroSiret");
             this.activitePrincipale = idx.get("ActivitePrincipale");
+            this.codeApe            = idx.get("CodeAPE");
             this.voie               = idx.get("Voie");
             this.codePostal         = idx.get("CodePostal");
             this.commune            = idx.get("Commune");
@@ -70,12 +66,15 @@ public class CsvStructureImportUtils {
         String numeroRNE        = col.apply(I.numeroRNE);
         String raisonSociale    = col.apply(I.raisonSociale);
         String numeroSiret      = col.apply(I.numeroSiret);
+        String activitePrincipale = col.apply(I.activitePrincipale);
+        String codeApe          = col.apply(I.codeApe);
         String codePostal       = col.apply(I.codePostal);
         String mail             = col.apply(I.mail);
 
         boolean hasRne   = numeroRNE != null && !numeroRNE.isEmpty();
         boolean hasSiret = numeroSiret != null && !numeroSiret.isEmpty();
 
+        // Identifiants
         if (!hasRne && !hasSiret) {
             errs.add(new LineErrorDto(lineNumber, "Identifiant", "RNE ou SIRET doit être renseigné", null));
         }
@@ -84,6 +83,12 @@ public class CsvStructureImportUtils {
         }
         if (hasSiret && !numeroSiret.matches("^\\d{14}$")) {
             errs.add(new LineErrorDto(lineNumber, "SIRET", "SIRET invalide (14 chiffres attendus)", numeroSiret));
+        }
+        if (codeApe != null && !codeApe.isEmpty() && !codeApe.matches("^\\d{2}\\.\\d{2}[A-Z]$")) {
+            errs.add(new LineErrorDto(lineNumber, "Code APE", "Format attendu ex: 62.01Z", codeApe));
+        }
+        if (activitePrincipale == null || activitePrincipale.isEmpty()) {
+             errs.add(new LineErrorDto(lineNumber, "Activité principale", "Champ obligatoire", null));
         }
         if (codePostal != null && !codePostal.isEmpty() && !codePostal.matches("^\\d{5}$")) {
             errs.add(new LineErrorDto(lineNumber, "Code postal", "Code postal FR invalide (5 chiffres)", codePostal));
@@ -140,6 +145,11 @@ public class CsvStructureImportUtils {
         s.setTelephone(col.apply(I.telephone));
         s.setSiteWeb(col.apply(I.siteWeb));
         s.setFax(col.apply(I.fax));
+
+        try {
+            s.getClass().getMethod("setCodeApe", String.class)
+                    .invoke(s, col.apply(I.codeApe));
+        } catch (Exception ignore) {}
 
         s.setTemEnServStructure(true);
         return s;
