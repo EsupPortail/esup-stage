@@ -3,7 +3,8 @@ package org.esup_portail.esup_stage.service.Structure.utils;
 import org.esup_portail.esup_stage.dto.LineErrorDto;
 import org.esup_portail.esup_stage.model.Structure;
 import org.esup_portail.esup_stage.model.*;
-import org.esup_portail.esup_stage.repository.StructureJpaRepository;
+import org.esup_portail.esup_stage.repository.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -12,11 +13,31 @@ import java.util.function.Function;
 @Component
 public class CsvStructureImportUtils {
 
-    private final List<String> requiredHeaders = List.of("NumeroRNE","RaisonSociale","NumeroSiret","ActivitePrincipale", "CodeAPE", "Voie","CodePostal","Commune","Telephone","Fax","SiteWeb","Mail");
+    @Autowired
+    private NafN5JpaRepository nafN5JpaRepository;
+
+    @Autowired
+    private EffectifJpaRepository effectifJpaRepository;
+
+    @Autowired
+    private StatutJuridiqueJpaRepository statutJuridiqueJpaRepository;
+
+    @Autowired
+    private TypeStructureJpaRepository typeStructureJpaRepository;
+
+    @Autowired
+    private PaysJpaRepository paysJpaRepository;
+
+    private final List<String> requiredHeaders = List.of(
+            "NumeroRNE","RaisonSociale","NumeroSiret","ActivitePrincipale",
+            "CodeAPE","Voie","CodePostal","Commune","Telephone","Fax","SiteWeb","Mail",
+            "TypeStructure","StatutJuridique","Effectif","Pays"
+    );
 
     /** Indices mappés depuis l’entête */
     public static final class Indices {
         public final int numeroRNE, raisonSociale, numeroSiret, activitePrincipale, codeApe, voie, codePostal, commune, telephone, fax, siteWeb, mail;
+        public final Integer typeStructure, statutJuridique, effectif, codeNaf, pays;
 
         public Indices(Map<String, Integer> idx) {
             this.numeroRNE          = idx.get("NumeroRNE");
@@ -31,6 +52,11 @@ public class CsvStructureImportUtils {
             this.fax                = idx.get("Fax");
             this.siteWeb            = idx.get("SiteWeb");
             this.mail               = idx.get("Mail");
+            this.typeStructure      = idx.get("TypeStructure");
+            this.statutJuridique    = idx.get("StatutJuridique");
+            this.effectif           = idx.get("Effectif");
+            this.codeNaf            = idx.get("CodeNAF");
+            this.pays               = idx.get("Pays");
         }
     }
 
@@ -48,12 +74,14 @@ public class CsvStructureImportUtils {
         if (!missing.isEmpty()) {
             throw new IllegalArgumentException("Entête invalide : colonnes manquantes -> " + String.join(", ", missing));
         }
+        // ok si les optionnels ne sont pas là
         return new Indices(idx);
     }
 
     /** Accès colonne sécurisé + trim */
     public Function<Integer,String> colAccessor(String[] columns) {
         return i -> {
+            if (i == null) return "";
             String v = (i >= 0 && i < columns.length) ? columns[i] : null;
             return v == null ? "" : v.trim();
         };
@@ -87,9 +115,6 @@ public class CsvStructureImportUtils {
         if (codeApe != null && !codeApe.isEmpty() && !codeApe.matches("^\\d{2}\\.\\d{2}[A-Z]$")) {
             errs.add(new LineErrorDto(lineNumber, "Code APE", "Format attendu ex: 62.01Z", codeApe));
         }
-        if (activitePrincipale == null || activitePrincipale.isEmpty()) {
-             errs.add(new LineErrorDto(lineNumber, "Activité principale", "Champ obligatoire", null));
-        }
         if (codePostal != null && !codePostal.isEmpty() && !codePostal.matches("^\\d{5}$")) {
             errs.add(new LineErrorDto(lineNumber, "Code postal", "Code postal FR invalide (5 chiffres)", codePostal));
         }
@@ -121,22 +146,28 @@ public class CsvStructureImportUtils {
         return Optional.empty();
     }
 
-    /** Construit l’entité Structure depuis les colonnes + référentiels */
-    public Structure buildStructure(
-            Function<Integer,String> col, Indices I,
-            NafN5 nafN5, Effectif effectif, StatutJuridique statutJuridique,
-            TypeStructure typeStructure, Pays pays) {
+    /* ======= La fonction demandée : build uniquement depuis CSV ======= */
+
+    public Structure buildStructure(Function<Integer,String> col, Indices I) {
+        // lire valeurs CSV
+        String numeroRNE         = col.apply(I.numeroRNE);
+        String numeroSiret       = col.apply(I.numeroSiret);
+        String typeStructCsv     = (I.typeStructure != null)   ? col.apply(I.typeStructure)   : "";
+        String statutCsv         = (I.statutJuridique != null) ? col.apply(I.statutJuridique) : "";
+        String effectifCsv       = (I.effectif != null)        ? col.apply(I.effectif)        : "";
+        String pays              = (I.pays != null)            ? col.apply(I.pays)            : "";
 
         Structure s = new Structure();
-        s.setNafN5(nafN5);
-        s.setEffectif(effectif);
-        s.setStatutJuridique(statutJuridique);
-        s.setTypeStructure(typeStructure);
-        s.setPays(pays);
+        s.setPays(resolvePays(pays));
+        System.out.println(resolvePays(pays));
+        s.setTypeStructure(resolveTypeStructure(typeStructCsv, numeroRNE, numeroSiret));
+        s.setStatutJuridique(resolveStatut(statutCsv));
+        s.setEffectif(resolveEffectif(effectifCsv));
+        s.setNafN5(resolveApe(col.apply(I.codeApe)));
 
-        s.setNumeroRNE(col.apply(I.numeroRNE));
+        s.setNumeroRNE(numeroRNE);
         s.setRaisonSociale(col.apply(I.raisonSociale));
-        s.setNumeroSiret(col.apply(I.numeroSiret));
+        s.setNumeroSiret(numeroSiret);
         s.setActivitePrincipale(col.apply(I.activitePrincipale));
         s.setVoie(col.apply(I.voie));
         s.setCodePostal(col.apply(I.codePostal));
@@ -145,13 +176,50 @@ public class CsvStructureImportUtils {
         s.setTelephone(col.apply(I.telephone));
         s.setSiteWeb(col.apply(I.siteWeb));
         s.setFax(col.apply(I.fax));
-
-        try {
-            s.getClass().getMethod("setCodeApe", String.class)
-                    .invoke(s, col.apply(I.codeApe));
-        } catch (Exception ignore) {}
-
         s.setTemEnServStructure(true);
         return s;
+    }
+
+    /* ===== Helpers de résolution (avec fallback doux) ===== */
+
+    private Pays resolvePays(String code) {
+        Pays p = paysJpaRepository.findByIso2(code);
+        if(p != null){
+            return p;
+        }
+        return paysJpaRepository.findByIso2("FR");
+    }
+
+    private TypeStructure resolveTypeStructure(String libelle, String numeroRNE, String numeroSiret) {
+        TypeStructure t = typeStructureJpaRepository.findByLibelle(libelle);
+        if (t == null) {
+            if ((numeroRNE != null && !numeroRNE.isEmpty()) && (numeroSiret == null || numeroSiret.isEmpty()) ){
+                return typeStructureJpaRepository.findById(7);
+            }
+            else if ((numeroRNE == null || numeroRNE.isEmpty()) && (numeroSiret != null && !numeroSiret.isEmpty()) ){
+                return typeStructureJpaRepository.findById(3);
+            } else {
+                return typeStructureJpaRepository.findById(6);
+            }
+        }
+        return t;
+    }
+
+    private StatutJuridique resolveStatut(String lib) {
+        if (lib == null || lib.isBlank()) return null;
+        return statutJuridiqueJpaRepository.findByLibelle(lib.trim());
+    }
+
+    private Effectif resolveEffectif(String lib) {
+        Effectif e = effectifJpaRepository.findByLibelle(lib);
+        if (e == null) {
+            e = effectifJpaRepository.findById(1);
+        }
+        return e;
+    }
+
+    private NafN5 resolveApe(String code) {
+        if (code == null || code.isBlank()) return null;
+        return nafN5JpaRepository.findByCode(code.trim());
     }
 }

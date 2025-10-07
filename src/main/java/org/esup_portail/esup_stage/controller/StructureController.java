@@ -172,17 +172,6 @@ public class StructureController {
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, java.nio.charset.StandardCharsets.UTF_8))) {
 
-            // Référentiels (fatals si manquants)
-            Effectif effectif = effectifJpaRepository.findByLibelle("Inconnu");
-            TypeStructure typeStructure = typeStructureJpaRepository.findByLibelle("Etablissement d'enseignement");
-            if (typeStructure == null) throw new IllegalStateException("Type de structure non trouvé");
-            StatutJuridique statutJuridique = statutJuridiqueJpaRepository.findByLibelle("public");
-            if (statutJuridique == null) throw new IllegalStateException("Statut juridique non trouvé");
-            NafN5 nafN5 = nafN5JpaRepository.findByCode("85.59B");
-            if (nafN5 == null) throw new IllegalStateException("Code NAF non trouvé (85.59B)");
-            Pays pays = paysJpaRepository.findByIso2("FR");
-            if (pays == null) throw new IllegalStateException("Pays non trouvé (FR)");
-
             String line;
             CsvStructureImportUtils.Indices I = null;
 
@@ -224,7 +213,7 @@ public class StructureController {
                 }
 
                 // 3) Build & save
-                Structure structure = csvUtils.buildStructure(col, I, nafN5, effectif, statutJuridique, typeStructure, pays);
+                Structure structure = csvUtils.buildStructure(col, I);
                 structureService.save(null, structure);
                 report.setImported(report.getImported() + 1);
             }
