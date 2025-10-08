@@ -95,7 +95,7 @@
                       </mat-form-field>
                     </div>
                   </div>
-                  <div class="row mb-2" *ngIf="question.type == 'EtuI5'">
+                  <div class="row mb-2" *ngIf="question.type == 'automatique'">
                     <div class="col-md-12">
                       <div class="mb-2"><b>{{question.title}}</b></div>
                       <div class="mb-2">{{convention.origineStage ? convention.origineStage.libelle : ''}}</div>
@@ -348,7 +348,7 @@
                       </mat-form-field>
                     </div>
                   </div>
-                  <div class="row mb-2" *ngIf="question.type == 'EtuIII1'">
+                  <div class="row mb-2" *ngIf="question.type == 'automatique'">
                     <div class="col-md-12">
                       <div class="mb-2"><b>{{question.title}}</b></div>
                       <div class="mb-2">{{convention.sujetStage}}</div>
