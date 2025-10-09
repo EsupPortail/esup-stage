@@ -6,4 +6,8 @@ export interface DbQuestion {
   type: TypeQuestionEvaluation;
   paramsJson?: string | null;
   options?: string[] | null;
+  bisQuestion: string;
+  bisQuestionLowNotation?: boolean;
+  bisQuestionTrue?: boolean;
+  bisQuestionFalse?: boolean;
 }

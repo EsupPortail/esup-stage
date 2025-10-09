@@ -27,6 +27,6 @@ public class QuestionEvaluation {
     @Column(name = "paramsJson", columnDefinition = "TEXT")
     private String paramsJson;
 
-    @Column(name="questionBis")
-    private String questionBis;
+    @Column(name="bisQuestion")
+    private String bisQuestion;
 }

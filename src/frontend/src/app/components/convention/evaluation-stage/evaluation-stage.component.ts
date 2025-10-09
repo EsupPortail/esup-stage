@@ -12,6 +12,7 @@ import {QuestionsEvaluationService} from "../../../services/questions-evaluation
 import {forkJoin} from "rxjs";
 import {DbQuestion} from "../../../models/question-evaluation.model";
 import {TypeQuestionEvaluation} from "../../../constants/type-question-evaluation";
+import {values} from "lodash";
 
 @Component({
   selector: 'app-evaluation-stage',
@@ -286,15 +287,18 @@ export class EvaluationStageComponent implements OnInit {
 
       this.applyFicheVisibilityToValidators();
 
-      this.reponseEvaluation = rep;
-      if (rep) {
-        this.reponseEtudiantForm.patchValue(rep);
-        this.reponseEnseignantForm.patchValue(rep);
-        this.reponseEntrepriseForm.patchValue(rep);
-      }
+      this.reponseEvaluationService.getByConvention(this.convention.id).subscribe((rep: any) => {
+        this.reponseEvaluation = rep;
+        this.getQuestionSupplementaire();
 
-      // 5) Charger les questions suppl. une fois la base posée
-      this.getQuestionSupplementaire();
+        if (rep) {
+          this.reponseEvaluation = rep;
+          this.reponseEtudiantForm.patchValue(rep);
+          this.reponseEnseignantForm.patchValue(rep);
+          this.reponseEntrepriseForm.patchValue(rep);
+        }
+      });
+
     });
   }
 
@@ -338,13 +342,6 @@ export class EvaluationStageComponent implements OnInit {
     }
 
     const valid = reponseForm.valid && reponseSupplementaireForm.valid
-
-    console.log("reponseSupplementaireForm : ",reponseSupplementaireForm.valid);
-    console.log("reponseForm : ",reponseForm.valid);
-    console.log("EtuFrom : ",this.reponseEtudiantForm.valid);
-    console.log("EnsFrom : ",this.reponseEnseignantForm.valid);
-    console.log("EntFrom : ",this.reponseEntrepriseForm.valid);
-    console.log("valid : ",valid);
 
     const data = {...reponseForm.value};
 
@@ -524,184 +521,59 @@ export class EvaluationStageComponent implements OnInit {
       this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 5));
       this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 6));
       this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 7));
+
+      this.reponseSupplementaireEtudiantForm.patchValue(response)
+      this.reponseSupplementaireEnseignantForm.patchValue(response)
+      this.reponseSupplementaireEntrepriseForm.patchValue(response)
     });
   }
 
-  // getQestionTexte(question: any): string {
-  //
-  //   let htmlTexte = "";
-  //
-  //   htmlTexte += "<p style=\"margin-left: 16px\"><span class=\"text-small\"><strong> - "+question.title+"</strong></span></p>";
-  //
-  //   if(question.type == 'boolean'){
-  //     if(this.reponseEvaluation['reponse' + question.controlName]){
-  //       htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">Oui</span></p>";
-  //     }else{
-  //       htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">Non</span></p>";
-  //     }
-  //   }
-  //   if(question.type == 'multiple-choice'){
-  //     let formControlName = 'reponse' + question.controlName;
-  //
-  //     let line = question.texte[this.reponseEvaluation[formControlName]];
-  //     htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+line+"</span></p>";
-  //
-  //     if(question.bisQuestionLowNotation &&
-  //       (this.reponseEvaluation[formControlName] !== null) &&
-  //       (this.reponseEvaluation[formControlName] >= 3)){
-  //       let line = question.bisQuestionLowNotation;
-  //       htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\"><strong> - "+line+"</strong>";
-  //       let formControlName = "reponse" + question.controlName + 'bis';
-  //       line = this.reponseEvaluation[formControlName];
-  //       htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+line+"</span></p>";
-  //     }
-  //     if(question.bisQuestion){
-  //       let formControlName = "reponse" + question.controlName + 'bis';
-  //       let bisLine = this.reponseEvaluation[formControlName];
-  //       if(bisLine && bisLine !== null){
-  //         let line = question.bisQuestion;
-  //         htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\"><strong> - "+line+"</strong>";
-  //         htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+bisLine+"</span></p>";
-  //       }
-  //     }
-  //   }
-  //   if(question.type == 'multiple-boolean'){
-  //     for (var i = 0; i < question.texte.length; i++) {
-  //       let line = question.texte[i];
-  //       htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\"><strong> - "+line+" : </strong>";
-  //       let formControlName = "reponse" + question.controlName + this.controlsIndexToLetter[i];
-  //       if(this.reponseEvaluation[formControlName]){
-  //         htmlTexte += "Oui</span></p>";
-  //       }else{
-  //         htmlTexte += "Non</span></p>";
-  //       }
-  //     }
-  //   }
-  //   if(question.type == 'texte'){
-  //     let line = this.reponseEvaluation['reponse' + question.controlName];
-  //     htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+line+"</span></p>";
-  //   }
-  //   if(question.type == 'EtuI5'){
-  //     htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+this.convention.origineStage.libelle+"</span></p>";
-  //   }
-  //   if(question.type == 'EtuI7'){
-  //     if(this.reponseEvaluation['reponse' + question.controlName]){
-  //       htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">Oui</span></p>";
-  //       htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\"><strong>- Si oui, par qui ?</strong></span></p>";
-  //       let line = question.texte[this.reponseEvaluation['reponseEtuI7bis1']];
-  //       htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+line+"</span></p>";
-  //     }else{
-  //       htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">Non</span></p>";
-  //       htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\"><strong>- Si non, pourquoi ?</strong></span></p>";
-  //       let line = question.texte[this.reponseEvaluation['reponseEtuI7bis2']];
-  //       htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+line+"</span></p>";
-  //     }
-  //   }
-  //   if(question.type == 'EtuII5'){
-  //     if(this.reponseEvaluation['reponse' + question.controlName]){
-  //       htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">Oui</span></p>";
-  //       htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\"><strong>- Si oui : a) De quel ordre ?</strong></span></p>";
-  //       let line = question.texte[this.reponseEvaluation['reponseEtuII5a']];
-  //       htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+line+"</span></p>";
-  //       htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\"><strong>b) Avec autonomie ?</strong></span></p>";
-  //       if(this.reponseEvaluation['reponseEtuII5b']){
-  //         htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">Oui</span></p>";
-  //       }else{
-  //         htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">Non</span></p>";
-  //       }
-  //     }
-  //   }
-  //   if(question.type == 'EtuIII1'){
-  //     htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+this.convention.sujetStage+"</span></p>";
-  //   }
-  //
-  //   return htmlTexte;
-  // }
-
-  // getQuestionSupplementaireTexte(reponseSupplementaireForm:any, questionSupplementaire: any): string {
-  //
-  //   let htmlTexte = "";
-  //
-  //   let line = questionSupplementaire.question;
-  //   htmlTexte += "<p style=\"margin-left: 16px\"><span class=\"text-small\"><strong> - "+line+"</strong></span></p>";
-  //
-  //   if(questionSupplementaire.typeQuestion == 'txt'){
-  //     line = reponseSupplementaireForm.get(questionSupplementaire.formControlName)!.value;
-  //   }
-  //   if(questionSupplementaire.typeQuestion == 'not'){
-  //     let notation = reponseSupplementaireForm.get(questionSupplementaire.formControlName)!.value;
-  //     if(notation === 0)line = 'Excellent';
-  //     if(notation === 1)line = 'Très bien';
-  //     if(notation === 2)line = 'Bien';
-  //     if(notation === 3)line = 'Satisfaisant';
-  //     if(notation === 4)line = 'Insuffisant';
-  //   }
-  //   if(questionSupplementaire.typeQuestion == 'yn'){
-  //     line = (reponseSupplementaireForm.get(questionSupplementaire.formControlName)!.value === true)?'Oui':'Non';
-  //   }
-  //   htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+line+"</span></p>";
-  //
-  //   return htmlTexte;
-  // }
-
   //-----------------------------------------------| Question |-----------------------------------------------//
 
-  private codeToControlName(code: string): string {
-    // ETU I / II / III
-    if (code.startsWith('ETU')) {
-      if (code.startsWith('ETUIII')) return 'EtuIII' + code.substring(6);
-      if (code.startsWith('ETUII'))  return 'EtuII'  + code.substring(5);
-      if (code.startsWith('ETUI'))   return 'EtuI'   + code.substring(4);
+  private parseParamsJsonLoose(paramsJson?: string | null): string[] {
+    if (!paramsJson) return [];
+    try {
+      // Tentative JSON stricte
+      const obj = JSON.parse(paramsJson);
+      if (Array.isArray(obj?.items)) return obj.items;
+    } catch {
+      // version "lax": extrait le tableau à l’intérieur des []
+      const m = paramsJson.match(/\[([\s\S]*)\]/);
+      if (!m) return [];
+      const inside = m[1];
+
+      // découpe par virgules, garde ce qui est entre guillemets, nettoie les espaces
+      return inside
+        .split(',')
+        .map(s => s.trim())
+        .map(s => s.replace(/^"|"$/g, '')) // "Texte" -> Texte
+        .filter(Boolean);
     }
-    // ENS I / II
-    if (code.startsWith('ENS')) {
-      if (code.startsWith('ENSII'))  return 'EnsII'  + code.substring(5);
-      if (code.startsWith('ENSI'))   return 'EnsI'   + code.substring(4);
-    }
-    // ENT
-    if (code.startsWith('ENT')) return 'Ent' + code.substring(3);
-    return code; // fallback
+    return [];
   }
 
-  private mapDbTypeToUi(t: TypeQuestionEvaluation):
-    'boolean' | 'multiple-choice' | 'multiple-boolean' | 'texte' | 'automatique' {
-    switch (t) {
-      case TypeQuestionEvaluation.YES_NO:            return 'boolean';
-      case TypeQuestionEvaluation.TEXT:              return 'texte';
-      case TypeQuestionEvaluation.SINGLE_CHOICE:     return 'multiple-choice';
-      case TypeQuestionEvaluation.MULTI_CHOICE:      return 'multiple-boolean';
-      case TypeQuestionEvaluation.BOOLEAN_GROUP:     return 'multiple-boolean';
-      case TypeQuestionEvaluation.SCALE_LIKERT_5:    return 'multiple-choice';
-      case TypeQuestionEvaluation.SCALE_AGREEMENT_5: return 'multiple-choice';
-      case TypeQuestionEvaluation.AUTO:              return 'automatique';
-      default: return 'texte';
-    }
-  }
-
-  private extractOptions(q: DbQuestion): string[] {
+  private extractOptions(q: { code: string; type: TypeQuestionEvaluation; paramsJson?: string | null; options?: string[] | null }): string[] {
     if (q.options?.length) return q.options;
-    if (q.paramsJson) {
-      try {
-        const p = JSON.parse(q.paramsJson);
-        if (Array.isArray(p.items)) return p.items as string[];
-      } catch {}
-    }
-    if (q.type === TypeQuestionEvaluation.SCALE_LIKERT_5)    return this.LIKERT_5;
-    if (q.type === TypeQuestionEvaluation.SCALE_AGREEMENT_5) return this.AGREEMENT_5;
+    const fromParams = this.parseParamsJsonLoose(q.paramsJson);
+    if (fromParams.length) return fromParams;
 
-    // Fallbacks legacy – à supprimer quand la DB est corrigée
-    const fb: Record<string,string[]> = {
+    // Échelles par défaut si rien en DB
+    if (q.type === TypeQuestionEvaluation.SCALE_LIKERT_5)
+      return this.LIKERT_5;
+    if (q.type === TypeQuestionEvaluation.SCALE_AGREEMENT_5)
+      return this.AGREEMENT_5;
+
+    // Fallbacks legacy utiles
+    const fb: Record<string, string[]> = {
+      ETUI1:  ['Non, il est automatiquement proposé dans le cadre de la formation','Non, je l’ai trouvé assez facilement par moi-même','Oui j’ai eu des difficultés'],
       ETUI2:  ['1 jour à 1 semaine','2 semaines à 1 mois','1 mois à 3 mois','3 mois à 6 mois','+ de 6 mois'],
       ETUI3:  ['1 à 5','6 à 10','11 à 20','20 et plus'],
-      ETUI5:  ['Réponse à une offre de stage','Candidature spontanée','Réseau de connaissance','Proposé par le département'],
       ETUI6:  ['Proposé par votre tuteur professionnel','Proposé par votre tuteur enseignant','Élaboré par vous-même','Négocié entre les parties'],
-      ETUII1: ['Avant le début du stage','Pendant le stage','À la fin du stage'],
-      ETUIII5:['Très au-dessous de vos compétences','Au-dessous de vos compétences','A votre niveau de compétences','Au-dessus de vos compétences','Très au-dessus de vos compétences','Inatteignables'],
+      ETUIII4:['Très au-dessous de vos compétences','Au-dessous de vos compétences','A votre niveau de compétences','Au-dessus de vos compétences','Très au-dessus de vos compétences','Inatteignables'],
+      ETUIII5:['Compétences techniques','Nouvelles méthodologies','Nouvelles connaissances théoriques'],
     };
     return fb[q.code] || [];
   }
-
-
 
   private applyDbQuestions(
     dbQuestions: DbQuestion[],
@@ -713,20 +585,20 @@ export class EvaluationStageComponent implements OnInit {
       const vm = this.toVM(q);
 
       const target = (() => {
-        const cn = vm.controlName;
+        const cn = vm.code;
 
         // Étudiant
-        if (cn.startsWith('EtuIII')) return section3!;
-        if (cn.startsWith('EtuII'))  return section2!;
-        if (cn.startsWith('EtuI'))   return section1;
+        if (cn.startsWith('ETUIII')) return section3!;
+        if (cn.startsWith('ETUII'))  return section2!;
+        if (cn.startsWith('ETUI'))   return section1;
 
         // Enseignant
-        if (cn.startsWith('EnsII'))  return section2!;
-        if (cn.startsWith('EnsI'))   return section1;
+        if (cn.startsWith('ENSII'))  return section2!;
+        if (cn.startsWith('ENSI'))   return section1;
 
         // Entreprise
-        if (cn.startsWith('Ent')) {
-          const num = parseInt(cn.replace('Ent',''), 10);
+        if (cn.startsWith('ENT')) {
+          const num = parseInt(cn.replace('ENT',''), 10);
           if (num <= 9)  return section1;
           if (num <= 14) return section2!;
           return section3!;
@@ -735,7 +607,7 @@ export class EvaluationStageComponent implements OnInit {
       })();
 
       // Upsert dans la section (on garde éventuels champs bis existants)
-      const idx = target.findIndex((x: any) => x.controlName === vm.controlName);
+      const idx = target.findIndex((x: any) => x.code === vm.code);
       if (idx > -1) target[idx] = { ...target[idx], ...vm };
       else target.push(vm);
 
@@ -746,34 +618,68 @@ export class EvaluationStageComponent implements OnInit {
 
 
   private toVM(q: DbQuestion) {
-    const controlName = this.codeToControlName(q.code); // déjà dans ton code
-    const uiType = this.mapDbTypeToUi(q.type);
-    const texte = (uiType === 'multiple-choice' || uiType === 'multiple-boolean')
-      ? this.extractOptions(q)
-      : undefined;
-    return { title: q.texte, type: uiType, texte, controlName };
+    const optionsNeeded =
+      q.type === TypeQuestionEvaluation.SINGLE_CHOICE ||
+      q.type === TypeQuestionEvaluation.MULTI_CHOICE ||
+      q.type === TypeQuestionEvaluation.BOOLEAN_GROUP ||
+      q.type === TypeQuestionEvaluation.SCALE_LIKERT_5 ||
+      q.type === TypeQuestionEvaluation.SCALE_AGREEMENT_5;
+
+    const options = optionsNeeded
+      ? this.extractOptions({
+        code: q.code,
+        type: q.type,
+        paramsJson: q.paramsJson ?? undefined,
+        options: q.options ?? undefined,
+      })
+      : [];
+
+    return {
+      code: q.code,
+      title: q.texte,
+      type: q.type as TypeQuestionEvaluation,
+      options,
+      bisQuestion: q.bisQuestion,
+    };
   }
 
-// Ajoute les FormControls requis par question, avec les mêmes noms qu’aujourd’hui
+
   private ensureFormControls(vm: any): void {
     const form =
-      vm.controlName.startsWith('Etu') ? this.reponseEtudiantForm :
-        vm.controlName.startsWith('Ens') ? this.reponseEnseignantForm :
+      vm.code.startsWith('ETU') ? this.reponseEtudiantForm :
+        vm.code.startsWith('ENS') ? this.reponseEnseignantForm :
           this.reponseEntrepriseForm;
 
-    const base = 'reponse' + vm.controlName;
+    const base = this.toControlBase(vm.code); // ✅ reponseEtu…, reponseEns…, reponseEnt…
 
-    if (vm.type === 'boolean' || vm.type === 'texte' || vm.type === 'multiple-choice') {
-      if (!form.contains(base)) form.addControl(base, new FormControl(null, Validators.required));
-      // si tu as des “bis” conditionnels, tu peux ajouter le control ici si besoin
+    // principal
+    if (!form.contains(base)) {
+      form.addControl(base, new FormControl(null, Validators.required));
     }
 
-    if (vm.type === 'multiple-boolean') {
-      const items = vm.texte || [];
-      items.forEach((_: string, i: number) => {
-        const key = base + this.controlsIndexToLetter[i]; // a, b, c, d...
-        if (!form.contains(key)) form.addControl(key, new FormControl(null, Validators.required));
+    // BOOLEAN_GROUP -> suffixes a,b,c…
+    if (vm.type === TypeQuestionEvaluation.BOOLEAN_GROUP && Array.isArray(vm.options)) {
+      vm.options.forEach((_: string, i: number) => {
+        const key = base + this.controlsIndexToLetter[i];
+        if (!form.contains(key)) {
+          form.addControl(key, new FormControl(null, Validators.required));
+        }
       });
+    }
+
+    // "bis" générique
+    if (vm.bisQuestion || vm.bisQuestionLowNotation || vm.bisQuestionTrue || vm.bisQuestionFalse) {
+      const bisKey = base + 'bis';
+      if (!form.contains(bisKey)) form.addControl(bisKey, new FormControl(null));
+    }
+
+    if (vm.code === 'ETUI7') {
+      if (!form.contains(base + 'bis1')) form.addControl(base + 'bis1', new FormControl(null));
+      if (!form.contains(base + 'bis2')) form.addControl(base + 'bis2', new FormControl(null));
+    }
+    if (vm.code === 'ETUII5') {
+      if (!form.contains(base + 'a')) form.addControl(base + 'a', new FormControl(null));
+      if (!form.contains(base + 'b')) form.addControl(base + 'b', new FormControl(null));
     }
   }
 
@@ -789,54 +695,168 @@ export class EvaluationStageComponent implements OnInit {
   }
 
   private applyVisibilityForQuestion(form: FormGroup, q: any): void {
-    const questionKey = 'question' + q.controlName;
-    const active = !!this.ficheEvaluation?.[questionKey];
-
-    const base = 'reponse' + q.controlName;
+    const active = this.isQuestionActive(q.code);
+    const base = this.toControlBase(q.code);
     const keys: string[] = [];
-    if (q.type === 'multiple-boolean') {
-      (q.texte || []).forEach((_: string, i: number) => keys.push(base + this.controlsIndexToLetter[i]));
+
+    if (q.type === TypeQuestionEvaluation.BOOLEAN_GROUP) {
+      (q.options || []).forEach((_: string, i: number) => keys.push(base + this.controlsIndexToLetter[i]));
     } else {
       keys.push(base);
       if (q.bisQuestionLowNotation || q.bisQuestionTrue || q.bisQuestionFalse) keys.push(base + 'bis');
-      if (q.controlName === 'EtuI7')  keys.push(base + 'bis1', base + 'bis2');
-      if (q.controlName === 'EtuII5') keys.push(base + 'a', base + 'b');
+      if (q.code === 'ETUI7') keys.push(base + 'bis1', base + 'bis2');
+      if (q.code === 'ETUII5') keys.push(base + 'a', base + 'b');
     }
     this.toggleValidators(form, keys, active);
   }
 
-  /** Branche les valueChanges conditionnels une fois les questions présentes */
+
   private wireConditionalValidators(): void {
     const hook = (form: FormGroup, q: any) => {
-      if (q.bisQuestionLowNotation || q.bisQuestionTrue || q.bisQuestionFalse ||
-        q.controlName === 'EtuI7' || q.controlName === 'EtuII5') {
-        const key = 'reponse' + q.controlName;
-        const bisKey = key + 'bis';
-        form.get(key)?.valueChanges.subscribe(val => {
-          const active = !!this.ficheEvaluation?.['question' + q.controlName];
-          if (!active) return;
+      if (q.bisQuestionLowNotation || q.bisQuestionTrue || q.bisQuestionFalse || q.code === 'ETUI7' || q.code === 'ETUII5') {
+        const base = this.toControlBase(q.code);
+        const main = form.get(base);
+        if (!main) return;
 
-          if ((q.bisQuestionLowNotation && val >= 3) ||
-            (q.bisQuestionTrue && !!val) ||
-            (q.bisQuestionFalse && !val)) {
-            this.toggleValidators(form, [bisKey], true);
-          } else if (q.controlName === 'EtuI7') {
-            this.toggleValidators(form, [key + 'bis1'], !!val);
-            this.toggleValidators(form, [key + 'bis2'], !val);
-          } else if (q.controlName === 'EtuII5') {
-            this.toggleValidators(form, [key + 'a', key + 'b'], !!val);
+        main.valueChanges.subscribe(val => {
+          if (!this.isQuestionActive(q.code)) return;
+
+          if ((q.bisQuestionLowNotation && val >= 3) || (q.bisQuestionTrue && !!val) || (q.bisQuestionFalse && !val)) {
+            this.toggleValidators(form, [base + 'bis'], true);
+          } else if (q.code === 'ETUI7') {
+            this.toggleValidators(form, [base + 'bis1'], !!val);
+            this.toggleValidators(form, [base + 'bis2'], !val);
+          } else if (q.code === 'ETUII5') {
+            this.toggleValidators(form, [base + 'a', base + 'b'], !!val);
           } else {
-            this.toggleValidators(form, [bisKey], false);
+            this.toggleValidators(form, [base + 'bis'], false);
           }
         });
       }
     };
 
-    this.FicheEtudiantIQuestions.concat(this.FicheEtudiantIIQuestions, this.FicheEtudiantIIIQuestions)
-      .forEach(q => hook(this.reponseEtudiantForm, q));
-    this.FicheEnseignantIQuestions.concat(this.FicheEnseignantIIQuestions)
-      .forEach(q => hook(this.reponseEnseignantForm, q));
-    this.FicheEntrepriseIQuestions.concat(this.FicheEntrepriseIIQuestions, this.FicheEntrepriseIIIQuestions)
-      .forEach(q => hook(this.reponseEntrepriseForm, q));
+    this.FicheEtudiantIQuestions.concat(this.FicheEtudiantIIQuestions, this.FicheEtudiantIIIQuestions).forEach(q => hook(this.reponseEtudiantForm, q));
+    this.FicheEnseignantIQuestions.concat(this.FicheEnseignantIIQuestions).forEach(q => hook(this.reponseEnseignantForm, q));
+    this.FicheEntrepriseIQuestions.concat(this.FicheEntrepriseIIQuestions, this.FicheEntrepriseIIIQuestions).forEach(q => hook(this.reponseEntrepriseForm, q));
   }
+
+  getAutoValue(code: string): string {
+    switch (code) {
+      case 'ETUI5':
+        return this.convention?.origineStage?.libelle || '';
+      case 'ETUIII0':
+        return this.convention?.sujetStage || '';
+      default:
+        return '';
+    }
+  }
+
+  protected readonly TypeQuestionEvaluation = TypeQuestionEvaluation;
+
+  toControlBase(code: string): string {
+    if (!code) return '';
+    if (code.startsWith('ETU')) return 'reponseEtu' + code.substring(3);
+    if (code.startsWith('ENS')) return 'reponseEns' + code.substring(3);
+    if (code.startsWith('ENT')) return 'reponseEnt' + code.substring(3);
+    return 'reponse' + code; // fallback
+  }
+
+  /** Clé "legacy" pour ficheEvaluation (questionEtuII1, questionEnt4, …) */
+  private toLegacyQuestionKey(code: string): string {
+    if (code.startsWith('ETU')) return 'questionEtu' + code.substring(3);
+    if (code.startsWith('ENS')) return 'questionEns' + code.substring(3);
+    if (code.startsWith('ENT')) return 'questionEnt' + code.substring(3);
+    return 'question' + code;
+  }
+
+  private isQuestionActive(code: string): boolean {
+    const k = this.toLegacyQuestionKey(code);
+    return !!this.ficheEvaluation?.[k];
+  }
+
+  getMainValue(q: any): any {
+    const base = this.toControlBase(q.code);
+    const ctrl =
+      this.reponseEtudiantForm.get(base) ||
+      this.reponseEnseignantForm.get(base) ||
+      this.reponseEntrepriseForm.get(base);
+    return ctrl ? ctrl.value : null;
+  }
+
+
+  // Gestion des cas spéciaux
+  /** Parse JSON tolérant (objet) – renvoie {} si invalide */
+  private parseObjectLoose(s?: string | null): any {
+    if (!s) return {};
+    try { return JSON.parse(s); } catch { return {}; }
+  }
+
+  /** Options spéciales pour ETUI7 : { oui: string[], non: string[] } */
+  getETUI7Options(q: any): { oui: string[]; non: string[] } {
+    // 1) JSON prioritaire
+    const obj = this.parseObjectLoose(q?.paramsJson);
+    const ouiFromJson: string[] = Array.isArray(obj?.oui) ? obj.oui : [];
+    const nonFromJson: string[] = Array.isArray(obj?.non) ? obj.non : [];
+    if (ouiFromJson.length || nonFromJson.length) {
+      return { oui: ouiFromJson, non: nonFromJson };
+    }
+
+    // 2) Fallback: on réutilise le comportement historique (slice)
+    const opts: string[] = Array.isArray(q?.options) ? q.options : [];
+    const oui = opts.slice(0, 5);
+    const non = opts.slice(5, 7);
+
+    // 3) Fallback “dur” si vraiment rien
+    if (!oui.length && !non.length) {
+      return {
+        oui: [
+          "Proposé par votre tuteur professionnel",
+          "Proposé par votre tuteur enseignant",
+          "Élaboré par vous-même",
+          "Négocié entre les parties",
+          "Autre"
+        ],
+        non: [
+          "Je n'ai pas eu besoin d'aide",
+          "Je ne savais pas à qui m'adresser"
+        ]
+      };
+    }
+    return { oui, non };
+  }
+
+  /** Options spéciales pour ETUII5 : { a: string[] } */
+  getETUII5Options(q: any): { a: string[] } {
+    // 1) JSON prioritaire
+    const obj = this.parseObjectLoose(q?.paramsJson);
+    const aFromJson: string[] = Array.isArray(obj?.a) ? obj.a : [];
+    if (aFromJson.length) return { a: aFromJson };
+
+    // 2) Fallback: utilise q.options
+    const opts: string[] = Array.isArray(q?.options) ? q.options : [];
+
+    // 3) Fallback “dur” si vide
+    if (!opts.length) {
+      return { a: ["Technique", "Organisationnelle", "Communication"] };
+    }
+    return { a: opts };
+  }
+
+  shouldShowBis(q: any): boolean {
+    if (!q?.bisQuestion) return false;
+
+    const v = this.getMainValue(q);
+
+    if (q.code === 'ETUIII1') return v === true;
+
+    if((q.type == TypeQuestionEvaluation.SCALE_LIKERT_5 || q.type == TypeQuestionEvaluation.SCALE_AGREEMENT_5) && v > 2 && q.code.startsWith('ETU')) return true;
+
+    if((q.type == TypeQuestionEvaluation.SCALE_LIKERT_5 || q.type == TypeQuestionEvaluation.SCALE_AGREEMENT_5) && q.code.startsWith('ENT')) return true;
+
+
+
+    return false;
+  }
+
+
 }
