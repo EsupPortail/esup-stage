@@ -90,12 +90,14 @@ public class CsvStructureImportUtils {
     public List<LineErrorDto> validateRow(int lineNumber, Function<Integer,String> col, Indices I) {
         List<LineErrorDto> errs = new ArrayList<>();
 
-        String numeroRNE        = col.apply(I.numeroRNE);
-        String raisonSociale    = col.apply(I.raisonSociale);
-        String numeroSiret      = col.apply(I.numeroSiret);
-        String codeApe          = col.apply(I.codeApe);
-        String codePostal       = col.apply(I.codePostal);
-        String mail             = col.apply(I.mail);
+        String numeroRNE          = col.apply(I.numeroRNE);
+        String raisonSociale      = col.apply(I.raisonSociale);
+        String numeroSiret        = col.apply(I.numeroSiret);
+        String ActivitePrincipale = col.apply(I.activitePrincipale);
+        String codeApe            = col.apply(I.codeApe);
+        String codePostal         = col.apply(I.codePostal);
+        String mail               = col.apply(I.mail);
+        String statutJuridique    = col.apply(I.statutJuridique);
 
         boolean hasRne   = numeroRNE != null && !numeroRNE.isEmpty();
         boolean hasSiret = numeroSiret != null && !numeroSiret.isEmpty();
@@ -117,6 +119,12 @@ public class CsvStructureImportUtils {
         }
         if (mail != null && !mail.isEmpty() && !mail.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {
             errs.add(new LineErrorDto(lineNumber, "Email", "Email invalide", mail));
+        }
+        if ((codeApe == null || codeApe.isEmpty()) && (ActivitePrincipale == null || ActivitePrincipale.isEmpty())){
+            errs.add(new LineErrorDto(lineNumber, "Activité", "Code APE ou activité principale attendu",null));
+        }
+        if(statutJuridique == null || statutJuridique.isEmpty()){
+            errs.add(new LineErrorDto(lineNumber, "Statut juridique", "Statut juridique invalide", statutJuridique));
         }
         return errs;
     }
