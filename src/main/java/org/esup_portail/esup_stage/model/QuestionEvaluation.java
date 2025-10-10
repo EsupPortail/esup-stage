@@ -29,4 +29,14 @@ public class QuestionEvaluation {
 
     @Column(name="bisQuestion")
     private String bisQuestion;
+
+    @Column(name = "bisQuestionLowNotation")
+    private Boolean bisQuestionLowNotation;
+
+    @Column(name = "bisQuestionTrue")
+    private Boolean bisQuestionTrue;
+
+    @Column(name = "bisQuestionFalse")
+    private Boolean bisQuestionFalse;
+
 }

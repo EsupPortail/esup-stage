@@ -23,7 +23,16 @@ public class QuestionEvaluationController {
     @Autowired
     private QuestionEvaluationJpaRepository questionEvaluationJpaRepository;
 
-    private record QuestionDto(Integer id, String code, String texte, TypeQuestionEvaluation type, java.util.List<String> options) {}
+    private record QuestionDto(
+            String code,
+            String texte,
+            TypeQuestionEvaluation type,
+            java.util.List<String> options,
+            String bisQuestion,
+            Boolean bisQuestionLowNotation,
+            Boolean bisQuestionTrue,
+            Boolean bisQuestionFalse
+    ) {}
 
     @GetMapping
     public List<QuestionDto> getQuestions(@RequestParam(value = "expand", required = false) String expand) {
@@ -31,8 +40,16 @@ public class QuestionEvaluationController {
         if (list.isEmpty()) throw new AppException(HttpStatus.NOT_FOUND,"aucune question trouvée");
         boolean withOptions = "options".equalsIgnoreCase(expand);
         return list.stream()
-                .map(q -> new QuestionDto(q.getId(), q.getCode(), q.getTexte(), q.getType(),
-                        withOptions ? buildOptions(q) : List.of()))
+                .map(q -> new QuestionDto(
+                        q.getCode(),
+                        q.getTexte(),
+                        q.getType(),
+                        withOptions ? buildOptions(q) : List.of(),
+                        q.getBisQuestion(),
+                        q.getBisQuestionLowNotation(),
+                        q.getBisQuestionTrue(),
+                        q.getBisQuestionFalse()
+                ))
                 .toList();
     }
 

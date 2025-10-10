@@ -926,3 +926,100 @@ databaseChangeLog:
               - column:
                   name: bisQuestion
                   value: Pour quelles raisons ?
+
+  - changeSet:
+      id: 3.3.0-ajout-colonnes-bis-question-bool
+      author: thouveno9
+      changes:
+        - addColumn:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: bisQuestionLowNotation
+                  type: BOOLEAN
+                  constraints:
+                    nullable: true
+              - column:
+                  name: bisQuestionTrue
+                  type: BOOLEAN
+                  constraints:
+                    nullable: true
+              - column:
+                  name: bisQuestionFalse
+                  type: BOOLEAN
+                  constraints:
+                    nullable: true
+  - changeSet:
+      id: 3.3.0-maj-bis-question-flags
+      author: thouveno9
+      changes:
+        # ETU échelles : bis si note basse
+        - update:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: bisQuestionLowNotation
+                  valueBoolean: true
+            where: "codeQuestionEvaluation IN ('ETUII1','ETUII2','ETUII3','ETUIII6','ETUIII7','ETUIII15','ETUIII16')"
+
+        # YES/NO : bis si Oui
+        - update:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: bisQuestionTrue
+                  valueBoolean: true
+            where: "codeQuestionEvaluation IN ('ETUIII1','ETUIII8','ETUIII9')"
+
+        # YES/NO : bis si Non
+        - update:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: bisQuestionFalse
+                  valueBoolean: true
+            where: "codeQuestionEvaluation IN ('ETUIII2')"
+
+  - changeSet:
+      id: 3.3.0-etui7-bis-oui-non
+      author: thouveno9
+      changes:
+        # Active les deux chemins bis (Oui et Non)
+        - update:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: bisQuestionTrue
+                  valueBoolean: true
+              - column:
+                  name: bisQuestionFalse
+                  valueBoolean: true
+            where: "codeQuestionEvaluation = 'ETUI7'"
+
+        # Enrichit paramsJson pour contenir labels + options distinctes
+        - update:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: paramsJson
+                  value: >-
+                    {
+                      "oui": {
+                        "label": "Si oui, par qui ?",
+                        "items": [
+                          "Proposé par votre tuteur professionnel",
+                          "Proposé par votre tuteur enseignant",
+                          "Élaboré par vous-même",
+                          "Négocié entre les parties",
+                          "Autre"
+                        ]
+                      },
+                      "non": {
+                        "label": "Si non, pourquoi ?",
+                        "items": [
+                          "Je n'ai pas eu besoin d'aide",
+                          "Je ne savais pas à qui m'adresser"
+                        ]
+                      }
+                    }
+            where: "codeQuestionEvaluation = 'ETUI7'"
