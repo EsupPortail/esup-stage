@@ -1,4 +1,4 @@
-<mat-card>
+<mat-card class="ficheEval">
   <mat-card-content *ngIf="ficheEvaluation">
 
     <!-- Boucle sur les 3 fiches principales : Étudiant, Enseignant, Entreprise -->
@@ -32,224 +32,216 @@
           show: isGestionnaireOrAdmin }
       ]">
 
-      <!-- Vérifie si on affiche cette fiche -->
-      <ng-container *ngIf="fiche.show">
+      <div class="form-group fiche">
+        <ng-container *ngIf="fiche.show">
 
-        <div class="text-title">{{ fiche.label }}</div>
-        <mat-divider class="mb-2"></mat-divider>
+          <div class="text-title">{{ fiche.label }}</div>
+          <mat-divider class="mb-2"></mat-divider>
 
-        <!-- Messages d'état -->
-        <div class="mt-3 mb-2 danger-color text-center" *ngIf="!ficheEvaluation[fiche.validationKey]">
-          <i class="fa fa-times"></i>&nbsp;Cette évaluation n'a pas encore été validée par le centre de gestion.
-        </div>
-        <div class="mt-3 mb-2 danger-color text-center" *ngIf="ficheEvaluation[fiche.validationKey] && (!reponseEvaluation || !reponseEvaluation[fiche.validationProp])">
-          <i class="fa fa-times"></i>&nbsp;Cette évaluation n'est pas encore renseignée.
-        </div>
-        <div class="mt-3 mb-2 success-color text-center" *ngIf="reponseEvaluation && reponseEvaluation[fiche.validationProp]">
-          <i class="fa fa-check"></i>&nbsp;Cette évaluation a bien été renseignée.
-        </div>
+          <!-- Messages d'état -->
+          <div class="mt-3 mb-2 danger-color text-center" *ngIf="!ficheEvaluation[fiche.validationKey]">
+            <i class="fa fa-times"></i>&nbsp;Cette évaluation n'a pas encore été validée par le centre de gestion.
+          </div>
+          <div class="mt-3 mb-2 danger-color text-center" *ngIf="ficheEvaluation[fiche.validationKey] && (!reponseEvaluation || !reponseEvaluation[fiche.validationProp])">
+            <i class="fa fa-times"></i>&nbsp;Cette évaluation n'est pas encore renseignée.
+          </div>
+          <div class="mt-3 mb-2 success-color text-center" *ngIf="reponseEvaluation && reponseEvaluation[fiche.validationProp]">
+            <i class="fa fa-check"></i>&nbsp;Cette évaluation a bien été renseignée.
+          </div>
 
-        <!-- Formulaire -->
-        <form
-          *ngIf="ficheEvaluation[fiche.validationKey]"
-          [formGroup]="fiche.type === 0 ? reponseEtudiantForm : fiche.type === 1 ? reponseEnseignantForm : reponseEntrepriseForm"
-          novalidate
-          (ngSubmit)="saveReponse(fiche.type)"
-          class="mt-2"
-        >
-          <mat-accordion>
-            <!-- Boucle sur sections -->
-            <ng-container *ngFor="let section of fiche.sections; let sIndex = index">
-              <mat-expansion-panel>
-                <mat-expansion-panel-header>
-                  <mat-panel-title>
-                    {{
-                      fiche.type === 0
+          <!-- Formulaire -->
+          <form
+            *ngIf="ficheEvaluation[fiche.validationKey]"
+            [formGroup]="fiche.type === 0 ? reponseEtudiantForm : fiche.type === 1 ? reponseEnseignantForm : reponseEntrepriseForm"
+            novalidate
+            (ngSubmit)="saveReponse(fiche.type)"
+            class="mt-2"
+          >
+            <mat-tab-group>
+              <!-- Boucle sur sections -->
+              <mat-tab *ngFor="let section of fiche.sections; let sIndex = index"
+                       [label]="fiche.type === 0
                         ? ['Avant le départ en stage', 'Pendant le stage', 'Après le stage'][sIndex]
                         : fiche.type === 1
                           ? ['Suivi du stagiaire', 'Évaluation du stagiaire'][sIndex]
-                          : ['Savoir-être', 'Savoir-faire', 'Appréciation générale'][sIndex]
-                    }}
-                  </mat-panel-title>
-                </mat-expansion-panel-header>
+                          : ['Savoir-être', 'Savoir-faire', 'Appréciation générale'][sIndex]">
 
-                <!-- Questions principales -->
-                <div *ngFor="let q of section; trackBy: trackByCode" class="mb-4">
-                  <div class="font-semibold mb-1"><b>{{ q.texte }}</b></div>
+                <div class="tab-content-padding">
+                  <!-- Questions principales -->
+                  <div *ngFor="let q of section; trackBy: trackByCode" class="mb-4">
+                    <div class="font-semibold mb-1"><b>{{ q.texte }}</b></div>
 
-                  <ng-container [ngSwitch]="q.type">
+                    <ng-container [ngSwitch]="q.type">
 
-                    <!-- SINGLE_CHOICE -->
-                    <mat-radio-group *ngSwitchCase="TypeQuestionEvaluation.SINGLE_CHOICE"
-                                     [formControlName]="toControlBase(q.code)">
-                      <ng-container *ngIf="q.options?.length; else noOptions">
-                        <mat-radio-button *ngFor="let opt of q.options; let i = index" [value]="i" style="display:grid;">{{ opt }}</mat-radio-button>
-                      </ng-container>
-                    </mat-radio-group>
-
-                    <!-- YES_NO -->
-                    <mat-radio-group *ngSwitchCase="TypeQuestionEvaluation.YES_NO"
-                                     [formControlName]="toControlBase(q.code)">
-                      <mat-radio-button [value]="true">Oui</mat-radio-button>
-                      <mat-radio-button [value]="false">Non</mat-radio-button>
-                    </mat-radio-group>
-
-                    <!-- BOOLEAN_GROUP -->
-                    <div *ngSwitchCase="TypeQuestionEvaluation.BOOLEAN_GROUP">
-                      <ng-container *ngIf="q.options?.length; else noOptions">
-                        <div *ngFor="let opt of q.options; let i = index" class="row align-items-center">
-                          <div class="col-sm-8">{{ opt }}</div>
-                          <div class="col-sm-4">
-                            <mat-radio-group [formControlName]="toControlBase(q.code) + controlsIndexToLetter[i]">
-                              <mat-radio-button [value]="true">Oui</mat-radio-button>
-                              <mat-radio-button [value]="false">Non</mat-radio-button>
-                            </mat-radio-group>
-                          </div>
-                        </div>
-                      </ng-container>
-                    </div>
-
-                    <!-- LIKERT / AGREEMENT -->
-                    <mat-radio-group *ngSwitchCase="TypeQuestionEvaluation.SCALE_LIKERT_5"
-                                     [formControlName]="toControlBase(q.code)" class="d-grid">
-                      <ng-container *ngIf="q.options?.length; else noOptions">
-                        <mat-radio-button *ngFor="let opt of q.options let i = index" [value]="i" style="display:grid;">{{ opt }}</mat-radio-button>
-                      </ng-container>
-                    </mat-radio-group>
-
-                    <mat-radio-group *ngSwitchCase="TypeQuestionEvaluation.SCALE_AGREEMENT_5"
-                                     [formControlName]="toControlBase(q.code)" class="d-grid">
-                      <ng-container *ngIf="q.options?.length; else noOptions">
-                        <mat-radio-button *ngFor="let opt of q.options let i = index" [value]="i" style="display:grid;">{{ opt }}</mat-radio-button>
-                      </ng-container>
-                    </mat-radio-group>
-
-                    <div *ngSwitchCase="TypeQuestionEvaluation.TEXT">
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput [formControlName]="toControlBase(q.code)"></textarea>
-                      </mat-form-field>
-                    </div>
-
-                    <!-- AUTO -->
-                    <div *ngSwitchCase="TypeQuestionEvaluation.AUTO" class="text-gray-600">
-                      {{ getAutoValue(q.code) }}
-                    </div>
-
-                    <ng-template #noOptions>
-                      <span class="text-muted">Aucune option disponible</span>
-                    </ng-template>
-                  </ng-container>
-
-                  <!-- ETUI7 -->
-                  <ng-container *ngIf="q.code === 'ETUI7'">
-                    <div *ngIf="getMainValue(q) === true" class="mt-2">
-                      <div class="text-sm mb-1"><b>{{ getETUI7Options(q).labelOui || 'Si oui, par qui ?' }}</b></div>
-                      <mat-radio-group [formControlName]="toControlBase(q.code) + 'bis1'" style="display:grid">
-                        <mat-radio-button *ngFor="let opt of getETUI7Options(q).oui; let i = index" [value]="i">{{ opt }}</mat-radio-button>
-                      </mat-radio-group>
-                    </div>
-                    <div *ngIf="getMainValue(q) === false" class="mt-2">
-                      <div class="text-sm mb-1"><b>{{ getETUI7Options(q).labelNon || 'Si non, pourquoi ?' }}</b></div>
-                      <mat-radio-group [formControlName]="toControlBase(q.code) + 'bis2'" style="display:grid">
-                        <mat-radio-button *ngFor="let opt of getETUI7Options(q).non; let i = index" [value]="i">{{ opt }}</mat-radio-button>
-                      </mat-radio-group>
-                    </div>
-                  </ng-container>
-
-
-
-                  <!-- ETUII5 : Si oui → a) choix radio ; b) oui/non -->
-                  <ng-container *ngIf="q.code === 'ETUII5' && getMainValue(q) === true">
-                    <div class="mt-2">
-                      <div class="text-sm mb-1"><b>Si oui : a) De quel ordre ?</b></div>
-                      <mat-radio-group [formControlName]="toControlBase(q.code) + 'a'" style="display:grid">
-                        <mat-radio-button *ngFor="let opt of getETUII5Options(q).a; let i = index" [value]="i">
-                          {{ opt }}
-                        </mat-radio-button>
+                      <!-- SINGLE_CHOICE -->
+                      <mat-radio-group *ngSwitchCase="TypeQuestionEvaluation.SINGLE_CHOICE"
+                                       [formControlName]="toControlBase(q.code)">
+                        <ng-container *ngIf="q.options?.length; else noOptions">
+                          <mat-radio-button *ngFor="let opt of q.options; let i = index" [value]="i" style="display:grid;">{{ opt }}</mat-radio-button>
+                        </ng-container>
                       </mat-radio-group>
 
-                      <div class="text-sm mb-1 mt-2"><b>b) Avec autonomie ?</b></div>
-                      <mat-radio-group [formControlName]="toControlBase(q.code) + 'b'">
+                      <!-- YES_NO -->
+                      <mat-radio-group *ngSwitchCase="TypeQuestionEvaluation.YES_NO"
+                                       [formControlName]="toControlBase(q.code)">
                         <mat-radio-button [value]="true">Oui</mat-radio-button>
                         <mat-radio-button [value]="false">Non</mat-radio-button>
                       </mat-radio-group>
-                    </div>
-                  </ng-container>
 
-                  <!-- Affichage de la question bis selon les conditions centralisées -->
-                  <div *ngIf="shouldShowBis(q)" class="mt-2">
-                    <div class="text-sm mb-1">
-                      <b>{{ q.bisQuestion }}</b>
-                    </div>
-                    <mat-form-field appearance="fill" style="width:100%">
-                      <textarea matInput [formControlName]="toControlBase(q.code) + 'bis'"></textarea>
-                    </mat-form-field>
-                  </div>
-                </div>
+                      <!-- BOOLEAN_GROUP -->
+                      <div *ngSwitchCase="TypeQuestionEvaluation.BOOLEAN_GROUP">
+                        <ng-container *ngIf="q.options?.length; else noOptions">
+                          <div *ngFor="let opt of q.options; let i = index" class="row align-items-center">
+                            <div class="col-sm-8">{{ opt }}</div>
+                            <div class="col-sm-4">
+                              <mat-radio-group [formControlName]="toControlBase(q.code) + controlsIndexToLetter[i]">
+                                <mat-radio-button [value]="true">Oui</mat-radio-button>
+                                <mat-radio-button [value]="false">Non</mat-radio-button>
+                              </mat-radio-group>
+                            </div>
+                          </div>
+                        </ng-container>
+                      </div>
 
-                <!-- Questions supplémentaires -->
-                <ng-container *ngIf="questionsSupplementaires && questionsSupplementaires[fiche.suppl[sIndex]]?.length > 0">
-                  <mat-divider class="mt-2 mb-2"></mat-divider>
-                  <form [formGroup]="fiche.type === 0 ? reponseSupplementaireEtudiantForm : fiche.type === 1 ? reponseSupplementaireEnseignantForm : reponseSupplementaireEntrepriseForm" novalidate>
-                    <div class="mt-2 mb-2" *ngFor="let qs of questionsSupplementaires[fiche.suppl[sIndex]]">
-                      <div class="mb-2"><b>{{qs.question}}</b></div>
-                      <ng-container [ngSwitch]="qs.typeQuestion">
-                        <mat-form-field appearance="fill" style="width:100%" *ngSwitchCase="'txt'">
-                          <textarea matInput [formControlName]="qs.formControlName"></textarea>
+                      <!-- LIKERT / AGREEMENT -->
+                      <mat-radio-group *ngSwitchCase="TypeQuestionEvaluation.SCALE_LIKERT_5"
+                                       [formControlName]="toControlBase(q.code)" class="d-grid">
+                        <ng-container *ngIf="q.options?.length; else noOptions">
+                          <mat-radio-button *ngFor="let opt of q.options let i = index" [value]="i" style="display:grid;">{{ opt }}</mat-radio-button>
+                        </ng-container>
+                      </mat-radio-group>
+
+                      <mat-radio-group *ngSwitchCase="TypeQuestionEvaluation.SCALE_AGREEMENT_5"
+                                       [formControlName]="toControlBase(q.code)" class="d-grid">
+                        <ng-container *ngIf="q.options?.length; else noOptions">
+                          <mat-radio-button *ngFor="let opt of q.options let i = index" [value]="i" style="display:grid;">{{ opt }}</mat-radio-button>
+                        </ng-container>
+                      </mat-radio-group>
+
+                      <div *ngSwitchCase="TypeQuestionEvaluation.TEXT">
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput [formControlName]="toControlBase(q.code)"></textarea>
                         </mat-form-field>
-                        <mat-radio-group *ngSwitchCase="'not'" [formControlName]="qs.formControlName" style="display:grid;">
-                          <mat-radio-button [value]="0">Excellent</mat-radio-button>
-                          <mat-radio-button [value]="1">Très bien</mat-radio-button>
-                          <mat-radio-button [value]="2">Bien</mat-radio-button>
-                          <mat-radio-button [value]="3">Satisfaisant</mat-radio-button>
-                          <mat-radio-button [value]="4">Insuffisant</mat-radio-button>
+                      </div>
+
+                      <!-- AUTO -->
+                      <div *ngSwitchCase="TypeQuestionEvaluation.AUTO" class="text-gray-600">
+                        {{ getAutoValue(q.code) }}
+                      </div>
+
+                      <ng-template #noOptions>
+                        <span class="text-muted">Aucune option disponible</span>
+                      </ng-template>
+                    </ng-container>
+
+                    <!-- ETUI7 -->
+                    <ng-container *ngIf="q.code === 'ETUI7'">
+                      <div *ngIf="getMainValue(q) === true" class="mt-2">
+                        <div class="text-sm mb-1"><b>{{ getETUI7Options(q).labelOui || 'Si oui, par qui ?' }}</b></div>
+                        <mat-radio-group [formControlName]="toControlBase(q.code) + 'bis1'" style="display:grid">
+                          <mat-radio-button *ngFor="let opt of getETUI7Options(q).oui; let i = index" [value]="i">{{ opt }}</mat-radio-button>
                         </mat-radio-group>
-                        <mat-radio-group *ngSwitchCase="'yn'" [formControlName]="qs.formControlName">
+                      </div>
+                      <div *ngIf="getMainValue(q) === false" class="mt-2">
+                        <div class="text-sm mb-1"><b>{{ getETUI7Options(q).labelNon || 'Si non, pourquoi ?' }}</b></div>
+                        <mat-radio-group [formControlName]="toControlBase(q.code) + 'bis2'" style="display:grid">
+                          <mat-radio-button *ngFor="let opt of getETUI7Options(q).non; let i = index" [value]="i">{{ opt }}</mat-radio-button>
+                        </mat-radio-group>
+                      </div>
+                    </ng-container>
+
+                    <!-- ETUII5 : Si oui → a) choix radio ; b) oui/non -->
+                    <ng-container *ngIf="q.code === 'ETUII5' && getMainValue(q) === true">
+                      <div class="mt-2">
+                        <div class="text-sm mb-1"><b>Si oui : a) De quel ordre ?</b></div>
+                        <mat-radio-group [formControlName]="toControlBase(q.code) + 'a'" style="display:grid">
+                          <mat-radio-button *ngFor="let opt of getETUII5Options(q).a; let i = index" [value]="i">
+                            {{ opt }}
+                          </mat-radio-button>
+                        </mat-radio-group>
+
+                        <div class="text-sm mb-1 mt-2"><b>b) Avec autonomie ?</b></div>
+                        <mat-radio-group [formControlName]="toControlBase(q.code) + 'b'">
                           <mat-radio-button [value]="true">Oui</mat-radio-button>
                           <mat-radio-button [value]="false">Non</mat-radio-button>
                         </mat-radio-group>
-                      </ng-container>
+                      </div>
+                    </ng-container>
+
+                    <!-- Affichage de la question bis selon les conditions centralisées -->
+                    <div *ngIf="shouldShowBis(q)" class="mt-2">
+                      <div class="text-sm mb-1">
+                        <b>{{ q.bisQuestion }}</b>
+                      </div>
+                      <mat-form-field appearance="fill" style="width:100%">
+                        <textarea matInput [formControlName]="toControlBase(q.code) + 'bis'"></textarea>
+                      </mat-form-field>
                     </div>
-                  </form>
-                </ng-container>
+                  </div>
 
-              </mat-expansion-panel>
-            </ng-container>
-          </mat-accordion>
+                  <!-- Questions supplémentaires -->
+                  <ng-container *ngIf="questionsSupplementaires && questionsSupplementaires[fiche.suppl[sIndex]]?.length > 0">
+                    <mat-divider class="mt-2 mb-2"></mat-divider>
+                    <form [formGroup]="fiche.type === 0 ? reponseSupplementaireEtudiantForm : fiche.type === 1 ? reponseSupplementaireEnseignantForm : reponseSupplementaireEntrepriseForm" novalidate>
+                      <div class="mt-2 mb-2" *ngFor="let qs of questionsSupplementaires[fiche.suppl[sIndex]]">
+                        <div class="mb-2"><b>{{qs.question}}</b></div>
+                        <ng-container [ngSwitch]="qs.typeQuestion">
+                          <mat-form-field appearance="fill" style="width:100%" *ngSwitchCase="'txt'">
+                            <textarea matInput [formControlName]="qs.formControlName"></textarea>
+                          </mat-form-field>
+                          <mat-radio-group *ngSwitchCase="'not'" [formControlName]="qs.formControlName" style="display:grid;">
+                            <mat-radio-button [value]="0">Excellent</mat-radio-button>
+                            <mat-radio-button [value]="1">Très bien</mat-radio-button>
+                            <mat-radio-button [value]="2">Bien</mat-radio-button>
+                            <mat-radio-button [value]="3">Satisfaisant</mat-radio-button>
+                            <mat-radio-button [value]="4">Insuffisant</mat-radio-button>
+                          </mat-radio-group>
+                          <mat-radio-group *ngSwitchCase="'yn'" [formControlName]="qs.formControlName">
+                            <mat-radio-button [value]="true">Oui</mat-radio-button>
+                            <mat-radio-button [value]="false">Non</mat-radio-button>
+                          </mat-radio-group>
+                        </ng-container>
+                      </div>
+                    </form>
+                  </ng-container>
+                </div>
+              </mat-tab>
+            </mat-tab-group>
 
-          <!-- Boutons -->
-          <div class="row mt-3">
-            <div class="col-4"></div>
-            <div class="col-4 text-center">
-              <button mat-stroked-button color="primary" (click)="printFiche(fiche.type)" *ngIf="reponseEvaluation && reponseEvaluation[fiche.validationProp]">
-                Imprimer
+            <!-- Boutons -->
+            <div class="row mt-3">
+              <div class="col-4"></div>
+              <div class="col-4 text-center">
+                <button mat-stroked-button color="primary" (click)="printFiche(fiche.type)" *ngIf="reponseEvaluation && reponseEvaluation[fiche.validationProp]">
+                  Imprimer
+                </button>
+              </div>
+              <div class="col-4 text-right">
+                <button mat-flat-button color="primary">{{ 'BOUTON_VALIDER' | contenu }}</button>
+              </div>
+            </div>
+          </form>
+
+          <!-- Bloc mail -->
+          <div *ngIf="isGestionnaireOrAdmin && ficheEvaluation[fiche.validationKey] && (!reponseEvaluation || !reponseEvaluation[fiche.validationProp])" class="alert alert-secondary mt-3">
+            <div class="mb-2">
+              Cliquez sur le bouton ci-dessous afin d'envoyer un mail prévenant le destinataire ({{fiche.destinataire}}) qu'il peut remplir sa fiche.
+            </div>
+            <div class="text-center">
+              <button mat-stroked-button color="primary" (click)="openConfirmEnvoiMailEvaluation(fiche.type)">
+                <i class="fa fa-envelope"></i>&nbsp;{{ 'Envoyer' + (convention[fiche.mailKey] ? ' un rappel' : '') }}
               </button>
             </div>
-            <div class="col-4 text-right">
-              <button mat-flat-button color="primary">{{ 'BOUTON_VALIDER' | contenu }}</button>
+            <div *ngIf="convention[fiche.mailKey] && convention[fiche.dateMailKey]" class="mail-info-box">
+              <div class="mail-info-title">
+                <mat-icon color="info">info</mat-icon>
+                <span>Le dernier mail a été envoyé le {{convention[fiche.dateMailKey] | date:'dd/MM/yyyy'}} à {{convention[fiche.dateMailKey] | date:'HH:mm'}}</span>
+              </div>
             </div>
           </div>
-        </form>
 
-        <!-- Bloc mail -->
-        <div *ngIf="isGestionnaireOrAdmin && ficheEvaluation[fiche.validationKey] && (!reponseEvaluation || !reponseEvaluation[fiche.validationProp])" class="alert alert-secondary mt-3">
-          <div class="mb-2">
-            Cliquez sur le bouton ci-dessous afin d'envoyer un mail prévenant le destinataire ({{fiche.destinataire}}) qu'il peut remplir sa fiche.
-          </div>
-          <div class="text-center">
-            <button mat-stroked-button color="primary" (click)="openConfirmEnvoiMailEvaluation(fiche.type)">
-              <i class="fa fa-envelope"></i>&nbsp;{{ 'Envoyer' + (convention[fiche.mailKey] ? ' un rappel' : '') }}
-            </button>
-          </div>
-          <div *ngIf="convention[fiche.mailKey] && convention[fiche.dateMailKey]" class="mail-info-box">
-            <div class="mail-info-title">
-              <mat-icon color="info">info</mat-icon>
-              <span>Le dernier mail a été envoyé le {{convention[fiche.dateMailKey] | date:'dd/MM/yyyy'}} à {{convention[fiche.dateMailKey] | date:'HH:mm'}}</span>
-            </div>
-          </div>
-        </div>
-
-      </ng-container>
+        </ng-container>
+      </div>
     </ng-container>
 
   </mat-card-content>

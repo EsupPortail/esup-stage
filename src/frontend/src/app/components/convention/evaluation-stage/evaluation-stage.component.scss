@@ -47,3 +47,105 @@
   display: flex;
   flex-direction: column; /* empile les spans verticalement */
 }
+
+:host {
+  --space-1: .5rem;      /* 8px  */
+  --space-2: .75rem;     /* 12px */
+  --space-3: 1rem;       /* 16px */
+  --space-4: 1.25rem;    /* 20px */
+  --radius: .75rem;      /* 12px */
+  --line-soft: rgba(0,0,0,.08);
+  --bg-soft: rgba(0,0,0,.025);
+  --text-muted: rgba(0,0,0,.65);
+}
+
+.ficheEval {
+  display: block;
+  padding: var(--space-3);
+}
+
+.form-group.fiche {
+  background: #fff;
+  box-shadow: 0 1px 0 rgba(0,0,0,.02);
+}
+
+.text-title {
+  margin: var(--space-2) 0 var(--space-1);
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+mat-divider {
+  margin: var(--space-2) 0;
+  opacity: .6;
+}
+
+.tab-content-padding {
+  padding: var(--space-2) var(--space-1) var(--space-3);
+}
+
+.tab-content-padding > .mb-4 {
+  padding: var(--space-2);
+  border-radius: calc(var(--radius) - 4px);
+  background: var(--bg-soft);
+  border: 1px solid var(--line-soft);
+}
+
+.d-grid,
+mat-radio-group[style*="display:grid"] {
+  display: grid !important;
+  gap: .5rem;
+}
+
+mat-form-field {
+  width: 100%;
+  margin: .25rem 0 var(--space-2);
+}
+
+.danger-color, .success-color {
+  padding: .375rem .5rem;
+  border-radius: .5rem;
+  font-size: .95rem;
+}
+.danger-color i, .success-color i { margin-right: .35rem; }
+
+.alert.alert-secondary {
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-3);
+}
+.mail-info-box {
+  margin-top: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+.mail-info-title {
+  gap: .5rem;
+  color: var(--text-muted);
+}
+
+.row.mt-3 { margin-top: var(--space-3) !important; }
+
+.text-center, .text-right { display: flex; align-items: center; }
+.text-center { justify-content: center; }
+.text-right { justify-content: flex-end; }
+
+@media (max-width: 599px) {
+  .ficheEval { padding: var(--space-2); }
+  .form-group.fiche { padding: var(--space-2); }
+  .tab-content-padding { padding: var(--space-2) var(--space-1) var(--space-2); }
+}
+
+.form-group.fiche .alert.alert-secondary {
+  margin-bottom: calc(var(--space-4) * 1.5); /* ↓ augmente si tu veux encore plus */
+}
+
+.form-group.fiche {
+  margin-bottom: calc(var(--space-4) * 2);
+}
+
+@media (max-width: 599px) {
+  .form-group.fiche {
+    margin-bottom: var(--space-4);
+  }
+  .form-group.fiche .alert.alert-secondary {
+    margin-bottom: var(--space-3);
+  }
+}
