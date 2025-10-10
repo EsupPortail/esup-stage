@@ -145,6 +145,7 @@ public class EvaluationTuteurController {
         if (validToken == null) {
             throw new AppException(HttpStatus.FORBIDDEN, "Token invalide, expiré ou déjà utilisé");
         }
+        reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
         return true;
     }
 

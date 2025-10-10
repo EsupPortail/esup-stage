@@ -3,7 +3,7 @@ export interface ConventionEvaluationTuteur {
   contact: any;
   etudiant: any;
   ficheEvaluation: any;
-  questionsSupplementaires: any;
+  questionSupplementaire: any;
   reponseEvaluation: any;
   reponseSupplementaires: any;
 }
