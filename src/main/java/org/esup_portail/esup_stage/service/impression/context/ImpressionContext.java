@@ -1,9 +1,13 @@
 package org.esup_portail.esup_stage.service.impression.context;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Lob;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.esup_portail.esup_stage.enums.TypeQuestionEvaluation;
 import org.esup_portail.esup_stage.model.*;
 
 import java.text.DateFormat;
@@ -25,10 +29,11 @@ public class ImpressionContext {
     private AvenantContext avenant = new AvenantContext();
     private ReponseEvaluationContext reponse = new ReponseEvaluationContext();
     private FicheEvaluationContext ficheEvaluation = new FicheEvaluationContext();
+    private List<QuestionEvaluationContext> questionEvaluations = new ArrayList<>();
     private List<QuestionSupplementaireContext> questionsSupplementaires = new ArrayList<>();
     private List<ReponseSupplementaireContext> reponsesSupplementaires = new ArrayList<>();
 
-    public ImpressionContext(Convention convention, Avenant avenant, CentreGestion centreEtablissement, List<QuestionSupplementaire> questionSupplementaires) {
+    public ImpressionContext(Convention convention, Avenant avenant, CentreGestion centreEtablissement, List<QuestionSupplementaire> questionSupplementaires, List<QuestionEvaluation> questionEvaluations) {
         if (convention != null) {
             this.convention = new ConventionContext(convention, centreEtablissement);
             this.centreGestion = new CentreGestionContext(convention.getCentreGestion(), centreEtablissement);
@@ -41,13 +46,14 @@ public class ImpressionContext {
             FicheEvaluation ficheEvaluation = convention.getCentreGestion().getFicheEvaluation();
             this.ficheEvaluation = new FicheEvaluationContext(ficheEvaluation);
             this.reponse = new ReponseEvaluationContext(convention.getReponseEvaluation());
-            if (ficheEvaluation != null) {
-                for (QuestionSupplementaire question : questionSupplementaires) {
-                    this.questionsSupplementaires.add(new QuestionSupplementaireContext(question));
-                }
+            for (QuestionSupplementaire question : questionSupplementaires) {
+                this.questionsSupplementaires.add(new QuestionSupplementaireContext(question));
             }
             for (ReponseSupplementaire reponse : convention.getReponseSupplementaires()) {
                 this.reponsesSupplementaires.add(new ReponseSupplementaireContext(reponse));
+            }
+            for (QuestionEvaluation q : questionEvaluations) {
+                this.questionEvaluations.add(new QuestionEvaluationContext(q));
             }
         }
         if (avenant != null) {
@@ -926,6 +932,20 @@ public class ImpressionContext {
             this.reponseTxt = reponseSupplementaire.getReponseTxt();
             this.reponseInt = reponseSupplementaire.getReponseInt();
             this.reponseBool = reponseSupplementaire.getReponseBool();
+        }
+    }
+
+    @Data
+    @NoArgsConstructor
+    public static class QuestionEvaluationContext {
+        private String code;
+        private String texte;
+        private TypeQuestionEvaluation type;
+
+        public QuestionEvaluationContext(QuestionEvaluation questionEvaluation) {
+            this.code = questionEvaluation.getCode();
+            this.texte = questionEvaluation.getTexte();
+            this.type = questionEvaluation.getType();
         }
     }
 }

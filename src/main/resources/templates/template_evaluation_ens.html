@@ -23,7 +23,7 @@
     <#-- I1 : avec le stagiaire -->
     <#if ficheEvaluation.questionEnsI1>
       <div class="evaluation-item">
-        <p><strong>Avec le stagiaire :</strong></p>
+        <p><strong>${questionEvaluations?filter(q -> q.code == "ENSI1")[0].texte}</strong></p>
         <p>• Téléphone :
           <#if reponse.reponseEnsI1a??>
             <#if reponse.reponseEnsI1a == true>Oui</#if>
@@ -48,7 +48,7 @@
     <#-- I2 : avec le tuteur professionnel -->
     <#if ficheEvaluation.questionEnsI2>
       <div class="evaluation-item">
-        <p><strong>Avec le tuteur professionnel :</strong></p>
+        <p><strong>${questionEvaluations?filter(q -> q.code == "ENSI2")[0].texte}</strong></p>
         <p>• Téléphone :
           <#if reponse.reponseEnsI2a??>
             <#if reponse.reponseEnsI2a == true>Oui</#if>
@@ -73,7 +73,7 @@
     <#-- I3 : Commentaire(s) -->
     <#if ficheEvaluation.questionEnsI3>
       <div class="evaluation-item">
-        <p><strong>Commentaire(s) :</strong></p>
+        <p><strong>${questionEvaluations?filter(q -> q.code == "ENSI3")[0].texte}</strong></p>
         <#if reponse.reponseEnsI3?? && reponse.reponseEnsI3 != "">
           <p><em>${reponse.reponseEnsI3}</em></p>
         </#if>
@@ -88,7 +88,7 @@
 
     <#if ficheEvaluation.questionEnsII1>
       <div class="evaluation-item">
-        <p><strong>- Impression générale et présentation de l’étudiant :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENSII1")[0].texte} :</strong>
           <#if reponse.reponseEnsII1??>
             <#if reponse.reponseEnsII1 == 0>Excellent</#if>
             <#if reponse.reponseEnsII1 == 1>Très bien</#if>
@@ -102,7 +102,7 @@
 
     <#if ficheEvaluation.questionEnsII2>
       <div class="evaluation-item">
-        <p><strong>- Aptitude à cerner et situer le projet :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENSII2")[0].texte} :</strong>
           <#if reponse.reponseEnsII2??>
             <#if reponse.reponseEnsII2 == 0>Excellent</#if>
             <#if reponse.reponseEnsII2 == 1>Très bien</#if>
@@ -116,7 +116,7 @@
 
     <#if ficheEvaluation.questionEnsII3>
       <div class="evaluation-item">
-        <p><strong>- Aptitude à appliquer ses connaissances :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENSII3")[0].texte} :</strong>
           <#if reponse.reponseEnsII3??>
             <#if reponse.reponseEnsII3 == 0>Excellent</#if>
             <#if reponse.reponseEnsII3 == 1>Très bien</#if>
@@ -130,7 +130,7 @@
 
     <#if ficheEvaluation.questionEnsII4>
       <div class="evaluation-item">
-        <p><strong>- Maîtrise du sujet, argumentation, analyse :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENSII4")[0].texte} :</strong>
           <#if reponse.reponseEnsII4??>
             <#if reponse.reponseEnsII4 == 0>Excellent</#if>
             <#if reponse.reponseEnsII4 == 1>Très bien</#if>
@@ -144,7 +144,7 @@
 
     <#if ficheEvaluation.questionEnsII5>
       <div class="evaluation-item">
-        <p><strong>- Mise en évidence des éléments importants de l’étude :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENSII5")[0].texte} :</strong>
           <#if reponse.reponseEnsII5??>
             <#if reponse.reponseEnsII5 == 0>Excellent</#if>
             <#if reponse.reponseEnsII5 == 1>Très bien</#if>
@@ -158,7 +158,7 @@
 
     <#if ficheEvaluation.questionEnsII6>
       <div class="evaluation-item">
-        <p><strong>- Utilisation des moyens de communication :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENSII6")[0].texte} :</strong>
           <#if reponse.reponseEnsII6??>
             <#if reponse.reponseEnsII6 == 0>Excellent</#if>
             <#if reponse.reponseEnsII6 == 1>Très bien</#if>
@@ -172,7 +172,7 @@
 
     <#if ficheEvaluation.questionEnsII7>
       <div class="evaluation-item">
-        <p><strong>- Qualité de l’expression orale :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENSII7")[0].texte} :</strong>
           <#if reponse.reponseEnsII7??>
             <#if reponse.reponseEnsII7 == 0>Excellent</#if>
             <#if reponse.reponseEnsII7 == 1>Très bien</#if>
@@ -186,7 +186,7 @@
 
     <#if ficheEvaluation.questionEnsII8>
       <div class="evaluation-item">
-        <p><strong>- Capacité à intéresser l’auditoire :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENSII8")[0].texte} :</strong>
           <#if reponse.reponseEnsII8??>
             <#if reponse.reponseEnsII8 == 0>Excellent</#if>
             <#if reponse.reponseEnsII8 == 1>Très bien</#if>
@@ -200,7 +200,7 @@
 
     <#if ficheEvaluation.questionEnsII9>
       <div class="evaluation-item">
-        <p><strong>- Pertinence des réponses :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENSII9")[0].texte} :</strong>
           <#if reponse.reponseEnsII9??>
             <#if reponse.reponseEnsII9 == 0>Excellent</#if>
             <#if reponse.reponseEnsII9 == 1>Très bien</#if>
@@ -214,7 +214,7 @@
 
     <#if ficheEvaluation.questionEnsII10>
       <div class="evaluation-item">
-        <p><strong>- Respect du temps alloué :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENSII10")[0].texte} :</strong>
           <#if reponse.reponseEnsII10??>
             <#if reponse.reponseEnsII10 == 0>Excellent</#if>
             <#if reponse.reponseEnsII10 == 1>Très bien</#if>
@@ -229,7 +229,7 @@
     <#-- II11 : commentaire libre -->
     <#if ficheEvaluation.questionEnsII11>
       <div class="evaluation-item">
-        <p><strong>Commentaire(s) complémentaire(s) :</strong></p>
+        <p><strong>${questionEvaluations?filter(q -> q.code == "ENSII11")[0].texte}</strong></p>
         <#if reponse.reponseEnsII11?? && reponse.reponseEnsII11 != "">
           <p><em>${reponse.reponseEnsII11}</em></p>
         </#if>

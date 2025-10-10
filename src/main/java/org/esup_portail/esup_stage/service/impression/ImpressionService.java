@@ -20,6 +20,7 @@ import org.esup_portail.esup_stage.enums.TypeSignatureEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
+import org.esup_portail.esup_stage.repository.QuestionEvaluationJpaRepository;
 import org.esup_portail.esup_stage.repository.QuestionSupplementaireJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateConventionJpaRepository;
 import org.esup_portail.esup_stage.service.impression.context.ImpressionContext;
@@ -53,11 +54,8 @@ public class ImpressionService {
     @Autowired
     QuestionSupplementaireJpaRepository QSJpaRepository;
 
-    //    @Autowired
-    //    ConventionService conventionService;
-    //
-    //    @Autowired
-    //    ConventionJpaRepository conventionJpaRepository;
+    @Autowired
+    QuestionEvaluationJpaRepository QEJpaRepository;
 
     public void generateConventionAvenantPDF(Convention convention, Avenant avenant, ByteArrayOutputStream ou, boolean isRecap) {
         if (convention.getNomenclature() == null) {
@@ -69,7 +67,8 @@ public class ImpressionService {
         }
         CentreGestion centreEtablissement = centreGestionJpaRepository.getCentreEtablissement();
         List<QuestionSupplementaire> questionSupplementaire = QSJpaRepository.findByFicheEvaluation(centreEtablissement.getFicheEvaluation().getId());
-        ImpressionContext impressionContext = new ImpressionContext(convention, avenant, centreEtablissement, questionSupplementaire);
+        List<QuestionEvaluation> questionEvaluations = QEJpaRepository.findAll();
+        ImpressionContext impressionContext = new ImpressionContext(convention, avenant, centreEtablissement, questionSupplementaire, questionEvaluations);
 
         try {
 
@@ -381,7 +380,8 @@ public class ImpressionService {
 
         CentreGestion centreEtablissement = centreGestionJpaRepository.getCentreEtablissement();
         List<QuestionSupplementaire> questionSupplementaire = QSJpaRepository.findByFicheEvaluation(centreEtablissement.getFicheEvaluation().getId());
-        ImpressionContext impressionContext = new ImpressionContext(convention, avenant, centreEtablissement, questionSupplementaire);
+        List<QuestionEvaluation> questionEvaluations = QEJpaRepository.findAll();
+        ImpressionContext impressionContext = new ImpressionContext(convention, avenant, centreEtablissement, questionSupplementaire, questionEvaluations);
 
         try {
             // Récupération du texte HTML directement depuis les fichiers

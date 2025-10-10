@@ -24,7 +24,7 @@
     <#-- I1 : Difficultés à trouver un stage -->
     <#if ficheEvaluation.questionEtuI1>
       <div class="evaluation-item">
-        <p><strong>- Avez-vous rencontré des difficultés pour trouver un stage ?</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUI1")[0].texte}</strong>
           <#if reponse.reponseEtuI1??>
             <#if reponse.reponseEtuI1 == 0>Non, il est automatiquement proposé dans le cadre de la formation</#if>
             <#if reponse.reponseEtuI1 == 1>Non, je l’ai trouvé assez facilement par moi-même</#if>
@@ -40,7 +40,7 @@
     <#-- I2 : Durée de recherche -->
     <#if ficheEvaluation.questionEtuI2>
       <div class="evaluation-item">
-        <p><strong>- Combien de temps a duré votre recherche de stage ?</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUI2")[0].texte}</strong>
           <#if reponse.reponseEtuI2??>
             <#if reponse.reponseEtuI2 == 0>1 jour à 1 semaine</#if>
             <#if reponse.reponseEtuI2 == 1>2 semaines à 1 mois</#if>
@@ -55,7 +55,7 @@
     <#-- I3 : Nombre d'établissements prospectés -->
     <#if ficheEvaluation.questionEtuI3>
       <div class="evaluation-item">
-        <p><strong>- Combien d'établissement(s) d'accueil avez-vous prospecté(s) ?</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUI3")[0].texte}</strong>
           <#if reponse.reponseEtuI3??>
             <#if reponse.reponseEtuI3 == 0>1 à 5</#if>
             <#if reponse.reponseEtuI3 == 1>6 à 10</#if>
@@ -69,7 +69,7 @@
     <#-- I4 a-d : Procédés de démarchage -->
     <#if ficheEvaluation.questionEtuI4>
       <div class="evaluation-item">
-        <p><strong>- Quel(s) procédé(s) de démarchage avez-vous utilisé(s) ?</strong></p>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUI4")[0].texte}</strong></p>
         <p>• Mail :
           <#if reponse.reponseEtuI4a??>
             <#if reponse.reponseEtuI4a == true>Oui</#if>
@@ -100,7 +100,7 @@
     <#-- I5 : Comment avez-vous trouvé votre stage ? (depuis la convention) -->
     <#if ficheEvaluation.questionEtuI5>
       <div class="evaluation-item">
-        <p><strong>- Comment avez-vous trouvé votre stage ?</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUI5")[0].texte}</strong>
           <#-- information récupérée depuis la convention -->
           <#if convention.origineStageLibelle?? && convention.origineStageLibelle?has_content>
             ${convention.origineStageLibelle}
@@ -112,7 +112,7 @@
     <#-- I6 : Détermination du contenu du stage -->
     <#if ficheEvaluation.questionEtuI6>
       <div class="evaluation-item">
-        <p><strong>- Comment avez-vous déterminé le contenu de stage ?</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUI6")[0].texte}</strong>
           <#if reponse.reponseEtuI6??>
             <#if reponse.reponseEtuI6 == 0>Proposé par votre tuteur professionnel</#if>
             <#if reponse.reponseEtuI6 == 1>Proposé par votre tuteur enseignant</#if>
@@ -126,7 +126,7 @@
     <#-- I7 (+bis) : Accompagnement dans les démarches -->
     <#if ficheEvaluation.questionEtuI7>
       <div class="evaluation-item">
-        <p><strong>- Avez-vous été accompagné(e) dans vos démarches ?</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUI7")[0].texte}</strong>
           <#if reponse.reponseEtuI7??>
             <#if reponse.reponseEtuI7 == true>Oui</#if>
             <#if reponse.reponseEtuI7 == false>Non</#if>
@@ -164,7 +164,7 @@
     <#-- I8 : Modalités d'évaluation présentées avant le début -->
     <#if ficheEvaluation.questionEtuI8>
       <div class="evaluation-item">
-        <p><strong>- Est-ce que les modalités d'évaluation de stage vous ont été clairement présentées ?</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUI8")[0].texte}</strong>
           <#if reponse.reponseEtuI8??>
             <#if reponse.reponseEtuI8 == true>Oui</#if>
             <#if reponse.reponseEtuI8 == false>Non</#if>
@@ -178,7 +178,7 @@
   <div>
     <h3>II. Pendant le stage</h3>
 
-    <#-- II1 : moment de présentation des modalités (Oui/Non/Pendant le stage via entier) -->
+    <#-- II1 : moment de présentation des modalités (pas de code en base dans le changelog fourni) -->
     <#if ficheEvaluation.questionEtuII1>
       <div class="evaluation-item">
         <p><strong>- Quand ces modalités vous ont-elles été présentées ?</strong>
@@ -197,7 +197,7 @@
     <#-- II2 : Accueil -->
     <#if ficheEvaluation.questionEtuII2>
       <div class="evaluation-item">
-        <p><strong>- Comment qualifieriez-vous l'accueil de votre entreprise ?</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUII1")[0].texte}</strong>
           <#if reponse.reponseEtuII2??>
             <#if reponse.reponseEtuII2 == 0>Excellent</#if>
             <#if reponse.reponseEtuII2 == 1>Très bien</#if>
@@ -215,7 +215,7 @@
     <#-- II3 : Encadrement -->
     <#if ficheEvaluation.questionEtuII3>
       <div class="evaluation-item">
-        <p><strong>- Comment qualifieriez-vous l'encadrement de votre stage ?</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUII2")[0].texte}</strong>
           <#if reponse.reponseEtuII3??>
             <#if reponse.reponseEtuII3 == 0>Excellent</#if>
             <#if reponse.reponseEtuII3 == 1>Très bien</#if>
@@ -233,7 +233,7 @@
     <#-- II4 : Adaptation -->
     <#if ficheEvaluation.questionEtuII4>
       <div class="evaluation-item">
-        <p><strong>- Comment qualifieriez-vous votre adaptation au sein de l'établissement d'accueil ?</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUII3")[0].texte}</strong>
           <#if reponse.reponseEtuII4??>
             <#if reponse.reponseEtuII4 == 0>Excellent</#if>
             <#if reponse.reponseEtuII4 == 1>Très bien</#if>
@@ -248,7 +248,7 @@
     <#-- II5/II5a/II5b : Conditions matérielles -->
     <#if ficheEvaluation.questionEtuII5>
       <div class="evaluation-item">
-        <p><strong>- Les conditions matérielles vous ont permis d’atteindre les objectifs de votre stage :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUII4")[0].texte}</strong>
           <#if reponse.reponseEtuII5a??>
             <#if reponse.reponseEtuII5a == 0>Tout à fait d'accord</#if>
             <#if reponse.reponseEtuII5a == 1>Plutôt d'accord</#if>
@@ -268,7 +268,7 @@
     <#-- II6 : Responsabilités -->
     <#if ficheEvaluation.questionEtuII6>
       <div class="evaluation-item">
-        <p><strong>- Avez-vous exercé des responsabilités ?</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUII5")[0].texte}</strong>
           <#if reponse.reponseEtuII6??>
             <#if reponse.reponseEtuII6 == true>Oui</#if>
             <#if reponse.reponseEtuII6 == false>Non</#if>
@@ -284,7 +284,7 @@
     <#-- III1 : Dimension internationale -->
     <#if ficheEvaluation.questionEtuIII1>
       <div class="evaluation-item">
-        <p><strong>- Votre stage avait-il une dimension internationale ?</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUII6")[0].texte}</strong>
           <#if reponse.reponseEtuIII1??>
             <#if reponse.reponseEtuIII1 == true>Oui</#if>
             <#if reponse.reponseEtuIII1 == false>Non</#if>
@@ -298,7 +298,7 @@
 
     <#-- Sujet d'origine (depuis la convention) -->
     <div class="evaluation-item">
-      <p><strong>- Votre sujet de stage était à l'origine :</strong>
+      <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUIII0")[0].texte}</strong>
         <#if convention.sujetStage?? && convention.sujetStage?has_content>
           ${convention.sujetStage}
         </#if>
@@ -308,7 +308,7 @@
     <#-- III2 : Modification du sujet -->
     <#if ficheEvaluation.questionEtuIII2>
       <div class="evaluation-item">
-        <p><strong>- L'avez-vous modifié ?</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUIII1")[0].texte}</strong>
           <#if reponse.reponseEtuIII2??>
             <#if reponse.reponseEtuIII2 == true>Oui</#if>
             <#if reponse.reponseEtuIII2 == false>Non</#if>
@@ -323,7 +323,7 @@
     <#-- III3 : Adéquation avec la formation -->
     <#if ficheEvaluation.questionEtuIII3>
       <div class="evaluation-item">
-        <p><strong>- Selon vous, le stage a-t-il bien été en adéquation avec votre formation ?</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUIII2")[0].texte}</strong>
           <#if reponse.reponseEtuIII3??>
             <#if reponse.reponseEtuIII3 == true>Oui</#if>
             <#if reponse.reponseEtuIII3 == false>Non</#if>
@@ -338,7 +338,7 @@
     <#-- III4 : Niveau des missions -->
     <#if ficheEvaluation.questionEtuIII4>
       <div class="evaluation-item">
-        <p><strong>- Les missions confiées ont été ?</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUIII4")[0].texte}</strong>
           <#if reponse.reponseEtuIII4??>
             <#if reponse.reponseEtuIII4 == 0>Très au-dessous de vos compétences</#if>
             <#if reponse.reponseEtuIII4 == 1>Au-dessous de vos compétences</#if>
@@ -354,7 +354,7 @@
     <#-- III5 a/b/c : acquis -->
     <#if ficheEvaluation.questionEtuIII5>
       <div class="evaluation-item">
-        <p><strong>- Ce stage vous a-t-il permis d'acquérir :</strong></p>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUIII5")[0].texte}</strong></p>
         <p>• Compétences techniques :
           <#if reponse.reponseEtuIII5a??>
             <#if reponse.reponseEtuIII5a == true>Oui</#if>
@@ -382,7 +382,7 @@
     <#-- III6 : progression projet pro (Likert 5 + Sans avis) -->
     <#if ficheEvaluation.questionEtuIII6>
       <div class="evaluation-item">
-        <p><strong>- Ce stage vous a permis de progresser dans la construction de votre projet personnel et professionnel :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUIII6")[0].texte}</strong>
           <#if reponse.reponseEtuIII6??>
             <#if reponse.reponseEtuIII6 == 0>Tout à fait d'accord</#if>
             <#if reponse.reponseEtuIII6 == 1>Plutôt d'accord</#if>
@@ -400,7 +400,7 @@
     <#-- III7 : stage déterminant (Likert 5 + Sans avis) -->
     <#if ficheEvaluation.questionEtuIII7>
       <div class="evaluation-item">
-        <p><strong>- Ce stage vous paraît déterminant à cette étape de votre formation :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUIII7")[0].texte}</strong>
           <#if reponse.reponseEtuIII7??>
             <#if reponse.reponseEtuIII7 == 0>Tout à fait d'accord</#if>
             <#if reponse.reponseEtuIII7 == 1>Plutôt d'accord</#if>
@@ -418,7 +418,7 @@
     <#-- III8 : Réorganisation du travail -->
     <#if ficheEvaluation.questionEtuIII8>
       <div class="evaluation-item">
-        <p><strong>- Votre travail a-t-il abouti à une réorganisation du travail ?</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUIII8")[0].texte}</strong>
           <#if reponse.reponseEtuIII8??>
             <#if reponse.reponseEtuIII8 == true>Oui</#if>
             <#if reponse.reponseEtuIII8 == false>Non</#if>
@@ -433,7 +433,7 @@
     <#-- III9 : Valorisation -->
     <#if ficheEvaluation.questionEtuIII9>
       <div class="evaluation-item">
-        <p><strong>- Allez-vous valoriser cette expérience dans une prochaine recherche d'emploi/stage ?</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUIII9")[0].texte}</strong>
           <#if reponse.reponseEtuIII9??>
             <#if reponse.reponseEtuIII9 == true>Oui</#if>
             <#if reponse.reponseEtuIII9 == false>Non</#if>
@@ -448,7 +448,7 @@
     <#-- III10 : Brevet -->
     <#if ficheEvaluation.questionEtuIII10>
       <div class="evaluation-item">
-        <p><strong>- Votre travail va-t-il donner lieu à un dépôt de brevet ?</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUIII10")[0].texte}</strong>
           <#if reponse.reponseEtuIII10??>
             <#if reponse.reponseEtuIII10 == true>Oui</#if>
             <#if reponse.reponseEtuIII10 == false>Non</#if>
@@ -460,7 +460,7 @@
     <#-- III11 : Attestation -->
     <#if ficheEvaluation.questionEtuIII11>
       <div class="evaluation-item">
-        <p><strong>- Avez-vous reçu une attestation de stage ?</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUIII11")[0].texte}</strong>
           <#if reponse.reponseEtuIII11??>
             <#if reponse.reponseEtuIII11 == true>Oui</#if>
             <#if reponse.reponseEtuIII11 == false>Non</#if>
@@ -472,7 +472,7 @@
     <#-- III12 : Difficultés gratification -->
     <#if ficheEvaluation.questionEtuIII12>
       <div class="evaluation-item">
-        <p><strong>- Avez-vous rencontré des difficultés à percevoir votre gratification ?</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUIII12")[0].texte}</strong>
           <#if reponse.reponseEtuIII12??>
             <#if reponse.reponseEtuIII12 == true>Oui</#if>
             <#if reponse.reponseEtuIII12 == false>Non</#if>
@@ -484,7 +484,7 @@
     <#-- III13 : Proposition d'emploi/alternance -->
     <#if ficheEvaluation.questionEtuIII13>
       <div class="evaluation-item">
-        <p><strong>- Ce stage a-t-il donné lieu à une proposition d'emploi ou d'alternance ?</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUIII14")[0].texte}</strong>
           <#if reponse.reponseEtuIII13??>
             <#if reponse.reponseEtuIII13 == true>Oui</#if>
             <#if reponse.reponseEtuIII13 == false>Non</#if>
@@ -508,7 +508,7 @@
     <#-- III15 : Conseilleriez-vous l'établissement ? (Likert 5) -->
     <#if ficheEvaluation.questionEtuIII15>
       <div class="evaluation-item">
-        <p><strong>- Conseilleriez-vous cet établissement d'accueil à un autre étudiant ?</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUIII15")[0].texte}</strong>
           <#if reponse.reponseEtuIII15??>
             <#if reponse.reponseEtuIII15 == 0>Tout à fait d'accord</#if>
             <#if reponse.reponseEtuIII15 == 1>Plutôt d'accord</#if>
@@ -526,7 +526,7 @@
     <#-- III16 : Appréciation générale (Excellent..Insuffisant) -->
     <#if ficheEvaluation.questionEtuIII16>
       <div class="evaluation-item">
-        <p><strong>- Indiquez votre appréciation générale sur le stage :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUIII16")[0].texte}</strong>
           <#if reponse.reponseEtuIII16??>
             <#if reponse.reponseEtuIII16 == 0>Excellent</#if>
             <#if reponse.reponseEtuIII16 == 1>Très bien</#if>

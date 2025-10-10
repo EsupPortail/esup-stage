@@ -22,7 +22,7 @@
 
     <#if ficheEvaluation.questionEnt1>
       <div class="evaluation-item">
-        <p><strong>- Adaptation au milieu professionnel :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT1")[0].texte} :</strong>
           <#if reponse.reponseEnt1??>
             <#if reponse.reponseEnt1 == 0>Excellent</#if>
             <#if reponse.reponseEnt1 == 1>Très bien</#if>
@@ -39,7 +39,7 @@
 
     <#if ficheEvaluation.questionEnt2>
       <div class="evaluation-item">
-        <p><strong>- Intégration au groupe de travail</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT2")[0].texte}</strong>
           <#if reponse.reponseEnt2??>
             <#if reponse.reponseEnt2 == 0>Excellent</#if>
             <#if reponse.reponseEnt2 == 1>Très bien</#if>
@@ -56,7 +56,7 @@
 
     <#if ficheEvaluation.questionEnt3>
       <div class="evaluation-item">
-        <p><strong>- Assiduité - ponctualité :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT3")[0].texte} :</strong>
           <#if reponse.reponseEnt3??>
             <#if reponse.reponseEnt3 == 0>Excellent</#if>
             <#if reponse.reponseEnt3 == 1>Très bien</#if>
@@ -70,7 +70,7 @@
 
     <#if ficheEvaluation.questionEnt4>
       <div class="evaluation-item">
-        <p><strong>- Intérêt pour l'établissement, les services, et les métiers :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT5")[0].texte} :</strong>
           <#if reponse.reponseEnt4??>
             <#if reponse.reponseEnt4 == 0>Excellent</#if>
             <#if reponse.reponseEnt4 == 1>Très bien</#if>
@@ -87,7 +87,7 @@
 
     <#if ficheEvaluation.questionEnt5>
       <div class="evaluation-item">
-        <p><strong>- Sens de l'organisation :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT9")[0].texte} :</strong>
           <#if reponse.reponseEnt5??>
             <#if reponse.reponseEnt5 == 0>Excellent</#if>
             <#if reponse.reponseEnt5 == 1>Très bien</#if>
@@ -104,7 +104,7 @@
 
     <#if ficheEvaluation.questionEnt6>
       <div class="evaluation-item">
-        <p><strong>- Capacité d'autonomie :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT11")[0].texte} :</strong>
           <#if reponse.reponseEnt6??>
             <#if reponse.reponseEnt6 == 0>Excellent</#if>
             <#if reponse.reponseEnt6 == 1>Très bien</#if>
@@ -121,7 +121,7 @@
 
     <#if ficheEvaluation.questionEnt7>
       <div class="evaluation-item">
-        <p><strong>- Initiative personnelle :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT12")[0].texte} :</strong>
           <#if reponse.reponseEnt7??>
             <#if reponse.reponseEnt7 == 0>Excellent</#if>
             <#if reponse.reponseEnt7 == 1>Très bien</#if>
@@ -138,7 +138,7 @@
 
     <#if ficheEvaluation.questionEnt8>
       <div class="evaluation-item">
-        <p><strong>- Implication :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT13")[0].texte} :</strong>
           <#if reponse.reponseEnt8??>
             <#if reponse.reponseEnt8 == 0>Excellent</#if>
             <#if reponse.reponseEnt8 == 1>Très bien</#if>
@@ -155,7 +155,7 @@
 
     <#if ficheEvaluation.questionEnt9>
       <div class="evaluation-item">
-        <p><strong>- Rigueur et précision dans le travail :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT14")[0].texte} :</strong>
           <#if reponse.reponseEnt9??>
             <#if reponse.reponseEnt9 == 0>Excellent</#if>
             <#if reponse.reponseEnt9 == 1>Très bien</#if>
@@ -176,7 +176,7 @@
 
     <#if ficheEvaluation.questionEnt10>
       <div class="evaluation-item">
-        <p><strong>- Aptitude à cerner et situer le projet : </strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT4")[0].texte} </strong>
           <#if reponse.reponseEnt10??>
             <#if reponse.reponseEnt10 == true>Oui</#if>
             <#if reponse.reponseEnt10 == false>Non</#if>
@@ -190,7 +190,7 @@
 
     <#if ficheEvaluation.questionEnt11>
       <div class="evaluation-item">
-        <p><strong>- Aptitude à appliquer ses connaissances : </strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT6")[0].texte} </strong>
           <#if reponse.reponseEnt11??>
             <#if reponse.reponseEnt11 == 0>Excellent</#if>
             <#if reponse.reponseEnt11 == 1>Très bien</#if>
@@ -207,7 +207,7 @@
 
     <#if ficheEvaluation.questionEnt12>
       <div class="evaluation-item">
-        <p><strong>- Esprit d'observation et pertinence des remarques :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT7")[0].texte} :</strong>
           <#if reponse.reponseEnt12??>
             <#if reponse.reponseEnt12 == 0>Excellent</#if>
             <#if reponse.reponseEnt12 == 1>Très bien</#if>
@@ -224,7 +224,7 @@
 
     <#if ficheEvaluation.questionEnt13>
       <div class="evaluation-item">
-        <p><strong>- Esprit de synthèse :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT8")[0].texte} :</strong>
           <#if reponse.reponseEnt13??>
             <#if reponse.reponseEnt13 == 0>Excellent</#if>
             <#if reponse.reponseEnt13 == 1>Très bien</#if>
@@ -241,7 +241,7 @@
 
     <#if ficheEvaluation.questionEnt14>
       <div class="evaluation-item">
-        <p><strong>- Aptitude à la communication :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT15")[0].texte} :</strong>
           <#if reponse.reponseEnt14??>
             <#if reponse.reponseEnt14 == 0>Excellent</#if>
             <#if reponse.reponseEnt14 == 1>Très bien</#if>
@@ -262,7 +262,7 @@
 
     <#if ficheEvaluation.questionEnt15>
       <div class="evaluation-item">
-        <p><strong>- Les objectifs ont-ils été atteints ? :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT16")[0].texte} :</strong>
           <#if reponse.reponseEnt15??>
             <#if reponse.reponseEnt15 == 0>Excellent</#if>
             <#if reponse.reponseEnt15 == 1>Très bien</#if>
@@ -279,7 +279,7 @@
 
     <#if ficheEvaluation.questionEnt16>
       <div class="evaluation-item">
-        <p><strong>- Indiquez votre appréciation générale de ce stage :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT17")[0].texte} :</strong>
           <#if reponse.reponseEnt16??>
             <#if reponse.reponseEnt16 == 0>Excellent</#if>
             <#if reponse.reponseEnt16 == 1>Très bien</#if>
@@ -296,7 +296,7 @@
 
     <#if ficheEvaluation.questionEnt17>
       <div class="evaluation-item">
-        <p><strong>- Observations : </strong></p>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT19")[0].texte} : </strong></p>
         <#if reponse.reponseEnt19?? && reponse.reponseEnt19 != "">
           <p>${reponse.reponseEnt19}</p>
         </#if>
@@ -305,7 +305,7 @@
 
     <#if ficheEvaluation.questionEnt18>
       <div class="evaluation-item">
-        <p><strong>- Seriez-vous prêt à accueillir un nouveau stagiaire ? :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT18")[0].texte} :</strong>
           <#if reponse.reponseEnt18??>
             <#if reponse.reponseEnt18 == true>Oui</#if>
             <#if reponse.reponseEnt18 == false>Non</#if>
@@ -317,9 +317,10 @@
       </div>
     </#if>
 
+    <#-- le bloc ci-dessous gardait le même intitulé ; je remets le même code ENT18 puisque tes réponses pointent sur reponseEnt18 -->
     <#if ficheEvaluation.questionEnt19>
       <div class="evaluation-item">
-        <p><strong>- Seriez-vous prêt à accueillir un nouveau stagiaire ? :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT18")[0].texte} :</strong>
           <#if reponse.reponseEnt18??>
             <#if reponse.reponseEnt18 == true>Oui</#if>
             <#if reponse.reponseEnt18 == false>Non</#if>
