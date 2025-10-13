@@ -7,6 +7,9 @@ import org.esup_portail.esup_stage.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.charset.*;
 import java.util.*;
 import java.util.function.Function;
 
@@ -184,6 +187,38 @@ public class CsvStructureImportUtils {
         return s;
     }
 
+    /* =================== ENCODING UTILS =================== */
+
+    /**
+     * Ouvre un BufferedReader en détectant l'encodage du flux CSV :
+     * - BOM UTF-8/UTF-16 si présent
+     * - sinon essai strict UTF-8
+     * - sinon fallback Windows-1252 (cas courant Excel FR)
+     */
+    public BufferedReader openReader(InputStream in) throws IOException {
+        byte[] bytes = in.readAllBytes();
+        Charset charset = detectCharset(bytes);
+        return new BufferedReader(new InputStreamReader(new ByteArrayInputStream(bytes), charset));
+    }
+
+    /** Détection BOM/UTF-8 strict, sinon CP1252 */
+    private static Charset detectCharset(byte[] bytes) {
+        // 1) BOMs connus
+        if (startsWith(bytes, new byte[]{(byte)0xEF,(byte)0xBB,(byte)0xBF})) return StandardCharsets.UTF_8;     // UTF-8 BOM
+        if (startsWith(bytes, new byte[]{(byte)0xFF,(byte)0xFE}))             return StandardCharsets.UTF_16LE;  // UTF-16 LE BOM
+        if (startsWith(bytes, new byte[]{(byte)0xFE,(byte)0xFF}))             return StandardCharsets.UTF_16BE;  // UTF-16 BE BOM
+
+        try {
+            CharsetDecoder dec = StandardCharsets.UTF_8.newDecoder()
+                    .onMalformedInput(CodingErrorAction.REPORT)
+                    .onUnmappableCharacter(CodingErrorAction.REPORT);
+            dec.decode(ByteBuffer.wrap(bytes));
+            return StandardCharsets.UTF_8;
+        } catch (CharacterCodingException ignore) {
+            return Charset.forName("windows-1252");
+        }
+    }
+
     /* ===== Helpers ===== */
 
     private Pays resolvePays(String code) {
@@ -225,5 +260,13 @@ public class CsvStructureImportUtils {
     private NafN5 resolveApe(String code) {
         if (code == null || code.isBlank()) return null;
         return nafN5JpaRepository.findByCode(code.trim());
+    }
+
+    private static boolean startsWith(byte[] data, byte[] prefix) {
+        if (data == null || data.length < prefix.length) return false;
+        for (int i = 0; i < prefix.length; i++) {
+            if (data[i] != prefix[i]) return false;
+        }
+        return true;
     }
 }

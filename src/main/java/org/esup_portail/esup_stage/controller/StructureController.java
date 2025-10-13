@@ -170,7 +170,7 @@ public class StructureController {
         int lineNumber = 0;
         boolean isHeader = true;
 
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, java.nio.charset.StandardCharsets.UTF_8))) {
+        try (BufferedReader br = csvUtils.openReader(inputStream)) { // <<— ici
 
             String line;
             CsvStructureImportUtils.Indices I = null;
@@ -200,10 +200,8 @@ public class StructureController {
                 String[] columns = line.split(separator, -1);
                 var col = csvUtils.colAccessor(columns);
 
-                // 1) Validation
                 var lineErrors = csvUtils.validateRow(lineNumber, col, I);
 
-                // 2) Doublons (en erreur)
                 csvUtils.duplicateError(lineNumber, col, I, structureJpaRepository)
                         .ifPresent(lineErrors::add);
 
@@ -212,7 +210,6 @@ public class StructureController {
                     continue;
                 }
 
-                // 3) Build & save
                 Structure structure = csvUtils.buildStructure(col, I);
                 structureService.save(null, structure);
                 report.setImported(report.getImported() + 1);
