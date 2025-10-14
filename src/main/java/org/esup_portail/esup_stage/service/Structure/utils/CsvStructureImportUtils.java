@@ -143,11 +143,11 @@ public class CsvStructureImportUtils {
         boolean hasSiret = numeroSiret != null && !numeroSiret.isEmpty();
 
         if (!hasRne && hasSiret) {
-            if (repo.existByNumeroSiret(numeroSiret)) {
+            if (repo.existAndActifByNumeroSiret(numeroSiret)) {
                 return Optional.of(new LineErrorDto(lineNumber, "Doublon", "Déjà présent avec ce SIRET", numeroSiret));
             }
         } else if (hasRne) {
-            if (repo.existByNumeroRNE(numeroRNE)) {
+            if (repo.existAndActifByNumeroRNE(numeroRNE)) {
                 return Optional.of(new LineErrorDto(lineNumber, "Doublon", "Déjà présent avec ce RNE", numeroRNE));
             }
         }
