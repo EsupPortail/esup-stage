@@ -6,6 +6,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.esup_portail.esup_stage.dto.EvaluationDto;
 import org.esup_portail.esup_stage.enums.ExportType;
+import org.esup_portail.esup_stage.enums.TypeQuestionEvaluation;
 import org.esup_portail.esup_stage.model.FicheEvaluation;
 import org.esup_portail.esup_stage.model.QuestionEvaluation;
 import org.esup_portail.esup_stage.model.QuestionSupplementaire;
@@ -32,11 +33,6 @@ public class EvaluationExcelExporter {
     private final ObjectMapper mapper = new ObjectMapper();
     private static final List<String> LIKERT_5 = List.of("Excellent","Très bien","Bien","Satisfaisant","Insuffisant");
     private static final List<String> AGREEMENT_5 = List.of("Tout à fait d'accord","Plutôt d'accord","Sans avis","Plutôt pas d'accord","Pas du tout d'accord");
-    private QuestionEvaluation q(String code) {
-        if (code == null) return null;
-        String canon = canonicalCode(code);
-        return questionsByCode.get(canon);
-    }
 
     public byte[] export(List<EvaluationDto> evaluations, ExportType type) {
         loadQuestionsCache();
@@ -164,7 +160,7 @@ public class EvaluationExcelExporter {
 
     private void addEtudiantHeaders(List<String> headers) {
         // I.1
-        headers.add(qText("ETUI1", "I.1") + " - Réponse");
+        headers.add(qText("ETUI1", "I.1"));
         headers.add(bisText("ETUI1", "Commentaire"));
 
         // I.2, I.3
@@ -186,49 +182,41 @@ public class EvaluationExcelExporter {
         // I.7 + sous-questions
         headers.add(qText("ETUI7", "I.7"));
         headers.add(qText("ETUI7", "I.7") + " - Si oui, par qui ?");
-        headers.add(qText("ETUI7", "I.7") + " - Réseau personnel");
-        headers.add(qText("ETUI7", "I.7") + " - Au sein de la formation");
         headers.add(qText("ETUI7", "I.7") + " - Si non, pourquoi ?");
 
         // I.8
         headers.add(qText("ETUI8", "I.8"));
 
         // II.1 (pas de code dédié - fallback manuel)
-        headers.add("Quand ces modalités vous ont-elles été présentées ? - Réponse");
-        headers.add("Quand ces modalités vous ont-elles été présentées ? - Commentaire");
-
-        // II.2, II.3
-        headers.add(qText("ETUII1", "II.2") + " - Réponse");
+        headers.add(qText("ETUII1", "II.1"));
         headers.add(bisText("ETUII1", "Commentaire"));
-        headers.add(qText("ETUII2", "II.3") + " - Réponse");
+
+        // II.2
+        headers.add(qText("ETUII2", "II.2"));
         headers.add(bisText("ETUII2", "Commentaire"));
 
-        // II.4 + commentaire ✅ CORRECTION ICI
-        headers.add(qText("ETUII3", "II.4"));
-        headers.add(bisText("ETUII3", "Commentaire"));  // ✅ Ajouté
+        // II.3
+        headers.add(qText("ETUII3", "II.3"));
+        headers.add(bisText("ETUII3", "Commentaire"));
 
-        // II.5 + précision ✅ CORRECTION ICI
-        headers.add(qText("ETUII4", "II.5"));
-        headers.add(qText("ETUII4", "II.5") + " - Précision");  // ✅ C'est bien ETUII4bis
+        // II.4
+        headers.add(qText("ETUII4", "II.4"));
 
-        // II.6 ✅ CORRECTION ICI
-        headers.add(qText("ETUII5", "II.6"));
+        // II.5
+        headers.add(qText("ETUII5", "II.5"));
+        headers.add(qText("ETUII5", "II.5") + " - De quel ordre ?");
+        headers.add(qText("ETUII5", "II.5") + " - Avec autonomie ?");
 
-        // III.1 (dimension internationale - ETUII6)
-        headers.add(qText("ETUII6", "III.1"));
-        headers.add(qText("ETUII6", "III.1") + " - Commentaire");
+        // II.6
+        headers.add(qText("ETUII6", "II.6"));
 
-        // III.2
-        headers.add(qText("ETUIII1", "III.2"));
+        // III.1
+        headers.add(qText("ETUIII1", "III.1"));
         headers.add(bisText("ETUIII1", "Commentaire"));
 
-        // III.3
-        headers.add(qText("ETUIII2", "III.3"));
+        // III.2
+        headers.add(qText("ETUIII2", "III.2"));
         headers.add(bisText("ETUIII2", "Commentaire"));
-
-        // III.3 bis
-        headers.add(qText("ETUIII3", "III.3 bis"));
-        headers.add(bisText("ETUIII3", "Commentaire"));
 
         // III.4
         headers.add(qText("ETUIII4", "III.4"));
@@ -242,9 +230,9 @@ public class EvaluationExcelExporter {
         headers.add(etuIII5Label + " - Commentaire");
 
         // III.6 à III.9
-        headers.add(qText("ETUIII6", "III.6") + " - Réponse");
+        headers.add(qText("ETUIII6", "III.6"));
         headers.add(bisText("ETUIII6", "Commentaire"));
-        headers.add(qText("ETUIII7", "III.7") + " - Réponse");
+        headers.add(qText("ETUIII7", "III.7"));
         headers.add(bisText("ETUIII7", "Commentaire"));
         headers.add(qText("ETUIII8", "III.8"));
         headers.add(bisText("ETUIII8", "Commentaire"));
@@ -255,12 +243,12 @@ public class EvaluationExcelExporter {
         headers.add(qText("ETUIII10", "III.10"));
         headers.add(qText("ETUIII11", "III.11"));
         headers.add(qText("ETUIII12", "III.12"));
-        headers.add(qText("ETUIII14", "III.14"));  // ✅ Pas de III.13 dans la BD
+        headers.add(qText("ETUIII14", "III.14"));
 
         // III.15, III.16
-        headers.add(qText("ETUIII15", "III.15") + " - Réponse");
+        headers.add(qText("ETUIII15", "III.15"));
         headers.add(bisText("ETUIII15", "Commentaire"));
-        headers.add(qText("ETUIII16", "III.16") + " - Réponse");
+        headers.add(qText("ETUIII16", "III.16"));
         headers.add(bisText("ETUIII16", "Commentaire"));
     }
 
@@ -284,60 +272,59 @@ public class EvaluationExcelExporter {
 
         // II.* (ENSII1..ENSII11)
         headers.add(qText("ENSII1", "II.1"));
+        headers.add(qText("ENSII10", "II.10"));
+        headers.add(qText("ENSII11", "II.11"));
         headers.add(qText("ENSII2", "II.2"));
         headers.add(qText("ENSII3", "II.3"));
-        headers.add(bisText("ENSII3","II.3 bis"));
         headers.add(qText("ENSII4", "II.4"));
         headers.add(qText("ENSII5", "II.5"));
         headers.add(qText("ENSII6", "II.6"));
         headers.add(qText("ENSII7", "II.7"));
         headers.add(qText("ENSII8", "II.8"));
         headers.add(qText("ENSII9", "II.9"));
-        headers.add(qText("ENSII10", "II.10"));
-        headers.add(qText("ENSII11", "II.11") + " - Commentaire");
     }
 
     private void addEntrepriseHeaders(List<String> headers) {
-        // I. savoir-être (ENT1..ENT14) avec commentaires éventuels
-        headers.add(qText("ENT1", "Ent 1") + " - Réponse");
+        // I. savoir-être
+        headers.add(qText("ENT1", "Ent 1"));
         headers.add(bisText("ENT1", "Commentaire"));
-        headers.add(qText("ENT2", "Ent 2") + " - Réponse");
+        headers.add(qText("ENT2", "Ent 2"));
         headers.add(bisText("ENT2", "Commentaire"));
         headers.add(qText("ENT3", "Ent 3"));
-        headers.add(qText("ENT5", "Ent 4") + " - Réponse");
+        headers.add(qText("ENT5", "Ent 4"));
         headers.add(bisText("ENT5", "Commentaire"));
-        headers.add(qText("ENT9", "Ent 5") + " - Réponse");
+        headers.add(qText("ENT9", "Ent 5"));
         headers.add(bisText("ENT9", "Commentaire"));
-        headers.add(qText("ENT11", "Ent 6") + " - Réponse");
+        headers.add(qText("ENT11", "Ent 6"));
         headers.add(bisText("ENT11", "Commentaire"));
-        headers.add(qText("ENT12", "Ent 7") + " - Réponse");
+        headers.add(qText("ENT12", "Ent 7"));
         headers.add(bisText("ENT12", "Commentaire"));
-        headers.add(qText("ENT13", "Ent 8") + " - Réponse");
+        headers.add(qText("ENT13", "Ent 8"));
         headers.add(bisText("ENT13", "Commentaire"));
-        headers.add(qText("ENT14", "Ent 9") + " - Réponse");
+        headers.add(qText("ENT14", "Ent 9"));
         headers.add(bisText("ENT14", "Commentaire"));
 
-        // II. savoir-faire (ENT4, ENT6..ENT8, ENT15)
+        // II. savoir-faire
         headers.add(qText("ENT4", "Ent 10"));
         headers.add(bisText("ENT4", "Commentaire"));
-        headers.add(qText("ENT6", "Ent 11") + " - Réponse");
+        headers.add(qText("ENT6", "Ent 11"));
         headers.add(bisText("ENT6", "Commentaire"));
-        headers.add(qText("ENT7", "Ent 12") + " - Réponse");
+        headers.add(qText("ENT7", "Ent 12"));
         headers.add(bisText("ENT7", "Commentaire"));
-        headers.add(qText("ENT8", "Ent 13") + " - Réponse");
+        headers.add(qText("ENT8", "Ent 13"));
         headers.add(bisText("ENT8", "Commentaire"));
-        headers.add(qText("ENT15", "Ent 14") + " - Réponse");
+        headers.add(qText("ENT15", "Ent 14"));
         headers.add(bisText("ENT15", "Commentaire"));
 
-        // III. appréciation générale (ENT16, ENT17, ENT19, ENT18)
-        headers.add(qText("ENT16", "Ent 15") + " - Réponse");
+        // III. appréciation générale
+        headers.add(qText("ENT16", "Ent 15"));
         headers.add(bisText("ENT16", "Commentaire"));
-        headers.add(qText("ENT17", "Ent 16") + " - Réponse");
+        headers.add(qText("ENT17", "Ent 16"));
         headers.add(bisText("ENT17", "Commentaire"));
-        headers.add(qText("ENT19", "Ent 17") + " - Commentaire");
+        headers.add(qText("ENT19", "Ent 19"));
+        headers.add(qText("ENT10", "Ent 10"));
         headers.add(qText("ENT18", "Ent 18"));
         headers.add(bisText("ENT18", "Commentaire"));
-        // Le dernier “Ent 19 - Commentaire” était déjà couvert par ENT19 ci-dessus.
     }
 
     private void createHeaderRow(Sheet sheet, List<String> headers, CellStyle headerStyle) {
@@ -406,161 +393,316 @@ public class EvaluationExcelExporter {
     }
 
     private int fillEtudiantData(Row row, int colNum, ReponseEvaluation r, CellStyle style) {
-        // I.1 à I.4
-        createCellForCode(row, colNum++, "ETUI1",  r.getReponseEtuI1(), style);
-        createCell(row,        colNum++,  r.getReponseEtuI1bis(), style);
-        createCellForCode(row, colNum++, "ETUI2",  r.getReponseEtuI2(), style);
-        createCellForCode(row, colNum++, "ETUI3",  r.getReponseEtuI3(), style);
-        createCellForCode(row, colNum++, "ETUI4a", r.getReponseEtuI4a(), style);
-        createCellForCode(row, colNum++, "ETUI4b", r.getReponseEtuI4b(), style);
-        createCellForCode(row, colNum++, "ETUI4c", r.getReponseEtuI4c(), style);
-        createCellForCode(row, colNum++, "ETUI4d", r.getReponseEtuI4d(), style);
 
-        // I.5, I.6
-        createCellForCode(row, colNum++, "ETUI5",  r.getReponseEtuI5(), style);
-        createCellForCode(row, colNum++, "ETUI6",  r.getReponseEtuI6(), style);
+        createCell(row, colNum++, "ETUI1",  r.getReponseEtuI1(), style);          // I.1 - Réponse
+        createCell(row, colNum++, "ETUI1bis", r.getReponseEtuI1bis(), style);                      // I.1 - Commentaire
+        createCell(row, colNum++, "ETUI2",  r.getReponseEtuI2(), style);          // I.2
+        createCell(row, colNum++, "ETUI3",  r.getReponseEtuI3(), style);          // I.3
+        createCell(row, colNum++, "ETUI4a", r.getReponseEtuI4a(), style);         // I.4 - a
+        createCell(row, colNum++, "ETUI4b", r.getReponseEtuI4b(), style);         // I.4 - b
+        createCell(row, colNum++, "ETUI4c", r.getReponseEtuI4c(), style);         // I.4 - c
+        createCell(row, colNum++, "ETUI4d", r.getReponseEtuI4d(), style);         // I.4 - d
+        createCell(row, colNum++, "ETUI5",  r.getReponseEtuI5(), style);          // I.5
+        createCell(row, colNum++, "ETUI6",  r.getReponseEtuI6(), style);          // I.6
+        createCell(row, colNum++, "ETUI7",  r.getReponseEtuI7(), style);      // I.7
+        createCell(row, colNum++, "ETUI7_bis1", r.getReponseEtuI7bis1(), style);  // I.7 - Si oui, par qui ?
+        createCell(row, colNum++, "ETUI7_bis2", r.getReponseEtuI7bis2(), style);  // I.7 - Si non, pourquoi ?
+        createCell(row, colNum++, "ETUI8", r.getReponseEtuI8(), style);           // I.8
 
-        // I.7 + sous-questions
-        createCellForCode(row, colNum++, "ETUI7",      r.getReponseEtuI7(), style);
-        createCellForCode(row, colNum++, "ETUI7_bis1", r.getReponseEtuI7bis1(), style);
-        createCell(row,        colNum++,    r.getReponseEtuI7bis1a(), style);
-        createCell(row,        colNum++,    r.getReponseEtuI7bis1b(), style);
-        createCellForCode(row, colNum++, "ETUI7_bis2", r.getReponseEtuI7bis2(), style);
+        createCell(row, colNum++, "ETUII1",  r.getReponseEtuII1(), style);        // II.1
+        createCell(row, colNum++,"ETUII1bis",  r.getReponseEtuII1bis(), style);                     // II.1 - Commentaire
+        createCell(row, colNum++, "ETUII2",  r.getReponseEtuII2(), style);        // II.2
+        createCell(row, colNum++,"ETUII2bis",  r.getReponseEtuII2bis(), style);                     // II.2 - Commentaire
+        createCell(row, colNum++, "ETUII3",  r.getReponseEtuII3(), style);        // II.3
+        createCell(row, colNum++,"ETUII3bis",  r.getReponseEtuII3bis(), style);                     // II.3 - Commentaire
+        createCell(row, colNum++, "ETUII4",  r.getReponseEtuII4(), style);        // II.4
+        createCell(row, colNum++, "ETUII5",  r.getReponseEtuII5(), style);        // II.5
+        createCell(row, colNum++,"ETUII5a",  r.getReponseEtuII5a(), style);                       // II.5 - De quel ordre ?
+        createCell(row, colNum++, "ETUII5b",  r.getReponseEtuII5b(), style);                       // II.5 - Avec autonomie ?
+        createCell(row, colNum++, "ETUII6",  r.getReponseEtuII6(), style);        // II.6
 
-        // I.8
-        createCellForCode(row, colNum++, "ETUI8", r.getReponseEtuI8(), style);
-
-        // II.1 (pas de code - données supposées nulles ou manuelles)
-        createCell(row, colNum++, "", style);  // Réponse vide
-        createCell(row, colNum++, "", style);  // Commentaire vide
-
-        // II.2, II.3
-        createCellForCode(row, colNum++, "ETUII1",  r.getReponseEtuII1(), style);
-        createCell(row,        colNum++, r.getReponseEtuII1bis(), style);
-        createCellForCode(row, colNum++, "ETUII2",  r.getReponseEtuII2(), style);
-        createCell(row,        colNum++, r.getReponseEtuII2bis(), style);
-
-        // II.4 + commentaire ✅ CORRECTION
-        createCellForCode(row, colNum++, "ETUII3",  r.getReponseEtuII3(), style);
-        createCell(row,        colNum++, r.getReponseEtuII3bis(), style);  // ✅ Ajouté
-
-        // II.5 + précision ✅ CORRECTION
-        createCellForCode(row, colNum++, "ETUII4",  r.getReponseEtuII4(), style);
-        createCell(row,        colNum++, null, style);  //
-
-        // II.6 ✅ CORRECTION
-        createCellForCode(row, colNum++, "ETUII5",  r.getReponseEtuII5(), style);  // ✅ Maintenant correctement placé
-
-        // III.1
-        createCellForCode(row, colNum++, "ETUII6",  r.getReponseEtuII6(), style);
-        createCell(row,        colNum++, "", style);  // Commentaire si disponible (non présent dans données)
-
-        // III.2 à III.16 (inchangé)
-        createCellForCode(row, colNum++, "ETUIII1",   r.getReponseEtuIII1(), style);
-        createCell(row,        colNum++,   r.getReponseEtuIII1bis(), style);
-        createCellForCode(row, colNum++, "ETUIII2",   r.getReponseEtuIII2(), style);
-        createCell(row,        colNum++,   r.getReponseEtuIII2bis(), style);
-        createCellForCode(row, colNum++, "ETUIII3",   r.getReponseEtuIII3(), style);
-        createCell(row,        colNum++,   r.getReponseEtuIII3bis(), style);
-        createCellForCode(row, colNum++, "ETUIII4",   r.getReponseEtuIII4(), style);
-        createCellForCode(row, colNum++, "ETUIII5a",  r.getReponseEtuIII5a(), style);
-        createCellForCode(row, colNum++, "ETUIII5b",  r.getReponseEtuIII5b(), style);
-        createCellForCode(row, colNum++, "ETUIII5c",  r.getReponseEtuIII5c(), style);
-        createCell(row,        colNum++, r.getReponseEtuIII5bis(), style);
-        createCellForCode(row, colNum++, "ETUIII6",   r.getReponseEtuIII6(), style);
-        createCell(row,        colNum++,   r.getReponseEtuIII6bis(), style);
-        createCellForCode(row, colNum++, "ETUIII7",   r.getReponseEtuIII7(), style);
-        createCell(row,        colNum++,   r.getReponseEtuIII7bis(), style);
-        createCellForCode(row, colNum++, "ETUIII8",   r.getReponseEtuIII8(), style);
-        createCell(row,        colNum++,   r.getReponseEtuIII8bis(), style);
-        createCellForCode(row, colNum++, "ETUIII9",   r.getReponseEtuIII9(), style);
-        createCell(row,        colNum++,   r.getReponseEtuIII9bis(), style);
-        createCellForCode(row, colNum++, "ETUIII10",  r.getReponseEtuIII10(), style);
-        createCellForCode(row, colNum++, "ETUIII11",  r.getReponseEtuIII11(), style);
-        createCellForCode(row, colNum++, "ETUIII12",  r.getReponseEtuIII12(), style);
-        // ✅ Pas de ETUIII13
-        createCellForCode(row, colNum++, "ETUIII14",  r.getReponseEtuIII14(), style);
-        createCellForCode(row, colNum++, "ETUIII15",  r.getReponseEtuIII15(), style);
-        createCell(row,        colNum++,   r.getReponseEtuIII15bis(), style);
-        createCellForCode(row, colNum++, "ETUIII16",  r.getReponseEtuIII16(), style);
-        createCell(row,        colNum++,   r.getReponseEtuIII16bis(), style);
+        createCell(row, colNum++, "ETUIII1",   r.getReponseEtuIII1(), style);     // III.1
+        createCell(row, colNum++,"ETUIII1bis",  r.getReponseEtuIII1bis(), style);                   // III.1 - Commentaire
+        createCell(row, colNum++, "ETUIII2",   r.getReponseEtuIII2(), style);     // III.2
+        createCell(row, colNum++, "ETUIII2bis",  r.getReponseEtuIII2bis(), style);                   // III.2 - Commentaire
+        createCell(row, colNum++, "ETUIII4",   r.getReponseEtuIII4(), style);     // III.4
+        createCell(row, colNum++, "ETUIII5a",  r.getReponseEtuIII5a(), style);    // III.5 - a
+        createCell(row, colNum++, "ETUIII5b",  r.getReponseEtuIII5b(), style);    // III.5 - b
+        createCell(row, colNum++, "ETUIII5c",  r.getReponseEtuIII5c(), style);    // III.5 - c
+        createCell(row, colNum++,"ETUIII5bis",  r.getReponseEtuIII5bis(), style);                    // III.5 - Commentaire
+        createCell(row, colNum++, "ETUIII6",   r.getReponseEtuIII6(), style);     // III.6
+        createCell(row, colNum++,"ETUIII6bis",   r.getReponseEtuIII6bis(), style);                   // III.6 - Commentaire
+        createCell(row, colNum++, "ETUIII7",   r.getReponseEtuIII7(), style);     // III.7
+        createCell(row, colNum++,"ETUIII7bis",   r.getReponseEtuIII7bis(), style);                   // III.7 - Commentaire
+        createCell(row, colNum++, "ETUIII8",   r.getReponseEtuIII8(), style);     // III.8
+        createCell(row, colNum++,"ETUIII8bis",   r.getReponseEtuIII8bis(), style);                   // III.8 - Commentaire
+        createCell(row, colNum++, "ETUIII9",   r.getReponseEtuIII9(), style);     // III.9
+        createCell(row, colNum++,"ETUIII9bis",   r.getReponseEtuIII9bis(), style);                   // III.9 - Commentaire
+        createCell(row, colNum++, "ETUIII10",  r.getReponseEtuIII10(), style);    // III.10
+        createCell(row, colNum++, "ETUIII11",  r.getReponseEtuIII11(), style);    // III.11
+        createCell(row, colNum++, "ETUIII12",  r.getReponseEtuIII12(), style);    // III.12
+        createCell(row, colNum++, "ETUIII14",  r.getReponseEtuIII14(), style);    // III.14
+        createCell(row, colNum++, "ETUIII15",  r.getReponseEtuIII15(), style);    // III.15
+        createCell(row, colNum++,"ETUIII15bis",   r.getReponseEtuIII15bis(), style);                  // III.15 - Commentaire
+        createCell(row, colNum++, "ETUIII16",  r.getReponseEtuIII16(), style);    // III.16
+        createCell(row, colNum++,"ETUIII16bis",   r.getReponseEtuIII16bis(), style);                  // III.16 - Commentaire
 
         return colNum;
     }
-
+    
     private int fillEnseignantData(Row row, int colNum, ReponseEvaluation r, CellStyle style) {
         // I.1, I.2, I.3
-        createCellForCode(row, colNum++, "ENSI1a", r.getReponseEnsI1a(), style);
-        createCellForCode(row, colNum++, "ENSI1b", r.getReponseEnsI1b(), style);
-        createCellForCode(row, colNum++, "ENSI1c", r.getReponseEnsI1c(), style);
-        createCellForCode(row, colNum++, "ENSI2a", r.getReponseEnsI2a(), style);
-        createCellForCode(row, colNum++, "ENSI2b", r.getReponseEnsI2b(), style);
-        createCellForCode(row, colNum++, "ENSI2c", r.getReponseEnsI2c(), style);
-        createCell(row,        colNum++,  r.getReponseEnsI3(), style);
+        createCell(row, colNum++, "ENSI1a", r.getReponseEnsI1a(), style);
+        createCell(row, colNum++, "ENSI1b", r.getReponseEnsI1b(), style);
+        createCell(row, colNum++, "ENSI1c", r.getReponseEnsI1c(), style);
+        createCell(row, colNum++, "ENSI2a", r.getReponseEnsI2a(), style);
+        createCell(row, colNum++, "ENSI2b", r.getReponseEnsI2b(), style);
+        createCell(row, colNum++, "ENSI2c", r.getReponseEnsI2c(), style);
+        createCell(row, colNum++, "ENSI3", r.getReponseEnsI3(), style);
 
         // II.1 à II.11
-        createCellForCode(row, colNum++, "ENSII1",  r.getReponseEnsII1(), style);
-        createCellForCode(row, colNum++, "ENSII2",  r.getReponseEnsII2(), style);
-        createCellForCode(row, colNum++, "ENSII3",  r.getReponseEnsII3(), style);
-        createCell(row,        colNum++, "", style);  // ✅ ENSII3bis ajouté (données non disponibles -> vide)
-        createCellForCode(row, colNum++, "ENSII4",  r.getReponseEnsII4(), style);
-        createCellForCode(row, colNum++, "ENSII5",  r.getReponseEnsII5(), style);
-        createCellForCode(row, colNum++, "ENSII6",  r.getReponseEnsII6(), style);
-        createCellForCode(row, colNum++, "ENSII7",  r.getReponseEnsII7(), style);
-        createCellForCode(row, colNum++, "ENSII8",  r.getReponseEnsII8(), style);
-        createCellForCode(row, colNum++, "ENSII9",  r.getReponseEnsII9(), style);
-        createCellForCode(row, colNum++, "ENSII10", r.getReponseEnsII10(), style);
-        createCellForCode(row, colNum++, "ENSII11", r.getReponseEnsII11(), style);
+        createCell(row, colNum++, "ENSII1",  r.getReponseEnsII1(), style);
+        createCell(row, colNum++, "ENSII10", r.getReponseEnsII10(), style);
+        createCell(row, colNum++, "ENSII11", r.getReponseEnsII11(), style);
+        createCell(row, colNum++, "ENSII2",  r.getReponseEnsII2(), style);
+        createCell(row, colNum++, "ENSII3",  r.getReponseEnsII3(), style);
+        createCell(row, colNum++, "ENSII4",  r.getReponseEnsII4(), style);
+        createCell(row, colNum++, "ENSII5",  r.getReponseEnsII5(), style);
+        createCell(row, colNum++, "ENSII6",  r.getReponseEnsII6(), style);
+        createCell(row, colNum++, "ENSII7",  r.getReponseEnsII7(), style);
+        createCell(row, colNum++, "ENSII8",  r.getReponseEnsII8(), style);
+        createCell(row, colNum++, "ENSII9",  r.getReponseEnsII9(), style);
+
 
         return colNum;
     }
 
     private int fillEntrepriseData(Row row, int colNum, ReponseEvaluation r, CellStyle style) {
         // I. Savoir-être (ENT1-2-3-5-9-11-12-13-14)
-        createCellForCode(row, colNum++, "ENT1",  r.getReponseEnt1(), style);
-        createCell(row,        colNum++, r.getReponseEnt1bis(), style);
-        createCellForCode(row, colNum++, "ENT2",  r.getReponseEnt2(), style);
-        createCell(row,        colNum++, r.getReponseEnt2bis(), style);
-        createCellForCode(row, colNum++, "ENT3",  r.getReponseEnt3(), style);
-        createCellForCode(row, colNum++, "ENT5",  r.getReponseEnt5(), style);
-        createCell(row,        colNum++, r.getReponseEnt5bis(), style);
-        createCellForCode(row, colNum++, "ENT9",  r.getReponseEnt9(), style);
-        createCell(row,        colNum++, r.getReponseEnt9bis(), style);
-        createCellForCode(row, colNum++, "ENT11", r.getReponseEnt11(), style);
-        createCell(row,        colNum++, r.getReponseEnt11bis(), style);
-        createCellForCode(row, colNum++, "ENT12", r.getReponseEnt12(), style);
-        createCell(row,        colNum++, r.getReponseEnt12bis(), style);
-        createCellForCode(row, colNum++, "ENT13", r.getReponseEnt13(), style);
-        createCell(row,        colNum++, r.getReponseEnt13bis(), style);
-        createCellForCode(row, colNum++, "ENT14", r.getReponseEnt14(), style);
-        createCell(row,        colNum++, r.getReponseEnt14bis(), style);
+        createCell(row, colNum++, "ENT1",  r.getReponseEnt1(), style);
+        createCell(row, colNum++, r.getReponseEnt1bis(), style);
+        createCell(row, colNum++, "ENT2",  r.getReponseEnt2(), style);
+        createCell(row, colNum++, r.getReponseEnt2bis(), style);
+        createCell(row, colNum++, "ENT3",  r.getReponseEnt3(), style);
+        createCell(row, colNum++, "ENT5",  r.getReponseEnt5(), style);
+        createCell(row, colNum++, r.getReponseEnt5bis(), style);
+        createCell(row, colNum++, "ENT9",  r.getReponseEnt9(), style);
+        createCell(row, colNum++, r.getReponseEnt9bis(), style);
+        createCell(row, colNum++, "ENT11", r.getReponseEnt11(), style);
+        createCell(row, colNum++, r.getReponseEnt11bis(), style);
+        createCell(row, colNum++, "ENT12", r.getReponseEnt12(), style);
+        createCell(row, colNum++, r.getReponseEnt12bis(), style);
+        createCell(row, colNum++, "ENT13", r.getReponseEnt13(), style);
+        createCell(row, colNum++, r.getReponseEnt13bis(), style);
+        createCell(row, colNum++, "ENT14", r.getReponseEnt14(), style);
+        createCell(row, colNum++, r.getReponseEnt14bis(), style);
 
-        // II. Savoir-faire (ENT4-6-7-8-15) ✅ ENT10 RETIRÉ D'ICI
-        createCellForCode(row, colNum++, "ENT4",  r.getReponseEnt4(), style);
-        createCell(row,        colNum++, r.getReponseEnt4bis(), style);
-        createCellForCode(row, colNum++, "ENT6",  r.getReponseEnt6(), style);
-        createCell(row,        colNum++, r.getReponseEnt6bis(), style);
-        createCellForCode(row, colNum++, "ENT7",  r.getReponseEnt7(), style);
-        createCell(row,        colNum++, r.getReponseEnt7bis(), style);
-        createCellForCode(row, colNum++, "ENT8",  r.getReponseEnt8(), style);
-        createCell(row,        colNum++, r.getReponseEnt8bis(), style);
-        createCellForCode(row, colNum++, "ENT15", r.getReponseEnt15(), style);
-        createCell(row,        colNum++, r.getReponseEnt15bis(), style);
+        createCell(row, colNum++, "ENT4",  r.getReponseEnt4(), style);
+        createCell(row, colNum++, r.getReponseEnt4bis(), style);
+        createCell(row, colNum++, "ENT6",  r.getReponseEnt6(), style);
+        createCell(row, colNum++, r.getReponseEnt6bis(), style);
+        createCell(row, colNum++, "ENT7",  r.getReponseEnt7(), style);
+        createCell(row, colNum++, r.getReponseEnt7bis(), style);
+        createCell(row, colNum++, "ENT8",  r.getReponseEnt8(), style);
+        createCell(row, colNum++, r.getReponseEnt8bis(), style);
+        createCell(row, colNum++, "ENT15", r.getReponseEnt15(), style);
+        createCell(row, colNum++, r.getReponseEnt15bis(), style);
 
-        // III. Appréciation générale (ENT16-17-19-18) ✅ ENT10 SUPPRIMÉ
-        createCellForCode(row, colNum++, "ENT16", r.getReponseEnt16(), style);
-        createCell(row,        colNum++, r.getReponseEnt16bis(), style);
-        createCellForCode(row, colNum++, "ENT17", r.getReponseEnt17(), style);
-        createCell(row,        colNum++, r.getReponseEnt17bis(), style);
-        createCell(row,        colNum++, r.getReponseEnt19(), style);
-        createCellForCode(row, colNum++, "ENT18", r.getReponseEnt18(), style);
-        createCell(row,        colNum++, r.getReponseEnt18bis(), style);
+        createCell(row, colNum++, "ENT16", r.getReponseEnt16(), style);
+        createCell(row, colNum++, r.getReponseEnt16bis(), style);
+        createCell(row, colNum++, "ENT17", r.getReponseEnt17(), style);
+        createCell(row, colNum++, r.getReponseEnt17bis(), style);
+        createCell(row, colNum++, r.getReponseEnt19(), style);
+        createCell(row, colNum++, r.getReponseEnt10(), style);
+        createCell(row, colNum++, "ENT18", r.getReponseEnt18(), style);
+        createCell(row, colNum++, r.getReponseEnt18bis(), style);
 
         return colNum;
     }
 
+    private void createCell(Row row, int colNum, String code, Object value, CellStyle style) {
+        Cell cell = row.createCell(colNum);
+        cell.setCellStyle(style);
 
-    private void createCell(Row row, int colNum, Object value, CellStyle style) {
+        if (value == null) {
+            cell.setCellValue("");
+            return;
+        }
+
+        QuestionEvaluation question = questionsByCode.get(code);
+        if (question == null) {
+            // Cas particuliers sans question en base
+            cell.setCellValue(formatSpecialCaseValue(code, value));
+            return;
+        }
+
+        TypeQuestionEvaluation typeQuestion = question.getType();
+
+        switch (typeQuestion) {
+            case TypeQuestionEvaluation.YES_NO:
+                cell.setCellValue(formatYesNo(value));
+                break;
+
+            case TypeQuestionEvaluation.SCALE_LIKERT_5:
+                cell.setCellValue(formatLikert5(value));
+                break;
+
+            case TypeQuestionEvaluation.SCALE_AGREEMENT_5:
+                cell.setCellValue(formatAgreement5(value));
+                break;
+
+            case TypeQuestionEvaluation.SINGLE_CHOICE:
+                cell.setCellValue(formatSingleChoice(question, value));
+                break;
+
+            case TypeQuestionEvaluation.BOOLEAN_GROUP:
+                cell.setCellValue(formatBoolean(value));
+                break;
+
+            case TypeQuestionEvaluation.AUTO:
+                if(!qItems(code).isEmpty()) {
+                    cell.setCellValue(formatSingleChoice(question, value));
+                } else {
+                    cell.setCellValue(formatDefaultValue(value));
+                }
+                break;
+            case TypeQuestionEvaluation.TEXT:
+                cell.setCellValue(value.toString());
+                break;
+
+            default:
+                cell.setCellValue(formatDefaultValue(value));
+                break;
+        }
+    }
+
+    private String formatYesNo(Object value) {
+        if (value instanceof Boolean) {
+            return (Boolean) value ? "Oui" : "Non";
+        }
+        if (value instanceof Integer) {
+            return ((Integer) value == 1) ? "Oui" : "Non";
+        }
+        return "";
+    }
+
+    private String formatBoolean(Object value) {
+        if (value instanceof Boolean) {
+            return (Boolean) value ? "Oui" : "Non";
+        }
+        if (value instanceof Integer) {
+            return ((Integer) value == 1) ? "Oui" : "Non";
+        }
+        return "";
+    }
+
+    private String formatLikert5(Object value) {
+        if (!(value instanceof Integer)) return "";
+        int index = (Integer) value;
+        if (index >= 0 && index < LIKERT_5.size()) {
+            return LIKERT_5.get(index);
+        }
+        return "";
+    }
+
+    private String formatAgreement5(Object value) {
+        if (!(value instanceof Integer)) return "";
+        int index = (Integer) value;
+        if (index >= 0 && index < AGREEMENT_5.size()) {
+            return AGREEMENT_5.get(index);
+        }
+        return "";
+    }
+
+    private String formatSingleChoice(QuestionEvaluation question, Object value) {
+        if (!(value instanceof Integer)) return "";
+
+        List<String> items = qItems(question.getCode());
+        int index = (Integer) value;
+
+        if (index >= 0 && index < items.size()) {
+            return items.get(index);
+        }
+        return "";
+    }
+
+    private String formatDefaultValue(Object value) {
+        if (value instanceof Integer) {
+            return String.valueOf(value);
+        } else if (value instanceof Boolean) {
+            return (Boolean) value ? "Oui" : "Non";
+        } else {
+            return value.toString();
+        }
+    }
+
+    private String formatSpecialCaseValue(String code, Object value) {
+        // Gestion des cas spéciaux pour ETUI7 et ETUII5
+        switch (code) {
+            case "ETUI7_bis1":
+                return formatEtuI7Bis1(value);
+            case "ETUI7_bis2":
+                return formatEtuI7Bis2(value);
+            case "ETUII5a":
+                return formatEtuII5a(value);
+            case "ETUII5b":
+                return formatEtuII5b(value);
+            default:
+                return formatDefaultValue(value);
+        }
+    }
+
+    private String formatEtuI7Bis1(Object value) {
+        // ETUI7 bis1 : "Si oui, par qui ?"
+        // Les options sont : ["Proposé par votre tuteur professionnel", "Proposé par votre tuteur enseignant",
+        //                     "Élaboré par vous-même", "Négocié entre les parties", "Autre"]
+        if (!(value instanceof Integer)) return value != null ? value.toString() : "";
+
+        int index = (Integer) value;
+        List<String> options = List.of(
+                "Proposé par votre tuteur professionnel",
+                "Proposé par votre tuteur enseignant",
+                "Élaboré par vous-même",
+                "Négocié entre les parties",
+                "Autre"
+        );
+
+        if (index >= 0 && index < options.size()) {
+            return options.get(index);
+        }
+        return "";
+    }
+
+    private String formatEtuI7Bis2(Object value) {
+        // ETUI7 bis2 : "Si non, pourquoi ?"
+        // Les options sont : ["Je n'ai pas eu besoin d'aide", "Je ne savais pas à qui m'adresser"]
+        if (!(value instanceof Integer)) return value != null ? value.toString() : "";
+
+        int index = (Integer) value;
+        List<String> options = List.of(
+                "Je n'ai pas eu besoin d'aide",
+                "Je ne savais pas à qui m'adresser"
+        );
+
+        if (index >= 0 && index < options.size()) {
+            return options.get(index);
+        }
+        return "";
+    }
+
+    private String formatEtuII5a(Object value) {
+        // ETUII5a : "De quel ordre ?"
+        // C'est généralement un texte libre
+        return value != null ? value.toString() : "";
+    }
+
+    private String formatEtuII5b(Object value) {
+        // ETUII5b : "Avec autonomie ?"
+        // C'est un YES_NO
+        return formatYesNo(value);
+    }
+
+    private void createCell(Row row, int colNum ,Object value, CellStyle style) {
         Cell cell = row.createCell(colNum);
         cell.setCellStyle(style);
 
@@ -617,7 +759,7 @@ public class EvaluationExcelExporter {
         if (repSup.getReponseBool() != null) {
             return repSup.getReponseBool();
         } else if (repSup.getReponseInt() != null) {
-            return repSup.getReponseInt();
+            return formatLikert5(repSup.getReponseInt());
         } else if (repSup.getReponseTxt() != null) {
             return repSup.getReponseTxt();
         }
@@ -649,89 +791,4 @@ public class EvaluationExcelExporter {
             default -> false;
         };
     }
-
-    private String qType(String code) {
-        QuestionEvaluation qe = q(code);
-        return (qe != null && qe.getType() != null) ? qe.getType().name() : null;
-    }
-
-    // 3) Options depuis paramsJson.items
-    private List<String> qOptions(String code) {
-        return qItems(canonicalCode(code)); // tu as déjà qItems(paramsJson)
-    }
-
-    private List<String> defaultScaleFor(String code) {
-        String t = qType(code);
-        if ("SCALE_AGREEMENT_5".equals(t)) return AGREEMENT_5;
-        return LIKERT_5;
-    }
-
-    private Object mapIndexedAnswer(String code, Object value) {
-        if (!(value instanceof Number)) return value;
-        int idx = ((Number) value).intValue();
-
-        // YES_NO/BOOLEAN_GROUP : on force Oui/Non, même si c'est 0/1
-        String t = qType(code);
-        if ("YES_NO".equals(t) || "BOOLEAN_GROUP".equals(t)) {
-            return mapBooleanLike(idx);
-        }
-
-        // sinon, options DB si dispo
-        List<String> opts = qOptions(code);
-        if (!opts.isEmpty() && idx >= 0 && idx < opts.size()) return opts.get(idx);
-
-        // sinon, échelle par défaut Likert/Accord selon type DB
-        List<String> table = defaultScaleFor(code);
-        if (idx >= 0 && idx < table.size()) return table.get(idx);
-
-        // fallback: garde la valeur brute
-        return idx;
-    }
-
-    private Object mapBoolean(Object value) {
-        if (value instanceof Boolean b) return b ? "Oui" : "Non";
-        return value;
-    }
-
-    private Object mapBooleanLike(Object value) {
-        // Accepte boolean / int / string
-        if (value instanceof Boolean b) return b ? "Oui" : "Non";
-        if (value instanceof Number n)  return n.intValue() == 1 ? "Oui" : "Non";
-        String s = String.valueOf(value).trim().toLowerCase();
-        if (s.equals("1") || s.equals("true") || s.equals("oui"))  return "Oui";
-        if (s.equals("0") || s.equals("false") || s.equals("non")) return "Non";
-        return value; // fallback
-    }
-
-    private void createCellForCode(Row row, int colNum, String code, Object rawValue, CellStyle style) {
-        Object val = rawValue;
-
-        // 1) Si type DB YES_NO / BOOLEAN_GROUP -> tout en Oui/Non (supporte 0/1/true/false)
-        String t = qType(code);
-        if ("YES_NO".equals(t) || "BOOLEAN_GROUP".equals(t)) {
-            val = mapBooleanLike(val);
-        } else {
-            // 2) Sinon, si nombre, mappe index -> libellé (options DB sinon table par défaut)
-            if (val instanceof Number) {
-                val = mapIndexedAnswer(code, val);
-            } else if (val instanceof Boolean) {
-                // cas booleen isolé
-                val = ((Boolean) val) ? "Oui" : "Non";
-            }
-        }
-
-        createCell(row, colNum, val, style);
-    }
-
-    private String canonicalCode(String code) {
-        if (code == null) return null;
-        // supprime suffixes a..h (BOOLEAN_GROUP) ex: ETUI4a -> ETUI4
-        String c = code.replaceFirst("([A-Z]+\\d{1,3})[a-h]$", "$1");
-        // supprime suffixes ...bis, ...bis1, ...bis2
-        c = c.replaceFirst("(.*)bis\\d*$", "$1");
-        // nettoie éventuels underscores qu'on aurait introduits (si tu en as mis côté front)
-        c = c.replace("_", "");
-        return c;
-    }
-
 }

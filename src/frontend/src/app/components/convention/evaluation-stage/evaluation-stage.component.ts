@@ -72,12 +72,8 @@ export class EvaluationStageComponent implements OnInit, OnDestroy {
   readonly controlsIndexToLetter = ['a','b','c','d','e','f','g','h'];
   protected readonly TypeQuestionEvaluation = TypeQuestionEvaluation;
   readonly FicheType = FicheType;
-  private optionsETUI5 = [
-    'Réponse à une offre de stage',
-    'Candidature spontanée',
-    'Réseau de connaissance',
-    'Proposé par le département',
-  ];
+  private optionsETUI5 = {"items":['Réponse à une offre de stage', 'Candidature spontanée', 'Réseau de connaissance', 'Proposé par le département']}.items;
+
 
 
   constructor(
@@ -154,6 +150,8 @@ export class EvaluationStageComponent implements OnInit, OnDestroy {
       reponseEnsI2c: [null, [Validators.required]],
       reponseEnsI3: [null, [Validators.required]],
       reponseEnsII1: [null, [Validators.required]],
+      reponseEnsII10: [null, [Validators.required]],
+      reponseEnsII11: [null, [Validators.required]],
       reponseEnsII2: [null, [Validators.required]],
       reponseEnsII3: [null, [Validators.required]],
       reponseEnsII4: [null, [Validators.required]],
@@ -162,8 +160,6 @@ export class EvaluationStageComponent implements OnInit, OnDestroy {
       reponseEnsII7: [null, [Validators.required]],
       reponseEnsII8: [null, [Validators.required]],
       reponseEnsII9: [null, [Validators.required]],
-      reponseEnsII10: [null, [Validators.required]],
-      reponseEnsII11: [null, [Validators.required]],
     });
 
     this.reponseEntrepriseForm = this.fb.group({

@@ -928,7 +928,7 @@ databaseChangeLog:
                   value: Pour quelles raisons ?
 
   - changeSet:
-      id: 3.3.0-ajout-colonnes-bis-question-bool
+      id: 3.2.0-ajout-colonnes-bis-question-bool
       author: thouveno9
       changes:
         - addColumn:
@@ -950,7 +950,7 @@ databaseChangeLog:
                   constraints:
                     nullable: true
   - changeSet:
-      id: 3.3.0-maj-bis-question-flags
+      id: 3.2.0-maj-bis-question-flags
       author: thouveno9
       changes:
         # ETU échelles : bis si note basse
@@ -981,7 +981,7 @@ databaseChangeLog:
             where: "codeQuestionEvaluation IN ('ETUIII2')"
 
   - changeSet:
-      id: 3.3.0-etui7-bis-oui-non
+      id: 3.2.0-etui7-bis-oui-non
       author: thouveno9
       changes:
         # Active les deux chemins bis (Oui et Non)
@@ -1023,3 +1023,15 @@ databaseChangeLog:
                       }
                     }
             where: "codeQuestionEvaluation = 'ETUI7'"
+
+  - changeSet:
+      id: 3.2.0-ajout-param-ETUI5
+      author: thouveno9
+      changes:
+          - update:
+              tableName: QuestionEvaluation
+              columns:
+                - column:
+                    name: paramsJson
+                    value: '{"items":["Réponse à une offre de stage", "Candidature spontanée", "Réseau de connaissance", "Proposé par le département"]}'
+              where: "codeQuestionEvaluation = 'ETUI5'"
