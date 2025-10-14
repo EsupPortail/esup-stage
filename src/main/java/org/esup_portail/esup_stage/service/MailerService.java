@@ -12,7 +12,6 @@ import org.esup_portail.esup_stage.dto.SendMailTestDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
-import org.esup_portail.esup_stage.repository.EvaluationTuteurTokenJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateMailGroupeJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateMailJpaRepository;
 import org.esup_portail.esup_stage.repository.UtilisateurJpaRepository;
@@ -174,15 +173,11 @@ public class MailerService {
         // Récupération du personnel du centre de gestion de la convention avec alertMail=1
         List<PersonnelCentreGestion> personnels = convention.getCentreGestion().getPersonnels();
         personnels = personnels.stream().filter(p -> p.getAlertesMail() != null && p.getAlertesMail()).toList();
-        logger.debug(personnels.size() + " personnels du centre de gestion " + convention.getCentreGestion().getNomCentre() + " avec alertes mail");
-        personnels.stream().toList().forEach(personnel -> {logger.debug("Personnel : {} {} - {}",personnel.getNom(),personnel.getPrenom(),personnel.getId());});
-
         // Récupération de la fiche utilisateur des personnels
         if (sendMailGestionnaire || sendMailRespGestionnaire) {
             List<Utilisateur> utilisateurPersonnels = utilisateurJpaRepository.findByUids(personnels.stream().map(PersonnelCentreGestion::getUidPersonnel).collect(Collectors.toList()));
             if (convention.getCentreGestion().isOnlyMailCentreGestion()) {
                 sendAlerteValidation(convention.getCentreGestion().getMail(), convention, avenant, utilisateurContext, templateMailCode);
-                logger.debug("Convention " + convention.getId() + " : envoi de l'alerte " + templateMailCode + " au centre de gestion " + convention.getCentreGestion().getNomCentre() + " (" + convention.getCentreGestion().getMail() + ")");
             } else {
                 for (PersonnelCentreGestion personnel : personnels) {
                     Utilisateur utilisateur = utilisateurPersonnels.stream().filter(u -> u.getUid().equals(personnel.getUidPersonnel())).findAny().orElse(null);
@@ -206,23 +201,23 @@ public class MailerService {
         // Récupération du personnel du centre de gestion de la convention avec alertMail=1
         List<PersonnelCentreGestion> personnels = convention.getCentreGestion().getPersonnels();
         personnels = personnels.stream().filter(p -> p.getAlertesMail() != null && p.getAlertesMail()).toList();
-        logger.debug(personnels.size() + " personnels du centre de gestion " + convention.getCentreGestion().getNomCentre() + " avec alertes mail");
-        personnels.stream().toList().forEach(personnel -> {logger.debug("Personnel : {} {} - {}",personnel.getNom(),personnel.getPrenom(),personnel.getId());});
         // Récupération de la fiche utilisateur des personnels
         if (sendMailGestionnaire || sendMailRespGestionnaire) {
             List<Utilisateur> utilisateurPersonnels = utilisateurJpaRepository.findByUids(personnels.stream().map(PersonnelCentreGestion::getUidPersonnel).collect(Collectors.toList()));
+            utilisateurPersonnels.stream().forEach(u -> {logger.debug("utilisateur : {}",u);});
             if (convention.getCentreGestion().isOnlyMailCentreGestion()) {
                 sendAlerteValidation(convention.getCentreGestion().getMail(), convention, avenant, templateMailCode);
-                logger.debug("Convention " + convention.getId() + " : envoi de l'alerte " + templateMailCode + " au centre de gestion " + convention.getCentreGestion().getNomCentre() + " (" + convention.getCentreGestion().getMail() + ")");
             } else {
                 for (PersonnelCentreGestion personnel : personnels) {
                     Utilisateur utilisateur = utilisateurPersonnels.stream().filter(u -> u.getUid().equals(personnel.getUidPersonnel())).findAny().orElse(null);
                     if ((utilisateur == null || !UtilisateurHelper.isRole(utilisateur, Role.RESP_GES))) {
-                        if (isAlerteActif(personnel, templateMailCode) && sendMailGestionnaire)
+                        if (isAlerteActif(personnel, templateMailCode) && sendMailGestionnaire) {
                             sendAlerteValidation(personnel.getMail(), convention, avenant, templateMailCode);
+                        }
                     } else if ((utilisateur != null && UtilisateurHelper.isRole(utilisateur, Role.RESP_GES))) {
-                        if (isAlerteActif(personnel, templateMailCode) && sendMailRespGestionnaire)
+                        if (isAlerteActif(personnel, templateMailCode) && sendMailRespGestionnaire) {
                             sendAlerteValidation(personnel.getMail(), convention, avenant, templateMailCode);
+                        }
                     }
                 }
             }
@@ -261,6 +256,17 @@ public class MailerService {
                 return personnel.getModificationConventionGestionnaire() != null && personnel.getModificationConventionGestionnaire();
             case TemplateMail.CODE_CONVENTION_SIGNEE:
                 return personnel.getConventionSignee() != null && personnel.getConventionSignee();
+            case TemplateMail.CODE_CHANGEMENT_ENSEIGNANT:
+                return personnel.getChangementEnseignant() != null && personnel.getChangementEnseignant();
+            case TemplateMail.CODE_EVAL_TUTEUR_REMPLIE:
+                return personnel.getEvalTuteurRemplie() != null && personnel.getEvalTuteurRemplie();
+            case TemplateMail.CODE_EVAL_ENSEIGNANT_REMPLIE:
+                return personnel.getEvalEnsRemplie() != null && personnel.getEvalEnsRemplie();
+            case TemplateMail.CODE_EVAL_ETU_REMPLIE:
+                return personnel.getEvalEtuRemplie() != null && personnel.getEvalEtuRemplie();
+            case TemplateMail.CODE_EVAL_REMPLIES:
+                return personnel.getEvalRemplies() != null && personnel.getEvalRemplies();
+
             default:
                 return false;
         }
