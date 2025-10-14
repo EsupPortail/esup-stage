@@ -1,12 +1,16 @@
 package org.esup_portail.esup_stage.controller;
 
 import jakarta.validation.Valid;
+import org.esup_portail.esup_stage.dto.ConfigAlerteMailDto;
 import org.esup_portail.esup_stage.dto.ConventionEvaluationTuteurDto;
 import org.esup_portail.esup_stage.dto.ReponseEntrepriseFormDto;
 import org.esup_portail.esup_stage.dto.ReponseSupplementaireFormDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
+import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
 import org.esup_portail.esup_stage.repository.*;
+import org.esup_portail.esup_stage.security.ServiceContext;
+import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.MailerService;
 import org.esup_portail.esup_stage.service.evaluation.EvaluationService;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
@@ -52,6 +56,9 @@ public class EvaluationTuteurController {
 
     @Autowired
     private MailerService mailerService;
+
+    @Autowired
+    private AppConfigService appConfigService;
 
     @GetMapping("/access")
     public ConventionEvaluationTuteurDto accessEvaluationPage(@RequestParam(name = "token") String token) {
@@ -129,6 +136,8 @@ public class EvaluationTuteurController {
                             @PathVariable("id") int id,
                             @PathVariable("valid") boolean valid) {
 
+
+
         // 1) JWT
         parseJwtOrThrow(token);
 
@@ -138,14 +147,26 @@ public class EvaluationTuteurController {
             throw new AppException(HttpStatus.NOT_FOUND, "ReponseEvaluation non trouvé");
         }
 
-        // 3) Marquer token utilisé (métier)
+        // 3) Marquer token utilisé
         EvaluationTuteurToken validToken = evaluationService.validateAndUseToken(token);
-        reponseEvaluation.setValidationEntreprise(valid);
-
         if (validToken == null) {
             throw new AppException(HttpStatus.FORBIDDEN, "Token invalide, expiré ou déjà utilisé");
         }
+
+        // 4) Valider réponse
+        reponseEvaluation.setValidationEntreprise(valid);
         reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
+
+        // 5) Mail d'alerte
+        if(valid){
+            Convention convention = validToken.getConvention();
+            ConfigAlerteMailDto configAlerteMailDto = appConfigService.getConfigAlerteMail();
+            boolean sendMailEtudiant = configAlerteMailDto.getAlerteEtudiant().isEvalTuteurRemplie();
+            boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isEvalTuteurRemplie();
+            boolean sendMailGestionnaire = configAlerteMailDto.getAlerteGestionnaire().isEvalTuteurRemplie();
+            boolean sendMailRespGestionnaire = configAlerteMailDto.getAlerteRespGestionnaire().isEvalTuteurRemplie();
+            mailerService.sendValidationMail(convention,convention.getAvenants().getLast(), TemplateMail.CODE_EVAL_TUTEUR_REMPLIE, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
+        }
         return true;
     }
 

@@ -8,6 +8,7 @@ import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
+import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
 import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
 import org.esup_portail.esup_stage.repository.QuestionSupplementaireJpaRepository;
 import org.esup_portail.esup_stage.repository.ReponseEvaluationJpaRepository;
@@ -64,6 +65,18 @@ public class ReponseEvaluationController {
     public ReponseEvaluation createReponseEtudiant(@PathVariable("id") int id, @PathVariable("valid") boolean valid, @Valid @RequestBody ReponseEtudiantFormDto reponseEtudiantFormDto) {
         ReponseEvaluation reponseEvaluation = evaluationService.initReponseEvaluation(id);
         reponseEvaluation.setValidationEtudiant(valid);
+        Convention convention = reponseEvaluation.getConvention();
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
+        if(valid && utilisateur != null && convention != null) {
+            ConfigAlerteMailDto configAlerteMailDto = appConfigService.getConfigAlerteMail();
+            boolean sendMailEtudiant = configAlerteMailDto.getAlerteEtudiant().isEvalEtuRemplie();
+            boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isEvalEtuRemplie();
+            boolean sendMailGestionnaire = configAlerteMailDto.getAlerteGestionnaire().isEvalEtuRemplie();
+            boolean sendMailRespGestionnaire = configAlerteMailDto.getAlerteRespGestionnaire().isEvalEtuRemplie();
+            mailerService.sendValidationMail(convention, null, utilisateur, TemplateMail.CODE_EVAL_ETU_REMPLIE, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
+        }else{
+            logger.debug("error envoie mail");
+        }
         evaluationService.setReponseEvaluationEtudiantData(reponseEvaluation, reponseEtudiantFormDto);
         return reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
     }
@@ -75,6 +88,16 @@ public class ReponseEvaluationController {
             throw new AppException(HttpStatus.NOT_FOUND, "ReponseEvaluation non trouvé");
         }
         reponseEvaluation.setValidationEtudiant(valid);
+        Convention convention = reponseEvaluation.getConvention();
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
+        if(valid && utilisateur != null && convention != null) {
+            ConfigAlerteMailDto configAlerteMailDto = appConfigService.getConfigAlerteMail();
+            boolean sendMailEtudiant = configAlerteMailDto.getAlerteEtudiant().isEvalEtuRemplie();
+            boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isEvalEtuRemplie();
+            boolean sendMailGestionnaire = configAlerteMailDto.getAlerteGestionnaire().isEvalEtuRemplie();
+            boolean sendMailRespGestionnaire = configAlerteMailDto.getAlerteRespGestionnaire().isEvalEtuRemplie();
+            mailerService.sendValidationMail(convention, null, utilisateur, TemplateMail.CODE_EVAL_ETU_REMPLIE, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
+        }
         evaluationService.setReponseEvaluationEtudiantData(reponseEvaluation, reponseEtudiantFormDto);
         return reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
     }
@@ -83,6 +106,18 @@ public class ReponseEvaluationController {
     public ReponseEvaluation createReponseEnseignant(@PathVariable("id") int id, @PathVariable("valid") boolean valid, @Valid @RequestBody ReponseEnseignantFormDto reponseEnseignantFormDto) {
         ReponseEvaluation reponseEvaluation = evaluationService.initReponseEvaluation(id);
         reponseEvaluation.setValidationEnseignant(valid);
+        Convention convention = reponseEvaluation.getConvention();
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
+        if(valid && utilisateur != null && convention != null) {
+            ConfigAlerteMailDto configAlerteMailDto = appConfigService.getConfigAlerteMail();
+            boolean sendMailEtudiant = configAlerteMailDto.getAlerteEtudiant().isEvalEnsRemplie();
+            boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isEvalEnsRemplie();
+            boolean sendMailGestionnaire = configAlerteMailDto.getAlerteGestionnaire().isEvalEnsRemplie();
+            boolean sendMailRespGestionnaire = configAlerteMailDto.getAlerteRespGestionnaire().isEvalEnsRemplie();
+            mailerService.sendValidationMail(convention, null, utilisateur, TemplateMail.CODE_EVAL_ENSEIGNANT_REMPLIE, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
+        }else{
+            logger.debug("error envoie mail");
+        }
         evaluationService.setReponseEvaluationEnseignantData(reponseEvaluation, reponseEnseignantFormDto);
         return reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
     }
@@ -94,6 +129,18 @@ public class ReponseEvaluationController {
             throw new AppException(HttpStatus.NOT_FOUND, "ReponseEvaluation non trouvé");
         }
         reponseEvaluation.setValidationEnseignant(valid);
+        Convention convention = reponseEvaluation.getConvention();
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
+        if(valid && utilisateur != null && convention != null) {
+            ConfigAlerteMailDto configAlerteMailDto = appConfigService.getConfigAlerteMail();
+            boolean sendMailEtudiant = configAlerteMailDto.getAlerteEtudiant().isEvalEnsRemplie();
+            boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isEvalEnsRemplie();
+            boolean sendMailGestionnaire = configAlerteMailDto.getAlerteGestionnaire().isEvalEnsRemplie();
+            boolean sendMailRespGestionnaire = configAlerteMailDto.getAlerteRespGestionnaire().isEvalEnsRemplie();
+            mailerService.sendValidationMail(convention, null, utilisateur, TemplateMail.CODE_EVAL_ENSEIGNANT_REMPLIE, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
+        }else{
+            logger.debug("error envoie mail");
+        }
         evaluationService.setReponseEvaluationEnseignantData(reponseEvaluation, reponseEnseignantFormDto);
         return reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
     }

@@ -89,6 +89,11 @@ public class PersonnelCentreGestion extends ObjetMetier implements Exportable {
     private Boolean verificationAdministrativeConvention;
     private Boolean validationAvenant;
     private Boolean conventionSignee;
+    private Boolean changementEnseignant;
+    private Boolean evalTuteurRemplie;
+    private Boolean evalEnsRemplie;
+    private Boolean evalEtuRemplie;
+    private Boolean evalRemplies;
 
     @Override
     public String getExportValue(String key) {

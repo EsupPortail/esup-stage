@@ -60,6 +60,10 @@ export class GestionnairesComponent implements OnInit {
     {id: 'validationAvenant', libelle: 'Validation d\'un avenant '},
     {id: 'conventionSignee', libelle: 'Convention signée par toutes les parties'},
     {id: 'changementEnseignant', libelle: 'Changement d\'enseignant référent'},
+    {id: 'evalTuteurRemplie', libelle: 'Évaluation du tuteur remplie'},
+    {id: 'evalEnsRemplie', libelle: 'Évaluation de l’enseignant remplie'},
+    {id: 'evalEtuRemplie', libelle: 'Évaluation de l’étudiant remplie'},
+    {id: 'evalRemplies', libelle: 'Toutes les évaluations remplies'},
   ];
 
   configAlertes: any;

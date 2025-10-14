@@ -17,6 +17,7 @@ import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.ConventionService;
+import org.esup_portail.esup_stage.service.MailerService;
 import org.esup_portail.esup_stage.service.signature.SignatureService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -72,6 +73,9 @@ public class AvenantController {
     @Autowired
     SignatureProperties signatureProperties;
 
+    @Autowired
+    MailerService mailerService;
+
     @GetMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.LECTURE})
     public Avenant getById(@PathVariable("id") int id) {
@@ -123,7 +127,7 @@ public class AvenantController {
         boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isValidationAvenant();
         boolean sendMailGestionnaire = configAlerteMailDto.getAlerteGestionnaire().isValidationAvenant();
         boolean sendMailRespGestionnaire = configAlerteMailDto.getAlerteRespGestionnaire().isValidationAvenant();
-        conventionService.sendValidationMail(avenant.getConvention(), avenant, utilisateur, TemplateMail.CODE_AVENANT_VALIDATION, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
+         mailerService.sendValidationMail(avenant.getConvention(), avenant, utilisateur, TemplateMail.CODE_AVENANT_VALIDATION, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
 
         return avenant;
     }
@@ -154,14 +158,14 @@ public class AvenantController {
             boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isCreationAvenantEtudiant();
             boolean sendMailGestionnaire = configAlerteMailDto.getAlerteGestionnaire().isCreationAvenantEtudiant();
             boolean sendMailRespGestionnaire = configAlerteMailDto.getAlerteRespGestionnaire().isCreationAvenantEtudiant();
-            conventionService.sendValidationMail(avenant.getConvention(), avenant, utilisateur, TemplateMail.CODE_ETU_CREA_AVENANT, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
+             mailerService.sendValidationMail(avenant.getConvention(), avenant, utilisateur, TemplateMail.CODE_ETU_CREA_AVENANT, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
         } else if (UtilisateurHelper.isRole(utilisateur, Role.GES)) {
             ConfigAlerteMailDto configAlerteMailDto = appConfigService.getConfigAlerteMail();
             boolean sendMailEtudiant = configAlerteMailDto.getAlerteEtudiant().isCreationAvenantGestionnaire();
             boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isCreationAvenantGestionnaire();
             boolean sendMailGestionnaire = configAlerteMailDto.getAlerteGestionnaire().isCreationAvenantGestionnaire();
             boolean sendMailRespGestionnaire = configAlerteMailDto.getAlerteRespGestionnaire().isCreationAvenantGestionnaire();
-            conventionService.sendValidationMail(avenant.getConvention(), avenant, utilisateur, TemplateMail.CODE_GES_CREA_AVENANT, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
+             mailerService.sendValidationMail(avenant.getConvention(), avenant, utilisateur, TemplateMail.CODE_GES_CREA_AVENANT, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
         }
         return avenant;
     }
@@ -183,14 +187,14 @@ public class AvenantController {
             boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isModificationAvenantEtudiant();
             boolean sendMailGestionnaire = configAlerteMailDto.getAlerteGestionnaire().isModificationAvenantEtudiant();
             boolean sendMailRespGestionnaire = configAlerteMailDto.getAlerteRespGestionnaire().isModificationAvenantEtudiant();
-            conventionService.sendValidationMail(avenant.getConvention(), avenant, utilisateur, TemplateMail.CODE_ETU_MODIF_AVENANT, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
+             mailerService.sendValidationMail(avenant.getConvention(), avenant, utilisateur, TemplateMail.CODE_ETU_MODIF_AVENANT, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
         } else if (UtilisateurHelper.isRole(utilisateur, Role.GES)) {
             ConfigAlerteMailDto configAlerteMailDto = appConfigService.getConfigAlerteMail();
             boolean sendMailEtudiant = configAlerteMailDto.getAlerteEtudiant().isModificationAvenantGestionnaire();
             boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isModificationAvenantGestionnaire();
             boolean sendMailGestionnaire = configAlerteMailDto.getAlerteGestionnaire().isModificationAvenantGestionnaire();
             boolean sendMailRespGestionnaire = configAlerteMailDto.getAlerteRespGestionnaire().isModificationAvenantGestionnaire();
-            conventionService.sendValidationMail(avenant.getConvention(), avenant, utilisateur, TemplateMail.CODE_GES_MODIF_AVENANT, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
+             mailerService.sendValidationMail(avenant.getConvention(), avenant, utilisateur, TemplateMail.CODE_GES_MODIF_AVENANT, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
         }
         return avenant;
     }

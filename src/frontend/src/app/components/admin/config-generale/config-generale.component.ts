@@ -1,9 +1,8 @@
-import {Component, OnInit, ViewContainerRef, WritableSignal} from '@angular/core';
+import {Component, OnInit, WritableSignal} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { ConfigService } from "../../../services/config.service";
 import { AuthService } from "../../../services/auth.service";
 import { MessageService } from "../../../services/message.service";
-import { CentreGestionService } from "../../../services/centre-gestion.service";
 import { AppFonction } from "../../../constants/app-fonction";
 import { Droit } from "../../../constants/droit";
 
@@ -35,6 +34,10 @@ export class ConfigGeneraleComponent implements OnInit {
     {code: 'validationAvenant', libelle: 'Validation d\'un avenant'},
     {code: 'conventionSignee', libelle: 'Convention signée par toutes les parties'},
     {code: 'changementEnseignant', libelle:' Changement d\'enseignant référent'},
+    {code: 'evalTuteurRemplie', libelle: 'Évaluation du tuteur remplie'},
+    {code: 'evalEnsRemplie', libelle: 'Évaluation de l’enseignant remplie'},
+    {code: 'evalEtuRemplie', libelle: 'Évaluation de l’étudiant remplie'},
+    {code: 'evalRemplies', libelle: 'Toutes les évaluations remplies'},
   ];
   alerteColumns = ['alertes', 'alerteEtudiant', 'alerteGestionnaire', 'alerteRespGestionnaire', 'alerteEnseignant'];
 
@@ -59,7 +62,6 @@ export class ConfigGeneraleComponent implements OnInit {
     private fb: FormBuilder,
     private authService: AuthService,
     private messageService: MessageService,
-    private centreGestionService: CentreGestionService,
   ) {
     this.formGenerale = this.fb.group({
       codeUniversite: [null, [Validators.required]],

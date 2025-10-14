@@ -31,6 +31,11 @@ public class TemplateMail extends ObjetMetier implements TemplateMailInterface, 
     public static final String CODE_RAPPEL_FICHE_EVAL_ETU = "RAPPEL_FICHE_EVAL_ETU";
     public static final String CODE_RAPPEL_FICHE_EVAL_ENSEIGNANT = "RAPPEL_FICHE_EVAL_ENSEIGNANT";
     public static final String CODE_RAPPEL_FICHE_EVAL_TUTEUR = "RAPPEL_FICHE_EVAL_TUTEUR";
+    public static final String CODE_CHANGEMENT_ENSEIGNANT = "CHANGEMENT_ENSEIGNANT";
+    public static final String CODE_EVAL_TUTEUR_REMPLIE = "EVAL_TUTEUR_REMPLIE";
+    public static final String CODE_EVAL_ENSEIGNANT_REMPLIE = "EVAL_ENS_REMPLIE";
+    public static final String CODE_EVAL_ETU_REMPLIE = "EVAL_ETU_REMPLIE";
+    public static final String CODE_EVAL_REMPLIES = "EVAL_REMPLIES";
 
 
     @Id
