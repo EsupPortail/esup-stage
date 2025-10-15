@@ -3,6 +3,7 @@ package org.esup_portail.esup_stage.controller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.dto.EvaluationDto;
+import org.esup_portail.esup_stage.dto.ExcelExportEvalDto;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
@@ -14,9 +15,7 @@ import org.esup_portail.esup_stage.service.evaluation.EvaluationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,10 +52,11 @@ public class EvaluationController {
         return getEvalsFromConventions(idConventions);
     }
 
-    @GetMapping(value = "/excel", produces = "application/vnd.ms-excel")
+    @PostMapping(value = "/excel", produces = "application/vnd.ms-excel")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
-    public ResponseEntity<byte[]> exportExcel(@RequestParam("idConventions")List<Integer> idConventions,@RequestParam("typeFiche")Integer typeFiche) {
-        byte[] bytes = evaluationService.getEvaluationToExcel(getEvalsFromConventions(idConventions),typeFiche);
+    public ResponseEntity<byte[]> exportExcel(@RequestBody ExcelExportEvalDto excelExportEvalDto) {
+
+        byte[] bytes = evaluationService.getEvaluationToExcel(getEvalsFromConventions(excelExportEvalDto.getIdConventions()),excelExportEvalDto.getTypeFiche(),excelExportEvalDto.getColonnes());
         return ResponseEntity.ok().body(bytes);
     }
 

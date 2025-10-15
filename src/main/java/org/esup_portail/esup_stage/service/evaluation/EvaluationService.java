@@ -536,23 +536,23 @@ public class EvaluationService {
 
     /* ===================== Export Excel ===================== */
 
-    public byte[] getEvaluationToExcel(List<EvaluationDto> evaluationDtos, Integer typeFiche) {
+    public byte[] getEvaluationToExcel(List<EvaluationDto> evaluationDtos, Integer typeFiche,List<String> columnFilter) {
         byte[] file = null;
         switch (typeFiche) {
             case 0: {
-                file = evaluationExcelExporter.export(evaluationDtos, ExportType.ETUDIANT);
+                file = evaluationExcelExporter.export(evaluationDtos, ExportType.ETUDIANT,columnFilter);
                 break;
             }
             case 1: {
-                file = evaluationExcelExporter.export(evaluationDtos, ExportType.ENSEIGNANT);
+                file = evaluationExcelExporter.export(evaluationDtos, ExportType.ENSEIGNANT,columnFilter);
                 break;
             }
             case 2: {
-                file = evaluationExcelExporter.export(evaluationDtos, ExportType.ENTREPRISE);
+                file = evaluationExcelExporter.export(evaluationDtos, ExportType.ENTREPRISE,columnFilter);
                 break;
             }
             default: {
-                file = evaluationExcelExporter.export(evaluationDtos, ExportType.ALL_IN_ONE);
+                file = evaluationExcelExporter.export(evaluationDtos, ExportType.ALL_IN_ONE,columnFilter);
                 break;
             }
         }

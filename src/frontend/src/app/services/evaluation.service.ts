@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {environment} from "../../environments/environment";
+import {ExcelExportEval} from "../models/excel-export-eval.model";
 
 @Injectable({
   providedIn: 'root'
@@ -14,17 +15,18 @@ export class EvaluationService {
     return this.http.get(`${environment.apiUrl}/evaluations`,{params:{idConventions}})
   }
 
-// service
-  getExportExcel(idConventions: number[], typeFiche: number) {
-    let params = new HttpParams().set('typeFiche', String(typeFiche));
-    idConventions.forEach(id => params = params.append('idConventions', String(id)));
+  getExportExcel(idConventions: number[], typeFiche: number, columns?: string[]): Observable<any> {
+    let body:ExcelExportEval = {
+      idConventions,
+      typeFiche,
+      ...(columns && columns.length ? { colonnes: columns } : {})
+    };
+    console.log(body);
 
-    // On observe la réponse et on attend un Blob
-    return this.http.get<Blob>(`${environment.apiUrl}/evaluations/excel`, {
-      params,
-      responseType: 'blob' as 'json',
-      observe: 'response'
-    });
+    return this.http.post<Blob>(`${environment.apiUrl}/evaluations/excel`,
+      body,
+      {responseType: 'blob' as 'json', observe: 'response'}
+    );
   }
 
 
