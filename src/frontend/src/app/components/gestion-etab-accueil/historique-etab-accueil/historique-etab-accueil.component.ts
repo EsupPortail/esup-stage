@@ -61,7 +61,7 @@ export class HistoriqueEtabAccueilComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    if (this.data.operationType === 'MODIFICATION') {
+    if (this.data.operationType === 'MODIFICATION' || this.data.operationType === 'MODIFICATION_AUTOMATIQUE') {
       try {
         let previousState = this.data.etatPrecedent;
         let currentState = this.data.etatActuel;

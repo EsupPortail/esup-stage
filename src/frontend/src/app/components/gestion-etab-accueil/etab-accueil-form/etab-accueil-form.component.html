@@ -173,12 +173,39 @@
       <input matInput formControlName="fax" />
     </mat-form-field>
   </div>
-  <div class="row mt-3">
-    <div class="col-6">
-      <button type="button" mat-button mat-stroked-button color="warn" *ngIf="etab.id" (click)="cancelEdit()">{{'BOUTON_ANNULER'|contenu}}</button>
+  <div class="actions-row mt-3">
+    <!-- Annuler (gauche) -->
+    <div class="slot left">
+      <button type="button"
+              mat-button
+              mat-stroked-button
+              color="warn"
+              *ngIf="etab.id"
+              (click)="cancelEdit()">
+        {{'BOUTON_ANNULER'|contenu}}
+      </button>
     </div>
-    <div class="col-6 text-right">
-      <button mat-button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
+
+    <!-- Mise à jour (centre) -->
+    <div class="slot center" *ngIf="isSireneActive && etab?.id && canEdit()">
+      <button type="button"
+              mat-button
+              mat-stroked-button
+              color="primary"
+              class="mr-2"
+              [disabled]="autoUpdating"
+              (click)="autoUpdateFromApi()"
+              matTooltip="Met à jour automatiquement les informations de l'établissement via l'API">
+        <mat-icon class="mr-1" [class.spin]="autoUpdating">autorenew</mat-icon>
+        {{ autoUpdating ? 'Mise à jour…' : 'Mise à jour automatique' }}
+      </button>
+    </div>
+
+    <!-- Valider (droite) -->
+    <div class="slot right">
+      <button mat-button mat-flat-button color="primary" type="submit">
+        {{'BOUTON_VALIDER'|contenu}}
+      </button>
     </div>
   </div>
 </form>

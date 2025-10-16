@@ -289,8 +289,14 @@ public class StructureController {
         if(structureBody.getId() != null) {
             structure = structureJpaRepository.findById(structureBody.getId()).orElse(null);
             if (structure != null && structure.getTemEnServStructure()) {
-                if(structure.isTemSiren()){
-                    sireneService.update(structure);
+                if(structure.getNumeroSiret() != null && !structure.getNumeroSiret().isEmpty()) {
+                    String jsonStructure;
+                    try{
+                        jsonStructure = objectMapper.writeValueAsString(structure);
+                    }catch(JsonProcessingException e){
+                        throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR,"Erreur lors de la mise à jour de la structure");
+                    }
+                    sireneService.update(jsonStructure,structure);
                 }
                 return structure;
             }
@@ -430,6 +436,26 @@ public class StructureController {
         sireneInfoDto.setIsApiSireneActive(sireneProperties.isApiSireneActive());
         sireneInfoDto.setNombreResultats(sireneProperties.getNombreMinimumResultats());
         return sireneInfoDto;
+    }
+
+    @PatchMapping("{id}/sirene")
+    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.MODIFICATION})
+    public Structure updateFromSirene(@PathVariable("id") int id) {
+        Structure structure = structureJpaRepository.findById(id);
+        if (structure == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Structure non trouvée");
+        }
+        if(structure.getNumeroSiret() == null || structure.getNumeroSiret().isEmpty()){
+            throw new AppException(HttpStatus.BAD_REQUEST,"Le numéro de SIRET est vide");
+        }
+        String jsonStructure;
+        try{
+            jsonStructure = objectMapper.writeValueAsString(structure);
+        }catch(JsonProcessingException e){
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR,"Erreur lors de la mise à jour de la structure");
+        }
+        sireneService.update(jsonStructure,structure);
+        return structure;
     }
 
 }
