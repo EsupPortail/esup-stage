@@ -39,7 +39,7 @@ public class StructureService {
             } catch (JsonProcessingException e) {
                 throw new RuntimeException("Erreur de sérialisation de la nouvelle structure", e);
             }
-            eventPublisher.publishEvent(new StructureUpdatedEvent(structure,oldStructureJson, newStructureJson));
+            eventPublisher.publishEvent(new StructureUpdatedEvent(structure,oldStructureJson, newStructureJson,false));
         }
 
         return savedStructure;

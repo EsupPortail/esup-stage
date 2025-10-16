@@ -57,7 +57,7 @@ public class SirenResponse {
             private String statutJuridique;
 
             @JsonProperty("trancheEffectifsUniteLegale")
-            private String effectif;
+            private String TrancheEffectifsUniteLegale;
 
             @JsonProperty("activitePrincipaleUniteLegale")
             private String naf_n5;

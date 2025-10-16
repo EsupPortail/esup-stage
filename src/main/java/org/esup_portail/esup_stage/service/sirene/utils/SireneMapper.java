@@ -1,5 +1,7 @@
 package org.esup_portail.esup_stage.service.sirene.utils;
 
+import org.esup_portail.esup_stage.model.Effectif;
+import org.esup_portail.esup_stage.model.StatutJuridique;
 import org.esup_portail.esup_stage.model.Structure;
 import org.esup_portail.esup_stage.model.TypeStructure;
 import org.esup_portail.esup_stage.repository.*;
@@ -24,6 +26,9 @@ public class SireneMapper {
 
     @Autowired
     private TypeStructureJpaRepository typeStructureJpaRepository;
+
+    @Autowired
+    private EffectifJpaRepository effectifJpaRepository;
 
     public Structure toStructure(SirenResponse.EtablissementSiren etablissement) {
         if (etablissement == null) {
@@ -50,15 +55,21 @@ public class SireneMapper {
             }
         }
 
-        // Statut juridique
-        if (etablissement.getUniteLegale().getStatutJuridique() != null) {
+        // Statut juridique + type structure
+        if (etablissement.getUniteLegale() != null && etablissement.getUniteLegale().getStatutJuridique() != null) {
             String codeJuridique = etablissement.getUniteLegale().getStatutJuridique();
-            structure.setStatutJuridique(statutJuridiqueJpaRepository.findByCode(codeJuridique));
+            StatutJuridique sj = statutJuridiqueJpaRepository.findByCode(codeJuridique);
+            if (sj == null) sj = statutJuridiqueJpaRepository.findByLibelle("Autre");
+            structure.setStatutJuridique(sj);
             structure.setTypeStructure(determinerTypeStructure(codeJuridique));
         } else {
             structure.setStatutJuridique(statutJuridiqueJpaRepository.findByLibelle("Autre"));
-            structure.setTypeStructure(typeStructureJpaRepository.findByid(3));
+            structure.setTypeStructure(typeStructureJpaRepository.findById(3));
         }
+
+        // Effectif
+        Effectif effectif = determinerEffectif(etablissement.getUniteLegale().getTrancheEffectifsUniteLegale()) ;
+        if (effectif != null) structure.setEffectif(effectif);
 
         // Valeurs par défaut
         structure.setPays(paysJpaRepository.findById(82)); // France
@@ -152,6 +163,46 @@ public class SireneMapper {
         return typeStructureJpaRepository.findById(typeStructureId);
     }
 
+    /**
+     * Bridge code SIRENE -> tranche Effectif (id en base).
+     * Retourne l'entité Effectif correspondante, ou null si code inconnu.
+     */
+    private Effectif determinerEffectif(String codeSirene) {
+        if (codeSirene == null || codeSirene.isBlank()) {
+            return null;
+        }
+
+        String code = codeSirene.trim();
+
+        Integer effectifId = switch (code) {
+            // 0 salarié
+            case "NN", "00" -> 1;
+
+            // 1 à 9
+            case "01", "02", "03" -> 2;
+
+            // 10 à 49
+            case "11", "12" -> 3;
+
+            // 50 à 199
+            case "21", "22" -> 4;
+
+            // 200 à 999
+            case "31", "32", "41" -> 5;
+
+            // 1000 et +
+            case "42", "51", "52", "53" -> 6;
+
+            default -> null; // code non prévu : ne pas écraser l’existant
+        };
+
+        if (effectifId == null) {
+            return null;
+        }
+
+        return effectifJpaRepository.findById(effectifId).orElse(null);
+    }
+
     public Structure updateStructure(SirenResponse sirenResponse, Structure structure) {
         if (sirenResponse == null || structure == null) {
             throw new IllegalArgumentException("Les paramètres sirenResponse et structure ne doivent pas être null");
@@ -162,28 +213,93 @@ public class SireneMapper {
             throw new IllegalArgumentException("Aucun établissement trouvé dans la réponse Siren");
         }
 
-        structure.setRaisonSociale(etablissement.getUniteLegale().getDenominationUniteLegale());
-
-        if (etablissement.getAdresse() != null) {
-            structure.setVoie(etablissement.getAdresse().getNumeroVoie() + " " + etablissement.getAdresse().getTypeVoie() + " " + etablissement.getAdresse().getVoie());
-            structure.setCommune(etablissement.getAdresse().getCommune());
-            structure.setCodePostal(etablissement.getAdresse().getCodePostal());
-            structure.setCodeCommune(etablissement.getAdresse().getCodeCommune());
+        // --- Raison sociale : MAJ seulement si non vide, sinon garder l’existant
+        String denomination = etablissement.getUniteLegale() != null
+                ? etablissement.getUniteLegale().getDenominationUniteLegale()
+                : null;
+        if (notBlank(denomination)) {
+            structure.setRaisonSociale(denomination);
         }
 
-        if (etablissement.getUniteLegale().getNaf_n5() != null) {
-            structure.setNafN5(nafN5JpaRepository.findByCode(etablissement.getUniteLegale().getNaf_n5()));
-            if (structure.getNafN5() != null) {
-                structure.setActivitePrincipale(structure.getNafN5().getLibelle());
+        // --- Adresse : ne patcher que les champs présents (ne jamais vider)
+        if (etablissement.getAdresse() != null) {
+            String numeroVoie = etablissement.getAdresse().getNumeroVoie();
+            String typeVoie   = etablissement.getAdresse().getTypeVoie();
+            String voie       = etablissement.getAdresse().getVoie();
+
+            String voieConcat = ((notBlank(numeroVoie) ? numeroVoie + " " : "") +
+                    (notBlank(typeVoie)   ? typeVoie   + " " : "") +
+                    (notBlank(voie)       ? voie             : "")).trim();
+
+            if (notBlank(voieConcat)) {
+                structure.setVoie(voieConcat);
+            }
+
+            String commune = etablissement.getAdresse().getCommune();
+            if (notBlank(commune)) {
+                structure.setCommune(commune);
+            }
+
+            String codePostal = etablissement.getAdresse().getCodePostal();
+            if (notBlank(codePostal)) {
+                structure.setCodePostal(codePostal);
+            }
+
+            String codeCommune = etablissement.getAdresse().getCodeCommune();
+            if (notBlank(codeCommune)) {
+                structure.setCodeCommune(codeCommune);
             }
         }
 
-        if (etablissement.getUniteLegale().getStatutJuridique() != null) {
-            String codeJuridique = etablissement.getUniteLegale().getStatutJuridique();
-            structure.setStatutJuridique(statutJuridiqueJpaRepository.findByCode(codeJuridique));
+        // --- NAF : ne remplacer que si on résout le code en base
+        if (etablissement.getUniteLegale() != null && notBlank(etablissement.getUniteLegale().getNaf_n5())) {
+            var naf = nafN5JpaRepository.findByCode(etablissement.getUniteLegale().getNaf_n5());
+            if (naf != null) {
+                structure.setNafN5(naf);
+                if (notBlank(naf.getLibelle())) {
+                    structure.setActivitePrincipale(naf.getLibelle());
+                }
+            }
+            // sinon : on ne touche pas à l’ancienne valeur (pas d’écrasement à null)
+        }
+
+        // --- Effectif : via determinerEffectif, garder l’existant si non résolu
+        String codeEffectif = (etablissement.getUniteLegale() != null)
+                ? etablissement.getUniteLegale().getTrancheEffectifsUniteLegale()
+                : null;
+        var effectifMappe = determinerEffectif(codeEffectif);
+        if (effectifMappe != null) {
+            structure.setEffectif(effectifMappe);
+        }
+
+        // --- Statut juridique : fallback "Autre" si non trouvé, sinon garder l’existant ?
+        String codeJuridique = (etablissement.getUniteLegale() != null)
+                ? etablissement.getUniteLegale().getStatutJuridique()
+                : null;
+
+        StatutJuridique sj = null;
+        if (notBlank(codeJuridique)) {
+            sj = statutJuridiqueJpaRepository.findByCode(codeJuridique);
+        }
+        // On veut explicitement un fallback "Autre" si rien n'est trouvé :
+        if (sj == null) {
+            sj = statutJuridiqueJpaRepository.findByLibelle("Autre");
+        }
+        structure.setStatutJuridique(sj);
+
+        // Type structure : recalcul si code exploitable, sinon garder l’existant (et défaut si null)
+        if (notBlank(codeJuridique)) {
             structure.setTypeStructure(determinerTypeStructure(codeJuridique));
+        } else if (structure.getTypeStructure() == null) {
+            structure.setTypeStructure(typeStructureJpaRepository.findById(3)); // défaut : entreprise privée
         }
 
         return structure;
     }
+
+
+    private static boolean notBlank(String s) {
+        return s != null && !s.isBlank();
+    }
+
 }

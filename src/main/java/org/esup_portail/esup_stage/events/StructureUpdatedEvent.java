@@ -8,4 +8,5 @@ public class StructureUpdatedEvent extends StructureEvent {
     private final Structure structure;
     private final String oldStructure;
     private final String newStructure;
+    private final boolean Auto;
 }

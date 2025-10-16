@@ -9,9 +9,11 @@ import org.esup_portail.esup_stage.service.sirene.model.ListStructureSireneDTO;
 import org.esup_portail.esup_stage.service.sirene.model.SirenResponse;
 import org.esup_portail.esup_stage.service.sirene.utils.SireneMapper;
 import org.esup_portail.esup_stage.service.sirene.utils.SireneQueryBuilder;
+import org.esup_portail.esup_stage.events.StructureUpdatedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -38,6 +40,10 @@ public class SireneService {
 
     @Autowired
     private StructureJpaRepository structureJpaRepository;
+
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
+
 
     public SireneService() {
         this.restTemplate = new RestTemplate();
@@ -132,7 +138,7 @@ public class SireneService {
         }
     }
 
-    public void update(Structure structure) {
+    public void update(String oldStructureJson, Structure structure) {
         String url = sireneProperties.getUrl() + "/siret/" + structure.getNumeroSiret();
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-INSEE-Api-Key-Integration", sireneProperties.getToken());
@@ -145,6 +151,7 @@ public class SireneService {
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 structure = sirenMapper.updateStructure(response.getBody(), structure);
                 structureJpaRepository.save(structure);
+                eventPublisher.publishEvent(new StructureUpdatedEvent(structure,oldStructureJson,objectMapper.writeValueAsString(structure),true));
             } else {
                 logger.warn("Erreur lors de la mise à jour de l'établissement {} avec l'id {} : {}", structure.getRaisonSociale(),structure.getId(), response.getStatusCode());
             }
