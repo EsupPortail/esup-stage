@@ -58,9 +58,9 @@ image::ROOT::application_souscriptions.png[Texte alternatif]
 Pour activer l’API Sirene dans votre application, vous devez renseigner les informations suivantes dans le fichier de configuration application.properties :
 [,properties]
 ----
-siren.url=https://api.insee.fr/api-sirene/3.11
-siren.token=[votre_token]
-siren.nombre_minimum_resultats=3
+sirene.url=https://api.insee.fr/api-sirene/3.11
+sirene.token=[votre_token]
+sirene.nombre_minimum_resultats=3
 ----
 
 == Problèmes techniques connus

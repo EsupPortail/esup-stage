@@ -18,7 +18,6 @@ import java.util.stream.Stream;
 public class AppliProperties {
     private DatasourceProperties datasource;
     private MailerProperties mailer;
-    private String prefix;
     private String url;
     private String localApi;
     private String adminTechnique;
@@ -28,7 +27,7 @@ public class AppliProperties {
     private Long nbJoursValideToken;
 
     public String getLocalApi() {
-        String result = prefix;
+        String result = url;
         if (StringUtils.hasText(localApi)) {
             result = localApi;
         }

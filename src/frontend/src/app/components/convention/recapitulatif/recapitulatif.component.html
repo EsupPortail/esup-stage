@@ -214,7 +214,7 @@
           <div class="col-sm-9">{{(tmpConvention.contact.mail? 'Mail : ' + tmpConvention.contact.mail : '') +
             (tmpConvention.contact.tel? ' - Tel : ' + tmpConvention.contact.tel : '')+
             (tmpConvention.contact.fax? ' - Fax : ' + tmpConvention.contact.fax : '')}}</div>
-          <div class="col-sm-3 font-weight-bold">Signataire</div>
+          <div class="col-sm-3 font-weight-bold">{{ "SIGNATAIRE_RECAPITULATIF"|contenu }}</div>
           <div class="col-sm-9">{{tmpConvention.signataire ? (tmpConvention.signataire.civilite ? tmpConvention.signataire.civilite.libelle + ' ' : '') +tmpConvention.signataire.nom + ' ' +tmpConvention.signataire.prenom +
             (tmpConvention.signataire.fonction ? ', ' + tmpConvention.signataire.fonction : '') : ''}}</div>
         </div>

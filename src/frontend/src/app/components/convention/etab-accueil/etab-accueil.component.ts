@@ -26,8 +26,6 @@ export class EtabAccueilComponent implements OnInit {
   columns = ['raisonSociale', 'numeroSiret', 'nafN5', 'pays', 'commune', 'typeStructure', 'statutJuridique', 'action'];
   sortColumn = 'raisonSociale';
   filters: any[] = [];
-
-  formTabIndex = 1;
   data: any;
 
   createButton = {
@@ -41,8 +39,7 @@ export class EtabAccueilComponent implements OnInit {
 
   @Input() modifiable!: boolean;
 
-  autorisationModification = false;
-  autorisationCreation=false;
+  autorisationCreationFrance=false;
   autorisationCreationHorsFrance = false;
 
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
@@ -57,9 +54,7 @@ export class EtabAccueilComponent implements OnInit {
               private paysService: PaysService,
               private typeStructureService: TypeStructureService,
               private nafN1Service: NafN1Service,
-              private nafN5Service: NafN5Service,
               private statutJuridiqueService: StatutJuridiqueService,
-              private messageService: MessageService,
               private contenuService: ContenuService,
               private authService: AuthService,
               private configService: ConfigService,
@@ -68,8 +63,7 @@ export class EtabAccueilComponent implements OnInit {
 
   ngOnInit(): void {
     this.configService.getConfigGenerale().subscribe((response: any) => {
-      this.autorisationModification = response.autoriserEtudiantAModifierEntreprise;
-      this.autorisationCreation = response.autoriserEtudiantACreerEntreprise;
+      this.autorisationCreationFrance = response.autoriserEtudiantACreerEntrepriseFrance;
       this.autorisationCreationHorsFrance = response.autoriserEtudiantACreerEntrepriseHorsFrance;
     });
     this.contenuService.get('BOUTON_CREER_ETAB_ACCUEIL').subscribe((response: any) => {
@@ -113,19 +107,15 @@ export class EtabAccueilComponent implements OnInit {
 
   canCreate(): boolean {
     let hasRight = this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.CREATION]});
-    if(!this.autorisationCreation){
-      if(this.authService.isEtudiant() && !this.autorisationCreationHorsFrance){
-        hasRight = false;
-      }
+    if(this.authService.isEtudiant() && !this.autorisationCreationHorsFrance && !this.autorisationCreationFrance){
+      hasRight = false;
     }
+
     return this.modifiable && hasRight;
   }
 
   canEdit(): boolean {
     let hasRight = this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.MODIFICATION]});
-    if (this.authService.isEtudiant() && !this.autorisationModification) {
-      hasRight = false;
-    }
     return this.modifiable && hasRight;
   }
 

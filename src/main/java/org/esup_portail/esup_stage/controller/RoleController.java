@@ -9,6 +9,7 @@ import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.AppFonction;
 import org.esup_portail.esup_stage.model.Role;
+import org.esup_portail.esup_stage.model.RoleAppFonction;
 import org.esup_portail.esup_stage.repository.AppFonctionJpaRepository;
 import org.esup_portail.esup_stage.repository.RoleJpaRepository;
 import org.esup_portail.esup_stage.repository.RoleRepository;
@@ -20,7 +21,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @ApiController
 @RequestMapping("/roles")
@@ -115,4 +118,32 @@ public class RoleController {
     public List<AppFonction> getAppFonctions() {
         return appFonctionJpaRepository.findAll();
     }
+
+    @GetMapping("/droits")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
+    public RoleAppFonction getRoleAppFonction(@RequestParam("role") String codeRole,
+                                              @RequestParam("appFonction") String codeAppFonction) {
+
+        Role role = roleJpaRepository.findOneByCode(codeRole);
+        if (role == null) {
+            System.out.println("role");
+            throw new AppException(HttpStatus.NOT_FOUND, "Role non trouvé");
+        }
+
+        final AppFonctionEnum appFonctionEnum;
+        try {
+            appFonctionEnum = AppFonctionEnum.valueOf(codeAppFonction);
+        } catch (IllegalArgumentException e) {
+            System.out.println("appfonction");
+            throw new AppException(HttpStatus.BAD_REQUEST, "Code appFonction invalide : " + codeAppFonction);
+        }
+
+        return Optional.ofNullable(role.getRoleAppFonctions())
+                .orElse(Collections.emptyList())
+                .stream()
+                .filter(r -> r.getAppFonction() != null && r.getAppFonction().getCode() == appFonctionEnum)
+                .findFirst()
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Droit non trouvé pour ce rôle et cette fonction"));
+    }
+
 }

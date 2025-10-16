@@ -9,14 +9,18 @@ import org.esup_portail.esup_stage.service.sirene.model.ListStructureSireneDTO;
 import org.esup_portail.esup_stage.service.sirene.model.SirenResponse;
 import org.esup_portail.esup_stage.service.sirene.utils.SireneMapper;
 import org.esup_portail.esup_stage.service.sirene.utils.SireneQueryBuilder;
+import org.esup_portail.esup_stage.events.StructureUpdatedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,6 +40,10 @@ public class SireneService {
 
     @Autowired
     private StructureJpaRepository structureJpaRepository;
+
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
+
 
     public SireneService() {
         this.restTemplate = new RestTemplate();
@@ -70,9 +78,14 @@ public class SireneService {
         String baseUrl = sireneProperties.getUrl() + "/siret";
         String lucene = SireneQueryBuilder.buildLuceneQuery(filtersJson);
 
-        String url = baseUrl + "?q=" + lucene + "&nombre=" + perpage + "&page=" + page;
+        URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .queryParam("q", lucene)
+                .queryParam("nombre", perpage)
+                .queryParam("page", page)
+                .build(false)
+                .toUri();
 
-        logger.debug("url : " + url);
+        logger.debug("url : " + uri);
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-INSEE-Api-Key-Integration", sireneProperties.getToken());
@@ -80,7 +93,7 @@ public class SireneService {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
         try {
-            ResponseEntity<SirenResponse> resp = restTemplate.exchange(url, HttpMethod.GET, entity, SirenResponse.class);
+            ResponseEntity<SirenResponse> resp = restTemplate.exchange(uri, HttpMethod.GET, entity, SirenResponse.class);
 
             if (resp.getStatusCode().is2xxSuccessful() && resp.getBody() != null) {
                 return new ListStructureSireneDTO(resp.getBody().getHeader().getTotal(), sirenMapper.toStructureList(resp.getBody()));
@@ -125,7 +138,7 @@ public class SireneService {
         }
     }
 
-    public void update(Structure structure) {
+    public void update(String oldStructureJson, Structure structure) {
         String url = sireneProperties.getUrl() + "/siret/" + structure.getNumeroSiret();
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-INSEE-Api-Key-Integration", sireneProperties.getToken());
@@ -138,6 +151,7 @@ public class SireneService {
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 structure = sirenMapper.updateStructure(response.getBody(), structure);
                 structureJpaRepository.save(structure);
+                eventPublisher.publishEvent(new StructureUpdatedEvent(structure,oldStructureJson,objectMapper.writeValueAsString(structure),true));
             } else {
                 logger.warn("Erreur lors de la mise à jour de l'établissement {} avec l'id {} : {}", structure.getRaisonSociale(),structure.getId(), response.getStatusCode());
             }

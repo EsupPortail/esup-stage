@@ -70,4 +70,8 @@ export class StructureService implements PaginatedService, AutocompleteService {
     return this.http.get(`${environment.apiUrl}/structures/sirene`);
   }
 
+  updateFromSirene(id:number): Observable<any>{
+    return this.http.patch(`${environment.apiUrl}/structures/${id}/sirene`,{});
+  }
+
 }

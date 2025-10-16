@@ -19,9 +19,10 @@ public interface StructureJpaRepository extends JpaRepository<Structure, Integer
     @Query("SELECT s FROM Structure s WHERE s.raisonSociale = :raisonSociale AND s.temEnServStructure = true")
     Structure findByRaisonSociale(@Param("raisonSociale") String raisonSociale);
 
-    @Query("SELECT CASE WHEN COUNT(s) > 0 THEN true ELSE false END FROM Structure s WHERE s.numeroRNE = :rne")
-    Boolean existByNumeroRNE (@Param("rne") String rne);
+    @Query("SELECT CASE WHEN COUNT(s) > 0 THEN true ELSE false END FROM Structure s WHERE s.numeroRNE = :rne AND s.temEnServStructure = true")
+    Boolean existAndActifByNumeroRNE (@Param("rne") String rne);
 
-    @Query("SELECT CASE WHEN COUNT(s) > 0 THEN true ELSE false END FROM Structure s WHERE s.numeroSiret = :siret")
-    Boolean existByNumeroSiret (@Param("siret") String siret);
+    @Query("SELECT CASE WHEN COUNT(s) > 0 THEN true ELSE false END FROM Structure s WHERE s.numeroSiret = :siret AND s.temEnServStructure = true")
+    Boolean existAndActifByNumeroSiret (@Param("siret") String siret);
+
 }

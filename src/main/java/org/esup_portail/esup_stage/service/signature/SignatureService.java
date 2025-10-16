@@ -535,38 +535,6 @@ public class SignatureService {
             for (Convention convention : conventionsNonSignee) {
                 try {
                     update(convention);
-
-                    if (convention.getDateSignatureEtudiant() != null
-                            && convention.getDateSignatureTuteur() != null
-                            && convention.getDateSignatureEnseignant() != null
-                            && convention.getDateSignatureSignataire() != null
-                            && convention.getDateSignatureViseur() != null) {
-                        // set le champ temConventionSignee à true si la convention est totalement signée
-                        convention.setTemConventionSignee(true);
-                        conventionJpaRepository.save(convention);
-                        log.info("Convention signée complètement. ID = {}", convention.getId());
-                        // on envoi le mail aux gestionnaires
-                        List<PersonnelCentreGestion> personnels = convention.getCentreGestion().getPersonnels();
-                        assert personnels != null;
-                        for (PersonnelCentreGestion personnel : personnels) {
-                            if (mailerService.isAlerteActif(personnel, "CONVENTION_SIGNEE")) {
-                                Utilisateur utilisateur = convention.getLoginEnvoiSignature() != null? utilisateurJpaRepository.findByLogin(convention.getLoginEnvoiSignature()): utilisateurJpaRepository.findOneByLogin(convention.getLoginValidation()) ;
-                                mailerService.sendAlerteValidation(personnel.getMail(), convention, null, utilisateur, "CONVENTION_SIGNEE");
-                            }
-                        }
-                    }
-
-                    //Suppression de la convention pour esup-signature si elle est signée et que le paramètre de suppression automatique est activé
-                    if (signatureProperties.getAppSignatureType() == AppSignatureEnum.ESUPSIGNATURE) {
-                        if( convention.isTemConventionSignee() && appConfigService.getConfigSignature().isSupprimerConventionUneFoisSigneEsupSignature()){
-                            webClient.delete()
-                                    .uri(signatureProperties.getEsupsignature().getUri() + "/signrequests/soft/" + convention.getDocumentId())
-                                    .retrieve()
-                                    .bodyToMono(String.class)
-                                    .block();
-                        }
-                    }
-
                 } catch (Exception e) {
                     log.error("Erreur lors du traitement de la convention id={} : {}",
                             convention != null ? convention.getId() : "null", e.getMessage(), e);
@@ -588,6 +556,42 @@ public class SignatureService {
                 default -> historiques;
             };
             setSignatureHistorique(convention, historiques);
+
+            if (convention.getDateSignatureEtudiant() != null
+                    && convention.getDateSignatureTuteur() != null
+                    && convention.getDateSignatureEnseignant() != null
+                    && convention.getDateSignatureSignataire() != null
+                    && convention.getDateSignatureViseur() != null) {
+                // set le champ temConventionSignee à true si la convention est totalement signée
+                convention.setTemConventionSignee(true);
+                conventionJpaRepository.save(convention);
+                log.info("Convention signée complètement. ID = {}", convention.getId());
+                Utilisateur utilisateur = convention.getLoginEnvoiSignature() != null? utilisateurJpaRepository.findByLogin(convention.getLoginEnvoiSignature()): utilisateurJpaRepository.findOneByLogin(convention.getLoginValidation()) ;
+                if(convention.getCentreGestion().isOnlyMailCentreGestion()){
+                    //si le paramètre OnlyMailCentreGestion est activé on envoi à l'adresse du centre de gestion
+                    mailerService.sendAlerteValidation(convention.getCentreGestion().getMail() , convention, null, utilisateur, "CONVENTION_SIGNEE");
+                }else{
+                    // sinon on envoi le mail aux gestionnaires
+                    List<PersonnelCentreGestion> personnels = convention.getCentreGestion().getPersonnels();
+                    assert personnels != null;
+                    for (PersonnelCentreGestion personnel : personnels) {
+                        if (mailerService.isAlerteActif(personnel, "CONVENTION_SIGNEE")) {
+                            mailerService.sendAlerteValidation(personnel.getMail(), convention, null, utilisateur, "CONVENTION_SIGNEE");
+                        }
+                    }
+                }
+            }
+
+            //Suppression de la convention pour esup-signature si elle est signée et que le paramètre de suppression automatique est activé
+            if (signatureProperties.getAppSignatureType() == AppSignatureEnum.ESUPSIGNATURE) {
+                if( convention.isTemConventionSignee() && appConfigService.getConfigSignature().isSupprimerConventionUneFoisSigneEsupSignature()){
+                    webClient.delete()
+                            .uri(signatureProperties.getEsupsignature().getUri() + "/signrequests/soft/" + convention.getDocumentId())
+                            .retrieve()
+                            .bodyToMono(String.class)
+                            .block();
+                }
+            }
         } catch (Exception e) {
             logger.error(e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur de la récupération de l'historique");

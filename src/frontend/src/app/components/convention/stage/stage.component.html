@@ -20,22 +20,62 @@
             <textarea matInput formControlName="sujetStage" [required]="!enMasse"></textarea>
             <mat-error><app-form-error [field]="form.get('sujetStage')"></app-form-error></mat-error>
           </mat-form-field>
+
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Compétences</mat-label>
-            <textarea matInput formControlName="competences" [required]="!enMasse"></textarea>
-            <mat-error><app-form-error [field]="form.get('competences')"></app-form-error></mat-error>
+            <textarea
+              matInput
+              formControlName="competences"
+              maxlength="{{ MAX.competences }}"
+              [required]="!enMasse"
+              (focus)="focused = 'competences'"
+              (blur)="focused = focused === 'competences' ? null : focused"
+            ></textarea>
+
+            <mat-error *ngIf="hasError('competences')">
+              <app-form-error [field]="form.get('competences')"></app-form-error>
+            </mat-error>
+
+            <mat-hint
+              align="end"
+              *ngIf="!hasError('competences') && focused === 'competences'"
+              [ngStyle]="{ color: counterColor('competences') }"
+            >
+              {{ len('competences') }}/{{ MAX.competences }}
+            </mat-hint>
           </mat-form-field>
+
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Fonctions et tâches</mat-label>
-            <textarea matInput formControlName="fonctionsEtTaches" [required]="!enMasse"></textarea>
-            <mat-error><app-form-error [field]="form.get('fonctionsEtTaches')"></app-form-error></mat-error>
+            <textarea
+              matInput
+              formControlName="fonctionsEtTaches"
+              maxlength="{{ MAX.fonctionsEtTaches }}"
+              [required]="!enMasse"
+              (focus)="focused = 'fonctionsEtTaches'"
+              (blur)="focused = focused === 'fonctionsEtTaches' ? null : focused"
+            ></textarea>
+
+            <mat-error *ngIf="hasError('fonctionsEtTaches')">
+              <app-form-error [field]="form.get('fonctionsEtTaches')"></app-form-error>
+            </mat-error>
+
+            <mat-hint
+              align="end"
+              *ngIf="!hasError('fonctionsEtTaches') && focused === 'fonctionsEtTaches'"
+              [ngStyle]="{ color: counterColor('fonctionsEtTaches') }"
+            >
+              {{ len('fonctionsEtTaches') }}/{{ MAX.fonctionsEtTaches }}
+            </mat-hint>
           </mat-form-field>
+
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Détails</mat-label>
             <textarea matInput formControlName="details"></textarea>
             <mat-error><app-form-error [field]="form.get('sujet')"></app-form-error></mat-error>
           </mat-form-field>
         </div>
+
 
         <div class="text-title">Dates / horaires</div>
         <mat-divider class="mb-2"></mat-divider>
@@ -194,6 +234,7 @@
             <textarea matInput formControlName="commentaireDureeTravail"></textarea>
             <mat-error><app-form-error [field]="form.get('commentaireDureeTravail')"></app-form-error></mat-error>
           </mat-form-field>
+
         </div>
 
         <div class="text-title">Gratification</div>
@@ -297,12 +338,14 @@
               <textarea matInput formControlName="avantagesNature"></textarea>
               <mat-error><app-form-error [field]="form.get('avantagesNature')"></app-form-error></mat-error>
             </mat-form-field>
+
             <mat-form-field class="col-12 mb-2" appearance="fill">
               <mat-label>Travail exceptionnel</mat-label>
               <textarea matInput formControlName="travailNuitFerie"></textarea>
               <mat-hint>Si le stagiaire doit télétravailler, être présent la nuit, le dimanche ou un jour férié, préciser</mat-hint>
               <mat-error><app-form-error [field]="form.get('travailNuitFerie')"></app-form-error></mat-error>
             </mat-form-field>
+
           </div>
         </div>
 

@@ -99,7 +99,7 @@ public class StructureController {
             throw new RuntimeException(e);
         }
         boolean estEtudiant = UtilisateurHelper.isRole(Objects.requireNonNull(ServiceContext.getUtilisateur()), Role.ETU);
-        boolean creationEtudiantInterdite = !appConfigService.getConfigGenerale().isAutoriserEtudiantACreerEntreprise();
+        boolean creationEtudiantInterdite = !appConfigService.getConfigGenerale().isAutoriserEtudiantACreerEntrepriseFrance();
         boolean paysOk = !(filterMap != null && filterMap.containsKey("pays.id") && !"82".equals(String.valueOf(((Map<?,?>) filterMap.get("pays.id")).get("value"))));
         if (sireneProperties.isApiSireneActive()
                 && structures.size() < sireneProperties.getNombreMinimumResultats()
@@ -170,18 +170,7 @@ public class StructureController {
         int lineNumber = 0;
         boolean isHeader = true;
 
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, java.nio.charset.StandardCharsets.UTF_8))) {
-
-            // Référentiels (fatals si manquants)
-            Effectif effectif = effectifJpaRepository.findByLibelle("Inconnu");
-            TypeStructure typeStructure = typeStructureJpaRepository.findByLibelle("Etablissement d'enseignement");
-            if (typeStructure == null) throw new IllegalStateException("Type de structure non trouvé");
-            StatutJuridique statutJuridique = statutJuridiqueJpaRepository.findByLibelle("public");
-            if (statutJuridique == null) throw new IllegalStateException("Statut juridique non trouvé");
-            NafN5 nafN5 = nafN5JpaRepository.findByCode("85.59B");
-            if (nafN5 == null) throw new IllegalStateException("Code NAF non trouvé (85.59B)");
-            Pays pays = paysJpaRepository.findByIso2("FR");
-            if (pays == null) throw new IllegalStateException("Pays non trouvé (FR)");
+        try (BufferedReader br = csvUtils.openReader(inputStream)) { // <<— ici
 
             String line;
             CsvStructureImportUtils.Indices I = null;
@@ -211,10 +200,8 @@ public class StructureController {
                 String[] columns = line.split(separator, -1);
                 var col = csvUtils.colAccessor(columns);
 
-                // 1) Validation
                 var lineErrors = csvUtils.validateRow(lineNumber, col, I);
 
-                // 2) Doublons (en erreur)
                 csvUtils.duplicateError(lineNumber, col, I, structureJpaRepository)
                         .ifPresent(lineErrors::add);
 
@@ -223,8 +210,7 @@ public class StructureController {
                     continue;
                 }
 
-                // 3) Build & save
-                Structure structure = csvUtils.buildStructure(col, I, nafN5, effectif, statutJuridique, typeStructure, pays);
+                Structure structure = csvUtils.buildStructure(col, I);
                 structureService.save(null, structure);
                 report.setImported(report.getImported() + 1);
             }
@@ -303,8 +289,14 @@ public class StructureController {
         if(structureBody.getId() != null) {
             structure = structureJpaRepository.findById(structureBody.getId()).orElse(null);
             if (structure != null && structure.getTemEnServStructure()) {
-                if(structure.isTemSiren()){
-                    sireneService.update(structure);
+                if(structure.getNumeroSiret() != null && !structure.getNumeroSiret().isEmpty()) {
+                    String jsonStructure;
+                    try{
+                        jsonStructure = objectMapper.writeValueAsString(structure);
+                    }catch(JsonProcessingException e){
+                        throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR,"Erreur lors de la mise à jour de la structure");
+                    }
+                    sireneService.update(jsonStructure,structure);
                 }
                 return structure;
             }
@@ -444,6 +436,26 @@ public class StructureController {
         sireneInfoDto.setIsApiSireneActive(sireneProperties.isApiSireneActive());
         sireneInfoDto.setNombreResultats(sireneProperties.getNombreMinimumResultats());
         return sireneInfoDto;
+    }
+
+    @PatchMapping("{id}/sirene")
+    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.MODIFICATION})
+    public Structure updateFromSirene(@PathVariable("id") int id) {
+        Structure structure = structureJpaRepository.findById(id);
+        if (structure == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Structure non trouvée");
+        }
+        if(structure.getNumeroSiret() == null || structure.getNumeroSiret().isEmpty()){
+            throw new AppException(HttpStatus.BAD_REQUEST,"Le numéro de SIRET est vide");
+        }
+        String jsonStructure;
+        try{
+            jsonStructure = objectMapper.writeValueAsString(structure);
+        }catch(JsonProcessingException e){
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR,"Erreur lors de la mise à jour de la structure");
+        }
+        sireneService.update(jsonStructure,structure);
+        return structure;
     }
 
 }

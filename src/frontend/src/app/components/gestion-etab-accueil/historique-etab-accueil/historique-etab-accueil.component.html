@@ -28,7 +28,7 @@
           <div class="detail-value">{{data.operationType}}</div>
         </div>
 
-        <div *ngIf="data.operationType == 'MODIFICATION'">
+        <div *ngIf="data.operationType == 'MODIFICATION' || data.operationType == 'MODIFICATION_AUTOMATIQUE'">
           <mat-divider class="section-divider"></mat-divider>
           <h2 class="changes-title">Modifications effectuées</h2>
           <!-- Pas de différences -->

@@ -6,5 +6,5 @@ import lombok.Data;
 public class ConfigSignatureDto {
 
     private boolean SupprimerConventionUneFoisSigneEsupSignature;
-
+    private boolean autoriserModifOrdreSignataireCG;
 }

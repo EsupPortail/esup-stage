@@ -233,10 +233,13 @@ public class MailerService {
             case TemplateMail.CODE_AVENANT_VALIDATION:
                 return personnel.getValidationAvenant() != null && personnel.getValidationAvenant();
             case TemplateMail.CODE_CONVENTION_VALID_ADMINISTRATIVE:
+            case TemplateMail.CODE_CONVENTION_DEVALID_ADMINISTRATIVE:
                 return personnel.getValidationAdministrativeConvention() != null && personnel.getValidationAdministrativeConvention();
             case TemplateMail.CODE_CONVENTION_VALID_PEDAGOGIQUE:
+            case TemplateMail.CODE_CONVENTION_DEVALID_PEDAGOGIQUE:
                 return personnel.getValidationPedagogiqueConvention() != null && personnel.getValidationPedagogiqueConvention();
             case TemplateMail.CODE_CONVENTION_VERIF_ADMINISTRATIVE:
+            case TemplateMail.CODE_CONVENTION_DEVERIF_ADMINISTRATIVE:
                 return personnel.getVerificationAdministrativeConvention() != null && personnel.getVerificationAdministrativeConvention();
             case TemplateMail.CODE_ETU_CREA_AVENANT:
                 return personnel.getCreationAvenantEtudiant() != null && personnel.getCreationAvenantEtudiant();
@@ -349,7 +352,7 @@ public class MailerService {
                 this.dateFin = convention.getDateFinStage() != null ? df.format(convention.getDateFinStage()) : null;
                 this.tempsTravail = convention.getTempsTravail() != null ? convention.getTempsTravail().getLibelle() : null;
                 this.tempsTravailComment = convention.getCommentaireDureeTravail();
-                this.lien = appliProperties.getUrl() + "conventions/" + convention.getId();
+                this.lien = appliProperties.getUrl() + "/frontend/#/conventions/" + convention.getId();
             }
         }
 
