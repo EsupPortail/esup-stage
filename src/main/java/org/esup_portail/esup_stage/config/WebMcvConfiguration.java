@@ -19,22 +19,14 @@ public class WebMcvConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        String browserDir = Paths.get("src/main/resources/frontend/browser")
-                .toAbsolutePath()
-                .toUri()
-                .toString();
-
         registry.addResourceHandler("/frontend/**")
-                .addResourceLocations(browserDir);
+                .addResourceLocations("classpath:/frontend/browser/");
     }
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/").setViewName("redirect:/frontend/");
         registry.addViewController("/frontend/").setViewName("forward:/frontend/index.html");
-
-        registry.addViewController("/frontend/{path:^(?!.*\\.).*$}")
-                .setViewName("forward:/frontend/index.html");
     }
 
     @Override
