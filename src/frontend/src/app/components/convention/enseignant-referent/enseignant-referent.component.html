@@ -1,4 +1,36 @@
 <mat-accordion>
+
+  <mat-expansion-panel [disabled]="!enseignant" [expanded]="enseignant">
+    <mat-expansion-panel-header>
+      <mat-panel-title>Enseignant</mat-panel-title>
+      <mat-panel-description>
+        <div class="w-100 text-right">
+          <mat-icon fontSet="fa" fontIcon="fa-user"></mat-icon>
+        </div>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <div *ngIf="enseignant" class="mt-3 mb-3">
+      <div class="row">
+        <div class="col-sm-3 font-weight-bold">Nom / Prénom</div>
+        <div class="col-sm-9">{{enseignant.nom + ' ' + enseignant.prenom}}</div>
+      </div>
+      <div class="row">
+        <div class="col-sm-3 font-weight-bold">Fonction</div>
+        <div class="col-sm-9">{{enseignant.typePersonne}}</div>
+      </div>
+      <div class="row">
+        <div class="col-sm-3 font-weight-bold">Téléphone</div>
+        <div class="col-sm-9">{{enseignant.tel}}</div>
+      </div>
+      <div class="row">
+        <div class="col-sm-3 font-weight-bold">Mail</div>
+        <div class="col-sm-9">{{enseignant.mail}}</div>
+      </div>
+    </div>
+
+  </mat-expansion-panel>
+
   <mat-expansion-panel [expanded]="!enseignant" *ngIf="modifiable">
     <mat-expansion-panel-header>
       <mat-panel-title>Recherchez un enseignant via son nom et/ou son prénom</mat-panel-title>
@@ -55,34 +87,5 @@
     </table>
 
   </mat-expansion-panel>
-  <mat-expansion-panel [disabled]="!enseignant" [expanded]="enseignant">
-    <mat-expansion-panel-header>
-      <mat-panel-title>Enseignant</mat-panel-title>
-      <mat-panel-description>
-        <div class="w-100 text-right">
-          <mat-icon fontSet="fa" fontIcon="fa-user"></mat-icon>
-        </div>
-      </mat-panel-description>
-    </mat-expansion-panel-header>
 
-    <div *ngIf="enseignant" class="mt-3 mb-3">
-      <div class="row">
-        <div class="col-sm-3 font-weight-bold">Nom / Prénom</div>
-        <div class="col-sm-9">{{enseignant.nom + ' ' + enseignant.prenom}}</div>
-      </div>
-      <div class="row">
-        <div class="col-sm-3 font-weight-bold">Fonction</div>
-        <div class="col-sm-9">{{enseignant.typePersonne}}</div>
-      </div>
-      <div class="row">
-        <div class="col-sm-3 font-weight-bold">Téléphone</div>
-        <div class="col-sm-9">{{enseignant.tel}}</div>
-      </div>
-      <div class="row">
-        <div class="col-sm-3 font-weight-bold">Mail</div>
-        <div class="col-sm-9">{{enseignant.mail}}</div>
-      </div>
-    </div>
-
-  </mat-expansion-panel>
 </mat-accordion>

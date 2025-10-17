@@ -1,95 +1,4 @@
 <mat-accordion>
-  <mat-expansion-panel [expanded]="!contact" *ngIf="modifiable">
-    <mat-expansion-panel-header>
-      {{ "TITRE_SELECTION_SIGNATAIRE"| contenu }}
-    </mat-expansion-panel-header>
-    <div class="row mt-3">
-      <mat-form-field class="col-md-12" appearance="fill" *ngIf="services.length > 0">
-        <mat-label>{{ "SELECTION_SERVICE_SIGNATAIRE"|contenu }}</mat-label>
-        <mat-select [(value)]="service" (selectionChange)="selectService()">
-          <mat-option>
-            <ngx-mat-select-search [formControl]="serviceFilterCtrl" placeholderLabel="Rechercher un service" noEntriesFoundLabel="Aucun service trouvé"></ngx-mat-select-search>
-          </mat-option>
-          <mat-option *ngFor="let service of filteredServices | async" [value]="service">
-            {{service.nom}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-      <div class="col-md-12 mb-3" *ngIf="canCreate()">
-        <button mat-flat-button (click)="createService()" color="primary">Créer un nouveau service</button>
-      </div>
-    </div>
-    <div class="row mt-3" *ngIf="service">
-      <div class="col-md-12">
-        <div class="text-title">Service sélectionné</div>
-      </div>
-      <div class="col-md-12">
-        <table mat-table [dataSource]="[service]">
-          <ng-container matColumnDef="nom">
-            <th mat-header-cell *matHeaderCellDef>Nom du service</th>
-            <td mat-cell *matCellDef="let row">{{row.nom}}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="voie">
-            <th mat-header-cell *matHeaderCellDef>Voie</th>
-            <td mat-cell *matCellDef="let row">{{row.voie}}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="batimentResidence">
-            <th mat-header-cell *matHeaderCellDef>Bâtiment / Résidence / Z.I.</th>
-            <td mat-cell *matCellDef="let row">{{row.batimentResidence}}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="codePostal">
-            <th mat-header-cell *matHeaderCellDef>Code postal</th>
-            <td mat-cell *matCellDef="let row">{{row.codePostal}}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="commune">
-            <th mat-header-cell *matHeaderCellDef>Commune</th>
-            <td mat-cell *matCellDef="let row">{{row.commune}}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="pays">
-            <th mat-header-cell *matHeaderCellDef>Pays</th>
-            <td mat-cell *matCellDef="let row">{{row.pays ? row.pays.lib : null}}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="telephone">
-            <th mat-header-cell *matHeaderCellDef>Téléphone</th>
-            <td mat-cell *matCellDef="let row">{{row.telephone}}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef>Actions</th>
-            <td mat-cell *matCellDef="let row">
-              <button mat-icon-button matTooltip="Éditer" (click)="editService(row)" color="primary"><i class="fa fa-pen"></i></button>
-            </td>
-          </ng-container>
-          <tr mat-header-row *matHeaderRowDef="serviceTableColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: serviceTableColumns;"></tr>
-        </table>
-      </div>
-    </div>
-    <div class="row mt-5" *ngIf="service">
-      <mat-form-field class="col-md-12" appearance="fill" [hidden]="contacts.length == 0">
-        <mat-label>{{"SELECTIONER_SIGNATAIRE_EXISTANT"|contenu}}</mat-label>
-        <mat-select [(value)]="contact" (selectionChange)="choose($event.value)">
-          <mat-option>
-            <ngx-mat-select-search [formControl]="contactFilterCtrl" placeholderLabel="Rechercher un signataire" noEntriesFoundLabel="Aucun signataire trouvé"></ngx-mat-select-search>
-          </mat-option>
-          <mat-option *ngFor="let contact of filteredContacts | async" [value]="contact">
-            {{contact.nom + ' ' + contact.prenom}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-      <div class="col-md-12" *ngIf="canCreate()">
-        <button mat-flat-button (click)="initCreate()" color="primary">{{ "BOUTON_CREER_NOUVEAU_SIGNATAIRE"|contenu }}</button>
-      </div>
-    </div>
-
-  </mat-expansion-panel>
-
   <mat-expansion-panel [expanded]="contact" [disabled]="!contact">
     <mat-expansion-panel-header>
       <mat-panel-title>{{"TITRE-PANEL-SIGNATAIRE"|contenu}}</mat-panel-title>
@@ -188,5 +97,95 @@
         </div>
       </div>
     </form>
+  </mat-expansion-panel>
+  <mat-expansion-panel [expanded]="!contact" *ngIf="modifiable">
+    <mat-expansion-panel-header>
+      {{ "TITRE_SELECTION_SIGNATAIRE"| contenu }}
+    </mat-expansion-panel-header>
+    <div class="row mt-3">
+      <mat-form-field class="col-md-12" appearance="fill" *ngIf="services.length > 0">
+        <mat-label>{{ "SELECTION_SERVICE_SIGNATAIRE"|contenu }}</mat-label>
+        <mat-select [(value)]="service" (selectionChange)="selectService()">
+          <mat-option>
+            <ngx-mat-select-search [formControl]="serviceFilterCtrl" placeholderLabel="Rechercher un service" noEntriesFoundLabel="Aucun service trouvé"></ngx-mat-select-search>
+          </mat-option>
+          <mat-option *ngFor="let service of filteredServices | async" [value]="service">
+            {{service.nom}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <div class="col-md-12 mb-3" *ngIf="canCreate()">
+        <button mat-flat-button (click)="createService()" color="primary">Créer un nouveau service</button>
+      </div>
+    </div>
+    <div class="row mt-3" *ngIf="service">
+      <div class="col-md-12">
+        <div class="text-title">Service sélectionné</div>
+      </div>
+      <div class="col-md-12">
+        <table mat-table [dataSource]="[service]">
+          <ng-container matColumnDef="nom">
+            <th mat-header-cell *matHeaderCellDef>Nom du service</th>
+            <td mat-cell *matCellDef="let row">{{row.nom}}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="voie">
+            <th mat-header-cell *matHeaderCellDef>Voie</th>
+            <td mat-cell *matCellDef="let row">{{row.voie}}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="batimentResidence">
+            <th mat-header-cell *matHeaderCellDef>Bâtiment / Résidence / Z.I.</th>
+            <td mat-cell *matCellDef="let row">{{row.batimentResidence}}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="codePostal">
+            <th mat-header-cell *matHeaderCellDef>Code postal</th>
+            <td mat-cell *matCellDef="let row">{{row.codePostal}}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="commune">
+            <th mat-header-cell *matHeaderCellDef>Commune</th>
+            <td mat-cell *matCellDef="let row">{{row.commune}}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="pays">
+            <th mat-header-cell *matHeaderCellDef>Pays</th>
+            <td mat-cell *matCellDef="let row">{{row.pays ? row.pays.lib : null}}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="telephone">
+            <th mat-header-cell *matHeaderCellDef>Téléphone</th>
+            <td mat-cell *matCellDef="let row">{{row.telephone}}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let row">
+              <button mat-icon-button matTooltip="Éditer" (click)="editService(row)" color="primary"><i class="fa fa-pen"></i></button>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="serviceTableColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: serviceTableColumns;"></tr>
+        </table>
+      </div>
+    </div>
+    <div class="row mt-5" *ngIf="service">
+      <mat-form-field class="col-md-12" appearance="fill" [hidden]="contacts.length == 0">
+        <mat-label>{{"SELECTIONER_SIGNATAIRE_EXISTANT"|contenu}}</mat-label>
+        <mat-select [(value)]="contact" (selectionChange)="choose($event.value)">
+          <mat-option>
+            <ngx-mat-select-search [formControl]="contactFilterCtrl" placeholderLabel="Rechercher un signataire" noEntriesFoundLabel="Aucun signataire trouvé"></ngx-mat-select-search>
+          </mat-option>
+          <mat-option *ngFor="let contact of filteredContacts | async" [value]="contact">
+            {{contact.nom + ' ' + contact.prenom}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <div class="col-md-12" *ngIf="canCreate()">
+        <button mat-flat-button (click)="initCreate()" color="primary">{{ "BOUTON_CREER_NOUVEAU_SIGNATAIRE"|contenu }}</button>
+      </div>
+    </div>
+
   </mat-expansion-panel>
 </mat-accordion>

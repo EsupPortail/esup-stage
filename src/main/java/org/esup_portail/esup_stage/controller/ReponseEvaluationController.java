@@ -174,15 +174,15 @@ public class ReponseEvaluationController {
         ByteArrayOutputStream ou = new ByteArrayOutputStream();
 
         if (typeFiche == 0) {
-            impressionService.generateEvaluationPDF(reponseEvaluation.getConvention(), reponseEvaluation.getConvention().getAvenants().getLast(), ou, typeFiche);
+            impressionService.generateEvaluationPDF(reponseEvaluation.getConvention(), null, ou, typeFiche);
             reponseEvaluation.setImpressionEtudiant(true);
         }
         if (typeFiche == 1) {
-            impressionService.generateEvaluationPDF(reponseEvaluation.getConvention(), reponseEvaluation.getConvention().getAvenants().getLast(), ou, typeFiche);
+            impressionService.generateEvaluationPDF(reponseEvaluation.getConvention(), null, ou, typeFiche);
             reponseEvaluation.setImpressionEnseignant(true);
         }
         if (typeFiche == 2) {
-            impressionService.generateEvaluationPDF(reponseEvaluation.getConvention(), reponseEvaluation.getConvention().getAvenants().getLast(), ou, typeFiche);
+            impressionService.generateEvaluationPDF(reponseEvaluation.getConvention(), null, ou, typeFiche);
             reponseEvaluation.setImpressionEntreprise(true);
         }
         reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);

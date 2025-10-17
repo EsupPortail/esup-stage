@@ -165,7 +165,7 @@ public class EvaluationTuteurController {
             boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isEvalTuteurRemplie();
             boolean sendMailGestionnaire = configAlerteMailDto.getAlerteGestionnaire().isEvalTuteurRemplie();
             boolean sendMailRespGestionnaire = configAlerteMailDto.getAlerteRespGestionnaire().isEvalTuteurRemplie();
-            mailerService.sendValidationMail(convention,convention.getAvenants().getLast(), TemplateMail.CODE_EVAL_TUTEUR_REMPLIE, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
+            mailerService.sendValidationMail(convention,null, TemplateMail.CODE_EVAL_TUTEUR_REMPLIE, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
         }
         return true;
     }
