@@ -1,6 +1,7 @@
 @use '@angular/material' as mat;
 @import "@fortawesome/fontawesome-free/css/all.css";
-@include mat.core();
+@include mat.elevation-classes();
+@include mat.app-background();
 $my-primary-palette: (
   100: var(--primaryColor),
   500: var(--primaryColor),
