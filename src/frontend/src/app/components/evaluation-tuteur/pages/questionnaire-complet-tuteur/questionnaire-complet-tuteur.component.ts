@@ -7,9 +7,10 @@ import {MessageService} from "../../../../services/message.service";
 import * as FileSaver from "file-saver";
 
 @Component({
-  selector: 'app-questionnaire-complet-tuteur',
-  templateUrl: './questionnaire-complet-tuteur.component.html',
-  styleUrl: './questionnaire-complet-tuteur.component.scss'
+    selector: 'app-questionnaire-complet-tuteur',
+    templateUrl: './questionnaire-complet-tuteur.component.html',
+    styleUrl: './questionnaire-complet-tuteur.component.scss',
+    standalone: false
 })
 export class QuestionnaireCompletTuteurComponent implements OnInit{
 

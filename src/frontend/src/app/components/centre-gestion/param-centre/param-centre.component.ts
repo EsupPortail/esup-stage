@@ -10,9 +10,10 @@ import { ConfigService } from "../../../services/config.service";
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 
 @Component({
-  selector: 'app-param-centre',
-  templateUrl: './param-centre.component.html',
-  styleUrls: ['./param-centre.component.scss']
+    selector: 'app-param-centre',
+    templateUrl: './param-centre.component.html',
+    styleUrls: ['./param-centre.component.scss'],
+    standalone: false
 })
 export class ParamCentreComponent implements OnInit {
 

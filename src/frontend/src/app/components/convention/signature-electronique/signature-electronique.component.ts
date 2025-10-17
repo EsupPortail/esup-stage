@@ -8,9 +8,10 @@ import { ConfigService } from '../../../services/config.service';
 import { UserService } from '../../../services/user.service';
 
 @Component({
-  selector: 'app-signature-electronique',
-  templateUrl: './signature-electronique.component.html',
-  styleUrls: ['./signature-electronique.component.scss']
+    selector: 'app-signature-electronique',
+    templateUrl: './signature-electronique.component.html',
+    styleUrls: ['./signature-electronique.component.scss'],
+    standalone: false
 })
 export class SignatureElectroniqueComponent implements OnInit {
 

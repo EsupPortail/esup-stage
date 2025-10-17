@@ -7,9 +7,10 @@ import {EvaluationTuteurContextService} from "./services/evaluation-tuteur-conte
 
 
 @Component({
-  selector: 'app-evaluation-tuteur',
-  templateUrl: './evaluation-tuteur.component.html',
-  styleUrl: './evaluation-tuteur.component.scss'
+    selector: 'app-evaluation-tuteur',
+    templateUrl: './evaluation-tuteur.component.html',
+    styleUrl: './evaluation-tuteur.component.scss',
+    standalone: false
 })
 export class EvaluationTuteurComponent implements OnInit {
 

@@ -17,9 +17,10 @@ import {MatDialog} from "@angular/material/dialog";
 
 
 @Component({
-  selector: 'app-etab-accueil',
-  templateUrl: './etab-accueil.component.html',
-  styleUrls: ['./etab-accueil.component.scss']
+    selector: 'app-etab-accueil',
+    templateUrl: './etab-accueil.component.html',
+    styleUrls: ['./etab-accueil.component.scss'],
+    standalone: false
 })
 export class EtabAccueilComponent implements OnInit {
 

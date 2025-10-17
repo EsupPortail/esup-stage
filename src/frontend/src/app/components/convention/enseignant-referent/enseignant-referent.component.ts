@@ -9,9 +9,10 @@ import { PageEvent } from "@angular/material/paginator";
 import { debounceTime } from "rxjs/operators";
 
 @Component({
-  selector: 'app-enseignant-referent',
-  templateUrl: './enseignant-referent.component.html',
-  styleUrls: ['./enseignant-referent.component.scss']
+    selector: 'app-enseignant-referent',
+    templateUrl: './enseignant-referent.component.html',
+    styleUrls: ['./enseignant-referent.component.scss'],
+    standalone: false
 })
 export class EnseignantReferentComponent implements OnInit {
 

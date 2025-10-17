@@ -8,9 +8,10 @@ import {CdkDragDrop, moveItemInArray} from "@angular/cdk/drag-drop";
 type TypeFiche = 0 | 1 | 2 | 3; // 0 = étudiant, 1 = enseignant référent, 2 = tuteur pro, 3 = tous
 
 @Component({
-  selector: 'app-export-evaluation',
-  templateUrl: './export-evaluation.component.html',
-  styleUrl: './export-evaluation.component.scss'
+    selector: 'app-export-evaluation',
+    templateUrl: './export-evaluation.component.html',
+    styleUrl: './export-evaluation.component.scss',
+    standalone: false
 })
 export class ExportEvaluationComponent implements OnInit{
 

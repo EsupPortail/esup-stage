@@ -20,9 +20,10 @@ import {REGEX} from "../../../../utils/regex.utils";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 
 @Component({
-  selector: 'app-cadre-stage-modal',
-  templateUrl: './cadre-stage-modal.component.html',
-  styleUrls: ['./cadre-stage-modal.component.scss']
+    selector: 'app-cadre-stage-modal',
+    templateUrl: './cadre-stage-modal.component.html',
+    styleUrls: ['./cadre-stage-modal.component.scss'],
+    standalone: false
 })
 export class CadreStageModalComponent implements OnInit {
 

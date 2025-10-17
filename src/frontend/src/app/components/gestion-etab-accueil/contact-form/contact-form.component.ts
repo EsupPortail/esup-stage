@@ -9,9 +9,10 @@ import {debounceTime} from "rxjs/operators";
 import { CentreGestionSearchModel } from 'src/app/models/centre-gestion-search.model';
 
 @Component({
-  selector: 'app-contact-form',
-  templateUrl: './contact-form.component.html',
-  styleUrls: ['./contact-form.component.scss']
+    selector: 'app-contact-form',
+    templateUrl: './contact-form.component.html',
+    styleUrls: ['./contact-form.component.scss'],
+    standalone: false
 })
 export class ContactFormComponent implements OnInit, OnDestroy {
 

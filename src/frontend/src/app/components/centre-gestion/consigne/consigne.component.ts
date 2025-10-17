@@ -85,10 +85,11 @@ import {
 import translations from 'ckeditor5/translations/fr.js';
 
 @Component({
-  selector: 'app-consigne',
-  templateUrl: './consigne.component.html',
-  styleUrls: ['./consigne.component.scss'],
-  encapsulation: ViewEncapsulation.None
+    selector: 'app-consigne',
+    templateUrl: './consigne.component.html',
+    styleUrls: ['./consigne.component.scss'],
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class ConsigneComponent implements OnInit, OnChanges, AfterViewInit {
 

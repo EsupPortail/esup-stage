@@ -22,9 +22,10 @@ import { InterruptionsFormComponent } from './interruptions-form/interruptions-f
 import { PeriodeStageService } from'../../../services/periode-stage.service';
 
 @Component({
-  selector: 'app-stage',
-  templateUrl: './stage.component.html',
-  styleUrls: ['./stage.component.scss']
+    selector: 'app-stage',
+    templateUrl: './stage.component.html',
+    styleUrls: ['./stage.component.scss'],
+    standalone: false
 })
 export class StageComponent implements OnInit {
   readonly MAX = {

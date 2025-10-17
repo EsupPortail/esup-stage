@@ -1,4 +1,4 @@
-import { APP_INITIALIZER, Injectable, LOCALE_ID, NgModule } from '@angular/core';
+import { Injectable, LOCALE_ID, NgModule, inject, provideAppInitializer } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from "./app-routing.module";
@@ -306,12 +306,10 @@ export class FrenchDateProvider extends NativeDateAdapter {
     {provide: MAT_DATE_LOCALE, useValue: 'fr-FR'},
     {provide: DateAdapter, useClass: FrenchDateProvider},
     {provide: MatPaginatorIntl, useClass: PaginatorIntl},
-    {
-      provide: APP_INITIALIZER,
-      useFactory: (cs: ContenuService) => () => cs.getAllLibelle(),
-      deps: [ContenuService],
-      multi: true
-    },
+    provideAppInitializer(() => {
+        const initializerFn = ((cs: ContenuService) => () => cs.getAllLibelle())(inject(ContenuService));
+        return initializerFn();
+      }),
     provideHttpClient(withInterceptorsFromDi()),
   ]
 })

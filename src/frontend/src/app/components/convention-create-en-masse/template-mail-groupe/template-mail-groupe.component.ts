@@ -80,10 +80,11 @@ import {
 import translations from 'ckeditor5/translations/fr.js';
 
 @Component({
-  selector: 'app-template-mail-groupe',
-  templateUrl: './template-mail-groupe.component.html',
-  styleUrls: ['./template-mail-groupe.component.scss'],
-  encapsulation : ViewEncapsulation.None
+    selector: 'app-template-mail-groupe',
+    templateUrl: './template-mail-groupe.component.html',
+    styleUrls: ['./template-mail-groupe.component.scss'],
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class TemplateMailGroupeComponent implements OnInit, AfterViewInit {
 

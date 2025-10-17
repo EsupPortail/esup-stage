@@ -26,9 +26,10 @@ import * as FileSaver from 'file-saver';
 import { ConventionService } from 'src/app/services/convention.service';
 
 @Component({
-  selector: 'app-avenant-form',
-  templateUrl: './avenant-form.component.html',
-  styleUrls: ['./avenant-form.component.scss']
+    selector: 'app-avenant-form',
+    templateUrl: './avenant-form.component.html',
+    styleUrls: ['./avenant-form.component.scss'],
+    standalone: false
 })
 export class AvenantFormComponent implements OnInit {
 

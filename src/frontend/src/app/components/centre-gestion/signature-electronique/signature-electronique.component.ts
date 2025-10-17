@@ -4,9 +4,10 @@ import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 import {ConfigService} from "../../../services/config.service";
 
 @Component({
-  selector: 'app-centre-signature-electronique',
-  templateUrl: './signature-electronique.component.html',
-  styleUrls: ['./signature-electronique.component.scss']
+    selector: 'app-centre-signature-electronique',
+    templateUrl: './signature-electronique.component.html',
+    styleUrls: ['./signature-electronique.component.scss'],
+    standalone: false
 })
 export class CentreSignatureElectroniqueComponent implements OnInit {
 

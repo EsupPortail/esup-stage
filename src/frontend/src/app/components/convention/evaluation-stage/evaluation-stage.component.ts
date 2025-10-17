@@ -25,9 +25,10 @@ import { TypeQuestionEvaluation } from "../../../constants/type-question-evaluat
 enum FicheType { Etudiant = 0, Enseignant = 1, Entreprise = 2 }
 
 @Component({
-  selector: 'app-evaluation-stage',
-  templateUrl: './evaluation-stage.component.html',
-  styleUrls: ['./evaluation-stage.component.scss']
+    selector: 'app-evaluation-stage',
+    templateUrl: './evaluation-stage.component.html',
+    styleUrls: ['./evaluation-stage.component.scss'],
+    standalone: false
 })
 export class EvaluationStageComponent implements OnInit, OnDestroy {
   // ---- Inputs / Outputs ----

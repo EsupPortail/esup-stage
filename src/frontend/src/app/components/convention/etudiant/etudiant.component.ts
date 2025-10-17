@@ -22,9 +22,10 @@ import { DomSanitizer } from '@angular/platform-browser';
 import {REGEX} from "../../../utils/regex.utils";
 
 @Component({
-  selector: 'app-convention-etudiant',
-  templateUrl: './etudiant.component.html',
-  styleUrls: ['./etudiant.component.scss']
+    selector: 'app-convention-etudiant',
+    templateUrl: './etudiant.component.html',
+    styleUrls: ['./etudiant.component.scss'],
+    standalone: false
 })
 export class EtudiantComponent implements OnInit, OnChanges {
 

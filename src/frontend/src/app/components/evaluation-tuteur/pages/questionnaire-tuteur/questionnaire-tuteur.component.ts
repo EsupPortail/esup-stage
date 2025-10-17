@@ -10,9 +10,10 @@ import { DbQuestion } from "../../../../models/question-evaluation.model";
 import { TypeQuestionEvaluation } from "../../../../constants/type-question-evaluation";
 
 @Component({
-  selector: 'app-questionnaire-tuteur',
-  templateUrl: './questionnaire-tuteur.component.html',
-  styleUrl: './questionnaire-tuteur.component.scss'
+    selector: 'app-questionnaire-tuteur',
+    templateUrl: './questionnaire-tuteur.component.html',
+    styleUrl: './questionnaire-tuteur.component.scss',
+    standalone: false
 })
 export class QuestionnaireTuteurComponent implements OnInit {
 

@@ -13,9 +13,10 @@ const PRESETS: Record<ConfirmPreset, { icon: string; color: ColorKey; title: str
 };
 
 @Component({
-  selector: '[confirm]',
-  templateUrl: './confirm-eval-tuteur.component.html',
-  styleUrls: ['./confirm-eval-tuteur.component.scss']
+    selector: '[confirm]',
+    templateUrl: './confirm-eval-tuteur.component.html',
+    styleUrls: ['./confirm-eval-tuteur.component.scss'],
+    standalone: false
 })
 export class ConfirmEvalTuteurComponent implements OnInit {
 

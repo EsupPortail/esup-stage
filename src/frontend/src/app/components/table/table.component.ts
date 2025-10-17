@@ -28,9 +28,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { ColumnSelectorComponent } from './column-selector/column-selector.component';
 
 @Component({
-  selector: 'app-table',
-  templateUrl: './table.component.html',
-  styleUrls: ['./table.component.scss']
+    selector: 'app-table',
+    templateUrl: './table.component.html',
+    styleUrls: ['./table.component.scss'],
+    standalone: false
 })
 export class TableComponent implements OnInit, AfterContentInit, OnChanges {
 

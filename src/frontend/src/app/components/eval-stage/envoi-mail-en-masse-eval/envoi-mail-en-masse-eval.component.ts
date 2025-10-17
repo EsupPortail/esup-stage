@@ -12,9 +12,10 @@ type TypeEnvoi = 1 | 2;
 type TypeFiche = 0 | 1 | 2; // 0 = étudiant, 1 = enseignant référent, 2 = tuteur pro
 
 @Component({
-  selector: 'app-envoi-mail-en-masse-eval',
-  templateUrl: './envoi-mail-en-masse-eval.component.html',
-  styleUrls: ['./envoi-mail-en-masse-eval.component.scss']
+    selector: 'app-envoi-mail-en-masse-eval',
+    templateUrl: './envoi-mail-en-masse-eval.component.html',
+    styleUrls: ['./envoi-mail-en-masse-eval.component.scss'],
+    standalone: false
 })
 export class EnvoiMailEnMasseEvalComponent implements OnInit {
 

@@ -83,10 +83,11 @@ import {Droit} from "../../../constants/droit";
 import {ConfigService} from "../../../services/config.service";
 
 @Component({
-  selector: 'app-etab-accueil-form',
-  templateUrl: './etab-accueil-form.component.html',
-  styleUrls: ['./etab-accueil-form.component.scss'],
-  encapsulation:ViewEncapsulation.None
+    selector: 'app-etab-accueil-form',
+    templateUrl: './etab-accueil-form.component.html',
+    styleUrls: ['./etab-accueil-form.component.scss'],
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
 

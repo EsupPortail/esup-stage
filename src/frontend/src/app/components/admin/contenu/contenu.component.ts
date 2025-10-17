@@ -82,10 +82,11 @@ import translations from 'ckeditor5/translations/fr.js';
 
 
 @Component({
-  selector: 'app-contenu',
-  templateUrl: './contenu.component.html',
-  styleUrls: ['./contenu.component.scss'],
-  encapsulation: ViewEncapsulation.None
+    selector: 'app-contenu',
+    templateUrl: './contenu.component.html',
+    styleUrls: ['./contenu.component.scss'],
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class ContenuComponent implements OnInit {
 

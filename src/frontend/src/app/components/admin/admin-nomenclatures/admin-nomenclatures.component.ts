@@ -27,9 +27,10 @@ import { AppFonction } from "../../../constants/app-fonction";
 import { Droit } from "../../../constants/droit";
 
 @Component({
-  selector: 'app-admin-nomenclatures',
-  templateUrl: './admin-nomenclatures.component.html',
-  styleUrls: ['./admin-nomenclatures.component.scss']
+    selector: 'app-admin-nomenclatures',
+    templateUrl: './admin-nomenclatures.component.html',
+    styleUrls: ['./admin-nomenclatures.component.scss'],
+    standalone: false
 })
 export class AdminNomenclaturesComponent implements OnInit {
 

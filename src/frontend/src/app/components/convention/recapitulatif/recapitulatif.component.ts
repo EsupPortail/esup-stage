@@ -10,9 +10,10 @@ import { UserService } from '../../../services/user.service';
 import {AvenantService} from "../../../services/avenant.service";
 
 @Component({
-  selector: 'app-recapitulatif',
-  templateUrl: './recapitulatif.component.html',
-  styleUrls: ['./recapitulatif.component.scss']
+    selector: 'app-recapitulatif',
+    templateUrl: './recapitulatif.component.html',
+    styleUrls: ['./recapitulatif.component.scss'],
+    standalone: false
 })
 export class RecapitulatifComponent implements OnInit {
 

@@ -13,9 +13,10 @@ import { debounceTime } from "rxjs/operators";
 import { Role } from 'src/app/constants/role';
 
 @Component({
-  selector: 'app-gestionnaires',
-  templateUrl: './gestionnaires.component.html',
-  styleUrls: ['./gestionnaires.component.scss']
+    selector: 'app-gestionnaires',
+    templateUrl: './gestionnaires.component.html',
+    styleUrls: ['./gestionnaires.component.scss'],
+    standalone: false
 })
 export class GestionnairesComponent implements OnInit {
 

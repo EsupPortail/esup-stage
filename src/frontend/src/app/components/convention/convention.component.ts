@@ -9,9 +9,10 @@ import { AppFonction } from '../../constants/app-fonction';
 import { Droit } from '../../constants/droit';
 
 @Component({
-  selector: 'app-convention',
-  templateUrl: './convention.component.html',
-  styleUrls: ['./convention.component.scss']
+    selector: 'app-convention',
+    templateUrl: './convention.component.html',
+    styleUrls: ['./convention.component.scss'],
+    standalone: false
 })
 export class ConventionComponent implements OnInit {
 

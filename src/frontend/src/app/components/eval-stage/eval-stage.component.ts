@@ -17,9 +17,10 @@ import {forkJoin} from "rxjs";
 
 
 @Component({
-  selector: 'app-eval-stage',
-  templateUrl: './eval-stage.component.html',
-  styleUrls: ['./eval-stage.component.scss']
+    selector: 'app-eval-stage',
+    templateUrl: './eval-stage.component.html',
+    styleUrls: ['./eval-stage.component.scss'],
+    standalone: false
 })
 export class EvalStageComponent implements OnInit, OnDestroy {
 

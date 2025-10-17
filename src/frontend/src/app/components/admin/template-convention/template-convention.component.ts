@@ -78,10 +78,11 @@ import {
 import translations from 'ckeditor5/translations/fr.js';
 
 @Component({
-  selector: 'app-template-convention',
-  templateUrl: './template-convention.component.html',
-  styleUrls: ['./template-convention.component.scss'],
-  encapsulation: ViewEncapsulation.None
+    selector: 'app-template-convention',
+    templateUrl: './template-convention.component.html',
+    styleUrls: ['./template-convention.component.scss'],
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class TemplateConventionComponent implements OnInit {
 

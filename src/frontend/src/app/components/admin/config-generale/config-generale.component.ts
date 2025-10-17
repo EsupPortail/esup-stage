@@ -8,9 +8,10 @@ import { Droit } from "../../../constants/droit";
 import {RoleService} from "../../../services/role.service";
 
 @Component({
-  selector: 'app-config-generale',
-  templateUrl: './config-generale.component.html',
-  styleUrls: ['./config-generale.component.scss']
+    selector: 'app-config-generale',
+    templateUrl: './config-generale.component.html',
+    styleUrls: ['./config-generale.component.scss'],
+    standalone: false
 })
 export class ConfigGeneraleComponent implements OnInit {
 

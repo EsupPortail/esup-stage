@@ -10,9 +10,10 @@ import { TitleService } from "../../services/title.service";
 import { AuthService } from "../../services/auth.service";
 
 @Component({
-  selector: 'app-convention-create-en-masse',
-  templateUrl: './convention-create-en-masse.component.html',
-  styleUrls: ['./convention-create-en-masse.component.scss']
+    selector: 'app-convention-create-en-masse',
+    templateUrl: './convention-create-en-masse.component.html',
+    styleUrls: ['./convention-create-en-masse.component.scss'],
+    standalone: false
 })
 export class ConventionCreateEnMasseComponent implements OnInit {
 

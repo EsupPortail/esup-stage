@@ -1,5 +1,5 @@
 @use '@angular/material' as mat;
-@import "~@fortawesome/fontawesome-free/css/all.css";
+@import "@fortawesome/fontawesome-free/css/all.css";
 @include mat.core();
 $my-primary-palette: (
   100: var(--primaryColor),

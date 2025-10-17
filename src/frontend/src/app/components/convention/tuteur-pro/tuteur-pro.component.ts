@@ -14,9 +14,10 @@ import {REGEX} from "../../../utils/regex.utils";
 import { ReplaySubject, Subject } from 'rxjs';
 
 @Component({
-  selector: 'app-tuteur-pro',
-  templateUrl: './tuteur-pro.component.html',
-  styleUrls: ['./tuteur-pro.component.scss']
+    selector: 'app-tuteur-pro',
+    templateUrl: './tuteur-pro.component.html',
+    styleUrls: ['./tuteur-pro.component.scss'],
+    standalone: false
 })
 export class TuteurProComponent implements OnInit, OnChanges, OnDestroy {
 

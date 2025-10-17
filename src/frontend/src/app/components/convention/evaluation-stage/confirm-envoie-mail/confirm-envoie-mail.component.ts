@@ -8,9 +8,10 @@ import {ConventionService} from "../../../../services/convention.service";
 import {finalize, switchMap} from "rxjs/operators";
 
 @Component({
-  selector: 'app-confirm-envoie-mail',
-  templateUrl: './confirm-envoie-mail.component.html',
-  styleUrl: './confirm-envoie-mail.component.scss'
+    selector: 'app-confirm-envoie-mail',
+    templateUrl: './confirm-envoie-mail.component.html',
+    styleUrl: './confirm-envoie-mail.component.scss',
+    standalone: false
 })
 export class ConfirmEnvoieMailComponent implements OnInit{
 

@@ -6,9 +6,10 @@ import { TemplateMailService } from "../../../../services/template-mail.service"
 import {REGEX} from "../../../../utils/regex.utils";
 
 @Component({
-  selector: 'app-mail-tester',
-  templateUrl: './mail-tester.component.html',
-  styleUrls: ['./mail-tester.component.scss']
+    selector: 'app-mail-tester',
+    templateUrl: './mail-tester.component.html',
+    styleUrls: ['./mail-tester.component.scss'],
+    standalone: false
 })
 export class MailTesterComponent implements OnInit {
 

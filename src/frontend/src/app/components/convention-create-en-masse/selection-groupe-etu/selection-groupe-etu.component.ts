@@ -16,9 +16,10 @@ import { FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms"
 import { EtudiantService } from '../../../services/etudiant.service';
 
 @Component({
-  selector: 'app-selection-groupe-etu',
-  templateUrl: './selection-groupe-etu.component.html',
-  styleUrls: ['./selection-groupe-etu.component.scss']
+    selector: 'app-selection-groupe-etu',
+    templateUrl: './selection-groupe-etu.component.html',
+    styleUrls: ['./selection-groupe-etu.component.scss'],
+    standalone: false
 })
 export class SelectionGroupeEtuComponent implements OnInit {
 

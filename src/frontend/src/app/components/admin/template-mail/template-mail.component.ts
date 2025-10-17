@@ -76,10 +76,11 @@ import {
 import translations from 'ckeditor5/translations/fr.js';
 
 @Component({
-  selector: 'app-template-mail',
-  templateUrl: './template-mail.component.html',
-  styleUrls: ['./template-mail.component.scss'],
-  encapsulation:ViewEncapsulation.None
+    selector: 'app-template-mail',
+    templateUrl: './template-mail.component.html',
+    styleUrls: ['./template-mail.component.scss'],
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class TemplateMailComponent implements OnInit, AfterViewInit {
 

@@ -3,9 +3,10 @@ import { ContenuService } from "../../../../services/contenu.service";
 import {ActivatedRoute, Router } from "@angular/router";
 
 @Component({
-  selector: 'app-accueil-tuteur',
-  templateUrl: './accueil-tuteur.component.html',
-  styleUrl: './accueil-tuteur.component.scss'
+    selector: 'app-accueil-tuteur',
+    templateUrl: './accueil-tuteur.component.html',
+    styleUrl: './accueil-tuteur.component.scss',
+    standalone: false
 })
 export class AccueilTuteurComponent implements OnInit {
 

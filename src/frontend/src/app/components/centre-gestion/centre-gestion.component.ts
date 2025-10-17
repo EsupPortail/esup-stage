@@ -11,9 +11,10 @@ import { CoordCentreComponent } from './coord-centre/coord-centre.component';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-centre-gestion',
-  templateUrl: './centre-gestion.component.html',
-  styleUrls: ['./centre-gestion.component.scss'],
+    selector: 'app-centre-gestion',
+    templateUrl: './centre-gestion.component.html',
+    styleUrls: ['./centre-gestion.component.scss'],
+    standalone: false
 })
 export class CentreGestionComponent implements OnInit,OnDestroy {
 

@@ -8,9 +8,10 @@ import { ImageCroppedEvent, ImageCropperComponent, LoadedImage } from 'ngx-image
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
-  selector: 'app-logo-centre',
-  templateUrl: './logo-centre.component.html',
-  styleUrls: ['./logo-centre.component.scss']
+    selector: 'app-logo-centre',
+    templateUrl: './logo-centre.component.html',
+    styleUrls: ['./logo-centre.component.scss'],
+    standalone: false
 })
 export class LogoCentreComponent implements OnInit {
   @Input() centreGestion: any;
