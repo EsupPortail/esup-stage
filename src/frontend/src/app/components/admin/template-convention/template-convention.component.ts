@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ChangeDetectorRef, ViewEncapsulation } from '@angular/core';
+import {Component, OnInit, ViewChild, ChangeDetectorRef, ViewEncapsulation, AfterViewInit} from '@angular/core';
 import { TableComponent } from "../../table/table.component";
 import { TemplateConventionService } from "../../../services/template-convention.service";
 import { ParamConventionService } from "../../../services/param-convention.service";
@@ -84,7 +84,7 @@ import translations from 'ckeditor5/translations/fr.js';
     encapsulation: ViewEncapsulation.None,
     standalone: false
 })
-export class TemplateConventionComponent implements OnInit {
+export class TemplateConventionComponent implements OnInit, AfterViewInit {
 
   columns = ['typeConvention.libelle', 'langueConvention.code', 'action'];
   sortColumn = 'typeConvention.libelle';
@@ -156,6 +156,7 @@ export class TemplateConventionComponent implements OnInit {
   public config: EditorConfig = {};
   public ngAfterViewInit():void{
     this.config = {
+      licenseKey: 'GPL',
       toolbar: {
         items: [
           'undo',

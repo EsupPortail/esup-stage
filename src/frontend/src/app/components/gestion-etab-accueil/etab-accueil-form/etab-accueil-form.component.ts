@@ -184,6 +184,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   public config: EditorConfig = {};
   public ngAfterViewInit() : void {
     this.config = {
+      licenseKey: 'GPL',
       toolbar: {
         items: [
           'undo',

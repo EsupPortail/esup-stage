@@ -121,6 +121,7 @@ export class ContenuComponent implements OnInit {
   public ngAfterViewInit(): void {
 
     this.config = {
+      licenseKey: 'GPL',
       toolbar: {
         items: [
           'undo',

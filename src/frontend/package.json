@@ -21,11 +21,10 @@
     "@angular/platform-browser": "^19.2.15",
     "@angular/platform-browser-dynamic": "^19.2.15",
     "@angular/router": "^19.2.15",
-    "@ckeditor/ckeditor5-angular": "^8.0.0",
-    "@ckeditor/ckeditor5-build-classic": "^43.2.0",
+    "@ckeditor/ckeditor5-angular": "^10.0.0",
     "@fortawesome/fontawesome-free": "^6.1.1",
     "bootstrap-css-only": "^4.4.1",
-    "ckeditor5": "^43.2.0",
+    "ckeditor5": "^47.1.0",
     "css-select": "^5.1.0",
     "css-what": "^6.1.0",
     "cssesc": "^3.0.0",
@@ -33,9 +32,9 @@
     "file-saver": "^2.0.5",
     "http-proxy-middleware": "^3.0.3",
     "lodash": "^4.17.21",
-    "ngx-color": "^9.0.0",
+    "ngx-color": "9.0.0",
     "ngx-color-picker": "^17.0.0",
-    "ngx-cookie-service": "^18.0.0",
+    "ngx-cookie-service": "^19.1.2",
     "ngx-image-cropper": "^9.1.5",
     "ngx-mat-select-search": "^7.0.6",
     "ngx-progressbar": "^8.0.0",
@@ -45,7 +44,7 @@
     "zone.js": "~0.15.1"
   },
   "devDependencies": {
-    "@angular-builders/custom-webpack": "^18.0.0",
+    "@angular-builders/custom-webpack": "^19.0.1",
     "@angular-devkit/build-angular": "^19.2.18",
     "@angular/cli": "^19.2.18",
     "@angular/compiler-cli": "^19.2.15",
@@ -54,14 +53,14 @@
     "@types/lodash": "^4.14.176",
     "@types/node": "^17.0.31",
     "css-loader": "^7.1.2",
-    "jasmine-core": "~4.0.0",
-    "karma": "~6.3.0",
+    "jasmine-core": "^5.12.0",
+    "karma": "^6.4.4",
     "karma-chrome-launcher": "~3.1.0",
     "karma-coverage": "~2.1.0",
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "~1.7.0",
     "style-loader": "^4.0.0",
-    "typescript": "^5.4.5"
+    "typescript": "^5.6.2"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "^4.40.1"

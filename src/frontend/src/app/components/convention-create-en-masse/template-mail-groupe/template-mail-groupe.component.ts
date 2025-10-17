@@ -138,6 +138,7 @@ export class TemplateMailGroupeComponent implements OnInit, AfterViewInit {
   public config: EditorConfig = {};
   public ngAfterViewInit() : void {
     this.config = {
+      licenseKey: 'GPL',
       toolbar: {
         items: [
           'undo',

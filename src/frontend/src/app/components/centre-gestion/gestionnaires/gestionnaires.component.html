@@ -62,15 +62,15 @@
     <form [formGroup]="form" (submit)="save()">
       <div class="gest-info" style="margin-bottom: 15px">
         <div class="row">
-          <div class="col-sm-6"><b>Nom</b> &nbsp; {{this.form.get('nom')?.value}}</div>
-          <div class="col-sm-6"><b>Affectation</b> &nbsp; {{this.form.get('codeAffectation')?.value}}</div>
+          <div class="col-sm-6"><b>Nom</b> &nbsp; {{form.get('nom')?.value}}</div>
+          <div class="col-sm-6"><b>Affectation</b> &nbsp; {{form.get('codeAffectation')?.value}}</div>
         </div>
         <div class="row">
-          <div class="col-sm-6"><b>Prénom</b> &nbsp; {{this.form.get('prenom')?.value}}</div>
-          <div class="col-sm-6"><b>Type</b> &nbsp; {{this.form.get('typePersonne')?.value}}</div>
+          <div class="col-sm-6"><b>Prénom</b> &nbsp; {{form.get('prenom')?.value}}</div>
+          <div class="col-sm-6"><b>Type</b> &nbsp; {{form.get('typePersonne')?.value}}</div>
         </div>
         <div class="row">
-          <div class="col-sm-6"><b>Mail</b> &nbsp; {{this.form.get('mail')?.value}}</div>
+          <div class="col-sm-6"><b>Mail</b> &nbsp; {{form.get('mail')?.value}}</div>
         </div>
       </div>
 

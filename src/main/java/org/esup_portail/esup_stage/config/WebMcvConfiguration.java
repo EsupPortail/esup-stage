@@ -11,19 +11,30 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+// ✱ ajout d’un seul import
+import java.nio.file.Paths;
+
 @Configuration
 public class WebMcvConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        String browserDir = Paths.get("src/main/resources/frontend/browser")
+                .toAbsolutePath()
+                .toUri()
+                .toString();
+
         registry.addResourceHandler("/frontend/**")
-                .addResourceLocations("classpath:/frontend/");
+                .addResourceLocations(browserDir);
     }
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/").setViewName("redirect:/frontend/");
         registry.addViewController("/frontend/").setViewName("forward:/frontend/index.html");
+
+        registry.addViewController("/frontend/{path:^(?!.*\\.).*$}")
+                .setViewName("forward:/frontend/index.html");
     }
 
     @Override

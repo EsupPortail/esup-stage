@@ -185,6 +185,7 @@ export class ConsigneComponent implements OnInit, OnChanges, AfterViewInit {
 
   public ngAfterViewInit(): void {
     this.config = {
+      licenseKey: 'GPL',
       toolbar: {
         items: [
           'undo',
