@@ -34,9 +34,13 @@
   margin-bottom: 0.3rem;
 }
 
+/* Conteneur principal : icône à gauche, texte à droite */
 .import-info-box {
-  background-color: #f1f5fb; /* bleu-gris très sobre */
-  border-left: 4px solid #2196f3; /* petite touche de bleu */
+  display: flex;
+  align-items: center;     /* aligne le haut de l'icône et du texte */
+  gap: 0.75rem;                /* espace entre icône et texte */
+  background-color: #f1f5fb;
+  border-left: 4px solid #2196f3;
   padding: 1rem 1.5rem;
   border-radius: 6px;
   margin-top: 2vh;
@@ -45,24 +49,37 @@
   color: #333;
 }
 
-.import-info-title {
+.import-info-box .icon-block {
+  flex: 0 0 auto;
   display: flex;
-  align-items: center; /* centre verticalement icône + texte */
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-}
-
-.import-info-title mat-icon {
-  display: flex;
-  justify-content: center;
   align-items: center;
-  margin-right: 0.75rem;
-  font-size: 24px;
+  justify-content: center;
 }
 
-.import-info-title .text-block {
+.import-info-box .icon-block mat-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+}
+
+.import-info-box .text-block {
+  flex: 1 1 auto;
+  min-width: 0;
   display: flex;
-  flex-direction: column; /* empile les spans verticalement */
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.import-info-box .text-block span {
+  display: block;
+  margin-top: 0.0rem;
+}
+
+@media (max-width: 360px) {
+  .import-info-box {
+    align-items: stretch;
+  }
 }
 
 
