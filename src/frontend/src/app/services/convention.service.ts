@@ -116,4 +116,12 @@ export class ConventionService implements PaginatedService {
   changeEnseignantReferent(idConvention: number, idEnseignant: number): Observable<any> {
     return this.http.put(`${environment.apiUrl}/conventions/${idConvention}/change-enseignant-referent`, { idEnseignant });
   }
+
+  getPreviewPdf(centreId: number, templateId : number) {
+    return this.http.get(
+      `${environment.apiUrl}/conventions/preview-pdf/centre-gestion/${centreId}?templateId=${templateId}`,
+      { responseType: 'blob', headers: { Accept: 'application/pdf' } }
+    );
+  }
+
 }

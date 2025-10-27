@@ -48,12 +48,6 @@ public class ImpressionService {
     @Autowired
     AppliProperties appliProperties;
 
-    //    @Autowired
-    //    ConventionService conventionService;
-    //
-    //    @Autowired
-    //    ConventionJpaRepository conventionJpaRepository;
-
     public void generateConventionAvenantPDF(Convention convention, Avenant avenant, ByteArrayOutputStream ou, boolean isRecap) {
         if (convention.getNomenclature() == null) {
             convention.setValeurNomenclature();
@@ -346,5 +340,115 @@ public class ImpressionService {
 
         img.setMarginBottom(10f);
         return img;
+    }
+
+    /**
+     * Generation d'une convention fictive de preview
+     */
+    public void generatePreviewPDF(Integer idCentreGestion, ByteArrayOutputStream ou) {
+        // Récupération du centre de gestion
+        CentreGestion centreGestion = centreGestionJpaRepository.findById(idCentreGestion).orElse(null);
+        if (centreGestion == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion introuvable");
+        }
+
+        try {
+            // Le template de preview est supposé déjà rempli : on prend directement le contenu HTML
+            // On cherche d'abord un template spécifique de preview dans les resources, sinon on utilise le template par défaut de convention
+            String htmlTexte;
+            try {
+                htmlTexte = getDefaultText("/templates/template_preview.html");
+            } catch (AppException e) {
+                // fallback vers le template par défaut de convention si le fichier preview n'existe pas
+                htmlTexte = getDefaultText(true);
+            }
+
+            // récupération du logo du centre gestion
+            ImageData imageData = null;
+            Fichier fichier = centreGestion.getFichier();
+            if (fichier != null) {
+                String logoname = this.getLogoFilePath(this.getNomFichier(fichier.getId(), fichier.getNom()));
+                if (Files.exists(Paths.get(logoname))) {
+                    imageData = ImageDataFactory.create(logoname);
+                }
+            }
+
+            // si pas d'image pour ce centre, on peut prendre celle du centre établissement
+            if (imageData == null) {
+                CentreGestion centreEtablissement = centreGestionJpaRepository.getCentreEtablissement();
+                if (centreEtablissement != null) {
+                    Fichier fichierEtab = centreEtablissement.getFichier();
+                    if (fichierEtab != null) {
+                        String logoname = this.getLogoFilePath(this.getNomFichier(fichierEtab.getId(), fichierEtab.getNom()));
+                        if (Files.exists(Paths.get(logoname))) {
+                            imageData = ImageDataFactory.create(logoname);
+                        }
+                    }
+                }
+            }
+
+            // Génération du PDF dans le ByteArrayOutputStream fourni
+            this.generatePDF(htmlTexte, "preview_convention.pdf", imageData, ou);
+
+        } catch (Exception e) {
+            logger.error("Une erreur est survenue lors de la génération du PDF de preview", e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
+        }
+
+    }
+
+    /**
+     * Génère un PDF à partir d'un HTML déjà rempli en ajoutant le logo du centre de gestion
+     * dont l'id est passé en paramètre. Le résultat est écrit dans le ByteArrayOutputStream fourni.
+     *
+     * @param idCentreGestion id du centre de gestion dont on souhaite récupérer le logo
+     * @param htmlTexte HTML complet déjà rendu (template pré-rempli)
+     * @param ou ByteArrayOutputStream où placer le PDF généré
+     */
+    public void generateConventionAvenantPDF(Integer idCentreGestion, String htmlTexte, ByteArrayOutputStream ou) {
+        // Récupération du centre de gestion
+        CentreGestion centreGestion = centreGestionJpaRepository.findById(idCentreGestion).orElse(null);
+        if (centreGestion == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion introuvable");
+        }
+
+        try {
+            // Si le HTML est null ou vide, on fallback sur le template par défaut
+            if (htmlTexte == null || htmlTexte.trim().isEmpty()) {
+                htmlTexte = getDefaultText(true);
+            }
+
+            // récupération du logo du centre gestion
+            ImageData imageData = null;
+            Fichier fichier = centreGestion.getFichier();
+            if (fichier != null) {
+                String logoname = this.getLogoFilePath(this.getNomFichier(fichier.getId(), fichier.getNom()));
+                if (Files.exists(Paths.get(logoname))) {
+                    imageData = ImageDataFactory.create(logoname);
+                }
+            }
+
+            // si pas d'image pour ce centre, on peut prendre celle du centre établissement
+            if (imageData == null) {
+                CentreGestion centreEtablissement = centreGestionJpaRepository.getCentreEtablissement();
+                if (centreEtablissement != null) {
+                    Fichier fichierEtab = centreEtablissement.getFichier();
+                    if (fichierEtab != null) {
+                        String logoname = this.getLogoFilePath(this.getNomFichier(fichierEtab.getId(), fichierEtab.getNom()));
+                        if (Files.exists(Paths.get(logoname))) {
+                            imageData = ImageDataFactory.create(logoname);
+                        }
+                    }
+                }
+            }
+
+            // Génération du PDF dans le ByteArrayOutputStream fourni
+            this.generatePDF(htmlTexte, "convention_filled.pdf", imageData, ou);
+
+        } catch (Exception e) {
+            logger.error("Une erreur est survenue lors de la génération du PDF de convention pré-remplie", e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
+        }
+
     }
 }

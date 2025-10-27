@@ -1,58 +1,147 @@
-import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  Output,
+  EventEmitter,
+  ViewChild,
+  ElementRef,
+  OnDestroy
+} from '@angular/core';
+import { FormBuilder, FormGroup, Validators, FormControl } from "@angular/forms";
+import { debounceTime } from 'rxjs/operators';
+import { forkJoin } from 'rxjs';
+
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { ImageCroppedEvent, ImageCropperComponent } from 'ngx-image-cropper';
+
 import { CentreGestionService } from "../../../services/centre-gestion.service";
 import { MessageService } from "../../../services/message.service";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { debounceTime } from 'rxjs/operators';
-import { HttpClient } from '@angular/common/http';
-import { ImageCroppedEvent, ImageCropperComponent, LoadedImage } from 'ngx-image-cropper';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { ConventionService } from "../../../services/convention.service";
+import { TemplateConventionService } from "../../../services/template-convention.service";
+import { TypeConventionService } from "../../../services/type-convention.service";
+import { LangueConventionService } from "../../../services/langue-convention.service";
 
 @Component({
   selector: 'app-logo-centre',
+  standalone: false,
   templateUrl: './logo-centre.component.html',
   styleUrls: ['./logo-centre.component.scss']
 })
-export class LogoCentreComponent implements OnInit {
+export class LogoCentreComponent implements OnInit, OnDestroy {
   @Input() centreGestion: any;
   @Output() refreshCentreGestion = new EventEmitter<any>();
   @ViewChild('logoInput') logoInput!: ElementRef<HTMLInputElement>;
   @ViewChild('cropper') cropper?: ImageCropperComponent;
 
+  // --- Logo & formulaire
   logoFile: File | undefined;
   previewUrl: string | ArrayBuffer | null = null;
   currentFile: any;
-
   form: FormGroup;
   dimensions: any[] = [];
   height: any;
   width: any;
 
-  // --- Intégration ngx-image-cropper ---
+  // --- Cropper
   imageChangedEvent: Event | null = null;
   croppedImage: SafeUrl | string = '';
-  croppedBlob: Blob | null = null; // Pour stocker le blob à envoyer
+  croppedBlob: Blob | null = null;
   outputFormat: 'png' | 'jpeg' | 'webp' = 'png';
+
+  // --- Template de convention
+  templateCtrl = new FormControl<number | null>(null);
+  templateConvention: Array<any> = []; // liste enrichie (avec typeLabel, langueLabel, displayLabel)
+  typesConvention: any[] = [];
+  languesConvention: any[] = [];
+
+  // --- Preview PDF
+  showPdfPreview: boolean = false; // pas de bouton; affiché automatiquement si conditions remplies
+  pdfUrl: SafeUrl | null = null;
+  pdfLoading: boolean = false;
+  pdfError: string | null = null;
+  private currentPdfObjectUrl: string | null = null;
 
   constructor(
     private centreGestionService: CentreGestionService,
     private messageService: MessageService,
     private fb: FormBuilder,
-    private httpClient: HttpClient,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private conventionService: ConventionService,
+    private templateService: TemplateConventionService,
+    private typeConventionService: TypeConventionService,
+    private langueConventionService: LangueConventionService,
   ) {
     this.form = this.fb.group({
       content: [null, Validators.required]
     });
   }
 
+  // =========================================================
+  // Lifecycle
+  // =========================================================
   ngOnInit(): void {
     this.getLogo();
     this.resizeLogoOnChange();
+    this.loadTemplateData();
+
+    // Lorsque l'utilisateur change le template, si un logo est présent, on régénère la preview
+    this.templateCtrl.valueChanges.subscribe((templateId) => {
+      const hasLogo = !!this.previewUrl || !!this.currentFile;
+      if (hasLogo && templateId) {
+        this.generatePdfPreview();
+      } else {
+        // Pas de template => pas de preview
+        this.hidePdfPreview();
+      }
+    });
   }
 
-  /**
-   * Sélection d'un fichier
-   */
+  ngOnDestroy(): void {
+    this.cleanupPdfUrl();
+  }
+
+  // =========================================================
+  // Chargement des données templates/langues/types (avec libellés)
+  // =========================================================
+  private loadTemplateData(): void {
+    forkJoin({
+      langues: this.langueConventionService.getListActive(),
+      types: this.typeConventionService.getListActive(),
+      templates: this.templateService.getAll(),
+    }).subscribe({
+      next: ({ langues, types, templates }) => {
+        const languesMap = new Map<number, string>();
+        const typesMap = new Map<number, string>();
+
+        (langues?.data || []).forEach((l: any) => {
+          // Essaie dans l'ordre : libelle, nom, code
+          languesMap.set(l.id, l.libelle || l.nom || l.code || `Langue ${l.id}`);
+        });
+        (types?.data || []).forEach((t: any) => {
+          typesMap.set(t.id, t.libelle || t.nom || `Type ${t.id}`);
+        });
+
+        this.languesConvention = langues?.data || [];
+        this.typesConvention = types?.data || [];
+
+        this.templateConvention = (templates?.data || []).map((tpl: any) => ({
+          ...tpl,
+          langueLabel: languesMap.get(tpl.idLangue) || 'Langue inconnue',
+          typeLabel: typesMap.get(tpl.idTypeConvention) || 'Type inconnu',
+          displayLabel: `${typesMap.get(tpl.idTypeConvention) || '?'} – ${languesMap.get(tpl.idLangue) || '?'}`
+        }));
+      },
+      error: (err) => {
+        console.error('Erreur chargement templates/langues/types:', err);
+        this.messageService.setError('Impossible de charger les templates');
+      }
+    });
+  }
+
+  // =========================================================
+  // Gestion logo + crop
+  // =========================================================
   onLogoChange(event: Event): void {
     const target = event.target as HTMLInputElement;
     const file: File | null = target?.files?.item(0) ?? null;
@@ -67,35 +156,20 @@ export class LogoCentreComponent implements OnInit {
     this.croppedImage = '';
     this.croppedBlob = null;
 
-    // Preview brute (optionnel)
     const reader = new FileReader();
     reader.onload = () => { this.previewUrl = reader.result; };
     reader.readAsDataURL(file);
   }
 
-  /**
-   * Callback ngx-image-cropper : récupère la base64 ET le blob
-   */
   imageCropped(event: ImageCroppedEvent): void {
-    // Récupération de l'URL sécurisée pour l'affichage
     this.croppedImage = this.sanitizer.bypassSecurityTrustUrl(event.objectUrl || '');
-
-    // Stockage du blob pour l'envoi
     this.croppedBlob = event.blob || null;
-
-    console.log('Image croppée:', !!this.croppedBlob, !!this.croppedImage);
   }
 
-  /**
-   * Callback en cas d'erreur de chargement
-   */
   loadImageFailed(): void {
     this.messageService.setError("Impossible de charger l'image dans l'outil de recadrage");
   }
 
-  /**
-   * Upload de l'image recadrée
-   */
   uploadCroppedLogo(): void {
     if (!this.croppedBlob) {
       this.messageService.setError("Veuillez recadrer l'image avant d'enregistrer");
@@ -110,9 +184,6 @@ export class LogoCentreComponent implements OnInit {
     this._sendLogo(formData);
   }
 
-  /**
-   * Annuler le recadrage
-   */
   cancelCrop(): void {
     this.imageChangedEvent = null;
     this.croppedImage = '';
@@ -123,34 +194,41 @@ export class LogoCentreComponent implements OnInit {
     }
   }
 
-  /**
-   * Envoi commun (inchangé côté backend)
-   */
   private _sendLogo(formData: FormData): void {
-    this.centreGestionService.insertLogoCentre(formData, this.centreGestion.id).subscribe((response: any) => {
-      this.centreGestion = response;
-      this.refreshCentreGestion.emit(this.centreGestion);
+    this.centreGestionService.insertLogoCentre(formData, this.centreGestion.id).subscribe({
+      next: (response: any) => {
+        this.centreGestion = response;
+        this.refreshCentreGestion.emit(this.centreGestion);
 
-      // Reset du cropper / input
-      this.imageChangedEvent = null;
-      this.croppedImage = '';
-      this.croppedBlob = null;
-      this.logoFile = undefined;
-      if (this.logoInput?.nativeElement) {
-        this.logoInput.nativeElement.value = '';
+        // Reset cropper/input
+        this.imageChangedEvent = null;
+        this.croppedImage = '';
+        this.croppedBlob = null;
+        this.logoFile = undefined;
+        if (this.logoInput?.nativeElement) {
+          this.logoInput.nativeElement.value = '';
+        }
+
+        // Recharger le logo affiché
+        this.getLogo();
+
+        // Si un template est sélectionné => on affiche et (re)génère la preview
+        const templateId = this.templateCtrl.value;
+        if (templateId) {
+          this.showPdfPreview = true;
+          this.generatePdfPreview();
+        } else {
+          this.hidePdfPreview(); // pas de template => pas d’aperçu
+        }
+
+        this.messageService.setSuccess("Logo mis à jour avec succès");
+      },
+      error: () => {
+        this.messageService.setError("Erreur lors de l'envoi du logo");
       }
-
-      this.getLogo();
-
-      this.messageService.setSuccess("Logo mis à jour avec succès");
-    }, _err => {
-      this.messageService.setError("Erreur lors de l'envoi du logo");
     });
   }
 
-  /**
-   * Recharger le logo depuis le backend
-   */
   getLogo(): void {
     this.centreGestionService.getLogoCentre(this.centreGestion.id).subscribe((response: any) => {
       this.currentFile = response;
@@ -161,13 +239,13 @@ export class LogoCentreComponent implements OnInit {
           this.previewUrl = reader.result;
           this.form.get('content')?.setValue('<p style="text-align: center"><img src="' + this.previewUrl + '" /><p>');
         };
+      } else {
+        // Pas de logo => pas d’aperçu
+        this.hidePdfPreview();
       }
     });
   }
 
-  /**
-   * Envoi de l'image redimensionnée au serveur
-   */
   resizeLogoOnChange(): void {
     this.form.valueChanges.pipe(debounceTime(1000)).subscribe(() => {
       if (this.height != null && this.width != null) {
@@ -178,30 +256,90 @@ export class LogoCentreComponent implements OnInit {
           this.height = null;
           this.width = null;
           this.getLogo();
+
+          // Si un template est sélectionné et la preview affichée, on régénère
+          if (this.showPdfPreview && this.templateCtrl.value) {
+            this.generatePdfPreview();
+          }
         });
       }
     });
   }
 
-  /**
-   * Suppression du logo
-   */
   removeLogo(): void {
-    this.centreGestionService.deleteLogoCentre(this.centreGestion.id).subscribe((_response: any) => {
-      this.previewUrl = null;
-      this.currentFile = null;
-      this.logoFile = undefined;
-      this.croppedImage = '';
-      this.croppedBlob = null;
-      this.imageChangedEvent = null;
-      this.form.get('content')?.setValue('');
-      if (this.logoInput && this.logoInput.nativeElement) {
-        this.logoInput.nativeElement.value = '';
+    this.centreGestionService.deleteLogoCentre(this.centreGestion.id).subscribe({
+      next: (_response: any) => {
+        this.previewUrl = null;
+        this.currentFile = null;
+        this.logoFile = undefined;
+        this.croppedImage = '';
+        this.croppedBlob = null;
+        this.imageChangedEvent = null;
+        this.form.get('content')?.setValue('');
+
+        // Pas de logo -> pas d'aperçu
+        this.hidePdfPreview();
+
+        this.messageService.setSuccess("Logo supprimé avec succès");
+        this.refreshCentreGestion.emit(this.centreGestion);
+      },
+      error: () => {
+        this.messageService.setError("Erreur lors de la suppression du logo");
       }
-      this.messageService.setSuccess("Logo supprimé avec succès");
-      this.refreshCentreGestion.emit(this.centreGestion);
-    }, _error => {
-      this.messageService.setError("Erreur lors de la suppression du logo");
     });
+  }
+
+  // =========================================================
+  // Preview PDF (auto, pas de bouton)
+  // =========================================================
+  private generatePdfPreview(): void {
+    if (!this.centreGestion?.id) {
+      this.pdfError = "ID du centre non disponible";
+      this.showPdfPreview = false;
+      return;
+    }
+    const templateId = this.templateCtrl.value;
+    if (!templateId) {
+      // Si aucun template sélectionné => pas de preview
+      this.hidePdfPreview();
+      return;
+    }
+
+    this.showPdfPreview = true;
+    this.pdfLoading = true;
+    this.pdfError = null;
+    this.cleanupPdfUrl();
+
+    this.conventionService.getPreviewPdf(this.centreGestion.id, templateId)
+      .subscribe({
+        next: (blob: Blob) => {
+          const url = URL.createObjectURL(blob);
+          this.currentPdfObjectUrl = url;
+          this.pdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+          this.pdfLoading = false;
+        },
+        error: (err: any) => {
+          console.error('Erreur génération preview PDF:', err);
+          this.pdfError = "Impossible de générer l'aperçu de la convention";
+          this.pdfLoading = false;
+          this.messageService.setError(this.pdfError);
+        }
+      });
+  }
+
+  private hidePdfPreview(): void {
+    this.showPdfPreview = false;
+    this.pdfUrl = null;
+    this.pdfError = null;
+    this.pdfLoading = false;
+    this.cleanupPdfUrl();
+  }
+
+  private cleanupPdfUrl(): void {
+    if (this.currentPdfObjectUrl) {
+      URL.revokeObjectURL(this.currentPdfObjectUrl);
+      this.currentPdfObjectUrl = null;
+    }
+    this.pdfUrl = null;
   }
 }

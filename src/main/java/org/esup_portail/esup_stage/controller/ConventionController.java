@@ -975,4 +975,21 @@ public class ConventionController {
 
         return convention;
     }
+
+    /**
+     * Génération d'un aperçu PDF d'une convention avec des données fictives,
+     * utile pour le recadrage/positionnement du logo.
+     * @return PDF en byte[] (Content-Type: application/pdf)
+     */
+    @GetMapping("/preview-pdf/centre-gestion/{id}")
+    public ResponseEntity<byte[]> generateConventionPreview(@PathVariable("id") int idCentreGestion) {
+
+        ByteArrayOutputStream ou = new ByteArrayOutputStream();
+        impressionService.generatePreviewPDF(idCentreGestion, ou);
+
+
+        byte[] pdf = ou.toByteArray();
+        return ResponseEntity.ok().body(pdf);
+    }
+
 }
