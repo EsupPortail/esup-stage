@@ -100,18 +100,33 @@ public class StructureController {
         }
         boolean estEtudiant = UtilisateurHelper.isRole(Objects.requireNonNull(ServiceContext.getUtilisateur()), Role.ETU);
         boolean creationEtudiantInterdite = !appConfigService.getConfigGenerale().isAutoriserEtudiantACreerEntrepriseFrance();
-        boolean paysOk = !(filterMap != null && filterMap.containsKey("pays.id") && !"82".equals(String.valueOf(((Map<?,?>) filterMap.get("pays.id")).get("value"))));
+        boolean paysFranceIncluse = true;
+        if (filterMap != null && filterMap.containsKey("pays.id")) {
+            Object paysValue = ((Map<?,?>) filterMap.get("pays.id")).get("value");
+            if (paysValue instanceof String) {
+                // Cas d'un seul pays
+                paysFranceIncluse = "82".equals(paysValue);
+            } else if (paysValue instanceof List) {
+                // Cas de plusieurs pays
+                paysFranceIncluse = ((List<?>) paysValue).contains("82")
+                        || ((List<?>) paysValue).stream().anyMatch(p -> "82".equals(String.valueOf(p)));
+            } else {
+                // Autre format, on convertit en String
+                paysFranceIncluse = "82".equals(String.valueOf(paysValue));
+            }
+        }
+
         if (sireneProperties.isApiSireneActive()
                 && structures.size() < sireneProperties.getNombreMinimumResultats()
                 && (creationEtudiantInterdite || !estEtudiant)
+                && paysFranceIncluse
                 && (
                 filterMap.size() >= 2
                         || (filterMap.size() == 1 && (
                         filterMap.containsKey("numeroSiret")
-                                || (filterMap.containsKey("pays.id") && paysOk) // ← autorise 1 filtre pays=FR
+                                || filterMap.containsKey("pays.id")
                 ))
         )
-
         ) {
             List<String> existingSirets = new ArrayList<>();
             structures.forEach(s -> existingSirets.add(s.getNumeroSiret()));
