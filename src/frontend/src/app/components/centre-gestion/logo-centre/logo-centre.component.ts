@@ -28,6 +28,7 @@ export class LogoCentreComponent implements OnInit, OnDestroy {
   dimensions: any[] = [];
   height: any;
   width: any;
+  private readonly MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5 MiB
 
   // --- Cropper
   imageChangedEvent: Event | null = null;
@@ -92,6 +93,11 @@ export class LogoCentreComponent implements OnInit, OnDestroy {
 
     if (!file || file.type.indexOf('image/') === -1) {
       this.messageService.setError("Le fichier doit être au format image");
+      return;
+    }
+
+    if (file.size > this.MAX_IMAGE_BYTES) {
+      this.rejectTooLarge(file.size);
       return;
     }
 
@@ -275,5 +281,11 @@ export class LogoCentreComponent implements OnInit, OnDestroy {
       this.currentPdfObjectUrl = null;
     }
     this.pdfUrl = null;
+  }
+
+  private rejectTooLarge(size: number): void {
+    const mb = (size / (1024 * 1024)).toFixed(2);
+    this.messageService.setError(`L'image dépasse 5 Mo (${mb} Mo).`);
+    this.cancelCrop();
   }
 }
