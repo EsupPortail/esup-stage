@@ -111,7 +111,7 @@
       <mat-label>Libellé Cedex ou Localité de destination</mat-label>
       <input matInput formControlName="libCedex" />
     </mat-form-field>
-    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill" subscriptSizing="dynamic">
       <mat-label>Pays</mat-label>
       <mat-select formControlName="idPays" [disabled]="isFieldDisabled()" required>
         <!-- Barre de recherche -->
@@ -119,11 +119,14 @@
           <ngx-mat-select-search
             [formControl]="paysFilterCtrl"
             [placeholderLabel]="'Rechercher…'"
-            [noEntriesFoundLabel]="'Aucun pays trouvé'"
-          ></ngx-mat-select-search>
+            [noEntriesFoundLabel]="'Aucun pays trouvé'">
+          </ngx-mat-select-search>
         </mat-option>
         <!-- Options filtrées -->
-        <mat-option *ngFor="let country of filteredCountries | async" [value]="country.id" [matTooltip]="country.libelle">
+        <mat-option
+          *ngFor="let country of filteredCountries | async"
+          [value]="country.id"
+          [matTooltip]="country.libelle">
           {{ country.libelle || 'Valeur indisponible' }}
         </mat-option>
       </mat-select>
@@ -131,6 +134,22 @@
       <mat-error *ngIf="form.get('idPays')?.hasError('required') && form.get('idPays')?.touched">
         Le pays est obligatoire.
       </mat-error>
+      <!-- hint absent -> correction visuel -->
+      <mat-hint
+        *ngIf="filterTypeContries === 0">
+      </mat-hint>
+      <!-- Hint pour les pays hors France -->
+      <mat-hint
+        *ngIf="filterTypeContries === 1"
+        class="hint-expandable">
+        {{ ('MESSAGE_HINT_PAYS_ETABLISSEMENT_CREATION_HORS_FRANCE' | contenu) }}
+      </mat-hint>
+      <!-- Hint pour la France uniquement -->
+      <mat-hint
+        *ngIf="filterTypeContries === 2"
+        class="hint-expandable">
+        {{ ('MESSAGE_HINT_PAYS_ETABLISSEMENT_CREATION_FRANCE_UNIQUEMENT' | contenu) }}
+      </mat-hint>
     </mat-form-field>
   </div>
   <div class="row">

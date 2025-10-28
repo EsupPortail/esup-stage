@@ -1,0 +1,41 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0
+      author: admin
+      changes:
+        - insert:
+            columns:
+              - column:
+                  name: codeContenu
+                  value: MESSAGE_HINT_PAYS_ETABLISSEMENT_CREATION_HORS_FRANCE
+              - column:
+                  name: libelle
+                  valueBoolean: true
+              - column:
+                  name: texte
+                  value: Recherchez votre établissement dans la section « Rechercher l'établissement ». En cas d’absence dans la liste, contactez votre gestionnaire de stage.
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: dateCreation
+                  value: now()
+            tableName: Contenu
+        - insert:
+            columns:
+              - column:
+                  name: codeContenu
+                  value: MESSAGE_HINT_PAYS_ETABLISSEMENT_CREATION_FRANCE_UNIQUEMENT
+              - column:
+                  name: libelle
+                  valueBoolean: true
+              - column:
+                  name: texte
+                  value: Vous ne pouvez pas créer un établissment en dehors de la France. Pour ajouter un établissement étranger, contactez votre gestionnaire de stage.
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: dateCreation
+                  value: now()
+            tableName: Contenu
