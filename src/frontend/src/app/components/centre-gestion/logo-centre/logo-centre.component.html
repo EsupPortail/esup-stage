@@ -15,10 +15,11 @@
           <li>Pour un logo rectangulaire : 320 × 160 px minimum</li>
           <li>Pour un logo carré : 160 × 160 px minimum</li>
           <li>Format PNG ou SVG avec fond transparent</li>
+          <li> L'image ne doit pas dépassé 5mo </li>
         </ul>
+        L'image sera redimensionnée automatiquement lors de l'impression.
       </div>
     </div>
-
 
     <mat-card-actions class="text-center">
       <button class="action-bt" mat-stroked-button color="primary" (click)="logoInput.click()">
@@ -26,7 +27,8 @@
         <input #logoInput type="file" (change)="onLogoChange($event)" accept="image/*" style="display:none">
       </button>
 
-      <button class="action-bt" mat-stroked-button color="warn" (click)="removeLogo()" *ngIf="currentFile && currentFile.size > 0">
+      <button class="action-bt" mat-stroked-button color="warn" (click)="removeLogo()"
+              *ngIf="currentFile && currentFile.size > 0">
         Supprimer le logo
       </button>
     </mat-card-actions>
@@ -50,15 +52,18 @@
       <!-- Aperçu de l'image recadrée -->
       <div *ngIf="croppedImage" class="preview-container">
         <h4>Aperçu :</h4>
-        <img [src]="croppedImage" alt="Logo recadré" class="preview-image" style="max-width: 300px; max-height: 300px;" />
+        <img [src]="croppedImage" alt="Logo recadré" class="preview-image"
+             style="max-width: 300px; max-height: 300px;" />
       </div>
 
       <!-- Boutons d'action -->
       <div class="cropper-actions" style="margin-top: 15px;">
-        <button mat-raised-button color="primary" (click)="uploadCroppedLogo()" [disabled]="!croppedBlob">
+        <button mat-raised-button color="primary" (click)="uploadCroppedLogo()"
+                [disabled]="!croppedBlob">
           Valider et enregistrer
         </button>
-        <button mat-stroked-button color="warn" (click)="cancelCrop()" style="margin-left: 10px;">
+        <button mat-stroked-button color="warn" (click)="cancelCrop()"
+                style="margin-left: 10px;">
           Annuler
         </button>
       </div>
@@ -67,8 +72,60 @@
     <!-- Aperçu du logo actuel -->
     <div *ngIf="previewUrl && !imageChangedEvent" class="current-logo-preview">
       <div class="preview-container">
-        <img [src]="previewUrl" alt="Preview du logo" class="preview-image" style="max-width: 300px; max-height: 300px;" />
+        <img [src]="previewUrl" alt="Preview du logo" class="preview-image"
+             style="max-width: 300px; max-height: 300px;" />
       </div>
+    </div>
+
+    <!-- Sélecteur de template -->
+    <mat-form-field appearance="outline" class="w-100 mt-4">
+      <mat-label>Template de convention</mat-label>
+      <mat-select [formControl]="templateCtrl">
+        <mat-option *ngFor="let t of templateConvention" [value]="t.id">
+          {{ t.typeConvention.libelle }} - {{ t.langueConvention.libelle }}
+        </mat-option>
+      </mat-select>
+      <mat-hint>Sélectionnez un template (type + langue) pour générer l’aperçu PDF après enregistrement du logo.</mat-hint>
+    </mat-form-field>
+
+    <div *ngIf="showPdfPreview" class="pdf-preview-section">
+      <mat-card class="pdf-preview-card">
+        <mat-card-header class="pdf-preview-header">
+          <mat-card-title>
+            <mat-icon>description</mat-icon>
+            Aperçu de la convention (données fictives)
+          </mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content class="pdf-preview-content">
+          <!-- État de chargement -->
+          <div *ngIf="pdfLoading" class="pdf-loading">
+            <mat-spinner diameter="50"></mat-spinner>
+            <p>Génération de l'aperçu de la convention...</p>
+          </div>
+
+          <!-- Erreur -->
+          <div *ngIf="pdfError && !pdfLoading" class="pdf-error">
+            <mat-icon color="warn">error_outline</mat-icon>
+            <p>{{ pdfError }}</p>
+          </div>
+
+          <!-- Affichage du PDF -->
+          <iframe
+            *ngIf="pdfUrl && !pdfLoading && !pdfError"
+            [attr.src]="pdfUrl"
+            type="application/pdf"
+            class="pdf-viewer"
+            frameborder="0"
+            title="Aperçu de la convention">
+          </iframe>
+
+          <!-- Message lorsqu'un template est sélectionné mais que la preview n'a pas encore été générée -->
+          <div *ngIf="!pdfUrl && !pdfLoading && !pdfError">
+            <p>Sélectionnez un template puis enregistrez (ou supprimez) un logo pour générer l’aperçu.</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
     </div>
   </mat-card-content>
 </mat-card>
