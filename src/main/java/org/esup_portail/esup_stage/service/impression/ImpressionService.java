@@ -19,11 +19,12 @@ import org.esup_portail.esup_stage.enums.TypeSignatureEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
+import org.esup_portail.esup_stage.repository.PaysJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateConventionJpaRepository;
 import org.esup_portail.esup_stage.service.impression.context.ImpressionContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
 import java.io.*;
@@ -47,6 +48,9 @@ public class ImpressionService {
 
     @Autowired
     AppliProperties appliProperties;
+
+    @Autowired
+    PaysJpaRepository paysJpaRepository;
 
     public void generateConventionAvenantPDF(Convention convention, Avenant avenant, ByteArrayOutputStream ou, boolean isRecap) {
         if (convention.getNomenclature() == null) {
@@ -345,25 +349,40 @@ public class ImpressionService {
     /**
      * Generation d'une convention fictive de preview
      */
-    public void generatePreviewPDF(Integer idCentreGestion, ByteArrayOutputStream ou) {
-        // Récupération du centre de gestion
+    public void generatePreviewPDF(Integer idCentreGestion, ByteArrayOutputStream ou, Integer templateId) {
         CentreGestion centreGestion = centreGestionJpaRepository.findById(idCentreGestion).orElse(null);
         if (centreGestion == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion introuvable");
         }
-
         try {
-            // Le template de preview est supposé déjà rempli : on prend directement le contenu HTML
-            // On cherche d'abord un template spécifique de preview dans les resources, sinon on utilise le template par défaut de convention
             String htmlTexte;
-            try {
-                htmlTexte = getDefaultText("/templates/template_preview.html");
-            } catch (AppException e) {
-                // fallback vers le template par défaut de convention si le fichier preview n'existe pas
-                htmlTexte = getDefaultText(true);
+            if (templateId != null) {
+                TemplateConvention templateConvention = templateConventionJpaRepository.findById(templateId).orElse(null);
+                if (templateConvention == null) {
+                    throw new AppException(HttpStatus.NOT_FOUND, "Template de convention introuvable");
+                }
+
+                // Récupération du texte du template et application des styles
+                htmlTexte = this.getHtmlText(templateConvention.getTexte(), true, false);
+                htmlTexte = manageIfElse(htmlTexte);
+
+                // Création d'un contexte fictif pour le preview
+                CentreGestion centreEtablissement = centreGestionJpaRepository.getCentreEtablissement();
+                ImpressionContext impressionContext = createFictionalPreviewContext(centreGestion, centreEtablissement);
+
+                // Traitement du template avec les données fictives
+                Template template = new Template("template_preview_" + templateId, htmlTexte, freeMarkerConfigurer.getConfiguration());
+                StringWriter texte = new StringWriter();
+                template.process(impressionContext, texte);
+                htmlTexte = texte.toString();
+            } else {
+                try {
+                    htmlTexte = getDefaultText("/templates/template_preview.html");
+                } catch (AppException e) {
+                    htmlTexte = getDefaultText(true);
+                }
             }
 
-            // récupération du logo du centre gestion
             ImageData imageData = null;
             Fichier fichier = centreGestion.getFichier();
             if (fichier != null) {
@@ -373,7 +392,6 @@ public class ImpressionService {
                 }
             }
 
-            // si pas d'image pour ce centre, on peut prendre celle du centre établissement
             if (imageData == null) {
                 CentreGestion centreEtablissement = centreGestionJpaRepository.getCentreEtablissement();
                 if (centreEtablissement != null) {
@@ -387,68 +405,247 @@ public class ImpressionService {
                 }
             }
 
-            // Génération du PDF dans le ByteArrayOutputStream fourni
-            this.generatePDF(htmlTexte, "preview_convention.pdf", imageData, ou);
+            this.generatePreviewPDFFirstPage(htmlTexte, "preview_convention.pdf", imageData, ou);
 
         } catch (Exception e) {
             logger.error("Une erreur est survenue lors de la génération du PDF de preview", e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
         }
-
     }
 
     /**
-     * Génère un PDF à partir d'un HTML déjà rempli en ajoutant le logo du centre de gestion
-     * dont l'id est passé en paramètre. Le résultat est écrit dans le ByteArrayOutputStream fourni.
-     *
-     * @param idCentreGestion id du centre de gestion dont on souhaite récupérer le logo
-     * @param htmlTexte HTML complet déjà rendu (template pré-rempli)
-     * @param ou ByteArrayOutputStream où placer le PDF généré
+     * Crée un contexte fictif avec des données d'exemple pour la preview
      */
-    public void generateConventionAvenantPDF(Integer idCentreGestion, String htmlTexte, ByteArrayOutputStream ou) {
-        // Récupération du centre de gestion
-        CentreGestion centreGestion = centreGestionJpaRepository.findById(idCentreGestion).orElse(null);
-        if (centreGestion == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion introuvable");
+    private ImpressionContext createFictionalPreviewContext(CentreGestion centreGestion, CentreGestion centreEtablissement) {
+        // Convention fictive
+        Convention convention = new Convention();
+        convention.setId(999);
+        convention.setCentreGestion(centreGestion);
+
+        // Étudiant fictif
+        Etudiant etudiant = new Etudiant();
+        etudiant.setId(1);
+        etudiant.setPrenom("Jean");
+        etudiant.setNom("Dupont");
+        etudiant.setMail("jean.dupont@example.com");
+        etudiant.setNumEtudiant("2025-0001");
+        etudiant.setCodeUniversite(centreGestion != null ? centreGestion.getCodeUniversite() : "UNIV");
+        etudiant.setIdentEtudiant("JDUP01");
+        convention.setEtudiant(etudiant);
+
+        // Enseignant fictif
+        Enseignant enseignant = new Enseignant();
+        enseignant.setId(2);
+        enseignant.setPrenom("Alice");
+        enseignant.setNom("Martin");
+        enseignant.setMail("alice.martin@univ.example");
+        enseignant.setTel("+33 1 23 45 67 89");
+        enseignant.setTypePersonne("Maître de conférences");
+        convention.setEnseignant(enseignant);
+
+        // Contact / tuteur fictif
+        Contact contact = new Contact();
+        contact.setId(3);
+        contact.setPrenom("Pierre");
+        contact.setNom("Durand");
+        contact.setMail("pierre.durand@entreprise.example");
+        contact.setTel("+33 6 11 22 33 44");
+        contact.setFonction("Tuteur pédagogique");
+        contact.setCentreGestion(centreGestion);
+        convention.setContact(contact);
+
+        // Signataire (contact interne) fictif
+        Contact signataire = new Contact();
+        signataire.setId(4);
+        signataire.setPrenom("Marie");
+        signataire.setNom("Legrand");
+        signataire.setMail("marie.legrand@univ.example");
+        signataire.setFonction("Responsable composante");
+        signataire.setCentreGestion(centreGestion);
+        convention.setSignataire(signataire);
+
+        // Structure (organisme d'accueil) fictive
+        Structure structure = new Structure();
+        structure.setId(10);
+        structure.setRaisonSociale("ACME Solutions");
+        structure.setNumeroSiret("123 456 789 00012");
+        structure.setTelephone("+33 1 88 77 66 55");
+        structure.setMail("contact@acme.example");
+        structure.setVoie("25 boulevard de la Tech");
+        structure.setBatimentResidence("Bât. A");
+        structure.setCodePostal("75002");
+        structure.setCommune("Paris");
+        structure.setPays(paysJpaRepository.findById(82));
+        structure.setActivitePrincipale("Édition de logiciels");
+        convention.setStructure(structure);
+
+        // Service (service d'accueil dans la structure) fictif
+        org.esup_portail.esup_stage.model.Service service = new org.esup_portail.esup_stage.model.Service();
+        service.setId(11);
+        service.setNom("R&D");
+        service.setVoie("25 boulevard de la Tech");
+        service.setBatimentResidence("Bât. A - 3e");
+        service.setCodePostal("75002");
+        service.setCommune("Paris");
+        service.setPays(paysJpaRepository.findById(82)); // France
+        convention.setService(service);
+
+        // Type de convention fictif
+        TypeConvention typeConvention = new TypeConvention();
+        typeConvention.setId(1);
+        typeConvention.setLibelle("Convention de stage");
+        convention.setTypeConvention(typeConvention);
+
+        // Langue de convention fictive
+        LangueConvention langueConvention = new LangueConvention();
+        langueConvention.setCode("FR");
+        langueConvention.setLibelle("Français");
+        convention.setLangueConvention(langueConvention);
+
+        // Nomenclature fictive
+        ConventionNomenclature nomenclature = new ConventionNomenclature();
+        nomenclature.setId(999);
+        nomenclature.setLangueConvention("Français");
+        nomenclature.setDevise("EUR");
+        nomenclature.setModeValidationStage("Validation pédagogique");
+        nomenclature.setModeVersGratification("Virement");
+        nomenclature.setNatureTravail("Bureau - développement");
+        nomenclature.setOrigineStage("Offre interne");
+        nomenclature.setTempsTravail("Temps plein");
+        nomenclature.setTheme("Informatique");
+        nomenclature.setTypeConvention(typeConvention.getLibelle());
+        nomenclature.setUniteDureeExceptionnelle("heures");
+        nomenclature.setUniteDureeGratification("mois");
+        nomenclature.setUniteGratification("EUR");
+        convention.setNomenclature(nomenclature);
+
+        // Informations basiques de stage
+        convention.setSujetStage("Projet d'intégration et développement");
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date());
+        c.add(Calendar.DAY_OF_MONTH, 7);
+        Date debut = c.getTime();
+        c.add(Calendar.MONTH, 3);
+        Date fin = c.getTime();
+        convention.setDateDebutStage(debut);
+        convention.setDateFinStage(fin);
+        convention.setDureeStage(90);
+        convention.setVilleEtudiant("Nantes");
+        convention.setAdresseEtudiant("10 rue de la République");
+        convention.setCodePostalEtudiant("44000");
+        convention.setPaysEtudiant("France");
+        convention.setTelEtudiant("+33 2 98 76 54 32");
+        convention.setTelPortableEtudiant("+33 6 55 44 33 22");
+        convention.setAnnee(String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
+
+        // Paramètres de gratification
+        convention.setGratificationStage(Boolean.TRUE);
+        convention.setMontantGratification("500");
+
+        // Période de travail (horaire irrégulier exemple)
+        PeriodeStage periode = new PeriodeStage();
+        periode.setId(1);
+        periode.setDateDebut(debut);
+        periode.setDateFin(fin);
+        periode.setNbHeuresJournalieres(7);
+        periode.setConvention(convention);
+        if (convention.getPeriodeStage() == null) {
+            convention.setPeriodeStage(new ArrayList<>());
         }
+        convention.getPeriodeStage().add(periode);
+
+        // Avenants vides pour la preview
+        convention.setAvenants(new ArrayList<>());
+
+        return new ImpressionContext(convention, null, centreEtablissement);
+    }
+
+    private CentreGestion createFictionalCentreGestion() {
+        CentreGestion cg = new CentreGestion();
+        cg.setId(100);
+        cg.setNomCentre("UFR Informatique");
+        cg.setCodeUniversite("UNIV-TEST");
+        cg.setVoie("1 rue des Universités");
+        cg.setAdresse("1 rue des Universités");
+        cg.setCodePostal("44000");
+        cg.setCommune("Nantes");
+        cg.setMail("ufr-info@example.com");
+        cg.setTelephone("+33 2 40 00 00 00");
+        cg.setNomViseur("Bernard");
+        cg.setPrenomViseur("Sophie");
+        cg.setQualiteViseur("Responsable pédagogique");
+        // Paramètres de validation (pour le calcul conventionValidee dans ImpressionContext)
+        cg.setValidationPedagogique(true);
+        cg.setValidationConvention(true);
+        return cg;
+    }
+
+    private CentreGestion createFictionalCentreEtablissement() {
+        CentreGestion ce = new CentreGestion();
+        ce.setId(101);
+        ce.setNomCentre("Université Exemple");
+        ce.setCodeUniversite("UNIV-TEST");
+        ce.setVoie("10 avenue du Savoir");
+        ce.setAdresse("10 avenue du Savoir, 75005 Paris");
+        ce.setCodePostal("75005");
+        ce.setCommune("Paris");
+        ce.setMail("contact@univ.example");
+        ce.setTelephone("+33 1 44 00 00 00");
+        ce.setNomViseur("Dupuis");
+        ce.setPrenomViseur("Claire");
+        ce.setQualiteViseur("Présidente");
+        ce.setValidationPedagogique(true);
+        ce.setValidationConvention(true);
+        return ce;
+    }
+
+    /**
+     * Génère un PDF avec uniquement la première page
+     */
+    private void generatePreviewPDFFirstPage(String texte, String filename, ImageData imageData, ByteArrayOutputStream ou) {
+        String tempFilePath = this.getClass().getResource("/templates").getPath();
+        String tempFile = tempFilePath + "temp_" + filename;
+        FileOutputStream fop = null;
+        Date dateGeneration = new Date();
 
         try {
-            // Si le HTML est null ou vide, on fallback sur le template par défaut
-            if (htmlTexte == null || htmlTexte.trim().isEmpty()) {
-                htmlTexte = getDefaultText(true);
+            fop = new FileOutputStream(tempFile);
+            HtmlConverter.convertToPdf(texte, fop);
+            fop.close();
+            fop = null;
+
+            PdfDocument pdfSource = new PdfDocument(new PdfReader(tempFile));
+            PdfDocument pdfDest = new PdfDocument(new PdfWriter(ou));
+
+            pdfSource.copyPagesTo(1, 1, pdfDest);
+
+            FooterPageEvent event = new FooterPageEvent(dateGeneration);
+            pdfDest.addEventHandler(PdfDocumentEvent.END_PAGE, event);
+            Document document = new Document(pdfDest);
+
+            if (imageData != null) {
+                Image img = prepareLogoImage(imageData);
+                document.add(img);
             }
 
-            // récupération du logo du centre gestion
-            ImageData imageData = null;
-            Fichier fichier = centreGestion.getFichier();
-            if (fichier != null) {
-                String logoname = this.getLogoFilePath(this.getNomFichier(fichier.getId(), fichier.getNom()));
-                if (Files.exists(Paths.get(logoname))) {
-                    imageData = ImageDataFactory.create(logoname);
-                }
-            }
-
-            // si pas d'image pour ce centre, on peut prendre celle du centre établissement
-            if (imageData == null) {
-                CentreGestion centreEtablissement = centreGestionJpaRepository.getCentreEtablissement();
-                if (centreEtablissement != null) {
-                    Fichier fichierEtab = centreEtablissement.getFichier();
-                    if (fichierEtab != null) {
-                        String logoname = this.getLogoFilePath(this.getNomFichier(fichierEtab.getId(), fichierEtab.getNom()));
-                        if (Files.exists(Paths.get(logoname))) {
-                            imageData = ImageDataFactory.create(logoname);
-                        }
-                    }
-                }
-            }
-
-            // Génération du PDF dans le ByteArrayOutputStream fourni
-            this.generatePDF(htmlTexte, "convention_filled.pdf", imageData, ou);
+            pdfSource.close();
+            document.close();
 
         } catch (Exception e) {
-            logger.error("Une erreur est survenue lors de la génération du PDF de convention pré-remplie", e);
+            logger.error("Erreur lors de la génération du PDF de preview", e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
+        } finally {
+            try {
+                if (fop != null) {
+                    fop.close();
+                }
+                File tempFileObj = new File(tempFile);
+                if (tempFileObj.exists()) {
+                    tempFileObj.delete();
+                }
+            } catch (IOException e) {
+                logger.error("Erreur lors de la suppression des fichiers temporaires", e);
+            }
         }
-
     }
 }

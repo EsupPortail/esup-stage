@@ -76,18 +76,16 @@
     </div>
 
     <!-- Sélecteur de template -->
-    <mat-form-field appearance="outline" class="w-100">
+    <mat-form-field appearance="outline" class="w-100 mt-4">
       <mat-label>Template de convention</mat-label>
       <mat-select [formControl]="templateCtrl">
-        <mat-option [value]="null">-- Sélectionner --</mat-option>
         <mat-option *ngFor="let t of templateConvention" [value]="t.id">
-          {{ t.displayLabel }}
+          {{ t.typeConvention.libelle }} - {{ t.langueConvention.libelle }}
         </mat-option>
       </mat-select>
       <mat-hint>Sélectionnez un template (type + langue) pour générer l’aperçu PDF après enregistrement du logo.</mat-hint>
     </mat-form-field>
 
-    <!-- ========== SECTION PREVIEW PDF (auto, pas de bouton) ========== -->
     <div *ngIf="showPdfPreview" class="pdf-preview-section">
       <mat-card class="pdf-preview-card">
         <mat-card-header class="pdf-preview-header">
@@ -95,12 +93,6 @@
             <mat-icon>description</mat-icon>
             Aperçu de la convention (données fictives)
           </mat-card-title>
-          <button mat-icon-button
-                  (click)="refreshPdfPreview()"
-                  [disabled]="pdfLoading"
-                  matTooltip="Rafraîchir l'aperçu">
-            <mat-icon>refresh</mat-icon>
-          </button>
         </mat-card-header>
 
         <mat-card-content class="pdf-preview-content">
@@ -114,9 +106,6 @@
           <div *ngIf="pdfError && !pdfLoading" class="pdf-error">
             <mat-icon color="warn">error_outline</mat-icon>
             <p>{{ pdfError }}</p>
-            <button mat-stroked-button color="primary" (click)="refreshPdfPreview()">
-              Réessayer
-            </button>
           </div>
 
           <!-- Affichage du PDF -->

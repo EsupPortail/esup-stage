@@ -114,8 +114,6 @@
   margin-top: 30px;
 }
 
-// ========== STYLES POUR LA PREVIEW PDF ==========
-
 .pdf-preview-section {
   margin-top: 30px;
   animation: slideDown 0.3s ease-out;
@@ -134,6 +132,9 @@
 
 .pdf-preview-card {
   background: #f5f5f5;
+  box-shadow: 3px 5px 14px 0px rgba(74,71,71,0.54);
+  -webkit-box-shadow: 3px 5px 14px 0px rgba(74,71,71,0.54);
+  -moz-box-shadow: 3px 5px 14px 0px rgba(74,71,71,0.54);
 
   .pdf-preview-header {
     display: flex;
@@ -142,6 +143,7 @@
     padding: 16px;
     background: white;
     border-bottom: 1px solid #e0e0e0;
+    border-radius: 4px;
 
     mat-card-title {
       display: flex;

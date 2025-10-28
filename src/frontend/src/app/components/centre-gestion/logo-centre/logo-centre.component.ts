@@ -1,32 +1,18 @@
-import {
-  Component,
-  OnInit,
-  Input,
-  Output,
-  EventEmitter,
-  ViewChild,
-  ElementRef,
-  OnDestroy
-} from '@angular/core';
+import {Component, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef, OnDestroy} from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from "@angular/forms";
 import { debounceTime } from 'rxjs/operators';
-import { forkJoin } from 'rxjs';
-
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ImageCroppedEvent, ImageCropperComponent } from 'ngx-image-cropper';
-
 import { CentreGestionService } from "../../../services/centre-gestion.service";
 import { MessageService } from "../../../services/message.service";
 import { ConventionService } from "../../../services/convention.service";
 import { TemplateConventionService } from "../../../services/template-convention.service";
-import { TypeConventionService } from "../../../services/type-convention.service";
-import { LangueConventionService } from "../../../services/langue-convention.service";
 
 @Component({
   selector: 'app-logo-centre',
   standalone: false,
   templateUrl: './logo-centre.component.html',
-  styleUrls: ['./logo-centre.component.scss']
+  styleUrl: './logo-centre.component.scss',
 })
 export class LogoCentreComponent implements OnInit, OnDestroy {
   @Input() centreGestion: any;
@@ -51,12 +37,10 @@ export class LogoCentreComponent implements OnInit, OnDestroy {
 
   // --- Template de convention
   templateCtrl = new FormControl<number | null>(null);
-  templateConvention: Array<any> = []; // liste enrichie (avec typeLabel, langueLabel, displayLabel)
-  typesConvention: any[] = [];
-  languesConvention: any[] = [];
+  templateConvention: Array<any> = [];
 
   // --- Preview PDF
-  showPdfPreview: boolean = false; // pas de bouton; affiché automatiquement si conditions remplies
+  showPdfPreview: boolean = false;
   pdfUrl: SafeUrl | null = null;
   pdfLoading: boolean = false;
   pdfError: string | null = null;
@@ -68,9 +52,7 @@ export class LogoCentreComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private sanitizer: DomSanitizer,
     private conventionService: ConventionService,
-    private templateService: TemplateConventionService,
-    private typeConventionService: TypeConventionService,
-    private langueConventionService: LangueConventionService,
+    private templateConventionService: TemplateConventionService,
   ) {
     this.form = this.fb.group({
       content: [null, Validators.required]
@@ -83,15 +65,15 @@ export class LogoCentreComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.getLogo();
     this.resizeLogoOnChange();
-    this.loadTemplateData();
 
-    // Lorsque l'utilisateur change le template, si un logo est présent, on régénère la preview
+    this.templateConventionService.getAll().subscribe((templates: any[]) => {
+      this.templateConvention = templates;
+    });
     this.templateCtrl.valueChanges.subscribe((templateId) => {
       const hasLogo = !!this.previewUrl || !!this.currentFile;
       if (hasLogo && templateId) {
         this.generatePdfPreview();
       } else {
-        // Pas de template => pas de preview
         this.hidePdfPreview();
       }
     });
@@ -99,44 +81,6 @@ export class LogoCentreComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.cleanupPdfUrl();
-  }
-
-  // =========================================================
-  // Chargement des données templates/langues/types (avec libellés)
-  // =========================================================
-  private loadTemplateData(): void {
-    forkJoin({
-      langues: this.langueConventionService.getListActive(),
-      types: this.typeConventionService.getListActive(),
-      templates: this.templateService.getAll(),
-    }).subscribe({
-      next: ({ langues, types, templates }) => {
-        const languesMap = new Map<number, string>();
-        const typesMap = new Map<number, string>();
-
-        (langues?.data || []).forEach((l: any) => {
-          // Essaie dans l'ordre : libelle, nom, code
-          languesMap.set(l.id, l.libelle || l.nom || l.code || `Langue ${l.id}`);
-        });
-        (types?.data || []).forEach((t: any) => {
-          typesMap.set(t.id, t.libelle || t.nom || `Type ${t.id}`);
-        });
-
-        this.languesConvention = langues?.data || [];
-        this.typesConvention = types?.data || [];
-
-        this.templateConvention = (templates?.data || []).map((tpl: any) => ({
-          ...tpl,
-          langueLabel: languesMap.get(tpl.idLangue) || 'Langue inconnue',
-          typeLabel: typesMap.get(tpl.idTypeConvention) || 'Type inconnu',
-          displayLabel: `${typesMap.get(tpl.idTypeConvention) || '?'} – ${languesMap.get(tpl.idLangue) || '?'}`
-        }));
-      },
-      error: (err) => {
-        console.error('Erreur chargement templates/langues/types:', err);
-        this.messageService.setError('Impossible de charger les templates');
-      }
-    });
   }
 
   // =========================================================
@@ -181,7 +125,7 @@ export class LogoCentreComponent implements OnInit, OnDestroy {
 
     const formData = new FormData();
     formData.append('logo', file, file.name);
-    this._sendLogo(formData);
+    this.sendLogo(formData);
   }
 
   cancelCrop(): void {
@@ -194,13 +138,11 @@ export class LogoCentreComponent implements OnInit, OnDestroy {
     }
   }
 
-  private _sendLogo(formData: FormData): void {
+  private sendLogo(formData: FormData): void {
     this.centreGestionService.insertLogoCentre(formData, this.centreGestion.id).subscribe({
       next: (response: any) => {
         this.centreGestion = response;
         this.refreshCentreGestion.emit(this.centreGestion);
-
-        // Reset cropper/input
         this.imageChangedEvent = null;
         this.croppedImage = '';
         this.croppedBlob = null;
@@ -208,17 +150,13 @@ export class LogoCentreComponent implements OnInit, OnDestroy {
         if (this.logoInput?.nativeElement) {
           this.logoInput.nativeElement.value = '';
         }
-
-        // Recharger le logo affiché
         this.getLogo();
-
-        // Si un template est sélectionné => on affiche et (re)génère la preview
         const templateId = this.templateCtrl.value;
         if (templateId) {
           this.showPdfPreview = true;
           this.generatePdfPreview();
         } else {
-          this.hidePdfPreview(); // pas de template => pas d’aperçu
+          this.hidePdfPreview();
         }
 
         this.messageService.setSuccess("Logo mis à jour avec succès");
@@ -240,7 +178,6 @@ export class LogoCentreComponent implements OnInit, OnDestroy {
           this.form.get('content')?.setValue('<p style="text-align: center"><img src="' + this.previewUrl + '" /><p>');
         };
       } else {
-        // Pas de logo => pas d’aperçu
         this.hidePdfPreview();
       }
     });
@@ -257,7 +194,6 @@ export class LogoCentreComponent implements OnInit, OnDestroy {
           this.width = null;
           this.getLogo();
 
-          // Si un template est sélectionné et la preview affichée, on régénère
           if (this.showPdfPreview && this.templateCtrl.value) {
             this.generatePdfPreview();
           }
@@ -277,7 +213,6 @@ export class LogoCentreComponent implements OnInit, OnDestroy {
         this.imageChangedEvent = null;
         this.form.get('content')?.setValue('');
 
-        // Pas de logo -> pas d'aperçu
         this.hidePdfPreview();
 
         this.messageService.setSuccess("Logo supprimé avec succès");
@@ -290,7 +225,7 @@ export class LogoCentreComponent implements OnInit, OnDestroy {
   }
 
   // =========================================================
-  // Preview PDF (auto, pas de bouton)
+  // Preview PDF
   // =========================================================
   private generatePdfPreview(): void {
     if (!this.centreGestion?.id) {
@@ -300,7 +235,6 @@ export class LogoCentreComponent implements OnInit, OnDestroy {
     }
     const templateId = this.templateCtrl.value;
     if (!templateId) {
-      // Si aucun template sélectionné => pas de preview
       this.hidePdfPreview();
       return;
     }

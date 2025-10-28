@@ -982,10 +982,10 @@ public class ConventionController {
      * @return PDF en byte[] (Content-Type: application/pdf)
      */
     @GetMapping("/preview-pdf/centre-gestion/{id}")
-    public ResponseEntity<byte[]> generateConventionPreview(@PathVariable("id") int idCentreGestion) {
+    public ResponseEntity<byte[]> generateConventionPreview(@PathVariable("id") int idCentreGestion, @RequestParam(name = "templateId") Integer templateId) {
 
         ByteArrayOutputStream ou = new ByteArrayOutputStream();
-        impressionService.generatePreviewPDF(idCentreGestion, ou);
+        impressionService.generatePreviewPDF(idCentreGestion, ou, templateId);
 
 
         byte[] pdf = ou.toByteArray();
