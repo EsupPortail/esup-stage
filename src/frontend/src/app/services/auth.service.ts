@@ -4,7 +4,6 @@ import { environment } from "../../environments/environment";
 import { Observable } from "rxjs";
 import { TokenService } from "./token.service";
 import { Role } from "../constants/role";
-import { AppFonction } from "../constants/app-fonction";
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +12,7 @@ export class AuthService {
 
   userConnected: any = undefined;
   appVersion: any = undefined;
+  private refreshPromise?: Promise<void>;
 
   constructor(private http: HttpClient, private tokenService: TokenService) { }
 
@@ -31,18 +31,14 @@ export class AuthService {
     sessionStorage.clear();
   }
 
-  async secure(right: any) {
+  async secure(right: any): Promise<boolean> {
     if (this.appVersion === undefined) {
       this.appVersion = await this.getAppVersion().toPromise();
     }
 
-    if (this.userConnected !== undefined) {
-      return this.checkRights(right);
-    } else {
-      let user = await this.getCurrentUser().toPromise();
-      this.createUser(user);
-      return this.checkRights(right);
-    }
+    await this.ensureFreshUser();
+
+    return this.checkRights(right);
   }
 
   createUser(user: any) {
@@ -66,6 +62,25 @@ export class AuthService {
       });
     }
     return hasRight;
+  }
+
+  async ensureFreshUser(): Promise<void> {
+    if (this.refreshPromise) {
+      return this.refreshPromise;
+    }
+
+    this.refreshPromise = this.getCurrentUser().toPromise()
+      .then(user => {
+        this.createUser(user);
+        this.refreshPromise = undefined;
+      })
+      .catch(error => {
+        console.error('Erreur rafraîchissement user:', error);
+        this.refreshPromise = undefined;
+        throw error;
+      });
+
+    return this.refreshPromise;
   }
 
   getUserConnectedLogin(): string {
