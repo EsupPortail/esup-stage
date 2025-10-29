@@ -14,9 +14,12 @@ import org.esup_portail.esup_stage.repository.UtilisateurRepository;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -37,9 +40,21 @@ public class UtilisateurController {
     RoleJpaRepository roleJpaRepository;
 
     @GetMapping("/connected")
-    @Secure()
-    public Utilisateur getUserConnected() {
-        return ServiceContext.getUtilisateur();
+    @Secure
+    public ResponseEntity<Utilisateur> getUserConnected(Authentication authentication) {
+        try{
+            String login = ((UserDetails) authentication.getPrincipal()).getUsername();
+            Utilisateur u = utilisateurJpaRepository.findOneByLogin(login);
+
+            return ResponseEntity.ok()
+                    .cacheControl(CacheControl.noStore().mustRevalidate())
+                    .header("Pragma", "no-cache")
+                    .header("Expires", "0")
+                    .body(u);
+
+        }catch (Exception e){
+            throw new AppException(HttpStatus.UNAUTHORIZED, "Utilisateur non authentifié");
+        }
     }
 
     @GetMapping("/{login}")
