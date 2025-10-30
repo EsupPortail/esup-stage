@@ -101,6 +101,7 @@ public class SireneService {
         } catch (HttpClientErrorException.NotFound ignored) {
             return new ListStructureSireneDTO(0,Collections.emptyList());
         } catch (HttpClientErrorException.BadRequest e) {
+            logger.error("Erreur de requête de la requete '{}', retour de l'api : {}", uri ,e.getMessage());
             throw new AppException(HttpStatus.BAD_REQUEST, "Erreur lors de la récupération des établissements, vérifiez vos filtres");
         } catch (HttpClientErrorException e) {
             logger.error("Erreur d'authentification lors de la récupération des établissements : {}", e.getMessage());
