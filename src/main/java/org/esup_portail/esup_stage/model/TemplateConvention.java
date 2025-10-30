@@ -1,6 +1,7 @@
 package org.esup_portail.esup_stage.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
 @Table(name = "TemplateConvention",
@@ -8,6 +9,7 @@ import jakarta.persistence.*;
                 @UniqueConstraint(name = "index_idTypeConvention_codeLangueConvention", columnNames = {"idTypeConvention", "codeLangueConvention"})
         }
 )
+@Data
 public class TemplateConvention extends ObjetMetier implements Exportable {
 
     @Id
@@ -29,46 +31,6 @@ public class TemplateConvention extends ObjetMetier implements Exportable {
     @Lob
     @Column
     private String texteAvenant;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public TypeConvention getTypeConvention() {
-        return typeConvention;
-    }
-
-    public void setTypeConvention(TypeConvention typeConvention) {
-        this.typeConvention = typeConvention;
-    }
-
-    public LangueConvention getLangueConvention() {
-        return langueConvention;
-    }
-
-    public void setLangueConvention(LangueConvention langueConvention) {
-        this.langueConvention = langueConvention;
-    }
-
-    public String getTexte() {
-        return texte;
-    }
-
-    public void setTexte(String texte) {
-        this.texte = texte;
-    }
-
-    public String getTexteAvenant() {
-        return texteAvenant;
-    }
-
-    public void setTexteAvenant(String texteAvenant) {
-        this.texteAvenant = texteAvenant;
-    }
 
     @Override
     public String getExportValue(String key) {

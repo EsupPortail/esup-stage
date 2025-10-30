@@ -210,3 +210,24 @@ body, html {
   animation: spin 1s linear infinite;
 }
 @keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* Style pour les hints avec expansion au survol */
+.hint-expandable {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  cursor: help;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+  margin: 4px;
+}
+
+/* Au survol : expansion du texte */
+.hint-expandable:hover {
+  white-space: normal;
+  overflow: visible;
+  z-index: 1000;
+}

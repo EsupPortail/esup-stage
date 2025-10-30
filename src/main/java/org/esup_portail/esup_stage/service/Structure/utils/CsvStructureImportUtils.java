@@ -40,7 +40,7 @@ public class CsvStructureImportUtils {
     /** Indices mappés depuis l’entête */
     public static final class Indices {
         public final int numeroRNE, raisonSociale, numeroSiret, activitePrincipale, codeApe, voie, codePostal, commune, telephone, fax, siteWeb, mail;
-        public final Integer typeStructure, statutJuridique, effectif, codeNaf, pays;
+        public final Integer typeStructure, statutJuridique, effectif, pays;
 
         public Indices(Map<String, Integer> idx) {
             this.numeroRNE          = idx.get("NumeroRNE");
@@ -58,12 +58,11 @@ public class CsvStructureImportUtils {
             this.typeStructure      = idx.get("TypeStructure");
             this.statutJuridique    = idx.get("StatutJuridique");
             this.effectif           = idx.get("Effectif");
-            this.codeNaf            = idx.get("CodeNAF");
             this.pays               = idx.get("Pays");
         }
     }
 
-    /** Mappe les indices à partir de la ligne d’entête, sinon IllegalArgumentException avec la liste manquante */
+    /** Mappe les indices à partir de la ligne d’entête */
     public Indices mapHeaderIndices(String headerLine, String separator) {
         String[] headerCols = headerLine.split(separator, -1);
         Map<String,Integer> idx = new HashMap<>();
@@ -156,7 +155,6 @@ public class CsvStructureImportUtils {
 
     /** Crée une structure à partir des informations récupérées du csv */
     public Structure buildStructure(Function<Integer,String> col, Indices I) {
-        // lire valeurs CSV
         String numeroRNE         = col.apply(I.numeroRNE);
         String numeroSiret       = col.apply(I.numeroSiret);
         String typeStructCsv     = (I.typeStructure != null)   ? col.apply(I.typeStructure)   : "";
@@ -166,7 +164,6 @@ public class CsvStructureImportUtils {
 
         Structure s = new Structure();
         s.setPays(resolvePays(pays));
-        System.out.println(resolvePays(pays));
         s.setTypeStructure(resolveTypeStructure(typeStructCsv, numeroRNE, numeroSiret));
         s.setStatutJuridique(resolveStatut(statutCsv));
         s.setEffectif(resolveEffectif(effectifCsv));
@@ -189,12 +186,6 @@ public class CsvStructureImportUtils {
 
     /* =================== ENCODING UTILS =================== */
 
-    /**
-     * Ouvre un BufferedReader en détectant l'encodage du flux CSV :
-     * - BOM UTF-8/UTF-16 si présent
-     * - sinon essai strict UTF-8
-     * - sinon fallback Windows-1252 (cas courant Excel FR)
-     */
     public BufferedReader openReader(InputStream in) throws IOException {
         byte[] bytes = in.readAllBytes();
         Charset charset = detectCharset(bytes);
@@ -203,7 +194,6 @@ public class CsvStructureImportUtils {
 
     /** Détection BOM/UTF-8 strict, sinon CP1252 */
     private static Charset detectCharset(byte[] bytes) {
-        // 1) BOMs connus
         if (startsWith(bytes, new byte[]{(byte)0xEF,(byte)0xBB,(byte)0xBF})) return StandardCharsets.UTF_8;     // UTF-8 BOM
         if (startsWith(bytes, new byte[]{(byte)0xFF,(byte)0xFE}))             return StandardCharsets.UTF_16LE;  // UTF-16 LE BOM
         if (startsWith(bytes, new byte[]{(byte)0xFE,(byte)0xFF}))             return StandardCharsets.UTF_16BE;  // UTF-16 BE BOM
