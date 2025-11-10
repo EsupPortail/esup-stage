@@ -59,4 +59,9 @@ public class CronTaskController {
     public void reload() {
         cronScheduler.reloadTasks();
     }
+
+    @PostMapping("/{id}/execute")
+    public void executeNow(@PathVariable("id") Integer id) {
+        cronScheduler.executeTaskNow(id);
+    }
 }
