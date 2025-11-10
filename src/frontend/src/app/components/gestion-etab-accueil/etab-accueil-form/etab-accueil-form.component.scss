@@ -213,16 +213,17 @@ body, html {
 
 /* Style pour les hints avec expansion au survol */
 .hint-expandable {
-  display: block;
+  display: inline-block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 100%;
+  width: 120%;
   cursor: help;
   transition: all 0.3s ease;
   position: relative;
   z-index: 1;
   font-size: 14px;
+  margin : 0px -28px 0px -15px // Ajustement pour que le texte prenne toute la largeur disponible
 }
 
 /* Au survol : expansion du texte */

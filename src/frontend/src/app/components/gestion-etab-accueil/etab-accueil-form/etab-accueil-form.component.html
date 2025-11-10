@@ -139,17 +139,9 @@
         *ngIf="filterTypeContries === 0">
       </mat-hint>
       <!-- Hint pour les pays hors France -->
-      <mat-hint
-        *ngIf="filterTypeContries === 1"
-        class="hint-expandable">
-        {{ ('MESSAGE_HINT_PAYS_ETABLISSEMENT_CREATION_HORS_FRANCE' | contenu) }}
-      </mat-hint>
+      <mat-hint *ngIf="filterTypeContries === 1" class="hint-expandable">{{('MESSAGE_HINT_PAYS_ETABLISSEMENT_CREATION_HORS_FRANCE' | contenu)}}</mat-hint>
       <!-- Hint pour la France uniquement -->
-      <mat-hint
-        *ngIf="filterTypeContries === 2"
-        class="hint-expandable">
-        {{ ('MESSAGE_HINT_PAYS_ETABLISSEMENT_CREATION_FRANCE_UNIQUEMENT' | contenu) }}
-      </mat-hint>
+      <mat-hint *ngIf="filterTypeContries === 2" class="hint-expandable">{{('MESSAGE_HINT_PAYS_ETABLISSEMENT_CREATION_FRANCE_UNIQUEMENT' | contenu)}}</mat-hint>
     </mat-form-field>
   </div>
   <div class="row">
