@@ -1,0 +1,171 @@
+<mat-card>
+  <mat-card-content>
+    <form class="form-filters" (ngSubmit)="$event.preventDefault()">
+      <mat-form-field appearance="outline">
+        <mat-label>ID</mat-label>
+        <input matInput type="number" [(ngModel)]="filtersObj.id" name="id" (ngModelChange)="onFilterChange()" autocomplete="off"/>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Nom</mat-label>
+        <input matInput [(ngModel)]="filtersObj.nom" name="nom" (ngModelChange)="onFilterChange()" autocomplete="off"/>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Actif</mat-label>
+        <mat-select
+          [(ngModel)]="filtersObj.active"
+          name="active"
+          (selectionChange)="onFilterChange()"
+        >
+          <mat-option [value]="''">Tous</mat-option>
+          <mat-option [value]="true">Oui</mat-option>
+          <mat-option [value]="false">Non</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </form>
+
+    <!-- Version Desktop -->
+    <div class="table-container desktop-table">
+      <table class="table table-bordered table-hover" role="table">
+        <thead class="thead-light">
+        <tr role="row">
+          <th role="columnheader" (click)="sort('id')" [class.sortable]="true" tabindex="0" [attr.aria-sort]="sortPredicate === 'id' ? (sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'">
+            ID
+            <mat-icon class="sort-icon" *ngIf="sortPredicate==='id'" aria-hidden="true">{{sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}}</mat-icon>
+          </th>
+          <th role="columnheader" (click)="sort('nom')" [class.sortable]="true" tabindex="0" [attr.aria-sort]="sortPredicate === 'nom' ? (sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'">
+            Nom
+            <mat-icon class="sort-icon" *ngIf="sortPredicate==='nom'" aria-hidden="true">{{sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}}</mat-icon>
+          </th>
+          <th role="columnheader" (click)="sort('expressionCron')" [class.sortable]="true" tabindex="0" [attr.aria-sort]="sortPredicate === 'expressionCron' ? (sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'">
+            Expression Cron
+            <mat-icon class="sort-icon" *ngIf="sortPredicate==='expressionCron'" aria-hidden="true">{{sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}}</mat-icon>
+          </th>
+          <th role="columnheader">Active</th>
+          <th role="columnheader" (click)="sort('dateDernierExecution')" [class.sortable]="true" tabindex="0" [attr.aria-sort]="sortPredicate === 'dateDernierExecution' ? (sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'">
+            Dernière Exécution
+            <mat-icon class="sort-icon" *ngIf="sortPredicate==='dateDernierExecution'" aria-hidden="true">{{sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}}</mat-icon>
+          </th>
+          <th role="columnheader" (click)="sort('dateModification')" [class.sortable]="true" tabindex="0" [attr.aria-sort]="sortPredicate === 'dateModification' ? (sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'">
+            Date modification
+            <mat-icon class="sort-icon" *ngIf="sortPredicate==='dateModification'" aria-hidden="true">{{sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}}</mat-icon>
+          </th>
+          <th role="columnheader" (click)="sort('loginModification')" [class.sortable]="true" tabindex="0" [attr.aria-sort]="sortPredicate === 'loginModification' ? (sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'">
+            Login modification
+            <mat-icon class="sort-icon" *ngIf="sortPredicate==='loginModification'" aria-hidden="true">{{sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}}</mat-icon>
+          </th>
+          <th role="columnheader">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let task of cronTasks" role="row">
+          <td role="cell">{{ task.id }}</td>
+          <td role="cell">{{ task.nom }}</td>
+          <td role="cell">
+            <input
+              class="form-control"
+              [(ngModel)]="task.expressionCron"
+              [attr.aria-label]="'Expression cron pour ' + task.nom"
+            />
+          </td>
+          <td role="cell" class="text-center">
+            <mat-slide-toggle
+              [(ngModel)]="task.active"
+              [attr.aria-label]="'Activer ou désactiver ' + task.nom"
+            ></mat-slide-toggle>
+          </td>
+          <td role="cell">{{ task.dateDernierExecution | date: 'short' }}</td>
+          <td role="cell">{{ task.dateModification | date: 'short' }}</td>
+          <td role="cell">{{ task.loginModification }}</td>
+          <td role="cell" class="text-center">
+            <button
+              mat-mini-fab
+              color="primary"
+              (click)="executeTask(task.id, task.nom)"
+              [disabled]="isExecuting(task.id)"
+              [attr.aria-label]="isExecuting(task.id) ? 'Exécution en cours de ' + task.nom : 'Exécuter la tâche ' + task.nom"
+              matTooltip="Exécuter la tâche maintenant"
+              class="execute-button">
+              <mat-icon *ngIf="!isExecuting(task.id)" aria-hidden="true">play_arrow</mat-icon>
+              <mat-spinner *ngIf="isExecuting(task.id)" diameter="24" aria-label="Chargement"></mat-spinner>
+            </button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Version Mobile -->
+    <div class="mobile-cards">
+      <mat-card *ngFor="let task of cronTasks" class="task-card" role="article" [attr.aria-label]="'Tâche ' + task.nom">
+        <mat-card-header>
+          <mat-card-title>
+            <div class="task-header">
+              <span class="task-id">#{{ task.id }}</span>
+              <span class="task-name">{{ task.nom }}</span>
+              <button
+                mat-mini-fab
+                color="primary"
+                (click)="executeTask(task.id, task.nom)"
+                [disabled]="isExecuting(task.id)"
+                [attr.aria-label]="isExecuting(task.id) ? 'Exécution en cours de ' + task.nom : 'Exécuter la tâche ' + task.nom"
+                matTooltip="Exécuter maintenant"
+                class="execute-button-mobile">
+                <mat-icon *ngIf="!isExecuting(task.id)" aria-hidden="true">play_arrow</mat-icon>
+                <mat-spinner *ngIf="isExecuting(task.id)" diameter="24" aria-label="Chargement"></mat-spinner>
+              </button>
+            </div>
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="task-field">
+            <label class="field-label">Expression Cron</label>
+            <input
+              class="form-control"
+              [(ngModel)]="task.expressionCron"
+              [attr.aria-label]="'Expression cron pour ' + task.nom"
+            />
+          </div>
+          <div class="task-field">
+            <label class="field-label">Active</label>
+            <mat-slide-toggle
+              [(ngModel)]="task.active"
+              [attr.aria-label]="'Activer ou désactiver ' + task.nom"
+            ></mat-slide-toggle>
+          </div>
+          <div class="task-field">
+            <label class="field-label">Dernière Exécution</label>
+            <span>{{ task.dateDernierExecution | date: 'short' }}</span>
+          </div>
+          <div class="task-field">
+            <label class="field-label">Date modification</label>
+            <span>{{ task.dateModification | date: 'short' }}</span>
+          </div>
+          <div class="task-field">
+            <label class="field-label">Login modification</label>
+            <span>{{ task.loginModification }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <mat-paginator
+      [pageSizeOptions]="[10, 25, 50, 100]"
+      [pageSize]="itemsPerPage"
+      [length]="totalTasks"
+      [showFirstLastButtons]="true"
+      (page)="onPageChange($event)"
+      aria-label="Pagination des tâches planifiées">
+    </mat-paginator>
+
+    <div class="action-buttons">
+      <button class="btn btn-reset" (click)="resetChanges()" aria-label="Réinitialiser les modifications">
+        <mat-icon aria-hidden="true">refresh</mat-icon>
+        Réinitialiser
+      </button>
+      <button class="btn btn-save" (click)="saveAll()" aria-label="Enregistrer toutes les modifications">
+        <mat-icon aria-hidden="true">save</mat-icon>
+        Enregistrer
+      </button>
+    </div>
+  </mat-card-content>
+</mat-card>

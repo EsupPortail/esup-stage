@@ -131,7 +131,7 @@ export class AppComponent {
         },
         {
           libelle: 'Tâches planifiées',
-          path: 'param-global/config',
+          path: 'param-global/taches-planifiees',
           icon: "fa-calendar",
         }
       ]
@@ -168,7 +168,6 @@ export class AppComponent {
     private configService: ConfigService,
     private el: ElementRef,
     private technicalService: TechnicalService,
-    public viewContainerRef : ViewContainerRef,
   ) {
     this.configService.getConfigTheme();
     this.configService.themeModified.subscribe((config: any) => {

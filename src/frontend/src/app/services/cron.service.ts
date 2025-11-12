@@ -28,4 +28,8 @@ export class CronService implements PaginatedService {
     return "";
   }
 
+  executeNow(id: number): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/cron/${id}/execute`, {});
+  }
+
 }

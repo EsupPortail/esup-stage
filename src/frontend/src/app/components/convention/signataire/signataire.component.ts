@@ -156,19 +156,11 @@ export class SignataireComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   canCreate(): boolean {
-    let hasRight =  this.modifiable && this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.CREATION]});
-    if (this.authService.isEtudiant() && !this.autorisationModification) {
-      hasRight = false;
-    }
-    return this.modifiable && hasRight;
+    return this.modifiable && this.authService.checkRights({fonction: AppFonction.SERVICE_CONTACT_ACC, droits: [Droit.CREATION]});
   }
 
   canEdit(): boolean {
-    let hasRight = this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.MODIFICATION]});
-    if (this.authService.isEtudiant() && !this.autorisationModification) {
-      hasRight = false;
-    }
-    return this.modifiable && hasRight;
+    return this.modifiable && this.authService.checkRights({fonction: AppFonction.SERVICE_CONTACT_ACC, droits: [Droit.MODIFICATION]});
   }
 
   choose(row: any): void {
