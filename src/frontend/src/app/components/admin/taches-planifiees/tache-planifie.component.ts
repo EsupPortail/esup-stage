@@ -20,6 +20,7 @@ export class TachePlanifieComponent implements OnInit {
   sortOrder: string = 'asc';
   filtersObj: any = {};
   private filterTimeout: any;
+  executingTasks: Set<number> = new Set(); // Pour tracker les tâches en cours d'exécution
 
   constructor(private cronService: CronService, private messageService: MessageService) {}
 
@@ -67,31 +68,51 @@ export class TachePlanifieComponent implements OnInit {
     });
   }
 
+  executeTask(taskId: number, taskName: string) {
+    if (this.executingTasks.has(taskId)) {
+      return;
+    }
+
+    this.executingTasks.add(taskId);
+
+    this.cronService.executeNow(taskId).subscribe({
+      next: () => {
+        this.messageService.setSuccess(`Tâche "${taskName}" exécutée avec succès`);
+        this.executingTasks.delete(taskId);
+        // Rafraîchir pour mettre à jour la dernière date d'exécution
+        this.getPaginated(this.page, this.itemsPerPage, this.sortPredicate, this.sortOrder, this.filters);
+      },
+      error: err => {
+        this.messageService.setError(`Erreur lors de l'exécution de la tâche "${taskName}" : ${err.error?.message || err.message}`);
+        this.executingTasks.delete(taskId);
+      }
+    });
+  }
+
+  isExecuting(taskId: number): boolean {
+    return this.executingTasks.has(taskId);
+  }
+
   onPageChange(event: PageEvent) {
     this.page = event.pageIndex + 1;
     this.itemsPerPage = event.pageSize;
     this.getPaginated(this.page, this.itemsPerPage, this.sortPredicate, this.sortOrder, this.filters);
   }
 
-  // Nouvelle méthode pour générer les filtres au bon format
   get filters(): string {
     const f: any = {};
-    // ID : int
     if (this.filtersObj.id !== '' && this.filtersObj.id !== null && this.filtersObj.id !== undefined) {
       f.id = { type: 'int', value: this.filtersObj.id };
     }
-    // NOM : text
     if (this.filtersObj.nom && this.filtersObj.nom.trim() !== '') {
       f.nom = { type: 'text', value: this.filtersObj.nom };
     }
-    // ACTIVE : boolean (attention à undefined !)
     if (this.filtersObj.active !== '' && this.filtersObj.active !== null && this.filtersObj.active !== undefined) {
       f.active = { type: 'boolean', value: this.filtersObj.active };
     }
     return JSON.stringify(f);
   }
 
-  // Délai de 1.5 sec avant d'envoyer la requête (debounce)
   onFilterChange() {
     if (this.filterTimeout) {
       clearTimeout(this.filterTimeout);

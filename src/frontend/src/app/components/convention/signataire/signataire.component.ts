@@ -157,19 +157,11 @@ export class SignataireComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   canCreate(): boolean {
-    let hasRight =  this.modifiable && this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.CREATION]});
-    if (this.authService.isEtudiant() && !this.autorisationModification) {
-      hasRight = false;
-    }
-    return this.modifiable && hasRight;
+    return this.modifiable && this.authService.checkRights({fonction: AppFonction.SERVICE_CONTACT_ACC, droits: [Droit.CREATION]});
   }
 
   canEdit(): boolean {
-    let hasRight = this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.MODIFICATION]});
-    if (this.authService.isEtudiant() && !this.autorisationModification) {
-      hasRight = false;
-    }
-    return this.modifiable && hasRight;
+    return this.modifiable && this.authService.checkRights({fonction: AppFonction.SERVICE_CONTACT_ACC, droits: [Droit.MODIFICATION]});
   }
 
   choose(row: any): void {
@@ -209,7 +201,7 @@ export class SignataireComponent implements OnInit, OnChanges, OnDestroy {
       const data = {...this.form.value};
 
       if (this.contact.id) {
-          this.contactService.update(this.contact.id, data).subscribe((response: any) => {
+        this.contactService.update(this.contact.id, data).subscribe((response: any) => {
           this.messageService.setSuccess('Contact modifié');
           this.contact = response;
           this.refreshContacts();
@@ -219,8 +211,7 @@ export class SignataireComponent implements OnInit, OnChanges, OnDestroy {
 
         //ajoute idService à l'objet contact
         data.idService = this.service.id;
-        //ajout idCentreGestion à l'objet contact
-        data.idCentreGestion = this.convention.centreGestion.id;
+
         this.contactService.create(data).subscribe((response: any) => {
           this.messageService.setSuccess('Contact créé');
           this.contact = response;

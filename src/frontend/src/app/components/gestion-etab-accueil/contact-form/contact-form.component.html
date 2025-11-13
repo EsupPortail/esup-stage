@@ -59,20 +59,6 @@
             <mat-error><app-form-error [field]="form.get('fax')"></app-form-error></mat-error>
           </mat-form-field>
         </div>
-        <div class="row input-group">
-          <mat-form-field class="col-12" appearance="fill">
-            <mat-label>Centre de gestion</mat-label>
-            <mat-select formControlName="idCentreGestion">
-              <mat-option>
-                <ngx-mat-select-search [formControl]="centreGestionsFilterCtrl" placeholderLabel="Rechercher un centre de gestion" noEntriesFoundLabel="Aucun centre de gestion trouvé"></ngx-mat-select-search>
-              </mat-option>
-              <mat-option *ngFor="let centre of (filteredCentreGestions | async)" [value]="centre.id">
-                {{ centre.nomCentre }}
-              </mat-option>
-            </mat-select>
-            <mat-error><app-form-error [field]="form.get('centreGestion')"></app-form-error></mat-error>
-          </mat-form-field>
-        </div>
       </form>
     </div>
 

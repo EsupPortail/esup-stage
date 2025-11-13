@@ -8,7 +8,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
-import org.esup_portail.esup_stage.dto.CentreGestionSearchDTO;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
@@ -514,12 +513,6 @@ public class CentreGestionController {
                 throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors du redimensionnement de l'image");
             }
         }
-    }
-
-    @GetMapping("/all")
-    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
-    public List<CentreGestionSearchDTO> getAll() {
-        return centreGestionJpaRepository.findAllForSearch();
     }
 
     private String getFilePath(String filename) {

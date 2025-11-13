@@ -5,6 +5,7 @@ import {Observable, firstValueFrom, of, EMPTY} from "rxjs";
 import { catchError } from "rxjs/operators";
 import { TokenService } from "./token.service";
 import { Role } from "../constants/role";
+import { AppFonction } from "../constants/app-fonction";
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +13,7 @@ import { Role } from "../constants/role";
 export class AuthService {
   userConnected: any = undefined;
   appVersion: any = undefined;
+  private refreshPromise?: Promise<void>;
   private redirecting = false;
 
   constructor(private http: HttpClient, private tokenService: TokenService) { }
@@ -51,24 +53,20 @@ export class AuthService {
 
   async secure(right: any): Promise<boolean> {
     try {
+      // Chargement lazy de la version de l'app
       if (this.appVersion === undefined) {
         this.appVersion = await firstValueFrom(this.getAppVersion());
       }
 
-      if (this.userConnected === undefined) {
-        const user = await firstValueFrom(this.getCurrentUser());
-        if (user) {
-          this.createUser(user);
-        } else {
-          return false;
-        }
-      }
+      await this.ensureFreshUser();
 
       return this.checkRights(right);
-    } catch {
+    } catch (error) {
+      console.error('Erreur dans secure :', error);
       return false;
     }
   }
+
 
   createUser(user: any) {
     this.userConnected = user;
@@ -91,6 +89,33 @@ export class AuthService {
       });
     }
     return hasRight;
+  }
+
+  private async ensureFreshUser(): Promise<void> {
+    if (this.userConnected !== undefined) {
+      return;
+    }
+
+    if (this.refreshPromise) {
+      return this.refreshPromise;
+    }
+
+    this.refreshPromise = firstValueFrom(this.getCurrentUser())
+      .then(user => {
+        if (!user) {
+          throw new Error('Utilisateur introuvable');
+        }
+        this.createUser(user);
+      })
+      .catch(error => {
+        console.error('Erreur rafraîchissement user :', error);
+        throw error;
+      })
+      .finally(() => {
+        this.refreshPromise = undefined;
+      });
+
+    return this.refreshPromise;
   }
 
   getUserConnectedLogin(): string {

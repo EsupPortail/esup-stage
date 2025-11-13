@@ -57,6 +57,8 @@ export class EvaluationStageComponent implements OnInit, OnDestroy {
   FicheEtudiantIIQuestions: DbQuestion[] = [];
   FicheEtudiantIIIQuestions: DbQuestion[] = [];
 
+  edit: boolean = false;
+
   FicheEnseignantIQuestions: DbQuestion[] = [];
   FicheEnseignantIIQuestions: DbQuestion[] = [];
 

@@ -83,11 +83,11 @@ import {Droit} from "../../../constants/droit";
 import {ConfigService} from "../../../services/config.service";
 
 @Component({
-    selector: 'app-etab-accueil-form',
-    templateUrl: './etab-accueil-form.component.html',
-    styleUrls: ['./etab-accueil-form.component.scss'],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: 'app-etab-accueil-form',
+  standalone: false,
+  templateUrl: './etab-accueil-form.component.html',
+  styleUrls: ['./etab-accueil-form.component.scss'],
+  encapsulation:ViewEncapsulation.None
 })
 export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
 
@@ -113,6 +113,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   _onDestroy = new Subject<void>();
   autoUpdating = false;
   isSireneActive = false;
+  filterTypeCountries!: 0 | 1 | 2  ;
 
   form: any;
 
@@ -141,15 +142,18 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
     })
     this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({ temEnServPays: { value: 'O', type: 'text' } })).subscribe((response: any) => {
         this.countries = response.data;
+        this.filterTypeCountries = 0;
 
         // Restriction étudiant : enlever la France si nécessaire
         if (this.authService.isEtudiant() && this.creationSeulementHorsFrance) {
           this.countries = this.countries.filter(c => c.libelle !== 'FRANCE');
+          this.filterTypeCountries = 1;
         }
 
         // Restriction étudiant : enlever les autres pays si nécessaire
-        if(this.authService.isEtudiant() && this .creationSeulementFrance){
+        if(this.authService.isEtudiant() && this.creationSeulementFrance){
           this.countries = this.countries.filter(c => c.libelle == 'FRANCE');
+          this.filterTypeCountries = 2;
         }
 
         // Alimente la liste filtrée initiale

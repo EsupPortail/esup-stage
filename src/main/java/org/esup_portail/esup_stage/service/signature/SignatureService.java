@@ -566,11 +566,12 @@ public class SignatureService {
                 convention.setTemConventionSignee(true);
                 conventionJpaRepository.save(convention);
                 log.info("Convention signée complètement. ID = {}", convention.getId());
+                ConfigAlerteMailDto configAlerteMailDto = appConfigService.getConfigAlerteMail();
                 Utilisateur utilisateur = convention.getLoginEnvoiSignature() != null? utilisateurJpaRepository.findByLogin(convention.getLoginEnvoiSignature()): utilisateurJpaRepository.findOneByLogin(convention.getLoginValidation()) ;
                 if(convention.getCentreGestion().isOnlyMailCentreGestion()){
                     //si le paramètre OnlyMailCentreGestion est activé on envoi à l'adresse du centre de gestion
                     mailerService.sendAlerteValidation(convention.getCentreGestion().getMail() , convention, null, utilisateur, "CONVENTION_SIGNEE");
-                }else{
+                }else if(configAlerteMailDto.getAlerteGestionnaire().isConventionSignee()){
                     // sinon on envoi le mail aux gestionnaires
                     List<PersonnelCentreGestion> personnels = convention.getCentreGestion().getPersonnels();
                     assert personnels != null;
@@ -579,6 +580,14 @@ public class SignatureService {
                             mailerService.sendAlerteValidation(personnel.getMail(), convention, null, utilisateur, "CONVENTION_SIGNEE");
                         }
                     }
+                }
+                if(configAlerteMailDto.getAlerteEtudiant().isConventionSignee()){
+                    //envoi d'un mail à l'étudiant pour l'informer que la convention est signée
+                    mailerService.sendAlerteValidation(convention.getEtudiant().getMail(),convention, null, utilisateur, "CONVENTION_SIGNEE");
+                }
+                if (configAlerteMailDto.getAlerteEnseignant().isConventionSignee() && convention.getEnseignant() != null) {
+                    //envoi d'un mail à l'enseignant pour l'informer que la convention est signée
+                    mailerService.sendAlerteValidation(convention.getEnseignant().getMail(),convention, null, utilisateur, "CONVENTION_SIGNEE");
                 }
             }
 

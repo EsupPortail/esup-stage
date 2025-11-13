@@ -271,6 +271,9 @@ databaseChangeLog:
         file: 3.1.4-contenu-signataires.yaml
         relativeToChangelogFile: true
   - include:
+        file: 3.1.6-contenu-hint-pays-etablissement.yaml
+        relativeToChangelogFile: true
+  - include:
       file: 3.2.0-autoriser-chevauchement.yaml
       relativeToChangelogFile: true
   - include:

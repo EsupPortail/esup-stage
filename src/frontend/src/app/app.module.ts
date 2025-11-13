@@ -131,7 +131,7 @@ import { SignatureElectroniqueViewComponent } from './components/convention/sign
 import {ColorPickerModule} from "ngx-color-picker";
 import {ConfirmDeleteDialogComponent} from "./components/gestion-etab-accueil/confirm-delete-dialog/confirm-delete-dialog.component";
 import {ColumnSelectorComponent} from "./components/table/column-selector/column-selector.component";
-import {TachePlanifieComponent} from "./components/admin/config/tache-planifie.component";
+import {TachePlanifieComponent} from "./components/admin/taches-planifiees/tache-planifie.component";
 import {MatSlideToggle} from "@angular/material/slide-toggle";
 import {ConfirmEnvoieMailComponent} from "./components/convention/evaluation-stage/confirm-envoie-mail/confirm-envoie-mail.component";
 import { ImageCropperComponent } from 'ngx-image-cropper';

@@ -280,7 +280,7 @@ export class GestionEtabAccueilComponent implements OnInit {
 
     this.structureService.import(event.target.files[0]).subscribe({
       next: () => {
-        this.messageService.setSuccess("Etablissements d'enseignement importés avec succès");
+        this.messageService.setSuccess("Etablissements d'accueil importés avec succès");
       },
       error: (err) => {
         const report = err?.error;
@@ -294,7 +294,7 @@ export class GestionEtabAccueilComponent implements OnInit {
             `Ligne ${e.line} — ${e.field} : ${e.message}${e.value ? ` (valeur: ${e.value})` : ''}`
           ).join('\n');
 
-          this.messageService.setError(
+          this.messageService.setWarning(
             `Erreurs d'import (${report.errors.length} au total, ` +
             `${report.imported || 0} importées) :\n` +
             preview +
