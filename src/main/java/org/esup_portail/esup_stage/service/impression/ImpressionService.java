@@ -581,7 +581,7 @@ public class ImpressionService {
         // Avenants vides pour la preview
         convention.setAvenants(new ArrayList<>());
 
-        return new ImpressionContext(convention, null, centreEtablissement);
+        return new ImpressionContext(convention, null, centreEtablissement,QSJpaRepository.findByFicheEvaluation(convention.getCentreGestion().getFicheEvaluation().getId()), QEJpaRepository.findAll());
     }
 
     private CentreGestion createFictionalCentreGestion() {
@@ -648,7 +648,7 @@ public class ImpressionService {
             Document document = new Document(pdfDest);
 
             if (imageData != null) {
-                Image img = prepareLogoImage(imageData);
+                Image img = prepareLogoImage(imageData, false);
                 document.add(img);
             }
 

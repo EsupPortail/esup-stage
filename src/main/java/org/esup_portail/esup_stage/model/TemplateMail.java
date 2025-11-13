@@ -2,8 +2,10 @@ package org.esup_portail.esup_stage.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.esup_portail.esup_stage.dto.TemplateMailInterface;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 @Table(name = "TemplateMail")

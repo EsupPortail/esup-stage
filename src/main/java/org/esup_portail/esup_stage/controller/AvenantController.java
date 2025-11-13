@@ -96,8 +96,9 @@ public class AvenantController {
     public List<Avenant> getByConvention(@PathVariable("id") int id) {
         // Pour les étudiants, on vérifie que c'est bien un avenant d'une de ses convention
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
+        assert utilisateur != null;
         if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
-            Convention convention = conventionJpaRepository.getById(id);
+            Convention convention = conventionJpaRepository.findById(id);
             if (!utilisateur.getUid().equals(convention.getEtudiant().getIdentEtudiant())) {
                 throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvée");
             }
