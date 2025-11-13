@@ -274,6 +274,9 @@ databaseChangeLog:
         file: 3.1.6-contenu-hint-pays-etablissement.yaml
         relativeToChangelogFile: true
   - include:
+        file: 3.1.7-contenu-envoi-doc-signe.yaml
+        relativeToChangelogFile: true
+  - include:
       file: 3.2.0-autoriser-chevauchement.yaml
       relativeToChangelogFile: true
   - include:
