@@ -362,7 +362,7 @@ public class ConventionService {
             put(keyTel, convention.getSignataire().getTel());
         }});
         data.put("directeur du département", new HashMap<>() {{
-            put(keyMail, convention.getCentreGestion().getMailViseur());
+            put(keyMail, !Strings.isEmpty(convention.getCentreGestion().getMailDelegataireViseur()) ? convention.getCentreGestion().getMailDelegataireViseur() : convention.getCentreGestion().getMailViseur());
             put(keyTel, convention.getCentreGestion().getTelephone());
         }});
 

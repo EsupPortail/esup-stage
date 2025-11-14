@@ -186,9 +186,12 @@ public class SignatureService {
                     break;
                 case viseur:
                     CentreGestion centreGestion = convention.getCentreGestion();
-                    signataireDto.setName(centreGestion.getNomViseur());
-                    signataireDto.setGivenname(centreGestion.getPrenomViseur());
-                    signataireDto.setMail(impressionService.getOtpDataEmail(centreGestion.getMailViseur()));
+                    String mailViseur = centreGestion.getMailDelegataireViseur() != null && !centreGestion.getMailDelegataireViseur().isEmpty() ? centreGestion.getMailDelegataireViseur() : centreGestion.getMailViseur();
+                    String nomViseur = centreGestion.getMailDelegataireViseur() != null && !centreGestion.getMailDelegataireViseur().isEmpty() ? centreGestion.getNomDelegataireViseur() : centreGestion.getNomViseur();
+                    String prenomViseur = centreGestion.getMailDelegataireViseur() != null && !centreGestion.getMailDelegataireViseur().isEmpty() ? centreGestion.getPrenomDelegataireViseur() : centreGestion.getPrenomViseur();
+                    signataireDto.setName(nomViseur);
+                    signataireDto.setGivenname(prenomViseur);
+                    signataireDto.setMail(impressionService.getOtpDataEmail(mailViseur));
                     phone = impressionService.getOtpDataPhoneNumber(centreGestion.getTelephone());
                     signataireDto.setOrder(s.getOrdre());
                     break;

@@ -229,6 +229,8 @@ public class ImpressionService {
                     break;
                 case viseur:
                     // Ajout du directeur du département
+                    // TODO: modfier pour prendre en compte le delegataire du viseur si défini dans le centre de gestion
+
                     otp.add(new HashMap<>() {{
                         put("firstname", convention.getCentreGestion().getPrenomViseur());
                         put("lastname", convention.getCentreGestion().getNomViseur());
