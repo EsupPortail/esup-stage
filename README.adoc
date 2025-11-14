@@ -176,9 +176,12 @@ L'application *se charge de créer les répertoires* suivants : si `appli.data_d
 
 == Génération de l'application (.war)
 
+WARNING: Si vous aviez déjà une version antérieure d'ESUP STAGE et que vous en installer une nouvelle, il est fortement recommandé de supprimer de supprimer le package-lock.json et les node_modules dans le dossier frontend avant de lancer la compilation.
+
 * Build du war de l'application : esup-stage-3.x.x.war
 
 [,console]
+
 ----
 mvn clean package
 ----
