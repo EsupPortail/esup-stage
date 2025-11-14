@@ -186,6 +186,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   public isLayoutReady = false;
   public Editor = ClassicEditor;
   public config: EditorConfig = {};
+
   public ngAfterViewInit() : void {
     this.config = {
       licenseKey: 'GPL',
@@ -298,13 +299,6 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
         Underline,
         Undo
       ],
-      fontFamily: {
-        supportAllValues: true
-      },
-      fontSize: {
-        options: [10, 12, 14, 'default', 18, 20, 22],
-        supportAllValues: true
-      },
       heading: {
         options: [
           {
@@ -350,16 +344,6 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
           }
         ]
       },
-      htmlSupport: {
-        allow: [
-          {
-            name: /^.*$/,
-            styles: true,
-            attributes: true,
-            classes: true
-          }
-        ]
-      },
       image: {
         toolbar: [
           'toggleImageCaption',
@@ -395,55 +379,6 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
         }
       },
       placeholder: 'Type or paste your content here!',
-      style: {
-        definitions: [
-          {
-            name: 'Article category',
-            element: 'h3',
-            classes: ['category']
-          },
-          {
-            name: 'Title',
-            element: 'h2',
-            classes: ['document-title']
-          },
-          {
-            name: 'Subtitle',
-            element: 'h3',
-            classes: ['document-subtitle']
-          },
-          {
-            name: 'Info box',
-            element: 'p',
-            classes: ['info-box']
-          },
-          {
-            name: 'Side quote',
-            element: 'blockquote',
-            classes: ['side-quote']
-          },
-          {
-            name: 'Marker',
-            element: 'span',
-            classes: ['marker']
-          },
-          {
-            name: 'Spoiler',
-            element: 'span',
-            classes: ['spoiler']
-          },
-          {
-            name: 'Code (dark)',
-            element: 'pre',
-            classes: ['fancy-code', 'fancy-code-dark']
-          },
-          {
-            name: 'Code (bright)',
-            element: 'pre',
-            classes: ['fancy-code', 'fancy-code-bright']
-          }
-        ]
-      },
       table: {
         contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells', 'tableProperties', 'tableCellProperties']
       },

@@ -41,6 +41,7 @@
     "parchment": "^3.0.0",
     "rxjs": "^7.5.5",
     "tslib": "^2.4.0",
+    "typescript": "^5.8.3",
     "zone.js": "~0.15.1"
   },
   "devDependencies": {
@@ -60,7 +61,7 @@
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "~1.7.0",
     "style-loader": "^4.0.0",
-    "typescript": "5.8.3"
+    "typescript": "^5.8.3"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "^4.40.1"
