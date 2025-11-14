@@ -70,7 +70,8 @@
                   <mat-error><app-form-error [field]="form.get('delaiAlerteConvention')"></app-form-error></mat-error>
                 </mat-form-field>
               </div>
-              <div *ngIf="form.get('nomViseur')?.value">
+              <h4 class="h5">Viseur</h4>
+              <div *ngIf="form.get('nomViseur')?.value; else noViseur">
                 <div class="row">
                   <div class="col"><b>Nom du viseur</b> &nbsp; {{form.get('nomViseur')?.value}}</div>
                 </div>
@@ -89,6 +90,56 @@
                 <mat-dialog-actions>
                   <button mat-flat-button color="warn" (click)="resetViseur()">Retirer ce viseur</button>
                 </mat-dialog-actions>
+              </div>
+              <ng-template #noViseur>
+                <p>Aucun viseur n'est renseigné pour ce centre de gestion.</p>
+              </ng-template>
+              <div class="mt-4">
+                <h4 class="h5">Délégation du viseur</h4>
+
+                <div *ngIf="form.get('nomViseur')?.value; else noViseurForDelegation">
+                  <p>
+                    <i>Le délégataire se substitue au viseur pour la signature électronique des conventions et avenants.</i>
+                  </p>
+
+                  <div *ngIf="form.get('nomDelegataireViseur')?.value; else noDelegataire">
+                    <div class="row">
+                      <div class="col">
+                        <b>Nom du délégataire</b> &nbsp; {{form.get('nomDelegataireViseur')?.value}}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col">
+                        <b>Prénom du délégataire</b> &nbsp; {{form.get('prenomDelegataireViseur')?.value}}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col">
+                        <b>Adresse mail du délégataire</b> &nbsp; {{form.get('mailDelegataireViseur')?.value}}
+                      </div>
+                    </div>
+                    <div>
+                      <mat-form-field class="col-sm-12 col-md-12" appearance="fill" style="margin-left: -15px">
+                        <mat-label>Qualité du délégataire</mat-label>
+                        <input matInput formControlName="qualiteDelegataireViseur">
+                      </mat-form-field>
+                    </div>
+                    <mat-dialog-actions>
+                      <button mat-flat-button color="warn" (click)="resetDelegataire()">
+                        Retirer ce délégataire
+                      </button>
+                    </mat-dialog-actions>
+                  </div>
+
+                  <ng-template #noDelegataire>
+                    <p>Aucun délégataire n'est renseigné pour ce viseur.</p>
+                  </ng-template>
+                </div>
+                <ng-template #noViseurForDelegation>
+                  <p class="text-muted">
+                    Aucun viseur n'est renseigné. Veuillez d'abord sélectionner un viseur avant de définir un délégataire.
+                  </p>
+                </ng-template>
               </div>
             </div>
             <div class="col-sm-12 col-md-4">
@@ -158,13 +209,63 @@
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let row">
           <button mat-button mat-stroked-button (click)="choose(row)" color="primary">
-            <span *ngIf="true"><i class="fa fa-check"></i> Sélectionner</span>
-            <ng-template #notSelected>
-              <i class="fa fa-check-circle"></i> Sélectionner
-            </ng-template>
+            <span><i class="fa fa-check"></i> Sélectionner</span>
           </button>
         </td>
       </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columns"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+    </table>
+  </mat-expansion-panel>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>Choix du délégataire du viseur</mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <form [formGroup]="delegataireForm" novalidate class="mt-2 mb-3">
+      <div class="row">
+        <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+          <mat-label>Nom</mat-label>
+          <input matInput formControlName="nom" />
+        </mat-form-field>
+        <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+          <mat-label>Prénom</mat-label>
+          <input matInput formControlName="prenom" />
+        </mat-form-field>
+      </div>
+    </form>
+
+    <div class="alert alert-info" *ngIf="delegataires.length > 10">
+      La recherche est limitée à 10 enseignants. Veuillez affiner la recherche si le délégataire n'apparaît pas.
+    </div>
+    <table mat-table [dataSource]="delegataires | slice:0:10">
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="9999">Aucun enseignant trouvé</td>
+      </tr>
+      <ng-container matColumnDef="nomprenom">
+        <th mat-header-cell *matHeaderCellDef>Nom / Prénom</th>
+        <td mat-cell *matCellDef="let row">{{row.sn.join(' ')}} {{row.givenName.join(' ')}}</td>
+      </ng-container>
+      <ng-container matColumnDef="mail">
+        <th mat-header-cell *matHeaderCellDef>Mail</th>
+        <td mat-cell *matCellDef="let row">{{row.mail}}</td>
+      </ng-container>
+      <ng-container matColumnDef="departement">
+        <th mat-header-cell *matHeaderCellDef>Département</th>
+        <td mat-cell *matCellDef="let row">-</td>
+      </ng-container>
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row">
+          <span matTooltip="Vous devez d'abord sélectionner un viseur pour pouvoir choisir un délégataire" [matTooltipDisabled]="!isDisabledChoose()">
+            <button mat-button mat-stroked-button (click)="chooseDelegataire(row)" [disabled]="isDisabledChoose()" color="primary">
+              <span><i class="fa fa-check"></i> Sélectionner</span>
+            </button>
+          </span>
+        </td>
+      </ng-container>
+
 
       <tr mat-header-row *matHeaderRowDef="columns"></tr>
       <tr mat-row *matRowDef="let row; columns: columns;"></tr>

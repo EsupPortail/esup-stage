@@ -186,6 +186,18 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     @Column()
     private boolean autoriserImpressionConventionApresCreationAvenant = false;
 
+    @Column
+    private String nomDelegataireViseur;
+
+    @Column
+    private String prenomDelegataireViseur;
+
+    @Column
+    private String qualiteDelegataireViseur;
+
+    @Column
+    private String mailDelegataireViseur;
+
     @Transient
     public String getAdresseComplete() {
         return getVoie() + " " + getCodePostal() + " " + getCommune();

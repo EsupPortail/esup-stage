@@ -306,6 +306,10 @@ export class CentreGestionComponent implements OnInit,OnDestroy {
       onlyMailCentreGestion: [null],
       autoriserChevauchement: [null],
       autoriserImpressionConventionApresCreationAvenant: [null],
+      nomDelegataireViseur: [null],
+      prenomDelegataireViseur: [null],
+      mailDelegataireViseur: [null],
+      qualiteDelegataireViseur: [null],
     });
   }
 
@@ -332,6 +336,10 @@ export class CentreGestionComponent implements OnInit,OnDestroy {
     this.centreGestion.onlyMailCentreGestion = this.paramCentreForm.get('onlyMailCentreGestion')?.value;
     this.centreGestion.autoriserChevauchement = this.paramCentreForm.get('autoriserChevauchement')?.value;
     this.centreGestion.autoriserImpressionConventionApresCreationAvenant = this.paramCentreForm.get('autoriserImpressionConventionApresCreationAvenant')?.value;
+    this.centreGestion.nomDelegataireViseur = this.paramCentreForm.get('nomDelegataireViseur')?.value;
+    this.centreGestion.prenomDelegataireViseur = this.paramCentreForm.get('prenomDelegataireViseur')?.value;
+    this.centreGestion.mailDelegataireViseur = this.paramCentreForm.get('mailDelegataireViseur')?.value;
+    this.centreGestion.qualiteDelegataireViseur = this.paramCentreForm.get('qualiteDelegataireViseur')?.value;
   }
 
   setSignatureElectroniqueForm() {

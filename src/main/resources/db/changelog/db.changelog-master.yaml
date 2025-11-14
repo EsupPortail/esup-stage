@@ -303,3 +303,6 @@ databaseChangeLog:
   - include:
         file: 3.2.0-alertes-mail-eval.yaml
         relativeToChangelogFile: true
+  - include:
+        file: 3.2.0-delegataire-viseur.yaml
+        relativeToChangelogFile: true
