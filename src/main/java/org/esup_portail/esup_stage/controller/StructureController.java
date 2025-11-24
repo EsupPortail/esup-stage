@@ -305,7 +305,7 @@ public class StructureController {
         if(structureBody.getId() != null) {
             structure = structureJpaRepository.findById(structureBody.getId()).orElse(null);
             if (structure != null && structure.getTemEnServStructure()) {
-                if(structure.getNumeroSiret() != null && !structure.getNumeroSiret().isEmpty()) {
+                if(structure.getNumeroSiret() != null && !structure.getNumeroSiret().isEmpty() && !structure.isVerrouillageSynchroStructureSirene()) {
                     String jsonStructure;
                     try{
                         jsonStructure = objectMapper.writeValueAsString(structure);

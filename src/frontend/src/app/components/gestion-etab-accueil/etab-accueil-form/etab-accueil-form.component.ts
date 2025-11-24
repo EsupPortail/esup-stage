@@ -716,7 +716,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   }
 
   canUpdateFromApi(): boolean {
-    return this.isSireneActive && this.etab?.id && this.canEdit()
+    return !(this.authService.isEtudiant() || this.authService.isEnseignant()) && this.isSireneActive && this.etab?.id && this.canEdit()
   }
 
   // Méthode pour basculer l'état du verrouillage
@@ -726,6 +726,6 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
 
   // Vérifie si le bouton de verrouillage doit être affiché
   canToggleVerrouillage(): boolean {
-    return this.isSireneActive && !!this.etab?.id && this.canEdit();
+    return !(this.authService.isEtudiant() || this.authService.isEnseignant()) && this.isSireneActive && !!this.etab?.id && this.canEdit();
   }
 }
