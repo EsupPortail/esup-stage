@@ -226,6 +226,10 @@ public class ImpressionContext {
         private String prenomPresidentEtab;
         private String nomPresidentEtab;
         private String qualitePresidentEtab;
+        private String mailDelegataire;
+        private String nomDelegataire;
+        private String prenomDelegataire;
+        private String qualiteDelegataire;
 
         public CentreGestionContext(CentreGestion centreGestion, CentreGestion centreEtablissement) {
             this.adresse = centreGestion.getAdresse();
@@ -244,6 +248,10 @@ public class ImpressionContext {
                 this.nomPresidentEtab = centreEtablissement.getNomViseur();
                 this.qualitePresidentEtab = centreEtablissement.getQualiteViseur();
             }
+            this.mailDelegataire = centreGestion.getMailDelegataireViseur();
+            this.nomDelegataire = centreGestion.getNomDelegataireViseur();
+            this.prenomDelegataire = centreGestion.getPrenomDelegataireViseur();
+            this.qualiteDelegataire = centreGestion.getQualiteDelegataireViseur();
         }
     }
 

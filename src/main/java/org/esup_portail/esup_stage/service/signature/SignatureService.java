@@ -309,6 +309,7 @@ public class SignatureService {
                 count++;
             }catch(Exception e){
                 logger.error("Une erreur est survenue lors du traitement de la convention {} : {}",id,e);
+                throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de l'envoi en signature de la convention " + id);
             }
 
         }

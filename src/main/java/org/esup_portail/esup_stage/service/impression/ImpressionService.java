@@ -229,14 +229,21 @@ public class ImpressionService {
                     break;
                 case viseur:
                     // Ajout du directeur du département
-                    // TODO: modfier pour prendre en compte le delegataire du viseur si défini dans le centre de gestion
-
-                    otp.add(new HashMap<>() {{
-                        put("firstname", convention.getCentreGestion().getPrenomViseur());
-                        put("lastname", convention.getCentreGestion().getNomViseur());
-                        put("phoneNumber", getOtpDataPhoneNumber(convention.getCentreGestion().getTelephone()));
-                        put("email", getOtpDataEmail(convention.getCentreGestion().getMail()));
-                    }});
+                    if(convention.getCentreGestion().getPrenomDelegataireViseur() != null && !convention.getCentreGestion().getPrenomDelegataireViseur().isEmpty()) {
+                        otp.add(new HashMap<>() {{
+                            put("firstname", convention.getCentreGestion().getPrenomDelegataireViseur());
+                            put("lastname", convention.getCentreGestion().getNomDelegataireViseur());
+                            put("phoneNumber", getOtpDataPhoneNumber(convention.getCentreGestion().getTelephone()));
+                            put("email", getOtpDataEmail(convention.getCentreGestion().getMail()));
+                        }});
+                    }else{
+                        otp.add(new HashMap<>() {{
+                            put("firstname", convention.getCentreGestion().getPrenomViseur());
+                            put("lastname", convention.getCentreGestion().getNomViseur());
+                            put("phoneNumber", getOtpDataPhoneNumber(convention.getCentreGestion().getTelephone()));
+                            put("email", getOtpDataEmail(convention.getCentreGestion().getMail()));
+                        }});
+                    }
                     break;
                 default:
                     break;

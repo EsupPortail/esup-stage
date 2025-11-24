@@ -306,3 +306,6 @@ databaseChangeLog:
   - include:
         file: 3.2.0-delegataire-viseur.yaml
         relativeToChangelogFile: true
+  - include:
+        file: 3.2.0-ajout-var-template-delegataire.yaml
+        relativeToChangelogFile: true
