@@ -279,3 +279,6 @@ databaseChangeLog:
   - include:
         file: 3.1.11-naf2025.yaml
         relativeToChangelogFile: true
+  - include:
+        file: 3.2.0-ajout-bool-verrouillage-synchro-etab.yaml
+        relativeToChangelogFile: true

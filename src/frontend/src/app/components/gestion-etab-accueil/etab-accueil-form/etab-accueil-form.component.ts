@@ -156,10 +156,8 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
           this.filterTypeContries = 2;
         }
 
-        // Alimente la liste filtrée initiale
         this.filteredCountries.next(this.countries.slice());
 
-        // Met en place le filtrage par saisie
         this.paysFilterCtrl.valueChanges.pipe(takeUntil(this._onDestroy)).subscribe(() => this.filterCountries());
     });
     this.communeService.getPaginated(1, 0, 'lib', 'asc', "").subscribe((response: any) => {
@@ -473,6 +471,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
       siteWeb: [this.etab.siteWeb, [Validators.maxLength(200), Validators.pattern('^https?://(\\w([\\w\\-]{0,61}\\w)?\\.)+[a-zA-Z]{2,6}([/]{1}.*)?$')]],
       fax: [this.etab.fax, [Validators.maxLength(20)]],
       numeroRNE: [this.etab.numeroRNE, [Validators.maxLength(8), Validators.pattern('[0-9]{7}[a-zA-Z]')]],
+      verrouillageSynchroStructureSirene: [this.etab.verrouillageSynchroStructureSirene || false]
     });
     this.toggleCommune();
     this.form.get('idPays')?.valueChanges
@@ -524,13 +523,11 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
 
   save(): void {
     if (this.form.valid) {
-      // Contrôle code APE ou activité principale renseignée
       if (!this.form.get('codeNafN5')?.value && !this.form.get('activitePrincipale')?.value) {
         this.messageService.setError('Une de ces deux informations doivent être renseignée : Code APE, Activité principale');
         return;
       }
 
-      // Contrôle code postal commune
       if (this.isFr() && !this.isCodePostalValid()) {
         this.messageService.setError('Code postal inconnu');
         return;
@@ -540,6 +537,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
         this.form.get('numeroSiret')?.setValue(null);
       }
       const data = {...this.form.getRawValue()};
+      data.verrouillageSynchroStructureSirene = this.etab.verrouillageSynchroStructureSirene;
       data.nafN5 = this.selectedNafN5;
       if (this.etab.id) {
         this.structureService.update(this.etab.id, data).subscribe((response: any) => {
@@ -691,19 +689,16 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
 
     this.selectedNafN5 = updated?.nafN5 ?? null;
 
-    // Recalcule logic FR / communes selon le pays
     this.toggleCommune();
     this.changeDetector.detectChanges();
   }
 
-  // === AJOUT ===
   autoUpdateFromApi(): void {
     if (!this.etab?.id || !this.canEdit()) {
       return;
     }
     this.autoUpdating = true;
 
-    // ↳ Appelez ici votre endpoint côté back qui va récupérer les infos (ex: INSEE/Sirene) et mettre à jour
     this.structureService.updateFromSirene(this.etab.id).subscribe({
       next: (updated: any) => {
         this.messageService.setSuccess('Mise à jour automatique effectuée.');
@@ -718,5 +713,19 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
         this.autoUpdating = false;
       }
     });
+  }
+
+  canUpdateFromApi(): boolean {
+    return this.isSireneActive && this.etab?.id && this.canEdit()
+  }
+
+  // Méthode pour basculer l'état du verrouillage
+  toggleVerrouillage(): void {
+    this.etab.verrouillageSynchroStructureSirene = !this.etab.verrouillageSynchroStructureSirene;
+  }
+
+  // Vérifie si le bouton de verrouillage doit être affiché
+  canToggleVerrouillage(): boolean {
+    return this.isSireneActive && !!this.etab?.id && this.canEdit();
   }
 }
