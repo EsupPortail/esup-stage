@@ -123,6 +123,9 @@ public class ConventionService {
                 tuteurPro.setLoginInfosAJour(utilisateur.getLogin());
                 contactJpaRepository.save(tuteurPro);
             }
+            if (updateNomSignataireComposante(convention)) {
+                conventionJpaRepository.save(convention);
+            }
         }
     }
 
@@ -382,6 +385,44 @@ public class ConventionService {
             }
         }
         return response;
+    }
+
+    private boolean updateNomSignataireComposante(Convention convention) {
+        CentreGestion centreGestion = convention.getCentreGestion();
+        if (centreGestion == null) {
+            return false;
+        }
+
+        boolean hasDelegataire = !Strings.isEmpty(centreGestion.getNomDelegataireViseur()) || !Strings.isEmpty(centreGestion.getPrenomDelegataireViseur());
+        String prenom = hasDelegataire ? centreGestion.getPrenomDelegataireViseur() : centreGestion.getPrenomViseur();
+        String nom = hasDelegataire ? centreGestion.getNomDelegataireViseur() : centreGestion.getNomViseur();
+        String qualite = hasDelegataire ? centreGestion.getQualiteDelegataireViseur() : centreGestion.getQualiteViseur();
+        String fullName = buildFullName(prenom, nom);
+
+        boolean updated = false;
+        if (!Strings.isEmpty(fullName) && !fullName.equals(convention.getNomSignataireComposante())) {
+            convention.setNomSignataireComposante(fullName);
+            updated = true;
+        }
+        if (!Strings.isEmpty(qualite) && !qualite.equals(convention.getQualiteSignataire())) {
+            convention.setQualiteSignataire(qualite);
+            updated = true;
+        }
+        return updated;
+    }
+
+    private String buildFullName(String prenom, String nom) {
+        StringBuilder sb = new StringBuilder();
+        if (!Strings.isEmpty(prenom)) {
+            sb.append(prenom.trim());
+        }
+        if (!Strings.isEmpty(prenom) && !Strings.isEmpty(nom)) {
+            sb.append(" ");
+        }
+        if (!Strings.isEmpty(nom)) {
+            sb.append(nom.trim());
+        }
+        return sb.toString().trim();
     }
 
     public void updateSignatureElectroniqueHistorique() {
