@@ -24,6 +24,7 @@ import org.esup_portail.esup_stage.repository.QuestionEvaluationJpaRepository;
 import org.esup_portail.esup_stage.repository.QuestionSupplementaireJpaRepository;
 import org.esup_portail.esup_stage.repository.PaysJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateConventionJpaRepository;
+import org.esup_portail.esup_stage.service.ConventionService;
 import org.esup_portail.esup_stage.service.impression.context.ImpressionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -60,6 +61,9 @@ public class ImpressionService {
 
     @Autowired
     QuestionEvaluationJpaRepository QEJpaRepository;
+
+    @Autowired
+    ConventionService conventionService;
 
     public void generateConventionAvenantPDF(Convention convention, Avenant avenant, ByteArrayOutputStream ou, boolean isRecap) {
         if (convention.getNomenclature() == null) {
@@ -326,7 +330,7 @@ public class ImpressionService {
         if (deliveryAddress != null && !deliveryAddress.isEmpty()  && !deliveryAddress.equals("null")) {
             return "";
         }
-        return phoneNumber;
+        return conventionService.parseNumTel(phoneNumber);
     }
 
     public String getOtpDataEmail(String email) {
