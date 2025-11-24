@@ -178,12 +178,8 @@ body, html {
 }
 
 .actions-row .slot {
-  flex: 1 1 0; /* 3 colonnes égales */
+  flex: 1 1 0; /* colonnes égales */
 }
-
-.actions-row .slot.left   { text-align: left; }
-.actions-row .slot.center { text-align: center; }
-.actions-row .slot.right  { text-align: right; }
 
 /* Empilement sur petits écrans */
 @media (max-width: 768px) {
@@ -227,4 +223,99 @@ body, html {
   white-space: normal;
   overflow: visible;
   z-index: 1000;
+}
+
+// Style pour le bouton verrouillé (optionnel - renforcement visuel)
+button[color="warn"] {
+  mat-icon {
+    color: #f44336;
+  }
+}
+
+button[color="accent"] {
+  mat-icon {
+    color: #4caf50;
+  }
+}
+
+/* Conteneur global de la rangée de boutons */
+.button-row {
+  width: 100%;
+}
+
+/* Rangée des actions */
+.button-row .actions-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
+/* Chaque "slot" et le bouton de verrouillage prennent une part égale */
+.button-row .actions-row > .slot,
+.button-row .actions-row > button {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Responsive : en mobile, on empile tout en full-width */
+@media (max-width: 768px) {
+  .button-row .actions-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .button-row .actions-row > .slot,
+  .button-row .actions-row > button {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .button-row .actions-row > .slot button,
+  .button-row .actions-row > button {
+    width: 100%;
+  }
+}
+
+/* Animation de rotation pour l'icône de mise à jour */
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Petites utilitaires de marge */
+.ml-1 {
+  margin-left: 4px;
+}
+
+.mr-1 {
+  margin-right: 4px;
+}
+
+.mr-2 {
+  margin-right: 8px;
+}
+
+.actions-row .slot.left-slot {
+  justify-content: flex-start !important;
+}
+
+.actions-row .slot.right-slot {
+  justify-content: flex-end !important;
+}
+
+@media (max-width: 768px) {
+  .actions-row .slot.left-slot,
+  .actions-row .slot.right-slot {
+    justify-content: stretch !important;
+  }
 }

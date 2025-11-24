@@ -309,3 +309,6 @@ databaseChangeLog:
   - include:
         file: 3.2.0-ajout-var-template-delegataire.yaml
         relativeToChangelogFile: true
+  - include:
+        file: 3.2.0-ajout-bool-verrouillage-synchro-etab.yaml
+        relativeToChangelogFile: true
