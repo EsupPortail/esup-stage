@@ -1,0 +1,46 @@
+databaseChangeLog:
+  - changeSet:
+      id : 3.2.0-ajout-param-convention-prenomEtatCivil
+      author: thouveno9
+      changes:
+        - insert:
+            tableName: ParamConvention
+            columns:
+              - column:
+                  name : code
+                  value : etudiant.prenomEtatCivil
+              - column:
+                  name : libelle
+                  value : Prénom état civil
+              - column:
+                  name : exemple
+                  value : Christophe
+  - changeSet:
+      id: 3.2.0-ajout-param-convention-sexEtatCivil
+      author: thouveno9
+      changes:
+        - insert:
+            tableName: ParamConvention
+            columns:
+              - column:
+                  name: code
+                  value: etudiant.sexEtatCivil
+              - column:
+                  name: libelle
+                  value: Sex état civil
+  - changeSet:
+      id: 3.2.0-ajout-param-convention-prenom2
+      author: thouveno9
+      changes:
+        - insert:
+            tableName: ParamConvention
+            columns:
+              - column:
+                  name: code
+                  value: etudiant.prenom2
+              - column:
+                  name: libelle
+                  value: Deuxième prénom
+              - column:
+                  name: exemple
+                  value: Michel

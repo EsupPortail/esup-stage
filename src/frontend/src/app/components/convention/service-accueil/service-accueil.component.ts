@@ -13,9 +13,10 @@ import { TableComponent } from '../../table/table.component';
 import {SortDirection} from "@angular/material/sort";
 
 @Component({
-  selector: 'app-service-accueil',
-  templateUrl: './service-accueil.component.html',
-  styleUrls: ['./service-accueil.component.scss']
+    selector: 'app-service-accueil',
+    templateUrl: './service-accueil.component.html',
+    styleUrls: ['./service-accueil.component.scss'],
+    standalone: false
 })
 export class ServiceAccueilComponent implements OnInit,OnChanges {
 

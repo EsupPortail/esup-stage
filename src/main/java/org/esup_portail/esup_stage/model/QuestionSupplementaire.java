@@ -2,9 +2,11 @@ package org.esup_portail.esup_stage.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
 @Table(name = "QuestionSupplementaire")
+@Data
 public class QuestionSupplementaire {
 
     @Id
@@ -26,43 +28,4 @@ public class QuestionSupplementaire {
     @Column(nullable = false)
     private String typeQuestion;
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public FicheEvaluation getFicheEvaluation() {
-        return ficheEvaluation;
-    }
-
-    public void setFicheEvaluation(FicheEvaluation ficheEvaluation) {
-        this.ficheEvaluation = ficheEvaluation;
-    }
-
-    public int getIdPlacement() {
-        return idPlacement;
-    }
-
-    public void setIdPlacement(int idPlacement) {
-        this.idPlacement = idPlacement;
-    }
-
-    public String getQuestion() {
-        return question;
-    }
-
-    public void setQuestion(String question) {
-        this.question = question;
-    }
-
-    public String getTypeQuestion() {
-        return typeQuestion;
-    }
-
-    public void setTypeQuestion(String typeQuestion) {
-        this.typeQuestion = typeQuestion;
-    }
 }

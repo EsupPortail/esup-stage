@@ -13,12 +13,12 @@ Node "Esup - Stage" {
     
     
     Node "Frontend" as frontend {
-        [Angular 18] as angular
+        [Angular 19] as angular
         [Node 20] as Node
     }
     
     Node "Backend" as backend {
-        [Spring boot 3.3.8] as spring
+        [Spring boot 3.5.7] as spring
         [Java 21] as java
     }
     

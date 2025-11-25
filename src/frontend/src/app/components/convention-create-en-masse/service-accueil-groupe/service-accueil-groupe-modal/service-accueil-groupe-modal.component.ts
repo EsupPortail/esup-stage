@@ -2,9 +2,10 @@ import { Component, Inject, OnInit} from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
-  selector: 'app-service-accueil-groupe-modal',
-  templateUrl: './service-accueil-groupe-modal.component.html',
-  styleUrls: ['./service-accueil-groupe-modal.component.scss']
+    selector: 'app-service-accueil-groupe-modal',
+    templateUrl: './service-accueil-groupe-modal.component.html',
+    styleUrls: ['./service-accueil-groupe-modal.component.scss'],
+    standalone: false
 })
 export class ServiceAccueilGroupeModalComponent implements OnInit {
 

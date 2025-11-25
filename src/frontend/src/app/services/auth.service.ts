@@ -1,27 +1,47 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { environment } from "../../environments/environment";
-import { Observable } from "rxjs";
+import {Observable, firstValueFrom, of, EMPTY} from "rxjs";
+import { catchError } from "rxjs/operators";
 import { TokenService } from "./token.service";
 import { Role } from "../constants/role";
+import { AppFonction } from "../constants/app-fonction";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-
   userConnected: any = undefined;
   appVersion: any = undefined;
   private refreshPromise?: Promise<void>;
+  private redirecting = false;
 
   constructor(private http: HttpClient, private tokenService: TokenService) { }
 
   getCurrentUser(): Observable<any> {
-    return this.http.get(environment.apiUrl + "/users/connected");
+    return this.http.get(environment.apiUrl + "/users/connected").pipe(
+      catchError(() => {
+        this.handleUnauthorized();
+        return EMPTY;
+      })
+    );
   }
 
   getAppVersion(): Observable<any> {
-    return this.http.get(environment.apiUrl + "/version", { responseType: 'text' });
+    return this.http.get(environment.apiUrl + "/version", { responseType: 'text' }).pipe(
+      catchError(() => EMPTY)
+    );
+  }
+
+  private handleUnauthorized() {
+    if (!this.redirecting) {
+      this.redirecting = true;
+      const currentPath = window.location.pathname;
+      if (currentPath !== '/login/cas') {
+        sessionStorage.setItem('redirectUrl', currentPath);
+        window.location.href = '/login/cas';
+      }
+    }
   }
 
   logout() {
@@ -32,14 +52,21 @@ export class AuthService {
   }
 
   async secure(right: any): Promise<boolean> {
-    if (this.appVersion === undefined) {
-      this.appVersion = await this.getAppVersion().toPromise();
+    try {
+      // Chargement lazy de la version de l'app
+      if (this.appVersion === undefined) {
+        this.appVersion = await firstValueFrom(this.getAppVersion());
+      }
+
+      await this.ensureFreshUser();
+
+      return this.checkRights(right);
+    } catch (error) {
+      console.error('Erreur dans secure :', error);
+      return false;
     }
-
-    await this.ensureFreshUser();
-
-    return this.checkRights(right);
   }
+
 
   createUser(user: any) {
     this.userConnected = user;
@@ -64,20 +91,28 @@ export class AuthService {
     return hasRight;
   }
 
-  async ensureFreshUser(): Promise<void> {
+  private async ensureFreshUser(): Promise<void> {
+    if (this.userConnected !== undefined) {
+      return;
+    }
+
     if (this.refreshPromise) {
       return this.refreshPromise;
     }
 
-    this.refreshPromise = this.getCurrentUser().toPromise()
+    this.refreshPromise = firstValueFrom(this.getCurrentUser())
       .then(user => {
+        if (!user) {
+          throw new Error('Utilisateur introuvable');
+        }
         this.createUser(user);
-        this.refreshPromise = undefined;
       })
       .catch(error => {
-        console.error('Erreur rafraîchissement user:', error);
-        this.refreshPromise = undefined;
+        console.error('Erreur rafraîchissement user :', error);
         throw error;
+      })
+      .finally(() => {
+        this.refreshPromise = undefined;
       });
 
     return this.refreshPromise;

@@ -6,18 +6,17 @@ import { MenuService } from "../../services/menu.service";
 import { ConventionService } from "../../services/convention.service";
 
 @Component({
-  selector: 'app-menu',
-  templateUrl: './menu.component.html',
-  styleUrls: ['./menu.component.scss'],
-  animations: [
-    trigger('indicatorRotate', [
-      state('collapsed', style({transform: 'rotate(90deg)'})),
-      state('expanded', style({transform: 'rotate(180deg)'})),
-      transition('expanded <=> collapsed',
-        animate('225ms cubic-bezier(0.4,0.0,0.2,1)')
-      ),
-    ])
-  ]
+    selector: 'app-menu',
+    templateUrl: './menu.component.html',
+    styleUrls: ['./menu.component.scss'],
+    animations: [
+        trigger('indicatorRotate', [
+            state('collapsed', style({ transform: 'rotate(90deg)' })),
+            state('expanded', style({ transform: 'rotate(180deg)' })),
+            transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4,0.0,0.2,1)')),
+        ])
+    ],
+    standalone: false
 })
 export class MenuComponent implements OnInit {
 

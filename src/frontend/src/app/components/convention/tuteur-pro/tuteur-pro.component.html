@@ -1,29 +1,4 @@
 <mat-accordion>
-  <mat-expansion-panel [expanded]="!contact" *ngIf="modifiable">
-    <mat-expansion-panel-header>
-      Sélection du tuteur professionnel - Établissement d'accueil : {{etab.raisonSociale}}
-    </mat-expansion-panel-header>
-
-    <div class="row mt-3">
-      <mat-form-field class="col-md-12" appearance="fill">
-        <mat-label *ngIf="contacts.length > 0">Sélectionnez un tuteur existant :</mat-label>
-        <mat-label *ngIf="contacts.length == 0">Aucun tuteur existant</mat-label>
-        <mat-select [(value)]="contact" (selectionChange)="choose($event.value)" [disabled]="contacts.length == 0">
-          <mat-option>
-            <ngx-mat-select-search [formControl]="contactFilterCtrl" placeholderLabel="Rechercher un tuteur" noEntriesFoundLabel="Aucun tuteur trouvé"></ngx-mat-select-search>
-          </mat-option>
-          <mat-option *ngFor="let contact of filteredContacts | async" [value]="contact">
-            {{contact.nom + ' ' + contact.prenom}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-      <div class="col-md-12" *ngIf="canCreate()">
-        <button mat-flat-button (click)="initCreate()" color="primary">Créez un nouveau tuteur</button>
-      </div>
-    </div>
-
-  </mat-expansion-panel>
-
   <mat-expansion-panel [expanded]="false" *ngIf="modifiable && enMasse">
     <mat-expansion-panel-header>
       <mat-panel-title>Recherchez un tuteur via son nom et/ou son prénom</mat-panel-title>
@@ -41,7 +16,6 @@
         </mat-form-field>
       </div>
     </form>
-
     <div class="alert alert-info" *ngIf="staffs.length > 10">La recherche est limitée à 10 tuteurs. Veuillez affiner la recherche si le tuteur n'apparaît pas.</div>
     <table mat-table [dataSource]="staffs | slice:0:10">
       <tr class="mat-row" *matNoDataRow>
@@ -74,9 +48,7 @@
       <tr mat-header-row *matHeaderRowDef="columns"></tr>
       <tr mat-row *matRowDef="let row; columns: columns;"></tr>
     </table>
-
   </mat-expansion-panel>
-
   <mat-expansion-panel [expanded]="contact" [disabled]="!contact">
     <mat-expansion-panel-header>
       <mat-panel-title>Tuteur professionnel</mat-panel-title>
@@ -98,7 +70,7 @@
         </div>
         <div class="row">
           <div class="col-sm-3 font-weight-bold">Civilité</div>
-          <div class="col-sm-9">{{this.contact.civilite ? this.contact.civilite.libelle : null}}</div>
+          <div class="col-sm-9">{{contact.civilite ? contact.civilite.libelle : null}}</div>
         </div>
         <div class="row">
           <div class="col-sm-3 font-weight-bold">Fonction</div>
@@ -160,8 +132,14 @@
         </div>
       </div>
       <div class="row mt-3" *ngIf="canEdit() || canCreate()">
+          <div class="col-12 d-flex justify-content-center">
+            <span *ngIf="etab.id && !modif && canEdit()" [confirmMessage]="'Attention : vous vous apprêtez à modifier la fiche de l\'établissement ' + etab.raisonSociale + ' . Pour sélectionner un autre établissement, veuillez cliquer sur le bouton de recherche d\'un établissement. '+ etab.raisonSociale + ' représente la raison sociale de l’établissement.'" (confirm)="edit()">
+              <button type="button" mat-button mat-stroked-button color="primary">
+                Modifier la fiche de ce tuteur professionnel
+              </button>
+            </span>
+          </div>
         <div class="col-6">
-          <button mat-button mat-stroked-button color="primary" *ngIf="contact.id && !modif && canEdit()" (click)="edit()">Modifier ces informations</button>
           <button mat-button mat-stroked-button color="warn" *ngIf="contact.id && modif" (click)="cancelEdit()">{{'BOUTON_ANNULER'|contenu}}</button>
         </div>
         <div class="col-6 text-right" *ngIf="modif">
@@ -169,5 +147,28 @@
         </div>
       </div>
     </form>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel [expanded]="!contact" *ngIf="modifiable">
+    <mat-expansion-panel-header>
+      Sélection du tuteur professionnel - Établissement d'accueil : {{etab.raisonSociale}}
+    </mat-expansion-panel-header>
+    <div class="row mt-3">
+      <mat-form-field class="col-md-12" appearance="fill">
+        <mat-label *ngIf="contacts.length > 0">Sélectionnez un tuteur existant :</mat-label>
+        <mat-label *ngIf="contacts.length == 0">Aucun tuteur existant</mat-label>
+        <mat-select [(value)]="contact" (selectionChange)="choose($event.value)" [disabled]="contacts.length == 0">
+          <mat-option>
+            <ngx-mat-select-search [formControl]="contactFilterCtrl" placeholderLabel="Rechercher un tuteur" noEntriesFoundLabel="Aucun tuteur trouvé"></ngx-mat-select-search>
+          </mat-option>
+          <mat-option *ngFor="let contact of filteredContacts | async" [value]="contact">
+            {{contact.nom + ' ' + contact.prenom}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <div class="col-md-12" *ngIf="canCreate()">
+        <button mat-flat-button (click)="initCreate()" color="primary">Créez un nouveau tuteur</button>
+      </div>
+    </div>
   </mat-expansion-panel>
 </mat-accordion>

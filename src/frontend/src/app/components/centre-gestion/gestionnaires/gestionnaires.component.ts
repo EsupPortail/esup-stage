@@ -13,9 +13,10 @@ import { debounceTime } from "rxjs/operators";
 import { Role } from 'src/app/constants/role';
 
 @Component({
-  selector: 'app-gestionnaires',
-  templateUrl: './gestionnaires.component.html',
-  styleUrls: ['./gestionnaires.component.scss']
+    selector: 'app-gestionnaires',
+    templateUrl: './gestionnaires.component.html',
+    styleUrls: ['./gestionnaires.component.scss'],
+    standalone: false
 })
 export class GestionnairesComponent implements OnInit {
 
@@ -60,6 +61,10 @@ export class GestionnairesComponent implements OnInit {
     {id: 'validationAvenant', libelle: 'Validation d\'un avenant '},
     {id: 'conventionSignee', libelle: 'Convention signée par toutes les parties'},
     {id: 'changementEnseignant', libelle: 'Changement d\'enseignant référent'},
+    {id: 'evalTuteurRemplie', libelle: 'Évaluation du tuteur remplie'},
+    {id: 'evalEnsRemplie', libelle: 'Évaluation de l’enseignant remplie'},
+    {id: 'evalEtuRemplie', libelle: 'Évaluation de l’étudiant remplie'},
+    {id: 'evalRemplies', libelle: 'Toutes les évaluations remplies'},
   ];
 
   configAlertes: any;
@@ -111,6 +116,11 @@ export class GestionnairesComponent implements OnInit {
       verificationAdministrativeConvention: [null, []],
       validationAvenant: [null, []],
       conventionSignee: [null, []],
+      changementEnseignant: [null, []],
+      evalTuteurRemplie: [null, []],
+      evalEnsRemplie: [null, []],
+      evalEtuRemplie: [null, []],
+      evalRemplies: [null, []],
     });
     this.searchForm = this.fb.group({
       nom: [null, []],
@@ -232,12 +242,23 @@ export class GestionnairesComponent implements OnInit {
 
   save(): void {
     const data = {...this.form.value}
+
+    // Récupérer aussi les valeurs des champs disabled
+    for (let alerte of this.alertesMail) {
+      const control = this.form.get(alerte.id);
+      if (control) {
+        data[alerte.id] = control.value;
+      }
+    }
+
     if (this.form.invalid) {
       this.messageService.setError("Veuillez remplir les champs obligatoires");
       return;
     }
+
     // On met alerteMail à true si au moins une alerte est activée
     data.alertesMail = this.hasAlertesMail(data);
+
     if (this.gestionnaire.id) {
       this.personnelCentreService.update(data, this.gestionnaire.id).subscribe((response: any) => {
         this.messageService.setSuccess("Personnel mis à jour");
@@ -291,20 +312,23 @@ export class GestionnairesComponent implements OnInit {
   }
 
   hasAlertesMail(gestionnaire: any) {
-    if (gestionnaire.creationConventionEtudiant == true
-    || gestionnaire.modificationConventionEtudiant == true
-    || gestionnaire.creationConventionGestionnaire == true
-    || gestionnaire.modificationConventionGestionnaire == true
-    || gestionnaire.creationAvenantEtudiant == true
-    || gestionnaire.modificationAvenantEtudiant == true
-    || gestionnaire.creationAvenantGestionnaire == true
-    || gestionnaire.modificationAvenantGestionnaire == true
-    || gestionnaire.validationPedagogiqueConvention == true
-    || gestionnaire.validationAdministrativeConvention == true
-    || gestionnaire.verificationAdministrativeConvention == true
-    || gestionnaire.validationAvenant == true) {
-      return true;
-    }
-    return false;
+    return !!(gestionnaire.creationConventionEtudiant
+      || gestionnaire.modificationConventionEtudiant
+      || gestionnaire.creationConventionGestionnaire
+      || gestionnaire.modificationConventionGestionnaire
+      || gestionnaire.creationAvenantEtudiant
+      || gestionnaire.modificationAvenantEtudiant
+      || gestionnaire.creationAvenantGestionnaire
+      || gestionnaire.modificationAvenantGestionnaire
+      || gestionnaire.validationPedagogiqueConvention
+      || gestionnaire.validationAdministrativeConvention
+      || gestionnaire.verificationAdministrativeConvention
+      || gestionnaire.validationAvenant
+      || gestionnaire.conventionSignee
+      || gestionnaire.changementEnseignant
+      || gestionnaire.evalTuteurRemplie
+      || gestionnaire.evalEnsRemplie
+      || gestionnaire.evalEtuRemplie
+      || gestionnaire.evalRemplies);
   }
 }

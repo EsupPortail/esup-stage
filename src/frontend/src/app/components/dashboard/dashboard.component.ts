@@ -12,11 +12,13 @@ import { SortDirection } from "@angular/material/sort";
 import { ContenuPipe } from "../../pipes/contenu.pipe";
 import { TypeConventionService } from "../../services/type-convention.service";
 import { LangueConventionService } from "../../services/langue-convention.service";
+import { PaysService } from "../../services/pays.service";
 
 @Component({
-  selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+    selector: 'app-dashboard',
+    templateUrl: './dashboard.component.html',
+    styleUrls: ['./dashboard.component.scss'],
+    standalone: false
 })
 export class DashboardComponent implements OnInit, OnDestroy {
 
@@ -45,6 +47,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   typeDashboard: number = 1; // Type de tableau de bord à afficher : 1=gestionnaire/responsable/admin/profil non défini ; 2=enseignant ; 3=etudiant
   langueConventionList: any[] = [];
   typeConventionList: any[] = [];
+  paysList: any[] = [];
 
   selected: any[] = [];
   validationLibelles: any = {};
@@ -62,6 +65,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private contenuPipe: ContenuPipe,
     private langueConventionService: LangueConventionService,
     private typeConventionService: TypeConventionService,
+    private paysService: PaysService,
   ) {
     this.columns = [];
     this.filters = [];
@@ -169,13 +173,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
       ufr: this.ufrService.getPaginated(1, 0, 'libelle', 'asc', '{}'),
       etape: this.etapeService.getPaginated(1, 0, 'libelle', 'asc', '{}'),
       langueConvention: this.langueConventionService.getPaginated(1, 0, 'libelle', 'asc', '{}'),
-      typeConvention: this.typeConventionService.getPaginated(1, 0, 'libelle', 'asc', '{}')
+      typeConvention: this.typeConventionService.getPaginated(1, 0, 'libelle', 'asc', '{}'),
+      pays: this.paysService.getPaginated(1, 0, 'libelle', 'asc', '{}')
     }).subscribe({
       next: (results) => {
         this.ufrList = results.ufr.data || [];
         this.etapeList = results.etape.data || [];
         this.langueConventionList = results.langueConvention.data || [];
         this.typeConventionList = results.typeConvention.data || [];
+        this.paysList = results.pays.data || [];
 
         if (this.appTable) {
           this.appTable.update();
@@ -201,6 +207,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.appTable.setFilterOption('etape.id', this.etapeList);
       this.appTable.setFilterOption('langueConvention.code', this.langueConventionList);
       this.appTable.setFilterOption('typeConvention.id', this.typeConventionList);
+      this.appTable.setFilterOption('structure.pays.id', this.paysList);
 
       if (this.authService.isEtudiant()) {
         this.appTable.setFilterOption('annee', this.annees);
@@ -223,6 +230,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       { id: 'etape.id', libelle: 'Étape', type: 'autocomplete', autocompleteService: this.etapeService, options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true, colSpan: 9 },
       { id: 'langueConvention.code', libelle: 'Langue de convention', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'code', value: [] },
       { id: 'typeConvention.id', libelle: 'Type de convention', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
+      { id: 'structure.pays.id', libelle: 'Pays de l’établissement d\'accueil', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], searchable: true },
     ];
 
     this.exportColumns = {
@@ -332,6 +340,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     { id: 'etatValidation', libelle: 'État de validation de la convention', type: 'list', options: this.validationsOptions, keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
     { id: 'langueConvention.code', libelle: 'Langue de convention', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'code', value: [] },
     { id: 'typeConvention.id', libelle: 'Type de convention', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
+    { id: 'structure.pays.id', libelle: 'Pays de l’établissement d\'accueil', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [],searchable: true },
   ];
 
   this.exportColumns = {
@@ -365,6 +374,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       { id: 'avenant', libelle: 'Avenant', type: 'boolean', specific: true },
       { id: 'etatValidation', libelle: 'État de validation de la convention', type: 'list', options: this.validationsOptions, keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
       { id: 'annee', libelle: 'Année', type: 'annee', options: [], keyLibelle: 'libelle', keyId: 'libelle', value: [] },
+      { id: 'structure.pays.id', libelle: 'Pays de l’établissement d\'accueil', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], searchable: true },
     ];
 
     this.exportColumns = {

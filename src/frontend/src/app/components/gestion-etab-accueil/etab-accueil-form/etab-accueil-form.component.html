@@ -136,12 +136,12 @@
       </mat-error>
       <!-- hint absent -> correction visuel -->
       <mat-hint
-        *ngIf="filterTypeContries === 0">
+        *ngIf="filterTypeCountries === 0">
       </mat-hint>
       <!-- Hint pour les pays hors France -->
-      <mat-hint *ngIf="filterTypeContries === 1" class="hint-expandable">{{('MESSAGE_HINT_PAYS_ETABLISSEMENT_CREATION_HORS_FRANCE' | contenu)}}</mat-hint>
+      <mat-hint *ngIf="filterTypeCountries === 1" class="hint-expandable">{{('MESSAGE_HINT_PAYS_ETABLISSEMENT_CREATION_HORS_FRANCE' | contenu)}}</mat-hint>
       <!-- Hint pour la France uniquement -->
-      <mat-hint *ngIf="filterTypeContries === 2" class="hint-expandable">{{('MESSAGE_HINT_PAYS_ETABLISSEMENT_CREATION_FRANCE_UNIQUEMENT' | contenu)}}</mat-hint>
+      <mat-hint *ngIf="filterTypeCountries === 2" class="hint-expandable">{{('MESSAGE_HINT_PAYS_ETABLISSEMENT_CREATION_FRANCE_UNIQUEMENT' | contenu)}}</mat-hint>
     </mat-form-field>
   </div>
   <div class="row">
@@ -184,39 +184,54 @@
       <input matInput formControlName="fax" />
     </mat-form-field>
   </div>
-  <div class="actions-row mt-3">
-    <!-- Annuler (gauche) -->
-    <div class="slot left">
-      <button type="button"
-              mat-button
-              mat-stroked-button
-              color="warn"
-              *ngIf="etab.id"
-              (click)="cancelEdit()">
-        {{'BOUTON_ANNULER'|contenu}}
-      </button>
-    </div>
+  <div class="button-row">
+    <div class="actions-row mt-3">
 
-    <!-- Mise à jour (centre) -->
-    <div class="slot center" *ngIf="isSireneActive && etab?.id && canEdit()">
-      <button type="button"
-              mat-button
-              mat-stroked-button
-              color="primary"
-              class="mr-2"
-              [disabled]="autoUpdating"
-              (click)="autoUpdateFromApi()"
-              matTooltip="Met à jour automatiquement les informations de l'établissement via l'API">
-        <mat-icon class="mr-1" [class.spin]="autoUpdating">autorenew</mat-icon>
-        {{ autoUpdating ? 'Mise à jour…' : 'Mise à jour automatique' }}
-      </button>
-    </div>
+      <!-- Annuler -->
+      <div class="slot left-slot" *ngIf="etab.id">
+        <button
+          type="button"
+          mat-button
+          mat-stroked-button
+          color="warn"
+          (click)="cancelEdit()">
+          {{ 'BOUTON_ANNULER' | contenu }}
+        </button>
+      </div>
 
-    <!-- Valider (droite) -->
-    <div class="slot right">
-      <button mat-button mat-flat-button color="primary" type="submit">
-        {{'BOUTON_VALIDER'|contenu}}
-      </button>
+      <!-- Verrouillage Synchro -->
+      <div class="slot" *ngIf="canToggleVerrouillage()">
+        <button type="button" class="btn" [ngClass]="{'btn-success': !etab.verrouillageSynchroStructureSirene,'btn-warning': etab.verrouillageSynchroStructureSirene}" (click)="toggleVerrouillage()"
+          [matTooltip]="etab.verrouillageSynchroStructureSirene ? 'Déverrouiller la mise à jour automatique' : 'Verrouiller la mise à jour automatique'">
+          <mat-icon class="mr-1" style="vertical-align: middle;">
+            {{ etab.verrouillageSynchroStructureSirene ? 'lock' : 'lock_open' }}
+          </mat-icon>
+          <span>
+        {{ etab.verrouillageSynchroStructureSirene ? 'Verrouillé' : 'Déverrouillé' }}
+      </span>
+        </button>
+      </div>
+
+      <!-- Mise à jour automatique -->
+      <div class="slot" *ngIf="canUpdateFromApi()">
+        <button type="button" mat-button mat-stroked-button color="primary" class="mr-2" [disabled]="autoUpdating || etab.verrouillageSynchroStructureSirene" (click)="autoUpdateFromApi()"
+                matTooltip="Met à jour automatiquement les informations de l'établissement via l'API">
+          <mat-icon class="mr-1" [class.spin]="autoUpdating">autorenew</mat-icon>
+          {{ autoUpdating ? 'Mise à jour…' : 'Mise à jour automatique' }}
+        </button>
+      </div>
+
+      <!-- Valider -->
+      <div class="slot right-slot">
+        <button
+          mat-button
+          mat-flat-button
+          color="primary"
+          type="submit">
+          {{ 'BOUTON_VALIDER' | contenu }}
+        </button>
+      </div>
+
     </div>
   </div>
 </form>

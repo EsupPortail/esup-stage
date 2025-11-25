@@ -5,9 +5,10 @@ import { MessageService } from '../../../services/message.service';
 import { PageEvent } from '@angular/material/paginator';
 
 @Component({
-  selector: 'app-config',
-  templateUrl: './tache-planifie.component.html',
-  styleUrl: './tache-planifie.component.scss'
+    selector: 'app-config',
+    templateUrl: './tache-planifie.component.html',
+    styleUrl: './tache-planifie.component.scss',
+    standalone: false
 })
 export class TachePlanifieComponent implements OnInit {
   cronTasks: any[] = [];

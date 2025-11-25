@@ -1,5 +1,13 @@
 package org.esup_portail.esup_stage.service.impression.context;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Lob;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.esup_portail.esup_stage.enums.TypeQuestionEvaluation;
 import org.esup_portail.esup_stage.model.*;
 
 import java.text.DateFormat;
@@ -7,6 +15,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+@Data
+@NoArgsConstructor
 public class ImpressionContext {
     private ConventionContext convention = new ConventionContext();
     private CentreGestionContext centreGestion = new CentreGestionContext();
@@ -17,11 +27,13 @@ public class ImpressionContext {
     private SignataireContext signataire = new SignataireContext();
     private StructureContext structure = new StructureContext();
     private AvenantContext avenant = new AvenantContext();
+    private ReponseEvaluationContext reponse = new ReponseEvaluationContext();
+    private FicheEvaluationContext ficheEvaluation = new FicheEvaluationContext();
+    private List<QuestionEvaluationContext> questionEvaluations = new ArrayList<>();
+    private List<QuestionSupplementaireContext> questionsSupplementaires = new ArrayList<>();
+    private List<ReponseSupplementaireContext> reponsesSupplementaires = new ArrayList<>();
 
-    public ImpressionContext() {
-    }
-
-    public ImpressionContext(Convention convention, Avenant avenant, CentreGestion centreEtablissement) {
+    public ImpressionContext(Convention convention, Avenant avenant, CentreGestion centreEtablissement, List<QuestionSupplementaire> questionSupplementaires, List<QuestionEvaluation> questionEvaluations) {
         if (convention != null) {
             this.convention = new ConventionContext(convention, centreEtablissement);
             this.centreGestion = new CentreGestionContext(convention.getCentreGestion(), centreEtablissement);
@@ -31,84 +43,26 @@ public class ImpressionContext {
             this.service = new ServiceContext(convention.getService());
             this.signataire = new SignataireContext(convention.getSignataire());
             this.structure = new StructureContext(convention.getStructure());
+            FicheEvaluation ficheEvaluation = convention.getCentreGestion().getFicheEvaluation();
+            this.ficheEvaluation = new FicheEvaluationContext(ficheEvaluation);
+            this.reponse = new ReponseEvaluationContext(convention.getReponseEvaluation());
+            for (QuestionSupplementaire question : questionSupplementaires) {
+                this.questionsSupplementaires.add(new QuestionSupplementaireContext(question));
+            }
+            for (ReponseSupplementaire reponse : convention.getReponseSupplementaires()) {
+                this.reponsesSupplementaires.add(new ReponseSupplementaireContext(reponse));
+            }
+            for (QuestionEvaluation q : questionEvaluations) {
+                this.questionEvaluations.add(new QuestionEvaluationContext(q));
+            }
         }
         if (avenant != null) {
             this.avenant = new AvenantContext(avenant);
         }
     }
 
-    public ConventionContext getConvention() {
-        return convention;
-    }
-
-    public void setConvention(ConventionContext convention) {
-        this.convention = convention;
-    }
-
-    public CentreGestionContext getCentreGestion() {
-        return centreGestion;
-    }
-
-    public void setCentreGestion(CentreGestionContext centreGestion) {
-        this.centreGestion = centreGestion;
-    }
-
-    public ContactContext getContact() {
-        return contact;
-    }
-
-    public void setContact(ContactContext contact) {
-        this.contact = contact;
-    }
-
-    public EnseignantContext getEnseignant() {
-        return enseignant;
-    }
-
-    public void setEnseignant(EnseignantContext enseignant) {
-        this.enseignant = enseignant;
-    }
-
-    public EtudiantContext getEtudiant() {
-        return etudiant;
-    }
-
-    public void setEtudiant(EtudiantContext etudiant) {
-        this.etudiant = etudiant;
-    }
-
-    public ServiceContext getService() {
-        return service;
-    }
-
-    public void setService(ServiceContext service) {
-        this.service = service;
-    }
-
-    public SignataireContext getSignataire() {
-        return signataire;
-    }
-
-    public void setSignataire(SignataireContext signataire) {
-        this.signataire = signataire;
-    }
-
-    public StructureContext getStructure() {
-        return structure;
-    }
-
-    public void setStructure(StructureContext structure) {
-        this.structure = structure;
-    }
-
-    public AvenantContext getAvenant() {
-        return avenant;
-    }
-
-    public void setAvenant(AvenantContext avenant) {
-        this.avenant = avenant;
-    }
-
+    @Data
+    @NoArgsConstructor
     public static class ConventionContext {
         private String id;
         private String adresseEtabRef;
@@ -170,9 +124,6 @@ public class ImpressionContext {
         private String conventionValidee;
         private String codeCaisse;
         private List<HoraireIrregulierContext> horaireIrregulier = new ArrayList<>();
-
-        public ConventionContext() {
-        }
 
         public ConventionContext(Convention convention, CentreGestion centreEtablissement) {
             DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
@@ -256,489 +207,10 @@ public class ImpressionContext {
             }
 
         }
-
-        public String getCodeCaisse() {
-            return codeCaisse;
-        }
-
-        public void setCodeCaisse(String codeCaisse) {
-            this.codeCaisse = codeCaisse;
-        }
-
-        public String getId() {
-            return id != null ? id : "";
-        }
-
-        public void setId(String id) {
-            this.id = id;
-        }
-
-        public String getAdresseEtabRef() {
-            return adresseEtabRef != null ? adresseEtabRef : "";
-        }
-
-        public void setAdresseEtabRef(String adresseEtabRef) {
-            this.adresseEtabRef = adresseEtabRef;
-        }
-
-        public String getAdresseEtudiant() {
-            return adresseEtudiant != null ? adresseEtudiant : "";
-        }
-
-        public void setAdresseEtudiant(String adresseEtudiant) {
-            this.adresseEtudiant = adresseEtudiant;
-        }
-
-        public String getAnnee() {
-            return annee != null ? annee : "";
-        }
-
-        public void setAnnee(String annee) {
-            this.annee = annee;
-        }
-
-        public String getAvantagesNature() {
-            return avantagesNature != null ? avantagesNature : "";
-        }
-
-        public void setAvantagesNature(String avantagesNature) {
-            this.avantagesNature = avantagesNature;
-        }
-
-        public String getCodeCursusLMD() {
-            return codeCursusLMD != null ? codeCursusLMD : "";
-        }
-
-        public void setCodeCursusLMD(String codeCursusLMD) {
-            this.codeCursusLMD = codeCursusLMD;
-        }
-
-        public String getCodeDepartement() {
-            return codeDepartement != null ? codeDepartement : "";
-        }
-
-        public void setCodeDepartement(String codeDepartement) {
-            this.codeDepartement = codeDepartement;
-        }
-
-        public String getCodePostalEtudiant() {
-            return codePostalEtudiant != null ? codePostalEtudiant : "";
-        }
-
-        public void setCodePostalEtudiant(String codePostalEtudiant) {
-            this.codePostalEtudiant = codePostalEtudiant;
-        }
-
-        public String getCommentaireDureeTravail() {
-            return commentaireDureeTravail != null ? commentaireDureeTravail : "";
-        }
-
-        public void setCommentaireDureeTravail(String commentaireDureeTravail) {
-            this.commentaireDureeTravail = commentaireDureeTravail;
-        }
-
-        public String getCourrielPersoEtudiant() {
-            return courrielPersoEtudiant != null ? courrielPersoEtudiant : "";
-        }
-
-        public void setCourrielPersoEtudiant(String courrielPersoEtudiant) {
-            this.courrielPersoEtudiant = courrielPersoEtudiant;
-        }
-
-        public String getCreditECTS() {
-            return creditECTS != null ? creditECTS : "";
-        }
-
-        public void setCreditECTS(String creditECTS) {
-            this.creditECTS = creditECTS;
-        }
-
-
-        public String getDateDebutStage() {
-            return dateDebutStage != null ? dateDebutStage : "";
-        }
-
-        public void setDateDebutStage(String dateDebutStage) {
-            this.dateDebutStage = dateDebutStage;
-        }
-
-        public String getDateFinStage() {
-            return dateFinStage != null ? dateFinStage : "";
-        }
-
-        public void setDateFinStage(String dateFinStage) {
-            this.dateFinStage = dateFinStage;
-        }
-
-        public String getDetails() {
-            return details != null ? details : "";
-        }
-
-        public void setDetails(String details) {
-            this.details = details;
-        }
-
-        public String getDureeStageHeure() {
-            return dureeStageHeure != null ? dureeStageHeure : "";
-        }
-
-        public void setDureeStageHeure(String dureeStageHeure) {
-            this.dureeStageHeure = dureeStageHeure;
-        }
-
-        public String getDureeStageHeurePeriode() {
-            return dureeStageHeurePeriode != null ? dureeStageHeurePeriode : "";
-        }
-
-        public void setDureeStageHeurePeriode(String dureeStageHeurePeriode) {
-            this.dureeStageHeurePeriode = dureeStageHeurePeriode;
-        }
-
-        public String getDureeStage() {
-            return dureeStage != null ? dureeStage : "";
-        }
-
-        public void setDureeStage(String dureeStage) {
-            this.dureeStage = dureeStage;
-        }
-
-        public String getEtapeLibelle() {
-            return etapeLibelle != null ? etapeLibelle : "";
-        }
-
-        public void setEtapeLibelle(String etapeLibelle) {
-            this.etapeLibelle = etapeLibelle;
-        }
-
-        public String getEtapeCode() {
-            return etapeCode;
-        }
-
-        public void setEtapeCode(String etapeCode) {
-            this.etapeCode = etapeCode;
-        }
-
-        public String getFonctionsEtTaches() {
-            return fonctionsEtTaches != null ? fonctionsEtTaches : "";
-        }
-
-        public void setFonctionsEtTaches(String fonctionsEtTaches) {
-            this.fonctionsEtTaches = fonctionsEtTaches;
-        }
-
-        public String getInterruptionStage() {
-            return interruptionStage != null ? interruptionStage : "";
-        }
-
-        public void setInterruptionStage(String interruptionStage) {
-            this.interruptionStage = interruptionStage;
-        }
-
-        public String getLibelleCPAM() {
-            return libelleCPAM != null ? libelleCPAM : "";
-        }
-
-        public void setLibelleCPAM(String libelleCPAM) {
-            this.libelleCPAM = libelleCPAM;
-        }
-
-        public String getRegionCPAM() {
-            return regionCPAM;
-        }
-
-        public void setRegionCPAM(String regionCPAM) {
-            this.regionCPAM = regionCPAM;
-        }
-
-        public String getAdresseCPAM() {
-            return adresseCPAM;
-        }
-
-        public void setAdresseCPAM(String adresseCPAM) {
-            this.adresseCPAM = adresseCPAM;
-        }
-
-        public String getLibelleFinalite() {
-            return libelleFinalite != null ? libelleFinalite : "";
-        }
-
-        public void setLibelleFinalite(String libelleFinalite) {
-            this.libelleFinalite = libelleFinalite;
-        }
-
-        public String getModeEncadreSuivi() {
-            return modeEncadreSuivi != null ? modeEncadreSuivi : "";
-        }
-
-        public void setModeEncadreSuivi(String modeEncadreSuivi) {
-            this.modeEncadreSuivi = modeEncadreSuivi;
-        }
-
-        public String getModeValidationStageLibelle() {
-            return modeValidationStageLibelle != null ? modeValidationStageLibelle : "";
-        }
-
-        public void setModeValidationStageLibelle(String modeValidationStageLibelle) {
-            this.modeValidationStageLibelle = modeValidationStageLibelle;
-        }
-
-        public String getModeVersGratificationLibelle() {
-            return modeVersGratificationLibelle != null ? modeVersGratificationLibelle : "";
-        }
-
-        public void setModeVersGratificationLibelle(String modeVersGratificationLibelle) {
-            this.modeVersGratificationLibelle = modeVersGratificationLibelle;
-        }
-
-        public String getMontantGratification() {
-            return montantGratification != null ? montantGratification : "";
-        }
-
-        public void setMontantGratification(String montantGratification) {
-            this.montantGratification = montantGratification;
-        }
-
-        public String getDeviseGratification() {
-            return deviseGratification != null ? deviseGratification : "";
-        }
-
-        public void setDeviseGratification(String deviseGratification) {
-            this.deviseGratification = deviseGratification;
-        }
-
-        public String getNatureTravailLibelle() {
-            return natureTravailLibelle != null ? natureTravailLibelle : "";
-        }
-
-        public void setNatureTravailLibelle(String natureTravailLibelle) {
-            this.natureTravailLibelle = natureTravailLibelle;
-        }
-
-        public String getNbHeuresHebdo() {
-            return nbHeuresHebdo != null ? nbHeuresHebdo : "";
-        }
-
-        public void setNbHeuresHebdo(String nbHeuresHebdo) {
-            this.nbHeuresHebdo = nbHeuresHebdo;
-        }
-
-        public String getNbConges() {
-            return nbConges != null ? nbConges : "";
-        }
-
-        public void setNbConges(String nbConges) {
-            this.nbConges = nbConges;
-        }
-
-        public String getNbJoursHebdo() {
-            return nbJoursHebdo != null ? nbJoursHebdo : "";
-        }
-
-        public void setNbJoursHebdo(String nbJoursHebdo) {
-            this.nbJoursHebdo = nbJoursHebdo;
-        }
-
-        public String getNomEtabRef() {
-            return nomEtabRef != null ? nomEtabRef : "";
-        }
-
-        public void setNomEtabRef(String nomEtabRef) {
-            this.nomEtabRef = nomEtabRef;
-        }
-
-        public String getNomSignataireComposante() {
-            return nomSignataireComposante != null ? nomSignataireComposante : "";
-        }
-
-        public void setNomSignataireComposante(String nomSignataireComposante) {
-            this.nomSignataireComposante = nomSignataireComposante;
-        }
-
-        public String getOrigineStageLibelle() {
-            return origineStageLibelle != null ? origineStageLibelle : "";
-        }
-
-        public void setOrigineStageLibelle(String origineStageLibelle) {
-            this.origineStageLibelle = origineStageLibelle;
-        }
-
-        public String getPaysEtudiant() {
-            return paysEtudiant != null ? paysEtudiant : "";
-        }
-
-        public void setPaysEtudiant(String paysEtudiant) {
-            this.paysEtudiant = paysEtudiant;
-        }
-
-        public String getQualiteSignataire() {
-            return qualiteSignataire != null ? qualiteSignataire : "";
-        }
-
-        public void setQualiteSignataire(String qualiteSignataire) {
-            this.qualiteSignataire = qualiteSignataire;
-        }
-
-        public String getSujetStage() {
-            return sujetStage != null ? sujetStage : "";
-        }
-
-        public void setSujetStage(String sujetStage) {
-            this.sujetStage = sujetStage;
-        }
-
-        public String getTelEtudiant() {
-            return telEtudiant != null ? telEtudiant : "";
-        }
-
-        public void setTelEtudiant(String telEtudiant) {
-            this.telEtudiant = telEtudiant;
-        }
-
-        public String getTelPortableEtudiant() {
-            return telPortableEtudiant != null ? telPortableEtudiant : "";
-        }
-
-        public void setTelPortableEtudiant(String telPortableEtudiant) {
-            this.telPortableEtudiant = telPortableEtudiant;
-        }
-
-        public String getTempsTravailLibelle() {
-            return tempsTravailLibelle != null ? tempsTravailLibelle : "";
-        }
-
-        public void setTempsTravailLibelle(String tempsTravailLibelle) {
-            this.tempsTravailLibelle = tempsTravailLibelle;
-        }
-
-        public String getThemeLibelle() {
-            return themeLibelle != null ? themeLibelle : "";
-        }
-
-        public void setThemeLibelle(String themeLibelle) {
-            this.themeLibelle = themeLibelle;
-        }
-
-        public String getTravailNuitFerie() {
-            return travailNuitFerie != null ? travailNuitFerie : "";
-        }
-
-        public void setTravailNuitFerie(String travailNuitFerie) {
-            this.travailNuitFerie = travailNuitFerie;
-        }
-
-        public String getUfrLibelle() {
-            return ufrLibelle != null ? ufrLibelle : "";
-        }
-
-        public void setUfrLibelle(String ufrLibelle) {
-            this.ufrLibelle = ufrLibelle;
-        }
-
-        public String getUfrCode() {
-            return ufrCode != null ? ufrCode : "";
-        }
-
-        public void setUfrCode(String ufrCode) {
-            this.ufrCode = ufrCode;
-        }
-
-        public String getUniteGratificationLibelle() {
-            return uniteGratificationLibelle != null ? uniteGratificationLibelle : "";
-        }
-
-        public void setUniteGratificationLibelle(String uniteGratificationLibelle) {
-            this.uniteGratificationLibelle = uniteGratificationLibelle;
-        }
-
-        public String getUniteDureeGratificationLibelle() {
-            return uniteDureeGratificationLibelle != null ? uniteDureeGratificationLibelle : "";
-        }
-
-        public void setUniteDureeGratificationLibelle(String uniteDureeGratificationLibelle) {
-            this.uniteDureeGratificationLibelle = uniteDureeGratificationLibelle;
-        }
-
-        public String getVilleEtudiant() {
-            return villeEtudiant != null ? villeEtudiant : "";
-        }
-
-        public void setVilleEtudiant(String villeEtudiant) {
-            this.villeEtudiant = villeEtudiant;
-        }
-
-        public String getVolumeHoraireFormation() {
-            return volumeHoraireFormation != null ? volumeHoraireFormation : "";
-        }
-
-        public void setVolumeHoraireFormation(String volumeHoraireFormation) {
-            this.volumeHoraireFormation = volumeHoraireFormation;
-        }
-
-        public String getCompetences() {
-            return competences != null ? competences : "";
-        }
-
-        public void setCompetences(String competences) {
-            this.competences = competences;
-        }
-
-        public List<PeriodeInterruptionContext> getPeriodesInterruptions() {
-            return periodesInterruptions;
-        }
-
-        public void setPeriodesInterruptions(List<PeriodeInterruptionContext> periodesInterruptions) {
-            this.periodesInterruptions = periodesInterruptions;
-        }
-
-        public String getTypeConventionLibelle() {
-            return typeConventionLibelle != null ? typeConventionLibelle : "";
-        }
-
-        public void setTypeConventionLibelle(String typeConventionLibelle) {
-            this.typeConventionLibelle = typeConventionLibelle;
-        }
-
-        public String getLangueConvention() {
-            return langueConvention != null ? langueConvention : "";
-        }
-
-        public void setLangueConvention(String langueConvention) {
-            this.langueConvention = langueConvention;
-        }
-
-        public String getConfidentiel() {
-            return confidentiel;
-        }
-
-        public void setConfidentiel(String confidentiel) {
-            this.confidentiel = confidentiel;
-        }
-
-        public String getLieuStage() {
-            return lieuStage != null ? lieuStage : "";
-        }
-
-        public void setLieuStage(String lieuStage) {
-            this.lieuStage = lieuStage;
-        }
-
-        public String getConventionValidee() {
-            return conventionValidee != null ? conventionValidee : "";
-        }
-
-        public void setConventionValidee(String conventionValidee) {
-            this.conventionValidee = conventionValidee;
-        }
-
-        public List<HoraireIrregulierContext> getHoraireIrregulier() {
-            return horaireIrregulier;
-        }
-
-        public void setHoraireIrregulier(List<HoraireIrregulierContext> horaireIrregulier) {
-            this.horaireIrregulier = horaireIrregulier;
-        }
     }
 
+    @Data
+    @NoArgsConstructor
     public static class CentreGestionContext {
         private String adresse;
         private String codePostal;
@@ -754,9 +226,10 @@ public class ImpressionContext {
         private String prenomPresidentEtab;
         private String nomPresidentEtab;
         private String qualitePresidentEtab;
-
-        public CentreGestionContext() {
-        }
+        private String mailDelegataire;
+        private String nomDelegataire;
+        private String prenomDelegataire;
+        private String qualiteDelegataire;
 
         public CentreGestionContext(CentreGestion centreGestion, CentreGestion centreEtablissement) {
             this.adresse = centreGestion.getAdresse();
@@ -775,121 +248,15 @@ public class ImpressionContext {
                 this.nomPresidentEtab = centreEtablissement.getNomViseur();
                 this.qualitePresidentEtab = centreEtablissement.getQualiteViseur();
             }
-        }
-
-        public String getAdresse() {
-            return adresse != null ? adresse : "";
-        }
-
-        public void setAdresse(String adresse) {
-            this.adresse = adresse;
-        }
-
-        public String getCodePostal() {
-            return codePostal != null ? codePostal : "";
-        }
-
-        public void setCodePostal(String codePostal) {
-            this.codePostal = codePostal;
-        }
-
-        public String getCodeUniversite() {
-            return codeUniversite != null ? codeUniversite : "";
-        }
-
-        public void setCodeUniversite(String codeUniversite) {
-            this.codeUniversite = codeUniversite;
-        }
-
-        public String getCommune() {
-            return commune != null ? commune : "";
-        }
-
-        public void setCommune(String commune) {
-            this.commune = commune;
-        }
-
-        public String getMail() {
-            return mail != null ? mail : "";
-        }
-
-        public void setMail(String mail) {
-            this.mail = mail;
-        }
-
-        public String getNomCentre() {
-            return nomCentre != null ? nomCentre : "";
-        }
-
-        public void setNomCentre(String nomCentre) {
-            this.nomCentre = nomCentre;
-        }
-
-        public String getNomViseur() {
-            return nomViseur != null ? nomViseur : "";
-        }
-
-        public void setNomViseur(String nomViseur) {
-            this.nomViseur = nomViseur;
-        }
-
-        public String getPrenomViseur() {
-            return prenomViseur != null ? prenomViseur : "";
-        }
-
-        public void setPrenomViseur(String prenomViseur) {
-            this.prenomViseur = prenomViseur;
-        }
-
-        public String getQualiteViseur() {
-            return qualiteViseur != null ? qualiteViseur : "";
-        }
-
-        public void setQualiteViseur(String qualiteViseur) {
-            this.qualiteViseur = qualiteViseur;
-        }
-
-        public String getTelephone() {
-            return telephone != null ? telephone : "";
-        }
-
-        public void setTelephone(String telephone) {
-            this.telephone = telephone;
-        }
-
-        public String getVoie() {
-            return voie != null ? voie : "";
-        }
-
-        public void setVoie(String voie) {
-            this.voie = voie;
-        }
-
-        public String getPrenomPresidentEtab() {
-            return prenomPresidentEtab != null ? prenomPresidentEtab : "";
-        }
-
-        public void setPrenomPresidentEtab(String prenomPresidentEtab) {
-            this.prenomPresidentEtab = prenomPresidentEtab;
-        }
-
-        public String getNomPresidentEtab() {
-            return nomPresidentEtab != null ? nomPresidentEtab : "";
-        }
-
-        public void setNomPresidentEtab(String nomPresidentEtab) {
-            this.nomPresidentEtab = nomPresidentEtab;
-        }
-
-        public String getQualitePresidentEtab() {
-            return qualitePresidentEtab != null ? qualitePresidentEtab : "";
-        }
-
-        public void setQualitePresidentEtab(String qualitePresidentEtab) {
-            this.qualitePresidentEtab = qualitePresidentEtab;
+            this.mailDelegataire = centreGestion.getMailDelegataireViseur();
+            this.nomDelegataire = centreGestion.getNomDelegataireViseur();
+            this.prenomDelegataire = centreGestion.getPrenomDelegataireViseur();
+            this.qualiteDelegataire = centreGestion.getQualiteDelegataireViseur();
         }
     }
 
+    @Data
+    @NoArgsConstructor
     public static class ContactContext {
         private String civiliteLibelle;
         private String fonction;
@@ -898,10 +265,8 @@ public class ImpressionContext {
         private String prenom;
         private String tel;
 
-        public ContactContext() {
-        }
-
         public ContactContext(Contact contact) {
+            if (contact == null) { this.civiliteLibelle = this.fonction = this.mail = this.nom = this.prenom = this.tel = ""; return; }
             this.civiliteLibelle = contact.getCivilite() != null ? contact.getCivilite().getLibelle() : null;
             this.fonction = contact.getFonction();
             this.mail = contact.getMail();
@@ -910,55 +275,10 @@ public class ImpressionContext {
             this.tel = contact.getTel();
         }
 
-        public String getCiviliteLibelle() {
-            return civiliteLibelle != null ? civiliteLibelle : "";
-        }
-
-        public void setCiviliteLibelle(String civiliteLibelle) {
-            civiliteLibelle = civiliteLibelle;
-        }
-
-        public String getFonction() {
-            return fonction != null ? fonction : "";
-        }
-
-        public void setFonction(String fonction) {
-            this.fonction = fonction;
-        }
-
-        public String getMail() {
-            return mail != null ? mail : "";
-        }
-
-        public void setMail(String mail) {
-            this.mail = mail;
-        }
-
-        public String getNom() {
-            return nom != null ? nom : "";
-        }
-
-        public void setNom(String nom) {
-            this.nom = nom;
-        }
-
-        public String getPrenom() {
-            return prenom != null ? prenom : "";
-        }
-
-        public void setPrenom(String prenom) {
-            this.prenom = prenom;
-        }
-
-        public String getTel() {
-            return tel != null ? tel : "";
-        }
-
-        public void setTel(String tel) {
-            this.tel = tel;
-        }
     }
 
+    @Data
+    @NoArgsConstructor
     public static class EnseignantContext {
         private String affectationLibelle;
         private String bureau;
@@ -968,10 +288,8 @@ public class ImpressionContext {
         private String mail;
         private String fonction;
 
-        public EnseignantContext() {
-        }
-
         public EnseignantContext(Enseignant enseignant) {
+            if (enseignant == null) { this.affectationLibelle = this.bureau = this.nom = this.prenom = this.tel = this.mail = this.fonction = ""; return; }
             this.affectationLibelle = enseignant.getAffectation() != null ? enseignant.getAffectation().getLibelle() : null;
             this.bureau = enseignant.getBureau();
             this.nom = enseignant.getNom();
@@ -980,64 +298,10 @@ public class ImpressionContext {
             this.mail = enseignant.getMail();
             this.fonction = enseignant.getTypePersonne();
         }
-
-        public String getAffectationLibelle() {
-            return affectationLibelle != null ? affectationLibelle : "";
-        }
-
-        public void setAffectationLibelle(String affectationLibelle) {
-            this.affectationLibelle = affectationLibelle;
-        }
-
-        public String getBureau() {
-            return bureau != null ? bureau : "";
-        }
-
-        public void setBureau(String bureau) {
-            this.bureau = bureau;
-        }
-
-        public String getNom() {
-            return nom != null ? nom : "";
-        }
-
-        public void setNom(String nom) {
-            this.nom = nom;
-        }
-
-        public String getPrenom() {
-            return prenom != null ? prenom : "";
-        }
-
-        public void setPrenom(String prenom) {
-            this.prenom = prenom;
-        }
-
-        public String getTel() {
-            return tel != null ? tel : "";
-        }
-
-        public void setTel(String tel) {
-            this.tel = tel;
-        }
-
-        public String getMail() {
-            return mail != null ? mail : "";
-        }
-
-        public void setMail(String mail) {
-            this.mail = mail;
-        }
-
-        public String getFonction() {
-            return fonction != null ? fonction : "";
-        }
-
-        public void setFonction(String fonction) {
-            this.fonction = fonction;
-        }
     }
 
+    @Data
+    @NoArgsConstructor
     public static class EtudiantContext {
         private String codeSexe;
         private String dateNais;
@@ -1046,9 +310,10 @@ public class ImpressionContext {
         private String nom;
         private String numEtudiant;
         private String prenom;
+        private String prenom2;
+        private String prenomEtatCivil;
+        private String sexEtatCivil;
 
-        public EtudiantContext() {
-        }
 
         public EtudiantContext(Etudiant etudiant) {
             DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
@@ -1060,65 +325,14 @@ public class ImpressionContext {
             this.nom = etudiant.getNom();
             this.numEtudiant = etudiant.getNumEtudiant();
             this.prenom = etudiant.getPrenom();
-        }
-
-        public String getCodeSexe() {
-            return codeSexe != null ? codeSexe : "";
-        }
-
-        public void setCodeSexe(String codeSexe) {
-            this.codeSexe = codeSexe;
-        }
-
-        public String getDateNais() {
-            return dateNais != null ? dateNais : "";
-        }
-
-        public void setDateNais(String dateNais) {
-            this.dateNais = dateNais;
-        }
-
-        public String getIdentEtudiant() {
-            return identEtudiant != null ? identEtudiant : "";
-        }
-
-        public void setIdentEtudiant(String identEtudiant) {
-            this.identEtudiant = identEtudiant;
-        }
-
-        public String getMail() {
-            return mail != null ? mail : "";
-        }
-
-        public void setMail(String mail) {
-            this.mail = mail;
-        }
-
-        public String getNom() {
-            return nom != null ? nom : "";
-        }
-
-        public void setNom(String nom) {
-            this.nom = nom;
-        }
-
-        public String getNumEtudiant() {
-            return numEtudiant != null ? numEtudiant : "";
-        }
-
-        public void setNumEtudiant(String numEtudiant) {
-            this.numEtudiant = numEtudiant;
-        }
-
-        public String getPrenom() {
-            return prenom != null ? prenom : "";
-        }
-
-        public void setPrenom(String prenom) {
-            this.prenom = prenom;
+            this.prenom2 = etudiant.getPrenom2();
+            this.prenomEtatCivil = etudiant.getPrenomEtatCivil();
+            this.sexEtatCivil = etudiant.getSexEtatCivil();
         }
     }
 
+    @Data
+    @NoArgsConstructor
     public static class ServiceContext {
         private String codePostal;
         private String commune;
@@ -1126,9 +340,6 @@ public class ImpressionContext {
         private String paysLibelle;
         private String voie;
         private String batiment;
-
-        public ServiceContext() {
-        }
 
         public ServiceContext(Service service) {
             this.codePostal = service.getCodePostal();
@@ -1138,56 +349,10 @@ public class ImpressionContext {
             this.voie = service.getVoie();
             this.batiment = service.getBatimentResidence();
         }
-
-        public String getCodePostal() {
-            return codePostal != null ? codePostal : "";
-        }
-
-        public void setCodePostal(String codePostal) {
-            this.codePostal = codePostal;
-        }
-
-        public String getCommune() {
-            return commune != null ? commune : "";
-        }
-
-        public void setCommune(String commune) {
-            this.commune = commune;
-        }
-
-        public String getNom() {
-            return nom != null ? nom : "";
-        }
-
-        public void setNom(String nom) {
-            this.nom = nom;
-        }
-
-        public String getPaysLibelle() {
-            return paysLibelle != null ? paysLibelle : "";
-        }
-
-        public void setPaysLibelle(String paysLibelle) {
-            this.paysLibelle = paysLibelle;
-        }
-
-        public String getVoie() {
-            return voie != null ? voie : "";
-        }
-
-        public void setVoie(String voie) {
-            this.voie = voie;
-        }
-
-        public String getBatiment() {
-            return batiment != null ? batiment : "";
-        }
-
-        public void setBatiment(String batiment) {
-            this.batiment = batiment;
-        }
     }
 
+    @Data
+    @NoArgsConstructor
     public static class SignataireContext {
         private String civiliteLibelle;
         private String fonction;
@@ -1195,9 +360,6 @@ public class ImpressionContext {
         private String nom;
         private String prenom;
         private String tel;
-
-        public SignataireContext() {
-        }
 
         public SignataireContext(Contact signataire) {
             if (signataire == null) {
@@ -1216,56 +378,10 @@ public class ImpressionContext {
                 this.tel = signataire.getTel();
             }
         }
-
-        public String getCiviliteLibelle() {
-            return civiliteLibelle != null ? civiliteLibelle : "";
-        }
-
-        public void setCiviliteLibelle(String civiliteLibelle) {
-            this.civiliteLibelle = civiliteLibelle;
-        }
-
-        public String getFonction() {
-            return fonction != null ? fonction : "";
-        }
-
-        public void setFonction(String fonction) {
-            this.fonction = fonction;
-        }
-
-        public String getMail() {
-            return mail != null ? mail : "";
-        }
-
-        public void setMail(String mail) {
-            this.mail = mail;
-        }
-
-        public String getNom() {
-            return nom != null ? nom : "";
-        }
-
-        public void setNom(String nom) {
-            this.nom = nom;
-        }
-
-        public String getPrenom() {
-            return prenom != null ? prenom : "";
-        }
-
-        public void setPrenom(String prenom) {
-            this.prenom = prenom;
-        }
-
-        public String getTel() {
-            return tel != null ? tel : "";
-        }
-
-        public void setTel(String tel) {
-            this.tel = tel;
-        }
     }
 
+    @Data
+    @NoArgsConstructor
     public static class StructureContext {
         private String activitePrincipale;
         private String codePostal;
@@ -1280,9 +396,6 @@ public class ImpressionContext {
         private String typeStructureLibelle;
         private String voie;
         private String batiment;
-
-        public StructureContext() {
-        }
 
         public StructureContext(Structure structure) {
             this.activitePrincipale = structure.getActivitePrincipale();
@@ -1299,112 +412,10 @@ public class ImpressionContext {
             this.voie = structure.getVoie();
             this.batiment = structure.getBatimentResidence();
         }
-
-        public String getActivitePrincipale() {
-            return activitePrincipale != null ? activitePrincipale : "";
-        }
-
-        public void setActivitePrincipale(String activitePrincipale) {
-            this.activitePrincipale = activitePrincipale;
-        }
-
-        public String getCodePostal() {
-            return codePostal != null ? codePostal : "";
-        }
-
-        public void setCodePostal(String codePostal) {
-            this.codePostal = codePostal;
-        }
-
-        public String getCommune() {
-            return commune != null ? commune : "";
-        }
-
-        public void setCommune(String commune) {
-            this.commune = commune;
-        }
-
-        public String getEffectifLibelle() {
-            return effectifLibelle != null ? effectifLibelle : "";
-        }
-
-        public void setEffectifLibelle(String effectifLibelle) {
-            this.effectifLibelle = effectifLibelle;
-        }
-
-        public String getMail() {
-            return mail != null ? mail : "";
-        }
-
-        public void setMail(String mail) {
-            this.mail = mail;
-        }
-
-        public String getNumeroSiret() {
-            return numeroSiret != null ? numeroSiret : "";
-        }
-
-        public void setNumeroSiret(String numeroSiret) {
-            this.numeroSiret = numeroSiret;
-        }
-
-        public String getPaysLibelle() {
-            return paysLibelle != null ? paysLibelle : "";
-        }
-
-        public void setPaysLibelle(String paysLibelle) {
-            this.paysLibelle = paysLibelle;
-        }
-
-        public String getRaisonSociale() {
-            return raisonSociale != null ? raisonSociale : "";
-        }
-
-        public void setRaisonSociale(String raisonSociale) {
-            this.raisonSociale = raisonSociale;
-        }
-
-        public String getStatutJuridiqueLibelle() {
-            return statutJuridiqueLibelle != null ? statutJuridiqueLibelle : "";
-        }
-
-        public void setStatutJuridiqueLibelle(String statutJuridiqueLibelle) {
-            this.statutJuridiqueLibelle = statutJuridiqueLibelle;
-        }
-
-        public String getTelephone() {
-            return telephone != null ? telephone : "";
-        }
-
-        public void setTelephone(String telephone) {
-            this.telephone = telephone;
-        }
-
-        public String getTypeStructureLibelle() {
-            return typeStructureLibelle != null ? typeStructureLibelle : "";
-        }
-
-        public void setTypeStructureLibelle(String typeStructureLibelle) {
-            this.typeStructureLibelle = typeStructureLibelle;
-        }
-
-        public String getVoie() {
-            return voie != null ? voie : "";
-        }
-
-        public void setVoie(String voie) {
-            this.voie = voie;
-        }
-
-        public String getBatiment() {
-            return batiment != null ? batiment : "";
-        }
-
-        public void setBatiment(String batiment) {
-            this.batiment = batiment;
-        }
     }
 
+    @Data
+    @NoArgsConstructor
     public static class AvenantContext {
         private String id;
         private String sujetStage;
@@ -1429,9 +440,6 @@ public class ImpressionContext {
         private ContactContext contact;
         private boolean modificationEnseignant;
         private EnseignantContext enseignant;
-
-        public AvenantContext() {
-        }
 
         public AvenantContext(Avenant avenant) {
             DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
@@ -1470,260 +478,482 @@ public class ImpressionContext {
                 this.enseignant = new EnseignantContext(avenant.getEnseignant());
             }
         }
-
-        public String getId() {
-            return id != null ? id : "";
-        }
-
-        public void setId(String id) {
-            this.id = id;
-        }
-
-        public String getSujetStage() {
-            return sujetStage != null ? sujetStage : "";
-        }
-
-        public void setSujetStage(String sujetStage) {
-            this.sujetStage = sujetStage;
-        }
-
-        public String getMotifAvenant() {
-            return motifAvenant != null ? motifAvenant : "";
-        }
-
-        public void setMotifAvenant(String motifAvenant) {
-            this.motifAvenant = motifAvenant;
-        }
-
-        public String getDateDebutStage() {
-            return dateDebutStage != null ? dateDebutStage : "";
-        }
-
-        public void setDateDebutStage(String dateDebutStage) {
-            this.dateDebutStage = dateDebutStage;
-        }
-
-        public String getDateFinStage() {
-            return dateFinStage != null ? dateFinStage : "";
-        }
-
-        public void setDateFinStage(String dateFinStage) {
-            this.dateFinStage = dateFinStage;
-        }
-
-        public boolean isRupture() {
-            return rupture;
-        }
-
-        public void setRupture(boolean rupture) {
-            this.rupture = rupture;
-        }
-
-        public String getDateRupture() {
-            return dateRupture != null ? dateRupture : "";
-        }
-
-        public void setDateRupture(String dateRupture) {
-            this.dateRupture = dateRupture;
-        }
-
-        public String getCommentaireRupture() {
-            return commentaireRupture != null ? commentaireRupture : "";
-        }
-
-        public void setCommentaireRupture(String commentaireRupture) {
-            this.commentaireRupture = commentaireRupture;
-        }
-
-        public boolean isModificationSujet() {
-            return modificationSujet;
-        }
-
-        public void setModificationSujet(boolean modificationSujet) {
-            this.modificationSujet = modificationSujet;
-        }
-
-        public boolean isModificationPeriode() {
-            return modificationPeriode;
-        }
-
-        public void setModificationPeriode(boolean modificationPeriode) {
-            this.modificationPeriode = modificationPeriode;
-        }
-
-        public List<PeriodeInterruptionContext> getPeriodesInterruptions() {
-            return periodesInterruptions;
-        }
-
-        public void setPeriodesInterruptions(List<PeriodeInterruptionContext> periodesInterruptions) {
-            this.periodesInterruptions = periodesInterruptions;
-        }
-
-        public boolean isModificationMontantGratification() {
-            return modificationMontantGratification;
-        }
-
-        public void setModificationMontantGratification(boolean modificationMontantGratification) {
-            this.modificationMontantGratification = modificationMontantGratification;
-        }
-
-        public String getMontantGratification() {
-            return montantGratification != null ? montantGratification : "";
-        }
-
-        public void setMontantGratification(String montantGratification) {
-            this.montantGratification = montantGratification;
-        }
-
-        public String getUniteGratificationLibelle() {
-            return uniteGratificationLibelle != null ? uniteGratificationLibelle : "";
-        }
-
-        public void setUniteGratificationLibelle(String uniteGratificationLibelle) {
-            this.uniteGratificationLibelle = uniteGratificationLibelle;
-        }
-
-        public String getUniteDureeGratificationLibelle() {
-            return uniteDureeGratificationLibelle != null ? uniteDureeGratificationLibelle : "";
-        }
-
-        public void setUniteDureeGratificationLibelle(String uniteDureeGratificationLibelle) {
-            this.uniteDureeGratificationLibelle = uniteDureeGratificationLibelle;
-        }
-
-        public String getDeviseGratification() {
-            return deviseGratification != null ? deviseGratification : "";
-        }
-
-        public void setDeviseGratification(String deviseGratification) {
-            this.deviseGratification = deviseGratification;
-        }
-
-        public String getModeVersGratificationLibelle() {
-            return modeVersGratificationLibelle != null ? modeVersGratificationLibelle : "";
-        }
-
-        public void setModeVersGratificationLibelle(String modeVersGratificationLibelle) {
-            this.modeVersGratificationLibelle = modeVersGratificationLibelle;
-        }
-
-        public boolean isModificationLieu() {
-            return modificationLieu;
-        }
-
-        public void setModificationLieu(boolean modificationLieu) {
-            this.modificationLieu = modificationLieu;
-        }
-
-        public ServiceContext getService() {
-            return service;
-        }
-
-        public void setService(ServiceContext service) {
-            this.service = service;
-        }
-
-        public boolean isModificationSalarie() {
-            return modificationSalarie;
-        }
-
-        public void setModificationSalarie(boolean modificationSalarie) {
-            this.modificationSalarie = modificationSalarie;
-        }
-
-        public ContactContext getContact() {
-            return contact;
-        }
-
-        public void setContact(ContactContext contact) {
-            this.contact = contact;
-        }
-
-        public boolean isModificationEnseignant() {
-            return modificationEnseignant;
-        }
-
-        public void setModificationEnseignant(boolean modificationEnseignant) {
-            this.modificationEnseignant = modificationEnseignant;
-        }
-
-        public EnseignantContext getEnseignant() {
-            return enseignant;
-        }
-
-        public void setEnseignant(EnseignantContext enseignant) {
-            this.enseignant = enseignant;
-        }
     }
 
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class PeriodeInterruptionContext {
         private String dateDebutInterruption;
         private String dateFinInterruption;
-
-        public PeriodeInterruptionContext() {
-
-        }
-
-        public PeriodeInterruptionContext(String dateDebutInterruption, String dateFinInterruption) {
-            this.dateDebutInterruption = dateDebutInterruption;
-            this.dateFinInterruption = dateFinInterruption;
-        }
-
-        public String getDateDebutInterruption() {
-            return dateDebutInterruption != null ? dateDebutInterruption : "";
-        }
-
-        public void setDateDebutInterruption(String dateDebutInterruption) {
-            this.dateDebutInterruption = dateDebutInterruption;
-        }
-
-        public String getDateFinInterruption() {
-            return dateFinInterruption != null ? dateFinInterruption : "";
-        }
-
-        public void setDateFinInterruption(String dateFinInterruption) {
-            this.dateFinInterruption = dateFinInterruption;
-        }
     }
 
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class HoraireIrregulierContext {
         private String dateDebutPeriode;
         private String dateFinPeriode;
         private Integer nbHeuresJournalieres;
+    }
 
-        public HoraireIrregulierContext() {
+    @Data
+    @NoArgsConstructor
+    public static class ReponseEvaluationContext {
+        private Integer reponseEnt1;
+        @Lob
+        private String reponseEnt1bis;
+        private Integer reponseEnt2;
+        @Lob
+        private String reponseEnt2bis;
+        private Integer reponseEnt3;
+        private Integer reponseEnt4;
+        @Lob
+        private String reponseEnt4bis;
+        private Integer reponseEnt5;
+        @Lob
+        private String reponseEnt5bis;
+        private Integer reponseEnt6;
+        @Lob
+        private String reponseEnt6bis;
+        private Integer reponseEnt7;
+        @Lob
+        private String reponseEnt7bis;
+        private Integer reponseEnt8;
+        @Lob
+        private String reponseEnt8bis;
+        private Integer reponseEnt9;
+        @Lob
+        private String reponseEnt9bis;
+        private Boolean reponseEnt10;
+        @Lob
+        private String reponseEnt10bis;
+        private Integer reponseEnt11;
+        @Lob
+        private String reponseEnt11bis;
+        private Integer reponseEnt12;
+        @Lob
+        private String reponseEnt12bis;
+        private Integer reponseEnt13;
+        @Lob
+        private String reponseEnt13bis;
+        private Integer reponseEnt14;
+        @Lob
+        private String reponseEnt14bis;
+        private Integer reponseEnt15;
+        @Lob
+        private String reponseEnt15bis;
+        private Integer reponseEnt16;
+        @Lob
+        private String reponseEnt16bis;
+        private Integer reponseEnt17;
+        @Lob
+        private String reponseEnt17bis;
+        private Boolean reponseEnt18;
+        @Lob
+        private String reponseEnt18bis;
+        @Lob
+        private String reponseEnt19;
 
+        private Integer reponseEtuI1;
+        @Lob
+        private String reponseEtuI1bis;
+        private Integer reponseEtuI2;
+        private Integer reponseEtuI3;
+        private Boolean reponseEtuI4a;
+        private Boolean reponseEtuI4b;
+        private Boolean reponseEtuI4c;
+        private Boolean reponseEtuI4d;
+        private Integer reponseEtuI5;
+        private Integer reponseEtuI6;
+        private Boolean reponseEtuI7;
+        private Integer reponseEtuI7bis1;
+        private Integer reponseEtuI7bis1a;
+        private String reponseEtuI7bis1b;
+        private Integer reponseEtuI7bis2;
+        private Boolean reponseEtuI8;
+
+        private Integer reponseEtuII1;
+        @Lob
+        private String reponseEtuII1bis;
+        private Integer reponseEtuII2;
+        @Lob
+        private String reponseEtuII2bis;
+        private Integer reponseEtuII3;
+        @Lob
+        private String reponseEtuII3bis;
+        private Integer reponseEtuII4;
+        private Boolean reponseEtuII5;
+        private Integer reponseEtuII5a;
+        private Boolean reponseEtuII5b;
+        private Boolean reponseEtuII6;
+
+        private Boolean reponseEtuIII1;
+        @Lob
+        private String reponseEtuIII1bis;
+        private Boolean reponseEtuIII2;
+        @Lob
+        private String reponseEtuIII2bis;
+        private Boolean reponseEtuIII3;
+        @Lob
+        private String reponseEtuIII3bis;
+        private Integer reponseEtuIII4;
+        private Boolean reponseEtuIII5a;
+        private Boolean reponseEtuIII5b;
+        private Boolean reponseEtuIII5c;
+        @Lob
+        private String reponseEtuIII5bis;
+        private Integer reponseEtuIII6;
+        @Lob
+        private String reponseEtuIII6bis;
+        private Integer reponseEtuIII7;
+        @Lob
+        private String reponseEtuIII7bis;
+        private Boolean reponseEtuIII8;
+        @Lob
+        private String reponseEtuIII8bis;
+        private Boolean reponseEtuIII9;
+        @Lob
+        private String reponseEtuIII9bis;
+        private Boolean reponseEtuIII10;
+        private Boolean reponseEtuIII11;
+        private Boolean reponseEtuIII12;
+        private Boolean reponseEtuIII13;
+        private Boolean reponseEtuIII14;
+        private Integer reponseEtuIII15;
+        @Lob
+        private String reponseEtuIII15bis;
+        private Integer reponseEtuIII16;
+        @Lob
+        private String reponseEtuIII16bis;
+
+        private Boolean reponseEnsI1a;
+        private Boolean reponseEnsI1b;
+        private Boolean reponseEnsI1c;
+        private Boolean reponseEnsI2a;
+        private Boolean reponseEnsI2b;
+        private Boolean reponseEnsI2c;
+        @Lob
+        private String reponseEnsI3;
+
+        private Integer reponseEnsII1;
+        private Integer reponseEnsII2;
+        private Integer reponseEnsII3;
+        private Integer reponseEnsII4;
+        private Integer reponseEnsII5;
+        private Integer reponseEnsII6;
+        private Integer reponseEnsII7;
+        private Integer reponseEnsII8;
+        private Integer reponseEnsII9;
+        private Integer reponseEnsII10;
+        @Lob
+        private String reponseEnsII11;
+
+        public ReponseEvaluationContext(ReponseEvaluation reponseEvaluation) {
+            this.reponseEnt1 = reponseEvaluation.getReponseEnt1();
+            this.reponseEnt1bis = reponseEvaluation.getReponseEnt1bis();
+            this.reponseEnt2 = reponseEvaluation.getReponseEnt2();
+            this.reponseEnt2bis = reponseEvaluation.getReponseEnt2bis();
+            this.reponseEnt3 = reponseEvaluation.getReponseEnt3();
+            this.reponseEnt4 = reponseEvaluation.getReponseEnt4();
+            this.reponseEnt4bis = reponseEvaluation.getReponseEnt4bis();
+            this.reponseEnt5 = reponseEvaluation.getReponseEnt5();
+            this.reponseEnt5bis = reponseEvaluation.getReponseEnt5bis();
+            this.reponseEnt6 = reponseEvaluation.getReponseEnt6();
+            this.reponseEnt6bis = reponseEvaluation.getReponseEnt6bis();
+            this.reponseEnt7 = reponseEvaluation.getReponseEnt7();
+            this.reponseEnt7bis = reponseEvaluation.getReponseEnt7bis();
+            this.reponseEnt8 = reponseEvaluation.getReponseEnt8();
+            this.reponseEnt8bis = reponseEvaluation.getReponseEnt8bis();
+            this.reponseEnt9 = reponseEvaluation.getReponseEnt9();
+            this.reponseEnt9bis = reponseEvaluation.getReponseEnt9bis();
+            this.reponseEnt10 = reponseEvaluation.getReponseEnt10();
+            this.reponseEnt10bis = reponseEvaluation.getReponseEnt10bis();
+            this.reponseEnt11 = reponseEvaluation.getReponseEnt11();
+            this.reponseEnt11bis = reponseEvaluation.getReponseEnt11bis();
+            this.reponseEnt12 = reponseEvaluation.getReponseEnt12();
+            this.reponseEnt12bis = reponseEvaluation.getReponseEnt12bis();
+            this.reponseEnt13 = reponseEvaluation.getReponseEnt13();
+            this.reponseEnt13bis = reponseEvaluation.getReponseEnt13bis();
+            this.reponseEnt14 = reponseEvaluation.getReponseEnt14();
+            this.reponseEnt14bis = reponseEvaluation.getReponseEnt14bis();
+            this.reponseEnt15 = reponseEvaluation.getReponseEnt15();
+            this.reponseEnt15bis = reponseEvaluation.getReponseEnt15bis();
+            this.reponseEnt16 = reponseEvaluation.getReponseEnt16();
+            this.reponseEnt16bis = reponseEvaluation.getReponseEnt16bis();
+            this.reponseEnt17 = reponseEvaluation.getReponseEnt17();
+            this.reponseEnt17bis = reponseEvaluation.getReponseEnt17bis();
+            this.reponseEnt18 = reponseEvaluation.getReponseEnt18();
+            this.reponseEnt18bis = reponseEvaluation.getReponseEnt18bis();
+            this.reponseEnt19 = reponseEvaluation.getReponseEnt19();
+
+            this.reponseEtuI1 = reponseEvaluation.getReponseEtuI1();
+            this.reponseEtuI1bis = reponseEvaluation.getReponseEtuI1bis();
+            this.reponseEtuI2 = reponseEvaluation.getReponseEtuI2();
+            this.reponseEtuI3 = reponseEvaluation.getReponseEtuI3();
+            this.reponseEtuI4a = reponseEvaluation.getReponseEtuI4a();
+            this.reponseEtuI4b = reponseEvaluation.getReponseEtuI4b();
+            this.reponseEtuI4c = reponseEvaluation.getReponseEtuI4c();
+            this.reponseEtuI4d = reponseEvaluation.getReponseEtuI4d();
+            this.reponseEtuI5 = reponseEvaluation.getReponseEtuI5();
+            this.reponseEtuI6 = reponseEvaluation.getReponseEtuI6();
+            this.reponseEtuI7 = reponseEvaluation.getReponseEtuI7();
+            this.reponseEtuI7bis1 = reponseEvaluation.getReponseEtuI7bis1();
+            this.reponseEtuI7bis1a = reponseEvaluation.getReponseEtuI7bis1a();
+            this.reponseEtuI7bis1b = reponseEvaluation.getReponseEtuI7bis1b();
+            this.reponseEtuI7bis2 = reponseEvaluation.getReponseEtuI7bis2();
+            this.reponseEtuI8 = reponseEvaluation.getReponseEtuI8();
+
+            this.reponseEtuII1 = reponseEvaluation.getReponseEtuII1();
+            this.reponseEtuII1bis = reponseEvaluation.getReponseEtuII1bis();
+            this.reponseEtuII2 = reponseEvaluation.getReponseEtuII2();
+            this.reponseEtuII2bis = reponseEvaluation.getReponseEtuII2bis();
+            this.reponseEtuII3 = reponseEvaluation.getReponseEtuII3();
+            this.reponseEtuII3bis = reponseEvaluation.getReponseEtuII3bis();
+            this.reponseEtuII4 = reponseEvaluation.getReponseEtuII4();
+            this.reponseEtuII5 = reponseEvaluation.getReponseEtuII5();
+            this.reponseEtuII5a = reponseEvaluation.getReponseEtuII5a();
+            this.reponseEtuII5b = reponseEvaluation.getReponseEtuII5b();
+            this.reponseEtuII6 = reponseEvaluation.getReponseEtuII6();
+
+            this.reponseEtuIII1 = reponseEvaluation.getReponseEtuIII1();
+            this.reponseEtuIII1bis = reponseEvaluation.getReponseEtuIII1bis();
+            this.reponseEtuIII2 = reponseEvaluation.getReponseEtuIII2();
+            this.reponseEtuIII2bis = reponseEvaluation.getReponseEtuIII2bis();
+            this.reponseEtuIII3 = reponseEvaluation.getReponseEtuIII3();
+            this.reponseEtuIII3bis = reponseEvaluation.getReponseEtuIII3bis();
+            this.reponseEtuIII4 = reponseEvaluation.getReponseEtuIII4();
+            this.reponseEtuIII5a = reponseEvaluation.getReponseEtuIII5a();
+            this.reponseEtuIII5b = reponseEvaluation.getReponseEtuIII5b();
+            this.reponseEtuIII5c = reponseEvaluation.getReponseEtuIII5c();
+            this.reponseEtuIII5bis = reponseEvaluation.getReponseEtuIII5bis();
+            this.reponseEtuIII6 = reponseEvaluation.getReponseEtuIII6();
+            this.reponseEtuIII6bis = reponseEvaluation.getReponseEtuIII6bis();
+            this.reponseEtuIII7 = reponseEvaluation.getReponseEtuIII7();
+            this.reponseEtuIII7bis = reponseEvaluation.getReponseEtuIII7bis();
+            this.reponseEtuIII8 = reponseEvaluation.getReponseEtuIII8();
+            this.reponseEtuIII8bis = reponseEvaluation.getReponseEtuIII8bis();
+            this.reponseEtuIII9 = reponseEvaluation.getReponseEtuIII9();
+            this.reponseEtuIII9bis = reponseEvaluation.getReponseEtuIII9bis();
+            this.reponseEtuIII10 = reponseEvaluation.getReponseEtuIII10();
+            this.reponseEtuIII11 = reponseEvaluation.getReponseEtuIII11();
+            this.reponseEtuIII12 = reponseEvaluation.getReponseEtuIII12();
+            this.reponseEtuIII13 = reponseEvaluation.getReponseEtuIII13();
+            this.reponseEtuIII14 = reponseEvaluation.getReponseEtuIII14();
+            this.reponseEtuIII15 = reponseEvaluation.getReponseEtuIII15();
+            this.reponseEtuIII15bis = reponseEvaluation.getReponseEtuIII15bis();
+            this.reponseEtuIII16 = reponseEvaluation.getReponseEtuIII16();
+            this.reponseEtuIII16bis = reponseEvaluation.getReponseEtuIII16bis();
+
+            this.reponseEnsI1a = reponseEvaluation.getReponseEnsI1a();
+            this.reponseEnsI1b = reponseEvaluation.getReponseEnsI1b();
+            this.reponseEnsI1c = reponseEvaluation.getReponseEnsI1c();
+            this.reponseEnsI2a = reponseEvaluation.getReponseEnsI2a();
+            this.reponseEnsI2b = reponseEvaluation.getReponseEnsI2b();
+            this.reponseEnsI2c = reponseEvaluation.getReponseEnsI2c();
+            this.reponseEnsI3 = reponseEvaluation.getReponseEnsI3();
+
+            this.reponseEnsII1 = reponseEvaluation.getReponseEnsII1();
+            this.reponseEnsII2 = reponseEvaluation.getReponseEnsII2();
+            this.reponseEnsII3 = reponseEvaluation.getReponseEnsII3();
+            this.reponseEnsII4 = reponseEvaluation.getReponseEnsII4();
+            this.reponseEnsII5 = reponseEvaluation.getReponseEnsII5();
+            this.reponseEnsII6 = reponseEvaluation.getReponseEnsII6();
+            this.reponseEnsII7 = reponseEvaluation.getReponseEnsII7();
+            this.reponseEnsII8 = reponseEvaluation.getReponseEnsII8();
+            this.reponseEnsII9 = reponseEvaluation.getReponseEnsII9();
+            this.reponseEnsII10 = reponseEvaluation.getReponseEnsII10();
+            this.reponseEnsII11 = reponseEvaluation.getReponseEnsII11();
         }
+    }
 
-        public HoraireIrregulierContext(String dateDebutPeriode, String dateFinPeriode, Integer nbHeuresJournalieres) {
-            this.dateDebutPeriode = dateDebutPeriode;
-            this.dateFinPeriode = dateFinPeriode;
-            this.nbHeuresJournalieres = nbHeuresJournalieres;
+    @Data
+    @NoArgsConstructor
+    public static class FicheEvaluationContext {
+        private Boolean questionEnt1;
+        private Boolean questionEnt2;
+        private Boolean questionEnt3;
+        private Boolean questionEnt4;
+        private Boolean questionEnt5;
+        private Boolean questionEnt6;
+        private Boolean questionEnt7;
+        private Boolean questionEnt8;
+        private Boolean questionEnt9;
+        private Boolean questionEnt10;
+        private Boolean questionEnt11;
+        private Boolean questionEnt12;
+        private Boolean questionEnt13;
+        private Boolean questionEnt14;
+        private Boolean questionEnt15;
+        private Boolean questionEnt16;
+        private Boolean questionEnt17;
+        private Boolean questionEnt18;
+        private Boolean questionEnt19;
+
+        private Boolean questionEtuI1;
+        private Boolean questionEtuI2;
+        private Boolean questionEtuI3;
+        private Boolean questionEtuI4;
+        private Boolean questionEtuI5;
+        private Boolean questionEtuI6;
+        private Boolean questionEtuI7;
+        private Boolean questionEtuI8;
+
+        private Boolean questionEtuII1;
+        private Boolean questionEtuII2;
+        private Boolean questionEtuII3;
+        private Boolean questionEtuII4;
+        private Boolean questionEtuII5;
+        private Boolean questionEtuII6;
+
+        private Boolean questionEtuIII1;
+        private Boolean questionEtuIII2;
+        private Boolean questionEtuIII3;
+        private Boolean questionEtuIII4;
+        private Boolean questionEtuIII5;
+        private Boolean questionEtuIII6;
+        private Boolean questionEtuIII7;
+        private Boolean questionEtuIII8;
+        private Boolean questionEtuIII9;
+        private Boolean questionEtuIII10;
+        private Boolean questionEtuIII11;
+        private Boolean questionEtuIII12;
+        private Boolean questionEtuIII13;
+        private Boolean questionEtuIII14;
+        private Boolean questionEtuIII15;
+        private Boolean questionEtuIII16;
+
+        private Boolean questionEnsI1;
+        private Boolean questionEnsI2;
+        private Boolean questionEnsI3;
+
+        private Boolean questionEnsII1;
+        private Boolean questionEnsII2;
+        private Boolean questionEnsII3;
+        private Boolean questionEnsII4;
+        private Boolean questionEnsII5;
+        private Boolean questionEnsII6;
+        private Boolean questionEnsII7;
+        private Boolean questionEnsII8;
+        private Boolean questionEnsII9;
+        private Boolean questionEnsII10;
+        private Boolean questionEnsII11;
+
+        public FicheEvaluationContext(FicheEvaluation ficheEvaluation){
+            this.questionEnt1 = ficheEvaluation.getQuestionEnt1();
+            this.questionEnt2 = ficheEvaluation.getQuestionEnt2();
+            this.questionEnt3 = ficheEvaluation.getQuestionEnt3();
+            this.questionEnt4 = ficheEvaluation.getQuestionEnt4();
+            this.questionEnt5 = ficheEvaluation.getQuestionEnt5();
+            this.questionEnt6 = ficheEvaluation.getQuestionEnt6();
+            this.questionEnt7 = ficheEvaluation.getQuestionEnt7();
+            this.questionEnt8 = ficheEvaluation.getQuestionEnt8();
+            this.questionEnt9 = ficheEvaluation.getQuestionEnt9();
+            this.questionEnt10 = ficheEvaluation.getQuestionEnt10();
+            this.questionEnt11 = ficheEvaluation.getQuestionEnt11();
+            this.questionEnt12 = ficheEvaluation.getQuestionEnt12();
+            this.questionEnt13 = ficheEvaluation.getQuestionEnt13();
+            this.questionEnt14 = ficheEvaluation.getQuestionEnt14();
+            this.questionEnt15 = ficheEvaluation.getQuestionEnt15();
+            this.questionEnt16 = ficheEvaluation.getQuestionEnt16();
+            this.questionEnt17 = ficheEvaluation.getQuestionEnt17();
+            this.questionEnt18 = ficheEvaluation.getQuestionEnt18();
+            this.questionEnt19 = ficheEvaluation.getQuestionEnt19();
+
+            this.questionEtuI1 = ficheEvaluation.getQuestionEtuI1();
+            this.questionEtuI2 = ficheEvaluation.getQuestionEtuI2();
+            this.questionEtuI3 = ficheEvaluation.getQuestionEtuI3();
+            this.questionEtuI4 = ficheEvaluation.getQuestionEtuI4();
+            this.questionEtuI5 = ficheEvaluation.getQuestionEtuI5();
+            this.questionEtuI6 = ficheEvaluation.getQuestionEtuI6();
+            this.questionEtuI7 = ficheEvaluation.getQuestionEtuI7();
+            this.questionEtuI8 = ficheEvaluation.getQuestionEtuI8();
+
+            this.questionEtuII1 = ficheEvaluation.getQuestionEtuII1();
+            this.questionEtuII2 = ficheEvaluation.getQuestionEtuII2();
+            this.questionEtuII3 = ficheEvaluation.getQuestionEtuII3();
+            this.questionEtuII4 = ficheEvaluation.getQuestionEtuII4();
+            this.questionEtuII5 = ficheEvaluation.getQuestionEtuII5();
+            this.questionEtuII6 = ficheEvaluation.getQuestionEtuII6();
+
+            this.questionEtuIII1 = ficheEvaluation.getQuestionEtuIII1();
+            this.questionEtuIII2 = ficheEvaluation.getQuestionEtuIII2();
+            this.questionEtuIII3 = ficheEvaluation.getQuestionEtuIII3();
+            this.questionEtuIII4 = ficheEvaluation.getQuestionEtuIII4();
+            this.questionEtuIII5 = ficheEvaluation.getQuestionEtuIII5();
+            this.questionEtuIII6 = ficheEvaluation.getQuestionEtuIII6();
+            this.questionEtuIII7 = ficheEvaluation.getQuestionEtuIII7();
+            this.questionEtuIII8 = ficheEvaluation.getQuestionEtuIII8();
+            this.questionEtuIII9 = ficheEvaluation.getQuestionEtuIII9();
+            this.questionEtuIII10 = ficheEvaluation.getQuestionEtuIII10();
+            this.questionEtuIII11 = ficheEvaluation.getQuestionEtuIII11();
+            this.questionEtuIII12 = ficheEvaluation.getQuestionEtuIII12();
+            this.questionEtuIII13 = ficheEvaluation.getQuestionEtuIII13();
+            this.questionEtuIII14 = ficheEvaluation.getQuestionEtuIII14();
+            this.questionEtuIII15 = ficheEvaluation.getQuestionEtuIII15();
+            this.questionEtuIII16 = ficheEvaluation.getQuestionEtuIII16();
+
+            this.questionEnsI1 = ficheEvaluation.getQuestionEnsI1();
+            this.questionEnsI2 = ficheEvaluation.getQuestionEnsI2();
+            this.questionEnsI3 = ficheEvaluation.getQuestionEnsI3();
+
+            this.questionEnsII1 = ficheEvaluation.getQuestionEnsII1();
+            this.questionEnsII2 = ficheEvaluation.getQuestionEnsII2();
+            this.questionEnsII3 = ficheEvaluation.getQuestionEnsII3();
+            this.questionEnsII4 = ficheEvaluation.getQuestionEnsII4();
+            this.questionEnsII5 = ficheEvaluation.getQuestionEnsII5();
+            this.questionEnsII6 = ficheEvaluation.getQuestionEnsII6();
+            this.questionEnsII7 = ficheEvaluation.getQuestionEnsII7();
+            this.questionEnsII8 = ficheEvaluation.getQuestionEnsII8();
+            this.questionEnsII9 = ficheEvaluation.getQuestionEnsII9();
+            this.questionEnsII10 = ficheEvaluation.getQuestionEnsII10();
+            this.questionEnsII11 = ficheEvaluation.getQuestionEnsII11();
         }
+    }
 
-        public String getDateDebutPeriode() {
-            return dateDebutPeriode != null ? dateDebutPeriode : "";
+    @Data
+    @NoArgsConstructor
+    public static class QuestionSupplementaireContext {
+        private int id;
+        private String question;
+        private String typeQuestion;
+
+        public QuestionSupplementaireContext(QuestionSupplementaire questionSupplementaire) {
+            this.id = questionSupplementaire.getId();
+            this.question = questionSupplementaire.getQuestion();
+            this.typeQuestion = questionSupplementaire.getTypeQuestion();
         }
+    }
 
-        public void setDateDebutPeriode(String dateDebutPeriode) {
-            this.dateDebutPeriode = dateDebutPeriode;
+    @Data
+    @NoArgsConstructor
+    public static class ReponseSupplementaireContext {
+        private int idQuestionSupplementaire;
+        private int idConvention;
+        private String reponseTxt;
+        private Integer reponseInt;
+        private Boolean reponseBool;
+
+        public ReponseSupplementaireContext(ReponseSupplementaire reponseSupplementaire) {
+            this.idQuestionSupplementaire = reponseSupplementaire.getId().getIdQuestionSupplementaire();
+            this.idConvention = reponseSupplementaire.getId().getIdConvention();
+            this.reponseTxt = reponseSupplementaire.getReponseTxt();
+            this.reponseInt = reponseSupplementaire.getReponseInt();
+            this.reponseBool = reponseSupplementaire.getReponseBool();
         }
+    }
 
-        public String getDateFinPeriode() {
-            return dateFinPeriode != null ? dateFinPeriode : "";
+    @Data
+    @NoArgsConstructor
+    public static class QuestionEvaluationContext {
+        private String code;
+        private String texte;
+        private TypeQuestionEvaluation type;
+
+        public QuestionEvaluationContext(QuestionEvaluation questionEvaluation) {
+            this.code = questionEvaluation.getCode();
+            this.texte = questionEvaluation.getTexte();
+            this.type = questionEvaluation.getType();
         }
-
-        public void setDateFinPeriode(String dateFinPeriode) {
-            this.dateFinPeriode = dateFinPeriode;
-        }
-
-        public Integer getNbHeuresJournalieres() {
-            return this.nbHeuresJournalieres;
-        }
-
-        public void setNbHeuresJournalieres(Integer nbHeuresJournalieres) {
-            this.nbHeuresJournalieres = nbHeuresJournalieres;
-        }
-
     }
 }

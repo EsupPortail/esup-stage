@@ -11,9 +11,10 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { SignataireGroupeModalComponent } from './signataire-groupe-modal/signataire-groupe-modal.component';
 
 @Component({
-  selector: 'app-signataire-groupe',
-  templateUrl: './signataire-groupe.component.html',
-  styleUrls: ['./signataire-groupe.component.scss']
+    selector: 'app-signataire-groupe',
+    templateUrl: './signataire-groupe.component.html',
+    styleUrls: ['./signataire-groupe.component.scss'],
+    standalone: false
 })
 export class SignataireGroupeComponent implements OnInit, OnChanges {
 

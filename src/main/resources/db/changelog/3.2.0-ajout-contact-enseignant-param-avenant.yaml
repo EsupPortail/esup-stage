@@ -1,0 +1,29 @@
+databaseChangeLog:
+- changeSet:
+    id: 3.2.0-ajout-contact-enseignant-param-avenant
+    author: thouveno9
+    changes:
+    - insert:
+      - columns:
+            - column:
+                name: code
+                value: avenant.enseignant
+            - column:
+                name: libelle
+                value: nouvel enseignant
+            - column:
+                name: exemple
+                value: John Doe
+      - tableName: ParamConvention
+    - insert:
+      - columns:
+          - column:
+              name: code
+              value: avenant.contact
+          - column:
+              name: libelle
+              value: nouveau contact
+          - column:
+              name: exemple
+              value: Jane Doe
+      - tableName: ParamConvention

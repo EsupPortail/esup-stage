@@ -113,7 +113,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   _onDestroy = new Subject<void>();
   autoUpdating = false;
   isSireneActive = false;
-  filterTypeContries!: 0 | 1 | 2  ;
+  filterTypeCountries!: 0 | 1 | 2  ;
 
   form: any;
 
@@ -142,24 +142,22 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
     })
     this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({ temEnServPays: { value: 'O', type: 'text' } })).subscribe((response: any) => {
         this.countries = response.data;
-        this.filterTypeContries = 0;
+        this.filterTypeCountries = 0;
 
         // Restriction étudiant : enlever la France si nécessaire
         if (this.authService.isEtudiant() && this.creationSeulementHorsFrance) {
           this.countries = this.countries.filter(c => c.libelle !== 'FRANCE');
-          this.filterTypeContries = 1;
+          this.filterTypeCountries = 1;
         }
 
         // Restriction étudiant : enlever les autres pays si nécessaire
         if(this.authService.isEtudiant() && this.creationSeulementFrance){
           this.countries = this.countries.filter(c => c.libelle == 'FRANCE');
-          this.filterTypeContries = 2;
+          this.filterTypeCountries = 2;
         }
 
-        // Alimente la liste filtrée initiale
         this.filteredCountries.next(this.countries.slice());
 
-        // Met en place le filtrage par saisie
         this.paysFilterCtrl.valueChanges.pipe(takeUntil(this._onDestroy)).subscribe(() => this.filterCountries());
     });
     this.communeService.getPaginated(1, 0, 'lib', 'asc', "").subscribe((response: any) => {
@@ -186,8 +184,10 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   public isLayoutReady = false;
   public Editor = ClassicEditor;
   public config: EditorConfig = {};
+
   public ngAfterViewInit() : void {
     this.config = {
+      licenseKey: 'GPL',
       toolbar: {
         items: [
           'undo',
@@ -297,13 +297,6 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
         Underline,
         Undo
       ],
-      fontFamily: {
-        supportAllValues: true
-      },
-      fontSize: {
-        options: [10, 12, 14, 'default', 18, 20, 22],
-        supportAllValues: true
-      },
       heading: {
         options: [
           {
@@ -349,16 +342,6 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
           }
         ]
       },
-      htmlSupport: {
-        allow: [
-          {
-            name: /^.*$/,
-            styles: true,
-            attributes: true,
-            classes: true
-          }
-        ]
-      },
       image: {
         toolbar: [
           'toggleImageCaption',
@@ -394,55 +377,6 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
         }
       },
       placeholder: 'Type or paste your content here!',
-      style: {
-        definitions: [
-          {
-            name: 'Article category',
-            element: 'h3',
-            classes: ['category']
-          },
-          {
-            name: 'Title',
-            element: 'h2',
-            classes: ['document-title']
-          },
-          {
-            name: 'Subtitle',
-            element: 'h3',
-            classes: ['document-subtitle']
-          },
-          {
-            name: 'Info box',
-            element: 'p',
-            classes: ['info-box']
-          },
-          {
-            name: 'Side quote',
-            element: 'blockquote',
-            classes: ['side-quote']
-          },
-          {
-            name: 'Marker',
-            element: 'span',
-            classes: ['marker']
-          },
-          {
-            name: 'Spoiler',
-            element: 'span',
-            classes: ['spoiler']
-          },
-          {
-            name: 'Code (dark)',
-            element: 'pre',
-            classes: ['fancy-code', 'fancy-code-dark']
-          },
-          {
-            name: 'Code (bright)',
-            element: 'pre',
-            classes: ['fancy-code', 'fancy-code-bright']
-          }
-        ]
-      },
       table: {
         contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells', 'tableProperties', 'tableCellProperties']
       },
@@ -473,6 +407,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
       siteWeb: [this.etab.siteWeb, [Validators.maxLength(200), Validators.pattern('^https?://(\\w([\\w\\-]{0,61}\\w)?\\.)+[a-zA-Z]{2,6}([/]{1}.*)?$')]],
       fax: [this.etab.fax, [Validators.maxLength(20)]],
       numeroRNE: [this.etab.numeroRNE, [Validators.maxLength(8), Validators.pattern('[0-9]{7}[a-zA-Z]')]],
+      verrouillageSynchroStructureSirene: [this.etab.verrouillageSynchroStructureSirene || false]
     });
     this.toggleCommune();
     this.form.get('idPays')?.valueChanges
@@ -524,13 +459,11 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
 
   save(): void {
     if (this.form.valid) {
-      // Contrôle code APE ou activité principale renseignée
       if (!this.form.get('codeNafN5')?.value && !this.form.get('activitePrincipale')?.value) {
         this.messageService.setError('Une de ces deux informations doivent être renseignée : Code APE, Activité principale');
         return;
       }
 
-      // Contrôle code postal commune
       if (this.isFr() && !this.isCodePostalValid()) {
         this.messageService.setError('Code postal inconnu');
         return;
@@ -540,6 +473,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
         this.form.get('numeroSiret')?.setValue(null);
       }
       const data = {...this.form.getRawValue()};
+      data.verrouillageSynchroStructureSirene = this.etab.verrouillageSynchroStructureSirene;
       data.nafN5 = this.selectedNafN5;
       if (this.etab.id) {
         this.structureService.update(this.etab.id, data).subscribe((response: any) => {
@@ -691,19 +625,16 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
 
     this.selectedNafN5 = updated?.nafN5 ?? null;
 
-    // Recalcule logic FR / communes selon le pays
     this.toggleCommune();
     this.changeDetector.detectChanges();
   }
 
-  // === AJOUT ===
   autoUpdateFromApi(): void {
     if (!this.etab?.id || !this.canEdit()) {
       return;
     }
     this.autoUpdating = true;
 
-    // ↳ Appelez ici votre endpoint côté back qui va récupérer les infos (ex: INSEE/Sirene) et mettre à jour
     this.structureService.updateFromSirene(this.etab.id).subscribe({
       next: (updated: any) => {
         this.messageService.setSuccess('Mise à jour automatique effectuée.');
@@ -718,5 +649,19 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
         this.autoUpdating = false;
       }
     });
+  }
+
+  canUpdateFromApi(): boolean {
+    return !(this.authService.isEtudiant() || this.authService.isEnseignant()) && this.isSireneActive && this.etab?.id && this.canEdit()
+  }
+
+  // Méthode pour basculer l'état du verrouillage
+  toggleVerrouillage(): void {
+    this.etab.verrouillageSynchroStructureSirene = !this.etab.verrouillageSynchroStructureSirene;
+  }
+
+  // Vérifie si le bouton de verrouillage doit être affiché
+  canToggleVerrouillage(): boolean {
+    return !(this.authService.isEtudiant() || this.authService.isEnseignant()) && this.isSireneActive && !!this.etab?.id && this.canEdit();
   }
 }

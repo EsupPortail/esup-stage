@@ -13,9 +13,10 @@ import {
 } from './service-accueil-groupe-modal/service-accueil-groupe-modal.component';
 
 @Component({
-  selector: 'app-service-accueil-groupe',
-  templateUrl: './service-accueil-groupe.component.html',
-  styleUrls: ['./service-accueil-groupe.component.scss']
+    selector: 'app-service-accueil-groupe',
+    templateUrl: './service-accueil-groupe.component.html',
+    styleUrls: ['./service-accueil-groupe.component.scss'],
+    standalone: false
 })
 export class ServiceAccueilGroupeComponent implements OnInit, OnChanges {
 

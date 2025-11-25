@@ -14,9 +14,10 @@ import {REGEX} from "../../../utils/regex.utils";
 import { ReplaySubject, Subject } from 'rxjs';
 
 @Component({
-  selector: 'app-tuteur-pro',
-  templateUrl: './tuteur-pro.component.html',
-  styleUrls: ['./tuteur-pro.component.scss']
+    selector: 'app-tuteur-pro',
+    templateUrl: './tuteur-pro.component.html',
+    styleUrls: ['./tuteur-pro.component.scss'],
+    standalone: false
 })
 export class TuteurProComponent implements OnInit, OnChanges, OnDestroy {
 
@@ -122,11 +123,10 @@ export class TuteurProComponent implements OnInit, OnChanges, OnDestroy {
 
   chooseStaff(row: any): void {
     this.contact = {};
-    let civilite = 'M.' ? this.civilites.find(c => c.libelle === 'Mr') : this.civilites.find(c => c.libelle === 'Mme')
     this.form.setValue({
       nom: row.sn.join(' '),
       prenom: row.givenName.join(' '),
-      idCivilite: civilite ? civilite.id : null,
+      idCivilite: this.resolveCiviliteIdFromLdap(row),
       fonction: row.eduPersonPrimaryAffiliation,
       tel: row.telephoneNumber,
       fax: '',
@@ -229,6 +229,27 @@ export class TuteurProComponent implements OnInit, OnChanges, OnDestroy {
       )
     );
   }
+
+  private resolveCiviliteIdFromLdap(row: any): number | null {
+    const raw = Array.isArray(row?.supannCivilite) ? row.supannCivilite[0] : row?.supannCivilite;
+
+    const isMale = typeof raw === 'string'
+      ? raw.trim().toLowerCase().startsWith('m')
+      : undefined;
+
+    const maleLabels = ['mr', 'm.', 'monsieur'];
+    const femaleLabels = ['mme', 'madame'];
+
+    const match = this.civilites.find((c: any) => {
+      const lib = String(c?.libelle || '').trim().toLowerCase();
+      if (isMale === true)  return maleLabels.includes(lib);
+      if (isMale === false) return femaleLabels.includes(lib);
+      return false;
+    });
+
+    return match ? match.id : null;
+  }
+
 
   ngOnDestroy() {
     this._onDestroy.next();

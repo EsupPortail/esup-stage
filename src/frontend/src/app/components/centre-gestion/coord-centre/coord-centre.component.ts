@@ -13,9 +13,10 @@ import { MatExpansionPanel } from '@angular/material/expansion';
 import { TableComponent } from "../../table/table.component";
 
 @Component({
-  selector: 'app-coord-centre',
-  templateUrl: './coord-centre.component.html',
-  styleUrls: ['./coord-centre.component.scss']
+    selector: 'app-coord-centre',
+    templateUrl: './coord-centre.component.html',
+    styleUrls: ['./coord-centre.component.scss'],
+    standalone: false
 })
 export class CoordCentreComponent implements OnInit {
 

@@ -11,7 +11,7 @@
           <div class="col-sm-3 font-weight-bold">Date d'actualisation</div>
           <div class="col-sm-9">{{avenant.dateActualisationSignature|date:'dd/MM/YYYY HH:mm:ss'}}</div>
           <div class="col-sm-3 font-weight-bold">Envoyé par</div>
-          <div class="col-sm-9">{{this.NomPrenomEnvoiSignature}}</div>
+          <div class="col-sm-9">{{NomPrenomEnvoiSignature}}</div>
           <ng-container *ngIf="avenant.allSignedDateSetted">
             <div class="col-sm-3 font-weight-bold">Document signé</div>
             <div class="col-sm-9"><a href (click)="downloadSignedDoc($event, avenant)">Télécharger</a></div>

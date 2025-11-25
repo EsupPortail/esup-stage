@@ -276,3 +276,39 @@ databaseChangeLog:
   - include:
         file: 3.1.7-contenu-envoi-doc-signe.yaml
         relativeToChangelogFile: true
+  - include:
+      file: 3.2.0-autoriser-chevauchement.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 3.2.0-contenu-confirm-message-etab-accueil.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 3.2.0-ajout-donnee-etudiant.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 3.2.0-ajout-param-convention.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 3.2.0-autoriser-impression-convention-apres-creation-avenant.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 3.2.0-ajout-contact-enseignant-param-avenant.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 3.2.0-evaluation-stage.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 3.2.0-ajout-question-evaluation.yaml
+      relativeToChangelogFile: true
+  - include:
+        file: 3.2.0-alertes-mail-eval.yaml
+        relativeToChangelogFile: true
+  - include:
+        file: 3.2.0-delegataire-viseur.yaml
+        relativeToChangelogFile: true
+  - include:
+        file: 3.2.0-ajout-var-template-delegataire.yaml
+        relativeToChangelogFile: true
+  - include:
+        file: 3.2.0-ajout-bool-verrouillage-synchro-etab.yaml
+        relativeToChangelogFile: true

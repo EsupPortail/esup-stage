@@ -4,9 +4,10 @@ import { MessageService } from "../../../../services/message.service";
 import { AuthService } from "../../../../services/auth.service";
 
 @Component({
-  selector: 'app-validation-card',
-  templateUrl: './validation-card.component.html',
-  styleUrls: ['./validation-card.component.scss']
+    selector: 'app-validation-card',
+    templateUrl: './validation-card.component.html',
+    styleUrls: ['./validation-card.component.scss'],
+    standalone: false
 })
 export class ValidationCardComponent implements OnInit {
 

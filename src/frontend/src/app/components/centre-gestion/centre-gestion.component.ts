@@ -11,9 +11,10 @@ import { CoordCentreComponent } from './coord-centre/coord-centre.component';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-centre-gestion',
-  templateUrl: './centre-gestion.component.html',
-  styleUrls: ['./centre-gestion.component.scss'],
+    selector: 'app-centre-gestion',
+    templateUrl: './centre-gestion.component.html',
+    styleUrls: ['./centre-gestion.component.scss'],
+    standalone: false
 })
 export class CentreGestionComponent implements OnInit,OnDestroy {
 
@@ -303,6 +304,12 @@ export class CentreGestionComponent implements OnInit,OnDestroy {
       qualiteViseur: [null, [Validators.maxLength(100)]],
       delaiAlerteConvention: [null, [Validators.required, Validators.min(0)]],
       onlyMailCentreGestion: [null],
+      autoriserChevauchement: [null],
+      autoriserImpressionConventionApresCreationAvenant: [null],
+      nomDelegataireViseur: [null],
+      prenomDelegataireViseur: [null],
+      mailDelegataireViseur: [null],
+      qualiteDelegataireViseur: [null],
     });
   }
 
@@ -327,6 +334,12 @@ export class CentreGestionComponent implements OnInit,OnDestroy {
     this.centreGestion.qualiteViseur = this.paramCentreForm.get('qualiteViseur')?.value;
     this.centreGestion.delaiAlerteConvention = this.paramCentreForm.get('delaiAlerteConvention')?.value;
     this.centreGestion.onlyMailCentreGestion = this.paramCentreForm.get('onlyMailCentreGestion')?.value;
+    this.centreGestion.autoriserChevauchement = this.paramCentreForm.get('autoriserChevauchement')?.value;
+    this.centreGestion.autoriserImpressionConventionApresCreationAvenant = this.paramCentreForm.get('autoriserImpressionConventionApresCreationAvenant')?.value;
+    this.centreGestion.nomDelegataireViseur = this.paramCentreForm.get('nomDelegataireViseur')?.value;
+    this.centreGestion.prenomDelegataireViseur = this.paramCentreForm.get('prenomDelegataireViseur')?.value;
+    this.centreGestion.mailDelegataireViseur = this.paramCentreForm.get('mailDelegataireViseur')?.value;
+    this.centreGestion.qualiteDelegataireViseur = this.paramCentreForm.get('qualiteDelegataireViseur')?.value;
   }
 
   setSignatureElectroniqueForm() {

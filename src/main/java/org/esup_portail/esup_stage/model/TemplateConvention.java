@@ -2,7 +2,9 @@ package org.esup_portail.esup_stage.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "TemplateConvention",
         uniqueConstraints = {

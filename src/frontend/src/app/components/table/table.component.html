@@ -110,7 +110,13 @@
         </div>
         <div class="row">
           <div class="col-sm-12 col-md-6">
-            <button type="button" mat-button mat-flat-button color="primary" *ngIf="actionButton" (click)="actionButton.action()">{{actionButton.libelle}}</button>
+            <!-- gestion des message de confirmation : si il y a un message on ouvre boite de dialogue (cas 1) sinon c'est le bouton qui déclenche le traitement directement (cas 2) -->
+            <span *ngIf="confirmMessage != ''" [confirmMessage]="confirmMessage" (confirm)="actionButton.action()">
+              <button type="button" mat-button mat-flat-button color="primary" *ngIf="actionButton">{{actionButton.libelle}}</button>
+            </span>
+            <span *ngIf="confirmMessage===''">
+              <button type="button" mat-button mat-flat-button color="primary" *ngIf="actionButton" (click)="actionButton.action()">{{actionButton.libelle}}</button>
+            </span>
           </div>
           <div class="col-sm-12 col-md-6 text-right" [hidden]="hideDeleteFilters">
             <button type="button" mat-button mat-stroked-button (click)="reset()">Supprimer les filtres</button>

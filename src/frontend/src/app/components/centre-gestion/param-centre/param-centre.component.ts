@@ -10,9 +10,10 @@ import { ConfigService } from "../../../services/config.service";
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 
 @Component({
-  selector: 'app-param-centre',
-  templateUrl: './param-centre.component.html',
-  styleUrls: ['./param-centre.component.scss']
+    selector: 'app-param-centre',
+    templateUrl: './param-centre.component.html',
+    styleUrls: ['./param-centre.component.scss'],
+    standalone: false
 })
 export class ParamCentreComponent implements OnInit {
 
@@ -27,6 +28,10 @@ export class ParamCentreComponent implements OnInit {
   enseignant: any;
   confidentialites: any[] = [];
   etablissementConfidentialite: any;
+
+  delegataireForm: FormGroup;
+  delegataires: any[] = [];
+  delegataire: any;
 
   validationLibelles: any = {};
   validationsActives: any[] = [];
@@ -43,11 +48,15 @@ export class ParamCentreComponent implements OnInit {
     private enseignantService: EnseignantService,
     private configService: ConfigService,
     ) {
-      this.viseurForm = this.fb.group({
-        nom: [null, []],
-        prenom: [null, []],
-      });
-    }
+    this.viseurForm = this.fb.group({
+      nom: [null, []],
+      prenom: [null, []],
+    });
+    this.delegataireForm = this.fb.group({
+      nom: [null, []],
+      prenom: [null, []],
+    });
+  }
 
   ngOnInit(): void {
     this.configService.getConfigGenerale().subscribe((response: any) => {
@@ -81,6 +90,15 @@ export class ParamCentreComponent implements OnInit {
         this.centreGestion.qualiteViseur = val;
         this.update.emit(this.form.getRawValue());
       }
+    });
+    this.form.get('qualiteDelegataireViseur')?.valueChanges.pipe(debounceTime(500)).subscribe((val) => {
+      if (this.form.get('qualiteDelegataireViseur')?.dirty) {
+        this.centreGestion.qualiteDelegataireViseur = val;
+        this.update.emit(this.form.getRawValue());
+      }
+    });
+    this.delegataireForm.valueChanges.pipe(debounceTime(1000)).subscribe(() => {
+      this.searchDelegataire();
     });
   }
 
@@ -124,6 +142,12 @@ export class ParamCentreComponent implements OnInit {
       qualiteViseur: this.centreGestion.qualiteViseur,
       delaiAlerteConvention: this.centreGestion.delaiAlerteConvention,
       onlyMailCentreGestion: this.centreGestion.onlyMailCentreGestion,
+      autoriserChevauchement : this.centreGestion.autoriserChevauchement,
+      autoriserImpressionConventionApresCreationAvenant : this.centreGestion.autoriserImpressionConventionApresCreationAvenant,
+      nomDelegataireViseur: this.centreGestion.nomDelegataireViseur,
+      prenomDelegataireViseur: this.centreGestion.prenomDelegataireViseur,
+      mailDelegataireViseur: this.centreGestion.mailDelegataireViseur,
+      qualiteDelegataireViseur: this.centreGestion.qualiteDelegataireViseur,
     }, {
       emitEvent: false,
     });
@@ -160,20 +184,20 @@ export class ParamCentreComponent implements OnInit {
   }
 
   choose(row: any): void {
-      if (this.pannels) {
-        this.pannels.first.open();
+    if (this.pannels) {
+      this.pannels.first.open();
+    }
+    this.enseignantService.getByUid(row.supannAliasLogin).subscribe((response: any) => {
+      this.enseignant = response;
+      if (this.enseignant == null){
+        this.createEnseignant(row, 'viseur');
+      }else{
+        this.updateEnseignant(this.enseignant.id, row, 'viseur');
       }
-      this.enseignantService.getByUid(row.supannAliasLogin).subscribe((response: any) => {
-        this.enseignant = response;
-        if (this.enseignant == null){
-          this.createEnseignant(row);
-        }else{
-          this.updateEnseignant(this.enseignant.id, row);
-        }
-      });
+    });
   }
 
-  createEnseignant(row: any): void {
+  createEnseignant(row: any, type: 'viseur' | 'delegataire'): void {
     const data = {
       "nom": row.sn.join(' '),
       "prenom": row.givenName.join(' '),
@@ -184,12 +208,17 @@ export class ParamCentreComponent implements OnInit {
     };
 
     this.enseignantService.create(data).subscribe((response: any) => {
-      this.enseignant = response;
-      this.setViseur(this.enseignant);
+      if (type === 'viseur') {
+        this.enseignant = response;
+        this.setViseur(this.enseignant);
+      } else {
+        this.delegataire = response;
+        this.setDelegataire(this.delegataire);
+      }
     });
   }
 
-  updateEnseignant(id: number, row: any): void {
+  updateEnseignant(id: number, row: any, type: 'viseur' | 'delegataire'): void {
     const data = {
       nom: row.sn.join(' '),
       prenom: row.givenName.join(' '),
@@ -200,8 +229,13 @@ export class ParamCentreComponent implements OnInit {
     };
 
     this.enseignantService.update(id, data).subscribe((response: any) => {
-      this.enseignant = response;
-      this.setViseur(this.enseignant);
+      if (type === 'viseur') {
+        this.enseignant = response;
+        this.setViseur(this.enseignant);
+      } else {
+        this.delegataire = response;
+        this.setDelegataire(this.delegataire);
+      }
     });
   }
 
@@ -233,6 +267,8 @@ export class ParamCentreComponent implements OnInit {
 
     this.form.markAsDirty();
     this.update.emit(this.form.getRawValue());
+
+    this.resetDelegataire() // reset aussi le délégataire, car lié au viseur
   }
 
   compareCode(option: any, value: any): boolean {
@@ -280,4 +316,74 @@ export class ParamCentreComponent implements OnInit {
     }
   }
 
+  searchDelegataire(): void {
+    if (!this.delegataireForm.get('nom')?.value && !this.delegataireForm.get('prenom')?.value) {
+      this.messageService.setError(`Veuillez renseigner au moins l'un des critères`);
+      return;
+    }
+    this.delegataire = undefined;
+    this.ldapService.searchUsersByName(this.delegataireForm.value.nom, this.delegataireForm.value.prenom).subscribe((response: any) => {
+      this.delegataires = response;
+      if (this.delegataires.length === 1) {
+        this.chooseDelegataire(this.delegataires[0]);
+      }
+    });
+  }
+
+
+  chooseDelegataire(row: any): void {
+    if (!this.hasViseur()) {
+      this.messageService.setError(`Vous devez d'abord sélectionner un viseur avant de définir un délégataire`);
+      return;
+    }
+    if (this.pannels) {
+      this.pannels.first.open();
+    }
+    this.enseignantService.getByUid(row.supannAliasLogin).subscribe((response: any) => {
+      this.delegataire = response;
+      if (this.delegataire == null){
+        this.createEnseignant(row, 'delegataire');
+      }else{
+        this.updateEnseignant(this.delegataire.id, row, 'delegataire');
+      }
+    });
+  }
+
+  setDelegataire(enseignant: any) {
+    this.form.get('nomDelegataireViseur')?.setValue(enseignant.nom);
+    this.form.get('prenomDelegataireViseur')?.setValue(enseignant.prenom);
+    this.form.get('mailDelegataireViseur')?.setValue(enseignant.mail);
+    this.form.get('qualiteDelegataireViseur')?.reset();
+
+    this.centreGestion.nomDelegataireViseur = enseignant.nom;
+    this.centreGestion.prenomDelegataireViseur = enseignant.prenom;
+    this.centreGestion.mailDelegataireViseur = enseignant.mail;
+    this.centreGestion.qualiteDelegataireViseur = null;
+
+    this.form.markAsDirty();
+    this.update.emit(this.form.getRawValue());
+  }
+
+  resetDelegataire() {
+    this.form.get('nomDelegataireViseur')?.reset();
+    this.form.get('prenomDelegataireViseur')?.reset();
+    this.form.get('mailDelegataireViseur')?.reset();
+    this.form.get('qualiteDelegataireViseur')?.reset();
+
+    this.centreGestion.nomDelegataireViseur = null;
+    this.centreGestion.prenomDelegataireViseur = null;
+    this.centreGestion.mailDelegataireViseur = null;
+    this.centreGestion.qualiteDelegataireViseur = null;
+
+    this.form.markAsDirty();
+    this.update.emit(this.form.getRawValue());
+  }
+
+  isDisabledChoose(): boolean {
+    return !this.hasViseur();
+  }
+
+  hasViseur(): boolean {
+    return !!this.form.get('nomViseur')?.value;
+  }
 }

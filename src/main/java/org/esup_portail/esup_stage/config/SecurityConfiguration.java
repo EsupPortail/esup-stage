@@ -30,7 +30,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import java.util.Collections;
 
 @Configuration
-@Order(3)
+@Order(4)
 @Slf4j
 public class SecurityConfiguration {
 
@@ -88,8 +88,11 @@ public class SecurityConfiguration {
         CasAuthenticationFilter filter = new CasAuthenticationFilter();
         filter.setServiceProperties(serviceProperties());
         filter.setAuthenticationManager(new ProviderManager(Collections.singletonList(casAuthenticationProvider())));
+        filter.setAuthenticationFailureHandler((req, res, ex) -> casEntryPoint().commence(req, res, ex));
+        filter.setFilterProcessesUrl("/login/cas"); // explicite
         return filter;
     }
+
 
     @Bean
     public SingleSignOutFilter singleSignOutFilter() {
@@ -108,21 +111,35 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        /* Configure les autorisations d'accès */
-        http.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/login/cas", "/api/version", "/error/**").permitAll()
-                /* Les autres requêtes doivent être authentifiées */
-                .anyRequest().authenticated());
-
-        // Gestion des exceptions d'authentification
-        http.exceptionHandling(exception -> exception.accessDeniedHandler(accessDeniedHandler()).authenticationEntryPoint(casEntryPoint()))
-                .addFilter(casAuthenticationFilter())  // Ajouter le filtre d'authentification CAS
-                .addFilterBefore(singleSignOutFilter(), CasAuthenticationFilter.class)  // Ajouter le filtre de déconnexion avant le filtre CAS
-                .addFilterBefore(logoutFilter(), LogoutFilter.class)  // Ajouter le filtre de déconnexion
-                .csrf(AbstractHttpConfigurer::disable);  // Désactiver CSRF
+        http.authorizeHttpRequests(auth -> auth
+                        // Routes d'authentification
+                        .requestMatchers("/login/cas").permitAll()
+                        .requestMatchers("/api/version").permitAll()
+                        .requestMatchers("/api/contenus/**").permitAll()
+                        .requestMatchers("/api/config/theme").permitAll()
+                        .requestMatchers("/api/evaluation-tuteur/**").permitAll()
+                        .requestMatchers("/error/**").permitAll()
+                        // Protection API
+                        .requestMatchers("/api/**").authenticated()
+                        .anyRequest().permitAll()
+                )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            if (request.getRequestURI().startsWith("/api/")) {
+                                response.setStatus(401);
+                            } else {
+                                response.sendRedirect("/login/cas");
+                            }
+                        })
+                )
+                .csrf(AbstractHttpConfigurer::disable)
+                .addFilter(casAuthenticationFilter())
+                .addFilterBefore(singleSignOutFilter(), CasAuthenticationFilter.class)
+                .addFilterBefore(logoutFilter(), LogoutFilter.class);
 
         return http.build();
     }
+
 
     @Bean
     public AccessDeniedHandler accessDeniedHandler() {

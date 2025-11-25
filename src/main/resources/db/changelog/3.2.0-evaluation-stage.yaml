@@ -1,0 +1,203 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.2.0-ajout-text-accueil-tuteur
+      author: thouveno9
+      changes:
+        - insert:
+            columns:
+              - column:
+                  name: codeContenu
+                  value: TEXTE_ACCUEIL_TUTEUR
+              - column:
+                  name: libelle
+                  valueBoolean: true
+              - column:
+                  name: texte
+                  value: "Bonjour et bienvenue sur notre module d'évaluation des stages. Pour remplir votre appréciation, cliquez ici :"
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: dateCreation
+                  value: now()
+            tableName: Contenu
+  - changeSet:
+      id: 3.2.0-ajout-text-questionnaire-complet-tuteur
+      author: thouveno9
+      changes:
+        - insert:
+            columns:
+              - column:
+                  name: codeContenu
+                  value: TEXTE_QUESTIONNAIRE_COMPLET_TUTEUR
+              - column:
+                  name: libelle
+                  valueBoolean: true
+              - column:
+                  name: texte
+                  value: "Votre appréciation a bien été prise en compte et peut être imprimée : "
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: dateCreation
+                  value: now()
+            tableName: Contenu
+  - changeSet:
+      id: 3.2.0-ajout-text-demander-renouvellement-tuteur
+      author: thouveno9
+      changes:
+        - insert:
+            columns:
+              - column:
+                  name: codeContenu
+                  value: TEXTE_DEMANDER_RENOUVELLEMENT_TUTEUR
+              - column:
+                  name: libelle
+                  valueBoolean: true
+              - column:
+                  name: texte
+                  value: "Si vous souhaitez changer votre évaluation, cliquez ici : "
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: dateCreation
+                  value: now()
+            tableName: Contenu
+  - changeSet:
+      id: 3.2.0-creation-evaluation-tuteur-token
+      author: thouveno9
+      changes:
+        - createTable:
+            tableName: EvaluationTuteurToken
+            columns:
+              - column:
+                  name: idEvaluationTuteurToken
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_eval_tuteur_token
+                    nullable: false
+
+              - column:
+                  name: idConvention
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: idTuteur
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: Token
+                  type: VARCHAR(128)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uk_evaltoken_token
+
+              - column:
+                  name: DateExpiration
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: DateCreation
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: DateUtilisation
+                  type: TIMESTAMP
+
+              - column:
+                  name: DateRevocation
+                  type: TIMESTAMP
+
+        # Index
+        - createIndex:
+            tableName: EvaluationTuteurToken
+            indexName: idx_evaltoken_convention
+            columns:
+              - column:
+                  name: idConvention
+
+        - createIndex:
+            tableName: EvaluationTuteurToken
+            indexName: idx_evaltoken_tuteur
+            columns:
+              - column:
+                  name: idTuteur
+  - changeSet:
+      id: 3.2.0-changement-type-Utilisation-Revocation-Token
+      author: thouveno9
+      changes:
+        - dropColumn:
+            columnName: DateUtilisation
+            tableName: EvaluationTuteurToken
+        - dropColumn:
+            columnName: DateRevocation
+            tableName: EvaluationTuteurToken
+        - addColumn:
+            tableName: EvaluationTuteurToken
+            columns:
+              - column:
+                  name: Utilise
+                  type: boolean
+              - column:
+                  name: Revoque
+                  type: boolean
+  - changeSet:
+      id: 3.2.0-ajout-param-mail-lien-evaluation-tuteur
+      author: thouveno9
+      changes:
+        - insert:
+            columns:
+              - column:
+                  name: code
+                  value: lienEvaluationTuteur
+              - column:
+                  name: libelle
+                  value: Lien de l'application vers l'évaluation de stage pour le tuteur
+            tableName: ParamMail
+
+  - changeSet:
+      id: 3.2.0-insert-template-mail-renouvellement
+      author: thouveno9
+      changes:
+        - insert:
+            tableName: TemplateMail
+            columns:
+              - column:
+                  name: code
+                  value: RENOUVELLEMENT_EVAL_TUTEUR
+              - column:
+                  name: libelle
+                  value: Envoi d'un nouveau lien au tuteur pour saisir son évaluation
+              - column:
+                  name: objet
+                  value: Renouvellement de l'évaluation
+              - column:
+                  name: texte
+                  value: Texte à modifier
+              - column:
+                  name: dateCreation
+                  value: now()
+              - column:
+                  name: loginCreation
+                  value: liquibase
+  - changeSet:
+      id: 3.2.0-updtade-token
+      author: thouveno9
+      changes:
+        - modifyDataType:
+            tableName: EvaluationTuteurToken
+            columnName: Token
+            newDataType: VARCHAR(1024)

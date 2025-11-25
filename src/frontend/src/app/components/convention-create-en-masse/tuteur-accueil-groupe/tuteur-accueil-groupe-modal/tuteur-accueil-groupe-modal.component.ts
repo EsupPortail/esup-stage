@@ -2,9 +2,10 @@ import { Component, Inject, OnInit} from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
-  selector: 'app-tuteur-accueil-groupe-modal',
-  templateUrl: './tuteur-accueil-groupe-modal.component.html',
-  styleUrls: ['./tuteur-accueil-groupe-modal.component.scss']
+    selector: 'app-tuteur-accueil-groupe-modal',
+    templateUrl: './tuteur-accueil-groupe-modal.component.html',
+    styleUrls: ['./tuteur-accueil-groupe-modal.component.scss'],
+    standalone: false
 })
 export class TuteurAccueilGroupeModalComponent implements OnInit {
 

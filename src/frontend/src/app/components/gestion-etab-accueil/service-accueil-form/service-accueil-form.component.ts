@@ -6,9 +6,10 @@ import { CommuneService } from "../../../services/commune.service";
 import { MessageService } from "../../../services/message.service";
 
 @Component({
-  selector: 'app-service-accueil-form',
-  templateUrl: './service-accueil-form.component.html',
-  styleUrls: ['./service-accueil-form.component.scss']
+    selector: 'app-service-accueil-form',
+    templateUrl: './service-accueil-form.component.html',
+    styleUrls: ['./service-accueil-form.component.scss'],
+    standalone: false
 })
 export class ServiceAccueilFormComponent {
 

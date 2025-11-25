@@ -1,4 +1,12 @@
-import {ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+  ViewEncapsulation
+} from '@angular/core';
 import { ContenuService } from "../../../services/contenu.service";
 import { TableComponent } from "../../table/table.component";
 import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
@@ -82,12 +90,13 @@ import translations from 'ckeditor5/translations/fr.js';
 
 
 @Component({
-  selector: 'app-contenu',
-  templateUrl: './contenu.component.html',
-  styleUrls: ['./contenu.component.scss'],
-  encapsulation: ViewEncapsulation.None
+    selector: 'app-contenu',
+    templateUrl: './contenu.component.html',
+    styleUrls: ['./contenu.component.scss'],
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
-export class ContenuComponent implements OnInit {
+export class ContenuComponent implements OnInit, AfterViewInit {
 
 
 
@@ -117,9 +126,10 @@ export class ContenuComponent implements OnInit {
   public isLayoutReady = false;
   public Editor = ClassicEditor;
   public config: EditorConfig = {};
-  public ngAfterViewInit(): void {
 
+  public ngAfterViewInit() : void {
     this.config = {
+      licenseKey: 'GPL',
       toolbar: {
         items: [
           'undo',
@@ -229,13 +239,6 @@ export class ContenuComponent implements OnInit {
         Underline,
         Undo
       ],
-      fontFamily: {
-        supportAllValues: true
-      },
-      fontSize: {
-        options: [10, 12, 14, 'default', 18, 20, 22],
-        supportAllValues: true
-      },
       heading: {
         options: [
           {
@@ -281,16 +284,6 @@ export class ContenuComponent implements OnInit {
           }
         ]
       },
-      htmlSupport: {
-        allow: [
-          {
-            name: /^.*$/,
-            styles: true,
-            attributes: true,
-            classes: true
-          }
-        ]
-      },
       image: {
         toolbar: [
           'toggleImageCaption',
@@ -326,55 +319,6 @@ export class ContenuComponent implements OnInit {
         }
       },
       placeholder: 'Type or paste your content here!',
-      style: {
-        definitions: [
-          {
-            name: 'Article category',
-            element: 'h3',
-            classes: ['category']
-          },
-          {
-            name: 'Title',
-            element: 'h2',
-            classes: ['document-title']
-          },
-          {
-            name: 'Subtitle',
-            element: 'h3',
-            classes: ['document-subtitle']
-          },
-          {
-            name: 'Info box',
-            element: 'p',
-            classes: ['info-box']
-          },
-          {
-            name: 'Side quote',
-            element: 'blockquote',
-            classes: ['side-quote']
-          },
-          {
-            name: 'Marker',
-            element: 'span',
-            classes: ['marker']
-          },
-          {
-            name: 'Spoiler',
-            element: 'span',
-            classes: ['spoiler']
-          },
-          {
-            name: 'Code (dark)',
-            element: 'pre',
-            classes: ['fancy-code', 'fancy-code-dark']
-          },
-          {
-            name: 'Code (bright)',
-            element: 'pre',
-            classes: ['fancy-code', 'fancy-code-bright']
-          }
-        ]
-      },
       table: {
         contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells', 'tableProperties', 'tableCellProperties']
       },
@@ -384,6 +328,7 @@ export class ContenuComponent implements OnInit {
     this.isLayoutReady = true;
     this.changeDetector.detectChanges();
   }
+
   ngOnInit(): void {
     this.form = this.fb.group({
       code: [null, [Validators.required, Validators.maxLength(100)]],

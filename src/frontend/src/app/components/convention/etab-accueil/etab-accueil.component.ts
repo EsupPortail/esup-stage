@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild} from '@angular/core';
 import { PaysService } from "../../../services/pays.service";
 import { TypeStructureService } from "../../../services/type-structure.service";
 import { NafN1Service } from "../../../services/naf-n1.service";
@@ -12,13 +12,15 @@ import { AppFonction } from "../../../constants/app-fonction";
 import { Droit } from "../../../constants/droit";
 import { AuthService } from "../../../services/auth.service";
 import { ConfigService } from "../../../services/config.service";
-import {Checkbox, CheckboxChangeEvent} from "primeng/checkbox";
 import {ContenuService} from "../../../services/contenu.service";
+import {MatDialog} from "@angular/material/dialog";
+
 
 @Component({
-  selector: 'app-etab-accueil',
-  templateUrl: './etab-accueil.component.html',
-  styleUrls: ['./etab-accueil.component.scss']
+    selector: 'app-etab-accueil',
+    templateUrl: './etab-accueil.component.html',
+    styleUrls: ['./etab-accueil.component.scss'],
+    standalone: false
 })
 export class EtabAccueilComponent implements OnInit {
 
@@ -28,7 +30,7 @@ export class EtabAccueilComponent implements OnInit {
   data: any;
 
   createButton = {
-    libelle: 'Créer un établissement',
+    libelle: 'Créer un nouvel établissement d’accueil',
     action: () => this.initCreate(),
   }
 
@@ -43,13 +45,11 @@ export class EtabAccueilComponent implements OnInit {
 
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
   @ViewChild(MatExpansionPanel) firstPanel: MatExpansionPanel|undefined;
+  @ViewChild('confirmDialog') confirmDialog!: TemplateRef<any>;
 
   @Output() validated = new EventEmitter<any>();
   @Output() cbyChange = new EventEmitter<any>();
   @Output() cbnChange = new EventEmitter<any>();
-
-
-
 
   constructor(public structureService: StructureService,
               private paysService: PaysService,
@@ -59,6 +59,7 @@ export class EtabAccueilComponent implements OnInit {
               private contenuService: ContenuService,
               private authService: AuthService,
               private configService: ConfigService,
+              private dialog: MatDialog,
   ) { }
 
   ngOnInit(): void {
@@ -141,10 +142,11 @@ export class EtabAccueilComponent implements OnInit {
     this.modif = true;
   }
 
-  changeOnglet(): void {
-    if (this.firstPanel) {
-      this.firstPanel.expanded = true;
-    }
-  }
+  // changeOnglet(): void {
+  //   if (this.firstPanel) {
+  //     this.firstPanel.expanded = true;
+  //   }
+  // }
+
 
 }

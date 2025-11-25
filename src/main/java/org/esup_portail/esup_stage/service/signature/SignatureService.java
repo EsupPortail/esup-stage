@@ -97,9 +97,11 @@ public class SignatureService {
     }
 
     public MetadataDto getPublicMetadata(Convention convention, Integer idAvenant) {
-        Avenant avenant = null;
+        Avenant avenant;
         if (idAvenant != null) {
             avenant = avenantJpaRepository.findById(idAvenant).orElse(null);
+        } else {
+            avenant = null;
         }
         MetadataDto metadata = new MetadataDto();
         metadata.setTitle("Convention_" + convention.getId() + "_" + convention.getEtudiant().getNom() + "_" + convention.getEtudiant().getPrenom());
@@ -137,6 +139,17 @@ public class SignatureService {
                     signataireDto.setOrder(s.getOrdre());
                     break;
                 case enseignant:
+                    if(avenant != null){
+                        if(avenant.getEnseignant() != null) {
+                            Enseignant enseignantAvenant = avenant.getEnseignant();
+                            signataireDto.setName(enseignantAvenant.getNom());
+                            signataireDto.setGivenname(enseignantAvenant.getPrenom());
+                            signataireDto.setMail(impressionService.getOtpDataEmail(enseignantAvenant.getMail()));
+                            phone = impressionService.getOtpDataPhoneNumber(enseignantAvenant.getTel());
+                            signataireDto.setOrder(s.getOrdre());
+                            break;
+                        }
+                    }
                     Enseignant enseignant = convention.getEnseignant();
                     signataireDto.setName(enseignant.getNom());
                     signataireDto.setGivenname(enseignant.getPrenom());
@@ -145,6 +158,17 @@ public class SignatureService {
                     signataireDto.setOrder(s.getOrdre());
                     break;
                 case tuteur:
+                    if(avenant != null){
+                        if(avenant.getContact() != null) {
+                            Contact tuteurAvenant = avenant.getContact();
+                            signataireDto.setName(tuteurAvenant.getNom());
+                            signataireDto.setGivenname(tuteurAvenant.getPrenom());
+                            signataireDto.setMail(impressionService.getOtpDataEmail(tuteurAvenant.getMail()));
+                            phone = impressionService.getOtpDataPhoneNumber(tuteurAvenant.getTel());
+                            signataireDto.setOrder(s.getOrdre());
+                            break;
+                        }
+                    }
                     Contact tuteur = convention.getContact();
                     signataireDto.setName(tuteur.getNom());
                     signataireDto.setGivenname(tuteur.getPrenom());
@@ -162,9 +186,12 @@ public class SignatureService {
                     break;
                 case viseur:
                     CentreGestion centreGestion = convention.getCentreGestion();
-                    signataireDto.setName(centreGestion.getNomViseur());
-                    signataireDto.setGivenname(centreGestion.getPrenomViseur());
-                    signataireDto.setMail(impressionService.getOtpDataEmail(centreGestion.getMailViseur()));
+                    String mailViseur = centreGestion.getMailDelegataireViseur() != null && !centreGestion.getMailDelegataireViseur().isEmpty() ? centreGestion.getMailDelegataireViseur() : centreGestion.getMailViseur();
+                    String nomViseur = centreGestion.getMailDelegataireViseur() != null && !centreGestion.getMailDelegataireViseur().isEmpty() ? centreGestion.getNomDelegataireViseur() : centreGestion.getNomViseur();
+                    String prenomViseur = centreGestion.getMailDelegataireViseur() != null && !centreGestion.getMailDelegataireViseur().isEmpty() ? centreGestion.getPrenomDelegataireViseur() : centreGestion.getPrenomViseur();
+                    signataireDto.setName(nomViseur);
+                    signataireDto.setGivenname(prenomViseur);
+                    signataireDto.setMail(impressionService.getOtpDataEmail(mailViseur));
                     phone = impressionService.getOtpDataPhoneNumber(centreGestion.getTelephone());
                     signataireDto.setOrder(s.getOrdre());
                     break;
@@ -282,6 +309,7 @@ public class SignatureService {
                 count++;
             }catch(Exception e){
                 logger.error("Une erreur est survenue lors du traitement de la convention {} : {}",id,e);
+                throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de l'envoi en signature de la convention " + id);
             }
 
         }

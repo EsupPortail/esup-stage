@@ -2,9 +2,10 @@ import { Component, Inject, OnInit} from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
-  selector: 'app-signataire-groupe-modal',
-  templateUrl: './signataire-groupe-modal.component.html',
-  styleUrls: ['./signataire-groupe-modal.component.scss']
+    selector: 'app-signataire-groupe-modal',
+    templateUrl: './signataire-groupe-modal.component.html',
+    styleUrls: ['./signataire-groupe-modal.component.scss'],
+    standalone: false
 })
 export class SignataireGroupeModalComponent implements OnInit {
 

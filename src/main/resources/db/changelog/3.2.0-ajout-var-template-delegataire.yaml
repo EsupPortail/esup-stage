@@ -1,0 +1,53 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.2.0-ajout-var-template-delegataire
+      author: thouveno9
+      changes:
+        - insert:
+            columns:
+              - column:
+                  name: code
+                  value: centreGestion.nomDelegataire
+              - column:
+                  name: libelle
+                  value: Nom du délégataire
+              - column:
+                  name: exemple
+                  value: Doe
+            tableName: ParamConvention
+        - insert:
+            columns:
+              - column:
+                  name: code
+                  value: centreGestion.prenomDelegataire
+              - column:
+                  name: libelle
+                  value: Prénom du délégataire
+              - column:
+                  name: exemple
+                  value: John
+            tableName: ParamConvention
+        - insert:
+            columns:
+              - column:
+                  name: code
+                  value: centreGestion.mailDelegataire
+              - column:
+                  name: libelle
+                  value: Mail du délégataire
+              - column:
+                  name: exemple
+                  value: john.doe@univ-example.fr
+            tableName: ParamConvention
+        - insert:
+            columns:
+              - column:
+                  name: code
+                  value: centreGestion.qualiteDelegataire
+              - column:
+                  name: libelle
+                  value: Qualité du délégataire
+              - column:
+                  name: exemple
+                  value: Directeur des stages
+            tableName: ParamConvention

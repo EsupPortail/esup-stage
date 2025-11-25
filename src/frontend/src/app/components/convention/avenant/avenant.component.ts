@@ -3,9 +3,10 @@ import { AvenantService } from "../../../services/avenant.service";
 import { MatExpansionPanel } from '@angular/material/expansion';
 
 @Component({
-  selector: 'app-avenant',
-  templateUrl: './avenant.component.html',
-  styleUrls: ['./avenant.component.scss']
+    selector: 'app-avenant',
+    templateUrl: './avenant.component.html',
+    styleUrls: ['./avenant.component.scss'],
+    standalone: false
 })
 export class AvenantComponent implements OnInit {
 

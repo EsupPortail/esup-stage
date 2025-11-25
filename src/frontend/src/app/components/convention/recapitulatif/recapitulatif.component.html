@@ -2,12 +2,21 @@
   <mat-card-content>
     <div class="col-sm-12 text-center">
       <mat-card-actions>
-        <button mat-button mat-flat-button color="primary" (click)="printConvention(false)" *ngIf="canPrint">
-          Imprimer la convention
-        </button>
-        <button mat-button mat-flat-button color="primary" (click)="printConvention(true)">
-          Imprimer le récapitulatif
-        </button>
+        <ng-container *ngIf="tmpConvention.validationCreation">
+          <span [matTooltip]="!canPrint ? printDisabledReason : ''"
+            matTooltipShowDelay="200"
+            class="d-inline-block">
+
+            <button mat-button mat-flat-button color="primary"
+              (click)="printConvention(false)"
+              [disabled]="!canPrint">
+                Imprimer la convention
+            </button>
+          </span>
+          <button mat-button mat-flat-button color="primary" (click)="printConvention(true)">
+            Imprimer le récapitulatif
+          </button>
+        </ng-container>
       </mat-card-actions>
     </div>
     <div class="mt-3 mb-3">
@@ -217,8 +226,6 @@
           <button mat-button mat-flat-button color="primary" (click)="validate()" *ngIf="!tmpConvention.validationCreation">
             {{'BOUTON_VALIDER'|contenu}}
           </button>
-
-          <!-- Affichage conditionnel des boutons d'impression -->
           <ng-container *ngIf="tmpConvention.validationCreation">
             <button mat-button mat-flat-button color="primary"
                     (click)="printConvention(false)"
@@ -226,7 +233,6 @@
                     [matTooltip]="!canPrint ? printDisabledReason : ''">
               Imprimer la convention
             </button>
-
             <button mat-button mat-flat-button color="primary" (click)="printConvention(true)">
               Imprimer le récapitulatif
             </button>

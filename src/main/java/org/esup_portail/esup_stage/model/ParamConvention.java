@@ -4,9 +4,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Data;
 
 @Entity
 @Table(name = "ParamConvention")
+@Data
 public class ParamConvention implements Exportable {
 
     @Id
@@ -19,29 +21,6 @@ public class ParamConvention implements Exportable {
     @Column
     private String exemple;
 
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getLibelle() {
-        return libelle;
-    }
-
-    public void setLibelle(String libelle) {
-        this.libelle = libelle;
-    }
-
-    public String getExemple() {
-        return exemple;
-    }
-
-    public void setExemple(String exemple) {
-        this.exemple = exemple;
-    }
 
     @Override
     public String getExportValue(String key) {

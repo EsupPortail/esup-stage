@@ -13,15 +13,14 @@ interface JsonDifference {
 }
 
 @Component({
-  selector: 'app-historique-etab-accueil',
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatButtonModule,
-    MatDividerModule
-  ],
-  templateUrl: './historique-etab-accueil.component.html',
-  styleUrl: './historique-etab-accueil.component.scss'
+    selector: 'app-historique-etab-accueil',
+    imports: [
+        CommonModule,
+        MatButtonModule,
+        MatDividerModule
+    ],
+    templateUrl: './historique-etab-accueil.component.html',
+    styleUrl: './historique-etab-accueil.component.scss'
 })
 export class HistoriqueEtabAccueilComponent implements OnInit {
   differences: JsonDifference[] = [];

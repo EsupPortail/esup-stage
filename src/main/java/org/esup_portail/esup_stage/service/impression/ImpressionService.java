@@ -10,6 +10,7 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.properties.HorizontalAlignment;
+import freemarker.template.Configuration;
 import freemarker.template.Template;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,12 +20,15 @@ import org.esup_portail.esup_stage.enums.TypeSignatureEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
+import org.esup_portail.esup_stage.repository.QuestionEvaluationJpaRepository;
+import org.esup_portail.esup_stage.repository.QuestionSupplementaireJpaRepository;
 import org.esup_portail.esup_stage.repository.PaysJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateConventionJpaRepository;
+import org.esup_portail.esup_stage.service.ConventionService;
 import org.esup_portail.esup_stage.service.impression.context.ImpressionContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
 import java.io.*;
@@ -52,6 +56,15 @@ public class ImpressionService {
     @Autowired
     PaysJpaRepository paysJpaRepository;
 
+    @Autowired
+    QuestionSupplementaireJpaRepository QSJpaRepository;
+
+    @Autowired
+    QuestionEvaluationJpaRepository QEJpaRepository;
+
+    @Autowired
+    ConventionService conventionService;
+
     public void generateConventionAvenantPDF(Convention convention, Avenant avenant, ByteArrayOutputStream ou, boolean isRecap) {
         if (convention.getNomenclature() == null) {
             convention.setValeurNomenclature();
@@ -60,9 +73,10 @@ public class ImpressionService {
         if (templateConvention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Template convention " + convention.getTypeConvention().getLibelle() + "-" + convention.getLangueConvention().getCode() + " non trouvé");
         }
-
         CentreGestion centreEtablissement = centreGestionJpaRepository.getCentreEtablissement();
-        ImpressionContext impressionContext = new ImpressionContext(convention, avenant, centreEtablissement);
+        List<QuestionSupplementaire> questionSupplementaire = QSJpaRepository.findByFicheEvaluation(centreEtablissement.getFicheEvaluation().getId());
+        List<QuestionEvaluation> questionEvaluations = QEJpaRepository.findAll();
+        ImpressionContext impressionContext = new ImpressionContext(convention, avenant, centreEtablissement, questionSupplementaire, questionEvaluations);
 
         try {
 
@@ -70,7 +84,9 @@ public class ImpressionService {
 
             htmlTexte = manageIfElse(htmlTexte);
 
-            Template template = new Template("template_convention_texte" + templateConvention.getId(), htmlTexte, freeMarkerConfigurer.getConfiguration());
+            Configuration freeMarkerConfig = freeMarkerConfigurer.getConfiguration();
+            freeMarkerConfig.setClassicCompatible(true);
+            Template template = new Template("template_convention_texte" + templateConvention.getId(), htmlTexte, freeMarkerConfig);
             StringWriter texte = new StringWriter();
             template.process(impressionContext, texte);
 
@@ -100,7 +116,7 @@ public class ImpressionService {
                 }
             }
 
-            this.generatePDF(texte.toString(), filename, imageData, ou);
+            this.generatePDF(texte.toString(), filename, imageData, ou,false);
         } catch (Exception e) {
             logger.error("Une erreur est survenue lors de la génération du PDF", e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
@@ -110,14 +126,14 @@ public class ImpressionService {
     public void generateFichePDF(String htmlTexte, ByteArrayOutputStream ou) {
         try {
             String filename = "FicheEtudiant.pdf";
-            this.generatePDF(htmlTexte, filename, null, ou);
+            this.generatePDF(htmlTexte, filename, null, ou,false);
         } catch (Exception e) {
             logger.error("Une erreur est survenue lors de la génération du PDF", e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
         }
     }
 
-    public void generatePDF(String texte, String filename, ImageData imageData, ByteArrayOutputStream ou) {
+    public void generatePDF(String texte, String filename, ImageData imageData, ByteArrayOutputStream ou, boolean isEvaluation) {
         String tempFilePath = this.getClass().getResource("/templates").getPath();
         String tempFile = tempFilePath + "temp_" + filename;
         FileOutputStream fop = null;
@@ -131,7 +147,7 @@ public class ImpressionService {
             Document document = new Document(pdfDoc);
 
             if (imageData != null) {
-                Image img = prepareLogoImage(imageData);
+                Image img = prepareLogoImage(imageData, isEvaluation);
                 document.add(img);
             }
             document.close();
@@ -147,7 +163,6 @@ public class ImpressionService {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
     }
 
@@ -218,12 +233,21 @@ public class ImpressionService {
                     break;
                 case viseur:
                     // Ajout du directeur du département
-                    otp.add(new HashMap<>() {{
-                        put("firstname", convention.getCentreGestion().getPrenomViseur());
-                        put("lastname", convention.getCentreGestion().getNomViseur());
-                        put("phoneNumber", getOtpDataPhoneNumber(convention.getCentreGestion().getTelephone()));
-                        put("email", getOtpDataEmail(convention.getCentreGestion().getMail()));
-                    }});
+                    if(convention.getCentreGestion().getPrenomDelegataireViseur() != null && !convention.getCentreGestion().getPrenomDelegataireViseur().isEmpty()) {
+                        otp.add(new HashMap<>() {{
+                            put("firstname", convention.getCentreGestion().getPrenomDelegataireViseur());
+                            put("lastname", convention.getCentreGestion().getNomDelegataireViseur());
+                            put("phoneNumber", getOtpDataPhoneNumber(convention.getCentreGestion().getTelephone()));
+                            put("email", getOtpDataEmail(convention.getCentreGestion().getMail()));
+                        }});
+                    }else{
+                        otp.add(new HashMap<>() {{
+                            put("firstname", convention.getCentreGestion().getPrenomViseur());
+                            put("lastname", convention.getCentreGestion().getNomViseur());
+                            put("phoneNumber", getOtpDataPhoneNumber(convention.getCentreGestion().getTelephone()));
+                            put("email", getOtpDataEmail(convention.getCentreGestion().getMail()));
+                        }});
+                    }
                     break;
                 default:
                     break;
@@ -275,6 +299,14 @@ public class ImpressionService {
             String motifTexte = getDefaultText("/templates/template_avenant_motifs.html");
             texte = texte.replace("${avenant.motifs}", motifTexte);
 
+            // Remplacement ${avenant.contact} par le bon signataire (nom & prénom) si il a ete change
+            String avenantContact = getDefaultText("/templates/template_avenant_contact.html");
+            texte = texte.replace("${avenant.contact}", avenantContact);
+
+            // Remplacement ${avenant.enseignant} par le bon signataire (nom & prénom) si il a ete change
+            String avenantEnseignant = getDefaultText("/templates/template_avenant_enseignant.html");
+            texte = texte.replace("${avenant.enseignant}", avenantEnseignant);
+
             // Style par défaut des tables dans les templates
             htmlTexte += texte;
         }
@@ -298,7 +330,7 @@ public class ImpressionService {
         if (deliveryAddress != null && !deliveryAddress.isEmpty()  && !deliveryAddress.equals("null")) {
             return "";
         }
-        return phoneNumber;
+        return conventionService.parseNumTel(phoneNumber);
     }
 
     public String getOtpDataEmail(String email) {
@@ -325,7 +357,7 @@ public class ImpressionService {
      * @param imageData les données de l'image
      * @return l'image prête à être ajoutée au document
      */
-    private Image prepareLogoImage(ImageData imageData) {
+    private Image prepareLogoImage(ImageData imageData, boolean isEvaluation) {
         Image img = new Image(imageData);
 
         float maxWidth = 155f;
@@ -340,7 +372,12 @@ public class ImpressionService {
 
         img.scale(scale, scale);
 
-        img.setHorizontalAlignment(HorizontalAlignment.LEFT);
+        if (isEvaluation) {
+            img.setHorizontalAlignment(HorizontalAlignment.CENTER);
+        } else {
+            img.setHorizontalAlignment(HorizontalAlignment.LEFT);
+        }
+
 
         img.setMarginBottom(10f);
         return img;
@@ -557,7 +594,7 @@ public class ImpressionService {
         // Avenants vides pour la preview
         convention.setAvenants(new ArrayList<>());
 
-        return new ImpressionContext(convention, null, centreEtablissement);
+        return new ImpressionContext(convention, null, centreEtablissement,QSJpaRepository.findByFicheEvaluation(convention.getCentreGestion().getFicheEvaluation().getId()), QEJpaRepository.findAll());
     }
 
     private CentreGestion createFictionalCentreGestion() {
@@ -624,7 +661,7 @@ public class ImpressionService {
             Document document = new Document(pdfDest);
 
             if (imageData != null) {
-                Image img = prepareLogoImage(imageData);
+                Image img = prepareLogoImage(imageData, false);
                 document.add(img);
             }
 
@@ -647,5 +684,103 @@ public class ImpressionService {
                 logger.error("Erreur lors de la suppression des fichiers temporaires", e);
             }
         }
+    }
+
+    /**
+     * Génère le pdf de l'évaluation du tuteur de stage
+     * @param convention
+     * @param avenant
+     * @param outputStream
+     */
+    public void generateEvaluationPDF(Convention convention, Avenant avenant, ByteArrayOutputStream outputStream, Integer typeRole) {
+        if (convention.getNomenclature() == null) {
+            convention.setValeurNomenclature();
+        }
+        String templatePath = getTemplatePath(convention, typeRole);
+
+        CentreGestion centreEtablissement = centreGestionJpaRepository.getCentreEtablissement();
+        List<QuestionSupplementaire> questionSupplementaire = QSJpaRepository.findByFicheEvaluation(centreEtablissement.getFicheEvaluation().getId());
+        List<QuestionEvaluation> questionEvaluations = QEJpaRepository.findAll();
+        ImpressionContext impressionContext = new ImpressionContext(convention, avenant, centreEtablissement, questionSupplementaire, questionEvaluations);
+
+        try {
+            // Récupération du texte HTML directement depuis les fichiers
+            String htmlTexte = getDefaultText(templatePath);
+            htmlTexte = this.getHtmlText(htmlTexte,typeRole);
+
+            // Traitement des conditions if/else comme dans generateConventionAvenantPDF
+            htmlTexte = manageIfElse(htmlTexte);
+
+            // Configuration FreeMarker
+            Configuration freeMarkerConfig = freeMarkerConfigurer.getConfiguration();
+            freeMarkerConfig.setClassicCompatible(true);
+            String name = "";
+
+            Template template = new Template("template_"+name, htmlTexte, freeMarkerConfig);
+
+            // Remplir le template avec les données
+            StringWriter texte = new StringWriter();
+            template.process(impressionContext, texte);
+
+            String filename = name + "_" + convention.getEtudiant().getPrenom() + "_" + convention.getEtudiant().getNom() + ".pdf";
+
+            // Récupération du logo du centre gestion (même logique que generateConventionAvenantPDF)
+            String logoname;
+            Fichier fichier = convention.getCentreGestion().getFichier();
+            ImageData imageData = null;
+
+            if (fichier != null) {
+                logoname = this.getLogoFilePath(this.getNomFichier(fichier.getId(), fichier.getNom()));
+                if (Files.exists(Paths.get(logoname))) {
+                    imageData = ImageDataFactory.create(logoname);
+                }
+            }
+
+            // Si le centre de gestion n'a pas de logo ou qu'il n'existe pas physiquement, on prend celui du centre établissement
+            if (imageData == null) {
+                fichier = centreEtablissement.getFichier();
+                if (fichier != null) {
+                    logoname = this.getLogoFilePath(this.getNomFichier(fichier.getId(), fichier.getNom()));
+                    if (Files.exists(Paths.get(logoname))) {
+                        imageData = ImageDataFactory.create(logoname);
+                    }
+                }
+            }
+
+            // Génération du PDF
+            this.generatePDF(texte.toString(), filename, imageData, outputStream,true);
+
+        } catch (Exception e) {
+            logger.error("Une erreur est survenue lors de la génération du PDF d'évaluation du tuteur", e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
+        }
+    }
+
+    private static String getTemplatePath(Convention convention, Integer typeRole) {
+        String name = switch (typeRole) {
+            case 0 -> "evaluation_etu";
+            case 1 -> "evaluation_ens";
+            case 2 -> "evaluation_tuteur";
+            default -> throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Template non trouvée");
+        };
+        // Récupération du template d'évaluation depuis les fichiers
+        String templatePath = "/templates/template_"+name;
+        if (convention.getLangueConvention() != null && !convention.getLangueConvention().getCode().equals("fr")) {
+            templatePath += "_" + convention.getLangueConvention().getCode();
+        }
+        templatePath += ".html";
+        return templatePath;
+    }
+
+    private String getHtmlText(String texte, Integer typeRole) {
+        String htmlTexte = getDefaultText("/templates/template_style.html");
+        htmlTexte = htmlTexte.replaceAll("__project_fonts_dir__", this.getClass().getResource("/static/fonts/").getPath());
+
+        htmlTexte += texte;
+
+        htmlTexte = htmlTexte.replace("<figure", "<div");
+        htmlTexte = htmlTexte.replace("</figure>", "</div>");
+
+        return htmlTexte;
     }
 }

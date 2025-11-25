@@ -1,23 +1,49 @@
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, FormControl, Validators } from "@angular/forms";
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ValidationErrors,
+  ValidatorFn,
+  Validators
+} from "@angular/forms";
+import { MatDialog, MatDialogConfig } from "@angular/material/dialog";
+import { MatExpansionPanel } from "@angular/material/expansion";
+import { forkJoin, Subject } from "rxjs";
+import { takeUntil } from "rxjs/operators";
+import * as FileSaver from 'file-saver';
 import { ReponseEvaluationService } from "../../../services/reponse-evaluation.service";
 import { FicheEvaluationService } from "../../../services/fiche-evaluation.service";
 import { MessageService } from "../../../services/message.service";
-import { MatExpansionPanel } from "@angular/material/expansion";
 import { AuthService } from "../../../services/auth.service";
-import * as FileSaver from 'file-saver';
+import { QuestionsEvaluationService } from "../../../services/questions-evaluation.service";
+import { ConfirmEnvoieMailComponent } from "./confirm-envoie-mail/confirm-envoie-mail.component";
+import { DbQuestion } from "../../../models/question-evaluation.model";
+import { TypeQuestionEvaluation } from "../../../constants/type-question-evaluation";
+
+enum FicheType { Etudiant = 0, Enseignant = 1, Entreprise = 2 }
 
 @Component({
-  selector: 'app-evaluation-stage',
-  templateUrl: './evaluation-stage.component.html',
-  styleUrls: ['./evaluation-stage.component.scss']
+    selector: 'app-evaluation-stage',
+    templateUrl: './evaluation-stage.component.html',
+    styleUrls: ['./evaluation-stage.component.scss'],
+    standalone: false
 })
-export class EvaluationStageComponent implements OnInit {
+export class EvaluationStageComponent implements OnInit, OnDestroy {
+  // ---- Inputs / Outputs ----
+  @Input() convention: any;
+  @Output() conventionChange = new EventEmitter<any>();
+  @ViewChild("generalPanel") generalPanel: MatExpansionPanel | undefined;
 
+  // ---- State ----
   ficheEvaluation: any;
   reponseEvaluation: any;
   questionsSupplementaires: any;
-  @Input() convention: any;
+
+  isEtudiant = false;
+  isEnseignant = false;
+  isGestionnaireOrAdmin = false;
 
   reponseEtudiantForm: FormGroup;
   reponseEnseignantForm: FormGroup;
@@ -27,732 +53,42 @@ export class EvaluationStageComponent implements OnInit {
   reponseSupplementaireEnseignantForm: FormGroup;
   reponseSupplementaireEntrepriseForm: FormGroup;
 
+  FicheEtudiantIQuestions: DbQuestion[] = [];
+  FicheEtudiantIIQuestions: DbQuestion[] = [];
+  FicheEtudiantIIIQuestions: DbQuestion[] = [];
+
   edit: boolean = false;
 
-  isEtudiant:boolean = false;
-  isEnseignant:boolean = false;
-  isGestionnaireOrAdmin:boolean = false;
+  FicheEnseignantIQuestions: DbQuestion[] = [];
+  FicheEnseignantIIQuestions: DbQuestion[] = [];
 
-  @ViewChild("generalPanel") generalPanel: MatExpansionPanel|undefined;
+  FicheEntrepriseIQuestions: DbQuestion[] = [];
+  FicheEntrepriseIIQuestions: DbQuestion[] = [];
+  FicheEntrepriseIIIQuestions: DbQuestion[] = [];
 
-  controlsIndexToLetter:any = ['a','b','c','d','e','f','g','h']
-  FicheEtudiantIQuestions: any = [
-    {
-      title: "Avez-vous rencontré des difficultés pour trouver un stage ?",
-      type: "multiple-choice",
-      texte: [
-              "Non, il est automatiquement proposé dans le cadre de la formation",
-              "Non, je l’ai trouvé assez facilement par moi-même",
-              "Oui j’ai eu des difficultés",
-             ],
-      controlName: "EtuI1",
-    },
-    {
-      title: "Combien de temps a duré votre recherche de stage ?",
-      type: "multiple-choice",
-      texte: [
-              "1 jour à 1 semaine",
-              "2 semaines à 1 mois",
-              "1 mois à 3 mois",
-              "3 mois à 6 mois",
-              "+ de 6 mois",
-             ],
-      controlName: "EtuI2",
-    },
-    {
-      title: "Combien d'établissement(s) d'accueil avez-vous prospecté(s) ?",
-      type: "multiple-choice",
-      texte: [
-              "1 à 5",
-              "6 à 10",
-              "11 à 20",
-              "20 et plus",
-             ],
-      controlName: "EtuI3",
-    },
-    {
-      title: "Quel(s) procédé(s) de démarchage avez-vous utilisé(s) ?",
-      type: "multiple-boolean",
-      texte: [
-              "Mail",
-              "Téléphone",
-              "Courrier",
-              "Prospection directe",
-             ],
-      controlName: "EtuI4",
-    },
-    {
-      title: "Comment avez-vous trouvé votre stage ? (récupération de l'information depuis la convention)",
-      type: "EtuI5",
-      texte: [
-              "Réponse à une offre de stage",
-              "Candidature spontanée",
-              "Réseau de connaissance",
-              "Proposé par le département",
-             ],
-      controlName: "EtuI5",
-    },
-    {
-      title: "Comment avez-vous déterminé le contenu de stage ?",
-      type: "multiple-choice",
-      texte: [
-              "Proposé par votre tuteur professionnel",
-              "Proposé par votre tuteur enseignant",
-              "Élaboré par vous-même",
-              "Négocié entre les parties",
-             ],
-      controlName: "EtuI6",
-    },
-    {
-      title: "Avez-vous été accompagné(e) dans vos démarches ?",
-      type: "EtuI7",
-      texte: [
-              "Par votre réseau personnel",
-              "Au sein de votre formation",
-              "Par le service d'Information, d'Orientation et d'Insertion Professionnelle",
-              "Par le Bureau d'Aide à l'Insertion Professionnelle",
-              "Autre",
-              "Par choix",
-              "Par méconnaissance des dispositifs proposés par votre université",
-             ],
-      controlName: "EtuI7",
-    },
-    {
-      title: "Est-ce que les modalités d'évaluation de stage vous ont été clairement présentées avant le début du stage ?",
-      type: "boolean",
-      texte: [
-              "Oui / Non",
-             ],
-      controlName: "EtuI8",
-    },
-  ];
+  trackByCode = (_index: number, item: { code?: string }) => item?.code ?? _index;
 
-  FicheEtudiantIIQuestions: any = [
-    {
-      title: "Comment qualifieriez-vous l'accueil de votre entreprise ?",
-      type: "multiple-choice",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      bisQuestionLowNotation:"Pour quelles raisons ?",
-      controlName: "EtuII1",
-    },
-    {
-      title: "Comment qualifieriez-vous l'encadrement de votre stage ?",
-      type: "multiple-choice",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      bisQuestionLowNotation:"Pour quelles raisons ?",
-      controlName: "EtuII2",
-    },
-    {
-      title: "Comment qualifieriez-vous votre adaptation au sein de l'établissement d'accueil ?",
-      type: "multiple-choice",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      bisQuestionLowNotation:"Pour quelles raisons ?",
-      controlName: "EtuII3",
-    },
-    {
-      title: "Les conditions matérielles vous ont permis d’atteindre les objectifs de votre stage :",
-      type: "multiple-choice",
-      texte: [
-              "Tout à fait d'accord",
-              "Plutôt d'accord",
-              "Plutôt pas d'accord",
-              "Pas du tout d'accord",
-             ],
-      controlName: "EtuII4",
-    },
-    {
-      title: "Avez-vous exercé des responsabilités ?",
-      type: "EtuII5",
-      texte: [
-              "Très importantes",
-              "Importantes",
-              "Peu importantes",
-             ],
-      controlName: "EtuII5",
-    },
-    {
-      title: "Votre stage avait-il une dimension internationale ?",
-      type: "boolean",
-      texte: [
-              "Oui / Non",
-             ],
-      controlName: "EtuII6",
-    },
-  ];
 
-  FicheEtudiantIIIQuestions: any = [
-    {
-      title: "Votre sujet de stage était à l'origine : (récuperation du sujet depuis la convention).",
-      type: "EtuIII1",
-      texte: [
-              "Oui / Non",
-             ],
-      bisQuestionTrue:"Quel a été le nouveau sujet ?",
-      controlName: "EtuIII1",
-    },
-    {
-      title: "Selon vous, le stage a-t-il bien été en adéquation avec votre formation ?",
-      type: "boolean",
-      texte: [
-              "Oui / Non",
-             ],
-      bisQuestionFalse:"Commentaire:",
-      controlName: "EtuIII2",
-    },
-    {
-      title: "Les missions confiées ont été ?",
-      type: "multiple-choice",
-      texte: [
-              "Très au-dessous de vos compétences",
-              "Au-dessous de vos compétences",
-              "A votre niveau de compétences",
-              "Au-dessus de vos compétences",
-              "Très au-dessus de vos compétences",
-              "Inatteignables",
-             ],
-      controlName: "EtuIII4",
-    },
-    {
-      title: "Ce stage vous a-t-il permis d'acquérir :",
-      type: "multiple-boolean",
-      texte: [
-              "Compétences techniques",
-              "Nouvelles méthodologies",
-              "Nouvelles connaissances théoriques",
-             ],
-      controlName: "EtuIII5",
-    },
-    {
-      title: "Ce stage vous a permis de progresser dans la construction de votre projet personnel et professionnel :",
-      type: "multiple-choice",
-      texte: [
-              "Tout à fait d'accord",
-              "Plutôt d'accord",
-              "Sans avis",
-              "Plutôt pas d'accord",
-              "Pas du tout d'accord",
-             ],
-      bisQuestionLowNotation:"Pour quelles raisons ?",
-      controlName: "EtuIII6",
-    },
-    {
-      title: "Ce stage vous paraît déterminant à cette étape de votre formation :",
-      type: "multiple-choice",
-      texte: [
-              "Tout à fait d'accord",
-              "Plutôt d'accord",
-              "Sans avis",
-              "Plutôt pas d'accord",
-              "Pas du tout d'accord",
-             ],
-      bisQuestionLowNotation:"Pour quelles raisons ?",
-      controlName: "EtuIII7",
-    },
-    {
-      title: "Votre travail a-t-il abouti à une réorganisation du travail ?",
-      type: "boolean",
-      texte: [
-              "Oui / Non",
-             ],
-      bisQuestionTrue:"Pouvez-vous en quelques lignes spécifier ce changement ?",
-      controlName: "EtuIII8",
-    },
-    {
-      title: "Allez-vous valoriser cette expérience dans une prochaine recherche d'emploi/stage ?",
-      type: "boolean",
-      texte: [
-              "Oui / Non",
-             ],
-      bisQuestionFalse:"Commentaire:",
-      controlName: "EtuIII9",
-    },
-    {
-      title: "Votre travail va-t-il donner lieu à un dépôt de brevet ?",
-      type: "boolean",
-      texte: [
-              "Oui / Non",
-             ],
-      controlName: "EtuIII10",
-    },
-    {
-      title: "Avez-vous reçu une attestation de stage ?",
-      type: "boolean",
-      texte: [
-              "Oui / Non",
-             ],
-      controlName: "EtuIII11",
-    },
-    {
-      title: "Avez-vous rencontré des difficultés à percevoir votre gratification ?",
-      type: "boolean",
-      texte: [
-              "Oui / Non",
-             ],
-      controlName: "EtuIII12",
-    },
-    {
-      title: "Ce stage a-t-il donné lieu à une proposition d'emploi ou d'alternance ?",
-      type: "boolean",
-      texte: [
-              "Oui / Non",
-             ],
-      controlName: "EtuIII14",
-    },
-    {
-      title: "Conseilleriez-vous cet établissement d'accueil à un autre étudiant ?",
-      type: "multiple-choice",
-      texte: [
-              "Tout à fait d'accord",
-              "Plutôt d'accord",
-              "Sans avis",
-              "Plutôt pas d'accord",
-              "Pas du tout d'accord",
-             ],
-      bisQuestionLowNotation:"Pour quelles raisons ?",
-      controlName: "EtuIII15",
-    },
-    {
-      title: "Indiquez votre appréciation générale sur le stage :",
-      type: "multiple-choice",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      bisQuestionLowNotation:"Pour quelles raisons ?",
-      controlName: "EtuIII16",
-    },
-  ];
+  private destroy$ = new Subject<void>();
+  private readonly LIKERT_5 = ['Excellent','Très bien','Bien','Satisfaisant','Insuffisant'];
+  private readonly AGREEMENT_5 = ['Tout à fait d\'accord','Plutôt d\'accord','Sans avis','Plutôt pas d\'accord','Pas du tout d\'accord'];
+  readonly controlsIndexToLetter = ['a','b','c','d','e','f','g','h'];
+  protected readonly TypeQuestionEvaluation = TypeQuestionEvaluation;
+  readonly FicheType = FicheType;
+  private optionsETUI5 = {"items":['Réponse à une offre de stage', 'Candidature spontanée', 'Réseau de connaissance', 'Proposé par le département']}.items;
 
-  FicheEnseignantIQuestions: any = [
-    {
-      title: "Modalité(s) d’échange(s) avec le stagiaire :",
-      type: "multiple-boolean",
-      texte: [
-              "Téléphone",
-              "Mail",
-              "Rencontre",
-             ],
-      controlName: "EnsI1",
-    },
-    {
-      title: "Modalité(s) d’échange(s) avec le tuteur professionnel :",
-      type: "multiple-boolean",
-      texte: [
-              "Téléphone",
-              "Mail",
-              "Rencontre",
-             ],
-      controlName: "EnsI2",
-    },
-    {
-      title: "Commentaire(s) :",
-      type: "texte",
-      texte: [
-              "Champ de texte libre",
-             ],
-      controlName: "EnsI3",
-    },
-  ]
 
-  FicheEnseignantIIQuestions: any = [
-    {
-      title: "Impression générale et présentation de l’étudiant :",
-      type: "multiple-choice",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      controlName: "EnsII1",
-    },
-    {
-      title: "Aptitude à cerner et situer le projet :",
-      type: "multiple-choice",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      controlName: "EnsII2",
-    },
-    {
-      title: "Aptitude à appliquer ses connaissances :",
-      type: "multiple-choice",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      controlName: "EnsII3",
-    },
-    {
-      title: "Maîtrise du sujet, argumentation, analyse :",
-      type: "multiple-choice",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      controlName: "EnsII4",
-    },
-    {
-      title: "Mise en évidence des éléments importants de l’étude :",
-      type: "multiple-choice",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      controlName: "EnsII5",
-    },
-    {
-      title: "Utilisation des moyens de communication :",
-      type: "multiple-choice",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      controlName: "EnsII6",
-    },
-    {
-      title: "Qualité de l’expression orale :",
-      type: "multiple-choice",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      controlName: "EnsII7",
-    },
-    {
-      title: "Capacité à intéresser l’auditoire :",
-      type: "multiple-choice",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      controlName: "EnsII8",
-    },
-    {
-      title: "Pertinence des réponses :",
-      type: "multiple-choice",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      controlName: "EnsII9",
-    },
-    {
-      title: "Respect du temps alloué :",
-      type: "multiple-choice",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      controlName: "EnsII10",
-    },
-    {
-      title: "Commentaire(s) :",
-      type: "texte",
-      texte: [
-              "Champ de texte libre",
-             ],
-      controlName: "EnsII11",
-    },
-  ]
 
-  FicheEntrepriseIQuestions: any = [
-    {
-      title: "Adaptation au milieu professionnel :",
-      type: "multiple-choice",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      bisQuestion:"Commentaire (facultatif)",
-      controlName: "Ent1",
-    },
-    {
-      title: "Intégration au groupe de travail :",
-      type: "multiple-choice",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      bisQuestion:"Commentaire (facultatif)",
-      controlName: "Ent2",
-    },
-    {
-      title: "Assiduité - ponctualité :",
-      type: "multiple-choice",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      controlName: "Ent3",
-    },
-    {
-      title: "Intérêt pour l'établissement, les services, et les métiers :",
-      type: "multiple-choice",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      bisQuestion:"Commentaire (facultatif)",
-      controlName: "Ent5",
-    },
-    {
-      title: "Sens de l'organisation :",
-      type: "multiple-choice",
-      texte: [
-        "Excellent",
-        "Très bien",
-        "Bien",
-        "Satisfaisant",
-        "Insuffisant",
-      ],
-      bisQuestion:"Commentaire (facultatif)",
-      controlName: "Ent9",
-    },
-    {
-      title: "Capacité d'autonomie :",
-      type: "multiple-choice",
-      texte: [
-        "Excellent",
-        "Très bien",
-        "Bien",
-        "Satisfaisant",
-        "Insuffisant",
-      ],
-      bisQuestion:"Commentaire (facultatif)",
-      controlName: "Ent11",
-    },
-    {
-      title: "Initiative personnelle :",
-      type: "multiple-choice",
-      texte: [
-        "Excellent",
-        "Très bien",
-        "Bien",
-        "Satisfaisant",
-        "Insuffisant",
-      ],
-      bisQuestion:"Commentaire (facultatif)",
-      controlName: "Ent12",
-    },
-    {
-      title: "Implication :",
-      type: "multiple-choice",
-      texte: [
-        "Excellent",
-        "Très bien",
-        "Bien",
-        "Satisfaisant",
-        "Insuffisant",
-      ],
-      bisQuestion:"Commentaire (facultatif)",
-      controlName: "Ent13",
-    },
-    {
-      title: "Rigueur et précision dans le travail :",
-      type: "multiple-choice",
-      texte: [
-        "Excellent",
-        "Très bien",
-        "Bien",
-        "Satisfaisant",
-        "Insuffisant",
-      ],
-      bisQuestion:"Commentaire (facultatif)",
-      controlName: "Ent14",
-    },
-  ]
-
-  FicheEntrepriseIIQuestions: any = [
-    {
-      title: "Aptitude à cerner et situer le projet :",
-      type: "multiple-choice",
-      texte: [
-        "Excellent",
-        "Très bien",
-        "Bien",
-        "Satisfaisant",
-        "Insuffisant",
-      ],
-      bisQuestion:"Commentaire (facultatif)",
-      controlName: "Ent4",
-    },
-    {
-      title: "Aptitude à appliquer ses connaissances :",
-      type: "multiple-choice",
-      texte: [
-        "Excellent",
-        "Très bien",
-        "Bien",
-        "Satisfaisant",
-        "Insuffisant",
-      ],
-      bisQuestion:"Commentaire (facultatif)",
-      controlName: "Ent6",
-    },
-    {
-      title: "Esprit d'observation et pertinence des remarques :",
-      type: "multiple-choice",
-      texte: [
-        "Excellent",
-        "Très bien",
-        "Bien",
-        "Satisfaisant",
-        "Insuffisant",
-      ],
-      bisQuestion:"Commentaire (facultatif)",
-      controlName: "Ent7",
-    },
-    {
-      title: "Esprit de synthèse :",
-      type: "multiple-choice",
-      texte: [
-        "Excellent",
-        "Très bien",
-        "Bien",
-        "Satisfaisant",
-        "Insuffisant",
-      ],
-      bisQuestion:"Commentaire (facultatif)",
-      controlName: "Ent8",
-    },
-    {
-      title: "Aptitude à la communication :",
-      type: "multiple-choice",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      bisQuestion:"Commentaire (facultatif)",
-      controlName: "Ent15",
-    },
-  ]
-
-  FicheEntrepriseIIIQuestions: any = [
-    {
-      title: "Les objectifs ont-ils été atteints ?",
-      type: "multiple-choice",
-      texte: [
-              "Tout à fait d'accord",
-              "Plutôt d'accord",
-              "Sans avis",
-              "Plutôt pas d'accord",
-              "Pas du tout d'accord",
-             ],
-      bisQuestion:"Commentaire (facultatif)",
-      controlName: "Ent16",
-    },
-    {
-      title: "Indiquez votre appréciation générale de ce stage :",
-      type: "multiple-choice",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      bisQuestionLowNotation:"Pour quelles raisons ?",
-      controlName: "Ent17",
-    },
-    {
-      title: "Observations :",
-      type: "texte",
-      texte: [
-              "Champ de texte libre",
-             ],
-      controlName: "Ent19",
-    },
-    {
-      title: "Avez-vous remis au stagiaire une attestation de stage ?",
-      type: "boolean",
-      texte: [
-              "Oui / Non",
-             ],
-      controlName: "Ent10",
-    },
-    {
-      title: "Accepteriez-vous de reprendre un de nos étudiants en stage ?",
-      type: "boolean",
-      texte: [
-              "Oui / Non",
-             ],
-      bisQuestionFalse:"Pour quelles raisons ?",
-      controlName: "Ent18",
-    },
-  ]
-
-  constructor(private reponseEvaluationService: ReponseEvaluationService,
-              private ficheEvaluationService: FicheEvaluationService,
-              private fb: FormBuilder,
-              private messageService: MessageService,
-              private authService: AuthService,
+  constructor(
+    private reponseEvaluationService: ReponseEvaluationService,
+    private ficheEvaluationService: FicheEvaluationService,
+    private fb: FormBuilder,
+    private messageService: MessageService,
+    private authService: AuthService,
+    private matDialog: MatDialog,
+    private questionsEvaluationService: QuestionsEvaluationService,
   ) {
+    // --- forms init (inchangé fonctionnellement) ---
     this.reponseEtudiantForm = this.fb.group({
       reponseEtuI1: [null, [Validators.required]],
       reponseEtuI1bis: [null],
@@ -817,6 +153,8 @@ export class EvaluationStageComponent implements OnInit {
       reponseEnsI2c: [null, [Validators.required]],
       reponseEnsI3: [null, [Validators.required]],
       reponseEnsII1: [null, [Validators.required]],
+      reponseEnsII10: [null, [Validators.required]],
+      reponseEnsII11: [null, [Validators.required]],
       reponseEnsII2: [null, [Validators.required]],
       reponseEnsII3: [null, [Validators.required]],
       reponseEnsII4: [null, [Validators.required]],
@@ -825,8 +163,6 @@ export class EvaluationStageComponent implements OnInit {
       reponseEnsII7: [null, [Validators.required]],
       reponseEnsII8: [null, [Validators.required]],
       reponseEnsII9: [null, [Validators.required]],
-      reponseEnsII10: [null, [Validators.required]],
-      reponseEnsII11: [null, [Validators.required]],
     });
 
     this.reponseEntrepriseForm = this.fb.group({
@@ -868,726 +204,551 @@ export class EvaluationStageComponent implements OnInit {
       reponseEnt19: [null, [Validators.required]],
     });
 
-    //gestion des champs required conditionnels
-    for(let question of this.FicheEtudiantIQuestions.concat(this.FicheEtudiantIIQuestions).concat(this.FicheEtudiantIIIQuestions)){
-      if(question.bisQuestionLowNotation || question.bisQuestionTrue || question.bisQuestionFalse ||
-      question.controlName == 'EtuI7' || question.controlName == 'EtuII5'){
-        let key = 'reponse' + question.controlName;
-        let bisKey = key + 'bis';
-        this.reponseEtudiantForm.get(key)?.valueChanges.subscribe(val => {
-          let questionKey = 'question' + question.controlName;
-          if(this.ficheEvaluation[questionKey]){
-            if((question.bisQuestionLowNotation && val>=3) || (question.bisQuestionTrue && val) || (question.bisQuestionFalse && !val) ){
-              this.toggleValidators(this.reponseEtudiantForm,[bisKey],true);
-            }else if(question.controlName == 'EtuI7'){
-              let bisKey1 = key + 'bis1';
-              let bisKey2 = key + 'bis2';
-              if(val){
-                this.toggleValidators(this.reponseEtudiantForm,[bisKey1],true);
-                this.toggleValidators(this.reponseEtudiantForm,[bisKey2],false);
-              }else{
-                this.toggleValidators(this.reponseEtudiantForm,[bisKey2],true);
-                this.toggleValidators(this.reponseEtudiantForm,[bisKey1],false);
-              }
-            }else if(question.controlName == 'EtuII5'){
-              let bisKey1 = key + 'a';
-              let bisKey2 = key + 'b';
-              if(val){
-                this.toggleValidators(this.reponseEtudiantForm,[bisKey1],true);
-                this.toggleValidators(this.reponseEtudiantForm,[bisKey2],true);
-              }else{
-                this.toggleValidators(this.reponseEtudiantForm,[bisKey1],false);
-                this.toggleValidators(this.reponseEtudiantForm,[bisKey2],false);
-              }
-            }else{
-              this.toggleValidators(this.reponseEtudiantForm,[bisKey],false);
-            }
-          }
-        });
-      }
-    }
-    for(let question of this.FicheEnseignantIQuestions.concat(this.FicheEnseignantIIQuestions)){
-      if(question.bisQuestionLowNotation || question.bisQuestionTrue || question.bisQuestionFalse){
-        let key = 'reponse' + question.controlName;
-        let bisKey = key + 'bis';
-        this.reponseEnseignantForm.get(key)?.valueChanges.subscribe(val => {
-          let questionKey = 'question' + question.controlName;
-          if(this.ficheEvaluation[questionKey]){
-            if((question.bisQuestionLowNotation && val>=3) || (question.bisQuestionTrue && val) || (question.bisQuestionFalse && !val) ){
-              this.toggleValidators(this.reponseEnseignantForm,[bisKey],true);
-            }else{
-              this.toggleValidators(this.reponseEnseignantForm,[bisKey],false);
-            }
-          }
-        });
-      }
-    }
-    for(let question of this.FicheEntrepriseIQuestions.concat(this.FicheEntrepriseIIQuestions).concat(this.FicheEntrepriseIIIQuestions)){
-      if(question.bisQuestionLowNotation || question.bisQuestionTrue || question.bisQuestionFalse){
-        let key = 'reponse' + question.controlName;
-        let bisKey = key + 'bis';
-        this.reponseEntrepriseForm.get(key)?.valueChanges.subscribe(val => {
-          let questionKey = 'question' + question.controlName;
-          if(this.ficheEvaluation[questionKey]){
-            if((question.bisQuestionLowNotation && val>=3) || (question.bisQuestionTrue && val) || (question.bisQuestionFalse && !val) ){
-              this.toggleValidators(this.reponseEntrepriseForm,[bisKey],true);
-            }else{
-              this.toggleValidators(this.reponseEntrepriseForm,[bisKey],false);
-            }
-          }
-        });
-      }
-    }
-
     this.reponseSupplementaireEtudiantForm = this.fb.group({});
     this.reponseSupplementaireEnseignantForm = this.fb.group({});
     this.reponseSupplementaireEntrepriseForm = this.fb.group({});
   }
 
-  toggleValidators(form: FormGroup, keys: string[], toggle: boolean): void {
-    keys.forEach((key: string) => {
-      const control = form.get(key);
-      if (control) {
-        if (toggle) {
-          control.addValidators(Validators.required);
-        } else {
-          control.clearValidators();
-        }
-        control.updateValueAndValidity();
-      }
-    });
-  }
-
   ngOnInit(): void {
-
     this.isEtudiant = this.authService.isEtudiant();
     this.isEnseignant = this.authService.isEnseignant();
-    this.isGestionnaireOrAdmin = this.authService.isGestionnaire() || this.authService.isAdmin() ;
+    this.isGestionnaireOrAdmin = this.authService.isGestionnaire() || this.authService.isAdmin();
 
-    this.ficheEvaluationService.getByCentreGestion(this.convention.centreGestion.id).subscribe((response: any) => {
+    forkJoin({
+      etu: this.questionsEvaluationService.getQuestionsEtu(),
+      ens: this.questionsEvaluationService.getQuestionsEns(),
+      ent: this.questionsEvaluationService.getQuestionsEnt(),
+      fiche: this.ficheEvaluationService.getByCentreGestion(this.convention.centreGestion.id),
+      rep: this.reponseEvaluationService.getByConvention(this.convention.id)
+    })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(({ etu, ens, ent, fiche, rep }) => {
+        this.ficheEvaluation = fiche;
 
-      this.ficheEvaluation = response;
+        this.applyDbQuestions(etu, this.FicheEtudiantIQuestions, this.FicheEtudiantIIQuestions, this.FicheEtudiantIIIQuestions);
+        this.applyDbQuestions(ens, this.FicheEnseignantIQuestions, this.FicheEnseignantIIQuestions);
+        this.applyDbQuestions(ent, this.FicheEntrepriseIQuestions, this.FicheEntrepriseIIQuestions, this.FicheEntrepriseIIIQuestions);
 
-      const allQuestions = this.FicheEtudiantIQuestions
-        .concat(this.FicheEtudiantIIQuestions)
-        .concat(this.FicheEtudiantIIIQuestions);
+        this.wireConditionalValidators();
+        this.applyFicheVisibilityToValidators();
 
-      for (let question of allQuestions) {
-        const questionKey = 'question' + question.controlName;
-        if (!this.ficheEvaluation[questionKey]) {
-          const key = 'reponse' + question.controlName;
-
-          if (question.type === 'multiple-boolean') {
-            for (let i = 0; i < question.texte.length; i++) {
-              const multipleKey = key + this.controlsIndexToLetter[i];
-              this.toggleValidators(this.reponseEtudiantForm, [multipleKey], false);
-            }
-          } else {
-            this.toggleValidators(this.reponseEtudiantForm, [key], false);
-
-            // Gestion des champs bis
-            if (question.bisQuestionLowNotation || question.bisQuestionTrue || question.bisQuestionFalse) {
-              const bisKey = key + 'bis';
-              this.toggleValidators(this.reponseEtudiantForm, [bisKey], false);
-            }
-          }
+        this.reponseEvaluation = rep ?? null;
+        if (rep) {
+          this.reponseEtudiantForm.patchValue(rep);
+          this.reponseEnseignantForm.patchValue(rep);
+          this.reponseEntrepriseForm.patchValue(rep);
         }
-      }
-      for(let question of this.FicheEnseignantIQuestions.concat(this.FicheEnseignantIIQuestions)){
-        let key = 'reponse' + question.controlName;
-        let questionKey = 'question' + question.controlName;
-        if(!this.ficheEvaluation[questionKey]){
-          if(question.type == 'multiple-boolean'){
-            for (var i = 0; i < question.texte.length; i++) {
-              let key = "reponse" + question.controlName + this.controlsIndexToLetter[i];
-              this.toggleValidators(this.reponseEnseignantForm,[key],false);
-            }
-          }else{
-            let key = 'reponse' + question.controlName;
-            this.toggleValidators(this.reponseEnseignantForm,[key],false);
-          }
-        }
-      }
-      for(let question of this.FicheEntrepriseIQuestions.concat(this.FicheEntrepriseIIQuestions).concat(this.FicheEntrepriseIIIQuestions)){
-        let key = 'reponse' + question.controlName;
-        let questionKey = 'question' + question.controlName;
-        if(!this.ficheEvaluation[questionKey]){
-          if(question.type == 'multiple-boolean'){
-            for (var i = 0; i < question.texte.length; i++) {
-              let key = "reponse" + question.controlName + this.controlsIndexToLetter[i];
-              this.toggleValidators(this.reponseEntrepriseForm,[key],false);
-            }
-          }else{
-            let key = 'reponse' + question.controlName;
-            this.toggleValidators(this.reponseEntrepriseForm,[key],false);
-          }
-        }
-      }
+        this.getQuestionSupplementaire();
 
-      if(this.ficheEvaluation){
-        this.reponseEvaluationService.getByConvention(this.convention.id).subscribe((response2: any) => {
-          this.reponseEvaluation = response2;
-          this.getQuestionSupplementaire();
-          if(this.reponseEvaluation){
+        const vI5 = this.getAutoValue('ETUI5');
+        this.setAutoEtuI5();
+        this.setRequired(this.reponseEtudiantForm, ['reponseEtuI5'], !!vI5);
+        this.setRequired(this.reponseEtudiantForm, ['reponseEtuI7bis'], false);
+      });
+  }
 
-            this.reponseEtudiantForm.setValue({
-              reponseEtuI1: this.reponseEvaluation.reponseEtuI1,
-              reponseEtuI1bis: this.reponseEvaluation.reponseEtuI1bis,
-              reponseEtuI2: this.reponseEvaluation.reponseEtuI2,
-              reponseEtuI3: this.reponseEvaluation.reponseEtuI3,
-              reponseEtuI4a: this.reponseEvaluation.reponseEtuI4a,
-              reponseEtuI4b: this.reponseEvaluation.reponseEtuI4b,
-              reponseEtuI4c: this.reponseEvaluation.reponseEtuI4c,
-              reponseEtuI4d: this.reponseEvaluation.reponseEtuI4d,
-              reponseEtuI5: this.reponseEvaluation.reponseEtuI5,
-              reponseEtuI6: this.reponseEvaluation.reponseEtuI6,
-              reponseEtuI7: this.reponseEvaluation.reponseEtuI7,
-              reponseEtuI7bis1: this.reponseEvaluation.reponseEtuI7bis1,
-              reponseEtuI7bis1a: this.reponseEvaluation.reponseEtuI7bis1a,
-              reponseEtuI7bis1b: this.reponseEvaluation.reponseEtuI7bis1b,
-              reponseEtuI7bis2: this.reponseEvaluation.reponseEtuI7bis2,
-              reponseEtuI8: this.reponseEvaluation.reponseEtuI8,
-              reponseEtuII1: this.reponseEvaluation.reponseEtuII1,
-              reponseEtuII1bis: this.reponseEvaluation.reponseEtuII1bis,
-              reponseEtuII2: this.reponseEvaluation.reponseEtuII2,
-              reponseEtuII2bis: this.reponseEvaluation.reponseEtuII2bis,
-              reponseEtuII3: this.reponseEvaluation.reponseEtuII3,
-              reponseEtuII3bis: this.reponseEvaluation.reponseEtuII3bis,
-              reponseEtuII4: this.reponseEvaluation.reponseEtuII4,
-              reponseEtuII5: this.reponseEvaluation.reponseEtuII5,
-              reponseEtuII5a: this.reponseEvaluation.reponseEtuII5a,
-              reponseEtuII5b: this.reponseEvaluation.reponseEtuII5b,
-              reponseEtuII6: this.reponseEvaluation.reponseEtuII6,
-              reponseEtuIII1: this.reponseEvaluation.reponseEtuIII1,
-              reponseEtuIII1bis: this.reponseEvaluation.reponseEtuIII1bis,
-              reponseEtuIII2: this.reponseEvaluation.reponseEtuIII2,
-              reponseEtuIII2bis: this.reponseEvaluation.reponseEtuIII2bis,
-              reponseEtuIII4: this.reponseEvaluation.reponseEtuIII4,
-              reponseEtuIII5a: this.reponseEvaluation.reponseEtuIII5a,
-              reponseEtuIII5b: this.reponseEvaluation.reponseEtuIII5b,
-              reponseEtuIII5c: this.reponseEvaluation.reponseEtuIII5c,
-              reponseEtuIII5bis: this.reponseEvaluation.reponseEtuIII5bis,
-              reponseEtuIII6: this.reponseEvaluation.reponseEtuIII6,
-              reponseEtuIII6bis: this.reponseEvaluation.reponseEtuIII6bis,
-              reponseEtuIII7: this.reponseEvaluation.reponseEtuIII7,
-              reponseEtuIII7bis: this.reponseEvaluation.reponseEtuIII7bis,
-              reponseEtuIII8: this.reponseEvaluation.reponseEtuIII8,
-              reponseEtuIII8bis: this.reponseEvaluation.reponseEtuIII8bis,
-              reponseEtuIII9: this.reponseEvaluation.reponseEtuIII9,
-              reponseEtuIII9bis: this.reponseEvaluation.reponseEtuIII9bis,
-              reponseEtuIII10: this.reponseEvaluation.reponseEtuIII10,
-              reponseEtuIII11: this.reponseEvaluation.reponseEtuIII11,
-              reponseEtuIII12: this.reponseEvaluation.reponseEtuIII12,
-              reponseEtuIII14: this.reponseEvaluation.reponseEtuIII14,
-              reponseEtuIII15: this.reponseEvaluation.reponseEtuIII15,
-              reponseEtuIII15bis: this.reponseEvaluation.reponseEtuIII15bis,
-              reponseEtuIII16: this.reponseEvaluation.reponseEtuIII16,
-              reponseEtuIII16bis: this.reponseEvaluation.reponseEtuIII16bis,
-            });
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
-            this.reponseEnseignantForm.setValue({
-              reponseEnsI1a: this.reponseEvaluation.reponseEnsI1a,
-              reponseEnsI1b: this.reponseEvaluation.reponseEnsI1b,
-              reponseEnsI1c: this.reponseEvaluation.reponseEnsI1c,
-              reponseEnsI2a: this.reponseEvaluation.reponseEnsI2a,
-              reponseEnsI2b: this.reponseEvaluation.reponseEnsI2b,
-              reponseEnsI2c: this.reponseEvaluation.reponseEnsI2c,
-              reponseEnsI3: this.reponseEvaluation.reponseEnsI3,
-              reponseEnsII1: this.reponseEvaluation.reponseEnsII1,
-              reponseEnsII2: this.reponseEvaluation.reponseEnsII2,
-              reponseEnsII3: this.reponseEvaluation.reponseEnsII3,
-              reponseEnsII4: this.reponseEvaluation.reponseEnsII4,
-              reponseEnsII5: this.reponseEvaluation.reponseEnsII5,
-              reponseEnsII6: this.reponseEvaluation.reponseEnsII6,
-              reponseEnsII7: this.reponseEvaluation.reponseEnsII7,
-              reponseEnsII8: this.reponseEvaluation.reponseEnsII8,
-              reponseEnsII9: this.reponseEvaluation.reponseEnsII9,
-              reponseEnsII10: this.reponseEvaluation.reponseEnsII10,
-              reponseEnsII11: this.reponseEvaluation.reponseEnsII11,
-            });
+  // ---------------- Helpers génériques ----------------
 
-            this.reponseEntrepriseForm.setValue({
-              reponseEnt1: this.reponseEvaluation.reponseEnt1,
-              reponseEnt1bis: this.reponseEvaluation.reponseEnt1bis,
-              reponseEnt2: this.reponseEvaluation.reponseEnt2,
-              reponseEnt2bis: this.reponseEvaluation.reponseEnt2bis,
-              reponseEnt3: this.reponseEvaluation.reponseEnt3,
-              reponseEnt4: this.reponseEvaluation.reponseEnt4,
-              reponseEnt4bis: this.reponseEvaluation.reponseEnt4bis,
-              reponseEnt5: this.reponseEvaluation.reponseEnt5,
-              reponseEnt5bis: this.reponseEvaluation.reponseEnt5bis,
-              reponseEnt6: this.reponseEvaluation.reponseEnt6,
-              reponseEnt6bis: this.reponseEvaluation.reponseEnt6bis,
-              reponseEnt7: this.reponseEvaluation.reponseEnt7,
-              reponseEnt7bis: this.reponseEvaluation.reponseEnt7bis,
-              reponseEnt8: this.reponseEvaluation.reponseEnt8,
-              reponseEnt8bis: this.reponseEvaluation.reponseEnt8bis,
-              reponseEnt9: this.reponseEvaluation.reponseEnt9,
-              reponseEnt9bis: this.reponseEvaluation.reponseEnt9bis,
-              reponseEnt10: this.reponseEvaluation.reponseEnt10,
-              reponseEnt10bis: this.reponseEvaluation.reponseEnt10bis,
-              reponseEnt11: this.reponseEvaluation.reponseEnt11,
-              reponseEnt11bis: this.reponseEvaluation.reponseEnt11bis,
-              reponseEnt12: this.reponseEvaluation.reponseEnt12,
-              reponseEnt12bis: this.reponseEvaluation.reponseEnt12bis,
-              reponseEnt13: this.reponseEvaluation.reponseEnt13,
-              reponseEnt13bis: this.reponseEvaluation.reponseEnt13bis,
-              reponseEnt14: this.reponseEvaluation.reponseEnt14,
-              reponseEnt14bis: this.reponseEvaluation.reponseEnt14bis,
-              reponseEnt15: this.reponseEvaluation.reponseEnt15,
-              reponseEnt15bis: this.reponseEvaluation.reponseEnt15bis,
-              reponseEnt16: this.reponseEvaluation.reponseEnt16,
-              reponseEnt16bis: this.reponseEvaluation.reponseEnt16bis,
-              reponseEnt17: this.reponseEvaluation.reponseEnt17,
-              reponseEnt17bis: this.reponseEvaluation.reponseEnt17bis,
-              reponseEnt18: this.reponseEvaluation.reponseEnt18,
-              reponseEnt18bis: this.reponseEvaluation.reponseEnt18bis,
-              reponseEnt19: this.reponseEvaluation.reponseEnt19,
-            });
-          }
-        });
-      }
+  private getFormByType(type: FicheType): FormGroup {
+    switch (type) {
+      case FicheType.Etudiant: return this.reponseEtudiantForm;
+      case FicheType.Enseignant: return this.reponseEnseignantForm;
+      case FicheType.Entreprise: return this.reponseEntrepriseForm;
+    }
+  }
+
+  private toggleValidators(form: FormGroup, keys: string[], required: boolean): void {
+    keys.forEach(key => {
+      const c = form.get(key);
+      if (!c) return;
+      if (required) c.addValidators(Validators.required);
+      else c.clearValidators();
+      c.updateValueAndValidity({ emitEvent: false });
     });
   }
+
+  // ---------------- Sauvegarde ----------------
+
+  saveReponse(typeFiche: FicheType): void {
+    const form = this.getFormByType(typeFiche);
+    const supplForm = typeFiche === FicheType.Etudiant
+      ? this.reponseSupplementaireEtudiantForm
+      : typeFiche === FicheType.Enseignant
+        ? this.reponseSupplementaireEnseignantForm
+        : this.reponseSupplementaireEntrepriseForm;
+
+    const supplBuckets = {
+      [FicheType.Etudiant]: [0, 1, 2],
+      [FicheType.Enseignant]: [3, 4],
+      [FicheType.Entreprise]: [5, 6, 7]
+    } as const;
+
+    const valid = form.valid && supplForm.valid;
+    const data = { ...form.value };
+
+    if (!valid) {
+      const invalidMain = this.listInvalidControls(form);
+      const invalidSuppl = this.listInvalidControls(supplForm, 'suppl');
+
+      console.groupCollapsed(
+        `%c[EvaluationStage] Champs invalides (type=${FicheType[typeFiche]})`,
+        'color:#d32f2f;font-weight:bold;'
+      );
+
+      const pretty = (arr: Array<{ path: string; errors: any; value: any }>) =>
+        arr.map(x => ({
+          path: x.path,
+          errors: x.errors,
+          value: x.value
+        }));
+
+      console.warn('Form principal INVALID =>', pretty(invalidMain));
+      console.warn('Form suppl. INVALID =>', pretty(invalidSuppl));
+
+      // Optionnel : filtrer les "bases" des BOOLEAN_GROUP si tu en as encore
+      // console.warn('Sans bases BOOLEAN_GROUP =>', pretty(invalidMain.filter(i => !/reponse(Etu|Ens|Ent).*[a-z]$/.test(i.path))));
+
+      console.groupEnd();
+    }
+
+    // Réponses supplémentaires
+    const ids = (supplBuckets[typeFiche] as any as number[])
+      .flatMap(idx => this.questionsSupplementaires?.[idx] ?? []);
+
+    for (const qs of ids) {
+      const payload: any = { reponseTxt: null, reponseInt: null, reponseBool: null };
+      if (qs.typeQuestion === 'txt') payload.reponseTxt = supplForm.get(qs.formControlName)?.value ?? null;
+      if (qs.typeQuestion === 'not') payload.reponseInt = supplForm.get(qs.formControlName)?.value ?? null;
+      if (qs.typeQuestion === 'yn')  payload.reponseBool = supplForm.get(qs.formControlName)?.value ?? null;
+
+      const upsert$ = qs.reponse
+        ? this.reponseEvaluationService.updateReponseSupplementaire(this.convention.id, qs.id, payload)
+        : this.reponseEvaluationService.createReponseSupplementaire(this.convention.id, qs.id, payload);
+
+      upsert$.pipe(takeUntil(this.destroy$)).subscribe(); // fire & forget
+    }
+
+    const onDone = (response: any) => {
+      this.reponseEvaluation = response;
+      if (valid) this.messageService.setSuccess('Evaluation enregistrée avec succès');
+      else this.messageService.setWarning('Evaluation enregistrée avec succès, mais certains champs restent à remplir');
+    };
+
+    const calls = {
+      [FicheType.Etudiant]: () => this.reponseEvaluation
+        ? this.reponseEvaluationService.updateReponseEtudiant(this.convention.id, valid, data)
+        : this.reponseEvaluationService.createReponseEtudiant(this.convention.id, valid, data),
+      [FicheType.Enseignant]: () => this.reponseEvaluation
+        ? this.reponseEvaluationService.updateReponseEnseignant(this.convention.id, valid, data)
+        : this.reponseEvaluationService.createReponseEnseignant(this.convention.id, valid, data),
+      [FicheType.Entreprise]: () => this.reponseEvaluation
+        ? this.reponseEvaluationService.updateReponseEntreprise(this.convention.id, valid, data)
+        : this.reponseEvaluationService.createReponseEntreprise(this.convention.id, valid, data),
+    } as const;
+
+    calls[typeFiche]().pipe(takeUntil(this.destroy$)).subscribe(onDone);
+  }
+
+  // ---------------- Impression / Modale ----------------
+
+  printFiche(typeFiche: FicheType): void {
+    this.reponseEvaluationService.getFichePDF(this.convention.id, typeFiche)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((response: any) => {
+        const blob = new Blob([response as BlobPart], { type: "application/pdf" });
+        const map = { [FicheType.Etudiant]: 'FicheEtudiant_', [FicheType.Enseignant]: 'FicheEnseignant_', [FicheType.Entreprise]: 'FicheEntreprise_' };
+        FileSaver.saveAs(blob, `${map[typeFiche]}${this.convention.id}.pdf`);
+      });
+  }
+
+  openConfirmEnvoiMailEvaluation(typeFiche: FicheType): void {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.width = '1000px';
+    dialogConfig.disableClose = true;
+    dialogConfig.data = { typeFiche, convention: this.convention };
+
+    this.matDialog.open(ConfirmEnvoieMailComponent, dialogConfig)
+      .afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((result?: { convention?: any }) => {
+        if (result?.convention) {
+          this.convention = result.convention;
+          this.conventionChange.emit(result.convention);
+        }
+      });
+  }
+
+  // ---------------- Supplémentaires ----------------
 
   getQuestionSupplementaire(): void {
+    this.ficheEvaluationService.getQuestionsSupplementaires(this.ficheEvaluation.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((response: any[]) => {
+        for (const q of response) {
+          const form = (q.idPlacement <= 2)
+            ? this.reponseSupplementaireEtudiantForm
+            : (q.idPlacement <= 4)
+              ? this.reponseSupplementaireEnseignantForm
+              : this.reponseSupplementaireEntrepriseForm;
 
-    this.ficheEvaluationService.getQuestionsSupplementaires(this.ficheEvaluation.id).subscribe((response: any) => {
+          const name = 'questionSupplementaire' + q.id;
+          if (!form.contains(name)) {
+            const validator = q.typeQuestion === 'yn'
+              ? this.requiredNonNull
+              : Validators.required;
+            form.addControl(name, new FormControl(null, validator));
+          }
+          q.formControlName = name;
 
-      let questionsSupplementaires = response;
-
-      for(let questionSupplementaire of questionsSupplementaires){
-
-        let form = this.fb.group({});
-
-        if(questionSupplementaire.idPlacement == 0 || questionSupplementaire.idPlacement == 1 || questionSupplementaire.idPlacement == 2){
-          form = this.reponseSupplementaireEtudiantForm;
+          if (this.reponseEvaluation) {
+            this.reponseEvaluationService.getReponseSupplementaire(this.convention.id, q.id)
+              .pipe(takeUntil(this.destroy$))
+              .subscribe((r: any) => {
+                q.reponse = false;
+                if (r) {
+                  q.reponse = true;
+                  if (q.typeQuestion === 'txt') form.get(name)?.setValue(r.reponseTxt);
+                  if (q.typeQuestion === 'not') form.get(name)?.setValue(r.reponseInt);
+                  if (q.typeQuestion === 'yn')  form.get(name)?.setValue(r.reponseBool);
+                }
+              });
+          }
         }
 
-        if(questionSupplementaire.idPlacement == 3 || questionSupplementaire.idPlacement == 4){
-          form = this.reponseSupplementaireEnseignantForm;
-        }
-
-        if(questionSupplementaire.idPlacement == 5 || questionSupplementaire.idPlacement == 6 || questionSupplementaire.idPlacement == 7){
-          form = this.reponseSupplementaireEntrepriseForm;
-        }
-        const questionSupplementaireFormControlName = 'questionSupplementaire' + questionSupplementaire.id
-        form.addControl(questionSupplementaireFormControlName,new FormControl(null, Validators.required));
-        questionSupplementaire.formControlName = questionSupplementaireFormControlName
-
-         if(this.reponseEvaluation){
-          this.reponseEvaluationService.getReponseSupplementaire(this.convention.id, questionSupplementaire.id).subscribe((response2: any) => {
-
-            questionSupplementaire.reponse = false;
-            if (response2){
-              questionSupplementaire.reponse = true;
-              if(questionSupplementaire.typeQuestion == 'txt'){
-                form.get(questionSupplementaireFormControlName)!.setValue(response2.reponseTxt);
-              }
-              if(questionSupplementaire.typeQuestion == 'not'){
-                form.get(questionSupplementaireFormControlName)!.setValue(response2.reponseInt);
-              }
-              if(questionSupplementaire.typeQuestion == 'yn'){
-                form.get(questionSupplementaireFormControlName)!.setValue(response2.reponseBool);
-              }
-            }
-          });
-        }
-      }
-
-      this.questionsSupplementaires = [];
-      this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 0));
-      this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 1));
-      this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 2));
-      this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 3));
-      this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 4));
-      this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 5));
-      this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 6));
-      this.questionsSupplementaires.push(response.filter((q: any) => q.idPlacement == 7));
-    });
+        this.questionsSupplementaires = [
+          response.filter(q => q.idPlacement === 0),
+          response.filter(q => q.idPlacement === 1),
+          response.filter(q => q.idPlacement === 2),
+          response.filter(q => q.idPlacement === 3),
+          response.filter(q => q.idPlacement === 4),
+          response.filter(q => q.idPlacement === 5),
+          response.filter(q => q.idPlacement === 6),
+          response.filter(q => q.idPlacement === 7),
+        ];
+      });
   }
 
-  compare(option: any, value: any): boolean {
-    if (option && value) {
-      return option.id === value.id;
+  // ---------------- Questions (VM / options / flags) ----------------
+
+  private parseParamsJsonLooseArr(paramsJson?: string | null): string[] {
+    if (!paramsJson) return [];
+    try {
+      const obj = JSON.parse(paramsJson);
+      if (Array.isArray(obj?.items)) return obj.items;
+      return [];
+    } catch {
+      const m = paramsJson.match(/\[([\s\S]*)\]/);
+      if (!m) return [];
+      return m[1].split(',').map(s => s.trim().replace(/^"|"$/g, '')).filter(Boolean);
     }
+  }
+
+  private extractOptions(q: { code: string; type: TypeQuestionEvaluation; paramsJson?: string | null; options?: string[] | null }): string[] {
+    if (q.options?.length) return q.options;
+    const fromParams = this.parseParamsJsonLooseArr(q.paramsJson);
+    if (fromParams.length) return fromParams;
+
+    if (q.type === TypeQuestionEvaluation.SCALE_LIKERT_5) return this.LIKERT_5;
+    if (q.type === TypeQuestionEvaluation.SCALE_AGREEMENT_5) return this.AGREEMENT_5;
+
+    return [];
+  }
+
+  private toVM(q: DbQuestion): DbQuestion {
+    const needsOptions =
+      q.type === TypeQuestionEvaluation.SINGLE_CHOICE ||
+      q.type === TypeQuestionEvaluation.MULTI_CHOICE ||
+      q.type === TypeQuestionEvaluation.BOOLEAN_GROUP ||
+      q.type === TypeQuestionEvaluation.SCALE_LIKERT_5 ||
+      q.type === TypeQuestionEvaluation.SCALE_AGREEMENT_5;
+
+    return {
+      code: q.code,
+      texte: q.texte,
+      type: q.type as TypeQuestionEvaluation,
+      options: needsOptions ? this.extractOptions(q) : [],
+      bisQuestion: q.bisQuestion,
+      bisQuestionLowNotation: q.bisQuestionLowNotation ?? false,
+      bisQuestionTrue: q.bisQuestionTrue ?? false,
+      bisQuestionFalse: q.bisQuestionFalse ?? false,
+      paramsJson: (q as any).paramsJson ?? null,
+    };
+  }
+
+  private ensureFormControls(vm: DbQuestion): void {
+    const form = vm.code.startsWith('ETU') ? this.reponseEtudiantForm
+      : vm.code.startsWith('ENS') ? this.reponseEnseignantForm
+        : this.reponseEntrepriseForm;
+
+    const base = this.toControlBase(vm.code);
+
+    // Ne pas mettre de required sur le "base" des BOOLEAN_GROUP
+    const needBaseRequired = vm.type !== TypeQuestionEvaluation.BOOLEAN_GROUP;
+
+    if (!form.contains(base)) {
+      form.addControl(base, new FormControl(null, needBaseRequired ? Validators.required : []));
+    }
+
+    if (vm.type === TypeQuestionEvaluation.BOOLEAN_GROUP && Array.isArray(vm.options)) {
+      vm.options.forEach((_, i) => {
+        const key = base + this.controlsIndexToLetter[i];
+        if (!form.contains(key)) form.addControl(key, new FormControl(null, this.requiredNonNull));
+      });
+    }
+
+    // Bis générique
+    if ((vm.bisQuestion || vm.bisQuestionLowNotation || vm.bisQuestionTrue || vm.bisQuestionFalse) && !form.contains(base + 'bis')) {
+      form.addControl(base + 'bis', new FormControl(null));
+    }
+
+    if (vm.code === 'ETUI7') {
+      if (!form.contains(base + 'bis1')) form.addControl(base + 'bis1', new FormControl(null));
+      if (!form.contains(base + 'bis2')) form.addControl(base + 'bis2', new FormControl(null));
+    }
+    if (vm.code === 'ETUII5') {
+      if (!form.contains(base + 'a')) form.addControl(base + 'a', new FormControl(null));
+      if (!form.contains(base + 'b')) form.addControl(base + 'b', new FormControl(null));
+    }
+  }
+
+  private bucketFor(code: string, s1: DbQuestion[], s2?: DbQuestion[], s3?: DbQuestion[]): DbQuestion[] {
+    if (code.startsWith('ETUIII')) return s3!;
+    if (code.startsWith('ETUII')) return s2!;
+    if (code.startsWith('ETUI')) return s1;
+    if (code.startsWith('ENSII')) return s2!;
+    if (code.startsWith('ENSI')) return s1;
+    if (code.startsWith('ENT')) {
+      const num = parseInt(code.replace('ENT',''), 10);
+      if (num <= 9) return s1;
+      if (num <= 14) return s2!;
+      return s3!;
+    }
+    return s1;
+  }
+
+  private applyDbQuestions(dbQuestions: DbQuestion[], s1: DbQuestion[], s2?: DbQuestion[], s3?: DbQuestion[]): void {
+    for (const q of dbQuestions) {
+      const vm = this.toVM(q);
+      const target = this.bucketFor(vm.code, s1, s2, s3);
+      const idx = target.findIndex(x => x.code === vm.code);
+      if (idx > -1) target[idx] = { ...target[idx], ...vm };
+      else target.push(vm);
+      this.ensureFormControls(vm);
+    }
+  }
+
+  private toLegacyQuestionKey(code: string): string {
+    if (code.startsWith('ETU')) return 'questionEtu' + code.substring(3);
+    if (code.startsWith('ENS')) return 'questionEns' + code.substring(3);
+    if (code.startsWith('ENT')) return 'questionEnt' + code.substring(3);
+    return 'question' + code;
+  }
+  private isQuestionActive(code: string): boolean {
+    return !!this.ficheEvaluation?.[this.toLegacyQuestionKey(code)];
+  }
+
+  private applyVisibilityForQuestion(form: FormGroup, q: any): void {
+    const active = this.isQuestionActive(q.code);
+    const base = this.toControlBase(q.code);
+
+    const mainKeys: string[] =
+      q.type === TypeQuestionEvaluation.BOOLEAN_GROUP
+        ? (q.options || []).map((_: string, i: number) => base + this.controlsIndexToLetter[i])
+        : [base];
+
+    this.setRequired(form, mainKeys, active, q.type);
+
+    if (!active) {
+      const conditionalKeys: string[] = [];
+      if (q.bisQuestionLowNotation || q.bisQuestionTrue || q.bisQuestionFalse) conditionalKeys.push(base + 'bis');
+      if (q.code === 'ETUI7') conditionalKeys.push(base + 'bis1', base + 'bis2');
+      if (q.code === 'ETUII5') conditionalKeys.push(base + 'a', base + 'b');
+      this.setRequired(form, conditionalKeys, false);
+    }
+  }
+
+  private applyFicheVisibilityToValidators(): void {
+    [...this.FicheEtudiantIQuestions, ...this.FicheEtudiantIIQuestions, ...this.FicheEtudiantIIIQuestions]
+      .forEach(q => this.applyVisibilityForQuestion(this.reponseEtudiantForm, q));
+    [...this.FicheEnseignantIQuestions, ...this.FicheEnseignantIIQuestions]
+      .forEach(q => this.applyVisibilityForQuestion(this.reponseEnseignantForm, q));
+    [...this.FicheEntrepriseIQuestions, ...this.FicheEntrepriseIIQuestions, ...this.FicheEntrepriseIIIQuestions]
+      .forEach(q => this.applyVisibilityForQuestion(this.reponseEntrepriseForm, q));
+  }
+
+  private wireConditionalValidators(): void {
+    const attach = (form: FormGroup, q: DbQuestion) => {
+      const base = this.toControlBase(q.code);
+      const main = form.get(base);
+      if (!main) return;
+
+      main.valueChanges.subscribe(val => {
+        if (!this.isQuestionActive(q.code)) return;
+
+        // bis : required si condition remplie
+        const wantBis = !!(
+          (q.bisQuestionLowNotation && typeof val === 'number' && val >= 3) ||
+          (q.bisQuestionTrue && !!val) ||
+          (q.bisQuestionFalse && val === false)
+        );
+
+        this.setRequired(form, [base + 'bis'], wantBis);
+
+        // ETUI7
+        if (q.code === 'ETUI7') {
+          this.setRequired(form, [base + 'bis1'], !!val, TypeQuestionEvaluation.SINGLE_CHOICE); // index requis
+          this.setRequired(form, [base + 'bis2'], val === false, TypeQuestionEvaluation.SINGLE_CHOICE);
+        }
+
+        // ETUII5 : a = index requis, b = booléen requisNonNull
+        if (q.code === 'ETUII5') {
+          this.setRequired(form, [base + 'a'], !!val, TypeQuestionEvaluation.SINGLE_CHOICE);
+          this.setRequired(form, [base + 'b'], !!val, TypeQuestionEvaluation.YES_NO); // << booléen
+        }
+      });
+    };
+
+    [...this.FicheEtudiantIQuestions, ...this.FicheEtudiantIIQuestions, ...this.FicheEtudiantIIIQuestions].forEach(q => attach(this.reponseEtudiantForm, q));
+    [...this.FicheEnseignantIQuestions, ...this.FicheEnseignantIIQuestions].forEach(q => attach(this.reponseEnseignantForm, q));
+    [...this.FicheEntrepriseIQuestions, ...this.FicheEntrepriseIIQuestions, ...this.FicheEntrepriseIIIQuestions].forEach(q => attach(this.reponseEntrepriseForm, q));
+  }
+
+  // ---------------- AUTO / Params helpers ----------------
+
+  getAutoValue(code: string): string {
+    switch (code) {
+      case 'ETUI5': return this.convention?.origineStage?.libelle || '';
+      case 'ETUIII0': return this.convention?.sujetStage || '';
+      default: return '';
+    }
+  }
+
+  toControlBase(code: string): string {
+    if (!code) return '';
+    if (code.startsWith('ETU')) return 'reponseEtu' + code.substring(3);
+    if (code.startsWith('ENS')) return 'reponseEns' + code.substring(3);
+    if (code.startsWith('ENT')) return 'reponseEnt' + code.substring(3);
+    return 'reponse' + code;
+  }
+
+  // ---------------- Cas spéciaux JSON ----------------
+
+  private parseObjectLoose(s?: string | null): any {
+    if (!s) return {};
+    try { return JSON.parse(s); } catch { return {}; }
+  }
+
+  getETUI7Options(q: DbQuestion): { oui: string[]; non: string[]; labelOui?: string; labelNon?: string } {
+    const obj = this.parseObjectLoose(q?.paramsJson);
+    const oui = Array.isArray(obj?.oui?.items) ? obj.oui.items : [];
+    const non = Array.isArray(obj?.non?.items) ? obj.non.items : [];
+    const labelOui = typeof obj?.oui?.label === 'string' ? obj.oui.label : undefined;
+    const labelNon = typeof obj?.non?.label === 'string' ? obj.non.label : undefined;
+    return { oui, non, labelOui, labelNon };
+  }
+
+  /** Affichage du bloc “bis” texte */
+  shouldShowBis(q: DbQuestion): boolean {
+    // Pas de texte bis => pas d’affichage
+    if (!q?.bisQuestion) return false;
+
+    const v = this.getMainValue(q);
+
+    // ENT sur échelles : toujours afficher la bis (comportement existant)
+    if ((q.type === TypeQuestionEvaluation.SCALE_LIKERT_5 || q.type === TypeQuestionEvaluation.SCALE_AGREEMENT_5) && q.code.startsWith('ENT')) {
+      return true;
+    }
+
+    // Flags pilotés par la base
+    if (q.bisQuestionLowNotation && typeof v === 'number' && v >= 3) return true; // 0..4
+    if (q.bisQuestionTrue && v === true) return true;
+    if (q.bisQuestionFalse && v === false) return true;
+
+    // Cas legacy explicite
+    if (q.code === 'ETUIII1') return v === true;
+
     return false;
   }
 
-  saveReponse(typeFiche: number): void {
-
-    let reponseForm = this.fb.group({});
-    let reponseSupplementaireForm = this.fb.group({});
-    let questionsSupplementaires = [];
-
-    if(typeFiche == 0){
-      reponseForm = this.reponseEtudiantForm;
-      reponseSupplementaireForm = this.reponseSupplementaireEtudiantForm;
-      questionsSupplementaires = this.questionsSupplementaires[0].concat(this.questionsSupplementaires[1]).concat(this.questionsSupplementaires[2]);
-    }
-
-    if(typeFiche == 1){
-      reponseForm = this.reponseEnseignantForm;
-      reponseSupplementaireForm = this.reponseSupplementaireEnseignantForm;
-      questionsSupplementaires = this.questionsSupplementaires[3].concat(this.questionsSupplementaires[4]);
-    }
-
-    if(typeFiche == 2){
-      reponseForm = this.reponseEntrepriseForm;
-      reponseSupplementaireForm = this.reponseSupplementaireEntrepriseForm;
-      questionsSupplementaires = this.questionsSupplementaires[5].concat(this.questionsSupplementaires[6]).concat(this.questionsSupplementaires[7]);
-    }
-
-    const valid = reponseForm.valid && reponseSupplementaireForm.valid
-
-    console.log("reponseSupplementaireForm : ",reponseSupplementaireForm.valid);
-    console.log("reponseForm : ",reponseForm.valid);
-    console.log("EtuFrom : ",this.reponseEtudiantForm.valid);
-    console.log("EnsFrom : ",this.reponseEnseignantForm.valid);
-    console.log("EntFrom : ",this.reponseEntrepriseForm.valid);
-    console.log("valid : ",valid);
-
-    const data = {...reponseForm.value};
-
-    for(let questionSupplementaire of questionsSupplementaires){
-      let reponseSupplementaireData = {'reponseTxt':null,'reponseInt':null,'reponseBool':null,};
-      if(questionSupplementaire.typeQuestion == 'txt'){
-        reponseSupplementaireData.reponseTxt = reponseSupplementaireForm.get(questionSupplementaire.formControlName)!.value;
-      }
-      if(questionSupplementaire.typeQuestion == 'not'){
-        reponseSupplementaireData.reponseInt = reponseSupplementaireForm.get(questionSupplementaire.formControlName)!.value;
-      }
-      if(questionSupplementaire.typeQuestion == 'yn'){
-        reponseSupplementaireData.reponseBool = reponseSupplementaireForm.get(questionSupplementaire.formControlName)!.value;
-      }
-      if(questionSupplementaire.reponse){
-        this.reponseEvaluationService.updateReponseSupplementaire(this.convention.id, questionSupplementaire.id, reponseSupplementaireData).subscribe((response: any) => {
-        });
-      }else{
-        this.reponseEvaluationService.createReponseSupplementaire(this.convention.id, questionSupplementaire.id, reponseSupplementaireData).subscribe((response: any) => {
-        });
-      }
-    }
-
-    if(typeFiche == 0){
-      if(this.reponseEvaluation){
-        this.reponseEvaluationService.updateReponseEtudiant(this.convention.id,valid, data).subscribe((response: any) => {
-          this.reponseEvaluation = response;
-          if(valid){
-            this.messageService.setSuccess('Evaluation enregistrée avec succès');
-          }else{
-            this.messageService.setWarning('Evaluation enregistrée avec succès, mais certains champs restent à remplir');
-          }
-        });
-      }else{
-        this.reponseEvaluationService.createReponseEtudiant(this.convention.id,valid, data).subscribe((response: any) => {
-          this.reponseEvaluation = response;
-          if(valid){
-            this.messageService.setSuccess('Evaluation enregistrée avec succès');
-          }else{
-            this.messageService.setWarning('Evaluation enregistrée avec succès, mais certains champs restent à remplir');
-          }
-        });
-      }
-    }
-
-    if(typeFiche == 1){
-      if(this.reponseEvaluation){
-        this.reponseEvaluationService.updateReponseEnseignant(this.convention.id,valid, data).subscribe((response: any) => {
-          this.reponseEvaluation = response;
-          if(valid){
-            this.messageService.setSuccess('Evaluation enregistrée avec succès');
-          }else{
-            this.messageService.setWarning('Evaluation enregistrée avec succès, mais certains champs restent à remplir');
-          }
-        });
-      }else{
-        this.reponseEvaluationService.createReponseEnseignant(this.convention.id,valid, data).subscribe((response: any) => {
-          this.reponseEvaluation = response;
-          if(valid){
-            this.messageService.setSuccess('Evaluation enregistrée avec succès');
-          }else{
-            this.messageService.setWarning('Evaluation enregistrée avec succès, mais certains champs restent à remplir');
-          }
-        });
-      }
-    }
-
-    if(typeFiche == 2){
-      if(this.reponseEvaluation){
-        this.reponseEvaluationService.updateReponseEntreprise(this.convention.id,valid, data).subscribe((response: any) => {
-          this.reponseEvaluation = response;
-          if(valid){
-            this.messageService.setSuccess('Evaluation enregistrée avec succès');
-          }else{
-            this.messageService.setWarning('Evaluation enregistrée avec succès, mais certains champs restent à remplir');
-          }
-        });
-      }else{
-        this.reponseEvaluationService.createReponseEntreprise(this.convention.id,valid, data).subscribe((response: any) => {
-          this.reponseEvaluation = response;
-          if(valid){
-            this.messageService.setSuccess('Evaluation enregistrée avec succès');
-          }else{
-            this.messageService.setWarning('Evaluation enregistrée avec succès, mais certains champs restent à remplir');
-          }
-        });
-      }
-    }
+  getMainValue(q: DbQuestion): any {
+    const base = this.toControlBase(q.code);
+    return this.reponseEtudiantForm.get(base)?.value
+      ?? this.reponseEnseignantForm.get(base)?.value
+      ?? this.reponseEntrepriseForm.get(base)?.value
+      ?? null;
   }
 
-  getQestionTexte(question: any): string {
+  public getETUII5Options(q: any): { a: string[] } {
+    const obj = this.parseObjectLoose(q?.paramsJson);
+    const aFromJson: string[] = Array.isArray(obj?.a) ? obj.a : [];
+    if (aFromJson.length) return { a: aFromJson };
 
-    let htmlTexte = "";
-
-    htmlTexte += "<p style=\"margin-left: 16px\"><span class=\"text-small\"><strong> - "+question.title+"</strong></span></p>";
-
-    if(question.type == 'boolean'){
-      if(this.reponseEvaluation['reponse' + question.controlName]){
-        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">Oui</span></p>";
-      }else{
-        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">Non</span></p>";
-      }
-    }
-    if(question.type == 'multiple-choice'){
-      let formControlName = 'reponse' + question.controlName;
-
-      let line = question.texte[this.reponseEvaluation[formControlName]];
-      htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+line+"</span></p>";
-
-      if(question.bisQuestionLowNotation &&
-      (this.reponseEvaluation[formControlName] !== null) &&
-      (this.reponseEvaluation[formControlName] >= 3)){
-        let line = question.bisQuestionLowNotation;
-        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\"><strong> - "+line+"</strong>";
-        let formControlName = "reponse" + question.controlName + 'bis';
-        line = this.reponseEvaluation[formControlName];
-        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+line+"</span></p>";
-      }
-      if(question.bisQuestion){
-        let formControlName = "reponse" + question.controlName + 'bis';
-        let bisLine = this.reponseEvaluation[formControlName];
-        if(bisLine && bisLine !== null){
-          let line = question.bisQuestion;
-          htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\"><strong> - "+line+"</strong>";
-          htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+bisLine+"</span></p>";
-        }
-      }
-    }
-    if(question.type == 'multiple-boolean'){
-      for (var i = 0; i < question.texte.length; i++) {
-        let line = question.texte[i];
-        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\"><strong> - "+line+" : </strong>";
-        let formControlName = "reponse" + question.controlName + this.controlsIndexToLetter[i];
-        if(this.reponseEvaluation[formControlName]){
-          htmlTexte += "Oui</span></p>";
-        }else{
-          htmlTexte += "Non</span></p>";
-        }
-      }
-    }
-    if(question.type == 'texte'){
-      let line = this.reponseEvaluation['reponse' + question.controlName];
-      htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+line+"</span></p>";
-    }
-    if(question.type == 'EtuI5'){
-        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+this.convention.origineStage.libelle+"</span></p>";
-    }
-    if(question.type == 'EtuI7'){
-      if(this.reponseEvaluation['reponse' + question.controlName]){
-        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">Oui</span></p>";
-        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\"><strong>- Si oui, par qui ?</strong></span></p>";
-        let line = question.texte[this.reponseEvaluation['reponseEtuI7bis1']];
-        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+line+"</span></p>";
-      }else{
-        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">Non</span></p>";
-        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\"><strong>- Si non, pourquoi ?</strong></span></p>";
-        let line = question.texte[this.reponseEvaluation['reponseEtuI7bis2']];
-        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+line+"</span></p>";
-      }
-    }
-    if(question.type == 'EtuII5'){
-      if(this.reponseEvaluation['reponse' + question.controlName]){
-        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">Oui</span></p>";
-        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\"><strong>- Si oui : a) De quel ordre ?</strong></span></p>";
-        let line = question.texte[this.reponseEvaluation['reponseEtuII5a']];
-        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+line+"</span></p>";
-        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\"><strong>b) Avec autonomie ?</strong></span></p>";
-        if(this.reponseEvaluation['reponseEtuII5b']){
-          htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">Oui</span></p>";
-        }else{
-          htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">Non</span></p>";
-        }
-      }
-    }
-    if(question.type == 'EtuIII1'){
-        htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+this.convention.sujetStage+"</span></p>";
-    }
-
-    return htmlTexte;
+    const opts: string[] = Array.isArray(q?.options) ? q.options : [];
+    if (!opts.length) return { a: ["Technique", "Organisationnelle", "Communication"] };
+    return { a: opts };
   }
 
-  getQuestionSupplementaireTexte(reponseSupplementaireForm:any, questionSupplementaire: any): string {
+  private readonly requiredNonNull: ValidatorFn = (c: AbstractControl): ValidationErrors | null =>
+    (c.value === null || c.value === undefined) ? { required: true } : null;
 
-    let htmlTexte = "";
-
-    let line = questionSupplementaire.question;
-    htmlTexte += "<p style=\"margin-left: 16px\"><span class=\"text-small\"><strong> - "+line+"</strong></span></p>";
-
-    if(questionSupplementaire.typeQuestion == 'txt'){
-      line = reponseSupplementaireForm.get(questionSupplementaire.formControlName)!.value;
-    }
-    if(questionSupplementaire.typeQuestion == 'not'){
-      let notation = reponseSupplementaireForm.get(questionSupplementaire.formControlName)!.value;
-      if(notation === 0)line = 'Excellent';
-      if(notation === 1)line = 'Très bien';
-      if(notation === 2)line = 'Bien';
-      if(notation === 3)line = 'Satisfaisant';
-      if(notation === 4)line = 'Insuffisant';
-    }
-    if(questionSupplementaire.typeQuestion == 'yn'){
-      line = (reponseSupplementaireForm.get(questionSupplementaire.formControlName)!.value === true)?'Oui':'Non';
-    }
-    htmlTexte += "<p style=\"margin-left: 32px\"><span class=\"text-small\">"+line+"</span></p>";
-
-    return htmlTexte;
-  }
-
-  printFiche(typeFiche: number): void {
-
-    let htmlTexte = "";
-
-    if (typeFiche==0){
-      htmlTexte += "<p style=\"text-align:center;\"><span class=\"text-huge\"><strong>Evaluation du stage par l'étudiant</strong></span></p>";
-      htmlTexte += "<p style=\"text-align:center;\"><span class=\"text-small\"><strong>Convention de stage n°"+this.convention.id+"</strong></span></p>";
-      htmlTexte += "<p><span class=\"text-small\"><strong>I. <u>Avant le départ en stage</u></strong></span></p>";
-      for(let question of this.FicheEtudiantIQuestions){
-        if(this.ficheEvaluation['question' + question.controlName]){
-          htmlTexte += this.getQestionTexte(question);
-        }
+  private setRequired(form: FormGroup, keys: string[], on: boolean, type?: TypeQuestionEvaluation) {
+    keys.forEach(k => {
+      const c = form.get(k);
+      if (!c) return;
+      if (!on) {
+        c.clearValidators();
+      } else {
+        const v = (type === TypeQuestionEvaluation.YES_NO || type === TypeQuestionEvaluation.BOOLEAN_GROUP)
+          ? this.requiredNonNull
+          : Validators.required;
+        c.setValidators(v);
       }
-      let questionsSupplementaires = this.questionsSupplementaires[0];
-      for(let questionSupplementaire of questionsSupplementaires){
-        htmlTexte += this.getQuestionSupplementaireTexte(this.reponseSupplementaireEtudiantForm,questionSupplementaire);
-      }
-      htmlTexte += "<p><span class=\"text-small\"><strong>II. <u>Pendant le stage</u></strong></span></p>";
-      for(let question of this.FicheEtudiantIIQuestions){
-        if(this.ficheEvaluation['question' + question.controlName]){
-          htmlTexte += this.getQestionTexte(question);
-        }
-      }
-      questionsSupplementaires = this.questionsSupplementaires[1];
-      for(let questionSupplementaire of questionsSupplementaires){
-        htmlTexte += this.getQuestionSupplementaireTexte(this.reponseSupplementaireEtudiantForm,questionSupplementaire);
-      }
-      htmlTexte += "<p><span class=\"text-small\"><strong>III. <u>Après le stage</u></strong></span></p>";
-      for(let question of this.FicheEtudiantIIIQuestions){
-        if(this.ficheEvaluation['question' + question.controlName]){
-          htmlTexte += this.getQestionTexte(question);
-        }
-      }
-      questionsSupplementaires = this.questionsSupplementaires[2];
-      for(let questionSupplementaire of questionsSupplementaires){
-        htmlTexte += this.getQuestionSupplementaireTexte(this.reponseSupplementaireEtudiantForm,questionSupplementaire);
-      }
-    }
-
-    if (typeFiche==1){
-      htmlTexte += "<p style=\"text-align:center;\"><span class=\"text-huge\"><strong>Evaluation du stage par l'enseignant</strong></span></p>";
-      htmlTexte += "<p style=\"text-align:center;\"><span class=\"text-small\"><strong>Convention de stage n°"+this.convention.id+"</strong></span></p>";
-      htmlTexte += "<p><span class=\"text-small\"><strong>I. <u>Suivi du stagiaire pendant son stage</u></strong></span></p>";
-      for(let question of this.FicheEnseignantIQuestions){
-        if(this.ficheEvaluation['question' + question.controlName]){
-          htmlTexte += this.getQestionTexte(question);
-        }
-      }
-      let questionsSupplementaires = this.questionsSupplementaires[3];
-      for(let questionSupplementaire of questionsSupplementaires){
-        htmlTexte += this.getQuestionSupplementaireTexte(this.reponseSupplementaireEnseignantForm,questionSupplementaire);
-      }
-      htmlTexte += "<p><span class=\"text-small\"><strong>II. <u>Evaluation du stagiaire</u></strong></span></p>";
-      for(let question of this.FicheEnseignantIIQuestions){
-        if(this.ficheEvaluation['question' + question.controlName]){
-          htmlTexte += this.getQestionTexte(question);
-        }
-      }
-      questionsSupplementaires = this.questionsSupplementaires[4];
-      for(let questionSupplementaire of questionsSupplementaires){
-        htmlTexte += this.getQuestionSupplementaireTexte(this.reponseSupplementaireEnseignantForm,questionSupplementaire);
-      }
-    }
-
-    if (typeFiche==2){
-      htmlTexte += "<p style=\"text-align:center;\"><span class=\"text-huge\"><strong>Evaluation du stage par le tuteur professionnel</strong></span></p>";
-      htmlTexte += "<p style=\"text-align:center;\"><span class=\"text-small\"><strong>Convention de stage n°"+this.convention.id+"</strong></span></p>";
-      htmlTexte += "<p><span class=\"text-small\"><strong>I. <u>Savoir être du stagiaire</u></strong></span></p>";
-      for(let question of this.FicheEntrepriseIQuestions){
-        if(this.ficheEvaluation['question' + question.controlName]){
-          htmlTexte += this.getQestionTexte(question);
-        }
-      }
-      let questionsSupplementaires = this.questionsSupplementaires[5];
-      for(let questionSupplementaire of questionsSupplementaires){
-        htmlTexte += this.getQuestionSupplementaireTexte(this.reponseSupplementaireEntrepriseForm,questionSupplementaire);
-      }
-      htmlTexte += "<p><span class=\"text-small\"><strong>II. <u>Savoir faire du stagiaire</u></strong></span></p>";
-      for(let question of this.FicheEntrepriseIIQuestions){
-        if(this.ficheEvaluation['question' + question.controlName]){
-          htmlTexte += this.getQestionTexte(question);
-        }
-      }
-      questionsSupplementaires = this.questionsSupplementaires[6];
-      for(let questionSupplementaire of questionsSupplementaires){
-        htmlTexte += this.getQuestionSupplementaireTexte(this.reponseSupplementaireEntrepriseForm,questionSupplementaire);
-      }
-      htmlTexte += "<p><span class=\"text-small\"><strong>III. <u>Appréciation générale du stage</u></strong></span></p>";
-      for(let question of this.FicheEntrepriseIIIQuestions){
-        if(this.ficheEvaluation['question' + question.controlName]){
-          htmlTexte += this.getQestionTexte(question);
-        }
-      }
-      questionsSupplementaires = this.questionsSupplementaires[7];
-      for(let questionSupplementaire of questionsSupplementaires){
-        htmlTexte += this.getQuestionSupplementaireTexte(this.reponseSupplementaireEntrepriseForm,questionSupplementaire);
-      }
-    }
-
-    this.reponseEvaluationService.getFichePDF(this.convention.id, typeFiche, htmlTexte).subscribe((response: any) => {
-      var blob = new Blob([response as BlobPart], {type: "application/pdf"});
-      let filename;
-      if (typeFiche==0){
-        filename = 'FicheEtudiant_' + this.convention.id + '.pdf';
-      }
-      if (typeFiche==1){
-        filename = 'FicheEnseignant_' + this.convention.id + '.pdf';
-      }
-      if (typeFiche==2){
-        filename = 'FicheEntreprise_' + this.convention.id + '.pdf';
-      }
-      FileSaver.saveAs(blob, filename);
+      c.updateValueAndValidity({ emitEvent: false });
     });
   }
 
-  envoiMailEvaluation(typeFiche: number): void {
-    this.reponseEvaluationService.sendMailEvaluation(this.convention.id, typeFiche).subscribe((response: any) => {
-      this.messageService.setSuccess('Mail envoyé avec succès');
-      if (typeFiche == 0)
-        this.convention.envoiMailEtudiant = true
-      if (typeFiche == 1)
-        this.convention.envoiMailTuteurPedago = true
-      if (typeFiche == 2)
-        this.convention.envoiMailTuteurPro = true
-    });
+  /** Retourne la liste des contrôles invalides (chemin complet, erreurs et valeur courante) */
+  private listInvalidControls(form: FormGroup, prefix = ''): Array<{ path: string; errors: any; value: any }> {
+    const invalid: Array<{ path: string; errors: any; value: any }> = [];
+    const stack: Array<{ group: FormGroup; base: string }> = [{ group: form, base: prefix }];
+
+    while (stack.length) {
+      const { group, base } = stack.pop()!;
+      Object.entries(group.controls).forEach(([key, control]) => {
+        const path = base ? `${base}.${key}` : key;
+
+        if (control instanceof FormGroup) {
+          stack.push({ group: control, base: path });
+          return;
+        }
+
+        if (control.invalid) {
+          invalid.push({ path, errors: control.errors, value: control.value });
+        }
+      });
+    }
+    return invalid;
   }
 
-  hasVisible(questions: Array<{controlName: string}>, supIndex: number): boolean {
-    const hasBase =
-      !!questions?.some(q => this.ficheEvaluation?.['question' + q.controlName]);
-    const hasSup =
-      (this.questionsSupplementaires?.[supIndex]?.length ?? 0) > 0;
-    return hasBase || hasSup;
+  private setAutoEtuI5(): void {
+    const libelle = this.convention?.origineStage?.libelle ?? '';
+    const idx = this.optionsETUI5.indexOf(libelle);
+    const ctrl = this.reponseEtudiantForm.get('reponseEtuI5');
+    if (!ctrl) return;
+    if (idx >= 0) {
+      ctrl.setValue(idx);            // ✅ on envoie un number
+      this.setRequired(this.reponseEtudiantForm, ['reponseEtuI5'], true);
+    } else {
+      // Pas de correspondance → on n’envoie rien et on ne bloque pas la validation
+      ctrl.setValue(null);
+      this.setRequired(this.reponseEtudiantForm, ['reponseEtuI5'], false);
+    }
   }
 
 
 }
-

@@ -4,9 +4,10 @@ import * as FileSaver from 'file-saver';
 import {UserService} from "../../../../services/user.service";
 
 @Component({
-  selector: 'app-signature-electronique-view',
-  templateUrl: './signature-electronique-view.component.html',
-  styleUrls: ['./signature-electronique-view.component.scss']
+    selector: 'app-signature-electronique-view',
+    templateUrl: './signature-electronique-view.component.html',
+    styleUrls: ['./signature-electronique-view.component.scss'],
+    standalone: false
 })
 export class SignatureElectroniqueViewComponent implements OnInit {
 

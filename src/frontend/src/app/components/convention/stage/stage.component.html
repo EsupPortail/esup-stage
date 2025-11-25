@@ -3,18 +3,6 @@
     <form [formGroup]="form" novalidate>
       <div class="mt-3 mb-3">
 
-        <div class="text-title">Modèle de la convention</div>
-        <mat-divider class="mb-2"></mat-divider>
-        <div class="row">
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Pays de la convention</mat-label>
-            <mat-select formControlName="idPays" required>
-              <mat-option *ngFor="let country of countries" [value]="country.id">{{country.libelle}}</mat-option>
-            </mat-select>
-            <mat-error><app-form-error [field]="form.get('idPays')"></app-form-error></mat-error>
-          </mat-form-field>
-        </div>
-
         <div class="text-title">Description du stage</div>
         <mat-divider class="mb-2"></mat-divider>
         <div class="row">

@@ -1,0 +1,65 @@
+<div class="modal-overlay">
+  <div class="modal-container">
+    <!-- En-tête fixe -->
+    <div class="header-banner">
+      <h1>Envoi de mail en masse</h1>
+    </div>
+
+    <div class="modal-content">
+      <div [formGroup]="form">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Type d'envoi</mat-label>
+          <mat-select formControlName="typeEnvoi">
+            <mat-option [value]="0">1er envoi</mat-option>
+            <mat-option [value]="1">Rappel</mat-option>
+          </mat-select>
+          <mat-error *ngIf="form.get('typeEnvoi')?.hasError('required') && form.get('typeEnvoi')?.touched">
+            Choisis un type d'envoi
+          </mat-error>
+        </mat-form-field>
+
+        <div class="radio-block" role="group" aria-label="Choix du destinataire">
+          <label class="block-label">Destinataires</label>
+          <mat-radio-group formControlName="typeFiche">
+            <mat-radio-button [value]="0">Étudiant</mat-radio-button>
+            <mat-radio-button [value]="1">Enseignant référent</mat-radio-button>
+            <mat-radio-button [value]="2">Tuteur professionnel</mat-radio-button>
+          </mat-radio-group>
+          <mat-error *ngIf="form.get('typeFiche')?.hasError('required') && form.get('typeFiche')?.touched">
+            Choisis un destinataire
+          </mat-error>
+        </div>
+
+        <div class="template-preview">
+          <span>Modèle de mail utilisé :</span>
+
+          @if(templateMail){
+            <div class="mail-box">
+              <div class="mail-header">
+                <span><strong>Sujet :</strong> {{ templateMail?.objet }}</span>
+              </div>
+              <mat-divider></mat-divider>
+              <div class="mail-body" [innerHTML]="templateMail?.texte"></div>
+            </div>
+          } @else if (!loadingTemplate) {
+            @if(form.get('typeEnvoi')?.value == null || form.get('typeFiche')?.value == null) {
+              <div class="missing-params">Veuillez remplir les champs de paramètrage</div>
+            } @else {
+              <div class="no-template">Aucun modèle disponible pour cette combinaison</div>
+            }
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer fixe -->
+    <div class="modal-footer">
+      <button type="button" mat-stroked-button class="cancel-button" (click)="close()">
+        {{'BOUTON_ANNULER'|contenu}}
+      </button>
+      <button type="submit" mat-flat-button class="submit-button" (click)="send()" [disabled]="form.invalid">
+        {{'BOUTON_VALIDER'|contenu}}
+      </button>
+    </div>
+  </div>
+</div>

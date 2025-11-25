@@ -5,9 +5,10 @@ import { TypeStructureService } from "../../../../services/type-structure.servic
 import { TypeOffreService } from "../../../../services/type-offre.service";
 
 @Component({
-  selector: 'app-admin-nomenclatures-edition',
-  templateUrl: './admin-nomenclatures-edition.component.html',
-  styleUrls: ['./admin-nomenclatures-edition.component.scss']
+    selector: 'app-admin-nomenclatures-edition',
+    templateUrl: './admin-nomenclatures-edition.component.html',
+    styleUrls: ['./admin-nomenclatures-edition.component.scss'],
+    standalone: false
 })
 export class AdminNomenclaturesEditionComponent implements OnInit {
 

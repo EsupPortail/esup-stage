@@ -7,10 +7,11 @@ import { QuestionSupplementaireFormComponent } from './question-supplementaire-f
 import { ContenuService } from "../../../services/contenu.service";
 
 @Component({
-  selector: 'app-fiche-evaluation',
-  templateUrl: './fiche-evaluation.component.html',
-  styleUrls: ['./fiche-evaluation.component.scss'],
-  encapsulation: ViewEncapsulation.None,
+    selector: 'app-fiche-evaluation',
+    templateUrl: './fiche-evaluation.component.html',
+    styleUrls: ['./fiche-evaluation.component.scss'],
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class FicheEvaluationComponent implements OnInit {
 

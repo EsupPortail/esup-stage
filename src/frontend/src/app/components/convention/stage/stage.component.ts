@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { PaysService } from "../../../services/pays.service";
 import { ThemeService } from "../../../services/theme.service";
 import { LangueConventionService } from "../../../services/langue-convention.service";
 import { ModeVersGratificationService } from "../../../services/mode-vers-gratification.service";
@@ -23,9 +22,10 @@ import { InterruptionsFormComponent } from './interruptions-form/interruptions-f
 import { PeriodeStageService } from'../../../services/periode-stage.service';
 
 @Component({
-  selector: 'app-stage',
-  templateUrl: './stage.component.html',
-  styleUrls: ['./stage.component.scss']
+    selector: 'app-stage',
+    templateUrl: './stage.component.html',
+    styleUrls: ['./stage.component.scss'],
+    standalone: false
 })
 export class StageComponent implements OnInit {
   readonly MAX = {
@@ -103,7 +103,6 @@ export class StageComponent implements OnInit {
               private fb: FormBuilder,
               private authService: AuthService,
               private contenuService: ContenuService,
-              private paysService: PaysService,
               private themeService: ThemeService,
               private langueConventionService: LangueConventionService,
               private modeVersGratificationService: ModeVersGratificationService,
@@ -123,9 +122,6 @@ export class StageComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServPays: {value: 'O', type: 'text'}})).subscribe((response: any) => {
-      this.countries = response.data;
-    });
     this.themeService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServ: {value: 'O', type: 'text'}})).subscribe((response: any) => {
       this.thematiques = response.data.sort((a: { libelle: string; }, b: { libelle: any; }) =>
         a.libelle.localeCompare(b.libelle, 'fr', { sensitivity: 'base' })
@@ -169,9 +165,7 @@ export class StageComponent implements OnInit {
     this.setDureeStageFromExceptionnelle();
 
     this.form = this.fb.group({
-      // - Modèle de la convention
-      idPays: [this.convention.paysConvention ? this.convention.paysConvention.id : null, [Validators.required]],
-      // - Description du stage
+         // - Description du stage
       idTheme: [this.convention.theme ? this.convention.theme.id : null, [Validators.required]],
       sujetStage: [this.convention.sujetStage],
       competences: [this.convention.competences],
@@ -270,14 +264,21 @@ export class StageComponent implements OnInit {
         }
         // controle du chevauchement avant mise à jour
         if (['dateDebutStage','dateFinStage'].includes(key)) {
-          this.conventionService.controleChevauchement(this.convention.id, this.form.get('dateDebutStage')!.value, this.form.get('dateFinStage')!.value).subscribe((response) => {
-            if (!response) {
-              this.updateHeuresTravail();
-              this.updateSingleField(key,res[key]);
-            } else {
-              this.form.get(key)!.setErrors({dateStageChevauchement: true});
-            }
-          });
+          if (!this.convention.centreGestion.autoriserChevauchement) {
+            // On fait le contrôle uniquement si le chevauchement n'est pas autorisé
+            this.conventionService.controleChevauchement(this.convention.id, this.form.get('dateDebutStage')!.value, this.form.get('dateFinStage')!.value).subscribe((response) => {
+              if (!response) {
+                this.updateHeuresTravail();
+                this.updateSingleField(key,res[key]);
+              } else {
+                this.form.get(key)!.setErrors({dateStageChevauchement: true});
+              }
+            });
+          } else {
+            // Si le chevauchement est autorisé, on met à jour directement sans contrôle
+            this.updateHeuresTravail();
+            this.updateSingleField(key,res[key]);
+          }
         } else {
           this.updateSingleField(key,res[key]);
         }
@@ -314,11 +315,6 @@ export class StageComponent implements OnInit {
   }
 
   ngOnChanges(): void{
-    if (this.form) {
-      this.form.patchValue({
-        idPays: this.convention.paysConvention ? this.convention.paysConvention.id : null,
-      }, {emitEvent: false});
-    }
     this.singleFieldUpdateLock = false;
     if(this.singleFieldUpdateQueue.length > 0){
       const data = this.singleFieldUpdateQueue.pop();
@@ -414,7 +410,7 @@ export class StageComponent implements OnInit {
   }
 
   updateDateFinBounds(dateDebut: Date): void {
-    this.minDateFinStage = new Date(dateDebut.getTime() + (1000 * 60 * 60 * 24));
+    this.minDateFinStage = new Date(dateDebut);
     this.maxDateFinStage = new Date(dateDebut.getTime() + (1000 * 60 * 60 * 24 * 365));
     this.form.get('dateFinStage')!.markAsTouched();
     this.form.get('dateFinStage')!.updateValueAndValidity();

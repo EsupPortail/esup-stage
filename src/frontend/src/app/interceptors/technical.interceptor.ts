@@ -61,7 +61,6 @@ export class TechnicalInterceptor implements HttpInterceptor {
           this.messageService.setError("Données invalides");
           break;
         case 401:
-          this.messageService.setError("Accès non autorisé");
           break;
         case 403:
           this.messageService.setError("Accès interdit");
