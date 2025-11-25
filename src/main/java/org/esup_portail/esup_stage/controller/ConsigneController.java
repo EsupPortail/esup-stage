@@ -1,5 +1,6 @@
 package org.esup_portail.esup_stage.controller;
 
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
@@ -12,6 +13,7 @@ import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.enums.FolderEnum;
 import org.esup_portail.esup_stage.exception.AppException;
+import org.esup_portail.esup_stage.model.CentreGestion;
 import org.esup_portail.esup_stage.model.Consigne;
 import org.esup_portail.esup_stage.model.ConsigneDocument;
 import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
@@ -31,6 +33,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
 
 @ApiController
 @RequestMapping("/consignes")
@@ -60,7 +64,8 @@ public class ConsigneController {
     public Consigne create(@Valid @RequestBody ConsigneFormDto consigneFormDto) {
         Consigne consigne = new Consigne();
         consigne.setCentreGestion(centreGestionJpaRepository.findById(consigneFormDto.getIdCentreGestion()));
-        consigne.setTexte(ColorConverter.convertHslToRgb(consigneFormDto.getTexte()));
+        String texte = consigneFormDto.getTexte() == null ? null : ColorConverter.convertHslToRgb(consigneFormDto.getTexte());
+        consigne.setTexte(texte);
         consigne = consigneJpaRepository.saveAndFlush(consigne);
         return consigne;
     }
@@ -157,6 +162,43 @@ public class ConsigneController {
             throw new AppException(HttpStatus.NOT_FOUND, "Fichier non trouvé");
         }
     }
+
+    @DeleteMapping("/{id}")
+    @Secure
+    @Transactional
+    public void deleteConsigne(@PathVariable("id") int id){
+        Consigne consigne = consigneJpaRepository.findById(id);
+        if (consigne == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Consigne non trouvée");
+        }
+
+        CentreGestion centreGestion = consigne.getCentreGestion();
+        if (centreGestion == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion non trouvé");
+        }
+        centreGestion.setConsigne(null);
+        centreGestionJpaRepository.saveAndFlush(centreGestion);
+
+        List<String> filePaths = new ArrayList<>();
+        for (ConsigneDocument consigneDocument : consigne.getDocuments()) {
+            filePaths.add(getFilePath(getNomDocument(consigneDocument.getId(), consigneDocument.getNom())));
+        }
+
+        consigneJpaRepository.delete(consigne);
+
+        for (String filePath : filePaths) {
+            try {
+                Path path = Paths.get(filePath);
+                if (Files.exists(path)) {
+                    Files.delete(path);
+                }
+            } catch (IOException e) {
+                logger.error("Erreur lors de la suppression du fichier", e);
+                throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de la suppression du fichier");
+            }
+        }
+    }
+
 
     private String getFilePath(String filename) {
         return appliProperties.getDataDir() + FolderEnum.CENTRE_GESTION_CONSIGNE_DOCS + "/" + filename;

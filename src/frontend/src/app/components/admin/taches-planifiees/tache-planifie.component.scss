@@ -1,0 +1,453 @@
+/* ========== GÉNÉRAL ========== */
+:host {
+  display: block;
+  width: 100%;
+}
+
+mat-card {
+  margin: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+mat-card-content {
+  padding: 1.5rem;
+}
+
+/* ========== FILTRES ========== */
+.form-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-filters mat-form-field {
+  width: 100%;
+}
+
+/* Cache les boutons up/down des inputs number */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* ========== TOTAL ========== */
+.totTask {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--primaryColor, #3f51b5);
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  padding: 0.75rem 1rem;
+  background: rgba(63, 81, 181, 0.08);
+  border-radius: 8px;
+  width: fit-content;
+}
+
+.totTask mat-icon {
+  color: var(--primaryColor, #3f51b5);
+}
+
+/* ========== TABLEAU DESKTOP ========== */
+.table-container {
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.desktop-table {
+  display: block;
+}
+
+.mobile-cards {
+  display: none;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+thead.thead-light th {
+  background-color: var(--primaryColor, #3f51b5);
+  color: white;
+  font-weight: 600;
+  padding: 1rem;
+  text-align: left;
+  white-space: nowrap;
+  position: relative;
+  border-bottom: 2px solid rgba(255,255,255,0.2);
+}
+
+th.sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s;
+}
+
+th.sortable:hover {
+  background-color: rgba(0,0,0,0.1);
+}
+
+th.sortable:focus {
+  outline: 2px solid white;
+  outline-offset: -2px;
+}
+
+.sort-icon {
+  font-size: 1.2rem;
+  vertical-align: middle;
+  margin-left: 0.25rem;
+}
+
+tbody tr {
+  border-bottom: 1px solid #e0e0e0;
+  transition: background-color 0.2s;
+}
+
+tbody tr:hover {
+  background-color: #f5f5f5;
+}
+
+tbody td {
+  padding: 1rem;
+  vertical-align: middle;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--primaryColor, #3f51b5);
+  box-shadow: 0 0 0 2px rgba(63, 81, 181, 0.1);
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* ========== BOUTON D'EXÉCUTION ========== */
+.execute-button {
+  min-width: 40px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+}
+
+.execute-button:not(:disabled):hover {
+  transform: scale(1.1);
+}
+
+.execute-button:focus {
+  outline: 2px solid var(--primaryColor, #3f51b5);
+  outline-offset: 2px;
+}
+
+.execute-button mat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.execute-button mat-spinner {
+  margin: 0 auto;
+}
+
+.execute-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ========== CARTES MOBILES ========== */
+.task-card {
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.task-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.task-id {
+  color: var(--primaryColor, #3f51b5);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.task-name {
+  flex: 1;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.execute-button-mobile {
+  min-width: 36px;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+}
+
+.execute-button-mobile mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.execute-button-mobile mat-spinner {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+.task-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.task-field:last-child {
+  margin-bottom: 0;
+}
+
+.field-label {
+  font-weight: 600;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.task-field input {
+  width: 100%;
+}
+
+.task-field span {
+  color: #333;
+}
+
+/* ========== BOUTONS D'ACTION ========== */
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.btn:hover {
+  filter: brightness(90%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.btn:focus {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.btn mat-icon {
+  font-size: 1.2rem;
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.btn-save {
+  background-color: var(--primaryColor, #3f51b5);
+  color: white;
+}
+
+.btn-reset {
+  background-color: var(--dangerColor, #f44336);
+  color: white;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 1200px) {
+  /* Ajustement des colonnes sur tablettes */
+  .form-filters {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+
+  thead.thead-light th {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  tbody td {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 900px) {
+  mat-card {
+    margin: 0.5rem;
+  }
+
+  mat-card-content {
+    padding: 1rem;
+  }
+
+  /* Filtres en colonne sur mobile */
+  .form-filters {
+    grid-template-columns: 1fr;
+  }
+
+  /* Masquer le tableau desktop, afficher les cartes */
+  .desktop-table {
+    display: none;
+  }
+
+  .mobile-cards {
+    display: block;
+  }
+
+  /* Total responsive */
+  .totTask {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Boutons d'action empilés */
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 600px) {
+  mat-card {
+    margin: 0.25rem;
+  }
+
+  mat-card-content {
+    padding: 0.75rem;
+  }
+
+  .totTask {
+    font-size: 1rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.95rem;
+  }
+}
+
+/* ========== ACCESSIBILITÉ ========== */
+/* Focus visible pour tous les éléments interactifs */
+button:focus-visible,
+input:focus-visible,
+mat-slide-toggle:focus-visible {
+  outline: 2px solid var(--primaryColor, #3f51b5);
+  outline-offset: 2px;
+}
+
+/* Assurer un contraste suffisant */
+@media (prefers-contrast: more) {
+  .totTask {
+    background: rgba(63, 81, 181, 0.15);
+    border: 2px solid var(--primaryColor, #3f51b5);
+  }
+
+  tbody tr:hover {
+    background-color: #e0e0e0;
+  }
+
+  .btn {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Mode sombre (si supporté par l'application) */
+@media (prefers-color-scheme: dark) {
+  mat-card {
+    background: #2a2a2a;
+    color: #fff;
+  }
+
+  table {
+    background: #2a2a2a;
+    color: #fff;
+  }
+
+  tbody tr {
+    border-bottom-color: #444;
+  }
+
+  tbody tr:hover {
+    background-color: #333;
+  }
+
+  .form-control {
+    background: #333;
+    color: #fff;
+    border-color: #555;
+  }
+
+  .task-card {
+    background: #333;
+    color: #fff;
+  }
+
+  .field-label {
+    color: #bbb;
+  }
+}
+
+/* Animation de chargement */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.execute-button:disabled mat-spinner {
+  animation: pulse 1.5s ease-in-out infinite;
+}

@@ -13,4 +13,6 @@ public interface TypeStructureJpaRepository extends JpaRepository<TypeStructure,
 
     @Query("SELECT t FROM TypeStructure t WHERE t.libelle = :lib")
     TypeStructure findByLibelle(@Param("lib") String lib);
+
+    TypeStructure findByid(int id);
 }

@@ -1,0 +1,41 @@
+# Attribution des droits aux rôles par defaut
+INSERT INTO RoleAppFonction(idRole, idAppFonction, lecture, creation, modification, suppression, validation) VALUES
+((SELECT idRole FROM Role WHERE code = 'ADM'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'PARAM_GLOBAL'), 1, 1, 1, 1, 1),
+((SELECT idRole FROM Role WHERE code = 'ADM'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'PARAM_CENTRE'), 1, 1, 1, 1, 1),
+((SELECT idRole FROM Role WHERE code = 'ADM'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'CONVENTION'), 1, 1, 1, 1, 1),
+((SELECT idRole FROM Role WHERE code = 'ADM'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'AVENANT'), 1, 1, 1, 1, 1),
+((SELECT idRole FROM Role WHERE code = 'ADM'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'ORGA_ACC'), 1, 1, 1, 1, 1),
+((SELECT idRole FROM Role WHERE code = 'ADM'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'NOMENCLATURE'), 1, 1, 1, 1, 1),
+((SELECT idRole FROM Role WHERE code = 'ADM'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'CREATION_EN_MASSE_CONVENTION'), 1, 1, 1, 1, 1),
+
+((SELECT idRole FROM Role WHERE code = 'RESP_GES'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'PARAM_GLOBAL'), 1, 1, 1, 1, 1),
+((SELECT idRole FROM Role WHERE code = 'RESP_GES'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'PARAM_CENTRE'), 1, 1, 1, 1, 1),
+((SELECT idRole FROM Role WHERE code = 'RESP_GES'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'CONVENTION'), 1, 1, 1, 1, 1),
+((SELECT idRole FROM Role WHERE code = 'RESP_GES'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'AVENANT'), 1, 1, 1, 1, 1),
+((SELECT idRole FROM Role WHERE code = 'RESP_GES'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'ORGA_ACC'), 1, 1, 1, 1, 1),
+((SELECT idRole FROM Role WHERE code = 'RESP_GES'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'NOMENCLATURE'), 1, 0, 0, 0, 0),
+((SELECT idRole FROM Role WHERE code = 'RESP_GES'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'CREATION_EN_MASSE_CONVENTION'), 1, 1, 1, 1, 1),
+
+((SELECT idRole FROM Role WHERE code = 'GES'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'PARAM_GLOBAL'), 0, 0, 0, 0, 0),
+((SELECT idRole FROM Role WHERE code = 'GES'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'PARAM_CENTRE'), 0, 0, 0, 0, 0),
+((SELECT idRole FROM Role WHERE code = 'GES'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'CONVENTION'), 1, 1, 1, 1, 1),
+((SELECT idRole FROM Role WHERE code = 'GES'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'AVENANT'), 1, 1, 1, 1, 1),
+((SELECT idRole FROM Role WHERE code = 'GES'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'ORGA_ACC'), 1, 1, 1, 1, 1),
+((SELECT idRole FROM Role WHERE code = 'GES'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'NOMENCLATURE'), 1, 0, 0, 0, 0),
+((SELECT idRole FROM Role WHERE code = 'GES'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'CREATION_EN_MASSE_CONVENTION'), 1, 1, 1, 1, 1),
+
+((SELECT idRole FROM Role WHERE code = 'ENS'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'PARAM_GLOBAL'), 0, 0, 0, 0, 0),
+((SELECT idRole FROM Role WHERE code = 'ENS'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'PARAM_CENTRE'), 0, 0, 0, 0, 0),
+((SELECT idRole FROM Role WHERE code = 'ENS'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'CONVENTION'), 1, 0, 0, 0, 1),
+((SELECT idRole FROM Role WHERE code = 'ENS'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'AVENANT'), 1, 1, 1, 1, 1),
+((SELECT idRole FROM Role WHERE code = 'ENS'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'ORGA_ACC'), 1, 1, 1, 1, 1),
+((SELECT idRole FROM Role WHERE code = 'ENS'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'NOMENCLATURE'), 0, 0, 0, 0, 0),
+((SELECT idRole FROM Role WHERE code = 'ENS'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'CREATION_EN_MASSE_CONVENTION'), 0, 0, 0, 0, 0),
+
+((SELECT idRole FROM Role WHERE code = 'ETU'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'PARAM_GLOBAL'), 0, 0, 0, 0, 0),
+((SELECT idRole FROM Role WHERE code = 'ETU'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'PARAM_CENTRE'), 0, 0, 0, 0, 0),
+((SELECT idRole FROM Role WHERE code = 'ETU'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'CONVENTION'), 1, 1, 1, 1, 0),
+((SELECT idRole FROM Role WHERE code = 'ETU'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'AVENANT'), 1, 1, 1, 1, 1),
+((SELECT idRole FROM Role WHERE code = 'ETU'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'ORGA_ACC'), 1, 1, 1, 1, 1),
+((SELECT idRole FROM Role WHERE code = 'ETU'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'NOMENCLATURE'), 0, 0, 0, 0, 0),
+((SELECT idRole FROM Role WHERE code = 'ETU'), (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'CREATION_EN_MASSE_CONVENTION'), 0, 0, 0, 0, 0);

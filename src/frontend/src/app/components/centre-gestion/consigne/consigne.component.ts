@@ -11,8 +11,8 @@ import {
 } from '@angular/core';
 import * as FileSaver from "file-saver";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { ConsigneService } from "../../services/consigne.service";
-import { MessageService } from "../../services/message.service";
+import { ConsigneService } from "../../../services/consigne.service";
+import { MessageService } from "../../../services/message.service";
 import {
   ClassicEditor,
   AccessibilityHelp,
@@ -114,7 +114,7 @@ export class ConsigneComponent implements OnInit, OnChanges, AfterViewInit {
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      texte: [this.consigne ? this.consigne.texte : null, [Validators.required]],
+      texte: [this.consigne ? this.consigne.texte : null],
       idCentreGestion: [this.idCentreGestion, [Validators.required]],
     });
   }
@@ -161,7 +161,7 @@ export class ConsigneComponent implements OnInit, OnChanges, AfterViewInit {
           this.messageService.setError("Le fichier doit être au format pdf, doc ou docx");
           return;
         }
-        if (doc.size > 1048576) {
+        if (doc.size > 10485760) {
           this.messageService.setError("Le fichier ne doit pas dépasser 10Mo");
           return;
         }
@@ -389,7 +389,7 @@ export class ConsigneComponent implements OnInit, OnChanges, AfterViewInit {
           reversed: true
         }
       },
-      placeholder: 'Type or paste your content here!',
+      placeholder: 'Tapez ou collez votre contenu ici…',
       style: {
         definitions: [
           {
@@ -446,6 +446,24 @@ export class ConsigneComponent implements OnInit, OnChanges, AfterViewInit {
     }
     this.isLayoutReady = true;
     this.changeDetector.detectChanges();
+  }
+
+  deleteConsigne() {
+    if (this.consigne) {
+      this.consigneService.deleteConsigne(this.consigne.id).subscribe({
+        next: () => {
+          this.messageService.setSuccess('Consigne supprimée');
+          this.form.get('texte')?.setValue('');     // ou this.form.patchValue({ texte: '' });
+          this.form.markAsPristine();
+          this.form.markAsUntouched();
+          this.consigne = null;
+          this.sumitted.emit(null);
+        },
+        error: (err) => {
+          this.messageService.setError('Erreur lors de la suppression');
+        }
+      });
+    }
   }
 
 }

@@ -217,29 +217,66 @@ public class PaginationRepository<T extends Exportable> {
     public byte[] exportExcel(String headerString, String predicate, String sortOrder, String filters) {
         List<T> data = findPaginated(1, 0, predicate, sortOrder, filters);
         Workbook wb = new HSSFWorkbook();
-
         formatHeaders(headerString);
+        if (headers == null || !headers.isJsonObject()) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Entête invalide pour l'export Excel");
+        }
+        JsonObject h = headers.getAsJsonObject();
 
-        if (headers.has("multipleExcelSheets")) {
-            JsonArray sheets = headers.getAsJsonArray("multipleExcelSheets");
-            for (int i = 0; i < sheets.size(); i++) {
-                JsonObject object = sheets.get(i).getAsJsonObject();
-                String title = object.get("title").getAsString();
-                JsonObject columns = object.get("columns").getAsJsonObject();
-                Set<Map.Entry<String, JsonElement>> entrySet = columns.entrySet();
+        // --- Plusieurs onglets ---
+        if (h.has("multipleExcelSheets") && h.get("multipleExcelSheets").isJsonArray()) {
+            JsonArray sheets = h.getAsJsonArray("multipleExcelSheets");
+            for (JsonElement el : sheets) {
+                if (!el.isJsonObject()) continue;
+                JsonObject obj = el.getAsJsonObject();
 
-                createSheet(wb, data, title, entrySet);
+                String title = obj.has("title") ? obj.get("title").getAsString() : "Export";
+                if (!obj.has("columns") || !obj.get("columns").isJsonObject()) continue;
+
+                JsonObject columns = obj.getAsJsonObject("columns");
+                createSheet(wb, data, title, columns.entrySet());
             }
-        } else {
-            String title = "Export";
-            JsonObject columns = headers;
-            Set<Map.Entry<String, JsonElement>> entrySet = columns.entrySet();
-            createSheet(wb, data, title, entrySet);
+
+            // --- Un seul onglet : objet ---
+        } else if (h.has("singleExcelSheet") && h.get("singleExcelSheet").isJsonObject()) {
+            JsonObject single = h.getAsJsonObject("singleExcelSheet");
+            String title = single.has("title") ? single.get("title").getAsString() : "Export";
+
+            if (!single.has("columns") || !single.get("columns").isJsonObject()) {
+                throw new AppException(HttpStatus.BAD_REQUEST, "Champ 'columns' manquant pour singleExcelSheet");
+            }
+            JsonObject columns = single.getAsJsonObject("columns");
+            createSheet(wb, data, title, columns.entrySet());
+
+            // --- Un seul onglet : tableau (fusion de colonnes) ---
+        } else if (h.has("singleExcelSheet") && h.get("singleExcelSheet").isJsonArray()) {
+            JsonArray sheets = h.getAsJsonArray("singleExcelSheet");
+
+            JsonObject allColumns = new JsonObject();
+            String finalTitle = "Export";
+            int i = 0;
+
+            for (JsonElement el : sheets) {
+                if (!el.isJsonObject()) continue;
+                JsonObject sheet = el.getAsJsonObject();
+
+                if (i == 0 && sheet.has("title")) {
+                    finalTitle = sheet.get("title").getAsString();
+                }
+                if (sheet.has("columns") && sheet.get("columns").isJsonObject()) {
+                    JsonObject cols = sheet.getAsJsonObject("columns");
+                    for (Map.Entry<String, JsonElement> e : cols.entrySet()) {
+                        allColumns.add(e.getKey(), e.getValue());
+                    }
+                }
+                i++;
+            }
+
+            createSheet(wb, data, finalTitle, allColumns.entrySet());
         }
 
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
             wb.write(bos);
-            bos.close();
             return bos.toByteArray();
         } catch (IOException e) {
             logger.error("Erreur génération fichier excel", e);
@@ -247,13 +284,13 @@ public class PaginationRepository<T extends Exportable> {
         }
     }
 
-    public void createSheet(Workbook wb, List<T> data, String title, Set<Map.Entry<String, JsonElement>> entrySet) {
-
+    private void createSheet(Workbook wb, List<T> data, String title, Set<Map.Entry<String, JsonElement>> entrySet) {
+        // Création de la feuille
         Sheet sheet = wb.createSheet(title);
         int rowNum = 0;
         int columnNum = 0;
 
-        // Ajout du header
+        // En-têtes
         Row row = sheet.createRow(rowNum);
         for (Map.Entry<String, JsonElement> entry : entrySet) {
             JsonObject header = entry.getValue().getAsJsonObject();
@@ -261,12 +298,11 @@ public class PaginationRepository<T extends Exportable> {
             columnNum++;
         }
 
-        // Ajout des lignes
+        // Lignes
         rowNum++;
         for (T entity : data) {
             columnNum = 0;
             row = sheet.createRow(rowNum);
-
             for (Map.Entry<String, JsonElement> entry : entrySet) {
                 Cell cell = row.createCell(columnNum);
                 cell.setCellValue(entity.getExportValue(entry.getKey()));

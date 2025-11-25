@@ -69,7 +69,7 @@ public class SecureInterceptor {
         }
 
         if (!hasRight) {
-            throw new AppException(HttpStatus.FORBIDDEN, "Votre rôle de donne pas accès à cette ressource");
+            throw new AppException(HttpStatus.FORBIDDEN, "Votre rôle ne donne pas accès à cette ressource");
         }
 
         return joinPoint.proceed();

@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.1.0-fix-update-signature-default-value
+      author: thouveno9
+      changes:
+        - update:
+            tableName: CronTask
+            columns:
+              - column:
+                  name: active
+                  valueBoolean: false
+            where: nom = 'UpdateSignature'
+        - dropDefaultValue:
+            tableName: CronTask
+            columnName: active
+        - addDefaultValue:
+            tableName: CronTask
+            columnName: active
+            defaultValueBoolean: false

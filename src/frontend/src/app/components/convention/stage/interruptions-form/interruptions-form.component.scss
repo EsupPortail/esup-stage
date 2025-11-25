@@ -1,3 +1,7 @@
+:host {
+  display: contents;
+}
+
 // Modal overlay
 .modal-overlay {
   position: fixed;
@@ -30,7 +34,7 @@
   position: sticky;
   top: 0;
   background-color: var(--primaryColor);
-  padding: 0.75rem 1.5rem;
+  padding: 0.75rem 1.5rem; // Réduit la hauteur
   z-index: 10;
   border-radius: 8px 8px 0 0;
 
@@ -59,13 +63,9 @@
   overflow-y: auto;
   padding: 0 1.5rem;
   // S'arrête avant les boutons
-  max-height: calc(90vh - 180px);
+  max-height: calc(90vh - 180px); // Ajusté pour le header plus petit
   // Masque le contenu qui dépasse
   mask-image: linear-gradient(to bottom,
-    black calc(100% - 20px),
-    transparent 100%
-  );
-  -webkit-mask-image: linear-gradient(to bottom,
     black calc(100% - 20px),
     transparent 100%
   );
@@ -83,7 +83,7 @@
   display: flex;
   align-items: flex-start;
   gap: 1.5rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
 
   .mat-form-field {
     flex: 1;
@@ -149,45 +149,20 @@ button[mat-fab] {
   }
 }
 
-// Période section
-.periode-section {
+// Période item
+.periode-item {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  gap: 1.5rem;
-  padding: 1rem 1rem;
-  margin-bottom: 1rem;
-  background: #f8fafc;
-  border-radius: 12px;
-  box-shadow: 0 1px 6px #0001;
-  min-height: 60px;
-  position: relative;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  margin-bottom: 0.75rem;
 }
 
-.periode-dates {
-  text-align: center;
-  font-size: 1.1rem;
-  font-weight: 400;
-  color: #222b45;
-  display: flex;
-  justify-content: center;
-}
-
-.periode-header {
+.periode-info {
   color: #475569;
-  font-size: 1rem;
-  margin-bottom: 0.5rem;
-}
-
-.delete-button {
-  flex-shrink: 0;
-  margin-left: 1.2rem;
-  margin-right: 0.2rem;
-  width: 44px !important;
-  height: 44px !important;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-size: 0.875rem;
 }
 
 // Material Design overrides
@@ -205,6 +180,4 @@ button[mat-fab] {
   .mat-form-field-subscript-wrapper {
     position: static;
   }
-
-
 }

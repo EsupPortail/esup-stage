@@ -17,386 +17,383 @@
       </div>
       <div class="mt-2">
         <form [formGroup]="reponseEtudiantForm" novalidate (submit)="saveReponse(0)" *ngIf="ficheEvaluation.validationEtudiant">
-          <mat-accordion>
-            <mat-expansion-panel #etuTab1Panel [expanded]="false">
-              <mat-expansion-panel-header>
-                <mat-panel-title>Avant le départ en stage</mat-panel-title>
-              </mat-expansion-panel-header>
-              <div class="mt-2 mb-2" *ngFor="let question of FicheEtudiantIQuestions">
-                <div *ngIf="ficheEvaluation['question' + question.controlName]">
-                  <div class="row mb-2" *ngIf="question.type == 'boolean'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <mat-radio-group formControlName="{{'reponse' + question.controlName}}">
-                        <mat-radio-button [value]="true">Oui</mat-radio-button>
-                        <mat-radio-button [value]="false">Non</mat-radio-button>
-                      </mat-radio-group>
+          <mat-tab-group>
+            <ng-container *ngIf="hasVisible(FicheEtudiantIQuestions, 0)">
+              <mat-tab label="Avant le départ en stage">
+                <div class="mt-2 mb-2" *ngFor="let question of FicheEtudiantIQuestions">
+                  <div *ngIf="ficheEvaluation['question' + question.controlName]">
+                    <div class="row mb-2" *ngIf="question.type == 'boolean'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <mat-radio-group formControlName="{{'reponse' + question.controlName}}">
+                          <mat-radio-button [value]="true">Oui</mat-radio-button>
+                          <mat-radio-button [value]="false">Non</mat-radio-button>
+                        </mat-radio-group>
+                      </div>
+                      <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionTrue &&
+                     (reponseEtudiantForm.get('reponse' + question.controlName)?.value !== null) &&
+                     (reponseEtudiantForm.get('reponse' + question.controlName)?.value === true)">
+                        <div class="mb-2"><b>{{question.bisQuestionTrue}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionFalse &&
+                     (reponseEtudiantForm.get('reponse' + question.controlName)?.value !== null) &&
+                     (reponseEtudiantForm.get('reponse' + question.controlName)?.value === false)">
+                        <div class="mb-2"><b>{{question.bisQuestionFalse}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                        </mat-form-field>
+                      </div>
                     </div>
-                    <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionTrue &&
-                   (reponseEtudiantForm.get('reponse' + question.controlName)?.value !== null) &&
-                   (reponseEtudiantForm.get('reponse' + question.controlName)?.value === true)">
-                      <div class="mb-2"><b>{{question.bisQuestionTrue}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
-                      </mat-form-field>
+                    <div class="row mb-2" *ngIf="question.type == 'multiple-choice'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <mat-radio-group style="display: grid" formControlName="{{'reponse' + question.controlName}}">
+                          <mat-radio-button style="margin-left: 0px" *ngFor="let line of question.texte; let ind = index" [value]="ind">{{line}}</mat-radio-button>
+                        </mat-radio-group>
+                      </div>
+                      <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionLowNotation &&
+                     (reponseEtudiantForm.get('reponse' + question.controlName)?.value !== null) &&
+                     (reponseEtudiantForm.get('reponse' + question.controlName)?.value >= 3)">
+                        <div class="mb-2"><b>{{question.bisQuestionLowNotation}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestion">
+                        <div class="mb-2"><b>{{question.bisQuestion}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                        </mat-form-field>
+                      </div>
                     </div>
-                    <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionFalse &&
-                   (reponseEtudiantForm.get('reponse' + question.controlName)?.value !== null) &&
-                   (reponseEtudiantForm.get('reponse' + question.controlName)?.value === false)">
-                      <div class="mb-2"><b>{{question.bisQuestionFalse}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                  </div>
-                  <div class="row mb-2" *ngIf="question.type == 'multiple-choice'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <mat-radio-group style="display: grid" formControlName="{{'reponse' + question.controlName}}">
-                        <mat-radio-button style="margin-left: 0px" *ngFor="let line of question.texte; let ind = index" [value]="ind">{{line}}</mat-radio-button>
-                      </mat-radio-group>
-                    </div>
-                    <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionLowNotation &&
-                   (reponseEtudiantForm.get('reponse' + question.controlName)?.value !== null) &&
-                   (reponseEtudiantForm.get('reponse' + question.controlName)?.value >= 3)">
-                      <div class="mb-2"><b>{{question.bisQuestionLowNotation}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                    <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestion">
-                      <div class="mb-2"><b>{{question.bisQuestion}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                  </div>
-                  <div class="row mb-2" *ngIf="question.type == 'multiple-boolean'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <div class="row" *ngFor="let line of question.texte; let ind = index">
-                        <div class="col-sm-9">
-                          {{line}}
+                    <div class="row mb-2" *ngIf="question.type == 'multiple-boolean'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <div class="row" *ngFor="let line of question.texte; let ind = index">
+                          <div class="col-sm-9">
+                            {{line}}
+                          </div>
+                          <div class="col-sm-3">
+                            <mat-radio-group formControlName="{{'reponse' + question.controlName + controlsIndexToLetter[ind]}}">
+                              <mat-radio-button [value]="true">Oui</mat-radio-button>
+                              <mat-radio-button [value]="false">Non</mat-radio-button>
+                            </mat-radio-group>
+                          </div>
                         </div>
-                        <div class="col-sm-3">
-                          <mat-radio-group formControlName="{{'reponse' + question.controlName + controlsIndexToLetter[ind]}}">
-                            <mat-radio-button [value]="true">Oui</mat-radio-button>
-                            <mat-radio-button [value]="false">Non</mat-radio-button>
+                      </div>
+                    </div>
+                    <div class="row mb-2" *ngIf="question.type == 'texte'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                    <div class="row mb-2" *ngIf="question.type == 'EtuI5'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <div class="mb-2">{{convention.origineStage ? convention.origineStage.libelle : ''}}</div>
+                      </div>
+                    </div>
+                    <div class="row mb-2" *ngIf="question.type == 'EtuI7'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <mat-radio-group formControlName="reponseEtuI7">
+                          <mat-radio-button [value]="true">Oui</mat-radio-button>
+                          <mat-radio-button [value]="false">Non</mat-radio-button>
+                        </mat-radio-group>
+                        <div class="row mb-2" *ngIf="reponseEtudiantForm.get('reponseEtuI7')?.value === true">
+                          <div class="col-12 mb-2">Si oui, par qui ?</div>
+                          <mat-radio-group style="display: grid" formControlName="reponseEtuI7bis1">
+                            <mat-radio-button style="margin-left: 16px" *ngFor="let line of question.texte | slice:0:5; let ind = index" [value]="ind">{{line}}</mat-radio-button>
+                          </mat-radio-group>
+                        </div>
+                        <div class="row mb-2" *ngIf="reponseEtudiantForm.get('reponseEtuI7')?.value === false">
+                          <div class="col-12 mb-2">Si non, pourquoi ?</div>
+                          <mat-radio-group style="display: grid" formControlName="reponseEtuI7bis2">
+                            <mat-radio-button style="margin-left: 16px" *ngFor="let line of question.texte | slice:5:7; let ind = index" [value]="ind">{{line}}</mat-radio-button>
                           </mat-radio-group>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div class="row mb-2" *ngIf="question.type == 'texte'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName}}"></textarea>
+                </div>
+                <div *ngIf="questionsSupplementaires && questionsSupplementaires[0] && questionsSupplementaires[0].length > 0">
+                  <mat-divider class="mt-2 mb-2"></mat-divider>
+                  <form [formGroup]="reponseSupplementaireEtudiantForm" novalidate>
+                    <div class="mt-2 mb-2" *ngFor="let questionSupplementaire of questionsSupplementaires[0]">
+                      <div class="mb-2"><b>{{questionSupplementaire.question}}</b></div>
+                      <mat-form-field style="width: 100%" *ngIf="questionSupplementaire.typeQuestion == 'txt'" appearance="fill">
+                        <textarea matInput formControlName="{{questionSupplementaire.formControlName}}"></textarea>
                       </mat-form-field>
-                    </div>
-                  </div>
-                  <div class="row mb-2" *ngIf="question.type == 'EtuI5'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <div class="mb-2">{{convention.origineStage ? convention.origineStage.libelle : ''}}</div>
-                    </div>
-                  </div>
-                  <div class="row mb-2" *ngIf="question.type == 'EtuI7'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <mat-radio-group formControlName="reponseEtuI7">
+                      <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'not'" style="display: grid" formControlName="{{questionSupplementaire.formControlName}}">
+                        <mat-radio-button style="margin-left: 0px" [value]="0">Excellent</mat-radio-button>
+                        <mat-radio-button style="margin-left: 0px" [value]="1">Très bien</mat-radio-button>
+                        <mat-radio-button style="margin-left: 0px" [value]="2">Bien</mat-radio-button>
+                        <mat-radio-button style="margin-left: 0px" [value]="3">Satisfaisant</mat-radio-button>
+                        <mat-radio-button style="margin-left: 0px" [value]="4">Insuffisant</mat-radio-button>
+                      </mat-radio-group>
+                      <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'yn'" formControlName="{{questionSupplementaire.formControlName}}">
                         <mat-radio-button [value]="true">Oui</mat-radio-button>
                         <mat-radio-button [value]="false">Non</mat-radio-button>
                       </mat-radio-group>
-                      <div class="row mb-2" *ngIf="reponseEtudiantForm.get('reponseEtuI7')?.value === true">
-                        <div class="col-12 mb-2">Si oui, par qui ?</div>
-                        <mat-radio-group style="display: grid" formControlName="reponseEtuI7bis1">
-                          <mat-radio-button style="margin-left: 16px" *ngFor="let line of question.texte | slice:0:5; let ind = index" [value]="ind">{{line}}</mat-radio-button>
-                        </mat-radio-group>
-                      </div>
-                      <div class="row mb-2" *ngIf="reponseEtudiantForm.get('reponseEtuI7')?.value === false">
-                        <div class="col-12 mb-2">Si non, pourquoi ?</div>
-                        <mat-radio-group style="display: grid" formControlName="reponseEtuI7bis2">
-                          <mat-radio-button style="margin-left: 16px" *ngFor="let line of question.texte | slice:5:7; let ind = index" [value]="ind">{{line}}</mat-radio-button>
-                        </mat-radio-group>
-                      </div>
                     </div>
-                  </div>
+                  </form>
                 </div>
-              </div>
-              <div *ngIf="questionsSupplementaires && questionsSupplementaires[0] && questionsSupplementaires[0].length > 0">
-                <mat-divider class="mt-2 mb-2"></mat-divider>
-                <form [formGroup]="reponseSupplementaireEtudiantForm" novalidate>
-                  <div class="mt-2 mb-2" *ngFor="let questionSupplementaire of questionsSupplementaires[0]">
-                    <div class="mb-2"><b>{{questionSupplementaire.question}}</b></div>
-                    <mat-form-field style="width: 100%" *ngIf="questionSupplementaire.typeQuestion == 'txt'" appearance="fill">
-                      <textarea matInput formControlName="{{questionSupplementaire.formControlName}}"></textarea>
-                    </mat-form-field>
-                    <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'not'" style="display: grid" formControlName="{{questionSupplementaire.formControlName}}">
-                      <mat-radio-button style="margin-left: 0px" [value]="0">Excellent</mat-radio-button>
-                      <mat-radio-button style="margin-left: 0px" [value]="1">Très bien</mat-radio-button>
-                      <mat-radio-button style="margin-left: 0px" [value]="2">Bien</mat-radio-button>
-                      <mat-radio-button style="margin-left: 0px" [value]="3">Satisfaisant</mat-radio-button>
-                      <mat-radio-button style="margin-left: 0px" [value]="4">Insuffisant</mat-radio-button>
-                    </mat-radio-group>
-                    <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'yn'" formControlName="{{questionSupplementaire.formControlName}}">
-                      <mat-radio-button [value]="true">Oui</mat-radio-button>
-                      <mat-radio-button [value]="false">Non</mat-radio-button>
-                    </mat-radio-group>
-                  </div>
-                </form>
-              </div>
-            </mat-expansion-panel>
+              </mat-tab>
+            </ng-container>
 
-            <mat-expansion-panel #etuTab2Panel [expanded]="false">
-              <mat-expansion-panel-header>
-                <mat-panel-title>Pendant le stage</mat-panel-title>
-              </mat-expansion-panel-header>
-              <div class="mt-2 mb-2" *ngFor="let question of FicheEtudiantIIQuestions">
-                <div *ngIf="ficheEvaluation['question' + question.controlName]">
-                  <div class="row mb-2" *ngIf="question.type == 'boolean'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <mat-radio-group formControlName="{{'reponse' + question.controlName}}">
-                        <mat-radio-button [value]="true">Oui</mat-radio-button>
-                        <mat-radio-button [value]="false">Non</mat-radio-button>
-                      </mat-radio-group>
+            <ng-container *ngIf="hasVisible(FicheEtudiantIIQuestions, 1)">
+              <mat-tab label="Pendant le stage" >
+                <div class="mt-2 mb-2" *ngFor="let question of FicheEtudiantIIQuestions">
+                  <div *ngIf="ficheEvaluation['question' + question.controlName]">
+                    <div class="row mb-2" *ngIf="question.type == 'boolean'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <mat-radio-group formControlName="{{'reponse' + question.controlName}}">
+                          <mat-radio-button [value]="true">Oui</mat-radio-button>
+                          <mat-radio-button [value]="false">Non</mat-radio-button>
+                        </mat-radio-group>
+                      </div>
+                      <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionTrue &&
+                     (reponseEtudiantForm.get('reponse' + question.controlName)?.value !== null) &&
+                     (reponseEtudiantForm.get('reponse' + question.controlName)?.value === true)">
+                        <div class="mb-2"><b>{{question.bisQuestionTrue}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionFalse &&
+                     (reponseEtudiantForm.get('reponse' + question.controlName)?.value !== null) &&
+                     (reponseEtudiantForm.get('reponse' + question.controlName)?.value === false)">
+                        <div class="mb-2"><b>{{question.bisQuestionFalse}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                        </mat-form-field>
+                      </div>
                     </div>
-                    <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionTrue &&
-                   (reponseEtudiantForm.get('reponse' + question.controlName)?.value !== null) &&
-                   (reponseEtudiantForm.get('reponse' + question.controlName)?.value === true)">
-                      <div class="mb-2"><b>{{question.bisQuestionTrue}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
-                      </mat-form-field>
+                    <div class="row mb-2" *ngIf="question.type == 'multiple-choice'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <mat-radio-group style="display: grid" formControlName="{{'reponse' + question.controlName}}">
+                          <mat-radio-button style="margin-left: 0px" *ngFor="let line of question.texte; let ind = index" [value]="ind">{{line}}</mat-radio-button>
+                        </mat-radio-group>
+                      </div>
+                      <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionLowNotation &&
+                     (reponseEtudiantForm.get('reponse' + question.controlName)?.value !== null) &&
+                     (reponseEtudiantForm.get('reponse' + question.controlName)?.value >= 3)">
+                        <div class="mb-2"><b>{{question.bisQuestionLowNotation}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestion">
+                        <div class="mb-2"><b>{{question.bisQuestion}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                        </mat-form-field>
+                      </div>
                     </div>
-                    <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionFalse &&
-                   (reponseEtudiantForm.get('reponse' + question.controlName)?.value !== null) &&
-                   (reponseEtudiantForm.get('reponse' + question.controlName)?.value === false)">
-                      <div class="mb-2"><b>{{question.bisQuestionFalse}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                  </div>
-                  <div class="row mb-2" *ngIf="question.type == 'multiple-choice'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <mat-radio-group style="display: grid" formControlName="{{'reponse' + question.controlName}}">
-                        <mat-radio-button style="margin-left: 0px" *ngFor="let line of question.texte; let ind = index" [value]="ind">{{line}}</mat-radio-button>
-                      </mat-radio-group>
-                    </div>
-                    <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionLowNotation &&
-                   (reponseEtudiantForm.get('reponse' + question.controlName)?.value !== null) &&
-                   (reponseEtudiantForm.get('reponse' + question.controlName)?.value >= 3)">
-                      <div class="mb-2"><b>{{question.bisQuestionLowNotation}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                    <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestion">
-                      <div class="mb-2"><b>{{question.bisQuestion}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                  </div>
-                  <div class="row mb-2" *ngIf="question.type == 'multiple-boolean'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <div class="row" *ngFor="let line of question.texte; let ind = index">
-                        <div class="col-sm-9">
-                          {{line}}
+                    <div class="row mb-2" *ngIf="question.type == 'multiple-boolean'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <div class="row" *ngFor="let line of question.texte; let ind = index">
+                          <div class="col-sm-9">
+                            {{line}}
+                          </div>
+                          <div class="col-sm-3">
+                            <mat-radio-group formControlName="{{'reponse' + question.controlName + controlsIndexToLetter[ind]}}">
+                              <mat-radio-button [value]="true">Oui</mat-radio-button>
+                              <mat-radio-button [value]="false">Non</mat-radio-button>
+                            </mat-radio-group>
+                          </div>
                         </div>
-                        <div class="col-sm-3">
-                          <mat-radio-group formControlName="{{'reponse' + question.controlName + controlsIndexToLetter[ind]}}">
-                            <mat-radio-button [value]="true">Oui</mat-radio-button>
-                            <mat-radio-button [value]="false">Non</mat-radio-button>
+                      </div>
+                    </div>
+                    <div class="row mb-2" *ngIf="question.type == 'texte'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                    <div class="row mb-2" *ngIf="question.type == 'EtuII5'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <mat-radio-group formControlName="reponseEtuII5">
+                          <mat-radio-button [value]="true">Oui</mat-radio-button>
+                          <mat-radio-button [value]="false">Non</mat-radio-button>
+                        </mat-radio-group>
+                        <div class="row mb-2" *ngIf="reponseEtudiantForm.get('reponseEtuII5')?.value === true">
+                          <div class="col-12 mb-2">Si oui : a) De quel ordre ?</div>
+                          <mat-radio-group style="display: grid" formControlName="reponseEtuII5a">
+                            <mat-radio-button style="margin-left: 16px" *ngFor="let line of question.texte; let ind = index" [value]="ind">{{line}}</mat-radio-button>
+                          </mat-radio-group>
+                          <div class="col-12 mb-2">b) Avec autonomie ?</div>
+                          <mat-radio-group formControlName="reponseEtuII5b">
+                            <mat-radio-button style="margin-left: 16px" [value]="true">Oui</mat-radio-button>
+                            <mat-radio-button style="margin-left: 16px" [value]="false">Non</mat-radio-button>
                           </mat-radio-group>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div class="row mb-2" *ngIf="question.type == 'texte'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName}}"></textarea>
+                </div>
+                <div *ngIf="questionsSupplementaires && questionsSupplementaires[1] && questionsSupplementaires[1].length > 0">
+                  <mat-divider class="mt-2 mb-2"></mat-divider>
+                  <form [formGroup]="reponseSupplementaireEtudiantForm" novalidate>
+                    <div class="mt-2 mb-2" *ngFor="let questionSupplementaire of questionsSupplementaires[1]">
+                      <div class="mb-2"><b>{{questionSupplementaire.question}}</b></div>
+                      <mat-form-field style="width: 100%" *ngIf="questionSupplementaire.typeQuestion == 'txt'" appearance="fill">
+                        <textarea matInput formControlName="{{questionSupplementaire.formControlName}}"></textarea>
                       </mat-form-field>
-                    </div>
-                  </div>
-                  <div class="row mb-2" *ngIf="question.type == 'EtuII5'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <mat-radio-group formControlName="reponseEtuII5">
+                      <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'not'" style="display: grid" formControlName="{{questionSupplementaire.formControlName}}">
+                        <mat-radio-button style="margin-left: 0px" [value]="0">Excellent</mat-radio-button>
+                        <mat-radio-button style="margin-left: 0px" [value]="1">Très bien</mat-radio-button>
+                        <mat-radio-button style="margin-left: 0px" [value]="2">Bien</mat-radio-button>
+                        <mat-radio-button style="margin-left: 0px" [value]="3">Satisfaisant</mat-radio-button>
+                        <mat-radio-button style="margin-left: 0px" [value]="4">Insuffisant</mat-radio-button>
+                      </mat-radio-group>
+                      <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'yn'" formControlName="{{questionSupplementaire.formControlName}}">
                         <mat-radio-button [value]="true">Oui</mat-radio-button>
                         <mat-radio-button [value]="false">Non</mat-radio-button>
                       </mat-radio-group>
-                      <div class="row mb-2" *ngIf="reponseEtudiantForm.get('reponseEtuII5')?.value === true">
-                        <div class="col-12 mb-2">Si oui : a) De quel ordre ?</div>
-                        <mat-radio-group style="display: grid" formControlName="reponseEtuII5a">
-                          <mat-radio-button style="margin-left: 16px" *ngFor="let line of question.texte; let ind = index" [value]="ind">{{line}}</mat-radio-button>
-                        </mat-radio-group>
-                        <div class="col-12 mb-2">b) Avec autonomie ?</div>
-                        <mat-radio-group formControlName="reponseEtuII5b">
-                          <mat-radio-button style="margin-left: 16px" [value]="true">Oui</mat-radio-button>
-                          <mat-radio-button style="margin-left: 16px" [value]="false">Non</mat-radio-button>
-                        </mat-radio-group>
-                      </div>
                     </div>
-                  </div>
+                  </form>
                 </div>
-              </div>
-              <div *ngIf="questionsSupplementaires && questionsSupplementaires[1] && questionsSupplementaires[1].length > 0">
-                <mat-divider class="mt-2 mb-2"></mat-divider>
-                <form [formGroup]="reponseSupplementaireEtudiantForm" novalidate>
-                  <div class="mt-2 mb-2" *ngFor="let questionSupplementaire of questionsSupplementaires[1]">
-                    <div class="mb-2"><b>{{questionSupplementaire.question}}</b></div>
-                    <mat-form-field style="width: 100%" *ngIf="questionSupplementaire.typeQuestion == 'txt'" appearance="fill">
-                      <textarea matInput formControlName="{{questionSupplementaire.formControlName}}"></textarea>
-                    </mat-form-field>
-                    <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'not'" style="display: grid" formControlName="{{questionSupplementaire.formControlName}}">
-                      <mat-radio-button style="margin-left: 0px" [value]="0">Excellent</mat-radio-button>
-                      <mat-radio-button style="margin-left: 0px" [value]="1">Très bien</mat-radio-button>
-                      <mat-radio-button style="margin-left: 0px" [value]="2">Bien</mat-radio-button>
-                      <mat-radio-button style="margin-left: 0px" [value]="3">Satisfaisant</mat-radio-button>
-                      <mat-radio-button style="margin-left: 0px" [value]="4">Insuffisant</mat-radio-button>
-                    </mat-radio-group>
-                    <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'yn'" formControlName="{{questionSupplementaire.formControlName}}">
-                      <mat-radio-button [value]="true">Oui</mat-radio-button>
-                      <mat-radio-button [value]="false">Non</mat-radio-button>
-                    </mat-radio-group>
-                  </div>
-                </form>
-              </div>
-            </mat-expansion-panel>
+              </mat-tab>
+            </ng-container>
 
-            <mat-expansion-panel #etuTab3Panel [expanded]="false">
-              <mat-expansion-panel-header>
-                <mat-panel-title>Après le stage</mat-panel-title>
-              </mat-expansion-panel-header>
-              <div class="mt-2 mb-2" *ngFor="let question of FicheEtudiantIIIQuestions">
-                <div *ngIf="ficheEvaluation['question' + question.controlName]">
-                  <div class="row mb-2" *ngIf="question.type == 'boolean'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <mat-radio-group formControlName="{{'reponse' + question.controlName}}">
-                        <mat-radio-button [value]="true">Oui</mat-radio-button>
-                        <mat-radio-button [value]="false">Non</mat-radio-button>
-                      </mat-radio-group>
+            <ng-container *ngIf="hasVisible(FicheEtudiantIIIQuestions, 2)">
+              <mat-tab label="Après le stage">
+                <div class="mt-2 mb-2" *ngFor="let question of FicheEtudiantIIIQuestions">
+                  <div *ngIf="ficheEvaluation['question' + question.controlName]">
+                    <div class="row mb-2" *ngIf="question.type == 'boolean'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <mat-radio-group formControlName="{{'reponse' + question.controlName}}">
+                          <mat-radio-button [value]="true">Oui</mat-radio-button>
+                          <mat-radio-button [value]="false">Non</mat-radio-button>
+                        </mat-radio-group>
+                      </div>
+                      <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionTrue &&
+                     (reponseEtudiantForm.get('reponse' + question.controlName)?.value !== null) &&
+                     (reponseEtudiantForm.get('reponse' + question.controlName)?.value === true)">
+                        <div class="mb-2"><b>{{question.bisQuestionTrue}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionFalse &&
+                     (reponseEtudiantForm.get('reponse' + question.controlName)?.value !== null) &&
+                     (reponseEtudiantForm.get('reponse' + question.controlName)?.value === false)">
+                        <div class="mb-2"><b>{{question.bisQuestionFalse}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                        </mat-form-field>
+                      </div>
                     </div>
-                    <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionTrue &&
-                   (reponseEtudiantForm.get('reponse' + question.controlName)?.value !== null) &&
-                   (reponseEtudiantForm.get('reponse' + question.controlName)?.value === true)">
-                      <div class="mb-2"><b>{{question.bisQuestionTrue}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
-                      </mat-form-field>
+                    <div class="row mb-2" *ngIf="question.type == 'multiple-choice'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <mat-radio-group style="display: grid" formControlName="{{'reponse' + question.controlName}}">
+                          <mat-radio-button style="margin-left: 0px" *ngFor="let line of question.texte; let ind = index" [value]="ind">{{line}}</mat-radio-button>
+                        </mat-radio-group>
+                      </div>
+                      <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionLowNotation &&
+                     (reponseEtudiantForm.get('reponse' + question.controlName)?.value !== null) &&
+                     (reponseEtudiantForm.get('reponse' + question.controlName)?.value >= 3)">
+                        <div class="mb-2"><b>{{question.bisQuestionLowNotation}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestion">
+                        <div class="mb-2"><b>{{question.bisQuestion}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                        </mat-form-field>
+                      </div>
                     </div>
-                    <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionFalse &&
-                   (reponseEtudiantForm.get('reponse' + question.controlName)?.value !== null) &&
-                   (reponseEtudiantForm.get('reponse' + question.controlName)?.value === false)">
-                      <div class="mb-2"><b>{{question.bisQuestionFalse}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                  </div>
-                  <div class="row mb-2" *ngIf="question.type == 'multiple-choice'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <mat-radio-group style="display: grid" formControlName="{{'reponse' + question.controlName}}">
-                        <mat-radio-button style="margin-left: 0px" *ngFor="let line of question.texte; let ind = index" [value]="ind">{{line}}</mat-radio-button>
-                      </mat-radio-group>
-                    </div>
-                    <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionLowNotation &&
-                   (reponseEtudiantForm.get('reponse' + question.controlName)?.value !== null) &&
-                   (reponseEtudiantForm.get('reponse' + question.controlName)?.value >= 3)">
-                      <div class="mb-2"><b>{{question.bisQuestionLowNotation}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                    <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestion">
-                      <div class="mb-2"><b>{{question.bisQuestion}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                  </div>
-                  <div class="row mb-2" *ngIf="question.type == 'multiple-boolean'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <div class="row" *ngFor="let line of question.texte; let ind = index">
-                        <div class="col-sm-9">
-                          {{line}}
-                        </div>
-                        <div class="col-sm-3">
-                          <mat-radio-group formControlName="{{'reponse' + question.controlName + controlsIndexToLetter[ind]}}">
-                            <mat-radio-button [value]="true">Oui</mat-radio-button>
-                            <mat-radio-button [value]="false">Non</mat-radio-button>
-                          </mat-radio-group>
+                    <div class="row mb-2" *ngIf="question.type == 'multiple-boolean'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <div class="row" *ngFor="let line of question.texte; let ind = index">
+                          <div class="col-sm-9">
+                            {{line}}
+                          </div>
+                          <div class="col-sm-3">
+                            <mat-radio-group formControlName="{{'reponse' + question.controlName + controlsIndexToLetter[ind]}}">
+                              <mat-radio-button [value]="true">Oui</mat-radio-button>
+                              <mat-radio-button [value]="false">Non</mat-radio-button>
+                            </mat-radio-group>
+                          </div>
                         </div>
                       </div>
                     </div>
+                    <div class="row mb-2" *ngIf="question.type == 'texte'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                    <div class="row mb-2" *ngIf="question.type == 'EtuIII1'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <div class="mb-2">{{convention.sujetStage}}</div>
+                      </div>
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>L'avez-vous modifié ?</b></div>
+                      </div>
+                      <div class="col-sm-12">
+                        <mat-radio-group formControlName="{{'reponse' + question.controlName}}">
+                          <mat-radio-button [value]="true">Oui</mat-radio-button>
+                          <mat-radio-button [value]="false">Non</mat-radio-button>
+                        </mat-radio-group>
+                      </div>
+                      <div class="col-md-12 mt-2 mb-2" *ngIf="
+                     (reponseEtudiantForm.get('reponse' + question.controlName)?.value !== null) &&
+                     (reponseEtudiantForm.get('reponse' + question.controlName)?.value === true)">
+                        <div class="mb-2"><b>{{question.bisQuestionTrue}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                    </div>
                   </div>
-                  <div class="row mb-2" *ngIf="question.type == 'texte'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName}}"></textarea>
+                </div>
+                <div *ngIf="questionsSupplementaires && questionsSupplementaires[2] && questionsSupplementaires[2].length > 0">
+                  <mat-divider class="mt-2 mb-2"></mat-divider>
+                  <form [formGroup]="reponseSupplementaireEtudiantForm" novalidate>
+                    <div class="mt-2 mb-2" *ngFor="let questionSupplementaire of questionsSupplementaires[2]">
+                      <div class="mb-2"><b>{{questionSupplementaire.question}}</b></div>
+                      <mat-form-field style="width: 100%" *ngIf="questionSupplementaire.typeQuestion == 'txt'" appearance="fill">
+                        <textarea matInput formControlName="{{questionSupplementaire.formControlName}}"></textarea>
                       </mat-form-field>
-                    </div>
-                  </div>
-                  <div class="row mb-2" *ngIf="question.type == 'EtuIII1'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <div class="mb-2">{{convention.sujetStage}}</div>
-                    </div>
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>L'avez-vous modifié ?</b></div>
-                    </div>
-                    <div class="col-sm-12">
-                      <mat-radio-group formControlName="{{'reponse' + question.controlName}}">
+                      <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'not'" style="display: grid" formControlName="{{questionSupplementaire.formControlName}}">
+                        <mat-radio-button style="margin-left: 0px" [value]="0">Excellent</mat-radio-button>
+                        <mat-radio-button style="margin-left: 0px" [value]="1">Très bien</mat-radio-button>
+                        <mat-radio-button style="margin-left: 0px" [value]="2">Bien</mat-radio-button>
+                        <mat-radio-button style="margin-left: 0px" [value]="3">Satisfaisant</mat-radio-button>
+                        <mat-radio-button style="margin-left: 0px" [value]="4">Insuffisant</mat-radio-button>
+                      </mat-radio-group>
+                      <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'yn'" formControlName="{{questionSupplementaire.formControlName}}">
                         <mat-radio-button [value]="true">Oui</mat-radio-button>
                         <mat-radio-button [value]="false">Non</mat-radio-button>
                       </mat-radio-group>
                     </div>
-                    <div class="col-md-12 mt-2 mb-2" *ngIf="
-                   (reponseEtudiantForm.get('reponse' + question.controlName)?.value !== null) &&
-                   (reponseEtudiantForm.get('reponse' + question.controlName)?.value === true)">
-                      <div class="mb-2"><b>{{question.bisQuestionTrue}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                  </div>
+                  </form>
                 </div>
-              </div>
-              <div *ngIf="questionsSupplementaires && questionsSupplementaires[2] && questionsSupplementaires[2].length > 0">
-                <mat-divider class="mt-2 mb-2"></mat-divider>
-                <form [formGroup]="reponseSupplementaireEtudiantForm" novalidate>
-                  <div class="mt-2 mb-2" *ngFor="let questionSupplementaire of questionsSupplementaires[2]">
-                    <div class="mb-2"><b>{{questionSupplementaire.question}}</b></div>
-                    <mat-form-field style="width: 100%" *ngIf="questionSupplementaire.typeQuestion == 'txt'" appearance="fill">
-                      <textarea matInput formControlName="{{questionSupplementaire.formControlName}}"></textarea>
-                    </mat-form-field>
-                    <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'not'" style="display: grid" formControlName="{{questionSupplementaire.formControlName}}">
-                      <mat-radio-button style="margin-left: 0px" [value]="0">Excellent</mat-radio-button>
-                      <mat-radio-button style="margin-left: 0px" [value]="1">Très bien</mat-radio-button>
-                      <mat-radio-button style="margin-left: 0px" [value]="2">Bien</mat-radio-button>
-                      <mat-radio-button style="margin-left: 0px" [value]="3">Satisfaisant</mat-radio-button>
-                      <mat-radio-button style="margin-left: 0px" [value]="4">Insuffisant</mat-radio-button>
-                    </mat-radio-group>
-                    <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'yn'" formControlName="{{questionSupplementaire.formControlName}}">
-                      <mat-radio-button [value]="true">Oui</mat-radio-button>
-                      <mat-radio-button [value]="false">Non</mat-radio-button>
-                    </mat-radio-group>
-                  </div>
-                </form>
-              </div>
-            </mat-expansion-panel>
-          </mat-accordion>
+              </mat-tab>
+            </ng-container>
+          </mat-tab-group>
 
           <div class="row mt-3">
             <div class="col-4"></div>
@@ -439,213 +436,211 @@
       <div class="mt-2">
 
         <form [formGroup]="reponseEnseignantForm" novalidate (submit)="saveReponse(1)" *ngIf="ficheEvaluation.validationEnseignant">
-          <mat-accordion>
-            <mat-expansion-panel #ensTab1Panel [expanded]="false">
-              <mat-expansion-panel-header>
-                <mat-panel-title>Suivi du stagiaire pendant son stage</mat-panel-title>
-              </mat-expansion-panel-header>
-              <div class="mt-2 mb-2" *ngFor="let question of FicheEnseignantIQuestions">
-                <div *ngIf="ficheEvaluation['question' + question.controlName]">
-                  <div class="row mb-2" *ngIf="question.type == 'boolean'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <mat-radio-group formControlName="{{'reponse' + question.controlName}}">
+          <mat-tab-group>
+            <ng-container *ngIf="hasVisible(FicheEnseignantIQuestions, 3)">
+              <mat-tab label="Suivi du stagiaire pendant son stage">
+                <div class="mt-2 mb-2" *ngFor="let question of FicheEnseignantIQuestions">
+                  <div *ngIf="ficheEvaluation['question' + question.controlName]">
+                    <div class="row mb-2" *ngIf="question.type == 'boolean'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <mat-radio-group formControlName="{{'reponse' + question.controlName}}">
+                          <mat-radio-button [value]="true">Oui</mat-radio-button>
+                          <mat-radio-button [value]="false">Non</mat-radio-button>
+                        </mat-radio-group>
+                      </div>
+                      <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionTrue &&
+                     (reponseEnseignantForm.get('reponse' + question.controlName)?.value !== null) &&
+                     (reponseEnseignantForm.get('reponse' + question.controlName)?.value === true)">
+                        <div class="mb-2"><b>{{question.bisQuestionTrue}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionFalse &&
+                     (reponseEnseignantForm.get('reponse' + question.controlName)?.value !== null) &&
+                     (reponseEnseignantForm.get('reponse' + question.controlName)?.value === false)">
+                        <div class="mb-2"><b>{{question.bisQuestionFalse}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                    <div class="row mb-2" *ngIf="question.type == 'multiple-choice'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <mat-radio-group style="display: grid" formControlName="{{'reponse' + question.controlName}}">
+                          <mat-radio-button style="margin-left: 0px" *ngFor="let line of question.texte; let ind = index" [value]="ind">{{line}}</mat-radio-button>
+                        </mat-radio-group>
+                      </div>
+                      <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionLowNotation &&
+                     (reponseEnseignantForm.get('reponse' + question.controlName)?.value !== null) &&
+                     (reponseEnseignantForm.get('reponse' + question.controlName)?.value >= 3)">
+                        <div class="mb-2"><b>{{question.bisQuestionLowNotation}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestion">
+                        <div class="mb-2"><b>{{question.bisQuestion}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                    <div class="row mb-2" *ngIf="question.type == 'multiple-boolean'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <div class="row" *ngFor="let line of question.texte; let ind = index">
+                          <div class="col-sm-9">
+                            {{line}}
+                          </div>
+                          <div class="col-sm-3">
+                            <mat-radio-group formControlName="{{'reponse' + question.controlName + controlsIndexToLetter[ind]}}">
+                              <mat-radio-button [value]="true">Oui</mat-radio-button>
+                              <mat-radio-button [value]="false">Non</mat-radio-button>
+                            </mat-radio-group>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row mb-2" *ngIf="question.type == 'texte'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="questionsSupplementaires && questionsSupplementaires[3] && questionsSupplementaires[3].length > 0">
+                  <mat-divider class="mt-2 mb-2"></mat-divider>
+                  <form [formGroup]="reponseSupplementaireEnseignantForm" novalidate>
+                    <div class="mt-2 mb-2" *ngFor="let questionSupplementaire of questionsSupplementaires[3]">
+                      <div class="mb-2"><b>{{questionSupplementaire.question}}</b></div>
+                      <mat-form-field style="width: 100%" *ngIf="questionSupplementaire.typeQuestion == 'txt'" appearance="fill">
+                        <textarea matInput formControlName="{{questionSupplementaire.formControlName}}"></textarea>
+                      </mat-form-field>
+                      <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'not'" style="display: grid" formControlName="{{questionSupplementaire.formControlName}}">
+                        <mat-radio-button style="margin-left: 0px" [value]="0">Excellent</mat-radio-button>
+                        <mat-radio-button style="margin-left: 0px" [value]="1">Très bien</mat-radio-button>
+                        <mat-radio-button style="margin-left: 0px" [value]="2">Bien</mat-radio-button>
+                        <mat-radio-button style="margin-left: 0px" [value]="3">Satisfaisant</mat-radio-button>
+                        <mat-radio-button style="margin-left: 0px" [value]="4">Insuffisant</mat-radio-button>
+                      </mat-radio-group>
+                      <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'yn'" formControlName="{{questionSupplementaire.formControlName}}">
                         <mat-radio-button [value]="true">Oui</mat-radio-button>
                         <mat-radio-button [value]="false">Non</mat-radio-button>
                       </mat-radio-group>
                     </div>
-                    <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionTrue &&
-                   (reponseEnseignantForm.get('reponse' + question.controlName)?.value !== null) &&
-                   (reponseEnseignantForm.get('reponse' + question.controlName)?.value === true)">
-                      <div class="mb-2"><b>{{question.bisQuestionTrue}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                    <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionFalse &&
-                   (reponseEnseignantForm.get('reponse' + question.controlName)?.value !== null) &&
-                   (reponseEnseignantForm.get('reponse' + question.controlName)?.value === false)">
-                      <div class="mb-2"><b>{{question.bisQuestionFalse}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                  </div>
-                  <div class="row mb-2" *ngIf="question.type == 'multiple-choice'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <mat-radio-group style="display: grid" formControlName="{{'reponse' + question.controlName}}">
-                        <mat-radio-button style="margin-left: 0px" *ngFor="let line of question.texte; let ind = index" [value]="ind">{{line}}</mat-radio-button>
-                      </mat-radio-group>
-                    </div>
-                    <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionLowNotation &&
-                   (reponseEnseignantForm.get('reponse' + question.controlName)?.value !== null) &&
-                   (reponseEnseignantForm.get('reponse' + question.controlName)?.value >= 3)">
-                      <div class="mb-2"><b>{{question.bisQuestionLowNotation}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                    <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestion">
-                      <div class="mb-2"><b>{{question.bisQuestion}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                  </div>
-                  <div class="row mb-2" *ngIf="question.type == 'multiple-boolean'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <div class="row" *ngFor="let line of question.texte; let ind = index">
-                        <div class="col-sm-9">
-                          {{line}}
-                        </div>
-                        <div class="col-sm-3">
-                          <mat-radio-group formControlName="{{'reponse' + question.controlName + controlsIndexToLetter[ind]}}">
-                            <mat-radio-button [value]="true">Oui</mat-radio-button>
-                            <mat-radio-button [value]="false">Non</mat-radio-button>
-                          </mat-radio-group>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row mb-2" *ngIf="question.type == 'texte'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                  </div>
+                  </form>
                 </div>
-              </div>
-              <div *ngIf="questionsSupplementaires && questionsSupplementaires[3] && questionsSupplementaires[3].length > 0">
-                <mat-divider class="mt-2 mb-2"></mat-divider>
-                <form [formGroup]="reponseSupplementaireEnseignantForm" novalidate>
-                  <div class="mt-2 mb-2" *ngFor="let questionSupplementaire of questionsSupplementaires[3]">
-                    <div class="mb-2"><b>{{questionSupplementaire.question}}</b></div>
-                    <mat-form-field style="width: 100%" *ngIf="questionSupplementaire.typeQuestion == 'txt'" appearance="fill">
-                      <textarea matInput formControlName="{{questionSupplementaire.formControlName}}"></textarea>
-                    </mat-form-field>
-                    <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'not'" style="display: grid" formControlName="{{questionSupplementaire.formControlName}}">
-                      <mat-radio-button style="margin-left: 0px" [value]="0">Excellent</mat-radio-button>
-                      <mat-radio-button style="margin-left: 0px" [value]="1">Très bien</mat-radio-button>
-                      <mat-radio-button style="margin-left: 0px" [value]="2">Bien</mat-radio-button>
-                      <mat-radio-button style="margin-left: 0px" [value]="3">Satisfaisant</mat-radio-button>
-                      <mat-radio-button style="margin-left: 0px" [value]="4">Insuffisant</mat-radio-button>
-                    </mat-radio-group>
-                    <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'yn'" formControlName="{{questionSupplementaire.formControlName}}">
-                      <mat-radio-button [value]="true">Oui</mat-radio-button>
-                      <mat-radio-button [value]="false">Non</mat-radio-button>
-                    </mat-radio-group>
-                  </div>
-                </form>
-              </div>
-            </mat-expansion-panel>
+              </mat-tab>
+            </ng-container>
 
-            <mat-expansion-panel #ensTab2Panel [expanded]="false">
-              <mat-expansion-panel-header>
-                <mat-panel-title>Evaluation du stagiaire</mat-panel-title>
-              </mat-expansion-panel-header>
-              <div class="mt-2 mb-2" *ngFor="let question of FicheEnseignantIIQuestions">
-                <div *ngIf="ficheEvaluation['question' + question.controlName]">
-                  <div class="row mb-2" *ngIf="question.type == 'boolean'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <mat-radio-group formControlName="{{'reponse' + question.controlName}}">
+            <ng-container *ngIf="hasVisible(FicheEnseignantIIQuestions, 4)">
+              <mat-tab label="Evaluation du stagiaire">
+                <div class="mt-2 mb-2" *ngFor="let question of FicheEnseignantIIQuestions">
+                  <div *ngIf="ficheEvaluation['question' + question.controlName]">
+                    <div class="row mb-2" *ngIf="question.type == 'boolean'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <mat-radio-group formControlName="{{'reponse' + question.controlName}}">
+                          <mat-radio-button [value]="true">Oui</mat-radio-button>
+                          <mat-radio-button [value]="false">Non</mat-radio-button>
+                        </mat-radio-group>
+                      </div>
+                      <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionTrue &&
+                     (reponseEnseignantForm.get('reponse' + question.controlName)?.value !== null) &&
+                     (reponseEnseignantForm.get('reponse' + question.controlName)?.value === true)">
+                        <div class="mb-2"><b>{{question.bisQuestionTrue}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionFalse &&
+                     (reponseEnseignantForm.get('reponse' + question.controlName)?.value !== null) &&
+                     (reponseEnseignantForm.get('reponse' + question.controlName)?.value === false)">
+                        <div class="mb-2"><b>{{question.bisQuestionFalse}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                    <div class="row mb-2" *ngIf="question.type == 'multiple-choice'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <mat-radio-group style="display: grid" formControlName="{{'reponse' + question.controlName}}">
+                          <mat-radio-button style="margin-left: 0px" *ngFor="let line of question.texte; let ind = index" [value]="ind">{{line}}</mat-radio-button>
+                        </mat-radio-group>
+                      </div>
+                      <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionLowNotation &&
+                     (reponseEnseignantForm.get('reponse' + question.controlName)?.value !== null) &&
+                     (reponseEnseignantForm.get('reponse' + question.controlName)?.value >= 3)">
+                        <div class="mb-2"><b>{{question.bisQuestionLowNotation}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestion">
+                        <div class="mb-2"><b>{{question.bisQuestion}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                    <div class="row mb-2" *ngIf="question.type == 'multiple-boolean'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <div class="row" *ngFor="let line of question.texte; let ind = index">
+                          <div class="col-sm-9">
+                            {{line}}
+                          </div>
+                          <div class="col-sm-3">
+                            <mat-radio-group formControlName="{{'reponse' + question.controlName + controlsIndexToLetter[ind]}}">
+                              <mat-radio-button [value]="true">Oui</mat-radio-button>
+                              <mat-radio-button [value]="false">Non</mat-radio-button>
+                            </mat-radio-group>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row mb-2" *ngIf="question.type == 'texte'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="questionsSupplementaires && questionsSupplementaires[4] && questionsSupplementaires[4].length > 0">
+                  <mat-divider class="mt-2 mb-2"></mat-divider>
+                  <form [formGroup]="reponseSupplementaireEnseignantForm" novalidate>
+                    <div class="mt-2 mb-2" *ngFor="let questionSupplementaire of questionsSupplementaires[4]">
+                      <div class="mb-2"><b>{{questionSupplementaire.question}}</b></div>
+                      <mat-form-field style="width: 100%" *ngIf="questionSupplementaire.typeQuestion == 'txt'" appearance="fill">
+                        <textarea matInput formControlName="{{questionSupplementaire.formControlName}}"></textarea>
+                      </mat-form-field>
+                      <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'not'" style="display: grid" formControlName="{{questionSupplementaire.formControlName}}">
+                        <mat-radio-button style="margin-left: 0px" [value]="0">Excellent</mat-radio-button>
+                        <mat-radio-button style="margin-left: 0px" [value]="1">Très bien</mat-radio-button>
+                        <mat-radio-button style="margin-left: 0px" [value]="2">Bien</mat-radio-button>
+                        <mat-radio-button style="margin-left: 0px" [value]="3">Satisfaisant</mat-radio-button>
+                        <mat-radio-button style="margin-left: 0px" [value]="4">Insuffisant</mat-radio-button>
+                      </mat-radio-group>
+                      <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'yn'" formControlName="{{questionSupplementaire.formControlName}}">
                         <mat-radio-button [value]="true">Oui</mat-radio-button>
                         <mat-radio-button [value]="false">Non</mat-radio-button>
                       </mat-radio-group>
                     </div>
-                    <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionTrue &&
-                   (reponseEnseignantForm.get('reponse' + question.controlName)?.value !== null) &&
-                   (reponseEnseignantForm.get('reponse' + question.controlName)?.value === true)">
-                      <div class="mb-2"><b>{{question.bisQuestionTrue}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                    <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionFalse &&
-                   (reponseEnseignantForm.get('reponse' + question.controlName)?.value !== null) &&
-                   (reponseEnseignantForm.get('reponse' + question.controlName)?.value === false)">
-                      <div class="mb-2"><b>{{question.bisQuestionFalse}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                  </div>
-                  <div class="row mb-2" *ngIf="question.type == 'multiple-choice'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <mat-radio-group style="display: grid" formControlName="{{'reponse' + question.controlName}}">
-                        <mat-radio-button style="margin-left: 0px" *ngFor="let line of question.texte; let ind = index" [value]="ind">{{line}}</mat-radio-button>
-                      </mat-radio-group>
-                    </div>
-                    <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionLowNotation &&
-                   (reponseEnseignantForm.get('reponse' + question.controlName)?.value !== null) &&
-                   (reponseEnseignantForm.get('reponse' + question.controlName)?.value >= 3)">
-                      <div class="mb-2"><b>{{question.bisQuestionLowNotation}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                    <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestion">
-                      <div class="mb-2"><b>{{question.bisQuestion}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                  </div>
-                  <div class="row mb-2" *ngIf="question.type == 'multiple-boolean'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <div class="row" *ngFor="let line of question.texte; let ind = index">
-                        <div class="col-sm-9">
-                          {{line}}
-                        </div>
-                        <div class="col-sm-3">
-                          <mat-radio-group formControlName="{{'reponse' + question.controlName + controlsIndexToLetter[ind]}}">
-                            <mat-radio-button [value]="true">Oui</mat-radio-button>
-                            <mat-radio-button [value]="false">Non</mat-radio-button>
-                          </mat-radio-group>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row mb-2" *ngIf="question.type == 'texte'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                  </div>
+                  </form>
                 </div>
-              </div>
-              <div *ngIf="questionsSupplementaires && questionsSupplementaires[4] && questionsSupplementaires[4].length > 0">
-                <mat-divider class="mt-2 mb-2"></mat-divider>
-                <form [formGroup]="reponseSupplementaireEnseignantForm" novalidate>
-                  <div class="mt-2 mb-2" *ngFor="let questionSupplementaire of questionsSupplementaires[4]">
-                    <div class="mb-2"><b>{{questionSupplementaire.question}}</b></div>
-                    <mat-form-field style="width: 100%" *ngIf="questionSupplementaire.typeQuestion == 'txt'" appearance="fill">
-                      <textarea matInput formControlName="{{questionSupplementaire.formControlName}}"></textarea>
-                    </mat-form-field>
-                    <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'not'" style="display: grid" formControlName="{{questionSupplementaire.formControlName}}">
-                      <mat-radio-button style="margin-left: 0px" [value]="0">Excellent</mat-radio-button>
-                      <mat-radio-button style="margin-left: 0px" [value]="1">Très bien</mat-radio-button>
-                      <mat-radio-button style="margin-left: 0px" [value]="2">Bien</mat-radio-button>
-                      <mat-radio-button style="margin-left: 0px" [value]="3">Satisfaisant</mat-radio-button>
-                      <mat-radio-button style="margin-left: 0px" [value]="4">Insuffisant</mat-radio-button>
-                    </mat-radio-group>
-                    <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'yn'" formControlName="{{questionSupplementaire.formControlName}}">
-                      <mat-radio-button [value]="true">Oui</mat-radio-button>
-                      <mat-radio-button [value]="false">Non</mat-radio-button>
-                    </mat-radio-group>
-                  </div>
-                </form>
-              </div>
-            </mat-expansion-panel>
-          </mat-accordion>
+              </mat-tab>
+            </ng-container>
+          </mat-tab-group>
 
           <div class="row mt-3">
             <div class="col-4"></div>
@@ -688,316 +683,313 @@
       <div class="mt-2">
 
         <form [formGroup]="reponseEntrepriseForm" novalidate (submit)="saveReponse(2)" *ngIf="ficheEvaluation.validationEntreprise">
-          <mat-accordion>
-            <mat-expansion-panel #entTab1Panel [expanded]="false">
-              <mat-expansion-panel-header>
-                <mat-panel-title>Savoir être du stagiaire</mat-panel-title>
-              </mat-expansion-panel-header>
-              <div class="mt-2 mb-2" *ngFor="let question of FicheEntrepriseIQuestions">
-                <div *ngIf="ficheEvaluation['question' + question.controlName]">
-                  <div class="row mb-2" *ngIf="question.type == 'boolean'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <mat-radio-group formControlName="{{'reponse' + question.controlName}}">
+          <mat-tab-group>
+            <ng-container *ngIf="hasVisible(FicheEntrepriseIQuestions, 5)">
+              <mat-tab label="Savoir être du stagiaire">
+                <div class="mt-2 mb-2" *ngFor="let question of FicheEntrepriseIQuestions">
+                  <div *ngIf="ficheEvaluation['question' + question.controlName]">
+                    <div class="row mb-2" *ngIf="question.type == 'boolean'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <mat-radio-group formControlName="{{'reponse' + question.controlName}}">
+                          <mat-radio-button [value]="true">Oui</mat-radio-button>
+                          <mat-radio-button [value]="false">Non</mat-radio-button>
+                        </mat-radio-group>
+                      </div>
+                      <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionTrue &&
+                     (reponseEntrepriseForm.get('reponse' + question.controlName)?.value !== null) &&
+                     (reponseEntrepriseForm.get('reponse' + question.controlName)?.value === true)">
+                        <div class="mb-2"><b>{{question.bisQuestionTrue}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionFalse &&
+                     (reponseEntrepriseForm.get('reponse' + question.controlName)?.value !== null) &&
+                     (reponseEntrepriseForm.get('reponse' + question.controlName)?.value === false)">
+                        <div class="mb-2"><b>{{question.bisQuestionFalse}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                    <div class="row mb-2" *ngIf="question.type == 'multiple-choice'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <mat-radio-group style="display: grid" formControlName="{{'reponse' + question.controlName}}">
+                          <mat-radio-button style="margin-left: 0px" *ngFor="let line of question.texte; let ind = index" [value]="ind">{{line}}</mat-radio-button>
+                        </mat-radio-group>
+                      </div>
+                      <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionLowNotation &&
+                     (reponseEntrepriseForm.get('reponse' + question.controlName)?.value !== null) &&
+                     (reponseEntrepriseForm.get('reponse' + question.controlName)?.value >= 3)">
+                        <div class="mb-2"><b>{{question.bisQuestionLowNotation}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestion">
+                        <div class="mb-2"><b>{{question.bisQuestion}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                    <div class="row mb-2" *ngIf="question.type == 'multiple-boolean'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <div class="row" *ngFor="let line of question.texte; let ind = index">
+                          <div class="col-sm-9">
+                            {{line}}
+                          </div>
+                          <div class="col-sm-3">
+                            <mat-radio-group formControlName="{{'reponse' + question.controlName + controlsIndexToLetter[ind]}}">
+                              <mat-radio-button [value]="true">Oui</mat-radio-button>
+                              <mat-radio-button [value]="false">Non</mat-radio-button>
+                            </mat-radio-group>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row mb-2" *ngIf="question.type == 'texte'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="questionsSupplementaires && questionsSupplementaires[5] && questionsSupplementaires[5].length > 0">
+                  <mat-divider class="mt-2 mb-2"></mat-divider>
+                  <form [formGroup]="reponseSupplementaireEntrepriseForm" novalidate>
+                    <div class="mt-2 mb-2" *ngFor="let questionSupplementaire of questionsSupplementaires[5]">
+                      <div class="mb-2"><b>{{questionSupplementaire.question}}</b></div>
+                      <mat-form-field style="width: 100%" *ngIf="questionSupplementaire.typeQuestion == 'txt'" appearance="fill">
+                        <textarea matInput formControlName="{{questionSupplementaire.formControlName}}"></textarea>
+                      </mat-form-field>
+                      <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'not'" style="display: grid" formControlName="{{questionSupplementaire.formControlName}}">
+                        <mat-radio-button style="margin-left: 0px" [value]="0">Excellent</mat-radio-button>
+                        <mat-radio-button style="margin-left: 0px" [value]="1">Très bien</mat-radio-button>
+                        <mat-radio-button style="margin-left: 0px" [value]="2">Bien</mat-radio-button>
+                        <mat-radio-button style="margin-left: 0px" [value]="3">Satisfaisant</mat-radio-button>
+                        <mat-radio-button style="margin-left: 0px" [value]="4">Insuffisant</mat-radio-button>
+                      </mat-radio-group>
+                      <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'yn'" formControlName="{{questionSupplementaire.formControlName}}">
                         <mat-radio-button [value]="true">Oui</mat-radio-button>
                         <mat-radio-button [value]="false">Non</mat-radio-button>
                       </mat-radio-group>
                     </div>
-                    <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionTrue &&
-                   (reponseEntrepriseForm.get('reponse' + question.controlName)?.value !== null) &&
-                   (reponseEntrepriseForm.get('reponse' + question.controlName)?.value === true)">
-                      <div class="mb-2"><b>{{question.bisQuestionTrue}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                    <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionFalse &&
-                   (reponseEntrepriseForm.get('reponse' + question.controlName)?.value !== null) &&
-                   (reponseEntrepriseForm.get('reponse' + question.controlName)?.value === false)">
-                      <div class="mb-2"><b>{{question.bisQuestionFalse}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                  </div>
-                  <div class="row mb-2" *ngIf="question.type == 'multiple-choice'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <mat-radio-group style="display: grid" formControlName="{{'reponse' + question.controlName}}">
-                        <mat-radio-button style="margin-left: 0px" *ngFor="let line of question.texte; let ind = index" [value]="ind">{{line}}</mat-radio-button>
-                      </mat-radio-group>
-                    </div>
-                    <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionLowNotation &&
-                   (reponseEntrepriseForm.get('reponse' + question.controlName)?.value !== null) &&
-                   (reponseEntrepriseForm.get('reponse' + question.controlName)?.value >= 3)">
-                      <div class="mb-2"><b>{{question.bisQuestionLowNotation}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                    <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestion">
-                      <div class="mb-2"><b>{{question.bisQuestion}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                  </div>
-                  <div class="row mb-2" *ngIf="question.type == 'multiple-boolean'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <div class="row" *ngFor="let line of question.texte; let ind = index">
-                        <div class="col-sm-9">
-                          {{line}}
-                        </div>
-                        <div class="col-sm-3">
-                          <mat-radio-group formControlName="{{'reponse' + question.controlName + controlsIndexToLetter[ind]}}">
-                            <mat-radio-button [value]="true">Oui</mat-radio-button>
-                            <mat-radio-button [value]="false">Non</mat-radio-button>
-                          </mat-radio-group>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row mb-2" *ngIf="question.type == 'texte'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                  </div>
+                  </form>
                 </div>
-              </div>
-              <div *ngIf="questionsSupplementaires && questionsSupplementaires[5] && questionsSupplementaires[5].length > 0">
-                <mat-divider class="mt-2 mb-2"></mat-divider>
-                <form [formGroup]="reponseSupplementaireEntrepriseForm" novalidate>
-                  <div class="mt-2 mb-2" *ngFor="let questionSupplementaire of questionsSupplementaires[5]">
-                    <div class="mb-2"><b>{{questionSupplementaire.question}}</b></div>
-                    <mat-form-field style="width: 100%" *ngIf="questionSupplementaire.typeQuestion == 'txt'" appearance="fill">
-                      <textarea matInput formControlName="{{questionSupplementaire.formControlName}}"></textarea>
-                    </mat-form-field>
-                    <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'not'" style="display: grid" formControlName="{{questionSupplementaire.formControlName}}">
-                      <mat-radio-button style="margin-left: 0px" [value]="0">Excellent</mat-radio-button>
-                      <mat-radio-button style="margin-left: 0px" [value]="1">Très bien</mat-radio-button>
-                      <mat-radio-button style="margin-left: 0px" [value]="2">Bien</mat-radio-button>
-                      <mat-radio-button style="margin-left: 0px" [value]="3">Satisfaisant</mat-radio-button>
-                      <mat-radio-button style="margin-left: 0px" [value]="4">Insuffisant</mat-radio-button>
-                    </mat-radio-group>
-                    <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'yn'" formControlName="{{questionSupplementaire.formControlName}}">
-                      <mat-radio-button [value]="true">Oui</mat-radio-button>
-                      <mat-radio-button [value]="false">Non</mat-radio-button>
-                    </mat-radio-group>
-                  </div>
-                </form>
-              </div>
-            </mat-expansion-panel>
+              </mat-tab>
+            </ng-container>
 
-            <mat-expansion-panel #entTab2Panel [expanded]="false">
-              <mat-expansion-panel-header>
-                <mat-panel-title>Savoir faire du stagiaire</mat-panel-title>
-              </mat-expansion-panel-header>
-              <div class="mt-2 mb-2" *ngFor="let question of FicheEntrepriseIIQuestions">
-                <div *ngIf="ficheEvaluation['question' + question.controlName]">
-                  <div class="row mb-2" *ngIf="question.type == 'boolean'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <mat-radio-group formControlName="{{'reponse' + question.controlName}}">
+            <ng-container *ngIf="hasVisible(FicheEntrepriseIIQuestions, 6)">
+              <mat-tab label="Savoir faire du stagiaire">
+                <div class="mt-2 mb-2" *ngFor="let question of FicheEntrepriseIIQuestions">
+                  <div *ngIf="ficheEvaluation['question' + question.controlName]">
+                    <div class="row mb-2" *ngIf="question.type == 'boolean'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <mat-radio-group formControlName="{{'reponse' + question.controlName}}">
+                          <mat-radio-button [value]="true">Oui</mat-radio-button>
+                          <mat-radio-button [value]="false">Non</mat-radio-button>
+                        </mat-radio-group>
+                      </div>
+                      <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionTrue &&
+                     (reponseEntrepriseForm.get('reponse' + question.controlName)?.value !== null) &&
+                     (reponseEntrepriseForm.get('reponse' + question.controlName)?.value === true)">
+                        <div class="mb-2"><b>{{question.bisQuestionTrue}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionFalse &&
+                     (reponseEntrepriseForm.get('reponse' + question.controlName)?.value !== null) &&
+                     (reponseEntrepriseForm.get('reponse' + question.controlName)?.value === false)">
+                        <div class="mb-2"><b>{{question.bisQuestionFalse}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                    <div class="row mb-2" *ngIf="question.type == 'multiple-choice'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <mat-radio-group style="display: grid" formControlName="{{'reponse' + question.controlName}}">
+                          <mat-radio-button style="margin-left: 0px" *ngFor="let line of question.texte; let ind = index" [value]="ind">{{line}}</mat-radio-button>
+                        </mat-radio-group>
+                      </div>
+                      <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionLowNotation &&
+                     (reponseEntrepriseForm.get('reponse' + question.controlName)?.value !== null) &&
+                     (reponseEntrepriseForm.get('reponse' + question.controlName)?.value >= 3)">
+                        <div class="mb-2"><b>{{question.bisQuestionLowNotation}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestion">
+                        <div class="mb-2"><b>{{question.bisQuestion}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                    <div class="row mb-2" *ngIf="question.type == 'multiple-boolean'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <div class="row" *ngFor="let line of question.texte; let ind = index">
+                          <div class="col-sm-9">
+                            {{line}}
+                          </div>
+                          <div class="col-sm-3">
+                            <mat-radio-group formControlName="{{'reponse' + question.controlName + controlsIndexToLetter[ind]}}">
+                              <mat-radio-button [value]="true">Oui</mat-radio-button>
+                              <mat-radio-button [value]="false">Non</mat-radio-button>
+                            </mat-radio-group>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row mb-2" *ngIf="question.type == 'texte'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="questionsSupplementaires && questionsSupplementaires[6] && questionsSupplementaires[6].length > 0">
+                  <mat-divider class="mt-2 mb-2"></mat-divider>
+                  <form [formGroup]="reponseSupplementaireEntrepriseForm" novalidate>
+                    <div class="mt-2 mb-2" *ngFor="let questionSupplementaire of questionsSupplementaires[6]">
+                      <div class="mb-2"><b>{{questionSupplementaire.question}}</b></div>
+                      <mat-form-field style="width: 100%" *ngIf="questionSupplementaire.typeQuestion == 'txt'" appearance="fill">
+                        <textarea matInput formControlName="{{questionSupplementaire.formControlName}}"></textarea>
+                      </mat-form-field>
+                      <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'not'" style="display: grid" formControlName="{{questionSupplementaire.formControlName}}">
+                        <mat-radio-button style="margin-left: 0px" [value]="0">Excellent</mat-radio-button>
+                        <mat-radio-button style="margin-left: 0px" [value]="1">Très bien</mat-radio-button>
+                        <mat-radio-button style="margin-left: 0px" [value]="2">Bien</mat-radio-button>
+                        <mat-radio-button style="margin-left: 0px" [value]="3">Satisfaisant</mat-radio-button>
+                        <mat-radio-button style="margin-left: 0px" [value]="4">Insuffisant</mat-radio-button>
+                      </mat-radio-group>
+                      <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'yn'" formControlName="{{questionSupplementaire.formControlName}}">
                         <mat-radio-button [value]="true">Oui</mat-radio-button>
                         <mat-radio-button [value]="false">Non</mat-radio-button>
                       </mat-radio-group>
                     </div>
-                    <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionTrue &&
-                   (reponseEntrepriseForm.get('reponse' + question.controlName)?.value !== null) &&
-                   (reponseEntrepriseForm.get('reponse' + question.controlName)?.value === true)">
-                      <div class="mb-2"><b>{{question.bisQuestionTrue}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                    <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionFalse &&
-                   (reponseEntrepriseForm.get('reponse' + question.controlName)?.value !== null) &&
-                   (reponseEntrepriseForm.get('reponse' + question.controlName)?.value === false)">
-                      <div class="mb-2"><b>{{question.bisQuestionFalse}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                  </div>
-                  <div class="row mb-2" *ngIf="question.type == 'multiple-choice'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <mat-radio-group style="display: grid" formControlName="{{'reponse' + question.controlName}}">
-                        <mat-radio-button style="margin-left: 0px" *ngFor="let line of question.texte; let ind = index" [value]="ind">{{line}}</mat-radio-button>
-                      </mat-radio-group>
-                    </div>
-                    <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionLowNotation &&
-                   (reponseEntrepriseForm.get('reponse' + question.controlName)?.value !== null) &&
-                   (reponseEntrepriseForm.get('reponse' + question.controlName)?.value >= 3)">
-                      <div class="mb-2"><b>{{question.bisQuestionLowNotation}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                    <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestion">
-                      <div class="mb-2"><b>{{question.bisQuestion}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                  </div>
-                  <div class="row mb-2" *ngIf="question.type == 'multiple-boolean'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <div class="row" *ngFor="let line of question.texte; let ind = index">
-                        <div class="col-sm-9">
-                          {{line}}
-                        </div>
-                        <div class="col-sm-3">
-                          <mat-radio-group formControlName="{{'reponse' + question.controlName + controlsIndexToLetter[ind]}}">
-                            <mat-radio-button [value]="true">Oui</mat-radio-button>
-                            <mat-radio-button [value]="false">Non</mat-radio-button>
-                          </mat-radio-group>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row mb-2" *ngIf="question.type == 'texte'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                  </div>
+                  </form>
                 </div>
-              </div>
-              <div *ngIf="questionsSupplementaires && questionsSupplementaires[6] && questionsSupplementaires[6].length > 0">
-                <mat-divider class="mt-2 mb-2"></mat-divider>
-                <form [formGroup]="reponseSupplementaireEntrepriseForm" novalidate>
-                  <div class="mt-2 mb-2" *ngFor="let questionSupplementaire of questionsSupplementaires[6]">
-                    <div class="mb-2"><b>{{questionSupplementaire.question}}</b></div>
-                    <mat-form-field style="width: 100%" *ngIf="questionSupplementaire.typeQuestion == 'txt'" appearance="fill">
-                      <textarea matInput formControlName="{{questionSupplementaire.formControlName}}"></textarea>
-                    </mat-form-field>
-                    <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'not'" style="display: grid" formControlName="{{questionSupplementaire.formControlName}}">
-                      <mat-radio-button style="margin-left: 0px" [value]="0">Excellent</mat-radio-button>
-                      <mat-radio-button style="margin-left: 0px" [value]="1">Très bien</mat-radio-button>
-                      <mat-radio-button style="margin-left: 0px" [value]="2">Bien</mat-radio-button>
-                      <mat-radio-button style="margin-left: 0px" [value]="3">Satisfaisant</mat-radio-button>
-                      <mat-radio-button style="margin-left: 0px" [value]="4">Insuffisant</mat-radio-button>
-                    </mat-radio-group>
-                    <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'yn'" formControlName="{{questionSupplementaire.formControlName}}">
-                      <mat-radio-button [value]="true">Oui</mat-radio-button>
-                      <mat-radio-button [value]="false">Non</mat-radio-button>
-                    </mat-radio-group>
-                  </div>
-                </form>
-              </div>
-            </mat-expansion-panel>
+              </mat-tab>
+            </ng-container>
 
-            <mat-expansion-panel #entTab3Panel [expanded]="false">
-              <mat-expansion-panel-header>
-                <mat-panel-title>Appréciation générale du stage</mat-panel-title>
-              </mat-expansion-panel-header>
-              <div class="mt-2 mb-2" *ngFor="let question of FicheEntrepriseIIIQuestions">
-                <div *ngIf="ficheEvaluation['question' + question.controlName]">
-                  <div class="row mb-2" *ngIf="question.type == 'boolean'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <mat-radio-group formControlName="{{'reponse' + question.controlName}}">
+            <ng-container *ngIf="hasVisible(FicheEntrepriseIIIQuestions, 7)">
+              <mat-tab label="Appréciation générale du stage">
+                <div class="mt-2 mb-2" *ngFor="let question of FicheEntrepriseIIIQuestions">
+                  <div *ngIf="ficheEvaluation['question' + question.controlName]">
+                    <div class="row mb-2" *ngIf="question.type == 'boolean'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <mat-radio-group formControlName="{{'reponse' + question.controlName}}">
+                          <mat-radio-button [value]="true">Oui</mat-radio-button>
+                          <mat-radio-button [value]="false">Non</mat-radio-button>
+                        </mat-radio-group>
+                      </div>
+                      <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionTrue &&
+                     (reponseEntrepriseForm.get('reponse' + question.controlName)?.value !== null) &&
+                     (reponseEntrepriseForm.get('reponse' + question.controlName)?.value === true)">
+                        <div class="mb-2"><b>{{question.bisQuestionTrue}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionFalse &&
+                     (reponseEntrepriseForm.get('reponse' + question.controlName)?.value !== null) &&
+                     (reponseEntrepriseForm.get('reponse' + question.controlName)?.value === false)">
+                        <div class="mb-2"><b>{{question.bisQuestionFalse}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                    <div class="row mb-2" *ngIf="question.type == 'multiple-choice'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <mat-radio-group style="display: grid" formControlName="{{'reponse' + question.controlName}}">
+                          <mat-radio-button style="margin-left: 0px" *ngFor="let line of question.texte; let ind = index" [value]="ind">{{line}}</mat-radio-button>
+                        </mat-radio-group>
+                      </div>
+                      <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionLowNotation &&
+                     (reponseEntrepriseForm.get('reponse' + question.controlName)?.value !== null) &&
+                     (reponseEntrepriseForm.get('reponse' + question.controlName)?.value >= 3)">
+                        <div class="mb-2"><b>{{question.bisQuestionLowNotation}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestion">
+                        <div class="mb-2"><b>{{question.bisQuestion}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                    <div class="row mb-2" *ngIf="question.type == 'multiple-boolean'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <div class="row" *ngFor="let line of question.texte; let ind = index">
+                          <div class="col-sm-9">
+                            {{line}}
+                          </div>
+                          <div class="col-sm-3">
+                            <mat-radio-group formControlName="{{'reponse' + question.controlName + controlsIndexToLetter[ind]}}">
+                              <mat-radio-button [value]="true">Oui</mat-radio-button>
+                              <mat-radio-button [value]="false">Non</mat-radio-button>
+                            </mat-radio-group>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row mb-2" *ngIf="question.type == 'texte'">
+                      <div class="col-md-12">
+                        <div class="mb-2"><b>{{question.title}}</b></div>
+                        <mat-form-field style="width: 100%" appearance="fill">
+                          <textarea matInput formControlName="{{'reponse' + question.controlName}}"></textarea>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="questionsSupplementaires && questionsSupplementaires[7] && questionsSupplementaires[7].length > 0">
+                  <mat-divider class="mt-2 mb-2"></mat-divider>
+                  <form [formGroup]="reponseSupplementaireEntrepriseForm" novalidate>
+                    <div class="mt-2 mb-2" *ngFor="let questionSupplementaire of questionsSupplementaires[7]">
+                      <div class="mb-2"><b>{{questionSupplementaire.question}}</b></div>
+                      <mat-form-field style="width: 100%" *ngIf="questionSupplementaire.typeQuestion == 'txt'" appearance="fill">
+                        <textarea matInput formControlName="{{questionSupplementaire.formControlName}}"></textarea>
+                      </mat-form-field>
+                      <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'not'" style="display: grid" formControlName="{{questionSupplementaire.formControlName}}">
+                        <mat-radio-button style="margin-left: 0px" [value]="0">Excellent</mat-radio-button>
+                        <mat-radio-button style="margin-left: 0px" [value]="1">Très bien</mat-radio-button>
+                        <mat-radio-button style="margin-left: 0px" [value]="2">Bien</mat-radio-button>
+                        <mat-radio-button style="margin-left: 0px" [value]="3">Satisfaisant</mat-radio-button>
+                        <mat-radio-button style="margin-left: 0px" [value]="4">Insuffisant</mat-radio-button>
+                      </mat-radio-group>
+                      <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'yn'" formControlName="{{questionSupplementaire.formControlName}}">
                         <mat-radio-button [value]="true">Oui</mat-radio-button>
                         <mat-radio-button [value]="false">Non</mat-radio-button>
                       </mat-radio-group>
                     </div>
-                    <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionTrue &&
-                   (reponseEntrepriseForm.get('reponse' + question.controlName)?.value !== null) &&
-                   (reponseEntrepriseForm.get('reponse' + question.controlName)?.value === true)">
-                      <div class="mb-2"><b>{{question.bisQuestionTrue}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                    <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionFalse &&
-                   (reponseEntrepriseForm.get('reponse' + question.controlName)?.value !== null) &&
-                   (reponseEntrepriseForm.get('reponse' + question.controlName)?.value === false)">
-                      <div class="mb-2"><b>{{question.bisQuestionFalse}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                  </div>
-                  <div class="row mb-2" *ngIf="question.type == 'multiple-choice'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <mat-radio-group style="display: grid" formControlName="{{'reponse' + question.controlName}}">
-                        <mat-radio-button style="margin-left: 0px" *ngFor="let line of question.texte; let ind = index" [value]="ind">{{line}}</mat-radio-button>
-                      </mat-radio-group>
-                    </div>
-                    <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionLowNotation &&
-                   (reponseEntrepriseForm.get('reponse' + question.controlName)?.value !== null) &&
-                   (reponseEntrepriseForm.get('reponse' + question.controlName)?.value >= 3)">
-                      <div class="mb-2"><b>{{question.bisQuestionLowNotation}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                    <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestion">
-                      <div class="mb-2"><b>{{question.bisQuestion}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                  </div>
-                  <div class="row mb-2" *ngIf="question.type == 'multiple-boolean'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <div class="row" *ngFor="let line of question.texte; let ind = index">
-                        <div class="col-sm-9">
-                          {{line}}
-                        </div>
-                        <div class="col-sm-3">
-                          <mat-radio-group formControlName="{{'reponse' + question.controlName + controlsIndexToLetter[ind]}}">
-                            <mat-radio-button [value]="true">Oui</mat-radio-button>
-                            <mat-radio-button [value]="false">Non</mat-radio-button>
-                          </mat-radio-group>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row mb-2" *ngIf="question.type == 'texte'">
-                    <div class="col-md-12">
-                      <div class="mb-2"><b>{{question.title}}</b></div>
-                      <mat-form-field style="width: 100%" appearance="fill">
-                        <textarea matInput formControlName="{{'reponse' + question.controlName}}"></textarea>
-                      </mat-form-field>
-                    </div>
-                  </div>
+                  </form>
                 </div>
-              </div>
-              <div *ngIf="questionsSupplementaires && questionsSupplementaires[7] && questionsSupplementaires[7].length > 0">
-                <mat-divider class="mt-2 mb-2"></mat-divider>
-                <form [formGroup]="reponseSupplementaireEntrepriseForm" novalidate>
-                  <div class="mt-2 mb-2" *ngFor="let questionSupplementaire of questionsSupplementaires[7]">
-                    <div class="mb-2"><b>{{questionSupplementaire.question}}</b></div>
-                    <mat-form-field style="width: 100%" *ngIf="questionSupplementaire.typeQuestion == 'txt'" appearance="fill">
-                      <textarea matInput formControlName="{{questionSupplementaire.formControlName}}"></textarea>
-                    </mat-form-field>
-                    <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'not'" style="display: grid" formControlName="{{questionSupplementaire.formControlName}}">
-                      <mat-radio-button style="margin-left: 0px" [value]="0">Excellent</mat-radio-button>
-                      <mat-radio-button style="margin-left: 0px" [value]="1">Très bien</mat-radio-button>
-                      <mat-radio-button style="margin-left: 0px" [value]="2">Bien</mat-radio-button>
-                      <mat-radio-button style="margin-left: 0px" [value]="3">Satisfaisant</mat-radio-button>
-                      <mat-radio-button style="margin-left: 0px" [value]="4">Insuffisant</mat-radio-button>
-                    </mat-radio-group>
-                    <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'yn'" formControlName="{{questionSupplementaire.formControlName}}">
-                      <mat-radio-button [value]="true">Oui</mat-radio-button>
-                      <mat-radio-button [value]="false">Non</mat-radio-button>
-                    </mat-radio-group>
-                  </div>
-                </form>
-              </div>
-            </mat-expansion-panel>
-          </mat-accordion>
+              </mat-tab>
+            </ng-container>
+          </mat-tab-group>
 
           <div class="row mt-3">
             <div class="col-4"></div>

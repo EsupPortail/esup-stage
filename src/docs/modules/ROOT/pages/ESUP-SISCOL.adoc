@@ -2,14 +2,11 @@
 
 Cette application expose à l'application ESUP-STAGE
 des API REST (OPEN API - Swagger).
-Ainsi seule ESUP SIScol fait des accès au SI de l'établissement
-(Annuaire LDAP et Apogée). 
+Ainsi seule ESUP SIscol fait des accès au SI de l'établissement (Annuaire LDAP, Apogée et Pégase). 
 
 == Versions
-
-* APOGEE `6.4.x`
-* JDK `11`, `8`
-* APOGEE WS `62031` ...`62070`
+* JDK `21`
+* APOGEE WS `65070` ou supérieure
 
 == Installation du JAR client WS-APOGEE
 
@@ -19,18 +16,14 @@ service Apogée soit auprès des collègues qui déploient Apogée dans votre
 être installés selon les préconisations de l'AMUE et fonctionnelles sinon, il
 n'est pas nécessaire d'aller plus loin...
 
-****
-Le jar client apo-webservices-client doit correspondre au web-service Apogée
-installé.
-****
-
 Votre fichier `apo-webservices-client__{mettre la version}__.jar` doit être
 installé ainsi :
 
 [source,shell]
 ----
-mvn install:install-file -Dfile=apo-webservices-client-version.jar -DgroupId=gouv.education.apogee -DartifactId=apo-webservices-client -Dversion={mettre la version} -Dpackaging=jar
+mvn install:install-file -Dfile=apo-webservices-client{mettre la version}.jar -DgroupId=gouv.education.apogee -DartifactId=apo-webservices-client -Dversion={mettre la version} -Dpackaging=jar -DgeneratePom=true
 ----
+Pour ceux utilisant la version compilée, il n'est pas nécessaire d'utiliser cette commande.
 
 == Clonage et installation
 
@@ -51,7 +44,7 @@ git clone https://github.com/EsupPortail/esup-siscol.git esup-siscol
 ----
 <1> Il faut ajouter la bonne dépendance
 vers votre numéro de version du client Apogée, +
-ex. `62070` au lieu de `x.y.z` dans le `pom.xml`.
+ex. `65070` au lieu de `x.y.z` dans le `pom.xml`.
 
 
 == Fichier de paramétrage
@@ -99,6 +92,10 @@ server:
     include-stacktrace: always
 
 app:
+# Les paramètres mode_xxxx permettent de sélectionner le SI Scolarité (les deux paramètres peuvent être activés en même temps).
+ mode_apogee: true
+ mode_pegase: false
+
  ldap:
     stringFilterTeacher: (|(eduPersonAffiliation=teacher)(eduPersonAffiliation=faculty))
     stringFilterStudent: (eduPersonAffiliation=student)
@@ -113,13 +110,79 @@ app:
     startYearMonth: 09
     startYearDay: 01
     universityCode: UPN
+    codesRegimeInscriptionFC: 2;4;5
+    # valeurs possible TOUS N O#
+    temoinRecupAnnu : N 
     urlService:
-      administratifMetier: http://wsapogee.monuniv.fr/aws/services/AdministratifMetier
-      etudiantMetier: http://wsapogee.monuniv.fr/aws/services/EtudiantMetier
-      pedagogiqueMetier: http://wsapogee.monuniv.fr/aws/services/PedagogiqueMetier
-      geographieMetier: http://wsapogee.monuniv.fr/aws/services/GeographieMetier
-      referentielMetier: http://wsapogee.monuniv.fr/aws/services/ReferentielMetier
-      offreFormationMetier: http://wsapogee.monuniv.fr/aws/services/OffreFormationMetier
+      #administratifMetier: http://univ.fr:8080/wsapogee/services/AdministratifMetier
+      administratifMetier: http://univ.fr:8080/wsapogee/services/AdministratifMetier
+      administratifMetierUserName: user
+      administratifMetierPassword: *********
+      etudiantMetier: http://trollius.gestion.ehess.fr:8080/wsapogee/services/EtudiantMetier
+      etudiantMetierUserName: user
+      etudiantMetierPassword: ***********
+      pedagogiqueMetier: http://trollius.gestion.ehess.fr:8080/wsapogee/services/PedagogiqueMetier
+      pedagogiqueMetierUserName: user
+      pedagogiqueMetierPassword: **********
+      geographieMetier: http://trollius.gestion.ehess.fr:8080/wsapogee/services/GeographieMetier
+      geographieMetierUserName: user
+      geographieMetierPassword: ********
+      referentielMetier: http://trollius.gestion.ehess.fr:8080/wsapogee/services/ReferentielMetier
+      referentielMetierUserName: user
+      referentielMetierPassword: *********
+      offreFormationMetier: http://trollius.gestion.ehess.fr:8080/wsapogee/services/OffreFormationMetier
+      offreFormationMetierUserName: user
+      offreFormationMetierPassword: **********
+
+  pcscol:
+    # Reporter la(s) valeur(s) du paramètre ANNEE et SEMESTRE dans le champ Paramètres de l'application > Paramètres généraux > codes césures séparés par un ; de Esup-Stage. 
+    # Une seule valeur possible pour chacun des paramètres.
+    cesures:
+       ANNEE: 1
+       SEMESTRE: 2
+       SANS: 3
+    codeStructure: ETAB00
+    codePeriode: PER-2024
+    codesPeriodesChargementFormations: PER-2021, PER-2022, PER-2023, PER-2024, PER-2018, PER-2019, PER-2020, PER-2020-21
+    # Pensez à mettre à jour codesPeriodesChargementFormations chaque année pour limiter le nombre de périodes chargées.
+    typeObjetFormationChargementFormations: ANNEE, SEMESTRE
+    statutInscriptionChargement: PREINSCRIT,NON_DEMARRE,EN_COURS,VALIDE,EN_ACTUALISATION,VALIDEE_EN_MULTI_CURSUS,ANNULEE
+    accesstoken:
+      # Url de l'API du serveur OAuth Pgase pour la rcupration de l'access-token
+      casUrl: https://authn-app.univ.pc-scol.fr/cas/v1/tickets
+      # Username et password pour s'authentifier auprs du serveur OAuth Pgase en tant qu'applicatif MDW
+      svcAcountLogin: svc-api
+      svcAcountPassword: **************
+      # Dure en heure de conservation de l'access-token
+      duration: 6
+    # Code de l'établissement dans Pgase
+    etablissement: ETAB00
+    # Base Url de l'API du module INS de Pgase (attention  conserver la structure de l'url d'exemple)
+    api:
+      # Base Url de l'API CHC de Pgase
+      chc:
+        url: https://chc.partenaires.pc-scol.fr/api/chc/v6
+      # Base Url de l'API ODF de Pgase
+      odf: 
+        https://odf.partenaires.pc-scol.fr/api/odf/ext/v1
+      # Base Url de l'API COF de Pgase
+      ref: 
+          url: https://ref.partenaires.pc-scol.fr/api/v1/ref
+      ins:
+          url: https://ins.partenaires.pc-scol.fr/api/ins/ext/v2
+      chcExterne:
+        url: https://chc.partenaires.pc-scol.fr/api/ext/chc/v1
+      insGestion:
+        url: https://ins.test-partenaires.pc-scol.fr/api/v5/ins
+      insInterne:
+        url: https://ins.test-partenaires.pc-scol.fr/api/ins/v1
+
+    # Permet de cibler un dossier par dfaut. /!\ Attention /!\ A renseigner uniquement pour une démonstration ou en phase de test/dveloppement.
+    demo:
+      codeapprenant: 000000001
+    # Liste des statuts des inscriptions  afficher dans la vue "Parcours" spars par des virgules
+    inscription:
+      statut: valide
 
  credential:
   userscredential:
@@ -140,6 +203,7 @@ app:
       - ADMIN
 
  cache:
+    # Si le mode_apogee=false alors tous les paramètres ci-dessous doivent être renseignés à false.
     # Chargement au demarrage des caches
     onStartup:
         # Active ou non, par defaut : false
@@ -160,8 +224,9 @@ app:
 Vous devez modifier en cohérence avec vos spécificités :
 
 * la section "LDAP"
-* la section "APOGEE" en indiquant vos URL côté serveur WebService Apogée (installé en général par les administrateurs techniques Apogée)
-* la section "credential" en modifiant votre mot de passe qui devra être renseigné aussi dans le fichier de configuration de l'application ESUP-STAGE
+* la section "APOGEE" en indiquant vos URL côté serveur WebService Apogée (installé en général par les administrateurs techniques Apogée).
+* la section "PCSCOL" en indiquant vos URL côté serveur Webservice PCSCOL.
+* la section "credential" en modifiant votre mot de passe qui devra être renseigné aussi dans le fichier de configuration de l'application ESUP-STAGE.
 
 == Compilation et génération du WAR
 
@@ -169,6 +234,7 @@ Pour compiler le projet et générer le WAR dans le répertoire "./target/", lan
 
 [source,shell]
 ----
+# Un fichier .war est disponible dans chaque tag pour les établissements ne souhaitant pas compiler l'application.
 mvn clean compile
 mvn install
 ----

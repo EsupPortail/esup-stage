@@ -76,11 +76,11 @@
           </td>
         </ng-container>
         <ng-container matColumnDef="signataire">
-          <th mat-header-cell *matHeaderCellDef>Signataire</th>
+          <th mat-header-cell *matHeaderCellDef>{{'TITRE_COLONNES_SIGNATAIRE_SIGNATAIRE_GROUPE'|contenu }}</th>
           <td mat-cell *matCellDef="let row">
             {{row.convention.signataire?(row.convention.signataire.nom + ' ' + row.convention.signataire.prenom):
             ((!row.convention.structure && !row.convention.service && groupeEtudiant.convention.signataire)?
-            (groupeEtudiant.convention.signataire.nom + ' ' + groupeEtudiant.convention.signataire.prenom) :'Signataire non Sélectionné')}}
+            (groupeEtudiant.convention.signataire.nom + ' ' + groupeEtudiant.convention.signataire.prenom) : "SIGNATAIRE_NON_SELECTIONNE_SIGNATAIRE_GROUPE"|contenu )}}
           </td>
         </ng-container>
       </app-table>

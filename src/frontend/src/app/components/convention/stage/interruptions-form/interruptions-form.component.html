@@ -2,17 +2,17 @@
   <div class="modal-container">
     <!-- En-tête fixe -->
     <div class="header-banner">
-      <h1 *ngIf="!interruptionStage">Ajouter des nouvelles périodes d'interruptions</h1>
+      <h1 *ngIf="!interruptionStage">Ajouter des périodes d'interruptions</h1>
       <h1 *ngIf="interruptionStage">Modifier une période d'interruption</h1>
     </div>
 
     <!-- Section d'ajout de période fixe -->
     <div class="add-period-section">
       <form [formGroup]="periodesForm" novalidate>
-        <div class="row input-group">
-          <mat-form-field class="col-9 date-range-field" appearance="fill">
-            <mat-label *ngIf="!interruptionStage">Ajoutez une nouvelle période</mat-label>
-            <mat-label *ngIf="interruptionStage">Nouvelle période</mat-label>
+        <div class="input-group">
+          <mat-form-field class="date-range-field" appearance="fill">
+            <mat-label *ngIf="!interruptionStage">Nouvelle période</mat-label>
+            <mat-label *ngIf="interruptionStage">Période à modifier</mat-label>
             <mat-date-range-input [dateFilter]="interruptionsDateFilter" [rangePicker]="interruptionsPicker">
               <input matStartDate formControlName="dateDebutInterruption" placeholder="Date de début">
               <input matEndDate formControlName="dateFinInterruption" placeholder="Date de fin">
@@ -31,24 +31,28 @@
 
     <!-- Contenu scrollable -->
     <div class="scrollable-content">
-      <div *ngFor="let periode of periodes" class="periode-section">
-        <div class="periode-dates">
-          Période du {{ periode.dateDebutInterruption | date:'dd/MM/yyyy' }} au {{ periode.dateFinInterruption | date:'dd/MM/yyyy' }}
+      <div *ngIf="periodes.length > 0">
+        <div class="periode-header">
+          Périodes d'interruptions ajoutées :
         </div>
-        <button mat-fab color="warn" class="delete-button" matTooltip="Supprimer" (click)="removePeriode(periode)">
-          <i class="fa fa-trash-alt"></i>
-        </button>
+
+        <div *ngFor="let periode of periodes" class="periode-section">
+          <div class="periode-item">
+            <div class="periode-info">
+              Période du {{periode.dateDebutInterruption|date:'shortDate'}} au {{periode.dateFinInterruption|date:'shortDate'}}
+            </div>
+            <button mat-fab color="warn" matTooltip="Supprimer" (click)="removePeriode(periode)">
+              <i class="fa fa-trash-alt"></i>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Footer fixe -->
+    <!-- Boutons fixes en bas -->
     <div class="modal-footer">
-      <button type="button" mat-stroked-button class="cancel-button" (click)="close()">
-        {{'BOUTON_ANNULER'|contenu}}
-      </button>
-      <button mat-flat-button class="submit-button" (click)="save()" [disabled]="periodes.length === 0 && initialPeriodesLength === 0 && !interruptionStage">
-        {{'BOUTON_VALIDER'|contenu}}
-      </button>
+      <button type="button" mat-button mat-stroked-button class="cancel-button" (click)="close()">{{'BOUTON_ANNULER'|contenu}}</button>
+      <button mat-button mat-flat-button class="submit-button" (click)="save()" [disabled]="periodes.length === 0 && initialPeriodesLength === 0 && !interruptionStage">{{'BOUTON_VALIDER'|contenu}}</button>
     </div>
   </div>
 </div>

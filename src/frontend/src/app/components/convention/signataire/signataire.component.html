@@ -1,13 +1,18 @@
 <mat-accordion>
   <mat-expansion-panel [expanded]="!contact" *ngIf="modifiable">
     <mat-expansion-panel-header>
-      Sélection du signataire
+      {{ "TITRE_SELECTION_SIGNATAIRE"| contenu }}
     </mat-expansion-panel-header>
     <div class="row mt-3">
       <mat-form-field class="col-md-12" appearance="fill" *ngIf="services.length > 0">
-        <mat-label>Sélectionnez le service du signataire:</mat-label>
+        <mat-label>{{ "SELECTION_SERVICE_SIGNATAIRE"|contenu }}</mat-label>
         <mat-select [(value)]="service" (selectionChange)="selectService()">
-          <mat-option *ngFor="let service of services" [value]="service">{{service.nom}}</mat-option>
+          <mat-option>
+            <ngx-mat-select-search [formControl]="serviceFilterCtrl" placeholderLabel="Rechercher un service" noEntriesFoundLabel="Aucun service trouvé"></ngx-mat-select-search>
+          </mat-option>
+          <mat-option *ngFor="let service of filteredServices | async" [value]="service">
+            {{service.nom}}
+          </mat-option>
         </mat-select>
       </mat-form-field>
       <div class="col-md-12 mb-3" *ngIf="canCreate()">
@@ -68,13 +73,18 @@
     </div>
     <div class="row mt-5" *ngIf="service">
       <mat-form-field class="col-md-12" appearance="fill" [hidden]="contacts.length == 0">
-        <mat-label>Sélectionnez un signataire existant :</mat-label>
+        <mat-label>{{"SELECTIONER_SIGNATAIRE_EXISTANT"|contenu}}</mat-label>
         <mat-select [(value)]="contact" (selectionChange)="choose($event.value)">
-          <mat-option *ngFor="let contact of contacts" [value]="contact">{{contact.nom+' '+contact.prenom}}</mat-option>
+          <mat-option>
+            <ngx-mat-select-search [formControl]="contactFilterCtrl" placeholderLabel="Rechercher un signataire" noEntriesFoundLabel="Aucun signataire trouvé"></ngx-mat-select-search>
+          </mat-option>
+          <mat-option *ngFor="let contact of filteredContacts | async" [value]="contact">
+            {{contact.nom + ' ' + contact.prenom}}
+          </mat-option>
         </mat-select>
       </mat-form-field>
       <div class="col-md-12" *ngIf="canCreate()">
-        <button mat-flat-button (click)="initCreate()" color="primary">Créez un nouveau signataire</button>
+        <button mat-flat-button (click)="initCreate()" color="primary">{{ "BOUTON_CREER_NOUVEAU_SIGNATAIRE"|contenu }}</button>
       </div>
     </div>
 
@@ -82,7 +92,7 @@
 
   <mat-expansion-panel [expanded]="contact" [disabled]="!contact">
     <mat-expansion-panel-header>
-      <mat-panel-title>Signataire</mat-panel-title>
+      <mat-panel-title>{{"TITRE-PANEL-SIGNATAIRE"|contenu}}</mat-panel-title>
       <mat-panel-description>
         <div class="w-100 text-right">
           <mat-icon fontSet="fa" fontIcon="fa-user"></mat-icon>

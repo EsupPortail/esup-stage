@@ -1,0 +1,46 @@
+
+
+.validation-card .text-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  text-align: left;
+  margin: 20px 20px 20px 20px;
+}
+
+.validation-card .info {
+  color: var(--dangerColor);
+  background-color: rgba(255, 0, 0, 0.1);
+  padding: 15px;
+  border-radius: 5px;
+  font-weight: 500;
+  text-align: left;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+.text-container {
+  background-color: #f8f8f8;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.validation-card .button-group {
+  display: flex;
+  justify-content: flex-end;
+}
+
+button {
+  margin: 20px 20px 20px 0;
+  padding: 6px 16px;
+  font-weight: 500;
+  border-radius: 5px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+}

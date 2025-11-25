@@ -22,7 +22,7 @@
       </ng-container>
       <ng-container matColumnDef="pays">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Pays</th>
-        <td mat-cell *matCellDef="let row">{{row.pays.lib}}</td>
+        <td mat-cell *matCellDef="let row">{{row.pays?.lib}}</td>
       </ng-container>
       <ng-container matColumnDef="commune">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Commune</th>
@@ -30,7 +30,7 @@
       </ng-container>
       <ng-container matColumnDef="typeStructure">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Type d'organisme</th>
-        <td mat-cell *matCellDef="let row">{{row.typeStructure.libelle}}</td>
+        <td mat-cell *matCellDef="let row">{{row.typeStructure?.libelle}}</td>
       </ng-container>
       <ng-container matColumnDef="statutJuridique">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Forme juridique</th>
@@ -67,7 +67,7 @@
         </div>
         <div class="row">
           <div class="col-sm-3 font-weight-bold">Type d'établissement</div>
-          <div class="col-sm-9">{{etab.typeStructure.libelle}}</div>
+          <div class="col-sm-9">{{etab.typeStructure?.libelle}}</div>
         </div>
         <div class="row">
           <div class="col-sm-3 font-weight-bold">Statut juridique</div>
@@ -75,7 +75,7 @@
         </div>
         <div class="row">
           <div class="col-sm-3 font-weight-bold">Effectif</div>
-          <div class="col-sm-9">{{etab.effectif.libelle}}</div>
+          <div class="col-sm-9">{{etab.effectif?.libelle}}</div>
         </div>
         <div class="row">
           <div class="col-sm-3 font-weight-bold">Numéro Siret</div>
@@ -105,17 +105,20 @@
           <div class="col-sm-3 font-weight-bold">Code APE</div>
           <div class="col-sm-9">{{etab.nafN5 ? (etab.nafN5.code + ' (' + etab.nafN5.libelle + ')') : ''}}</div>
         </div>
-        <div class="row mt-3" *ngIf="canEdit()">
-          <div class="col-sm-6">
-            <button mat-button mat-stroked-button color="primary" *ngIf="etab.id && !modif" (click)="edit()">Modifier ces informations</button>
+        <div class="row mt-3">
+          <div class="col-md-3">
+            <button mat-button mat-stroked-button color="primary" *ngIf="etab.id && modifiable" (click)="changeOnglet()">Changer d'établissement</button>
+          </div>
+          <div class="col-md-3">
+            <button mat-button mat-stroked-button color="primary" *ngIf="etab.id && !modif && canEdit()" (click)="edit()">Modifier ces informations</button>
           </div>
         </div>
       </div>
-      <div *ngIf="modif && canEdit()">
+      <div *ngIf="(modif && canEdit()) || (modif && canCreate())">
         <app-etab-accueil-form [etab]="etab" (submitted)="choose($event)" (canceled)="modif = false"></app-etab-accueil-form>
       </div>
     </div>
   </mat-expansion-panel>
- 
+
 
 </mat-accordion>

@@ -1,0 +1,34 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.1.7-contenu-envoi-doc-signe
+      author: thouveno9
+      changes:
+        - insert:
+            columns:
+              - column:
+                  name: codeContenu
+                  value: MESSAGE_ENVOI_DOCUMENT_SIGNE_DOCAPOSTE
+              - column:
+                  name: libelle
+                  valueBoolean: true
+              - column:
+                  name: texte
+                  value: Activer l'envoi du document signé au signataire (Docaposte uniquement)
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: dateCreation
+                  value: now()
+            tableName: Contenu
+  - changeSet:
+      id: 3.1.7-contenu-envoi-doc-signe-update-texte
+      author: thouveno9
+      changes:
+        - update:
+            tableName: Contenu
+            columns:
+              - column:
+                  name: texte
+                  value: "Activer l'envoi du document signé au signataire pour le compte de l'établissement d'accueil"
+            where: "codeContenu = 'MESSAGE_ENVOI_DOCUMENT_SIGNE_DOCAPOSTE'"

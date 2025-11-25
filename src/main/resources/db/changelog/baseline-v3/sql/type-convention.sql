@@ -1,0 +1,12 @@
+INSERT INTO `TypeConvention` (`libelleTypeConvention`, `codeCtrl`, `temEnServTypeConvention`, `modifiable`) VALUES
+('FORMATION CONTINUE', 'FC', 'O', false),
+('FORMATION INITIALE', 'FI', 'O', false),
+('AUDITEUR LIBRE', 'AUD. LIBRE', 'O', true),
+('FORMATION INITIALE', 'INITIALE', 'O', true),
+('FORMATION CONT. REPRISE D''ETU. FINANCEES', 'CONTINUE', 'O', true),
+('REPRISE D''ETUDES NON FINANCEES', 'PERMANENTE', 'O', true),
+('FORMATION PAR APPRENTISSAGE DIPLOMANTE', 'APPRENTI', 'O', true),
+('CONTRAT DE PROFESSIONALISATION', 'CONTR. PRO', 'O', true),
+('HEBERGE', 'HEBERGE', 'O', true),
+('FLE ETRANGER', 'REFUGIE', 'O', true),
+('STAGIAIRE DE LA FORMATION PROFESSIONELLE', 'SFP', 'O', true);

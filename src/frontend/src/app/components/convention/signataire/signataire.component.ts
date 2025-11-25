@@ -1,6 +1,6 @@
-import { Component, EventEmitter, OnInit, OnChanges, Input, Output, ViewChild } from '@angular/core';
+import {Component, EventEmitter, OnInit, OnChanges, Input, Output, ViewChild, OnDestroy} from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
 import { ServiceService } from "../../../services/service.service";
 import { ContactService } from "../../../services/contact.service";
 import { PaysService } from "../../../services/pays.service";
@@ -13,13 +13,14 @@ import { AuthService } from "../../../services/auth.service";
 import { ConfigService } from "../../../services/config.service";
 import { ServiceAccueilFormComponent } from '../../gestion-etab-accueil/service-accueil-form/service-accueil-form.component';
 import {REGEX} from "../../../utils/regex.utils";
+import { ReplaySubject, Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-signataire',
   templateUrl: './signataire.component.html',
   styleUrls: ['./signataire.component.scss']
 })
-export class SignataireComponent implements OnInit, OnChanges {
+export class SignataireComponent implements OnInit, OnChanges, OnDestroy {
 
   civilites: any[] = [];
   countries: any[] = [];
@@ -44,6 +45,12 @@ export class SignataireComponent implements OnInit, OnChanges {
   @Output() validated = new EventEmitter<number>();
 
   @Input() modifiable!: boolean;
+
+  contactFilterCtrl: FormControl = new FormControl();
+  filteredContacts: ReplaySubject<any> = new ReplaySubject<any>(1);
+  serviceFilterCtrl: FormControl = new FormControl();
+  filteredServices: ReplaySubject<any> = new ReplaySubject<any>(1);
+  _onDestroy = new Subject<void>();
 
   constructor(private contactService: ContactService,
               private fb: FormBuilder,
@@ -88,14 +95,26 @@ export class SignataireComponent implements OnInit, OnChanges {
 
   refreshServices(): void {
     this.serviceService.getByStructure(this.etab.id, this.convention.centreGestion.id).subscribe((response: any) => {
-      this.services = response;
+      this.services = response.sort((a: any, b: any) => a.nom.localeCompare(b.nom));
+      this.filteredServices.next(this.services.slice());
+      this.serviceFilterCtrl.valueChanges
+        .pipe(takeUntil(this._onDestroy))
+        .subscribe(() => {
+          this.filterServices();
+        });
     });
   }
 
   refreshContacts(): void {
-    if (this.service){
+    if (this.service) {
       this.contactService.getByService(this.service.id, this.convention.centreGestion.id).subscribe((response: any) => {
-        this.contacts = response;
+        this.contacts = response.sort((a: any, b: any) => a.nom.localeCompare(b.nom));
+        this.filteredContacts.next(this.contacts.slice());
+        this.contactFilterCtrl.valueChanges
+          .pipe(takeUntil(this._onDestroy))
+          .subscribe(() => {
+            this.filterContacts();
+          });
       });
     }
   }
@@ -137,19 +156,11 @@ export class SignataireComponent implements OnInit, OnChanges {
   }
 
   canCreate(): boolean {
-    let hasRight =  this.modifiable && this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.CREATION]});
-    if (this.authService.isEtudiant() && !this.autorisationModification) {
-      hasRight = false;
-    }
-    return this.modifiable && hasRight;
+    return this.modifiable && this.authService.checkRights({fonction: AppFonction.SERVICE_CONTACT_ACC, droits: [Droit.CREATION]});
   }
 
   canEdit(): boolean {
-    let hasRight = this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.MODIFICATION]});
-    if (this.authService.isEtudiant() && !this.autorisationModification) {
-      hasRight = false;
-    }
-    return this.modifiable && hasRight;
+    return this.modifiable && this.authService.checkRights({fonction: AppFonction.SERVICE_CONTACT_ACC, droits: [Droit.MODIFICATION]});
   }
 
   choose(row: any): void {
@@ -183,13 +194,6 @@ export class SignataireComponent implements OnInit, OnChanges {
     this.modif = false;
   }
 
-  compare(option: any, value: any): boolean {
-    if (option && value) {
-      return option.id === value.id;
-    }
-    return false;
-  }
-
   save(): void {
     if (this.form.valid) {
 
@@ -215,6 +219,53 @@ export class SignataireComponent implements OnInit, OnChanges {
       }
     }
   }
+
+  private filterContacts() {
+    if (!this.contacts) {
+      return;
+    }
+
+    let search = this.contactFilterCtrl.value;
+    if (!search) {
+      this.filteredContacts.next(this.contacts.slice());
+      return;
+    } else {
+      search = search.toLowerCase();
+    }
+
+    this.filteredContacts.next(
+      this.contacts.filter(contact =>
+        contact.nom.toLowerCase().includes(search) ||
+        contact.prenom.toLowerCase().includes(search)
+      )
+    );
+  }
+
+  private filterServices() {
+    if (!this.services) {
+      return;
+    }
+
+    let search = this.serviceFilterCtrl.value;
+    if (!search) {
+      this.filteredServices.next(this.services.slice());
+      return;
+    } else {
+      search = search.toLowerCase();
+    }
+
+    this.filteredServices.next(
+      this.services.filter(service =>
+        service.nom.toLowerCase().includes(search)
+      )
+    );
+  }
+
+  ngOnDestroy() {
+    this._onDestroy.next();
+    this._onDestroy.complete();
+  }
+
 
 }
 

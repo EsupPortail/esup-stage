@@ -1,4 +1,4 @@
-@import '../../../../node_modules/ckeditor5/dist/ckeditor5.css';
+@import '../../../../../node_modules/ckeditor5/dist/ckeditor5.css';
 @import url('https://fonts.googleapis.com/css2?family=Oswald&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
@@ -174,4 +174,10 @@ body, html {
   background: #dddfe0;
   color: #000;
   box-shadow: 5px 5px 0 #b3b3b3;
+}
+
+.buttons{
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }

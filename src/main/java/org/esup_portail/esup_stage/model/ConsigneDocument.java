@@ -2,9 +2,11 @@ package org.esup_portail.esup_stage.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
 @Table(name = "ConsigneDocument")
+@Data
 public class ConsigneDocument extends ObjetMetier {
 
     @Id
@@ -22,36 +24,4 @@ public class ConsigneDocument extends ObjetMetier {
 
     @Column(nullable = false)
     private String nomReel;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public Consigne getConsigne() {
-        return consigne;
-    }
-
-    public void setConsigne(Consigne consigne) {
-        this.consigne = consigne;
-    }
-
-    public String getNom() {
-        return nom;
-    }
-
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
-
-    public String getNomReel() {
-        return nomReel;
-    }
-
-    public void setNomReel(String nomReel) {
-        this.nomReel = nomReel;
-    }
 }

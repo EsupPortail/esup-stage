@@ -20,6 +20,24 @@ public class StructureRepository extends PaginationRepository<Structure> {
     }
 
     @Override
+    public List<Structure> findPaginated(int page, int perPage, String predicate, String sortOrder, String filters) {
+        JSONObject jsonFilters = new JSONObject(filters);
+
+        if (!jsonFilters.has("temEnServStructure")) {
+            JSONObject temEnServParam = new JSONObject();
+            temEnServParam.put("value", true);
+            temEnServParam.put("type", "boolean");
+            jsonFilters.put("temEnServStructure", temEnServParam);
+
+            filters = jsonFilters.toString();
+        }
+
+        return super.findPaginated(page, perPage, predicate, sortOrder, filters);
+    }
+
+
+
+    @Override
     protected void addSpecificParameter(String key, JSONObject parameter, List<String> clauses) {
         if (key.equals("nafN1.code")) {
             clauses.add("s.nafN5.nafN1.code IN :" + key.replace(".", ""));
@@ -39,7 +57,7 @@ public class StructureRepository extends PaginationRepository<Structure> {
     }
 
     public boolean existsSiret(Structure structure, String siret) {
-        String queryString = "SELECT id FROM Structure WHERE LOWER(numeroSiret) = LOWER(:siret)";
+        String queryString = "SELECT id FROM Structure WHERE LOWER(numeroSiret) = LOWER(:siret) AND temEnServStructure = true";
         TypedQuery<Integer> query = em.createQuery(queryString, Integer.class);
         query.setParameter("siret", siret);
         List<Integer> results = query.getResultList();

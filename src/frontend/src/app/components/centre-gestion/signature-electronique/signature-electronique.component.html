@@ -11,15 +11,15 @@
           <mat-error><app-form-error [field]="form.get('circuitSignature')"></app-form-error></mat-error>
         </mat-form-field>
         <div class="col-12">
-          <mat-checkbox formControlName="envoiDocumentSigne">Activer l'envoi du document signé</mat-checkbox>
+          <mat-checkbox formControlName="envoiDocumentSigne">{{"MESSAGE_ENVOI_DOCUMENT_SIGNE_DOCAPOSTE" | contenu}}</mat-checkbox>
         </div>
         <div class="col-12">
           <div class="text-title">Ordre de signature</div>
           <div class="text-hint">
             <mat-hint>Le choix entre OTP et signature serveur est obligatoire. Si vous n'utilisez pas Docaposte, vous pouvez indifféremment cocher signature OTP ou signature serveur</mat-hint>
           </div>
-          <div cdkDropList [cdkDropListData]="signataires" (cdkDropListDropped)="drop($event)">
-            <div class="ordre" *ngFor="let signataire of signataires; let index = index" cdkDrag>
+          <div cdkDropList  [class.no-drag-cursor]="!canMoveSignataire" [cdkDropListDisabled]="!canMoveSignataire" [cdkDropListData]="signataires" (cdkDropListDropped)="drop($event)">
+            <div class="ordre" [cdkDragDisabled]="!canMoveSignataire" *ngFor="let signataire of signataires; let index = index" cdkDrag>
               <div class="row">
                 <div class="col-4">
                   <span cdkDragHandle>{{signataire.ordre}}</span>{{signataire.id.signataire}}

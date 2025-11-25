@@ -1,13 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges,
-  ChangeDetectorRef, ViewEncapsulation, AfterViewInit
-} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ChangeDetectorRef, ViewEncapsulation, AfterViewInit, OnDestroy} from '@angular/core';
 import { FormBuilder, FormControl, Validators } from "@angular/forms";
 import { StructureService } from "../../../services/structure.service";
 import { CommuneService } from "../../../services/commune.service";
@@ -86,14 +77,19 @@ import {
   TextTransformation, TodoList, Underline, Undo
 } from "ckeditor5";
 import translations from 'ckeditor5/translations/fr.js';
+import { AuthService } from "../../../services/auth.service"
+import {AppFonction} from "../../../constants/app-fonction";
+import {Droit} from "../../../constants/droit";
+import {ConfigService} from "../../../services/config.service";
 
 @Component({
   selector: 'app-etab-accueil-form',
+  standalone: false,
   templateUrl: './etab-accueil-form.component.html',
   styleUrls: ['./etab-accueil-form.component.scss'],
   encapsulation:ViewEncapsulation.None
 })
-export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewInit {
+export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
 
   @Input() etab: any;
   @Output() submitted = new EventEmitter<any>();
@@ -107,10 +103,17 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   effectifs: any[] = [];
   selectedNafN5: any;
   nafN5List: any[] = [];
+  creationSeulementHorsFrance : boolean = false;
+  creationSeulementFrance : boolean = false;
 
   nafN5FilterCtrl: FormControl = new FormControl();
   filteredNafN5List: ReplaySubject<any> = new ReplaySubject<any>(1);
+  paysFilterCtrl: FormControl = new FormControl('');
+  filteredCountries: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
   _onDestroy = new Subject<void>();
+  autoUpdating = false;
+  isSireneActive = false;
+  filterTypeContries!: 0 | 1 | 2  ;
 
   form: any;
 
@@ -123,14 +126,41 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
     private nafN5Service: NafN5Service,
     private statutJuridiqueService: StatutJuridiqueService,
     private effectifService: EffectifService,
+    private authService: AuthService,
     private fb: FormBuilder,
     private messageService: MessageService,
-    private changeDetector: ChangeDetectorRef
+    private changeDetector: ChangeDetectorRef,
+    private configService: ConfigService
   ) { }
 
   ngOnInit(): void {
-    this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServPays: {value: 'O', type: 'text'}})).subscribe((response: any) => {
-      this.countries = response.data;
+    this.configService.getConfigGenerale().subscribe(response=>{
+      const autorisationCreationHorsFrance = response.autoriserEtudiantACreerEntrepriseHorsFrance;
+      const autorisationCreationFrance = response.autoriserEtudiantACreerEntrepriseFrance;
+      this.creationSeulementHorsFrance = autorisationCreationHorsFrance && !autorisationCreationFrance;
+      this.creationSeulementFrance = !autorisationCreationHorsFrance && autorisationCreationFrance
+    })
+    this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({ temEnServPays: { value: 'O', type: 'text' } })).subscribe((response: any) => {
+        this.countries = response.data;
+        this.filterTypeContries = 0;
+
+        // Restriction étudiant : enlever la France si nécessaire
+        if (this.authService.isEtudiant() && this.creationSeulementHorsFrance) {
+          this.countries = this.countries.filter(c => c.libelle !== 'FRANCE');
+          this.filterTypeContries = 1;
+        }
+
+        // Restriction étudiant : enlever les autres pays si nécessaire
+        if(this.authService.isEtudiant() && this.creationSeulementFrance){
+          this.countries = this.countries.filter(c => c.libelle == 'FRANCE');
+          this.filterTypeContries = 2;
+        }
+
+        // Alimente la liste filtrée initiale
+        this.filteredCountries.next(this.countries.slice());
+
+        // Met en place le filtrage par saisie
+        this.paysFilterCtrl.valueChanges.pipe(takeUntil(this._onDestroy)).subscribe(() => this.filterCountries());
     });
     this.communeService.getPaginated(1, 0, 'lib', 'asc', "").subscribe((response: any) => {
       this.communes = response;
@@ -146,6 +176,9 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
     });
     this.effectifService.getAll().subscribe((response: any) => {
       this.effectifs =  response;
+    });
+    this.structureService.getSireneInfo().subscribe(res=>{
+      this.isSireneActive = res.isApiSireneActive
     });
     this.getNafN5List();
   }
@@ -422,30 +455,33 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
 
   ngOnChanges(changes: SimpleChanges): void {
     this.form = this.fb.group({
-      raisonSociale: [this.etab.raisonSociale, [Validators.required, Validators.maxLength(150)]],
-      numeroSiret: [this.etab.numeroSiret, [Validators.maxLength(14), Validators.pattern('[0-9]{14}')]],
-      idEffectif: [this.etab.effectif ? this.etab.effectif.id : null, [Validators.required]],
+      raisonSociale: [{ value: this.etab.raisonSociale, disabled: this.isFieldDisabled() }, [Validators.required, Validators.maxLength(150)]],
+      numeroSiret: [{ value: this.etab.numeroSiret, disabled: this.isFieldDisabled() }, [Validators.maxLength(14), Validators.pattern('[0-9]{14}')]],
+      idEffectif: [this.etab.effectif ? this.etab.effectif.id : null],
       idTypeStructure: [this.etab.typeStructure ? this.etab.typeStructure.id : null, [Validators.required]],
-      idStatutJuridique: [this.etab.statutJuridique ? this.etab.statutJuridique.id : null, [Validators.required]],
-      codeNafN5: [this.etab.nafN5 ? this.etab.nafN5.code : null, []],
+      idStatutJuridique: [this.etab.statutJuridique?.id ?? null, [Validators.required]],
+      codeNafN5: [this.etab.nafN5?.code ?? null, []],
       activitePrincipale: [this.etab.activitePrincipale, []],
       voie: [this.etab.voie, [Validators.required, Validators.maxLength(200)]],
       codePostal: [this.etab.codePostal, [Validators.required, Validators.maxLength(10)]],
       batimentResidence: [this.etab.batimentResidence, [Validators.maxLength(200)]],
       commune: [this.etab.commune, [Validators.required, Validators.maxLength(200)]],
       libCedex: [this.etab.libCedex, [Validators.maxLength(20)]],
-      idPays: [this.etab.pays ? this.etab.pays.id : null, [Validators.required]],
+      idPays: [this.etab.pays?.id ?? null, [Validators.required]],
       mail: [this.etab.mail, [Validators.pattern(REGEX.EMAIL), Validators.maxLength(255)]],
-      telephone: [this.etab.telephone, [Validators.required,Validators.pattern(/^(?:(?:\+|00)\d{1,4}[-.\s]?|0)\d{1,4}([-.\s]?\d{1,4})*$/), Validators.maxLength(50)]],
+      telephone: [this.etab.telephone, [Validators.required, Validators.pattern(/^(?:(?:\+|00)\d{1,4}[-.\s]?|0)\d{1,4}([-.\s]?\d{1,4})*$/), Validators.maxLength(50)]],
       siteWeb: [this.etab.siteWeb, [Validators.maxLength(200), Validators.pattern('^https?://(\\w([\\w\\-]{0,61}\\w)?\\.)+[a-zA-Z]{2,6}([/]{1}.*)?$')]],
       fax: [this.etab.fax, [Validators.maxLength(20)]],
-      numeroRNE: [this.etab.numeroRNE, [Validators.maxLength(8),  Validators.pattern('[0-9]{7}[a-zA-Z]')]],
+      numeroRNE: [this.etab.numeroRNE, [Validators.maxLength(8), Validators.pattern('[0-9]{7}[a-zA-Z]')]],
     });
     this.toggleCommune();
-    this.form.get('idPays')?.valueChanges.subscribe((idPays: any) => {
-      this.toggleCommune();
-      this.clearCommune();
-    });
+    this.form.get('idPays')?.valueChanges
+      .pipe(takeUntil(this._onDestroy))
+      .subscribe((idPays: any) => {
+        if (this.autoUpdating) return;
+        this.toggleCommune();
+        this.clearCommune();
+      });
 
     if (this.etab.nafN5) {
       this.selectedNafN5 = this.etab.nafN5;
@@ -591,5 +627,96 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
         return true;
     }
     return false;
+  }
+
+  canEdit(){
+    return !this.authService.isEtudiant() && !this.etab.temSiren
+  }
+
+  canCreate(): boolean {
+    return this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.CREATION]});
+  }
+
+  isFieldDisabled(): boolean {
+      return !!this.etab?.id ? !this.canEdit() : !this.canCreate();
+  }
+
+  private filterCountries(): void {
+    if (!this.countries || !Array.isArray(this.countries)) {
+      this.filteredCountries.next([]);
+      return;
+    }
+    let search = this.paysFilterCtrl.value;
+    if (!search) {
+      this.filteredCountries.next(this.countries.slice());
+      return;
+    }
+    search = ('' + search).toLowerCase().trim();
+    this.filteredCountries.next(
+      this.countries.filter(c =>
+        (c.libelle ?? '').toLowerCase().includes(search) ||
+        (c.code ?? '').toLowerCase().includes(search)
+      )
+    );
+  }
+
+  ngOnDestroy(): void {
+    this._onDestroy.next();
+    this._onDestroy.complete();
+  }
+
+  private patchFormFromEtab(updated: any): void {
+    if (!this.form) { return; }
+
+    this.form.patchValue({
+      raisonSociale: updated?.raisonSociale ?? null,
+      numeroSiret: updated?.numeroSiret ?? null,
+      idEffectif: updated?.effectif?.id ?? null,
+      idTypeStructure: updated?.typeStructure?.id ?? null,
+      idStatutJuridique: updated?.statutJuridique?.id ?? null,
+      codeNafN5: updated?.nafN5?.code ?? null,
+      activitePrincipale: updated?.activitePrincipale ?? null,
+      voie: updated?.voie ?? null,
+      codePostal: updated?.codePostal ?? null,
+      batimentResidence: updated?.batimentResidence ?? null,
+      commune: updated?.commune ?? null,
+      libCedex: updated?.libCedex ?? null,
+      idPays: updated?.pays?.id ?? null,
+      mail: updated?.mail ?? null,
+      telephone: updated?.telephone ?? null,
+      siteWeb: updated?.siteWeb ?? null,
+      fax: updated?.fax ?? null,
+      numeroRNE: updated?.numeroRNE ?? null,
+    }, { emitEvent: true });
+
+    this.selectedNafN5 = updated?.nafN5 ?? null;
+
+    // Recalcule logic FR / communes selon le pays
+    this.toggleCommune();
+    this.changeDetector.detectChanges();
+  }
+
+  // === AJOUT ===
+  autoUpdateFromApi(): void {
+    if (!this.etab?.id || !this.canEdit()) {
+      return;
+    }
+    this.autoUpdating = true;
+
+    // ↳ Appelez ici votre endpoint côté back qui va récupérer les infos (ex: INSEE/Sirene) et mettre à jour
+    this.structureService.updateFromSirene(this.etab.id).subscribe({
+      next: (updated: any) => {
+        this.messageService.setSuccess('Mise à jour automatique effectuée.');
+        this.etab = updated;
+        this.patchFormFromEtab(updated);
+      },
+      error: () => {
+        this.autoUpdating = false;
+        this.messageService.setError('Échec de la mise à jour automatique.');
+      },
+      complete: () => {
+        this.autoUpdating = false;
+      }
+    });
   }
 }

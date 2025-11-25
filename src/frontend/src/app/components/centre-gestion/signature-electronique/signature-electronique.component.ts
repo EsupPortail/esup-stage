@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormGroup } from "@angular/forms";
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
+import {ConfigService} from "../../../services/config.service";
 
 @Component({
   selector: 'app-centre-signature-electronique',
@@ -13,13 +14,17 @@ export class CentreSignatureElectroniqueComponent implements OnInit {
   @Input() form!: FormGroup;
 
   signataires: any[] = [];
+  canMoveSignataire!: boolean;
 
-  constructor() { }
+  constructor(private configService : ConfigService) { }
 
   ngOnInit(): void {
     if (this.centreGestion.id) {
       this.setFormData();
     }
+    this.configService.getConfigSignature().subscribe(res=>{
+      this.canMoveSignataire = res.autoriserModifOrdreSignataireCG
+    })
   }
 
   setFormData(): void {
@@ -43,5 +48,7 @@ export class CentreSignatureElectroniqueComponent implements OnInit {
   updateSignataire(): void {
     this.form.get('signataires')?.setValue(this.signataires);
   }
+
+
 
 }

@@ -96,7 +96,7 @@ import { TemplateConventionComponent } from './components/admin/template-convent
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { InterruptionsFormComponent } from './components/convention/stage/interruptions-form/interruptions-form.component';
 import { MatBadgeModule } from "@angular/material/badge";
-import { ConsigneComponent } from './components/consigne/consigne.component';
+import { ConsigneComponent } from './components/centre-gestion/consigne/consigne.component';
 import { RetourListeComponent } from './components/retour-liste/retour-liste.component';
 import { FicheEvaluationComponent } from './components/centre-gestion/fiche-evaluation/fiche-evaluation.component';
 import { QuestionSupplementaireFormComponent } from './components/centre-gestion/fiche-evaluation/question-supplementaire-form/question-supplementaire-form.component';
@@ -129,6 +129,11 @@ import { MatTabNavChangeDirective } from './directives/mat-tab-nav-change.direct
 import {CentreSignatureElectroniqueComponent} from "./components/centre-gestion/signature-electronique/signature-electronique.component";
 import { SignatureElectroniqueViewComponent } from './components/convention/signature-electronique/signature-electronique-view/signature-electronique-view.component';
 import {ColorPickerModule} from "ngx-color-picker";
+import {ConfirmDeleteDialogComponent} from "./components/gestion-etab-accueil/confirm-delete-dialog/confirm-delete-dialog.component";
+import {ColumnSelectorComponent} from "./components/table/column-selector/column-selector.component";
+import {TachePlanifieComponent} from "./components/admin/taches-planifiees/tache-planifie.component";
+import {MatSlideToggle} from "@angular/material/slide-toggle";
+import { ImageCropperComponent } from 'ngx-image-cropper';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -238,44 +243,48 @@ export class FrenchDateProvider extends NativeDateAdapter {
         MatTabNavChangeDirective,
         CentreSignatureElectroniqueComponent,
         SignatureElectroniqueViewComponent,
+        ConfirmDeleteDialogComponent,
+        ColumnSelectorComponent,
+        TachePlanifieComponent
     ],
     bootstrap: [AppComponent], imports: [BrowserModule,
-        AppRoutingModule,
-        BrowserAnimationsModule,
-        ReactiveFormsModule,
-        FormsModule,
-        MatSidenavModule,
-        MatToolbarModule,
-        MatIconModule,
-        MatButtonModule,
-        MatListModule,
-        MatDialogModule,
-        MatTabsModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatTableModule,
-        MatSortModule,
-        MatPaginatorModule,
-        MatTooltipModule,
-        MatCardModule,
-        MatSelectModule,
-        MatCheckboxModule,
-        MatStepperModule,
-        MatRadioModule,
-        MatExpansionModule,
-        MatProgressSpinnerModule,
-        MatProgressBarModule,
-        MatDatepickerModule,
-        MatNativeDateModule,
-        NgxMatSelectSearchModule,
-        MatChipsModule,
-        MatAutocompleteModule,
-        MatMenuModule,
-        DragDropModule,
-        CKEditorModule,
-        MatSnackBarModule,
-        MatBadgeModule,
-        ColorPickerModule], providers: [
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    ReactiveFormsModule,
+    FormsModule,
+    MatSidenavModule,
+    MatToolbarModule,
+    MatIconModule,
+    MatButtonModule,
+    MatListModule,
+    MatDialogModule,
+    MatTabsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatTableModule,
+    MatSortModule,
+    MatPaginatorModule,
+    MatTooltipModule,
+    MatCardModule,
+    MatSelectModule,
+    MatCheckboxModule,
+    MatStepperModule,
+    MatRadioModule,
+    MatExpansionModule,
+    MatProgressSpinnerModule,
+    MatProgressBarModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    NgxMatSelectSearchModule,
+    MatChipsModule,
+    MatAutocompleteModule,
+    MatMenuModule,
+    DragDropModule,
+    CKEditorModule,
+    MatSnackBarModule,
+    MatBadgeModule,
+    ImageCropperComponent,
+    ColorPickerModule, MatSlideToggle], providers: [
         CookieService,
         ContenuService,
         ContenuPipe,

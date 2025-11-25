@@ -95,19 +95,8 @@ export class EtudiantComponent implements OnInit, OnChanges {
     });
     this.centreGestionService.getCentreEtablissement().subscribe((response: any) => {
       this.centreGestionEtablissement = response;
-      if (this.centreGestionEtablissement) {
-        this.consigneService.getConsigneByCentre(this.centreGestionEtablissement.id).subscribe({
-          next: (response: any) => {
-            if (response && response.texte) {
-              this.consigneEtablissement = response;
-            } else {
-              console.info('Pas de consigne disponible pour ce centre');
-            }
-          },
-          error: (err) => {
-            console.warn('Erreur lors du chargement de la consigne', err);
-          }
-        });
+      if((response.consigne.texte) || response.consigne.documents.length > 0){
+        this.consigneEtablissement = response.consigne;
       }
     });
 
@@ -236,56 +225,56 @@ export class EtudiantComponent implements OnInit, OnChanges {
       this.searchEtudiantPanel.expanded = false;
     }
 
-    // // Vérifie si la convention existe déjà avec un ID
-    // if (this.convention && this.convention.id) {
-    //   this.etudiant = this.convention.etudiant;
-    //   // Remplir le formulaire avec les valeurs de la convention
-    //   this.formConvention.get('adresseEtudiant')?.setValue(this.convention.adresseEtudiant);
-    //   this.formConvention.get('codePostalEtudiant')?.setValue(this.convention.codePostalEtudiant);
-    //   this.formConvention.get('villeEtudiant')?.setValue(this.convention.villeEtudiant);
-    //   this.formConvention.get('paysEtudiant')?.setValue(this.convention.paysEtudiant);
-    //   this.formConvention.get('telEtudiant')?.setValue(this.convention.telEtudiant);
-    //   this.formConvention.get('telPortableEtudiant')?.setValue(this.convention.telPortableEtudiant);
-    //   this.formConvention.get('courrielPersoEtudiant')?.setValue(this.convention.courrielPersoEtudiant);
-    //   this.centreGestion = this.convention.centreGestion;
-    //
-    //   if (this.convention.etape) {
-    //     // Recrée un objet inscription avec les données de la convention existante
-    //     const annee = parseInt(this.convention.annee.split('/')[0]) ;
-    //
-    //     // Définir le tableau elementPedagogiques comme un tableau d'objet any[]
-    //     const elementPedagogiques: any[] = [];
-    //
-    //     if (this.convention.codeElp) {
-    //       // Ajoute l'élément pédagogique si présent dans la convention
-    //       elementPedagogiques.push({
-    //         codElp: this.convention.codeElp,
-    //         libElp: this.convention.libelleELP,
-    //         nbrCrdElp: this.convention.creditECTS
-    //       });
-    //     }
-    //
-    //     const inscription = {
-    //       annee: annee,
-    //       anneeFormatted: annee + '/' + (+annee + 1),
-    //       etapeInscription: {
-    //         codeEtp: this.convention.etape.id.code,
-    //         libWebVet: this.convention.libWebVet,
-    //         codeComposante: this.convention.codeComposante
-    //       },
-    //       elementPedagogiques: elementPedagogiques
-    //     };
-    //
-    //     this.formConvention.get('inscription')?.setValue(inscription);
-    //
-    //     if (this.convention.codeElp && elementPedagogiques.length > 0) {
-    //       this.formConvention.get('inscriptionElp')?.setValue(elementPedagogiques[0]);
-    //     }
-    //
-    //     // S'assurer que l'inscription est disponible pour l'interface
-    //     this.inscriptions = [inscription];
-    //   }
-    // } else {
+    // Vérifie si la convention existe déjà avec un ID
+    if (this.convention && this.convention.id) {
+      this.etudiant = this.convention.etudiant;
+      // Remplir le formulaire avec les valeurs de la convention
+      this.formConvention.get('adresseEtudiant')?.setValue(this.convention.adresseEtudiant);
+      this.formConvention.get('codePostalEtudiant')?.setValue(this.convention.codePostalEtudiant);
+      this.formConvention.get('villeEtudiant')?.setValue(this.convention.villeEtudiant);
+      this.formConvention.get('paysEtudiant')?.setValue(this.convention.paysEtudiant);
+      this.formConvention.get('telEtudiant')?.setValue(this.convention.telEtudiant);
+      this.formConvention.get('telPortableEtudiant')?.setValue(this.convention.telPortableEtudiant);
+      this.formConvention.get('courrielPersoEtudiant')?.setValue(this.convention.courrielPersoEtudiant);
+      this.centreGestion = this.convention.centreGestion;
+
+      if (this.convention.etape) {
+        // Recrée un objet inscription avec les données de la convention existante
+        const annee = parseInt(this.convention.annee.split('/')[0]) ;
+
+        // Définir le tableau elementPedagogiques comme un tableau d'objet any[]
+        const elementPedagogiques: any[] = [];
+
+        if (this.convention.codeElp) {
+          // Ajoute l'élément pédagogique si présent dans la convention
+          elementPedagogiques.push({
+            codElp: this.convention.codeElp,
+            libElp: this.convention.libelleELP,
+            nbrCrdElp: this.convention.creditECTS
+          });
+        }
+
+        const inscription = {
+          annee: annee,
+          anneeFormatted: annee + '/' + (+annee + 1),
+          etapeInscription: {
+            codeEtp: this.convention.etape.id.code,
+            libWebVet: this.convention.libWebVet,
+            codeComposante: this.convention.codeComposante
+          },
+          elementPedagogiques: elementPedagogiques
+        };
+
+        this.formConvention.get('inscription')?.setValue(inscription);
+
+        if (this.convention.codeElp && elementPedagogiques.length > 0) {
+          this.formConvention.get('inscriptionElp')?.setValue(elementPedagogiques[0]);
+        }
+
+        // S'assurer que l'inscription est disponible pour l'interface
+        this.inscriptions = [inscription];
+      }
+    } else {
       // Pour une nouvelle convention, obtenir les données depuis Apogee
       this.etudiantService.getApogeeData(row.codEtu).subscribe((response: any) => {
         this.etudiant = response;
@@ -310,7 +299,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
       // Récupérer les inscriptions
       this.etudiantService.getApogeeInscriptions(row.codEtu, this.convention ? this.convention.annee : null).subscribe((response: any) => {
         this.inscriptions = response;
-
+        this.inscriptions.sort((a,b) => a.annee < b.annee ? 1 : -1);
         if (this.inscriptions.length === 1) {
           this.formConvention.get('inscription')?.setValue(this.inscriptions[0]);
         }
@@ -335,7 +324,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
           }
         }
       });
-  //}
+    }
   }
 
   get selectedInscription() {

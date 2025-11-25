@@ -1,0 +1,190 @@
+// Modal overlay
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-container {
+  position: relative;
+  width: 100%;
+  max-width: 42rem;
+  max-height: 90vh;
+  margin: 1rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+// Header plus compact
+.header-banner {
+  position: sticky;
+  top: 0;
+  background-color: var(--primaryColor);
+  padding: 0.75rem 1.5rem;
+  z-index: 10;
+  border-radius: 8px 8px 0 0;
+
+  h1 {
+    color: white;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+    text-align: center;
+  }
+}
+
+// Zone de contenu scrollable
+.scrollable-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem 1.5rem;
+  // S'arrête avant les boutons
+  max-height: calc(90vh - 180px);
+  // Masque le contenu qui dépasse
+  mask-image: linear-gradient(to bottom,
+    black calc(100% - 20px),
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(to bottom,
+    black calc(100% - 20px),
+    transparent 100%
+  );
+}
+
+// Detail section
+.detail-section {
+  margin-bottom: 2rem;
+}
+
+.detail-row {
+  display: flex;
+  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
+
+  .detail-label {
+    width: 150px;
+    font-weight: 500;
+    color: #475569;
+  }
+
+  .detail-value {
+    flex: 1;
+  }
+}
+
+// Section des modifications
+.section-divider {
+  margin: 1.5rem 0;
+}
+
+.changes-title {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #475569;
+  margin: 1rem 0;
+}
+
+.no-changes {
+  color: #64748b;
+  padding: 1rem 0;
+  font-style: italic;
+}
+
+// Chaque élément de modification
+.change-item {
+  margin-bottom: 0.5rem;
+
+  .change-header {
+    font-weight: 500;
+    color: #334155;
+    margin-bottom: 0.5rem;
+  }
+
+  .change-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    @media (min-width: 768px) {
+      flex-direction: row;
+
+      .previous-value, .new-value {
+        flex: 1;
+      }
+    }
+  }
+
+  .value-label {
+    color: #64748b;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .value-content {
+    padding: 0.5rem;
+    background-color: #f8fafc;
+    border-radius: 4px;
+    word-break: break-word;
+
+    &.added {
+      background-color: #ecfdf5;
+      border-left: 3px solid #10b981;
+    }
+
+    &.deleted {
+      background-color: #fef2f2;
+      border-left: 3px solid #ef4444;
+    }
+  }
+}
+
+// Utility classes
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
+.mb-3 {
+  margin-bottom: 0.75rem;
+}
+
+.mt-3 {
+  margin-top: 0.75rem;
+}
+
+// Fixed footer
+.modal-footer {
+  position: sticky;
+  bottom: 0;
+  background-color: white;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  z-index: 10;
+  border-radius: 0 0 8px 8px;
+
+  button {
+    min-width: 120px;
+    padding: 0.5rem 1.5rem;
+  }
+
+  .cancel-button {
+    border-color: var(--primaryColor);
+    color: var(--primaryColor);
+  }
+}

@@ -2,183 +2,277 @@ databaseChangeLog:
   - include:
       file: 000-init.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.0-user-role.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.0-foreignkey-nullable.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.0-app-config.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.0-devise.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.0-convention.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.0-contenu.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.0-centre-gestion.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.0-template-mail.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.0-personnel-centre-gestion.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.0-pays.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.0-avenant.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.0-convention-nomenclature.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.0-historique-validation.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.0-engine-collate.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.0-template-convention.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.0-periode-interruption-stage.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.0-param-convention.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.0-periode-interruption-avenant.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.0-init-data.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.0-consigne.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.0-consigne-nonnullable.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.0-service.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.1-fix-type-convention.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.1-fix-taille-nomenclature.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.1-drop-columns.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.3-param-convention.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.3-suppression-droit-administration.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.3-suppression-convention-quotiteTravail.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.4-paramconvention.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.5-convention.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.5-template-mail.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.5-periode-interruption-stage.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.5-periode-interruption-avenant.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.5-param-convention.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.5-avenant.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.6-param-convention.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 1.0.9-utilisateur.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 2.0.0-contenu.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 2.0.0-template-mail.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 2.0.0-reponse-evaluation.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 2.0.0-user-role.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 2.0.0-groupe-etudiant.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 2.0.0-convention.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 2.0.0-template-mail-groupe.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 2.0.0-historique-groupe.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 2.0.0-etablissement-enseignement.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 2.0.0-commune.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 2.0.0-centre-gestion.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 2.0.0-personnel-centre-gestion.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 2.0.0-docaposte.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 2.0.0-cpam.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 2.0.0-engine-collate.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 2.0.0-modification-conventions-en-masse.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 2.0.0-update-empty-cpam.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 2.1.0-centre-gestion-signataire.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 2.1.0-fix-code-postal.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 2.1.2-mail-viseur.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 2.1.5-convention-avenant-actualisation.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 2.1.8-docaposte-envoi-doc.yaml
       relativeToChangelogFile: true
+      context: legacy
   - include:
       file: 3.0.0-add-login-sender-signature.yaml
       relativeToChangelogFile: true
+      context: legacy
+  - include:
+      file: 3.0.1-add-duree-exceptionnelle-periode.yaml
+      relativeToChangelogFile: true
+      context: legacy
+  - include:
+      file: 3.0.1-add-periode-stage.yml
+      relativeToChangelogFile: true
+      context: legacy
+  - include:
+      file: baseline-v3/baseline-v3.yaml
+      relativeToChangelogFile: true
+      context: baseline
+  - include:
+      file: 3.1.0-siren.yaml
+      relativeToChangelogFile: true
+  - include:
+      file : 3.1.0-fix-update-signature-default-value.yaml
+      relativeToChangelogFile: true
+  - include:
+        file: 3.1.1-text-consigne-nullable.yml
+        relativeToChangelogFile: true
+  - include:
+        file: 3.1.2-ajout-param-convention-horaireIrregulier.yaml
+        relativeToChangelogFile: true
+  - include:
+        file: 3.1.4-contenu-signataires.yaml
+        relativeToChangelogFile: true
+  - include:
+        file: 3.1.6-contenu-hint-pays-etablissement.yaml
+        relativeToChangelogFile: true
+  - include:
+        file: 3.1.7-contenu-envoi-doc-signe.yaml
+        relativeToChangelogFile: true

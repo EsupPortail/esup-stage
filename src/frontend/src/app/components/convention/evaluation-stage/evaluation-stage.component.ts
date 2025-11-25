@@ -4,8 +4,6 @@ import { ReponseEvaluationService } from "../../../services/reponse-evaluation.s
 import { FicheEvaluationService } from "../../../services/fiche-evaluation.service";
 import { MessageService } from "../../../services/message.service";
 import { MatExpansionPanel } from "@angular/material/expansion";
-import { AppFonction } from "../../../constants/app-fonction";
-import { Droit } from "../../../constants/droit";
 import { AuthService } from "../../../services/auth.service";
 import * as FileSaver from 'file-saver';
 
@@ -30,9 +28,6 @@ export class EvaluationStageComponent implements OnInit {
   reponseSupplementaireEntrepriseForm: FormGroup;
 
   edit: boolean = false;
-  editEtu: boolean = false;
-  editEns: boolean = false;
-  editEnt: boolean = false;
 
   isEtudiant:boolean = false;
   isEnseignant:boolean = false;
@@ -1584,6 +1579,15 @@ export class EvaluationStageComponent implements OnInit {
         this.convention.envoiMailTuteurPro = true
     });
   }
+
+  hasVisible(questions: Array<{controlName: string}>, supIndex: number): boolean {
+    const hasBase =
+      !!questions?.some(q => this.ficheEvaluation?.['question' + q.controlName]);
+    const hasSup =
+      (this.questionsSupplementaires?.[supIndex]?.length ?? 0) > 0;
+    return hasBase || hasSup;
+  }
+
 
 }
 

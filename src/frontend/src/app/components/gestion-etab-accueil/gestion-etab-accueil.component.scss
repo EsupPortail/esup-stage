@@ -1,3 +1,85 @@
 .mat-card .mat-divider-horizontal {
     position: relative;
 }
+
+.tooltip-wide {
+  white-space: pre-line;
+  max-width: 300px;
+}
+
+.sirene-info-box {
+  background-color: #f1f5fb; /* bleu-gris très sobre */
+  border-left: 4px solid #2196f3; /* petite touche de bleu */
+  padding: 1rem 1.5rem;
+  border-radius: 6px;
+  margin-top: 2vh;
+  margin-bottom: 2vh;
+  font-size: 14px;
+  color: #333;
+}
+
+.sirene-info-title {
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.sirene-info-details ul {
+  padding-left: 1.5rem;
+  margin: 0;
+}
+
+.sirene-info-details li {
+  margin-bottom: 0.3rem;
+}
+
+/* Conteneur principal : icône à gauche, texte à droite */
+.import-info-box {
+  display: flex;
+  align-items: center;     /* aligne le haut de l'icône et du texte */
+  gap: 0.75rem;                /* espace entre icône et texte */
+  background-color: #f1f5fb;
+  border-left: 4px solid #2196f3;
+  padding: 1rem 1.5rem;
+  border-radius: 6px;
+  margin-top: 2vh;
+  margin-bottom: 2vh;
+  font-size: 15px;
+  color: #333;
+}
+
+.import-info-box .icon-block {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.import-info-box .icon-block mat-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+}
+
+.import-info-box .text-block {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.import-info-box .text-block span {
+  display: block;
+  margin-top: 0.0rem;
+}
+
+@media (max-width: 360px) {
+  .import-info-box {
+    align-items: stretch;
+  }
+}
+
+

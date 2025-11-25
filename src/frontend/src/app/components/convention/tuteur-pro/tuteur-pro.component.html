@@ -5,10 +5,16 @@
     </mat-expansion-panel-header>
 
     <div class="row mt-3">
-      <mat-form-field class="col-md-12" appearance="fill" [hidden]="contacts.length == 0">
-        <mat-label>Sélectionnez un tuteur existant :</mat-label>
-        <mat-select [(value)]="contact" (selectionChange)="choose($event.value)">
-          <mat-option *ngFor="let contact of contacts" [value]="contact">{{contact.nom+' '+contact.prenom}}</mat-option>
+      <mat-form-field class="col-md-12" appearance="fill">
+        <mat-label *ngIf="contacts.length > 0">Sélectionnez un tuteur existant :</mat-label>
+        <mat-label *ngIf="contacts.length == 0">Aucun tuteur existant</mat-label>
+        <mat-select [(value)]="contact" (selectionChange)="choose($event.value)" [disabled]="contacts.length == 0">
+          <mat-option>
+            <ngx-mat-select-search [formControl]="contactFilterCtrl" placeholderLabel="Rechercher un tuteur" noEntriesFoundLabel="Aucun tuteur trouvé"></ngx-mat-select-search>
+          </mat-option>
+          <mat-option *ngFor="let contact of filteredContacts | async" [value]="contact">
+            {{contact.nom + ' ' + contact.prenom}}
+          </mat-option>
         </mat-select>
       </mat-form-field>
       <div class="col-md-12" *ngIf="canCreate()">
@@ -111,7 +117,7 @@
           <div class="col-sm-9">{{contact.fax}}</div>
         </div>
       </div>
-      <div *ngIf="modif && canEdit()">
+      <div *ngIf="modif && (canEdit() || (isNewContact && canCreate()))">
         <mat-divider class="mb-2"></mat-divider>
         <div class="row">
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
@@ -155,7 +161,7 @@
       </div>
       <div class="row mt-3" *ngIf="canEdit() || canCreate()">
         <div class="col-6">
-          <button mat-button mat-stroked-button color="primary" *ngIf="contact.id && !modif" (click)="edit()">Modifier ces informations</button>
+          <button mat-button mat-stroked-button color="primary" *ngIf="contact.id && !modif && canEdit()" (click)="edit()">Modifier ces informations</button>
           <button mat-button mat-stroked-button color="warn" *ngIf="contact.id && modif" (click)="cancelEdit()">{{'BOUTON_ANNULER'|contenu}}</button>
         </div>
         <div class="col-6 text-right" *ngIf="modif">

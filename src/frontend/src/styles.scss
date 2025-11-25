@@ -272,5 +272,18 @@ mat-form-field {
   }
 }
 
+.custom-dialog-container {
+  .mat-dialog-container {
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    overflow: hidden;
+  }
+}
+
+.section-disabled {
+  color: rgba(0, 0, 0, 0.45);
+}
 
 

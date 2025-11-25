@@ -42,4 +42,8 @@ export class TemplateConventionService implements PaginatedService {
   getMobileTitle(row: any): string {
     return `${row.typeConvention.libelle} - ${row.langueConvention.libelle}`;
   }
+
+  getAll(): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/template-convention/all`);
+  }
 }

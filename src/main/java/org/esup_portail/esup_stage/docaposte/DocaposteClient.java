@@ -34,6 +34,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -46,13 +47,13 @@ public class DocaposteClient extends WebServiceGatewaySupport {
     @Autowired
     private SignatureProperties signatureProperties;
     @Autowired
-    private AppliProperties appliProperties;
+    AppliProperties appliProperties;
     @Autowired
-    private ImpressionService impressionService;
+    ImpressionService impressionService;
     @Autowired
-    private ConventionJpaRepository conventionJpaRepository;
+    ConventionJpaRepository conventionJpaRepository;
     @Autowired
-    private AvenantJpaRepository avenantJpaRepository;
+    AvenantJpaRepository avenantJpaRepository;
 
     public DocaposteClient(SignatureProperties signatureProperties) {
         this.signatureProperties = signatureProperties;
@@ -128,7 +129,7 @@ public class DocaposteClient extends WebServiceGatewaySupport {
 
 
     public void upload(Convention convention, Avenant avenant) {
-        String filename = "Convention_" + convention.getId() + "_" + convention.getEtudiant().getPrenom() + "_" + convention.getEtudiant().getNom();
+        String filename = "Convention_" + convention.getId() + "_" + convention.getEtudiant().getPrenom() + "_" + convention.getEtudiant().getNom() + "_" + new SimpleDateFormat("ddMMyyyy_HHmmss").format(new Date());
         String label = "conventions";
         String documentId = convention.getDocumentId();
         if (avenant != null) {
@@ -141,7 +142,7 @@ public class DocaposteClient extends WebServiceGatewaySupport {
 
         DataFileVO documentFile = new DataFileVO();
         documentFile.setDataHandler(ou.toByteArray());
-        documentFile.setFilename(filename + ".pdf");
+        documentFile.setFilename(filename +".pdf");
 
         // Dépôt du PDF dans Docaposte
         Upload uploadRequest = new Upload();
@@ -213,6 +214,12 @@ public class DocaposteClient extends WebServiceGatewaySupport {
             conventionJpaRepository.saveAndFlush(convention);
         }
 
+        logger.debug("Envoi à Docaposte :");
+        logger.debug(" - SubscriberId: {}", uploadRequest.getSubscriberId());
+        logger.debug(" - CircuitId: {}", uploadRequest.getCircuitId());
+        logger.debug(" - Filename: {}", documentFile.getFilename());
+        logger.debug(" - Label: {}", uploadRequest.getLabel());
+
         String otpData = impressionService.generateXmlData(convention, TypeSignatureEnum.otp);
         String metaData = impressionService.generateXmlData(convention, TypeSignatureEnum.serveur);
 
@@ -222,6 +229,8 @@ public class DocaposteClient extends WebServiceGatewaySupport {
             requestUploadMeta.setDocumentId(documentId);
             requestUploadMeta.setArg1(metaData.getBytes());
             ((JAXBElement<UploadMetaResponse>) getWebServiceTemplate().marshalSendAndReceive(new ObjectFactory().createUploadMeta(requestUploadMeta))).getValue();
+
+            logger.debug(" - MetaData XML :\n{}", metaData);
         }
         // Ajout des otp pour les signatures otp
         if (otpData != null) {
@@ -229,6 +238,14 @@ public class DocaposteClient extends WebServiceGatewaySupport {
             requestUploadOtpInformation.setDocumentId(documentId);
             requestUploadOtpInformation.setArg1(otpData.getBytes());
             ((JAXBElement<UploadOTPInformationResponse>) getWebServiceTemplate().marshalSendAndReceive(new ObjectFactory().createUploadOTPInformation(requestUploadOtpInformation))).getValue();
+
+            logger.debug(" - OTP XML :\n{}", otpData);
+        }
+        if(documentId!=null){
+            if(avenant!=null)
+                logger.info("Avenant de la convention {} envoyé à Docaposte avec le documentId : {}", convention.getId() , documentId);
+            else
+                logger.info("Document de la convention {} envoyé à Docaposte avec le documentId : {}", convention.getId() , documentId);
         }
     }
 

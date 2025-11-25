@@ -42,7 +42,11 @@ public class PaysController {
         List<PaysDto> paysDtoList = new ArrayList<>();
         for (Pays pays : paginatedResponsePays.getData()) {
             PaysDto dto = new PaysDto(pays.getId(), pays.getLib(), pays.getTemEnServPays());
-            paysDtoList.add(dto);
+            if (pays.getIso2().equals("FR")) {
+                paysDtoList.add(0, dto);
+            } else {
+                paysDtoList.add(dto);
+            }
         }
 
         paginatedResponsePaysDto.setData(paysDtoList);

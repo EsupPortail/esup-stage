@@ -132,6 +132,12 @@ public class TemplateConventionController {
         }
     }
 
+    @GetMapping("/all")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
+    public List<TemplateConvention> getAllTemplates() {
+        return templateConventionJpaRepository.findAll();
+    }
+
     private List<String> extractChamps(String texte) {
         List<String> liste = new ArrayList<>();
         Pattern p = Pattern.compile("(.*?)\\$\\{(.*?)\\}.*?");

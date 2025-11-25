@@ -1,6 +1,7 @@
 package org.esup_portail.esup_stage.repository;
 
 import org.esup_portail.esup_stage.model.Convention;
+import org.esup_portail.esup_stage.model.Structure;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -8,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -114,4 +116,9 @@ public interface ConventionJpaRepository extends JpaRepository<Convention, Integ
     @Query("SELECT c FROM Convention c WHERE c.documentId IS NOT NULL AND (c.dateSignatureEtudiant IS NULL OR c.dateDepotEtudiant IS NULL OR c.dateSignatureEnseignant IS NULL OR c.dateDepotEnseignant IS NULL OR c.dateSignatureTuteur IS NULL OR c.dateDepotTuteur IS NULL OR c.dateSignatureSignataire IS NULL OR c.dateDepotSignataire IS NULL OR c.dateSignatureViseur IS NULL OR c.dateDepotViseur IS NULL)")
     List<Convention> getSignatureInfoToUpdate();
 
+    @Query("SELECT c FROM Convention c WHERE c.structure.id = :structureId")
+    List<Convention> findByStructureId(@Param("structureId") int structureId);
+
+    @Query("SELECT c FROM Convention c WHERE c.temConventionSignee = false AND c.validationConvention = TRUE AND c.dateEnvoiSignature IS NOT NULL")
+    List<Convention> findConventionNonSignees();
 }

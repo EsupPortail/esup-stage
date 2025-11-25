@@ -6,6 +6,7 @@ import { MessageService } from "../../../services/message.service";
 import { CentreGestionService } from "../../../services/centre-gestion.service";
 import { AppFonction } from "../../../constants/app-fonction";
 import { Droit } from "../../../constants/droit";
+import {RoleService} from "../../../services/role.service";
 
 @Component({
   selector: 'app-config-generale',
@@ -17,6 +18,7 @@ export class ConfigGeneraleComponent implements OnInit {
   configGenerale: any;
   configAlerte: any;
   configTheme: any;
+  configSignature: any;
 
   formGenerale: FormGroup;
   alertes = [
@@ -32,6 +34,8 @@ export class ConfigGeneraleComponent implements OnInit {
     {code: 'validationAdministrativeConvention', libelle: 'Validation administrative d\'une convention'},
     {code: 'verificationAdministrativeConvention', libelle: 'Vérification administrative d\'une convention'},
     {code: 'validationAvenant', libelle: 'Validation d\'un avenant'},
+    {code: 'conventionSignee', libelle: 'Convention signée par toutes les parties'},
+    {code: 'changementEnseignant', libelle:' Changement d\'enseignant référent'},
   ];
   alerteColumns = ['alertes', 'alerteEtudiant', 'alerteGestionnaire', 'alerteRespGestionnaire', 'alerteEnseignant'];
 
@@ -49,12 +53,16 @@ export class ConfigGeneraleComponent implements OnInit {
   warningColor: string | WritableSignal<string> | undefined;
   successColor: string | WritableSignal<string> | undefined;
 
+  formSignature: FormGroup;
+
+  isEtuAutoriseToCreate!: boolean;
+
   constructor(
     private configService: ConfigService,
     private fb: FormBuilder,
     private authService: AuthService,
     private messageService: MessageService,
-    private centreGestionService: CentreGestionService,
+    private roleService: RoleService,
   ) {
     this.formGenerale = this.fb.group({
       codeUniversite: [null, [Validators.required]],
@@ -62,13 +70,14 @@ export class ConfigGeneraleComponent implements OnInit {
       anneeBasculeMois: [null, [Validators.required, Validators.min(1), Validators.max(12)]],
       autoriserConventionsOrphelines: [null, [Validators.required]],
       typeCentre: [null, [Validators.required]],
-      autoriserEtudiantAModifierEntreprise: [null, [Validators.required]],
       autoriserValidationAutoOrgaAccCreaEtu: [null, [Validators.required]],
       utiliserMailPersoEtudiant: [null, [Validators.required]],
       autoriserElementPedagogiqueFacultatif: [null, [Validators.required]],
       validationPedagogiqueLibelle: [null, [Validators.required]],
       validationAdministrativeLibelle: [null, [Validators.required]],
       codeCesure: [null],
+      autoriserEtudiantACreerEntrepriseFrance: [null],
+      autoriserEtudiantACreerEntrepriseHorsFrance: [null],
     });
 
     this.formTheme = this.fb.group({
@@ -82,9 +91,18 @@ export class ConfigGeneraleComponent implements OnInit {
       warningColor: [null, [Validators.required]],
       successColor: [null, [Validators.required]],
     });
+
+    this.formSignature = this.fb.group({
+      supprimerConventionUneFoisSigneEsupSignature: [null, [Validators.required]],
+      autoriserModifOrdreSignataireCG:[null,[Validators.required]]
+    });
   }
 
   ngOnInit(): void {
+    this.roleService.getDroitsRole("ETU","ORGA_ACC").subscribe((res: any)=>{
+      this.isEtuAutoriseToCreate = res.creation;
+    })
+
     if (!this.canEdit()) {
       this.formGenerale.disable();
       this.formTheme.disable();
@@ -108,6 +126,11 @@ export class ConfigGeneraleComponent implements OnInit {
       this.setFormThemeValue();
     });
 
+    // Récupération de la configuration de la signature
+    this.configService.getConfigSignature().subscribe((response: any) => {
+      this.configSignature = response;
+      this.formSignature.patchValue(this.configSignature);
+    });
   }
 
   setFormThemeValue(): void {
@@ -191,6 +214,15 @@ export class ConfigGeneraleComponent implements OnInit {
       this.faviconFile = undefined;
       return;
     }
+  }
+
+  saveSignature(): void {
+    this.configSignature = this.formSignature.value;
+    this.configService.updateConfigSignature(this.configSignature).subscribe((response: any) => {
+      this.configSignature = response;
+      this.messageService.setSuccess('Configuration de la signature modifiée');
+      this.formSignature.patchValue(this.configSignature);
+    });
   }
 
 }

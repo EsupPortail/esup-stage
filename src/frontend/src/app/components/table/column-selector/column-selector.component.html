@@ -1,0 +1,103 @@
+<div class="modal-overlay">
+  <div class="modal-container">
+    <div class="header-banner">
+      <h1>Exporter</h1>
+    </div>
+
+    <div class="column-selector-dialog">
+      <h2>Colonnes à exporter</h2>
+
+      <mat-tab-group *ngIf="hasMultipleSheets" [(selectedIndex)]="selectedSheetIndex">
+        <mat-tab *ngFor="let sheet of sheets; let i = index" [label]="sheet.title"></mat-tab>
+      </mat-tab-group>
+
+      <div class="column-selector-scrollable">
+        <div class="column-selector-container">
+          <!-- LISTE DISPONIBLES -->
+          <div class="column-list"
+               cdkDropList
+               #availableList="cdkDropList"
+               [cdkDropListData]="currentSheet.availableColumns"
+               [cdkDropListConnectedTo]="[selectedList]"
+               (cdkDropListDropped)="drop($event, currentSheet)">
+            <div class="list-header">
+              <h3 class="list-title">
+                <mat-checkbox
+                  [checked]="isAllAvailableSelected(currentSheet)"
+                  (change)="toggleAllAvailable($event.checked, currentSheet)"
+                  matTooltip="Sélectionner/Désélectionner tout">
+                </mat-checkbox>
+                Colonnes disponibles
+              </h3>
+            </div>
+
+            <div class="list">
+              <div class="list-item"
+                   *ngFor="let col of currentSheet?.availableColumns; trackBy: trackByKey"                   cdkDrag
+                   [cdkDragData]="col"
+                   [class.selected]="selectedAvailableKeys.has(col.key)"
+                   (click)="toggleAvailable(col)">
+                {{ col.title }}
+              </div>
+            </div>
+          </div>
+
+          <!-- ACTIONS entre listes -->
+          <div class="column-actions">
+            <button mat-icon-button
+                    (click)="addSelected(currentSheet)"
+                    [disabled]="!selectedAvailableKeys.size"
+                    matTooltip="ajouter les colonnes sélectionnées">
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+            <button mat-icon-button
+                    (click)="removeSelected(currentSheet)"
+                    [disabled]="!selectedChosenKeys.size"
+                    matTooltip="Retirer les colonnes sélectionnées">
+              <mat-icon>arrow_back</mat-icon>
+            </button>
+          </div>
+
+          <!-- LISTE SÉLECTIONNÉES -->
+          <div class="column-list"
+               cdkDropList
+               #selectedList="cdkDropList"
+               [cdkDropListData]="currentSheet.selectedColumns"
+               [cdkDropListConnectedTo]="[availableList]"
+               (cdkDropListDropped)="drop($event, currentSheet)">
+            <div class="list-header">
+              <h3 class="list-title">
+                <mat-checkbox
+                  [checked]="isAllChosenSelected(currentSheet)"
+                  (change)="toggleAllChosen($event.checked, currentSheet)"
+                  matTooltip="Sélectionner/Désélectionner tout">
+                </mat-checkbox>
+                Colonnes sélectionnées
+              </h3>
+            </div>
+
+            <div class="list">
+              <div class="list-item"
+                   *ngFor="let col of currentSheet.selectedColumns"
+                   cdkDrag
+                   [cdkDragData]="col"
+                   [class.selected]="selectedChosenKeys.has(col.key)"
+                   (click)="toggleChosen(col)">
+                {{ col.title }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="reset-btn">
+        <button mat-stroked-button color="warn" (click)="reset(currentSheet)">Réinitialiser</button>
+      </div>
+
+      <div class="actions">
+        <button mat-flat-button color="warn" (click)="cancel()">Annuler</button>
+        <button mat-flat-button color="primary" (click)="confirm()">Valider</button>
+      </div>
+    </div>
+  </div>
+</div>

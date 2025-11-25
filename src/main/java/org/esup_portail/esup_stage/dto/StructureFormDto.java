@@ -4,8 +4,10 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
 import org.hibernate.validator.constraints.URL;
 
+@Data
 public class StructureFormDto {
 
     @Size(max = 20)
@@ -24,8 +26,6 @@ public class StructureFormDto {
 
     private String activitePrincipale;
 
-    @NotNull
-    @NotEmpty
     @Size(max = 20)
     private String telephone;
 
@@ -72,147 +72,4 @@ public class StructureFormDto {
     @Size(max = 20)
     private String numeroRNE;
 
-    public String getLibCedex() {
-        return libCedex;
-    }
-
-    public void setLibCedex(String libCedex) {
-        this.libCedex = libCedex;
-    }
-
-    public String getNumeroSiret() {
-        return numeroSiret;
-    }
-
-    public void setNumeroSiret(String numeroSiret) {
-        this.numeroSiret = numeroSiret;
-    }
-
-    public String getCodeNafN5() {
-        return codeNafN5;
-    }
-
-    public void setCodeNafN5(String codeNafN5) {
-        this.codeNafN5 = codeNafN5;
-    }
-
-    public String getRaisonSociale() {
-        return raisonSociale;
-    }
-
-    public void setRaisonSociale(String raisonSociale) {
-        this.raisonSociale = raisonSociale;
-    }
-
-    public String getActivitePrincipale() {
-        return activitePrincipale;
-    }
-
-    public void setActivitePrincipale(String activitePrincipale) {
-        this.activitePrincipale = activitePrincipale;
-    }
-
-    public String getTelephone() {
-        return telephone;
-    }
-
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
-    }
-
-    public String getFax() {
-        return fax;
-    }
-
-    public void setFax(String fax) {
-        this.fax = fax;
-    }
-
-    public String getMail() {
-        return mail;
-    }
-
-    public void setMail(String mail) {
-        this.mail = mail;
-    }
-
-    public String getSiteWeb() {
-        return siteWeb;
-    }
-
-    public void setSiteWeb(String siteWeb) {
-        this.siteWeb = siteWeb;
-    }
-
-    public int getIdEffectif() {
-        return idEffectif;
-    }
-
-    public void setIdEffectif(int idEffectif) {
-        this.idEffectif = idEffectif;
-    }
-
-    public int getIdStatutJuridique() {
-        return idStatutJuridique;
-    }
-
-    public void setIdStatutJuridique(int idStatutJuridique) {
-        this.idStatutJuridique = idStatutJuridique;
-    }
-
-    public int getIdTypeStructure() {
-        return idTypeStructure;
-    }
-
-    public void setIdTypeStructure(int idTypeStructure) {
-        this.idTypeStructure = idTypeStructure;
-    }
-
-    public String getBatimentResidence() {
-        return batimentResidence;
-    }
-
-    public void setBatimentResidence(String batimentResidence) {
-        this.batimentResidence = batimentResidence;
-    }
-
-    public String getVoie() {
-        return voie;
-    }
-
-    public void setVoie(String voie) {
-        this.voie = voie;
-    }
-
-    public String getCommune() {
-        return commune;
-    }
-
-    public void setCommune(String commune) {
-        this.commune = commune;
-    }
-
-    public String getCodePostal() {
-        return codePostal;
-    }
-
-    public void setCodePostal(String codePostal) {
-        this.codePostal = codePostal;
-    }
-
-    public int getIdPays() {
-        return idPays;
-    }
-
-    public void setIdPays(int idPays) {
-        this.idPays = idPays;
-    }
-
-    public String getNumeroRNE() {
-        return numeroRNE;
-    }
-
-    public void setNumeroRNE(String numeroRNE) {
-        this.numeroRNE = numeroRNE;
-    }
 }

@@ -16,4 +16,8 @@ public interface NafN5JpaRepository extends JpaRepository<NafN5, String> {
     NafN5 findByLibelle(@Param("lib") String lib);
 
     List<NafN5> findAll();
+
+    @Query("select n5.code from NafN5 n5 where n5.nafN1.code in :codes")
+    List<String> findAllCodesByNafN1Codes(@Param("codes") List<String> codes);
+
 }

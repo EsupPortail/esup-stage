@@ -4,13 +4,13 @@
   <div class="row">
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Raison sociale</mat-label>
-      <input matInput formControlName="raisonSociale" required />
+      <input matInput formControlName="raisonSociale" [disabled]="isFieldDisabled()" required />
       <mat-icon matSuffix class="icon-help" matTooltip="Nom de l'organisme">help</mat-icon>
       <mat-error *ngIf="form.get('raisonSociale')"></mat-error>
     </mat-form-field>
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill" [hidden]="!isFr()">
       <mat-label>Numéro Siret</mat-label>
-      <input matInput formControlName="numeroSiret" [required]="numeroSiretRequired() && isFr()" />
+      <input matInput formControlName="numeroSiret" [disabled]="isFieldDisabled()" [required]="numeroSiretRequired() && isFr()" />
       <mat-icon matSuffix class="icon-help" matTooltip="Code INSEE à demander à votre établissement d'accueil ou consultable sur des sites de référencement d'entreprises. Correspond à l'identifiant géographique de l'établissement. (format : 14 chiffres consécutifs sans espace - ex: 12345678912345)">help</mat-icon>
       <mat-error *ngIf="form.get('numeroSiret')"></mat-error>
     </mat-form-field>
@@ -18,7 +18,7 @@
   <div class="row">
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Effectif</mat-label>
-      <mat-select formControlName="idEffectif" required>
+      <mat-select formControlName="idEffectif">
         <mat-option *ngFor="let effectif of effectifs" [value]="effectif.id">{{effectif.libelle}}</mat-option>
       </mat-select>
       <mat-error *ngIf="form.get('idEffectif')"></mat-error>
@@ -111,12 +111,37 @@
       <mat-label>Libellé Cedex ou Localité de destination</mat-label>
       <input matInput formControlName="libCedex" />
     </mat-form-field>
-    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill" subscriptSizing="dynamic">
       <mat-label>Pays</mat-label>
-      <mat-select formControlName="idPays" required>
-        <mat-option *ngFor="let country of countries" [value]="country.id">{{country.libelle}}</mat-option>
+      <mat-select formControlName="idPays" [disabled]="isFieldDisabled()" required>
+        <!-- Barre de recherche -->
+        <mat-option>
+          <ngx-mat-select-search
+            [formControl]="paysFilterCtrl"
+            [placeholderLabel]="'Rechercher…'"
+            [noEntriesFoundLabel]="'Aucun pays trouvé'">
+          </ngx-mat-select-search>
+        </mat-option>
+        <!-- Options filtrées -->
+        <mat-option
+          *ngFor="let country of filteredCountries | async"
+          [value]="country.id"
+          [matTooltip]="country.libelle">
+          {{ country.libelle || 'Valeur indisponible' }}
+        </mat-option>
       </mat-select>
-      <mat-error *ngIf="form.get('idPays')"></mat-error>
+      <!-- Gestion des erreurs -->
+      <mat-error *ngIf="form.get('idPays')?.hasError('required') && form.get('idPays')?.touched">
+        Le pays est obligatoire.
+      </mat-error>
+      <!-- hint absent -> correction visuel -->
+      <mat-hint
+        *ngIf="filterTypeContries === 0">
+      </mat-hint>
+      <!-- Hint pour les pays hors France -->
+      <mat-hint *ngIf="filterTypeContries === 1" class="hint-expandable">{{('MESSAGE_HINT_PAYS_ETABLISSEMENT_CREATION_HORS_FRANCE' | contenu)}}</mat-hint>
+      <!-- Hint pour la France uniquement -->
+      <mat-hint *ngIf="filterTypeContries === 2" class="hint-expandable">{{('MESSAGE_HINT_PAYS_ETABLISSEMENT_CREATION_FRANCE_UNIQUEMENT' | contenu)}}</mat-hint>
     </mat-form-field>
   </div>
   <div class="row">
@@ -159,12 +184,39 @@
       <input matInput formControlName="fax" />
     </mat-form-field>
   </div>
-  <div class="row mt-3">
-    <div class="col-6">
-      <button type="button" mat-button mat-stroked-button color="warn" *ngIf="etab.id" (click)="cancelEdit()">{{'BOUTON_ANNULER'|contenu}}</button>
+  <div class="actions-row mt-3">
+    <!-- Annuler (gauche) -->
+    <div class="slot left">
+      <button type="button"
+              mat-button
+              mat-stroked-button
+              color="warn"
+              *ngIf="etab.id"
+              (click)="cancelEdit()">
+        {{'BOUTON_ANNULER'|contenu}}
+      </button>
     </div>
-    <div class="col-6 text-right">
-      <button mat-button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
+
+    <!-- Mise à jour (centre) -->
+    <div class="slot center" *ngIf="isSireneActive && etab?.id && canEdit()">
+      <button type="button"
+              mat-button
+              mat-stroked-button
+              color="primary"
+              class="mr-2"
+              [disabled]="autoUpdating"
+              (click)="autoUpdateFromApi()"
+              matTooltip="Met à jour automatiquement les informations de l'établissement via l'API">
+        <mat-icon class="mr-1" [class.spin]="autoUpdating">autorenew</mat-icon>
+        {{ autoUpdating ? 'Mise à jour…' : 'Mise à jour automatique' }}
+      </button>
+    </div>
+
+    <!-- Valider (droite) -->
+    <div class="slot right">
+      <button mat-button mat-flat-button color="primary" type="submit">
+        {{'BOUTON_VALIDER'|contenu}}
+      </button>
     </div>
   </div>
 </form>

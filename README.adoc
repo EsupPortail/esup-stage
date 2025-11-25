@@ -51,6 +51,22 @@ zcat /opt/estage/mysql-pstage-2022-01-25-16h00.sql.gz | mysql -u esupstage_user 
 cat /opt/estage/src/main/resources/db/changelog/init-changelog.sql | mysql -u esupstage_user -p estage
 ----
 
+Par la suite, dans le application.properties, devrez renseigner le paramètre suivant :
+
+[source,properties]
+----
+appli.datasource.context=legacy
+----
+
+=== Base données sans import de pStage
+
+Si vous n'avez pas de base pStage à importer, vous devrez renseigner le paramètre suivant dans le application.properties pour créer une nouvelle base de données vide :
+
+[source,properties]
+----
+appli.datasource.context=baseline
+----
+
 == Clonage du projet
 
 [source,shell]
@@ -78,6 +94,8 @@ cp /opt/esup-stage/application-example.properties /etc/estage/application.proper
 ** `cas.url.login` : devient *optionnel* et ne peut maintenant contenir que le path de connexion :  `/login` (saisie de l'url entière toujours possible)
 ** `cas.url.logout` : devient *optionnel* et ne peut maintenant contenir que le path de déconnexion :  `/logout` (saisie de l'url entière toujours possible)
 ** `appli.localapi` : devient *optionnel*, sera utilisé en remplacement de `appli.url` lors des appels api sur elle-même (cas d'un reverse proxy par exemple)
+* *Ajout d'une nouvelle propriété*
+** Ajout de la propriété `appli.datasource.context` à partir de la *version 3.1.0*, qui permet de choisir entre la création d'une nouvelle base de données vide ou la reprise d'une base de données existante (comme avant l'introduction de ce paramètre). Cette propriété doit *obligatoirement* être renseignée.
 
 
 [source,properties]
@@ -93,6 +111,13 @@ appli.datasource.url=jdbc:mariadb://monserversql.monuniv.fr:3306/estage
 appli.datasource.username=estage
 appli.datasource.password=xxx
 appli.datasource.driver=org.mariadb.jdbc.Driver
+# =============================== IMPORTANT ==================================
+# Contexte de la base de donnees
+# * Pour utiliser une nouvelle base de donnees, utiliser le contexte "baseline"
+# * Pour utiliser une base de donnees existante, utiliser le contexte "legacy"
+# Une fois le contexte choisi, il ne faut pas le changer
+# ============================================================================
+appli.datasource.context=baseline
 
 # url de l'application utilisée pour envoyer des liens par mail
 appli.url=http://esupstage.monuniv.fr:8080/frontend/#/

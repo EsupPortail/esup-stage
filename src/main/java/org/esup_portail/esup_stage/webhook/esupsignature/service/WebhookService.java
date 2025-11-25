@@ -1,17 +1,20 @@
 package org.esup_portail.esup_stage.webhook.esupsignature.service;
 
 import com.itextpdf.commons.utils.Base64;
+import jakarta.validation.constraints.NotNull;
+import lombok.extern.slf4j.Slf4j;
 import org.esup_portail.esup_stage.config.properties.SignatureProperties;
 import org.esup_portail.esup_stage.dto.MetadataDto;
+import org.esup_portail.esup_stage.dto.MetadataObservateurDto;
+import org.esup_portail.esup_stage.dto.MetadataSignataireDto;
 import org.esup_portail.esup_stage.dto.PdfMetadataDto;
+import org.esup_portail.esup_stage.enums.SignataireEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.CentreGestionSignataire;
 import org.esup_portail.esup_stage.model.Convention;
 import org.esup_portail.esup_stage.service.signature.model.Historique;
-import org.esup_portail.esup_stage.webhook.esupsignature.service.model.AuditStep;
-import org.esup_portail.esup_stage.webhook.esupsignature.service.model.AuditTrail;
-import org.esup_portail.esup_stage.webhook.esupsignature.service.model.Recipient;
-import org.esup_portail.esup_stage.webhook.esupsignature.service.model.WorkflowStep;
+import org.esup_portail.esup_stage.webhook.esupsignature.service.model.*;
+import org.esup_portail.esup_stage.webhook.esupsignature.service.model.Steps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,14 +34,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class WebhookService {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebhookService.class);
     private final WebClient webClient;
     @Autowired
     SignatureProperties signatureProperties;
+
+    private final Logger logger = LoggerFactory.getLogger(WebhookService.class);
 
     public WebhookService(WebClient.Builder builder) {
         this.webClient = builder.build();
@@ -56,6 +63,7 @@ public class WebhookService {
     }
 
     public String upload(PdfMetadataDto content) {
+        logger.debug("Upload dans esup-signature de la convention ou de l'avenant : {}",content.getMetadata().getTitle());
         MetadataDto metadataDto = content.getMetadata();
         List<String> recipients = metadataDto.getSignatory().stream().map(s -> s.getOrder() + "*" + s.getMail()).collect(Collectors.toList());
         List<WorkflowStep> workflowSteps = new ArrayList<>();
@@ -75,6 +83,18 @@ public class WebhookService {
             step.getRecipients().add(recipient);
         });
 
+        logger.debug(" - WorkflowId : {} ", content.getMetadata().getWorkflowId());
+        logger.debug(" - Pdf : {} ", content.getPdf64() != null);
+        logger.debug(" - Titre : {} ", metadataDto.getTitle());
+        logger.debug(" - Entreprise : {} ", metadataDto.getCompanyname());
+        logger.debug(" - Etablissement : {} ", metadataDto.getSchool());
+        logger.debug(" - WorkflowId : {} ", metadataDto.getWorkflowId());
+        logger.debug(" - Observateurs : {} ", metadataDto.getWatchers() != null ? metadataDto.getWatchers().stream().map(MetadataObservateurDto::getMail).collect(Collectors.joining(",")) : "0");
+        logger.debug(" - Signataires : {} ",metadataDto.getSignatory() != null ? metadataDto.getSignatory().stream().map(MetadataSignataireDto::getMail).collect(Collectors.joining(",")) : "0");
+        logger.debug("Ordre : ");
+        for(WorkflowStep step : workflowSteps) {
+            logger.debug(" - Step {} : {}", step.getStepNumber(), step.getRecipients().stream().map(Recipient::getEmail).collect(Collectors.joining(",")));
+        }
 
         MultipartBodyBuilder builder = new MultipartBodyBuilder();
         builder.part("multipartFiles", geMultipartFile(metadataDto.getTitle(), Base64.decode(content.getPdf64())));
@@ -82,13 +102,16 @@ public class WebhookService {
         builder.part("recipientsEmails", String.join(",", recipients));
         builder.part("stepsJsonString", workflowSteps);
 
-        return webClient.post()
+        String result = webClient.post()
                 .uri(signatureProperties.getEsupsignature().getUri() + "/workflows/" + metadataDto.getWorkflowId() + "/new")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
+
+        logger.debug(" - Retour de l'application de signature : {} ", result);
+         return result;
     }
 
     public List<Historique> getHistorique(String documentId, Convention convention) {
@@ -133,4 +156,50 @@ public class WebhookService {
                 })
                 .block();
     }
+
+    public List<Historique> getHistoriqueStatus(String documentId, Convention convention) {
+        List<Historique> historiques = new ArrayList<>();
+
+        if(documentId == null || documentId.equals("null")){
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR,"Erreur lors de la mise jour des informations de signature : identifiant du document non trouvé");
+        }
+
+        List<Steps> steps = Objects.requireNonNull(webClient.get()
+                .uri(signatureProperties.getEsupsignature().getUri() + "/signrequests/" + documentId + "/steps")
+                .retrieve()
+                .bodyToFlux(Steps.class)
+                .collectList()
+                .block());
+
+        if (steps != null) {
+            List<CentreGestionSignataire> signataires = convention.getCentreGestion().getSignataires();
+            for (int ordre = 1; ordre <= steps.size(); ++ordre) {
+                Steps step = steps.get(ordre - 1);
+                int finalOrdre = ordre;
+                CentreGestionSignataire signataire = signataires.stream()
+                        .filter(s -> s.getOrdre() == finalOrdre)
+                        .findAny()
+                        .orElse(null);
+
+                for (Steps.RecipientAction recipientAction : step.getRecipientsActions()) {
+                    if ( signataire != null && Objects.equals(recipientAction.getActionType(), "signed")) {
+                        Historique historique = new Historique();
+                        historique.setDateDepot(
+                                recipientAction.getActionDate() != null ? recipientAction.getActionDate() : null
+                        );
+                        historique.setDateSignature(
+                                recipientAction.getActionDate() != null ? recipientAction.getActionDate() : null
+                        );
+                        historique.setTypeSignataire(signataire.getId().getSignataire());
+                        if (historique.getDateDepot() != null && historique.getDateSignature() != null && historique.getTypeSignataire() != null) {
+                            historiques.add(historique);
+                        }
+                    }
+                }
+            }
+        }
+
+        return historiques;
+    }
+
 }

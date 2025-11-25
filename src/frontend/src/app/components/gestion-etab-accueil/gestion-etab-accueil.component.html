@@ -1,5 +1,18 @@
 <mat-tab-group #tabs (selectedTabChange)="tabChanged($event)">
   <mat-tab label="Liste">
+    <div class="sirene-info-box" *ngIf="isSireneAcitve">
+      <div class="sirene-info-title">
+        <mat-icon color="info">info</mat-icon>
+        <span class="m-2">La recherche via l’API Sirene est déclenchée uniquement si :</span>
+      </div>
+      <div class="sirene-info-details">
+        <ul>
+          <li>au moins <strong>2 champs de filtre</strong> sont remplis</li>
+          <li>le nombre de résultats est <strong>inférieur à {{nbMinResultats}}</strong></li>
+          <li>ou une <strong>recherche directe par SIRET</strong> est effectuée</li>
+        </ul>
+      </div>
+    </div>
     <app-table [service]="structureService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters" [exportColumns]="exportColumns"
                matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'"
                (matSortChange)="appTable ? appTable.sorting($event) : null" [noResultText]="'Aucun établissement trouvé'">
@@ -36,9 +49,15 @@
         <td mat-cell *matCellDef="let row">{{row.statutJuridique ? row.statutJuridique.libelle : ''}}</td>
       </ng-container>
       <ng-container matColumnDef="action">
-        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <th mat-header-cell *matHeaderCellDef >Actions</th>
         <td mat-cell *matCellDef="let row">
-          <button mat-icon-button matTooltip="Éditer" *ngIf="canEdit()" (click)="edit(row)" color="primary"><i class="fa fa-pen"></i></button>
+          <div class="row" *ngIf="!isFromSirene(row)">
+            <button mat-icon-button matTooltip="Éditer" *ngIf="canEdit()" (click)="edit(row)" color="primary"><i class="fa fa-pen"></i></button>
+            <button mat-icon-button matTooltip="Supprimer" *ngIf="canDelete()" (click)="delete(row)" color="warn"><i class="fa fa-trash-alt"></i></button>
+          </div>
+          <div class="row" *ngIf="isFromSirene(row)">
+            <button mat-icon-button matTooltip="Créer" *ngIf="canCreate()" (click)="create(row)" color="primary"><i class="fa fa-plus"></i></button>
+          </div>
         </td>
       </ng-container>
     </app-table>
@@ -52,14 +71,15 @@
       <mat-expansion-panel *ngIf="data.id">
         <mat-expansion-panel-header>Contacts</mat-expansion-panel-header>
         <div class="row mt-3">
-          <mat-form-field class="col-md-12" appearance="fill" *ngIf="services.length > 0">
-            <mat-label>Sélectionnez un service :</mat-label>
-            <mat-select [(value)]="service" (selectionChange)="selectService()">
+          <mat-form-field class="col-md-12" appearance="fill">
+            <mat-label *ngIf="services.length > 0">Sélectionnez un service existant :</mat-label>
+            <mat-label *ngIf="services.length == 0">Aucun service existant</mat-label>
+            <mat-select [(value)]="service" (selectionChange)="selectService()" [disabled]="services.length == 0">
               <mat-option *ngFor="let service of services" [value]="service">{{service.nom}}</mat-option>
             </mat-select>
           </mat-form-field>
           <div class="col-md-12 mb-3">
-            <button mat-flat-button (click)="createService()" color="primary">Créer un nouveau service d'accueil</button>
+            <button mat-flat-button *ngIf="canCreateServiceOrContact()" (click)="createService()" color="primary">Créer un nouveau service d'accueil</button>
           </div>
         </div>
         <div class="row mt-3" *ngIf="service">
@@ -172,17 +192,69 @@
           </div>
         </div>
       </mat-expansion-panel>
+      <mat-expansion-panel (opened)="loadHistorique()" *ngIf="data.id">
+        <mat-expansion-panel-header>Historique</mat-expansion-panel-header>
+        <div class="row mt-3">
+          <div class="col-md-12" *ngIf="historique.length === 0">
+            <p>Aucun historique disponible.</p>
+          </div>
+          <div class="col-md-12" *ngIf="historique.length > 0">
+            <table mat-table [dataSource]="historique">
+              <ng-container matColumnDef="date">
+                <th mat-header-cell *matHeaderCellDef>Date</th>
+                <td mat-cell *matCellDef="let row">{{row.operationDate | date:'dd/MM/yyyy HH:mm:ss'}}</td>              </ng-container>
+
+              <ng-container matColumnDef="utilisateur">
+                <th mat-header-cell *matHeaderCellDef>Utilisateur</th>
+                <td mat-cell *matCellDef="let row">{{row.utilisateur.nom}} {{row.utilisateur.prenom}}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="type">
+                <th mat-header-cell *matHeaderCellDef>Type</th>
+                <td mat-cell *matCellDef="let row">{{row.operationType}}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="action">
+                <th mat-header-cell *matHeaderCellDef>Action</th>
+                <td mat-cell *matCellDef="let row">
+                  <button type="button" mat-icon-button matTooltip="Visualiser"
+                          matTooltipPosition="left" color="primary"
+                          (click)="openHistoriqueDetails(row)">
+                    <i class="fa fa-eye"></i>
+                  </button>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="historiqueTableColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: historiqueTableColumns;"></tr>
+            </table>
+          </div>
+        </div>
+      </mat-expansion-panel>
     </mat-accordion>
   </mat-tab>
   <mat-tab label="Import">
     <mat-card>
       <mat-card-content>
         <div class="mb-3">
-          <div class="text-title">Import des établissements d'enseignement</div>
+          <div class="text-title">Import d'établissements d'accueil</div>
           <mat-divider class="mb-3"></mat-divider>
+          <div class="import-info-box">
+            <div class="icon-block">
+              <mat-icon color="info">info</mat-icon>
+            </div>
+            <div class="text-block">
+              <span>Le séparateur attendu est ';'.</span>
+              <span>L’en-tête du fichier doit respecter le format suivant : NumeroRNE; RaisonSociale; NumeroSiret; ActivitePrincipale; CodeAPE; Voie; CodePostal; Commune; Telephone; Fax; SiteWeb; Mail; TypeStructure; StatutJuridique; Effectif; Pays.</span>
+              <span>Les colonnes obligatoires sont : NuméroRNE ou NumeroSiret, RaisonSociale, ActivitePrincipale ou CodeAPE, et StatutJuridique.</span>
+              <span>L’en-tête est attendue dans la première ligne du fichier.</span>
+            </div>
+          </div>
           <div class="mb-2">
-            <button mat-flat-button style="margin-right:5px" color="primary" (click)="importer.click()">importer depuis un fichier csv</button>
-            <input #importer hidden type="file" name="file" accept="text/csv" (change)="importCsv($event)">
+            <button mat-flat-button style="margin-right:5px" color="primary" (click)="importer.click()">
+              Importer depuis un fichier csv
+            </button>
+            <input #importer hidden type="file" name="file" accept="text/csv"   (click)="importer.value = ''" (change)="importCsv($event)">
           </div>
         </div>
       </mat-card-content>

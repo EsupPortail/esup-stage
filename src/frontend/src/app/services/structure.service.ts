@@ -50,4 +50,28 @@ export class StructureService implements PaginatedService, AutocompleteService {
     return `${row.id} - ${row.raisonSociale}`;
   }
 
+  getOrCreate(data: any): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/structures/getOrCreate`, data);
+  }
+
+  delete(id: number): Observable<any> {
+    return this.http.delete(`${environment.apiUrl}/structures/${id}`);
+  }
+
+  //getHistorique(id: number): Observable<any> {
+  //  return this.http.get(`${environment.apiUrl}/structures/${id}/historique`);
+  //}
+
+  getHistorique(id: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/historique_structures/structures/${id}`);
+  }
+
+  getSireneInfo(): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/structures/sirene`);
+  }
+
+  updateFromSirene(id:number): Observable<any>{
+    return this.http.patch(`${environment.apiUrl}/structures/${id}/sirene`,{});
+  }
+
 }

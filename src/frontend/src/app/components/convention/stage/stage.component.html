@@ -32,22 +32,62 @@
             <textarea matInput formControlName="sujetStage" [required]="!enMasse"></textarea>
             <mat-error><app-form-error [field]="form.get('sujetStage')"></app-form-error></mat-error>
           </mat-form-field>
+
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Compétences</mat-label>
-            <textarea matInput formControlName="competences" [required]="!enMasse"></textarea>
-            <mat-error><app-form-error [field]="form.get('competences')"></app-form-error></mat-error>
+            <textarea
+              matInput
+              formControlName="competences"
+              maxlength="{{ MAX.competences }}"
+              [required]="!enMasse"
+              (focus)="focused = 'competences'"
+              (blur)="focused = focused === 'competences' ? null : focused"
+            ></textarea>
+
+            <mat-error *ngIf="hasError('competences')">
+              <app-form-error [field]="form.get('competences')"></app-form-error>
+            </mat-error>
+
+            <mat-hint
+              align="end"
+              *ngIf="!hasError('competences') && focused === 'competences'"
+              [ngStyle]="{ color: counterColor('competences') }"
+            >
+              {{ len('competences') }}/{{ MAX.competences }}
+            </mat-hint>
           </mat-form-field>
+
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Fonctions et tâches</mat-label>
-            <textarea matInput formControlName="fonctionsEtTaches" [required]="!enMasse"></textarea>
-            <mat-error><app-form-error [field]="form.get('fonctionsEtTaches')"></app-form-error></mat-error>
+            <textarea
+              matInput
+              formControlName="fonctionsEtTaches"
+              maxlength="{{ MAX.fonctionsEtTaches }}"
+              [required]="!enMasse"
+              (focus)="focused = 'fonctionsEtTaches'"
+              (blur)="focused = focused === 'fonctionsEtTaches' ? null : focused"
+            ></textarea>
+
+            <mat-error *ngIf="hasError('fonctionsEtTaches')">
+              <app-form-error [field]="form.get('fonctionsEtTaches')"></app-form-error>
+            </mat-error>
+
+            <mat-hint
+              align="end"
+              *ngIf="!hasError('fonctionsEtTaches') && focused === 'fonctionsEtTaches'"
+              [ngStyle]="{ color: counterColor('fonctionsEtTaches') }"
+            >
+              {{ len('fonctionsEtTaches') }}/{{ MAX.fonctionsEtTaches }}
+            </mat-hint>
           </mat-form-field>
+
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Détails</mat-label>
             <textarea matInput formControlName="details"></textarea>
             <mat-error><app-form-error [field]="form.get('sujet')"></app-form-error></mat-error>
           </mat-form-field>
         </div>
+
 
         <div class="text-title">Dates / horaires</div>
         <mat-divider class="mb-2"></mat-divider>
@@ -130,18 +170,68 @@
             <mat-error><app-form-error [field]="form.get('nbConges')"></app-form-error></mat-error>
           </mat-form-field>
         </div>
-        <div class="row" *ngIf="!form.value.horairesReguliers && modifiable">
+        <div class="row" *ngIf="!form.value.horairesReguliers">
           <div class="col-6 mb-3">
             <button mat-button mat-flat-button type="button" color="primary" (click)="openCalendar()">Calcul du nombre d'heures de stages</button>
+            <mat-error *ngIf="periodesCalculHeuresStage.length === 0">Veuillez définir au moins une période de travail</mat-error>
+          </div>
+          <div class="col-md-12 mb-3" *ngIf="periodesCalculHeuresStage.length > 0">
+            <div class="text-title">Périodes de travail actuelles :</div>
+            <div class="scrollable-content">
+              <div class="detail-section">
+                <table class="table">
+                  <thead>
+                  <tr class="header-row">
+                    <th class="table-header">Date de début</th>
+                    <th class="table-header">Date de fin</th>
+                    <th class="table-header">Heures par jour</th>
+                    <th class="table-header">Actions</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr *ngFor="let periode of periodesCalculHeuresStage; let i = index" class="detail-row">
+                    <td class="detail-value">{{periode.dateDebut | date:'dd/MM/yyyy'}}</td>
+                    <td class="detail-value">{{periode.dateFin | date:'dd/MM/yyyy'}}</td>
+                    <td class="detail-value">{{periode.nbHeuresJournalieres}}</td>
+                    <td class="detail-value">
+                      <div class="actions-container">
+                        <button mat-icon-button matTooltip="Éditer" (click)="openCalendar()" color="primary" *ngIf="modifiable">
+                          <i class="fa fa-pen"></i>
+                        </button>
+                        <button mat-icon-button matTooltip="Supprimer" (click)="deletePeriodeStage(i)" class="delete-button" *ngIf="modifiable">
+                          <i class="fa fa-trash-alt"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="row" style="align-items: baseline">
-          <mat-form-field class="col-6 mb-2" appearance="fill">
+        <div class="form-row row align-items-start">
+          <mat-form-field class="duree-field col-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Durée effective du stage en nombre d'heures</mat-label>
             <input type="number" step="any" matInput formControlName="dureeExceptionnelle" required />
-            <mat-error><app-form-error [field]="form.get('dureeExceptionnelle')"></app-form-error></mat-error>
+            <mat-error>
+              <app-form-error [field]="form.get('dureeExceptionnelle')"></app-form-error>
+            </mat-error>
           </mat-form-field>
-          <mat-label *ngIf="!updatingPeriode && !enMasse">{{convention.dureeExceptionnellePeriode}}</mat-label>
+          <div class="periode-wrapper col-12 col-md-6 mb-2" *ngIf="!updatingPeriode && !enMasse">
+            <mat-form-field class="periode-field" appearance="fill">
+              <mat-label>Mois</mat-label>
+              <input type="number" matInput formControlName="periodeStageMois" />
+            </mat-form-field>
+            <mat-form-field class="periode-field" appearance="fill">
+              <mat-label>Jour(s)</mat-label>
+              <input type="number" matInput formControlName="periodeStageJours" />
+            </mat-form-field>
+            <mat-form-field class="periode-field" appearance="fill">
+              <mat-label>Heure(s)</mat-label>
+              <input type="number" matInput formControlName="periodeStageHeures" />
+            </mat-form-field>
+          </div>
         </div>
         <div class="row">
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
@@ -156,6 +246,7 @@
             <textarea matInput formControlName="commentaireDureeTravail"></textarea>
             <mat-error><app-form-error [field]="form.get('commentaireDureeTravail')"></app-form-error></mat-error>
           </mat-form-field>
+
         </div>
 
         <div class="text-title">Gratification</div>
@@ -259,12 +350,14 @@
               <textarea matInput formControlName="avantagesNature"></textarea>
               <mat-error><app-form-error [field]="form.get('avantagesNature')"></app-form-error></mat-error>
             </mat-form-field>
+
             <mat-form-field class="col-12 mb-2" appearance="fill">
               <mat-label>Travail exceptionnel</mat-label>
               <textarea matInput formControlName="travailNuitFerie"></textarea>
               <mat-hint>Si le stagiaire doit télétravailler, être présent la nuit, le dimanche ou un jour férié, préciser</mat-hint>
               <mat-error><app-form-error [field]="form.get('travailNuitFerie')"></app-form-error></mat-error>
             </mat-form-field>
+
           </div>
         </div>
 

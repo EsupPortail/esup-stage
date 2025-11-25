@@ -41,7 +41,8 @@
     <div class="row mt-3" *ngIf="signatureEnabled && validee">
       <div class="col text-right">
         <span (confirm)="controleSignatureElectronique()" [confirmMessage]="'ALERTE_SIGNATURE'|contenu">
-          <button mat-button mat-flat-button color="primary">Envoi pour signature électronique</button>
+          <button mat-button mat-flat-button color="primary" *ngIf="!convention.dateEnvoiSignature">Envoi pour signature électronique</button>
+          <button mat-button mat-flat-button color="accent" *ngIf="!!convention.dateEnvoiSignature">⚠️Écraser l'envoi précédent et renvoyer en signature électronique</button>
         </span>
       </div>
     </div>
@@ -104,4 +105,5 @@
   </mat-card-content>
 </mat-card>
 
-<div #confirmComponent (confirm)="envoiSignatureElectronique()" [confirmMessage]="confirmMessage"></div>
+<div #confirmComponent (confirm)="confirmerRenvoiSignatureElectronique()" [confirmMessage]="confirmMessage"></div>
+<div #confirmReenvoi (confirm)="envoiSignatureElectronique()" [confirmMessage]="confirmReenvoiMessage"></div>
