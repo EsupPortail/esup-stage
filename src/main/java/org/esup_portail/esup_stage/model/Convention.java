@@ -458,6 +458,11 @@ public class Convention extends ObjetMetier implements Exportable {
     public boolean isDepasseDelaiValidation() {
         CentreGestion centreGestion = getCentreGestion();
         if (centreGestion != null) {
+            Integer delaiAlerte = centreGestion.getDelaiAlerteConvention();
+            if (delaiAlerte == null) {
+                delaiAlerte = 0;
+            }
+
             Date now = new Date();
             Calendar calendarNow = Calendar.getInstance();
             calendarNow.setTime(now);
@@ -471,7 +476,7 @@ public class Convention extends ObjetMetier implements Exportable {
             if (dateDebutStage != null) {
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(dateDebutStage);
-                calendar.add(Calendar.DAY_OF_MONTH, centreGestion.getDelaiAlerteConvention() * -1);
+                calendar.add(Calendar.DAY_OF_MONTH, delaiAlerte * -1);
                 calendar.set(Calendar.HOUR_OF_DAY, 0);
                 calendar.set(Calendar.MINUTE, 0);
                 calendar.set(Calendar.SECOND, 0);
