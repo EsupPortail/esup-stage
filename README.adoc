@@ -120,7 +120,7 @@ appli.datasource.driver=org.mariadb.jdbc.Driver
 appli.datasource.context=baseline
 
 # url de l'application utilisée pour envoyer des liens par mail
-appli.url=http://esupstage.monuniv.fr:8080/frontend/#/
+appli.url=http://esupstage.monuniv.fr:8080
 
 # logins des admin technique, séparés par des ; (utilisateurs à créer au 1er lancement pour paramétrer l'application)
 appli.admin_technique=xxx;yyy
