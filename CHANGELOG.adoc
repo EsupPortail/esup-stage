@@ -1,24 +1,15 @@
 == Version stable
 https://github.com/EsupPortail/esup-stage/releases/tag/3.1.7[Esup-Stage v3.1.7]
 
-== ESUP-Stage v3.3.0 (À venir)
-=== Nouveautés
-- Permettre d'associer de 1 à n régimes d'inscription par type de convention.
-- Ajout d'un paramètre autorisant l'impression d'un avenant sous conditions (#293).
-
-=== Améliorations
-- N/A
-
-=== Corrections
-- N/A
-
 == ESUP-Stage v3.2.0 (À venir)
 === Nouveautés
-- Afficher dans les conventions le prénom, sexe d'état civil et prenom2 #309, #186, #114, #4
+- Afficher dans les conventions le prénom, sexe d'état civil et prenom2 (#309), (#186), (#114), (#4).
 - Ajout d'un filtre "Pays" dans le tableau de bord (#125).
 - Mise à jour de l'interface de sélection des établissements d'accueil, service, tuteur professionnel et signataire (#220).
 - Ajout d'un paramètre permettant d'autoriser ou non l'impression d'une convention suite à la validation d'un avenant.
-- Ajout d'un paramètre autorisant le chevauchement de dates de convention pour les étudiants (#176 #117)
+- Ajout d'un paramètre autorisant le chevauchement de dates de convention pour les étudiants (#176), (#117).
+- Création d’un délégataire pour le viseur d’un centre de gestion.
+- Création d'un bouton permettant de désactiver la synchro des données d'un établissement.
 
 === Améliorations
 - Permettre de saisir un stage d'une durée de 1 jour (#200).
@@ -28,3 +19,55 @@ https://github.com/EsupPortail/esup-stage/releases/tag/3.1.7[Esup-Stage v3.1.7]
 === Corrections
 - Correction du problème de mise à jour des signataires suite à la création d'un avenant pour changement de tuteur.
 - Correction du problème de création d'un avenant avant validation de la convention (#207).
+- Erreur lors de l'envoi du numéro de téléphone à Docaposte.
+
+== ESUP-Stage v3.3.0 (À venir)
+=== Nouveautés
+- Ajout d'un paramètre autorisant l'impression d'un avenant sous conditions (#293).
+- Création d'un paramètre permettant d'autoriser l'impression de l'avenant sous conditions (#218).
+- Intégration de la conformité au RPGD.
+- Ajouter la vérification administrative dans le filtre de recherche du tableau de bord.
+
+=== Améliorations
+- Permettre d'associer de 1 à n régimes d'inscription par type de convention.
+- Possibilité pour un admin de supprimer un établissement d'accueil via un bouton (#256).
+- Demander à l’étudiant de répondre au choix proposé par l’article 6.3.
+- Installation de l’application dans une webapp spécifique.
+- Amélioration du message d’erreur en cas d’inactivité.
+- Suppression du champ url dans centre de gestion
+- Augmentation du nombre de caractères maximum des champs mails.
+
+=== Corrections
+- Création d'un script de migration pour que legacy ait le même schéma que baseline.
+
+== ESUP-Stage v3.4.0 (À venir)
+=== Nouveautés
+- Ajout d'une liste déroulante dans le filtre Etape du tableau de bord.
+- Ajout du numéro de l’avenant dans l’intitulé du fichier.
+- Déplacement possible d'une VET d’un centre de gestion à un autre.
+- Création d'une table de nomenclature pour la gestion des CPAM.
+- Usage des X-API-Key de ESUP-Signature (#197).
+
+=== Améliorations
+- Utilisation de l’attribut target possible dans le contenu modifiable de l'application.
+- Mise à jour les informations personnelles de l’étudiant à partir d’Apogée.
+- Détection de l'absence de mail pour empêcher la création d'un étudiant en tant qu'utilisateur (#223).
+
+=== Corrections
+- N/A
+
+== ESUP-Stage v3.5.0 (À venir)
+=== Nouveautés
+- Afficher un message d’alerte pour dépassement des 924h.
+- Ajout d'une colonne "mail institutionnel" dans la gestion des utilisateurs.
+- Créer une zone de commentaire pour chaque motif d'avenant (sauf Autres).
+- Créer une variable pour le libellé cedex des établissements d'accueil.
+
+=== Améliorations
+- Utilisation de l’attribut target possible dans le contenu modifiable de l'application.
+- Mise en majuscule du nom du contact d’entreprise.
+- Déplacement du paramétrage des étapes dans un onglet dédié du centre de gestion.
+- Mieux gérer les codes postaux étrangers.
+
+=== Corrections
+- Corriger la gestion des jours fériés en cas d'interruption de stage.
