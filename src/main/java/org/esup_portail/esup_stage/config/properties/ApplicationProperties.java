@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor
 @ConfigurationProperties(prefix = "application")
 @Component
+@Deprecated
 public class ApplicationProperties {
     private String suffixUrl;
 

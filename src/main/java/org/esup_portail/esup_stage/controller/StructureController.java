@@ -443,7 +443,9 @@ public class StructureController {
         structure.setSiteWeb(structureFormDto.getSiteWeb());
         structure.setFax(structureFormDto.getFax());
         structure.setNumeroRNE(structureFormDto.getNumeroRNE());
-        structure.setVerrouillageSynchroStructureSirene(structureFormDto.getVerrouillageSynchroStructureSirene());
+        Boolean verrou = structureFormDto.getVerrouillageSynchroStructureSirene();
+        structure.setVerrouillageSynchroStructureSirene(verrou != null ? verrou : Boolean.FALSE);
+
     }
 
     @GetMapping("/sirene")

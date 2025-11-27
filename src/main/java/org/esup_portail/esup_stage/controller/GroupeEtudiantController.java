@@ -560,6 +560,7 @@ public class GroupeEtudiantController {
             typeConvention = typeCesure;
         }
         if (typeConvention == null) {
+            logger.error("Type de convention non trouvé pour le regime d'inscription : {}", regIns != null ? regIns.getCodRegIns() : "null");
             throw new AppException(HttpStatus.NO_CONTENT, "Type de convention non trouvé");
         }
         CentreGestion centreGestionEtab = conventionService.getCentreGestionEtab();
