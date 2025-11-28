@@ -73,9 +73,6 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     @Column
     private String mailViseur;
 
-    @Column
-    private String urlPageInstruction;
-
     @ManyToOne
     @JoinColumn(name = "idCentreGestionSuperViseur")
     private CentreGestionSuperviseur centreGestionSuperViseur;

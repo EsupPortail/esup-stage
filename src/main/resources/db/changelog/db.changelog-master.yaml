@@ -262,20 +262,20 @@ databaseChangeLog:
       file : 3.1.0-fix-update-signature-default-value.yaml
       relativeToChangelogFile: true
   - include:
-        file: 3.1.1-text-consigne-nullable.yml
-        relativeToChangelogFile: true
+      file: 3.1.1-text-consigne-nullable.yml
+      relativeToChangelogFile: true
   - include:
-        file: 3.1.2-ajout-param-convention-horaireIrregulier.yaml
-        relativeToChangelogFile: true
+      file: 3.1.2-ajout-param-convention-horaireIrregulier.yaml
+      relativeToChangelogFile: true
   - include:
-        file: 3.1.4-contenu-signataires.yaml
-        relativeToChangelogFile: true
+      file: 3.1.4-contenu-signataires.yaml
+      relativeToChangelogFile: true
   - include:
-        file: 3.1.6-contenu-hint-pays-etablissement.yaml
-        relativeToChangelogFile: true
+      file: 3.1.6-contenu-hint-pays-etablissement.yaml
+      relativeToChangelogFile: true
   - include:
-        file: 3.1.7-contenu-envoi-doc-signe.yaml
-        relativeToChangelogFile: true
+      file: 3.1.7-contenu-envoi-doc-signe.yaml
+      relativeToChangelogFile: true
   - include:
       file: 3.2.0-autoriser-chevauchement.yaml
       relativeToChangelogFile: true
@@ -301,14 +301,17 @@ databaseChangeLog:
       file: 3.2.0-ajout-question-evaluation.yaml
       relativeToChangelogFile: true
   - include:
-        file: 3.2.0-alertes-mail-eval.yaml
-        relativeToChangelogFile: true
+      file: 3.2.0-alertes-mail-eval.yaml
+      relativeToChangelogFile: true
   - include:
-        file: 3.2.0-delegataire-viseur.yaml
-        relativeToChangelogFile: true
+      file: 3.2.0-delegataire-viseur.yaml
+      relativeToChangelogFile: true
   - include:
-        file: 3.2.0-ajout-var-template-delegataire.yaml
-        relativeToChangelogFile: true
+      file: 3.2.0-ajout-var-template-delegataire.yaml
+      relativeToChangelogFile: true
   - include:
-        file: 3.2.0-ajout-bool-verrouillage-synchro-etab.yaml
-        relativeToChangelogFile: true
+      file: 3.2.0-ajout-bool-verrouillage-synchro-etab.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 3.3.0-suppression-url-page-instruction-cg.yaml
+      relativeToChangelogFile: true
