@@ -96,7 +96,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
     });
     this.centreGestionService.getCentreEtablissement().subscribe((response: any) => {
       this.centreGestionEtablissement = response;
-      if((response.consigne.texte) || response.consigne.documents.length > 0){
+      if(response.consigne && ((response.consigne.texte) || (response.consigne.documents && response.consigne.documents.length > 0))){
         this.consigneEtablissement = response.consigne;
       }
     });
@@ -121,6 +121,14 @@ export class EtudiantComponent implements OnInit, OnChanges {
         volumeHoraireFormationBool: [this.convention.volumeHoraireFormation !== null && this.convention.volumeHoraireFormation !== '200+', []],
       });
       this.sansElp = response.autoriserElementPedagogiqueFacultatif;
+
+      const typeConventionControl = this.formConvention.get('idTypeConvention');
+      const langueConventionControl = this.formConvention.get('codeLangueConvention');
+      const initialTypeConvention = typeConventionControl?.value;
+      const initialLangueConvention = langueConventionControl?.value;
+      if (initialTypeConvention) {
+        this.loadLangues(initialTypeConvention, initialLangueConvention);
+      }
 
       this.formConvention.get('inscription')?.valueChanges.subscribe((inscription: any) => {
         if (inscription) {
@@ -167,11 +175,10 @@ export class EtudiantComponent implements OnInit, OnChanges {
       // Recherche des langues disponible en fonction du type de convention
       this.formConvention.get('idTypeConvention')?.valueChanges.subscribe((val: any) => {
         if (val) {
-          this.langueConventionService.getListActiveByTypeConvention(val).subscribe((response: any) => {
-            this.langueConventions = response.data;
-          });
+          this.loadLangues(val, this.formConvention.get('codeLangueConvention')?.value);
         } else {
           this.langueConventions = [];
+          this.formConvention.get('codeLangueConvention')?.setValue(null);
           this.messageService.setWarning("Aucune langue disponible pour ce type de convention.");
         }
       });
@@ -260,13 +267,20 @@ export class EtudiantComponent implements OnInit, OnChanges {
           anneeFormatted: annee + '/' + (+annee + 1),
           etapeInscription: {
             codeEtp: this.convention.etape.id.code,
+            codVrsVet: this.convention.etape.id.codeVersionEtape,
             libWebVet: this.convention.libWebVet,
-            codeComposante: this.convention.codeComposante
+            codeComposante: this.convention.codeComposante,
+            libComposante: this.convention.ufr?.libelle || this.convention.libelleComposante
           },
+          typeConvention: this.convention.typeConvention ? {id: this.convention.typeConvention.id, libelle: this.convention.typeConvention.libelle} : null,
           elementPedagogiques: elementPedagogiques
         };
 
         this.formConvention.get('inscription')?.setValue(inscription);
+        if (inscription.typeConvention) {
+          this.formConvention.get('idTypeConvention')?.setValue(inscription.typeConvention.id);
+          this.formConvention.get('idTypeConvention')?.disable();
+        }
 
         if (this.convention.codeElp && elementPedagogiques.length > 0) {
           this.formConvention.get('inscriptionElp')?.setValue(elementPedagogiques[0]);
@@ -336,6 +350,18 @@ export class EtudiantComponent implements OnInit, OnChanges {
     return _.isEqual(row, this.selectedRow);
   }
 
+  private loadLangues(idTypeConvention: number, currentCode?: string | null): void {
+    this.langueConventionService.getListActiveByTypeConvention(idTypeConvention).subscribe((response: any) => {
+      this.langueConventions = response.data || [];
+      const langueControl = this.formConvention.get('codeLangueConvention');
+      const hasCurrent = currentCode && this.langueConventions.some((l: any) => l.code === currentCode);
+      if (!hasCurrent) {
+        const fallback = this.langueConventions.length === 1 ? this.langueConventions[0].code : null;
+        langueControl?.setValue(fallback);
+      }
+    });
+  }
+
   validate(): void {
     if (this.formConvention.valid) {
       // Contrôle code postal commune
@@ -355,6 +381,45 @@ export class EtudiantComponent implements OnInit, OnChanges {
         data.libelleEtape = this.formConvention.value.inscription.etapeInscription.libWebVet;
         data.codeVersionEtape = this.formConvention.value.inscription.etapeInscription.codVrsVet;
         data.annee = this.formConvention.value.inscription.annee;
+      } else if (this.convention) {
+        data.codeComposante = this.convention.codeComposante;
+        data.libelleComposante = this.convention.libelleComposante;
+        data.codeEtape = this.convention.etape?.id?.code;
+        data.codeVersionEtape = this.convention.etape?.id?.codeVersionEtape;
+        data.libelleEtape = this.convention.libWebVet;
+        data.annee = this.convention.annee ? parseInt(this.convention.annee.split('/')[0]) : null;
+      }
+      if (!data.codeVersionEtape && this.convention?.etape?.id?.codeVersionEtape) {
+        data.codeVersionEtape = this.convention.etape.id.codeVersionEtape;
+      }
+      if (!data.codeEtape && this.convention?.etape?.id?.code) {
+        data.codeEtape = this.convention.etape.id.code;
+      }
+      if (!data.libelleEtape && this.convention?.libWebVet) {
+        data.libelleEtape = this.convention.libWebVet;
+      }
+      if (!data.codeComposante && this.convention?.codeComposante) {
+        data.codeComposante = this.convention.codeComposante;
+      }
+      if (!data.libelleComposante && this.convention?.libelleComposante) {
+        data.libelleComposante = this.convention.libelleComposante;
+      }
+      if (!data.codeComposante && this.convention?.ufr?.id?.code) {
+        data.codeComposante = this.convention.ufr.id.code;
+      }
+      if (!data.libelleComposante && this.convention?.ufr?.libelle) {
+        data.libelleComposante = this.convention.ufr.libelle;
+      }
+      if (!data.libelleEtape && this.convention?.etape?.libelle) {
+        data.libelleEtape = this.convention.etape.libelle;
+      }
+      if (!data.codeLangueConvention && this.convention?.langueConvention?.code) {
+        data.codeLangueConvention = this.convention.langueConvention.code;
+      }
+      if (data.annee != null && typeof data.annee !== 'string') {
+        data.annee = data.annee.toString();
+      } else if (data.annee == null && this.convention?.annee) {
+        data.annee = this.convention.annee.split('/')[0];
       }
       if (this.formConvention.value.inscriptionElp) {
         Object.assign(data, {
