@@ -128,7 +128,7 @@ import { SignatureElectroniqueComponent } from './components/convention/signatur
 import { MatTabNavChangeDirective } from './directives/mat-tab-nav-change.directive';
 import {CentreSignatureElectroniqueComponent} from "./components/centre-gestion/signature-electronique/signature-electronique.component";
 import { SignatureElectroniqueViewComponent } from './components/convention/signature-electronique/signature-electronique-view/signature-electronique-view.component';
-import {ColorPickerModule} from "ngx-color-picker";
+import {ColorPickerComponent, ColorPickerDirective} from "ngx-color-picker";
 import {ConfirmDeleteDialogComponent} from "./components/gestion-etab-accueil/confirm-delete-dialog/confirm-delete-dialog.component";
 import {ColumnSelectorComponent} from "./components/table/column-selector/column-selector.component";
 import {TachePlanifieComponent} from "./components/admin/taches-planifiees/tache-planifie.component";
@@ -291,7 +291,10 @@ export class FrenchDateProvider extends NativeDateAdapter {
     MatSnackBarModule,
     MatBadgeModule,
     ImageCropperComponent,
-    ColorPickerModule, MatSlideToggle],
+    ColorPickerComponent,
+    MatSlideToggle,
+    ColorPickerDirective
+  ],
   exports: [
     ContenuPipe,
     TitleComponent

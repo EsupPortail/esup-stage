@@ -169,6 +169,7 @@ export class AppComponent {
     private configService: ConfigService,
     private el: ElementRef,
     private technicalService: TechnicalService,
+    public vcRef: ViewContainerRef
   ) {
     this.configService.getConfigTheme();
     this.configService.themeModified.subscribe((config: any) => {
