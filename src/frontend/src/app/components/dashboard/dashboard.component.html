@@ -65,12 +65,12 @@
   <ng-container *ngIf="typeDashboard === 2 || typeDashboard === 1" matColumnDef="etatValidation">
     <th mat-header-cell *matHeaderCellDef>État de validation de la convention</th>
     <td mat-cell *matCellDef="let row" class="dashboard-validation">
-      <i *ngIf="row.centreGestion.validationPedagogique" class="fa fa-graduation-cap"
-         [class.activate]="row.validationPedagogique"
-         matTooltip="{{row.validationPedagogique ? validationLibelles.validationPedagogique + ' effectuée' : 'en attente ' + validationLibelles.validationPedagogique}}"></i>
       <i *ngIf="row.centreGestion.verificationAdministrative" class="fa fa-check"
          [class.activate]="row.verificationAdministrative"
          matTooltip="{{row.verificationAdministrative ? validationLibelles.verificationAdministrative + ' effectuée' : 'en attente ' + validationLibelles.verificationAdministrative}}"></i>
+      <i *ngIf="row.centreGestion.validationPedagogique" class="fa fa-graduation-cap"
+         [class.activate]="row.validationPedagogique"
+         matTooltip="{{row.validationPedagogique ? validationLibelles.validationPedagogique + ' effectuée' : 'en attente ' + validationLibelles.validationPedagogique}}"></i>
       <i *ngIf="row.centreGestion.validationConvention" class="fa fa-scroll" [class.activate]="row.validationConvention"
          matTooltip="{{row.validationConvention ? validationLibelles.validationConvention + ' effectuée' : 'en attente ' + validationLibelles.validationConvention}}"></i>
       <i *ngIf="row.dateEnvoiSignature" class="fa-solid fa-signature"
@@ -114,12 +114,12 @@
   <ng-container *ngIf="typeDashboard === 3" matColumnDef="etatValidation">
     <th mat-header-cell *matHeaderCellDef>État de validation de la convention</th>
     <td mat-cell *matCellDef="let row" class="dashboard-validation">
-      <i *ngIf="row.centreGestion.validationPedagogique" class="fa fa-graduation-cap"
-         [class.activate]="row.validationPedagogique"
-         matTooltip="{{row.validationPedagogique ? validationLibelles.validationPedagogique + ' effectuée' : 'en attente ' + validationLibelles.validationPedagogique}}"></i>
       <i *ngIf="row.centreGestion.verificationAdministrative" class="fa fa-check"
          [class.activate]="row.verificationAdministrative"
          matTooltip="{{row.verificationAdministrative ? validationLibelles.verificationAdministrative + ' effectuée' : 'en attente ' + validationLibelles.verificationAdministrative}}"></i>
+      <i *ngIf="row.centreGestion.validationPedagogique" class="fa fa-graduation-cap"
+         [class.activate]="row.validationPedagogique"
+         matTooltip="{{row.validationPedagogique ? validationLibelles.validationPedagogique + ' effectuée' : 'en attente ' + validationLibelles.validationPedagogique}}"></i>
       <i *ngIf="row.centreGestion.validationConvention" class="fa fa-scroll"
          [class.activate]="row.validationConvention"
          matTooltip="{{row.validationConvention ? validationLibelles.validationConvention + ' effectuée' : 'en attente ' + validationLibelles.validationConvention}}"></i>
@@ -202,12 +202,12 @@
     <tr *ngIf="typeDashboard === 2 || typeDashboard === 1">
       <th>État de validation de la convention</th>
       <td class="dashboard-validation">
-        <i *ngIf="row.centreGestion.validationPedagogique" class="fa fa-graduation-cap"
-           [class.activate]="row.validationPedagogique"
-           matTooltip="{{row.validationPedagogique ? validationLibelles.validationPedagogique + ' effectuée' : 'en attente ' + validationLibelles.validationPedagogique}}"></i>
         <i *ngIf="row.centreGestion.verificationAdministrative" class="fa fa-check"
            [class.activate]="row.verificationAdministrative"
            matTooltip="{{row.verificationAdministrative ? validationLibelles.verificationAdministrative + ' effectuée' : 'en attente ' + validationLibelles.verificationAdministrative}}"></i>
+        <i *ngIf="row.centreGestion.validationPedagogique" class="fa fa-graduation-cap"
+           [class.activate]="row.validationPedagogique"
+           matTooltip="{{row.validationPedagogique ? validationLibelles.validationPedagogique + ' effectuée' : 'en attente ' + validationLibelles.validationPedagogique}}"></i>
         <i *ngIf="row.centreGestion.validationConvention" class="fa fa-scroll"
            [class.activate]="row.validationConvention"
            matTooltip="{{row.validationConvention ? validationLibelles.validationConvention + ' effectuée' : 'en attente ' + validationLibelles.validationConvention}}"></i>
