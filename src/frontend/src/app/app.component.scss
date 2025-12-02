@@ -1,15 +1,27 @@
 @import "@fortawesome/fontawesome-free/css/all.css";
 
+/* Conteneur principal */
 mat-sidenav-container {
   min-height: calc(100vh - 64px);
 }
 
 mat-sidenav-content {
-  padding: 30px 10px;
-  max-height: calc(100vh - 64px);
+  padding: 30px 10px 0px 10px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
+.app-menu {
+  display: flex;
+  flex-direction: column;
+}
 
+.menu-root {
+  list-style: none;
+  padding: 3px;
+  flex: 0 0 auto;
+  overflow: visible;
+}
 
 .menu-button {
   button {
@@ -17,69 +29,27 @@ mat-sidenav-content {
     margin-left: 8px;
     margin-top: 8px;
     z-index: 5;
-    position: fixed;
+    position: absolute;
     outline: none;
-    transition: opacity .3s, transform .3s;
-    opacity: 0;
-  }
-
-  .menu-open-button {
-    transform: rotate(0deg);
-  }
-
-  .menu-close-button {
-    transform: rotate(180deg);
-  }
-
-  .menu-open-button.visible {
-    transform: rotate(180deg);
-    opacity: 1;
-  }
-
-  .menu-close-button.visible {
-    transform: rotate(0deg);
-    opacity: 1;
+    transition: opacity 0.3s, transform 0.3s;
   }
 }
 
-mat-nav-list {
-   flex-grow: 1;
-   height: calc(100vh - 64px - 39px - 48px);
-   overflow-y: auto;
- }
+.menu-button__btn {
+  color: black;
+  border-radius: 50%;
+  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
 
-.app-version {
-  text-align: center;
-  font-size: 0.75em;
-  padding: 10px 0;
-  background-color: #f2f2f2;
-}
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
 
-@media (max-width: 767px) {
-  mat-sidenav-content {
-    margin-left: 0px !important;
+  &:focus-visible {
+    outline: 2px solid #3f51b5;
+    outline-offset: 2px;
   }
 }
 
-.menu-item {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 10px;
-  height: 48px; /* Ajuste selon la hauteur souhaitée */
-}
-
-.icon-display {
-  font-size: 24px; /* Ajuste la taille de l'icône */
-  width: 48px; /* Taille du conteneur de l'icône */
-  height: 48px; /* Hauteur du conteneur de l'icône */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-right: 10px; /* Espacement entre l'icône et le texte */
-}
-
-.menu-label {
-  flex-grow: 1; /* Le texte occupe l'espace restant */
-  font-size: 16px; /* Ajuste la taille du texte */
+.menu-button__btn--open {
+  transform: rotate(90deg);
 }

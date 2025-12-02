@@ -137,6 +137,9 @@ import {ConfirmEnvoieMailComponent} from "./components/convention/evaluation-sta
 import { ImageCropperComponent } from 'ngx-image-cropper';
 import { EnvoiMailEnMasseEvalComponent } from "./components/eval-stage/envoi-mail-en-masse-eval/envoi-mail-en-masse-eval.component";
 import { ExportEvaluationComponent } from "./components/eval-stage/export-evaluation/export-evaluation.component";
+import {AccessibilityComponent} from "./components/accessibility/accessibility.component";
+import {LegalNoticeComponent} from "./components/legal-notice/legal-notice.component";
+import {FooterComponent} from "./components/footer/footer.component";
 
 registerLocaleData(localeFr, 'fr');
 
@@ -252,7 +255,10 @@ export class FrenchDateProvider extends NativeDateAdapter {
     TachePlanifieComponent,
     ConfirmEnvoieMailComponent,
     EnvoiMailEnMasseEvalComponent,
-    ExportEvaluationComponent
+    ExportEvaluationComponent,
+    AccessibilityComponent,
+    LegalNoticeComponent,
+    FooterComponent
   ],
   bootstrap: [AppComponent], imports: [BrowserModule,
     AppRoutingModule,

@@ -190,10 +190,6 @@ export class AppComponent {
     return this.authService.userConnected;
   }
 
-  getAppVersion(): string {
-    return this.authService.appVersion;
-  }
-
   slideNavbar(): void {
     let opened = this.menuService.navbarOpened;
     this.menuService.navbarOpened = !opened;
