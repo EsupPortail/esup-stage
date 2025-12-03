@@ -130,7 +130,7 @@
           <div class="col-sm-9">{{contact.fax}}</div>
         </div>
       </div>
-      <div *ngIf="modif && canEdit()">
+      <div *ngIf="modif && canEdit() || !contact.id && canCreate()">
         <mat-divider class="mb-2"></mat-divider>
         <div class="row">
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
