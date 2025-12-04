@@ -25,6 +25,7 @@ public class AppliProperties {
     private List<String> tokens;
     private String jwtSecret;
     private Long nbJoursValideToken;
+    private FooterProperties footer;
 
     public String getLocalApi() {
         String result = url;
@@ -80,5 +81,14 @@ public class AppliProperties {
         private String from;
         private boolean disableDelivery;
         private String deliveryAddress;
+    }
+
+    @Data
+    @NoArgsConstructor
+    public static class FooterProperties {
+        private String github;
+        private String site;
+        private String support;
+        private String wiki;
     }
 }

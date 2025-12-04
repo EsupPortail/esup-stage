@@ -1,11 +1,12 @@
-<mat-toolbar id="app-toolbar" color="primary">
-  <a routerLink="/">
-    <img #logo id="app-logo" src="" alt="logo" />
-    <span class="app-name">{{'TITRE_APPLICATION'|contenu}}</span>
-  </a>
-  <span class="spacer"></span>
-  <button mat-icon-button (click)="logout()" *ngIf="isConnected()">
-    <i class="fa fa-sign-out-alt"></i>
-  </button>
-</mat-toolbar>
-
+<header>
+  <mat-toolbar id="app-toolbar" color="primary">
+    <a routerLink="/">
+      <img #logo id="app-logo" src="" alt="logo" />
+      <span class="app-name">{{'TITRE_APPLICATION'|contenu}}</span>
+    </a>
+    <span class="spacer"></span>
+    <button mat-icon-button (click)="logout()" *ngIf="isConnected()">
+      <i class="fa fa-sign-out-alt"></i>
+    </button>
+  </mat-toolbar>
+</header>

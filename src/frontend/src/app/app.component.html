@@ -12,11 +12,11 @@
 </div>
 <mat-sidenav-container>
   <mat-sidenav mode="side" [opened]="isOpened()" *ngIf="isConnected()">
-    <div class="app-menu">
+    <nav class="app-menu" role="navigation" aria-label="menu principal">
       <ul class="menu-root">
         <app-menu *ngFor="let item of items" [item]="item"></app-menu>
       </ul>
-    </div>
+    </nav>
   </mat-sidenav>
   <mat-sidenav-content>
     <main>

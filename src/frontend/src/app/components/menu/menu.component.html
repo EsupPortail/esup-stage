@@ -1,15 +1,6 @@
 <li *ngIf="!item.canView || item.canView()" class="menu-item">
   <div class="menu-item__row" [style.padding-left.px]="(depth * 12) + 8">
-    <button *ngIf="hasChildren"
-            type="button"
-            class="menu-item__toggle"
-            (click)="toggleChildren()"
-            [attr.aria-expanded]="expanded"
-            [attr.aria-controls]="submenuId"
-            aria-label="Basculer le sous-menu">
-      <mat-icon color="primary" [@indicatorRotate]="expanded ? 'expanded': 'collapsed'">chevron_right</mat-icon>
-    </button>
-    <ng-container *ngIf="!hasChildren; else parentLabel">
+    <ng-container *ngIf="!hasChildren; else parentButton">
       <a class="menu-item__link"
          [routerLink]="item.path"
          [ngClass]="{'active': item.path ? router.isActive(item.path, true): false}"
@@ -19,16 +10,17 @@
         <span [class.badge-alerte]="item.alerte">{{item.libelle}}</span>
       </a>
     </ng-container>
-    <ng-template #parentLabel>
-      <span class="menu-item__link menu-item__link--parent"
-            tabindex="0"
-            (click)="toggleChildren()"
-            (keydown.enter)="toggleChildren()"
-            (keydown.space)="toggleChildren(); $event.preventDefault();"
-            [attr.aria-expanded]="expanded"
-            [attr.aria-controls]="submenuId">
+
+    <ng-template #parentButton>
+      <button type="button"
+              class="menu-item__link menu-item__link--parent"
+              (click)="toggleChildren()"
+              [attr.aria-expanded]="expanded"
+              [attr.aria-controls]="submenuId"
+              [attr.aria-label]="(expanded ? 'Fermer' : 'Ouvrir') + ' le sous-menu ' + item.libelle">
+        <mat-icon color="primary" [@indicatorRotate]="expanded ? 'expanded': 'collapsed'">chevron_right</mat-icon>
         <span [class.badge-alerte]="item.alerte">{{item.libelle}}</span>
-      </span>
+      </button>
     </ng-template>
   </div>
 
