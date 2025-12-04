@@ -130,7 +130,7 @@
           <div class="col-sm-9">{{contact.fax}}</div>
         </div>
       </div>
-      <div *ngIf="modif && canEdit()">
+      <div *ngIf="modif && canEdit() || !contact.id && canCreate()">
         <mat-divider class="mb-2"></mat-divider>
         <div class="row">
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
@@ -174,7 +174,7 @@
       </div>
       <div class="row mt-3" *ngIf="canEdit() || canCreate()">
         <div class="col-6">
-          <button mat-button mat-stroked-button color="primary" *ngIf="contact.id && !modif" (click)="edit()">Modifier ces informations</button>
+          <button mat-button mat-stroked-button color="primary" *ngIf="contact.id && !modif && canEdit()" (click)="edit()">Modifier ces informations</button>
           <button mat-button mat-stroked-button color="warn" *ngIf="contact.id && modif" (click)="cancelEdit()">{{'BOUTON_ANNULER'|contenu}}</button>
         </div>
         <div class="col-6 text-right" *ngIf="modif">
