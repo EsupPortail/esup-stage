@@ -109,14 +109,14 @@
     <th mat-header-cell *matHeaderCellDef>Actions</th>
     <td mat-cell *matCellDef="let row">
       <button type="button" mat-icon-button matTooltip="Visualiser" color="primary" (click)="goToConvention(row.id); $event.stopPropagation()"
-      [disabled]="!row.centreGestion.ficheEvaluation || !row.centreGestion.ficheEvaluation.validationEntreprise || !row.validationConvention"><i class="fa fa-eye"></i></button>
+      [disabled]="!row.centreGestion.ficheEvaluation || !row.centreGestion.ficheEvaluation.validationEntreprise || !row.validationConvention"><span class="fa fa-eye"></span></button>
     </td>
   </ng-container>
 </app-table>
 
 <div class="actions mb-3" *ngIf="isGestionnaireOrAdmin">
   <button class="button" mat-raised-button color="primary" (click)="openEnvoiMailModal()" [disabled]="selected.length === 0">
-    <i class="fa fa-envelope" aria-hidden="true"></i> Envoyer un mail en masse
+    <span class="fa fa-envelope" aria-hidden="true"></span> Envoyer un mail en masse
   </button>
   <button class="button"  mat-raised-button color="primary" (click)="openExportExcelModal()">
     <mat-icon>download</mat-icon> Export excel

@@ -18,11 +18,11 @@
         <th mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let row">
           <ng-container *ngIf="canEdit()">
-            <button mat-icon-button matTooltip="Éditer" (click)="edit(row)" color="primary"><i class="fa fa-pen"></i></button>
+            <button mat-icon-button matTooltip="Éditer" (click)="edit(row)" color="primary"><span class="fa fa-pen"></span></button>
             <span (confirm)="delete(row)" [confirmMessage]="'Voulez-vous supprimer ce template de mail ?'">
-              <button mat-icon-button matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
+              <button mat-icon-button matTooltip="Supprimer" color="warn"><span class="fa fa-trash"></span></button>
             </span>
-            <button mat-icon-button matTooltip="Tester l'envoi" (click)="openTestSend(row)" color="accent"><i class="fa fa-paper-plane"></i></button>
+            <button mat-icon-button matTooltip="Tester l'envoi" (click)="openTestSend(row)" color="accent"><span class="fa fa-paper-plane"></span></button>
           </ng-container>
         </td>
       </ng-container>

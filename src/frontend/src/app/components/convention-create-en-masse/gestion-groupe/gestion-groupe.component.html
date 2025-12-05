@@ -38,13 +38,13 @@
     <th mat-header-cell *matHeaderCellDef>Actions</th>
     <td mat-cell *matCellDef="let row">
       <ng-container>
-        <button mat-icon-button matTooltip="Modifier le groupe" (click)="edit(row)" color="primary"><i class="fa fa-pen"></i></button>
-        <button mat-icon-button matTooltip="Dupliquer le groupe" (click)="duplicate(row)" color="primary"><i class="fa fa-copy"></i></button>
+        <button mat-icon-button matTooltip="Modifier le groupe" (click)="edit(row)" color="primary"><span class="fa fa-pen"></span> </button>
+        <button mat-icon-button matTooltip="Dupliquer le groupe" (click)="duplicate(row)" color="primary"><span class="fa fa-copy"></span> </button>
         <span (confirm)="delete(row.id)" [confirmMessage]="'Voulez-vous supprimer ce groupe ?'">
-              <button mat-icon-button matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
+              <button mat-icon-button matTooltip="Supprimer" color="warn"><span class="fa fa-trash"></span> </button>
         </span>
-        <button mat-icon-button matTooltip="Envoie de mail" (click)="sendMailTab(row)" color="primary" *ngIf="isConventionGenerated(row)"><i class="fa fa-envelope"></i></button>
-        <button mat-icon-button matTooltip="Export pdf" (click)="printTab(row)" color="primary" *ngIf="isConventionGenerated(row)"><i class="fa fa-file-contract"></i></button>
+        <button mat-icon-button matTooltip="Envoie de mail" (click)="sendMailTab(row)" color="primary" *ngIf="isConventionGenerated(row)"><span class="fa fa-envelope"></span> </button>
+        <button mat-icon-button matTooltip="Export pdf" (click)="printTab(row)" color="primary" *ngIf="isConventionGenerated(row)"><span class="fa fa-file-contract"></span> </button>
       </ng-container>
     </td>
   </ng-container>

@@ -23,7 +23,7 @@
           </mat-form-field>
 
           <button *ngIf="!interruptionStage" mat-fab type="button" class="add-button" matTooltip="Ajouter" (click)="addPeriode()">
-            <i class="fa fa-plus"></i>
+            <span class="fa fa-plus"></span>
           </button>
         </div>
       </form>
@@ -42,7 +42,7 @@
               Période du {{periode.dateDebutInterruption|date:'shortDate'}} au {{periode.dateFinInterruption|date:'shortDate'}}
             </div>
             <button mat-fab color="warn" matTooltip="Supprimer" (click)="removePeriode(periode)">
-              <i class="fa fa-trash-alt"></i>
+              <span class="fa fa-trash-alt"></span>
             </button>
           </div>
         </div>

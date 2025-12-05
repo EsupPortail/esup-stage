@@ -40,13 +40,13 @@
 
           <!-- Messages d'état -->
           <div class="mt-3 mb-2 danger-color text-center" *ngIf="!ficheEvaluation[fiche.validationKey]">
-            <i class="fa fa-times"></i>&nbsp;Cette évaluation n'a pas encore été validée par le centre de gestion.
+            <span class="fa fa-times"></span>&nbsp;Cette évaluation n'a pas encore été validée par le centre de gestion.
           </div>
           <div class="mt-3 mb-2 danger-color text-center" *ngIf="ficheEvaluation[fiche.validationKey] && (!reponseEvaluation || !reponseEvaluation[fiche.validationProp])">
-            <i class="fa fa-times"></i>&nbsp;Cette évaluation n'est pas encore renseignée.
+            <span class="fa fa-times"></span>&nbsp;Cette évaluation n'est pas encore renseignée.
           </div>
           <div class="mt-3 mb-2 success-color text-center" *ngIf="reponseEvaluation && reponseEvaluation[fiche.validationProp]">
-            <i class="fa fa-check"></i>&nbsp;Cette évaluation a bien été renseignée.
+            <span class="fa fa-check"></span>&nbsp;Cette évaluation a bien été renseignée.
           </div>
 
           <!-- Formulaire -->
@@ -229,7 +229,7 @@
             </div>
             <div class="text-center">
               <button mat-stroked-button color="primary" (click)="openConfirmEnvoiMailEvaluation(fiche.type)">
-                <i class="fa fa-envelope"></i>&nbsp;{{ 'Envoyer' + (convention[fiche.mailKey] ? ' un rappel' : '') }}
+                <span class="fa fa-envelope"></span>&nbsp;{{ 'Envoyer' + (convention[fiche.mailKey] ? ' un rappel' : '') }}
               </button>
             </div>
             <div *ngIf="convention[fiche.mailKey] && convention[fiche.dateMailKey]" class="mail-info-box">

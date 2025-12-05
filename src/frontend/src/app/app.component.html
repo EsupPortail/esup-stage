@@ -7,7 +7,7 @@
     [class.menu-button__btn--open]="menuService.navbarOpened"
     (click)="slideNavbar()"
     [attr.aria-label]="menuService.navbarOpened ? 'Fermer le menu' : 'Ouvrir le menu'">
-    <i class="fa" [ngClass]="menuService.navbarOpened ? 'fa-times' : 'fa-bars'"></i>
+    <span class="fa" [ngClass]="menuService.navbarOpened ? 'fa-times' : 'fa-bars'"></span>
   </button>
 </div>
 <mat-sidenav-container>

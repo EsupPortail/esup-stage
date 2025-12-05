@@ -17,7 +17,7 @@
           </div>
         </div>
         <div class="col-sm-12 col-md-4">
-      <div class="mb-2 text-title"><i class="fa fa-paperclip"></i> Documents associés</div>
+      <div class="mb-2 text-title"><span class="fa fa-paperclip"></span> Documents associés</div>
       <mat-divider></mat-divider>
 
       <div *ngIf="consigne; else notCreated">
@@ -25,7 +25,7 @@
         <div class="row" *ngFor="let doc of consigne.documents">
           <div class="col-12 mt-2">
             <a href (click)="downloadDoc($event, doc)">{{doc.nomReel}}</a>
-            <i class="fa fa-trash-alt delete-icon" matTooltip="supprimer" (confirm)="deleteDoc(doc.id)" [confirmMessage]="'Êtes-vous sûr de vouloir supprimer le document ' + doc.nomReel + ' ?'"></i>
+            <span class="fa fa-trash-alt delete-icon" matTooltip="supprimer" (confirm)="deleteDoc(doc.id)" [confirmMessage]="'Êtes-vous sûr de vouloir supprimer le document ' + doc.nomReel + ' ?'"></span>
           </div>
         </div>
         <div class="row mt-3">

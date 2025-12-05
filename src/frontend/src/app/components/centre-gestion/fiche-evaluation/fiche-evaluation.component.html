@@ -9,8 +9,8 @@
       <mat-expansion-panel [expanded]="false">
         <mat-expansion-panel-header>
           <mat-panel-title>Fiche Etudiant
-            <span *ngIf="ficheEvaluation.validationEtudiant">&nbsp;<i class="icon-valide fa fa-check"></i>&nbsp;<b>Validée</b></span>
-            <span *ngIf="!ficheEvaluation.validationEtudiant">&nbsp;<i class="icon-devalidee fa fa-times"></i>&nbsp;<b>Non validée</b></span>
+            <span *ngIf="ficheEvaluation.validationEtudiant">&nbsp;<span class="icon-valide fa fa-check"></span>&nbsp;<b>Validée</b></span>
+            <span *ngIf="!ficheEvaluation.validationEtudiant">&nbsp;<span class="icon-devalidee fa fa-times"></span>&nbsp;<b>Non validée</b></span>
           </mat-panel-title>
         </mat-expansion-panel-header>
         <mat-accordion>
@@ -60,9 +60,9 @@
                     <div class="col-sm-2">{{getTypeQuestionLibelle(questionSupplementaire.typeQuestion)}}</div>
                     <div class="col-sm-8">{{questionSupplementaire.question}}</div>
                     <div class="col-sm-2">
-                      <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(0,questionSupplementaire)" color="primary"><i class="fa fa-pen"></i></button>
+                      <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(0,questionSupplementaire)" color="primary"><span class="fa fa-pen"></span></button>
                       <span (confirm)="deleteQuestionSupplementaire(questionSupplementaire.id)" [confirmMessage]="'Etes-vous sûr de vouloir supprimer cette question ?'">
-                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
+                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><span class="fa fa-trash"></span></button>
                     </span>
                     </div>
                   </div>
@@ -117,9 +117,9 @@
                     <div class="col-sm-2">{{getTypeQuestionLibelle(questionSupplementaire.typeQuestion)}}</div>
                     <div class="col-sm-8">{{questionSupplementaire.question}}</div>
                     <div class="col-sm-2">
-                      <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(1,questionSupplementaire)" color="primary"><i class="fa fa-pen"></i></button>
+                      <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(1,questionSupplementaire)" color="primary"><span class="fa fa-pen"></span></button>
                       <span (confirm)="deleteQuestionSupplementaire(questionSupplementaire.id)" [confirmMessage]="'Etes-vous sûr de vouloir supprimer cette question ?'">
-                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
+                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><span class="fa fa-trash"></span></button>
                     </span>
                     </div>
                   </div>
@@ -174,9 +174,9 @@
                     <div class="col-sm-2">{{getTypeQuestionLibelle(questionSupplementaire.typeQuestion)}}</div>
                     <div class="col-sm-8">{{questionSupplementaire.question}}</div>
                     <div class="col-sm-2">
-                      <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(2,questionSupplementaire)" color="primary"><i class="fa fa-pen"></i></button>
+                      <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(2,questionSupplementaire)" color="primary"><span class="fa fa-pen"></span></button>
                       <span (confirm)="deleteQuestionSupplementaire(questionSupplementaire.id)" [confirmMessage]="'Etes-vous sûr de vouloir supprimer cette question ?'">
-                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
+                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><span class="fa fa-trash"></span></button>
                     </span>
                     </div>
                   </div>
@@ -198,8 +198,8 @@
       <mat-expansion-panel [expanded]="false">
         <mat-expansion-panel-header>
           <mat-panel-title>Fiche Enseignant
-            <span *ngIf="ficheEvaluation.validationEnseignant">&nbsp;<i class="icon-valide fa fa-check"></i>&nbsp;<b>Validée</b></span>
-            <span *ngIf="!ficheEvaluation.validationEnseignant">&nbsp;<i class="icon-devalidee fa fa-times"></i>&nbsp;<b>Non validée</b></span>
+            <span *ngIf="ficheEvaluation.validationEnseignant">&nbsp;<span class="icon-valide fa fa-check"></span>&nbsp;<b>Validée</b></span>
+            <span *ngIf="!ficheEvaluation.validationEnseignant">&nbsp;<span class="icon-devalidee fa fa-times"></span>&nbsp;<b>Non validée</b></span>
           </mat-panel-title>
         </mat-expansion-panel-header>
 
@@ -248,9 +248,9 @@
                   <div class="col-sm-2">{{getTypeQuestionLibelle(questionSupplementaire.typeQuestion)}}</div>
                   <div class="col-sm-8">{{questionSupplementaire.question}}</div>
                   <div class="col-sm-2">
-                    <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(3,questionSupplementaire)" color="primary"><i class="fa fa-pen"></i></button>
+                    <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(3,questionSupplementaire)" color="primary"><span class="fa fa-pen"></span></button>
                     <span (confirm)="deleteQuestionSupplementaire(questionSupplementaire.id)" [confirmMessage]="'Etes-vous sûr de vouloir supprimer cette question ?'">
-                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
+                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><span class="fa fa-trash"></span></button>
                     </span>
                   </div>
                 </div>
@@ -305,9 +305,9 @@
                   <div class="col-sm-2">{{getTypeQuestionLibelle(questionSupplementaire.typeQuestion)}}</div>
                   <div class="col-sm-8">{{questionSupplementaire.question}}</div>
                   <div class="col-sm-2">
-                    <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(4,questionSupplementaire)" color="primary"><i class="fa fa-pen"></i></button>
+                    <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(4,questionSupplementaire)" color="primary"><span class="fa fa-pen"></span></button>
                     <span (confirm)="deleteQuestionSupplementaire(questionSupplementaire.id)" [confirmMessage]="'Etes-vous sûr de vouloir supprimer cette question ?'">
-                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
+                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><span class="fa fa-trash"></span></button>
                     </span>
                   </div>
                 </div>
@@ -328,8 +328,8 @@
       <mat-expansion-panel [expanded]="false">
         <mat-expansion-panel-header>
           <mat-panel-title>Fiche Entreprise
-            <span *ngIf="ficheEvaluation.validationEntreprise">&nbsp;<i class="icon-valide fa fa-check"></i>&nbsp;<b>Validée</b></span>
-            <span *ngIf="!ficheEvaluation.validationEntreprise">&nbsp;<i class="icon-devalidee fa fa-times"></i>&nbsp;<b>Non validée</b></span>
+            <span *ngIf="ficheEvaluation.validationEntreprise">&nbsp;<span class="icon-valide fa fa-check"></span>&nbsp;<b>Validée</b></span>
+            <span *ngIf="!ficheEvaluation.validationEntreprise">&nbsp;<span class="icon-devalidee fa fa-times"></span>&nbsp;<b>Non validée</b></span>
           </mat-panel-title>
         </mat-expansion-panel-header>
 
@@ -378,9 +378,9 @@
                   <div class="col-sm-2">{{getTypeQuestionLibelle(questionSupplementaire.typeQuestion)}}</div>
                   <div class="col-sm-8">{{questionSupplementaire.question}}</div>
                   <div class="col-sm-2">
-                    <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(5,questionSupplementaire)" color="primary"><i class="fa fa-pen"></i></button>
+                    <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(5,questionSupplementaire)" color="primary"><span class="fa fa-pen"></span></button>
                     <span (confirm)="deleteQuestionSupplementaire(questionSupplementaire.id)" [confirmMessage]="'Etes-vous sûr de vouloir supprimer cette question ?'">
-                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
+                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><span class="fa fa-trash"></span></button>
                     </span>
                   </div>
                 </div>
@@ -436,9 +436,9 @@
                   <div class="col-sm-2">{{getTypeQuestionLibelle(questionSupplementaire.typeQuestion)}}</div>
                   <div class="col-sm-8">{{questionSupplementaire.question}}</div>
                   <div class="col-sm-2">
-                    <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(6,questionSupplementaire)" color="primary"><i class="fa fa-pen"></i></button>
+                    <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(6,questionSupplementaire)" color="primary"><span class="fa fa-pen"></span></button>
                     <span (confirm)="deleteQuestionSupplementaire(questionSupplementaire.id)" [confirmMessage]="'Etes-vous sûr de vouloir supprimer cette question ?'">
-                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
+                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><span class="fa fa-trash"></span></button>
                     </span>
                   </div>
                 </div>
@@ -493,9 +493,9 @@
                   <div class="col-sm-2">{{getTypeQuestionLibelle(questionSupplementaire.typeQuestion)}}</div>
                   <div class="col-sm-8">{{questionSupplementaire.question}}</div>
                   <div class="col-sm-2">
-                    <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(7,questionSupplementaire)" color="primary"><i class="fa fa-pen"></i></button>
+                    <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(7,questionSupplementaire)" color="primary"><span class="fa fa-pen"></span></button>
                     <span (confirm)="deleteQuestionSupplementaire(questionSupplementaire.id)" [confirmMessage]="'Etes-vous sûr de vouloir supprimer cette question ?'">
-                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
+                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><span class="fa fa-trash"></span></button>
                     </span>
                   </div>
                 </div>

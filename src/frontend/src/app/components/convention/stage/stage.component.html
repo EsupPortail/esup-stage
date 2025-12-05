@@ -126,8 +126,8 @@
               <ng-container matColumnDef="actions">
                 <th mat-header-cell *matHeaderCellDef>actions</th>
                 <td mat-cell *matCellDef="let row">
-                  <button mat-icon-button matTooltip="Éditer" (click)="openInterruptionsEditFormModal(row)" color="primary"><i class="fa fa-pen"></i></button>
-                  <button mat-icon-button matTooltip="Supprimer" (click)="deleteInterruptionStage(row)" color="warn"><i class="fa fa-trash-alt"></i></button>
+                  <button mat-icon-button matTooltip="Éditer" (click)="openInterruptionsEditFormModal(row)" color="primary"><span class="fa fa-pen"></span></button>
+                  <button mat-icon-button matTooltip="Supprimer" (click)="deleteInterruptionStage(row)" color="warn"><span class="fa fa-trash-alt"></span></button>
                 </td>
               </ng-container>
               <tr mat-header-row *matHeaderRowDef="interruptionsStageTableColumns"></tr>
@@ -184,10 +184,10 @@
                     <td class="detail-value">
                       <div class="actions-container">
                         <button mat-icon-button matTooltip="Éditer" (click)="openCalendar()" color="primary" *ngIf="modifiable">
-                          <i class="fa fa-pen"></i>
+                          <span class="fa fa-pen"></span>
                         </button>
                         <button mat-icon-button matTooltip="Supprimer" (click)="deletePeriodeStage(i)" class="delete-button" *ngIf="modifiable">
-                          <i class="fa fa-trash-alt"></i>
+                          <span class="fa fa-trash-alt"></span>
                         </button>
                       </div>
                     </td>
