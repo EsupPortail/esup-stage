@@ -7,6 +7,7 @@ import { AuthService } from "../../services/auth.service";
 import { ConfigService } from "../../services/config.service";
 import { AppFonction } from '../../constants/app-fonction';
 import { Droit } from '../../constants/droit';
+import { getProgressText } from '../../utils/text-progress-bar.utils';
 
 @Component({
     selector: 'app-convention',
@@ -37,6 +38,7 @@ export class ConventionComponent implements OnInit {
   allValid = false;
   modifiable = true;
   signatureEnabled = false;
+  protected readonly getProgressText = getProgressText;
 
   @ViewChild("tabGroup") tabGroup!: MatTabGroup;
 

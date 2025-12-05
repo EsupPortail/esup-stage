@@ -5,8 +5,20 @@
     <ng-template mat-tab-label>
       <div class="tabTitle">
         Coordonnées du centre
-        <mat-progress-bar mode="determinate" [value]="getProgressValue(0)"
-                          [ngClass]="{ 'editing': tabs[0]?.statut === 1, 'done': tabs[0]?.statut === 2,'empty':tabs[0]?.statut===0 }">
+        <mat-progress-bar
+          mode="determinate"
+          [value]="getProgressValue(0)"
+          [ngClass]="{
+            'editing': tabs[0]?.statut === 1,
+            'done': tabs[0]?.statut === 2,
+            'empty': tabs[0]?.statut === 0
+          }"
+          role="progressbar"
+          [attr.aria-valuenow]="getProgressValue(0)"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          [attr.aria-valuetext]="getProgressText(0, getProgressValue(0), tabs[0]?.statut)"
+        >
         </mat-progress-bar>
       </div>
     </ng-template>
@@ -22,8 +34,20 @@
     <ng-template mat-tab-label>
       <div class="tabTitle">
         Paramètres du centre
-        <mat-progress-bar mode="determinate" [value]="getProgressValue(1)"
-                          [ngClass]="{ 'editing': tabs[1]?.statut === 1, 'done': tabs[1]?.statut === 2, 'empty':tabs[1]?.statut===0 }">
+        <mat-progress-bar
+          mode="determinate"
+          [value]="getProgressValue(1)"
+          [ngClass]="{
+            'editing': tabs[1]?.statut === 1,
+            'done': tabs[1]?.statut === 2,
+            'empty': tabs[1]?.statut === 0
+          }"
+          role="progressbar"
+          [attr.aria-valuenow]="getProgressValue(1)"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          [attr.aria-valuetext]="getProgressText(1, getProgressValue(1), tabs[1]?.statut)"
+        >
         </mat-progress-bar>
       </div>
     </ng-template>
@@ -38,8 +62,20 @@
     <ng-template mat-tab-label>
       <div class="tabTitle">
         Personnalisation du centre
-        <mat-progress-bar mode="determinate" [value]="getProgressValue(2)"
-                          [ngClass]="{ 'editing': tabs[2]?.statut === 1, 'done': tabs[2]?.statut === 2,'empty':tabs[2]?.statut===0  }">
+        <mat-progress-bar
+          mode="determinate"
+          [value]="getProgressValue(2)"
+          [ngClass]="{
+            'editing': tabs[2]?.statut === 1,
+            'done': tabs[2]?.statut === 2,
+            'empty': tabs[2]?.statut === 0
+          }"
+          role="progressbar"
+          [attr.aria-valuenow]="getProgressValue(2)"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          [attr.aria-valuetext]="getProgressText(2, getProgressValue(2), tabs[2]?.statut)"
+        >
         </mat-progress-bar>
       </div>
     </ng-template>
@@ -53,8 +89,20 @@
     <ng-template mat-tab-label>
       <div class="tabTitle">
         Rattacher un gestionnaire
-        <mat-progress-bar mode="determinate" [value]="getProgressValue(3)"
-                          [ngClass]="{ 'editing': tabs[3]?.statut === 1, 'done': tabs[3]?.statut === 2,'empty':tabs[3]?.statut===0  }">
+        <mat-progress-bar
+          mode="determinate"
+          [value]="getProgressValue(3)"
+          [ngClass]="{
+            'editing': tabs[3]?.statut === 1,
+            'done': tabs[3]?.statut === 2,
+            'empty': tabs[3]?.statut === 0
+          }"
+          role="progressbar"
+          [attr.aria-valuenow]="getProgressValue(3)"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          [attr.aria-valuetext]="getProgressText(3, getProgressValue(3), tabs[3]?.statut)"
+        >
         </mat-progress-bar>
       </div>
     </ng-template>
@@ -68,8 +116,20 @@
     <ng-template mat-tab-label>
       <div class="tabTitle">
         Consigne
-        <mat-progress-bar mode="determinate" [value]="getProgressValue(4)"
-                          [ngClass]="{ 'editing': tabs[4]?.statut === 1, 'done': tabs[4]?.statut === 2,'empty':tabs[4]?.statut===0  }">
+        <mat-progress-bar
+          mode="determinate"
+          [value]="getProgressValue(4)"
+          [ngClass]="{
+            'editing': tabs[4]?.statut === 1,
+            'done': tabs[4]?.statut === 2,
+            'empty': tabs[4]?.statut === 0
+          }"
+          role="progressbar"
+          [attr.aria-valuenow]="getProgressValue(4)"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          [attr.aria-valuetext]="getProgressText(4, getProgressValue(4), tabs[4]?.statut)"
+        >
         </mat-progress-bar>
       </div>
     </ng-template>
@@ -84,8 +144,20 @@
     <ng-template mat-tab-label>
       <div class="tabTitle">
         Fiches d'évaluation
-        <mat-progress-bar mode="determinate" [value]="getProgressValue(5)"
-                          [ngClass]="{ 'editing': tabs[5]?.statut === 1, 'done': tabs[5]?.statut === 2,'empty':tabs[5]?.statut===0  }">
+        <mat-progress-bar
+          mode="determinate"
+          [value]="getProgressValue(5)"
+          [ngClass]="{
+            'editing': tabs[5]?.statut === 1,
+            'done': tabs[5]?.statut === 2,
+            'empty': tabs[5]?.statut === 0
+          }"
+          role="progressbar"
+          [attr.aria-valuenow]="getProgressValue(5)"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          [attr.aria-valuetext]="getProgressText(5, getProgressValue(5), tabs[5]?.statut)"
+        >
         </mat-progress-bar>
       </div>
     </ng-template>
@@ -98,8 +170,20 @@
     <ng-template mat-tab-label>
       <div class="tabTitle">
         Signature électronique
-        <mat-progress-bar mode="determinate" [value]="getProgressValue(6)"
-                          [ngClass]="{ 'editing': tabs[6]?.statut === 1, 'done': tabs[6]?.statut === 2,'empty':tabs[6]?.statut===0  }">
+        <mat-progress-bar
+          mode="determinate"
+          [value]="getProgressValue(6)"
+          [ngClass]="{
+            'editing': tabs[6]?.statut === 1,
+            'done': tabs[6]?.statut === 2,
+            'empty': tabs[6]?.statut === 0
+          }"
+          role="progressbar"
+          [attr.aria-valuenow]="getProgressValue(6)"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          [attr.aria-valuetext]="getProgressText(6, getProgressValue(6), tabs[6]?.statut)"
+        >
         </mat-progress-bar>
       </div>
     </ng-template>
