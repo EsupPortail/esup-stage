@@ -726,6 +726,9 @@ public class  ConventionController {
         if (Objects.equals(conventionSingleFieldDto.getField(), "confidentiel")) {
             convention.setConfidentiel((Boolean) conventionSingleFieldDto.getValue());
         }
+        if(Objects.equals(conventionSingleFieldDto.getField(),"protectionSocialeOrganismeAccueil")) {
+            convention.setProtectionSocialeOrganismeAccueil((Boolean) conventionSingleFieldDto.getValue());
+        }
 
         if (Objects.equals(conventionSingleFieldDto.getField(), "idStructure")) {
             int oldIdStructure = convention.getStructure() != null ? convention.getStructure().getId() : 0;

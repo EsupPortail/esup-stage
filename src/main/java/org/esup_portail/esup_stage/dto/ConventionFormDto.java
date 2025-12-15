@@ -247,4 +247,6 @@ public class ConventionFormDto {
 
     private boolean confidentiel;
 
+    private Boolean protectionSocialeOrganismeAccueil;
+
 }

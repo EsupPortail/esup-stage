@@ -45,7 +45,8 @@ public class ImpressionContext {
             this.structure = new StructureContext(convention.getStructure());
             FicheEvaluation ficheEvaluation = convention.getCentreGestion().getFicheEvaluation();
             this.ficheEvaluation = new FicheEvaluationContext(ficheEvaluation);
-            this.reponse = new ReponseEvaluationContext(convention.getReponseEvaluation());
+            ReponseEvaluation reponseEvaluation = convention.getReponseEvaluation();
+            this.reponse = reponseEvaluation != null ? new ReponseEvaluationContext(reponseEvaluation) : new ReponseEvaluationContext();
             for (QuestionSupplementaire question : questionSupplementaires) {
                 this.questionsSupplementaires.add(new QuestionSupplementaireContext(question));
             }
@@ -124,6 +125,7 @@ public class ImpressionContext {
         private String conventionValidee;
         private String codeCaisse;
         private List<HoraireIrregulierContext> horaireIrregulier = new ArrayList<>();
+        private Boolean protectionSocialeOrganismeAccueil;
 
         public ConventionContext(Convention convention, CentreGestion centreEtablissement) {
             DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
@@ -205,6 +207,7 @@ public class ImpressionContext {
                         periode.getNbHeuresJournalieres()
                 ));
             }
+            this.protectionSocialeOrganismeAccueil = convention.getProtectionSocialeOrganismeAccueil();
 
         }
     }
@@ -650,6 +653,9 @@ public class ImpressionContext {
         private String reponseEnsII11;
 
         public ReponseEvaluationContext(ReponseEvaluation reponseEvaluation) {
+            if (reponseEvaluation == null) {
+                return;
+            }
             this.reponseEnt1 = reponseEvaluation.getReponseEnt1();
             this.reponseEnt1bis = reponseEvaluation.getReponseEnt1bis();
             this.reponseEnt2 = reponseEvaluation.getReponseEnt2();

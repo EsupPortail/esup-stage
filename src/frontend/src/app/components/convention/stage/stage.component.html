@@ -294,6 +294,18 @@
           </div>
         </div>
 
+        <div class="text-title">Protection Sociale (article 6.3)</div>
+        <mat-divider class="mb-2"></mat-divider>
+        <div class="row">
+          <div class="col-sm-12 col-md-12 mb-2">
+            <div class="mb-2">En cochant la case approprié, l'organisme d'accueil indique ci-après s'il fournit une protection Maladie au stagiaire, en vertu du droit local :</div>
+            <mat-radio-group formControlName="protectionSocialeOrganismeAccueil">
+              <mat-radio-button [value]="true">OUI : cette protection s'ajoute au maintien, à l'étranger, des droits issus du droit français</mat-radio-button>
+              <mat-radio-button [value]="false">NON : la protection découle alors exclusivement du maintien, à l'étranger, des droits issus du régime français étudiant</mat-radio-button>
+            </mat-radio-group>
+          </div>
+        </div>
+
         <div class="text-title">Divers</div>
         <mat-divider class="mb-2"></mat-divider>
         <div class="row" *ngIf="!enMasse">

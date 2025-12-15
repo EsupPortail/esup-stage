@@ -315,3 +315,6 @@ databaseChangeLog:
   - include:
       file: 3.3.0-suppression-url-page-instruction-cg.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 3.3.0-ajout-protection-social-organisme-accueil-convention.yaml
+      relativeToChangelogFile: true

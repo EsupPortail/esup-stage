@@ -410,20 +410,28 @@
                 <p style="text-align:justify;">
                     <span class="text-tiny" style="color:hsl(0,0%,0%);font-family:'Times New Roman', Times, serif;">En cochant la case appropriée, l'organisme d'accueil indique ci-après s'il fournit une protection Maladie au stagiaire, en vertu du droit local :</span>
                 </p>
-                <ul class="todo-list">
-                    <li style="text-align:justify;">
-                        <label class="todo-list__label">
-                            <input type="checkbox" disabled="disabled">
-                            <span class="todo-list__label__description">&nbsp;<span class="text-tiny" style="color:hsl(0,0%,0%);font-family:'Times New Roman', Times, serif;"><strong> OUI: </strong>cette protection s'ajoute au maintien, à l'étranger, des droits issus du droit français.</span></span></label>
-                    </li>
-                    <li style="text-align:justify;">
-                        <label class="todo-list__label">
-                            <input type="checkbox" disabled="disabled">
-                            <span class="todo-list__label__description">&nbsp;<span class="text-tiny" style="color:hsl(0,0%,0%);font-family:'Times New Roman', Times, serif;"><strong> NON: </strong>la protection découle alors exclusivement du maintien, à l'étranger, des droits issus du régime français étudiant.</span></span></label>
-                    </li>
-                </ul>
+                <p style="text-align:justify;margin-left:20px;">
+                    <span style="font-family:'Arial Unicode MS', 'Segoe UI Symbol', sans-serif; font-style:normal;font-size:12pt;">
+                        <#if convention.protectionSocialeOrganismeAccueil?? && convention.protectionSocialeOrganismeAccueil>☑<#else>☐</#if>
+                    </span>
+                    <span class="text-tiny" style="color:hsl(0,0%,0%);font-family:'Times New Roman', Times, serif;">
+                        <strong> OUI: </strong>cette protection s'ajoute au maintien, à l'étranger, des droits issus du droit français.
+                    </span>
+                </p>
+
+                <p style="text-align:justify;margin-left:20px;">
+                    <span style="font-family:'Arial Unicode MS', 'Segoe UI Symbol', sans-serif; font-style:normal;font-size:12pt;">
+                        <#if convention.protectionSocialeOrganismeAccueil?? && !convention.protectionSocialeOrganismeAccueil>☑<#else>☐</#if>
+                    </span>
+                    <span class="text-tiny" style="color:hsl(0,0%,0%);font-family:'Times New Roman', Times, serif;">
+                        <strong> NON: </strong>la protection découle alors exclusivement du maintien, à l'étranger, des droits issus du régime français étudiant.
+                    </span>
+                </p>
+
                 <p style="text-align:justify;">
-                    <span class="text-tiny" style="color:hsl(0,0%,0%);font-family:'Times New Roman', Times, serif;">Si aucune case n'est cochée, le 6.3-1 s'applique.</span>
+                    <span class="text-tiny" style="color:hsl(0,0%,0%);font-family:'Times New Roman', Times, serif;">
+                        Si aucune case n'est cochée, le 6.3-1 s'applique.
+                    </span>
                 </p>
                 <p style="text-align:justify;">
                     <span class="text-tiny" style="color:hsl(0,0%,0%);font-family:'Times New Roman', Times, serif;"><strong>6.4 - Protection Accident du Travail du stagiaire à l'étranger</strong></span>

@@ -87,12 +87,6 @@ public class ConventionService {
     LdapService ldapService;
 
     @Autowired
-    UtilisateurJpaRepository utilisateurJpaRepository;
-
-    @Autowired
-    MailerService mailerService;
-
-    @Autowired
     private StructureService structureService;
 
     public void validationAutoDonnees(Convention convention, Utilisateur utilisateur) {
@@ -205,6 +199,7 @@ public class ConventionService {
         convention.setNomEtabRef(centreGestionEtab.getNomCentre());
         convention.setAdresseEtabRef(centreGestionEtab.getAdresseComplete());
         convention.setVolumeHoraireFormation(conventionFormDto.getVolumeHoraireFormation());
+        convention.setProtectionSocialeOrganismeAccueil(conventionFormDto.getProtectionSocialeOrganismeAccueil());
 
         if (!isConventionModifiable(convention, ServiceContext.getUtilisateur())) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La convention n'est plus modifiable");

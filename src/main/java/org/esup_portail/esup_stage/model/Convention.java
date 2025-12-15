@@ -425,6 +425,9 @@ public class Convention extends ObjetMetier implements Exportable {
     @Column
     private boolean temConventionSignee;
 
+    @Column
+    private Boolean protectionSocialeOrganismeAccueil;
+
     public void setNomenclature(ConventionNomenclature nomenclature) {
         this.nomenclature = nomenclature;
         this.nomenclature.setConvention(this);
