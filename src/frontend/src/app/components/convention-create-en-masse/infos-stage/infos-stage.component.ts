@@ -82,7 +82,7 @@ export class InfosStageComponent implements OnInit, OnChanges {
       this.appTable?.data.forEach((data: any) => {
         const index = this.selected.findIndex((r: any) => {return r.id === data.id});
         if (index === -1) {
-           allSelected = false;
+          allSelected = false;
         }
       });
     }
@@ -91,8 +91,10 @@ export class InfosStageComponent implements OnInit, OnChanges {
 
   selectForGroup(): void {
     const dialogConfig = new MatDialogConfig();
-    dialogConfig.width = '1000px';
-    dialogConfig.height = '1000px';
+    dialogConfig.width = '95vw';
+    dialogConfig.maxWidth = '1100px';
+    dialogConfig.maxHeight = '90vh';
+    dialogConfig.panelClass = 'custom-dialog-container';
     dialogConfig.data = {convention:this.groupeEtudiant.convention, groupeConvention:null, groupeEtudiant:this.groupeEtudiant};
     const modalDialog = this.matDialog.open(InfosStageModalComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
@@ -103,8 +105,10 @@ export class InfosStageComponent implements OnInit, OnChanges {
   selectForSelected(): void {
     if(this.selected.length == 1){
       const dialogConfig = new MatDialogConfig();
-      dialogConfig.width = '1000px';
-    dialogConfig.height = '1000px';
+      dialogConfig.width = '100vw';
+      dialogConfig.maxWidth = '1100px';
+      dialogConfig.maxHeight = '100vh';
+      dialogConfig.panelClass = 'custom-dialog-container';
       const etu = this.selected[0];
       dialogConfig.data = {convention:etu.convention, groupeConvention:this.groupeEtudiant.convention, groupeEtudiant:null};
       const modalDialog = this.matDialog.open(InfosStageModalComponent, dialogConfig);
@@ -112,7 +116,7 @@ export class InfosStageComponent implements OnInit, OnChanges {
         this.refreshGroupeEtudiant(dialogResponse);
       });
     }else{
-        this.messageService.setError('Veuillez sélectionner un unique étudiant.');
+      this.messageService.setError('Veuillez sélectionner un unique étudiant.');
     }
   }
 
