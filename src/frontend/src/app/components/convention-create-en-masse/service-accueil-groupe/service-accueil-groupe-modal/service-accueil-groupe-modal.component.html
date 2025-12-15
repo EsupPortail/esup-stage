@@ -1,3 +1,15 @@
-<app-service-accueil (validated)="updateService($event)"
-                     [etab]="etab" [service]="service"
-                     [centreGestion]="centreGestion" [modifiable]="true"></app-service-accueil>
+<div class="modal-overlay">
+  <div class="modal-container">
+    <div class="header-banner">
+      <h1>Service d'accueil</h1>
+    </div>
+    <div class="scrollable-content">
+      <app-service-accueil (validated)="updateService($event)"
+                           [etab]="etab" [service]="service"
+                           [centreGestion]="centreGestion" [modifiable]="true"></app-service-accueil>
+    </div>
+    <div class="actions">
+      <button mat-flat-button color="warn" (click)="close()">Fermer</button>
+    </div>
+  </div>
+</div>

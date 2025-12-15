@@ -121,8 +121,10 @@ export class TuteurAccueilGroupeComponent implements OnInit, OnChanges {
 
   selectForGroup(): void {
     const dialogConfig = new MatDialogConfig();
-    dialogConfig.width = '12000px';
-    dialogConfig.height = '1000px';
+    dialogConfig.width = '95vw';
+    dialogConfig.maxWidth = '1100px';
+    dialogConfig.maxHeight = '90vh';
+    dialogConfig.panelClass = 'custom-dialog-container';
     dialogConfig.data = {contact: this.groupeEtudiant.convention.contact,
                          etab: this.groupeEtudiant.convention.structure,
                          service: this.groupeEtudiant.convention.service,
@@ -140,8 +142,10 @@ export class TuteurAccueilGroupeComponent implements OnInit, OnChanges {
     this.services = [...new Map(this.services.map(e => [e.id, {id:e.id,nom:e.nom}])).values()]
     if(this.services.length == 1){
       const dialogConfig = new MatDialogConfig();
-      dialogConfig.width = '1200px';
-      dialogConfig.height = '1000px';
+      dialogConfig.width = '95vw';
+      dialogConfig.maxWidth = '1100px';
+      dialogConfig.maxHeight = '90vh';
+      dialogConfig.panelClass = 'custom-dialog-container';
       let convention = this.selected[0].convention;
       dialogConfig.data = {contact: null,
                            etab: convention.structure ?? this.groupeEtudiant.convention.structure,

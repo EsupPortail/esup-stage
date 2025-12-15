@@ -67,9 +67,9 @@ export class CadreStageComponent implements OnInit, OnChanges {
 
   edit(row: any): void{
     const dialogConfig = new MatDialogConfig();
-    dialogConfig.width = '100vw';
+    dialogConfig.width = '95vw';
     dialogConfig.maxWidth = '1100px';
-    dialogConfig.maxHeight = '100vh';
+    dialogConfig.maxHeight = '90vh';
     dialogConfig.panelClass = 'custom-dialog-container';
     dialogConfig.data = {convention: row.convention};
     const modalDialog = this.matDialog.open(CadreStageModalComponent, dialogConfig);

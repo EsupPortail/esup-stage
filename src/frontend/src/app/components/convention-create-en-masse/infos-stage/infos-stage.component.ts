@@ -105,12 +105,12 @@ export class InfosStageComponent implements OnInit, OnChanges {
   selectForSelected(): void {
     if(this.selected.length == 1){
       const dialogConfig = new MatDialogConfig();
-      dialogConfig.width = '100vw';
+      dialogConfig.width = '95vw';
       dialogConfig.maxWidth = '1100px';
-      dialogConfig.maxHeight = '100vh';
+      dialogConfig.maxHeight = '90vh';
       dialogConfig.panelClass = 'custom-dialog-container';
       const etu = this.selected[0];
-      dialogConfig.data = {convention:etu.convention, groupeConvention:this.groupeEtudiant.convention, groupeEtudiant:null};
+      dialogConfig.data = {convention:etu.convention, groupeConvention:this.groupeEtudiant.convention, groupeEtudiant:this.groupeEtudiant};
       const modalDialog = this.matDialog.open(InfosStageModalComponent, dialogConfig);
       modalDialog.afterClosed().subscribe(dialogResponse => {
         this.refreshGroupeEtudiant(dialogResponse);
