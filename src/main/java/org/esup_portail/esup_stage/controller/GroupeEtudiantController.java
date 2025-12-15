@@ -78,6 +78,9 @@ public class GroupeEtudiantController {
     @Autowired
     ConventionService conventionService;
 
+    @Autowired
+    PeriodeStageJpaRepository periodeStageJpaRepository;
+
     public static <T> T mergeObjects(T first, T second) throws IllegalAccessException {
         Class<?> clazz = first.getClass();
         Field[] fields = clazz.getDeclaredFields();
@@ -188,6 +191,17 @@ public class GroupeEtudiantController {
             etudiantMergedConvention.setVerificationAdministrative(true);
             etudiantMergedConvention.setValidationConvention(true);
             etudiantMergedConvention.setLoginValidation(ServiceContext.getUtilisateur().getLogin());
+            List<PeriodeStage> periodesSource = etudiantConvention.getPeriodeStage(); // etu ou groupe
+            List<PeriodeStage> clones = clonePeriodes(periodesSource, etudiantMergedConvention);
+
+            etudiantMergedConvention.setPeriodeStage(new ArrayList<>());
+
+            Convention saved = conventionJpaRepository.save(etudiantMergedConvention);
+
+            clones.forEach(p -> p.setConvention(saved));
+            periodeStageJpaRepository.saveAll(clones);
+            saved.setPeriodeStage(clones);
+
             conventionService.validationAutoDonnees(etudiantMergedConvention, ServiceContext.getUtilisateur());
             conventionJpaRepository.save(etudiantMergedConvention);
 
@@ -595,6 +609,20 @@ public class GroupeEtudiantController {
         conventionService.setConventionData(convention, conventionFormDto);
 
         return conventionJpaRepository.save(convention);
+    }
+
+    private List<PeriodeStage> clonePeriodes(List<PeriodeStage> source, Convention target) {
+        List<PeriodeStage> clones = new ArrayList<>();
+        if (source == null) return clones;
+        for (PeriodeStage p : source) {
+            PeriodeStage clone = new PeriodeStage();
+            clone.setDateDebut(p.getDateDebut());
+            clone.setDateFin(p.getDateFin());
+            clone.setNbHeuresJournalieres(p.getNbHeuresJournalieres());
+            clone.setConvention(target); // <- Convention, pas la liste
+            clones.add(clone);
+        }
+        return clones;
     }
 
 }

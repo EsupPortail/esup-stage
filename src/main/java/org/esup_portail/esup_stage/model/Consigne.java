@@ -3,6 +3,7 @@ package org.esup_portail.esup_stage.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,11 +11,13 @@ import java.util.List;
 @Entity
 @Table(name = "Consigne")
 @Data
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public class Consigne extends ObjetMetier {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idConsigne", nullable = false)
+    @EqualsAndHashCode.Include
     private int id;
 
     @JsonIgnore
