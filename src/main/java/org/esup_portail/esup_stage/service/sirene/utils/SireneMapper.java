@@ -9,7 +9,9 @@ import org.esup_portail.esup_stage.service.sirene.model.SirenResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
@@ -41,10 +43,13 @@ public class SireneMapper {
 
         // Adresse
         if (etablissement.getAdresse() != null) {
-            structure.setVoie(etablissement.getAdresse().getNumeroVoie() + " " + etablissement.getAdresse().getTypeVoie() + " " + etablissement.getAdresse().getVoie());
-            structure.setCommune(etablissement.getAdresse().getCommune());            structure.setCommune(etablissement.getAdresse().getCommune());
-            structure.setCodePostal(etablissement.getAdresse().getCodePostal());
-            structure.setCodeCommune(etablissement.getAdresse().getCodeCommune());
+            String voie = cleanConcat(etablissement.getAdresse().getNumeroVoie(),
+                    etablissement.getAdresse().getTypeVoie(),
+                    etablissement.getAdresse().getVoie());
+            structure.setVoie(voie);
+            structure.setCommune(clean(etablissement.getAdresse().getCommune()));
+            structure.setCodePostal(clean(etablissement.getAdresse().getCodePostal()));
+            structure.setCodeCommune(clean(etablissement.getAdresse().getCodeCommune()));
         }
 
         // NAF
@@ -302,4 +307,17 @@ public class SireneMapper {
         return s != null && !s.isBlank();
     }
 
+    private String clean(String value) {
+        if (value == null) return null;
+        String v = value.trim();
+        if (v.isEmpty() || v.equalsIgnoreCase("null")) return null;
+        return v;
+    }
+
+    private String cleanConcat(String... parts) {
+        return Arrays.stream(parts)
+                .map(this::clean)
+                .filter(Objects::nonNull)
+                .collect(Collectors.joining(" "));
+    }
 }
