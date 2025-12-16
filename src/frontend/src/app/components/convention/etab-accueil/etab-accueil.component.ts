@@ -156,7 +156,7 @@ export class EtabAccueilComponent implements OnInit {
       return false;
     }
     const isCreator: boolean = etab.loginCreation === this.currentUser.login;
-    const isEtabModified: boolean = etab.loginModification && etab.loginModification !== etab.loginCreation;
+    const isEtabModified: boolean = etab.loginModif && etab.loginModif !== etab.loginCreation;
     return isCreator && !isEtabModified;
   }
 

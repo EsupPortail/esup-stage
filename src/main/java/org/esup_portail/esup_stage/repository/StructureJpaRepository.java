@@ -25,4 +25,13 @@ public interface StructureJpaRepository extends JpaRepository<Structure, Integer
     @Query("SELECT CASE WHEN COUNT(s) > 0 THEN true ELSE false END FROM Structure s WHERE s.numeroSiret = :siret AND s.temEnServStructure = true")
     Boolean existAndActifByNumeroSiret (@Param("siret") String siret);
 
+    @Query("""
+    SELECT CASE WHEN COUNT(s) > 0 THEN true ELSE false END
+    FROM Structure s, Utilisateur u
+    WHERE s.id = :id
+      AND u.id = :userId
+      AND s.loginCreation = u.login
+      AND (s.loginModif IS NULL OR s.loginModif = s.loginCreation)
+    """)
+    boolean isOwner(@Param("id") Integer id, @Param("userId") int userId);
 }
