@@ -9,7 +9,9 @@ import org.esup_portail.esup_stage.service.sirene.model.SirenResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
@@ -41,15 +43,18 @@ public class SireneMapper {
 
         // Adresse
         if (etablissement.getAdresse() != null) {
-            structure.setVoie(etablissement.getAdresse().getNumeroVoie() + " " + etablissement.getAdresse().getTypeVoie() + " " + etablissement.getAdresse().getVoie());
-            structure.setCommune(etablissement.getAdresse().getCommune());            structure.setCommune(etablissement.getAdresse().getCommune());
-            structure.setCodePostal(etablissement.getAdresse().getCodePostal());
-            structure.setCodeCommune(etablissement.getAdresse().getCodeCommune());
+            String voie = cleanConcat(etablissement.getAdresse().getNumeroVoie(),
+                    etablissement.getAdresse().getTypeVoie(),
+                    etablissement.getAdresse().getVoie());
+            structure.setVoie(voie);
+            structure.setCommune(clean(etablissement.getAdresse().getCommune()));
+            structure.setCodePostal(clean(etablissement.getAdresse().getCodePostal()));
+            structure.setCodeCommune(clean(etablissement.getAdresse().getCodeCommune()));
         }
 
         // NAF
-        if(etablissement.getUniteLegale().getNaf_n5() != null) {
-            structure.setNafN5(nafN5JpaRepository.findByCode(etablissement.getUniteLegale().getNaf_n5()));
+        if(etablissement.getNaf_n5() != null) {
+            structure.setNafN5(nafN5JpaRepository.findByCode(etablissement.getNaf_n5()));
             if(structure.getNafN5() != null){
                 structure.setActivitePrincipale(structure.getNafN5().getLibelle());
             }
@@ -252,8 +257,8 @@ public class SireneMapper {
         }
 
         // --- NAF : ne remplacer que si on résout le code en base
-        if (etablissement.getUniteLegale() != null && notBlank(etablissement.getUniteLegale().getNaf_n5())) {
-            var naf = nafN5JpaRepository.findByCode(etablissement.getUniteLegale().getNaf_n5());
+        if (etablissement.getUniteLegale() != null && notBlank(etablissement.getNaf_n5())) {
+            var naf = nafN5JpaRepository.findByCode(etablissement.getNaf_n5());
             if (naf != null) {
                 structure.setNafN5(naf);
                 if (notBlank(naf.getLibelle())) {
@@ -302,4 +307,17 @@ public class SireneMapper {
         return s != null && !s.isBlank();
     }
 
+    private String clean(String value) {
+        if (value == null) return null;
+        String v = value.trim();
+        if (v.isEmpty() || v.equalsIgnoreCase("null")) return null;
+        return v;
+    }
+
+    private String cleanConcat(String... parts) {
+        return Arrays.stream(parts)
+                .map(this::clean)
+                .filter(Objects::nonNull)
+                .collect(Collectors.joining(" "));
+    }
 }

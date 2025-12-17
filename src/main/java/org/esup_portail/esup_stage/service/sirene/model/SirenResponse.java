@@ -46,6 +46,9 @@ public class SirenResponse {
         @JsonProperty("adresseEtablissement")
         private AdresseEtablissement adresse;
 
+        @JsonProperty("activitePrincipaleNAF25Etablissement")
+        private String naf_n5;
+
         @JsonIgnoreProperties(ignoreUnknown = true)
         @Data
         public static class UniteLegale {
@@ -58,9 +61,6 @@ public class SirenResponse {
 
             @JsonProperty("trancheEffectifsUniteLegale")
             private String TrancheEffectifsUniteLegale;
-
-            @JsonProperty("activitePrincipaleUniteLegale")
-            private String naf_n5;
 
             @JsonProperty("categorieEntreprise")
             private String categorieEntreprise;
