@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.1.11-naf-rev2-to-2025
+      author: thouveno9
+      changes:
+        - sqlFile:
+            path : 3.1.11-naf-rev2-to-2025.sql
+            relativeToChangelogFile: true
+            encoding: utf8

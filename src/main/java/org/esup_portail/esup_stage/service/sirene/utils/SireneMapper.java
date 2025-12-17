@@ -53,8 +53,8 @@ public class SireneMapper {
         }
 
         // NAF
-        if(etablissement.getUniteLegale().getNaf_n5() != null) {
-            structure.setNafN5(nafN5JpaRepository.findByCode(etablissement.getUniteLegale().getNaf_n5()));
+        if(etablissement.getNaf_n5() != null) {
+            structure.setNafN5(nafN5JpaRepository.findByCode(etablissement.getNaf_n5()));
             if(structure.getNafN5() != null){
                 structure.setActivitePrincipale(structure.getNafN5().getLibelle());
             }
@@ -257,8 +257,8 @@ public class SireneMapper {
         }
 
         // --- NAF : ne remplacer que si on résout le code en base
-        if (etablissement.getUniteLegale() != null && notBlank(etablissement.getUniteLegale().getNaf_n5())) {
-            var naf = nafN5JpaRepository.findByCode(etablissement.getUniteLegale().getNaf_n5());
+        if (etablissement.getUniteLegale() != null && notBlank(etablissement.getNaf_n5())) {
+            var naf = nafN5JpaRepository.findByCode(etablissement.getNaf_n5());
             if (naf != null) {
                 structure.setNafN5(naf);
                 if (notBlank(naf.getLibelle())) {
