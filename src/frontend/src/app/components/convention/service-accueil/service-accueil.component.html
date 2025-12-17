@@ -67,7 +67,7 @@
           <div class="col-sm-9">{{service.telephone}}</div>
         </div>
       </div>
-      <div *ngIf="modif && (canEdit() || (isNewService && canCreate()))">
+      <div *ngIf="modif && (canEdit() || isCreatorService(service) || (isNewService && canCreate()))">
         <div class="text-title">Général</div>
         <mat-divider class="mb-2"></mat-divider>
           <div class="row">
@@ -115,9 +115,9 @@
           </mat-form-field>
         </div>
       </div>
-      <div class="row mt-3" *ngIf="canEdit() || canCreate()">
+      <div class="row mt-3" *ngIf="canEdit() || canCreate() || isCreatorService(service)">
         <div class="col-6">
-          <button mat-button mat-stroked-button color="primary" *ngIf="service.id && !modif && canEdit()" (click)="edit()">Modifier ces informations</button>
+          <button mat-button mat-stroked-button color="primary" *ngIf="service.id && !modif && (canEdit() || isCreatorService(service))" (click)="edit()">Modifier ces informations</button>
           <button mat-button mat-stroked-button color="warn" *ngIf="service.id && modif" (click)="cancelEdit()">{{'BOUTON_ANNULER'|contenu}}</button>
         </div>
         <div class="col-6 text-right" *ngIf="modif">
