@@ -2,27 +2,27 @@
 -- Source https://www.insee.fr/fr/information/8181066
 
 -- 1) Ajout de la colonne de version
-ALTER TABLE naf_n5
+ALTER TABLE NAF_N5
     ADD COLUMN RevNaf VARCHAR(10) NULL AFTER temEnServNAF_N5;
 
 -- 2) Remplacer temEnServNAF_N5 (VARCHAR) par un booléen
 --    (On force ensuite toutes les lignes existantes à 0, donc peu importe la valeur actuelle)
-ALTER TABLE naf_n5
+ALTER TABLE NAF_N5
     DROP COLUMN temEnServNAF_N5;
 
-ALTER TABLE naf_n5
+ALTER TABLE NAF_N5
     ADD COLUMN temEnServNAF_N5 BOOLEAN NOT NULL DEFAULT 0
         AFTER codeNAF_N1;
 
 -- 3) Marquer tout l'existant comme "rev.2" et inactif
-UPDATE naf_n5
+UPDATE NAF_N5
 SET temEnServNAF_N5 = 0,
     RevNaf = 'rev.2';
 
 -- Script généré depuis le PDF "Structure NAF 2025" (maj 2024-10-04)
 -- Table: NAF_N5
 
-INSERT INTO naf_n5 (codeNAF_N5, libelleNAF_N5, codeNAF_N1, temEnServNAF_N5, RevNaf)
+INSERT INTO NAF_N5 (codeNAF_N5, libelleNAF_N5, codeNAF_N1, temEnServNAF_N5, RevNaf)
 VALUES
     ('01.11Y', 'Culture de céréales, à l’exception du riz, de légumineuses et de graines oléagineuses', 'A', 1, '2025'),
     ('01.12Y', 'Culture du riz', 'A', 1, '2025'),
@@ -331,7 +331,7 @@ métallurgie des poudres', 'C', 1, '2025'),
     ('33.18H', 'Réparation et entretien de véhicules de combat, de navires et de bateaux militaires', 'C', 1, '2025'),
     ('33.19Y', 'Réparation et entretien d’autres équipements', 'C', 1, '2025');
 
-INSERT INTO naf_n5 (codeNAF_N5, libelleNAF_N5, codeNAF_N1, temEnServNAF_N5, RevNaf)
+INSERT INTO NAF_N5 (codeNAF_N5, libelleNAF_N5, codeNAF_N1, temEnServNAF_N5, RevNaf)
 VALUES
     ('33.20Y', 'Installation de machines et d’équipements industriels', 'C', 1, '2025'),
     ('35.11Y', 'Production d’électricité à partir de sources non renouvelables', 'D', 1, '2025'),
@@ -640,7 +640,7 @@ conseil fiscal', 'M', 1, '2025'),
     ('74.30Y', 'Activités de traduction et d’interprétation', 'M', 1, '2025'),
     ('74.91Y', 'Activités de courtage et de marketing de brevets', 'M', 1, '2025');
 
-INSERT INTO naf_n5 (codeNAF_N5, libelleNAF_N5, codeNAF_N1, temEnServNAF_N5, RevNaf)
+INSERT INTO NAF_N5 (codeNAF_N5, libelleNAF_N5, codeNAF_N1, temEnServNAF_N5, RevNaf)
 VALUES
     ('74.99Y', 'Toutes les autres activités spécialisées, scientifiques et techniques n.c.a.', 'M', 1, '2025'),
     ('75.00Y', 'Activités vétérinaires', 'M', 1, '2025'),
