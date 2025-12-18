@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { LoaderService } from "../../services/loader.service";
+import {Subscription} from "rxjs";
 
 @Component({
     selector: 'app-loader',
@@ -9,9 +10,23 @@ import { LoaderService } from "../../services/loader.service";
 })
 export class LoaderComponent implements OnInit {
 
-  constructor(public loaderService: LoaderService) { }
+  loadingMessage = '';
+  private sub!: Subscription;
+
+  constructor(public loaderService: LoaderService) {}
 
   ngOnInit(): void {
+    this.sub = this.loaderService.isLoading.subscribe(isLoading => {
+      if (isLoading) {
+        this.loadingMessage = 'Chargement en cours…';
+      } else {
+        this.loadingMessage = 'Chargement terminé';
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.sub?.unsubscribe();
   }
 
 }

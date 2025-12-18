@@ -53,3 +53,45 @@ mat-sidenav-content {
 .menu-button__btn--open {
   transform: rotate(90deg);
 }
+
+.fr-skiplinks {
+  width: 100%;
+  background: #ffffff;
+  border-bottom: 2px solid #000000;
+  max-height: 0;
+  overflow: hidden;
+}
+
+.fr-skiplinks:focus-within {
+  max-height: 80px;
+}
+
+.fr-skiplinks .fr-container {
+  padding: 0;
+}
+
+.fr-skiplinks:focus-within .fr-container {
+  padding: 0.5rem 1rem;
+}
+
+.fr-skiplinks__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.fr-skiplinks .fr-link {
+  color: #1a237e;
+  font-size: 1rem;
+  text-decoration: underline;
+}
+
+.fr-skiplinks .fr-link:focus,
+.fr-skiplinks .fr-link:focus-visible {
+  font-weight: 700;
+}
+
+.fr-skiplinks .fr-link:hover {}

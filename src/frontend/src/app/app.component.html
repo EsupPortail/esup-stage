@@ -1,3 +1,18 @@
+<div class="fr-skiplinks">
+  <nav role="navigation" aria-label="Accès rapide" class="fr-container">
+    <ul class="fr-skiplinks__list">
+      <li>
+        <a class="fr-link" href="#main">Contenu</a>
+      </li>
+      <li>
+        <a class="fr-link" href="#menu">Menu</a>
+      </li>
+      <li>
+        <a class="fr-link" href="#footer">Pied de page</a>
+      </li>
+    </ul>
+  </nav>
+</div>
 <app-header></app-header>
 <div class="menu-button" *ngIf="isConnected()">
   <button
@@ -12,14 +27,14 @@
 </div>
 <mat-sidenav-container>
   <mat-sidenav mode="side" [opened]="isOpened()" *ngIf="isConnected()">
-    <nav class="app-menu" role="navigation" aria-label="menu principal">
+    <nav id="menu" class="app-menu" role="navigation" aria-label="menu principal">
       <ul class="menu-root">
         <app-menu *ngFor="let item of items" [item]="item"></app-menu>
       </ul>
     </nav>
   </mat-sidenav>
   <mat-sidenav-content>
-    <main>
+    <main id="main">
       <app-loader></app-loader>
       <app-title></app-title>
       <router-outlet></router-outlet>
