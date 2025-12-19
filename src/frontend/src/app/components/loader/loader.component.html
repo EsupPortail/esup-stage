@@ -1,7 +1,8 @@
 <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
   {{ loadingMessage }}
 </div>
-<div id="loader" *ngIf="loaderService.isLoading|async">
+
+<div id="loader" *ngIf="showLoader">
   <div id="loader-overlay"></div>
   <mat-spinner color="accent"></mat-spinner>
 </div>
