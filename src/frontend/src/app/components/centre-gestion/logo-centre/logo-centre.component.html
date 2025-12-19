@@ -52,9 +52,10 @@
       <!-- Aperçu de l'image recadrée -->
       <div *ngIf="croppedImage" class="preview-container">
         <h4>Aperçu :</h4>
-        <img [src]="croppedImage" alt="Logo recadré" class="preview-image"
+        <img [src]="croppedImage" aria-label="Logo recadré" alt="Logo recadré" class="preview-image"
              style="max-width: 300px; max-height: 300px;" />
       </div>
+
 
       <!-- Boutons d'action -->
       <div class="cropper-actions" style="margin-top: 15px;">
@@ -72,7 +73,7 @@
     <!-- Aperçu du logo actuel -->
     <div *ngIf="previewUrl && !imageChangedEvent" class="current-logo-preview">
       <div class="preview-container">
-        <img [src]="previewUrl" alt="Preview du logo" class="preview-image"
+        <img [src]="previewUrl" aria-label="logo du centre de gestion" alt="Logo du centre de gesiton" class="preview-image"
              style="max-width: 300px; max-height: 300px;" />
       </div>
     </div>

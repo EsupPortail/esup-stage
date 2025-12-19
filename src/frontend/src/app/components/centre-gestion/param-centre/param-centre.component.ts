@@ -386,4 +386,26 @@ export class ParamCentreComponent implements OnInit {
   hasViseur(): boolean {
     return !!this.form.get('nomViseur')?.value;
   }
+
+  /**
+   * Déplace une validation vers le haut dans la liste (alternative accessible)
+   * @param index Index actuel de la validation
+   */
+  moveValidationUp(index: number): void {
+    if (index > 0) {
+      moveItemInArray(this.validationsActives, index, index - 1);
+      this.reorderValidations();
+    }
+  }
+
+  /**
+   * Déplace une validation vers le bas dans la liste (alternative accessible)
+   * @param index Index actuel de la validation
+   */
+  moveValidationDown(index: number): void {
+    if (index < this.validationsActives.length - 1) {
+      moveItemInArray(this.validationsActives, index, index + 1);
+      this.reorderValidations();
+    }
+  }
 }
