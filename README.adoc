@@ -306,3 +306,103 @@ TIP: Le fichier application.properties peut être positionné à la racine du to
 * Se rendre sur l'application à l'adresse `http://localhost:8080/` pour se connecter une première fois
 * Puis se rendre sur `http://localhost:4200`
 * Pour se déconnecter, aller sur `http://localhost:4200/logout`
+
+== Exécution locale en mode docker compose
+
+=== Fonctionnement
+
+.Services :
+* ESUP Stage
+* MariaDB & PHP My Admin
+* https://apereo.github.io/cas/index.html[CAS]
+* https://github.com/maildev/maildev[MailDev]
+* https://github.com/EsupPortail/esup-siscol[ESUP SiScol]
+* https://github.com/unistra/apo-webservices-stub-server[Apogee Web Services (Stub)]
+* https://traefik.io/[Routeur Træfik]
+
+[horizontal]
+.Variables (fichier `.env`) :
+`IMAGE_REPO IMAGE_NAME:IMAGE_TAG`:: `harbor.esup-portail.org/esup-stage/esup-stage:3.1.9-e424919` par défaut
+`APPLI_ADMIN_TECHNIQUE`:: login de l'admin technique (`$USER` par défaut)
+`APP_APOGEE_UNIVERSITY_CODE`:: code université (`UNIV` par défaut)
+`APP_APOGEE_UNIVERSITY_LIBELLE`:: code université (`UNIVERSITÉ` par défaut)
+`APPLI_TOKEN_SECRET`:: token d'accès à localhost/public/… (`achanger` par défaut)
+`APPLI_JWT_SECRET`:: secret utilisé pour signer les JWT (algorithmes HS256 / HS512)
+`APPLI_DATASOURCE_CONTEXT`:: contexte liquibase (`baseline` par défaut)
+`DOCKER_SOCK`:: socket docker (par défaut `/var/run/docker.sock`) +
+utilisez `/run/user/$UID/podman/podman.sock` pour podman
+
+[horizontal]
+.Données de test :
+* xref:testdata/apogeews/personas.yml[] — Personas LDAP et APOGEE
+** `olivier`: _Olivier ENSEIGNANT_
+** `nathalie`: _Nathalie GESTIONNAIRE_
+** `estelle`: _Estelle ETUDIANTE_
+*** INE: `201234567AB`, numéro: `12345678`
+*** _Licence de test première année_ (VET: `LT1` `321`) +
+Diplôme: _Licence de Test_ (VDI: `LT` `321`) +
+Composante: _Composante_ (`COMP`)
+*** sous le régime de la `Formation Initiale`
+* xref:testdata/esup-stage/CentreGestion.csv[] — Centres de gestion
+** `$APP_APOGEE_UNIVERSITY_CODE` de type établissement
+** `COMP` de type UFR
+* xref:testdata/esup-stage/Structure.csv[] — Établissements d'accueil
+** _Etablissement-accueil_
+* xref:testdata/esup-stage/Service.csv[] — Services d'accueil
+** _Le service_
+* xref:testdata/esup-stage/Contact.csv[] — Tuteurs professionnel
+** `jordan`: _Jordan TUTEUR_
+* testdata/esup-stage/nomenclatures/ — Nomenclatures additionnelles (CSV)
+
+=== Exécution
+
+[source,shell]
+----
+sh ./mvnw package -Dmaven.test.skip # compile le target/esup-stage-….war requis
+docker compose build # build des différentes images
+docker compose up -d # démarrer tout
+docker compose ps # état des services
+docker compose logs -f # tous les journaux aggrégés
+docker compose down # arrêter tout
+docker compose down --volumes # arrêter tout et supprimer les données
+----
+
+.Accès aux différents services :
+* http://localhost — ESUP Stage
+* http://cas.localhost/cas/login — CAS (n'importe quel login, n'importe quel mot de passe)
+* http://webmail.localhost — MailDev (emails locaux)
+* http://db.localhost — PHP My Admin
+* http://esup-siscol.localhost — ESUP SiScol
+* http://apogeews.localhost — Apogee Web Services (Stub)
+* http://ingress.localhost — tableau de bord de Træfik
+
+.Ports exposés :
+* `80` : http
+* `389` : ldap (bind-dn: `uid=estage,ou=apps,dc=univ,dc=fr` bind-password: `achanger`)
+* `3306` : mariadb
+* `1025` : maildev (SMTP)
+* `8001` : Remote JVM DEBUG esup-stage
+* `8002` : Remote JVM DEBUG esup-siscol
+* `8081` : esup-stage en direct (sans træfik)
+* `8082` : esup-siscol en direct (sans træfik)
+* `8083` : apogeews en direct (sans træfik)
+
+[NOTE]
+====
+La configuration par défaut `xref:config/application.yml[]`
+est pré-paramétrée pour utiliser les services locaux du `docker-compose.yml`
+en exécution directe depuis l'IDE.
+
+Cette dernière est facilement amendable avec `config/application-default.yml`
+ou autre `config/application-_monprofil_.yml` qui sont exclus par défaut de GIT.
+====
+
+[TIP]
+.Importer des données de sauvegarde
+====
+1. mettre `APPLI_DATASOURCE_CONTEXT=legacy` dans `.env`
+2. décommenter la partie `volume[].type=bind` du service `mariadb` (`docker-compose.yml`) +
+avec le fichier de sauvegarde en `data_….sql.gz`
+3. supprimer le volume docker `mariadb-data`
+4. relancer
+====
