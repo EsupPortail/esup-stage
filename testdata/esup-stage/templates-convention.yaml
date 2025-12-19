@@ -1,0 +1,33 @@
+databaseChangeLog:
+  - changeSet:
+      id: template-convention-fr
+      author: test-data
+      preConditions:
+        - onFail: MARK_RAN
+        - tableIsEmpty:
+            tableName: TemplateConvention
+      changes:
+        - insert:
+            tableName: TemplateConvention
+            columns:
+              - column:
+                  name: idTypeConvention
+                  valueNumeric: 4 # FORMATION INITIALE
+              - column:
+                  name: codeLangueConvention
+                  value: fr
+              - column:
+                  name: dateCreation
+                  valueComputed: NOW()
+        - insert:
+            tableName: TemplateConvention
+            columns:
+              - column:
+                  name: idTypeConvention
+                  valueNumeric: 5 # FORMATION CONTINUE
+              - column:
+                  name: codeLangueConvention
+                  value: fr
+              - column:
+                  name: dateCreation
+                  valueComputed: NOW()

@@ -1,0 +1,40 @@
+databaseChangeLog:
+  - preConditions:
+      - or:
+        - changeSetExecuted:
+            id: 3.0.0-add-login-sender-signature-avenant
+            author: thouveno9
+            changeLogFile: db/changelog/3.0.0-add-login-sender-signature.yaml
+        - changeSetExecuted:
+            id: 1751877910127-354
+            author: thouveno9
+            changeLogFile: db/changelog/baseline-v3/baseline-v3.yaml
+  - include:
+      file: nomenclatures.yaml
+  - include:
+      file: roles.yaml
+  - include:
+      file: centre-gestion.yaml
+  - include:
+      file: templates-convention.yaml
+  - include:
+      file: structures-services-contacts.yaml
+  - changeSet:
+      id: init-app-config-generale
+      author: test-data
+      preConditions:
+        - onFail: MARK_RAN
+        - tableIsEmpty:
+            tableName: AppConfig
+      changes:
+        - insert:
+            tableName: AppConfig
+            columns:
+              - column:
+                  name: codeAppConfig
+                  value: GENERAL
+              - column:
+                  name: parametres
+                  value: "{}"
+  - includeAll:
+      path: db.changelog.d/

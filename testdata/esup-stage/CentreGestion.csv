@@ -1,0 +1,4 @@
+idCentreGestion,nomCentre,idNiveauCentre,codeConfidentialite,presenceTuteurEns,presenceTuteurPro,saisieTuteurProParEtudiant,depotAnonyme,autoriserImpressionConvention,autorisationEtudiantCreationConvention,envoiDocumentSigne,dateCreation,validationCreation
+1,ETABLISSEMENT,2,,,,,,,,,,
+2,COMP,4,,,,,,,,,,
+

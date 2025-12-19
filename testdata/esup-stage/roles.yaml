@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: roles-Role
+      author: test-data
+      runOnChange: true
+      changes:
+        - loadUpdateData:
+            primaryKey: idRole
+            file: roles/Role.csv
+            tableName: Role
+  - changeSet:
+      id: roles-RoleAppFonction
+      author: test-data
+      runOnChange: true
+      changes:
+        - loadUpdateData:
+            primaryKey: idRoleAppFonction
+            file: roles/RoleAppFonction.csv
+            tableName: RoleAppFonction

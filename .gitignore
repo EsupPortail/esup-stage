@@ -3,6 +3,7 @@
 /application.properties
 application.properties
 etc/estage/application.properties
+/config/application-*
 compose.env
 .env
 /data*
@@ -14,6 +15,8 @@ target/
 !**/src/test/**/target/
 application.properties
 etc/estage/application.properties
+/testdata/esup-stage/db.changelog.d/
+!/testdata/esup-stage/db.changelog.d/.empty.yaml
 
 ### HTTP files ###
 *rest.http

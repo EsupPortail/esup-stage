@@ -1,0 +1,75 @@
+databaseChangeLog:
+  - changeSet:
+      id: centres-gestion
+      author: test-data
+      preConditions:
+        - onFail: MARK_RAN
+        - tableIsEmpty:
+            tableName: CentreGestion
+      changes:
+        - loadData:
+            tableName: CentreGestion
+            file: CentreGestion.csv
+            columns:
+              - column:
+                  name: dateCreation
+                  defaultValue: NOW()
+                  type: datetime
+              - column:
+                  name: presenceTuteurEns
+                  defaultValue: 1
+                  type: numeric
+              - column:
+                  name: presenceTuteurPro
+                  defaultValue: 1
+                  type: numeric
+              - column:
+                  name: saisieTuteurProParEtudiant
+                  defaultValue: 1
+                  type: numeric
+              - column:
+                  name: depotAnonyme
+                  defaultValue: 1
+                  type: numeric
+              - column:
+                  name: autoriserImpressionConvention
+                  defaultValue: 1
+                  type: numeric
+              - column:
+                  name: autorisationEtudiantCreationConvention
+                  defaultValue: 1
+                  type: numeric
+              - column:
+                  name: envoiDocumentSigne
+                  defaultValue: 1
+                  type: numeric
+              - column:
+                  name: autoriserImpressionConventionApresCreationAvenant
+                  defaultValue: 1
+                  type: numeric
+              - column:
+                  name: codeConfidentialite
+                  defaultValue: 0
+              - column:
+                  name: validationCreation
+                  defaultValue: 1
+                  type: numeric
+          #validationPedagogique
+          #validationConvention
+          #verificationAdministrative
+          #onlyMailCentreGestion
+        - loadData:
+            tableName: CritereGestion
+            file: CritereGestion.csv
+            columns:
+              - column:
+                  name: codeVersionEtape
+                  defaultValue: ''
+        # ajout des fiches évaluation par défaut manquantes
+        - sql:
+            sql: |
+              INSERT INTO `FicheEvaluation` (`idCentreGestion`)
+                SELECT `CentreGestion`.`idCentreGestion`
+                  FROM `CentreGestion`
+                  LEFT JOIN `FicheEvaluation` ON `CentreGestion`.`idCentreGestion` = `FicheEvaluation`.`idCentreGestion`
+                  WHERE `FicheEvaluation`.`idCentreGestion` IS NULL

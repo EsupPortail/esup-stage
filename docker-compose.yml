@@ -1,15 +1,799 @@
+# syntax=docker/dockerfile:1.4
+
+# start/stop:
+#  • docker compose build # build images
+#  • docker compose up -d # start services
+#  • docker compose down # stop services
+#  • docker compose down --volumes # stop services and drop data
+# variables (à redéfinir dans le fichier .env):
+#  • IMAGE_REPO IMAGE_NAME:IMAGE_TAG — harbor.esup-portail.org/esup-stage/esup-stage:3.1.9-e424919 par défaut
+#  • APPLI_ADMIN_TECHNIQUE — login de l'admin technique ($USER par défaut)
+#  • APP_APOGEE_UNIVERSITY_CODE — code université (UNIV par défaut)
+#  • APP_APOGEE_UNIVERSITY_LIBELLE — code université (UNIVERSITÉ par défaut)
+#  • APPLI_TOKEN_SECRET — token d'accès à localhost/public/… (achanger par défaut)
+#  • APPLI_JWT_SECRET — secret utilisé pour signer les JWT (algorithmes HS256 / HS512)
+#  • APPLI_DATASOURCE_CONTEXT — contexte liquibase (baseline par défaut)
+#  • DOCKER_SOCK — socket docker (par défaut /var/run/docker.sock, /run/user/$UID/podman/podman.sock pour podman)
+# files:
+#  • .env — variables d'environnement
+#  • testdata/apogeews/*.yml — Données de test (apogeews stub)
+#  • testdata/esup-stage/… — Données de test (liquibase)
+# urls:
+#  • http://localhost — ESUP Stage
+#  • http://cas.localhost/cas/login — CAS (any user, any password)
+#  • http://webmail.localhost — MailDev
+#  • http://db.localhost — PHP My Admin
+#  • http://esup-siscol.localhost — ESUP SiScol
+#  • http://apogeews.localhost — Apogee Web Services (Stub)
+#  • http://ingress.localhost — Træfik Dashboard
+# ports:
+#  • 80 http
+#  • 389 ldap (bind-dn: uid=estage,ou=apps,dc=univ,dc=fr bind-password: achanger)
+#  • 3306 mariadb
+#  • 1025 maildev
+#  • 8001 DEBUG esup-stage
+#  • 8002 DEBUG esup-siscol
+#  • 8081 esup-stage en direct
+#  • 8082 esup-siscol en direct
+#  • 8083 apogeews en direct
+
+configs:
+  application-esup-stage.yml:
+    content: |
+      cas:
+        url:
+          service: ${CAS_URL_SERVICE:-http://cas.localhost/cas}
+      appli:
+        prefix: http://localhost
+        url: http://localhost/
+        local-api: http://esup-stage.localhost
+        admin_technique: ${APPLI_ADMIN_TECHNIQUE:-$USER}
+        data_dir: /srv
+        tokens:
+          - ${APPLI_TOKEN_SECRET:-achanger}
+        jwt-secret: ${APPLI_JWT_SECRET:-achangerachangerachangerachangerachangerachanger}
+        nb-jours-valide-token: 60
+        datasource:
+          driver: org.mariadb.jdbc.Driver
+          url: jdbc:mariadb://mariadb:3306/estage?sslMode=disable
+          username: ${APPLI_DATASOURCE_USERNAME:-esup_stage}
+          password: ${APPLI_DATASOURCE_PASSWORD:-achanger}
+          context: ${APPLI_DATASOURCE_CONTEXT:-baseline}
+        mailer:
+          protocol: smtp
+          host: maildev
+          ssl:
+            enable: true
+          port: 1025
+          auth: true
+          username: ${APPLI_MAILER_USERNAME:-esup-stage@localhost}
+          password: ${APPLI_MAILER_PASSWORD:-achanger}
+          from: esup-stage@esup-stage.localhost
+          #disable_delivery: false
+          #delivery_address: ${APPLI_ADMIN_TECHNIQUE:-$USER}@localhost
+      referentiel:
+        ws:
+          ldap_url: http://esup-siscol.localhost/ldap
+          apogee_url: http://esup-siscol.localhost/apogee
+          login: ${REFERENTIEL_WS_LOGIN:-estage}
+          password: ${REFERENTIEL_WS_PASSWORD:-achanger}
+      management:
+        endpoints:
+          web:
+            base-path: /public/actuator
+  app-config-generale.yaml:
+    content: |
+      databaseChangeLog:
+        - changeSet:
+            id: app-config-generale
+            author: test-data
+            runOnChange: true
+            changes:
+              - update:
+                  tableName: AppConfig
+                  where: codeAppConfig='GENERAL'
+                  columns:
+                    - column:
+                        name: parametres
+                        value: |
+                          {
+                            "codeUniversite": "${APP_APOGEE_UNIVERSITY_CODE:-UNIV}",
+                            "anneeBasculeMois": 9, "anneeBasculeJour": 1,
+                            "autoriserConventionsOrphelines": false,
+                            "typeCentre": "MIXTE",
+                            "autoriserCentresBloquerImpressionConvention": false,
+                            "saisieManuelle": false,
+                            "signatureEnabled": false,
+                            "signatureType": null,
+                            "autoriserEtudiantAModifierEntreprise": true,
+                            "autoriserValidationAutoOrgaAccCreaEtu": true,
+                            "autoriserElementPedagogiqueFacultatif": true,
+                            "validationPedagogiqueLibelle": "Validation pédagogique",
+                            "validationAdministrativeLibelle": "Validation administrative",
+                            "codeCesure": null,
+                            "utiliserMailPersoEtudiant": false
+                          }
+              - delete:
+                  tableName: Affectation
+                  where: codeAffectation = '' AND codeUniversite = '${APP_APOGEE_UNIVERSITY_CODE:-UNIV}'
+              - insert:
+                  tableName: Affectation
+                  columns:
+                    - column:
+                        name: "codeUniversite"
+                        value: ${APP_APOGEE_UNIVERSITY_CODE:-UNIV}
+                    - column:
+                        name: "codeAffectation"
+                        value: ""
+                    - column:
+                        name: "libelleAffectation"
+                        value: ""
+        - changeSet:
+            id: centreGestion-etab
+            author: test-data
+            changes:
+              - update:
+                  tableName: CentreGestion
+                  columns:
+                    - column:
+                        name: codeUniversite
+                        value: ${APP_APOGEE_UNIVERSITY_CODE:-UNIV}
+              - update:
+                  tableName: CentreGestion
+                  where: idNiveauCentre=2
+                  columns:
+                    - column:
+                        name: nomCentre
+                        value: ${APP_APOGEE_UNIVERSITY_LIBELLE:-UNIVERSITÉ}
+  context.xml:
+    # prioritize /usr/local/tomcat/lib over WEB-INF/classes:WEB-INF/lib/*.jar in docker tomcat
+    # allowing static/… templates/… fonts/… to be found in /usr/local/tomcat/lib/…
+    content: |
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Context><Loader delegate="true" /></Context>
+  empty-file:
+    content: " "
+  application-esup-siscol.yml:
+    content: |
+      env:
+        apogee:
+          urlService: http://apogeews.localhost/services
+          username: ${REFERENTIEL_WS_LOGIN:-estage}
+          password: ${REFERENTIEL_WS_PASSWORD:-achanger}
+      app:
+        mode_apogee: true
+        mode_pegase: false
+        server-url: http://esup-siscol.localhost
+        server-title: Client API SCOLARITE REST [docker-compose]
+        apogee:
+          universityCode: ${APP_APOGEE_UNIVERSITY_CODE:-UNIV}
+          # valeurs possible TOUS N O#
+          temoinRecupAnnu: ${APP_APOGEE_TEMOIN_RECUP_ANNU:-N}
+          urlService:
+            administratifMetier: $${env.apogee.urlService}/AdministratifMetier
+            administratifMetierUserName: $${env.apogee.username}
+            administratifMetierPassword: $${env.apogee.password}
+            etudiantMetier: $${env.apogee.urlService}/EtudiantMetier
+            etudiantMetierUserName: $${env.apogee.username}
+            etudiantMetierPassword: $${env.apogee.password}
+            pedagogiqueMetier: $${env.apogee.urlService}/PedagogiqueMetier
+            pedagogiqueMetierUserName: $${env.apogee.username}
+            pedagogiqueMetierPassword: $${env.apogee.password}
+            geographieMetier: $${env.apogee.urlService}/GeographieMetier
+            geographieMetierUserName: $${env.apogee.username}
+            geographieMetierPassword: $${env.apogee.password}
+            referentielMetier: $${env.apogee.urlService}/ReferentielMetier
+            referentielMetierUserName: $${env.apogee.username}
+            referentielMetierPassword: $${env.apogee.password}
+            offreFormationMetier: $${env.apogee.urlService}/OffreFormationMetier
+            offreFormationMetierUserName: $${env.apogee.username}
+            offreFormationMetierPassword: $${env.apogee.password}
+        ldap:
+          attributes:
+            base-dn: ""
+      spring:
+        ldap:
+          urls: [ "ldap://apogeews.localhost:389" ]
+          username: uid=${REFERENTIEL_WS_LOGIN:-estage},ou=apps,dc=univ,dc=fr
+          password: ${REFERENTIEL_WS_PASSWORD:-achanger}
+          base: ou=people,dc=univ,dc=fr
+      credential:
+        userscredential:
+          ${REFERENTIEL_WS_LOGIN:-estage}:
+            username: ${REFERENTIEL_WS_LOGIN:-estage}
+            password: ${REFERENTIEL_WS_PASSWORD:-achanger}
+            roles: [ ADMIN, USER, USER_APOGEE, USER_LDAP ]
+      logging:
+        level:
+          org.springframework.ldap.core: DEBUG
+  application-apogeews.yml:
+    content: |
+      spring:
+        ldap:
+          base: ou=people,dc=univ,dc=fr
+          embedded:
+            base-dn:
+            - dc=univ,dc=fr
+            - ou=apps,dc=univ,dc=fr
+            - ou=people,dc=univ,dc=fr
+            credential:
+              username: uid=${REFERENTIEL_WS_LOGIN:-estage},ou=apps,dc=univ,dc=fr
+              password: ${REFERENTIEL_WS_PASSWORD:-achanger}
+      app:
+        apogee:
+          university-code: ${APP_APOGEE_UNIVERSITY_CODE:-UNIV}
+          university-libelle: ${APP_APOGEE_UNIVERSITY_LIBELLE:-UNIVERSITÉ}
+      dataset:
+        files: file:/srv/admin-technique.yml,file:/testdata/**/*.yml
+  configUrlServices.properties:
+    content: |
+      geographieMetier.urlService=
+      offreFormationMetier.urlService=
+      etudiantMetier.urlService=
+      administratifMetier.urlService=
+      geographieMetier.username=
+      geographieMetier.password=
+      offreFormationMetier.username=
+      offreFormationMetier.password=
+      pedagogiqueMetier.username=
+      pedagogiqueMetier.password=
+      etudiantMetier.username=
+      etudiantMetier.password=
+      administratifMetier.username=
+      administratifMetier.password=
+  admin-technique.yml:
+    content: |
+      - ldap:
+          uid: ${APPLI_ADMIN_TECHNIQUE:-$USER}
+          sn: [ ${APPLI_ADMIN_TECHNIQUE:-$USER} ]
+          givenName: [ ${APPLI_ADMIN_TECHNIQUE:-$USER} ]
+          supannAliasLogin: ${APPLI_ADMIN_TECHNIQUE:-$USER} 
+          mail: ${APPLI_ADMIN_TECHNIQUE:-$USER}@univ.fr
+          eduPersonPrimaryAffiliation: staff
+          eduPersonAffiliation: [staff, member]
+  cas.yml:
+    content: |
+      server:
+        http:
+          enabled: false
+        port: 80
+        ssl:
+          enabled: false
+        httpProxy:
+          enabled: true
+          secure: true
+          scheme: https
+          protocol: HTTP/1.1
+        tomcat:
+          accesslog:
+            check-exists: false
+          remoteip:
+            internal-proxies:
+            protocol-header-https-value: http
+      cas:
+        server:
+          name: http://cas.localhost
+          prefix: http://cas.localhost/cas
+          tomcat:
+            http-proxy:
+              enabled: true
+              protocol:
+              scheme: http
+              secure: true
+        http-web-request:
+          cors:
+            enabled: true
+            allow-origin-patterns[0]: '*'
+        authn:
+          accept:
+            enabled: false
+          groovy:
+            location: file:///etc/cas/authn-any.groovy
+        serviceRegistry:
+          core:
+            init-from-json: true
+          json:
+            location: file:/etc/cas/services/
+            watcher-enabled: false
+        monitor:
+          endpoints:
+            endpoint:
+              defaults:
+                access: ANONYMOUS
+              registeredServices:
+                access: ANONYMOUS
+      management:
+        endpoints:
+          web:
+            exposure:
+              include: "*"
+          access:
+            default: unrestricted
+            registeredServices: unrestricted
+        health:
+          readiness-state:
+            enabled: true
+          liveness-state:
+            enabled: true
+        endpoint:
+          health:
+            probes:
+              enabled: true
+  authn-any.groovy:
+    content: |
+      import org.apereo.cas.authentication.*
+      import org.apereo.cas.authentication.credential.*
+      import org.apereo.cas.authentication.metadata.*
+      import javax.security.auth.login.*
+
+      def authenticate(final Object... args) {
+          def (authenticationHandler,credential,servicesManager,principalFactory,logger) = args
+          def principal = principalFactory.createPrincipal(credential.username);
+          logger.info("Authenticating user $$credential.username with any password")
+          return new DefaultAuthenticationHandlerExecutionResult(authenticationHandler,
+              credential, principal, new ArrayList<>(0));
+      }
+
+      def supportsCredential(final Object... args) {
+          def (credential,logger) = args
+          return credential != null
+      }
+
+      def supportsCredentialClass(final Object... args) {
+          def (credentialClazz,logger) = args
+          return credentialClazz == UsernamePasswordCredential.class
+      }
+  localhost-10000001.json:
+    content: |
+      {
+        "@class": "org.apereo.cas.services.CasRegisteredService",
+        "serviceId": "^http://(.*[.])?localhost(:[0-9]+)?./.*",
+        "name": "localhost",
+        "id": 10000001,
+      }
+  HealthCheck.java:
+    content: |
+      public class HealthCheck {
+        public static void main(String[] args) throws InterruptedException, java.io.IOException {
+          var client = java.net.http.HttpClient.newHttpClient();
+          var request = java.net.http.HttpRequest.newBuilder()
+              .uri(java.net.URI.create("http://localhost/cas/actuator/health/liveness"))
+              .header("accept", "application/json")
+              .build();
+          var response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
+          if (response.statusCode() != 200 || !response.body().contains("UP"))
+            throw new RuntimeException("Healthcheck failed");
+        }
+      }
+  mariadb-character-set.cnf:
+    content: |
+      [server]
+      character-set-server=utf8mb4
+      collation-server=utf8mb4_unicode_ci
+      connect-timeout = 3600
+  local-healthcheck.cnf:
+    content: |
+      [client]
+      socket=/run/mysqld/mysqld.sock
+      port=3306
+      user=local_healthcheck
+      password=${MARIADB_HEALTHCHECK_PASSWORD:-GRwLD931RRrfepGpnAzHsSvWb8Svw3QQ}
+  grant_file.sql:
+    content: |
+      GRANT FILE ON *.* TO '${APPLI_DATASOURCE_USERNAME:-esup_stage}'@'%';
+  create_healthcheck_users.sql:
+    #name: /docker-entrypoint-initdb.d/create_healthcheck_users.sql
+    content: |
+      CREATE USER IF NOT EXISTS local_healthcheck@'127.0.0.1' IDENTIFIED BY '${MARIADB_HEALTHCHECK_PASSWORD:-GRwLD931RRrfepGpnAzHsSvWb8Svw3QQ}';
+      SET PASSWORD FOR local_healthcheck@'127.0.0.1' = PASSWORD('${MARIADB_HEALTHCHECK_PASSWORD:-GRwLD931RRrfepGpnAzHsSvWb8Svw3QQ}');
+      GRANT ${MARIADB_HEALTHCHECK_GRANTS:-USAGE} ON *.* TO local_healthcheck@'127.0.0.1';
+      CREATE USER IF NOT EXISTS local_healthcheck@'::1' IDENTIFIED BY '${MARIADB_HEALTHCHECK_PASSWORD:-GRwLD931RRrfepGpnAzHsSvWb8Svw3QQ}';
+      SET PASSWORD FOR local_healthcheck@'::1' = PASSWORD('${MARIADB_HEALTHCHECK_PASSWORD:-GRwLD931RRrfepGpnAzHsSvWb8Svw3QQ}');
+      GRANT ${MARIADB_HEALTHCHECK_GRANTS:-USAGE} ON *.* TO local_healthcheck@'::1';
+      CREATE USER IF NOT EXISTS local_healthcheck@'localhost' IDENTIFIED BY '${MARIADB_HEALTHCHECK_PASSWORD:-GRwLD931RRrfepGpnAzHsSvWb8Svw3QQ}';
+      SET PASSWORD FOR local_healthcheck@'localhost' = PASSWORD('${MARIADB_HEALTHCHECK_PASSWORD:-GRwLD931RRrfepGpnAzHsSvWb8Svw3QQ}');
+      GRANT ${MARIADB_HEALTHCHECK_GRANTS:-USAGE} ON *.* TO local_healthcheck@'localhost';
+
 services:
+
   esup-stage:
-    image: ${IMAGE_REPO}${IMAGE_NAME}:${IMAGE_TAG}
-    container_name: ${IMAGE_NAME}
-    restart: always
-    env_file:
-      - application.properties
-      - .env
+    #image: ${IMAGE_REPO:-harbor.esup-portail.org/esup-stage/}${IMAGE_NAME:-esup-stage}:${IMAGE_TAG:-3.1.9-e424919}
+    build:
+      context: .
+      args:
+        VERSION: 3.2.0
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.esup-stage.rule: Host(`localhost`)
+      traefik.http.services.esup-stage.loadbalancer.server.port: 8081
+    command:
+      - java
+      - -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8001
+      - -cp
+      - /usr/local/tomcat/temp/templates:/usr/local/tomcat/temp/theme:/usr/local/tomcat/lib:/usr/local/tomcat/webapps/ROOT.war
+      - org.springframework.boot.loader.launch.WarLauncher
     ports:
-      - "8080:8080"
+      - "8081:8081"
+      - "8001:8001"
+    environment:
+      SERVER_PORT: 8081
+      SERVER_USE_FORWARD_HEADERS: true
+      MANAGEMENT_SERVER_PORT: 8981
+    mem_limit: 2G
+    user: www-data
     volumes:
-      - data:${DATA_PATH}
+      - type: volume
+        source: estage-data
+        target: /srv
+        read_only: false
+      ## partage de paramétrages avec l'IDE :
+      #- type: bind
+      #  source: config/application-default.yml
+      #  target: /usr/local/tomcat/config/application-default.yml
+      #  read_only: true
+      ## WarLauncher WORKAROUND: use of classes/templateXXXX classpath resource (ImpressionService.java:121, could be temp files)
+      - type: tmpfs
+        target: /usr/local/tomcat/temp/templates
+        tmpfs:
+          size: 1048576
+          mode: 01777
+        read_only: false
+      - type: tmpfs
+        target: /usr/local/tomcat/temp/templates/templates
+        tmpfs:
+          size: 4096
+          mode: 0555
+        read_only: true
+      ## WarLauncher WORKAROUND: /static/fonts classpath directory (ImpressionService.java:267, could be classpath:/…)
+      - type: bind
+        source: ../esup-stage/src/main/resources/static/fonts
+        target: /usr/local/tomcat/lib/static/fonts
+        #read_only: true
+    configs:
+      - source: application-esup-stage.yml
+        target: /usr/local/tomcat/config/application.yml
+      - source: context.xml
+        target: /usr/local/tomcat/conf/context.xml
+      ## WarLauncher WORKAROUND: rewrite of WAR resource (AppConfigService.java:131)
+      - source: empty-file
+        target: /usr/local/tomcat/temp/theme/static/theme.css
+        mode: 0644
+        uid: "33"
+    healthcheck:
+      test: [ "CMD", "/usr/bin/curl", "-sfL","--oauth2-bearer","${APPLI_TOKEN_SECRET:-achanger}", "http://localhost:8981/public/actuator/health/" ]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 2m
+      start_interval: 1s
+
+    depends_on:
+      init-volume:
+        condition: service_completed_successfully
+      esup-siscol:
+        condition: service_healthy
+      mariadb:
+        condition: service_healthy
+      maildev:
+        condition: service_healthy
+      ingress:
+        condition: service_started
+
+  esup-siscol:
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.esup-siscol.rule: Host(`esup-siscol.localhost`)
+      traefik.http.services.esup-siscol.loadbalancer.server.port: 8082
+    build:
+      args:
+        VERSION: 2.1.2
+      tags: [ "esup-siscol:2.1.2" ]
+      context: https://github.com/EsupPortail/esup-siscol.git#2.1.2
+      dockerfile_inline: |
+        FROM eclipse-temurin:21-jdk-alpine
+        ARG VERSION=2.1.2
+        RUN apk update && apk upgrade && apk add --update tzdata && rm -rf /var/cache/apk/*
+        ENV TZ=Europe/Paris
+        RUN mkdir -p /esup-siscol /etc/esup-siscol \
+          && wget -O /esup-siscol/esup-siscol.jar https://github.com/EsupPortail/esup-siscol/releases/download/$$VERSION/esup-siscol-$$VERSION.war
+        COPY etc/esup-siscol /etc/esup-siscol      
+        RUN mv /etc/esup-siscol/application.yml.sample /etc/esup-siscol/application.yml \
+          && sed -i 's/\t/  /g;173s/^/    /' /etc/esup-siscol/application.yml \
+          && sed -i 's/^\(\s*\)\(\w*[Pp]assword:\)/\1#\2/g' /etc/esup-siscol/application.yml
+        WORKDIR /esup-siscol
+        ENV SERVER_PORT=8081
+        EXPOSE 8081
+        CMD ["java", "-jar", "esup-siscol.jar"]
+    environment:
+      SERVER_PORT: 8082
+      SERVER_USE_FORWARD_HEADERS: true
+    command:
+      - java
+      - -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8002
+      - -jar
+      - esup-siscol.jar
+    configs:
+      - source: application-esup-siscol.yml
+        target: /esup-siscol/config/application.yml
+      - source: configUrlServices.properties
+        target: /esup-siscol/configUrlServices.properties
+    ports:
+      - "8082:8082"
+      - "8002:8002"
+    healthcheck:
+      test: [ "CMD", "/usr/bin/wget", "-qO/dev/null", "http://localhost:8082/login" ]
+      interval: 30s
+      timeout: 3s
+      retries: 1
+      start_period: 1m
+      start_interval: 5s
+    depends_on:
+      apogeews:
+        condition: service_healthy
+
+  apogeews:
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.apogeews.rule: Host(`apogeews.localhost`)
+      traefik.http.services.apogeews.loadbalancer.server.port: 8083
+      traefik.tcp.routers.apogeews-ldap.rule: ClientIP(`0.0.0.0/0`)
+      traefik.tcp.routers.apogeews-ldap.entrypoints: ldap
+      traefik.tcp.routers.apogeews-ldap.service: apogeews-ldap
+      traefik.tcp.services.apogeews-ldap.loadbalancer.server.port: 389
+    image: ghcr.io/unistra/apo-webservices-stub-server
+    ports:
+      - "389"
+      - "8083:8083"
+    environment:
+      SERVER_PORT: 8083
+      SERVER_USE_FORWARD_HEADERS: true
+      MANAGEMENT_SERVER_PORT: 8983
+    volumes:
+      - type: bind
+        source: testdata/apogeews
+        target: /testdata/apogeews
+        read_only: true
+    configs:
+      - source: application-apogeews.yml
+        target: /config/application-default.yml
+      - source: admin-technique.yml
+        target: /srv/admin-technique.yml
+    container_name: apogeews
+    healthcheck:
+      test: ["CMD","curl","-sfL","http://localhost:8983/actuator/health/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 1m
+      start_interval: 5s
+
+  esup-stage-db-load-test-data:
+    image: liquibase/liquibase:4
+    environment:
+      APPLI_DATASOURCE_USERNAME: ${APPLI_DATASOURCE_USERNAME:-esup_stage}
+      APPLI_DATASOURCE_PASSWORD: ${APPLI_DATASOURCE_PASSWORD:-achanger}
+    command:
+      - update
+      - --changelog-file=changelog/db.changelog.yaml
+      #- --contexts=testdata
+      - --url=jdbc:mariadb://mariadb:3306/estage?sslMode=disable
+      - --username=${APPLI_DATASOURCE_USERNAME:-esup_stage}
+      - --password=${APPLI_DATASOURCE_PASSWORD:-achanger}
+    volumes:
+      - type: bind
+        source: testdata/esup-stage
+        target: /liquibase/changelog
+    configs:
+      - source: app-config-generale.yaml
+        target: /liquibase/changelog/db.changelog.d/app-config-generale.yaml
+        mode: 0666
+    restart: on-failure
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      esup-stage:
+        condition: service_healthy
+
+  ingress:
+    image: traefik:v3
+    command:
+    - --entryPoints.http.address=:80
+    - --entryPoints.http.asDefault=true
+    - --entryPoints.http.forwardedHeaders.insecure=true
+    - --entryPoints.ldap.address=:389
+    - --providers.docker
+    - --providers.docker.exposedByDefault=false
+    - --providers.docker.allowEmptyServices=true
+    - --log=true
+    - --accessLog=true
+    - --accesslog.addinternals=true
+    - --api.disabledashboardad=true
+    ports:
+      - "80:80"
+      - "389:389"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.traefik-api.rule: Host(`ingress.localhost`) && PathPrefix(`/api`)
+      traefik.http.routers.traefik-api.service: api@internal
+      traefik.http.routers.traefik-api.priority: "999"
+      traefik.http.routers.traefik-dashboard.rule: Host(`ingress.localhost`)
+      traefik.http.routers.traefik-dashboard.service: dashboard@internal
+      traefik.http.routers.traefik-dashboard.priority: "998"
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - type: bind
+        source: ${DOCKER_SOCK:-/var/run/docker.sock}
+        target: /var/run/docker.sock
+    deploy:
+      resources:
+        limits:
+          memory: 60M
+        reservations:
+          memory: 30M
+    networks:
+      default:
+        aliases:
+        - apogeews.localhost
+        - esup-siscol.localhost
+
+  mariadb:
+    #image: mariadb:10.3 # context=legacy / 2.0.0-engine-collate.sql : SET FOREIGN_KEY_CHECKS=0
+    image: mariadb:12 # 3.2.0-updtade-token : Specified key was too long; max key length is 3072 bytes
+    ports:
+      - "3306:3306"
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:-achanger}
+      MARIADB_DATABASE: estage
+      MARIADB_USER: ${APPLI_DATASOURCE_USERNAME:-esup_stage}
+      MARIADB_PASSWORD: ${APPLI_DATASOURCE_PASSWORD:-achanger}
+      MARIADB_MYSQL_LOCALHOST_USER: "1"
+    user: mysql
+    cap_drop:
+      - ALL
+    #mem_limit: 128M
+    volumes:
+      - type: volume
+        source: mariadb-data
+        target: /var/lib/mysql
+        read_only: false
+      ## pour faire un export local :
+      ##   docker compose exec mariadb tar -zcf- -C /var/lib/mysql . > data_esup_stage_YYYYMMDD.tar.gz
+      ## ou
+      ##   docker compose exec mariadb mysqldump -uroot -p${MARIADB_ROOT_PASSWORD:-achanger} estage | gzip -9 > data_esup_stage_YYYYMMDD.sql.gz
+      #- type: bind
+      #  source: data_esup_stage_YYYYMMDD.[tar|sql].gz
+      #  target: /docker-entrypoint-initdb.d/init-from-backup.[tar|sql].gz
+      #  read_only: true
+    configs:
+      - source: mariadb-character-set.cnf
+        target: /etc/mysql/conf.d/mariadb-character-set.cnf
+      - source: local-healthcheck.cnf
+        target: /var/lib/mysql/.local-healthcheck.cnf
+        mode: 0700
+        uid: "999"
+        gid: "999"
+      - source: grant_file.sql
+        target: /docker-entrypoint-initdb.d/grant_file.sql
+      - source: create_healthcheck_users.sql
+        target: /docker-entrypoint-initdb.d/create_healthcheck_users.sql
+    healthcheck:
+      test: [ "CMD", "healthcheck.sh", "--defaults-file=/var/lib/mysql/.local-healthcheck.cnf", "--connect", "--innodb_initialized" ]
+      start_period: 1m
+      start_interval: 1s
+      interval: 1m
+      timeout: 5s
+      retries: 3
+    networks:
+      default:
+        aliases: [ mariadb.localhost ]
+
+  phpmyadmin:
+    image: phpmyadmin:5
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.phpmyadmin.rule: Host(`db.localhost`)
+    environment:
+      PMA_HOST: mariadb
+      PMA_ABSOLUTE_URI: http://db.localhost
+      PMA_SSL: "0"
+      PMA_USER: ${APPLI_DATASOURCE_USERNAME:-esup_stage}
+      PMA_PASSWORD: ${APPLI_DATASOURCE_PASSWORD:-achanger}
+    volumes:
+      - type: volume
+        source: phpmyadmin-sessions
+        target: /sessions
+        read_only: false
+    depends_on:
+      ingress:
+        condition: service_started
+      mariadb:
+        condition: service_healthy
+
+  maildev:
+    image: maildev/maildev:latest
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.maildev.rule: Host(`webmail.localhost`)
+      traefik.http.services.maildev.loadbalancer.server.port: 1080
+    environment:
+      MAILDEV_INCOMING_USER: ${APPLI_MAILER_USERNAME:-esup-stage@localhost}
+      MAILDEV_INCOMING_PASS: ${APPLI_MAILER_PASSWORD:-achanger}
+      MAILDEV_MAIL_DIRECTORY: /var/tmp
+      TZ: Europe/Paris
+      #MAILDEV_SMTP_PORT: 1025
+      #MAILDEV_WEB_PORT: 1080
+    ports:
+      - "1025:1025"
+    volumes:
+      - type: volume
+        source: mails
+        target: /var/tmp
+        read_only: false
+    depends_on:
+      ingress:
+        condition: service_started
+
+  cas.localhost:
+    build:
+      dockerfile_inline: |
+        ARG CAS_VERSION="7.2.4"
+        FROM apereo/cas:$${CAS_VERSION} as cas
+        # add zip as jar update messes up with cas.war existing content 
+        RUN apt-get update && apt-get install -y --no-install-recommends zip \
+          && rm -rf /var/lib/apt/lists/*
+        ARG CAS_VERSION="7.2.4"
+        # add org.apereo.cas:cas-server-support-generic & cas-server-core-scripting
+        ADD https://repo.maven.apache.org/maven2/org/apereo/cas/cas-server-support-generic/$${CAS_VERSION}/cas-server-support-generic-$${CAS_VERSION}.jar \
+            https://repo.maven.apache.org/maven2/org/apereo/cas/cas-server-core-scripting/$${CAS_VERSION}/cas-server-core-scripting-$${CAS_VERSION}.jar \
+            https://repo.maven.apache.org/maven2/org/apache/groovy/groovy/4.0.26/groovy-4.0.26.jar \
+            https://repo.maven.apache.org/maven2/org/apache/groovy/groovy-jsr223/4.0.26/groovy-jsr223-4.0.26.jar \
+            https://repo.maven.apache.org/maven2/org/apache/groovy/groovy-templates/4.0.26/groovy-templates-4.0.26.jar \
+            https://repo.maven.apache.org/maven2/org/apache/groovy/groovy-groovysh/4.0.26/groovy-groovysh-4.0.26.jar \
+            WEB-INF/lib/
+        # add additional libs to war
+        RUN zip -ur0 cas.war WEB-INF/lib/
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.cas.rule: Host(`cas.localhost`)
+      traefik.http.routers.cas.middlewares: cas-ssl@docker
+      #traefik.http.middlewares.cas-ssl.headers.sslProxyHeaders.X-Forwarded-Proto: https
+      traefik.http.middlewares.cas-ssl.headers.customrequestheaders.X-Forwarded-Proto: https
+      traefik.http.services.cas.loadbalancer.server.port: 80
+    configs:
+      - source: cas.yml
+        target: /etc/cas/config/cas.yml
+      - source: authn-any.groovy
+        target: /etc/cas/authn-any.groovy
+      - source: localhost-10000001.json
+        target: /etc/cas/services/localhost-10000001.json
+      - source: HealthCheck.java
+        target: /etc/cas/scripts/HealthCheck.java
+    healthcheck:
+      test: ["CMD", "java", "/etc/cas/scripts/HealthCheck.java"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+
+  init-volume:
+    image: busybox
+    user: root
+    command: [ "/bin/chown", "33:33", "/srv/." ]
+    volumes:
+      - type: volume
+        source: estage-data
+        target: /srv
+
 volumes:
-  data:
-    driver: local
+  estage-data: {}
+  mariadb-data: {}
+  mails: {}
+  theme: {}
+  phpmyadmin-sessions: {}
+
+networks:
+  default:
+    name: esup-stage
