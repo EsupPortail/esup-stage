@@ -91,7 +91,7 @@ export class AdminNomenclaturesComponent implements OnInit {
     { key: 'id', label: 'Niveau de formation', service: this.niveauFormationService, tableIndex: undefined, creationFormType: 1, init: false },
     { key: 'id', label: 'Origine du stage', service: this.origineStageService, tableIndex: undefined, creationFormType: 1, init: false },
     { key: 'id', label: 'Type de structure', service: this.typeStructureService, tableIndex: undefined, creationFormType: 3, init: false },
-    { key: 'id', label: 'Statut juridique', service: this.statutJuridiqueService, tableIndex: undefined, creationFormType: 3, init: false },
+    { key: 'code', label: 'Statut juridique', service: this.statutJuridiqueService, tableIndex: undefined, creationFormType: 3, init: false },
     { key: 'id', label: "Type d'offre de stage", codeCtrl: true, service: this.typeOffreService, tableIndex: undefined, creationFormType: 2, init: false },
     { key: 'id', label: "Contrat du stage", codeCtrl: true, service: this.contratOffreService, tableIndex: undefined, creationFormType: 3, init: false },
     { key: 'id', label: "Effectif", service: this.effectifService, tableIndex: undefined, creationFormType: 1, init: false },
