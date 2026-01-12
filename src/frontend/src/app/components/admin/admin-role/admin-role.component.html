@@ -33,15 +33,14 @@
           <div class="row">
             <mat-form-field class="col-md-3" appearance="fill">
               <mat-label>Code</mat-label>
-              <spannput matInput formControlName="code" />
+              <input matInput formControlName="code" />
             </mat-form-field>
 
             <mat-form-field class="col-md-3" appearance="fill">
               <mat-label>Libellé</mat-label>
-              <spannput matInput formControlName="libelle" />
+              <input matInput formControlName="libelle" />
             </mat-form-field>
-            <spannput type="hidden" formControlName="origine" />
-          </div>
+            <input type="hidden" formControlName="origine" />          </div>
           <div>
             <table mat-table [dataSource]="appFonctions">
               <ng-container matColumnDef="fonctionnalite">
