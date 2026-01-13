@@ -227,8 +227,10 @@
   <ng-container matColumnDef="action">
     <th mat-header-cell *matHeaderCellDef>Actions</th>
     <td mat-cell *matCellDef="let row">
-      <button type="button" mat-icon-button matTooltip="Visualiser" matTooltipPosition="left" color="primary"
-              (click)="goToConvention(row.id)"><span class="fa fa-eye"></span></button>
+      <button type="button" mat-button color="primary" class="btn-eye" matTooltip="Visualiser" matTooltipPosition="left" (click)="goToConvention(row.id)">
+        <span class="fa fa-eye" aria-hidden="true"></span>
+        <span class="eye-label">Visualiser</span>
+      </button>
     </td>
   </ng-container>
 </app-table>
@@ -368,8 +370,10 @@
     <tr>
       <th>Actions</th>
       <td>
-        <button type="button" mat-icon-button matTooltip="Visualiser" matTooltipPosition="left" color="primary"
-                (click)="goToConvention(row.id)"><span class="fa fa-eye"></span></button>
+        <button type="button" mat-button color="primary" class="btn-eye" matTooltip="Visualiser" matTooltipPosition="left" (click)="goToConvention(row.id)">
+          <span class="fa fa-eye" aria-hidden="true"></span>
+          <span class="eye-label">Visualiser</span>
+        </button>
       </td>
     </tr>
     </tbody>

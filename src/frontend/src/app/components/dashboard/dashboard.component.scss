@@ -60,3 +60,26 @@ i.done {
   white-space: nowrap !important;
   border: 0 !important;
 }
+
+.btn-eye {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: auto;
+  padding: 0;
+  line-height: 1;
+  .fa {
+    font-size: 16px;
+  }
+}
+
+.eye-label {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
