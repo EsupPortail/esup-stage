@@ -4,7 +4,7 @@ import {
   ContentChildren,
   EventEmitter,
   Input,
-  OnChanges,
+  OnChanges, OnDestroy,
   OnInit,
   Output,
   QueryList,
@@ -17,7 +17,7 @@ import { Sort, SortDirection } from '@angular/material/sort';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatColumnDef, MatTable } from '@angular/material/table';
 import { PaginatedService } from '../../services/paginated.service';
-import { Subject } from 'rxjs';
+import {Subject, Subscription} from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import * as _ from 'lodash';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
@@ -33,7 +33,7 @@ import { ColumnSelectorComponent } from './column-selector/column-selector.compo
     styleUrls: ['./table.component.scss'],
     standalone: false
 })
-export class TableComponent implements OnInit, AfterContentInit, OnChanges {
+export class TableComponent implements OnInit, AfterContentInit, OnChanges, OnDestroy {
 
   @Input() service!: PaginatedService;
   @Input() columns: any;
@@ -75,6 +75,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   listFilterCtrls: Record<string, FormControl> = {};
   filteredListOptions: Record<string, any[]> = {};
   private _destroy$ = new Subject<void>();
+  private _colSub?: Subscription;
 
   constructor(
     private authService: AuthService,
@@ -139,18 +140,21 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   }
 
   ngAfterContentInit() {
-    if (this.columnDefs) {
-      this.columnDefs.forEach(columnDef => {
-        if (this.table) {
-          this.table.addColumnDef(columnDef);
-        }
-      });
-    }
+    this._colSub = this.columnDefs?.changes.subscribe(() => {
+      this._registerColumnDefs();
+    });
+    this._registerColumnDefs();
+  }
+
+  private _registerColumnDefs() {
+    if (!this.table || !this.columnDefs) return;
+    this.columnDefs.forEach(cd => this.table!.addColumnDef(cd));
   }
 
   ngOnChanges(changes: SimpleChanges): void {}
 
   ngOnDestroy(): void {
+    this._colSub?.unsubscribe();
     this._destroy$.next();
     this._destroy$.complete();
   }
@@ -515,4 +519,19 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
     const q = this.listFilterCtrls[id]?.value || '';
     this.applyListFilter(id, q);   // ← vide => toutes les options
   }
+
+  getFilter(id: string) {
+    return this.filters?.find(f => f.id === id);
+  }
+
+  isFilterHidden(id: string) {
+    const f = this.getFilter(id);
+    return !f || !!f.hidden;
+  }
+
+  hasVisibleFilter(id: string): boolean {
+    const f = this.filters?.find(x => x.id === id);
+    return !!f && !f.hidden;
+  }
+
 }

@@ -15,7 +15,7 @@
       <form>
         <div class="row">
           <ng-container *ngFor="let filter of filters">
-            <mat-form-field class="col-md-{{filter.colSpan ?? 3}}" appearance="fill" *ngIf="!filter.hidden">
+            <mat-form-field class="col-md-{{filter.colSpan ?? 3}}" appearance="fill" *ngIf="!filter.hidden && filter.id !== 'dateDebutStage' && filter.id !== 'dateFinStage'">
               <mat-label>{{filter.libelle}}</mat-label>
               <ng-container [ngSwitch]="filter.type">
                 <ng-container *ngSwitchCase="'boolean'">
@@ -106,6 +106,30 @@
               <mat-datepicker-toggle matSuffix [for]="datepicker" [style.display]="['date', 'date-min', 'date-max'].indexOf(filter.type) === -1 ? 'none' : ''"></mat-datepicker-toggle>
               <mat-datepicker #datepicker></mat-datepicker>
             </mat-form-field>
+          </ng-container>
+          <ng-container *ngIf="hasVisibleFilter('dateDebutStage') || hasVisibleFilter('dateFinStage')">
+            <div class="col-md-6">
+              <fieldset>
+                <legend class="sr-only">Période du stage</legend>
+                <div class="row">
+                  <ng-container *ngFor="let f of filters">
+                    <mat-form-field class="col-md-6" appearance="fill" *ngIf="f.id === 'dateDebutStage' && !f.hidden">
+                      <mat-label>{{f.libelle}}</mat-label>
+                      <input matInput [name]="f.id" [matDatepicker]="datepickerDebut" [(ngModel)]="filterValues[f.id].value" (ngModelChange)="update()" />
+                      <mat-datepicker-toggle matSuffix [for]="datepickerDebut"></mat-datepicker-toggle>
+                      <mat-datepicker #datepickerDebut></mat-datepicker>
+                    </mat-form-field>
+
+                    <mat-form-field class="col-md-6" appearance="fill" *ngIf="f.id === 'dateFinStage' && !f.hidden">
+                      <mat-label>{{f.libelle}}</mat-label>
+                      <input matInput [name]="f.id" [matDatepicker]="datepickerFin" [(ngModel)]="filterValues[f.id].value" (ngModelChange)="update()" />
+                      <mat-datepicker-toggle matSuffix [for]="datepickerFin"></mat-datepicker-toggle>
+                      <mat-datepicker #datepickerFin></mat-datepicker>
+                    </mat-form-field>
+                  </ng-container>
+                </div>
+              </fieldset>
+            </div>
           </ng-container>
         </div>
         <div class="row">
