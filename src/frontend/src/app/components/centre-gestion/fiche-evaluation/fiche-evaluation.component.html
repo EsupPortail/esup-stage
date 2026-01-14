@@ -88,8 +88,10 @@
               <div class="mt-2 mb-2" *ngFor="let question of FicheEtudiantIIQuestions">
                 <div class="row">
                   <div class="col-sm-9">
-                    <b>{{question.title}}</b><br>
-                    <span *ngFor="let line of question.texte">{{line}}<br></span>
+                    <b class="question-title">{{question.title}}</b>
+                    <div class="question-texte">
+                      <p *ngFor="let line of question.texte">{{line}}</p>
+                    </div>
                   </div>
                   <div class="col-sm-3">
                     <mat-radio-group formControlName="{{question.controlName}}">
@@ -145,8 +147,10 @@
               <div class="mt-2 mb-2" *ngFor="let question of FicheEtudiantIIIQuestions">
                 <div class="row">
                   <div class="col-sm-9">
-                    <b>{{question.title}}</b><br>
-                    <span *ngFor="let line of question.texte">{{line}}<br></span>
+                    <b class="question-title">{{question.title}}</b>
+                    <div class="question-texte">
+                      <p *ngFor="let line of question.texte">{{line}}</p>
+                    </div>
                   </div>
                   <div class="col-sm-3">
                     <mat-radio-group formControlName="{{question.controlName}}">
@@ -219,8 +223,10 @@
             <div class="mt-2 mb-2" *ngFor="let question of FicheEnseignantIQuestions">
               <div class="row">
                 <div class="col-sm-9">
-                  <b>{{question.title}}</b><br>
-                  <span *ngFor="let line of question.texte">{{line}}<br></span>
+                  <b class="question-title">{{question.title}}</b>
+                  <div class="question-texte">
+                    <p *ngFor="let line of question.texte">{{line}}</p>
+                  </div>
                 </div>
                 <div class="col-sm-3">
                   <mat-radio-group formControlName="{{question.controlName}}">
@@ -276,8 +282,10 @@
             <div class="mt-2 mb-2" *ngFor="let question of FicheEnseignantIIQuestions">
               <div class="row">
                 <div class="col-sm-9">
-                  <b>{{question.title}}</b><br>
-                  <span *ngFor="let line of question.texte">{{line}}<br></span>
+                  <b class="question-title">{{question.title}}</b>
+                  <div class="question-texte">
+                    <p *ngFor="let line of question.texte">{{line}}</p>
+                  </div>
                 </div>
                 <div class="col-sm-3">
                   <mat-radio-group formControlName="{{question.controlName}}">
@@ -349,8 +357,10 @@
             <div class="mt-2 mb-2" *ngFor="let question of FicheEntrepriseIQuestions">
               <div class="row">
                 <div class="col-sm-9">
-                  <b>{{question.title}}</b><br>
-                  <span *ngFor="let line of question.texte">{{line}}<br></span>
+                  <b class="question-title">{{question.title}}</b>
+                  <div class="question-texte">
+                    <p *ngFor="let line of question.texte">{{line}}</p>
+                  </div>
                 </div>
                 <div class="col-sm-3">
                   <mat-radio-group formControlName="{{question.controlName}}">
@@ -406,8 +416,10 @@
             <div class="mt-2 mb-2" *ngFor="let question of FicheEntrepriseIIQuestions">
               <div class="row">
                 <div class="col-sm-9">
-                  <b>{{question.title}}</b><br>
-                  <span *ngFor="let line of question.texte">{{line}}<br></span>
+                  <b class="question-title">{{question.title}}</b>
+                  <div class="question-texte">
+                    <p *ngFor="let line of question.texte">{{line}}</p>
+                  </div>
                 </div>
                 <div class="col-sm-3">
                   <mat-radio-group formControlName="{{question.controlName}}">
@@ -464,8 +476,10 @@
             <div class="mt-2 mb-2" *ngFor="let question of FicheEntrepriseIIIQuestions">
               <div class="row">
                 <div class="col-sm-9">
-                  <b>{{question.title}}</b><br>
-                  <span *ngFor="let line of question.texte">{{line}}<br></span>
+                  <b class="question-title">{{question.title}}</b>
+                  <div class="question-texte">
+                    <p *ngFor="let line of question.texte">{{line}}</p>
+                  </div>
                 </div>
                 <div class="col-sm-3">
                   <mat-radio-group formControlName="{{question.controlName}}">

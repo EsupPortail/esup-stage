@@ -35,3 +35,18 @@
   height: auto;
   min-height: 36px;
 }
+
+.question-title {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.question-texte {
+  p {
+    margin: 0.25rem 0;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
