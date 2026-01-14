@@ -95,3 +95,8 @@ mat-sidenav-content {
 }
 
 .fr-skiplinks .fr-link:hover {}
+
+.mat-sidenav-content{
+  overflow-y: hidden;
+  margin-bottom : 20px;
+}
