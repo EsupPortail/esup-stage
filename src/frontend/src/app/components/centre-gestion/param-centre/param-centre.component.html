@@ -210,14 +210,17 @@
 
     <form [formGroup]="viseurForm" novalidate class="mt-2 mb-3">
       <div class="row">
-        <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-          <mat-label>Nom</mat-label>
-          <input matInput formControlName="nom" />
-        </mat-form-field>
-        <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-          <mat-label>Prénom</mat-label>
-          <input matInput formControlName="prenom" />
-        </mat-form-field>
+        <fieldset>
+          <legend class="sr-only">Filtre de recherche du viseur</legend>
+          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+            <mat-label>Nom</mat-label>
+            <input matInput formControlName="nom" />
+          </mat-form-field>
+          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+            <mat-label>Prénom</mat-label>
+            <input matInput formControlName="prenom" />
+          </mat-form-field>
+        </fieldset>
       </div>
     </form>
 
@@ -258,14 +261,17 @@
 
     <form [formGroup]="delegataireForm" novalidate class="mt-2 mb-3">
       <div class="row">
-        <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-          <mat-label>Nom</mat-label>
-          <input matInput formControlName="nom" />
-        </mat-form-field>
-        <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-          <mat-label>Prénom</mat-label>
-          <input matInput formControlName="prenom" />
-        </mat-form-field>
+        <fieldset>
+          <legend class="sr-only">Filtre de recherche du délégataire</legend>
+          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+            <mat-label>Nom</mat-label>
+            <input matInput formControlName="nom" />
+          </mat-form-field>
+          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+            <mat-label>Prénom</mat-label>
+            <input matInput formControlName="prenom" />
+          </mat-form-field>
+        </fieldset>
       </div>
     </form>
 
