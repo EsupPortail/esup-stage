@@ -3,11 +3,22 @@
            [templateMobile]="tableMobile">
 
   <ng-container matColumnDef="personnels">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header><mat-icon fontSet="fa" [fontIcon]="'fa-user'" matTooltip="Indique si vous êtes rattaché au centre" color="primary"></mat-icon></th>
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+      <span class="sr-only">Rattachement au centre de gestion</span>
+      <mat-icon fontSet="fa" [fontIcon]="'fa-user'" matTooltip="Indique si vous êtes rattaché au centre" color="primary"></mat-icon>
+    </th>
     <td mat-cell *matCellDef="let row">
-             <mat-icon fontSet="fa" [fontIcon]="isPersonnel(row) ? 'fa-check' : 'fa-times'"
-                [matTooltip]="isPersonnel(row) ? 'Vous êtes rattaché au centre' : 'Vous n\'êtes pas rattaché au centre'"
-                [color]="isPersonnel(row) ? 'primary' : 'warn'"></mat-icon>
+      <span class="sr-only">
+        {{ isPersonnel(row) ? 'Vous êtes rattaché au centre' : 'Vous n\'êtes pas rattaché au centre' }}
+      </span>
+
+      <mat-icon
+        aria-hidden="true"
+        fontSet="fa"
+        [fontIcon]="isPersonnel(row) ? 'fa-check' : 'fa-times'"
+        [matTooltip]="isPersonnel(row) ? 'Vous êtes rattaché au centre' : 'Vous n\'êtes pas rattaché au centre'"
+        [color]="isPersonnel(row) ? 'primary' : 'warn'">
+      </mat-icon>
     </td>
   </ng-container>
   <ng-container matColumnDef="id">
@@ -33,8 +44,8 @@
   <ng-container matColumnDef="action">
     <th mat-header-cell *matHeaderCellDef>Actions</th>
     <td mat-cell *matCellDef="let row">
-      <button type="button" mat-icon-button matTooltip="Modifier" color="primary" (click)="editCentre(row.id)"><span class="fa fa-pen"></span></button>
-      <button type="button" mat-icon-button matTooltip="Supprimer" color="warn" (click)="openDeleteFormModal(row.id)"><span class="fa fa-trash"></span></button>
+      <button type="button" mat-icon-button matTooltip="Modifier" color="primary" aria-label="Modifier le centre de gestion" (click)="editCentre(row.id)"><span class="fa fa-pen"></span></button>
+      <button type="button" mat-icon-button matTooltip="Supprimer" color="warn" aria-label="Supprimer le centre de gestion" (click)="openDeleteFormModal(row.id)"><span class="fa fa-trash"></span></button>
     </td>
   </ng-container>
 </app-table>
