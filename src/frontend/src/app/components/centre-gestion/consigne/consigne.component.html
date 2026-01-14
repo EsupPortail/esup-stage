@@ -33,8 +33,8 @@
             <button type="button" mat-stroked-button color="primary" (click)="addDocInput.click()">
               <span>Ajouter un document</span>
               <input #addDocInput type="file" (change)="addDoc($event)" accept="application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display:none">
-            </button><br/>
-            <mat-hint>Format accepté : pdf, doc et docx ; Taille max : 10Mo</mat-hint>
+            </button>
+            <mat-hint class="hint-doc">Format accepté : pdf, doc et docx ; Taille max : 10Mo</mat-hint>
           </div>
         </div>
       </div>

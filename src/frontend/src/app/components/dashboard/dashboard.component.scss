@@ -39,13 +39,13 @@ i.done {
   color: var(--successColor) !important;
 }
 
-.mdc-card{
-  box-shadow: none !important; // Supprime l'ombre portée (contour)
-  border: none !important;     // Supprime toute bordure
-  border-radius: 0 !important; // Supprime les bords arrondis
+.mdc-card {
+  box-shadow: none !important;
+  border: none !important;
+  border-radius: 0 !important;
 }
 
-.convention-attente{
+.convention-attente {
   font-weight: bold;
 }
 
@@ -70,4 +70,3 @@ i.done {
   line-height: 1.1;
   white-space: nowrap;
 }
-
