@@ -22,7 +22,7 @@
     </div>
 
     <mat-card-actions class="text-center">
-      <button class="action-bt" mat-stroked-button color="primary" (click)="logoInput.click()">
+      <button class="action-bt" mat-stroked-button color="primary" [attr.aria-label]="currentFile && currentFile.size > 0 ? 'Changer de logo' : 'Insérer un logo'" (click)="logoInput.click()">
         <span>{{currentFile && currentFile.size > 0 ? 'Changer de logo' : 'Insérer un logo'}}</span>
         <input #logoInput type="file" (change)="onLogoChange($event)" accept="image/*" style="display:none">
       </button>
