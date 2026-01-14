@@ -136,7 +136,14 @@
                 <mat-form-field class="col-sm-12 mb-2" appearance="fill">
                   <mat-label>Mail personnel</mat-label>
                   <input matInput formControlName="courrielPersoEtudiant" required />
-                  <mat-error><app-form-error [field]="formConvention.get('courrielPersoEtudiant')"></app-form-error></mat-error>
+                  <mat-error *ngIf="formConvention.get('courrielPersoEtudiant')?.hasError('email')
+                  || formConvention.get('courrielPersoEtudiant')?.hasError('pattern')">
+                    Adresse email invalide. Format attendu : exemple&#64;domaine.com
+                  </mat-error>
+                  <mat-error *ngIf="!(formConvention.get('courrielPersoEtudiant')?.hasError('email')
+                  || formConvention.get('courrielPersoEtudiant')?.hasError('pattern'))">
+                    <app-form-error [field]="formConvention.get('courrielPersoEtudiant')"></app-form-error>
+                  </mat-error>
                 </mat-form-field>
               </div>
             </fieldset>
