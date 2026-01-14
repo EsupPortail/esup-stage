@@ -120,10 +120,13 @@
     </div>
     <div class="row mt-3" *ngIf="service">
       <div class="col-md-12">
-        <div class="text-title">Service sélectionné</div>
+        <span class="text-title" id="service-selectionne-title">
+          Service sélectionné
+        </span>
       </div>
+
       <div class="col-md-12">
-        <table mat-table [dataSource]="[service]">
+        <table mat-table [dataSource]="[service]" aria-labelledby="service-selectionne-title">
           <ng-container matColumnDef="nom">
             <th mat-header-cell *matHeaderCellDef>Nom du service</th>
             <td mat-cell *matCellDef="let row">{{row.nom}}</td>
