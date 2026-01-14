@@ -71,27 +71,30 @@
     </mat-expansion-panel-header>
 
     <form [formGroup]="form">
-      <div class="row">
-        <mat-form-field class="col-sm12 col-md-6" appearance="fill">
-          <mat-label>Voie</mat-label>
-          <input matInput formControlName="voie" required>
-          <mat-error><app-form-error [field]="form.get('voie')"></app-form-error></mat-error>
-        </mat-form-field>
-        <mat-form-field class="col-sm12 col-md-6" appearance="fill">
-          <mat-label>Bâtiment / Résidence / Z.I.</mat-label>
-          <input matInput formControlName="adresse">
-        </mat-form-field>
-      </div>
-      <div class="row">
-        <div class="col-sm12 col-md-6">
-          <app-form-autocomplete-field [service]="communeService" [field]="form.get('codePostal')" [fieldLabel]="'Code postal'" (updated)="updateCommune($event)" [startWith]="false"></app-form-autocomplete-field>
+      <fieldset>
+        <legend class="sr-only">Adresse</legend>
+        <div class="row">
+          <mat-form-field class="col-sm12 col-md-6" appearance="fill">
+            <mat-label>Voie</mat-label>
+            <input matInput formControlName="voie" required>
+            <mat-error><app-form-error [field]="form.get('voie')"></app-form-error></mat-error>
+          </mat-form-field>
+          <mat-form-field class="col-sm12 col-md-6" appearance="fill">
+            <mat-label>Bâtiment / Résidence / Z.I.</mat-label>
+            <input matInput formControlName="adresse">
+          </mat-form-field>
         </div>
-        <mat-form-field class="col-sm12 col-md-6" appearance="fill">
-          <mat-label>Commune</mat-label>
-          <input matInput formControlName="commune" required>
-          <mat-error><app-form-error [field]="form.get('commune')"></app-form-error></mat-error>
-        </mat-form-field>
-      </div>
+        <div class="row">
+          <div class="col-sm12 col-md-6">
+            <app-form-autocomplete-field [service]="communeService" [field]="form.get('codePostal')" [fieldLabel]="'Code postal'" (updated)="updateCommune($event)" [startWith]="false"></app-form-autocomplete-field>
+          </div>
+          <mat-form-field class="col-sm12 col-md-6" appearance="fill">
+            <mat-label>Commune</mat-label>
+            <input matInput formControlName="commune" required>
+            <mat-error><app-form-error [field]="form.get('commune')"></app-form-error></mat-error>
+          </mat-form-field>
+        </div>
+      </fieldset>
       <div class="row">
         <mat-form-field class="col-sm12 col-md-6" appearance="fill">
           <mat-label>Adresse mail</mat-label>
