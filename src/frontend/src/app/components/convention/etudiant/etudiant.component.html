@@ -5,23 +5,30 @@
     </mat-expansion-panel-header>
 
     <form [formGroup]="form" novalidate class="mt-2 mb-3">
-      <div class="row">
-        <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-          <mat-label>N° étudiant</mat-label>
-          <input matInput formControlName="codEtu" />
-        </mat-form-field>
-      </div>
-      <div class="row">
-        <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-          <mat-label>Nom</mat-label>
-          <input matInput formControlName="nom" />
-        </mat-form-field>
-        <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-          <mat-label>Prénom</mat-label>
-          <input matInput formControlName="prenom" />
-        </mat-form-field>
-      </div>
+      <fieldset class="fieldset-block">
+        <legend class="sr-only">Recherche d’un étudiant</legend>
+
+        <div class="row">
+          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+            <mat-label>N° étudiant</mat-label>
+            <input matInput formControlName="codEtu" />
+          </mat-form-field>
+        </div>
+
+        <div class="row">
+          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+            <mat-label>Nom</mat-label>
+            <input matInput formControlName="nom" />
+          </mat-form-field>
+
+          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+            <mat-label>Prénom</mat-label>
+            <input matInput formControlName="prenom" />
+          </mat-form-field>
+        </div>
+      </fieldset>
     </form>
+
 
     <div class="alert alert-info" *ngIf="etudiants.length === 10">La recherche est limitée à 10 étudiants. Veuillez affiner la recherche si l'étudiant n'apparaît pas.</div>
     <table mat-table [dataSource]="etudiants">
@@ -82,10 +89,10 @@
                 <div class="col-sm-6">{{etudiant.mail}}</div>
               </div>
             </div>
-
             <div class="text-title"><span class="fa fa-star"></span> Vérifiez les coordonnées</div>
             <mat-divider></mat-divider>
-            <div class="mt-3 mb-3">
+            <fieldset class="fieldset-block mt-3 mb-3">
+              <legend class="sr-only">{{ isUserEtudiant() ? "Vérifiez vos coordonnées":"Vérifiez les coordonnées de l’étudiant"}}</legend>
               <div class="row">
                 <mat-form-field class="col-sm-12 mb-2" appearance="fill">
                   <mat-label>Adresse</mat-label>
@@ -93,10 +100,16 @@
                   <mat-error><app-form-error [field]="formConvention.get('adresseEtudiant')"></app-form-error></mat-error>
                 </mat-form-field>
                 <div class="col-sm-12 mb-2" *ngIf="isFr()">
-                  <app-form-autocomplete-field [service]="communeService" [field]="formConvention.get('codePostalEtudiant')" [fieldLabel]="'Code postal'" (updated)="updateCommune($event)" [startWith]="false"></app-form-autocomplete-field>
+                  <app-form-autocomplete-field
+                    [service]="communeService"
+                    [field]="formConvention.get('codePostalEtudiant')"
+                    [fieldLabel]="'Code postal'"
+                    (updated)="updateCommune($event)"
+                    [startWith]="false"
+                  ></app-form-autocomplete-field>
                 </div>
                 <mat-form-field class="col-sm-12 mb-2" appearance="fill" *ngIf="!isFr()">
-                  <mat-label>code Postal</mat-label>
+                  <mat-label>Code postal</mat-label>
                   <input matInput formControlName="codePostalEtudiant" required />
                   <mat-error><app-form-error [field]="formConvention.get('codePostalEtudiant')"></app-form-error></mat-error>
                 </mat-form-field>
@@ -126,7 +139,7 @@
                   <mat-error><app-form-error [field]="formConvention.get('courrielPersoEtudiant')"></app-form-error></mat-error>
                 </mat-form-field>
               </div>
-            </div>
+            </fieldset>
           </div>
 
           <div class="col-sm-12 col-md-6">
@@ -134,51 +147,62 @@
             <mat-divider></mat-divider>
             <div class="mt-3 mb-3">
               <div class="row">
-                <mat-form-field class="col-sm-12 mb-2" appearance="fill" *ngIf="regions.length > 0">
-                  <mat-label>Région CPAM</mat-label>
-                  <mat-select formControlName="regionCPAM" (selectionChange)="setCPAMLibelles($event)" required>
-                    <mat-option *ngFor="let region of regions" [value]="region">{{region}}</mat-option>
-                  </mat-select>
-                  <mat-error><app-form-error [field]="formConvention.get('regionCPAM')"></app-form-error></mat-error>
-                </mat-form-field>
-                <mat-form-field class="col-sm-12 mb-2" appearance="fill">
-                  <mat-label>Libellé CPAM</mat-label>
-                  <input matInput formControlName="libelleCPAM" [matAutocomplete]="auto" required />
-                  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="setCPAMRegion($event)">
-                    <mat-option *ngFor="let libelle of libelles" [value]="libelle">
-                      {{libelle}}
-                    </mat-option>
-                  </mat-autocomplete>
-                  <mat-error><app-form-error [field]="formConvention.get('libelleCPAM')"></app-form-error></mat-error>
-                </mat-form-field>
-                <mat-form-field class="col-sm-12 mb-2" appearance="fill">
-                  <mat-label>Adresse CPAM</mat-label>
-                  <input matInput formControlName="adresseCPAM" required />
-                  <mat-error><app-form-error [field]="formConvention.get('adresseCPAM')"></app-form-error></mat-error>
-                </mat-form-field>
+                <fieldset>
+                  <legend class="sr-only"> Caisse primaire d'assurance maladie </legend>
+                  <mat-form-field class="col-sm-12 mb-2" appearance="fill" *ngIf="regions.length > 0">
+                    <mat-label>Région CPAM</mat-label>
+                    <mat-select formControlName="regionCPAM" (selectionChange)="setCPAMLibelles($event)" required>
+                      <mat-option *ngFor="let region of regions" [value]="region">{{region}}</mat-option>
+                    </mat-select>
+                    <mat-error><app-form-error [field]="formConvention.get('regionCPAM')"></app-form-error></mat-error>
+                  </mat-form-field>
+                  <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                    <mat-label>Libellé CPAM</mat-label>
+                    <input matInput formControlName="libelleCPAM" [matAutocomplete]="auto" required />
+                    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="setCPAMRegion($event)">
+                      <mat-option *ngFor="let libelle of libelles" [value]="libelle">
+                        {{libelle}}
+                      </mat-option>
+                    </mat-autocomplete>
+                    <mat-error><app-form-error [field]="formConvention.get('libelleCPAM')"></app-form-error></mat-error>
+                  </mat-form-field>
+                  <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                    <mat-label>Adresse CPAM</mat-label>
+                    <input matInput formControlName="adresseCPAM" required />
+                    <mat-error><app-form-error [field]="formConvention.get('adresseCPAM')"></app-form-error></mat-error>
+                  </mat-form-field>
+                </fieldset>
               </div>
             </div>
 
-          <div class="text-title"><span class="fa fa-graduation-cap"></span> Choisissez le cadre du stage</div>
+            <div class="text-title"><span class="fa fa-graduation-cap"></span> Choisissez le cadre du stage</div>
             <mat-divider></mat-divider>
+
             <div class="mt-3 mb-3">
               <ng-container *ngIf="inscriptions.length === 0; else hasInscriptions">
                 <div class="alert alert-danger">
                   Vous n'êtes inscrit à aucune formation éligible.
                 </div>
               </ng-container>
+
               <ng-template #hasInscriptions>
-                <ng-container *ngIf="inscriptions.length > 1">
-                  <div class="row">
-                    <mat-form-field class="col-sm-12 mb-2" appearance="fill">
-                      <mat-label>Formation</mat-label>
-                      <mat-select formControlName="inscription" required>
-                        <mat-option *ngFor="let inscription of inscriptions" [value]="inscription">{{inscription.annee + '/' + (+inscription.annee + 1) + ': ' + inscription.etapeInscription.codeEtp + ' - ' + inscription.etapeInscription.libWebVet}}<span class="option-composante">({{inscription.etapeInscription.codeComposante}})</span></mat-option>
-                      </mat-select>
-                      <mat-error><app-form-error [field]="formConvention.get('inscription')"></app-form-error></mat-error>
-                    </mat-form-field>
-                  </div>
-                </ng-container>
+                <fieldset class="fieldset-block">
+                  <legend class="sr-only">Cadre du stage</legend>
+
+                  <ng-container *ngIf="inscriptions.length > 1">
+                    <div class="row">
+                      <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                        <mat-label>Formation</mat-label>
+                        <mat-select formControlName="inscription" required>
+                          <mat-option *ngFor="let inscription of inscriptions" [value]="inscription">
+                            {{inscription.annee + '/' + (+inscription.annee + 1) + ': ' + inscription.etapeInscription.codeEtp + ' - ' + inscription.etapeInscription.libWebVet}}
+                            <span class="option-composante">({{inscription.etapeInscription.codeComposante}})</span>
+                          </mat-option>
+                        </mat-select>
+                        <mat-error><app-form-error [field]="formConvention.get('inscription')"></app-form-error></mat-error>
+                      </mat-form-field>
+                    </div>
+                  </ng-container>
                 <div *ngIf="selectedInscription">
                   <div class="row">
                     <div class="col-sm-4 font-weight-bold">Année inscription</div>
@@ -227,6 +251,7 @@
                       <mat-error><app-form-error [field]="formConvention.get('codeLangueConvention')"></app-form-error></mat-error>
                     </mat-form-field>
                   </div>
+                </fieldset>
               </ng-template>
             </div>
 

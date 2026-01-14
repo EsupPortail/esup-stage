@@ -526,4 +526,8 @@ export class EtudiantComponent implements OnInit, OnChanges {
   trustHtml(html: string){
     return this.sanitizer.bypassSecurityTrustHtml(html);
   }
+
+  isUserEtudiant(): boolean {
+    return this.authService.isEtudiant();
+  }
 }
