@@ -103,7 +103,7 @@
             Ce champ est requis.
           </mat-error>
           <mat-error *ngIf="form.get('mail')?.hasError('pattern')">
-            Adresse email invalide.
+            Adresse email invalide. Format attendu : exemple&#64;domaine.com
           </mat-error>
         </mat-form-field>
         <mat-form-field class="col-sm12 col-md-6" appearance="fill">
@@ -113,7 +113,7 @@
             Ce champ est requis.
           </mat-error>
           <mat-error *ngIf="form.get('telephone')?.hasError('pattern')">
-            Numéro de téléphone invalide.
+            Numéro de téléphone invalide. Format attendu : 01 23 XX XX XX
           </mat-error>
         </mat-form-field>
 
