@@ -25,14 +25,14 @@
             L'avenant n'a pas été envoyé pour signature électronique.
         </div>
         <div class="alert alert-info" *ngIf="avenant.dateEnvoiSignature">
-          Docaposte et ESUP-Signature : les informations de signature sont mises à jour automatiquement tous les jours à 1h.<br/>
-          Solutions externes : les informations de signature sont mis à jour automatiquement via webhook.<br/>
-          L'actualisation des données n'est possible que toutes les 30 minutes.
-            <div class="mt-2 text-center">
-                <button mat-button mat-flat-button color="primary" (click)="updateSignatureInfos()" [disabled]="isActualisationActif()">
-                  Mettre à jour les informations et récupérer le document signé
-                </button>
-            </div>
+          <p class="signature-info">Docaposte et ESUP-Signature : les informations de signature sont mises à jour automatiquement tous les jours à 1h.</p>
+          <p class="signature-info">Solutions externes : les informations de signature sont mis à jour automatiquement via webhook.</p>
+          <p class="signature-info">L'actualisation des données n'est possible que toutes les 30 minutes.</p>
+          <div class="mt-2 text-center">
+            <button mat-button mat-flat-button color="primary" (click)="updateSignatureInfos()" [disabled]="isActualisationActif()">
+              Mettre à jour les informations et récupérer le document signé
+            </button>
+          </div>
         </div>
         <div *ngIf="avenant.dateEnvoiSignature && data.length > 0">
             <table mat-table [dataSource]="data" *ngIf="!isMobile; else mobileTable">

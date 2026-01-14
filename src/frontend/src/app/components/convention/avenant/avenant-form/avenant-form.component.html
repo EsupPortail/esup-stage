@@ -76,8 +76,7 @@
     <div class="row" *ngIf="convention.interruptionStage">
       <div class="col-sm-3 font-weight-bold">Périodes d'interruption du stage</div>
       <div class="col-sm-9"><span *ngFor="let interruption of interruptionsStage">
-          {{(interruptionsStage.length>1?'- Du ':'Du ') + (interruption.dateDebutInterruption|date:'shortDate') + ' au
-          '+ (interruption.dateFinInterruption|date:'shortDate')}}<br></span>
+          {{(interruptionsStage.length>1?'- Du ':'Du ') + (interruption.dateDebutInterruption|date:'shortDate') + ' au '+ (interruption.dateFinInterruption|date:'shortDate')}}</span>
       </div>
     </div>
     <div class="row mt-3 mb-3">
@@ -131,8 +130,7 @@
       </div>
     </div>
     <mat-divider></mat-divider>
-    <br />
-    <div *ngIf="addedInterruptionsStage.length>0">
+    <div class="interruption-stage-container" *ngIf="addedInterruptionsStage.length>0">
       <div class="col-sm-3 font-weight-bold">Nouvelles périodes d'interruption du stage </div>
       <div *ngFor="let row of addedInterruptionsStage">
         <div class="col-sm-9">Du {{row.dateDebutInterruption | date:'d/MM/yy'}} au {{row.dateFinInterruption | date:'d/MM/yy'}}</div>
@@ -141,8 +139,7 @@
     <div class="row mt-3 mb-3">
       <div class="col-6">
         <button mat-button mat-flat-button type="button" color="primary"
-          (click)="openInterruptionsCreateFormModal()">{{addedInterruptionsStage.length === 0 ?'Ajouter des':'Gérer
-          les'}} nouvelles périodes d'interruptions</button>
+          (click)="openInterruptionsCreateFormModal()">{{addedInterruptionsStage.length === 0 ?'Ajouter des':'Gérerles'}} nouvelles périodes d'interruptions</button>
       </div>
     </div>
   </div>

@@ -38,7 +38,7 @@
   <div class="row" *ngIf="convention.interruptionStage">
     <div class="col-sm-3 font-weight-bold">Anciennes périodes d'interruption du stage</div>
     <div class="col-sm-9"><span *ngFor="let interruption of interruptionsStage">
-            {{(interruptionsStage.length>1?'- Du ':'Du ') + (interruption.dateDebutInterruption|date:'shortDate') + ' au '+ (interruption.dateFinInterruption|date:'shortDate')}}<br></span>
+            {{(interruptionsStage.length>1?'- Du ':'Du ') + (interruption.dateDebutInterruption|date:'shortDate') + ' au '+ (interruption.dateFinInterruption|date:'shortDate')}}</span>
     </div>
   </div>
   <div class="row mt-3" *ngIf="avenant.dateDebutStage">
@@ -55,13 +55,13 @@
       {{(modifiedInterruptionsStage.length>1?'- Du ':'Du ') + (interruption.periodeInterruptionStage.dateDebutInterruption|date:'shortDate') +
       ' au '+ (interruption.periodeInterruptionStage.dateFinInterruption|date:'shortDate') + ' -> ' +
       ((interruption.dateDebutInterruption?interruption.dateDebutInterruption:interruption.periodeInterruptionStage.dateDebutInterruption)|date:'shortDate') +
-      ' au '+ ((interruption.dateFinInterruption?interruption.dateFinInterruption:interruption.periodeInterruptionStage.dateFinInterruption)|date:'shortDate') }}<br></span>
+      ' au '+ ((interruption.dateFinInterruption?interruption.dateFinInterruption:interruption.periodeInterruptionStage.dateFinInterruption)|date:'shortDate') }}</span>
     </div>
   </div>
   <div class="row mt-3" *ngIf="addedInterruptionsStage.length>0">
     <div class="col-sm-3 font-weight-bold">Nouvelles périodes d'interruption du stage</div>
     <div class="col-sm-9"><span *ngFor="let interruption of addedInterruptionsStage">
-            {{(addedInterruptionsStage.length>1?'- Du ':'Du ') + (interruption.dateDebutInterruption|date:'shortDate') + ' au '+ (interruption.dateFinInterruption|date:'shortDate')}}<br></span>
+            {{(addedInterruptionsStage.length>1?'- Du ':'Du ') + (interruption.dateDebutInterruption|date:'shortDate') + ' au '+ (interruption.dateFinInterruption|date:'shortDate')}}</span>
     </div>
   </div>
 </div>
