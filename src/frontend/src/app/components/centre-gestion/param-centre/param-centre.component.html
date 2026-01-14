@@ -7,8 +7,8 @@
       <div class="row">
         <div class="col-sm-12 col-md-8">
           <div>
-            <span>Critère de gestion de la confidentialité : </span>
-            <mat-form-field>
+            <label for="codeConfidentialite">Critère de gestion de la confidentialité : </label>
+            <mat-form-field id="codeConfidentialite" class="col-sm-12 col-md-6" appearance="fill">
               <mat-select formControlName="codeConfidentialite" [compareWith]="compareCode">
                 <mat-option *ngFor="let confidentialite of confidentialites" [value]="confidentialite">{{confidentialite.libelle}}</mat-option>
               </mat-select>
