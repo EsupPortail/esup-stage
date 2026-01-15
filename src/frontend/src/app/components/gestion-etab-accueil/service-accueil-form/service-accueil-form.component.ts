@@ -4,6 +4,7 @@ import { FormBuilder, Validators } from "@angular/forms";
 import { ServiceService } from "../../../services/service.service";
 import { CommuneService } from "../../../services/commune.service";
 import { MessageService } from "../../../services/message.service";
+import {REGEX} from "../../../utils/regex.utils";
 
 @Component({
     selector: 'app-service-accueil-form',
@@ -39,7 +40,7 @@ export class ServiceAccueilFormComponent {
         batimentResidence: [this.service.batimentResidence, [Validators.maxLength(200)]],
         commune: [this.service.commune, [Validators.required, Validators.maxLength(200)]],
         idPays: [this.service.pays ? this.service.pays.id : null, [Validators.required]],
-        telephone: [this.service.telephone, [Validators.maxLength(20)]],
+        telephone: [this.service.telephone, [Validators.pattern(REGEX.PHONE), Validators.maxLength(50)]],
       });
     }else{
       this.form = this.fb.group({
@@ -49,7 +50,7 @@ export class ServiceAccueilFormComponent {
         batimentResidence: [this.etab.batimentResidence, [Validators.maxLength(200)]],
         commune: [this.etab.commune, [Validators.required, Validators.maxLength(200)]],
         idPays: [this.etab.pays ? this.etab.pays.id : null, [Validators.required]],
-        telephone: [this.etab.telephone, [Validators.maxLength(20)]],
+        telephone: [this.etab.telephone, [Validators.pattern(REGEX.PHONE),Validators.maxLength(50)]],
       });
     }
     this.communeService.getPaginated(1, 0, 'lib', 'asc', "").subscribe((response: any) => {

@@ -8,7 +8,14 @@
       <button mat-icon-button matSuffix class="icon-help" matTooltip="Nom de l'organisme" aria-label="Aide sur la raison sociale" type="button">
         <mat-icon>help</mat-icon>
       </button>
-      <mat-error *ngIf="form.get('raisonSociale')"></mat-error>
+      <mat-error *ngIf="form.get('raisonSociale')?.touched && form.get('raisonSociale')?.invalid">
+        <ng-container *ngIf="form.get('raisonSociale')?.hasError('required')">
+          Ce champ est obligatoire.
+        </ng-container>
+        <ng-container *ngIf="form.get('raisonSociale')?.hasError('maxlength')">
+          150 caractères maximum.
+        </ng-container>
+      </mat-error>
     </mat-form-field>
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill" [hidden]="!isFr()">
       <mat-label>Numéro Siret</mat-label>
@@ -16,7 +23,17 @@
       <button mat-icon-button matSuffix class="icon-help" matTooltip="Code INSEE à demander à votre établissement d'accueil ou consultable sur des sites de référencement d'entreprises. Correspond à l'identifiant géographique de l'établissement. (format : 14 chiffres consécutifs sans espace - ex: 12345678912345)" aria-label="Aide sur le numéro SIRET" type="button">
         <mat-icon>help</mat-icon>
       </button>
-      <mat-error *ngIf="form.get('numeroSiret')"></mat-error>
+      <mat-error *ngIf="form.get('numeroSiret')?.touched && form.get('numeroSiret')?.invalid">
+        <ng-container *ngIf="form.get('numeroSiret')?.hasError('required')">
+          Ce champ est obligatoire.
+        </ng-container>
+        <ng-container *ngIf="form.get('numeroSiret')?.hasError('minlength') || form.get('numeroSiret')?.hasError('maxlength')">
+          Le SIRET doit contenir 14 chiffres.
+        </ng-container>
+        <ng-container *ngIf="form.get('numeroSiret')?.hasError('pattern')">
+          Format invalide. Le format attendu est : 12345678912345
+        </ng-container>
+      </mat-error>
     </mat-form-field>
   </div>
   <div class="row">
@@ -32,7 +49,9 @@
       <mat-select formControlName="idTypeStructure" required>
         <mat-option *ngFor="let typeStructure of typeStructures" [value]="typeStructure.id">{{typeStructure.libelle}}</mat-option>
       </mat-select>
-      <mat-error *ngIf="form.get('idTypeStructure')"></mat-error>
+      <mat-error *ngIf="form.get('idTypeStructure')?.touched && form.get('idTypeStructure')?.hasError('required')">
+        Ce champ est obligatoire.
+      </mat-error>
     </mat-form-field>
   </div>
   <div class="row">
@@ -50,7 +69,9 @@
       <mat-select formControlName="idStatutJuridique" required>
         <mat-option *ngFor="let statutJuridique of statutJuridiques" (click)="setTypeStructure(statutJuridique)" [value]="statutJuridique.id">{{statutJuridique.libelle}}</mat-option>
       </mat-select>
-      <mat-error *ngIf="form.get('idStatutJuridique')"></mat-error>
+      <mat-error *ngIf="form.get('idStatutJuridique')?.touched && form.get('idStatutJuridique')?.hasError('required')">
+        Ce champ est obligatoire.
+      </mat-error>
     </mat-form-field>
   </div>
 
@@ -107,7 +128,10 @@
       <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
         <mat-label>Voie</mat-label>
         <input matInput formControlName="voie" required />
-        <mat-error *ngIf="form.get('voie')"></mat-error>
+        <mat-error *ngIf="form.get('voie')?.touched && form.get('voie')?.invalid">
+          <ng-container *ngIf="form.get('voie')?.hasError('required')">Ce champ est obligatoire.</ng-container>
+          <ng-container *ngIf="form.get('voie')?.hasError('maxlength')">200 caractères maximum.</ng-container>
+        </mat-error>
       </mat-form-field>
       <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
         <mat-label>Bâtiment / Résidence / Z.I</mat-label>
@@ -139,8 +163,8 @@
           </mat-option>
         </mat-select>
         <!-- Gestion des erreurs -->
-        <mat-error *ngIf="form.get('idPays')?.hasError('required') && form.get('idPays')?.touched">
-          Le pays est obligatoire.
+        <mat-error *ngIf="form.get('idPays')?.touched && form.get('idPays')?.hasError('required')">
+          Ce champ est obligatoire.
         </mat-error>
         <!-- hint absent -> correction visuel -->
         <mat-hint
@@ -173,12 +197,23 @@
       <mat-label>Adresse mail</mat-label>
       <input matInput formControlName="mail" />
       <mat-hint>Sous cette forme adresse&#64;domaine.fr</mat-hint>
-      <mat-error><app-form-error [field]="form.get('email')"></app-form-error></mat-error>
+      <mat-error *ngIf="form.get('mail')?.touched && form.get('mail')?.invalid">
+        <ng-container *ngIf="form.get('mail')?.hasError('pattern')">
+          Adresse email invalide. Format attendu : exemple&#64;domaine.com
+        </ng-container>
+        <ng-container *ngIf="form.get('mail')?.hasError('maxlength')">
+          255 caractères maximum.
+        </ng-container>
+      </mat-error>
     </mat-form-field>
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Téléphone</mat-label>
       <input matInput formControlName="telephone" required />
-      <mat-error *ngIf="form.get('telephone')"> Numéro de téléphone invalide. </mat-error>
+      <mat-error *ngIf="form.get('telephone')?.touched && form.get('telephone')?.invalid">
+        <ng-container *ngIf="form.get('telephone')?.hasError('required')">Ce champ est obligatoire.</ng-container>
+        <ng-container *ngIf="form.get('telephone')?.hasError('pattern')">Numéro de téléphone invalide. Format attendu : 01 23 XX XX XX </ng-container>
+        <ng-container *ngIf="form.get('telephone')?.hasError('maxlength')">50 caractères maximum.</ng-container>
+      </mat-error>
     </mat-form-field>
   </div>
   <div class="row">
@@ -186,7 +221,7 @@
       <mat-label>Site internet</mat-label>
       <input type="url" matInput formControlName="siteWeb" />
       <mat-hint>Sous cette forme http://siteinternet.fr/...</mat-hint>
-      <mat-error *ngIf="form.get('siteWeb')"> Site web invalide. </mat-error>
+      <mat-error *ngIf="form.get('siteWeb')"> Site web invalide. Format attendu : https://example.com </mat-error>
     </mat-form-field>
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Fax</mat-label>

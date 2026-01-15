@@ -11,7 +11,7 @@
         <div class="text-title">Général</div>
         <mat-divider class="mb-2"></mat-divider>
         <div class="row">
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+          <mat-form-field class="col-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Nom</mat-label>
             <input matInput formControlName="nom" required />
             <mat-error><app-form-error [field]="form.get('nom')"></app-form-error></mat-error>
@@ -19,44 +19,60 @@
         </div>
         <div class="text-title">Coordonnées</div>
         <mat-divider class="mb-2"></mat-divider>
-        <div class="row">
-          <fieldset>
-            <legend class="sr-only">Adresse</legend>
-            <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+        <fieldset class="w-100">
+          <legend class="sr-only">Adresse</legend>
+          <div class="row">
+            <mat-form-field class="col-12 col-md-6 mb-2" appearance="fill">
               <mat-label>Voie</mat-label>
               <input matInput formControlName="voie" required />
               <mat-error><app-form-error [field]="form.get('voie')"></app-form-error></mat-error>
             </mat-form-field>
-            <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+            <mat-form-field class="col-12 col-md-6 mb-2" appearance="fill">
               <mat-label>Bâtiment / Résidence / Z.I</mat-label>
               <input matInput formControlName="batimentResidence" />
             </mat-form-field>
-            <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+            <mat-form-field class="col-12 col-md-6 mb-2" appearance="fill">
               <mat-label>Pays</mat-label>
               <mat-select formControlName="idPays" required>
-                <mat-option *ngFor="let country of countries" [value]="country.id">{{country.libelle}}</mat-option>
+                <mat-option *ngFor="let country of countries" [value]="country.id">
+                  {{ country.libelle }}
+                </mat-option>
               </mat-select>
               <mat-error><app-form-error [field]="form.get('idPays')"></app-form-error></mat-error>
             </mat-form-field>
-            <div class="col-sm-12 col-md-6 mb-2" *ngIf="isFr()">
-              <app-form-autocomplete-field [service]="communeService" [field]="form.get('codePostal')" [fieldLabel]="'Code postal'" (updated)="updateCommune($event)" [startWith]="false"></app-form-autocomplete-field>
+            <div class="col-12 col-md-6 mb-2" *ngIf="isFr()">
+              <app-form-autocomplete-field
+                [service]="communeService"
+                [field]="form.get('codePostal')"
+                [fieldLabel]="'Code postal'"
+                (updated)="updateCommune($event)"
+                [startWith]="false">
+              </app-form-autocomplete-field>
             </div>
-            <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill" *ngIf="!isFr()">
+            <mat-form-field class="col-12 col-md-6 mb-2" appearance="fill" *ngIf="!isFr()">
               <mat-label>Code Postal</mat-label>
               <input matInput formControlName="codePostal" required />
               <mat-error><app-form-error [field]="form.get('codePostal')"></app-form-error></mat-error>
             </mat-form-field>
-            <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+            <mat-form-field class="col-12 col-md-6 mb-2" appearance="fill">
               <mat-label>Commune</mat-label>
               <input matInput formControlName="commune" required />
               <mat-error><app-form-error [field]="form.get('commune')"></app-form-error></mat-error>
             </mat-form-field>
-          </fieldset>
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Téléphone</mat-label>
-            <input matInput formControlName="telephone" />
-          </mat-form-field>
-        </div>
+            <mat-form-field class="col-12 col-md-6 mb-2" appearance="fill">
+              <mat-label>Téléphone</mat-label>
+              <input matInput formControlName="telephone" />
+              <mat-error *ngIf="form.get('telephone')?.touched && form.get('telephone')?.invalid">
+                <ng-container *ngIf="form.get('telephone')?.hasError('pattern')">
+                  Numéro de téléphone invalide. Format attendu : 01 23 XX XX XX
+                </ng-container>
+                <ng-container *ngIf="form.get('telephone')?.hasError('maxlength')">
+                  50 caractères maximum.
+                </ng-container>
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </fieldset>
       </form>
     </div>
 

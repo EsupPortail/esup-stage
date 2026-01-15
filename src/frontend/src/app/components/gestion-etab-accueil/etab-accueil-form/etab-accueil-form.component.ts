@@ -390,7 +390,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   ngOnChanges(changes: SimpleChanges): void {
     this.form = this.fb.group({
       raisonSociale: [{ value: this.etab.raisonSociale, disabled: this.isFieldDisabled() }, [Validators.required, Validators.maxLength(150)]],
-      numeroSiret: [{ value: this.etab.numeroSiret, disabled: this.isFieldDisabled() }, [Validators.maxLength(14), Validators.pattern('[0-9]{14}')]],
+      numeroSiret: [{ value: this.etab.numeroSiret, disabled: this.isFieldDisabled() }, [Validators.maxLength(14), Validators.pattern(REGEX.NUMSIRET)]],
       idEffectif: [this.etab.effectif ? this.etab.effectif.id : null],
       idTypeStructure: [this.etab.typeStructure ? this.etab.typeStructure.id : null, [Validators.required]],
       idStatutJuridique: [this.etab.statutJuridique?.id ?? null, [Validators.required]],
@@ -403,10 +403,10 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
       libCedex: [this.etab.libCedex, [Validators.maxLength(20)]],
       idPays: [this.etab.pays?.id ?? null, [Validators.required]],
       mail: [this.etab.mail, [Validators.pattern(REGEX.EMAIL), Validators.maxLength(255)]],
-      telephone: [this.etab.telephone, [Validators.required, Validators.pattern(/^(?:(?:\+|00)\d{1,4}[-.\s]?|0)\d{1,4}([-.\s]?\d{1,4})*$/), Validators.maxLength(50)]],
-      siteWeb: [this.etab.siteWeb, [Validators.maxLength(200), Validators.pattern('^https?://(\\w([\\w\\-]{0,61}\\w)?\\.)+[a-zA-Z]{2,6}([/]{1}.*)?$')]],
+      telephone: [this.etab.telephone, [Validators.required, Validators.pattern(REGEX.PHONE), Validators.maxLength(50)]],
+      siteWeb: [this.etab.siteWeb, [Validators.maxLength(200), Validators.pattern(REGEX.SITEWEB)]],
       fax: [this.etab.fax, [Validators.maxLength(20)]],
-      numeroRNE: [this.etab.numeroRNE, [Validators.maxLength(8), Validators.pattern('[0-9]{7}[a-zA-Z]')]],
+      numeroRNE: [this.etab.numeroRNE, [Validators.maxLength(8), Validators.pattern(REGEX.NUMRNE)]],
       verrouillageSynchroStructureSirene: [this.etab.verrouillageSynchroStructureSirene || false]
     });
     this.toggleCommune();
