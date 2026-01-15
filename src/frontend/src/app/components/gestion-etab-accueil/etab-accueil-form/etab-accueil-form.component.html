@@ -5,13 +5,17 @@
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Raison sociale</mat-label>
       <input matInput formControlName="raisonSociale" [disabled]="isFieldDisabled()" required />
-      <mat-icon matSuffix class="icon-help" matTooltip="Nom de l'organisme">help</mat-icon>
+      <button mat-icon-button matSuffix class="icon-help" matTooltip="Nom de l'organisme" aria-label="Aide sur la raison sociale" type="button">
+        <mat-icon>help</mat-icon>
+      </button>
       <mat-error *ngIf="form.get('raisonSociale')"></mat-error>
     </mat-form-field>
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill" [hidden]="!isFr()">
       <mat-label>Numéro Siret</mat-label>
       <input matInput formControlName="numeroSiret" [disabled]="isFieldDisabled()" [required]="numeroSiretRequired() && isFr()" />
-      <mat-icon matSuffix class="icon-help" matTooltip="Code INSEE à demander à votre établissement d'accueil ou consultable sur des sites de référencement d'entreprises. Correspond à l'identifiant géographique de l'établissement. (format : 14 chiffres consécutifs sans espace - ex: 12345678912345)">help</mat-icon>
+      <button mat-icon-button matSuffix class="icon-help" matTooltip="Code INSEE à demander à votre établissement d'accueil ou consultable sur des sites de référencement d'entreprises. Correspond à l'identifiant géographique de l'établissement. (format : 14 chiffres consécutifs sans espace - ex: 12345678912345)" aria-label="Aide sur le numéro SIRET" type="button">
+        <mat-icon>help</mat-icon>
+      </button>
       <mat-error *ngIf="form.get('numeroSiret')"></mat-error>
     </mat-form-field>
   </div>
@@ -67,7 +71,9 @@
           <mat-option (click)="setSelectedNafN5(null)"></mat-option>
           <mat-option *ngFor="let nafN5 of filteredNafN5List | async" [value]="nafN5.code" (click)="setSelectedNafN5(nafN5)">{{nafN5.code}} - {{nafN5.libelle}}</mat-option>
         </mat-select>
-        <mat-icon matSuffix class="icon-help" matTooltip="Code à demander directement à votre établissement d'accueil ou consultable sur un site de référencement d'entreprises. Composé de quatre chiffres et une lettre (ex: 01.10Z) faisant référence à la nomenclature d'activité françaises (NAF).">help</mat-icon>
+        <button mat-icon-button matSuffix class="icon-help" matTooltip="Code à demander directement à votre établissement d'accueil ou consultable sur un site de référencement d'entreprises. Composé de quatre chiffres et une lettre (ex: 01.10Z) faisant référence à la nomenclature d'activité françaises (NAF)." aria-label="Aide sur le code APE" type="button">
+          <mat-icon>help</mat-icon>
+        </button>
         <mat-hint>
           <ng-container *ngIf="selectedNafN5">
             <span class="text-success"><span class="fa fa-check"></span> {{selectedNafN5.libelle}}</span>
