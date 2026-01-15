@@ -101,70 +101,73 @@
 
   <div class="text-title">Coordonnées</div>
   <mat-divider class="etab-accueil-divider mb-2"></mat-divider>
-  <div class="row">
-    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-      <mat-label>Voie</mat-label>
-      <input matInput formControlName="voie" required />
-      <mat-error *ngIf="form.get('voie')"></mat-error>
-    </mat-form-field>
-    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-      <mat-label>Bâtiment / Résidence / Z.I</mat-label>
-      <input matInput formControlName="batimentResidence" />
-    </mat-form-field>
-  </div>
-  <div class="row">
-    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-      <mat-label>Libellé Cedex ou Localité de destination</mat-label>
-      <input matInput formControlName="libCedex" />
-    </mat-form-field>
-    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill" subscriptSizing="dynamic">
-      <mat-label>Pays</mat-label>
-      <mat-select formControlName="idPays" [disabled]="isFieldDisabled()" required>
-        <!-- Barre de recherche -->
-        <mat-option>
-          <ngx-mat-select-search
-            [formControl]="paysFilterCtrl"
-            [placeholderLabel]="'Rechercher…'"
-            [noEntriesFoundLabel]="'Aucun pays trouvé'">
-          </ngx-mat-select-search>
-        </mat-option>
-        <!-- Options filtrées -->
-        <mat-option
-          *ngFor="let country of filteredCountries | async"
-          [value]="country.id"
-          [matTooltip]="country.libelle">
-          {{ country.libelle || 'Valeur indisponible' }}
-        </mat-option>
-      </mat-select>
-      <!-- Gestion des erreurs -->
-      <mat-error *ngIf="form.get('idPays')?.hasError('required') && form.get('idPays')?.touched">
-        Le pays est obligatoire.
-      </mat-error>
-      <!-- hint absent -> correction visuel -->
-      <mat-hint
-        *ngIf="filterTypeCountries === 0">
-      </mat-hint>
-      <!-- Hint pour les pays hors France -->
-      <mat-hint *ngIf="filterTypeCountries === 1" class="hint-expandable">{{('MESSAGE_HINT_PAYS_ETABLISSEMENT_CREATION_HORS_FRANCE' | contenu)}}</mat-hint>
-      <!-- Hint pour la France uniquement -->
-      <mat-hint *ngIf="filterTypeCountries === 2" class="hint-expandable">{{('MESSAGE_HINT_PAYS_ETABLISSEMENT_CREATION_FRANCE_UNIQUEMENT' | contenu)}}</mat-hint>
-    </mat-form-field>
-  </div>
-  <div class="row">
-    <div class="col-sm-12 col-md-6 mb-2" *ngIf="isFr()">
-      <app-form-autocomplete-field [service]="communeService" [field]="form.get('codePostal')" [fieldLabel]="'Code postal'" (updated)="updateCommune($event)" [startWith]="false"></app-form-autocomplete-field>
+  <fieldset>
+    <legend class="sr-only">Adresse</legend>
+    <div class="row">
+      <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+        <mat-label>Voie</mat-label>
+        <input matInput formControlName="voie" required />
+        <mat-error *ngIf="form.get('voie')"></mat-error>
+      </mat-form-field>
+      <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+        <mat-label>Bâtiment / Résidence / Z.I</mat-label>
+        <input matInput formControlName="batimentResidence" />
+      </mat-form-field>
     </div>
-    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill" *ngIf="!isFr()">
-      <mat-label>code Postal</mat-label>
-      <input matInput formControlName="codePostal" required />
-      <mat-error *ngIf="form.get('codePostal')"></mat-error>
-    </mat-form-field>
-    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-      <mat-label>Commune</mat-label>
-      <input matInput formControlName="commune" required />
-      <mat-error *ngIf="form.get('commune')"></mat-error>
-    </mat-form-field>
-  </div>
+    <div class="row">
+      <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+        <mat-label>Libellé Cedex ou Localité de destination</mat-label>
+        <input matInput formControlName="libCedex" />
+      </mat-form-field>
+      <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill" subscriptSizing="dynamic">
+        <mat-label>Pays</mat-label>
+        <mat-select formControlName="idPays" [disabled]="isFieldDisabled()" required>
+          <!-- Barre de recherche -->
+          <mat-option>
+            <ngx-mat-select-search
+              [formControl]="paysFilterCtrl"
+              [placeholderLabel]="'Rechercher…'"
+              [noEntriesFoundLabel]="'Aucun pays trouvé'">
+            </ngx-mat-select-search>
+          </mat-option>
+          <!-- Options filtrées -->
+          <mat-option
+            *ngFor="let country of filteredCountries | async"
+            [value]="country.id"
+            [matTooltip]="country.libelle">
+            {{ country.libelle || 'Valeur indisponible' }}
+          </mat-option>
+        </mat-select>
+        <!-- Gestion des erreurs -->
+        <mat-error *ngIf="form.get('idPays')?.hasError('required') && form.get('idPays')?.touched">
+          Le pays est obligatoire.
+        </mat-error>
+        <!-- hint absent -> correction visuel -->
+        <mat-hint
+          *ngIf="filterTypeCountries === 0">
+        </mat-hint>
+        <!-- Hint pour les pays hors France -->
+        <mat-hint *ngIf="filterTypeCountries === 1" class="hint-expandable">{{('MESSAGE_HINT_PAYS_ETABLISSEMENT_CREATION_HORS_FRANCE' | contenu)}}</mat-hint>
+        <!-- Hint pour la France uniquement -->
+        <mat-hint *ngIf="filterTypeCountries === 2" class="hint-expandable">{{('MESSAGE_HINT_PAYS_ETABLISSEMENT_CREATION_FRANCE_UNIQUEMENT' | contenu)}}</mat-hint>
+      </mat-form-field>
+    </div>
+    <div class="row">
+      <div class="col-sm-12 col-md-6 mb-2" *ngIf="isFr()">
+        <app-form-autocomplete-field [service]="communeService" [field]="form.get('codePostal')" [fieldLabel]="'Code postal'" (updated)="updateCommune($event)" [startWith]="false"></app-form-autocomplete-field>
+      </div>
+      <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill" *ngIf="!isFr()">
+        <mat-label>code Postal</mat-label>
+        <input matInput formControlName="codePostal" required />
+        <mat-error *ngIf="form.get('codePostal')"></mat-error>
+      </mat-form-field>
+      <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+        <mat-label>Commune</mat-label>
+        <input matInput formControlName="commune" required />
+        <mat-error *ngIf="form.get('commune')"></mat-error>
+      </mat-form-field>
+    </div>
+  </fieldset>
   <div class="row">
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Adresse mail</mat-label>
