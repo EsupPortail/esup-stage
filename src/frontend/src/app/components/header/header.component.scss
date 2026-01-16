@@ -16,6 +16,16 @@ a {
   margin-left: 10px;
 }
 
+.header-button-accessibility{
+  font-size: 25px;
+  margin-right: 0.5rem;
+}
+
+.header-button-disconnect{
+  font-size: 21px;
+  margin-right: 0.5rem;
+}
+
 @media (max-width: 767px) {
   #app-logo {
     display: block;
@@ -25,5 +35,84 @@ a {
   #app-toolbar {
     height: 80px;
     font-size: 0.8rem;
+  }
+}
+
+// Styles pour le menu d'accessibilité
+::ng-deep .accessibility-menu {
+  .mat-mdc-menu-content {
+    padding: 0 !important;
+  }
+}
+
+.accessibility-menu-content {
+  padding: 8px 0;
+  min-width: 280px;
+
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+    padding: 8px 16px;
+  }
+
+  .accessibility-option {
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .accessibility-label {
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.87);
+    }
+
+    .accessibility-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .font-size-display {
+        min-width: 50px;
+        text-align: center;
+        font-weight: 500;
+      }
+
+      button {
+        &:disabled {
+          opacity: 0.4;
+        }
+      }
+    }
+  }
+}
+
+// Styles globaux pour le contraste élevé (à ajouter dans styles.scss global)
+::ng-deep body.high-contrast {
+  filter: contrast(1.5);
+
+  * {
+    border-color: #000 !important;
+  }
+
+  .mat-mdc-card {
+    box-shadow: 0 0 0 2px #000 !important;
+  }
+
+  button, a {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+}
+
+// Styles globaux pour la réduction des animations (à ajouter dans styles.scss global)
+::ng-deep body.reduced-motion {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

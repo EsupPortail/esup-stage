@@ -5,8 +5,114 @@
       <span class="app-name">{{'TITRE_APPLICATION'|contenu}}</span>
     </a>
     <span class="spacer"></span>
-    <button mat-icon-button  title="Déconnexion" (click)="logout()" *ngIf="isConnected()">
-      <span class="fa fa-sign-out-alt"></span>
+
+    <button class="header-button-accessibility"
+            mat-icon-button
+            [matMenuTriggerFor]="accessibilityMenu"
+            #accessibilityTrigger="matMenuTrigger"
+            title="Paramètres d'accessibilité"
+            *ngIf="isConnected()"
+            aria-label="Ouvrir le menu d'accessibilité">
+      <span class="fa-solid fa-universal-access"></span>
+    </button>
+
+    <mat-menu #accessibilityMenu="matMenu"
+              class="accessibility-menu"
+              (menuOpened)="onAccessibilityMenuOpened()"
+              (closed)="onAccessibilityMenuClosed()"
+              [hasBackdrop]="true">
+
+      <!-- Wrapper focusable + focus trap -->
+      <div class="accessibility-menu-content"
+           tabindex="-1"
+           #accessibilityMenuRoot
+           (click)="$event.stopPropagation()"
+           (keydown.escape)="closeAccessibilityMenu()">
+
+        <h3 mat-menu-item disabled id="accessibility-title">Accessibilité</h3>
+        <mat-divider></mat-divider>
+
+        <!-- Taille du texte -->
+        <div class="accessibility-option" role="group" aria-label="Taille du texte">
+          <span class="accessibility-label">Taille du texte</span>
+          <div class="accessibility-controls">
+            <button mat-icon-button
+                    (click)="decreaseFontSize()"
+                    [disabled]="fontSize <= 80"
+                    title="Réduire la taille du texte"
+                    aria-label="Réduire la taille du texte">
+              <span class="fa-solid fa-minus"></span>
+            </button>
+
+            <span class="font-size-display"
+                  aria-live="polite"
+                  aria-atomic="true">
+          {{fontSize}}%
+        </span>
+
+            <button mat-icon-button
+                    (click)="increaseFontSize()"
+                    [disabled]="fontSize >= 150"
+                    title="Augmenter la taille du texte"
+                    aria-label="Augmenter la taille du texte">
+              <span class="fa-solid fa-plus"></span>
+            </button>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <!-- Contraste -->
+        <button mat-menu-item
+                (click)="toggleHighContrast()"
+                [attr.aria-pressed]="highContrast">
+          <mat-icon aria-hidden="true">
+            <span class="fa-solid" [class.fa-check-square]="highContrast" [class.fa-square]="!highContrast"></span>
+          </mat-icon>
+          <span>Contraste élevé</span>
+        </button>
+
+        <!-- Animations -->
+        <button mat-menu-item
+                (click)="toggleReducedMotion()"
+                [attr.aria-pressed]="reducedMotion">
+          <mat-icon aria-hidden="true">
+            <span class="fa-solid" [class.fa-check-square]="reducedMotion" [class.fa-square]="!reducedMotion"></span>
+          </mat-icon>
+          <span>Réduire les animations</span>
+        </button>
+
+        <mat-divider></mat-divider>
+
+        <!-- NOUVEAU : auto-recherche -->
+        <button mat-menu-item
+                (click)="toggleDisableAutoSearch()"
+                [attr.aria-pressed]="disableAutoSearch">
+          <mat-icon aria-hidden="true">
+            <span class="fa-solid" [class.fa-check-square]="disableAutoSearch" [class.fa-square]="!disableAutoSearch"></span>
+          </mat-icon>
+          <span>Ne pas déclencher automatiquement les recherches</span>
+        </button>
+
+        <mat-divider></mat-divider>
+
+        <button mat-menu-item (click)="resetAccessibilitySettings()">
+          <mat-icon aria-hidden="true">
+            <span class="fa-solid fa-rotate-left"></span>
+          </mat-icon>
+          <span>Réinitialiser</span>
+        </button>
+
+      </div>
+    </mat-menu>
+
+    <button class="header-button-disconnect"
+            mat-icon-button
+            title="Déconnexion"
+            (click)="logout()"
+            *ngIf="isConnected()"
+            aria-label="Se déconnecter">
+      <span class="fa-solid fa-right-from-bracket"></span>
     </button>
   </mat-toolbar>
 </header>
