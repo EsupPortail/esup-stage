@@ -14,9 +14,9 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
         <td mat-cell *matCellDef="let row">
           <ng-container>
-            <button mat-icon-button matTooltip="Éditer" (click)="edit(row)" color="primary"><span class="fa fa-pen"></span></button>
+            <button mat-icon-button matTooltip="Éditer" (click)="edit(row)" color="primary"><span class="fa fa-pen" aria-label="Modifier"></span></button>
             <span (confirm)="delete(row.id)" [confirmMessage]="'Voulez-vous supprimer ce template de convention ?'">
-              <button mat-icon-button matTooltip="Supprimer" color="warn"><span class="fa fa-trash"></span></button>
+              <button mat-icon-button matTooltip="Supprimer" color="warn"><span class="fa fa-trash" aria-label="Supprimer"></span></button>
             </span>
           </ng-container>
         </td>

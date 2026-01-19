@@ -15,11 +15,11 @@
         <th mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let row">
           <ng-container *ngIf="canEdit()">
-            <button mat-icon-button matTooltip="Éditer" (click)="edit(row, false)" color="primary"><span class="fa fa-pen" aria-label="Modifier" title="Modifier"></span></button>
-            <button mat-icon-button matTooltip="Dupliquer" (click)="edit(row, true)" color="primary"><span class="fa fa-copy" aria-label="Dupliquer" title="Dupliquer"></span></button>
+            <button mat-icon-button matTooltip="Éditer" (click)="edit(row, false)" color="primary"><span class="fa fa-pen" aria-label="Modifier"></span></button>
+            <button mat-icon-button matTooltip="Dupliquer" (click)="edit(row, true)" color="primary"><span class="fa fa-copy" aria-label="Dupliquer"></span></button>
           </ng-container>
           <span *ngIf="canDelete()" (confirm)="delete(row)" [confirmMessage]="'Êtes-vous sûr de vouloir supprimer ce rôle ?'">
-            <button mat-icon-button matTooltip="Supprimer" color="warn"><span class="fa fa-trash-alt" aria-label="Supprimer" title="Supprimer"></span></button>
+            <button mat-icon-button matTooltip="Supprimer" color="warn"><span class="fa fa-trash-alt" aria-label="Supprimer"></span></button>
           </span>
         </td>
       </ng-container>
@@ -51,15 +51,71 @@
                 <th mat-header-cell *matHeaderCellDef>Droits</th>
                 <td mat-cell *matCellDef="let appFonction" class="role-droit-icons" [ngClass]="{disabled: !canEdit()}">
                   <ng-container *ngIf="[AppFonction.CONVENTION, AppFonction.AVENANT, AppFonction.ORGA_ACC, AppFonction.SERVICE_CONTACT_ACC].indexOf(appFonction.code) === -1; else sipmplify">
-                    <span class="fa fa-eye mr-2" [ngClass]="{activate: hasRight(appFonction.code, Droit.LECTURE)}" (click)="toggleRight(appFonction.code, Droit.LECTURE)" [matTooltip]="hasRight(appFonction.code, Droit.LECTURE) ? 'visible' : 'non visible'"></span>
-                    <span class="fa fa-edit" [ngClass]="{activate: hasRight(appFonction.code, Droit.ECRITURE)}" (click)="toggleRight(appFonction.code, Droit.ECRITURE)" [matTooltip]="hasRight(appFonction.code, Droit.ECRITURE) ? 'modifiable' : 'non modifiable'"></span>
+                    <span
+                      class="fa fa-eye mr-2"
+                      [ngClass]="{activate: hasRight(appFonction.code, Droit.LECTURE)}"
+                      (click)="toggleRight(appFonction.code, Droit.LECTURE)"
+                      [matTooltip]="hasRight(appFonction.code, Droit.LECTURE) ? 'Visible' : 'Non visible'"
+                      [attr.aria-label]="hasRight(appFonction.code, Droit.LECTURE) ? 'Désactiver le droit de lecture' : 'Activer le droit de lecture'"
+                      role="button"
+                      tabindex="0">
+                    </span>
+                    <span
+                      class="fa fa-edit"
+                      [ngClass]="{activate: hasRight(appFonction.code, Droit.ECRITURE)}"
+                      (click)="toggleRight(appFonction.code, Droit.ECRITURE)"
+                      [matTooltip]="hasRight(appFonction.code, Droit.ECRITURE) ? 'Modifiable' : 'Non modifiable'"
+                      [attr.aria-label]="hasRight(appFonction.code, Droit.ECRITURE) ? 'Désactiver le droit d’écriture' : 'Activer le droit d’écriture'"
+                      role="button"
+                      tabindex="0">
+                    </span>
                   </ng-container>
                   <ng-template #sipmplify>
-                    <span class="fa fa-eye mr-2" [ngClass]="{activate: hasRight(appFonction.code, Droit.LECTURE)}" (click)="toggleRight(appFonction.code, Droit.LECTURE)" [matTooltip]="hasRight(appFonction.code, Droit.LECTURE) ? 'visible' : 'non visible'"></span>
-                    <span class="fa fa-plus mr-2" [ngClass]="{activate: hasRight(appFonction.code, Droit.CREATION)}" (click)="toggleRight(appFonction.code, Droit.CREATION)" [matTooltip]="hasRight(appFonction.code, Droit.CREATION) ? 'création autorisée' : 'création interdite'"></span>
-                    <span class="fa fa-edit mr-2" [ngClass]="{activate: hasRight(appFonction.code, Droit.MODIFICATION)}" (click)="toggleRight(appFonction.code, Droit.MODIFICATION)" [matTooltip]="hasRight(appFonction.code, Droit.MODIFICATION) ? 'modifiable' : 'non modifiable'"></span>
-                    <span class="fa fa-minus mr-2" [ngClass]="{activate: hasRight(appFonction.code, Droit.SUPPRESSION)}" (click)="toggleRight(appFonction.code, Droit.SUPPRESSION)" [matTooltip]="hasRight(appFonction.code, Droit.SUPPRESSION) ? 'suppression autorisée' : 'suppression interdite'"></span>
-                    <span class="fa fa-check mr-2" [ngClass]="{activate: hasRight(appFonction.code, Droit.VALIDATION)}" (click)="toggleRight(appFonction.code, Droit.VALIDATION)" [matTooltip]="hasRight(appFonction.code, Droit.VALIDATION) ? 'validation autorisée' : 'validation interdite'"></span>
+                    <span
+                      class="fa fa-eye mr-2"
+                      [ngClass]="{activate: hasRight(appFonction.code, Droit.LECTURE)}"
+                      (click)="toggleRight(appFonction.code, Droit.LECTURE)"
+                      [matTooltip]="hasRight(appFonction.code, Droit.LECTURE) ? 'Visible' : 'Non visible'"
+                      [attr.aria-label]="hasRight(appFonction.code, Droit.LECTURE) ? 'Désactiver le droit de lecture' : 'Activer le droit de lecture'"
+                      role="button"
+                      tabindex="0">
+                    </span>
+                    <span
+                      class="fa fa-plus mr-2"
+                      [ngClass]="{activate: hasRight(appFonction.code, Droit.CREATION)}"
+                      (click)="toggleRight(appFonction.code, Droit.CREATION)"
+                      [matTooltip]="hasRight(appFonction.code, Droit.CREATION) ? 'Création autorisée' : 'Création interdite'"
+                      [attr.aria-label]="hasRight(appFonction.code, Droit.CREATION) ? 'Désactiver le droit de création' : 'Activer le droit de création'"
+                      role="button"
+                      tabindex="0">
+                    </span>
+                    <span
+                      class="fa fa-edit mr-2"
+                      [ngClass]="{activate: hasRight(appFonction.code, Droit.MODIFICATION)}"
+                      (click)="toggleRight(appFonction.code, Droit.MODIFICATION)"
+                      [matTooltip]="hasRight(appFonction.code, Droit.MODIFICATION) ? 'Modifiable' : 'Non modifiable'"
+                      [attr.aria-label]="hasRight(appFonction.code, Droit.MODIFICATION) ? 'Désactiver le droit de modification' : 'Activer le droit de modification'"
+                      role="button"
+                      tabindex="0">
+                    </span>
+                    <span
+                      class="fa fa-minus mr-2"
+                      [ngClass]="{activate: hasRight(appFonction.code, Droit.SUPPRESSION)}"
+                      (click)="toggleRight(appFonction.code, Droit.SUPPRESSION)"
+                      [matTooltip]="hasRight(appFonction.code, Droit.SUPPRESSION) ? 'Suppression autorisée' : 'Suppression interdite'"
+                      [attr.aria-label]="hasRight(appFonction.code, Droit.SUPPRESSION) ? 'Désactiver le droit de suppression' : 'Activer le droit de suppression'"
+                      role="button"
+                      tabindex="0">
+                    </span>
+                    <span
+                      class="fa fa-check mr-2"
+                      [ngClass]="{activate: hasRight(appFonction.code, Droit.VALIDATION)}"
+                      (click)="toggleRight(appFonction.code, Droit.VALIDATION)"
+                      [matTooltip]="hasRight(appFonction.code, Droit.VALIDATION) ? 'Validation autorisée' : 'Validation interdite'"
+                      [attr.aria-label]="hasRight(appFonction.code, Droit.VALIDATION) ? 'Désactiver le droit de validation' : 'Activer le droit de validation'"
+                      role="button"
+                      tabindex="0">
+                    </span>
                   </ng-template>
                 </td>
               </ng-container>

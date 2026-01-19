@@ -18,8 +18,8 @@
         <th mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let row">
           <ng-container *ngIf="canEdit()">
-            <button mat-icon-button matTooltip="Éditer" (click)="edit(row)" color="primary"><span class="fa fa-pen"></span></button>
-            <button mat-icon-button matTooltip="Tester l'envoi" (click)="openTestSend(row)" color="accent"><span class="fa fa-paper-plane"></span></button>
+            <button mat-icon-button matTooltip="Éditer" (click)="edit(row)" color="primary"><span class="fa fa-pen" aria-label="Modifier"></span></button>
+            <button mat-icon-button matTooltip="Tester l'envoi" (click)="openTestSend(row)" color="accent"><span class="fa fa-paper-plane" aria-label="Tester l'envoie"></span></button>
           </ng-container>
         </td>
       </ng-container>
