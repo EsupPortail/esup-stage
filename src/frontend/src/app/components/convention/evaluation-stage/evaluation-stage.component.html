@@ -40,13 +40,13 @@
 
           <!-- Messages d'état -->
           <div class="mt-3 mb-2 danger-color text-center" *ngIf="!ficheEvaluation[fiche.validationKey]">
-            <span class="fa fa-times"></span>&nbsp;Cette évaluation n'a pas encore été validée par le centre de gestion.
+            <span class="fa fa-times" aria-hidden="true"></span>&nbsp;Cette évaluation n'a pas encore été validée par le centre de gestion.
           </div>
           <div class="mt-3 mb-2 danger-color text-center" *ngIf="ficheEvaluation[fiche.validationKey] && (!reponseEvaluation || !reponseEvaluation[fiche.validationProp])">
-            <span class="fa fa-times"></span>&nbsp;Cette évaluation n'est pas encore renseignée.
+            <span class="fa fa-times" aria-hidden="true"></span>&nbsp;Cette évaluation n'est pas encore renseignée.
           </div>
           <div class="mt-3 mb-2 success-color text-center" *ngIf="reponseEvaluation && reponseEvaluation[fiche.validationProp]">
-            <span class="fa fa-check"></span>&nbsp;Cette évaluation a bien été renseignée.
+            <span class="fa fa-check" aria-hidden="true"></span>&nbsp;Cette évaluation a bien été renseignée.
           </div>
 
           <!-- Formulaire -->

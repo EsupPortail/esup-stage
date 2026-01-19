@@ -52,11 +52,11 @@
         <th mat-header-cell *matHeaderCellDef >Actions</th>
         <td mat-cell *matCellDef="let row">
           <div class="row" *ngIf="!isFromSirene(row)">
-            <button mat-icon-button matTooltip="Éditer" *ngIf="canEdit()" (click)="edit(row)" color="primary"><span class="fa fa-pen"></span></button>
+            <button mat-icon-button matTooltip="Éditer" *ngIf="canEdit()" (click)="edit(row)" color="primary"><span class="fa fa-pen" aria-label="Modifier"></span></button>
             <button mat-icon-button matTooltip="Supprimer" *ngIf="canDelete()" (click)="delete(row)" color="warn"><span class="fa fa-trash-alt"></span></button>
           </div>
           <div class="row" *ngIf="isFromSirene(row)">
-            <button mat-icon-button matTooltip="Créer" *ngIf="canCreate()" (click)="create(row)" color="primary"><span class="fa fa-plus"></span></button>
+            <button mat-icon-button matTooltip="Créer" *ngIf="canCreate()" (click)="create(row)" color="primary"><span class="fa fa-plus" aria-label="Créer"></span></button>
           </div>
         </td>
       </ng-container>
@@ -126,7 +126,7 @@
               <ng-container matColumnDef="actions">
                 <th mat-header-cell *matHeaderCellDef>Actions</th>
                 <td mat-cell *matCellDef="let row">
-                  <button mat-icon-button matTooltip="Éditer" (click)="editService(row)" color="primary"><span class="fa fa-pen"></span></button>
+                  <button mat-icon-button matTooltip="Éditer" (click)="editService(row)" color="primary"><span class="fa fa-pen" aria-label="Modifier"></span></button>
                   <span (confirm)="deleteService(row)" [confirmMessage]="'Êtes-vous sûr de vouloir supprimer ce service ?'">
                     <button mat-icon-button matTooltip="Supprimer" color="warn"><span class="fa fa-trash-alt"></span></button>
                   </span>
@@ -177,7 +177,7 @@
               <ng-container matColumnDef="actions">
                 <th mat-header-cell *matHeaderCellDef>actions</th>
                 <td mat-cell *matCellDef="let row">
-                  <button mat-icon-button matTooltip="Éditer" (click)="editContact(row)" color="primary"><span class="fa fa-pen"></span></button>
+                  <button mat-icon-button matTooltip="Éditer" (click)="editContact(row)" color="primary"><span class="fa fa-pen" aria-label="Modifier"></span></button>
                   <span (confirm)="deleteContact(row)" [confirmMessage]="'Êtes-vous sûr de vouloir supprimer ce contact ?'">
                     <button mat-icon-button matTooltip="Supprimer" color="warn"><span class="fa fa-trash-alt"></span></button>
                   </span>

@@ -240,12 +240,12 @@
 
 <div class="btn-container">
   <button mat-stroked-button color="primary" (click)="prevTab()" [disabled]="selectedTab === 0">
-    <span class="fas fa-chevron-left me-2"></span> Précédent
+    <span class="fas fa-chevron-left me-2" aria-hidden="true"></span> Précédent
   </button>
 
   <ng-container *ngIf="!isLastTab; else endBtn">
     <button mat-stroked-button color="primary" (click)="nextOrFinish()">
-      Suivant <span class="fas fa-chevron-right ms-2"></span>
+      Suivant <span class="fas fa-chevron-right ms-2" aria-hidden="true"></span>
     </button>
   </ng-container>
 

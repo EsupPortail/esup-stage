@@ -140,7 +140,7 @@
           </div>
         </div>
         <div class="col-sm-12 col-md-4">
-          <div class="text-title"><span class="fa fa-check"></span> Validations</div>
+          <div class="text-title"><span class="fa fa-check" aria-hidden="true"></span> Validations</div>
           <div>
             <mat-checkbox formControlName="validationPedagogique">{{validationLibelles.validationPedagogique}} des conventions</mat-checkbox>
           </div>
@@ -245,7 +245,7 @@
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let row">
           <button mat-button mat-stroked-button (click)="choose(row)" color="primary">
-            <span><span class="fa fa-check"></span> Sélectionner</span>
+            <span><span class="fa fa-check" aria-hidden="true"></span> Sélectionner</span>
           </button>
         </td>
       </ng-container>
@@ -299,7 +299,7 @@
         <td mat-cell *matCellDef="let row">
           <span matTooltip="Vous devez d'abord sélectionner un viseur pour pouvoir choisir un délégataire" [matTooltipDisabled]="!isDisabledChoose()">
             <button mat-button mat-stroked-button (click)="chooseDelegataire(row)" [disabled]="isDisabledChoose()" color="primary">
-              <span><span class="fa fa-check"></span> Sélectionner</span>
+              <span><span class="fa fa-check"  aria-hidden="true"></span> Sélectionner</span>
             </button>
           </span>
         </td>
