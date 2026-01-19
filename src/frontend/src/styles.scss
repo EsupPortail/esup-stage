@@ -302,3 +302,82 @@ mat-form-field {
   border:0;
 }
 
+/* =========================
+   ACCESSIBILITE - GLOBAL
+   ========================= */
+
+/* 1) Police personnalisée */
+:root {
+  --custom-font-family: initial;
+
+  /* Valeurs par defaut */
+  --text-letter-spacing: normal;
+  --text-word-spacing: normal;
+  --text-line-height: normal;
+}
+
+body.custom-font-active {
+  font-family: var(--custom-font-family) !important;
+}
+
+/* 2) Espacement du texte */
+body.text-spacing-normal {
+  --text-letter-spacing: normal;
+  --text-word-spacing: normal;
+  --text-line-height: normal;
+}
+
+body.text-spacing-comfortable {
+  --text-letter-spacing: 0.02em;
+  --text-word-spacing: 0.08em;
+  --text-line-height: 1.5;
+}
+
+body.text-spacing-spacious {
+  --text-letter-spacing: 0.05em;
+  --text-word-spacing: 0.16em;
+  --text-line-height: 1.8;
+}
+
+/* Applique les variables à toute l'appli */
+body {
+  letter-spacing: var(--text-letter-spacing);
+  word-spacing: var(--text-word-spacing);
+  line-height: var(--text-line-height);
+}
+
+/* 3) Contraste élevé (simple & efficace) */
+body.high-contrast {
+  filter: contrast(1.25) saturate(1.1);
+}
+
+/* Assure une bonne lisibilité sur fond clair */
+body.high-contrast,
+body.high-contrast * {
+  text-shadow: none !important;
+}
+
+/* 4) Réduction / suppression des animations */
+body.reduced-motion *,
+body.reduced-motion *::before,
+body.reduced-motion *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+
+/* Optionnel : si tu avais des classes d'animations */
+body.animations-enabled {
+  /* rien ici, juste un flag */
+}
+
+/* 5) OpenDyslexic (si tu veux vraiment qu'elle marche)
+   -> il faut charger la police (fichier local ou @import).
+   Exemple si tu as mis les fichiers dans src/assets/fonts/OpenDyslexic/ :
+*/
+@font-face {
+  font-family: "OpenDyslexic";
+  src: url("/assets/fonts/OpenDyslexic/OpenDyslexic-Regular.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}

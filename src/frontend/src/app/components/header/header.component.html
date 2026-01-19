@@ -13,7 +13,7 @@
             title="Paramètres d'accessibilité"
             *ngIf="isConnected()"
             aria-label="Ouvrir le menu d'accessibilité">
-      <span class="fa-solid fa-universal-access" ></span>
+      <span class="fa-solid fa-universal-access"></span>
     </button>
 
     <mat-menu #accessibilityMenu="matMenu"
@@ -22,7 +22,6 @@
               (closed)="onAccessibilityMenuClosed()"
               [hasBackdrop]="true">
 
-      <!-- Wrapper focusable + focus trap -->
       <div class="accessibility-menu-content"
            tabindex="-1"
            #accessibilityMenuRoot
@@ -47,8 +46,8 @@
             <span class="font-size-display"
                   aria-live="polite"
                   aria-atomic="true">
-          {{fontSize}}%
-        </span>
+              {{fontSize}}%
+            </span>
 
             <button mat-icon-button
                     (click)="increaseFontSize()"
@@ -62,7 +61,28 @@
 
         <mat-divider></mat-divider>
 
-        <!-- Contraste -->
+        <div class="accessibility-option" role="group" aria-label="Espacement du texte">
+          <span class="accessibility-label">Espacement du texte</span>
+          <mat-button-toggle-group
+            [value]="textSpacing"
+            (change)="setTextSpacing($event.value)"
+            aria-label="Sélectionner l'espacement du texte"
+            class="spacing-toggle-group">
+            <mat-button-toggle value="normal" aria-label="Espacement normal">
+              Normal
+            </mat-button-toggle>
+            <mat-button-toggle value="comfortable" aria-label="Espacement confortable">
+              Confortable
+            </mat-button-toggle>
+            <mat-button-toggle value="spacious" aria-label="Espacement large">
+              Large
+            </mat-button-toggle>
+          </mat-button-toggle-group>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <!-- Contraste élevé -->
         <button mat-menu-item
                 (click)="toggleHighContrast()"
                 [attr.aria-pressed]="highContrast">
@@ -72,19 +92,38 @@
           <span>Contraste élevé</span>
         </button>
 
-        <!-- Animations -->
         <button mat-menu-item
                 (click)="toggleReducedMotion()"
                 [attr.aria-pressed]="reducedMotion">
           <mat-icon aria-hidden="true">
             <span class="fa-solid" [class.fa-check-square]="reducedMotion" [class.fa-square]="!reducedMotion"></span>
           </mat-icon>
-          <span>Réduire les animations</span>
+          <span>Désactiver les animations</span>
         </button>
 
         <mat-divider></mat-divider>
 
-        <!-- NOUVEAU : auto-recherche -->
+        <div class="accessibility-option font-selector" role="group" aria-label="Police de caractères">
+          <label for="font-select" class="accessibility-label">
+            Police de caractères
+          </label>
+          <mat-select
+            id="font-select"
+            [(value)]="selectedFont"
+            (selectionChange)="onFontChange($event.value)"
+            aria-label="Choisir une police de caractères"
+            class="font-select">
+            <mat-option *ngFor="let font of availableFonts"
+                        [value]="font.value"
+                        [style.font-family]="font.family">
+              {{font.label}}
+            </mat-option>
+          </mat-select>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <!-- Désactiver recherche automatique -->
         <button mat-menu-item
                 (click)="toggleDisableAutoSearch()"
                 [attr.aria-pressed]="disableAutoSearch">
@@ -96,6 +135,7 @@
 
         <mat-divider></mat-divider>
 
+        <!-- Réinitialiser -->
         <button mat-menu-item (click)="resetAccessibilitySettings()">
           <mat-icon aria-hidden="true">
             <span class="fa-solid fa-rotate-left"></span>

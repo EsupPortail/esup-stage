@@ -28,6 +28,7 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatPaginatorIntl, MatPaginatorModule } from "@angular/material/paginator";
 import { DatePipe, registerLocaleData } from "@angular/common";
 import localeFr from '@angular/common/locales/fr';
+import {MatButtonToggle, MatButtonToggleGroup} from '@angular/material/button-toggle'
 import {
   DateAdapter,
   MAT_DATE_LOCALE,
@@ -299,7 +300,8 @@ export class FrenchDateProvider extends NativeDateAdapter {
     ImageCropperComponent,
     ColorPickerComponent,
     MatSlideToggle,
-    ColorPickerDirective
+    ColorPickerDirective,
+    MatButtonToggleGroup, MatButtonToggle
   ],
   exports: [
     ContenuPipe,
