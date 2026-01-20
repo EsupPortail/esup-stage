@@ -3,6 +3,8 @@
     padding: 0;
     max-width: 500px;
     width: 90vw;
+    border-radius: 8px;
+    overflow: hidden;
   }
 }
 
@@ -10,23 +12,50 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.5rem 1.5rem 1rem;
+  padding: 0.75rem 1.25rem;
   margin: 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  background-color: var(--primaryColor, #1976d2);
+  color: #fff;
 }
 
 .dialog-title-text {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 600;
-  color: var(--primaryColor, #1976d2);
+  color: #fff;
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.dialog-header-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.dialog-header-icon {
+  font-size: 22px;
 }
 
 .dialog-close-button {
   margin-left: auto;
+  color: #fff;
+  transition: background-color 0.2s ease, transform 0.1s ease;
 
   &:focus-visible {
-    outline: 2px solid #1976d2;
+    outline: 2px solid #fff;
     outline-offset: 2px;
+  }
+
+  &:hover:not(:disabled) {
+    background-color: rgba(255, 255, 255, 0.15);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.95);
   }
 
   .fa-solid {
@@ -195,7 +224,7 @@
 
 @media (max-width: 767px) {
   .dialog-title-text {
-    font-size: 1.1rem;
+    font-size: 1rem;
   }
 
   .accessibility-section {
@@ -203,7 +232,7 @@
   }
 
   ::ng-deep .mat-mdc-dialog-title {
-    padding: 1.25rem 1.25rem 0.875rem;
+    padding: 0.65rem 1rem;
   }
 
   .font-size-value {
@@ -215,7 +244,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .section-controls button,
-  .option-button {
+  .option-button,
+  .dialog-close-button {
     transition: none;
   }
 }
