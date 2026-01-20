@@ -537,7 +537,9 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
         this.form.get('numeroSiret')?.setValue(null);
       }
       const data = {...this.form.getRawValue()};
-      data.verrouillageSynchroStructureSirene = this.etab.verrouillageSynchroStructureSirene;
+      if (data.verrouillageSynchroStructureSirene == null) {
+        data.verrouillageSynchroStructureSirene = false;
+      }
       data.nafN5 = this.selectedNafN5;
       if (this.etab.id) {
         this.structureService.update(this.etab.id, data).subscribe((response: any) => {
@@ -722,6 +724,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   // Méthode pour basculer l'état du verrouillage
   toggleVerrouillage(): void {
     this.etab.verrouillageSynchroStructureSirene = !this.etab.verrouillageSynchroStructureSirene;
+    this.form.get('verrouillageSynchroStructureSirene')?.setValue(this.etab.verrouillageSynchroStructureSirene);
   }
 
   // Vérifie si le bouton de verrouillage doit être affiché
