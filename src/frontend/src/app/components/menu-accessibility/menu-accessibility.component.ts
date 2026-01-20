@@ -1,5 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { AccessibilityService } from '../../services/accessibility.service';
 
 export interface AccessibilitySettings {
   fontSize: number;
@@ -40,7 +41,8 @@ export class MenuAccessibilityComponent implements OnInit {
 
   constructor(
     public dialogRef: MatDialogRef<MenuAccessibilityComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: AccessibilitySettings
+    @Inject(MAT_DIALOG_DATA) public data: AccessibilitySettings,
+    private accessibilityService: AccessibilityService
   ) {
     if (data) {
       this.fontSize = data.fontSize;
@@ -167,6 +169,7 @@ export class MenuAccessibilityComponent implements OnInit {
       selectedFont: this.selectedFont
     };
     localStorage.setItem('accessibilityPreferences', JSON.stringify(preferences));
+    this.accessibilityService.setDisableAutoSearch(this.disableAutoSearch);
   }
 
   private loadAccessibilityPreferences(): void {
@@ -180,6 +183,7 @@ export class MenuAccessibilityComponent implements OnInit {
       this.textSpacing = preferences.textSpacing ?? 'normal';
       this.selectedFont = preferences.selectedFont ?? 'default';
       this.applyAccessibilitySettings();
+      this.accessibilityService.setDisableAutoSearch(this.disableAutoSearch);
     }
   }
 
