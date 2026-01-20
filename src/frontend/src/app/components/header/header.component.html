@@ -4,154 +4,27 @@
       <img #logo id="app-logo" src="" alt="logo" />
       <span class="app-name">{{'TITRE_APPLICATION'|contenu}}</span>
     </a>
+
     <span class="spacer"></span>
 
-    <button class="header-button-accessibility"
-            mat-icon-button
-            [matMenuTriggerFor]="accessibilityMenu"
-            #accessibilityTrigger="matMenuTrigger"
-            title="Paramètres d'accessibilité"
-            *ngIf="isConnected()"
-            aria-label="Ouvrir le menu d'accessibilité">
+    <button
+      class="header-button-accessibility"
+      mat-icon-button
+      (click)="openAccessibilityDialog()"
+      title="Paramètres d'accessibilité"
+      *ngIf="isConnected()"
+      aria-label="Ouvrir le menu d'accessibilité"
+      type="button">
       <span class="fa-solid fa-universal-access"></span>
     </button>
 
-    <mat-menu #accessibilityMenu="matMenu"
-              class="accessibility-menu"
-              (menuOpened)="onAccessibilityMenuOpened()"
-              (closed)="onAccessibilityMenuClosed()"
-              [hasBackdrop]="true">
-
-      <div class="accessibility-menu-content"
-           tabindex="-1"
-           #accessibilityMenuRoot
-           (click)="$event.stopPropagation()"
-           (keydown.escape)="closeAccessibilityMenu()">
-
-        <h3 mat-menu-item disabled id="accessibility-title">Accessibilité</h3>
-        <mat-divider></mat-divider>
-
-        <!-- Taille du texte -->
-        <div class="accessibility-option" role="group" aria-label="Taille du texte">
-          <span class="accessibility-label">Taille du texte</span>
-          <div class="accessibility-controls">
-            <button mat-icon-button
-                    (click)="decreaseFontSize()"
-                    [disabled]="fontSize <= 80"
-                    title="Réduire la taille du texte"
-                    aria-label="Réduire la taille du texte">
-              <span class="fa-solid fa-minus"></span>
-            </button>
-
-            <span class="font-size-display"
-                  aria-live="polite"
-                  aria-atomic="true">
-              {{fontSize}}%
-            </span>
-
-            <button mat-icon-button
-                    (click)="increaseFontSize()"
-                    [disabled]="fontSize >= 150"
-                    title="Augmenter la taille du texte"
-                    aria-label="Augmenter la taille du texte">
-              <span class="fa-solid fa-plus"></span>
-            </button>
-          </div>
-        </div>
-
-        <mat-divider></mat-divider>
-
-        <div class="accessibility-option" role="group" aria-label="Espacement du texte">
-          <span class="accessibility-label">Espacement du texte</span>
-          <mat-button-toggle-group
-            [value]="textSpacing"
-            (change)="setTextSpacing($event.value)"
-            aria-label="Sélectionner l'espacement du texte"
-            class="spacing-toggle-group">
-            <mat-button-toggle value="normal" aria-label="Espacement normal">
-              Normal
-            </mat-button-toggle>
-            <mat-button-toggle value="comfortable" aria-label="Espacement confortable">
-              Confortable
-            </mat-button-toggle>
-            <mat-button-toggle value="spacious" aria-label="Espacement large">
-              Large
-            </mat-button-toggle>
-          </mat-button-toggle-group>
-        </div>
-
-        <mat-divider></mat-divider>
-
-        <!-- Contraste élevé -->
-        <button mat-menu-item
-                (click)="toggleHighContrast()"
-                [attr.aria-pressed]="highContrast">
-          <mat-icon aria-hidden="true">
-            <span class="fa-solid" [class.fa-check-square]="highContrast" [class.fa-square]="!highContrast"></span>
-          </mat-icon>
-          <span>Contraste élevé</span>
-        </button>
-
-        <button mat-menu-item
-                (click)="toggleReducedMotion()"
-                [attr.aria-pressed]="reducedMotion">
-          <mat-icon aria-hidden="true">
-            <span class="fa-solid" [class.fa-check-square]="reducedMotion" [class.fa-square]="!reducedMotion"></span>
-          </mat-icon>
-          <span>Désactiver les animations</span>
-        </button>
-
-        <mat-divider></mat-divider>
-
-        <div class="accessibility-option font-selector" role="group" aria-label="Police de caractères">
-          <label for="font-select" class="accessibility-label">
-            Police de caractères
-          </label>
-          <mat-select
-            id="font-select"
-            [(value)]="selectedFont"
-            (selectionChange)="onFontChange($event.value)"
-            aria-label="Choisir une police de caractères"
-            class="font-select">
-            <mat-option *ngFor="let font of availableFonts"
-                        [value]="font.value"
-                        [style.font-family]="font.family">
-              {{font.label}}
-            </mat-option>
-          </mat-select>
-        </div>
-
-        <mat-divider></mat-divider>
-
-        <!-- Désactiver recherche automatique -->
-        <button mat-menu-item
-                (click)="toggleDisableAutoSearch()"
-                [attr.aria-pressed]="disableAutoSearch">
-          <mat-icon aria-hidden="true">
-            <span class="fa-solid" [class.fa-check-square]="disableAutoSearch" [class.fa-square]="!disableAutoSearch"></span>
-          </mat-icon>
-          <span>Ne pas déclencher automatiquement les recherches</span>
-        </button>
-
-        <mat-divider></mat-divider>
-
-        <!-- Réinitialiser -->
-        <button mat-menu-item (click)="resetAccessibilitySettings()">
-          <mat-icon aria-hidden="true">
-            <span class="fa-solid fa-rotate-left"></span>
-          </mat-icon>
-          <span>Réinitialiser</span>
-        </button>
-
-      </div>
-    </mat-menu>
-
-    <button class="header-button-disconnect"
-            mat-icon-button
-            title="Déconnexion"
-            (click)="logout()"
-            *ngIf="isConnected()"
-            aria-label="Se déconnecter">
+    <button
+      class="header-button-disconnect"
+      mat-icon-button
+      title="Déconnexion"
+      (click)="logout()"
+      *ngIf="isConnected()"
+      aria-label="Se déconnecter">
       <span class="fa-solid fa-right-from-bracket"></span>
     </button>
   </mat-toolbar>

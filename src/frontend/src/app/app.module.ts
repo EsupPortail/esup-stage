@@ -29,6 +29,7 @@ import { MatPaginatorIntl, MatPaginatorModule } from "@angular/material/paginato
 import { DatePipe, registerLocaleData } from "@angular/common";
 import localeFr from '@angular/common/locales/fr';
 import {MatButtonToggle, MatButtonToggleGroup} from '@angular/material/button-toggle'
+import { CdkTrapFocus } from '@angular/cdk/a11y'
 import {
   DateAdapter,
   MAT_DATE_LOCALE,
@@ -141,6 +142,7 @@ import { ExportEvaluationComponent } from "./components/eval-stage/export-evalua
 import {AccessibilityComponent} from "./components/accessibility/accessibility.component";
 import {LegalNoticeComponent} from "./components/legal-notice/legal-notice.component";
 import {FooterComponent} from "./components/footer/footer.component";
+import {MenuAccessibilityComponent} from "./components/menu-accessibility/menu-accessibility.component";
 
 registerLocaleData(localeFr, 'fr');
 
@@ -259,7 +261,8 @@ export class FrenchDateProvider extends NativeDateAdapter {
     ExportEvaluationComponent,
     AccessibilityComponent,
     LegalNoticeComponent,
-    FooterComponent
+    FooterComponent,
+    MenuAccessibilityComponent
   ],
   bootstrap: [AppComponent], imports: [BrowserModule,
     AppRoutingModule,
@@ -301,7 +304,9 @@ export class FrenchDateProvider extends NativeDateAdapter {
     ColorPickerComponent,
     MatSlideToggle,
     ColorPickerDirective,
-    MatButtonToggleGroup, MatButtonToggle
+    MatButtonToggleGroup,
+    MatButtonToggle,
+    CdkTrapFocus,
   ],
   exports: [
     ContenuPipe,

@@ -1,0 +1,137 @@
+<h2 mat-dialog-title>
+  <span class="dialog-title-text">Paramètres d'accessibilité</span>
+  <button
+    mat-icon-button
+    class="dialog-close-button"
+    (click)="close()"
+    aria-label="Fermer le menu d'accessibilité"
+    type="button">
+    <span class="fa-solid fa-xmark"></span>
+  </button>
+</h2>
+
+<mat-dialog-content>
+  <div class="accessibility-section">
+    <div class="section-header">
+      <span class="section-label">Taille du texte</span>
+    </div>
+    <div class="section-controls">
+      <button
+        mat-icon-button
+        (click)="decreaseFontSize()"
+        [disabled]="fontSize <= 80"
+        aria-label="Réduire la taille du texte"
+        type="button">
+        <span class="fa-solid fa-minus"></span>
+      </button>
+
+      <span
+        class="font-size-value"
+        role="status"
+        aria-live="polite"
+        [attr.aria-label]="'Taille actuelle : ' + fontSize + ' pourcent'">
+        {{fontSize}}%
+      </span>
+
+      <button
+        mat-icon-button
+        (click)="increaseFontSize()"
+        [disabled]="fontSize >= 150"
+        aria-label="Augmenter la taille du texte"
+        type="button">
+        <span class="fa-solid fa-plus"></span>
+      </button>
+    </div>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <div class="accessibility-section">
+    <div class="section-header">
+      <span class="section-label">Espacement du texte</span>
+    </div>
+    <div class="spacing-toggle-group">
+      <mat-button-toggle-group
+        [value]="textSpacing"
+        (change)="setTextSpacing($event.value)"
+        aria-label="Sélectionner l'espacement du texte">
+        <mat-button-toggle value="normal">Normal</mat-button-toggle>
+        <mat-button-toggle value="comfortable">Confortable</mat-button-toggle>
+        <mat-button-toggle value="spacious">Large</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <div class="accessibility-section">
+    <button
+      class="option-button"
+      (click)="toggleHighContrast()"
+      [attr.aria-pressed]="highContrast"
+      type="button">
+      <span class="option-icon">
+        <span class="fa-solid" [class.fa-check-square]="highContrast" [class.fa-square]="!highContrast"></span>
+      </span>
+      <span>Contraste élevé</span>
+    </button>
+
+    <button
+      class="option-button"
+      (click)="toggleReducedMotion()"
+      [attr.aria-pressed]="reducedMotion"
+      type="button">
+      <span class="option-icon">
+        <span class="fa-solid" [class.fa-check-square]="reducedMotion" [class.fa-square]="!reducedMotion"></span>
+      </span>
+      <span>Désactiver les animations</span>
+    </button>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <div class="accessibility-section">
+    <div class="section-header">
+      <label for="font-select" class="section-label">Police de caractères</label>
+    </div>
+    <mat-select
+      id="font-select"
+      [(value)]="selectedFont"
+      (selectionChange)="onFontChange($event.value)"
+      aria-label="Choisir une police de caractères"
+      class="font-select">
+      <mat-option *ngFor="let font of availableFonts" [value]="font.value" [style.font-family]="font.family">
+        {{font.label}}
+      </mat-option>
+    </mat-select>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <div class="accessibility-section">
+    <button
+      class="option-button"
+      (click)="toggleDisableAutoSearch()"
+      [attr.aria-pressed]="disableAutoSearch"
+      type="button">
+      <span class="option-icon">
+        <span class="fa-solid" [class.fa-check-square]="disableAutoSearch" [class.fa-square]="!disableAutoSearch"></span>
+      </span>
+      <span>Ne pas déclencher automatiquement les recherches</span>
+    </button>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <div class="accessibility-section">
+    <button
+      mat-raised-button
+      color="warn"
+      class="reset-button"
+      (click)="resetAccessibilitySettings()"
+      type="button">
+      <span class="fa-solid fa-rotate-left"></span>
+      <span>Réinitialiser tous les paramètres</span>
+    </button>
+  </div>
+</mat-dialog-content>
