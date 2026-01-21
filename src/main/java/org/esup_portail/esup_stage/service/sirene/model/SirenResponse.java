@@ -49,12 +49,18 @@ public class SirenResponse {
         @JsonProperty("activitePrincipaleNAF25Etablissement")
         private String naf_n5;
 
+        @JsonProperty("periodesEtablissement")
+        private List<PeriodeEtablissement> periodesEtablissement;
+
         @JsonIgnoreProperties(ignoreUnknown = true)
         @Data
         public static class UniteLegale {
 
             @JsonProperty("denominationUniteLegale")
             private String denominationUniteLegale;
+
+            @JsonProperty("denominationUsuelle1UniteLegale")
+            private String denominationUsuelle1UniteLegale;
 
             @JsonProperty("categorieJuridiqueUniteLegale")
             private String statutJuridique;
@@ -64,6 +70,18 @@ public class SirenResponse {
 
             @JsonProperty("categorieEntreprise")
             private String categorieEntreprise;
+
+            @JsonProperty("activitePrincipaleNAF25UniteLegale")
+            private String activitePrincipaleNAF25UniteLegale;
+
+            @JsonProperty("nomUniteLegale")
+            private String nomUniteLegale;
+
+            @JsonProperty("prenomUsuelUniteLegale")
+            private String prenomUsuelUniteLegale;
+
+            @JsonProperty("sexeUniteLegale")
+            private String sexeUniteLegale;
 
         }
 
@@ -89,5 +107,22 @@ public class SirenResponse {
             @JsonProperty("codeCommuneEtablissement")
             private String codeCommune;
         }
+
+        @JsonIgnoreProperties(ignoreUnknown = true)
+        @Data
+        public static class PeriodeEtablissement {
+            @JsonProperty("dateFin")
+            private String dateFin;
+
+            @JsonProperty("dateDebut")
+            private String dateDebut;
+
+            @JsonProperty("enseigne1Etablissement")
+            private String enseigne1Etablissement;
+
+            @JsonProperty("denominationUsuelleEtablissement")
+            private String denominationUsuelleEtablissement;
+        }
+
     }
 }

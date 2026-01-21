@@ -39,7 +39,7 @@ public class SireneMapper {
 
         Structure structure = new Structure();
         structure.setNumeroSiret(etablissement.getSiret());
-        structure.setRaisonSociale(etablissement.getUniteLegale().getDenominationUniteLegale());
+        structure.setRaisonSociale(determinerRaisonSociale(etablissement));
 
         // Adresse
         if (etablissement.getAdresse() != null) {
@@ -53,12 +53,23 @@ public class SireneMapper {
         }
 
         // NAF
-        if(etablissement.getNaf_n5() != null) {
-            structure.setNafN5(nafN5JpaRepository.findByCode(etablissement.getNaf_n5()));
-            if(structure.getNafN5() != null){
+        String naf25 = null;
+
+        if (notBlank(etablissement.getNaf_n5())) {
+            naf25 = etablissement.getNaf_n5();
+        }
+        else if (etablissement.getUniteLegale() != null
+                && notBlank(etablissement.getUniteLegale().getActivitePrincipaleNAF25UniteLegale())) {
+            naf25 = etablissement.getUniteLegale().getActivitePrincipaleNAF25UniteLegale();
+        }
+
+        if (notBlank(naf25) && !naf25.equalsIgnoreCase("[ND]")) {
+            structure.setNafN5(nafN5JpaRepository.findByCode(naf25));
+            if (structure.getNafN5() != null) {
                 structure.setActivitePrincipale(structure.getNafN5().getLibelle());
             }
         }
+
 
         // Statut juridique + type structure
         if (etablissement.getUniteLegale() != null && etablissement.getUniteLegale().getStatutJuridique() != null) {
@@ -219,12 +230,11 @@ public class SireneMapper {
         }
 
         // --- Raison sociale : MAJ seulement si non vide, sinon garder l’existant
-        String denomination = etablissement.getUniteLegale() != null
-                ? etablissement.getUniteLegale().getDenominationUniteLegale()
-                : null;
-        if (notBlank(denomination)) {
-            structure.setRaisonSociale(denomination);
+        String raisonSociale = determinerRaisonSociale(etablissement);
+        if (notBlank(raisonSociale)) {
+            structure.setRaisonSociale(raisonSociale);
         }
+
 
         // --- Adresse : ne patcher que les champs présents (ne jamais vider)
         if (etablissement.getAdresse() != null) {
@@ -319,5 +329,76 @@ public class SireneMapper {
                 .map(this::clean)
                 .filter(Objects::nonNull)
                 .collect(Collectors.joining(" "));
+    }
+
+    /**
+     * Détermine la raison sociale selon l'ordre de priorité :
+     * 1. Enseigne de la période active (dateFin == null)
+     * 2. Dénomination usuelle de l'établissement (période active)
+     * 3. Dénomination usuelle de l'unité légale
+     * 4. Dénomination légale de l'unité légale
+     * 5. Identité personne physique (civilité + nom + prénom usuel)
+     * @param etablissement L'établissement renvoyé par l'api SIREN
+     * @return La raison sociale déterminée, ou null si aucune info disponible
+     */
+    private String determinerRaisonSociale(SirenResponse.EtablissementSiren etablissement) {
+
+        String resultat = null;
+
+        // 1 + 2 : infos de la période active (dateFin == null)
+        if (etablissement.getPeriodesEtablissement() != null && !etablissement.getPeriodesEtablissement().isEmpty()) {
+
+            var periodeActiveOpt = etablissement.getPeriodesEtablissement().stream()
+                    .filter(p -> p.getDateFin() == null)
+                    .findFirst();
+
+            if (periodeActiveOpt.isPresent()) {
+                var periodeActive = periodeActiveOpt.get();
+
+                if (notBlank(periodeActive.getEnseigne1Etablissement())) {
+                    resultat = periodeActive.getEnseigne1Etablissement();
+                } else if (notBlank(periodeActive.getDenominationUsuelleEtablissement())) {
+                    resultat = periodeActive.getDenominationUsuelleEtablissement();
+                }
+            }
+        }
+
+        // 3 + 4 + 5 : unité légale
+        if (resultat == null && etablissement.getUniteLegale() != null) {
+
+            var ul = etablissement.getUniteLegale();
+
+            // 3
+            if (notBlank(ul.getDenominationUsuelle1UniteLegale())) {
+                resultat = ul.getDenominationUsuelle1UniteLegale();
+            }
+            // 4
+            else if (notBlank(ul.getDenominationUniteLegale())) {
+                resultat = ul.getDenominationUniteLegale();
+            }
+            // 5 : personne physique
+            else {
+                String nom = ul.getNomUniteLegale();
+                String prenom = ul.getPrenomUsuelUniteLegale();
+
+                if (notBlank(nom) && notBlank(prenom)) {
+                    String civilite = "";
+                    if ("F".equalsIgnoreCase(ul.getSexeUniteLegale())) {
+                        civilite = "MADAME ";
+                    } else if ("M".equalsIgnoreCase(ul.getSexeUniteLegale())) {
+                        civilite = "MONSIEUR ";
+                    }
+
+                    resultat = (civilite + prenom + " " + nom).trim();
+                }
+            }
+        }
+
+        // --- Post-traitement ND
+        if (resultat != null && resultat.equalsIgnoreCase("[ND]")) {
+            return "[Non diffusé]";
+        }
+
+        return resultat;
     }
 }
