@@ -1,10 +1,14 @@
 package org.esup_portail.esup_stage.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
+@Data
 @Table(name = "GroupeEtudiant")
 public class GroupeEtudiant extends ObjetMetier implements Exportable {
 
@@ -35,62 +39,6 @@ public class GroupeEtudiant extends ObjetMetier implements Exportable {
     @Column(nullable = false)
     private boolean infosStageValid = false;
 
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getNom() {
-        return nom;
-    }
-
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
-
-    public List<EtudiantGroupeEtudiant> getEtudiantGroupeEtudiants() {
-        return etudiantGroupeEtudiants;
-    }
-
-    public void setEtudiantGroupeEtudiants(List<EtudiantGroupeEtudiant> etudiantGroupeEtudiants) {
-        this.etudiantGroupeEtudiants = etudiantGroupeEtudiants;
-    }
-
-    public Convention getConvention() {
-        return convention;
-    }
-
-    public void setConvention(Convention convention) {
-        this.convention = convention;
-    }
-
-    public boolean isValidationCreation() {
-        return validationCreation;
-    }
-
-    public void setValidationCreation(boolean validationCreation) {
-        this.validationCreation = validationCreation;
-    }
-
-    public boolean isInfosStageValid() {
-        return infosStageValid;
-    }
-
-    public void setInfosStageValid(boolean infosStageValid) {
-        this.infosStageValid = infosStageValid;
-    }
 
     public List<HistoriqueMailGroupe> getHistoriqueMailGroupe() {
         return historiqueMailGroupes;
