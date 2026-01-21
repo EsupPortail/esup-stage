@@ -21,6 +21,7 @@ export class ConventionCreateEnMasseComponent implements OnInit {
   sharedData: any = {};
   groupeEtudiant: any;
   allValid = false;
+  isModif = false;
 
   tabs: any = {
     0: { statut: 0, init: false },
@@ -30,7 +31,7 @@ export class ConventionCreateEnMasseComponent implements OnInit {
     4: { statut: 0, init: false },
     5: { statut: 0, init: false },
     6: { statut: 0, init: false },
-    7: { statut: 2, init: false },
+    7: { statut: 0, init: false },
   }
 
   constructor(private activatedRoute: ActivatedRoute,
@@ -88,6 +89,13 @@ export class ConventionCreateEnMasseComponent implements OnInit {
       filter = this.sharedData.filters.find((f: any) => f.id === 'convention.annee');
       if (filter) filter.options = listAnneeData;
     });
+
+    this.activatedRoute.params.subscribe((param: any) => {
+      const pathId = param.id;
+      if (pathId != 'create') {
+        this.isModif = true;
+      }
+    });
   }
 
   majStatus(): void {
@@ -120,6 +128,11 @@ export class ConventionCreateEnMasseComponent implements OnInit {
       this.setStatus(6,2);
     }else{
       this.setStatus(6,0);
+    }
+    if (this.groupeEtudiant && this.allValidSignataire()) {
+      this.setStatus(7, 2);
+    } else {
+      this.setStatus(7, 0);
     }
   }
 
@@ -176,6 +189,17 @@ export class ConventionCreateEnMasseComponent implements OnInit {
           this.allValid = false;
         }
     }
+  }
+
+  allValidSignataire(): boolean {
+    return this.groupeEtudiant.convention.signataire || this.allValidEtudiantsSignataire();
+  }
+
+  allValidEtudiantsSignataire(): boolean {
+    for (let etudiant of this.groupeEtudiant.etudiantGroupeEtudiants) {
+      if (!etudiant.convention.signataire) return false;
+    }
+    return true;
   }
 
   tabChanged(event: MatTabChangeEvent): void {
