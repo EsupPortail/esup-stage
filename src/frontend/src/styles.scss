@@ -382,14 +382,17 @@ body.animations-enabled {
   font-style: normal;
 }
 
-.edit-button{
-  background-color :var(--primary);
+button.mat-mdc-icon-button.edit-button,
+button.mat-mdc-icon-button.edit-button .fa {
+  color: var(--primaryColor);
 }
 
-.disable-button{
-  background-color :var(--warningColor);
+button.mat-mdc-icon-button.disable-button,
+button.mat-mdc-icon-button.disable-button .fa {
+  color: var(--warningColor);
 }
 
-.delete-button{
-  background-color :var(--dangerColor);
+button.mat-mdc-icon-button.delete-button,
+button.mat-mdc-icon-button.delete-button .fa {
+  color: var(--dangerColor);
 }
