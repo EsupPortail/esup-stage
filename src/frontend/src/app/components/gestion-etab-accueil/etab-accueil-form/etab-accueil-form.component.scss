@@ -2,6 +2,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Oswald&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
+$toggle-circle-size: 24px;
+$locked-color: #f44336;
+$unlocked-color: #4caf50;
+$toggle-width: 55px;
+$toggle-height: 22px;
+
 .etab-accueil-divider {
   position: unset;
 }
@@ -322,4 +328,222 @@ button[color="accent"] {
   .actions-row .slot.right-slot {
     justify-content: stretch !important;
   }
+}
+
+.lock-toggle-wrapper {
+  padding: 0;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.lock-toggle-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #424242;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+
+.lock-toggle-input {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  outline: none;
+
+  &:checked + label {
+    background-color: $locked-color;
+
+    > .lock-toggle-circle {
+      left: calc(100% - #{$toggle-circle-size});
+
+      .lock-icon {
+        .lock-shackle {
+          height: 9px;
+          border-left-width: 2px;
+          border-right-width: 2px;
+          transform: translateX(2px) rotate(0);
+          animation: lockShackle 520ms cubic-bezier(.2, .9, .2, 1);
+        }
+
+        .lock-body {
+          animation: lockClick 220ms ease-in-out 220ms;
+        }
+      }
+    }
+  }
+
+  &:not(:checked) + label {
+    background-color: $unlocked-color;
+
+    > .lock-toggle-circle {
+      left: -2px;
+
+      .lock-icon {
+        .lock-shackle {
+          height: 8px;
+          border-left-width: 2px;
+          border-right-width: 0;
+          transform: translateX(3px) rotate(-18deg);
+          animation: unlockShackle 520ms cubic-bezier(.2, .9, .2, 1);
+        }
+
+        .lock-body {
+          animation: shakeLock 420ms ease-in-out 140ms;
+        }
+      }
+    }
+  }
+}
+
+.lock-toggle-container {
+  border-radius: 999px;
+  display: block;
+  width: $toggle-width;
+  height: $toggle-height;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.35, 0.4, 0.45, 0.2);
+
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background-image: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.25),
+      rgba(0, 0, 0, 0.05)
+  );
+
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, 0.4),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.08),
+    0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.lock-toggle-circle {
+  position: absolute;
+  top: 50%;
+  left: -2px;
+  transform: translateY(-50%);
+  background: linear-gradient(to bottom, #ffffff, #f1f1f1);
+  width: $toggle-circle-size;
+  height: $toggle-circle-size;
+  border-radius: 50%;
+
+  border: 1px solid rgba(0, 0, 0, 0.15);
+
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.18),
+    inset 0 1px 1px rgba(255, 255, 255, 0.7);
+
+  transition: left 320ms cubic-bezier(.2, .9, .2, 1),
+  transform 320ms cubic-bezier(.2, .9, .2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lock-icon {
+  width: 11px;
+  height: 13px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  position: relative;
+}
+
+.lock-body {
+  width: 11px;
+  height: 8px;
+  background-color: #25263c;
+  border-radius: 2px;
+  position: relative;
+  z-index: 2;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 1px 1px rgba(0, 0, 0, 0.25);
+
+  &:before {
+    content: "";
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background-color: #fff;
+    border-radius: 50%;
+    top: 2.5px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+.lock-shackle {
+  width: 8px;
+  height: 8px;
+  border: 2px solid #25263c;
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  margin-left: -6px;
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  transform-origin: 0% 100%;
+  z-index: 1;
+
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+@keyframes unlockShackle {
+  0%   { transform: translateX(1px) rotate(0);        height: 8px; border-right-width: 2px; }
+  45%  { transform: translateX(4px) rotate(-26deg);   height: 9px; border-right-width: 0; }
+  70%  { transform: translateX(2.6px) rotate(-16deg); height: 8px; border-right-width: 0; }
+  100% { transform: translateX(3px) rotate(-18deg);   height: 8px; border-right-width: 0; }
+}
+
+@keyframes lockShackle {
+  0%   { transform: translateX(3px) rotate(-18deg);   height: 8px; border-right-width: 0; }
+  55%  { transform: translateX(0.2px) rotate(2deg);   height: 9px; border-right-width: 2px; }
+  75%  { transform: translateX(1.4px) rotate(-1deg);  height: 8px; border-right-width: 2px; }
+  100% { transform: translateX(2px) rotate(0);        height: 9px; border-right-width: 2px; }
+}
+
+@keyframes shakeLock {
+  0%, 100% { transform: translateX(0) rotate(0); }
+  25% { transform: translateX(-0.8px) rotate(-2deg); }
+  50% { transform: translateX(0.8px) rotate(2deg); }
+  75% { transform: translateX(-0.4px) rotate(-1deg); }
+}
+
+@keyframes lockClick {
+  0%, 100% { transform: scale(1); }
+  40% { transform: scale(0.92); }
+  70% { transform: scale(1.02); }
+}
+
+@media (max-width: 768px) {
+  .lock-toggle-wrapper {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .lock-toggle-label {
+    font-size: 12px;
+  }
+}
+
+.lock-toggle-input:focus + .lock-toggle-container {
+  outline: 2px solid #1976d2;
+  outline-offset: 2px;
+  border-radius: 999px;
+}
+
+.lock-toggle-container:hover {
+  transform: scale(1.03);
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, 0.5),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.1),
+    0 4px 10px rgba(0, 0, 0, 0.18);
 }

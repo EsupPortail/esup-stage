@@ -201,17 +201,31 @@
 
       <!-- Verrouillage Synchro -->
       <div class="slot" *ngIf="canToggleVerrouillage()">
-        <button type="button" class="btn" [ngClass]="{'btn-success': !etab.verrouillageSynchroStructureSirene,'btn-warning': etab.verrouillageSynchroStructureSirene}" (click)="toggleVerrouillage()"
-          [matTooltip]="etab.verrouillageSynchroStructureSirene ? 'Déverrouiller la mise à jour automatique' : 'Verrouiller la mise à jour automatique'">
-          <mat-icon class="mr-1" style="vertical-align: middle;">
-            {{ etab.verrouillageSynchroStructureSirene ? 'lock' : 'lock_open' }}
-          </mat-icon>
-          <span>
-        {{ etab.verrouillageSynchroStructureSirene ? 'Verrouillé' : 'Déverrouillé' }}
-      </span>
-        </button>
+        <div class="lock-toggle-wrapper">
+          <span class="lock-toggle-label">Synchronisation automatique</span>
+          <input
+            class="lock-toggle-input"
+            type="checkbox"
+            id="lock-toggle"
+            [checked]="etab.verrouillageSynchroStructureSirene"
+            (change)="toggleVerrouillage()"
+            [attr.aria-label]="etab.verrouillageSynchroStructureSirene ? 'Déverrouiller la synchronisation' : 'Verrouiller la synchronisation'"/>
+          <label
+            class="lock-toggle-container"
+            for="lock-toggle"
+            [matTooltip]="etab.verrouillageSynchroStructureSirene
+        ? 'Cliquez pour déverrouiller et autoriser la mise à jour automatique'
+        : 'Cliquez pour verrouiller et empêcher toute mise à jour automatique'"
+            matTooltipPosition="above">
+            <div class="lock-toggle-circle">
+              <div class="lock-icon">
+                <span class="lock-shackle"></span>
+                <span class="lock-body"></span>
+              </div>
+            </div>
+          </label>
+        </div>
       </div>
-
       <!-- Mise à jour automatique -->
       <div class="slot" *ngIf="canUpdateFromApi()">
         <button type="button" mat-button mat-stroked-button color="primary" class="mr-2" [disabled]="autoUpdating || etab.verrouillageSynchroStructureSirene" (click)="autoUpdateFromApi()"
