@@ -381,3 +381,15 @@ body.animations-enabled {
   font-weight: normal;
   font-style: normal;
 }
+
+.edit-button{
+  background-color :var(--primary);
+}
+
+.disable-button{
+  background-color :var(--warningColor);
+}
+
+.delete-button{
+  background-color :var(--dangerColor);
+}
