@@ -392,7 +392,29 @@ button.mat-mdc-icon-button.disable-button .fa {
   color: var(--warningColor);
 }
 
+button.mat-mdc-button-base.cancel-button,
+button.mat-mdc-button-base.cancel-button .mat-mdc-button-persistent-ripple {
+  background-color: var(--dangerColor);
+  color: #fafafa;
+}
+
+button.mat-mdc-button-base.valid-button,
+button.mat-mdc-button-base.valid-button .mat-mdc-button-persistent-ripple {
+  background-color: var(--primaryColor);
+  color: #fafafa;
+}
+
+button.mat-mdc-button-base.cancel-button:hover,
+button.mat-mdc-button-base.valid-button:hover {
+  filter: brightness(0.95);
+}
+
 button.mat-mdc-icon-button.delete-button,
 button.mat-mdc-icon-button.delete-button .fa {
   color: var(--dangerColor);
+}
+
+button.mat-mdc-icon-button.accent-button,
+button.mat-mdc-icon-button.accent-button .fa {
+  color: var(--secondaryColor);
 }
