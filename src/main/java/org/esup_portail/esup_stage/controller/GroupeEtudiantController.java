@@ -18,6 +18,7 @@ import org.esup_portail.esup_stage.service.MailerService;
 import org.esup_portail.esup_stage.service.apogee.ApogeeService;
 import org.esup_portail.esup_stage.service.apogee.model.*;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -226,64 +227,41 @@ public class GroupeEtudiantController {
     @GetMapping("/duplicate/{id}")
     @Secure(fonctions = {AppFonctionEnum.CREATION_EN_MASSE_CONVENTION}, droits = {DroitEnum.LECTURE})
     public GroupeEtudiant duplicate(@PathVariable("id") int id) {
-
-        //Suppression de l'ancien brouilon
-        Utilisateur utilisateur = ServiceContext.getUtilisateur();
-        GroupeEtudiant groupeEtudiantBrouillon = groupeEtudiantJpaRepository.findBrouillon(utilisateur.getLogin());
-
-        if (groupeEtudiantBrouillon != null) {
-            delete(groupeEtudiantBrouillon.getId());
-        }
-
         GroupeEtudiant groupeEtudiant = groupeEtudiantJpaRepository.findById(id);
         if (groupeEtudiant == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "GroupeEtudiant non trouvée");
         }
 
-        GroupeEtudiantDto groupeEtudiantDto = new GroupeEtudiantDto();
-        groupeEtudiantDto.setCodeGroupe(groupeEtudiant.getCode() + " duplicate");
-        groupeEtudiantDto.setNomGroupe(groupeEtudiant.getNom());
-
-        List<String> numEtudiants = groupeEtudiant.getEtudiantGroupeEtudiants().stream().map(EtudiantGroupeEtudiant::getEtudiantNumEtudiant).collect(Collectors.toList());
-
-        List<EtudiantDiplomeEtapeResponse> etudiantsAdded = new ArrayList<>();
-        for (String numEtudiant : numEtudiants) {
-            EtudiantDiplomeEtapeResponse etudiant = new EtudiantDiplomeEtapeResponse();
-            etudiant.setCodEtu(numEtudiant);
-            etudiantsAdded.add(etudiant);
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
+        GroupeEtudiant existingDraft = groupeEtudiantJpaRepository.findBrouillon(utilisateur.getLogin());
+        if (existingDraft != null) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Vous avez déjà un groupe en cours de création");
         }
-        groupeEtudiantDto.setEtudiantAdded(etudiantsAdded);
 
-        GroupeEtudiant newGroupeEtudiant = create(groupeEtudiantDto);
-        newGroupeEtudiant.setInfosStageValid(true);
+        GroupeEtudiant duplicate = new GroupeEtudiant();
+        duplicate.setCode(buildDuplicateCode(groupeEtudiant.getCode()));
+        duplicate.setNom(buildDuplicateNom(groupeEtudiant.getNom()));
+        duplicate.setValidationCreation(false);
+        duplicate.setInfosStageValid(false);
 
-        //Duplication de la convention du groupe
-        Convention oldGroupeConvention = groupeEtudiant.getConvention();
-        Convention newGroupeConvention = newGroupeEtudiant.getConvention();
-        try {
-            newGroupeConvention = mergeObjects(newGroupeConvention, oldGroupeConvention);
-        } catch (Exception e) {
-            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur création des conventions en masse");
+        Convention groupeConventionClone = cloneConvention(groupeEtudiant.getConvention());
+        duplicate.setConvention(groupeConventionClone);
+        duplicate = groupeEtudiantJpaRepository.save(duplicate);
+
+        List<EtudiantGroupeEtudiant> clonedEtudiants = new ArrayList<>();
+        for (EtudiantGroupeEtudiant ege : groupeEtudiant.getEtudiantGroupeEtudiants()) {
+            Convention etudiantConventionClone = cloneConvention(ege.getConvention());
+            EtudiantGroupeEtudiant egeClone = new EtudiantGroupeEtudiant();
+            egeClone.setEtudiant(ege.getEtudiant());
+            egeClone.setConvention(etudiantConventionClone);
+            egeClone.setMergedConvention(null);
+            egeClone.setGroupeEtudiant(duplicate);
+            egeClone = etudiantGroupeEtudiantJpaRepository.save(egeClone);
+            clonedEtudiants.add(egeClone);
         }
-        conventionJpaRepository.save(newGroupeConvention);
-
-        //Duplication des conventions des étudiants du groupe
-        //for (EtudiantGroupeEtudiant etudiant : groupeEtudiant.getEtudiantGroupeEtudiants()) {
-        //    Convention oldEtudiantConvention = etudiant.getConvention();
-        //    for (EtudiantGroupeEtudiant newEtudiant : newGroupeEtudiant.getEtudiantGroupeEtudiants()) {
-        //        Convention newEtudiantConvention = newEtudiant.getConvention();
-        //        if(newEtudiantConvention.getId() == oldEtudiantConvention.getId()){
-        //            try {
-        //                newEtudiantConvention = mergeObjects(newEtudiantConvention, oldEtudiantConvention);
-        //            } catch (Exception e) {
-        //                throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur création des conventions en masse");
-        //            }
-        //            conventionJpaRepository.save(newEtudiantConvention);
-        //        }
-        //    }
-        //}
-
-        return groupeEtudiantJpaRepository.saveAndFlush(groupeEtudiant);
+        duplicate.setEtudiantGroupeEtudiants(clonedEtudiants);
+        duplicate.setInfosStageValid(groupeEtudiant.isInfosStageValid());
+        return groupeEtudiantJpaRepository.saveAndFlush(duplicate);
     }
 
     @PostMapping
@@ -623,6 +601,107 @@ public class GroupeEtudiantController {
             clones.add(clone);
         }
         return clones;
+    }
+
+    private Convention cloneConvention(Convention source) {
+        Convention clone = new Convention();
+        BeanUtils.copyProperties(source, clone,
+                "id", "loginCreation", "dateCreation", "loginModif", "dateModif",
+                "validationCreation", "dateValidationCreation",
+                "validationPedagogique", "validationConvention", "verificationAdministrative",
+                "loginValidation", "dateValidation",
+                "loginSignature", "dateSignature",
+                "envoiMailEtudiant", "dateEnvoiMailEtudiant",
+                "envoiMailTuteurPedago", "dateEnvoiMailTuteurPedago",
+                "envoiMailTuteurPro", "dateEnvoiMailTuteurPro",
+                "creationEnMasse",
+                "avenants", "nomenclature", "historiqueValidations",
+                "periodeInterruptionStages", "reponseEvaluations", "reponseEvaluation", "reponseSupplementaires",
+                "periodeStage",
+                "temConventionSignee", "dateEnvoiSignature", "documentId",
+                "dateSignatureEtudiant", "dateDepotEtudiant",
+                "dateSignatureEnseignant", "dateDepotEnseignant",
+                "dateSignatureTuteur", "dateDepotTuteur",
+                "dateSignatureSignataire", "dateDepotSignataire",
+                "dateSignatureViseur", "dateDepotViseur",
+                "dateActualisationSignature", "loginEnvoiSignature");
+
+        clone.setValidationCreation(false);
+        clone.setDateValidationCreation(null);
+        clone.setValidationPedagogique(false);
+        clone.setValidationConvention(false);
+        clone.setVerificationAdministrative(false);
+        clone.setLoginValidation(null);
+        clone.setDateValidation(null);
+        clone.setLoginSignature(null);
+        clone.setDateSignature(null);
+        clone.setEnvoiMailEtudiant(false);
+        clone.setDateEnvoiMailEtudiant(null);
+        clone.setEnvoiMailTuteurPedago(false);
+        clone.setDateEnvoiMailTuteurPedago(null);
+        clone.setEnvoiMailTuteurPro(false);
+        clone.setDateEnvoiMailTuteurPro(null);
+        clone.setCreationEnMasse(true);
+        clone.setTemConventionSignee(false);
+        clone.setDateEnvoiSignature(null);
+        clone.setDocumentId(null);
+        clone.setDateSignatureEtudiant(null);
+        clone.setDateDepotEtudiant(null);
+        clone.setDateSignatureEnseignant(null);
+        clone.setDateDepotEnseignant(null);
+        clone.setDateSignatureTuteur(null);
+        clone.setDateDepotTuteur(null);
+        clone.setDateSignatureSignataire(null);
+        clone.setDateDepotSignataire(null);
+        clone.setDateSignatureViseur(null);
+        clone.setDateDepotViseur(null);
+        clone.setDateActualisationSignature(null);
+        clone.setLoginEnvoiSignature(null);
+        clone.setAvenants(new ArrayList<>());
+        clone.setHistoriqueValidations(new ArrayList<>());
+        clone.setPeriodeInterruptionStages(new ArrayList<>());
+        clone.setReponseEvaluations(new ArrayList<>());
+        clone.setReponseSupplementaires(new ArrayList<>());
+        clone.setReponseEvaluation(null);
+
+        Convention saved = conventionJpaRepository.save(clone);
+        List<PeriodeStage> periodes = clonePeriodes(source.getPeriodeStage(), saved);
+        if (!periodes.isEmpty()) {
+            periodeStageJpaRepository.saveAll(periodes);
+            saved.setPeriodeStage(periodes);
+        } else {
+            saved.setPeriodeStage(new ArrayList<>());
+        }
+        ConventionNomenclature nomenclature = new ConventionNomenclature();
+        nomenclature.setId(saved.getId());
+        saved.setNomenclature(nomenclature);
+        saved.setValeurNomenclature();
+        return conventionJpaRepository.save(saved);
+    }
+
+    private String buildDuplicateCode(String originalCode) {
+        String base = originalCode == null ? "" : originalCode;
+        String suffix = "_copie";
+        String code = trimToLength(base + suffix, 100);
+        int i = 1;
+        while (groupeEtudiantRepository.exists(code, 0)) {
+            String numberedSuffix = suffix + "_" + i;
+            code = trimToLength(base + numberedSuffix, 100);
+            i++;
+        }
+        return code;
+    }
+
+    private String buildDuplicateNom(String originalNom) {
+        String base = originalNom == null ? "" : originalNom;
+        return trimToLength(base + " (copie)", 100);
+    }
+
+    private String trimToLength(String value, int maxLength) {
+        if (value == null || value.length() <= maxLength) {
+            return value;
+        }
+        return value.substring(0, maxLength);
     }
 
 }
