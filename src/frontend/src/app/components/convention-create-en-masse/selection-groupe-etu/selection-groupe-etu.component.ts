@@ -31,13 +31,7 @@ export class SelectionGroupeEtuComponent implements OnInit {
   selectedAdd: any[] = [];
   etudiants: any[] = [];
 
-  // Années N-1 / N / N+1
-  currentYear = (new Date()).getFullYear();
-  annees = [
-    { label: (this.currentYear - 1) + '/' + (this.currentYear), value: this.currentYear - 1 },
-    { label: this.currentYear + '/' + (this.currentYear + 1), value: this.currentYear },
-    { label: (this.currentYear + 1) + '/' + (this.currentYear + 2), value: this.currentYear + 1 },
-  ];
+  annees: { label:string, value:number }[] = [];
   ufrList: any[] = [];
   etapeList: any[] = [];
 
@@ -79,7 +73,7 @@ export class SelectionGroupeEtuComponent implements OnInit {
       prenom: [null, []],
       etape: [null, []],
       composante: [null, []],
-      annee: [this.currentYear, []],
+      annee: [null, []],
     });
 
     this.formAddEtudiants.get('etape')?.disable({ emitEvent: false });
@@ -89,6 +83,21 @@ export class SelectionGroupeEtuComponent implements OnInit {
     this.formAddEtudiants.get('composante')?.valueChanges.subscribe((changes) => {
       this.getEtapes(this.formAddEtudiants.get('annee')?.value, changes);
     });
+  }
+
+  // Années N-1 / N / N+1
+  initCurrentYear(anneeEnCours?: string): void {
+    const currentYear:number = anneeEnCours ? Number.parseInt(anneeEnCours) : this.anneeUniversitaire(new Date());
+    this.annees = [
+      { label: (currentYear - 1) + '/' + (currentYear), value: currentYear - 1 },
+      { label: currentYear + '/' + (currentYear + 1), value: currentYear },
+      { label: (currentYear + 1) + '/' + (currentYear + 2), value: currentYear + 1 },
+    ];
+    this.formAddEtudiants.get('annee')?.setValue(currentYear);
+  }
+
+  anneeUniversitaire(now:Date): number {
+    return now.getMonth() > 7 ? now.getFullYear() : now.getFullYear() -1;
   }
 
   getEtapes(annee: string, composante: string): void {
@@ -121,6 +130,13 @@ export class SelectionGroupeEtuComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.conventionService.getListAnnee().subscribe({
+      next: (listAnneeData) => this.initCurrentYear(
+          listAnneeData.find((a:any) => a?.anneeEnCours === true)?.annee
+        ),
+      error: (e) => this.initCurrentYear()
+    });
+
     this.groupeEtudiantColumns = [...this.sharedData.columns];
     this.groupeEtudiantFilters = [...this.sharedData.filters];
     this.columns =  [...this.sharedData.columns];
