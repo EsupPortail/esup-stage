@@ -696,7 +696,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   }
 
   autoUpdateFromApi(): void {
-    if (!this.etab?.id || !this.canEdit()) {
+    if (!this.etab?.id || this.authService.isEtudiant()) {
       return;
     }
     this.autoUpdating = true;
@@ -718,17 +718,12 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   }
 
   canUpdateFromApi(): boolean {
-    return !(this.authService.isEtudiant() || this.authService.isEnseignant()) && this.isSireneActive && this.etab?.id && this.canEdit()
+    return !(this.authService.isEtudiant() || this.authService.isEnseignant()) && this.isSireneActive && this.etab?.id;
   }
 
   // Méthode pour basculer l'état du verrouillage
   toggleVerrouillage(): void {
     this.etab.verrouillageSynchroStructureSirene = !this.etab.verrouillageSynchroStructureSirene;
     this.form.get('verrouillageSynchroStructureSirene')?.setValue(this.etab.verrouillageSynchroStructureSirene);
-  }
-
-  // Vérifie si le bouton de verrouillage doit être affiché
-  canToggleVerrouillage(): boolean {
-    return !(this.authService.isEtudiant() || this.authService.isEnseignant()) && this.isSireneActive && !!this.etab?.id && this.canEdit();
   }
 }
