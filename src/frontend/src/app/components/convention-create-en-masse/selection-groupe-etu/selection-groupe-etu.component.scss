@@ -1,3 +1,12 @@
 .mat-card .mat-divider-horizontal {
     position: relative;
 }
+
+mat-optgroup {
+  ::ng-deep .mat-mdc-optgroup-label {
+    background-color: var(--mdc-filled-text-field-disabled-container-color);
+    ::ng-deep .mdc-list-item__primary-text {
+      color: var(--mdc-filled-text-field-disabled-label-text-color);
+    }
+  }
+}
