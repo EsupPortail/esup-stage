@@ -123,9 +123,8 @@
       </div>
 
       <div class="reset-btn">
-        <button mat-stroked-button
+        <button class="cancel-button" mat-stroked-button
                 type="button"
-                color="warn"
                 (click)="reset(currentSheet)"
                 aria-label="Réinitialiser toutes les sélections">
           Réinitialiser
@@ -133,16 +132,14 @@
       </div>
 
       <div class="actions" role="group" aria-label="Actions principales">
-        <button mat-flat-button
+        <button class="cancel-button" mat-flat-button
                 type="button"
-                color="warn"
                 (click)="cancel()"
                 aria-label="Annuler et fermer">
           Annuler
         </button>
-        <button mat-flat-button
+        <button class="valid-button" mat-flat-button
                 type="button"
-                color="primary"
                 (click)="confirm()"
                 aria-label="Valider la sélection et exporter">
           Valider

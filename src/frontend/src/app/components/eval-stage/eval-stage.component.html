@@ -114,17 +114,17 @@
   <ng-container matColumnDef="action">
     <th mat-header-cell *matHeaderCellDef>Actions</th>
     <td mat-cell *matCellDef="let row">
-      <button type="button" mat-icon-button matTooltip="Visualiser" color="primary" (click)="goToConvention(row.id); $event.stopPropagation()"
+      <button type="button" class="edit-button" mat-icon-button matTooltip="Visualiser" (click)="goToConvention(row.id); $event.stopPropagation()"
       [disabled]="!row.centreGestion.ficheEvaluation || !row.centreGestion.ficheEvaluation.validationEntreprise || !row.validationConvention"><span class="fa fa-eye"></span></button>
     </td>
   </ng-container>
 </app-table>
 
-<div class="actions mb-3" *ngIf="isGestionnaireOrAdmin">
-  <button class="button" mat-raised-button color="primary" (click)="openEnvoiMailModal()" [disabled]="selected.length === 0">
+<div class="action-buttons-container mb-3" *ngIf="isGestionnaireOrAdmin">
+  <button class="valid-button" mat-raised-button (click)="openEnvoiMailModal()" [disabled]="selected.length === 0">
     <span class="fa fa-envelope" aria-hidden="true"></span> Envoyer un mail en masse
   </button>
-  <button class="button"  mat-raised-button color="primary" (click)="openExportExcelModal()">
+  <button class="valid-button" mat-raised-button (click)="openExportExcelModal()">
     <mat-icon>download</mat-icon> Export excel
   </button>
 </div>
@@ -290,9 +290,7 @@
       <td>
         <button
           type="button"
-          mat-button
-          color="primary"
-          class="btn-eye"
+          mat-button class="btn-eye valid-button"
           matTooltip="Visualiser"
           matTooltipPosition="left"
           (click)="goToConvention(row.id)">
@@ -304,3 +302,4 @@
     </tbody>
   </table>
 </ng-template>
+

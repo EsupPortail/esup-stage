@@ -410,6 +410,20 @@ button.mat-mdc-button-base.valid-button .mat-mdc-button-persistent-ripple {
   color: #fafafa;
 }
 
+button.mat-mdc-fab.valid-button,
+button.mat-mdc-mini-fab.valid-button {
+  background-color: var(--primaryColor);
+  color: #fafafa;
+  --mdc-fab-container-color: var(--primaryColor);
+}
+
+button.mat-mdc-fab.valid-button .mat-icon,
+button.mat-mdc-fab.valid-button .fa,
+button.mat-mdc-mini-fab.valid-button .mat-icon,
+button.mat-mdc-mini-fab.valid-button .fa {
+  color: #fafafa;
+}
+
 button.mat-mdc-button-base.valid-button.mat-mdc-button-disabled,
 button.mat-mdc-button-base.valid-button:disabled {
   background-color: #e0e0e0;
@@ -437,6 +451,25 @@ button.mat-mdc-icon-button.delete-button .fa {
 button.mat-mdc-icon-button.accent-button,
 button.mat-mdc-icon-button.accent-button .fa {
   color: var(--secondaryColor);
+}
+
+mat-icon.icon-primary,
+.icon-primary {
+  color: var(--primaryColor);
+}
+
+mat-icon.icon-warn,
+.icon-warn {
+  color: var(--dangerColor);
+}
+
+mat-toolbar.toolbar-primary {
+  background-color: var(--primaryColor);
+  color: #fafafa;
+}
+
+mat-spinner.spinner-accent {
+  --mdc-circular-progress-active-indicator-color: var(--secondaryColor);
 }
 
 button.mat-mdc-fab.delete-button,

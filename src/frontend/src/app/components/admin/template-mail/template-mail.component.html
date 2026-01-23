@@ -18,7 +18,7 @@
         <th mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let row">
           <ng-container *ngIf="canEdit()">
-            <button class="edit-button" mat-icon-button matTooltip="Éditer" (click)="edit(row)" color="primary"><span class="fa fa-pen" aria-label="Modifier"></span></button>
+            <button class="edit-button" mat-icon-button matTooltip="Éditer" (click)="edit(row)"><span class="fa fa-pen" aria-label="Modifier"></span></button>
             <button class="accent-button" mat-icon-button matTooltip="Tester l'envoi" (click)="openTestSend(row)"><span class="fa fa-paper-plane" aria-label="Tester l'envoie"></span></button>
           </ng-container>
         </td>
@@ -71,7 +71,7 @@
 
           <div class="row mt-3">
             <div class="col-12 text-right">
-              <button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
+              <button class="valid-button" mat-flat-button>{{'BOUTON_VALIDER'|contenu}}</button>
             </div>
           </div>
         </form>
@@ -145,3 +145,4 @@
     </mat-card>
   </mat-tab>
 </mat-tab-group>
+

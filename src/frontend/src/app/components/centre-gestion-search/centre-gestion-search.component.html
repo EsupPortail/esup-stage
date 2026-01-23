@@ -17,7 +17,7 @@
         fontSet="fa"
         [fontIcon]="isPersonnel(row) ? 'fa-check' : 'fa-times'"
         [matTooltip]="isPersonnel(row) ? 'Vous êtes rattaché au centre' : 'Vous n\'êtes pas rattaché au centre'"
-        [color]="isPersonnel(row) ? 'primary' : 'warn'">
+        [ngClass]="isPersonnel(row) ? 'icon-primary' : 'icon-warn'">
       </mat-icon>
     </td>
   </ng-container>
@@ -54,11 +54,11 @@
   <table class="table table-sm">
     <tbody>
     <tr>
-      <th><mat-icon fontSet="fa" [fontIcon]="'fa-user'" matTooltip="Indique si vous êtes rattaché au centre" color="primary"></mat-icon></th>
+      <th><mat-icon class="icon-primary" fontSet="fa" [fontIcon]="'fa-user'" matTooltip="Indique si vous êtes rattaché au centre"></mat-icon></th>
       <td>
         <mat-icon fontSet="fa" [fontIcon]="isPersonnel(row) ? 'fa-check' : 'fa-times'"
                   [matTooltip]="isPersonnel(row) ? 'Vous êtes rattaché au centre' : 'Vous n\'êtes pas rattaché au centre'"
-                  [color]="isPersonnel(row) ? 'primary' : 'warn'"></mat-icon>
+                  [ngClass]="isPersonnel(row) ? 'icon-primary' : 'icon-warn'"></mat-icon>
       </td>
     </tr>
     <tr>

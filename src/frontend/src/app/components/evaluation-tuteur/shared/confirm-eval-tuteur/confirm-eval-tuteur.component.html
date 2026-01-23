@@ -11,10 +11,10 @@
   </mat-dialog-content>
 
   <mat-dialog-actions class="btn-block">
-    <button mat-stroked-button color="warn" mat-dialog-close>
+    <button class="cancel-button" mat-stroked-button mat-dialog-close>
       {{ textBoutonAnnuler }}
     </button>
-    <button mat-flat-button color="primary" (click)="confirmed()">
+    <button class="valid-button" mat-flat-button (click)="confirmed()">
       {{ textBoutonValider }}
     </button>
   </mat-dialog-actions>

@@ -236,8 +236,8 @@
         <button
           type="button"
           mat-button
+          class="cancel-button"
           mat-stroked-button
-          color="warn"
           (click)="cancelEdit()">
           {{ 'BOUTON_ANNULER' | contenu }}
         </button>
@@ -258,7 +258,7 @@
 
       <!-- Mise à jour automatique -->
       <div class="slot" *ngIf="canUpdateFromApi()">
-        <button type="button" mat-button mat-stroked-button color="primary" class="mr-2" [disabled]="autoUpdating || etab.verrouillageSynchroStructureSirene" (click)="autoUpdateFromApi()"
+        <button type="button" class="mr-2 valid-button" mat-button mat-stroked-button [disabled]="autoUpdating || etab.verrouillageSynchroStructureSirene" (click)="autoUpdateFromApi()"
                 matTooltip="Met à jour automatiquement les informations de l'établissement via l'API">
           <mat-icon class="mr-1" [class.spin]="autoUpdating">autorenew</mat-icon>
           {{ autoUpdating ? 'Mise à jour…' : 'Mise à jour automatique' }}
@@ -269,8 +269,8 @@
       <div class="slot right-slot">
         <button
           mat-button
+          class="valid-button"
           mat-flat-button
-          color="primary"
           type="submit">
           {{ 'BOUTON_VALIDER' | contenu }}
         </button>

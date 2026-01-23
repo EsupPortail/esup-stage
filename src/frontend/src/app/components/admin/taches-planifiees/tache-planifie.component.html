@@ -104,7 +104,6 @@
               <button
                 class="valid-button execute-button-mobile"
                 mat-mini-fab
-                color="primary"
                 (click)="executeTask(task.id, task.nom)"
                 [disabled]="isExecuting(task.id)"
                 [attr.aria-label]="isExecuting(task.id) ? 'Exécution en cours de ' + task.nom : 'Exécuter la tâche ' + task.nom"

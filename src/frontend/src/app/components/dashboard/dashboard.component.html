@@ -17,7 +17,7 @@
 </mat-card>
 
 <ng-template #validAction>
-  <button *ngIf="typeDashboard === 1" mat-button mat-flat-button color="primary" [matMenuTriggerFor]="actions"
+  <button *ngIf="typeDashboard === 1" class="valid-button" mat-button mat-flat-button [matMenuTriggerFor]="actions"
           [disabled]="selected.length === 0">
     <mat-icon>more_vert</mat-icon> Actions
   </button>
@@ -227,7 +227,7 @@
   <ng-container matColumnDef="action">
     <th mat-header-cell *matHeaderCellDef>Actions</th>
     <td mat-cell *matCellDef="let row">
-      <button type="button" mat-button color="primary" class="btn-eye" matTooltip="Visualiser" matTooltipPosition="left" (click)="goToConvention(row.id)">
+      <button type="button" mat-button class="btn-eye valid-button" matTooltip="Visualiser" matTooltipPosition="left" (click)="goToConvention(row.id)">
         <span class="fa fa-eye" aria-hidden="true"></span>
         <span class="eye-label">Visualiser</span>
       </button>
@@ -370,7 +370,7 @@
     <tr>
       <th>Actions</th>
       <td>
-        <button type="button" mat-button color="primary" class="btn-eye" matTooltip="Visualiser" matTooltipPosition="left" (click)="goToConvention(row.id)">
+        <button type="button" mat-button class="btn-eye valid-button" matTooltip="Visualiser" matTooltipPosition="left" (click)="goToConvention(row.id)">
           <span class="fa fa-eye" aria-hidden="true"></span>
           <span class="eye-label">Visualiser</span>
         </button>
@@ -379,3 +379,4 @@
     </tbody>
   </table>
 </ng-template>
+

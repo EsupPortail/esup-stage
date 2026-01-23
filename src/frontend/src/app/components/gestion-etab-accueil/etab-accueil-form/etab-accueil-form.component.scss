@@ -226,13 +226,13 @@ body, html {
 }
 
 // Style pour le bouton verrouillé (optionnel - renforcement visuel)
-button[color="warn"] {
+button.cancel-button {
   mat-icon {
     color: #f44336;
   }
 }
 
-button[color="accent"] {
+button.accent-button {
   mat-icon {
     color: #4caf50;
   }

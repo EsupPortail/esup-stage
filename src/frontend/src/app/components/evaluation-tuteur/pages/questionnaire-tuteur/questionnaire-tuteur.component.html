@@ -234,17 +234,17 @@
   </form>
 
   <div class="btn-container">
-    <button mat-raised-button color="primary" (click)="enregistrer()">Enregistrer</button>
+    <button class="valid-button" mat-raised-button (click)="enregistrer()">Enregistrer</button>
   </div>
 </div>
 
 <div class="btn-container">
-  <button mat-stroked-button color="primary" (click)="prevTab()" [disabled]="selectedTab === 0">
+  <button class="valid-button" mat-stroked-button (click)="prevTab()" [disabled]="selectedTab === 0">
     <span class="fas fa-chevron-left me-2" aria-hidden="true"></span> Précédent
   </button>
 
   <ng-container *ngIf="!isLastTab; else endBtn">
-    <button mat-stroked-button color="primary" (click)="nextOrFinish()">
+    <button class="valid-button" mat-stroked-button (click)="nextOrFinish()">
       Suivant <span class="fas fa-chevron-right ms-2" aria-hidden="true"></span>
     </button>
   </ng-container>
@@ -256,7 +256,7 @@
       [confirmMessage]="(reponseEntrepriseForm.valid && reponseSupplementaireEntrepriseForm.valid)
         ? 'Tout est rempli. Valider définitivement ?'
         : 'Certaines réponses manquent. Valider quand même ?'">
-      <button mat-raised-button color="primary">Terminer</button>
+      <button class="valid-button" mat-raised-button>Terminer</button>
     </span>
   </ng-template>
 </div>
