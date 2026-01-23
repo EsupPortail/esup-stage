@@ -92,7 +92,8 @@
               </mat-expansion-panel-header>
 
               <app-table #paramTableList [service]="paramConventionService" [columns]="paramColumns" [sortColumn]="paramSortColumn"
-                         matSort [matSortActive]="paramSortColumn" [matSortDirection]="'asc'" (matSortChange)="appParamTable ? appParamTable.sorting($event) : null">
+                         matSort [matSortActive]="paramSortColumn" [matSortDirection]="'asc'" (matSortChange)="appParamTable ? appParamTable.sorting($event) : null"
+                         [templateMobile]="tableMobileParamConvention">
                 <ng-container matColumnDef="code">
                   <th mat-header-cell *matHeaderCellDef mat-sort-header>Code</th>
                   <td mat-cell *matCellDef="let row">{{row.code}}</td>
@@ -106,6 +107,24 @@
                   <td mat-cell *matCellDef="let row">{{row.exemple}}</td>
                 </ng-container>
               </app-table>
+              <ng-template #tableMobileParamConvention let-row="row">
+                <table class="table table-sm">
+                  <tbody>
+                  <tr>
+                    <th>Code</th>
+                    <td>{{row.code}}</td>
+                  </tr>
+                  <tr>
+                    <th>Libellé</th>
+                    <td>{{row.libelle}}</td>
+                  </tr>
+                  <tr>
+                    <th>Exemple</th>
+                    <td>{{row.exemple}}</td>
+                  </tr>
+                  </tbody>
+                </table>
+              </ng-template>
             </mat-expansion-panel>
           </mat-accordion>
         </div>
@@ -173,7 +192,8 @@
               </mat-expansion-panel-header>
 
               <app-table #paramTableList [service]="paramConventionService" [columns]="paramColumns" [sortColumn]="paramSortColumn"
-                         matSort [matSortActive]="paramSortColumn" [matSortDirection]="'asc'" (matSortChange)="appParamTable ? appParamTable.sorting($event) : null">
+                         matSort [matSortActive]="paramSortColumn" [matSortDirection]="'asc'" (matSortChange)="appParamTable ? appParamTable.sorting($event) : null"
+                         [templateMobile]="tableMobileParamConvention">
                 <ng-container matColumnDef="code">
                   <th mat-header-cell *matHeaderCellDef mat-sort-header>Code</th>
                   <td mat-cell *matCellDef="let row">{{row.code}}</td>

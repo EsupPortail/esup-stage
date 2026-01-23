@@ -400,8 +400,7 @@ button.mat-mdc-button-base.cancel-button .mat-mdc-button-persistent-ripple {
 
 button.mat-mdc-button-base.accent-button,
 button.mat-mdc-button-base.accent-button .mat-mdc-button-persistent-ripple {
-  background-color: var(--secondaryColor);
-  color: #fafafa;
+  color: var(--secondaryColor);
 }
 
 button.mat-mdc-button-base.valid-button,
