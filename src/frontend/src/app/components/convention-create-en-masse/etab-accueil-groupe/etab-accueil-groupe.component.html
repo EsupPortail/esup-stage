@@ -3,10 +3,10 @@
     <div class="mb-3">
       <div class="text-title">Choix de la structure d'accueil</div>
       <mat-divider class="mb-3"></mat-divider>
-      <div class="mb-2">
-        <button mat-flat-button style="margin-right:5px" color="primary" (click)="selectForGroup()"  aria-label="Pour le groupe d'étudiant">pour le groupe d'étudiant</button>
-        <button mat-flat-button style="margin-right:5px" color="primary" (click)="selectForSelected()" aria-label="Pour les étudiant sélectionné" [disabled]="selected.length === 0">pour les étudiants sélectionnés</button>
-        <button mat-flat-button style="margin-right:5px" color="primary" (click)="importer.click()" aria-label="Importer depuis un CSV">importer depuis un fichier csv</button>
+      <div class="action-buttons-container mb-2">
+        <button class="valid-button" mat-flat-button (click)="selectForGroup()"  aria-label="Pour le groupe d'étudiant">pour le groupe d'étudiant</button>
+        <button class="valid-button" mat-flat-button (click)="selectForSelected()" aria-label="Pour les étudiant sélectionné" [disabled]="selected.length === 0">pour les étudiants sélectionnés</button>
+        <button class="valid-button" mat-flat-button (click)="importer.click()" aria-label="Importer depuis un CSV">importer depuis un fichier csv</button>
         <input #importer hidden type="file" name="file" accept="text/csv" (change)="importCsv($event)">
       </div>
     </div>

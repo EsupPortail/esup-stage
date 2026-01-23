@@ -18,7 +18,7 @@
           </mat-form-field>
         </div>
         <div>
-          <button mat-flat-button color="primary" [disabled]="selectedAdd.length === 0 && selectedRemove.length === 0">{{'BOUTON_VALIDER'|contenu}}</button>
+          <button class="valid-button" mat-flat-button [disabled]="selectedAdd.length === 0 && selectedRemove.length === 0">{{'BOUTON_VALIDER'|contenu}}</button>
         </div>
       </form>
     </div>
@@ -124,7 +124,7 @@
           <div class="row">
             <div class="col-12 text-right">
               <button type="button" mat-button mat-stroked-button (click)="resetFilters()">Supprimer les filtres</button>
-              <button type="submit" mat-button mat-flat-button color="primary" class="ml-2">Rechercher</button>
+              <button type="submit" mat-button mat-flat-button class="ml-2 valid-button">Rechercher</button>
             </div>
           </div>
         </form>

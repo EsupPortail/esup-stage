@@ -169,10 +169,11 @@
   </div>
   <div class="row mt-3">
     <div class="col-sm-6">
-      <button type="button" mat-button mat-stroked-button color="warn" (click)="cancel()">{{'BOUTON_ANNULER'|contenu}}</button>
+      <button class="cancel-button" type="button" mat-button mat-stroked-button (click)="cancel()">{{'BOUTON_ANNULER'|contenu}}</button>
     </div>
     <div class="col-sm-6 text-right">
-      <button mat-button mat-flat-button color="primary" [disabled]="!centreGestion || inscriptions.length === 0 || !selectedInscription">{{'BOUTON_VALIDER'|contenu}}</button>
+      <button class="valid-button" mat-button mat-flat-button [disabled]="!centreGestion || inscriptions.length === 0 || !selectedInscription">{{'BOUTON_VALIDER'|contenu}}</button>
     </div>
   </div>
 </form>
+

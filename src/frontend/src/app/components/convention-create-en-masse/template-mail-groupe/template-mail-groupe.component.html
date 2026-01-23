@@ -17,12 +17,12 @@
         <th mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let row">
           <ng-container *ngIf="canEdit()">
-            <button mat-icon-button matTooltip="Éditer" (click)="edit(row)" color="primary" aria-label="Éditer"><span class="fa fa-pen" aria-hidden="true"></span></button>
+            <button class="edit-button" mat-icon-button matTooltip="Éditer" (click)="edit(row)" aria-label="Éditer"><span class="fa fa-pen" aria-hidden="true"></span></button>
             <span (confirm)="delete(row)" [confirmMessage]="'Voulez-vous supprimer ce template de mail ?'">
-              <button mat-icon-button matTooltip="Supprimer" color="warn" aria-label="Supprimer"><span class="fa fa-trash" aria-hidden="true"></span></button>
+              <button class="delete-button" mat-icon-button matTooltip="Supprimer" aria-label="Supprimer"><span class="fa fa-trash" aria-hidden="true"></span></button>
             </span>
 
-            <button mat-icon-button matTooltip="Tester l'envoi" (click)="openTestSend(row)" color="accent" aria-label="Tester l'envoi"><span class="fa fa-paper-plane" aria-hidden="true"></span></button>
+            <button class="accent-button" mat-icon-button matTooltip="Tester l'envoi" (click)="openTestSend(row)" aria-label="Tester l'envoi"><span class="fa fa-paper-plane" aria-hidden="true"></span></button>
           </ng-container>
         </td>
       </ng-container>
@@ -89,7 +89,7 @@
 
           <div class="row mt-3">
             <div class="col-12 text-right">
-              <button mat-flat-button color="primary">
+              <button class="valid-button" mat-flat-button>
                 {{ 'BOUTON_VALIDER' | contenu }}
               </button>
             </div>

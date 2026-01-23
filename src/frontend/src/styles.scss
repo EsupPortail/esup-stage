@@ -410,6 +410,20 @@ button.mat-mdc-button-base.valid-button .mat-mdc-button-persistent-ripple {
   color: #fafafa;
 }
 
+button.mat-mdc-button-base.valid-button.mat-mdc-button-disabled,
+button.mat-mdc-button-base.valid-button:disabled {
+  background-color: #e0e0e0;
+  color: #9e9e9e;
+  border-color: #e0e0e0;
+  --mdc-outlined-button-outline-color: #e0e0e0;
+  cursor: not-allowed;
+}
+
+button.mat-mdc-button-base.valid-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple,
+button.mat-mdc-button-base.valid-button:disabled .mat-mdc-button-persistent-ripple {
+  background-color: #e0e0e0;
+}
+
 button.mat-mdc-button-base.cancel-button:hover,
 button.mat-mdc-button-base.valid-button:hover {
   filter: brightness(0.95);
@@ -467,4 +481,18 @@ button.mat-mdc-outlined-button.secondary-button .mdc-button__outline {
 button.mat-mdc-button-base.secondary-button .mat-icon,
 button.mat-mdc-button-base.secondary-button .fa {
   color: var(--secondaryColor);
+}
+
+.action-buttons-container {
+  display: flex;
+  justify-content: flex-start;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .action-buttons-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }

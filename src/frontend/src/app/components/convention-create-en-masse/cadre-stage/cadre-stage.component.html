@@ -14,7 +14,7 @@
           </mat-form-field>
         </div>
         <div>
-          <button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
+          <button class="valid-button" mat-flat-button>{{'BOUTON_VALIDER'|contenu}}</button>
         </div>
       </form>
     </div>
@@ -28,7 +28,7 @@
         <ng-container matColumnDef="action">
           <th mat-header-cell *matHeaderCellDef>Action</th>
           <td mat-cell *matCellDef="let row">
-            <button mat-button mat-stroked-button (click)="edit(row)" color="primary">
+            <button class="secondary-button" mat-button mat-stroked-button (click)="edit(row)">
               <span *ngIf="true"><span class="fa fa-pen" aria-label="Modifier"></span> Modifier</span>
               <ng-template #notSelected>
                 <span class="fa fa-check-circle" aria-hidden="true"></span> Sélectionner
