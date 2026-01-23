@@ -37,7 +37,7 @@
       <input matInput formControlName="numeroRNE"/>
       <mat-error>
         <ng-container *ngIf="form.get('numeroRNE') && form.get('numeroRNE').invalid">
-          <div>Le code "UAI" doit se composer d'un ensemble de 7 chiffres suivi d’une lettre</div>
+          <div>Le code "UAI" doit se composer d'un ensemble de 7 chiffres suivi d'une lettre</div>
         </ng-container>
       </mat-error>
     </mat-form-field>
@@ -199,33 +199,20 @@
         </button>
       </div>
 
-      <!-- Verrouillage Synchro -->
+      <!-- Synchronisation automatique -->
       <div class="slot" *ngIf="canUpdateFromApi()">
-        <div class="lock-toggle-wrapper">
-          <span class="lock-toggle-label">Synchronisation automatique</span>
-          <input
-            class="lock-toggle-input"
-            type="checkbox"
-            id="lock-toggle"
-            [checked]="etab.verrouillageSynchroStructureSirene"
+        <div class="sync-radio-wrapper">
+          <span class="sync-radio-label">Synchronisation automatique</span>
+          <mat-radio-group
+            [value]="etab.verrouillageSynchroStructureSirene ? 'non' : 'oui'"
             (change)="toggleVerrouillage()"
-            [attr.aria-label]="etab.verrouillageSynchroStructureSirene ? 'Déverrouiller la synchronisation' : 'Verrouiller la synchronisation'"/>
-          <label
-            class="lock-toggle-container"
-            for="lock-toggle"
-            [matTooltip]="etab.verrouillageSynchroStructureSirene
-        ? 'Cliquez pour déverrouiller et autoriser la mise à jour automatique'
-        : 'Cliquez pour verrouiller et empêcher toute mise à jour automatique'"
-            matTooltipPosition="above">
-            <div class="lock-toggle-circle">
-              <div class="lock-icon">
-                <span class="lock-shackle"></span>
-                <span class="lock-body"></span>
-              </div>
-            </div>
-          </label>
+            aria-label="Synchronisation automatique">
+            <mat-radio-button value="oui">Oui</mat-radio-button>
+            <mat-radio-button value="non">Non</mat-radio-button>
+          </mat-radio-group>
         </div>
       </div>
+
       <!-- Mise à jour automatique -->
       <div class="slot" *ngIf="canUpdateFromApi()">
         <button type="button" mat-button mat-stroked-button color="primary" class="mr-2" [disabled]="autoUpdating || etab.verrouillageSynchroStructureSirene" (click)="autoUpdateFromApi()"
