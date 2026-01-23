@@ -6,7 +6,7 @@
 
     <div class="import-info-box">
       <div class="import-info-title">
-        <mat-icon color="info">info</mat-icon>
+        <mat-icon>info</mat-icon>
         <span class="m-2">Recommendations pour un résultat optimal</span>
       </div>
 
@@ -22,12 +22,12 @@
     </div>
 
     <mat-card-actions class="text-center">
-      <button class="action-bt" mat-stroked-button color="primary" [attr.aria-label]="currentFile && currentFile.size > 0 ? 'Changer de logo' : 'Insérer un logo'" (click)="logoInput.click()">
+      <button class="action-bt valid-button" mat-stroked-button [attr.aria-label]="currentFile && currentFile.size > 0 ? 'Changer de logo' : 'Insérer un logo'" (click)="logoInput.click()">
         <span>{{currentFile && currentFile.size > 0 ? 'Changer de logo' : 'Insérer un logo'}}</span>
         <input #logoInput type="file" (change)="onLogoChange($event)" accept="image/*" style="display:none">
       </button>
 
-      <button class="action-bt" mat-stroked-button color="warn" (click)="removeLogo()"
+      <button class="action-bt cancel-button" mat-stroked-button (click)="removeLogo()"
               *ngIf="currentFile && currentFile.size > 0">
         Supprimer le logo
       </button>
@@ -59,11 +59,11 @@
 
       <!-- Boutons d'action -->
       <div class="cropper-actions" style="margin-top: 15px;">
-        <button mat-raised-button color="primary" (click)="uploadCroppedLogo()"
+        <button class="valid-button" mat-raised-button (click)="uploadCroppedLogo()"
                 [disabled]="!croppedBlob">
           Valider et enregistrer
         </button>
-        <button mat-stroked-button color="warn" (click)="cancelCrop()"
+        <button class="cancel-button" mat-stroked-button (click)="cancelCrop()"
                 style="margin-left: 10px;">
           Annuler
         </button>
@@ -107,7 +107,7 @@
 
           <!-- Erreur -->
           <div *ngIf="pdfError && !pdfLoading" class="pdf-error">
-            <mat-icon color="warn">error_outline</mat-icon>
+            <mat-icon>error_outline</mat-icon>
             <p>{{ pdfError }}</p>
           </div>
 
@@ -130,3 +130,4 @@
     </div>
   </mat-card-content>
 </mat-card>
+

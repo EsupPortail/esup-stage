@@ -58,7 +58,7 @@
         <ng-container matColumnDef="action">
           <th mat-header-cell *matHeaderCellDef>Actions</th>
           <td mat-cell *matCellDef="let row">
-            <button mat-icon-button matTooltip="Supprimer" color="warn" (click)="deleteEtape(row.id.code, row.id.codeVersionEtape)"><span class="fa fa-trash" aria-label="Supprimer"></span></button>
+            <button class="delete-button" mat-icon-button matTooltip="Supprimer" (click)="deleteEtape(row.id.code, row.id.codeVersionEtape)"><span class="fa fa-trash" aria-label="Supprimer"></span></button>
           </td>
         </ng-container>
       </app-table>

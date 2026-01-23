@@ -62,16 +62,16 @@
                     <div class="col-sm-2">{{getTypeQuestionLibelle(questionSupplementaire.typeQuestion)}}</div>
                     <div class="col-sm-8">{{questionSupplementaire.question}}</div>
                     <div class="col-sm-2">
-                      <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(0,questionSupplementaire)" color="primary"><span class="fa fa-pen" aria-label="Modifier"></span></button>
+                      <button class="edit-button" mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(0,questionSupplementaire)"><span class="fa fa-pen" aria-label="Modifier"></span></button>
                       <span (confirm)="deleteQuestionSupplementaire(questionSupplementaire.id)" [confirmMessage]="'Etes-vous sûr de vouloir supprimer cette question ?'">
-                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><span class="fa fa-trash" aria-label="Supprimer"></span></button>
+                      <button class="delete-button" mat-icon-button type='button'  matTooltip="Supprimer"><span class="fa fa-trash" aria-label="Supprimer"></span></button>
                     </span>
                     </div>
                   </div>
                 </div>
               </div>
               <div class="mt-3">
-                <button mat-flat-button color="primary" type='button' (click)="openQuestionSupplementaireFormModal(0,null)">Ajouter une question à cette section</button>
+                <button class="valid-button" mat-flat-button type='button' (click)="openQuestionSupplementaireFormModal(0,null)">Ajouter une question à cette section</button>
               </div>
 
             </mat-expansion-panel>
@@ -121,16 +121,16 @@
                     <div class="col-sm-2">{{getTypeQuestionLibelle(questionSupplementaire.typeQuestion)}}</div>
                     <div class="col-sm-8">{{questionSupplementaire.question}}</div>
                     <div class="col-sm-2">
-                      <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(1,questionSupplementaire)" color="primary"><span class="fa fa-pen" aria-label="Modifier"></span></button>
+                      <button class="edit-button" mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(1,questionSupplementaire)"><span class="fa fa-pen" aria-label="Modifier"></span></button>
                       <span (confirm)="deleteQuestionSupplementaire(questionSupplementaire.id)" [confirmMessage]="'Etes-vous sûr de vouloir supprimer cette question ?'">
-                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><span class="fa fa-trash" aria-label="Supprimer"></span></button>
+                      <button class="delete-button" mat-icon-button type='button'  matTooltip="Supprimer"><span class="fa fa-trash" aria-label="Supprimer"></span></button>
                     </span>
                     </div>
                   </div>
                 </div>
               </div>
               <div class="mt-3">
-                <button class="question-sup-bouton" mat-flat-button color="primary" type='button' (click)="openQuestionSupplementaireFormModal(1,null)">Ajouter une question à cette section</button>
+                <button class="question-sup-bouton valid-button" mat-flat-button type='button' (click)="openQuestionSupplementaireFormModal(1,null)">Ajouter une question à cette section</button>
               </div>
 
             </mat-expansion-panel>
@@ -180,22 +180,22 @@
                     <div class="col-sm-2">{{getTypeQuestionLibelle(questionSupplementaire.typeQuestion)}}</div>
                     <div class="col-sm-8">{{questionSupplementaire.question}}</div>
                     <div class="col-sm-2">
-                      <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(2,questionSupplementaire)" color="primary"><span class="fa fa-pen" aria-label="Modifier"></span></button>
+                      <button class="edit-button" mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(2,questionSupplementaire)"><span class="fa fa-pen" aria-label="Modifier"></span></button>
                       <span (confirm)="deleteQuestionSupplementaire(questionSupplementaire.id)" [confirmMessage]="'Etes-vous sûr de vouloir supprimer cette question ?'">
-                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><span class="fa fa-trash" aria-label="Supprimer"></span></button>
+                      <button class="delete-button" mat-icon-button type='button'  matTooltip="Supprimer"><span class="fa fa-trash" aria-label="Supprimer"></span></button>
                     </span>
                     </div>
                   </div>
                 </div>
               </div>
               <div class="mt-3">
-                <button mat-flat-button color="primary" type='button' (click)="openQuestionSupplementaireFormModal(2,null)">Ajouter une question à cette section</button>
+                <button class="valid-button" mat-flat-button type='button' (click)="openQuestionSupplementaireFormModal(2,null)">Ajouter une question à cette section</button>
               </div>
 
             </mat-expansion-panel>
 
             <div class="mt-3">
-              <button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
+              <button class="valid-button" mat-flat-button>{{'BOUTON_VALIDER'|contenu}}</button>
             </div>
           </form>
         </mat-accordion>
@@ -256,16 +256,16 @@
                   <div class="col-sm-2">{{getTypeQuestionLibelle(questionSupplementaire.typeQuestion)}}</div>
                   <div class="col-sm-8">{{questionSupplementaire.question}}</div>
                   <div class="col-sm-2">
-                    <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(3,questionSupplementaire)" color="primary"><span class="fa fa-pen" aria-label="Modifier"></span></button>
+                    <button class="edit-button" mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(3,questionSupplementaire)"><span class="fa fa-pen" aria-label="Modifier"></span></button>
                     <span (confirm)="deleteQuestionSupplementaire(questionSupplementaire.id)" [confirmMessage]="'Etes-vous sûr de vouloir supprimer cette question ?'">
-                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><span class="fa fa-trash" aria-label="Supprimer"></span></button>
+                      <button class="delete-button" mat-icon-button type='button'  matTooltip="Supprimer"><span class="fa fa-trash" aria-label="Supprimer"></span></button>
                     </span>
                   </div>
                 </div>
               </div>
             </div>
             <div class="mt-3">
-              <button mat-flat-button color="primary" type='button' (click)="openQuestionSupplementaireFormModal(3,null)">Ajouter une question à cette section</button>
+              <button class="valid-button" mat-flat-button type='button' (click)="openQuestionSupplementaireFormModal(3,null)">Ajouter une question à cette section</button>
             </div>
 
           </mat-expansion-panel>
@@ -315,22 +315,22 @@
                   <div class="col-sm-2">{{getTypeQuestionLibelle(questionSupplementaire.typeQuestion)}}</div>
                   <div class="col-sm-8">{{questionSupplementaire.question}}</div>
                   <div class="col-sm-2">
-                    <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(4,questionSupplementaire)" color="primary"><span class="fa fa-pen" aria-label="Modifier"></span></button>
+                    <button class="edit-button" mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(4,questionSupplementaire)"><span class="fa fa-pen" aria-label="Modifier"></span></button>
                     <span (confirm)="deleteQuestionSupplementaire(questionSupplementaire.id)" [confirmMessage]="'Etes-vous sûr de vouloir supprimer cette question ?'">
-                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><span class="fa fa-trash" aria-label="Supprimer"></span></button>
+                      <button class="delete-button" mat-icon-button type='button'  matTooltip="Supprimer"><span class="fa fa-trash" aria-label="Supprimer"></span></button>
                     </span>
                   </div>
                 </div>
               </div>
             </div>
             <div class="mt-3">
-              <button mat-flat-button color="primary" type='button' (click)="openQuestionSupplementaireFormModal(4,null)">Ajouter une question à cette section</button>
+              <button class="valid-button" mat-flat-button type='button' (click)="openQuestionSupplementaireFormModal(4,null)">Ajouter une question à cette section</button>
             </div>
 
           </mat-expansion-panel>
 
           <div class="mt-3">
-            <button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
+            <button class="valid-button" mat-flat-button>{{'BOUTON_VALIDER'|contenu}}</button>
           </div>
         </form>
       </mat-expansion-panel>
@@ -390,16 +390,16 @@
                   <div class="col-sm-2">{{getTypeQuestionLibelle(questionSupplementaire.typeQuestion)}}</div>
                   <div class="col-sm-8">{{questionSupplementaire.question}}</div>
                   <div class="col-sm-2">
-                    <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(5,questionSupplementaire)" color="primary"><span class="fa fa-pen" aria-label="Modifier"></span></button>
+                    <button class="edit-button" mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(5,questionSupplementaire)"><span class="fa fa-pen" aria-label="Modifier"></span></button>
                     <span (confirm)="deleteQuestionSupplementaire(questionSupplementaire.id)" [confirmMessage]="'Etes-vous sûr de vouloir supprimer cette question ?'">
-                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><span class="fa fa-trash" aria-label="Supprimer"></span></button>
+                      <button class="delete-button" mat-icon-button type='button'  matTooltip="Supprimer"><span class="fa fa-trash" aria-label="Supprimer"></span></button>
                     </span>
                   </div>
                 </div>
               </div>
             </div>
             <div class="mt-3">
-              <button mat-flat-button color="primary" type='button' (click)="openQuestionSupplementaireFormModal(5,null)">Ajouter une question à cette section</button>
+              <button class="valid-button" mat-flat-button type='button' (click)="openQuestionSupplementaireFormModal(5,null)">Ajouter une question à cette section</button>
             </div>
 
           </mat-expansion-panel>
@@ -450,16 +450,16 @@
                   <div class="col-sm-2">{{getTypeQuestionLibelle(questionSupplementaire.typeQuestion)}}</div>
                   <div class="col-sm-8">{{questionSupplementaire.question}}</div>
                   <div class="col-sm-2">
-                    <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(6,questionSupplementaire)" color="primary"><span class="fa fa-pen" aria-label="Modifier"></span></button>
+                    <button class="edit-button" mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(6,questionSupplementaire)"><span class="fa fa-pen" aria-label="Modifier"></span></button>
                     <span (confirm)="deleteQuestionSupplementaire(questionSupplementaire.id)" [confirmMessage]="'Etes-vous sûr de vouloir supprimer cette question ?'">
-                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><span class="fa fa-trash" aria-label="Supprimer"></span></button>
+                      <button class="delete-button" mat-icon-button type='button'  matTooltip="Supprimer"><span class="fa fa-trash" aria-label="Supprimer"></span></button>
                     </span>
                   </div>
                 </div>
               </div>
             </div>
             <div class="mt-3">
-              <button mat-flat-button color="primary" type='button' (click)="openQuestionSupplementaireFormModal(6,null)">Ajouter une question à cette section</button>
+              <button class="valid-button" mat-flat-button type='button' (click)="openQuestionSupplementaireFormModal(6,null)">Ajouter une question à cette section</button>
             </div>
 
           </mat-expansion-panel>
@@ -509,22 +509,22 @@
                   <div class="col-sm-2">{{getTypeQuestionLibelle(questionSupplementaire.typeQuestion)}}</div>
                   <div class="col-sm-8">{{questionSupplementaire.question}}</div>
                   <div class="col-sm-2">
-                    <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(7,questionSupplementaire)" color="primary"><span class="fa fa-pen" aria-label="Modifier"></span></button>
+                    <button class="edit-button" mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(7,questionSupplementaire)"><span class="fa fa-pen" aria-label="Modifier"></span></button>
                     <span (confirm)="deleteQuestionSupplementaire(questionSupplementaire.id)" [confirmMessage]="'Etes-vous sûr de vouloir supprimer cette question ?'">
-                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><span class="fa fa-trash" aria-label="Supprimer"></span></button>
+                      <button class="delete-button" mat-icon-button type='button'  matTooltip="Supprimer"><span class="fa fa-trash" aria-label="Supprimer"></span></button>
                     </span>
                   </div>
                 </div>
               </div>
             </div>
             <div class="mt-3">
-              <button mat-flat-button color="primary" type='button' (click)="openQuestionSupplementaireFormModal(7,null)">Ajouter une question à cette section</button>
+              <button class="valid-button" mat-flat-button type='button' (click)="openQuestionSupplementaireFormModal(7,null)">Ajouter une question à cette section</button>
             </div>
 
           </mat-expansion-panel>
 
           <div class="mt-3">
-            <button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
+            <button class="valid-button" mat-flat-button>{{'BOUTON_VALIDER'|contenu}}</button>
           </div>
         </form>
       </mat-expansion-panel>

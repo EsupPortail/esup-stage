@@ -30,7 +30,7 @@
         </div>
         <div class="row mt-3">
           <div class="col-12">
-            <button type="button" mat-stroked-button color="primary" (click)="addDocInput.click()">
+            <button class="valid-button" type="button" mat-stroked-button (click)="addDocInput.click()">
               <span>Ajouter un document</span>
               <input #addDocInput type="file" (change)="addDoc($event)" accept="application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display:none">
             </button>
@@ -43,10 +43,10 @@
       </div>
 
       <div class="buttons">
-        <button type="submit" mat-flat-button color="primary" [disabled]="form.invalid">
+        <button class="valid-button" type="submit" mat-flat-button [disabled]="form.invalid">
           {{ (consigne ? 'BOUTON_VALIDER' : 'Créer') | contenu }}
         </button>
-        <button type="button" *ngIf="consigne" mat-flat-button color="warn" (click)="deleteConsigne()">
+        <button class="cancel-button" type="button" *ngIf="consigne" mat-flat-button (click)="deleteConsigne()">
           Supprimer
         </button>
       </div>

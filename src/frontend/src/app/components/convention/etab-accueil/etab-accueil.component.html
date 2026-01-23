@@ -57,11 +57,11 @@
         </div>
         <div class="row mt-3">
 <!--          <div class="col-md-3">-->
-<!--            <button mat-button mat-stroked-button color="primary" *ngIf="etab.id" (click)="changeOnglet()">Changer d'établissement</button>-->
+<!--            <button class="valid-button" mat-button mat-stroked-button *ngIf="etab.id" (click)="changeOnglet()">Changer d'établissement</button>-->
 <!--          </div>-->
           <div class="col-12 d-flex justify-content-center">
             <span *ngIf="etab.id && !modif && canEdit()" [confirmMessage]="'Attention : vous vous apprêtez à modifier la fiche de l\'établissement ' + etab.raisonSociale + ' . Pour sélectionner un autre établissement, veuillez cliquer sur le bouton de recherche d\'un établissement. '+ etab.raisonSociale + ' représente la raison sociale de l’établissement.'" (confirm)="edit()">
-              <button mat-button mat-stroked-button color="primary">
+              <button class="valid-button" mat-button mat-stroked-button>
                 Modifier la fiche de cet établissement d'accueil
               </button>
             </span>
@@ -119,7 +119,7 @@
       <ng-container matColumnDef="action">
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let row">
-          <button mat-button mat-stroked-button (click)="choose(row)" color="primary">
+          <button class="secondary-button" mat-button mat-stroked-button (click)="choose(row)">
             <span class="fa fa-check" aria-hidden="true"></span> Sélectionner
           </button>
         </td>

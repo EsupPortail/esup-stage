@@ -203,14 +203,16 @@
       <mat-card-content>
         <span style="display: block">Validation définitive du centre</span>
         <mat-card-actions class="text-center">
-          <span (confirm)="validationCreation()"
-                [confirmMessage]="'Voulez-vous vraiment valider la création du centre ?'">
-            <button class="validate" mat-flat-button color="primary">Valider la création du centre de gestion</button>
-          </span>
-          <span (confirm)="delete()"
-                [confirmMessage]="'Voulez-vous vraiment supprimer le brouillon ?'">
-            <button class="delete" style="margin-left: 8px" mat-flat-button color="warn">Supprimer le brouillon</button>
-          </span>
+          <div class="action-buttons">
+            <span (confirm)="validationCreation()"
+                  [confirmMessage]="'Voulez-vous vraiment valider la création du centre ?'">
+              <button class="valid-button" mat-flat-button>Valider la création du centre de gestion</button>
+            </span>
+            <span (confirm)="delete()"
+                  [confirmMessage]="'Voulez-vous vraiment supprimer le brouillon ?'">
+              <button class="cancel-button" mat-flat-button>Supprimer le brouillon</button>
+            </span>
+          </div>
         </mat-card-actions>
       </mat-card-content>
     </mat-card>

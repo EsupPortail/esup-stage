@@ -212,12 +212,12 @@
             <div class="row mt-3">
               <div class="col-4"></div>
               <div class="col-4 text-center">
-                <button mat-stroked-button color="primary" (click)="printFiche(fiche.type)" *ngIf="reponseEvaluation && reponseEvaluation[fiche.validationProp]">
+                <button class="valid-button" mat-stroked-button (click)="printFiche(fiche.type)" *ngIf="reponseEvaluation && reponseEvaluation[fiche.validationProp]">
                   Imprimer
                 </button>
               </div>
               <div class="col-4 text-right">
-                <button mat-flat-button color="primary">{{ 'BOUTON_VALIDER' | contenu }}</button>
+                <button class="valid-button" mat-flat-button>{{ 'BOUTON_VALIDER' | contenu }}</button>
               </div>
             </div>
           </form>
@@ -228,13 +228,13 @@
               Cliquez sur le bouton ci-dessous afin d'envoyer un mail prévenant le destinataire ({{fiche.destinataire}}) qu'il peut remplir sa fiche.
             </div>
             <div class="text-center">
-              <button mat-stroked-button color="primary" (click)="openConfirmEnvoiMailEvaluation(fiche.type)">
+              <button class="valid-button" mat-stroked-button (click)="openConfirmEnvoiMailEvaluation(fiche.type)">
                 <span class="fa fa-envelope"></span>&nbsp;{{ 'Envoyer' + (convention[fiche.mailKey] ? ' un rappel' : '') }}
               </button>
             </div>
             <div *ngIf="convention[fiche.mailKey] && convention[fiche.dateMailKey]" class="mail-info-box">
               <div class="mail-info-title">
-                <mat-icon color="info">info</mat-icon>
+                <mat-icon>info</mat-icon>
                 <span>Le dernier mail a été envoyé le {{convention[fiche.dateMailKey] | date:'dd/MM/yyyy'}} à {{convention[fiche.dateMailKey] | date:'HH:mm'}}</span>
               </div>
             </div>

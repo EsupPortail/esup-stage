@@ -29,7 +29,7 @@
           <p class="signature-info">Solutions externes : les informations de signature sont mis à jour automatiquement via webhook.</p>
           <p class="signature-info">L'actualisation des données n'est possible que toutes les 30 minutes.</p>
           <div class="mt-2 text-center">
-            <button mat-button mat-flat-button color="primary" (click)="updateSignatureInfos()" [disabled]="isActualisationActif()">
+            <button class="valid-button" mat-button mat-flat-button (click)="updateSignatureInfos()" [disabled]="isActualisationActif()">
               Mettre à jour les informations et récupérer le document signé
             </button>
           </div>

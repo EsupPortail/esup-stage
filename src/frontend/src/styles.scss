@@ -398,6 +398,12 @@ button.mat-mdc-button-base.cancel-button .mat-mdc-button-persistent-ripple {
   color: #fafafa;
 }
 
+button.mat-mdc-button-base.accent-button,
+button.mat-mdc-button-base.accent-button .mat-mdc-button-persistent-ripple {
+  background-color: var(--secondaryColor);
+  color: #fafafa;
+}
+
 button.mat-mdc-button-base.valid-button,
 button.mat-mdc-button-base.valid-button .mat-mdc-button-persistent-ripple {
   background-color: var(--primaryColor);
@@ -416,5 +422,49 @@ button.mat-mdc-icon-button.delete-button .fa {
 
 button.mat-mdc-icon-button.accent-button,
 button.mat-mdc-icon-button.accent-button .fa {
+  color: var(--secondaryColor);
+}
+
+button.mat-mdc-fab.delete-button,
+button.mat-mdc-fab.delete-button .mat-icon,
+button.mat-mdc-fab.delete-button .fa {
+  background-color: var(--dangerColor);
+  color: #fafafa;
+  --mdc-fab-container-color: var(--dangerColor);
+}
+
+button.mat-mdc-fab.secondary-button {
+  background-color: #fafafa;
+  color: var(--secondaryColor);
+  --mdc-fab-container-color: #fafafa;
+  border: 1px solid var(--secondaryColor);
+}
+
+button.mat-mdc-fab.secondary-button .mat-icon,
+button.mat-mdc-fab.secondary-button .fa {
+  color: var(--secondaryColor);
+}
+
+button.mat-mdc-button-base.secondary-button,
+button.mat-mdc-button-base.secondary-button .mat-mdc-button-persistent-ripple {
+  background-color: #fafafa;
+  color: var(--secondaryColor);
+}
+
+button.mat-mdc-button-base.secondary-button,
+button.mat-mdc-outlined-button.secondary-button {
+  border: 1px solid var(--secondaryColor) !important;
+  --mdc-outlined-button-outline-color: var(--secondaryColor);
+}
+
+button.mat-mdc-button-base.secondary-button .mdc-button__outline,
+button.mat-mdc-outlined-button.secondary-button .mdc-button__outline {
+  border-style: solid !important;
+  border-width: 1px !important;
+  border-color: var(--secondaryColor) !important;
+}
+
+button.mat-mdc-button-base.secondary-button .mat-icon,
+button.mat-mdc-button-base.secondary-button .fa {
   color: var(--secondaryColor);
 }

@@ -41,7 +41,7 @@
             <div class="periode-info">
               Période du {{periode.dateDebutInterruption|date:'shortDate'}} au {{periode.dateFinInterruption|date:'shortDate'}}
             </div>
-            <button mat-fab color="warn" matTooltip="Supprimer" (click)="removePeriode(periode)">
+            <button class="delete-button" mat-fab matTooltip="Supprimer" (click)="removePeriode(periode)">
               <span class="fa fa-trash-alt" aria-label="Supprimer"></span>
             </button>
           </div>

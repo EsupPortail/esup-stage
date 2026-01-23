@@ -26,6 +26,6 @@
   </div>
 </mat-dialog-content>
 <mat-dialog-actions>
-  <button mat-flat-button color="warn" (click)="cancel()">{{'BOUTON_ANNULER'|contenu}}</button>
-  <button mat-flat-button color="primary" (click)="valid()" [disabled]="conventionsCount + contactsCount > 0">{{'BOUTON_VALIDER'|contenu}}</button>
+  <button class="cancel-button" mat-flat-button (click)="cancel()">{{'BOUTON_ANNULER'|contenu}}</button>
+  <button class="valid-button" mat-flat-button (click)="valid()" [disabled]="conventionsCount + contactsCount > 0">{{'BOUTON_VALIDER'|contenu}}</button>
 </mat-dialog-actions>
