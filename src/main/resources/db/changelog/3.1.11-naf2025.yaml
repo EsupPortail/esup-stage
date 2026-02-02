@@ -7,3 +7,27 @@ databaseChangeLog:
             path : 3.1.11-naf-rev2-to-2025.sql
             relativeToChangelogFile: true
             encoding: utf8
+
+  - changeSet:
+      id: 3.1.11-fix-insert-naf2025-1
+      author: thouveno9
+      changes:
+        - update:
+            tableName: NAF_N5
+            columns:
+              - column:
+                  name: libelleNAF_N5
+                  value: "Activites de comptabilite, de tenue de comptes et d'audit ; conseil fiscal"
+            where: "codeNAF_N5 = '69.20Y'"
+
+  - changeSet:
+      id: 3.1.11-fix-insert-naf2025-2
+      author: thouveno9
+      changes:
+        - update:
+            tableName: NAF_N5
+            columns:
+              - column:
+                  name: libelleNAF_N5
+                  value: "Forgeage et faconnage de metal ; metallurgie des poudres"
+            where: "codeNAF_N5 = '25.40Y'"

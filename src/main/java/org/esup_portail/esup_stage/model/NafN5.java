@@ -27,4 +27,7 @@ public class NafN5 {
     @JoinColumn(name = "codeNAF_N1", nullable = false)
     private NafN1 nafN1;
 
+    @Column(name = "RevNaf")
+    private String revNaf;
+
 }

@@ -114,6 +114,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   autoUpdating = false;
   isSireneActive = false;
   filterTypeContries!: 0 | 1 | 2  ;
+  private lastNafListKey: string | number | null = null;
 
   form: any;
 
@@ -178,7 +179,11 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
     this.structureService.getSireneInfo().subscribe(res=>{
       this.isSireneActive = res.isApiSireneActive
     });
-    this.getNafN5List();
+    this.nafN5FilterCtrl.valueChanges
+      .pipe(takeUntil(this._onDestroy))
+      .subscribe(() => {
+        this.filterNafN5List();
+      });
   }
 
   public isLayoutReady = false;
@@ -484,18 +489,52 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
 
     if (this.etab.nafN5) {
       this.selectedNafN5 = this.etab.nafN5;
+    } else if (!this.etab?.id) {
+      this.selectedNafN5 = null;
+      this.form.get('codeNafN5')?.setValue(null);
+    }
+
+    if (changes['etab']) {
+      const currentKey = this.etab?.id ?? 'new';
+      if (currentKey !== this.lastNafListKey) {
+        this.lastNafListKey = currentKey;
+        this.loadNafN5List();
+      }
     }
   }
 
   getNafN5List(): void {
-    this.nafN5Service.findAll().subscribe((response: any) => {
+    if(this.etab.id){
+      this.nafN5Service.findAllForModification(this.etab.id).subscribe((response: any) => {
+        this.nafN5List = response;
+          this.filteredNafN5List.next(this.nafN5List.slice());
+          this.nafN5FilterCtrl.valueChanges
+            .pipe(takeUntil(this._onDestroy))
+            .subscribe(() => {
+              this.filterNafN5List();
+            });
+      });
+    } else {
+      this.nafN5Service.findAllForCreation().subscribe((response: any) => {
+        this.nafN5List = response;
+          this.filteredNafN5List.next(this.nafN5List.slice());
+          this.nafN5FilterCtrl.valueChanges
+            .pipe(takeUntil(this._onDestroy))
+            .subscribe(() => {
+              this.filterNafN5List();
+            });
+      });
+    }
+  }
+
+  loadNafN5List(): void {
+    const request = this.etab?.id
+      ? this.nafN5Service.findAllForModification(this.etab.id)
+      : this.nafN5Service.findAllForCreation();
+
+    request.subscribe((response: any) => {
       this.nafN5List = response;
       this.filteredNafN5List.next(this.nafN5List.slice());
-      this.nafN5FilterCtrl.valueChanges
-        .pipe(takeUntil(this._onDestroy))
-        .subscribe(() => {
-          this.filterNafN5List();
-        });
     });
   }
 
