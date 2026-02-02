@@ -70,7 +70,11 @@
         <mat-icon matSuffix class="icon-help" matTooltip="Code à demander directement à votre établissement d'accueil ou consultable sur un site de référencement d'entreprises. Composé de quatre chiffres et une lettre (ex: 01.10Z) faisant référence à la nomenclature d'activité françaises (NAF).">help</mat-icon>
         <mat-hint>
           <ng-container *ngIf="selectedNafN5">
-            <span class="text-success"><i class="fa fa-check"></i> {{selectedNafN5.libelle}}</span>
+            <span *ngIf="selectedNafN5.temEnServ !== false" class="text-success"><i class="fa fa-check"></i> {{selectedNafN5.libelle}}</span>
+            <span *ngIf="selectedNafN5.temEnServ === false" class="text-warning">
+              <mat-icon class="mr-1" inline>warning</mat-icon>
+              Le code APE de cet établissement est obsolète. Merci de choisir, si possible, un code APE à jour dans la liste.
+            </span>
           </ng-container>
         </mat-hint>
       </mat-form-field>

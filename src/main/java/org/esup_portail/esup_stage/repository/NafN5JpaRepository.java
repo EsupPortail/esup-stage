@@ -20,4 +20,9 @@ public interface NafN5JpaRepository extends JpaRepository<NafN5, String> {
     @Query("select n5.code from NafN5 n5 where n5.nafN1.code in :codes AND n5.temEnServ = true")
     List<String> findAllCodesByNafN1Codes(@Param("codes") List<String> codes);
 
+    @Query("select n5 from NafN5 n5 where n5.temEnServ = true")
+    List<NafN5> findAllForCreation();
+
+    @Query("select n5 from NafN5 n5 where n5.temEnServ = true or n5.code in (select s.nafN5.code from Structure s where s.id = :idStructure)")
+    List<NafN5> findAllForModification(@Param("idStructure") Integer idStructure);
 }
