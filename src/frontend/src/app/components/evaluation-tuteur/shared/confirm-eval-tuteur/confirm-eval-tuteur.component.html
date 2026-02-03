@@ -2,7 +2,7 @@
 
 <ng-template #confirmDialog>
   <h2 mat-dialog-title class="title" [ngClass]="resolvedColorClass">
-    <mat-icon class="title-icon">{{ resolvedIcon }}</mat-icon>
+    <mat-icon aria-hidden="true" class="title-icon">{{ resolvedIcon }}</mat-icon>
     <span>{{ resolvedTitle }}</span>
   </h2>
 

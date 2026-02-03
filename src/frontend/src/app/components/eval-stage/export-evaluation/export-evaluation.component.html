@@ -72,12 +72,12 @@
               <button mat-icon-button
                       (click)="addSelected(currentSheet)"
                       [disabled]="isLocked || !selectedAvailableKeys.size">
-                <mat-icon>arrow_forward</mat-icon>
+                <mat-icon aria-hidden="true">arrow_forward</mat-icon>
               </button>
               <button mat-icon-button
                       (click)="removeSelected(currentSheet)"
                       [disabled]="isLocked || !selectedChosenKeys.size">
-                <mat-icon>arrow_back</mat-icon>
+                <mat-icon aria-hidden="true">arrow_back</mat-icon>
               </button>
             </div>
 

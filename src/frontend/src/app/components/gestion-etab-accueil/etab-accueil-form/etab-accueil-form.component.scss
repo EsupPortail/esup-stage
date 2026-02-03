@@ -225,13 +225,6 @@ body, html {
   z-index: 1000;
 }
 
-// Style pour le bouton verrouillé (optionnel - renforcement visuel)
-button.cancel-button {
-  mat-icon {
-    color: #f44336;
-  }
-}
-
 button.accent-button {
   mat-icon {
     color: #4caf50;

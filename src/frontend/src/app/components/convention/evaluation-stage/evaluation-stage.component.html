@@ -234,7 +234,7 @@
             </div>
             <div *ngIf="convention[fiche.mailKey] && convention[fiche.dateMailKey]" class="mail-info-box">
               <div class="mail-info-title">
-                <mat-icon>info</mat-icon>
+                <mat-icon aria-hidden="true">info</mat-icon>
                 <span>Le dernier mail a été envoyé le {{convention[fiche.dateMailKey] | date:'dd/MM/yyyy'}} à {{convention[fiche.dateMailKey] | date:'HH:mm'}}</span>
               </div>
             </div>

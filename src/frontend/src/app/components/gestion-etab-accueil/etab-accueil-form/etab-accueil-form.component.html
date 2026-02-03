@@ -6,7 +6,7 @@
       <mat-label>Raison sociale</mat-label>
       <input matInput formControlName="raisonSociale" [disabled]="isFieldDisabled()" required />
       <button mat-icon-button matSuffix class="icon-help" matTooltip="Nom de l'organisme" aria-label="Aide sur la raison sociale" type="button">
-        <mat-icon>help</mat-icon>
+        <mat-icon aria-hidden="true">help</mat-icon>
       </button>
       <mat-error *ngIf="form.get('raisonSociale')?.touched && form.get('raisonSociale')?.invalid">
         <ng-container *ngIf="form.get('raisonSociale')?.hasError('required')">
@@ -21,7 +21,7 @@
       <mat-label>Numéro Siret</mat-label>
       <input matInput formControlName="numeroSiret" [disabled]="isFieldDisabled()" [required]="numeroSiretRequired() && isFr()" />
       <button mat-icon-button matSuffix class="icon-help" matTooltip="Code INSEE à demander à votre établissement d'accueil ou consultable sur des sites de référencement d'entreprises. Correspond à l'identifiant géographique de l'établissement. (format : 14 chiffres consécutifs sans espace - ex: 12345678912345)" aria-label="Aide sur le numéro SIRET" type="button">
-        <mat-icon>help</mat-icon>
+        <mat-icon aria-hidden="true">help</mat-icon>
       </button>
       <mat-error *ngIf="form.get('numeroSiret')?.touched && form.get('numeroSiret')?.invalid">
         <ng-container *ngIf="form.get('numeroSiret')?.hasError('required')">
@@ -93,7 +93,7 @@
           <mat-option *ngFor="let nafN5 of filteredNafN5List | async" [value]="nafN5.code" (click)="setSelectedNafN5(nafN5)">{{nafN5.code}} - {{nafN5.libelle}}</mat-option>
         </mat-select>
         <button mat-icon-button matSuffix class="icon-help" matTooltip="Code à demander directement à votre établissement d'accueil ou consultable sur un site de référencement d'entreprises. Composé de quatre chiffres et une lettre (ex: 01.10Z) faisant référence à la nomenclature d'activité françaises (NAF)." aria-label="Aide sur le code APE" type="button">
-          <mat-icon>help</mat-icon>
+          <mat-icon aria-hidden="true">help</mat-icon>
         </button>
         <mat-hint>
           <ng-container *ngIf="selectedNafN5">
@@ -247,7 +247,7 @@
       <div class="slot" *ngIf="canToggleVerrouillage()">
         <button type="button" class="btn" [ngClass]="{'btn-success': !etab.verrouillageSynchroStructureSirene,'btn-warning': etab.verrouillageSynchroStructureSirene}" (click)="toggleVerrouillage()"
           [matTooltip]="etab.verrouillageSynchroStructureSirene ? 'Déverrouiller la mise à jour automatique' : 'Verrouiller la mise à jour automatique'">
-          <mat-icon class="mr-1" style="vertical-align: middle;">
+          <mat-icon aria-hidden="true" style="vertical-align: middle;">
             {{ etab.verrouillageSynchroStructureSirene ? 'lock' : 'lock_open' }}
           </mat-icon>
           <span>
@@ -260,7 +260,7 @@
       <div class="slot" *ngIf="canUpdateFromApi()">
         <button type="button" class="mr-2 valid-button" mat-button mat-stroked-button [disabled]="autoUpdating || etab.verrouillageSynchroStructureSirene" (click)="autoUpdateFromApi()"
                 matTooltip="Met à jour automatiquement les informations de l'établissement via l'API">
-          <mat-icon class="mr-1" [class.spin]="autoUpdating">autorenew</mat-icon>
+          <mat-icon aria-hidden="true" [class.spin]="autoUpdating">autorenew</mat-icon>
           {{ autoUpdating ? 'Mise à jour…' : 'Mise à jour automatique' }}
         </button>
       </div>

@@ -6,7 +6,7 @@
 
     <div class="import-info-box">
       <div class="import-info-title">
-        <mat-icon>info</mat-icon>
+        <mat-icon aria-hidden="true">info</mat-icon>
         <span class="m-2">Recommendations pour un résultat optimal</span>
       </div>
 
@@ -93,7 +93,7 @@
       <mat-card class="pdf-preview-card">
         <mat-card-header class="pdf-preview-header">
           <mat-card-title>
-            <mat-icon>description</mat-icon>
+            <mat-icon aria-hidden="true">description</mat-icon>
             Aperçu de la convention (données fictives)
           </mat-card-title>
         </mat-card-header>
@@ -107,7 +107,7 @@
 
           <!-- Erreur -->
           <div *ngIf="pdfError && !pdfLoading" class="pdf-error">
-            <mat-icon>error_outline</mat-icon>
+            <mat-icon aria-label="Erreur">error_outline</mat-icon>
             <p>{{ pdfError }}</p>
           </div>
 
