@@ -7,14 +7,14 @@
 }
 
 .dashboard-validation {
-  i {
+  mat-icon {
     cursor: pointer;
     color: var(--dangerColor);
   }
-  i.activate {
+  mat-icon.activate {
     color: var(--successColor);
   }
-  i:not(:first-child) {
+  mat-icon:not(:first-child) {
     margin-left: 5px;
   }
 }
