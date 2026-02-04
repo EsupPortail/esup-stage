@@ -1,12 +1,12 @@
-import {Component, OnInit, ViewContainerRef, WritableSignal} from '@angular/core';
+import {Component, OnInit, WritableSignal} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { ConfigService } from "../../../services/config.service";
 import { AuthService } from "../../../services/auth.service";
 import { MessageService } from "../../../services/message.service";
-import { CentreGestionService } from "../../../services/centre-gestion.service";
 import { AppFonction } from "../../../constants/app-fonction";
 import { Droit } from "../../../constants/droit";
 import {RoleService} from "../../../services/role.service";
+import {StructureService} from "../../../services/structure.service";
 
 @Component({
   selector: 'app-config-generale',
@@ -56,6 +56,7 @@ export class ConfigGeneraleComponent implements OnInit {
   formSignature: FormGroup;
 
   isEtuAutoriseToCreate!: boolean;
+  isSireneAcitve!: boolean;
 
   constructor(
     private configService: ConfigService,
@@ -63,6 +64,7 @@ export class ConfigGeneraleComponent implements OnInit {
     private authService: AuthService,
     private messageService: MessageService,
     private roleService: RoleService,
+    private structureService: StructureService
   ) {
     this.formGenerale = this.fb.group({
       codeUniversite: [null, [Validators.required]],
@@ -78,6 +80,7 @@ export class ConfigGeneraleComponent implements OnInit {
       codeCesure: [null],
       autoriserEtudiantACreerEntrepriseFrance: [null],
       autoriserEtudiantACreerEntrepriseHorsFrance: [null],
+      desactiverMajAutoEtabSelection: [null, [Validators.required]],
     });
 
     this.formTheme = this.fb.group({
@@ -130,6 +133,11 @@ export class ConfigGeneraleComponent implements OnInit {
     this.configService.getConfigSignature().subscribe((response: any) => {
       this.configSignature = response;
       this.formSignature.patchValue(this.configSignature);
+    });
+
+    // Récupération des infos sirene
+    this.structureService.getSireneInfo().subscribe((response: any) => {
+      this.isSireneAcitve = response.isApiSireneActive;
     });
   }
 
