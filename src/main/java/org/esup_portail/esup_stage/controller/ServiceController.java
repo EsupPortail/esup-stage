@@ -12,6 +12,7 @@ import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
 import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
+import org.esup_portail.esup_stage.security.permission.ServicePermissionEvaluator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -129,7 +130,7 @@ public class ServiceController {
     }
 
     @PutMapping("/{id}")
-    @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.MODIFICATION})
+    @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.MODIFICATION},evaluator = ServicePermissionEvaluator.class)
     public Service update(@PathVariable("id") int id, @Valid @RequestBody ServiceFormDto serviceFormDto) {
         Service service = serviceJpaRepository.findById(id);
         setServiceData(service, serviceFormDto);

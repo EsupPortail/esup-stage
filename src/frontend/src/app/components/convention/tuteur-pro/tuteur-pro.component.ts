@@ -48,6 +48,7 @@ export class TuteurProComponent implements OnInit, OnChanges, OnDestroy {
   contactFilterCtrl: FormControl = new FormControl();
   filteredContacts: ReplaySubject<any> = new ReplaySubject<any>(1);
   _onDestroy = new Subject<void>();
+  currentUser: any;
 
   @ViewChild(MatExpansionPanel) firstPanel: MatExpansionPanel|undefined;
 
@@ -85,6 +86,7 @@ export class TuteurProComponent implements OnInit, OnChanges, OnDestroy {
     this.searchForm.valueChanges.pipe(debounceTime(1000)).subscribe(() => {
       this.search();
     });
+    this.authService.getCurrentUser().subscribe(res => this.currentUser = res);
   }
 
   ngOnChanges(): void{
@@ -254,6 +256,13 @@ export class TuteurProComponent implements OnInit, OnChanges, OnDestroy {
   ngOnDestroy() {
     this._onDestroy.next();
     this._onDestroy.complete();
+  }
+
+  isCreatorContact(contact: any): boolean {
+    if (!this.currentUser || !contact) return false;
+    const isCreator = contact.loginCreation === this.currentUser.login;
+    const isModified = contact.loginModif && contact.loginModif !== contact.loginCreation;
+    return isCreator && !isModified;
   }
 
 }

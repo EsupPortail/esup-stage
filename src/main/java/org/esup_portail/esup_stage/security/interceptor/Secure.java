@@ -2,6 +2,7 @@ package org.esup_portail.esup_stage.security.interceptor;
 
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
+import org.esup_portail.esup_stage.security.permission.PermissionEvaluator;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -19,4 +20,6 @@ public @interface Secure {
     DroitEnum[] droits() default {};
 
     boolean forbiddenEtu() default false;
+
+    Class<? extends PermissionEvaluator> evaluator() default PermissionEvaluator.class;
 }

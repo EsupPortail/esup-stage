@@ -14,6 +14,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @Table(name = "CentreGestion")
 public class CentreGestion extends ObjetMetier implements Exportable {
 
@@ -21,6 +22,7 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idCentreGestion", nullable = false)
+    @EqualsAndHashCode.Include
     private int id;
 
     @JsonView(Views.List.class)

@@ -105,7 +105,7 @@ body, html {
 }
 
 .ck-content blockquote.side-quote::before {
-  content: '“';
+  content: '"';
   position: absolute;
   top: -37px;
   left: -10px;
@@ -169,39 +169,60 @@ body, html {
   box-shadow: 5px 5px 0 #b3b3b3;
 }
 
+/* Rangée des actions */
 .actions-row {
   display: flex;
   align-items: center;
-  justify-content: space-between; /* left / center / right */
-  gap: 12px; /* petit espace horizontal */
+  justify-content: space-between;
+  gap: 12px;
   flex-wrap: nowrap;
 }
 
 .actions-row .slot {
-  flex: 1 1 0; /* colonnes égales */
+  flex: 1 1 0;
 }
 
-/* Empilement sur petits écrans */
+.actions-row .slot.left-slot {
+  justify-content: flex-start !important;
+}
+
+.actions-row .slot.right-slot {
+  justify-content: flex-end !important;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
   .actions-row {
     flex-direction: column;
-    align-items: stretch; /* pleine largeur */
+    align-items: stretch;
     justify-content: flex-start;
   }
+
   .actions-row .slot {
     text-align: initial;
   }
+
   .actions-row .slot button {
-    width: 100%; /* boutons full width en mobile */
-    margin-bottom:2px;
+    width: 100%;
+    margin-bottom: 2px;
+  }
+
+  .actions-row .slot.left-slot,
+  .actions-row .slot.right-slot {
+    justify-content: stretch !important;
   }
 }
 
-/* Déjà présent chez toi — on le laisse */
+/* Animation de rotation */
 .spin {
   animation: spin 1s linear infinite;
 }
-@keyframes spin { 100% { transform: rotate(360deg); } }
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
 
 /* Style pour les hints avec expansion au survol */
 .hint-expandable {
@@ -215,27 +236,13 @@ body, html {
   position: relative;
   z-index: 1;
   font-size: 14px;
-  margin : 0px -28px 0px -15px // Ajustement pour que le texte prenne toute la largeur disponible
+  margin: 0px -28px 0px -15px;
 }
 
-/* Au survol : expansion du texte */
 .hint-expandable:hover {
   white-space: normal;
   overflow: visible;
   z-index: 1000;
-}
-
-// Style pour le bouton verrouillé (optionnel - renforcement visuel)
-button[color="warn"] {
-  mat-icon {
-    color: #f44336;
-  }
-}
-
-button[color="accent"] {
-  mat-icon {
-    color: #4caf50;
-  }
 }
 
 /* Conteneur global de la rangée de boutons */
@@ -243,7 +250,6 @@ button[color="accent"] {
   width: 100%;
 }
 
-/* Rangée des actions */
 .button-row .actions-row {
   display: flex;
   align-items: center;
@@ -253,7 +259,6 @@ button[color="accent"] {
   width: 100%;
 }
 
-/* Chaque "slot" et le bouton de verrouillage prennent une part égale */
 .button-row .actions-row > .slot,
 .button-row .actions-row > button {
   flex: 1 1 0;
@@ -262,7 +267,6 @@ button[color="accent"] {
   justify-content: center;
 }
 
-/* Responsive : en mobile, on empile tout en full-width */
 @media (max-width: 768px) {
   .button-row .actions-row {
     flex-direction: column;
@@ -281,17 +285,6 @@ button[color="accent"] {
   }
 }
 
-/* Animation de rotation pour l'icône de mise à jour */
-@keyframes spin {
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.spin {
-  animation: spin 1s linear infinite;
-}
-
 /* Petites utilitaires de marge */
 .ml-1 {
   margin-left: 4px;
@@ -305,17 +298,36 @@ button[color="accent"] {
   margin-right: 8px;
 }
 
-.actions-row .slot.left-slot {
-  justify-content: flex-start !important;
+/* Styles pour la synchronisation avec radio buttons */
+.sync-radio-wrapper {
+  padding: 0;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
 }
 
-.actions-row .slot.right-slot {
-  justify-content: flex-end !important;
+.sync-radio-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #424242;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+
+.sync-radio-wrapper mat-radio-group {
+  display: flex;
+  gap: 16px;
 }
 
 @media (max-width: 768px) {
-  .actions-row .slot.left-slot,
-  .actions-row .slot.right-slot {
-    justify-content: stretch !important;
+  .sync-radio-wrapper {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .sync-radio-label {
+    font-size: 12px;
   }
 }

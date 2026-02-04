@@ -37,7 +37,7 @@
       <input matInput formControlName="numeroRNE"/>
       <mat-error>
         <ng-container *ngIf="form.get('numeroRNE') && form.get('numeroRNE').invalid">
-          <div>Le code "UAI" doit se composer d'un ensemble de 7 chiffres suivi d’une lettre</div>
+          <div>Le code "UAI" doit se composer d'un ensemble de 7 chiffres suivi d'une lettre</div>
         </ng-container>
       </mat-error>
     </mat-form-field>
@@ -70,7 +70,11 @@
         <mat-icon matSuffix class="icon-help" matTooltip="Code à demander directement à votre établissement d'accueil ou consultable sur un site de référencement d'entreprises. Composé de quatre chiffres et une lettre (ex: 01.10Z) faisant référence à la nomenclature d'activité françaises (NAF).">help</mat-icon>
         <mat-hint>
           <ng-container *ngIf="selectedNafN5">
-            <span class="text-success"><i class="fa fa-check"></i> {{selectedNafN5.libelle}}</span>
+            <span *ngIf="selectedNafN5.temEnServ !== false" class="text-success"><i class="fa fa-check"></i> {{selectedNafN5.libelle}}</span>
+            <span *ngIf="selectedNafN5.temEnServ === false" class="text-warning">
+              <mat-icon class="mr-1" inline>warning</mat-icon>
+              Le code APE de cet établissement est obsolète. Merci de choisir, si possible, un code APE à jour dans la liste.
+            </span>
           </ng-container>
         </mat-hint>
       </mat-form-field>
@@ -199,17 +203,18 @@
         </button>
       </div>
 
-      <!-- Verrouillage Synchro -->
-      <div class="slot" *ngIf="canToggleVerrouillage()">
-        <button type="button" class="btn" [ngClass]="{'btn-success': !etab.verrouillageSynchroStructureSirene,'btn-warning': etab.verrouillageSynchroStructureSirene}" (click)="toggleVerrouillage()"
-          [matTooltip]="etab.verrouillageSynchroStructureSirene ? 'Déverrouiller la mise à jour automatique' : 'Verrouiller la mise à jour automatique'">
-          <mat-icon class="mr-1" style="vertical-align: middle;">
-            {{ etab.verrouillageSynchroStructureSirene ? 'lock' : 'lock_open' }}
-          </mat-icon>
-          <span>
-        {{ etab.verrouillageSynchroStructureSirene ? 'Verrouillé' : 'Déverrouillé' }}
-      </span>
-        </button>
+      <!-- Synchronisation automatique -->
+      <div class="slot" *ngIf="canUpdateFromApi()">
+        <div class="sync-radio-wrapper">
+          <span class="sync-radio-label">Synchronisation automatique</span>
+          <mat-radio-group
+            [value]="etab.verrouillageSynchroStructureSirene ? 'non' : 'oui'"
+            (change)="toggleVerrouillage()"
+            aria-label="Synchronisation automatique">
+            <mat-radio-button value="oui">Oui</mat-radio-button>
+            <mat-radio-button value="non">Non</mat-radio-button>
+          </mat-radio-group>
+        </div>
       </div>
 
       <!-- Mise à jour automatique -->
@@ -231,7 +236,6 @@
           {{ 'BOUTON_VALIDER' | contenu }}
         </button>
       </div>
-
     </div>
   </div>
 </form>
