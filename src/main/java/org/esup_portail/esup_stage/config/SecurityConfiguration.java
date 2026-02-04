@@ -121,7 +121,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/error/**").permitAll()
                         // Protection API
                         .requestMatchers("/api/**").authenticated()
-                        .anyRequest().permitAll()
+                        .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) -> {
