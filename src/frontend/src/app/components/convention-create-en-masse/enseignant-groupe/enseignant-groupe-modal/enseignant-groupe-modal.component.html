@@ -1,3 +1,15 @@
-<app-enseignant-referent (validated)="updateEnseignant($event)"
-                         [enseignant]="enseignant"
-                         [modifiable]="true"></app-enseignant-referent>
+<div class="modal-overlay">
+  <div class="modal-container">
+    <div class="header-banner">
+      <h1>Enseignant r&eacute;f&eacute;rent</h1>
+    </div>
+    <div class="scrollable-content">
+      <app-enseignant-referent (validated)="updateEnseignant($event)"
+                               [enseignant]="enseignant"
+                               [modifiable]="true"></app-enseignant-referent>
+    </div>
+    <div class="actions">
+      <button mat-flat-button color="warn" (click)="close()">Fermer</button>
+    </div>
+  </div>
+</div>

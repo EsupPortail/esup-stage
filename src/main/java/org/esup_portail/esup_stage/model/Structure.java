@@ -3,10 +3,12 @@ package org.esup_portail.esup_stage.model;
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.esup_portail.esup_stage.dto.view.Views;
 
 import java.util.Date;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "Structure")
 @Data
@@ -128,6 +130,9 @@ public class Structure extends ObjetMetier implements Exportable {
 
     @Column
     private boolean temSiren;
+
+    @Column
+    private boolean verrouillageSynchroStructureSirene;
 
     public Structure() {
     }

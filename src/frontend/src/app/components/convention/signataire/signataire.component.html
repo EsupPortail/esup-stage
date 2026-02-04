@@ -60,15 +60,15 @@
             <td mat-cell *matCellDef="let row">{{row.telephone}}</td>
           </ng-container>
 
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef>Actions</th>
-            <td mat-cell *matCellDef="let row">
-              <button mat-icon-button matTooltip="Éditer" (click)="editService(row)" color="primary"><i class="fa fa-pen"></i></button>
-            </td>
-          </ng-container>
-          <tr mat-header-row *matHeaderRowDef="serviceTableColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: serviceTableColumns;"></tr>
-        </table>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let row">
+            <button mat-icon-button matTooltip="Éditer" (click)="editService(row)" color="primary" *ngIf="canEdit() || isCreatorService(service)"><i class="fa fa-pen"></i></button>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="serviceTableColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: serviceTableColumns;"></tr>
+      </table>
       </div>
     </div>
     <div class="row mt-5" *ngIf="service">
@@ -130,7 +130,7 @@
           <div class="col-sm-9">{{contact.fax}}</div>
         </div>
       </div>
-      <div *ngIf="modif && canEdit() || !contact.id && canCreate()">
+      <div *ngIf="(modif && (canEdit() || isCreatorContact(contact))) || (!contact.id && canCreate())">
         <mat-divider class="mb-2"></mat-divider>
         <div class="row">
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
@@ -172,9 +172,9 @@
           </mat-form-field>
         </div>
       </div>
-      <div class="row mt-3" *ngIf="canEdit() || canCreate()">
+      <div class="row mt-3" *ngIf="canEdit() || canCreate() || isCreatorContact(contact)">
         <div class="col-6">
-          <button mat-button mat-stroked-button color="primary" *ngIf="contact.id && !modif && canEdit()" (click)="edit()">Modifier ces informations</button>
+          <button mat-button mat-stroked-button color="primary" *ngIf="contact.id && !modif && (canEdit() || isCreatorContact(contact))" (click)="edit()">Modifier ces informations</button>
           <button mat-button mat-stroked-button color="warn" *ngIf="contact.id && modif" (click)="cancelEdit()">{{'BOUTON_ANNULER'|contenu}}</button>
         </div>
         <div class="col-6 text-right" *ngIf="modif">

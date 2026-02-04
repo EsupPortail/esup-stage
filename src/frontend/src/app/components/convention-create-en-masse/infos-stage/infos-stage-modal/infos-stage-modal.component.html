@@ -1,1 +1,13 @@
-<app-stage [convention]="convention" [groupeConvention]="groupeConvention" (updateField)="updateStage($event)" (validated)="validated($event)" [modifiable]="true" [enMasse]="true"></app-stage>
+<div class="modal-overlay">
+  <div class="modal-container">
+    <div class="header-banner">
+      <h1>Informations du stage</h1>
+    </div>
+    <div class="scrollable-content">
+      <app-stage [convention]="convention" [groupeConvention]="groupeConvention" (updateField)="updateStage($event)" (validated)="validated($event)" [modifiable]="true" [enMasse]="true"></app-stage>
+    </div>
+    <div class="actions">
+      <button mat-flat-button color="warn" (click)="close()">Fermer</button>
+    </div>
+  </div>
+</div>

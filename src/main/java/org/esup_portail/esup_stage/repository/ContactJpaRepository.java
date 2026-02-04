@@ -20,4 +20,14 @@ public interface ContactJpaRepository extends JpaRepository<Contact, Integer> {
 
     @Query("SELECT COUNT(c.id) FROM Contact c WHERE c.centreGestion.id = :idCentreGestion")
     Long countContactWithCentreGestion(@Param("idCentreGestion") int idCentreGestion);
+
+    @Query("""
+    SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END
+    FROM Contact c, Utilisateur u
+    WHERE c.id = :id
+      AND u.id = :userId
+      AND c.loginCreation = u.login
+      AND (c.loginModif IS NULL OR c.loginModif = c.loginCreation)
+""")
+    boolean isOwner(@Param("id") Integer id, @Param("userId") int userId);
 }
