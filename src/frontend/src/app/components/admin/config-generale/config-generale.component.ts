@@ -80,7 +80,8 @@ export class ConfigGeneraleComponent implements OnInit {
       codeCesure: [null],
       autoriserEtudiantACreerEntrepriseFrance: [null],
       autoriserEtudiantACreerEntrepriseHorsFrance: [null],
-      desactiverMajAutoEtabSelection: [null, [Validators.required]],
+      desactiverMajAutoEtabSelection: [null],
+      desactiverMajAutoEtabDiffusionPartiel: [null],
     });
 
     this.formTheme = this.fb.group({
@@ -98,6 +99,10 @@ export class ConfigGeneraleComponent implements OnInit {
     this.formSignature = this.fb.group({
       supprimerConventionUneFoisSigneEsupSignature: [null, [Validators.required]],
       autoriserModifOrdreSignataireCG:[null,[Validators.required]]
+    });
+
+    this.formGenerale.get('desactiverMajAutoEtabSelection')?.valueChanges.subscribe((value) => {
+      this.syncDiffusionPartielControl(value === true);
     });
   }
 
@@ -138,7 +143,21 @@ export class ConfigGeneraleComponent implements OnInit {
     // Récupération des infos sirene
     this.structureService.getSireneInfo().subscribe((response: any) => {
       this.isSireneAcitve = response.isApiSireneActive;
+      this.syncDiffusionPartielControl(this.formGenerale.get('desactiverMajAutoEtabSelection')?.value === true);
     });
+  }
+
+  private syncDiffusionPartielControl(forceDisable: boolean): void {
+    const control = this.formGenerale.get('desactiverMajAutoEtabDiffusionPartiel');
+    if (!control) return;
+    if (forceDisable) {
+      control.setValue(true, { emitEvent: false });
+      control.disable({ emitEvent: false });
+      return;
+    }
+    if (control.disabled) {
+      control.enable({ emitEvent: false });
+    }
   }
 
   setFormThemeValue(): void {
@@ -163,7 +182,8 @@ export class ConfigGeneraleComponent implements OnInit {
 
   saveGenerale(): void {
     if (this.formGenerale.valid) {
-      this.configService.updateGenerale(this.formGenerale.value).subscribe((response: any) => {
+      const payload = this.formGenerale.getRawValue();
+      this.configService.updateGenerale(payload).subscribe((response: any) => {
         this.configGenerale = response;
         this.messageService.setSuccess('Paramètre d\'éléments généraux modifiés');
       });
