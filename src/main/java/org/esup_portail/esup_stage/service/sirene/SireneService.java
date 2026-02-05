@@ -5,6 +5,7 @@ import org.esup_portail.esup_stage.config.properties.SireneProperties;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.Structure;
 import org.esup_portail.esup_stage.repository.StructureJpaRepository;
+import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.sirene.model.ListStructureSireneDTO;
 import org.esup_portail.esup_stage.service.sirene.model.SirenResponse;
 import org.esup_portail.esup_stage.service.sirene.utils.SireneMapper;
@@ -43,6 +44,8 @@ public class SireneService {
 
     @Autowired
     private ApplicationEventPublisher eventPublisher;
+    @Autowired
+    private AppConfigService appConfigService;
 
 
     public SireneService() {
@@ -150,6 +153,11 @@ public class SireneService {
                     url, HttpMethod.GET, entity, SirenResponse.class
             );
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                if ((!isDiffusionComplete(response.getBody())) && appConfigService.getConfigGenerale().isDesactiverMajAutoEtabDiffusionPartiel() ) {
+                    logger.warn("Mise à jour ignorée (diffusion partielle) pour l'établissement id={} siret={}",
+                            structure.getId(), structure.getNumeroSiret());
+                    return;
+                }
                 structure = sirenMapper.updateStructure(response.getBody(), structure);
                 structure.setTemSiren(true);
                 structureJpaRepository.save(structure);
@@ -160,5 +168,17 @@ public class SireneService {
         } catch (Exception e) {
             logger.error("Erreur lors de la mise à jour de l'établissement {}, id : {}", structure.getRaisonSociale(),structure.getId(), e);
         }
+    }
+
+    private boolean isDiffusionComplete(SirenResponse sirenResponse) {
+        if (sirenResponse == null || sirenResponse.getEtablissement() == null) {
+            return false;
+        }
+        SirenResponse.EtablissementSiren etablissement = sirenResponse.getEtablissement();
+        if (etablissement.getUniteLegale() == null) {
+            return false;
+        }
+        String statut = etablissement.getUniteLegale().getStatutDiffusionUniteLegale();
+        return "O".equalsIgnoreCase(statut);
     }
 }

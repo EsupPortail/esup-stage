@@ -209,6 +209,7 @@
           <span class="sync-radio-label">Synchronisation automatique</span>
           <mat-radio-group
             [value]="etab.verrouillageSynchroStructureSirene ? 'non' : 'oui'"
+            [disabled]="isMajAutoDisabled"
             (change)="toggleVerrouillage()"
             aria-label="Synchronisation automatique">
             <mat-radio-button value="oui">Oui</mat-radio-button>
@@ -219,7 +220,7 @@
 
       <!-- Mise à jour automatique -->
       <div class="slot" *ngIf="canUpdateFromApi()">
-        <button type="button" mat-button mat-stroked-button color="primary" class="mr-2" [disabled]="autoUpdating || etab.verrouillageSynchroStructureSirene" (click)="autoUpdateFromApi()"
+        <button type="button" mat-button mat-stroked-button color="primary" class="mr-2" [disabled]="autoUpdating" (click)="autoUpdateFromApi()"
                 matTooltip="Met à jour automatiquement les informations de l'établissement via l'API">
           <mat-icon class="mr-1" [class.spin]="autoUpdating">autorenew</mat-icon>
           {{ autoUpdating ? 'Mise à jour…' : 'Mise à jour automatique' }}

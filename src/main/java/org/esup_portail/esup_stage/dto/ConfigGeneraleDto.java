@@ -48,4 +48,8 @@ public class ConfigGeneraleDto {
     @JsonView(Views.Etu.class)
     private boolean autoriserEtudiantACreerEntrepriseHorsFrance = false;
 
+    private boolean desactiverMajAutoEtabSelection = false;
+
+    private boolean desactiverMajAutoEtabDiffusionPartiel = false;
+
 }

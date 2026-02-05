@@ -105,6 +105,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   nafN5List: any[] = [];
   creationSeulementHorsFrance : boolean = false;
   creationSeulementFrance : boolean = false;
+  isMajAutoDisabled : boolean = false;
 
   nafN5FilterCtrl: FormControl = new FormControl();
   filteredNafN5List: ReplaySubject<any> = new ReplaySubject<any>(1);
@@ -140,6 +141,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
       const autorisationCreationFrance = response.autoriserEtudiantACreerEntrepriseFrance;
       this.creationSeulementHorsFrance = autorisationCreationHorsFrance && !autorisationCreationFrance;
       this.creationSeulementFrance = !autorisationCreationHorsFrance && autorisationCreationFrance
+      this.isMajAutoDisabled = response.desactiverMajAutoEtabSelection;
     })
     this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({ temEnServPays: { value: 'O', type: 'text' } })).subscribe((response: any) => {
         this.countries = response.data;
@@ -757,7 +759,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   }
 
   canUpdateFromApi(): boolean {
-    return !(this.authService.isEtudiant() || this.authService.isEnseignant()) && this.isSireneActive && this.etab?.id;
+    return !(this.authService.isEtudiant() || this.authService.isEnseignant()) && this.isSireneActive && this.etab?.id && this.etab.pays.id == 82;
   }
 
   // Méthode pour basculer l'état du verrouillage

@@ -1,12 +1,12 @@
-import {Component, OnInit, ViewContainerRef, WritableSignal} from '@angular/core';
+import {Component, OnInit, WritableSignal} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { ConfigService } from "../../../services/config.service";
 import { AuthService } from "../../../services/auth.service";
 import { MessageService } from "../../../services/message.service";
-import { CentreGestionService } from "../../../services/centre-gestion.service";
 import { AppFonction } from "../../../constants/app-fonction";
 import { Droit } from "../../../constants/droit";
 import {RoleService} from "../../../services/role.service";
+import {StructureService} from "../../../services/structure.service";
 
 @Component({
   selector: 'app-config-generale',
@@ -56,6 +56,7 @@ export class ConfigGeneraleComponent implements OnInit {
   formSignature: FormGroup;
 
   isEtuAutoriseToCreate!: boolean;
+  isSireneAcitve!: boolean;
 
   constructor(
     private configService: ConfigService,
@@ -63,6 +64,7 @@ export class ConfigGeneraleComponent implements OnInit {
     private authService: AuthService,
     private messageService: MessageService,
     private roleService: RoleService,
+    private structureService: StructureService
   ) {
     this.formGenerale = this.fb.group({
       codeUniversite: [null, [Validators.required]],
@@ -78,6 +80,8 @@ export class ConfigGeneraleComponent implements OnInit {
       codeCesure: [null],
       autoriserEtudiantACreerEntrepriseFrance: [null],
       autoriserEtudiantACreerEntrepriseHorsFrance: [null],
+      desactiverMajAutoEtabSelection: [null],
+      desactiverMajAutoEtabDiffusionPartiel: [null],
     });
 
     this.formTheme = this.fb.group({
@@ -95,6 +99,10 @@ export class ConfigGeneraleComponent implements OnInit {
     this.formSignature = this.fb.group({
       supprimerConventionUneFoisSigneEsupSignature: [null, [Validators.required]],
       autoriserModifOrdreSignataireCG:[null,[Validators.required]]
+    });
+
+    this.formGenerale.get('desactiverMajAutoEtabSelection')?.valueChanges.subscribe((value) => {
+      this.syncDiffusionPartielControl(value === true);
     });
   }
 
@@ -131,6 +139,25 @@ export class ConfigGeneraleComponent implements OnInit {
       this.configSignature = response;
       this.formSignature.patchValue(this.configSignature);
     });
+
+    // Récupération des infos sirene
+    this.structureService.getSireneInfo().subscribe((response: any) => {
+      this.isSireneAcitve = response.isApiSireneActive;
+      this.syncDiffusionPartielControl(this.formGenerale.get('desactiverMajAutoEtabSelection')?.value === true);
+    });
+  }
+
+  private syncDiffusionPartielControl(forceDisable: boolean): void {
+    const control = this.formGenerale.get('desactiverMajAutoEtabDiffusionPartiel');
+    if (!control) return;
+    if (forceDisable) {
+      control.setValue(true, { emitEvent: false });
+      control.disable({ emitEvent: false });
+      return;
+    }
+    if (control.disabled) {
+      control.enable({ emitEvent: false });
+    }
   }
 
   setFormThemeValue(): void {
@@ -155,7 +182,8 @@ export class ConfigGeneraleComponent implements OnInit {
 
   saveGenerale(): void {
     if (this.formGenerale.valid) {
-      this.configService.updateGenerale(this.formGenerale.value).subscribe((response: any) => {
+      const payload = this.formGenerale.getRawValue();
+      this.configService.updateGenerale(payload).subscribe((response: any) => {
         this.configGenerale = response;
         this.messageService.setSuccess('Paramètre d\'éléments généraux modifiés');
       });
