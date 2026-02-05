@@ -10,6 +10,7 @@ import org.esup_portail.esup_stage.dto.MetadataSignataireDto;
 import org.esup_portail.esup_stage.dto.PdfMetadataDto;
 import org.esup_portail.esup_stage.enums.SignataireEnum;
 import org.esup_portail.esup_stage.exception.AppException;
+import org.esup_portail.esup_stage.model.Avenant;
 import org.esup_portail.esup_stage.model.CentreGestionSignataire;
 import org.esup_portail.esup_stage.model.Convention;
 import org.esup_portail.esup_stage.service.signature.model.Historique;
@@ -202,4 +203,25 @@ public class WebhookService {
         return historiques;
     }
 
+    /*
+    * Déclenche une demande de mise à jour sur l'application de signature
+     */
+    public void getHistoriqueExterne(Convention convention) {
+
+        webClient.get()
+                .uri(signatureProperties.getWebhook().getUri() + "?conventionid=" + convention.getId())
+                .header("Authorization", "Bearer " + signatureProperties.getWebhook().getToken())
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+    }
+
+    public void getHistoriqueExterne(Avenant avenant) {
+        webClient.get()
+                .uri(signatureProperties.getWebhook().getUri() + "?avenantid=" + avenant.getId())
+                .header("Authorization", "Bearer " + signatureProperties.getWebhook().getToken())
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+    }
 }
