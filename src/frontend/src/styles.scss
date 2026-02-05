@@ -528,3 +528,25 @@ button.mat-mdc-button-base.secondary-button .fa {
     align-items: stretch;
   }
 }
+
+/* =========================
+
+   RGAA 10.5 — fallback couleurs (global)
+   Objectif: expliciter couleur texte + fond par défaut,
+   sans changer l'aspect (valeurs neutres)*/
+
+
+html {
+  background-color: #fff;
+}
+
+body {
+  color: rgba(0, 0, 0, 0.87);
+  background-color: #fff;
+}
+
+app-root {
+  background-color: #fff;
+  color: inherit;
+}
+   /*========================= */

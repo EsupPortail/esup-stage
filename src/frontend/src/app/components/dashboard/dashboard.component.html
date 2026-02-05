@@ -231,7 +231,7 @@
   <ng-container matColumnDef="action">
     <th mat-header-cell *matHeaderCellDef>Actions</th>
     <td mat-cell *matCellDef="let row">
-      <button type="button" mat-button class="btn-eye valid-button" matTooltip="Visualiser" matTooltipPosition="left" (click)="goToConvention(row.id)">
+      <button type="button" mat-button class="btn-eye valid-button" matTooltip="Visualiser" matTooltipPosition="left" aria-label="Visualiser le détail de l’élément" (click)="goToConvention(row.id)">
         <span class="fa fa-eye" aria-hidden="true"></span>
         <span class="eye-label">Visualiser</span>
       </button>
