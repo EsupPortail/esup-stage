@@ -7,14 +7,14 @@
 }
 
 .dashboard-validation {
-  i {
+  mat-icon {
     cursor: pointer;
     color: var(--dangerColor);
   }
-  i.activate {
+  mat-icon.activate {
     color: var(--successColor);
   }
-  i:not(:first-child) {
+  mat-icon:not(:first-child) {
     margin-left: 5px;
   }
 }
@@ -39,8 +39,34 @@ i.done {
   color: var(--successColor) !important;
 }
 
-.mdc-card{
-  box-shadow: none !important; // Supprime l'ombre portée (contour)
-  border: none !important;     // Supprime toute bordure
-  border-radius: 0 !important; // Supprime les bords arrondis
+.mdc-card {
+  box-shadow: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+}
+
+.convention-attente {
+  font-weight: bold;
+}
+
+.btn-eye {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: auto;
+  padding: 0;
+  line-height: 1;
+  .fa {
+    font-size: 16px;
+  }
+}
+
+.eye-label {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.1;
+  white-space: nowrap;
 }

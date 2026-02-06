@@ -103,6 +103,7 @@ export class TemplateMailComponent implements OnInit, AfterViewInit {
   editTabIndex = 1;
   data: any = {};
   form: FormGroup;
+  isMobile = false;
 
   @ViewChild('tableList') appTable: TableComponent | undefined;
   @ViewChild('tabs') tabs: MatTabGroup | undefined;
@@ -128,6 +129,8 @@ export class TemplateMailComponent implements OnInit, AfterViewInit {
     this.templateMailService.getParams().subscribe((response: any) => {
       this.params = response;
     });
+    this.updateIsMobile();
+    window.addEventListener('resize', this.updateIsMobile);
   }
 
   public isLayoutReady = false;
@@ -377,4 +380,11 @@ export class TemplateMailComponent implements OnInit, AfterViewInit {
     });
   }
 
+  private updateIsMobile = (): void => {
+    this.isMobile = window.matchMedia('(max-width: 768px)').matches;
+  };
+
+  ngOnDestroy(): void {
+    window.removeEventListener('resize', this.updateIsMobile);
+  }
 }

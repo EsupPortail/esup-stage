@@ -8,7 +8,7 @@
         <div class="convention-etudiant-details">
           <mat-card>
             <mat-card-content>
-              <div class="text-title"><i class="fa fa-user"></i> Étudiant</div>
+              <div class="text-title"><span class="fa fa-user" aria-hidden="true"></span> Étudiant</div>
               <mat-divider></mat-divider>
               <div class="mt-3 mb-3">
                 <div class="row">
@@ -29,7 +29,7 @@
                 </div>
               </div>
 
-              <div class="text-title"><i class="fa fa-star"></i> Vérifiez les coordonnées</div>
+              <div class="text-title"><span class="fa fa-star" aria-hidden="true"></span> Vérifiez les coordonnées</div>
               <mat-divider></mat-divider>
               <div class="mt-3 mb-3">
                 <div class="row">
@@ -70,7 +70,7 @@
                   </mat-form-field>
                 </div>
               </div>
-              <div class="text-title"><i class="fa fa-house-medical"></i> Caisse Primaire d’Assurance Maladie</div>
+              <div class="text-title"><span class="fa fa-house-medical" aria-hidden="true"></span> Caisse Primaire d’Assurance Maladie</div>
               <mat-divider></mat-divider>
               <div class="mt-3 mb-3">
                 <div class="row">
@@ -98,7 +98,7 @@
                   </mat-form-field>
                 </div>
               </div>
-              <div class="text-title"><i class="fa fa-graduation-cap"></i> Choisissez le cadre du stage</div>
+              <div class="text-title"><span class="fa fa-graduation-cap" aria-hidden="true"></span> Choisissez le cadre du stage</div>
               <mat-divider></mat-divider>
               <div class="mt-3 mb-3">
                 <ng-container *ngIf="inscriptions.length === 0; else hasInscriptions">
@@ -157,20 +157,16 @@
               </div>
 
               <div *ngIf="selectedInscription">
-                <div class="text-title"><i class="fa fa-book-open"></i> Consignes</div>
+                <div class="text-title"><span class="fa fa-book-open" aria-hidden="true"></span> Consignes</div>
                 <mat-divider></mat-divider>
-                <div class="mt-2" *ngIf="consigneEtablissement?.texte" [innerHTML]="consigneEtablissement?.texte"></div>
-                <div *ngIf="consigneEtablissement?.documents?.length">
-                  <div *ngFor="let doc of consigneEtablissement.documents">
-                    <a href (click)="downloadDoc($event, doc)"><i class="fa fa-paperclip"></i> {{doc.nomReel}}</a>
-                  </div>
+                <div class="mt-2" [innerHTML]="consigneEtablissement.texte"></div>
+                <div *ngFor="let doc of consigneEtablissement.documents">
+                  <a href (click)="downloadDoc($event, doc)"><span class="fa fa-paperclip" aria-hidden="true"></span> {{doc.nomReel}}</a>
                 </div>
-                <div class="mt-3" *ngIf="centreGestion && centreGestion.niveauCentre?.libelle !== 'ETABLISSEMENT' && centreGestion.consigne">
-                  <div *ngIf="centreGestion.consigne?.texte" [innerHTML]="centreGestion.consigne.texte"></div>
-                  <div *ngIf="centreGestion.consigne?.documents?.length">
-                    <div *ngFor="let doc of centreGestion.consigne.documents">
-                      <a href (click)="downloadDoc($event, doc)"><i class="fa fa-paperclip"></i> {{doc.nomReel}}</a>
-                    </div>
+                <div class="mt-3" *ngIf="centreGestion && centreGestion.niveauCentre.libelle !== 'ETABLISSEMENT' && centreGestion.consigne">
+                  <div [innerHTML]="centreGestion.consigne.texte"></div>
+                  <div *ngFor="let doc of centreGestion.consigne.documents">
+                    <a href (click)="downloadDoc($event, doc)"><span class="fa fa-paperclip" aria-hidden="true"></span> {{doc.nomReel}}</a>
                   </div>
                 </div>
               </div>
@@ -178,14 +174,15 @@
           </mat-card>
         </div>
       </div>
-      <div class="actions">
-          <div>
-            <button class="actions-button" mat-flat-button color="warn" (click)="cancel()">{{'BOUTON_ANNULER'|contenu}}</button>
-          </div>
-          <div>
-            <button class="actions-button" mat-button mat-flat-button color="primary" [disabled]="!centreGestion || inscriptions.length === 0 || !selectedInscription">{{'BOUTON_VALIDER'|contenu}}</button>
-          </div>
-        </div>
+      <div class="actions" role="group" aria-label="Actions principales">
+        <button class="cancel-button actions-button" type="button" mat-flat-button (click)="cancel()">
+          {{'BOUTON_ANNULER'|contenu}}
+        </button>
+        <button class="valid-button actions-button" mat-flat-button
+                [disabled]="!centreGestion || inscriptions.length === 0 || !selectedInscription">
+          {{'BOUTON_VALIDER'|contenu}}
+        </button>
+      </div>
     </form>
   </div>
 </div>

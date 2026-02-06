@@ -27,8 +27,8 @@
 
     <!-- Footer fixe -->
     <div class="modal-footer">
-      <button type="button" mat-flat-button color="warn" (click)="close()">{{'BOUTON_ANNULER'|contenu}}</button>
-      <button mat-flat-button color="primary" (click)="save()">{{'BOUTON_VALIDER'|contenu}}</button>
+      <button class="cancel-button" type="button" mat-flat-button (click)="close()">{{'BOUTON_ANNULER'|contenu}}</button>
+      <button class="valid-button" mat-flat-button (click)="save()">{{'BOUTON_VALIDER'|contenu}}</button>
     </div>
   </div>
 </div>

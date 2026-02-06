@@ -15,7 +15,7 @@
       <form>
         <div class="row">
           <ng-container *ngFor="let filter of filters">
-            <mat-form-field class="col-md-{{filter.colSpan ?? 3}}" appearance="fill" *ngIf="!filter.hidden">
+            <mat-form-field class="col-md-{{filter.colSpan ?? 3}}" appearance="fill" *ngIf="!filter.hidden && filter.id !== 'dateDebutStage' && filter.id !== 'dateFinStage'">
               <mat-label>{{filter.libelle}}</mat-label>
               <ng-container [ngSwitch]="filter.type">
                 <ng-container *ngSwitchCase="'boolean'">
@@ -73,7 +73,7 @@
                       (removed)="removeAutocomplete(filter, value)">
                       {{value[filter.keyLibelle]}}
                       <span matChipRemove>
-                        <mat-icon>cancel</mat-icon>
+                        <mat-icon aria-hidden="true">cancel</mat-icon>
                       </span>
                     </mat-chip>
                   </mat-chip-grid>
@@ -107,19 +107,61 @@
               <mat-datepicker #datepicker></mat-datepicker>
             </mat-form-field>
           </ng-container>
+          <ng-container *ngIf="hasVisibleFilter('dateDebutStage') || hasVisibleFilter('dateFinStage')">
+            <div class="col-md-6">
+              <fieldset>
+                <legend class="sr-only">Période du stage</legend>
+                <div class="row">
+                  <ng-container *ngFor="let f of filters">
+                    <mat-form-field class="col-md-6" appearance="fill" *ngIf="f.id === 'dateDebutStage' && !f.hidden">
+                      <mat-label>{{f.libelle}}</mat-label>
+                      <input matInput [name]="f.id" [matDatepicker]="datepickerDebut" [(ngModel)]="filterValues[f.id].value" (ngModelChange)="update()" />
+                      <mat-datepicker-toggle matSuffix [for]="datepickerDebut"></mat-datepicker-toggle>
+                      <mat-datepicker #datepickerDebut></mat-datepicker>
+                    </mat-form-field>
+
+                    <mat-form-field class="col-md-6" appearance="fill" *ngIf="f.id === 'dateFinStage' && !f.hidden">
+                      <mat-label>{{f.libelle}}</mat-label>
+                      <input matInput [name]="f.id" [matDatepicker]="datepickerFin" [(ngModel)]="filterValues[f.id].value" (ngModelChange)="update()" />
+                      <mat-datepicker-toggle matSuffix [for]="datepickerFin"></mat-datepicker-toggle>
+                      <mat-datepicker #datepickerFin></mat-datepicker>
+                    </mat-form-field>
+                  </ng-container>
+                </div>
+              </fieldset>
+            </div>
+          </ng-container>
+        </div>
+        <div class="row mb-3">
+          <div class="col-sm-12 col-md-6 text-left">
+            <button
+              type="button"
+              class="valid-button"
+              mat-button
+              mat-flat-button
+              *ngIf="disableAutoSearch"
+              (click)="runSearch()"
+              [disabled]="!hasPendingSearch">
+              Lancer la recherche
+            </button>
+
+            <span *ngIf="disableAutoSearch && hasPendingSearch" class="pending-search-hint">
+              Modifications en attente
+            </span>
+          </div>
+          <div class="col-sm-12 col-md-6 text-right" [hidden]="hideDeleteFilters">
+            <button type="button" mat-button mat-stroked-button (click)="reset()">Supprimer les filtres</button>
+          </div>
         </div>
         <div class="row">
           <div class="col-sm-12 col-md-6">
             <!-- gestion des message de confirmation : si il y a un message on ouvre boite de dialogue (cas 1) sinon c'est le bouton qui déclenche le traitement directement (cas 2) -->
             <span *ngIf="confirmMessage != ''" [confirmMessage]="confirmMessage" (confirm)="actionButton.action()">
-              <button type="button" mat-button mat-flat-button color="primary" *ngIf="actionButton">{{actionButton.libelle}}</button>
+              <button class="valid-button" type="button" mat-button mat-flat-button *ngIf="actionButton">{{actionButton.libelle}}</button>
             </span>
             <span *ngIf="confirmMessage===''">
-              <button type="button" mat-button mat-flat-button color="primary" *ngIf="actionButton" (click)="actionButton.action()">{{actionButton.libelle}}</button>
+              <button class="valid-button" type="button" mat-button mat-flat-button *ngIf="actionButton" (click)="actionButton.action()">{{actionButton.libelle}}</button>
             </span>
-          </div>
-          <div class="col-sm-12 col-md-6 text-right" [hidden]="hideDeleteFilters">
-            <button type="button" mat-button mat-stroked-button (click)="reset()">Supprimer les filtres</button>
           </div>
         </div>
       </form>
@@ -181,7 +223,7 @@
   <mat-card *ngIf="!isEtudiant() && hasExportableColumns()">
     <mat-card-content>
       <ng-container>
-        <button mat-button mat-flat-button color="primary" (click)="openExportDialog()">Exporter</button>
+        <button class="valid-button" mat-button mat-flat-button (click)="openExportDialog()">Exporter</button>
       </ng-container>
     </mat-card-content>
   </mat-card>

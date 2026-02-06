@@ -46,6 +46,29 @@ export class CentreSignatureElectroniqueComponent implements OnInit {
     this.updateSignataire();
   }
 
+  moveUp(index: number): void {
+    if (index > 0) {
+      moveItemInArray(this.signataires, index, index - 1);
+      let newOrdre = 1;
+      this.signataires.forEach((s) => {
+        s.ordre = newOrdre++;
+      });
+      this.updateSignataire();
+    }
+  }
+
+  moveDown(index: number): void {
+    if (index < this.signataires.length - 1) {
+      moveItemInArray(this.signataires, index, index + 1);
+      let newOrdre = 1;
+      this.signataires.forEach((s) => {
+        s.ordre = newOrdre++;
+      });
+      this.updateSignataire();
+    }
+  }
+
+
   updateSignataire(): void {
     this.form.get('signataires')?.setValue(this.signataires);
   }

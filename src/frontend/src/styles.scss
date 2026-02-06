@@ -290,4 +290,263 @@ mat-form-field {
   color: rgba(0, 0, 0, 0.45);
 }
 
+.sr-only{
+  position:absolute !important;
+  width:1px;
+  height:1px;
+  padding:0;
+  margin:-1px;
+  overflow:hidden;
+  clip:rect(0,0,0,0);
+  white-space:nowrap;
+  border:0;
+}
 
+/* =========================
+   ACCESSIBILITE - GLOBAL
+   ========================= */
+
+/* 1) Police personnalisée */
+:root {
+  --custom-font-family: initial;
+
+  /* Valeurs par defaut */
+  --text-letter-spacing: normal;
+  --text-word-spacing: normal;
+  --text-line-height: normal;
+}
+
+body.custom-font-active {
+  font-family: var(--custom-font-family) !important;
+}
+
+/* 2) Espacement du texte */
+body.text-spacing-normal {
+  --text-letter-spacing: normal;
+  --text-word-spacing: normal;
+  --text-line-height: normal;
+}
+
+body.text-spacing-comfortable {
+  --text-letter-spacing: 0.02em;
+  --text-word-spacing: 0.08em;
+  --text-line-height: 1.5;
+}
+
+body.text-spacing-spacious {
+  --text-letter-spacing: 0.05em;
+  --text-word-spacing: 0.16em;
+  --text-line-height: 1.8;
+}
+
+/* Applique les variables à toute l'appli */
+body {
+  letter-spacing: var(--text-letter-spacing);
+  word-spacing: var(--text-word-spacing);
+  line-height: var(--text-line-height);
+}
+
+/* 3) Contraste élevé (simple & efficace) */
+body.high-contrast {
+  filter: contrast(1.25) saturate(1.1);
+}
+
+/* Assure une bonne lisibilité sur fond clair */
+body.high-contrast,
+body.high-contrast * {
+  text-shadow: none !important;
+}
+
+/* 4) Réduction / suppression des animations */
+body.reduced-motion *,
+body.reduced-motion *::before,
+body.reduced-motion *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+
+/* Optionnel : si tu avais des classes d'animations */
+body.animations-enabled {
+  /* rien ici, juste un flag */
+}
+
+/* 5) OpenDyslexic (si tu veux vraiment qu'elle marche)
+   -> il faut charger la police (fichier local ou @import).
+   Exemple si tu as mis les fichiers dans src/assets/fonts/OpenDyslexic/ :
+*/
+@font-face {
+  font-family: "OpenDyslexic";
+  src: url("/assets/fonts/OpenDyslexic/OpenDyslexic-Regular.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+button.mat-mdc-icon-button.edit-button,
+button.mat-mdc-icon-button.edit-button .fa {
+  color: var(--primaryColor);
+}
+
+button.mat-mdc-icon-button.disable-button,
+button.mat-mdc-icon-button.disable-button .fa {
+  color: var(--warningColor);
+}
+
+button.mat-mdc-button-base.cancel-button,
+button.mat-mdc-button-base.cancel-button .mat-mdc-button-persistent-ripple {
+  background-color: var(--dangerColor);
+  color: #fafafa;
+}
+
+button.mat-mdc-button-base.accent-button,
+button.mat-mdc-button-base.accent-button .mat-mdc-button-persistent-ripple {
+  color: var(--secondaryColor);
+}
+
+button.mat-mdc-button-base.valid-button,
+button.mat-mdc-button-base.valid-button .mat-mdc-button-persistent-ripple {
+  background-color: var(--primaryColor);
+  color: #fafafa;
+}
+
+button.mat-mdc-fab.valid-button,
+button.mat-mdc-mini-fab.valid-button {
+  background-color: var(--primaryColor);
+  color: #fafafa;
+  --mdc-fab-container-color: var(--primaryColor);
+}
+
+button.mat-mdc-fab.valid-button .mat-icon,
+button.mat-mdc-fab.valid-button .fa,
+button.mat-mdc-mini-fab.valid-button .mat-icon,
+button.mat-mdc-mini-fab.valid-button .fa {
+  color: #fafafa;
+}
+
+button.mat-mdc-button-base.valid-button.mat-mdc-button-disabled,
+button.mat-mdc-button-base.valid-button:disabled {
+  background-color: #e0e0e0;
+  color: #9e9e9e;
+  border-color: #e0e0e0;
+  --mdc-outlined-button-outline-color: #e0e0e0;
+  cursor: not-allowed;
+}
+
+button.mat-mdc-button-base.valid-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple,
+button.mat-mdc-button-base.valid-button:disabled .mat-mdc-button-persistent-ripple {
+  background-color: #e0e0e0;
+}
+
+button.mat-mdc-button-base.cancel-button:hover,
+button.mat-mdc-button-base.valid-button:hover {
+  filter: brightness(0.95);
+}
+
+button.mat-mdc-icon-button.delete-button,
+button.mat-mdc-icon-button.delete-button .fa {
+  color: var(--dangerColor);
+}
+
+button.mat-mdc-icon-button.accent-button,
+button.mat-mdc-icon-button.accent-button .fa {
+  color: var(--secondaryColor);
+}
+
+mat-icon.icon-primary,
+.icon-primary {
+  color: var(--primaryColor);
+}
+
+mat-icon.icon-warn,
+.icon-warn {
+  color: var(--dangerColor);
+}
+
+mat-toolbar.toolbar-primary {
+  background-color: var(--primaryColor);
+  color: #fafafa;
+}
+
+mat-spinner.spinner-accent {
+  --mdc-circular-progress-active-indicator-color: var(--secondaryColor);
+}
+
+button.mat-mdc-fab.delete-button,
+button.mat-mdc-fab.delete-button .mat-icon,
+button.mat-mdc-fab.delete-button .fa {
+  background-color: var(--dangerColor);
+  color: #fafafa;
+  --mdc-fab-container-color: var(--dangerColor);
+}
+
+button.mat-mdc-fab.secondary-button {
+  background-color: #fafafa;
+  color: var(--secondaryColor);
+  --mdc-fab-container-color: #fafafa;
+  border: 1px solid var(--secondaryColor);
+}
+
+button.mat-mdc-fab.secondary-button .mat-icon,
+button.mat-mdc-fab.secondary-button .fa {
+  color: var(--secondaryColor);
+}
+
+button.mat-mdc-button-base.secondary-button,
+button.mat-mdc-button-base.secondary-button .mat-mdc-button-persistent-ripple {
+  background-color: #fafafa;
+  color: var(--secondaryColor);
+}
+
+button.mat-mdc-button-base.secondary-button,
+button.mat-mdc-outlined-button.secondary-button {
+  border: 1px solid var(--secondaryColor) !important;
+  --mdc-outlined-button-outline-color: var(--secondaryColor);
+}
+
+button.mat-mdc-button-base.secondary-button .mdc-button__outline,
+button.mat-mdc-outlined-button.secondary-button .mdc-button__outline {
+  border-style: solid !important;
+  border-width: 1px !important;
+  border-color: var(--secondaryColor) !important;
+}
+
+button.mat-mdc-button-base.secondary-button .mat-icon,
+button.mat-mdc-button-base.secondary-button .fa {
+  color: var(--secondaryColor);
+}
+
+.action-buttons-container {
+  display: flex;
+  justify-content: flex-start;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .action-buttons-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* =========================
+
+   RGAA 10.5 — fallback couleurs (global)
+   Objectif: expliciter couleur texte + fond par défaut,
+   sans changer l'aspect (valeurs neutres)*/
+
+
+html {
+  background-color: #fff;
+}
+
+body {
+  color: rgba(0, 0, 0, 0.87);
+  background-color: #fff;
+}
+
+app-root {
+  background-color: #fff;
+  color: inherit;
+}
+   /*========================= */

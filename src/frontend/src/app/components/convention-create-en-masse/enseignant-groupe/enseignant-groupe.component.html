@@ -3,9 +3,9 @@
     <div class="mb-3">
       <div class="text-title">Choix de l'enseignant</div>
       <mat-divider class="mb-3"></mat-divider>
-      <div class="mb-2">
-        <button mat-flat-button style="margin-right:5px" color="primary" (click)="selectForGroup()">pour le groupe d'étudiant</button>
-        <button mat-flat-button style="margin-right:5px" color="primary" (click)="selectForSelected()" [disabled]="selected.length === 0">pour les étudiants sélectionnés</button>
+      <div class="action-buttons-container mb-2">
+        <button class="valid-button" mat-flat-button (click)="selectForGroup()">pour le groupe d'étudiant</button>
+        <button class="valid-button" mat-flat-button (click)="selectForSelected()" [disabled]="selected.length === 0">pour les étudiants sélectionnés</button>
       </div>
     </div>
 

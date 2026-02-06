@@ -9,6 +9,8 @@ import { ConsigneService } from "../../services/consigne.service";
 import {REGEX} from "../../utils/regex.utils";
 import { CoordCentreComponent } from './coord-centre/coord-centre.component';
 import { Subscription } from 'rxjs';
+import { getProgressText } from '../../utils/text-progress-bar.utils';
+
 
 @Component({
     selector: 'app-centre-gestion',
@@ -50,6 +52,8 @@ export class CentreGestionComponent implements OnInit,OnDestroy {
   paramCentreForm!: FormGroup;
   consigneCentre: any;
   signatureElectroniqueForm!: FormGroup;
+
+  protected readonly getProgressText = getProgressText;
 
   @ViewChild('matTabs') matTabs: MatTabGroup | undefined;
   @ViewChild('coordCentre') coordCentreComponent!: CoordCentreComponent;

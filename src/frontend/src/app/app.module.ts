@@ -28,6 +28,8 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatPaginatorIntl, MatPaginatorModule } from "@angular/material/paginator";
 import { DatePipe, registerLocaleData } from "@angular/common";
 import localeFr from '@angular/common/locales/fr';
+import {MatButtonToggle, MatButtonToggleGroup} from '@angular/material/button-toggle'
+import { CdkTrapFocus } from '@angular/cdk/a11y'
 import {
   DateAdapter,
   MAT_DATE_LOCALE,
@@ -137,6 +139,10 @@ import {ConfirmEnvoieMailComponent} from "./components/convention/evaluation-sta
 import { ImageCropperComponent } from 'ngx-image-cropper';
 import { EnvoiMailEnMasseEvalComponent } from "./components/eval-stage/envoi-mail-en-masse-eval/envoi-mail-en-masse-eval.component";
 import { ExportEvaluationComponent } from "./components/eval-stage/export-evaluation/export-evaluation.component";
+import {AccessibilityComponent} from "./components/accessibility/accessibility.component";
+import {LegalNoticeComponent} from "./components/legal-notice/legal-notice.component";
+import {FooterComponent} from "./components/footer/footer.component";
+import {MenuAccessibilityComponent} from "./components/menu-accessibility/menu-accessibility.component";
 
 registerLocaleData(localeFr, 'fr');
 
@@ -252,7 +258,11 @@ export class FrenchDateProvider extends NativeDateAdapter {
     TachePlanifieComponent,
     ConfirmEnvoieMailComponent,
     EnvoiMailEnMasseEvalComponent,
-    ExportEvaluationComponent
+    ExportEvaluationComponent,
+    AccessibilityComponent,
+    LegalNoticeComponent,
+    FooterComponent,
+    MenuAccessibilityComponent
   ],
   bootstrap: [AppComponent], imports: [BrowserModule,
     AppRoutingModule,
@@ -293,7 +303,10 @@ export class FrenchDateProvider extends NativeDateAdapter {
     ImageCropperComponent,
     ColorPickerComponent,
     MatSlideToggle,
-    ColorPickerDirective
+    ColorPickerDirective,
+    MatButtonToggleGroup,
+    MatButtonToggle,
+    CdkTrapFocus,
   ],
   exports: [
     ContenuPipe,

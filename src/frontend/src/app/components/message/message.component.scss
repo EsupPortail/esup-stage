@@ -25,3 +25,9 @@ h1 {
 .msg-text {
   white-space: pre-line; /* interprète \n en retours à la ligne, compresse les espaces multiples */
 }
+
+.message-ok-button{
+  background-color: var(--primaryColor);
+  color: white ;
+  font-weight: 500;
+}

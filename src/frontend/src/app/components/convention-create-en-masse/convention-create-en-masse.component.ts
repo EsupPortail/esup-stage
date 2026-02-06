@@ -8,6 +8,7 @@ import { ConventionService } from "../../services/convention.service";
 import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
 import { TitleService } from "../../services/title.service";
 import { AuthService } from "../../services/auth.service";
+import { getProgressText } from '../../utils/text-progress-bar.utils';
 
 @Component({
     selector: 'app-convention-create-en-masse',
@@ -18,7 +19,7 @@ import { AuthService } from "../../services/auth.service";
 export class ConventionCreateEnMasseComponent implements OnInit {
 
   conventionTabIndex: number = 0;
-
+  protected readonly getProgressText = getProgressText;
   sharedData: any = {};
   groupeEtudiant: any;
   allValid = false;

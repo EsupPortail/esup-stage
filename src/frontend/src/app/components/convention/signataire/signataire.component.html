@@ -4,7 +4,7 @@
       <mat-panel-title>{{"TITRE-PANEL-SIGNATAIRE"|contenu}}</mat-panel-title>
       <mat-panel-description>
         <div class="w-100 text-right">
-          <mat-icon fontSet="fa" fontIcon="fa-user"></mat-icon>
+          <mat-icon aria-hidden="true" fontSet="fa" fontIcon="fa-user"></mat-icon>
         </div>
       </mat-panel-description>
     </mat-expansion-panel-header>
@@ -84,16 +84,16 @@
       <div class="row mt-3" *ngIf="canEdit() || canCreate()">
         <div class="col-12 d-flex justify-content-center">
           <span *ngIf="etab.id && !modif && canEdit()" [confirmMessage]="'Attention : vous vous apprêtez à modifier la fiche de l\'établissement ' + etab.raisonSociale + ' . Pour sélectionner un autre établissement, veuillez cliquer sur le bouton de recherche d\'un établissement. '+ etab.raisonSociale + ' représente la raison sociale de l’établissement.'" (confirm)="edit()">
-            <button type="button" mat-button mat-stroked-button color="primary">
+            <button class="valid-button" type="button" mat-button mat-stroked-button>
               Modifier la fiche de ce signataire
             </button>
           </span>
         </div>
         <div class="col-6">
-          <button mat-button mat-stroked-button color="warn" *ngIf="contact.id && modif" (click)="cancelEdit()">{{'BOUTON_ANNULER'|contenu}}</button>
+          <button class="cancel-button" mat-button mat-stroked-button *ngIf="contact.id && modif" (click)="cancelEdit()">{{'BOUTON_ANNULER'|contenu}}</button>
         </div>
         <div class="col-6 text-right" *ngIf="modif">
-          <button mat-button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
+          <button class="valid-button" mat-button mat-flat-button>{{'BOUTON_VALIDER'|contenu}}</button>
         </div>
       </div>
     </form>
@@ -115,15 +115,18 @@
         </mat-select>
       </mat-form-field>
       <div class="col-md-12 mb-3" *ngIf="canCreate()">
-        <button mat-flat-button (click)="createService()" color="primary">Créer un nouveau service</button>
+        <button class="valid-button" mat-flat-button (click)="createService()">Créer un nouveau service</button>
       </div>
     </div>
     <div class="row mt-3" *ngIf="service">
       <div class="col-md-12">
-        <div class="text-title">Service sélectionné</div>
+        <span class="text-title" id="service-selectionne-title">
+          Service sélectionné
+        </span>
       </div>
+
       <div class="col-md-12">
-        <table mat-table [dataSource]="[service]">
+        <table mat-table [dataSource]="[service]" aria-labelledby="service-selectionne-title">
           <ng-container matColumnDef="nom">
             <th mat-header-cell *matHeaderCellDef>Nom du service</th>
             <td mat-cell *matCellDef="let row">{{row.nom}}</td>
@@ -162,7 +165,7 @@
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>Actions</th>
             <td mat-cell *matCellDef="let row">
-              <button mat-icon-button matTooltip="Éditer" (click)="editService(row)" color="primary"><i class="fa fa-pen"></i></button>
+              <button class="edit-button" mat-icon-button matTooltip="Éditer" (click)="editService(row)"><span class="fa fa-pen" aria-label="Modifier"></span></button>
             </td>
           </ng-container>
           <tr mat-header-row *matHeaderRowDef="serviceTableColumns"></tr>
@@ -183,7 +186,7 @@
         </mat-select>
       </mat-form-field>
       <div class="col-md-12" *ngIf="canCreate()">
-        <button mat-flat-button (click)="initCreate()" color="primary">{{ "BOUTON_CREER_NOUVEAU_SIGNATAIRE"|contenu }}</button>
+        <button class="valid-button" mat-flat-button (click)="initCreate()">{{ "BOUTON_CREER_NOUVEAU_SIGNATAIRE"|contenu }}</button>
       </div>
     </div>
 

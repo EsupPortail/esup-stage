@@ -5,14 +5,35 @@
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Raison sociale</mat-label>
       <input matInput formControlName="raisonSociale" [disabled]="isFieldDisabled()" required />
-      <mat-icon matSuffix class="icon-help" matTooltip="Nom de l'organisme">help</mat-icon>
-      <mat-error *ngIf="form.get('raisonSociale')"></mat-error>
+      <button mat-icon-button matSuffix class="icon-help" matTooltip="Nom de l'organisme" aria-label="Aide sur la raison sociale" type="button">
+        <mat-icon aria-hidden="true">help</mat-icon>
+      </button>
+      <mat-error *ngIf="form.get('raisonSociale')?.touched && form.get('raisonSociale')?.invalid">
+        <ng-container *ngIf="form.get('raisonSociale')?.hasError('required')">
+          Ce champ est obligatoire.
+        </ng-container>
+        <ng-container *ngIf="form.get('raisonSociale')?.hasError('maxlength')">
+          150 caractères maximum.
+        </ng-container>
+      </mat-error>
     </mat-form-field>
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill" [hidden]="!isFr()">
       <mat-label>Numéro Siret</mat-label>
       <input matInput formControlName="numeroSiret" [disabled]="isFieldDisabled()" [required]="numeroSiretRequired() && isFr()" />
-      <mat-icon matSuffix class="icon-help" matTooltip="Code INSEE à demander à votre établissement d'accueil ou consultable sur des sites de référencement d'entreprises. Correspond à l'identifiant géographique de l'établissement. (format : 14 chiffres consécutifs sans espace - ex: 12345678912345)">help</mat-icon>
-      <mat-error *ngIf="form.get('numeroSiret')"></mat-error>
+      <button mat-icon-button matSuffix class="icon-help" matTooltip="Code INSEE à demander à votre établissement d'accueil ou consultable sur des sites de référencement d'entreprises. Correspond à l'identifiant géographique de l'établissement. (format : 14 chiffres consécutifs sans espace - ex: 12345678912345)" aria-label="Aide sur le numéro SIRET" type="button">
+        <mat-icon aria-hidden="true">help</mat-icon>
+      </button>
+      <mat-error *ngIf="form.get('numeroSiret')?.touched && form.get('numeroSiret')?.invalid">
+        <ng-container *ngIf="form.get('numeroSiret')?.hasError('required')">
+          Ce champ est obligatoire.
+        </ng-container>
+        <ng-container *ngIf="form.get('numeroSiret')?.hasError('minlength') || form.get('numeroSiret')?.hasError('maxlength')">
+          Le SIRET doit contenir 14 chiffres.
+        </ng-container>
+        <ng-container *ngIf="form.get('numeroSiret')?.hasError('pattern')">
+          Format invalide. Le format attendu est : 12345678912345
+        </ng-container>
+      </mat-error>
     </mat-form-field>
   </div>
   <div class="row">
@@ -28,7 +49,9 @@
       <mat-select formControlName="idTypeStructure" required>
         <mat-option *ngFor="let typeStructure of typeStructures" [value]="typeStructure.id">{{typeStructure.libelle}}</mat-option>
       </mat-select>
-      <mat-error *ngIf="form.get('idTypeStructure')"></mat-error>
+      <mat-error *ngIf="form.get('idTypeStructure')?.touched && form.get('idTypeStructure')?.hasError('required')">
+        Ce champ est obligatoire.
+      </mat-error>
     </mat-form-field>
   </div>
   <div class="row">
@@ -46,7 +69,9 @@
       <mat-select formControlName="idStatutJuridique" required>
         <mat-option *ngFor="let statutJuridique of statutJuridiques" (click)="setTypeStructure(statutJuridique)" [value]="statutJuridique.id">{{statutJuridique.libelle}}</mat-option>
       </mat-select>
-      <mat-error *ngIf="form.get('idStatutJuridique')"></mat-error>
+      <mat-error *ngIf="form.get('idStatutJuridique')?.touched && form.get('idStatutJuridique')?.hasError('required')">
+        Ce champ est obligatoire.
+      </mat-error>
     </mat-form-field>
   </div>
 
@@ -67,12 +92,14 @@
           <mat-option (click)="setSelectedNafN5(null)"></mat-option>
           <mat-option *ngFor="let nafN5 of filteredNafN5List | async" [value]="nafN5.code" (click)="setSelectedNafN5(nafN5)">{{nafN5.code}} - {{nafN5.libelle}}</mat-option>
         </mat-select>
-        <mat-icon matSuffix class="icon-help" matTooltip="Code à demander directement à votre établissement d'accueil ou consultable sur un site de référencement d'entreprises. Composé de quatre chiffres et une lettre (ex: 01.10Z) faisant référence à la nomenclature d'activité françaises (NAF).">help</mat-icon>
+        <button mat-icon-button matSuffix class="icon-help" matTooltip="Code à demander directement à votre établissement d'accueil ou consultable sur un site de référencement d'entreprises. Composé de quatre chiffres et une lettre (ex: 01.10Z) faisant référence à la nomenclature d'activité françaises (NAF)." aria-label="Aide sur le code APE" type="button">
+          <mat-icon aria-hidden="true">help</mat-icon>
+        </button>
         <mat-hint>
           <ng-container *ngIf="selectedNafN5">
-            <span *ngIf="selectedNafN5.temEnServ !== false" class="text-success"><i class="fa fa-check"></i> {{selectedNafN5.libelle}}</span>
+            <span *ngIf="selectedNafN5.temEnServ !== false" class="text-success"><span class="fa fa-check" aria-hidden="true"></span> {{selectedNafN5.libelle}}</span>
             <span *ngIf="selectedNafN5.temEnServ === false" class="text-warning">
-              <mat-icon class="mr-1" inline>warning</mat-icon>
+              <mat-icon class="mr-1" aria-hidden="true" inline>warning</mat-icon>
               Le code APE de cet établissement est obsolète. Merci de choisir, si possible, un code APE à jour dans la liste.
             </span>
           </ng-container>
@@ -99,81 +126,98 @@
 
   <div class="text-title">Coordonnées</div>
   <mat-divider class="etab-accueil-divider mb-2"></mat-divider>
-  <div class="row">
-    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-      <mat-label>Voie</mat-label>
-      <input matInput formControlName="voie" required />
-      <mat-error *ngIf="form.get('voie')"></mat-error>
-    </mat-form-field>
-    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-      <mat-label>Bâtiment / Résidence / Z.I</mat-label>
-      <input matInput formControlName="batimentResidence" />
-    </mat-form-field>
-  </div>
-  <div class="row">
-    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-      <mat-label>Libellé Cedex ou Localité de destination</mat-label>
-      <input matInput formControlName="libCedex" />
-    </mat-form-field>
-    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill" subscriptSizing="dynamic">
-      <mat-label>Pays</mat-label>
-      <mat-select formControlName="idPays" [disabled]="isFieldDisabled()" required>
-        <!-- Barre de recherche -->
-        <mat-option>
-          <ngx-mat-select-search
-            [formControl]="paysFilterCtrl"
-            [placeholderLabel]="'Rechercher…'"
-            [noEntriesFoundLabel]="'Aucun pays trouvé'">
-          </ngx-mat-select-search>
-        </mat-option>
-        <!-- Options filtrées -->
-        <mat-option
-          *ngFor="let country of filteredCountries | async"
-          [value]="country.id"
-          [matTooltip]="country.libelle">
-          {{ country.libelle || 'Valeur indisponible' }}
-        </mat-option>
-      </mat-select>
-      <!-- Gestion des erreurs -->
-      <mat-error *ngIf="form.get('idPays')?.hasError('required') && form.get('idPays')?.touched">
-        Le pays est obligatoire.
-      </mat-error>
-      <!-- hint absent -> correction visuel -->
-      <mat-hint
-        *ngIf="filterTypeCountries === 0">
-      </mat-hint>
-      <!-- Hint pour les pays hors France -->
-      <mat-hint *ngIf="filterTypeCountries === 1" class="hint-expandable">{{('MESSAGE_HINT_PAYS_ETABLISSEMENT_CREATION_HORS_FRANCE' | contenu)}}</mat-hint>
-      <!-- Hint pour la France uniquement -->
-      <mat-hint *ngIf="filterTypeCountries === 2" class="hint-expandable">{{('MESSAGE_HINT_PAYS_ETABLISSEMENT_CREATION_FRANCE_UNIQUEMENT' | contenu)}}</mat-hint>
-    </mat-form-field>
-  </div>
-  <div class="row">
-    <div class="col-sm-12 col-md-6 mb-2" *ngIf="isFr()">
-      <app-form-autocomplete-field [service]="communeService" [field]="form.get('codePostal')" [fieldLabel]="'Code postal'" (updated)="updateCommune($event)" [startWith]="false"></app-form-autocomplete-field>
+  <fieldset>
+    <legend class="sr-only">Adresse</legend>
+    <div class="row">
+      <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+        <mat-label>Voie</mat-label>
+        <input matInput formControlName="voie" required />
+        <mat-error *ngIf="form.get('voie')?.touched && form.get('voie')?.invalid">
+          <ng-container *ngIf="form.get('voie')?.hasError('required')">Ce champ est obligatoire.</ng-container>
+          <ng-container *ngIf="form.get('voie')?.hasError('maxlength')">200 caractères maximum.</ng-container>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+        <mat-label>Bâtiment / Résidence / Z.I</mat-label>
+        <input matInput formControlName="batimentResidence" />
+      </mat-form-field>
     </div>
-    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill" *ngIf="!isFr()">
-      <mat-label>code Postal</mat-label>
-      <input matInput formControlName="codePostal" required />
-      <mat-error *ngIf="form.get('codePostal')"></mat-error>
-    </mat-form-field>
-    <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-      <mat-label>Commune</mat-label>
-      <input matInput formControlName="commune" required />
-      <mat-error *ngIf="form.get('commune')"></mat-error>
-    </mat-form-field>
-  </div>
+    <div class="row">
+      <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+        <mat-label>Libellé Cedex ou Localité de destination</mat-label>
+        <input matInput formControlName="libCedex" />
+      </mat-form-field>
+      <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill" subscriptSizing="dynamic">
+        <mat-label>Pays</mat-label>
+        <mat-select formControlName="idPays" [disabled]="isFieldDisabled()" required>
+          <!-- Barre de recherche -->
+          <mat-option>
+            <ngx-mat-select-search
+              [formControl]="paysFilterCtrl"
+              [placeholderLabel]="'Rechercher…'"
+              [noEntriesFoundLabel]="'Aucun pays trouvé'">
+            </ngx-mat-select-search>
+          </mat-option>
+          <!-- Options filtrées -->
+          <mat-option
+            *ngFor="let country of filteredCountries | async"
+            [value]="country.id"
+            [matTooltip]="country.libelle">
+            {{ country.libelle || 'Valeur indisponible' }}
+          </mat-option>
+        </mat-select>
+        <!-- Gestion des erreurs -->
+        <mat-error *ngIf="form.get('idPays')?.touched && form.get('idPays')?.hasError('required')">
+          Ce champ est obligatoire.
+        </mat-error>
+        <!-- hint absent -> correction visuel -->
+        <mat-hint
+          *ngIf="filterTypeCountries === 0">
+        </mat-hint>
+        <!-- Hint pour les pays hors France -->
+        <mat-hint *ngIf="filterTypeCountries === 1" class="hint-expandable">{{('MESSAGE_HINT_PAYS_ETABLISSEMENT_CREATION_HORS_FRANCE' | contenu)}}</mat-hint>
+        <!-- Hint pour la France uniquement -->
+        <mat-hint *ngIf="filterTypeCountries === 2" class="hint-expandable">{{('MESSAGE_HINT_PAYS_ETABLISSEMENT_CREATION_FRANCE_UNIQUEMENT' | contenu)}}</mat-hint>
+      </mat-form-field>
+    </div>
+    <div class="row">
+      <div class="col-sm-12 col-md-6 mb-2" *ngIf="isFr()">
+        <app-form-autocomplete-field [service]="communeService" [field]="form.get('codePostal')" [fieldLabel]="'Code postal'" (updated)="updateCommune($event)" [startWith]="false"></app-form-autocomplete-field>
+      </div>
+      <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill" *ngIf="!isFr()">
+        <mat-label>code Postal</mat-label>
+        <input matInput formControlName="codePostal" required />
+        <mat-error *ngIf="form.get('codePostal')"></mat-error>
+      </mat-form-field>
+      <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+        <mat-label>Commune</mat-label>
+        <input matInput formControlName="commune" required />
+        <mat-error *ngIf="form.get('commune')"></mat-error>
+      </mat-form-field>
+    </div>
+  </fieldset>
   <div class="row">
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Adresse mail</mat-label>
       <input matInput formControlName="mail" />
       <mat-hint>Sous cette forme adresse&#64;domaine.fr</mat-hint>
-      <mat-error><app-form-error [field]="form.get('email')"></app-form-error></mat-error>
+      <mat-error *ngIf="form.get('mail')?.touched && form.get('mail')?.invalid">
+        <ng-container *ngIf="form.get('mail')?.hasError('pattern')">
+          Adresse email invalide. Format attendu : exemple&#64;domaine.com
+        </ng-container>
+        <ng-container *ngIf="form.get('mail')?.hasError('maxlength')">
+          255 caractères maximum.
+        </ng-container>
+      </mat-error>
     </mat-form-field>
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Téléphone</mat-label>
       <input matInput formControlName="telephone" required />
-      <mat-error *ngIf="form.get('telephone')"> Numéro de téléphone invalide. </mat-error>
+      <mat-error *ngIf="form.get('telephone')?.touched && form.get('telephone')?.invalid">
+        <ng-container *ngIf="form.get('telephone')?.hasError('required')">Ce champ est obligatoire.</ng-container>
+        <ng-container *ngIf="form.get('telephone')?.hasError('pattern')">Numéro de téléphone invalide. Format attendu : 01 23 XX XX XX </ng-container>
+        <ng-container *ngIf="form.get('telephone')?.hasError('maxlength')">50 caractères maximum.</ng-container>
+      </mat-error>
     </mat-form-field>
   </div>
   <div class="row">
@@ -181,7 +225,7 @@
       <mat-label>Site internet</mat-label>
       <input type="url" matInput formControlName="siteWeb" />
       <mat-hint>Sous cette forme http://siteinternet.fr/...</mat-hint>
-      <mat-error *ngIf="form.get('siteWeb')"> Site web invalide. </mat-error>
+      <mat-error *ngIf="form.get('siteWeb')"> Site web invalide. Format attendu : https://example.com </mat-error>
     </mat-form-field>
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Fax</mat-label>
@@ -196,8 +240,8 @@
         <button
           type="button"
           mat-button
+          class="cancel-button"
           mat-stroked-button
-          color="warn"
           (click)="cancelEdit()">
           {{ 'BOUTON_ANNULER' | contenu }}
         </button>
@@ -207,21 +251,34 @@
       <div class="slot" *ngIf="canUpdateFromApi()">
         <div class="sync-radio-wrapper">
           <span class="sync-radio-label">Synchronisation automatique</span>
+
           <mat-radio-group
             [value]="etab.verrouillageSynchroStructureSirene ? 'non' : 'oui'"
             (change)="toggleVerrouillage()"
-            aria-label="Synchronisation automatique">
-            <mat-radio-button value="oui">Oui</mat-radio-button>
-            <mat-radio-button value="non">Non</mat-radio-button>
+            aria-label="Synchronisation automatique"
+          >
+            <mat-radio-button value="oui">
+              Oui
+              <mat-icon aria-hidden="true" style="vertical-align: middle; margin-left: 4px;">
+                lock_open
+              </mat-icon>
+            </mat-radio-button>
+
+            <mat-radio-button value="non">
+              Non
+              <mat-icon aria-hidden="true" style="vertical-align: middle; margin-left: 4px;">
+                lock
+              </mat-icon>
+            </mat-radio-button>
           </mat-radio-group>
         </div>
       </div>
 
       <!-- Mise à jour automatique -->
       <div class="slot" *ngIf="canUpdateFromApi()">
-        <button type="button" mat-button mat-stroked-button color="primary" class="mr-2" [disabled]="autoUpdating || etab.verrouillageSynchroStructureSirene" (click)="autoUpdateFromApi()"
+        <button type="button" class="mr-2 valid-button" mat-button mat-stroked-button [disabled]="autoUpdating || etab.verrouillageSynchroStructureSirene" (click)="autoUpdateFromApi()"
                 matTooltip="Met à jour automatiquement les informations de l'établissement via l'API">
-          <mat-icon class="mr-1" [class.spin]="autoUpdating">autorenew</mat-icon>
+          <mat-icon aria-hidden="true" [class.spin]="autoUpdating">autorenew</mat-icon>
           {{ autoUpdating ? 'Mise à jour…' : 'Mise à jour automatique' }}
         </button>
       </div>
@@ -230,8 +287,8 @@
       <div class="slot right-slot">
         <button
           mat-button
+          class="valid-button"
           mat-flat-button
-          color="primary"
           type="submit">
           {{ 'BOUTON_VALIDER' | contenu }}
         </button>

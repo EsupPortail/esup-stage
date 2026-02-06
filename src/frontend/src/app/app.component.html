@@ -1,26 +1,45 @@
+<div class="fr-skiplinks">
+  <nav role="navigation" aria-label="Accès rapide" class="fr-container">
+    <ul class="fr-skiplinks__list">
+      <li>
+        <a class="fr-link" href="#main">Contenu</a>
+      </li>
+      <li>
+        <a class="fr-link" href="#menu">Menu</a>
+      </li>
+      <li>
+        <a class="fr-link" href="#footer">Pied de page</a>
+      </li>
+    </ul>
+  </nav>
+</div>
 <app-header></app-header>
 <div class="menu-button" *ngIf="isConnected()">
-  <button mat-icon-button (click)="slideNavbar()" class="menu-open-button" [ngClass]="{visible: !menuService.navbarOpened}">
-    <i class="fa fa-bars"></i>
-  </button>
-  <button mat-icon-button (click)="slideNavbar()" class="menu-close-button" [ngClass]="{visible: menuService.navbarOpened}">
-    <i class="fa fa-times"></i>
+  <button
+    mat-icon-button
+    title="Ouvrir/fermer le menu"
+    type="button"
+    class="menu-button__btn"
+    [class.menu-button__btn--open]="menuService.navbarOpened"
+    (click)="slideNavbar()"
+    [attr.aria-label]="menuService.navbarOpened ? 'Fermer le menu' : 'Ouvrir le menu'">
+    <span class="fa" [ngClass]="menuService.navbarOpened ? 'fa-times' : 'fa-bars'"></span>
   </button>
 </div>
 <mat-sidenav-container>
   <mat-sidenav mode="side" [opened]="isOpened()" *ngIf="isConnected()">
-    <div class="app-menu">
-      <mat-nav-list>
-        <app-menu *ngFor="let item of items" [item]="item"> </app-menu>
-      </mat-nav-list>
-      <div class="app-version">
-        Version {{getAppVersion()}}
-      </div>
-    </div>
+    <nav id="menu" class="app-menu" role="navigation" aria-label="menu principal">
+      <ul class="menu-root">
+        <app-menu *ngFor="let item of items" [item]="item"></app-menu>
+      </ul>
+    </nav>
   </mat-sidenav>
   <mat-sidenav-content>
-    <app-loader></app-loader>
-    <app-title></app-title>
-    <router-outlet></router-outlet>
+    <main id="main">
+      <app-loader></app-loader>
+      <app-title></app-title>
+      <router-outlet></router-outlet>
+    </main>
   </mat-sidenav-content>
 </mat-sidenav-container>
+<app-footer></app-footer>
