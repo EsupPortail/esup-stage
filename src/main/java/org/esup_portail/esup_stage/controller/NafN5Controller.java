@@ -28,4 +28,16 @@ public class NafN5Controller {
     public List<NafN5> findAll() {
         return nafN5JpaRepository.findAll();
     }
+
+    @GetMapping("/all/creation")
+    @Secure
+    public List<NafN5> findAllForCreation() {
+        return nafN5JpaRepository.findAllForCreation();
+    }
+
+    @GetMapping("/all/modification/{idStructure}")
+    @Secure
+    public List<NafN5> findAllForModification(@PathVariable("idStructure") Integer idStructure) {
+        return nafN5JpaRepository.findAllForModification(idStructure);
+    }
 }

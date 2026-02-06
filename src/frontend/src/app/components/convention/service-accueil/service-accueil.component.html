@@ -31,7 +31,7 @@
           <div class="col-sm-9">{{service.telephone}}</div>
         </div>
       </div>
-      <div *ngIf="modif && (canEdit() || (isNewService && canCreate()))">
+      <div *ngIf="modif && (canEdit() || isCreatorService(service) || (isNewService && canCreate()))">
         <div class="text-title">Général</div>
         <mat-divider class="mb-2"></mat-divider>
         <div class="row">

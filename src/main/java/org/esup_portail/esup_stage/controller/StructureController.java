@@ -23,6 +23,7 @@ import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
 import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
+import org.esup_portail.esup_stage.security.permission.StructurePermissionEvaluator;
 import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.Structure.StructureService;
 import org.esup_portail.esup_stage.service.Structure.utils.CsvStructureImportUtils;
@@ -279,7 +280,7 @@ public class StructureController {
     }
 
     @PutMapping("/{id}")
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.MODIFICATION})
+    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.MODIFICATION},evaluator = StructurePermissionEvaluator.class)
     public Structure update(@PathVariable("id") int id, @Valid @RequestBody StructureFormDto structureFormDto) {
         Structure structure = structureJpaRepository.findById(id);
         if (structure == null) {
@@ -416,7 +417,7 @@ public class StructureController {
         if (structureFormDto.getCodeNafN5() != null && !structureFormDto.getCodeNafN5().isEmpty()) {
             nafN5 = nafN5JpaRepository.findByCode(structureFormDto.getCodeNafN5());
             if (nafN5 == null) {
-                throw new AppException(HttpStatus.NOT_FOUND, "Code non trouvé");
+                throw new AppException(HttpStatus.NOT_FOUND, "Code APE non trouvé");
             }
         }
         Pays pays = paysJpaRepository.findById(structureFormDto.getIdPays());
@@ -445,7 +446,7 @@ public class StructureController {
         structure.setNumeroRNE(structureFormDto.getNumeroRNE());
         Boolean verrou = structureFormDto.getVerrouillageSynchroStructureSirene();
         structure.setVerrouillageSynchroStructureSirene(verrou != null ? verrou : Boolean.FALSE);
-
+        structure.setVerrouillageSynchroStructureSirene(structureFormDto.getVerrouillageSynchroStructureSirene());
     }
 
     @GetMapping("/sirene")

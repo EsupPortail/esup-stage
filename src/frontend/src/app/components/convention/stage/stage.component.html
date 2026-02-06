@@ -206,7 +206,7 @@
               <app-form-error [field]="form.get('dureeExceptionnelle')"></app-form-error>
             </mat-error>
           </mat-form-field>
-          <div class="periode-wrapper col-12 col-md-6 mb-2" *ngIf="!updatingPeriode && !enMasse">
+          <div class="periode-wrapper col-12 col-md-6 mb-2" *ngIf="!updatingPeriode">
             <mat-form-field class="periode-field" appearance="fill">
               <mat-label>Mois</mat-label>
               <input type="number" matInput formControlName="periodeStageMois" />

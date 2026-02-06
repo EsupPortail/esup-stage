@@ -8,15 +8,16 @@ import lombok.EqualsAndHashCode;
 import java.util.ArrayList;
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "Consigne")
 @Data
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public class Consigne extends ObjetMetier {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idConsigne", nullable = false)
+    @EqualsAndHashCode.Include
     private int id;
 
     @JsonIgnore

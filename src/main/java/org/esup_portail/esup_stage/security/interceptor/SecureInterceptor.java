@@ -13,6 +13,8 @@ import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 
@@ -21,6 +23,9 @@ import org.springframework.http.HttpStatus;
 public class SecureInterceptor {
 
     private static final Logger logger = LoggerFactory.getLogger(SecureInterceptor.class);
+
+    @Autowired
+    private ApplicationContext context;
 
     @Around("@annotation(Secure)")
     public Object checkAuthorization(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -31,7 +36,6 @@ public class SecureInterceptor {
         boolean forbiddenEtu = authorized.forbiddenEtu();
 
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
-
         if (utilisateur == null) {
             return joinPoint.proceed();
         }
