@@ -138,4 +138,10 @@ export class AuthService {
     return this.userConnected && this.userConnected.roles.find((r: any) => [Role.ADM].indexOf(r.code) > -1) !== undefined;
   }
 
+  canAccess(roleData: any) {
+    if (!roleData || !this.userConnected) {
+      return true;
+    }
+    return this.checkRights(roleData);
+  }
 }

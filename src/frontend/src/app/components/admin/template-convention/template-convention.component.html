@@ -14,9 +14,9 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
         <td mat-cell *matCellDef="let row">
           <ng-container>
-            <button mat-icon-button matTooltip="Éditer" (click)="edit(row)" color="primary"><i class="fa fa-pen"></i></button>
+            <button class="edit-button" mat-icon-button matTooltip="Éditer" (click)="edit(row)"><span class="fa fa-pen" aria-label="Modifier"></span></button>
             <span (confirm)="delete(row.id)" [confirmMessage]="'Voulez-vous supprimer ce template de convention ?'">
-              <button mat-icon-button matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
+              <button class="delete-button" mat-icon-button matTooltip="Supprimer"><span class="fa fa-trash" aria-label="Supprimer"></span></button>
             </span>
           </ng-container>
         </td>
@@ -28,7 +28,7 @@
     <mat-card>
       <mat-card-content>
         <div class="alert alert-info">
-          Les paramètres doivent être saisis sous la forme ${{ '{' }}...{{ '}' }}. Par exemple : ${{ '{' }}convention.dateDebut{{ '}' }}<br/>
+          Les paramètres doivent être saisis sous la forme ${{ '{' }}...{{ '}' }}. Par exemple : ${{ '{' }}convention.dateDebut{{ '}' }}
           Utiliser "Maj+Entrer" pour aller à la ligne sans marge.
         </div>
         <form [formGroup]="form" (submit)="save()">
@@ -79,7 +79,7 @@
 
           <div class="row mt-3">
             <div class="col-12 text-right">
-              <button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
+              <button class="valid-button" mat-flat-button>{{'BOUTON_VALIDER'|contenu}}</button>
             </div>
           </div>
         </form>
@@ -92,7 +92,8 @@
               </mat-expansion-panel-header>
 
               <app-table #paramTableList [service]="paramConventionService" [columns]="paramColumns" [sortColumn]="paramSortColumn"
-                         matSort [matSortActive]="paramSortColumn" [matSortDirection]="'asc'" (matSortChange)="appParamTable ? appParamTable.sorting($event) : null">
+                         matSort [matSortActive]="paramSortColumn" [matSortDirection]="'asc'" (matSortChange)="appParamTable ? appParamTable.sorting($event) : null"
+                         [templateMobile]="tableMobileParamConvention">
                 <ng-container matColumnDef="code">
                   <th mat-header-cell *matHeaderCellDef mat-sort-header>Code</th>
                   <td mat-cell *matCellDef="let row">{{row.code}}</td>
@@ -106,6 +107,24 @@
                   <td mat-cell *matCellDef="let row">{{row.exemple}}</td>
                 </ng-container>
               </app-table>
+              <ng-template #tableMobileParamConvention let-row="row">
+                <table class="table table-sm">
+                  <tbody>
+                  <tr>
+                    <th>Code</th>
+                    <td>{{row.code}}</td>
+                  </tr>
+                  <tr>
+                    <th>Libellé</th>
+                    <td>{{row.libelle}}</td>
+                  </tr>
+                  <tr>
+                    <th>Exemple</th>
+                    <td>{{row.exemple}}</td>
+                  </tr>
+                  </tbody>
+                </table>
+              </ng-template>
             </mat-expansion-panel>
           </mat-accordion>
         </div>
@@ -138,7 +157,7 @@
           </div>
           <div class="row mt-3">
             <div class="col-12 text-right">
-              <button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
+              <button class="valid-button" mat-flat-button>{{'BOUTON_VALIDER'|contenu}}</button>
             </div>
           </div>
 
@@ -160,7 +179,7 @@
           </div>
           <div class="row mt-3">
             <div class="col-12 text-right">
-              <button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
+              <button class="valid-button" mat-flat-button>{{'BOUTON_VALIDER'|contenu}}</button>
             </div>
           </div>
         </form>
@@ -173,7 +192,8 @@
               </mat-expansion-panel-header>
 
               <app-table #paramTableList [service]="paramConventionService" [columns]="paramColumns" [sortColumn]="paramSortColumn"
-                         matSort [matSortActive]="paramSortColumn" [matSortDirection]="'asc'" (matSortChange)="appParamTable ? appParamTable.sorting($event) : null">
+                         matSort [matSortActive]="paramSortColumn" [matSortDirection]="'asc'" (matSortChange)="appParamTable ? appParamTable.sorting($event) : null"
+                         [templateMobile]="tableMobileParamConvention">
                 <ng-container matColumnDef="code">
                   <th mat-header-cell *matHeaderCellDef mat-sort-header>Code</th>
                   <td mat-cell *matCellDef="let row">{{row.code}}</td>

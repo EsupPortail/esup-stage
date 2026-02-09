@@ -7,13 +7,13 @@
             matTooltipShowDelay="200"
             class="d-inline-block">
 
-            <button mat-button mat-flat-button color="primary"
+            <button class="valid-button" mat-button mat-flat-button
               (click)="printConvention(false)"
               [disabled]="!canPrint">
                 Imprimer la convention
             </button>
           </span>
-          <button mat-button mat-flat-button color="primary" (click)="printConvention(true)">
+          <button class="valid-button" mat-button mat-flat-button (click)="printConvention(true)">
             Imprimer le récapitulatif
           </button>
         </ng-container>
@@ -223,17 +223,17 @@
     <div class="row">
       <div class="col-sm-12 text-center">
         <mat-card-actions>
-          <button mat-button mat-flat-button color="primary" (click)="validate()" *ngIf="!tmpConvention.validationCreation">
+          <button class="valid-button" mat-button mat-flat-button (click)="validate()" *ngIf="!tmpConvention.validationCreation">
             {{'BOUTON_VALIDER'|contenu}}
           </button>
           <ng-container *ngIf="tmpConvention.validationCreation">
-            <button mat-button mat-flat-button color="primary"
+            <button class="valid-button" mat-button mat-flat-button
                     (click)="printConvention(false)"
                     [disabled]="!canPrint"
                     [matTooltip]="!canPrint ? printDisabledReason : ''">
               Imprimer la convention
             </button>
-            <button mat-button mat-flat-button color="primary" (click)="printConvention(true)">
+            <button class="valid-button" mat-button mat-flat-button (click)="printConvention(true)">
               Imprimer le récapitulatif
             </button>
           </ng-container>
@@ -247,12 +247,8 @@
     </div>
   </mat-card-content>
   <mat-divider></mat-divider>
-  <br>
   <div class="mt-3 mb-3">
-    <div>
-      <div class="recap-text">{{ 'TEXTE_RECAPITULATIF' | contenu }}</div>
-      <br />
-      <div style="text-align: center">Créée le : {{tmpConvention.dateCreation |date:'dd MMM yyyy'}} par {{nomPrenomCreation}}, modifiée le : {{tmpConvention.dateModif |date:'dd MMM yyyy'}} par {{nomPrenomModification}}</div>
-    </div>
+    <div class="recap-text">{{ 'TEXTE_RECAPITULATIF' | contenu }}</div>
+    <div class="recap-footer">Créée le : {{tmpConvention.dateCreation |date:'dd MMM yyyy'}} par {{nomPrenomCreation}}, modifiée le : {{tmpConvention.dateModif |date:'dd MMM yyyy'}} par {{nomPrenomModification}}</div>
   </div>
 </mat-card>

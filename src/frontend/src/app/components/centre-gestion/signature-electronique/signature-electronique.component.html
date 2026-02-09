@@ -18,17 +18,59 @@
           <div class="text-hint">
             <mat-hint>Le choix entre OTP et signature serveur est obligatoire. Si vous n'utilisez pas Docaposte, vous pouvez indifféremment cocher signature OTP ou signature serveur</mat-hint>
           </div>
-          <div cdkDropList  [class.no-drag-cursor]="!canMoveSignataire" [cdkDropListDisabled]="!canMoveSignataire" [cdkDropListData]="signataires" (cdkDropListDropped)="drop($event)">
-            <div class="ordre" [cdkDragDisabled]="!canMoveSignataire" *ngFor="let signataire of signataires; let index = index" cdkDrag>
-              <div class="row">
+
+          <!-- Liste avec drag & drop ET boutons accessibles -->
+          <div
+            cdkDropList
+            [class.no-drag-cursor]="!canMoveSignataire"
+            [cdkDropListDisabled]="!canMoveSignataire"
+            [cdkDropListData]="signataires"
+            (cdkDropListDropped)="drop($event)"
+            role="list"
+            aria-label="Liste des signataires - utilisez le glisser-déposer ou les boutons pour réorganiser">
+            <div
+              class="ordre"
+              [cdkDragDisabled]="!canMoveSignataire"
+              *ngFor="let signataire of signataires; let index = index; let first = first; let last = last"
+              cdkDrag
+              role="listitem"
+              [attr.aria-label]="'Signataire ' + signataire.ordre + ' : ' + signataire.id.signataire">
+              <div class="row align-items-center">
                 <div class="col-4">
-                  <span cdkDragHandle>{{signataire.ordre}}</span>{{signataire.id.signataire}}
+                  <span cdkDragHandle [class.draggable]="canMoveSignataire" aria-hidden="true">{{signataire.ordre}}</span>
+                  {{signataire.id.signataire}}
                 </div>
-                <div class="col-8">
-                  <mat-radio-group [(ngModel)]="signataire.type" [ngModelOptions]="{standalone: true}" (ngModelChange)="updateSignataire()">
+                <div class="col-6">
+                  <mat-radio-group
+                    [(ngModel)]="signataire.type"
+                    [ngModelOptions]="{standalone: true}"
+                    (ngModelChange)="updateSignataire()"
+                    [attr.aria-label]="'Type de signature pour ' + signataire.id.signataire">
                     <mat-radio-button style="margin-left: 10px" [value]="'otp'">Signature OTP</mat-radio-button>
                     <mat-radio-button style="margin-left: 10px" [value]="'serveur'">Signature serveur</mat-radio-button>
                   </mat-radio-group>
+                </div>
+                <div class="col-2 text-end" *ngIf="canMoveSignataire">
+                  <button
+                    mat-icon-button
+                    type="button"
+                    [disabled]="first"
+                    (click)="moveUp(index)"
+                    [attr.aria-label]="'Déplacer ' + signataire.id.signataire + ' vers le haut'"
+                    matTooltip="Déplacer vers le haut"
+                    class="move-button">
+                    <mat-icon aria-hidden="true">arrow_upward</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    type="button"
+                    [disabled]="last"
+                    (click)="moveDown(index)"
+                    [attr.aria-label]="'Déplacer ' + signataire.id.signataire + ' vers le bas'"
+                    matTooltip="Déplacer vers le bas"
+                    class="move-button">
+                    <mat-icon aria-hidden="true">arrow_downward</mat-icon>
+                  </button>
                 </div>
               </div>
             </div>

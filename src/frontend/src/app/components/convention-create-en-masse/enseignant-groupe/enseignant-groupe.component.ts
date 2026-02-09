@@ -93,7 +93,10 @@ export class EnseignantGroupeComponent implements OnInit, OnChanges {
 
   selectForGroup(): void {
     const dialogConfig = new MatDialogConfig();
-    dialogConfig.width = '1000px';
+    dialogConfig.width = '95vw';
+    dialogConfig.maxWidth = '1100px';
+    dialogConfig.maxHeight = '90vh';
+    dialogConfig.panelClass = 'custom-dialog-container';
     dialogConfig.data = {enseignant: this.groupeEtudiant.enseignant};
     const modalDialog = this.matDialog.open(EnseignantGroupeModalComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
@@ -105,7 +108,10 @@ export class EnseignantGroupeComponent implements OnInit, OnChanges {
 
   selectForSelected(): void {
     const dialogConfig = new MatDialogConfig();
-    dialogConfig.width = '1000px';
+    dialogConfig.width = '95vw';
+    dialogConfig.maxWidth = '1100px';
+    dialogConfig.maxHeight = '90vh';
+    dialogConfig.panelClass = 'custom-dialog-container';
     dialogConfig.data = {enseignant: null};
     const modalDialog = this.matDialog.open(EnseignantGroupeModalComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {

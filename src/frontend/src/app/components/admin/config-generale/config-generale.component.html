@@ -83,7 +83,7 @@
             </mat-form-field>
           </div>
           <div class="mt-3" *ngIf="canEdit()">
-            <button mat-flat-button color="primary">Valider</button>
+            <button class="valid-button" mat-flat-button>Valider</button>
           </div>
         </form>
       </mat-card-content>
@@ -126,7 +126,7 @@
           <tr mat-row *matRowDef="let alertes; columns: alerteColumns;"></tr>
         </table>
         <div class="mt-3" *ngIf="canEdit()">
-          <button mat-flat-button color="primary" (click)="saveAlerteMail()">Valider</button>
+          <button class="valid-button" mat-flat-button (click)="saveAlerteMail()">Valider</button>
         </div>
       </mat-card-content>
     </mat-card>
@@ -140,7 +140,7 @@
         <form [formGroup]="formTheme" novalidate>
           <div class="row">
             <div class="col-md-3 mb-2">
-              <button mat-stroked-button color="primary" (click)="logoInput.click()">
+              <button class="valid-button" mat-stroked-button (click)="logoInput.click()">
                 <span>Logo</span>
                 <input #logoInput type="file" (change)="onLogoChange($event)" accept="image/*" style="display:none">
               </button>
@@ -148,7 +148,7 @@
             </div>
 
             <div class="col-md-3 mb-2">
-              <button mat-stroked-button color="primary" (click)="faviconInput.click()">
+              <button class="valid-button" mat-stroked-button (click)="faviconInput.click()">
                 <span>Favicon</span>
                 <input #faviconInput type="file" (change)="onFaviconChange($event)" accept="image/*" style="display:none">
               </button>
@@ -265,10 +265,10 @@
 
           <div class="mt-3">
             <div class="ml-2">
-              <button *ngIf="canEdit()" mat-flat-button color="primary" (click)="saveTheme()">Valider les modifications</button>
+              <button class="valid-button" *ngIf="canEdit()" mat-flat-button (click)="saveTheme()">Valider les modifications</button>
             </div>
             <div class="ml-2" style="margin-top: 10px;">
-              <button *ngIf="canDelete()" mat-flat-button color="primary" (click)="rollbackTheme()">Remettre la configuration par défaut</button>
+              <button class="cancel-button" *ngIf="canDelete()" mat-flat-button (click)="rollbackTheme()">Remettre la configuration par défaut</button>
             </div>
           </div>
         </form>
@@ -298,7 +298,7 @@
             </div>
           </div>
           <div class="mt-3" *ngIf="canEdit()">
-            <button mat-flat-button color="primary">Valider</button>
+            <button class="valid-button" mat-flat-button>Valider</button>
           </div>
         </form>
       </mat-card-content>
@@ -340,7 +340,7 @@
           </div>
 
           <div class="text-end mt-4" *ngIf="canEdit()">
-            <button mat-flat-button color="primary" type="submit">Valider</button>
+            <button class="valid-button" mat-flat-button type="submit">Valider</button>
           </div>
         </form>
       </mat-card-content>

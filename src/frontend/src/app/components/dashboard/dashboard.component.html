@@ -2,7 +2,7 @@
   <mat-card-content>
     <div class="row">
       <div class="col-md-6 col-sm-12">
-        <h6>Convention(s) en attente de validation : <span class="text-title" *ngIf="nbConventionsEnAttente !== undefined">{{nbConventionsEnAttente}} trouvée(s)</span></h6>
+        <span class="convention-attente">Convention(s) en attente de validation : <span class="text-title" *ngIf="nbConventionsEnAttente !== undefined">{{nbConventionsEnAttente}} trouvée(s)</span></span>
       </div>
       <div class="col-md-6 col-sm-12 text-right">
         <mat-form-field>
@@ -17,9 +17,9 @@
 </mat-card>
 
 <ng-template #validAction>
-  <button *ngIf="typeDashboard === 1" mat-button mat-flat-button color="primary" [matMenuTriggerFor]="actions"
+  <button *ngIf="typeDashboard === 1" class="valid-button" mat-button mat-flat-button [matMenuTriggerFor]="actions"
           [disabled]="selected.length === 0">
-    <mat-icon>more_vert</mat-icon> Actions
+    <mat-icon aria-hidden="true">more_vert</mat-icon> Actions
   </button>
   <mat-menu #actions="matMenu">
     <button mat-menu-item (click)="validationAdministrative()">Valider administrativement la sélection</button>
@@ -32,17 +32,20 @@
            (matSortChange)="appTable ? appTable.sorting($event) : null" [noResultText]="'Aucune convention trouvée'"
            [customTemplateRef]="validAction" (onUpdated)="countConvention()" [setAlerte]="true" [exportColumns]="exportColumns"
            [templateMobile]="tableMobile" [loadWithoutFilters]="false">
-  <ng-container *ngIf="typeDashboard === 1" matColumnDef="select">
-    <th mat-header-cell *matHeaderCellDef>
-      <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selected.length > 0 && isAllSelected()"
-                    [indeterminate]="selected.length > 0 && !isAllSelected()">
-      </mat-checkbox>
-    </th>
-    <td mat-cell *matCellDef="let row">
-      <mat-checkbox [checked]="isSelected(row)" (change)="$event ? toggleSelected(row) : null"
-                    (click)="$event.stopPropagation()">
-      </mat-checkbox>
-    </td>
+
+  <ng-container *ngIf="typeDashboard === 1">
+    <ng-container matColumnDef="select">
+      <th mat-header-cell *matHeaderCellDef>
+        <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selected.length > 0 && isAllSelected()"
+                      [indeterminate]="selected.length > 0 && !isAllSelected()">
+        </mat-checkbox>
+      </th>
+      <td mat-cell *matCellDef="let row">
+        <mat-checkbox [checked]="isSelected(row)" (change)="$event ? toggleSelected(row) : null"
+                      (click)="$event.stopPropagation()">
+        </mat-checkbox>
+      </td>
+    </ng-container>
   </ng-container>
   <ng-container *ngIf="typeDashboard === 3 || typeDashboard === 1" matColumnDef="enseignant.prenom">
     <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Enseignant</th>
@@ -59,24 +62,72 @@
   <ng-container matColumnDef="avenant">
     <th mat-header-cell *matHeaderCellDef>Avenant</th>
     <td mat-cell *matCellDef="let row">
-      <span>{{(row.avenants.length > 0)|boolean}}<br /></span>
+      <span>{{(row.avenants.length > 0)|boolean}}</span>
     </td>
   </ng-container>
   <ng-container *ngIf="typeDashboard === 2 || typeDashboard === 1" matColumnDef="etatValidation">
     <th mat-header-cell *matHeaderCellDef>État de validation de la convention</th>
     <td mat-cell *matCellDef="let row" class="dashboard-validation">
-      <i *ngIf="row.centreGestion.validationPedagogique" class="fa fa-graduation-cap"
+      <mat-icon *ngIf="row.centreGestion.validationPedagogique"
+         fontSet="fa"
+         fontIcon="fa-graduation-cap"
          [class.activate]="row.validationPedagogique"
-         matTooltip="{{row.validationPedagogique ? validationLibelles.validationPedagogique + ' effectuée' : 'en attente ' + validationLibelles.validationPedagogique}}"></i>
-      <i *ngIf="row.centreGestion.verificationAdministrative" class="fa fa-check"
+         [matTooltip]="row.validationPedagogique
+        ? validationLibelles.validationPedagogique + ' effectuée'
+        : 'en attente ' + validationLibelles.validationPedagogique"
+         role="img"
+         [attr.aria-label]="row.validationPedagogique
+        ? (validationLibelles.validationPedagogique + ' effectuée')
+        : (validationLibelles.validationPedagogique + ' en attente')">
+        <span class="sr-only">
+          {{ row.validationPedagogique
+          ? (validationLibelles.validationPedagogique + ' effectuée')
+          : (validationLibelles.validationPedagogique + ' en attente') }}
+        </span>
+      </mat-icon>
+      <mat-icon *ngIf="row.centreGestion.verificationAdministrative"
+         fontSet="fa"
+         fontIcon="fa-check"
          [class.activate]="row.verificationAdministrative"
-         matTooltip="{{row.verificationAdministrative ? validationLibelles.verificationAdministrative + ' effectuée' : 'en attente ' + validationLibelles.verificationAdministrative}}"></i>
-      <i *ngIf="row.centreGestion.validationConvention" class="fa fa-scroll" [class.activate]="row.validationConvention"
-         matTooltip="{{row.validationConvention ? validationLibelles.validationConvention + ' effectuée' : 'en attente ' + validationLibelles.validationConvention}}"></i>
-      <i *ngIf="row.dateEnvoiSignature" class="fa-solid fa-signature"
+         matTooltip="{{ row.verificationAdministrative
+        ? (validationLibelles.verificationAdministrative + ' effectuée')
+        : ('en attente ' + validationLibelles.verificationAdministrative) }}"
+         role="img"
+         [attr.aria-label]="row.verificationAdministrative
+        ? (validationLibelles.verificationAdministrative + ' effectuée')
+        : (validationLibelles.verificationAdministrative + ' en attente')">
+        <span class="sr-only">
+          {{ row.verificationAdministrative
+          ? (validationLibelles.verificationAdministrative + ' effectuée')
+          : (validationLibelles.verificationAdministrative + ' en attente') }}
+        </span>
+      </mat-icon>
+      <mat-icon *ngIf="row.centreGestion.validationConvention"
+         fontSet="fa"
+         fontIcon="fa-scroll"
+         [class.activate]="row.validationConvention"
+         matTooltip="{{ row.validationConvention
+        ? (validationLibelles.validationConvention + ' effectuée')
+        : ('en attente ' + validationLibelles.validationConvention) }}"
+         role="img"
+         [attr.aria-label]="row.validationConvention
+        ? (validationLibelles.validationConvention + ' effectuée')
+        : (validationLibelles.validationConvention + ' en attente')">
+        <span class="sr-only">
+          {{ row.validationConvention
+          ? (validationLibelles.validationConvention + ' effectuée')
+          : (validationLibelles.validationConvention + ' en attente') }}
+        </span>
+      </mat-icon>
+      <mat-icon *ngIf="row.dateEnvoiSignature"
+         fontSet="fa"
+         fontIcon="fa-signature"
          [ngClass]="getValidationIconStatus(row)"
-         [matTooltip]="getValidationTooltip(row)">
-      </i>
+         [matTooltip]="getValidationTooltip(row)"
+         role="img"
+         [attr.aria-label]="'signature ' + getValidationTooltip(row)">
+        <span class="sr-only">{{ getValidationTooltip(row) }}</span>
+      </mat-icon>
     </td>
   </ng-container>
   <ng-container matColumnDef="id">
@@ -114,18 +165,62 @@
   <ng-container *ngIf="typeDashboard === 3" matColumnDef="etatValidation">
     <th mat-header-cell *matHeaderCellDef>État de validation de la convention</th>
     <td mat-cell *matCellDef="let row" class="dashboard-validation">
-      <i *ngIf="row.centreGestion.validationPedagogique" class="fa fa-graduation-cap"
+    <td mat-cell *matCellDef="let row" class="dashboard-validation">
+      <i *ngIf="row.centreGestion.validationPedagogique"
+         class="fa fa-graduation-cap"
          [class.activate]="row.validationPedagogique"
-         matTooltip="{{row.validationPedagogique ? validationLibelles.validationPedagogique + ' effectuée' : 'en attente ' + validationLibelles.validationPedagogique}}"></i>
-      <i *ngIf="row.centreGestion.verificationAdministrative" class="fa fa-check"
+         matTooltip="{{ row.validationPedagogique
+        ? (validationLibelles.validationPedagogique + ' effectuée')
+        : ('en attente ' + validationLibelles.validationPedagogique) }}"
+         role="img"
+         [attr.aria-label]="row.validationPedagogique
+        ? (validationLibelles.validationPedagogique + ' effectuée')
+        : (validationLibelles.validationPedagogique + ' en attente')">
+        <span class="sr-only">
+          {{ row.validationPedagogique
+          ? (validationLibelles.validationPedagogique + ' effectuée')
+          : (validationLibelles.validationPedagogique + ' en attente') }}
+        </span>
+      </i>
+      <i *ngIf="row.centreGestion.verificationAdministrative"
+         class="fa fa-check"
          [class.activate]="row.verificationAdministrative"
-         matTooltip="{{row.verificationAdministrative ? validationLibelles.verificationAdministrative + ' effectuée' : 'en attente ' + validationLibelles.verificationAdministrative}}"></i>
-      <i *ngIf="row.centreGestion.validationConvention" class="fa fa-scroll"
+         matTooltip="{{ row.verificationAdministrative
+        ? (validationLibelles.verificationAdministrative + ' effectuée')
+        : ('en attente ' + validationLibelles.verificationAdministrative) }}"
+         role="img"
+         [attr.aria-label]="row.verificationAdministrative
+        ? (validationLibelles.verificationAdministrative + ' effectuée')
+        : (validationLibelles.verificationAdministrative + ' en attente')">
+        <span class="sr-only">
+          {{ row.verificationAdministrative
+          ? (validationLibelles.verificationAdministrative + ' effectuée')
+          : (validationLibelles.verificationAdministrative + ' en attente') }}
+        </span>
+      </i>
+      <i *ngIf="row.centreGestion.validationConvention"
+         class="fa fa-scroll"
          [class.activate]="row.validationConvention"
-         matTooltip="{{row.validationConvention ? validationLibelles.validationConvention + ' effectuée' : 'en attente ' + validationLibelles.validationConvention}}"></i>
-      <i *ngIf="row.dateEnvoiSignature" class="fa-solid fa-signature"
+         matTooltip="{{ row.validationConvention
+        ? (validationLibelles.validationConvention + ' effectuée')
+        : ('en attente ' + validationLibelles.validationConvention) }}"
+         role="img"
+         [attr.aria-label]="row.validationConvention
+        ? (validationLibelles.validationConvention + ' effectuée')
+        : (validationLibelles.validationConvention + ' en attente')">
+        <span class="sr-only">
+          {{ row.validationConvention
+          ? (validationLibelles.validationConvention + ' effectuée')
+          : (validationLibelles.validationConvention + ' en attente') }}
+        </span>
+      </i>
+      <i *ngIf="row.dateEnvoiSignature"
+         class="fa-solid fa-signature"
          [ngClass]="getValidationIconStatus(row)"
-         [matTooltip]="getValidationTooltip(row)">
+         [matTooltip]="getValidationTooltip(row)"
+         role="img"
+         [attr.aria-label]="'signature '+getValidationTooltip(row)">
+        <span class="sr-only">{{ getValidationTooltip(row) }}</span>
       </i>
     </td>
   </ng-container>
@@ -136,8 +231,10 @@
   <ng-container matColumnDef="action">
     <th mat-header-cell *matHeaderCellDef>Actions</th>
     <td mat-cell *matCellDef="let row">
-      <button type="button" mat-icon-button matTooltip="Visualiser" matTooltipPosition="left" color="primary"
-              (click)="goToConvention(row.id)"><i class="fa fa-eye"></i></button>
+      <button type="button" mat-button class="btn-eye valid-button" matTooltip="Visualiser" matTooltipPosition="left" aria-label="Visualiser le détail de l’élément" (click)="goToConvention(row.id)">
+        <span class="fa fa-eye" aria-hidden="true"></span>
+        <span class="eye-label">Visualiser</span>
+      </button>
     </td>
   </ng-container>
 </app-table>
@@ -196,24 +293,69 @@
     <tr>
       <th>Avenant</th>
       <td>
-        <span>{{(row.avenants.length > 0)|boolean}}<br /></span>
+        <span>{{(row.avenants.length > 0)|boolean}}</span>
       </td>
     </tr>
     <tr *ngIf="typeDashboard === 2 || typeDashboard === 1">
       <th>État de validation de la convention</th>
       <td class="dashboard-validation">
-        <i *ngIf="row.centreGestion.validationPedagogique" class="fa fa-graduation-cap"
+        <i *ngIf="row.centreGestion.validationPedagogique"
+           class="fa fa-graduation-cap"
            [class.activate]="row.validationPedagogique"
-           matTooltip="{{row.validationPedagogique ? validationLibelles.validationPedagogique + ' effectuée' : 'en attente ' + validationLibelles.validationPedagogique}}"></i>
-        <i *ngIf="row.centreGestion.verificationAdministrative" class="fa fa-check"
+           matTooltip="{{ row.validationPedagogique
+          ? (validationLibelles.validationPedagogique + ' effectuée')
+          : ('en attente ' + validationLibelles.validationPedagogique) }}"
+           role="img"
+           [attr.aria-label]="row.validationPedagogique
+          ? (validationLibelles.validationPedagogique + ' effectuée')
+          : (validationLibelles.validationPedagogique + ' en attente')">
+          <span class="sr-only">
+            {{ row.validationPedagogique
+            ? (validationLibelles.validationPedagogique + ' effectuée')
+            : (validationLibelles.validationPedagogique + ' en attente') }}
+          </span>
+        </i>
+
+        <i *ngIf="row.centreGestion.verificationAdministrative"
+           class="fa fa-check"
            [class.activate]="row.verificationAdministrative"
-           matTooltip="{{row.verificationAdministrative ? validationLibelles.verificationAdministrative + ' effectuée' : 'en attente ' + validationLibelles.verificationAdministrative}}"></i>
-        <i *ngIf="row.centreGestion.validationConvention" class="fa fa-scroll"
+           matTooltip="{{ row.verificationAdministrative
+          ? (validationLibelles.verificationAdministrative + ' effectuée')
+          : ('en attente ' + validationLibelles.verificationAdministrative) }}"
+           role="img"
+           [attr.aria-label]="row.verificationAdministrative
+          ? (validationLibelles.verificationAdministrative + ' effectuée')
+          : (validationLibelles.verificationAdministrative + ' en attente')">
+          <span class="sr-only">
+            {{ row.verificationAdministrative
+            ? (validationLibelles.verificationAdministrative + ' effectuée')
+            : (validationLibelles.verificationAdministrative + ' en attente') }}
+          </span>
+        </i>
+
+        <i *ngIf="row.centreGestion.validationConvention"
+           class="fa fa-scroll"
            [class.activate]="row.validationConvention"
-           matTooltip="{{row.validationConvention ? validationLibelles.validationConvention + ' effectuée' : 'en attente ' + validationLibelles.validationConvention}}"></i>
-        <i *ngIf="row.dateEnvoiSignature" class="fa-solid fa-signature"
+           matTooltip="{{ row.validationConvention
+          ? (validationLibelles.validationConvention + ' effectuée')
+          : ('en attente ' + validationLibelles.validationConvention) }}"
+           role="img"
+           [attr.aria-label]="row.validationConvention
+          ? (validationLibelles.validationConvention + ' effectuée')
+          : (validationLibelles.validationConvention + ' en attente')">
+          <span class="sr-only">
+            {{ row.validationConvention
+            ? (validationLibelles.validationConvention + ' effectuée')
+            : (validationLibelles.validationConvention + ' en attente') }}
+          </span>
+        </i>
+        <i *ngIf="row.dateEnvoiSignature"
+           class="fa-solid fa-signature"
            [ngClass]="getValidationIconStatus(row)"
-           [matTooltip]="getValidationTooltip(row)">
+           [matTooltip]="getValidationTooltip(row)"
+           role="img"
+           [attr.aria-label]="'signature ' + getValidationTooltip(row)">
+          <span class="sr-only">{{ getValidationTooltip(row) }}</span>
         </i>
       </td>
     </tr>
@@ -232,10 +374,13 @@
     <tr>
       <th>Actions</th>
       <td>
-        <button type="button" mat-icon-button matTooltip="Visualiser" matTooltipPosition="left" color="primary"
-                (click)="goToConvention(row.id)"><i class="fa fa-eye"></i></button>
+        <button type="button" mat-button class="btn-eye valid-button" matTooltip="Visualiser" matTooltipPosition="left" (click)="goToConvention(row.id)">
+          <span class="fa fa-eye" aria-hidden="true"></span>
+          <span class="eye-label">Visualiser</span>
+        </button>
       </td>
     </tr>
     </tbody>
   </table>
 </ng-template>
+

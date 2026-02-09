@@ -4,6 +4,7 @@
       branches:
         - main
         - dev
+        - test
     # Allows you to run this workflow manually from the Actions tab
     workflow_dispatch:
   concurrency:
@@ -30,7 +31,9 @@
             git config --global user.email "githubaction@esup-portail.org"
             git config --global user.name "GitHub Actions"
             git fetch origin dev
+            git fetch origin test
             git checkout dev
+            git checkout test
             git checkout main
           working-directory: esup-stage
 
@@ -46,6 +49,16 @@
         - name: duplicate files for dev branch
           run: |
             git checkout dev
+            cp README.adoc src/docs/modules/ROOT/pages/README.adoc
+            cp CHANGELOG.adoc src/docs/modules/ROOT/pages/CHANGELOG.adoc
+            git add src/docs/modules/ROOT/pages/README.adoc src/docs/modules/ROOT/pages/CHANGELOG.adoc
+            git commit -m "Update README and CHANGELOG for Antora"
+            git checkout main
+          working-directory: esup-stage
+
+        - name: duplicate files for test branch
+          run: |
+            git checkout test
             cp README.adoc src/docs/modules/ROOT/pages/README.adoc
             cp CHANGELOG.adoc src/docs/modules/ROOT/pages/CHANGELOG.adoc
             git add src/docs/modules/ROOT/pages/README.adoc src/docs/modules/ROOT/pages/CHANGELOG.adoc

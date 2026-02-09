@@ -151,6 +151,7 @@ public class SireneService {
             );
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 structure = sirenMapper.updateStructure(response.getBody(), structure);
+                structure.setTemSiren(true);
                 structureJpaRepository.save(structure);
                 eventPublisher.publishEvent(new StructureUpdatedEvent(structure,oldStructureJson,objectMapper.writeValueAsString(structure),true));
             } else {

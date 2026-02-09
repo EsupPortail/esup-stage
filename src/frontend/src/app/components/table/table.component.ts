@@ -1,24 +1,11 @@
-import {
-  AfterContentInit,
-  Component,
-  ContentChildren,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  QueryList,
-  SimpleChanges,
-  TemplateRef,
-  ViewChild,
-} from '@angular/core';
+import {AfterContentInit, Component, ContentChildren, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, QueryList, SimpleChanges, TemplateRef, ViewChild,} from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Sort, SortDirection } from '@angular/material/sort';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatColumnDef, MatTable } from '@angular/material/table';
 import { PaginatedService } from '../../services/paginated.service';
-import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import * as _ from 'lodash';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { AuthService } from '../../services/auth.service';
@@ -26,14 +13,15 @@ import * as FileSaver from 'file-saver';
 import { TechnicalService } from '../../services/technical.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ColumnSelectorComponent } from './column-selector/column-selector.component';
+import { AccessibilityService } from '../../services/accessibility.service';
 
 @Component({
-    selector: 'app-table',
-    templateUrl: './table.component.html',
-    styleUrls: ['./table.component.scss'],
-    standalone: false
+  selector: 'app-table',
+  templateUrl: './table.component.html',
+  styleUrls: ['./table.component.scss'],
+  standalone: false
 })
-export class TableComponent implements OnInit, AfterContentInit, OnChanges {
+export class TableComponent implements OnInit, AfterContentInit, OnChanges, OnDestroy {
 
   @Input() service!: PaginatedService;
   @Input() columns: any;
@@ -71,15 +59,19 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   backConfig: any;
   isMobile: boolean = false;
 
-  // --- recherche pour toutes les listes ---
   listFilterCtrls: Record<string, FormControl> = {};
   filteredListOptions: Record<string, any[]> = {};
   private _destroy$ = new Subject<void>();
+  private _colSub?: Subscription;
+
+  disableAutoSearch: boolean = false;
+  hasPendingSearch: boolean = false;
 
   constructor(
     private authService: AuthService,
     private technicalService: TechnicalService,
     private dialog: MatDialog,
+    private accessibilityService: AccessibilityService,
   ) {
     this.technicalService.isMobile.subscribe((value: boolean) => {
       this.isMobile = value;
@@ -87,6 +79,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
 
     this.filterChanged.pipe(debounceTime(1000)).subscribe(() => {
       const filters = this.getFilters();
+
       if (this.backConfig) {
         this.page = this.backConfig.page;
         this.pageSize = this.backConfig.pageSize;
@@ -98,20 +91,6 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
         this.resetPage();
       }
 
-      for (const key of Object.keys(this.autocmpleteChanged)) {
-        this.autocmpleteChanged[key].pipe(debounceTime(1000)).subscribe(async (event: any) => {
-          if (event.value?.length >= 2) {
-            try {
-              const result = await event.filter.autocompleteService.getAutocompleteData(event.value).toPromise();
-              this.autocompleteData[event.filter.id] = result?.data || [];
-            } catch (error) {
-              console.error('Error fetching autocomplete data:', error);
-              this.autocompleteData[event.filter.id] = [];
-            }
-          }
-        });
-      }
-
       const nonPermanentFiltersCount = Object.entries(filters)
         .filter(([key, val]) => {
           const f = val as any;
@@ -120,12 +99,19 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
 
       if (this.loadWithoutFilters || nonPermanentFiltersCount > 0) {
         this.filterValuesToSend = filters;
-        this.getPaginated();
+        if (this.disableAutoSearch) {
+          this.hasPendingSearch = true;
+        } else {
+          this.hasPendingSearch = false;
+          this.getPaginated();
+        }
       }
     });
   }
 
   ngOnInit(): void {
+    this.loadDisableAutoSearchPref();
+
     if (window.screen.width < TechnicalService.MAX_WIDTH) {
       this.isMobile = true;
     }
@@ -136,26 +122,51 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
     if (this.loadWithoutFilters) {
       this.update();
     }
+
+    this.accessibilityService.disableAutoSearch$
+      .pipe(takeUntil(this._destroy$))
+      .subscribe((value) => {
+        const previous = this.disableAutoSearch;
+        this.disableAutoSearch = value;
+
+        if (this.disableAutoSearch && !previous) {
+          this.hasPendingSearch = this.shouldQueueSearch();
+        } else if (!this.disableAutoSearch && previous && this.hasPendingSearch) {
+          this.hasPendingSearch = false;
+          this.getPaginated();
+        }
+      });
   }
 
   ngAfterContentInit() {
-    if (this.columnDefs) {
-      this.columnDefs.forEach(columnDef => {
-        if (this.table) {
-          this.table.addColumnDef(columnDef);
-        }
-      });
-    }
+    this._colSub = this.columnDefs?.changes.subscribe(() => {
+      this._registerColumnDefs();
+    });
+    this._registerColumnDefs();
+  }
+
+  private _registerColumnDefs() {
+    if (!this.table || !this.columnDefs) return;
+    this.columnDefs.forEach(cd => this.table!.addColumnDef(cd));
   }
 
   ngOnChanges(changes: SimpleChanges): void {}
 
   ngOnDestroy(): void {
+    this._colSub?.unsubscribe();
     this._destroy$.next();
     this._destroy$.complete();
   }
 
-  // --- utils recherche list ---
+  private loadDisableAutoSearchPref(): void {
+    const saved = localStorage.getItem('accessibilityPreferences');
+    if (!saved) return;
+    try {
+      const prefs = JSON.parse(saved);
+      this.disableAutoSearch = !!prefs?.disableAutoSearch;
+    } catch {}
+  }
+
   private norm(v: any): string {
     return (v ?? '')
       .toString()
@@ -177,7 +188,6 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
       this.norm(o?.[keyLib]).includes(nq)
     );
   }
-
 
   getPaginated(): void {
     this.service.getPaginated(this.page, this.pageSize, this.sortColumn, this.sortOrder, JSON.stringify(this.filterValuesToSend)).subscribe((results: any) => {
@@ -202,6 +212,23 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
     this.filterChanged.next(this.filterValues);
   }
 
+  runSearch(): void {
+    const filters = this.getFilters();
+
+    const nonPermanentFiltersCount = Object.entries(filters)
+      .filter(([key, val]) => {
+        const f = val as any;
+        return !f.permanent && f.value !== undefined && f.value !== null && f.value !== '';
+      }).length;
+
+    if (this.loadWithoutFilters || nonPermanentFiltersCount > 0) {
+      this.filterValuesToSend = filters;
+      this.hasPendingSearch = false;
+      this.resetPage();
+      this.getPaginated();
+    }
+  }
+
   changePaginator(event: PageEvent): void {
     if (this.pageSize == event.pageSize) {
       this.page = event.pageIndex + 1;
@@ -215,7 +242,8 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   sorting(event: Sort): void {
     this.sortColumn = event.active;
     this.sortOrder = event.direction;
-    this.update();
+    this.resetPage();
+    this.getPaginated();
   }
 
   initFilters(emptyValues: boolean): void {
@@ -228,7 +256,22 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
         };
 
         if (filter.type === 'autocomplete') {
-          this.autocmpleteChanged[filter.id] = new Subject();
+          if (!this.autocmpleteChanged[filter.id]) {
+            this.autocmpleteChanged[filter.id] = new Subject();
+            this.autocmpleteChanged[filter.id].pipe(debounceTime(1000)).subscribe(async (event: any) => {
+              if (event.value?.length >= 2) {
+                try {
+                  const result = await event.filter.autocompleteService.getAutocompleteData(event.value).toPromise();
+                  this.autocompleteData[event.filter.id] = result?.data || [];
+                } catch (error) {
+                  console.error('Error fetching autocomplete data:', error);
+                  this.autocompleteData[event.filter.id] = [];
+                }
+              } else {
+                this.autocompleteData[event.filter.id] = [];
+              }
+            });
+          }
           if (!this.filterValues[filter.id].value) {
             this.filterValues[filter.id].value = [];
           }
@@ -369,6 +412,16 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
     return f;
   }
 
+  private shouldQueueSearch(): boolean {
+    const filters = this.getFilters();
+    const nonPermanentFiltersCount = Object.entries(filters)
+      .filter(([key, val]) => {
+        const f = val as any;
+        return !f.permanent && f.value !== undefined && f.value !== null && f.value !== '';
+      }).length;
+    return this.loadWithoutFilters || nonPermanentFiltersCount > 0;
+  }
+
   isEtudiant(): boolean {
     return this.authService.isEtudiant();
   }
@@ -493,7 +546,6 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   hasExportableColumns(): boolean {
     if (!this.exportColumns) return false;
 
-    // Cas avec plusieurs feuilles
     if ('multipleExcelSheets' in this.exportColumns && Array.isArray(this.exportColumns.multipleExcelSheets)) {
       return this.exportColumns.multipleExcelSheets.some((sheet: any) =>
         sheet.columns && Object.keys(sheet.columns).length > 0
@@ -506,13 +558,26 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
       );
     }
 
-    // Cas simple : un seul objet plat
     return typeof this.exportColumns === 'object' && Object.keys(this.exportColumns).length > 0;
   }
 
   onListOpenedChange(id: string, opened: boolean) {
     if (!opened) return;
     const q = this.listFilterCtrls[id]?.value || '';
-    this.applyListFilter(id, q);   // ← vide => toutes les options
+    this.applyListFilter(id, q);
+  }
+
+  getFilter(id: string) {
+    return this.filters?.find(f => f.id === id);
+  }
+
+  isFilterHidden(id: string) {
+    const f = this.getFilter(id);
+    return !f || !!f.hidden;
+  }
+
+  hasVisibleFilter(id: string): boolean {
+    const f = this.filters?.find(x => x.id === id);
+    return !!f && !f.hidden;
   }
 }

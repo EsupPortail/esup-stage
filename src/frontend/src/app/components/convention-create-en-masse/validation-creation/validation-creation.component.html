@@ -1,6 +1,8 @@
 <mat-card *ngIf="groupeEtudiant">
   <mat-card-content>
-    <button type="button" mat-button mat-flat-button color="primary" (click)="createGroup()" *ngIf="!isModif()">Créer le groupe</button>
-    <button type="button" mat-button mat-flat-button color="primary" (click)="validate()" [disabled]="!allValid">Valider la {{isModif() ? 'modification' : 'creation'}} des conventions</button>
+    <div class="action-buttons-container">
+      <button class="valid-button" type="button" mat-button mat-flat-button (click)="createGroup()" *ngIf="!isModif()">Créer le groupe</button>
+      <button class="valid-button" type="button" mat-button mat-flat-button (click)="validate()" [disabled]="!allValid">Valider la {{isModif() ? 'modification' : 'creation'}} des conventions</button>
+    </div>
   </mat-card-content>
 </mat-card>

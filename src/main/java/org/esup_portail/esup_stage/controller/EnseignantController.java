@@ -32,7 +32,7 @@ public class EnseignantController {
     AppConfigService appConfigService;
 
     @GetMapping
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<Enseignant> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         PaginatedResponse<Enseignant> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(enseignantRepository.count(filters));
@@ -41,7 +41,7 @@ public class EnseignantController {
     }
 
     @GetMapping("/{id}")
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public Enseignant getById(@PathVariable("id") int id) {
         Enseignant enseignant = enseignantJpaRepository.findById(id);
         if (enseignant == null) {
@@ -51,13 +51,13 @@ public class EnseignantController {
     }
 
     @GetMapping("/getByUid/{uid}")
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public Enseignant getByUid(@PathVariable("uid") String uid) {
         return enseignantJpaRepository.findByUid(uid);
     }
 
     @PostMapping
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.CREATION})
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.CREATION})
     public Enseignant create(@Valid @RequestBody EnseignantDto enseignantDto) {
         Enseignant enseignant = new Enseignant();
         setEnseignantData(enseignant, enseignantDto);
@@ -65,7 +65,7 @@ public class EnseignantController {
     }
 
     @PutMapping("/{id}")
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.MODIFICATION})
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.MODIFICATION})
     public Enseignant update(@PathVariable("id") int id, @Valid @RequestBody EnseignantDto enseignantDto) {
         Enseignant enseignant = enseignantJpaRepository.findById(id);
         if (enseignant == null) {
@@ -76,7 +76,7 @@ public class EnseignantController {
     }
 
     @DeleteMapping("/{id}")
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.SUPPRESSION})
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.SUPPRESSION})
     public boolean delete(@PathVariable("id") int id) {
         Enseignant enseignant = enseignantJpaRepository.findById(id);
         if (enseignant == null) {

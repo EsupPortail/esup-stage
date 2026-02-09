@@ -130,11 +130,9 @@ export class GestionGroupeComponent implements OnInit {
     });
   }
 
-  isConventionGenerated(row: any): boolean{
-    if (row.etudiantGroupeEtudiants[0].mergedConvention) {
-      return true
-    }
-    return false
+  isConventionGenerated(row: any): boolean {
+    const merged = row?.etudiantGroupeEtudiants?.[0]?.mergedConvention;
+    return !!merged;
   }
 
   refreshFilters(): void{

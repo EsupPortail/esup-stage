@@ -9,8 +9,8 @@
       <mat-expansion-panel [expanded]="false">
         <mat-expansion-panel-header>
           <mat-panel-title>Fiche Etudiant
-            <span *ngIf="ficheEvaluation.validationEtudiant">&nbsp;<i class="icon-valide fa fa-check"></i>&nbsp;<b>Validée</b></span>
-            <span *ngIf="!ficheEvaluation.validationEtudiant">&nbsp;<i class="icon-devalidee fa fa-times"></i>&nbsp;<b>Non validée</b></span>
+            <span *ngIf="ficheEvaluation.validationEtudiant">&nbsp;<span class="icon-valide fa fa-check"></span>&nbsp;<b>Validée</b></span>
+            <span *ngIf="!ficheEvaluation.validationEtudiant">&nbsp;<span class="icon-devalidee fa fa-times"></span>&nbsp;<b>Non validée</b></span>
           </mat-panel-title>
         </mat-expansion-panel-header>
         <mat-accordion>
@@ -31,8 +31,10 @@
               <div class="mt-2 mb-2" *ngFor="let question of FicheEtudiantIQuestions">
                 <div class="row">
                   <div class="col-sm-9">
-                    <b>{{question.title}}</b><br>
-                    <span *ngFor="let line of question.texte">{{line}}<br></span>
+                    <b class="question-title">{{question.title}}</b>
+                    <div class="question-texte">
+                      <p *ngFor="let line of question.texte">{{line}}</p>
+                    </div>
                   </div>
                   <div class="col-sm-3">
                     <mat-radio-group formControlName="{{question.controlName}}">
@@ -60,16 +62,16 @@
                     <div class="col-sm-2">{{getTypeQuestionLibelle(questionSupplementaire.typeQuestion)}}</div>
                     <div class="col-sm-8">{{questionSupplementaire.question}}</div>
                     <div class="col-sm-2">
-                      <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(0,questionSupplementaire)" color="primary"><i class="fa fa-pen"></i></button>
+                      <button class="edit-button" mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(0,questionSupplementaire)"><span class="fa fa-pen" aria-label="Modifier"></span></button>
                       <span (confirm)="deleteQuestionSupplementaire(questionSupplementaire.id)" [confirmMessage]="'Etes-vous sûr de vouloir supprimer cette question ?'">
-                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
+                      <button class="delete-button" mat-icon-button type='button'  matTooltip="Supprimer"><span class="fa fa-trash" aria-label="Supprimer"></span></button>
                     </span>
                     </div>
                   </div>
                 </div>
               </div>
               <div class="mt-3">
-                <button mat-flat-button color="primary" type='button' (click)="openQuestionSupplementaireFormModal(0,null)">Ajouter une question à cette section</button>
+                <button class="valid-button" mat-flat-button type='button' (click)="openQuestionSupplementaireFormModal(0,null)">Ajouter une question à cette section</button>
               </div>
 
             </mat-expansion-panel>
@@ -88,8 +90,10 @@
               <div class="mt-2 mb-2" *ngFor="let question of FicheEtudiantIIQuestions">
                 <div class="row">
                   <div class="col-sm-9">
-                    <b>{{question.title}}</b><br>
-                    <span *ngFor="let line of question.texte">{{line}}<br></span>
+                    <b class="question-title">{{question.title}}</b>
+                    <div class="question-texte">
+                      <p *ngFor="let line of question.texte">{{line}}</p>
+                    </div>
                   </div>
                   <div class="col-sm-3">
                     <mat-radio-group formControlName="{{question.controlName}}">
@@ -117,16 +121,16 @@
                     <div class="col-sm-2">{{getTypeQuestionLibelle(questionSupplementaire.typeQuestion)}}</div>
                     <div class="col-sm-8">{{questionSupplementaire.question}}</div>
                     <div class="col-sm-2">
-                      <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(1,questionSupplementaire)" color="primary"><i class="fa fa-pen"></i></button>
+                      <button class="edit-button" mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(1,questionSupplementaire)"><span class="fa fa-pen" aria-label="Modifier"></span></button>
                       <span (confirm)="deleteQuestionSupplementaire(questionSupplementaire.id)" [confirmMessage]="'Etes-vous sûr de vouloir supprimer cette question ?'">
-                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
+                      <button class="delete-button" mat-icon-button type='button'  matTooltip="Supprimer"><span class="fa fa-trash" aria-label="Supprimer"></span></button>
                     </span>
                     </div>
                   </div>
                 </div>
               </div>
               <div class="mt-3">
-                <button mat-flat-button color="primary" type='button' (click)="openQuestionSupplementaireFormModal(1,null)">Ajouter une question à cette section</button>
+                <button class="question-sup-bouton valid-button" mat-flat-button type='button' (click)="openQuestionSupplementaireFormModal(1,null)">Ajouter une question à cette section</button>
               </div>
 
             </mat-expansion-panel>
@@ -145,8 +149,10 @@
               <div class="mt-2 mb-2" *ngFor="let question of FicheEtudiantIIIQuestions">
                 <div class="row">
                   <div class="col-sm-9">
-                    <b>{{question.title}}</b><br>
-                    <span *ngFor="let line of question.texte">{{line}}<br></span>
+                    <b class="question-title">{{question.title}}</b>
+                    <div class="question-texte">
+                      <p *ngFor="let line of question.texte">{{line}}</p>
+                    </div>
                   </div>
                   <div class="col-sm-3">
                     <mat-radio-group formControlName="{{question.controlName}}">
@@ -174,22 +180,22 @@
                     <div class="col-sm-2">{{getTypeQuestionLibelle(questionSupplementaire.typeQuestion)}}</div>
                     <div class="col-sm-8">{{questionSupplementaire.question}}</div>
                     <div class="col-sm-2">
-                      <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(2,questionSupplementaire)" color="primary"><i class="fa fa-pen"></i></button>
+                      <button class="edit-button" mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(2,questionSupplementaire)"><span class="fa fa-pen" aria-label="Modifier"></span></button>
                       <span (confirm)="deleteQuestionSupplementaire(questionSupplementaire.id)" [confirmMessage]="'Etes-vous sûr de vouloir supprimer cette question ?'">
-                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
+                      <button class="delete-button" mat-icon-button type='button'  matTooltip="Supprimer"><span class="fa fa-trash" aria-label="Supprimer"></span></button>
                     </span>
                     </div>
                   </div>
                 </div>
               </div>
               <div class="mt-3">
-                <button mat-flat-button color="primary" type='button' (click)="openQuestionSupplementaireFormModal(2,null)">Ajouter une question à cette section</button>
+                <button class="valid-button" mat-flat-button type='button' (click)="openQuestionSupplementaireFormModal(2,null)">Ajouter une question à cette section</button>
               </div>
 
             </mat-expansion-panel>
 
             <div class="mt-3">
-              <button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
+              <button class="valid-button" mat-flat-button>{{'BOUTON_VALIDER'|contenu}}</button>
             </div>
           </form>
         </mat-accordion>
@@ -198,8 +204,8 @@
       <mat-expansion-panel [expanded]="false">
         <mat-expansion-panel-header>
           <mat-panel-title>Fiche Enseignant
-            <span *ngIf="ficheEvaluation.validationEnseignant">&nbsp;<i class="icon-valide fa fa-check"></i>&nbsp;<b>Validée</b></span>
-            <span *ngIf="!ficheEvaluation.validationEnseignant">&nbsp;<i class="icon-devalidee fa fa-times"></i>&nbsp;<b>Non validée</b></span>
+            <span *ngIf="ficheEvaluation.validationEnseignant">&nbsp;<span class="icon-valide fa fa-check"></span>&nbsp;<b>Validée</b></span>
+            <span *ngIf="!ficheEvaluation.validationEnseignant">&nbsp;<span class="icon-devalidee fa fa-times"></span>&nbsp;<b>Non validée</b></span>
           </mat-panel-title>
         </mat-expansion-panel-header>
 
@@ -219,8 +225,10 @@
             <div class="mt-2 mb-2" *ngFor="let question of FicheEnseignantIQuestions">
               <div class="row">
                 <div class="col-sm-9">
-                  <b>{{question.title}}</b><br>
-                  <span *ngFor="let line of question.texte">{{line}}<br></span>
+                  <b class="question-title">{{question.title}}</b>
+                  <div class="question-texte">
+                    <p *ngFor="let line of question.texte">{{line}}</p>
+                  </div>
                 </div>
                 <div class="col-sm-3">
                   <mat-radio-group formControlName="{{question.controlName}}">
@@ -248,16 +256,16 @@
                   <div class="col-sm-2">{{getTypeQuestionLibelle(questionSupplementaire.typeQuestion)}}</div>
                   <div class="col-sm-8">{{questionSupplementaire.question}}</div>
                   <div class="col-sm-2">
-                    <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(3,questionSupplementaire)" color="primary"><i class="fa fa-pen"></i></button>
+                    <button class="edit-button" mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(3,questionSupplementaire)"><span class="fa fa-pen" aria-label="Modifier"></span></button>
                     <span (confirm)="deleteQuestionSupplementaire(questionSupplementaire.id)" [confirmMessage]="'Etes-vous sûr de vouloir supprimer cette question ?'">
-                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
+                      <button class="delete-button" mat-icon-button type='button'  matTooltip="Supprimer"><span class="fa fa-trash" aria-label="Supprimer"></span></button>
                     </span>
                   </div>
                 </div>
               </div>
             </div>
             <div class="mt-3">
-              <button mat-flat-button color="primary" type='button' (click)="openQuestionSupplementaireFormModal(3,null)">Ajouter une question à cette section</button>
+              <button class="valid-button" mat-flat-button type='button' (click)="openQuestionSupplementaireFormModal(3,null)">Ajouter une question à cette section</button>
             </div>
 
           </mat-expansion-panel>
@@ -276,8 +284,10 @@
             <div class="mt-2 mb-2" *ngFor="let question of FicheEnseignantIIQuestions">
               <div class="row">
                 <div class="col-sm-9">
-                  <b>{{question.title}}</b><br>
-                  <span *ngFor="let line of question.texte">{{line}}<br></span>
+                  <b class="question-title">{{question.title}}</b>
+                  <div class="question-texte">
+                    <p *ngFor="let line of question.texte">{{line}}</p>
+                  </div>
                 </div>
                 <div class="col-sm-3">
                   <mat-radio-group formControlName="{{question.controlName}}">
@@ -305,22 +315,22 @@
                   <div class="col-sm-2">{{getTypeQuestionLibelle(questionSupplementaire.typeQuestion)}}</div>
                   <div class="col-sm-8">{{questionSupplementaire.question}}</div>
                   <div class="col-sm-2">
-                    <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(4,questionSupplementaire)" color="primary"><i class="fa fa-pen"></i></button>
+                    <button class="edit-button" mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(4,questionSupplementaire)"><span class="fa fa-pen" aria-label="Modifier"></span></button>
                     <span (confirm)="deleteQuestionSupplementaire(questionSupplementaire.id)" [confirmMessage]="'Etes-vous sûr de vouloir supprimer cette question ?'">
-                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
+                      <button class="delete-button" mat-icon-button type='button'  matTooltip="Supprimer"><span class="fa fa-trash" aria-label="Supprimer"></span></button>
                     </span>
                   </div>
                 </div>
               </div>
             </div>
             <div class="mt-3">
-              <button mat-flat-button color="primary" type='button' (click)="openQuestionSupplementaireFormModal(4,null)">Ajouter une question à cette section</button>
+              <button class="valid-button" mat-flat-button type='button' (click)="openQuestionSupplementaireFormModal(4,null)">Ajouter une question à cette section</button>
             </div>
 
           </mat-expansion-panel>
 
           <div class="mt-3">
-            <button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
+            <button class="valid-button" mat-flat-button>{{'BOUTON_VALIDER'|contenu}}</button>
           </div>
         </form>
       </mat-expansion-panel>
@@ -328,8 +338,8 @@
       <mat-expansion-panel [expanded]="false">
         <mat-expansion-panel-header>
           <mat-panel-title>Fiche Entreprise
-            <span *ngIf="ficheEvaluation.validationEntreprise">&nbsp;<i class="icon-valide fa fa-check"></i>&nbsp;<b>Validée</b></span>
-            <span *ngIf="!ficheEvaluation.validationEntreprise">&nbsp;<i class="icon-devalidee fa fa-times"></i>&nbsp;<b>Non validée</b></span>
+            <span *ngIf="ficheEvaluation.validationEntreprise">&nbsp;<span class="icon-valide fa fa-check"></span>&nbsp;<b>Validée</b></span>
+            <span *ngIf="!ficheEvaluation.validationEntreprise">&nbsp;<span class="icon-devalidee fa fa-times"></span>&nbsp;<b>Non validée</b></span>
           </mat-panel-title>
         </mat-expansion-panel-header>
 
@@ -349,8 +359,10 @@
             <div class="mt-2 mb-2" *ngFor="let question of FicheEntrepriseIQuestions">
               <div class="row">
                 <div class="col-sm-9">
-                  <b>{{question.title}}</b><br>
-                  <span *ngFor="let line of question.texte">{{line}}<br></span>
+                  <b class="question-title">{{question.title}}</b>
+                  <div class="question-texte">
+                    <p *ngFor="let line of question.texte">{{line}}</p>
+                  </div>
                 </div>
                 <div class="col-sm-3">
                   <mat-radio-group formControlName="{{question.controlName}}">
@@ -378,16 +390,16 @@
                   <div class="col-sm-2">{{getTypeQuestionLibelle(questionSupplementaire.typeQuestion)}}</div>
                   <div class="col-sm-8">{{questionSupplementaire.question}}</div>
                   <div class="col-sm-2">
-                    <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(5,questionSupplementaire)" color="primary"><i class="fa fa-pen"></i></button>
+                    <button class="edit-button" mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(5,questionSupplementaire)"><span class="fa fa-pen" aria-label="Modifier"></span></button>
                     <span (confirm)="deleteQuestionSupplementaire(questionSupplementaire.id)" [confirmMessage]="'Etes-vous sûr de vouloir supprimer cette question ?'">
-                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
+                      <button class="delete-button" mat-icon-button type='button'  matTooltip="Supprimer"><span class="fa fa-trash" aria-label="Supprimer"></span></button>
                     </span>
                   </div>
                 </div>
               </div>
             </div>
             <div class="mt-3">
-              <button mat-flat-button color="primary" type='button' (click)="openQuestionSupplementaireFormModal(5,null)">Ajouter une question à cette section</button>
+              <button class="valid-button" mat-flat-button type='button' (click)="openQuestionSupplementaireFormModal(5,null)">Ajouter une question à cette section</button>
             </div>
 
           </mat-expansion-panel>
@@ -406,8 +418,10 @@
             <div class="mt-2 mb-2" *ngFor="let question of FicheEntrepriseIIQuestions">
               <div class="row">
                 <div class="col-sm-9">
-                  <b>{{question.title}}</b><br>
-                  <span *ngFor="let line of question.texte">{{line}}<br></span>
+                  <b class="question-title">{{question.title}}</b>
+                  <div class="question-texte">
+                    <p *ngFor="let line of question.texte">{{line}}</p>
+                  </div>
                 </div>
                 <div class="col-sm-3">
                   <mat-radio-group formControlName="{{question.controlName}}">
@@ -436,16 +450,16 @@
                   <div class="col-sm-2">{{getTypeQuestionLibelle(questionSupplementaire.typeQuestion)}}</div>
                   <div class="col-sm-8">{{questionSupplementaire.question}}</div>
                   <div class="col-sm-2">
-                    <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(6,questionSupplementaire)" color="primary"><i class="fa fa-pen"></i></button>
+                    <button class="edit-button" mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(6,questionSupplementaire)"><span class="fa fa-pen" aria-label="Modifier"></span></button>
                     <span (confirm)="deleteQuestionSupplementaire(questionSupplementaire.id)" [confirmMessage]="'Etes-vous sûr de vouloir supprimer cette question ?'">
-                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
+                      <button class="delete-button" mat-icon-button type='button'  matTooltip="Supprimer"><span class="fa fa-trash" aria-label="Supprimer"></span></button>
                     </span>
                   </div>
                 </div>
               </div>
             </div>
             <div class="mt-3">
-              <button mat-flat-button color="primary" type='button' (click)="openQuestionSupplementaireFormModal(6,null)">Ajouter une question à cette section</button>
+              <button class="valid-button" mat-flat-button type='button' (click)="openQuestionSupplementaireFormModal(6,null)">Ajouter une question à cette section</button>
             </div>
 
           </mat-expansion-panel>
@@ -464,8 +478,10 @@
             <div class="mt-2 mb-2" *ngFor="let question of FicheEntrepriseIIIQuestions">
               <div class="row">
                 <div class="col-sm-9">
-                  <b>{{question.title}}</b><br>
-                  <span *ngFor="let line of question.texte">{{line}}<br></span>
+                  <b class="question-title">{{question.title}}</b>
+                  <div class="question-texte">
+                    <p *ngFor="let line of question.texte">{{line}}</p>
+                  </div>
                 </div>
                 <div class="col-sm-3">
                   <mat-radio-group formControlName="{{question.controlName}}">
@@ -493,22 +509,22 @@
                   <div class="col-sm-2">{{getTypeQuestionLibelle(questionSupplementaire.typeQuestion)}}</div>
                   <div class="col-sm-8">{{questionSupplementaire.question}}</div>
                   <div class="col-sm-2">
-                    <button mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(7,questionSupplementaire)" color="primary"><i class="fa fa-pen"></i></button>
+                    <button class="edit-button" mat-icon-button type='button' matTooltip="Éditer" (click)="openQuestionSupplementaireFormModal(7,questionSupplementaire)"><span class="fa fa-pen" aria-label="Modifier"></span></button>
                     <span (confirm)="deleteQuestionSupplementaire(questionSupplementaire.id)" [confirmMessage]="'Etes-vous sûr de vouloir supprimer cette question ?'">
-                      <button mat-icon-button type='button'  matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
+                      <button class="delete-button" mat-icon-button type='button'  matTooltip="Supprimer"><span class="fa fa-trash" aria-label="Supprimer"></span></button>
                     </span>
                   </div>
                 </div>
               </div>
             </div>
             <div class="mt-3">
-              <button mat-flat-button color="primary" type='button' (click)="openQuestionSupplementaireFormModal(7,null)">Ajouter une question à cette section</button>
+              <button class="valid-button" mat-flat-button type='button' (click)="openQuestionSupplementaireFormModal(7,null)">Ajouter une question à cette section</button>
             </div>
 
           </mat-expansion-panel>
 
           <div class="mt-3">
-            <button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
+            <button class="valid-button" mat-flat-button>{{'BOUTON_VALIDER'|contenu}}</button>
           </div>
         </form>
       </mat-expansion-panel>

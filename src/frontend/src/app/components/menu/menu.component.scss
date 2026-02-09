@@ -1,23 +1,63 @@
-mat-icon {
+.menu-item {
+  list-style: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   margin-right: 5px;
-  margin-left: 5px;
 }
 
-.mat-list-item {
+.menu-item__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.menu-item__link {
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+  text-decoration: none;
+  color: inherit;
   font-size: var(--fontSize);
-  height: 48px !important;
+  min-height: 44px;
+  box-sizing: border-box;
+  cursor: pointer;
+  gap: 4px;
+  border: none;
+  background: transparent;
 }
 
-.mat-list-item.active {
+.menu-item__link.active {
   background-color: #e8eaf6;
+  font-weight: 600;
 }
 
-.mat-icon {
+.menu-item__link--parent {
+  text-align: left;
+}
+
+.menu-item__toggle {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.menu-sublist {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 12px;
+}
+
+mat-icon {
   height: 24px !important;
   width: 24px !important;
-}
-.material-icons, .mat-list-icon {
-  font-size: 24px !important;
 }
 
 .badge-alerte::after {

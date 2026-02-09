@@ -72,12 +72,12 @@
               <button mat-icon-button
                       (click)="addSelected(currentSheet)"
                       [disabled]="isLocked || !selectedAvailableKeys.size">
-                <mat-icon>arrow_forward</mat-icon>
+                <mat-icon aria-hidden="true">arrow_forward</mat-icon>
               </button>
               <button mat-icon-button
                       (click)="removeSelected(currentSheet)"
                       [disabled]="isLocked || !selectedChosenKeys.size">
-                <mat-icon>arrow_back</mat-icon>
+                <mat-icon aria-hidden="true">arrow_back</mat-icon>
               </button>
             </div>
 
@@ -117,18 +117,18 @@
           </div>
         </div>
         <div class="reset-btn">
-          <button mat-stroked-button color="warn" (click)="reset(null)" [disabled]="isLocked">Réinitialiser</button>
+          <button class="cancel-button" mat-stroked-button (click)="reset(null)" [disabled]="isLocked">Réinitialiser</button>
         </div>
       </div>
 
       <div class="actions">
-        <button mat-flat-button color="warn" (click)="cancel()">Annuler</button>
+        <button class="cancel-button" mat-flat-button (click)="cancel()">Annuler</button>
 
         <span [matTooltip]="'Veuillez d\'abord renseigner le type d\'évaluation'"
               [matTooltipDisabled]="form.valid"
               matTooltipPosition="above"
               [tabindex]="form.valid ? -1 : 0">
-          <button mat-flat-button color="primary" [disabled]="!form.valid" (click)="confirm()">Valider</button>
+          <button class="valid-button" mat-flat-button [disabled]="!form.valid" (click)="confirm()">Valider</button>
         </span>
       </div>
     </div>

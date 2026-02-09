@@ -122,8 +122,10 @@ export class SignataireGroupeComponent implements OnInit, OnChanges {
 
   selectForGroup(): void {
     const dialogConfig = new MatDialogConfig();
-    dialogConfig.width = '1200px';
-    dialogConfig.height = '1000px';
+    dialogConfig.width = '95vw';
+    dialogConfig.maxWidth = '1100px';
+    dialogConfig.maxHeight = '90vh';
+    dialogConfig.panelClass = 'custom-dialog-container';
     dialogConfig.data = {convention: this.groupeEtudiant.convention};
     const modalDialog = this.matDialog.open(SignataireGroupeModalComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
@@ -138,8 +140,10 @@ export class SignataireGroupeComponent implements OnInit, OnChanges {
     this.structures = [...new Map(this.structures.map(e => [e.id, {id:e.id,raisonSociale:e.raisonSociale}])).values()]
     if(this.structures.length == 1){
       const dialogConfig = new MatDialogConfig();
-      dialogConfig.width = '1200px';
-      dialogConfig.height = '1000px';
+      dialogConfig.width = '95vw';
+      dialogConfig.maxWidth = '1100px';
+      dialogConfig.maxHeight = '90vh';
+      dialogConfig.panelClass = 'custom-dialog-container';
       let convention = this.selected[0].convention;
       dialogConfig.data = {convention: convention};
       const modalDialog = this.matDialog.open(SignataireGroupeModalComponent, dialogConfig);

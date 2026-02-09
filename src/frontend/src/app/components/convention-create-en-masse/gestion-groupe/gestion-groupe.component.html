@@ -38,13 +38,13 @@
     <th mat-header-cell *matHeaderCellDef>Actions</th>
     <td mat-cell *matCellDef="let row">
       <ng-container>
-        <button mat-icon-button matTooltip="Modifier le groupe" (click)="edit(row)" color="primary"><i class="fa fa-pen"></i></button>
-        <button mat-icon-button matTooltip="Dupliquer le groupe" (click)="duplicate(row)" color="primary"><i class="fa fa-copy"></i></button>
+        <button class="edit-button" mat-icon-button matTooltip="Modifier le groupe" (click)="edit(row)"><span class="fa fa-pen" aria-label="Modifier"></span> </button>
+        <button class="edit-button" mat-icon-button matTooltip="Dupliquer le groupe" (click)="duplicate(row)"><span class="fa fa-copy" aria-label="Dupliquer"></span> </button>
         <span (confirm)="delete(row.id)" [confirmMessage]="'Voulez-vous supprimer ce groupe ?'">
-              <button mat-icon-button matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
+              <button class="delete-button" mat-icon-button matTooltip="Supprimer"><span class="fa fa-trash" aria-label="Supprimer"></span> </button>
         </span>
-        <button mat-icon-button matTooltip="Envoie de mail" (click)="sendMailTab(row)" color="primary" *ngIf="isConventionGenerated(row)"><i class="fa fa-envelope"></i></button>
-        <button mat-icon-button matTooltip="Export pdf" (click)="printTab(row)" color="primary" *ngIf="isConventionGenerated(row)"><i class="fa fa-file-contract"></i></button>
+        <button class="edit-button" mat-icon-button matTooltip="Envoie de mail" (click)="sendMailTab(row)" *ngIf="isConventionGenerated(row)"><span class="fa fa-envelope" aria-label="Envoie de mail"></span> </button>
+        <button class="edit-button" mat-icon-button matTooltip="Export pdf" (click)="printTab(row)" *ngIf="isConventionGenerated(row)"><span class="fa fa-file-contract" aria-label="Export PDF"></span> </button>
       </ng-container>
     </td>
   </ng-container>
@@ -70,10 +70,10 @@
           </div>
           <div class="mb-2">
             <span (confirm)="sendMailForGroup()" [confirmMessage]="'Envoyer les mails ? Cette action est irreversible.'">
-              <button mat-flat-button style="margin-right:5px" color="primary" [disabled]="this.form.get('template')?.value===null">En masse</button>
+              <button class="valid-button" mat-flat-button style="margin-right:5px" [disabled]="this.form.get('template')?.value===null">En masse</button>
             </span>
             <span (confirm)="sendMailForSelected()" [confirmMessage]="'Envoyer les mails ? Cette action est irreversible.'">
-              <button mat-flat-button style="margin-right:5px" color="primary" [disabled]="selected.length === 0 || this.form.get('template')?.value===null">Pour les étudiants sélectionnés</button>
+              <button class="valid-button" mat-flat-button style="margin-right:5px" [disabled]="selected.length === 0 || this.form.get('template')?.value===null">Pour les étudiants sélectionnés</button>
             </span>
           </div>
         </form>
@@ -159,7 +159,7 @@
               <mat-panel-title>Historique des envois de mail</mat-panel-title>
               <mat-panel-description>
                 <div class="w-100 text-right">
-                  <mat-icon fontSet="fa" fontIcon="fa-history"></mat-icon>
+                  <mat-icon aria-hidden="true" fontSet="fa" fontIcon="fa-history"></mat-icon>
                 </div>
               </mat-panel-description>
             </mat-expansion-panel-header>
@@ -196,8 +196,8 @@
         <div class="text-title">Impression des mergedConventions</div>
         <mat-divider class="mb-3"></mat-divider>
         <div class="mb-2">
-          <button mat-flat-button style="margin-right:5px" color="primary" (click)="printForGroup()">En masse</button>
-          <button mat-flat-button style="margin-right:5px" color="primary" (click)="printForSelected()" [disabled]="selected.length === 0">pour les étudiants sélectionnés</button>
+          <button class="valid-button" mat-flat-button style="margin-right:5px" (click)="printForGroup()">En masse</button>
+          <button class="valid-button" mat-flat-button style="margin-right:5px" (click)="printForSelected()" [disabled]="selected.length === 0">pour les étudiants sélectionnés</button>
         </div>
       </div>
       <div class="mb-3">
@@ -259,3 +259,4 @@
   </mat-tab>
 
 </mat-tab-group>
+

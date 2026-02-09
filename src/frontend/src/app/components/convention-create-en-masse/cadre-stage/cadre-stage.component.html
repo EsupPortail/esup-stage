@@ -14,7 +14,7 @@
           </mat-form-field>
         </div>
         <div>
-          <button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
+          <button class="valid-button" mat-flat-button>{{'BOUTON_VALIDER'|contenu}}</button>
         </div>
       </form>
     </div>
@@ -23,15 +23,15 @@
       <mat-divider class="mb-2"></mat-divider>
       <app-table [service]="etudiantGroupeEtudiantService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters" [sortOrder]="sortDirection"
                  matSort [matSortActive]="sortColumn" [matSortDirection]="'desc'" (matSortChange)="appTable ? appTable.sorting($event) : null"
-                 [noResultText]="'Aucun étudiant trouvé'">
+                 [noResultText]="'Aucun étudiant trouvé'" [templateMobile]="tableMobileCadreStage">
 
         <ng-container matColumnDef="action">
           <th mat-header-cell *matHeaderCellDef>Action</th>
           <td mat-cell *matCellDef="let row">
-            <button mat-button mat-stroked-button (click)="edit(row)" color="primary">
-              <span *ngIf="true"><i class="fa fa-pen"></i> Modifier</span>
+            <button class="secondary-button" mat-button mat-stroked-button (click)="edit(row)">
+              <span *ngIf="true"><span class="fa fa-pen" aria-label="Modifier"></span> Modifier</span>
               <ng-template #notSelected>
-                <i class="fa fa-check-circle"></i> Sélectionner
+                <span class="fa fa-check-circle" aria-hidden="true"></span> Sélectionner
               </ng-template>
             </button>
           </td>
@@ -94,6 +94,74 @@
           <td mat-cell *matCellDef="let row">{{row.convention.telPortableEtudiant??'/'}}</td>
         </ng-container>
       </app-table>
+
+      <ng-template #tableMobileCadreStage let-row="row">
+        <table class="table table-sm">
+          <tbody>
+          <tr>
+            <th>Action</th>
+            <td>
+              <button class="secondary-button" mat-button mat-stroked-button (click)="edit(row)">
+                <span class="fa fa-pen" aria-label="Modifier"></span>
+                <span>Modifier</span>
+              </button>
+            </td>
+          </tr>
+          <tr>
+            <th>N° étudiant</th>
+            <td>{{row.etudiant?.numEtudiant}}</td>
+          </tr>
+          <tr>
+            <th>Nom, Prénom</th>
+            <td>{{row.etudiant?.nom + ' ' + row.etudiant?.prenom}}</td>
+          </tr>
+          <tr>
+            <th>Mail institutionnel</th>
+            <td>{{row.etudiant?.mail}}</td>
+          </tr>
+          <tr>
+            <th>Mail personnel</th>
+            <td>{{row.convention?.courrielPersoEtudiant ?? '/'}}</td>
+          </tr>
+          <tr>
+            <th>UFR</th>
+            <td>{{row.convention?.ufr ? row.convention.ufr.libelle : ''}}</td>
+          </tr>
+          <tr>
+            <th>Étape d'étude</th>
+            <td>{{row.convention?.etape ? row.convention.etape.libelle : ''}}</td>
+          </tr>
+          <tr>
+            <th>Année univ.</th>
+            <td>{{row.convention?.annee}}</td>
+          </tr>
+          <tr>
+            <th>Adresse</th>
+            <td>{{row.convention?.adresseEtudiant ?? '/'}}</td>
+          </tr>
+          <tr>
+            <th>Code postal</th>
+            <td>{{row.convention?.codePostalEtudiant ?? '/'}}</td>
+          </tr>
+          <tr>
+            <th>Commune</th>
+            <td>{{row.convention?.villeEtudiant ?? '/'}}</td>
+          </tr>
+          <tr>
+            <th>Pays</th>
+            <td>{{row.convention?.paysEtudiant ?? '/'}}</td>
+          </tr>
+          <tr>
+            <th>Téléphone</th>
+            <td>{{row.convention?.telEtudiant ?? '/'}}</td>
+          </tr>
+          <tr>
+            <th>Téléphone portable</th>
+            <td>{{row.convention?.telPortableEtudiant ?? '/'}}</td>
+          </tr>
+          </tbody>
+        </table>
+      </ng-template>
 
     </div>
   </mat-card-content>

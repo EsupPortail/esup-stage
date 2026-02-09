@@ -28,6 +28,8 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatPaginatorIntl, MatPaginatorModule } from "@angular/material/paginator";
 import { DatePipe, registerLocaleData } from "@angular/common";
 import localeFr from '@angular/common/locales/fr';
+import {MatButtonToggle, MatButtonToggleGroup} from '@angular/material/button-toggle'
+import { CdkTrapFocus } from '@angular/cdk/a11y'
 import {
   DateAdapter,
   MAT_DATE_LOCALE,
@@ -128,7 +130,7 @@ import { SignatureElectroniqueComponent } from './components/convention/signatur
 import { MatTabNavChangeDirective } from './directives/mat-tab-nav-change.directive';
 import {CentreSignatureElectroniqueComponent} from "./components/centre-gestion/signature-electronique/signature-electronique.component";
 import { SignatureElectroniqueViewComponent } from './components/convention/signature-electronique/signature-electronique-view/signature-electronique-view.component';
-import {ColorPickerModule} from "ngx-color-picker";
+import {ColorPickerComponent, ColorPickerDirective} from "ngx-color-picker";
 import {ConfirmDeleteDialogComponent} from "./components/gestion-etab-accueil/confirm-delete-dialog/confirm-delete-dialog.component";
 import {ColumnSelectorComponent} from "./components/table/column-selector/column-selector.component";
 import {TachePlanifieComponent} from "./components/admin/taches-planifiees/tache-planifie.component";
@@ -137,6 +139,10 @@ import {ConfirmEnvoieMailComponent} from "./components/convention/evaluation-sta
 import { ImageCropperComponent } from 'ngx-image-cropper';
 import { EnvoiMailEnMasseEvalComponent } from "./components/eval-stage/envoi-mail-en-masse-eval/envoi-mail-en-masse-eval.component";
 import { ExportEvaluationComponent } from "./components/eval-stage/export-evaluation/export-evaluation.component";
+import {AccessibilityComponent} from "./components/accessibility/accessibility.component";
+import {LegalNoticeComponent} from "./components/legal-notice/legal-notice.component";
+import {FooterComponent} from "./components/footer/footer.component";
+import {MenuAccessibilityComponent} from "./components/menu-accessibility/menu-accessibility.component";
 
 registerLocaleData(localeFr, 'fr');
 
@@ -252,7 +258,11 @@ export class FrenchDateProvider extends NativeDateAdapter {
     TachePlanifieComponent,
     ConfirmEnvoieMailComponent,
     EnvoiMailEnMasseEvalComponent,
-    ExportEvaluationComponent
+    ExportEvaluationComponent,
+    AccessibilityComponent,
+    LegalNoticeComponent,
+    FooterComponent,
+    MenuAccessibilityComponent
   ],
   bootstrap: [AppComponent], imports: [BrowserModule,
     AppRoutingModule,
@@ -291,7 +301,13 @@ export class FrenchDateProvider extends NativeDateAdapter {
     MatSnackBarModule,
     MatBadgeModule,
     ImageCropperComponent,
-    ColorPickerModule, MatSlideToggle],
+    ColorPickerComponent,
+    MatSlideToggle,
+    ColorPickerDirective,
+    MatButtonToggleGroup,
+    MatButtonToggle,
+    CdkTrapFocus,
+  ],
   exports: [
     ContenuPipe,
     TitleComponent

@@ -39,4 +39,8 @@ export class InfosStageModalComponent implements OnInit {
       this.convention = response;
     });
   }
+
+  protected close():void{
+    this.dialogRef.close();
+  }
 }

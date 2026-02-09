@@ -58,7 +58,7 @@
         <ng-container matColumnDef="action">
           <th mat-header-cell *matHeaderCellDef>Actions</th>
           <td mat-cell *matCellDef="let row">
-            <button mat-icon-button matTooltip="Supprimer" color="warn" (click)="deleteEtape(row.id.code, row.id.codeVersionEtape)"><i class="fa fa-trash"></i></button>
+            <button class="delete-button" mat-icon-button matTooltip="Supprimer" (click)="deleteEtape(row.id.code, row.id.codeVersionEtape)"><span class="fa fa-trash" aria-label="Supprimer"></span></button>
           </td>
         </ng-container>
       </app-table>
@@ -71,27 +71,30 @@
     </mat-expansion-panel-header>
 
     <form [formGroup]="form">
-      <div class="row">
-        <mat-form-field class="col-sm12 col-md-6" appearance="fill">
-          <mat-label>Voie</mat-label>
-          <input matInput formControlName="voie" required>
-          <mat-error><app-form-error [field]="form.get('voie')"></app-form-error></mat-error>
-        </mat-form-field>
-        <mat-form-field class="col-sm12 col-md-6" appearance="fill">
-          <mat-label>Bâtiment / Résidence / Z.I.</mat-label>
-          <input matInput formControlName="adresse">
-        </mat-form-field>
-      </div>
-      <div class="row">
-        <div class="col-sm12 col-md-6">
-          <app-form-autocomplete-field [service]="communeService" [field]="form.get('codePostal')" [fieldLabel]="'Code postal'" (updated)="updateCommune($event)" [startWith]="false"></app-form-autocomplete-field>
+      <fieldset>
+        <legend class="sr-only">Adresse</legend>
+        <div class="row">
+          <mat-form-field class="col-sm12 col-md-6" appearance="fill">
+            <mat-label>Voie</mat-label>
+            <input matInput formControlName="voie" required>
+            <mat-error><app-form-error [field]="form.get('voie')"></app-form-error></mat-error>
+          </mat-form-field>
+          <mat-form-field class="col-sm12 col-md-6" appearance="fill">
+            <mat-label>Bâtiment / Résidence / Z.I.</mat-label>
+            <input matInput formControlName="adresse">
+          </mat-form-field>
         </div>
-        <mat-form-field class="col-sm12 col-md-6" appearance="fill">
-          <mat-label>Commune</mat-label>
-          <input matInput formControlName="commune" required>
-          <mat-error><app-form-error [field]="form.get('commune')"></app-form-error></mat-error>
-        </mat-form-field>
-      </div>
+        <div class="row">
+          <div class="col-sm12 col-md-6">
+            <app-form-autocomplete-field [service]="communeService" [field]="form.get('codePostal')" [fieldLabel]="'Code postal'" (updated)="updateCommune($event)" [startWith]="false"></app-form-autocomplete-field>
+          </div>
+          <mat-form-field class="col-sm12 col-md-6" appearance="fill">
+            <mat-label>Commune</mat-label>
+            <input matInput formControlName="commune" required>
+            <mat-error><app-form-error [field]="form.get('commune')"></app-form-error></mat-error>
+          </mat-form-field>
+        </div>
+      </fieldset>
       <div class="row">
         <mat-form-field class="col-sm12 col-md-6" appearance="fill">
           <mat-label>Adresse mail</mat-label>
@@ -100,7 +103,7 @@
             Ce champ est requis.
           </mat-error>
           <mat-error *ngIf="form.get('mail')?.hasError('pattern')">
-            Adresse email invalide.
+            Adresse email invalide. Format attendu : exemple&#64;domaine.com
           </mat-error>
         </mat-form-field>
         <mat-form-field class="col-sm12 col-md-6" appearance="fill">
@@ -110,7 +113,7 @@
             Ce champ est requis.
           </mat-error>
           <mat-error *ngIf="form.get('telephone')?.hasError('pattern')">
-            Numéro de téléphone invalide.
+            Numéro de téléphone invalide. Format attendu : 01 23 XX XX XX
           </mat-error>
         </mat-form-field>
 

@@ -42,6 +42,7 @@ export class EtabAccueilComponent implements OnInit {
 
   autorisationCreationFrance=false;
   autorisationCreationHorsFrance = false;
+  currentUser: any;
 
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
   @ViewChild(MatExpansionPanel) firstPanel: MatExpansionPanel|undefined;
@@ -104,6 +105,9 @@ export class EtabAccueilComponent implements OnInit {
         filter.options = response.data;
       }
     });
+    this.authService.getCurrentUser().subscribe(res=>{
+      this.currentUser = res;
+    });
   }
 
   canCreate(): boolean {
@@ -148,5 +152,14 @@ export class EtabAccueilComponent implements OnInit {
   //   }
   // }
 
+
+  isCreatorEtab(etab: any): boolean {
+    if (!this.currentUser || !etab) {
+      return false;
+    }
+    const isCreator: boolean = etab.loginCreation === this.currentUser.login;
+    const isEtabModified: boolean = etab.loginModif && etab.loginModif !== etab.loginCreation;
+    return isCreator && !isEtabModified;
+  }
 
 }

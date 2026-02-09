@@ -2,7 +2,7 @@
   <mat-tab label="Liste">
     <div class="sirene-info-box" *ngIf="isSireneAcitve">
       <div class="sirene-info-title">
-        <mat-icon color="info">info</mat-icon>
+        <mat-icon aria-hidden="true">info</mat-icon>
         <span class="m-2">La recherche via l’API Sirene est déclenchée uniquement si :</span>
       </div>
       <div class="sirene-info-details">
@@ -52,11 +52,11 @@
         <th mat-header-cell *matHeaderCellDef >Actions</th>
         <td mat-cell *matCellDef="let row">
           <div class="row" *ngIf="!isFromSirene(row)">
-            <button mat-icon-button matTooltip="Éditer" *ngIf="canEdit()" (click)="edit(row)" color="primary"><i class="fa fa-pen"></i></button>
-            <button mat-icon-button matTooltip="Supprimer" *ngIf="canDelete()" (click)="delete(row)" color="warn"><i class="fa fa-trash-alt"></i></button>
+            <button class="edit-button" mat-icon-button matTooltip="Éditer" *ngIf="canEdit()" (click)="edit(row)" ><span class="fa fa-pen" aria-label="Modifier"></span></button>
+            <button class="delete-button" mat-icon-button matTooltip="Supprimer" *ngIf="canDelete()" (click)="delete(row)" ><span class="fa fa-trash-alt"></span></button>
           </div>
           <div class="row" *ngIf="isFromSirene(row)">
-            <button mat-icon-button matTooltip="Créer" *ngIf="canCreate()" (click)="create(row)" color="primary"><i class="fa fa-plus"></i></button>
+            <button class="edit-button" mat-icon-button matTooltip="Créer" *ngIf="canCreate()" (click)="create(row)" ><span class="fa fa-plus" aria-label="Créer"></span></button>
           </div>
         </td>
       </ng-container>
@@ -79,7 +79,7 @@
             </mat-select>
           </mat-form-field>
           <div class="col-md-12 mb-3">
-            <button mat-flat-button *ngIf="canCreateServiceOrContact()" (click)="createService()" color="primary">Créer un nouveau service d'accueil</button>
+            <button class="valid-button" mat-flat-button *ngIf="canCreateServiceOrContact()" (click)="createService()" >Créer un nouveau service d'accueil</button>
           </div>
         </div>
         <div class="row mt-3" *ngIf="service">
@@ -126,9 +126,9 @@
               <ng-container matColumnDef="actions">
                 <th mat-header-cell *matHeaderCellDef>Actions</th>
                 <td mat-cell *matCellDef="let row">
-                  <button mat-icon-button matTooltip="Éditer" (click)="editService(row)" color="primary"><i class="fa fa-pen"></i></button>
+                  <button class="edit-button" mat-icon-button matTooltip="Éditer" (click)="editService(row)" ><span class="fa fa-pen" aria-label="Modifier"></span></button>
                   <span (confirm)="deleteService(row)" [confirmMessage]="'Êtes-vous sûr de vouloir supprimer ce service ?'">
-                    <button mat-icon-button matTooltip="Supprimer" color="warn"><i class="fa fa-trash-alt"></i></button>
+                    <button class="delete-button" mat-icon-button matTooltip="Supprimer" ><span class="fa fa-trash-alt"></span></button>
                   </span>
                 </td>
               </ng-container>
@@ -177,9 +177,9 @@
               <ng-container matColumnDef="actions">
                 <th mat-header-cell *matHeaderCellDef>actions</th>
                 <td mat-cell *matCellDef="let row">
-                  <button mat-icon-button matTooltip="Éditer" (click)="editContact(row)" color="primary"><i class="fa fa-pen"></i></button>
+                  <button class="edit-button" mat-icon-button matTooltip="Éditer" (click)="editContact(row)" ><span class="fa fa-pen" aria-label="Modifier"></span></button>
                   <span (confirm)="deleteContact(row)" [confirmMessage]="'Êtes-vous sûr de vouloir supprimer ce contact ?'">
-                    <button mat-icon-button matTooltip="Supprimer" color="warn"><i class="fa fa-trash-alt"></i></button>
+                    <button class="delete-button" mat-icon-button matTooltip="Supprimer" ><span class="fa fa-trash-alt"></span></button>
                   </span>
                 </td>
               </ng-container>
@@ -188,7 +188,7 @@
             </table>
           </div>
           <div class="col-md-12 mt-5">
-            <button mat-flat-button (click)="createContact()" color="primary">Créer un nouveau Contact</button>
+            <button class="valid-button" mat-flat-button (click)="createContact()" >Créer un nouveau Contact</button>
           </div>
         </div>
       </mat-expansion-panel>
@@ -217,10 +217,10 @@
               <ng-container matColumnDef="action">
                 <th mat-header-cell *matHeaderCellDef>Action</th>
                 <td mat-cell *matCellDef="let row">
-                  <button type="button" mat-icon-button matTooltip="Visualiser"
-                          matTooltipPosition="left" color="primary"
+                  <button type="button" class="edit-button" mat-icon-button matTooltip="Visualiser"
+                          matTooltipPosition="left"
                           (click)="openHistoriqueDetails(row)">
-                    <i class="fa fa-eye"></i>
+                    <span class="fa fa-eye"></span>
                   </button>
                 </td>
               </ng-container>
@@ -241,7 +241,7 @@
           <mat-divider class="mb-3"></mat-divider>
           <div class="import-info-box">
             <div class="icon-block">
-              <mat-icon color="info">info</mat-icon>
+              <mat-icon aria-hidden="true">info</mat-icon>
             </div>
             <div class="text-block">
               <span>Le séparateur attendu est ';'.</span>
@@ -251,7 +251,7 @@
             </div>
           </div>
           <div class="mb-2">
-            <button mat-flat-button style="margin-right:5px" color="primary" (click)="importer.click()">
+            <button class="valid-button" mat-flat-button style="margin-right:5px"  (click)="importer.click()" aria-label="Importer depuis un fichier csv">
               Importer depuis un fichier csv
             </button>
             <input #importer hidden type="file" name="file" accept="text/csv"   (click)="importer.value = ''" (change)="importCsv($event)">

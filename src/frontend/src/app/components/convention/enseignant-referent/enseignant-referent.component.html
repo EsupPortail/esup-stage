@@ -5,7 +5,7 @@
       <mat-panel-title>Enseignant</mat-panel-title>
       <mat-panel-description>
         <div class="w-100 text-right">
-          <mat-icon fontSet="fa" fontIcon="fa-user"></mat-icon>
+          <mat-icon aria-hidden="true" fontSet="fa" fontIcon="fa-user"></mat-icon>
         </div>
       </mat-panel-description>
     </mat-expansion-panel-header>
@@ -73,10 +73,10 @@
       <ng-container matColumnDef="action">
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let row">
-          <button mat-button mat-stroked-button (click)="choose(row)" color="primary">
-            <span *ngIf="true"><i class="fa fa-check"></i> Sélectionner</span>
+          <button class="valid-button" mat-button mat-stroked-button (click)="choose(row)">
+            <span *ngIf="true"><span class="fa fa-check" aria-hidden="true"></span> Sélectionner</span>
             <ng-template #notSelected>
-              <i class="fa fa-check-circle"></i> Sélectionner
+              <span class="fa fa-check-circle" aria-hidden="true"></span> Sélectionner
             </ng-template>
           </button>
         </td>

@@ -7,5 +7,10 @@
     </ng-container>
     {{getTitle()}}
   </h1>
-  <div mat-dialog-content [innerHTML]="getMessage()" class="msg-text"></div>
+
+  <div mat-dialog-content [innerHTML]="getMessage()" class="msg-text text-center"></div>
+
+  <mat-dialog-actions align="center">
+    <button class="message-ok-button" mat-button mat-dialog-close autofocus>OK</button>
+  </mat-dialog-actions>
 </div>
