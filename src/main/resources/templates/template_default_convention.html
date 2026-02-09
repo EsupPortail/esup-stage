@@ -410,24 +410,58 @@
                 <p style="text-align:justify;">
                     <span class="text-tiny" style="color:hsl(0,0%,0%);font-family:'Times New Roman', Times, serif;">En cochant la case appropriée, l'organisme d'accueil indique ci-après s'il fournit une protection Maladie au stagiaire, en vertu du droit local :</span>
                 </p>
-                <p style="text-align:justify;margin-left:20px;">
-                    <span style="font-family:'Arial Unicode MS', 'Segoe UI Symbol', sans-serif; font-style:normal;font-size:12pt;">
-                        <#if convention.protectionSocialeOrganismeAccueil?? && convention.protectionSocialeOrganismeAccueil>☑<#else>☐</#if>
-                    </span>
-                    <span class="text-tiny" style="color:hsl(0,0%,0%);font-family:'Times New Roman', Times, serif;">
-                        <strong> OUI: </strong>cette protection s'ajoute au maintien, à l'étranger, des droits issus du droit français.
-                    </span>
-                </p>
+                <style>
+                    .checkbox {
+                        display: inline-block;
+                        width: 10px;
+                        height: 10px;
+                        border: 1px solid #000;
 
-                <p style="text-align:justify;margin-left:20px;">
-                    <span style="font-family:'Arial Unicode MS', 'Segoe UI Symbol', sans-serif; font-style:normal;font-size:12pt;">
-                        <#if convention.protectionSocialeOrganismeAccueil?? && !convention.protectionSocialeOrganismeAccueil>☑<#else>☐</#if>
-                    </span>
-                    <span class="text-tiny" style="color:hsl(0,0%,0%);font-family:'Times New Roman', Times, serif;">
-                        <strong> NON: </strong>la protection découle alors exclusivement du maintien, à l'étranger, des droits issus du régime français étudiant.
-                    </span>
-                </p>
+                        text-align: center;
+                        line-height: 10px;
+                        font-family: Arial, sans-serif;
+                        font-size: 9px;
+                        font-style: normal;
+                        font-weight: normal;
+                    }
 
+                    .checkbox.checked::after {
+                        content: "X";
+                    }
+                </style>
+                <table style="margin-left:20px; border-collapse:collapse; width:100%;">
+                    <tr>
+                        <td style="width:16px; vertical-align:top; padding-top:2px;">
+                            <#if convention.protectionSocialeOrganismeAccueil?? && convention.protectionSocialeOrganismeAccueil>
+                            <span class="checkbox checked"></span>
+                            <#else>
+                            <span class="checkbox"></span>
+                        </#if>
+                        </td>
+                        <td style="text-align:justify;">
+                            <span class="text-tiny" style="color:black; font-family:'Times New Roman', Times, serif;">
+                                <strong>OUI:&nbsp;</strong> cette protection s'ajoute au maintien, à l'étranger, des droits issus du droit français.
+                            </span>
+                        </td>
+                    </tr>
+                </table>
+
+                <table style="margin-left:20px; border-collapse:collapse; width:100%; margin-top:4px;">
+                    <tr>
+                        <td style="width:16px; vertical-align:top; padding-top:2px;">
+                            <#if convention.protectionSocialeOrganismeAccueil?? && !convention.protectionSocialeOrganismeAccueil>
+                                <span class="checkbox checked"></span>
+                            <#else>
+                                <span class="checkbox"></span>
+                            </#if>
+                        </td>
+                        <td style="text-align:justify;">
+                            <span class="text-tiny" style="color:black; font-family:'Times New Roman', Times, serif;">
+                                <strong>NON:&nbsp;</strong> la protection découle alors exclusivement du maintien, à l'étranger, des droits issus du régime français étudiant.
+                            </span>
+                        </td>
+                    </tr>
+                </table>
                 <p style="text-align:justify;">
                     <span class="text-tiny" style="color:hsl(0,0%,0%);font-family:'Times New Roman', Times, serif;">
                         Si aucune case n'est cochée, le 6.3-1 s'applique.
