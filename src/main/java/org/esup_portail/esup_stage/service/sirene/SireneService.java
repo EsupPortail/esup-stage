@@ -153,9 +153,15 @@ public class SireneService {
                     url, HttpMethod.GET, entity, SirenResponse.class
             );
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                if ((!isDiffusionComplete(response.getBody())) && appConfigService.getConfigGenerale().isDesactiverMajAutoEtabDiffusionPartiel() ) {
+                if ((!isDiffusionComplete(response.getBody()))) {
                     logger.warn("Mise à jour ignorée (diffusion partielle) pour l'établissement id={} siret={}",
                             structure.getId(), structure.getNumeroSiret());
+                    if (structure.isTemDiffusibleSirene()){
+                        structure.setTemDiffusibleSirene(false);
+                        structure.setVerrouillageSynchroStructureSirene(true);
+                        structureJpaRepository.save(structure);
+                        eventPublisher.publishEvent(new StructureUpdatedEvent(structure,oldStructureJson,objectMapper.writeValueAsString(structure),true));
+                    }
                     return;
                 }
                 structure = sirenMapper.updateStructure(response.getBody(), structure);

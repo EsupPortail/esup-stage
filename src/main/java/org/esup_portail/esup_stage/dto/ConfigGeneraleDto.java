@@ -50,6 +50,4 @@ public class ConfigGeneraleDto {
 
     private boolean desactiverMajAutoEtabSelection = false;
 
-    private boolean desactiverMajAutoEtabDiffusionPartiel = false;
-
 }

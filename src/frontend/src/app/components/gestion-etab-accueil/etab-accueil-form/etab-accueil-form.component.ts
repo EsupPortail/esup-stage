@@ -460,8 +460,8 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
 
   ngOnChanges(changes: SimpleChanges): void {
     this.form = this.fb.group({
-      raisonSociale: [{ value: this.etab.raisonSociale, disabled: this.isFieldDisabled() }, [Validators.required, Validators.maxLength(150)]],
-      numeroSiret: [{ value: this.etab.numeroSiret, disabled: this.isFieldDisabled() }, [Validators.maxLength(14), Validators.pattern('[0-9]{14}')]],
+      raisonSociale: [this.etab.raisonSociale, [Validators.required, Validators.maxLength(150)]],
+      numeroSiret: [this.etab.numeroSiret, [Validators.maxLength(14), Validators.pattern('[0-9]{14}')]],
       idEffectif: [this.etab.effectif ? this.etab.effectif.id : null],
       idTypeStructure: [this.etab.typeStructure ? this.etab.typeStructure.id : null, [Validators.required]],
       idStatutJuridique: [this.etab.statutJuridique?.id ?? null, [Validators.required]],
@@ -502,6 +502,11 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
         this.lastNafListKey = currentKey;
         this.loadNafN5List();
       }
+    }
+
+    if (this.isRaisonSocialeOrSiretDisabled()) {
+      this.form.get('raisonSociale')?.disable();
+      this.form.get('numeroSiret')?.disable();
     }
   }
 
@@ -680,6 +685,14 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
 
   isFieldDisabled(): boolean {
       return !!this.etab?.id ? !this.canEdit() : !this.canCreate();
+  }
+
+  isRaisonSocialeOrSiretDisabled(): boolean {
+    const hasRights = this.authService.checkRights({
+      fonction: AppFonction.ORGA_ACC,
+      droits: [Droit.CREATION, Droit.MODIFICATION]
+    });
+    return hasRights && this.etab?.temSiren === true && this.etab?.temDiffusibleSirene === true;
   }
 
   private filterCountries(): void {

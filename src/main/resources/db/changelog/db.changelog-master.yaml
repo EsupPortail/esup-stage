@@ -282,3 +282,6 @@ databaseChangeLog:
   - include:
         file: 3.2.0-ajout-bool-verrouillage-synchro-etab.yaml
         relativeToChangelogFile: true
+  - include:
+      file: 3.1.12-ajout-temoin-diffusible-sirene.yaml
+      relativeToChangelogFile: true
