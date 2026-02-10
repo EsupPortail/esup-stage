@@ -504,8 +504,10 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
       }
     }
 
-    if (this.isRaisonSocialeOrSiretDisabled()) {
+    if (this.isRaisonSocialeDisabled()) {
       this.form.get('raisonSociale')?.disable();
+    }
+    if (this.isSiretDisabled()) {
       this.form.get('numeroSiret')?.disable();
     }
   }
@@ -687,13 +689,14 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
       return !!this.etab?.id ? !this.canEdit() : !this.canCreate();
   }
 
-  isRaisonSocialeOrSiretDisabled(): boolean {
-    const hasRights = this.authService.checkRights({
-      fonction: AppFonction.ORGA_ACC,
-      droits: [Droit.CREATION, Droit.MODIFICATION]
-    });
-    return hasRights && this.etab?.temSiren === true && this.etab?.temDiffusibleSirene === true;
+  isRaisonSocialeDisabled(): boolean {
+    return this.isFieldDisabled() && this.etab?.temSiren === true && this.etab?.temDiffusibleSirene === true;
   }
+
+
+    isSiretDisabled(): boolean {
+      return this.isFieldDisabled() && this.etab?.temSiren === true;
+    }
 
   private filterCountries(): void {
     if (!this.countries || !Array.isArray(this.countries)) {

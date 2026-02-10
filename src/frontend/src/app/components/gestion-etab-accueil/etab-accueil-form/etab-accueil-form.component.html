@@ -4,13 +4,13 @@
   <div class="row">
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Raison sociale</mat-label>
-      <input matInput formControlName="raisonSociale" required [disabled]="isRaisonSocialeOrSiretDisabled()" />
+      <input matInput formControlName="raisonSociale" required [disabled]="isRaisonSocialeDisabled()" />
       <mat-icon matSuffix class="icon-help" matTooltip="Nom de l'organisme">help</mat-icon>
       <mat-error *ngIf="form.get('raisonSociale')"></mat-error>
     </mat-form-field>
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill" [hidden]="!isFr()">
       <mat-label>Numéro Siret</mat-label>
-      <input matInput formControlName="numeroSiret" [required]="numeroSiretRequired() && isFr()" [disabled]="isRaisonSocialeOrSiretDisabled()" />
+      <input matInput formControlName="numeroSiret" [required]="numeroSiretRequired() && isFr()" [disabled]="isSiretDisabled()" />
       <mat-icon matSuffix class="icon-help" matTooltip="Code INSEE à demander à votre établissement d'accueil ou consultable sur des sites de référencement d'entreprises. Correspond à l'identifiant géographique de l'établissement. (format : 14 chiffres consécutifs sans espace - ex: 12345678912345)">help</mat-icon>
       <mat-error *ngIf="form.get('numeroSiret')"></mat-error>
     </mat-form-field>
