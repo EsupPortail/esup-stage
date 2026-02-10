@@ -1,14 +1,12 @@
 package org.esup_portail.esup_stage.webhook.esupsignature.service;
 
 import com.itextpdf.commons.utils.Base64;
-import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.esup_portail.esup_stage.config.properties.SignatureProperties;
 import org.esup_portail.esup_stage.dto.MetadataDto;
 import org.esup_portail.esup_stage.dto.MetadataObservateurDto;
 import org.esup_portail.esup_stage.dto.MetadataSignataireDto;
 import org.esup_portail.esup_stage.dto.PdfMetadataDto;
-import org.esup_portail.esup_stage.enums.SignataireEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.Avenant;
 import org.esup_portail.esup_stage.model.CentreGestionSignataire;
@@ -214,19 +212,19 @@ public class WebhookService {
                     .uri(uri)
                     .header("Authorization", "Bearer " + signatureProperties.getWebhook().getToken())
                     .retrieve()
-                    .bodyToMono(String.class)
+                    .toEntity(String.class)
                     .block();
         } catch (WebClientResponseException e) {
             HttpStatus status = HttpStatus.valueOf(e.getStatusCode().value());
             logger.error("Erreur HTTP lors du refresh historique EXTERNE (conventionId={}, uri={}, status={})", convention.getId(), uri, status, e);
-            if (status == HttpStatus.UNAUTHORIZED) throw new AppException(HttpStatus.UNAUTHORIZED, "Accès non autorisé à l'application de signature externe");
-            if (status == HttpStatus.FORBIDDEN) throw new AppException(HttpStatus.FORBIDDEN, "Accès interdit à l'application de signature externe");
-            if (status == HttpStatus.NOT_FOUND) throw new AppException(HttpStatus.NOT_FOUND, "Endpoint externe de mise à jour d'historique introuvable");
-            if (status == HttpStatus.INTERNAL_SERVER_ERROR) throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur interne de l'application de signature externe");
-            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de l'appel à l'application de signature externe");
+            if (status == HttpStatus.UNAUTHORIZED) throw new AppException(HttpStatus.UNAUTHORIZED, "Accès non autorisé à l'application de signature");
+            if (status == HttpStatus.FORBIDDEN) throw new AppException(HttpStatus.FORBIDDEN, "Accès interdit à l'application de signature");
+            if (status == HttpStatus.NOT_FOUND) throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvé dans l'application de signature");
+            if (status == HttpStatus.INTERNAL_SERVER_ERROR) throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur interne de l'application de signature");
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de l'appel à l'application de signature");
         } catch (Exception e) {
             logger.error("Erreur technique lors du refresh historique EXTERNE (conventionId={}, uri={})", convention.getId(), uri, e);
-            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique lors de la mise à jour externe de l'historique");
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique lors de la mise à jour de l'historique");
         }
     }
 
@@ -241,15 +239,15 @@ public class WebhookService {
                     .block();
         } catch (WebClientResponseException e) {
             HttpStatus status = HttpStatus.valueOf(e.getStatusCode().value());
-            logger.error("Erreur HTTP lors du refresh historique EXTERNE (avenantId={}, uri={}, status={})", avenant.getId(), uri, status, e);
-            if (status == HttpStatus.UNAUTHORIZED) throw new AppException(HttpStatus.UNAUTHORIZED, "Accès non autorisé à l'application de signature externe");
-            if (status == HttpStatus.FORBIDDEN) throw new AppException(HttpStatus.FORBIDDEN, "Accès interdit à l'application de signature externe");
-            if (status == HttpStatus.NOT_FOUND) throw new AppException(HttpStatus.NOT_FOUND, "Endpoint externe de mise à jour d'historique introuvable");
-            if (status == HttpStatus.INTERNAL_SERVER_ERROR) throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur interne de l'application de signature externe");
-            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de l'appel à l'application de signature externe");
+            logger.error("Erreur HTTP lors du refresh historique (avenantId={}, uri={}, status={})", avenant.getId(), uri, status, e);
+            if (status == HttpStatus.UNAUTHORIZED) throw new AppException(HttpStatus.UNAUTHORIZED, "Accès non autorisé à l'application de signature");
+            if (status == HttpStatus.FORBIDDEN) throw new AppException(HttpStatus.FORBIDDEN, "Accès interdit à l'application de signature");
+            if (status == HttpStatus.NOT_FOUND) throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvé dans l'application de signature");
+            if (status == HttpStatus.INTERNAL_SERVER_ERROR) throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur interne de l'application de signature");
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de l'appel à l'application de signature");
         } catch (Exception e) {
-            logger.error("Erreur technique lors du refresh historique EXTERNE (avenantId={}, uri={})", avenant.getId(), uri, e);
-            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique lors de la mise à jour externe de l'historique");
+            logger.error("Erreur technique lors du refresh historique (avenantId={}, uri={})", avenant.getId(), uri, e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique lors de la mise à jour de l'historique");
         }
     }
 }
