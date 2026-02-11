@@ -72,7 +72,7 @@
                       [removable]="true"
                       (removed)="removeAutocomplete(filter, value)">
                       {{value[filter.keyLibelle]}}
-                      <span matChipRemove>
+                      <span matChipRemove [attr.aria-label]="'Supprimer l\'élément'">
                         <mat-icon aria-hidden="true">cancel</mat-icon>
                       </span>
                     </mat-chip>
