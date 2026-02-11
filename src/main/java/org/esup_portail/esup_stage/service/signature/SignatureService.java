@@ -304,9 +304,6 @@ public class SignatureService {
         if (appSignature == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La signature électronique n'est pas configurée");
         }
-        if (appSignature == AppSignatureEnum.EXTERNE) {
-            throw new AppException(HttpStatus.NO_CONTENT, "La récupération de l'historique sera faite automatiquement");
-        }
 
         try {
             List<Historique> historiques = new ArrayList<>();
@@ -317,6 +314,9 @@ public class SignatureService {
                 case ESUPSIGNATURE:
                     historiques = webhookService.getHistorique(convention.getDocumentId(), convention);
                     break;
+                case EXTERNE:
+                    webhookService.getHistoriqueExterne(convention);
+                    return;
             }
             setSignatureHistorique(convention, historiques);
         } catch (Exception e) {
@@ -340,9 +340,6 @@ public class SignatureService {
         if (appSignature == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La signature électronique n'est pas configurée");
         }
-        if (appSignature == AppSignatureEnum.EXTERNE) {
-            throw new AppException(HttpStatus.NO_CONTENT, "La récupération de l'historique sera faite automatiquement");
-        }
 
         try {
             List<Historique> historiques = new ArrayList<>();
@@ -353,6 +350,9 @@ public class SignatureService {
                 case ESUPSIGNATURE:
                     historiques = webhookService.getHistorique(avenant.getDocumentId(), avenant.getConvention());
                     break;
+                case EXTERNE:
+                    webhookService.getHistoriqueExterne(avenant);
+                    return;
             }
             setSignatureHistorique(avenant, historiques);
         } catch (Exception e) {
@@ -521,11 +521,14 @@ public class SignatureService {
         log.info("Fin de updateAuto()");
     }
 
-    //TODO : mettre a jour le update pour aller chercher les données (pour toutes les app de signature)
     public void update(Convention convention){
         AppSignatureEnum appSignature = signatureProperties.getAppSignatureType();
         try {
             List<Historique> historiques = new ArrayList<>();
+            if (appSignature == AppSignatureEnum.EXTERNE) {
+                webhookService.getHistoriqueExterne(convention);
+                return;
+            }
             historiques = switch (appSignature) {
                 case DOCAPOSTE -> signatureClient.getHistorique(convention.getDocumentId(), convention.getCentreGestion().getSignataires());
                 case ESUPSIGNATURE -> webhookService.getHistoriqueStatus(convention.getDocumentId(), convention);
@@ -585,11 +588,14 @@ public class SignatureService {
         }
     }
 
-    //TODO : mettre a jour le update pour aller chercher les données (pour toutes les app de signature)
     public void update(Avenant avenant){
         AppSignatureEnum appSignature = signatureProperties.getAppSignatureType();
         try {
             List<Historique> historiques = new ArrayList<>();
+            if (appSignature == AppSignatureEnum.EXTERNE) {
+                webhookService.getHistoriqueExterne(avenant);
+                return;
+            }
             historiques = switch (appSignature) {
                 case DOCAPOSTE -> signatureClient.getHistorique(avenant.getDocumentId(), avenant.getConvention().getCentreGestion().getSignataires());
                 case ESUPSIGNATURE -> webhookService.getHistorique(avenant.getDocumentId(), avenant.getConvention());
