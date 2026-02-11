@@ -306,21 +306,6 @@
               </mat-radio-group>
             </div>
           </div>
-          <div class="row mb-2">
-            <div class="col-md-12">
-              <div class="mb-2" [class.section-disabled]="!isSireneAcitve">Désactiver la mise à jour automatique via l'API Sirene si l'établissement est en diffusion partielle ?</div>
-              <mat-radio-group formControlName="desactiverMajAutoEtabDiffusionPartiel">
-                <mat-radio-button
-                  [disabled]="!isSireneAcitve || formGenerale.get('desactiverMajAutoEtabSelection')?.value === true"
-                  [value]="true"
-                >Oui</mat-radio-button>
-                <mat-radio-button
-                  [disabled]="!isSireneAcitve || formGenerale.get('desactiverMajAutoEtabSelection')?.value === true"
-                  [value]="false"
-                >Non</mat-radio-button>
-              </mat-radio-group>
-            </div>
-          </div>
           <div class="mt-3" *ngIf="canEdit()">
             <button mat-flat-button color="primary">Valider</button>
           </div>

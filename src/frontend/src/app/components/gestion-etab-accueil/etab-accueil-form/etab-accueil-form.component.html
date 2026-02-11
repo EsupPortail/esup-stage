@@ -4,13 +4,13 @@
   <div class="row">
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Raison sociale</mat-label>
-      <input matInput formControlName="raisonSociale" [disabled]="isFieldDisabled()" required />
+      <input matInput formControlName="raisonSociale" required [disabled]="isRaisonSocialeDisabled()" />
       <mat-icon matSuffix class="icon-help" matTooltip="Nom de l'organisme">help</mat-icon>
       <mat-error *ngIf="form.get('raisonSociale')"></mat-error>
     </mat-form-field>
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill" [hidden]="!isFr()">
       <mat-label>Numéro Siret</mat-label>
-      <input matInput formControlName="numeroSiret" [disabled]="isFieldDisabled()" [required]="numeroSiretRequired() && isFr()" />
+      <input matInput formControlName="numeroSiret" [required]="numeroSiretRequired() && isFr()" [disabled]="isSiretDisabled()" />
       <mat-icon matSuffix class="icon-help" matTooltip="Code INSEE à demander à votre établissement d'accueil ou consultable sur des sites de référencement d'entreprises. Correspond à l'identifiant géographique de l'établissement. (format : 14 chiffres consécutifs sans espace - ex: 12345678912345)">help</mat-icon>
       <mat-error *ngIf="form.get('numeroSiret')"></mat-error>
     </mat-form-field>
@@ -209,7 +209,7 @@
           <span class="sync-radio-label">Synchronisation automatique</span>
           <mat-radio-group
             [value]="etab.verrouillageSynchroStructureSirene ? 'non' : 'oui'"
-            [disabled]="isMajAutoDisabled"
+            [disabled]="isMajAutoDisabled || !etab.temDiffusibleSirene"
             (change)="toggleVerrouillage()"
             aria-label="Synchronisation automatique">
             <mat-radio-button value="oui">Oui</mat-radio-button>
@@ -218,13 +218,16 @@
         </div>
       </div>
 
-      <!-- Mise à jour automatique -->
       <div class="slot" *ngIf="canUpdateFromApi()">
-        <button type="button" mat-button mat-stroked-button color="primary" class="mr-2" [disabled]="autoUpdating" (click)="autoUpdateFromApi()"
-                matTooltip="Met à jour automatiquement les informations de l'établissement via l'API">
-          <mat-icon class="mr-1" [class.spin]="autoUpdating">autorenew</mat-icon>
-          {{ autoUpdating ? 'Mise à jour…' : 'Mise à jour automatique' }}
-        </button>
+        <div [matTooltip]="!etab.temDiffusibleSirene ? 'Cet établissement est partiellement diffusible et ne peut pas être mis à jour via l\'API Sirene' : 'Met à jour automatiquement les informations de l\'établissement via l\'API'"
+             style="display: inline-block;">
+          <button type="button" mat-button mat-stroked-button color="primary" class="mr-2"
+                  [disabled]="autoUpdating || !etab.temDiffusibleSirene"
+                  (click)="autoUpdateFromApi()">
+            <mat-icon class="mr-1" [class.spin]="autoUpdating">autorenew</mat-icon>
+            {{ autoUpdating ? 'Mise à jour…' : 'Mise à jour' }}
+          </button>
+        </div>
       </div>
 
       <!-- Valider -->
