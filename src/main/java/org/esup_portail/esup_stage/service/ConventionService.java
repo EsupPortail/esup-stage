@@ -226,6 +226,9 @@ public class ConventionService {
             etape.setId(etapeId);
             etape.setLibelle(libelleEtape);
             etape = etapeJpaRepository.saveAndFlush(etape);
+        } else if ((etape.getLibelle() == null || etape.getLibelle().isEmpty()) && libelleEtape != null && !libelleEtape.isEmpty()) {
+            etape.setLibelle(libelleEtape);
+            etape = etapeJpaRepository.saveAndFlush(etape);
         }
         return etape;
     }
