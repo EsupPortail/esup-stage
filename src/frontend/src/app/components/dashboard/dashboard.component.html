@@ -76,6 +76,7 @@
         ? validationLibelles.validationPedagogique + ' effectuée'
         : 'en attente ' + validationLibelles.validationPedagogique"
          role="img"
+         [attr.aria-hidden]="false"
          [attr.aria-label]="row.validationPedagogique
         ? (validationLibelles.validationPedagogique + ' effectuée')
         : (validationLibelles.validationPedagogique + ' en attente')">
@@ -93,6 +94,7 @@
         ? (validationLibelles.verificationAdministrative + ' effectuée')
         : ('en attente ' + validationLibelles.verificationAdministrative) }}"
          role="img"
+         [attr.aria-hidden]="false"
          [attr.aria-label]="row.verificationAdministrative
         ? (validationLibelles.verificationAdministrative + ' effectuée')
         : (validationLibelles.verificationAdministrative + ' en attente')">
@@ -110,6 +112,7 @@
         ? (validationLibelles.validationConvention + ' effectuée')
         : ('en attente ' + validationLibelles.validationConvention) }}"
          role="img"
+         [attr.aria-hidden]="false"
          [attr.aria-label]="row.validationConvention
         ? (validationLibelles.validationConvention + ' effectuée')
         : (validationLibelles.validationConvention + ' en attente')">
@@ -125,6 +128,7 @@
          [ngClass]="getValidationIconStatus(row)"
          [matTooltip]="getValidationTooltip(row)"
          role="img"
+         [attr.aria-hidden]="false"
          [attr.aria-label]="'signature ' + getValidationTooltip(row)">
         <span class="sr-only">{{ getValidationTooltip(row) }}</span>
       </mat-icon>
@@ -173,6 +177,7 @@
         ? (validationLibelles.validationPedagogique + ' effectuée')
         : ('en attente ' + validationLibelles.validationPedagogique) }}"
          role="img"
+         [attr.aria-hidden]="false"
          [attr.aria-label]="row.validationPedagogique
         ? (validationLibelles.validationPedagogique + ' effectuée')
         : (validationLibelles.validationPedagogique + ' en attente')">
@@ -189,6 +194,7 @@
         ? (validationLibelles.verificationAdministrative + ' effectuée')
         : ('en attente ' + validationLibelles.verificationAdministrative) }}"
          role="img"
+         [attr.aria-hidden]="false"
          [attr.aria-label]="row.verificationAdministrative
         ? (validationLibelles.verificationAdministrative + ' effectuée')
         : (validationLibelles.verificationAdministrative + ' en attente')">
@@ -205,6 +211,7 @@
         ? (validationLibelles.validationConvention + ' effectuée')
         : ('en attente ' + validationLibelles.validationConvention) }}"
          role="img"
+         [attr.aria-hidden]="false"
          [attr.aria-label]="row.validationConvention
         ? (validationLibelles.validationConvention + ' effectuée')
         : (validationLibelles.validationConvention + ' en attente')">
@@ -219,6 +226,7 @@
          [ngClass]="getValidationIconStatus(row)"
          [matTooltip]="getValidationTooltip(row)"
          role="img"
+         [attr.aria-hidden]="false"
          [attr.aria-label]="'signature '+getValidationTooltip(row)">
         <span class="sr-only">{{ getValidationTooltip(row) }}</span>
       </i>
@@ -306,6 +314,7 @@
           ? (validationLibelles.validationPedagogique + ' effectuée')
           : ('en attente ' + validationLibelles.validationPedagogique) }}"
            role="img"
+           [attr.aria-hidden]="false"
            [attr.aria-label]="row.validationPedagogique
           ? (validationLibelles.validationPedagogique + ' effectuée')
           : (validationLibelles.validationPedagogique + ' en attente')">
@@ -323,6 +332,7 @@
           ? (validationLibelles.verificationAdministrative + ' effectuée')
           : ('en attente ' + validationLibelles.verificationAdministrative) }}"
            role="img"
+           [attr.aria-hidden]="false"
            [attr.aria-label]="row.verificationAdministrative
           ? (validationLibelles.verificationAdministrative + ' effectuée')
           : (validationLibelles.verificationAdministrative + ' en attente')">
@@ -340,6 +350,7 @@
           ? (validationLibelles.validationConvention + ' effectuée')
           : ('en attente ' + validationLibelles.validationConvention) }}"
            role="img"
+           [attr.aria-hidden]="false"
            [attr.aria-label]="row.validationConvention
           ? (validationLibelles.validationConvention + ' effectuée')
           : (validationLibelles.validationConvention + ' en attente')">
@@ -354,6 +365,7 @@
            [ngClass]="getValidationIconStatus(row)"
            [matTooltip]="getValidationTooltip(row)"
            role="img"
+           [attr.aria-hidden]="false"
            [attr.aria-label]="'signature ' + getValidationTooltip(row)">
           <span class="sr-only">{{ getValidationTooltip(row) }}</span>
         </i>
@@ -383,4 +395,9 @@
     </tbody>
   </table>
 </ng-template>
+
+
+
+
+
 
