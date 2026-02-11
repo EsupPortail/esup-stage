@@ -2,7 +2,15 @@
   <mat-card-content>
     <div class="row">
       <div class="col-md-6 col-sm-12">
-        <span class="convention-attente">Convention(s) en attente de validation : <span class="text-title" *ngIf="nbConventionsEnAttente !== undefined">{{nbConventionsEnAttente}} trouvée(s)</span></span>
+        <span class="convention-attente">
+          Convention(s) en attente de validation :
+          <span class="text-title"
+                *ngIf="nbConventionsEnAttente !== undefined"
+                aria-live="polite"
+                aria-atomic="true">
+            {{nbConventionsEnAttente}} trouvée(s)
+          </span>
+        </span>
       </div>
       <div class="col-md-6 col-sm-12 text-right">
         <mat-form-field>
@@ -397,6 +405,8 @@
     </tbody>
   </table>
 </ng-template>
+
+
 
 
 
