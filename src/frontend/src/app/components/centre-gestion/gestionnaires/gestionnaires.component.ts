@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { PersonnelCentreService } from "../../../services/personnel-centre.service";
 import { CiviliteService } from "../../../services/civilite.service";
@@ -9,8 +9,10 @@ import { ConfigService } from "../../../services/config.service";
 import { UserService } from "../../../services/user.service";
 import { MatExpansionPanel } from "@angular/material/expansion";
 import { TableComponent } from "../../table/table.component";
-import { debounceTime } from "rxjs/operators";
+import { debounceTime, takeUntil } from "rxjs/operators";
 import { Role } from 'src/app/constants/role';
+import { Subject } from "rxjs";
+import { AccessibilityService } from "../../../services/accessibility.service";
 
 @Component({
     selector: 'app-gestionnaires',
@@ -18,7 +20,7 @@ import { Role } from 'src/app/constants/role';
     styleUrls: ['./gestionnaires.component.scss'],
     standalone: false
 })
-export class GestionnairesComponent implements OnInit {
+export class GestionnairesComponent implements OnInit, OnDestroy {
 
   @Input() centreGestion: any;
   @Output() refreshPersonnelsCentre = new EventEmitter<any>();
@@ -45,6 +47,11 @@ export class GestionnairesComponent implements OnInit {
   searchColumns = ['nomprenom', 'mail', 'departement', 'action'];
   gestionnaires: any[] = [];
   gestionnaire: any;
+
+  disableAutoSearch: boolean = false;
+  hasPendingSearchGestionnaire: boolean = false;
+
+  private _destroy$ = new Subject<void>();
 
   alertesMail = [
     {id: 'creationConventionEtudiant', libelle: 'Création d\'une convention par l’étudiant'},
@@ -82,7 +89,8 @@ export class GestionnairesComponent implements OnInit {
     private enseignantService: EnseignantService,
     private civiliteService: CiviliteService,
     private configService: ConfigService,
-    private userService: UserService
+    private userService: UserService,
+    private accessibilityService: AccessibilityService
   ) {
     this.form = this.fb.group({
       nom: [null, []],
@@ -129,6 +137,8 @@ export class GestionnairesComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadDisableAutoSearchPref();
+
     this.civiliteService.getPaginated(1, 0, 'libelle', 'asc','').subscribe((response: any) => {
       this.civilites = response;
     });
@@ -139,15 +149,43 @@ export class GestionnairesComponent implements OnInit {
       this.filters.push({id: 'centreGestion.id', value: this.centreGestion.id, type: 'int', hidden: true});
     }
     this.searchForm.valueChanges.pipe(debounceTime(1000)).subscribe(() => {
+      if (this.disableAutoSearch) {
+        this.hasPendingSearchGestionnaire = this.hasGestionnaireCriteria();
+        if (!this.hasPendingSearchGestionnaire) {
+          this.gestionnaires = [];
+        }
+        return;
+      }
       this.search();
     });
+
+    this.accessibilityService.disableAutoSearch$
+      .pipe(takeUntil(this._destroy$))
+      .subscribe((value) => {
+        const previous = this.disableAutoSearch;
+        this.disableAutoSearch = value;
+
+        if (this.disableAutoSearch && !previous) {
+          this.hasPendingSearchGestionnaire = this.hasGestionnaireCriteria();
+        } else if (!this.disableAutoSearch && previous) {
+          if (this.hasPendingSearchGestionnaire) {
+            this.runSearchGestionnaire();
+          }
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 
   search(): void {
     if (!this.searchForm.get('nom')?.value && !this.searchForm.get('prenom')?.value) {
       this.messageService.setError(`Veuillez renseigner au moins l'un des critères`);
       return;
-    }
+    this.hasPendingSearchGestionnaire = false;
+  }
     this.gestionnaire = undefined;
     this.ldapService.searchUsersByName(this.searchForm.get('nom')?.value, this.searchForm.get('prenom')?.value).subscribe((response: any) => {
       this.gestionnaires = response;
@@ -311,7 +349,29 @@ export class GestionnairesComponent implements OnInit {
     this.toggleAlertes = !this.toggleAlertes;
   }
 
-  hasAlertesMail(gestionnaire: any) {
+  
+  runSearchGestionnaire(): void {
+    if (!this.hasGestionnaireCriteria()) {
+      this.hasPendingSearchGestionnaire = false;
+      return;
+    }
+    this.search();
+  }
+
+  private hasGestionnaireCriteria(): boolean {
+    const nom = (this.searchForm.get('nom')?.value || '').toString().trim();
+    const prenom = (this.searchForm.get('prenom')?.value || '').toString().trim();
+    return nom.length > 0 || prenom.length > 0;
+  }
+
+  private loadDisableAutoSearchPref(): void {
+    const saved = localStorage.getItem('accessibilityPreferences');
+    if (!saved) return;
+    try {
+      const prefs = JSON.parse(saved);
+      this.disableAutoSearch = !!prefs?.disableAutoSearch;
+    } catch {}
+  }hasAlertesMail(gestionnaire: any) {
     return !!(gestionnaire.creationConventionEtudiant
       || gestionnaire.modificationConventionEtudiant
       || gestionnaire.creationConventionGestionnaire
@@ -332,3 +392,4 @@ export class GestionnairesComponent implements OnInit {
       || gestionnaire.evalRemplies);
   }
 }
+
