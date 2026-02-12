@@ -79,6 +79,7 @@ body { margin: 0; font-family: var(--fontFamily); font-size: var(--fontSize); }
 .text-title {
   color: var(--primaryColor);
   font-weight: bold;
+  font-size: calc(var(--fontSize) * 1.1);
 }
 .text-danger {
   color: var(--dangerColor);
@@ -550,3 +551,4 @@ app-root {
   color: inherit;
 }
    /*========================= */
+

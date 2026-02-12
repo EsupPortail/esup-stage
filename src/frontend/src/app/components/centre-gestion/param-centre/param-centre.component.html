@@ -67,7 +67,7 @@
               <mat-error><app-form-error [field]="form.get('delaiAlerteConvention')"></app-form-error></mat-error>
             </mat-form-field>
           </div>
-          <h4 class="h5">Viseur</h4>
+          <h4 class="text-title">Viseur</h4>
           <div *ngIf="form.get('nomViseur')?.value; else noViseur">
             <div class="row">
               <div class="col"><b>Nom du viseur</b> &nbsp; {{form.get('nomViseur')?.value}}</div>
@@ -92,7 +92,7 @@
             <p>Aucun viseur n'est renseigné pour ce centre de gestion.</p>
           </ng-template>
           <div class="mt-4">
-            <h4 class="h5">Délégation du viseur</h4>
+            <h4 class="text-title">Délégation du viseur</h4>
 
             <div *ngIf="form.get('nomViseur')?.value; else noViseurForDelegation">
               <p>
@@ -140,7 +140,7 @@
           </div>
         </div>
         <div class="col-sm-12 col-md-4">
-          <div class="text-title"><span class="fa fa-check" aria-hidden="true"></span> Validations</div>
+          <h4 class="text-title"><span class="fa fa-check" aria-hidden="true"></span> Validations</h4>
           <div>
             <mat-checkbox formControlName="validationPedagogique">{{validationLibelles.validationPedagogique}} des conventions</mat-checkbox>
           </div>
@@ -336,12 +336,8 @@
           </span>
         </td>
       </ng-container>
-
-
       <tr mat-header-row *matHeaderRowDef="columns"></tr>
       <tr mat-row *matRowDef="let row; columns: columns;"></tr>
     </table>
   </mat-expansion-panel>
 </mat-accordion>
-
-

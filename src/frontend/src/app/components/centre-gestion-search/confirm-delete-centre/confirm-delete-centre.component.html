@@ -1,6 +1,6 @@
 <h2 mat-dialog-title>Suppression d'un centre</h2>
 <mat-dialog-content *ngIf="centreGestion">
-  <div class="text-title">{{centreGestion.nomCentre}}</div>
+  <h4 class="text-title">{{centreGestion.nomCentre}}</h4>
   <mat-divider></mat-divider>
   <div class="mt-2 mb-2 row">
       <div class="col-sm-8">{{centreGestion.voie}}</div>
@@ -29,3 +29,4 @@
   <button class="cancel-button" mat-flat-button (click)="cancel()">{{'BOUTON_ANNULER'|contenu}}</button>
   <button class="valid-button" mat-flat-button (click)="valid()" [disabled]="conventionsCount + contactsCount > 0">{{'BOUTON_VALIDER'|contenu}}</button>
 </mat-dialog-actions>
+
