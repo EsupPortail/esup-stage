@@ -126,6 +126,9 @@ public class SecurityConfiguration {
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) -> {
                             if (request.getRequestURI().startsWith("/api/")) {
+                                if (request.getSession(false) == null  || !request.isRequestedSessionIdValid()) {
+                                    response.setHeader("X-Auth-Reason", "idle");
+                                }
                                 response.setStatus(401);
                             } else {
                                 response.sendRedirect("/login/cas");
