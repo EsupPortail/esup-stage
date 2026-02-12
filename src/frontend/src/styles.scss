@@ -440,7 +440,20 @@ button.mat-mdc-button-base.valid-button:disabled .mat-mdc-button-persistent-ripp
 
 button.mat-mdc-button-base.cancel-button:hover,
 button.mat-mdc-button-base.valid-button:hover {
-  filter: brightness(0.95);
+  filter: brightness(0.9);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.20);
+}
+
+/* Focus visible for primary action buttons */
+button.mat-mdc-button-base.valid-button:focus-visible,
+button.mat-mdc-button-base.valid-button:focus,
+button.mat-mdc-button-base.valid-button.cdk-keyboard-focused,
+button.mat-mdc-button-base.cancel-button:focus-visible,
+button.mat-mdc-button-base.cancel-button:focus,
+button.mat-mdc-button-base.cancel-button.cdk-keyboard-focused {
+  outline: 2px solid #111827 !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 4px rgba(17, 24, 39, 0.35) !important;
 }
 
 button.mat-mdc-icon-button.delete-button,
