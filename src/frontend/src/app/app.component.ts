@@ -134,6 +134,11 @@ export class AppComponent {
           libelle: 'Tâches planifiées',
           path: 'param-global/taches-planifiees',
           icon: "fa-calendar",
+        },
+        {
+          libelle : 'configuration de l\'application',
+          path : 'param-global/config-app',
+          icon: "fa-rocket"
         }
       ]
     },

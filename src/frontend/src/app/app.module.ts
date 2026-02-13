@@ -143,6 +143,7 @@ import {AccessibilityComponent} from "./components/accessibility/accessibility.c
 import {LegalNoticeComponent} from "./components/legal-notice/legal-notice.component";
 import {FooterComponent} from "./components/footer/footer.component";
 import {MenuAccessibilityComponent} from "./components/menu-accessibility/menu-accessibility.component";
+import {ConfigAppComponent} from "./components/admin/config-app/config-app.component";
 
 registerLocaleData(localeFr, 'fr');
 
@@ -262,7 +263,8 @@ export class FrenchDateProvider extends NativeDateAdapter {
     AccessibilityComponent,
     LegalNoticeComponent,
     FooterComponent,
-    MenuAccessibilityComponent
+    MenuAccessibilityComponent,
+    ConfigAppComponent,
   ],
   bootstrap: [AppComponent], imports: [BrowserModule,
     AppRoutingModule,

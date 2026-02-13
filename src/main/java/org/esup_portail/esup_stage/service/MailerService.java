@@ -16,6 +16,7 @@ import org.esup_portail.esup_stage.repository.TemplateMailGroupeJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateMailJpaRepository;
 import org.esup_portail.esup_stage.repository.UtilisateurJpaRepository;
 import org.esup_portail.esup_stage.service.evaluation.EvaluationService;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
@@ -38,7 +39,7 @@ public class MailerService {
     AppliProperties appliProperties;
 
     @Autowired
-    JavaMailSender javaMailSender;
+    ObjectProvider<JavaMailSender> javaMailSenderProvider;
 
     @Autowired
     FreeMarkerConfigurer freeMarkerConfigurer;
@@ -129,6 +130,11 @@ public class MailerService {
                           MailContext mailContext, boolean forceTo, String attachmentLibelle, byte[] attachment) {
         logger.info("Mail " + templateMailCode + ", destinataires : " + to);
         boolean disableDelivery = appliProperties.getMailer().isDisableDelivery();
+        JavaMailSender javaMailSender = javaMailSenderProvider.getIfAvailable();
+        if (javaMailSender == null) {
+            logger.warn("Mailer not configured (no JavaMailSender bean). Skip sending mail {}", templateMailCode);
+            return;
+        }
         if (!disableDelivery) {
             String deliveryAddress = appliProperties.getMailer().getDeliveryAddress();
             if (!forceTo && deliveryAddress != null && !deliveryAddress.isEmpty() && !deliveryAddress.equals("null")) {

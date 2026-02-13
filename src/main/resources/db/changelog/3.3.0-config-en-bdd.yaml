@@ -1,0 +1,244 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.3.0-create-app-property-table
+      author: thouveno9
+      changes:
+        - createTable:
+            tableName: AppProperty
+            columns:
+              - column:
+                  name: key
+                  type: varchar(255)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: value
+                  type: varchar(255)
+              - column:
+                  name: updatedAt
+                  type: datetime
+                  constraints:
+                    nullable: false
+              - column:
+                  name: createdAt
+                  type: datetime
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 3.3.0-insert-app-property-keys
+      author: thouveno9
+      changes:
+        - insert:
+            tableName: AppProperty
+            columns:
+              - column: { name: key, value: "appli.url" }
+              - column: { name: value, value: null }
+              - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
+
+        - insert:
+            tableName: AppProperty
+            columns:
+              - column: { name: key, value: "appli.tokens" }
+              - column: { name: value, value: null }
+              - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
+
+        - insert:
+            tableName: AppProperty
+            columns:
+              - column: { name: key, value: "appli.jwt_secret" }
+              - column: { name: value, value: null }
+              - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
+
+        - insert:
+            tableName: AppProperty
+            columns:
+              - column: { name: key, value: "appli.nb_jours_valide_token" }
+              - column: { name: value, value: null }
+              - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
+
+        # === MAILER ===
+        - insert:
+            tableName: AppProperty
+            columns:
+              - column: { name: key, value: "appli.mailer.protocol" }
+              - column: { name: value, value: "smtp" }
+              - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
+
+        - insert:
+            tableName: AppProperty
+            columns:
+              - column: { name: key, value: "appli.mailer.host" }
+              - column: { name: value, value: null }
+              - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
+
+        - insert:
+            tableName: AppProperty
+            columns:
+              - column: { name: key, value: "appli.mailer.port" }
+              - column: { name: value, value: null }
+              - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
+
+        - insert:
+            tableName: AppProperty
+            columns:
+              - column: { name: key, value: "appli.mailer.auth" }
+              - column: { name: value, value: null }
+              - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
+
+        - insert:
+            tableName: AppProperty
+            columns:
+              - column: { name: key, value: "appli.mailer.username" }
+              - column: { name: value, value: "username@domaine.com" }
+              - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
+
+        - insert:
+            tableName: AppProperty
+            columns:
+              - column: { name: key, value: "appli.mailer.password" }
+              - column: { name: value, value: "xxx" }
+              - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
+
+        - insert:
+            tableName: AppProperty
+            columns:
+              - column: { name: key, value: "appli.mailer.from" }
+              - column: { name: value, value: null }
+              - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
+
+        - insert:
+            tableName: AppProperty
+            columns:
+              - column: { name: key, value: "appli.mailer.disable_delivery" }
+              - column: { name: value, value: "false" }
+              - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
+
+        - insert:
+            tableName: AppProperty
+            columns:
+              - column: { name: key, value: "appli.mailer.delivery_address" }
+              - column: { name: value, value: null }
+              - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
+
+        # === REFERENTIEL WS ===
+        - insert:
+            tableName: AppProperty
+            columns:
+              - column: { name: key, value: "referentiel.ws.login" }
+              - column: { name: value, value: null }
+              - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
+
+        - insert:
+            tableName: AppProperty
+            columns:
+              - column: { name: key, value: "referentiel.ws.password" }
+              - column: { name: value, value: null }
+              - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
+
+        - insert:
+            tableName: AppProperty
+            columns:
+              - column: { name: key, value: "referentiel.ws.ldap_url" }
+              - column: { name: value, value: null }
+              - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
+
+        - insert:
+            tableName: AppProperty
+            columns:
+              - column: { name: key, value: "referentiel.ws.apogee_url" }
+              - column: { name: value, value: null }
+              - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
+
+        # === WEBHOOK ===
+        - insert:
+            tableName: AppProperty
+            columns:
+              - column: { name: key, value: "webhook.signature.uri" }
+              - column: { name: value, value: null }
+              - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
+
+        - insert:
+            tableName: AppProperty
+            columns:
+              - column: { name: key, value: "webhook.signature.token" }
+              - column: { name: value, value: null }
+              - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
+
+        # === SIRENE ===
+        - insert:
+            tableName: AppProperty
+            columns:
+              - column: { name: key, value: "sirene.url" }
+              - column: { name: value, value: null }
+              - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
+
+        - insert:
+            tableName: AppProperty
+            columns:
+              - column: { name: key, value: "sirene.token" }
+              - column: { name: value, value: null }
+              - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
+
+        - insert:
+            tableName: AppProperty
+            columns:
+              - column: { name: key, value: "sirene.nombre_minimum_resultats" }
+              - column: { name: value, value: null }
+              - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
+
+        # === FOOTER ===
+        - insert:
+            tableName: AppProperty
+            columns:
+              - column: { name: key, value: "appli.footer.github" }
+              - column: { name: value, value: null }
+              - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
+
+        - insert:
+            tableName: AppProperty
+            columns:
+              - column: { name: key, value: "appli.footer.site" }
+              - column: { name: value, value: null }
+              - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
+
+        - insert:
+            tableName: AppProperty
+            columns:
+              - column: { name: key, value: "appli.footer.support" }
+              - column: { name: value, value: null }
+              - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
+
+        - insert:
+            tableName: AppProperty
+            columns:
+              - column: { name: key, value: "appli.footer.wiki" }
+              - column: { name: value, value: null }
+              - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }

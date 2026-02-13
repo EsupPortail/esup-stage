@@ -1,0 +1,12 @@
+package org.esup_portail.esup_stage.repository;
+
+import org.esup_portail.esup_stage.model.AppProperty;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface AppPropertyJpaRepository extends JpaRepository<AppProperty, String> {
+
+    AppProperty findByKey(String key);
+
+}

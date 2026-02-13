@@ -25,6 +25,7 @@ import {TachePlanifieComponent} from "./components/admin/taches-planifiees/tache
 import {SitemapComponent} from "./components/sitemap/sitemap.component";
 import {AccessibilityComponent} from "./components/accessibility/accessibility.component";
 import {LegalNoticeComponent} from "./components/legal-notice/legal-notice.component";
+import {ConfigAppComponent} from "./components/admin/config-app/config-app.component";
 
 const routes: Routes = [
   {path: '', component: HomeComponent, canActivate: [AuthGuard], data: {role: {}, title: 'Accueil', sitemap: {label: 'Accueil', group: 'Général', order: 1}}},
@@ -199,6 +200,16 @@ const routes: Routes = [
       role: {},
       title: 'Mentions légales',
       sitemap: {label: 'Mentions légales', group: 'Général', order: 3}
+    }
+  },
+  {
+    path:'param-global/config-app',
+    component: ConfigAppComponent,
+    canActivate: [AuthGuard],
+    data:{
+      role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.CREATION, Droit.VALIDATION, Droit.LECTURE, Droit.MODIFICATION, Droit.SUPPRESSION]},
+      title: 'Configuration de l\'application',
+      sitemap: {label: 'Configuration de l\'application', group: 'Paramétrage global', order: 8}
     }
   }
 ];

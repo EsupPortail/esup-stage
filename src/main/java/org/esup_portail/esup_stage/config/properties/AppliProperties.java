@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 @Component
 public class AppliProperties {
     private DatasourceProperties datasource;
-    private MailerProperties mailer;
+    private MailerProperties mailer = new MailerProperties();
     private String url;
     private String localApi;
     private String adminTechnique;

@@ -10,6 +10,7 @@ import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.EvaluationJwtService;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -42,7 +43,7 @@ public class EvaluationService {
     private AppliProperties appliProperties;
 
     @Autowired
-    private EvaluationJwtService evaluationJwtService;
+    private ObjectProvider<EvaluationJwtService> evaluationJwtServiceProvider;
 
     @Autowired
     private EvaluationExcelExporter evaluationExcelExporter;
@@ -223,7 +224,11 @@ public class EvaluationService {
             logger.warn("Impossible de créer un token : convention ou contact manquant");
             return null;
         }
-
+        EvaluationJwtService evaluationJwtService = evaluationJwtServiceProvider.getIfAvailable();
+        if (evaluationJwtService == null) {
+            logger.error("Impossible de créer un token pour l'évaluation du tuteur : EvaluationJwtService non disponible");
+            return null;
+        }
         try {
             // Ne pas dupliquer si un actif existe déjà
             List<EvaluationTuteurToken> existingTokens = tokenRepository.findByTuteurId(convention.getContact().getId());

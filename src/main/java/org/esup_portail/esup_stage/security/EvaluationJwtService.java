@@ -6,9 +6,12 @@ import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
@@ -18,13 +21,37 @@ public class EvaluationJwtService {
 
 
     private final AppliProperties appliProperties;
-    private final SecretKey key;
-    private final JwtParser parser;
+    private volatile SecretKey key;
+    private volatile JwtParser parser;
 
     public EvaluationJwtService(AppliProperties appliProperties) {
         this.appliProperties = appliProperties;
-        this.key = Keys.hmacShaKeyFor(java.util.Base64.getDecoder().decode(appliProperties.getJwtSecret()));
-        this.parser = Jwts.parser().verifyWith(key).build();
+    }
+
+    /**
+        * Initialise le parser JWT de manière thread-safe et paresseuse
+     */
+    private void ensureInitialized() {
+        if (parser != null) return;
+
+        synchronized (this) {
+            if (parser != null) return;
+
+            String secret = appliProperties.getJwtSecret();
+            if (!StringUtils.hasText(secret)) {
+                throw new AppException(HttpStatus.SERVICE_UNAVAILABLE, "JWT evaluation non configuré (appli.jwtSecret manquant)");
+            }
+
+            byte[] decoded;
+            try {
+                decoded = Base64.getDecoder().decode(secret.getBytes(StandardCharsets.UTF_8));
+            } catch (IllegalArgumentException e) {
+                throw new AppException(HttpStatus.SERVICE_UNAVAILABLE, "JWT evaluation mal configuré (Base64 invalide)");
+            }
+
+            this.key = Keys.hmacShaKeyFor(decoded);
+            this.parser = Jwts.parser().verifyWith(key).build();
+        }
     }
 
     /**
@@ -36,6 +63,7 @@ public class EvaluationJwtService {
      * @return String Token JWT
      */
     public String createToken(Integer conventionId, Integer contactId, Instant issuedAt, Instant expiresAt) {
+        ensureInitialized();
         return Jwts.builder()
                 .header().type("JWT").and()
                 .id(UUID.randomUUID().toString())
@@ -56,6 +84,7 @@ public class EvaluationJwtService {
      * @return Claims Liste des élément du jwt
      */
     public Claims parseAndValidate(String token) {
+        ensureInitialized();
         if (token == null || token.isBlank()) {
             throw new AppException(HttpStatus.FORBIDDEN, "Token manquant");
         }
