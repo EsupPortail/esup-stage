@@ -31,13 +31,29 @@ export class SelectionGroupeEtuComponent implements OnInit {
   selectedAdd: any[] = [];
   etudiants: any[] = [];
 
-  // Années N-1 / N / N+1
-  currentYear = (new Date()).getFullYear();
+  // Années universitaires N-1/N, N/N+1, N+1/N+2
+  // Une année universitaire N/N+1 commence le 1er septembre de l'année N.
+  // Si la date courante est avant le 1er septembre, l'année univ. courante est (année-1)/année.
+  private currentDate = new Date();
+  private currentYear = this.currentDate.getMonth() < 8
+    ? this.currentDate.getFullYear() - 1
+    : this.currentDate.getFullYear();
+
   annees = [
-    { label: (this.currentYear - 1) + '/' + (this.currentYear), value: this.currentYear - 1 },
-    { label: this.currentYear + '/' + (this.currentYear + 1), value: this.currentYear },
-    { label: (this.currentYear + 1) + '/' + (this.currentYear + 2), value: this.currentYear + 1 },
+    {
+      label: `${this.currentYear - 1}/${this.currentYear}`,
+      value: this.currentYear - 1
+    },
+    {
+      label: `${this.currentYear}/${this.currentYear + 1}`,
+      value: this.currentYear
+    },
+    {
+      label: `${this.currentYear + 1}/${this.currentYear + 2}`,
+      value: this.currentYear + 1
+    },
   ];
+
   ufrList: any[] = [];
   etapeList: any[] = [];
 
@@ -79,6 +95,7 @@ export class SelectionGroupeEtuComponent implements OnInit {
       prenom: [null, []],
       etape: [null, []],
       composante: [null, []],
+      // Valeur par défaut : l'année universitaire en cours (ex: 2024 pour 2024/2025)
       annee: [this.currentYear, []],
     });
 
@@ -188,7 +205,7 @@ export class SelectionGroupeEtuComponent implements OnInit {
       this.appTable?.data.forEach((data: any) => {
         const index = this.selectedRemove.findIndex((r: any) => {return r.id === data.id});
         if (index === -1) {
-           allSelectedRemove = false;
+          allSelectedRemove = false;
         }
       });
     }
@@ -226,7 +243,7 @@ export class SelectionGroupeEtuComponent implements OnInit {
       this.etudiants.forEach((data: any) => {
         const index = this.selectedAdd.findIndex((r: any) => {return r.codEtu === data.codEtu});
         if (index === -1) {
-           allSelectedAdd = false;
+          allSelectedAdd = false;
         }
       });
     }
@@ -269,6 +286,8 @@ export class SelectionGroupeEtuComponent implements OnInit {
 
   resetFilters(): void {
     this.formAddEtudiants.reset();
+    // Réinitialise l'année universitaire en cours après le reset
+    this.formAddEtudiants.get('annee')?.setValue(this.currentYear);
   }
 
 }
