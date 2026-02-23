@@ -3,7 +3,6 @@ package org.esup_portail.esup_stage.config.properties;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
@@ -14,7 +13,6 @@ import java.util.stream.Stream;
 @Data
 @NoArgsConstructor
 @ConfigurationProperties(prefix = "appli")
-@Component
 public class AppliProperties {
     private DatasourceProperties datasource;
     private MailerProperties mailer = new MailerProperties();

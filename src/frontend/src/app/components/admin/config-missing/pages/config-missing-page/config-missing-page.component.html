@@ -1,0 +1,14 @@
+<div class="config-missing">
+  <p>Des clés obligatoires sont manquantes. Seuls les administrateurs techniques peuvent continuer.</p>
+
+  <div *ngIf="missingKeys.length > 0; else allGood">
+    <h4>Clés manquantes</h4>
+    <ul>
+      <li *ngFor="let key of missingKeys">{{ key }}</li>
+    </ul>
+  </div>
+
+  <ng-template #allGood>
+    <p>Aucune clé manquante détectée.</p>
+  </ng-template>
+</div>

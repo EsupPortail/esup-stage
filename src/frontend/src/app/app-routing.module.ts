@@ -26,67 +26,68 @@ import {SitemapComponent} from "./components/sitemap/sitemap.component";
 import {AccessibilityComponent} from "./components/accessibility/accessibility.component";
 import {LegalNoticeComponent} from "./components/legal-notice/legal-notice.component";
 import {ConfigAppComponent} from "./components/admin/config-app/config-app.component";
+import { ConfigMissingGuard } from "./guard/config-missing.guard";
 
 const routes: Routes = [
-  {path: '', component: HomeComponent, canActivate: [AuthGuard], data: {role: {}, title: 'Accueil', sitemap: {label: 'Accueil', group: 'Général', order: 1}}},
+  {path: '', component: HomeComponent, canActivate: [AuthGuard, ConfigMissingGuard], data: {role: {}, title: 'Accueil', sitemap: {label: 'Accueil', group: 'Général', order: 1}}},
   {
     path: 'param-global/utilisateurs',
     component: AdminUserComponent,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, ConfigMissingGuard],
     data: {role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.LECTURE]}, title: 'Gestion des utilisateurs', sitemap: {label: 'Gestion des utilisateurs', group: 'Paramétrage global', order: 1}}
   },
   {
     path: 'param-global/roles',
     component: AdminRoleComponent,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, ConfigMissingGuard],
     data: {role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.LECTURE]}, title: 'Gestion des rôles', sitemap: {label: 'Gestion des rôles', group: 'Paramétrage global', order: 2}}
   },
   {
     path: 'param-global/config-generale',
     component: ConfigGeneraleComponent,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, ConfigMissingGuard],
     data: {role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.LECTURE]}, title: 'Paramètres généraux', sitemap: {label: 'Paramètres généraux', group: 'Paramétrage global', order: 3}}
   },
   {
     path: 'param-global/contenu',
     component: ContenuComponent,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, ConfigMissingGuard],
     data: {role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.LECTURE]}, title: 'Contenu', sitemap: {label: 'Contenu', group: 'Paramétrage global', order: 4}}
   },
   {
     path: 'param-global/mails',
     component: TemplateMailComponent,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, ConfigMissingGuard],
     data: {role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.LECTURE]}, title: 'Template de mails', sitemap: {label: 'Templates de mails', group: 'Paramétrage global', order: 5}}
   },
   {
     path: 'param-global/conventions',
     component: TemplateConventionComponent,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, ConfigMissingGuard],
     data: {role: {fonction: AppFonction.PARAM_GLOBAL}, droits: [Droit.LECTURE], sitemap: {label: 'Templates de conventions', group: 'Paramétrage global', order: 6}}
   },
   {
     path: 'eval-stages',
     component: EvalStageComponent,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, ConfigMissingGuard],
     data: {role: {fonction: AppFonction.CONVENTION, droits: [Droit.LECTURE]}, sitemap: {label: 'Évaluation des stages', group: 'Conventions de stages', order: 3}}
   },
   {
     path: 'etab-accueils',
     component: GestionEtabAccueilComponent,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, ConfigMissingGuard],
     data: {role: {fonction: AppFonction.NOMENCLATURE, droits: [Droit.LECTURE]}, title: 'Gestion des établissements d\'accueil', sitemap: {label: 'Établissements d\'accueil', group:"Établissements d\'accueil" , order: 2}}
   },
   {
     path: 'nomenclatures',
     component: AdminNomenclaturesComponent,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, ConfigMissingGuard],
     data: {role: {fonction: AppFonction.NOMENCLATURE, droits: [Droit.LECTURE]}, title: 'Gestion des tables des nomenclatures', sitemap: {label: 'Tables des nomenclatures', group: 'Nomenclatures', order: 1}}
   },
   {
     path: 'tableau-de-bord',
     component: DashboardComponent,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, ConfigMissingGuard],
     data: {
       role: {fonction: AppFonction.CONVENTION, droits: [Droit.LECTURE]},
       title: 'Tableau de bord',
@@ -96,7 +97,7 @@ const routes: Routes = [
   {
     path: 'conventions/:id',
     component: ConventionComponent,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, ConfigMissingGuard],
     data: {
       role: {fonction: AppFonction.CONVENTION, droits: [Droit.CREATION, Droit.VALIDATION, Droit.LECTURE, Droit.MODIFICATION]},
       title: 'Création d\'une convention',
@@ -106,7 +107,7 @@ const routes: Routes = [
   {
     path: 'convention-create-en-masse/groupes',
     component: GestionGroupeComponent,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, ConfigMissingGuard],
     data: {
       role: {fonction: AppFonction.CREATION_EN_MASSE_CONVENTION, droits: [Droit.CREATION, Droit.LECTURE]},
       title: 'Gestion des groupes',
@@ -116,7 +117,7 @@ const routes: Routes = [
   {
     path: 'convention-create-en-masse/mails',
     component: TemplateMailGroupeComponent,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, ConfigMissingGuard],
     data: {
       role: {fonction: AppFonction.CREATION_EN_MASSE_CONVENTION, droits: [Droit.CREATION, Droit.LECTURE]},
       title: 'Template de mails',
@@ -126,7 +127,7 @@ const routes: Routes = [
   {
     path: 'convention-create-en-masse/:id',
     component: ConventionCreateEnMasseComponent,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, ConfigMissingGuard],
     data: {
       role: {fonction: AppFonction.CREATION_EN_MASSE_CONVENTION, droits: [Droit.CREATION, Droit.LECTURE]},
       title: 'Création des conventions en masse',
@@ -136,7 +137,7 @@ const routes: Routes = [
   {
     path: 'centre-gestion/search',
     component: CentreGestionSearchComponent,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, ConfigMissingGuard],
     data: {
       role: {fonction: AppFonction.PARAM_CENTRE, droits: [Droit.LECTURE]},
       title: 'Liste des centres de gestion',
@@ -146,7 +147,7 @@ const routes: Routes = [
   {
     path: 'centre-gestion/:id',
     component: CentreGestionComponent,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, ConfigMissingGuard],
     data: {
       role: {fonction: AppFonction.PARAM_CENTRE, droits: [Droit.CREATION, Droit.VALIDATION, Droit.LECTURE, Droit.MODIFICATION]},
       title: 'Modification d\'un centre de gestion',
@@ -156,7 +157,7 @@ const routes: Routes = [
   {
     path: 'param-global/taches-planifiees',
     component: TachePlanifieComponent,
-    canActivate:[AuthGuard],
+    canActivate:[AuthGuard, ConfigMissingGuard],
     data:{
       role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.CREATION, Droit.VALIDATION, Droit.LECTURE, Droit.MODIFICATION,Droit.SUPPRESSION],},
       title: 'Tâches planifiées',
@@ -173,9 +174,19 @@ const routes: Routes = [
     }
   },
   {
+    path: 'admin/config-missing',
+    loadChildren: () => import('./components/admin/config-missing/config-missing.module')
+      .then(m => m.ConfigMissingModule),
+    canActivate: [AuthGuard, ConfigMissingGuard],
+    data: {
+      title: 'Configuration requise',
+      layout: 'public',
+    }
+  },
+  {
     path: 'plan-du-site',
     component: SitemapComponent,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, ConfigMissingGuard],
     data: {
       role: {},
       title: 'Plan du site',
@@ -185,7 +196,7 @@ const routes: Routes = [
   {
     path: 'accessibilite',
     component: AccessibilityComponent,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, ConfigMissingGuard],
     data: {
       role: {},
       title: 'Accessibilité',
@@ -195,7 +206,7 @@ const routes: Routes = [
   {
     path: 'mentions-legales',
     component: LegalNoticeComponent,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, ConfigMissingGuard],
     data: {
       role: {},
       title: 'Mentions légales',
@@ -205,7 +216,7 @@ const routes: Routes = [
   {
     path:'param-global/config-app',
     component: ConfigAppComponent,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, ConfigMissingGuard],
     data:{
       role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.CREATION, Droit.VALIDATION, Droit.LECTURE, Droit.MODIFICATION, Droit.SUPPRESSION]},
       title: 'Configuration de l\'application',
@@ -220,3 +231,4 @@ const routes: Routes = [
 })
 export class AppRoutingModule {
 }
+

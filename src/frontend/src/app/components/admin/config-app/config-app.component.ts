@@ -6,6 +6,4 @@ import { Component } from '@angular/core';
   styleUrl: './config-app.component.scss',
   standalone: false
 })
-export class ConfigAppComponent {
-
-}
+export class ConfigAppComponent {}

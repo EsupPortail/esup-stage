@@ -1,4 +1,5 @@
-import {Component, ElementRef, HostListener, ViewContainerRef} from '@angular/core';
+import {Component, ElementRef, HostListener, OnInit, ViewContainerRef} from '@angular/core';
+import { ActivatedRoute, ActivatedRouteSnapshot, NavigationEnd, Router } from "@angular/router";
 import { MenuService } from "./services/menu.service";
 import { AuthService } from "./services/auth.service";
 import { AppFonction } from "./constants/app-fonction";
@@ -6,6 +7,8 @@ import { Droit } from "./constants/droit";
 import { environment } from "../environments/environment";
 import { ConfigService } from "./services/config.service";
 import { TechnicalService } from "./services/technical.service";
+import { ConfigMissingService } from "./services/config-missing.service";
+import { filter, firstValueFrom } from "rxjs";
 
 @Component({
     selector: 'app-root',
@@ -13,7 +16,7 @@ import { TechnicalService } from "./services/technical.service";
     styleUrls: ['./app.component.scss'],
     standalone: false
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
 
   favicon: HTMLLinkElement | null = document.querySelector('#app-favicon');
   theme: HTMLLinkElement | null = document.querySelector('#theme');
@@ -174,7 +177,10 @@ export class AppComponent {
     private configService: ConfigService,
     private el: ElementRef,
     private technicalService: TechnicalService,
-    public vcRef: ViewContainerRef
+    public vcRef: ViewContainerRef,
+    private configMissingService: ConfigMissingService,
+    private router: Router,
+    private activatedRoute: ActivatedRoute
   ) {
     this.configService.getConfigTheme();
     this.configService.themeModified.subscribe((config: any) => {
@@ -185,6 +191,55 @@ export class AppComponent {
         this.theme.href = environment.themeUrl + `?q=${(new Date(config.dateModification)).getTime()}`;
       }
     });
+  }
+
+  publicLayout = false;
+
+  async ngOnInit(): Promise<void> {
+    this.updateLayoutFromSnapshot(this.router.routerState.snapshot.root);
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.updateLayoutFromSnapshot(this.router.routerState.snapshot.root);
+      });
+
+    try {
+      if (!this.authService.userConnected) {
+        const user = await firstValueFrom(this.authService.getCurrentUser());
+        if (user) {
+          this.authService.createUser(user);
+        }
+      }
+
+      if (!this.authService.isAdmin()) {
+        return;
+      }
+
+      const response = await firstValueFrom(this.configMissingService.getMissing());
+      const missing = response?.missing || [];
+      if (missing.length === 0) {
+        return;
+      }
+
+      const currentPath = this.router.url || '';
+      if (!currentPath.includes('admin/config-missing')) {
+        await this.router.navigateByUrl('/admin/config-missing');
+      }
+    } catch (e) {
+      // ignore bootstrap check errors
+    }
+  }
+
+  private updateLayoutFromSnapshot(snapshot: ActivatedRouteSnapshot): void {
+    let current: ActivatedRouteSnapshot | null = snapshot;
+    let layout: string | undefined;
+    while (current) {
+      if (current.data && current.data['layout']) {
+        layout = current.data['layout'];
+      }
+      current = current.firstChild ?? null;
+    }
+    this.publicLayout = layout === 'public';
   }
 
   isOpened(): boolean {

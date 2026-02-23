@@ -8,6 +8,7 @@ import org.esup_portail.esup_stage.model.Utilisateur;
 import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
 import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.service.AppConfigService;
+import org.esup_portail.esup_stage.service.proprety.ConfigMissingService;
 import org.esup_portail.esup_stage.service.ldap.LdapService;
 import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.esup_portail.esup_stage.config.properties.AppliProperties;
 
 @Service
 public class CasUserDetailsServiceImpl implements AuthenticationUserDetailsService<CasAssertionAuthenticationToken> {
@@ -49,9 +51,30 @@ public class CasUserDetailsServiceImpl implements AuthenticationUserDetailsServi
     @Autowired
     private AppConfigService appConfigService;
 
+    @Autowired
+    private ConfigMissingService configMissingService;
+
+    @Autowired
+    private AppliProperties appliProperties;
+
     @Override
     public UserDetails loadUserDetails(CasAssertionAuthenticationToken authentication) throws UsernameNotFoundException {
         String username = authentication.getName();
+
+        if (configMissingService.hasMissingKeys() && appliProperties.isAdminTechnique(username)) {
+            Role roleAdmTech = roleJpaRepository.findOneByCode(Role.ADM);
+            Utilisateur utilisateur = utilisateurJpaRepository.findOneByLogin(username);
+            if (utilisateur == null) {
+                utilisateur = new Utilisateur();
+                utilisateur.setLogin(username);
+                utilisateur.setActif(true);
+            }
+            if (roleAdmTech != null && !utilisateur.getRoles().contains(roleAdmTech)) {
+                utilisateur.getRoles().add(roleAdmTech);
+            }
+            utilisateur = utilisateurJpaRepository.saveAndFlush(utilisateur);
+            return new CasUserDetailsImpl(utilisateur, getGrantedAuthorities(utilisateur));
+        }
 
         // Recherche de l'utilisateur
         Utilisateur utilisateur = utilisateurJpaRepository.findOneByLogin(username);
