@@ -19,7 +19,6 @@ import org.esup_portail.esup_stage.enums.TypeSignatureEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
-import org.esup_portail.esup_stage.repository.PaysJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateConventionJpaRepository;
 import org.esup_portail.esup_stage.service.impression.context.ImpressionContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +49,7 @@ public class ImpressionService {
     AppliProperties appliProperties;
 
     @Autowired
-    PaysJpaRepository paysJpaRepository;
+    PreviewConventionFactory previewConventionFactory;
 
     public void generateConventionAvenantPDF(Convention convention, Avenant avenant, ByteArrayOutputStream ou, boolean isRecap) {
         if (convention.getNomenclature() == null) {
@@ -58,7 +57,7 @@ public class ImpressionService {
         }
         TemplateConvention templateConvention = templateConventionJpaRepository.findByTypeAndLangue(convention.getTypeConvention().getId(), convention.getLangueConvention().getCode());
         if (templateConvention == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Template convention " + convention.getTypeConvention().getLibelle() + "-" + convention.getLangueConvention().getCode() + " non trouvé");
+            throw new AppException(HttpStatus.NOT_FOUND, "Template convention " + convention.getTypeConvention().getLibelle() + "-" + convention.getLangueConvention().getCode() + " non trouvÃ©");
         }
 
         CentreGestion centreEtablissement = centreGestionJpaRepository.getCentreEtablissement();
@@ -77,7 +76,7 @@ public class ImpressionService {
             String filename = avenant != null ? "avenant_" + avenant.getId() : "convention_" + convention.getId();
             filename += "_" + convention.getEtudiant().getPrenom() + "_" + convention.getEtudiant().getNom() + ".pdf";
 
-            // récupération du logo du centre gestion
+            // rÃ©cupÃ©ration du logo du centre gestion
             String logoname;
             Fichier fichier = convention.getCentreGestion().getFichier();
             ImageData imageData = null;
@@ -89,7 +88,7 @@ public class ImpressionService {
                 }
             }
 
-            // si le centre de gestion n'a pas de logo ou qu'il n'existe pas physiquement, on prend celui du centre établissement
+            // si le centre de gestion n'a pas de logo ou qu'il n'existe pas physiquement, on prend celui du centre Ã©tablissement
             if (imageData == null) {
                 fichier = centreEtablissement.getFichier();
                 if (fichier != null) {
@@ -102,7 +101,7 @@ public class ImpressionService {
 
             this.generatePDF(texte.toString(), filename, imageData, ou);
         } catch (Exception e) {
-            logger.error("Une erreur est survenue lors de la génération du PDF", e);
+            logger.error("Une erreur est survenue lors de la gÃ©nÃ©ration du PDF", e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
         }
     }
@@ -112,7 +111,7 @@ public class ImpressionService {
             String filename = "FicheEtudiant.pdf";
             this.generatePDF(htmlTexte, filename, null, ou);
         } catch (Exception e) {
-            logger.error("Une erreur est survenue lors de la génération du PDF", e);
+            logger.error("Une erreur est survenue lors de la gÃ©nÃ©ration du PDF", e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
         }
     }
@@ -168,7 +167,7 @@ public class ImpressionService {
 
             return sb.toString();
         } catch (Exception e) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Template par défaut non trouvé");
+            throw new AppException(HttpStatus.NOT_FOUND, "Template par dÃ©faut non trouvÃ©");
         }
     }
 
@@ -181,7 +180,7 @@ public class ImpressionService {
         for (CentreGestionSignataire signataire : signatairesOtp) {
             switch (signataire.getId().getSignataire()) {
                 case etudiant:
-                    // Ajout de l'étudiant
+                    // Ajout de l'Ã©tudiant
                     otp.add(new HashMap<>() {{
                         put("firstname", convention.getEtudiant().getPrenom());
                         put("lastname", convention.getEtudiant().getNom());
@@ -190,7 +189,7 @@ public class ImpressionService {
                     }});
                     break;
                 case enseignant:
-                    // Ajout de l'enseignant référent
+                    // Ajout de l'enseignant rÃ©fÃ©rent
                     otp.add(new HashMap<>() {{
                         put("firstname", convention.getEnseignant().getPrenom());
                         put("lastname", convention.getEnseignant().getNom());
@@ -199,7 +198,7 @@ public class ImpressionService {
                     }});
                     break;
                 case tuteur:
-                    // Ajout du tuteur pédagogique
+                    // Ajout du tuteur pÃ©dagogique
                     otp.add(new HashMap<>() {{
                         put("firstname", convention.getContact().getPrenom());
                         put("lastname", convention.getContact().getNom());
@@ -217,7 +216,7 @@ public class ImpressionService {
                     }});
                     break;
                 case viseur:
-                    // Ajout du directeur du département
+                    // Ajout du directeur du dÃ©partement
                     otp.add(new HashMap<>() {{
                         put("firstname", convention.getCentreGestion().getPrenomViseur());
                         put("lastname", convention.getCentreGestion().getNomViseur());
@@ -275,10 +274,10 @@ public class ImpressionService {
             String motifTexte = getDefaultText("/templates/template_avenant_motifs.html");
             texte = texte.replace("${avenant.motifs}", motifTexte);
 
-            // Style par défaut des tables dans les templates
+            // Style par dÃ©faut des tables dans les templates
             htmlTexte += texte;
         }
-        // Remplacement de tags et styles générés par l'éditeur qui ne sont pas convertis correctement
+        // Remplacement de tags et styles gÃ©nÃ©rÃ©s par l'Ã©diteur qui ne sont pas convertis correctement
         htmlTexte = htmlTexte.replace("<figure", "<div");
         htmlTexte = htmlTexte.replace("</figure>", "</div>");
 
@@ -320,10 +319,10 @@ public class ImpressionService {
     }
 
     /**
-     * Prépare l'image du logo pour l'ajout dans le PDF.
+     * PrÃ©pare l'image du logo pour l'ajout dans le PDF.
      *
-     * @param imageData les données de l'image
-     * @return l'image prête à être ajoutée au document
+     * @param imageData les donnÃ©es de l'image
+     * @return l'image prÃªte Ã  Ãªtre ajoutÃ©e au document
      */
     private Image prepareLogoImage(ImageData imageData) {
         Image img = new Image(imageData);
@@ -362,15 +361,15 @@ public class ImpressionService {
                     throw new AppException(HttpStatus.NOT_FOUND, "Template de convention introuvable");
                 }
 
-                // Récupération du texte du template et application des styles
+                // RÃ©cupÃ©ration du texte du template et application des styles
                 htmlTexte = this.getHtmlText(templateConvention.getTexte(), true, false);
                 htmlTexte = manageIfElse(htmlTexte);
 
-                // Création d'un contexte fictif pour le preview
+                // CrÃ©ation d'un contexte fictif pour le preview
                 CentreGestion centreEtablissement = centreGestionJpaRepository.getCentreEtablissement();
-                ImpressionContext impressionContext = createFictionalPreviewContext(centreGestion, centreEtablissement);
+                ImpressionContext impressionContext = previewConventionFactory.createPreviewContext(centreGestion, centreEtablissement);
 
-                // Traitement du template avec les données fictives
+                // Traitement du template avec les donnÃ©es fictives
                 Template template = new Template("template_preview_" + templateId, htmlTexte, freeMarkerConfigurer.getConfiguration());
                 StringWriter texte = new StringWriter();
                 template.process(impressionContext, texte);
@@ -408,156 +407,9 @@ public class ImpressionService {
             this.generatePreviewPDFFirstPage(htmlTexte, "preview_convention.pdf", imageData, ou);
 
         } catch (Exception e) {
-            logger.error("Une erreur est survenue lors de la génération du PDF de preview", e);
+            logger.error("Une erreur est survenue lors de la gÃ©nÃ©ration du PDF de preview", e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
         }
-    }
-
-    /**
-     * Crée un contexte fictif avec des données d'exemple pour la preview
-     */
-    private ImpressionContext createFictionalPreviewContext(CentreGestion centreGestion, CentreGestion centreEtablissement) {
-        // Convention fictive
-        Convention convention = new Convention();
-        convention.setId(999);
-        convention.setCentreGestion(centreGestion);
-
-        // Étudiant fictif
-        Etudiant etudiant = new Etudiant();
-        etudiant.setId(1);
-        etudiant.setPrenom("Jean");
-        etudiant.setNom("Dupont");
-        etudiant.setMail("jean.dupont@example.com");
-        etudiant.setNumEtudiant("2025-0001");
-        etudiant.setCodeUniversite(centreGestion != null ? centreGestion.getCodeUniversite() : "UNIV");
-        etudiant.setIdentEtudiant("JDUP01");
-        convention.setEtudiant(etudiant);
-
-        // Enseignant fictif
-        Enseignant enseignant = new Enseignant();
-        enseignant.setId(2);
-        enseignant.setPrenom("Alice");
-        enseignant.setNom("Martin");
-        enseignant.setMail("alice.martin@univ.example");
-        enseignant.setTel("+33 1 23 45 67 89");
-        enseignant.setTypePersonne("Maître de conférences");
-        convention.setEnseignant(enseignant);
-
-        // Contact / tuteur fictif
-        Contact contact = new Contact();
-        contact.setId(3);
-        contact.setPrenom("Pierre");
-        contact.setNom("Durand");
-        contact.setMail("pierre.durand@entreprise.example");
-        contact.setTel("+33 6 11 22 33 44");
-        contact.setFonction("Tuteur pédagogique");
-        contact.setCentreGestion(centreGestion);
-        convention.setContact(contact);
-
-        // Signataire (contact interne) fictif
-        Contact signataire = new Contact();
-        signataire.setId(4);
-        signataire.setPrenom("Marie");
-        signataire.setNom("Legrand");
-        signataire.setMail("marie.legrand@univ.example");
-        signataire.setFonction("Responsable composante");
-        signataire.setCentreGestion(centreGestion);
-        convention.setSignataire(signataire);
-
-        // Structure (organisme d'accueil) fictive
-        Structure structure = new Structure();
-        structure.setId(10);
-        structure.setRaisonSociale("ACME Solutions");
-        structure.setNumeroSiret("123 456 789 00012");
-        structure.setTelephone("+33 1 88 77 66 55");
-        structure.setMail("contact@acme.example");
-        structure.setVoie("25 boulevard de la Tech");
-        structure.setBatimentResidence("Bât. A");
-        structure.setCodePostal("75002");
-        structure.setCommune("Paris");
-        structure.setPays(paysJpaRepository.findById(82));
-        structure.setActivitePrincipale("Édition de logiciels");
-        convention.setStructure(structure);
-
-        // Service (service d'accueil dans la structure) fictif
-        org.esup_portail.esup_stage.model.Service service = new org.esup_portail.esup_stage.model.Service();
-        service.setId(11);
-        service.setNom("R&D");
-        service.setVoie("25 boulevard de la Tech");
-        service.setBatimentResidence("Bât. A - 3e");
-        service.setCodePostal("75002");
-        service.setCommune("Paris");
-        service.setPays(paysJpaRepository.findById(82)); // France
-        convention.setService(service);
-
-        // Type de convention fictif
-        TypeConvention typeConvention = new TypeConvention();
-        typeConvention.setId(1);
-        typeConvention.setLibelle("Convention de stage");
-        convention.setTypeConvention(typeConvention);
-
-        // Langue de convention fictive
-        LangueConvention langueConvention = new LangueConvention();
-        langueConvention.setCode("FR");
-        langueConvention.setLibelle("Français");
-        convention.setLangueConvention(langueConvention);
-
-        // Nomenclature fictive
-        ConventionNomenclature nomenclature = new ConventionNomenclature();
-        nomenclature.setId(999);
-        nomenclature.setLangueConvention("Français");
-        nomenclature.setDevise("EUR");
-        nomenclature.setModeValidationStage("Validation pédagogique");
-        nomenclature.setModeVersGratification("Virement");
-        nomenclature.setNatureTravail("Bureau - développement");
-        nomenclature.setOrigineStage("Offre interne");
-        nomenclature.setTempsTravail("Temps plein");
-        nomenclature.setTheme("Informatique");
-        nomenclature.setTypeConvention(typeConvention.getLibelle());
-        nomenclature.setUniteDureeExceptionnelle("heures");
-        nomenclature.setUniteDureeGratification("mois");
-        nomenclature.setUniteGratification("EUR");
-        convention.setNomenclature(nomenclature);
-
-        // Informations basiques de stage
-        convention.setSujetStage("Projet d'intégration et développement");
-        Calendar c = Calendar.getInstance();
-        c.setTime(new Date());
-        c.add(Calendar.DAY_OF_MONTH, 7);
-        Date debut = c.getTime();
-        c.add(Calendar.MONTH, 3);
-        Date fin = c.getTime();
-        convention.setDateDebutStage(debut);
-        convention.setDateFinStage(fin);
-        convention.setDureeStage(90);
-        convention.setVilleEtudiant("Nantes");
-        convention.setAdresseEtudiant("10 rue de la République");
-        convention.setCodePostalEtudiant("44000");
-        convention.setPaysEtudiant("France");
-        convention.setTelEtudiant("+33 2 98 76 54 32");
-        convention.setTelPortableEtudiant("+33 6 55 44 33 22");
-        convention.setAnnee(String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
-
-        // Paramètres de gratification
-        convention.setGratificationStage(Boolean.TRUE);
-        convention.setMontantGratification("500");
-
-        // Période de travail (horaire irrégulier exemple)
-        PeriodeStage periode = new PeriodeStage();
-        periode.setId(1);
-        periode.setDateDebut(debut);
-        periode.setDateFin(fin);
-        periode.setNbHeuresJournalieres(7);
-        periode.setConvention(convention);
-        if (convention.getPeriodeStage() == null) {
-            convention.setPeriodeStage(new ArrayList<>());
-        }
-        convention.getPeriodeStage().add(periode);
-
-        // Avenants vides pour la preview
-        convention.setAvenants(new ArrayList<>());
-
-        return new ImpressionContext(convention, null, centreEtablissement);
     }
 
     private CentreGestion createFictionalCentreGestion() {
@@ -565,16 +417,16 @@ public class ImpressionService {
         cg.setId(100);
         cg.setNomCentre("UFR Informatique");
         cg.setCodeUniversite("UNIV-TEST");
-        cg.setVoie("1 rue des Universités");
-        cg.setAdresse("1 rue des Universités");
+        cg.setVoie("1 rue des UniversitÃ©s");
+        cg.setAdresse("1 rue des UniversitÃ©s");
         cg.setCodePostal("44000");
         cg.setCommune("Nantes");
         cg.setMail("ufr-info@example.com");
         cg.setTelephone("+33 2 40 00 00 00");
         cg.setNomViseur("Bernard");
         cg.setPrenomViseur("Sophie");
-        cg.setQualiteViseur("Responsable pédagogique");
-        // Paramètres de validation (pour le calcul conventionValidee dans ImpressionContext)
+        cg.setQualiteViseur("Responsable pÃ©dagogique");
+        // ParamÃ¨tres de validation (pour le calcul conventionValidee dans ImpressionContext)
         cg.setValidationPedagogique(true);
         cg.setValidationConvention(true);
         return cg;
@@ -583,7 +435,7 @@ public class ImpressionService {
     private CentreGestion createFictionalCentreEtablissement() {
         CentreGestion ce = new CentreGestion();
         ce.setId(101);
-        ce.setNomCentre("Université Exemple");
+        ce.setNomCentre("UniversitÃ© Exemple");
         ce.setCodeUniversite("UNIV-TEST");
         ce.setVoie("10 avenue du Savoir");
         ce.setAdresse("10 avenue du Savoir, 75005 Paris");
@@ -593,14 +445,14 @@ public class ImpressionService {
         ce.setTelephone("+33 1 44 00 00 00");
         ce.setNomViseur("Dupuis");
         ce.setPrenomViseur("Claire");
-        ce.setQualiteViseur("Présidente");
+        ce.setQualiteViseur("PrÃ©sidente");
         ce.setValidationPedagogique(true);
         ce.setValidationConvention(true);
         return ce;
     }
 
     /**
-     * Génère un PDF avec uniquement la première page
+     * GÃ©nÃ¨re un PDF avec uniquement la premiÃ¨re page
      */
     private void generatePreviewPDFFirstPage(String texte, String filename, ImageData imageData, ByteArrayOutputStream ou) {
         String tempFilePath = this.getClass().getResource("/templates").getPath();
@@ -632,7 +484,7 @@ public class ImpressionService {
             document.close();
 
         } catch (Exception e) {
-            logger.error("Erreur lors de la génération du PDF de preview", e);
+            logger.error("Erreur lors de la gÃ©nÃ©ration du PDF de preview", e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
         } finally {
             try {
