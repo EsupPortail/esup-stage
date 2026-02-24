@@ -179,6 +179,7 @@ const routes: Routes = [
       .then(m => m.ConfigMissingModule),
     canActivate: [AuthGuard, ConfigMissingGuard],
     data: {
+      role:{},
       title: 'Configuration requise',
       layout: 'public',
     }

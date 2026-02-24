@@ -1,10 +1,439 @@
-.config-missing {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 20px;
+.config-missing-container {
+  background: #ffffff;
+  color: #1f2937;
+  max-width: 1000px;
+  margin: clamp(24px, 6vh, 72px) auto;
+  padding: clamp(20px, 3vw, 40px);
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, .06);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .08);
+  line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
-.config-missing ul {
-  margin: 12px 0 0;
-  padding-left: 20px;
+// ── Variables ──────────────────────────────────────────────────
+$accent:       #2563eb;
+$accent-light: #eff6ff;
+$danger:       #dc2626;
+$danger-light: #fef2f2;
+$success:      #16a34a;
+$success-light:#f0fdf4;
+$warning-bg:   #fffbeb;
+$warning-border: #f59e0b;
+$required-bg:  #f0fdf4;
+$required-border: #bbf7d0;
+$border:       #e5e7eb;
+$text:         #1f2937;
+$text-muted:   #6b7280;
+$radius:       8px;
+$transition:   0.18s ease;
+
+// ── Bannière clés manquantes ───────────────────────────────────
+.missing-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: $warning-bg;
+  border: 1px solid $warning-border;
+  border-radius: $radius;
+  padding: 14px 18px;
+  font-size: 14px;
+
+  &__icon {
+    font-size: 18px;
+    line-height: 1;
+    margin-top: 1px;
+    flex-shrink: 0;
+  }
+
+  &__title {
+    font-weight: 600;
+    color: #92400e;
+    margin-bottom: 4px;
+  }
+
+  &__subtitle {
+    color: #78350f;
+  }
+
+  &__keys {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    font-weight: 600;
+  }
+}
+
+// ── En-tête page ───────────────────────────────────────────────
+.page-header {
+  border-bottom: 1px solid $border;
+  padding-bottom: 1.5rem;
+
+  h1 {
+    font-size: clamp(20px, 3vw, 26px);
+    font-weight: 700;
+    color: $text;
+    margin-bottom: 6px;
+  }
+
+  p {
+    font-size: 14px;
+    color: $text-muted;
+  }
+}
+
+.section-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: $accent;
+  background: $accent-light;
+  padding: 3px 8px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+// ── Sections ───────────────────────────────────────────────────
+.form-section {
+  border: 1px solid $border;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 16px;
+
+  &--required {
+    border-color: $required-border;
+    background: $required-bg;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    background: #f9fafb;
+    border-bottom: 1px solid $border;
+
+    .form-section--required & {
+      background: darken($required-bg, 2%);
+      border-color: $required-border;
+    }
+
+    h2 {
+      font-size: 14px;
+      font-weight: 600;
+      color: $text;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+  }
+
+  &__num {
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: $text-muted;
+    background: $border;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+}
+
+.required-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: $success;
+  background: #dcfce7;
+  border: 1px solid $required-border;
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.03em;
+}
+
+// ── Grille de champs ───────────────────────────────────────────
+.fields-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 20px;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  &.full {
+    grid-column: 1 / -1;
+  }
+
+  &--toggle {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  // Clé signalée comme manquante par l'API
+  &--missing {
+    label::after {
+      content: ' manquant';
+      font-size: 11px;
+      color: $warning-border;
+      font-weight: 500;
+      margin-left: 4px;
+    }
+
+    input, select {
+      border-color: $warning-border !important;
+      background: $warning-bg;
+    }
+  }
+
+  // Erreur de validation
+  &--error {
+    input, .input-pwd input {
+      border-color: $danger !important;
+      background: $danger-light;
+    }
+  }
+}
+
+// ── Labels ─────────────────────────────────────────────────────
+label {
+  font-size: 13px;
+  font-weight: 500;
+  color: $text-muted;
+  cursor: pointer;
+}
+
+.hint {
+  font-weight: 400;
+  font-size: 12px;
+}
+
+.asterisk {
+  color: $danger;
+  margin-left: 2px;
+}
+
+.error-msg {
+  font-size: 12px;
+  color: $danger;
+  font-weight: 500;
+}
+
+// ── Inputs & selects ───────────────────────────────────────────
+input[type=text],
+input[type=url],
+input[type=email],
+input[type=password],
+input[type=number],
+select {
+  width: 100%;
+  border: 1px solid $border;
+  border-radius: $radius;
+  padding: 9px 12px;
+  font-size: 14px;
+  color: $text;
+  background: #fff;
+  outline: none;
+  transition: border-color $transition, box-shadow $transition;
+  appearance: none;
+  font-family: inherit;
+
+  &::placeholder {
+    color: #c3c9d4;
+  }
+
+  &:focus {
+    border-color: $accent;
+    box-shadow: 0 0 0 3px rgba($accent, 0.12);
+  }
+}
+
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M0 0l6 8 6-8z' fill='%236b7280'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+  cursor: pointer;
+}
+
+// ── Champ mot de passe ─────────────────────────────────────────
+.input-pwd {
+  position: relative;
+
+  input {
+    padding-right: 40px;
+  }
+}
+
+.pwd-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: $text-muted;
+  display: flex;
+  align-items: center;
+  transition: color $transition;
+
+  &:hover { color: $text; }
+
+  svg {
+    width: 16px;
+    height: 16px;
+    display: block;
+  }
+}
+
+// ── Toggle switch ──────────────────────────────────────────────
+.toggle-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+
+  input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+  }
+}
+
+.toggle-track {
+  width: 40px;
+  height: 22px;
+  background: $border;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  transition: background $transition;
+
+  .toggle-switch input:checked ~ & {
+    background: $accent;
+  }
+}
+
+.toggle-thumb {
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0,0,0,.2);
+  transition: transform $transition;
+
+  .toggle-switch input:checked ~ .toggle-track & {
+    transform: translateX(18px);
+  }
+}
+
+// ── Actions ────────────────────────────────────────────────────
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  padding-top: 4px;
+  flex-wrap: wrap;
+
+  &__warning {
+    margin-right: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: $danger;
+    font-weight: 500;
+
+    svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+  }
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: $radius;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background $transition, border-color $transition, color $transition, transform 0.1s;
+  border: 1px solid transparent;
+
+  svg {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+  }
+
+  &:active { transform: scale(0.98); }
+
+  &--secondary {
+    background: #fff;
+    border-color: $border;
+    color: $text-muted;
+
+    &:hover {
+      border-color: #9ca3af;
+      color: $text;
+    }
+  }
+
+  &--primary {
+    background: $accent;
+    color: #fff;
+
+    &:hover { background: darken($accent, 8%); }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}
+
+// ── Toast succès ───────────────────────────────────────────────
+.success-toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: $success-light;
+  border: 1px solid #bbf7d0;
+  color: $success;
+  padding: 12px 18px;
+  border-radius: $radius;
+  font-size: 14px;
+  font-weight: 500;
+  animation: fadeInUp 0.25s ease;
+
+  svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }

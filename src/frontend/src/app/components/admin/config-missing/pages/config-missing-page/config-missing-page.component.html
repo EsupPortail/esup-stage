@@ -1,14 +1,272 @@
-<div class="config-missing">
-  <p>Des clés obligatoires sont manquantes. Seuls les administrateurs techniques peuvent continuer.</p>
+<div class="config-missing-container">
 
-  <div *ngIf="missingKeys.length > 0; else allGood">
-    <h4>Clés manquantes</h4>
-    <ul>
-      <li *ngFor="let key of missingKeys">{{ key }}</li>
-    </ul>
+  <!-- ── BANNIÈRE CLÉS MANQUANTES ── -->
+  <div class="missing-banner" *ngIf="missingKeys.length > 0">
+    <div class="missing-banner__icon">⚠</div>
+    <div>
+      <p class="missing-banner__title">Configuration incomplète</p>
+      <p class="missing-banner__subtitle">
+        {{ missingKeys.length }} clé{{ missingKeys.length > 1 ? 's' : '' }} manquante{{ missingKeys.length > 1 ? 's' : '' }} :
+        <span class="missing-banner__keys">{{ missingKeys.join(' · ') }}</span>
+      </p>
+    </div>
   </div>
 
-  <ng-template #allGood>
-    <p>Aucune clé manquante détectée.</p>
-  </ng-template>
+  <!-- ── FORMULAIRE ── -->
+  <form [formGroup]="configForm" (ngSubmit)="onSubmit()" novalidate>
+
+    <!-- 01 · APPLICATION -->
+    <div class="form-section">
+      <div class="form-section__header">
+        <h2>Application</h2>
+      </div>
+      <div class="fields-grid">
+        <div class="field" [class.field--missing]="isMissing('appli.tokens')">
+          <label for="appli_tokens">Tokens</label>
+          <input id="appli_tokens" type="text" formControlName="appli_tokens"
+                 placeholder="token1,token2,..." />
+        </div>
+        <div class="field" [class.field--missing]="isMissing('appli.jwt_secret')">
+          <label for="appli_jwt_secret">Secret JWT</label>
+          <div class="input-pwd">
+            <input [type]="showJwt ? 'text' : 'password'" id="appli_jwt_secret"
+                   formControlName="appli_jwt_secret" placeholder="••••••••••••" />
+            <button type="button" class="pwd-toggle" (click)="showJwt = !showJwt"
+                    [attr.aria-label]="showJwt ? 'Masquer' : 'Afficher'">
+              <svg *ngIf="!showJwt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg *ngIf="showJwt"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="field" [class.field--missing]="isMissing('appli.nb_jours_valide_token')">
+          <label for="appli_nb_jours">Durée validité token <span class="hint">(jours)</span></label>
+          <input id="appli_nb_jours" type="number" formControlName="appli_nb_jours_valide_token"
+                 placeholder="30" min="1" />
+        </div>
+      </div>
+    </div>
+
+    <!-- 02 · MESSAGERIE -->
+    <div class="form-section">
+      <div class="form-section__header">
+        <h2>Messagerie</h2>
+      </div>
+      <div class="fields-grid">
+        <div class="field">
+          <label for="mailer_protocol">Protocole</label>
+          <select id="mailer_protocol" formControlName="appli_mailer_protocol">
+            <option value="smtp">SMTP</option>
+            <option value="smtps">SMTPS</option>
+          </select>
+        </div>
+        <div class="field" [class.field--missing]="isMissing('appli.mailer.host')">
+          <label for="mailer_host">Hôte SMTP</label>
+          <input id="mailer_host" type="text" formControlName="appli_mailer_host"
+                 placeholder="smtp.domaine.com" />
+        </div>
+        <div class="field" [class.field--missing]="isMissing('appli.mailer.port')">
+          <label for="mailer_port">Port</label>
+          <input id="mailer_port" type="number" formControlName="appli_mailer_port"
+                 placeholder="587" />
+        </div>
+        <div class="field">
+          <label for="mailer_auth">Authentification</label>
+          <select id="mailer_auth" formControlName="appli_mailer_auth">
+            <option value="">— Non défini —</option>
+            <option value="true">Activée</option>
+            <option value="false">Désactivée</option>
+          </select>
+        </div>
+        <div class="field" [class.field--missing]="isMissing('appli.mailer.username')">
+          <label for="mailer_username">Utilisateur</label>
+          <input id="mailer_username" type="text" formControlName="appli_mailer_username"
+                 placeholder="username@domaine.com" />
+        </div>
+        <div class="field">
+          <label for="mailer_password">Mot de passe SMTP</label>
+          <div class="input-pwd">
+            <input [type]="showSmtpPwd ? 'text' : 'password'" id="mailer_password"
+                   formControlName="appli_mailer_password" placeholder="••••••••••••" />
+            <button type="button" class="pwd-toggle" (click)="showSmtpPwd = !showSmtpPwd">
+              <svg *ngIf="!showSmtpPwd" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg *ngIf="showSmtpPwd"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="field" [class.field--missing]="isMissing('appli.mailer.from')">
+          <label for="mailer_from">Expéditeur <span class="hint">(From)</span></label>
+          <input id="mailer_from" type="email" formControlName="appli_mailer_from"
+                 placeholder="noreply@domaine.com" />
+        </div>
+        <div class="field field--toggle">
+          <label>Désactiver l'envoi</label>
+          <label class="toggle-switch">
+            <input type="checkbox" formControlName="appli_mailer_disable_delivery" />
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          </label>
+        </div>
+        <div class="field full" [class.field--missing]="isMissing('appli.mailer.delivery_address')">
+          <label for="mailer_delivery">Adresse de livraison forcée</label>
+          <input id="mailer_delivery" type="email" formControlName="appli_mailer_delivery_address"
+                 placeholder="test@domaine.com" />
+        </div>
+      </div>
+    </div>
+
+    <!-- 03 · RÉFÉRENTIEL WS (obligatoires) -->
+    <div class="form-section form-section--required">
+      <div class="form-section__header">
+        <h2>Référentiel WS <span class="required-badge">Requis</span></h2>
+      </div>
+      <div class="fields-grid">
+        <div class="field" [class.field--error]="isInvalid('referentiel_ws_login')"
+             [class.field--missing]="isMissing('referentiel.ws.login')">
+          <label for="ref_login">Login <span class="asterisk">*</span></label>
+          <input id="ref_login" type="text" formControlName="referentiel_ws_login"
+                 placeholder="login_ws" />
+          <span class="error-msg" *ngIf="isInvalid('referentiel_ws_login')">Champ obligatoire</span>
+        </div>
+        <div class="field" [class.field--error]="isInvalid('referentiel_ws_password')"
+             [class.field--missing]="isMissing('referentiel.ws.password')">
+          <label for="ref_password">Mot de passe <span class="asterisk">*</span></label>
+          <div class="input-pwd">
+            <input [type]="showRefPwd ? 'text' : 'password'" id="ref_password"
+                   formControlName="referentiel_ws_password" placeholder="••••••••••••" />
+            <button type="button" class="pwd-toggle" (click)="showRefPwd = !showRefPwd">
+              <svg *ngIf="!showRefPwd" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg *ngIf="showRefPwd"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
+          <span class="error-msg" *ngIf="isInvalid('referentiel_ws_password')">Champ obligatoire</span>
+        </div>
+        <div class="field full" [class.field--error]="isInvalid('referentiel_ws_ldap_url')"
+             [class.field--missing]="isMissing('referentiel.ws.ldap_url')">
+          <label for="ref_ldap">URL LDAP <span class="asterisk">*</span></label>
+          <input id="ref_ldap" type="url" formControlName="referentiel_ws_ldap_url"
+                 placeholder="ldap://ldap.domaine.fr:389" />
+          <span class="error-msg" *ngIf="isInvalid('referentiel_ws_ldap_url')">Champ obligatoire</span>
+        </div>
+        <div class="field full" [class.field--error]="isInvalid('referentiel_ws_apogee_url')"
+             [class.field--missing]="isMissing('referentiel.ws.apogee_url')">
+          <label for="ref_apogee">URL Apogée <span class="asterisk">*</span></label>
+          <input id="ref_apogee" type="url" formControlName="referentiel_ws_apogee_url"
+                 placeholder="https://apogee.domaine.fr/ws" />
+          <span class="error-msg" *ngIf="isInvalid('referentiel_ws_apogee_url')">Champ obligatoire</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 04 · WEBHOOK -->
+    <div class="form-section">
+      <div class="form-section__header">
+        <h2>Webhook Signature</h2>
+      </div>
+      <div class="fields-grid">
+        <div class="field" [class.field--missing]="isMissing('webhook.signature.uri')">
+          <label for="webhook_uri">URI</label>
+          <input id="webhook_uri" type="url" formControlName="webhook_signature_uri"
+                 placeholder="https://webhook.domaine.fr/sign" />
+        </div>
+        <div class="field" [class.field--missing]="isMissing('webhook.signature.token')">
+          <label for="webhook_token">Token</label>
+          <div class="input-pwd">
+            <input [type]="showWebhookToken ? 'text' : 'password'" id="webhook_token"
+                   formControlName="webhook_signature_token" placeholder="••••••••••••" />
+            <button type="button" class="pwd-toggle" (click)="showWebhookToken = !showWebhookToken">
+              <svg *ngIf="!showWebhookToken" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg *ngIf="showWebhookToken"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 05 · SIRENE -->
+    <div class="form-section">
+      <div class="form-section__header">
+        <h2>SIRENE</h2>
+      </div>
+      <div class="fields-grid">
+        <div class="field full" [class.field--missing]="isMissing('sirene.url')">
+          <label for="sirene_url">URL SIRENE</label>
+          <input id="sirene_url" type="url" formControlName="sirene_url"
+                 placeholder="https://api.insee.fr/entreprises/sirene/V3" />
+        </div>
+        <div class="field" [class.field--missing]="isMissing('sirene.token')">
+          <label for="sirene_token">Token INSEE</label>
+          <div class="input-pwd">
+            <input [type]="showSireneToken ? 'text' : 'password'" id="sirene_token"
+                   formControlName="sirene_token" placeholder="••••••••••••" />
+            <button type="button" class="pwd-toggle" (click)="showSireneToken = !showSireneToken">
+              <svg *ngIf="!showSireneToken" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg *ngIf="showSireneToken"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="field" [class.field--missing]="isMissing('sirene.nombre_minimum_resultats')">
+          <label for="sirene_min">Résultats minimum</label>
+          <input id="sirene_min" type="number" formControlName="sirene_nombre_minimum_resultats"
+                 placeholder="5" min="1" />
+        </div>
+      </div>
+    </div>
+
+    <!-- 06 · FOOTER -->
+    <div class="form-section">
+      <div class="form-section__header">
+        <h2>Liens du pied de page</h2>
+      </div>
+      <div class="fields-grid">
+        <div class="field" [class.field--missing]="isMissing('appli.footer.github')">
+          <label for="footer_github">GitHub</label>
+          <input id="footer_github" type="url" formControlName="appli_footer_github"
+                 placeholder="https://github.com/organisation/repo" />
+        </div>
+        <div class="field" [class.field--missing]="isMissing('appli.footer.site')">
+          <label for="footer_site">Site officiel</label>
+          <input id="footer_site" type="url" formControlName="appli_footer_site"
+                 placeholder="https://monsite.fr" />
+        </div>
+        <div class="field" [class.field--missing]="isMissing('appli.footer.support')">
+          <label for="footer_support">Support</label>
+          <input id="footer_support" type="url" formControlName="appli_footer_support"
+                 placeholder="https://support.domaine.fr" />
+        </div>
+        <div class="field" [class.field--missing]="isMissing('appli.footer.wiki')">
+          <label for="footer_wiki">Wiki</label>
+          <input id="footer_wiki" type="url" formControlName="appli_footer_wiki"
+                 placeholder="https://wiki.domaine.fr" />
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ACTIONS ── -->
+    <div class="form-actions">
+      <div class="form-actions__warning" *ngIf="configForm.invalid && submitted">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+        Veuillez renseigner tous les champs obligatoires.
+      </div>
+      <button type="button" class="btn btn--secondary" (click)="onReset()">
+        Réinitialiser
+      </button>
+      <button type="submit" class="btn btn--primary">
+        Enregistrer la configuration
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- ── SUCCÈS ── -->
+    <div class="success-toast" *ngIf="savedSuccess">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      Configuration enregistrée avec succès !
+    </div>
+
+  </form>
 </div>
