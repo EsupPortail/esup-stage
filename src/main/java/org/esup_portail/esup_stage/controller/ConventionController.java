@@ -954,23 +954,25 @@ public class ConventionController {
         convention.setEnseignant(enseignant);
         conventionJpaRepository.saveAndFlush(convention);
 
-        // Envoi de l'alerte de changement d'enseignant référent aux gestionnaires
-        List<PersonnelCentreGestion> personnels = convention.getCentreGestion().getPersonnels();
-        assert personnels != null;
-        for (PersonnelCentreGestion personnel : personnels) {
-            if (mailerService.isAlerteActif(personnel, "CHANGEMENT_ENS")) {
-                mailerService.sendAlerteValidation(personnel.getMail(), convention, null, utilisateur, "CHANGEMENT_ENS");
+        if (convention.isValidationCreation()) {
+            // Envoi de l'alerte de changement d'enseignant référent aux gestionnaires
+            List<PersonnelCentreGestion> personnels = convention.getCentreGestion().getPersonnels();
+            assert personnels != null;
+            for (PersonnelCentreGestion personnel : personnels) {
+                if (mailerService.isAlerteActif(personnel, "CHANGEMENT_ENS")) {
+                    mailerService.sendAlerteValidation(personnel.getMail(), convention, null, utilisateur, "CHANGEMENT_ENS");
+                }
             }
-        }
 
-        // Envoi de l'alerte de changement d'enseignant référent à l'enseignant
-        if(appConfigService.getConfigAlerteMail().getAlerteEnseignant().isChangementEnseignant()){
-            mailerService.sendAlerteValidation(enseignant.getMail(), convention, null, utilisateur, "CHANGEMENT_ENS");
-        }
+            // Envoi de l'alerte de changement d'enseignant référent à l'enseignant
+            if(appConfigService.getConfigAlerteMail().getAlerteEnseignant().isChangementEnseignant()){
+                mailerService.sendAlerteValidation(enseignant.getMail(), convention, null, utilisateur, "CHANGEMENT_ENS");
+            }
 
-        // Envoi de l'alerte de changement d'enseignant référent à l'étudiant
-        if(appConfigService.getConfigAlerteMail().getAlerteEtudiant().isChangementEnseignant()){
-            mailerService.sendAlerteValidation(convention.getEtudiant().getMail(), convention, null, utilisateur, "CHANGEMENT_ENS");
+            // Envoi de l'alerte de changement d'enseignant référent à l'étudiant
+            if(appConfigService.getConfigAlerteMail().getAlerteEtudiant().isChangementEnseignant()){
+                mailerService.sendAlerteValidation(convention.getEtudiant().getMail(), convention, null, utilisateur, "CHANGEMENT_ENS");
+            }
         }
 
         return convention;
