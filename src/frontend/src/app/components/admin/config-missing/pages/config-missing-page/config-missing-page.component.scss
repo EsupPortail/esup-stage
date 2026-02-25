@@ -113,7 +113,6 @@ $transition:   0.18s ease;
     align-items: center;
     gap: 12px;
     padding: 14px 20px;
-    background: #f9fafb;
     border-bottom: 1px solid $border;
 
     .form-section--required & {
@@ -341,6 +340,133 @@ select {
   }
 }
 
+// ── Barre de test ──────────────────────────────────────────────
+.test-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 20px 20px;
+  flex-wrap: wrap;
+  margin-top: -8px;
+}
+
+.test-bar__label {
+  font-size: 13px;
+  font-weight: 500;
+  color: $text-muted;
+}
+
+// Bouton de test (même style que tache-planifie)
+.execute-button {
+  min-width: 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+}
+
+.execute-button:not(:disabled):hover {
+  transform: scale(1.1);
+}
+
+.execute-button:not(:disabled) {
+  background-color: #089524;
+  color: #fff;
+  --mdc-fab-container-color: #089524;
+}
+
+//.execute-button:not(:disabled):hover {
+//  background-color: darken($success, 8%);
+//  box-shadow: 0 2px 8px rgba($success, 0.35);
+//}
+
+.execute-button:not(:disabled) mat-spinner circle {
+  stroke: #fff !important;
+}
+
+.execute-button:focus {
+  outline: 2px solid $accent;
+  outline-offset: 2px;
+}
+
+.execute-button mat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.execute-button mat-spinner {
+  margin: 0 auto;
+}
+
+.execute-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn {
+   display: flex;
+   align-items: center;
+   gap: 0.5rem;
+   padding: 0.75rem 1.5rem;
+   border: none;
+   border-radius: 4px;
+   font-size: 1rem;
+   font-weight: 500;
+   cursor: pointer;
+   transition: all 0.2s;
+   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+ }
+
+.btn:hover {
+  filter: brightness(90%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.btn:focus {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+
+// Résultat du test
+.test-result {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 7px 13px;
+  border-radius: $radius;
+  animation: fadeInLeft 0.2s ease;
+
+  svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+  }
+
+  &--error {
+    background: $danger-light;
+    border: 1px solid #fecaca;
+    color: $danger;
+  }
+}
+
+@keyframes fadeInLeft {
+  from { opacity: 0; transform: translateX(-6px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
 // ── Actions ────────────────────────────────────────────────────
 .form-actions {
   display: flex;
@@ -403,7 +529,7 @@ select {
     background: $accent;
     color: #fff;
 
-    &:hover { background: darken($accent, 8%); }
+    &:hover { }
 
     &:disabled {
       opacity: 0.5;

@@ -17,6 +17,10 @@ public class AppProperyService {
     @Autowired
     private AppPropertyJpaRepository appPropertyJpaRepository;
 
+    public List<AppProperty> getAll() {
+        return appPropertyJpaRepository.findAll();
+    }
+
     Map<String, String> getOverrides() {
         List<AppProperty> props = appPropertyJpaRepository.findAll();
         Map<String, String> overrides = new LinkedHashMap<>();
@@ -37,7 +41,7 @@ public class AppProperyService {
         return overrides;
     }
 
-    void save(String key, String value, String user) {
+    public void save(String key, String value, String user) {
         if (!StringUtils.hasText(key)) {
             return;
         }
