@@ -11,7 +11,7 @@ import lombok.Data;
 @Entity
 public class AppProperty {
 
-    @Column
+    @Column(name = "`key`")
     @Id
     private String key;
 
@@ -19,7 +19,7 @@ public class AppProperty {
     private String value;
 
     @Column
-    private String updateAt;
+    private String updatedAt;
 
     @Column
     private String createdAt;

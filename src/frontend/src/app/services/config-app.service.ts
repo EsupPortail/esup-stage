@@ -5,7 +5,7 @@ import { environment } from "../../environments/environment";
 
 export interface AppPropertyDto {
   key: string;
-  value: string;
+  value: string | null;
 }
 
 export interface RequiredKeysResponse {
@@ -14,6 +14,41 @@ export interface RequiredKeysResponse {
 
 export interface MissingKeysResponse {
   missing: string[];
+}
+
+export interface ConfigTestResult {
+  result: 'success' | 'error';
+  message: string;
+}
+
+export interface MailerTestRequest {
+  protocol: string;
+  host: string;
+  port: number;
+  auth: string;
+  username: string;
+  password: string;
+  mailto?: string;
+  subject?: string;
+  content?: string;
+}
+
+export interface ReferentielTestRequest {
+  login: string;
+  password: string;
+  ldapUrl: string;
+  apogeeUrl: string;
+}
+
+export interface WebhookTestRequest {
+  uri: string;
+  token: string;
+}
+
+export interface SireneTestRequest {
+  url: string;
+  token: string;
+  siret?: string;
 }
 
 @Injectable({
@@ -39,5 +74,21 @@ export class ConfigAppService {
 
   getMissingKeys(): Observable<MissingKeysResponse> {
     return this.http.get<MissingKeysResponse>(`${this.baseUrl}/missing`);
+  }
+
+  testMailer(request: MailerTestRequest): Observable<ConfigTestResult> {
+    return this.http.post<ConfigTestResult>(`${this.baseUrl}/test/mailer`, request);
+  }
+
+  testReferentiel(request: ReferentielTestRequest): Observable<ConfigTestResult> {
+    return this.http.post<ConfigTestResult>(`${this.baseUrl}/test/referentiel`, request);
+  }
+
+  testWebhook(request: WebhookTestRequest): Observable<ConfigTestResult> {
+    return this.http.post<ConfigTestResult>(`${this.baseUrl}/test/webhook`, request);
+  }
+
+  testSirene(request: SireneTestRequest): Observable<ConfigTestResult> {
+    return this.http.post<ConfigTestResult>(`${this.baseUrl}/test/sirene`, request);
   }
 }

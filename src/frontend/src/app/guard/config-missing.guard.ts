@@ -37,6 +37,10 @@ export class ConfigMissingGuard {
       const missing = response?.missing || [];
 
       if (missing.length === 0) {
+        if (state.url.includes('admin/config-missing')) {
+          console.log('[ConfigMissingGuard] Config complète, redirection vers l\'accueil');
+          return this.router.createUrlTree(['/']);
+        }
         console.log('[ConfigMissingGuard] Config complète, accès autorisé');
         return true;
       }

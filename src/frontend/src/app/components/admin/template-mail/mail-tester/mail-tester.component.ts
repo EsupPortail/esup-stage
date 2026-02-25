@@ -23,7 +23,9 @@ export class MailTesterComponent implements OnInit {
     private messageService: MessageService,
   ) {
     this.form = this.fb.group({
-      email: [null, [Validators.required, Validators.pattern(REGEX.EMAIL)]],
+      mailto: [null, [Validators.required, Validators.pattern(REGEX.EMAIL)]],
+      subject: [data?.objet ?? null, [Validators.required]],
+      content: [data?.texte ?? null, [Validators.required]],
     });
   }
 
@@ -38,7 +40,9 @@ export class MailTesterComponent implements OnInit {
     if (this.form.valid) {
       const data = {
         templateMail: this.data.code,
-        to: this.form.get('email')?.value,
+        mailto: this.form.get('mailto')?.value,
+        subject: this.form.get('subject')?.value,
+        content: this.form.get('content')?.value,
       }
       this.templateMailService.sendMailTest(data).subscribe((response: any) => {
         this.dialogRef.close();
@@ -48,3 +52,4 @@ export class MailTesterComponent implements OnInit {
   }
 
 }
+

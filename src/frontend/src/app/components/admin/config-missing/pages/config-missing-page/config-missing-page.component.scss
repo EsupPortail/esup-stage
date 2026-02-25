@@ -1,3 +1,5 @@
+@use "sass:color";
+
 .config-missing-container {
   background: #ffffff;
   color: #1f2937;
@@ -116,7 +118,7 @@ $transition:   0.18s ease;
     border-bottom: 1px solid $border;
 
     .form-section--required & {
-      background: darken($required-bg, 2%);
+      background: color.adjust($required-bg, $lightness: -2%);
       border-color: $required-border;
     }
 
@@ -543,6 +545,7 @@ select {
   display: flex;
   align-items: center;
   gap: 10px;
+  margin-top: 12px;
   background: $success-light;
   border: 1px solid #bbf7d0;
   color: $success;
@@ -559,7 +562,47 @@ select {
   }
 }
 
+// Ready actions
+.ready-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+  background: $success-light;
+  border: 1px solid #bbf7d0;
+  color: $success;
+  padding: 12px 18px;
+  border-radius: $radius;
+  font-size: 14px;
+  font-weight: 500;
+  animation: fadeInUp 0.25s ease;
+  flex-wrap: wrap;
+}
+
+.ready-actions__text {
+  flex: 1 1 auto;
+}
+
+.ready-actions__buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+::ng-deep .config-missing-mailer-dialog .mat-mdc-dialog-container {
+  width: min(720px, 96vw);
+  max-width: 96vw;
+}
+
+@media (max-width: 640px) {
+  ::ng-deep .config-missing-mailer-dialog .mat-mdc-dialog-container {
+    width: 96vw;
+    margin: 0;
+  }
 }

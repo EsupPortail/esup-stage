@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ConfigMissingService } from "../../../../../services/config-missing.service";
+import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
+import { AppPropertyDto, ConfigAppService } from "../../../../../services/config-app.service";
+import { ConfigMissingMailerTestDialogComponent } from "./mailer-test-dialog/config-missing-mailer-test-dialog.component";
 
-/** État d'un test de connexion */
 interface TestState {
   loading: boolean;
   result: 'success' | 'error' | null;
@@ -21,18 +23,20 @@ function emptyTest(): TestState {
 })
 export class ConfigMissingPageComponent implements OnInit {
 
+  private static readonly SIRENE_TEST_SIRET = '13001550600012';
+
   missingKeys: string[] = [];
+  configReady = false;
+  showReadyActions = false;
   configForm!: FormGroup;
   submitted = false;
   savedSuccess = false;
 
-  // États des tests
   testMailer:      TestState = emptyTest();
   testReferentiel: TestState = emptyTest();
   testWebhook:     TestState = emptyTest();
   testSirene:      TestState = emptyTest();
 
-  // Visibilité mots de passe
   showJwt          = false;
   showSmtpPwd      = false;
   showRefPwd       = false;
@@ -46,33 +50,71 @@ export class ConfigMissingPageComponent implements OnInit {
     'referentiel.ws.apogee_url',
   ];
 
+  private readonly FIELD_TO_KEY: Record<string, string> = {
+    appli_url: 'appli.url',
+    appli_tokens: 'appli.tokens',
+    appli_jwt_secret: 'appli.jwt_secret',
+    appli_nb_jours_valide_token: 'appli.nb_jours_valide_token',
+
+    appli_mailer_protocol: 'appli.mailer.protocol',
+    appli_mailer_host: 'appli.mailer.host',
+    appli_mailer_port: 'appli.mailer.port',
+    appli_mailer_auth: 'appli.mailer.auth',
+    appli_mailer_username: 'appli.mailer.username',
+    appli_mailer_password: 'appli.mailer.password',
+    appli_mailer_from: 'appli.mailer.from',
+    appli_mailer_disable_delivery: 'appli.mailer.disable_delivery',
+    appli_mailer_delivery_address: 'appli.mailer.delivery_address',
+
+    referentiel_ws_login: 'referentiel.ws.login',
+    referentiel_ws_password: 'referentiel.ws.password',
+    referentiel_ws_ldap_url: 'referentiel.ws.ldap_url',
+    referentiel_ws_apogee_url: 'referentiel.ws.apogee_url',
+
+    webhook_signature_uri: 'webhook.signature.uri',
+    webhook_signature_token: 'webhook.signature.token',
+
+    sirene_url: 'sirene.url',
+    sirene_token: 'sirene.token',
+    sirene_nombre_minimum_resultats: 'sirene.nombre_minimum_resultats',
+
+    appli_footer_github: 'appli.footer.github',
+    appli_footer_site: 'appli.footer.site',
+    appli_footer_support: 'appli.footer.support',
+    appli_footer_wiki: 'appli.footer.wiki',
+  };
+
+  private readonly KEY_TO_FIELD: Record<string, string> = Object.entries(this.FIELD_TO_KEY)
+    .reduce((acc, [field, key]) => {
+      acc[key] = field;
+      return acc;
+    }, {} as Record<string, string>);
+
+  get displayMissingKeys(): string[] {
+    return this.missingKeys.filter((key) => this.isMissing(key));
+  }
+
   constructor(
-    private configMissingService: ConfigMissingService,
+    private configAppService: ConfigAppService,
     private fb: FormBuilder,
+    private dialog: MatDialog,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
     this.buildForm();
 
-    this.configMissingService.getMissing().subscribe({
-      next: (resp: { missing: string[] }) => {
-        this.missingKeys = resp?.missing || [];
-      },
-      error: () => {
-        this.missingKeys = [];
-      }
-    });
+    this.loadMissingKeys();
+    this.loadProperties();
   }
 
   private buildForm(): void {
     this.configForm = this.fb.group({
-      // Application
       appli_url: [null],
       appli_tokens: [null],
       appli_jwt_secret: [null],
       appli_nb_jours_valide_token: [null],
 
-      // Mailer
       appli_mailer_protocol: ['smtp'],
       appli_mailer_host: [null],
       appli_mailer_port: [null],
@@ -83,22 +125,18 @@ export class ConfigMissingPageComponent implements OnInit {
       appli_mailer_disable_delivery: [false],
       appli_mailer_delivery_address: [null],
 
-      // Référentiel WS (obligatoires)
       referentiel_ws_login: [null, Validators.required],
       referentiel_ws_password: [null, Validators.required],
       referentiel_ws_ldap_url: [null, Validators.required],
       referentiel_ws_apogee_url: [null, Validators.required],
 
-      // Webhook
       webhook_signature_uri: [null],
       webhook_signature_token: [null],
 
-      // SIRENE
       sirene_url: [null],
       sirene_token: [null],
       sirene_nombre_minimum_resultats: [null],
 
-      // Footer
       appli_footer_github: [null],
       appli_footer_site: [null],
       appli_footer_support: [null],
@@ -106,7 +144,6 @@ export class ConfigMissingPageComponent implements OnInit {
     });
   }
 
-  // ── Helpers ──────────────────────────────────────────────────
 
   isInvalid(field: string): boolean {
     const ctrl = this.configForm.get(field);
@@ -114,10 +151,21 @@ export class ConfigMissingPageComponent implements OnInit {
   }
 
   isMissing(key: string): boolean {
-    return this.missingKeys.includes(key);
+    if (!this.missingKeys.includes(key)) {
+      return false;
+    }
+    const field = this.KEY_TO_FIELD[key];
+    if (!field) {
+      return true;
+    }
+    const ctrl = this.configForm?.get(field);
+    if (!ctrl) {
+      return true;
+    }
+    const value = ctrl.value;
+    return value === null || value === undefined || value === '';
   }
 
-  // ── Conditions d'activation des boutons de test ───────────────
 
   isMailerTestable(): boolean {
     const v = this.configForm.value;
@@ -136,7 +184,7 @@ export class ConfigMissingPageComponent implements OnInit {
 
   isWebhookTestable(): boolean {
     const v = this.configForm.value;
-    return !!(v.webhook_signature_uri && v.webhook_signature_token);
+    return !!v.webhook_signature_uri;
   }
 
   isSireneTestable(): boolean {
@@ -144,9 +192,32 @@ export class ConfigMissingPageComponent implements OnInit {
     return !!(v.sirene_url && v.sirene_token);
   }
 
-  // ── Fonctions de test ─────────────────────────────────────────
+  openMailerTestDialog(): void {
+    if (!this.isMailerTestable()) {
+      return;
+    }
+    const dialogRef = this.dialog.open(ConfigMissingMailerTestDialogComponent, {
+      data: {
+        mailto: null,
+        subject: null,
+        content: null,
+      },
+      panelClass: 'config-missing-mailer-dialog',
+    });
 
-  testMailerConnection(): void {
+    dialogRef.afterClosed().subscribe((result) => {
+      if (!result) {
+        return;
+      }
+      this.testMailerConnection(result);
+    });
+  }
+
+  testMailerConnectionOnly(): void {
+    this.testMailerConnection();
+  }
+
+  testMailerConnection(testPayload?: { mailto: string; subject: string; content: string }): void {
     const v = this.configForm.value;
     const params = {
       protocol: v.appli_mailer_protocol,
@@ -155,35 +226,38 @@ export class ConfigMissingPageComponent implements OnInit {
       auth:     v.appli_mailer_auth,
       username: v.appli_mailer_username,
       password: v.appli_mailer_password,
+      mailto: testPayload?.mailto,
+      subject: testPayload?.subject,
+      content: testPayload?.content,
     };
 
     this.testMailer = { loading: true, result: null, message: '' };
-    console.log('Test SMTP params:', params);
-
-    // TODO: this.configMissingService.testMailer(params).subscribe(...)
-    this._simulateTest(this.testMailer,
-      'Connexion SMTP établie avec succès.',
-      'Impossible de joindre le serveur SMTP. Vérifiez l\'hôte et le port.'
-    );
+    this.configAppService.testMailer(params).subscribe({
+      next: (resp) => this.applyTestResult(this.testMailer, resp),
+      error: () => this.applyTestResult(this.testMailer, {
+        result: 'error',
+        message: 'Erreur lors du test SMTP (non implémenté ou indisponible).'
+      })
+    });
   }
 
   testReferentielConnection(): void {
     const v = this.configForm.value;
     const params = {
-      login:      v.referentiel_ws_login,
-      password:   v.referentiel_ws_password,
-      ldap_url:   v.referentiel_ws_ldap_url,
-      apogee_url: v.referentiel_ws_apogee_url,
+      login: v.referentiel_ws_login,
+      password: v.referentiel_ws_password,
+      ldapUrl: v.referentiel_ws_ldap_url,
+      apogeeUrl: v.referentiel_ws_apogee_url,
     };
 
     this.testReferentiel = { loading: true, result: null, message: '' };
-    console.log('Test Référentiel WS params:', params);
-
-    // TODO: this.configMissingService.testReferentiel(params).subscribe(...)
-    this._simulateTest(this.testReferentiel,
-      'Connexion au référentiel WS réussie.',
-      'Échec de la connexion. Vérifiez les identifiants et les URLs.'
-    );
+    this.configAppService.testReferentiel(params).subscribe({
+      next: (resp) => this.applyTestResult(this.testReferentiel, resp),
+      error: () => this.applyTestResult(this.testReferentiel, {
+        result: 'error',
+        message: 'Erreur lors du test WS (non implémenté ou indisponible).'
+      })
+    });
   }
 
   testWebhookConnection(): void {
@@ -194,13 +268,13 @@ export class ConfigMissingPageComponent implements OnInit {
     };
 
     this.testWebhook = { loading: true, result: null, message: '' };
-    console.log('Test Webhook params:', params);
-
-    // TODO: this.configMissingService.testWebhook(params).subscribe(...)
-    this._simulateTest(this.testWebhook,
-      'Webhook joignable et token accepté.',
-      'Le webhook n\'a pas répondu ou a rejeté le token.'
-    );
+    this.configAppService.testWebhook(params).subscribe({
+      next: (resp) => this.applyTestResult(this.testWebhook, resp),
+      error: () => this.applyTestResult(this.testWebhook, {
+        result: 'error',
+        message: 'Erreur lors du test webhook (non implémenté ou indisponible).'
+      })
+    });
   }
 
   testSireneConnection(): void {
@@ -208,54 +282,45 @@ export class ConfigMissingPageComponent implements OnInit {
     const params = {
       url:   v.sirene_url,
       token: v.sirene_token,
+      siret: ConfigMissingPageComponent.SIRENE_TEST_SIRET,
     };
 
     this.testSirene = { loading: true, result: null, message: '' };
-    console.log('Test API Sirène params:', params);
-
-    // TODO: this.configMissingService.testSirene(params).subscribe(...)
-    this._simulateTest(this.testSirene,
-      'API Sirène accessible, token valide.',
-      'Accès à l\'API Sirène refusé. Vérifiez l\'URL et le token INSEE.'
-    );
+    this.configAppService.testSirene(params).subscribe({
+      next: (resp) => this.applyTestResult(this.testSirene, resp),
+      error: () => this.applyTestResult(this.testSirene, {
+        result: 'error',
+        message: 'Erreur lors du test API Sirène (non implémenté ou indisponible).'
+      })
+    });
   }
 
-  /**
-   * Simulation temporaire d'un appel async (à retirer lors de l'implémentation métier).
-   * Remplace l'appel service par un délai fixe et un résultat aléatoire pour
-   * valider le rendu visuel.
-   */
-  private _simulateTest(state: TestState, successMsg: string, errorMsg: string): void {
-    setTimeout(() => {
-      const ok = Math.random() > 0.4;
-      state.loading = false;
-      state.result  = ok ? 'success' : 'error';
-      state.message = ok ? successMsg : errorMsg;
-    }, 1200);
+  private applyTestResult(state: TestState, resp: { result: 'success' | 'error'; message: string }): void {
+    state.loading = false;
+    state.result = resp.result;
+    state.message = resp.message || '';
   }
 
-  // ── Payload & soumission ──────────────────────────────────────
-
-  buildAppPropertyPayload(): Record<string, string | null> {
+  buildAppPropertyPayload(): AppPropertyDto[] {
     const v = this.configForm.value;
-    return {
+    const payload: Record<string, string | null> = {
       'appli.url':                        v.appli_url ?? null,
       'appli.tokens':                     v.appli_tokens ?? null,
       'appli.jwt_secret':                 v.appli_jwt_secret ?? null,
       'appli.nb_jours_valide_token':      v.appli_nb_jours_valide_token?.toString() ?? null,
-      'appli.mailer.protocol':            v.appli_mailer_protocol,
+      'appli.mailer.protocol':            v.appli_mailer_protocol ?? null,
       'appli.mailer.host':                v.appli_mailer_host ?? null,
       'appli.mailer.port':                v.appli_mailer_port?.toString() ?? null,
       'appli.mailer.auth':                v.appli_mailer_auth || null,
-      'appli.mailer.username':            v.appli_mailer_username,
-      'appli.mailer.password':            v.appli_mailer_password,
+      'appli.mailer.username':            v.appli_mailer_username ?? null,
+      'appli.mailer.password':            v.appli_mailer_password ?? null,
       'appli.mailer.from':                v.appli_mailer_from ?? null,
       'appli.mailer.disable_delivery':    String(v.appli_mailer_disable_delivery),
       'appli.mailer.delivery_address':    v.appli_mailer_delivery_address ?? null,
-      'referentiel.ws.login':             v.referentiel_ws_login,
-      'referentiel.ws.password':          v.referentiel_ws_password,
-      'referentiel.ws.ldap_url':          v.referentiel_ws_ldap_url,
-      'referentiel.ws.apogee_url':        v.referentiel_ws_apogee_url,
+      'referentiel.ws.login':             v.referentiel_ws_login ?? null,
+      'referentiel.ws.password':          v.referentiel_ws_password ?? null,
+      'referentiel.ws.ldap_url':          v.referentiel_ws_ldap_url ?? null,
+      'referentiel.ws.apogee_url':        v.referentiel_ws_apogee_url ?? null,
       'webhook.signature.uri':            v.webhook_signature_uri ?? null,
       'webhook.signature.token':          v.webhook_signature_token ?? null,
       'sirene.url':                       v.sirene_url ?? null,
@@ -266,6 +331,63 @@ export class ConfigMissingPageComponent implements OnInit {
       'appli.footer.support':             v.appli_footer_support ?? null,
       'appli.footer.wiki':                v.appli_footer_wiki ?? null,
     };
+
+    return Object.entries(payload).map(([key, value]) => ({ key, value }));
+  }
+
+  private loadMissingKeys(afterSave = false): void {
+    this.configAppService.getMissingKeys().subscribe({
+      next: (resp) => {
+        this.missingKeys = resp?.missing || [];
+        this.configReady = this.missingKeys.length === 0;
+        if (afterSave && this.configReady) {
+          this.showReadyActions = true;
+        }
+      },
+      error: () => {
+        this.missingKeys = [];
+        this.configReady = false;
+      }
+    });
+  }
+
+  private loadProperties(): void {
+    this.configAppService.getProperties().subscribe({
+      next: (properties) => {
+        const values = this.mapPropertiesToForm(properties || []);
+        this.configForm.patchValue(values, { emitEvent: false });
+      },
+      error: () => {}
+    });
+  }
+
+  private mapPropertiesToForm(properties: AppPropertyDto[]): Record<string, unknown> {
+    const map: Record<string, string | null> = {};
+    for (const prop of properties) {
+      if (!prop || !prop.key) {
+        continue;
+      }
+      map[prop.key] = prop.value ?? null;
+    }
+
+    const formValues: Record<string, unknown> = {};
+    Object.entries(this.FIELD_TO_KEY).forEach(([field, key]) => {
+      const value = map[key] ?? null;
+      switch (field) {
+        case 'appli_mailer_disable_delivery':
+          formValues[field] = value === 'true';
+          break;
+        case 'appli_mailer_port':
+        case 'appli_nb_jours_valide_token':
+        case 'sirene_nombre_minimum_resultats':
+          formValues[field] = value !== null ? Number(value) : null;
+          break;
+        default:
+          formValues[field] = value;
+      }
+    });
+
+    return formValues;
   }
 
   onSubmit(): void {
@@ -276,11 +398,25 @@ export class ConfigMissingPageComponent implements OnInit {
     }
 
     const payload = this.buildAppPropertyPayload();
-    console.log('AppProperty payload:', payload);
-    // TODO: this.configMissingService.saveAll(payload).subscribe(...)
+    this.configAppService.saveProperties(payload).subscribe({
+      next: () => {
+        this.savedSuccess = true;
+        setTimeout(() => this.savedSuccess = false, 4000);
+        this.showReadyActions = false;
+        this.loadMissingKeys(true);
+      },
+      error: () => {
+        this.savedSuccess = false;
+      }
+    });
+  }
 
-    this.savedSuccess = true;
-    setTimeout(() => this.savedSuccess = false, 4000);
+  goToHome(): void {
+    this.router.navigateByUrl('/');
+  }
+
+  continueConfig(): void {
+    this.showReadyActions = false;
   }
 
   onReset(): void {

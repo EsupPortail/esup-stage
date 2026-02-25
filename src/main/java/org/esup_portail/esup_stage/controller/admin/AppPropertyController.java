@@ -2,6 +2,11 @@ package org.esup_portail.esup_stage.controller.admin;
 
 import org.esup_portail.esup_stage.controller.ApiController;
 import org.esup_portail.esup_stage.dto.AppPropertyDto;
+import org.esup_portail.esup_stage.dto.ConfigTestResultDto;
+import org.esup_portail.esup_stage.dto.MailerTestRequestDto;
+import org.esup_portail.esup_stage.dto.ReferentielTestRequestDto;
+import org.esup_portail.esup_stage.dto.SireneTestRequestDto;
+import org.esup_portail.esup_stage.dto.WebhookTestRequestDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.AppProperty;
 import org.esup_portail.esup_stage.model.Utilisateur;
@@ -62,11 +67,39 @@ public class AppPropertyController {
                 if (dto == null) {
                     continue;
                 }
-                appProperyService.save(dto.getKey(), dto.getValue(), utilisateur.getLogin());
+                appProperyService.save(dto.getKey(), dto.getValue());
             }
         }
         List<AppProperty> saved = appProperyService.getAll();
         return saved.stream().map(this::toDto).collect(Collectors.toList());
+    }
+
+    @PostMapping("/test/mailer")
+    @Secure
+    public ConfigTestResultDto testMailer(@RequestBody MailerTestRequestDto request) {
+        requireAdmin();
+        return appProperyService.testMailer(request);
+    }
+
+    @PostMapping("/test/referentiel")
+    @Secure
+    public ConfigTestResultDto testReferentiel(@RequestBody ReferentielTestRequestDto request) {
+        requireAdmin();
+        return appProperyService.testReferentiel(request);
+    }
+
+    @PostMapping("/test/webhook")
+    @Secure
+    public ConfigTestResultDto testWebhook(@RequestBody WebhookTestRequestDto request) {
+        requireAdmin();
+        return appProperyService.testWebhook(request);
+    }
+
+    @PostMapping("/test/sirene")
+    @Secure
+    public ConfigTestResultDto testSirene(@RequestBody SireneTestRequestDto request) {
+        requireAdmin();
+        return appProperyService.testSirene(request);
     }
 
     private AppPropertyDto toDto(AppProperty prop) {

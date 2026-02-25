@@ -1,12 +1,12 @@
 <div class="config-missing-container">
 
-  <div class="missing-banner" *ngIf="missingKeys.length > 0">
+  <div class="missing-banner" *ngIf="displayMissingKeys.length > 0">
     <div class="missing-banner__icon">⚠</div>
     <div>
       <p class="missing-banner__title">Configuration incomplète</p>
       <p class="missing-banner__subtitle">
-        {{ missingKeys.length }} clé{{ missingKeys.length > 1 ? 's' : '' }} manquante{{ missingKeys.length > 1 ? 's' : '' }} :
-        <span class="missing-banner__keys">{{ missingKeys.join(' · ') }}</span>
+        {{ displayMissingKeys.length }} clé{{ displayMissingKeys.length > 1 ? 's' : '' }} manquante{{ displayMissingKeys.length > 1 ? 's' : '' }} :
+        <span class="missing-banner__keys">{{ displayMissingKeys.join(' · ') }}</span>
       </p>
     </div>
   </div>
@@ -109,13 +109,22 @@
     <div class="test-bar">
       <button type="button" class="valid-button execute-button" mat-mini-fab
               [disabled]="!isMailerTestable() || testMailer.loading"
-              (click)="testMailerConnection()"
+              (click)="testMailerConnectionOnly()"
               [attr.aria-label]="testMailer.loading ? 'Test SMTP en cours…' : 'Tester la connexion SMTP'"
               matTooltip="Tester la connexion SMTP">
         <mat-icon *ngIf="!testMailer.loading" aria-hidden="true">play_arrow</mat-icon>
         <mat-spinner *ngIf="testMailer.loading" diameter="24" aria-label="Chargement"></mat-spinner>
       </button>
       <span class="test-bar__label">Tester la connexion SMTP</span>
+      <button type="button" class="valid-button execute-button" mat-mini-fab
+              [disabled]="!isMailerTestable() || testMailer.loading"
+              (click)="openMailerTestDialog()"
+              [attr.aria-label]="testMailer.loading ? 'Test SMTP en cours…' : 'Envoyer un mail de test'"
+              matTooltip="Envoyer un mail de test">
+        <mat-icon *ngIf="!testMailer.loading" aria-hidden="true">mail</mat-icon>
+        <mat-spinner *ngIf="testMailer.loading" diameter="24" aria-label="Chargement"></mat-spinner>
+      </button>
+      <span class="test-bar__label">Envoyer un mail de test</span>
       <div class="test-result" *ngIf="testMailer.result !== null"
            [class.test-result--success]="testMailer.result === 'success'"
            [class.test-result--error]="testMailer.result === 'error'">
@@ -318,6 +327,20 @@
           <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
         </svg>
       </button>
+    </div>
+
+    <div class="ready-actions" *ngIf="showReadyActions">
+      <div class="ready-actions__text">
+        Configuration minimale enregistrée. Vous pouvez accéder à l'application.
+      </div>
+      <div class="ready-actions__buttons">
+        <button type="button" class="btn btn--secondary" (click)="continueConfig()">
+          Continuer la configuration
+        </button>
+        <button type="button" class="btn btn--primary" (click)="goToHome()">
+          Aller à l'accueil
+        </button>
+      </div>
     </div>
 
     <div class="success-toast" *ngIf="savedSuccess">
