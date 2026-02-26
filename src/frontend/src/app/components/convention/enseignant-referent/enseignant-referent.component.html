@@ -48,6 +48,22 @@
         </mat-form-field>
       </div>
     </form>
+    <div class="row mb-3" *ngIf="disableAutoSearch">
+      <div class="col-sm-12 col-md-6 text-left">
+        <button
+          type="button"
+          class="valid-button"
+          mat-button
+          mat-flat-button
+          (click)="runSearchEnseignant()"
+          [disabled]="!hasPendingSearchEnseignant">
+          Lancer la recherche
+        </button>
+        <span *ngIf="hasPendingSearchEnseignant" class="pending-search-hint">
+          Modifications en attente
+        </span>
+      </div>
+    </div>
 
     <div class="alert alert-info" *ngIf="enseignants.length > 10">La recherche est limitée à 10 enseignants. Veuillez affiner la recherche si l'enseignant n'apparaît pas.</div>
     <table mat-table [dataSource]="enseignants | slice:0:10">
@@ -89,3 +105,4 @@
   </mat-expansion-panel>
 
 </mat-accordion>
+

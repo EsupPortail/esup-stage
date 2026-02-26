@@ -2,7 +2,15 @@
   <mat-card-content>
     <div class="row">
       <div class="col-md-6 col-sm-12">
-        <span class="convention-attente">Convention(s) en attente de validation : <span class="text-title" *ngIf="nbConventionsEnAttente !== undefined">{{nbConventionsEnAttente}} trouvée(s)</span></span>
+        <span class="convention-attente">
+          Convention(s) en attente de validation :
+          <span class="text-title"
+                *ngIf="nbConventionsEnAttente !== undefined"
+                aria-live="polite"
+                aria-atomic="true">
+            {{nbConventionsEnAttente}} trouvée(s)
+          </span>
+        </span>
       </div>
       <div class="col-md-6 col-sm-12 text-right">
         <mat-form-field>
@@ -33,19 +41,21 @@
            [customTemplateRef]="validAction" (onUpdated)="countConvention()" [setAlerte]="true" [exportColumns]="exportColumns"
            [templateMobile]="tableMobile" [loadWithoutFilters]="false">
 
-  <ng-container *ngIf="typeDashboard === 1">
-    <ng-container matColumnDef="select">
-      <th mat-header-cell *matHeaderCellDef>
-        <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selected.length > 0 && isAllSelected()"
-                      [indeterminate]="selected.length > 0 && !isAllSelected()">
-        </mat-checkbox>
-      </th>
-      <td mat-cell *matCellDef="let row">
-        <mat-checkbox [checked]="isSelected(row)" (change)="$event ? toggleSelected(row) : null"
-                      (click)="$event.stopPropagation()">
-        </mat-checkbox>
-      </td>
-    </ng-container>
+  <ng-container matColumnDef="select">
+    <th mat-header-cell *matHeaderCellDef>
+      <mat-checkbox *ngIf="typeDashboard === 1"
+                    (change)="$event ? masterToggle() : null"
+                    [checked]="selected.length > 0 && isAllSelected()"
+                    [indeterminate]="selected.length > 0 && !isAllSelected()">
+      </mat-checkbox>
+    </th>
+    <td mat-cell *matCellDef="let row">
+      <mat-checkbox *ngIf="typeDashboard === 1"
+                    [checked]="isSelected(row)"
+                    (change)="$event ? toggleSelected(row) : null"
+                    (click)="$event.stopPropagation()">
+      </mat-checkbox>
+    </td>
   </ng-container>
   <ng-container *ngIf="typeDashboard === 3 || typeDashboard === 1" matColumnDef="enseignant.prenom">
     <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Enseignant</th>
@@ -76,6 +86,7 @@
         ? validationLibelles.validationPedagogique + ' effectuée'
         : 'en attente ' + validationLibelles.validationPedagogique"
          role="img"
+         [attr.aria-hidden]="false"
          [attr.aria-label]="row.validationPedagogique
         ? (validationLibelles.validationPedagogique + ' effectuée')
         : (validationLibelles.validationPedagogique + ' en attente')">
@@ -93,6 +104,7 @@
         ? (validationLibelles.verificationAdministrative + ' effectuée')
         : ('en attente ' + validationLibelles.verificationAdministrative) }}"
          role="img"
+         [attr.aria-hidden]="false"
          [attr.aria-label]="row.verificationAdministrative
         ? (validationLibelles.verificationAdministrative + ' effectuée')
         : (validationLibelles.verificationAdministrative + ' en attente')">
@@ -110,6 +122,7 @@
         ? (validationLibelles.validationConvention + ' effectuée')
         : ('en attente ' + validationLibelles.validationConvention) }}"
          role="img"
+         [attr.aria-hidden]="false"
          [attr.aria-label]="row.validationConvention
         ? (validationLibelles.validationConvention + ' effectuée')
         : (validationLibelles.validationConvention + ' en attente')">
@@ -125,6 +138,7 @@
          [ngClass]="getValidationIconStatus(row)"
          [matTooltip]="getValidationTooltip(row)"
          role="img"
+         [attr.aria-hidden]="false"
          [attr.aria-label]="'signature ' + getValidationTooltip(row)">
         <span class="sr-only">{{ getValidationTooltip(row) }}</span>
       </mat-icon>
@@ -173,6 +187,7 @@
         ? (validationLibelles.validationPedagogique + ' effectuée')
         : ('en attente ' + validationLibelles.validationPedagogique) }}"
          role="img"
+         [attr.aria-hidden]="false"
          [attr.aria-label]="row.validationPedagogique
         ? (validationLibelles.validationPedagogique + ' effectuée')
         : (validationLibelles.validationPedagogique + ' en attente')">
@@ -189,6 +204,7 @@
         ? (validationLibelles.verificationAdministrative + ' effectuée')
         : ('en attente ' + validationLibelles.verificationAdministrative) }}"
          role="img"
+         [attr.aria-hidden]="false"
          [attr.aria-label]="row.verificationAdministrative
         ? (validationLibelles.verificationAdministrative + ' effectuée')
         : (validationLibelles.verificationAdministrative + ' en attente')">
@@ -205,6 +221,7 @@
         ? (validationLibelles.validationConvention + ' effectuée')
         : ('en attente ' + validationLibelles.validationConvention) }}"
          role="img"
+         [attr.aria-hidden]="false"
          [attr.aria-label]="row.validationConvention
         ? (validationLibelles.validationConvention + ' effectuée')
         : (validationLibelles.validationConvention + ' en attente')">
@@ -219,6 +236,7 @@
          [ngClass]="getValidationIconStatus(row)"
          [matTooltip]="getValidationTooltip(row)"
          role="img"
+         [attr.aria-hidden]="false"
          [attr.aria-label]="'signature '+getValidationTooltip(row)">
         <span class="sr-only">{{ getValidationTooltip(row) }}</span>
       </i>
@@ -306,6 +324,7 @@
           ? (validationLibelles.validationPedagogique + ' effectuée')
           : ('en attente ' + validationLibelles.validationPedagogique) }}"
            role="img"
+           [attr.aria-hidden]="false"
            [attr.aria-label]="row.validationPedagogique
           ? (validationLibelles.validationPedagogique + ' effectuée')
           : (validationLibelles.validationPedagogique + ' en attente')">
@@ -323,6 +342,7 @@
           ? (validationLibelles.verificationAdministrative + ' effectuée')
           : ('en attente ' + validationLibelles.verificationAdministrative) }}"
            role="img"
+           [attr.aria-hidden]="false"
            [attr.aria-label]="row.verificationAdministrative
           ? (validationLibelles.verificationAdministrative + ' effectuée')
           : (validationLibelles.verificationAdministrative + ' en attente')">
@@ -340,6 +360,7 @@
           ? (validationLibelles.validationConvention + ' effectuée')
           : ('en attente ' + validationLibelles.validationConvention) }}"
            role="img"
+           [attr.aria-hidden]="false"
            [attr.aria-label]="row.validationConvention
           ? (validationLibelles.validationConvention + ' effectuée')
           : (validationLibelles.validationConvention + ' en attente')">
@@ -354,6 +375,7 @@
            [ngClass]="getValidationIconStatus(row)"
            [matTooltip]="getValidationTooltip(row)"
            role="img"
+           [attr.aria-hidden]="false"
            [attr.aria-label]="'signature ' + getValidationTooltip(row)">
           <span class="sr-only">{{ getValidationTooltip(row) }}</span>
         </i>
@@ -383,4 +405,11 @@
     </tbody>
   </table>
 </ng-template>
+
+
+
+
+
+
+
 

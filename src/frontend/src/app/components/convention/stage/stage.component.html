@@ -3,7 +3,7 @@
     <form [formGroup]="form" novalidate>
       <div class="mt-3 mb-3">
 
-        <div class="text-title">Description du stage</div>
+        <h4 class="text-title">Description du stage</h4>
         <mat-divider class="mb-2"></mat-divider>
         <div class="row">
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
@@ -77,7 +77,7 @@
         </div>
 
 
-        <div class="text-title">Dates / horaires</div>
+        <h4 class="text-title">Dates / horaires</h4>
         <mat-divider class="mb-2"></mat-divider>
         <div class="row">
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
@@ -111,7 +111,7 @@
             <mat-error *ngIf="!periodesInterruptionsValid">Veuillez ajouter une période d'interruption</mat-error>
           </div>
           <div class="col-md-12 mb-3" *ngIf="interruptionsStage.length > 0">
-            <div class="text-title">Périodes d'interruptions actuelles :</div>
+            <h4 class="text-title">Périodes d'interruptions actuelles :</h4>
             <table mat-table [dataSource]="interruptionsStage">
               <ng-container matColumnDef="dateDebutInterruption">
                 <th mat-header-cell *matHeaderCellDef>date de Debut</th>
@@ -164,7 +164,7 @@
             <mat-error *ngIf="periodesCalculHeuresStage.length === 0">Veuillez définir au moins une période de travail</mat-error>
           </div>
           <div class="col-md-12 mb-3" *ngIf="periodesCalculHeuresStage.length > 0">
-            <div class="text-title">Périodes de travail actuelles :</div>
+            <h4 class="text-title">Périodes de travail actuelles :</h4>
             <div class="scrollable-content">
               <div class="detail-section">
                 <table class="table">
@@ -237,7 +237,7 @@
 
         </div>
 
-        <div class="text-title">Gratification</div>
+        <h4 class="text-title">Gratification</h4>
         <mat-divider class="mb-2"></mat-divider>
         <div class="row">
           <div class="col-sm-12 col-md-12 mb-2">
@@ -251,7 +251,7 @@
         <div class="alert alert-info text-center" [innerHTML]="texteLimiteRenumeration" *ngIf="form.value.gratificationStage">
         </div>
         <div *ngIf="form.value.gratificationStage">
-          <div class="text-title">Montant de la gratification</div>
+          <h4 class="text-title">Montant de la gratification</h4>
         </div>
         <div *ngIf="form.value.gratificationStage">
           <div class="row" style="align-items: baseline">
@@ -294,7 +294,7 @@
           </div>
         </div>
 
-        <div class="text-title">Divers</div>
+        <h4 class="text-title">Divers</h4>
         <mat-divider class="mb-2"></mat-divider>
         <div class="row" *ngIf="!enMasse">
           <div class="row col-sm-12 col-md-6">
@@ -361,3 +361,4 @@
     </form>
   </mat-card-content>
 </mat-card>
+

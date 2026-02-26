@@ -16,6 +16,22 @@
         </mat-form-field>
       </div>
     </form>
+    <div class="row mb-3" *ngIf="disableAutoSearch">
+      <div class="col-sm-12 col-md-6 text-left">
+        <button
+          type="button"
+          class="valid-button"
+          mat-button
+          mat-flat-button
+          (click)="runSearchGestionnaire()"
+          [disabled]="!hasPendingSearchGestionnaire">
+          Lancer la recherche
+        </button>
+        <span *ngIf="hasPendingSearchGestionnaire" class="pending-search-hint">
+          Modifications en attente
+        </span>
+      </div>
+    </div>
 
     <div class="alert alert-info" *ngIf="gestionnaires.length >= 10">La recherche est limitée à 10 gestionnaires. Veuillez affiner la recherche si le gestionnaire n'apparaît pas.</div>
     <table mat-table [dataSource]="gestionnaires | slice:0:10">
@@ -166,3 +182,4 @@
     </app-table>
   </mat-expansion-panel>
 </mat-accordion>
+

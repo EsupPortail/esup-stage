@@ -32,7 +32,7 @@
         </div>
       </div>
       <div *ngIf="modif && (canEdit() || isCreatorService(service) || (isNewService && canCreate()))">
-        <div class="text-title">Général</div>
+        <h4 class="text-title">Général</h4>
         <mat-divider class="mb-2"></mat-divider>
         <div class="row">
           <mat-form-field class="col mb-2" appearance="fill">
@@ -41,7 +41,7 @@
             <mat-error><app-form-error [field]="form.get('nom')"></app-form-error></mat-error>
           </mat-form-field>
         </div>
-        <div class="text-title">Coordonnées</div>
+        <h4 class="text-title">Coordonnées</h4>
         <mat-divider class="mb-2"></mat-divider>
         <div class="row">
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
@@ -135,3 +135,4 @@
   </mat-expansion-panel>
 
 </mat-accordion>
+

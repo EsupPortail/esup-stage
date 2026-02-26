@@ -55,7 +55,7 @@
   <mat-tab *ngIf="groupeEtudiant.id" label="Envoie des mails">
     <mat-card>
       <div class="mb-3">
-        <div class="text-title">Envoie des mails</div>
+        <h4 class="text-title">Envoie des mails</h4>
         <mat-divider class="mb-3"></mat-divider>
 
         <form [formGroup]="form" novalidate (submit)="save()">
@@ -79,7 +79,7 @@
         </form>
       </div>
       <div class="mb-3">
-        <div class="text-title">Sélection des étudiants du groupe</div>
+        <h4 class="text-title">Sélection des étudiants du groupe</h4>
         <mat-divider class="mb-2"></mat-divider>
         <app-table #tableMail [service]="etudiantGroupeEtudiantService" [columns]="mailColumns" [sortColumn]="mailSortColumn" [filters]="mailFilters" [sortOrder]="mailSortDirection"
                    matSort [matSortActive]="mailSortColumn" [matSortDirection]="'desc'" (matSortChange)="tableMail ? tableMail.sorting($event) : null"
@@ -193,7 +193,7 @@
   <mat-tab *ngIf="groupeEtudiant.id" label="Impression PDF">
     <mat-card>
       <div class="mb-3">
-        <div class="text-title">Impression des mergedConventions</div>
+        <h4 class="text-title">Impression des mergedConventions</h4>
         <mat-divider class="mb-3"></mat-divider>
         <div class="mb-2">
           <button class="valid-button" mat-flat-button style="margin-right:5px" (click)="printForGroup()">En masse</button>
@@ -201,7 +201,7 @@
         </div>
       </div>
       <div class="mb-3">
-        <div class="text-title">Sélection des étudiants du groupe</div>
+        <h4 class="text-title">Sélection des étudiants du groupe</h4>
         <mat-divider class="mb-2"></mat-divider>
         <app-table #tableExport [service]="etudiantGroupeEtudiantService" [columns]="exportColumns" [sortColumn]="exportSortColumn" [filters]="mailFilters" [sortOrder]="exportSortDirection"
                    matSort [matSortActive]="exportSortColumn" [matSortDirection]="'desc'" (matSortChange)="tableExport ? tableExport.sorting($event) : null"
@@ -259,4 +259,5 @@
   </mat-tab>
 
 </mat-tab-group>
+
 

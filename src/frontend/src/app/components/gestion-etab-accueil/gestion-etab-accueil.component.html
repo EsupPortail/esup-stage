@@ -84,7 +84,7 @@
         </div>
         <div class="row mt-3" *ngIf="service">
           <div class="col-md-12">
-            <div class="text-title">Service sélectionné</div>
+            <h4 class="text-title">Service sélectionné</h4>
           </div>
           <div class="col-md-12">
             <table mat-table [dataSource]="[service]">
@@ -137,7 +137,7 @@
             </table>
           </div>
           <div class="col-md-12 mt-5" *ngIf="contacts.length > 0">
-            <div class="text-title">Contacts de ce service</div>
+            <h4 class="text-title">Contacts de ce service</h4>
             <table mat-table [dataSource]="contacts">
               <ng-container matColumnDef="centreGestionnaire">
                 <th mat-header-cell *matHeaderCellDef>Centre gestionnaire</th>
@@ -237,7 +237,7 @@
     <mat-card>
       <mat-card-content>
         <div class="mb-3">
-          <div class="text-title">Import d'établissements d'accueil</div>
+          <h4 class="text-title">Import d'établissements d'accueil</h4>
           <mat-divider class="mb-3"></mat-divider>
           <div class="import-info-box">
             <div class="icon-block">
@@ -261,3 +261,4 @@
     </mat-card>
   </mat-tab>
 </mat-tab-group>
+

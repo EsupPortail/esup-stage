@@ -51,6 +51,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   selected: any[] = [];
   validationLibelles: any = {};
+  private shouldAutoSearchOnReturn = false;
 
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
 
@@ -79,6 +80,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    const navigation = this.router.getCurrentNavigation();
+    const returnFlag = sessionStorage.getItem('dashboard-return-refresh');
+    this.shouldAutoSearchOnReturn = returnFlag === '1' || navigation?.trigger === 'popstate';
+
     this.configService.getConfigGenerale().subscribe({
       next: (response: any) => {
         this.initializeValidationLibelles(response);
@@ -466,6 +471,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   goToConvention(id: number): void {
+    sessionStorage.setItem('dashboard-return-refresh', '1');
     this.router.navigate([`/conventions/${id}`],)
   }
 
@@ -582,6 +588,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     if (this.appTable) {
       this.appTable.update();
+    }
+    if (this.shouldAutoSearchOnReturn && this.appTable?.disableAutoSearch) {
+      this.appTable.runSearch();
+      this.shouldAutoSearchOnReturn = false;
+      sessionStorage.removeItem('dashboard-return-refresh');
     }
     this.restorePagingConfig()
   }
