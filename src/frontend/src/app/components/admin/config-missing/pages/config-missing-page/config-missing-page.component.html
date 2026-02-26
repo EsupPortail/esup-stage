@@ -312,41 +312,35 @@
 
     <div class="form-actions">
       <div class="form-actions__warning" *ngIf="configForm.invalid && submitted">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-          <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-        </svg>
+        <mat-icon>close</mat-icon>
         Veuillez renseigner tous les champs obligatoires.
       </div>
-      <button type="button" class="btn btn--secondary" (click)="onReset()">
+      <button mat-flat-button type="button" class="btn cancel-button" (click)="onReset()">
+        <mat-icon>rotate_left</mat-icon>
         Réinitialiser
       </button>
-      <button type="submit" class="btn btn--primary">
+      <button mat-flat-button type="submit" class="btn valid-button">
+        <mat-icon>save</mat-icon>
         Enregistrer la configuration
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
-        </svg>
       </button>
     </div>
 
-    <div class="ready-actions" *ngIf="showReadyActions">
+    <div class="ready-actions" *ngIf="showReadyActions && isOnConfigMissingRoute()">
       <div class="ready-actions__text">
         Configuration minimale enregistrée. Vous pouvez accéder à l'application.
       </div>
       <div class="ready-actions__buttons">
-        <button type="button" class="btn btn--secondary" (click)="continueConfig()">
+        <button mat-flat-button type="button" class="btn secondary-button" (click)="continueConfig()">
           Continuer la configuration
         </button>
-        <button type="button" class="btn btn--primary" (click)="goToHome()">
+        <button mat-flat-button type="button" class="btn valid-button" (click)="goToHome()">
           Aller à l'accueil
         </button>
       </div>
     </div>
 
     <div class="success-toast" *ngIf="savedSuccess">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <polyline points="20 6 9 17 4 12"/>
-      </svg>
+      <mat-icon>check</mat-icon>
       Configuration enregistrée avec succès !
     </div>
 

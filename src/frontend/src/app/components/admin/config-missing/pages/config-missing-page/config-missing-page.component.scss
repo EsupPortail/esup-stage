@@ -508,36 +508,11 @@ select {
   transition: background $transition, border-color $transition, color $transition, transform 0.1s;
   border: 1px solid transparent;
 
-  svg {
-    width: 15px;
-    height: 15px;
-    flex-shrink: 0;
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 
-  &:active { transform: scale(0.98); }
-
-  &--secondary {
-    background: #fff;
-    border-color: $border;
-    color: $text-muted;
-
-    &:hover {
-      border-color: #9ca3af;
-      color: $text;
-    }
-  }
-
-  &--primary {
-    background: $accent;
-    color: #fff;
-
-    &:hover { }
-
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-  }
 }
 
 // ── Toast succès ───────────────────────────────────────────────

@@ -419,6 +419,10 @@ export class ConfigMissingPageComponent implements OnInit {
     this.showReadyActions = false;
   }
 
+  isOnConfigMissingRoute(): boolean {
+    return this.router.url.startsWith('/config-missing');
+  }
+
   onReset(): void {
     this.submitted = false;
     this.savedSuccess = false;
