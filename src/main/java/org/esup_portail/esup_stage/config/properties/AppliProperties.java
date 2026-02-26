@@ -71,6 +71,8 @@ public class AppliProperties {
         private String protocol;
         private String host;
         private boolean sslEnable;
+        private boolean starttlsEnable;
+        private boolean starttlsRequired;
         private int port;
         private boolean auth;
         private String username;

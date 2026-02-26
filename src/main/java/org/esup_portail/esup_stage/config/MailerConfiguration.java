@@ -36,8 +36,16 @@ public class MailerConfiguration {
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail." + mailerProtocol + ".auth", appliProperties.getMailer().isAuth());
         props.put("mail." + mailerProtocol + ".from", appliProperties.getMailer().getFrom());
+        // Support SSL/TLS direct (port 465 typiquement)
         if (appliProperties.getMailer().isSslEnable()) {
             props.put("mail." + mailerProtocol + ".ssl.enable", appliProperties.getMailer().isSslEnable());
+        }
+        // Support STARTTLS (port 587 typiquement)
+        if (appliProperties.getMailer().isStarttlsEnable()) {
+            props.put("mail." + mailerProtocol + ".starttls.enable", appliProperties.getMailer().isStarttlsEnable());
+            if (appliProperties.getMailer().isStarttlsRequired()) {
+                props.put("mail." + mailerProtocol + ".starttls.required", appliProperties.getMailer().isStarttlsRequired());
+            }
         }
 
         return mailSender;
