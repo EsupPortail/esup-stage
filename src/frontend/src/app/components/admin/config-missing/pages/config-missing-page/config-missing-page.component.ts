@@ -4,6 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { AppPropertyDto, ConfigAppService } from "../../../../../services/config-app.service";
 import { ConfigMissingMailerTestDialogComponent } from "./mailer-test-dialog/config-missing-mailer-test-dialog.component";
+import { ConfigMissingWebhookTestDialogComponent } from "./webhook-test-dialog/config-missing-webhook-test-dialog.component";
 
 interface TestState {
   loading: boolean;
@@ -260,10 +261,61 @@ export class ConfigMissingPageComponent implements OnInit {
     });
   }
 
-  testWebhookConnection(): void {
+  openWebhookTestDialog(): void {
+    if (!this.isWebhookTestable()) {
+      return;
+    }
+    const dialogRef = this.dialog.open(ConfigMissingWebhookTestDialogComponent, {
+      data: {
+        suffix: null,
+      },
+      panelClass: 'config-missing-mailer-dialog',
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (!result) {
+        return;
+      }
+      this.testWebhookConnection(result?.suffix);
+    });
+  }
+
+  private normalizeWebhookBase(base: string): string {
+    let value = base.trim();
+    try {
+      value = decodeURIComponent(value);
+    } catch {
+      // keep raw value if decoding fails
+    }
+    const match = value.match(/webhook\.signature\.uri(?:=|%3D)(.+)/i);
+    if (match && match[1]) {
+      return match[1].trim();
+    }
+    return value;
+  }
+
+  private buildWebhookUrl(base: string, suffix?: string): string {
+    const trimmedBase = this.normalizeWebhookBase(base);
+    const trimmedSuffix = (suffix ?? '').trim();
+    if (!trimmedSuffix) {
+      return trimmedBase;
+    }
+    const baseEnds = trimmedBase.endsWith('/');
+    const suffixStarts = trimmedSuffix.startsWith('/');
+    if (baseEnds && suffixStarts) {
+      return trimmedBase + trimmedSuffix.slice(1);
+    }
+    if (!baseEnds && !suffixStarts) {
+      return trimmedBase + '/' + trimmedSuffix;
+    }
+    return trimmedBase + trimmedSuffix;
+  }
+
+  testWebhookConnection(suffix?: string): void {
     const v = this.configForm.value;
+    const uri = this.buildWebhookUrl(v.webhook_signature_uri, suffix);
     const params = {
-      uri:   v.webhook_signature_uri,
+      uri,
       token: v.webhook_signature_token,
     };
 

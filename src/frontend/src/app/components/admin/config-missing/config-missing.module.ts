@@ -4,6 +4,7 @@ import { ConfigMissingRoutingModule } from './config-missing-routing.module';
 import { ConfigMissingComponent } from './config-missing.component';
 import { ConfigMissingPageComponent } from './pages/config-missing-page/config-missing-page.component';
 import { ConfigMissingMailerTestDialogComponent } from './pages/config-missing-page/mailer-test-dialog/config-missing-mailer-test-dialog.component';
+import { ConfigMissingWebhookTestDialogComponent } from './pages/config-missing-page/webhook-test-dialog/config-missing-webhook-test-dialog.component';
 import {MatCardModule} from "@angular/material/card";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatIcon} from "@angular/material/icon";
@@ -18,7 +19,8 @@ import {AppModule} from "../../../app.module";
   declarations: [
     ConfigMissingComponent,
     ConfigMissingPageComponent,
-    ConfigMissingMailerTestDialogComponent
+    ConfigMissingMailerTestDialogComponent,
+    ConfigMissingWebhookTestDialogComponent
   ],
   exports: [
     ConfigMissingPageComponent

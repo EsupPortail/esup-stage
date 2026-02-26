@@ -220,7 +220,7 @@
     <div class="test-bar">
       <button type="button" class="valid-button execute-button" mat-mini-fab
               [disabled]="!isWebhookTestable() || testWebhook.loading"
-              (click)="testWebhookConnection()"
+              (click)="openWebhookTestDialog()"
               [attr.aria-label]="testWebhook.loading ? 'Test webhook en cours…' : 'Tester le webhook'"
               matTooltip="Tester le webhook">
         <mat-icon *ngIf="!testWebhook.loading" aria-hidden="true">play_arrow</mat-icon>

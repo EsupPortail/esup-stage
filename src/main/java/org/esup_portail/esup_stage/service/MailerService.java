@@ -16,19 +16,21 @@ import org.esup_portail.esup_stage.repository.TemplateMailGroupeJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateMailJpaRepository;
 import org.esup_portail.esup_stage.repository.UtilisateurJpaRepository;
 import org.esup_portail.esup_stage.service.evaluation.EvaluationService;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
+import org.springframework.util.StringUtils;
 
 import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,9 +39,6 @@ public class MailerService {
 
     @Autowired
     AppliProperties appliProperties;
-
-    @Autowired
-    ObjectProvider<JavaMailSender> javaMailSenderProvider;
 
     @Autowired
     FreeMarkerConfigurer freeMarkerConfigurer;
@@ -130,9 +129,9 @@ public class MailerService {
                           MailContext mailContext, boolean forceTo, String attachmentLibelle, byte[] attachment) {
         logger.info("Mail " + templateMailCode + ", destinataires : " + to);
         boolean disableDelivery = appliProperties.getMailer().isDisableDelivery();
-        JavaMailSender javaMailSender = javaMailSenderProvider.getIfAvailable();
+        JavaMailSender javaMailSender = resolveJavaMailSender();
         if (javaMailSender == null) {
-            logger.warn("Mailer not configured (no JavaMailSender bean). Skip sending mail {}", templateMailCode);
+            logger.warn("Mailer not configured (missing host). Skip sending mail {}", templateMailCode);
             return;
         }
         if (!disableDelivery) {
@@ -173,6 +172,33 @@ public class MailerService {
         } else {
             logger.info("Delivery disabled. Mail was: " + templateMailCode);
         }
+    }
+
+    private JavaMailSender resolveJavaMailSender() {
+        var mailer = appliProperties.getMailer();
+        if (!StringUtils.hasText(mailer.getHost())) {
+            return null;
+        }
+        String protocol = StringUtils.hasText(mailer.getProtocol()) ? mailer.getProtocol() : "smtp";
+        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+        mailSender.setProtocol(protocol);
+        mailSender.setHost(mailer.getHost());
+        if (mailer.getPort() > 0) {
+            mailSender.setPort(mailer.getPort());
+        }
+        if (mailer.isAuth()) {
+            mailSender.setUsername(mailer.getUsername());
+            mailSender.setPassword(mailer.getPassword());
+        }
+        Properties props = mailSender.getJavaMailProperties();
+        props.put("mail." + protocol + ".auth", String.valueOf(mailer.isAuth()));
+        if (StringUtils.hasText(mailer.getFrom())) {
+            props.put("mail." + protocol + ".from", mailer.getFrom());
+        }
+        if (mailer.isSslEnable()) {
+            props.put("mail." + protocol + ".ssl.enable", "true");
+        }
+        return mailSender;
     }
 
     public void sendValidationMail(Convention convention, Avenant avenant, Utilisateur utilisateurContext, String templateMailCode, boolean sendMailEtudiant, boolean sendMailEnseignant, boolean sendMailGestionnaire, boolean sendMailRespGestionnaire) {
