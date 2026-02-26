@@ -16,8 +16,8 @@ export class EtapeService implements PaginatedService, AutocompleteService {
     return this.http.get(`${environment.apiUrl}/etapes`, {params: {page, perPage, predicate, sortOrder, filters}});
   }
 
-  getApogeeEtapes(codeAnnee: string, codeComposante: string): Observable<any> {
-    return this.http.get(`${environment.apiUrl}/etapes/apogee`, { params: {codeAnnee, codeComposante} });
+  getApogeeEtapes(codeAnnee: string, codeComposante: string): Observable<DiplomeEtape[]> {
+    return this.http.get<DiplomeEtape[]>(`${environment.apiUrl}/etapes/apogee`, { params: {codeAnnee, codeComposante} });
   }
 
   exportData(format: string, headers: string, predicate: string, sortOrder: string, filters: string): Observable<any> {
@@ -39,3 +39,14 @@ export class EtapeService implements PaginatedService, AutocompleteService {
     return `${row.id} - ${row.libelle}`;
   }
 }
+export type EtapeV2Apogee = {
+  codeEtp: string;
+  codVrsVet: string;
+  libWebVet: string;
+};
+export type DiplomeEtape = {
+  codeDiplome: string;
+  versionDiplome: string;
+  libDiplome: string;
+  listeEtapes: EtapeV2Apogee[];
+};

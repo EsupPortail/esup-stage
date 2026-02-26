@@ -1,26 +1,32 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild} from '@angular/core';
 import { TableComponent } from "../../table/table.component";
-import { GroupeEtudiantService } from "../../../services/groupe-etudiant.service";
+import {GroupeEtudiant, GroupeEtudiantDto, GroupeEtudiantService} from "../../../services/groupe-etudiant.service";
 import { UfrService } from "../../../services/ufr.service";
-import { EtapeService } from "../../../services/etape.service";
+import {DiplomeEtape, EtapeService, EtapeV2Apogee} from "../../../services/etape.service";
 import { ConventionService } from "../../../services/convention.service";
 import { EtudiantGroupeEtudiantService } from "../../../services/etudiant-groupe-etudiant.service";
 import { AuthService } from "../../../services/auth.service";
 import { Router } from "@angular/router";
 import { LdapService } from "../../../services/ldap.service";
 import { MessageService } from "../../../services/message.service";
-import { ReplaySubject, Subject } from 'rxjs';
+import {Observable, ReplaySubject, Subject} from 'rxjs';
 import { ConfigService } from "../../../services/config.service";
 import { SortDirection } from "@angular/material/sort";
-import { FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
-import { EtudiantService } from '../../../services/etudiant.service';
+import {FormBuilder, FormControl, FormGroup, ValidationErrors, Validators} from "@angular/forms";
+import {
+  EtudiantDiplomeEtapeResponse,
+  EtudiantDiplomeEtapeSearch,
+  EtudiantService
+} from '../../../services/etudiant.service';
+import {filters} from "css-select";
+import {map,startWith} from "rxjs/operators";
 
 @Component({
   selector: 'app-selection-groupe-etu',
   templateUrl: './selection-groupe-etu.component.html',
   styleUrls: ['./selection-groupe-etu.component.scss']
 })
-export class SelectionGroupeEtuComponent implements OnInit {
+export class SelectionGroupeEtuComponent implements OnInit, OnChanges {
 
   groupeEtudiantColumns: string[] = [];
   groupeEtudiantFilters: string[] = [];
@@ -28,8 +34,8 @@ export class SelectionGroupeEtuComponent implements OnInit {
   sortColumn = 'prenom';
   sortDirection: SortDirection = 'desc';
   selectedRemove: any[] = [];
-  selectedAdd: any[] = [];
-  etudiants: any[] = [];
+  selectedAdd: EtudiantDiplomeEtapeResponse[] = [];
+  etudiants: EtudiantDiplomeEtapeResponse[] = [];
 
   // Années N-1 / N / N+1
   currentYear = (new Date()).getFullYear();
@@ -39,18 +45,25 @@ export class SelectionGroupeEtuComponent implements OnInit {
     { label: (this.currentYear + 1) + '/' + (this.currentYear + 2), value: this.currentYear + 1 },
   ];
   ufrList: any[] = [];
-  etapeList: any[] = [];
+  etapeList: DiplomeEtape[] = [];
 
   etapeFilterCtrl: FormControl = new FormControl();
-  filteredEtapes: ReplaySubject<any> = new ReplaySubject<any>(1);
+  filteredEtapes$: Observable<DiplomeEtape[]>;
 
   _onDestroy = new Subject<void>();
 
   form: FormGroup;
-  formAddEtudiants: FormGroup;
+  formAddEtudiants: FormGroup<{
+    codEtu: FormControl<string|null>,
+    nom: FormControl<string|null>,
+    prenom: FormControl<string|null>,
+    etape: FormControl<string|DiplomeEtEtape|null>,
+    composante: FormControl<string|null>,
+    annee: FormControl<number|null>,
+  }>;
 
   @Input() sharedData: any;
-  @Input() groupeEtudiant: any;
+  @Input() groupeEtudiant?: GroupeEtudiant;
   @Output() validated = new EventEmitter<any>();
 
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
@@ -74,42 +87,40 @@ export class SelectionGroupeEtuComponent implements OnInit {
       nomGroupe: [null, [Validators.required, Validators.maxLength(100)]],
     });
     this.formAddEtudiants = this.fb.group({
-      codEtu: [null, []],
-      nom: [null, []],
-      prenom: [null, []],
-      etape: [null, []],
-      composante: [null, []],
-      annee: [this.currentYear, []],
+      codEtu: new FormControl<string|null>(null),
+      nom: new FormControl<string|null>(null),
+      prenom: new FormControl<string|null>(null),
+      etape: new FormControl<string|DiplomeEtEtape|null>(null, {
+        validators: [control => !control?.value || typeof control?.value === 'string' ? { required: true } : null],
+      }),
+      composante: new FormControl<string|null>(null),
+      annee: new FormControl<number|null>(this.currentYear),
     });
 
     this.formAddEtudiants.get('etape')?.disable({ emitEvent: false });
     this.formAddEtudiants.get('annee')?.valueChanges.subscribe((changes) => {
-      this.getEtapes(changes, this.formAddEtudiants.get('composante')?.value);
+      this.getEtapes(changes, this.formAddEtudiants.get('composante')!.value);
     });
     this.formAddEtudiants.get('composante')?.valueChanges.subscribe((changes) => {
-      this.getEtapes(this.formAddEtudiants.get('annee')?.value, changes);
+      this.getEtapes(this.formAddEtudiants.get('annee')!.value, changes);
     });
+    this.filteredEtapes$ = this.formAddEtudiants.get('etape')!.valueChanges.pipe(
+      map((value:string|DiplomeEtEtape|null) => this.filterEtapes(value)),
+    );
   }
 
-  getEtapes(annee: string, composante: string): void {
+  getEtapes(annee: number|null, composante: string|null): void {
     this.etudiants = [];
     this.selectedAdd = [];
     if (annee && composante) {
       // recherche de la liste des étapes en fonction de l'année et de la composante sélectionnée
-      this.etapeList = [];
-      this.etapeService.getApogeeEtapes(annee, composante).subscribe((response: any) => {
-        response.forEach((r: any) => {
-          this.etapeList = this.etapeList.concat(r.listeEtapes.map((e: any) => {
-            return {
-              diplome: {codeDiplome: r.codeDiplome, versionDiplome: r.versionDiplome, libDiplome: r.libDiplome},
-              etape: e
-            }
-          }));
-        });
+      this.etapeService.getApogeeEtapes(annee.toString(), composante).subscribe(response => {
+        this.etapeList = response;
+        this.formAddEtudiants.get('etape')?.enable({ emitEvent: true });
+        this.formAddEtudiants.get('etape')!.setValue(null, { emitEvent: true });
       }, () => {
         this.emptyEtape();
       });
-      this.formAddEtudiants.get('etape')?.enable({ emitEvent: false });
     } else {
       this.emptyEtape();
     }
@@ -118,6 +129,25 @@ export class SelectionGroupeEtuComponent implements OnInit {
   emptyEtape(): void {
     this.formAddEtudiants.get('etape')?.setValue(null, { emitEvent: false });
     this.formAddEtudiants.get('etape')?.disable({ emitEvent: false });
+  }
+
+  filterEtapes(value?: string|DiplomeEtEtape|null): DiplomeEtape[] {
+    if (!value) return this.etapeList;
+    return typeof value === 'string' ? this.filterEtapesBySearchString(value) : this.etapeList;
+  }
+  private filterEtapesBySearchString(value: string): DiplomeEtape[] {
+    value = value.toLowerCase();
+    return this.etapeList.map(
+      diplome => { return { ...diplome, listeEtapes: diplome.listeEtapes.filter(
+          etape => etape.codeEtp.toLowerCase().includes(value)
+            || etape.libWebVet.toLowerCase().includes(value),
+        ) }; }
+    ).filter(diplome => diplome.listeEtapes.length > 0)
+      || this.etapeList;
+  }
+
+  displayEtape(dpe?: DiplomeEtEtape) {
+    return dpe ? dpe.etape.codeEtp + '-' + dpe.etape.codVrsVet + ' ' + dpe.etape.libWebVet : null;
   }
 
   ngOnInit(): void {
@@ -146,15 +176,31 @@ export class SelectionGroupeEtuComponent implements OnInit {
       this.selectedAdd = [];
       return;
     }
-    const data = {...this.formAddEtudiants.value};
-    data.codeComposante = data.composante;
-    data.codeEtape = data.etape.etape.codeEtp;
-    data.versionEtape = data.etape.etape.codVrsVet;
-    data.codeDiplome = data.etape.diplome.codeDiplome;
-    data.versionDiplome = data.etape.diplome.versionDiplome;
+    const value = this.formAddEtudiants.value;
+    const etape: DiplomeEtEtape = value.etape as DiplomeEtEtape;
+    const data: EtudiantDiplomeEtapeSearch = {
+      annee: value.annee!.toString(),
+      //codeComposante: value.composante,
+      codeEtape: etape.etape.codeEtp,
+      versionEtape: etape.etape.codVrsVet,
+      codeDiplome: etape.diplome.codeDiplome,
+      versionDiplome: etape.diplome.versionDiplome,
+    };
 
-    this.etudiantService.searchEtudiantsDiplomeEtape(data).subscribe((response: any) => {
-      this.etudiants = response;
+    this.etudiantService.searchEtudiantsDiplomeEtape(data).subscribe(response => {
+      this.etudiants = response.map(etudiant => {
+        return {
+          ...etudiant,
+          // complète les données absentes de la réponse
+          annee: value.annee!.toString(),
+          codeComposante: value.composante,
+          codeEtape: etape.etape.codeEtp,
+          versionEtape: etape.etape.codVrsVet,
+          libelleEtape: etape.etape.libWebVet,
+          codeDiplome: etape.diplome.codeDiplome,
+          versionDiplome: etape.diplome.versionDiplome,
+        } as EtudiantDiplomeEtapeResponse;
+      });
       this.selectedAdd = [];
     });
   }
@@ -195,15 +241,15 @@ export class SelectionGroupeEtuComponent implements OnInit {
     return allSelectedRemove;
   }
 
-  isSelectedAdd(data: any): boolean {
+  isSelectedAdd(data: EtudiantDiplomeEtapeResponse): boolean {
     return this.selectedAdd.find((r: any) => {return r.codEtu === data.codEtu}) !== undefined;
   }
-  toggleSelectedAdd(data: any): void {
+  toggleSelectedAdd(data: EtudiantDiplomeEtapeResponse): void {
     const index = this.selectedAdd.findIndex((r: any) => {return r.codEtu === data.codEtu});
     if (index > -1) {
       this.selectedAdd.splice(index, 1);
     } else {
-      this.selectedAdd.push(this.getEtudiantValue(data));
+      this.selectedAdd.push(data);
     }
   }
 
@@ -215,7 +261,7 @@ export class SelectionGroupeEtuComponent implements OnInit {
     this.etudiants.forEach((d: any) => {
       const index = this.selectedAdd.findIndex((s: any) => s.codEtu === d.codEtu);
       if (index === -1) {
-        this.selectedAdd.push(this.getEtudiantValue(d));
+        this.selectedAdd.push(d);
       }
     });
   }
@@ -233,25 +279,14 @@ export class SelectionGroupeEtuComponent implements OnInit {
     return allSelectedAdd;
   }
 
-  getEtudiantValue(etu: any): any {
-    return {
-      ...etu,
-      annee: this.formAddEtudiants.get('annee')?.value,
-      codeComposante: this.formAddEtudiants.get('composante')?.value,
-      codeDiplome: this.formAddEtudiants.get('etape')?.value.diplome.codeDiplome,
-      versionDiplome: this.formAddEtudiants.get('etape')?.value.diplome.versionDiplome,
-      codeEtape: this.formAddEtudiants.get('etape')?.value.etape.codeEtp,
-      versionEtape: this.formAddEtudiants.get('etape')?.value.etape.codVrsVet,
-    }
-  }
 
   validate(): void {
     if (this.form.valid) {
-      const selectedRemove = this.selectedRemove.map((s: any) => s.id);
-
-      let data = {...this.form.value};
-      data.etudiantRemovedIds = selectedRemove;
-      data.etudiantAdded = this.selectedAdd;
+      let data: GroupeEtudiantDto = {
+        ...this.form.value,
+        etudiantRemovedIds: this.selectedRemove.map((s: any) => s.id),
+        etudiantAdded: this.selectedAdd,
+      };
 
       if (!this.groupeEtudiant) {
         this.groupeEtudiantService.create(data).subscribe((response: any) => {
@@ -272,3 +307,4 @@ export class SelectionGroupeEtuComponent implements OnInit {
   }
 
 }
+type DiplomeEtEtape = {diplome:DiplomeEtape,etape:EtapeV2Apogee};

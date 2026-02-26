@@ -3,6 +3,7 @@ import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { environment } from "../../environments/environment";
 import { PaginatedService } from "./paginated.service";
+import {Etudiant, EtudiantDiplomeEtapeResponse} from "./etudiant.service";
 
 @Injectable({
   providedIn: 'root'
@@ -23,44 +24,44 @@ export class GroupeEtudiantService implements PaginatedService {
     return this.http.get(environment.apiUrl + `/groupeEtudiant/export/${format}`, {params: {headers, predicate, sortOrder, filters}, responseType: 'blob'});
   }
 
-  getBrouillon(): Observable<any> {
-    return this.http.get(`${environment.apiUrl}/groupeEtudiant/brouillon`);
+  getBrouillon(): Observable<GroupeEtudiant> {
+    return this.http.get<GroupeEtudiant>(`${environment.apiUrl}/groupeEtudiant/brouillon`);
   }
 
-  getById(id: number): Observable<any> {
-    return this.http.get(`${environment.apiUrl}/groupeEtudiant/${id}`);
+  getById(id: number): Observable<GroupeEtudiant> {
+    return this.http.get<GroupeEtudiant>(`${environment.apiUrl}/groupeEtudiant/${id}`);
   }
 
-  getHistoriqueGroupeMail(id: number): Observable<any> {
-    return this.http.get(`${environment.apiUrl}/groupeEtudiant/historique/${id}`);
+  getHistoriqueGroupeMail(id: number): Observable<HistoriqueMailGroupe[]> {
+    return this.http.get<HistoriqueMailGroupe[]>(`${environment.apiUrl}/groupeEtudiant/historique/${id}`);
   }
 
-  duplicate(id: number): Observable<any> {
-    return this.http.get(`${environment.apiUrl}/groupeEtudiant/duplicate/${id}`);
+  duplicate(id: number): Observable<GroupeEtudiant> {
+    return this.http.get<GroupeEtudiant>(`${environment.apiUrl}/groupeEtudiant/duplicate/${id}`);
   }
 
-  setInfosStageValid(id: number, valid: boolean): Observable<any> {
-    return this.http.patch(`${environment.apiUrl}/groupeEtudiant/${id}/setInfosStageValid/${valid}`, {});
+  setInfosStageValid(id: number, valid: boolean): Observable<GroupeEtudiant> {
+    return this.http.patch<GroupeEtudiant>(`${environment.apiUrl}/groupeEtudiant/${id}/setInfosStageValid/${valid}`, {});
   }
 
-  setTypeConventionGroupe(id: number, typeConventionId: number): Observable<any> {
-    return this.http.patch(`${environment.apiUrl}/groupeEtudiant/${id}/setTypeConventionGroupe/${typeConventionId}`, {});
+  setTypeConventionGroupe(id: number, typeConventionId: number): Observable<GroupeEtudiant> {
+    return this.http.patch<GroupeEtudiant>(`${environment.apiUrl}/groupeEtudiant/${id}/setTypeConventionGroupe/${typeConventionId}`, {});
   }
 
-  validateBrouillon(id: number): Observable<any> {
-    return this.http.patch(`${environment.apiUrl}/groupeEtudiant/${id}/validateBrouillon`, {});
+  validateBrouillon(id: number): Observable<GroupeEtudiant> {
+    return this.http.patch<GroupeEtudiant>(`${environment.apiUrl}/groupeEtudiant/${id}/validateBrouillon`, {});
   }
 
-  mergeAndValidateConventions(id: number): Observable<any> {
-    return this.http.patch(`${environment.apiUrl}/groupeEtudiant/${id}/mergeAndValidateConventions`, {});
+  mergeAndValidateConventions(id: number): Observable<GroupeEtudiant> {
+    return this.http.patch<GroupeEtudiant>(`${environment.apiUrl}/groupeEtudiant/${id}/mergeAndValidateConventions`, {});
   }
 
-  create(data: any): Observable<any> {
-    return this.http.post(environment.apiUrl + "/groupeEtudiant", data);
+  create(data: GroupeEtudiantDto): Observable<GroupeEtudiant> {
+    return this.http.post<GroupeEtudiant>(environment.apiUrl + "/groupeEtudiant", data);
   }
 
-  update(id: number, data: any): Observable<any> {
-    return this.http.put(`${environment.apiUrl}/groupeEtudiant/${id}`, data);
+  update(id: number, data: GroupeEtudiantDto): Observable<GroupeEtudiant> {
+    return this.http.put<GroupeEtudiant>(`${environment.apiUrl}/groupeEtudiant/${id}`, data);
   }
 
   delete(id: number): Observable<any> {
@@ -78,4 +79,32 @@ export class GroupeEtudiantService implements PaginatedService {
   getConventionPDF(data: any): Observable<any> {
     return this.http.post(`${environment.apiUrl}/groupeEtudiant/pdf-convention`,data , { responseType: 'blob'});
   }
+}
+export type GroupeEtudiantDto = {
+  codeGroupe: string;
+  nomGroupe: string;
+  etudiantRemovedIds: number[];
+  etudiantAdded: EtudiantDiplomeEtapeResponse[];
+}
+export type GroupeEtudiant = {
+  id: number;
+  code: string;
+  nom: string;
+  etudiantGroupeEtudiants: EtudiantGroupeEtudiant[];
+  historiqueMailGroupes: HistoriqueMailGroupe[];
+  convention: any;
+  validationCreation: boolean;
+  infosStageValid: boolean;
+}
+export type EtudiantGroupeEtudiant = {
+  id: number;
+  etudiant: Etudiant;
+  convention: any;
+  mergedConvention: any;
+}
+export type HistoriqueMailGroupe = {
+  id: number;
+  login: string;
+  date: string;
+  mailto: string;
 }
