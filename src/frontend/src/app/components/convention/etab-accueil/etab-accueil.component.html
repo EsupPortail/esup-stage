@@ -3,7 +3,19 @@
     <mat-expansion-panel-header>
       Recherchez l'établissement où le stage sera effectué
     </mat-expansion-panel-header>
-
+    <div class="sirene-info-box" *ngIf="isSireneAcitve">
+      <div class="sirene-info-title">
+        <mat-icon color="info">info</mat-icon>
+        <span class="m-2">La recherche de l'établissement se fait via la base de <a href="https://annuaire-entreprises.data.gouv.fr/">l'annuaire national des entreprises</a> en renseignant :</span>
+      </div>
+      <div class="sirene-info-details">
+        <ul>
+          <li>soit au moins 2 champs de recherche (par ex : Raison sociale + Commune)</li>
+          <li>soit le SIRET de l'entreprise</li>
+        </ul>
+      </div>
+      En cas d’absence dans la liste, contactez votre gestionnaire de stage.
+    </div>
     <app-table [service]="structureService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters"
                matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'"
                (matSortChange)="appTable ? appTable.sorting($event) : null" [actionButton]="canCreate() ? createButton : undefined" [selectedRow]="selectedRow"
