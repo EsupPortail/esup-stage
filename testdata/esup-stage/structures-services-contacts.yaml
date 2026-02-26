@@ -1,0 +1,64 @@
+databaseChangeLog:
+  - changeSet:
+      id: structures-services-contacts
+      author: test-data
+      preConditions:
+        - onFail: MARK_RAN
+        - tableIsEmpty:
+            tableName: Structure
+      changes:
+        - loadData:
+            tableName: Structure
+            file: Structure.csv
+            columns:
+              - column:
+                  name: activitePrincipale
+                  type: STRING # text column type messes up w/ liquibase loadData
+              - column:
+                  name: idPays
+                  defaultValue: 82 # FRANCE
+                  type: NUMERIC
+              - column:
+                  name: idTypeStructure
+                  defaultValue: 3 # Entreprise
+                  type: NUMERIC
+              - column:
+                  name: idStatutJuridique
+                  defaultValue: 3 # SA
+                  type: NUMERIC
+              - column:
+                  name: dateCreation
+                  defaultValue: NOW()
+                  type: COMPUTED
+              - column:
+                  name: estValidee
+                  defaultValue: 1
+                  type: NUMERIC
+              - column:
+                  name: temEnServStructure
+                  defaultValue: 1
+                  type: NUMERIC
+        - loadData:
+            tableName: Service
+            file: Service.csv
+            columns:
+              - column:
+                  name: dateCreation
+                  defaultValue: NOW()
+                  type: datetime
+              - column:
+                  name: idPays
+                  defaultValue: 82 # FRANCE
+                  type: NUMERIC
+        - loadData:
+            tableName: Contact
+            file: Contact.csv
+            columns:
+              - column:
+                  name: idCentreGestion
+                  defaultValue: 1
+                  type: numeric
+              - column:
+                  name: dateCreation
+                  defaultValue: NOW()
+                  type: COMPUTED

@@ -1,0 +1,154 @@
+databaseChangeLog:
+  - changeSet:
+      id: nomenclature-TypeConvention
+      author: test-data
+      runOnChange: true
+      changes:
+        - loadUpdateData:
+            primaryKey: idTypeConvention
+            file: nomenclatures/TypeConvention.csv
+            tableName: TypeConvention
+  - changeSet:
+      id: nomenclature-LangueConvention
+      author: test-data
+      runOnChange: true
+      changes:
+        - loadUpdateData:
+            primaryKey: codeLangueConvention
+            file: nomenclatures/LangueConvention.csv
+            tableName: LangueConvention
+  - changeSet:
+      id: nomenclature-Theme
+      author: test-data
+      runOnChange: true
+      changes:
+        - loadUpdateData:
+            primaryKey: idTheme
+            file: nomenclatures/Theme.csv
+            tableName: Theme
+  - changeSet:
+      id: nomenclature-TempsTravail
+      author: test-data
+      runOnChange: true
+      changes:
+        - loadUpdateData:
+            primaryKey: idTempsTravail
+            file: nomenclatures/TempsTravail.csv
+            tableName: TempsTravail
+  - changeSet:
+      id: nomenclature-UniteDuree
+      author: test-data
+      runOnChange: true
+      changes:
+        - loadUpdateData:
+            primaryKey: idUniteDuree
+            file: nomenclatures/UniteDuree.csv
+            tableName: UniteDuree
+  - changeSet:
+      id: nomenclature-Devise
+      author: test-data
+      runOnChange: true
+      changes:
+        - loadUpdateData:
+            primaryKey: idDevise
+            file: nomenclatures/Devise.csv
+            tableName: Devise
+  - changeSet:
+      id: nomenclature-UniteGratification
+      author: test-data
+      runOnChange: true
+      changes:
+        - loadUpdateData:
+            primaryKey: idUniteGratification
+            file: nomenclatures/UniteGratification.csv
+            tableName: UniteGratification
+  - changeSet:
+      id: nomenclature-ModeVersGratification
+      author: test-data
+      runOnChange: true
+      changes:
+        - loadUpdateData:
+            primaryKey: idModeVersGratification
+            file: nomenclatures/ModeVersGratification.csv
+            tableName: ModeVersGratification
+  - changeSet:
+      id: nomenclature-ModeValidationStage
+      author: test-data
+      runOnChange: true
+      changes:
+        - loadUpdateData:
+            primaryKey: idModeValidationStage
+            file: nomenclatures/ModeValidationStage.csv
+            tableName: ModeValidationStage
+  - changeSet:
+      id: nomenclature-NatureTravail
+      author: test-data
+      runOnChange: true
+      changes:
+        - loadUpdateData:
+            primaryKey: idNatureTravail
+            file: nomenclatures/NatureTravail.csv
+            tableName: NatureTravail
+  - changeSet:
+      id: nomenclature-NiveauFormation
+      author: test-data
+      runOnChange: true
+      changes:
+        - loadUpdateData:
+            primaryKey: idNiveauFormation
+            file: nomenclatures/NiveauFormation.csv
+            tableName: NiveauFormation
+  - changeSet:
+      id: nomenclature-OrigineStage
+      author: test-data
+      runOnChange: true
+      changes:
+        - loadUpdateData:
+            primaryKey: idOrigineStage
+            file: nomenclatures/OrigineStage.csv
+            tableName: OrigineStage
+  - changeSet:
+      id: nomenclature-TypeStructure
+      author: test-data
+      runOnChange: true
+      changes:
+        - loadUpdateData:
+            primaryKey: idTypeStructure
+            file: nomenclatures/TypeStructure.csv
+            tableName: TypeStructure
+  - changeSet:
+      id: nomenclature-StatutJuridique
+      author: test-data
+      runOnChange: true
+      changes:
+        - loadUpdateData:
+            primaryKey: idStatutJuridique
+            file: nomenclatures/StatutJuridique.csv
+            tableName: StatutJuridique
+  - changeSet:
+      id: nomenclature-TypeOffre
+      author: test-data
+      runOnChange: true
+      changes:
+        - loadUpdateData:
+            primaryKey: idTypeOffre
+            file: nomenclatures/TypeOffre.csv
+            tableName: TypeOffre
+  - changeSet:
+      id: nomenclature-ContratOffre
+      author: test-data
+      runOnChange: true
+      changes:
+        - loadUpdateData:
+            primaryKey: idContratOffre
+            file: nomenclatures/ContratOffre.csv
+            tableName: ContratOffre
+  - changeSet:
+      id: nomenclature-Effectif
+      author: test-data
+      runOnChange: true
+      changes:
+        - loadUpdateData:
+            primaryKey: idEffectif
+            file: nomenclatures/Effectif.csv
+            tableName: Effectif

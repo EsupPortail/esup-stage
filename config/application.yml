@@ -1,0 +1,56 @@
+# Paramètres par défaut pour utiliser les services locaux du docker-compose.yml
+# à surcharger/redéfinir dans un config/application-default.yml (ou config/application-monprofil.yml)
+# exemple de config/application-default.yml :
+# #==========================================
+# sirene:
+#   url: https://api.insee.fr/api-sirene/3.11
+#   token: ********-****-****-****-************
+#   nombre-minimum-resultats: 3
+# spring:
+#   jpa:
+#     show-sql: true
+#     properties:
+#       hibernate.format_sql: true
+# logging:
+#   level:
+#     org.esup_portail.esup_stage: TRACE
+#     org.springframework.web: DEBUG
+#     logging.level.org.hibernate.SQL: DEBUG
+#     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+#     org.hibernate.orm.jdbc.bind: TRACE
+
+cas:
+  url:
+    service: http://cas.localhost/cas
+appli:
+  prefix: http://localhost:8080
+  url: http://localhost:8080
+  local-api: http://localhost:8080
+  admin_technique: ${USER}
+  data_dir: data
+  tokens:
+    - achanger
+  jwt-secret: achangerachangerachangerachangerachangerachanger
+  nb-jours-valide-token: 60
+  datasource:
+    driver: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://localhost:3306/estage?sslMode=disable
+    username: esup_stage
+    password: achanger
+    context: baseline
+  mailer:
+    protocol: smtp
+    host: localhost
+    ssl:
+      enable: true
+    port: 1025
+    auth: true
+    username: esup-stage@localhost
+    password: achanger
+    from: esup-stage@esup-stage.localhost
+referentiel:
+  ws:
+    ldap_url: http://localhost:8082/ldap
+    apogee_url: http://localhost:8082/apogee
+    login: estage
+    password: achanger

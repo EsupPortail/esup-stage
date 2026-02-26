@@ -1,0 +1,64 @@
+- ldap:
+    uid: olivier
+    sn: [ ENSEIGNANT ]
+    givenName: [ Olivier ]
+    supannAliasLogin: olivier
+    mail: olivier.enseignant@univ.fr
+    eduPersonPrimaryAffiliation: teacher
+    eduPersonAffiliation: [teacher, member]
+
+- ldap:
+    uid: nathalie
+    sn: [ GESTIONNAIRE ]
+    givenName: [ Nathalie ]
+    supannAliasLogin: nathalie
+    mail: nathalie.gestionnaire@univ.fr
+    eduPersonPrimaryAffiliation: employee
+    eduPersonAffiliation: [employee, member]
+
+- codInd: 12345678
+  infoAdm:
+      prenom1: Estelle
+      nomPatronymique: ETUDIANTE
+      numEtu: 12345678
+      numeroINE: 201234567AB
+      sexe: F
+  coordonnees:
+  - email: estelle@example.org
+    emailAnnuaire: estelle.etudiante@etu.univ.fr
+    loginAnnuaire: estelle
+    adresseAnnuelle: &TourEiffel
+      libAd1: Champ-de-Mars
+      libAd2: Av. Gustave Eiffel
+      commune:
+        codePostal: "75007"
+        nomCommune: PARIS
+      pays: &France
+        codPay: "100"
+        libPay: FRANCE
+    adresseFixe: &PorteDeBrandebourg
+      libAde: Pariser Platz, 10117 Berlin
+      pays: &Allemagne
+        codPay: "109"
+        libPay: ALLEMAGNE
+  ias:
+  - statut: &Etudiant { code: '01', libelle: Etudiant, libelleWeb: Etudiant }
+    cpam: { libCpam: CPAM }
+    regimeIns: &FormationInitiale { codRgi: '1', libRgi: Formation Initiale }
+    #regimeIns: &FormationContinue { codRgi: '2', libRgi: Formation Continue }
+  etapes:
+  - cge: &CGE { codeCGE: CGE, libCGE: Centre de Gestion }
+    composante: &COMP { codComposante: COMP, libComposante: Composante }
+    diplome: &LT
+        codeDiplome: LT
+        libLongDiplome: Licence de Test
+        libVdi: Licence TEST
+        libWebVdi: LICENCE de test
+        versionDiplome: '321'
+    etape: &LT1
+        codeEtp: LT1
+        versionEtp: '321'
+        libLongEtp: Licence de test première année
+        libWebVet: LICENCE de test première année
+    regimeIns: *FormationInitiale
+    #regimeIns: *FormationContinue
