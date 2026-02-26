@@ -236,6 +236,108 @@
       </div>
     </div>
 
+    <!-- ── DOCAPOSTE ── -->
+    <div class="form-section__header">
+      <h2>Docaposte</h2>
+    </div>
+    <div class="fields-grid">
+      <div class="field full" [class.field--missing]="isMissing('docaposte.uri')">
+        <label for="docaposte_uri">URI Docaposte</label>
+        <input id="docaposte_uri" type="url" formControlName="docaposte_uri"
+               placeholder="https://demo-parapheur.dfast.fr/parapheur-soap/soap/v1/Documents" />
+      </div>
+      <div class="field" [class.field--missing]="isMissing('docaposte.siren')">
+        <label for="docaposte_siren">SIREN</label>
+        <input id="docaposte_siren" type="text" formControlName="docaposte_siren"
+               placeholder="123456789" />
+      </div>
+      <div class="field" [class.field--missing]="isMissing('docaposte.keystore.path')">
+        <label for="docaposte_keystore_path">Keystore path</label>
+        <input id="docaposte_keystore_path" type="text" formControlName="docaposte_keystore_path"
+               placeholder="C:\\path\\keystore.p12" />
+      </div>
+      <div class="field" [class.field--missing]="isMissing('docaposte.keystore.password')">
+        <label for="docaposte_keystore_password">Keystore password</label>
+        <div class="input-pwd">
+          <input [type]="showDocaposteKeystorePwd ? 'text' : 'password'" id="docaposte_keystore_password"
+                 formControlName="docaposte_keystore_password" placeholder="••••••••" />
+          <button type="button" class="pwd-toggle" (click)="showDocaposteKeystorePwd = !showDocaposteKeystorePwd">
+            <svg *ngIf="!showDocaposteKeystorePwd" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg *ngIf="showDocaposteKeystorePwd"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="field" [class.field--missing]="isMissing('docaposte.truststore.path')">
+        <label for="docaposte_truststore_path">Truststore path</label>
+        <input id="docaposte_truststore_path" type="text" formControlName="docaposte_truststore_path"
+               placeholder="C:\\path\\truststore.jks" />
+      </div>
+      <div class="field" [class.field--missing]="isMissing('docaposte.truststore.password')">
+        <label for="docaposte_truststore_password">Truststore password</label>
+        <div class="input-pwd">
+          <input [type]="showDocaposteTruststorePwd ? 'text' : 'password'" id="docaposte_truststore_password"
+                 formControlName="docaposte_truststore_password" placeholder="••••••••" />
+          <button type="button" class="pwd-toggle" (click)="showDocaposteTruststorePwd = !showDocaposteTruststorePwd">
+            <svg *ngIf="!showDocaposteTruststorePwd" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg *ngIf="showDocaposteTruststorePwd"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="test-bar">
+      <button type="button" class="valid-button execute-button" mat-mini-fab
+              [disabled]="!isDocaposteTestable() || testDocaposte.loading"
+              (click)="testDocaposteConnection()"
+              [attr.aria-label]="testDocaposte.loading ? 'Test Docaposte en cours…' : 'Tester Docaposte'"
+              matTooltip="Tester Docaposte">
+        <mat-icon *ngIf="!testDocaposte.loading" aria-hidden="true">play_arrow</mat-icon>
+        <mat-spinner *ngIf="testDocaposte.loading" diameter="24" aria-label="Chargement"></mat-spinner>
+      </button>
+      <span class="test-bar__label">Tester Docaposte</span>
+      <div class="test-result" *ngIf="testDocaposte.result !== null"
+           [class.test-result--success]="testDocaposte.result === 'success'"
+           [class.test-result--error]="testDocaposte.result === 'error'">
+        <svg *ngIf="testDocaposte.result === 'success'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        <svg *ngIf="testDocaposte.result === 'error'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+        {{ testDocaposte.message }}
+      </div>
+    </div>
+
+    <!-- ── ESUP-SIGNATURE ── -->
+    <div class="form-section__header">
+      <h2>Esup-Signature</h2>
+    </div>
+    <div class="fields-grid">
+      <div class="field full" [class.field--missing]="isMissing('esupsignature.uri')">
+        <label for="esupsignature_uri">URI Esup-Signature</label>
+        <input id="esupsignature_uri" type="url" formControlName="esupsignature_uri"
+               placeholder="https://signature.domaine.fr" />
+      </div>
+      <div class="field" [class.field--missing]="isMissing('esupsignature.circuit')">
+        <label for="esupsignature_circuit">Circuit</label>
+        <input id="esupsignature_circuit" type="text" formControlName="esupsignature_circuit"
+               placeholder="CIRCUIT_1" />
+      </div>
+    </div>
+    <div class="test-bar">
+      <button type="button" class="valid-button execute-button" mat-mini-fab
+              [disabled]="!isEsupSignatureTestable() || testEsupSign.loading"
+              (click)="testEsupSignatureConnection()"
+              [attr.aria-label]="testEsupSign.loading ? 'Test Esup-Signature en cours…' : 'Tester Esup-Signature'"
+              matTooltip="Tester Esup-Signature">
+        <mat-icon *ngIf="!testEsupSign.loading" aria-hidden="true">play_arrow</mat-icon>
+        <mat-spinner *ngIf="testEsupSign.loading" diameter="24" aria-label="Chargement"></mat-spinner>
+      </button>
+      <span class="test-bar__label">Tester Esup-Signature</span>
+      <div class="test-result" *ngIf="testEsupSign.result !== null"
+           [class.test-result--success]="testEsupSign.result === 'success'"
+           [class.test-result--error]="testEsupSign.result === 'error'">
+        <svg *ngIf="testEsupSign.result === 'success'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        <svg *ngIf="testEsupSign.result === 'error'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+        {{ testEsupSign.message }}
+      </div>
+    </div>
+
     <!-- ── API SIRÈNE ── -->
     <div class="form-section__header">
       <h2>API Sirène</h2>

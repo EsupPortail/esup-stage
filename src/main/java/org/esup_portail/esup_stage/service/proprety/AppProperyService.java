@@ -1,6 +1,8 @@
 package org.esup_portail.esup_stage.service.proprety;
 
 import org.esup_portail.esup_stage.dto.ConfigTestResultDto;
+import org.esup_portail.esup_stage.dto.DocaposteTestRequestDto;
+import org.esup_portail.esup_stage.dto.EsupSignatureTestRequestDto;
 import org.esup_portail.esup_stage.dto.MailerTestRequestDto;
 import org.esup_portail.esup_stage.dto.ReferentielTestRequestDto;
 import org.esup_portail.esup_stage.dto.SireneTestRequestDto;
@@ -17,6 +19,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -174,6 +177,32 @@ public class AppProperyService {
         }
     }
 
+    public ConfigTestResultDto testDocaposte(DocaposteTestRequestDto request) {
+        if (request == null || !StringUtils.hasText(request.getUri())) {
+            return error("URI Docaposte manquante.");
+        }
+        if (!StringUtils.hasText(request.getSiren())) {
+            return error("SIREN Docaposte manquant.");
+        }
+        if (!StringUtils.hasText(request.getKeystorePath()) || !StringUtils.hasText(request.getKeystorePassword())) {
+            return error("Keystore Docaposte manquant.");
+        }
+        if (!StringUtils.hasText(request.getTruststorePath()) || !StringUtils.hasText(request.getTruststorePassword())) {
+            return error("Truststore Docaposte manquant.");
+        }
+        return pingUrl(request.getUri(), "Docaposte");
+    }
+
+    public ConfigTestResultDto testEsupSignature(EsupSignatureTestRequestDto request) {
+        if (request == null || !StringUtils.hasText(request.getUri())) {
+            return error("URI Esup-Signature manquante.");
+        }
+        if (!StringUtils.hasText(request.getCircuit())) {
+            return error("Circuit Esup-Signature manquant.");
+        }
+        return pingUrl(request.getUri(), "Esup-Signature");
+    }
+
     private ConfigTestResultDto notImplemented(String message) {
         ConfigTestResultDto dto = new ConfigTestResultDto();
         dto.setResult("error");
@@ -193,6 +222,29 @@ public class AppProperyService {
         dto.setResult("error");
         dto.setMessage(message);
         return dto;
+    }
+
+    private ConfigTestResultDto pingUrl(String url, String label) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            ResponseEntity<String> resp = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    new HttpEntity<>(headers),
+                    String.class
+            );
+            if (resp.getStatusCode().is5xxServerError()) {
+                return error(label + " indisponible : " + resp.getStatusCode());
+            }
+            return success(label + " joignable (" + resp.getStatusCode() + ").");
+        } catch (HttpStatusCodeException e) {
+            if (e.getStatusCode().is5xxServerError()) {
+                return error(label + " indisponible : " + e.getStatusCode());
+            }
+            return success(label + " joignable (" + e.getStatusCode() + ").");
+        } catch (Exception e) {
+            return error("Erreur " + label + " : " + e.getMessage());
+        }
     }
 
     private JavaMailSenderImpl buildJavaMailSender(MailerTestRequestDto request) {

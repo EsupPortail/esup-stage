@@ -139,7 +139,7 @@ export class AppComponent implements OnInit {
           icon: "fa-calendar",
         },
         {
-          libelle : 'configuration de l\'application',
+          libelle : 'Configuration',
           path : 'param-global/config-app',
           icon: "fa-rocket"
         }

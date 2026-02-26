@@ -51,6 +51,20 @@ export interface SireneTestRequest {
   siret?: string;
 }
 
+export interface DocaposteTestRequest {
+  uri: string;
+  siren: string;
+  keystorePath: string;
+  keystorePassword: string;
+  truststorePath: string;
+  truststorePassword: string;
+}
+
+export interface EsupSignatureTestRequest {
+  uri: string;
+  circuit: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -90,5 +104,13 @@ export class ConfigAppService {
 
   testSirene(request: SireneTestRequest): Observable<ConfigTestResult> {
     return this.http.post<ConfigTestResult>(`${this.baseUrl}/test/sirene`, request);
+  }
+
+  testDocaposte(request: DocaposteTestRequest): Observable<ConfigTestResult> {
+    return this.http.post<ConfigTestResult>(`${this.baseUrl}/test/docaposte`, request);
+  }
+
+  testEsupSignature(request: EsupSignatureTestRequest): Observable<ConfigTestResult> {
+    return this.http.post<ConfigTestResult>(`${this.baseUrl}/test/esupsignature`, request);
   }
 }

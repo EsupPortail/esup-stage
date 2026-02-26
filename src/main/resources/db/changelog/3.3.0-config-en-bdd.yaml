@@ -242,3 +242,74 @@ databaseChangeLog:
               - column: { name: value, value: null }
               - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
               - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
+
+  - changeSet:
+      id: 3.3.0-insert-app-property-keys-2
+      author: thouveno9
+      changes:
+        # === DOCAPOSTE ===
+        - insert:
+            tableName: AppProperty
+            columns:
+              - column: { name: key, value: "docaposte.uri" }
+              - column: { name: value, value: null }
+              - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
+
+        - insert:
+            tableName: AppProperty
+            columns:
+              - column: { name: key, value: "docaposte.siren" }
+              - column: { name: value, value: null }
+              - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
+
+        - insert:
+            tableName: AppProperty
+            columns:
+              - column: { name: key, value: "docaposte.keystore.path" }
+              - column: { name: value, value: null }
+              - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
+
+        - insert:
+            tableName: AppProperty
+            columns:
+              - column: { name: key, value: "docaposte.keystore.password" }
+              - column: { name: value, value: null }
+              - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
+
+        - insert:
+            tableName: AppProperty
+            columns:
+              - column: { name: key, value: "docaposte.truststore.path" }
+              - column: { name: value, value: null }
+              - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
+
+        - insert:
+            tableName: AppProperty
+            columns:
+              - column: { name: key, value: "docaposte.truststore.password" }
+              - column: { name: value, value: null }
+              - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
+
+        # === ESUP-SIGNATURE ===
+        - insert:
+            tableName: AppProperty
+            columns:
+              - column: { name: key, value: "esupsignature.uri" }
+              - column: { name: value, value: null }
+              - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
+
+        - insert:
+            tableName: AppProperty
+            columns:
+              - column: { name: key, value: "esupsignature.circuit" }
+              - column: { name: value, value: null }
+              - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
+              - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
+

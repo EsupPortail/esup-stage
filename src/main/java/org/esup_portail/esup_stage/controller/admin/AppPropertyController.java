@@ -3,6 +3,8 @@ package org.esup_portail.esup_stage.controller.admin;
 import org.esup_portail.esup_stage.controller.ApiController;
 import org.esup_portail.esup_stage.dto.AppPropertyDto;
 import org.esup_portail.esup_stage.dto.ConfigTestResultDto;
+import org.esup_portail.esup_stage.dto.DocaposteTestRequestDto;
+import org.esup_portail.esup_stage.dto.EsupSignatureTestRequestDto;
 import org.esup_portail.esup_stage.dto.MailerTestRequestDto;
 import org.esup_portail.esup_stage.dto.ReferentielTestRequestDto;
 import org.esup_portail.esup_stage.dto.SireneTestRequestDto;
@@ -100,6 +102,20 @@ public class AppPropertyController {
     public ConfigTestResultDto testSirene(@RequestBody SireneTestRequestDto request) {
         requireAdmin();
         return appProperyService.testSirene(request);
+    }
+
+    @PostMapping("/test/docaposte")
+    @Secure
+    public ConfigTestResultDto testDocaposte(@RequestBody DocaposteTestRequestDto request) {
+        requireAdmin();
+        return appProperyService.testDocaposte(request);
+    }
+
+    @PostMapping("/test/esupsignature")
+    @Secure
+    public ConfigTestResultDto testEsupSignature(@RequestBody EsupSignatureTestRequestDto request) {
+        requireAdmin();
+        return appProperyService.testEsupSignature(request);
     }
 
     private AppPropertyDto toDto(AppProperty prop) {

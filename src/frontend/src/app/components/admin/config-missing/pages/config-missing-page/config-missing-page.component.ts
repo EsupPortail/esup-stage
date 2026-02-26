@@ -37,12 +37,16 @@ export class ConfigMissingPageComponent implements OnInit {
   testReferentiel: TestState = emptyTest();
   testWebhook:     TestState = emptyTest();
   testSirene:      TestState = emptyTest();
+  testDocaposte:   TestState = emptyTest();
+  testEsupSign:    TestState = emptyTest();
 
   showJwt          = false;
   showSmtpPwd      = false;
   showRefPwd       = false;
   showWebhookToken = false;
   showSireneToken  = false;
+  showDocaposteKeystorePwd = false;
+  showDocaposteTruststorePwd = false;
 
   private readonly REQUIRED_KEYS = [
     'referentiel.ws.login',
@@ -74,6 +78,16 @@ export class ConfigMissingPageComponent implements OnInit {
 
     webhook_signature_uri: 'webhook.signature.uri',
     webhook_signature_token: 'webhook.signature.token',
+
+    docaposte_uri: 'docaposte.uri',
+    docaposte_siren: 'docaposte.siren',
+    docaposte_keystore_path: 'docaposte.keystore.path',
+    docaposte_keystore_password: 'docaposte.keystore.password',
+    docaposte_truststore_path: 'docaposte.truststore.path',
+    docaposte_truststore_password: 'docaposte.truststore.password',
+
+    esupsignature_uri: 'esupsignature.uri',
+    esupsignature_circuit: 'esupsignature.circuit',
 
     sirene_url: 'sirene.url',
     sirene_token: 'sirene.token',
@@ -134,6 +148,16 @@ export class ConfigMissingPageComponent implements OnInit {
       webhook_signature_uri: [null],
       webhook_signature_token: [null],
 
+      docaposte_uri: [null],
+      docaposte_siren: [null],
+      docaposte_keystore_path: [null],
+      docaposte_keystore_password: [null],
+      docaposte_truststore_path: [null],
+      docaposte_truststore_password: [null],
+
+      esupsignature_uri: [null],
+      esupsignature_circuit: [null],
+
       sirene_url: [null],
       sirene_token: [null],
       sirene_nombre_minimum_resultats: [null],
@@ -191,6 +215,23 @@ export class ConfigMissingPageComponent implements OnInit {
   isSireneTestable(): boolean {
     const v = this.configForm.value;
     return !!(v.sirene_url && v.sirene_token);
+  }
+
+  isDocaposteTestable(): boolean {
+    const v = this.configForm.value;
+    return !!(
+      v.docaposte_uri &&
+      v.docaposte_siren &&
+      v.docaposte_keystore_path &&
+      v.docaposte_keystore_password &&
+      v.docaposte_truststore_path &&
+      v.docaposte_truststore_password
+    );
+  }
+
+  isEsupSignatureTestable(): boolean {
+    const v = this.configForm.value;
+    return !!(v.esupsignature_uri && v.esupsignature_circuit);
   }
 
   openMailerTestDialog(): void {
@@ -347,6 +388,44 @@ export class ConfigMissingPageComponent implements OnInit {
     });
   }
 
+  testDocaposteConnection(): void {
+    const v = this.configForm.value;
+    const params = {
+      uri: v.docaposte_uri,
+      siren: v.docaposte_siren,
+      keystorePath: v.docaposte_keystore_path,
+      keystorePassword: v.docaposte_keystore_password,
+      truststorePath: v.docaposte_truststore_path,
+      truststorePassword: v.docaposte_truststore_password,
+    };
+
+    this.testDocaposte = { loading: true, result: null, message: '' };
+    this.configAppService.testDocaposte(params).subscribe({
+      next: (resp) => this.applyTestResult(this.testDocaposte, resp),
+      error: () => this.applyTestResult(this.testDocaposte, {
+        result: 'error',
+        message: 'Erreur lors du test Docaposte (non implémenté ou indisponible).'
+      })
+    });
+  }
+
+  testEsupSignatureConnection(): void {
+    const v = this.configForm.value;
+    const params = {
+      uri: v.esupsignature_uri,
+      circuit: v.esupsignature_circuit,
+    };
+
+    this.testEsupSign = { loading: true, result: null, message: '' };
+    this.configAppService.testEsupSignature(params).subscribe({
+      next: (resp) => this.applyTestResult(this.testEsupSign, resp),
+      error: () => this.applyTestResult(this.testEsupSign, {
+        result: 'error',
+        message: 'Erreur lors du test Esup-Signature (non implémenté ou indisponible).'
+      })
+    });
+  }
+
   private applyTestResult(state: TestState, resp: { result: 'success' | 'error'; message: string }): void {
     state.loading = false;
     state.result = resp.result;
@@ -375,6 +454,14 @@ export class ConfigMissingPageComponent implements OnInit {
       'referentiel.ws.apogee_url':        v.referentiel_ws_apogee_url ?? null,
       'webhook.signature.uri':            v.webhook_signature_uri ?? null,
       'webhook.signature.token':          v.webhook_signature_token ?? null,
+      'docaposte.uri':                    v.docaposte_uri ?? null,
+      'docaposte.siren':                  v.docaposte_siren ?? null,
+      'docaposte.keystore.path':          v.docaposte_keystore_path ?? null,
+      'docaposte.keystore.password':      v.docaposte_keystore_password ?? null,
+      'docaposte.truststore.path':        v.docaposte_truststore_path ?? null,
+      'docaposte.truststore.password':    v.docaposte_truststore_password ?? null,
+      'esupsignature.uri':                v.esupsignature_uri ?? null,
+      'esupsignature.circuit':            v.esupsignature_circuit ?? null,
       'sirene.url':                       v.sirene_url ?? null,
       'sirene.token':                     v.sirene_token ?? null,
       'sirene.nombre_minimum_resultats':  v.sirene_nombre_minimum_resultats?.toString() ?? null,
@@ -482,6 +569,8 @@ export class ConfigMissingPageComponent implements OnInit {
     this.testReferentiel = emptyTest();
     this.testWebhook     = emptyTest();
     this.testSirene      = emptyTest();
+    this.testDocaposte   = emptyTest();
+    this.testEsupSign    = emptyTest();
     this.configForm.reset({
       appli_mailer_protocol: 'smtp',
       appli_mailer_disable_delivery: false,
