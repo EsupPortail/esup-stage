@@ -57,7 +57,7 @@ public class ImpressionService {
         }
         TemplateConvention templateConvention = templateConventionJpaRepository.findByTypeAndLangue(convention.getTypeConvention().getId(), convention.getLangueConvention().getCode());
         if (templateConvention == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Template convention " + convention.getTypeConvention().getLibelle() + "-" + convention.getLangueConvention().getCode() + " non trouvÃ©");
+            throw new AppException(HttpStatus.NOT_FOUND, "Template convention " + convention.getTypeConvention().getLibelle() + "-" + convention.getLangueConvention().getCode() + " non trouvé");
         }
 
         CentreGestion centreEtablissement = centreGestionJpaRepository.getCentreEtablissement();
@@ -76,7 +76,7 @@ public class ImpressionService {
             String filename = avenant != null ? "avenant_" + avenant.getId() : "convention_" + convention.getId();
             filename += "_" + convention.getEtudiant().getPrenom() + "_" + convention.getEtudiant().getNom() + ".pdf";
 
-            // rÃ©cupÃ©ration du logo du centre gestion
+            // récupération du logo du centre gestion
             String logoname;
             Fichier fichier = convention.getCentreGestion().getFichier();
             ImageData imageData = null;
@@ -88,7 +88,7 @@ public class ImpressionService {
                 }
             }
 
-            // si le centre de gestion n'a pas de logo ou qu'il n'existe pas physiquement, on prend celui du centre Ã©tablissement
+            // si le centre de gestion n'a pas de logo ou qu'il n'existe pas physiquement, on prend celui du centre établissement
             if (imageData == null) {
                 fichier = centreEtablissement.getFichier();
                 if (fichier != null) {
@@ -101,7 +101,7 @@ public class ImpressionService {
 
             this.generatePDF(texte.toString(), filename, imageData, ou);
         } catch (Exception e) {
-            logger.error("Une erreur est survenue lors de la gÃ©nÃ©ration du PDF", e);
+            logger.error("Une erreur est survenue lors de la génération du PDF", e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
         }
     }
@@ -111,7 +111,7 @@ public class ImpressionService {
             String filename = "FicheEtudiant.pdf";
             this.generatePDF(htmlTexte, filename, null, ou);
         } catch (Exception e) {
-            logger.error("Une erreur est survenue lors de la gÃ©nÃ©ration du PDF", e);
+            logger.error("Une erreur est survenue lors de la génération du PDF", e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
         }
     }
@@ -167,7 +167,7 @@ public class ImpressionService {
 
             return sb.toString();
         } catch (Exception e) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Template par dÃ©faut non trouvÃ©");
+            throw new AppException(HttpStatus.NOT_FOUND, "Template par défaut non trouvé");
         }
     }
 
@@ -180,7 +180,7 @@ public class ImpressionService {
         for (CentreGestionSignataire signataire : signatairesOtp) {
             switch (signataire.getId().getSignataire()) {
                 case etudiant:
-                    // Ajout de l'Ã©tudiant
+                    // Ajout de l'étudiant
                     otp.add(new HashMap<>() {{
                         put("firstname", convention.getEtudiant().getPrenom());
                         put("lastname", convention.getEtudiant().getNom());
@@ -189,7 +189,7 @@ public class ImpressionService {
                     }});
                     break;
                 case enseignant:
-                    // Ajout de l'enseignant rÃ©fÃ©rent
+                    // Ajout de l'enseignant référent
                     otp.add(new HashMap<>() {{
                         put("firstname", convention.getEnseignant().getPrenom());
                         put("lastname", convention.getEnseignant().getNom());
@@ -198,7 +198,7 @@ public class ImpressionService {
                     }});
                     break;
                 case tuteur:
-                    // Ajout du tuteur pÃ©dagogique
+                    // Ajout du tuteur pédagogique
                     otp.add(new HashMap<>() {{
                         put("firstname", convention.getContact().getPrenom());
                         put("lastname", convention.getContact().getNom());
@@ -216,7 +216,7 @@ public class ImpressionService {
                     }});
                     break;
                 case viseur:
-                    // Ajout du directeur du dÃ©partement
+                    // Ajout du directeur du département
                     otp.add(new HashMap<>() {{
                         put("firstname", convention.getCentreGestion().getPrenomViseur());
                         put("lastname", convention.getCentreGestion().getNomViseur());
@@ -274,10 +274,10 @@ public class ImpressionService {
             String motifTexte = getDefaultText("/templates/template_avenant_motifs.html");
             texte = texte.replace("${avenant.motifs}", motifTexte);
 
-            // Style par dÃ©faut des tables dans les templates
+            // Style par défaut des tables dans les templates
             htmlTexte += texte;
         }
-        // Remplacement de tags et styles gÃ©nÃ©rÃ©s par l'Ã©diteur qui ne sont pas convertis correctement
+        // Remplacement de tags et styles générés par l'éditeur qui ne sont pas convertis correctement
         htmlTexte = htmlTexte.replace("<figure", "<div");
         htmlTexte = htmlTexte.replace("</figure>", "</div>");
 
@@ -319,10 +319,10 @@ public class ImpressionService {
     }
 
     /**
-     * PrÃ©pare l'image du logo pour l'ajout dans le PDF.
+     * Prépare l'image du logo pour l'ajout dans le PDF.
      *
-     * @param imageData les donnÃ©es de l'image
-     * @return l'image prÃªte Ã  Ãªtre ajoutÃ©e au document
+     * @param imageData les données de l'image
+     * @return l'image prête à être ajoutée au document
      */
     private Image prepareLogoImage(ImageData imageData) {
         Image img = new Image(imageData);
@@ -361,15 +361,15 @@ public class ImpressionService {
                     throw new AppException(HttpStatus.NOT_FOUND, "Template de convention introuvable");
                 }
 
-                // RÃ©cupÃ©ration du texte du template et application des styles
+                // Récupération du texte du template et application des styles
                 htmlTexte = this.getHtmlText(templateConvention.getTexte(), true, false);
                 htmlTexte = manageIfElse(htmlTexte);
 
-                // CrÃ©ation d'un contexte fictif pour le preview
+                // Création d'un contexte fictif pour le preview
                 CentreGestion centreEtablissement = centreGestionJpaRepository.getCentreEtablissement();
                 ImpressionContext impressionContext = previewConventionFactory.createPreviewContext(centreGestion, centreEtablissement);
 
-                // Traitement du template avec les donnÃ©es fictives
+                // Traitement du template avec les données fictives
                 Template template = new Template("template_preview_" + templateId, htmlTexte, freeMarkerConfigurer.getConfiguration());
                 StringWriter texte = new StringWriter();
                 template.process(impressionContext, texte);
@@ -407,7 +407,7 @@ public class ImpressionService {
             this.generatePreviewPDFFirstPage(htmlTexte, "preview_convention.pdf", imageData, ou);
 
         } catch (Exception e) {
-            logger.error("Une erreur est survenue lors de la gÃ©nÃ©ration du PDF de preview", e);
+            logger.error("Une erreur est survenue lors de la génération du PDF de preview", e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
         }
     }
@@ -417,16 +417,16 @@ public class ImpressionService {
         cg.setId(100);
         cg.setNomCentre("UFR Informatique");
         cg.setCodeUniversite("UNIV-TEST");
-        cg.setVoie("1 rue des UniversitÃ©s");
-        cg.setAdresse("1 rue des UniversitÃ©s");
+        cg.setVoie("1 rue des Universités");
+        cg.setAdresse("1 rue des Universités");
         cg.setCodePostal("44000");
         cg.setCommune("Nantes");
         cg.setMail("ufr-info@example.com");
         cg.setTelephone("+33 2 40 00 00 00");
         cg.setNomViseur("Bernard");
         cg.setPrenomViseur("Sophie");
-        cg.setQualiteViseur("Responsable pÃ©dagogique");
-        // ParamÃ¨tres de validation (pour le calcul conventionValidee dans ImpressionContext)
+        cg.setQualiteViseur("Responsable pédagogique");
+        // Paramètres de validation (pour le calcul conventionValidee dans ImpressionContext)
         cg.setValidationPedagogique(true);
         cg.setValidationConvention(true);
         return cg;
@@ -435,7 +435,7 @@ public class ImpressionService {
     private CentreGestion createFictionalCentreEtablissement() {
         CentreGestion ce = new CentreGestion();
         ce.setId(101);
-        ce.setNomCentre("UniversitÃ© Exemple");
+        ce.setNomCentre("Université Exemple");
         ce.setCodeUniversite("UNIV-TEST");
         ce.setVoie("10 avenue du Savoir");
         ce.setAdresse("10 avenue du Savoir, 75005 Paris");
@@ -445,14 +445,14 @@ public class ImpressionService {
         ce.setTelephone("+33 1 44 00 00 00");
         ce.setNomViseur("Dupuis");
         ce.setPrenomViseur("Claire");
-        ce.setQualiteViseur("PrÃ©sidente");
+        ce.setQualiteViseur("Présidente");
         ce.setValidationPedagogique(true);
         ce.setValidationConvention(true);
         return ce;
     }
 
     /**
-     * GÃ©nÃ¨re un PDF avec uniquement la premiÃ¨re page
+     * Génère un PDF avec uniquement la première page
      */
     private void generatePreviewPDFFirstPage(String texte, String filename, ImageData imageData, ByteArrayOutputStream ou) {
         String tempFilePath = this.getClass().getResource("/templates").getPath();
@@ -484,7 +484,7 @@ public class ImpressionService {
             document.close();
 
         } catch (Exception e) {
-            logger.error("Erreur lors de la gÃ©nÃ©ration du PDF de preview", e);
+            logger.error("Erreur lors de la génération du PDF de preview", e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
         } finally {
             try {
