@@ -23,6 +23,7 @@ public class AppliProperties {
     private List<String> tokens;
     private String jwtSecret;
     private Long nbJoursValideToken;
+    private String configEncryptionKey;
     private FooterProperties footer;
 
     public String getLocalApi() {

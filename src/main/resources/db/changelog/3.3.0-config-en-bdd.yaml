@@ -14,7 +14,16 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: value
-                  type: varchar(255)
+                  type: varchar(500)
+              - column:
+                  name: valueEncrypted
+                  type: text
+              - column:
+                  name: isSecret
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
               - column:
                   name: updatedAt
                   type: datetime
@@ -25,6 +34,9 @@ databaseChangeLog:
                   type: datetime
                   constraints:
                     nullable: false
+              - column:
+                  name: updatedBy
+                  type: varchar(255)
 
   - changeSet:
       id: 3.3.0-insert-app-property-keys
@@ -34,7 +46,6 @@ databaseChangeLog:
             tableName: AppProperty
             columns:
               - column: { name: key, value: "appli.url" }
-              - column: { name: value, value: null }
               - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
               - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
 
@@ -42,7 +53,6 @@ databaseChangeLog:
             tableName: AppProperty
             columns:
               - column: { name: key, value: "appli.tokens" }
-              - column: { name: value, value: null }
               - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
               - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
 
@@ -50,7 +60,7 @@ databaseChangeLog:
             tableName: AppProperty
             columns:
               - column: { name: key, value: "appli.jwt_secret" }
-              - column: { name: value, value: null }
+              - column: { name: isSecret, value: 1 }
               - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
               - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
 
@@ -58,7 +68,6 @@ databaseChangeLog:
             tableName: AppProperty
             columns:
               - column: { name: key, value: "appli.nb_jours_valide_token" }
-              - column: { name: value, value: null }
               - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
               - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
 
@@ -75,7 +84,6 @@ databaseChangeLog:
             tableName: AppProperty
             columns:
               - column: { name: key, value: "appli.mailer.host" }
-              - column: { name: value, value: null }
               - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
               - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
 
@@ -83,7 +91,6 @@ databaseChangeLog:
             tableName: AppProperty
             columns:
               - column: { name: key, value: "appli.mailer.port" }
-              - column: { name: value, value: null }
               - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
               - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
 
@@ -91,7 +98,6 @@ databaseChangeLog:
             tableName: AppProperty
             columns:
               - column: { name: key, value: "appli.mailer.auth" }
-              - column: { name: value, value: null }
               - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
               - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
 
@@ -99,7 +105,6 @@ databaseChangeLog:
             tableName: AppProperty
             columns:
               - column: { name: key, value: "appli.mailer.username" }
-              - column: { name: value, value: "username@domaine.com" }
               - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
               - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
 
@@ -107,7 +112,7 @@ databaseChangeLog:
             tableName: AppProperty
             columns:
               - column: { name: key, value: "appli.mailer.password" }
-              - column: { name: value, value: "xxx" }
+              - column: { name: isSecret, value: 1 }
               - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
               - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
 
@@ -115,7 +120,6 @@ databaseChangeLog:
             tableName: AppProperty
             columns:
               - column: { name: key, value: "appli.mailer.from" }
-              - column: { name: value, value: null }
               - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
               - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
 
@@ -131,7 +135,6 @@ databaseChangeLog:
             tableName: AppProperty
             columns:
               - column: { name: key, value: "appli.mailer.delivery_address" }
-              - column: { name: value, value: null }
               - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
               - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
 
@@ -140,7 +143,6 @@ databaseChangeLog:
             tableName: AppProperty
             columns:
               - column: { name: key, value: "referentiel.ws.login" }
-              - column: { name: value, value: null }
               - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
               - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
 
@@ -148,7 +150,7 @@ databaseChangeLog:
             tableName: AppProperty
             columns:
               - column: { name: key, value: "referentiel.ws.password" }
-              - column: { name: value, value: null }
+              - column: { name: isSecret, value: 1 }
               - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
               - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
 
@@ -156,7 +158,6 @@ databaseChangeLog:
             tableName: AppProperty
             columns:
               - column: { name: key, value: "referentiel.ws.ldap_url" }
-              - column: { name: value, value: null }
               - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
               - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
 
@@ -164,7 +165,6 @@ databaseChangeLog:
             tableName: AppProperty
             columns:
               - column: { name: key, value: "referentiel.ws.apogee_url" }
-              - column: { name: value, value: null }
               - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
               - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
 
@@ -173,7 +173,6 @@ databaseChangeLog:
             tableName: AppProperty
             columns:
               - column: { name: key, value: "webhook.signature.uri" }
-              - column: { name: value, value: null }
               - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
               - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
 
@@ -181,7 +180,7 @@ databaseChangeLog:
             tableName: AppProperty
             columns:
               - column: { name: key, value: "webhook.signature.token" }
-              - column: { name: value, value: null }
+              - column: { name: isSecret, value: 1 }
               - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
               - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
 
@@ -190,7 +189,6 @@ databaseChangeLog:
             tableName: AppProperty
             columns:
               - column: { name: key, value: "sirene.url" }
-              - column: { name: value, value: null }
               - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
               - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
 
@@ -198,7 +196,7 @@ databaseChangeLog:
             tableName: AppProperty
             columns:
               - column: { name: key, value: "sirene.token" }
-              - column: { name: value, value: null }
+              - column: { name: isSecret, value: 1 }
               - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
               - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
 
@@ -206,7 +204,6 @@ databaseChangeLog:
             tableName: AppProperty
             columns:
               - column: { name: key, value: "sirene.nombre_minimum_resultats" }
-              - column: { name: value, value: null }
               - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
               - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
 
@@ -215,7 +212,6 @@ databaseChangeLog:
             tableName: AppProperty
             columns:
               - column: { name: key, value: "appli.footer.github" }
-              - column: { name: value, value: null }
               - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
               - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
 
@@ -223,7 +219,6 @@ databaseChangeLog:
             tableName: AppProperty
             columns:
               - column: { name: key, value: "appli.footer.site" }
-              - column: { name: value, value: null }
               - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
               - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
 
@@ -231,7 +226,6 @@ databaseChangeLog:
             tableName: AppProperty
             columns:
               - column: { name: key, value: "appli.footer.support" }
-              - column: { name: value, value: null }
               - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
               - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
 
@@ -239,20 +233,14 @@ databaseChangeLog:
             tableName: AppProperty
             columns:
               - column: { name: key, value: "appli.footer.wiki" }
-              - column: { name: value, value: null }
               - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
               - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
 
-  - changeSet:
-      id: 3.3.0-insert-app-property-keys-2
-      author: thouveno9
-      changes:
         # === DOCAPOSTE ===
         - insert:
             tableName: AppProperty
             columns:
               - column: { name: key, value: "docaposte.uri" }
-              - column: { name: value, value: null }
               - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
               - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
 
@@ -260,7 +248,6 @@ databaseChangeLog:
             tableName: AppProperty
             columns:
               - column: { name: key, value: "docaposte.siren" }
-              - column: { name: value, value: null }
               - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
               - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
 
@@ -268,7 +255,6 @@ databaseChangeLog:
             tableName: AppProperty
             columns:
               - column: { name: key, value: "docaposte.keystore.path" }
-              - column: { name: value, value: null }
               - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
               - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
 
@@ -276,7 +262,7 @@ databaseChangeLog:
             tableName: AppProperty
             columns:
               - column: { name: key, value: "docaposte.keystore.password" }
-              - column: { name: value, value: null }
+              - column: { name: isSecret, value: 1 }
               - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
               - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
 
@@ -284,7 +270,6 @@ databaseChangeLog:
             tableName: AppProperty
             columns:
               - column: { name: key, value: "docaposte.truststore.path" }
-              - column: { name: value, value: null }
               - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
               - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
 
@@ -292,7 +277,6 @@ databaseChangeLog:
             tableName: AppProperty
             columns:
               - column: { name: key, value: "docaposte.truststore.password" }
-              - column: { name: value, value: null }
               - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
               - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
 
@@ -301,7 +285,6 @@ databaseChangeLog:
             tableName: AppProperty
             columns:
               - column: { name: key, value: "esupsignature.uri" }
-              - column: { name: value, value: null }
               - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
               - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
 
@@ -309,7 +292,6 @@ databaseChangeLog:
             tableName: AppProperty
             columns:
               - column: { name: key, value: "esupsignature.circuit" }
-              - column: { name: value, value: null }
               - column: { name: createdAt, valueComputed: CURRENT_TIMESTAMP }
               - column: { name: updatedAt, valueComputed: CURRENT_TIMESTAMP }
 

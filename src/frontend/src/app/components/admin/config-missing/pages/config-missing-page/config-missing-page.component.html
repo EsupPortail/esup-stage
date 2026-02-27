@@ -12,36 +12,44 @@
   </div>
 
   <form [formGroup]="configForm" (ngSubmit)="onSubmit()" novalidate>
-
-    <div class="form-section__header">
-      <h2>Application</h2>
+  <ng-template #pwdField let-id="id" let-control="control" let-showKey="showKey" let-placeholder="placeholder">
+    <div class="input-pwd">
+      <input [type]="isShown(showKey) ? 'text' : 'password'" [id]="id"
+             [formControlName]="control" [placeholder]="placeholder" />
+      <button type="button" class="pwd-toggle" (click)="toggleShown(showKey)"
+              [attr.aria-label]="isShown(showKey) ? 'Masquer' : 'Afficher'">
+        <svg *ngIf="!isShown(showKey)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        <svg *ngIf="isShown(showKey)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+      </button>
     </div>
-    <div class="fields-grid">
-      <div class="field" [class.field--missing]="isMissing('appli.tokens')">
-        <label for="appli_tokens">Tokens</label>
-        <input id="appli_tokens" type="text" formControlName="appli_tokens"
-               placeholder="token1,token2,..." />
-      </div>
-      <div class="field" [class.field--missing]="isMissing('appli.jwt_secret')">
-        <label for="appli_jwt_secret">Secret JWT</label>
-        <div class="input-pwd">
-          <input [type]="showJwt ? 'text' : 'password'" id="appli_jwt_secret"
-                 formControlName="appli_jwt_secret" placeholder="••••••••••••" />
-          <button type="button" class="pwd-toggle" (click)="showJwt = !showJwt"
-                  [attr.aria-label]="showJwt ? 'Masquer' : 'Afficher'">
-            <svg *ngIf="!showJwt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            <svg *ngIf="showJwt"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-          </button>
-        </div>
-      </div>
-      <div class="field" [class.field--missing]="isMissing('appli.nb_jours_valide_token')">
-        <label for="appli_nb_jours">Durée validité token <span class="hint">(jours)</span></label>
-        <input id="appli_nb_jours" type="number" formControlName="appli_nb_jours_valide_token"
-               placeholder="30" min="1" />
-      </div>
-    </div>
+  </ng-template>
 
-    <!-- ── MESSAGERIE ── -->
+  <div class="form-section__header">
+    <h2>Application</h2>
+  </div>
+  <div class="fields-grid">
+    <div class="field" [class.field--missing]="isMissing('appli.tokens')">
+      <label for="appli_tokens">Tokens</label>
+      <input id="appli_tokens" type="text" formControlName="appli_tokens"
+             placeholder="token1,token2,..." />
+    </div>
+    <div class="field" [class.field--missing]="isMissing('appli.jwt_secret')">
+      <label for="appli_jwt_secret">Secret JWT</label>
+      <ng-container *ngTemplateOutlet="pwdField; context: {
+        id: 'appli_jwt_secret',
+        control: 'appli_jwt_secret',
+        showKey: 'jwt',
+        placeholder: '••••••••••••'
+      }"></ng-container>
+    </div>
+    <div class="field" [class.field--missing]="isMissing('appli.nb_jours_valide_token')">
+      <label for="appli_nb_jours">Durée validité token <span class="hint">(jours)</span></label>
+      <input id="appli_nb_jours" type="number" formControlName="appli_nb_jours_valide_token"
+             placeholder="30" min="1" />
+    </div>
+  </div>
+
+  <!-- ── MESSAGERIE ── -->
     <div class="form-section__header">
       <h2>Messagerie</h2>
     </div>
@@ -78,14 +86,12 @@
       </div>
       <div class="field">
         <label for="mailer_password">Mot de passe SMTP</label>
-        <div class="input-pwd">
-          <input [type]="showSmtpPwd ? 'text' : 'password'" id="mailer_password"
-                 formControlName="appli_mailer_password" placeholder="••••••••••••" />
-          <button type="button" class="pwd-toggle" (click)="showSmtpPwd = !showSmtpPwd">
-            <svg *ngIf="!showSmtpPwd" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            <svg *ngIf="showSmtpPwd"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-          </button>
-        </div>
+        <ng-container *ngTemplateOutlet="pwdField; context: {
+          id: 'mailer_password',
+          control: 'appli_mailer_password',
+          showKey: 'smtp',
+          placeholder: '••••••••••••'
+        }"></ng-container>
       </div>
       <div class="field" [class.field--missing]="isMissing('appli.mailer.from')">
         <label for="mailer_from">Expéditeur <span class="hint">(From)</span></label>
@@ -149,14 +155,12 @@
       <div class="field" [class.field--error]="isInvalid('referentiel_ws_password')"
            [class.field--missing]="isMissing('referentiel.ws.password')">
         <label for="ref_password">Mot de passe <span class="asterisk">*</span></label>
-        <div class="input-pwd">
-          <input [type]="showRefPwd ? 'text' : 'password'" id="ref_password"
-                 formControlName="referentiel_ws_password" placeholder="••••••••••••" />
-          <button type="button" class="pwd-toggle" (click)="showRefPwd = !showRefPwd">
-            <svg *ngIf="!showRefPwd" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            <svg *ngIf="showRefPwd"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-          </button>
-        </div>
+        <ng-container *ngTemplateOutlet="pwdField; context: {
+          id: 'ref_password',
+          control: 'referentiel_ws_password',
+          showKey: 'ref',
+          placeholder: '••••••••••••'
+        }"></ng-container>
         <span class="error-msg" *ngIf="isInvalid('referentiel_ws_password')">Champ obligatoire</span>
       </div>
       <div class="field full" [class.field--error]="isInvalid('referentiel_ws_ldap_url')"
@@ -206,14 +210,12 @@
       </div>
       <div class="field" [class.field--missing]="isMissing('webhook.signature.token')">
         <label for="webhook_token">Token</label>
-        <div class="input-pwd">
-          <input [type]="showWebhookToken ? 'text' : 'password'" id="webhook_token"
-                 formControlName="webhook_signature_token" placeholder="••••••••••••" />
-          <button type="button" class="pwd-toggle" (click)="showWebhookToken = !showWebhookToken">
-            <svg *ngIf="!showWebhookToken" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            <svg *ngIf="showWebhookToken"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-          </button>
-        </div>
+        <ng-container *ngTemplateOutlet="pwdField; context: {
+          id: 'webhook_token',
+          control: 'webhook_signature_token',
+          showKey: 'webhook',
+          placeholder: '••••••••••••'
+        }"></ng-container>
       </div>
     </div>
     <!-- Test Webhook -->
@@ -258,14 +260,12 @@
       </div>
       <div class="field" [class.field--missing]="isMissing('docaposte.keystore.password')">
         <label for="docaposte_keystore_password">Keystore password</label>
-        <div class="input-pwd">
-          <input [type]="showDocaposteKeystorePwd ? 'text' : 'password'" id="docaposte_keystore_password"
-                 formControlName="docaposte_keystore_password" placeholder="••••••••" />
-          <button type="button" class="pwd-toggle" (click)="showDocaposteKeystorePwd = !showDocaposteKeystorePwd">
-            <svg *ngIf="!showDocaposteKeystorePwd" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            <svg *ngIf="showDocaposteKeystorePwd"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-          </button>
-        </div>
+        <ng-container *ngTemplateOutlet="pwdField; context: {
+          id: 'docaposte_keystore_password',
+          control: 'docaposte_keystore_password',
+          showKey: 'docaposte_keystore',
+          placeholder: '••••••••'
+        }"></ng-container>
       </div>
       <div class="field" [class.field--missing]="isMissing('docaposte.truststore.path')">
         <label for="docaposte_truststore_path">Truststore path</label>
@@ -274,14 +274,12 @@
       </div>
       <div class="field" [class.field--missing]="isMissing('docaposte.truststore.password')">
         <label for="docaposte_truststore_password">Truststore password</label>
-        <div class="input-pwd">
-          <input [type]="showDocaposteTruststorePwd ? 'text' : 'password'" id="docaposte_truststore_password"
-                 formControlName="docaposte_truststore_password" placeholder="••••••••" />
-          <button type="button" class="pwd-toggle" (click)="showDocaposteTruststorePwd = !showDocaposteTruststorePwd">
-            <svg *ngIf="!showDocaposteTruststorePwd" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            <svg *ngIf="showDocaposteTruststorePwd"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-          </button>
-        </div>
+        <ng-container *ngTemplateOutlet="pwdField; context: {
+          id: 'docaposte_truststore_password',
+          control: 'docaposte_truststore_password',
+          showKey: 'docaposte_truststore',
+          placeholder: '••••••••'
+        }"></ng-container>
       </div>
     </div>
     <div class="test-bar">
@@ -350,14 +348,12 @@
       </div>
       <div class="field" [class.field--missing]="isMissing('sirene.token')">
         <label for="sirene_token">Token INSEE</label>
-        <div class="input-pwd">
-          <input [type]="showSireneToken ? 'text' : 'password'" id="sirene_token"
-                 formControlName="sirene_token" placeholder="••••••••••••" />
-          <button type="button" class="pwd-toggle" (click)="showSireneToken = !showSireneToken">
-            <svg *ngIf="!showSireneToken" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            <svg *ngIf="showSireneToken"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-          </button>
-        </div>
+        <ng-container *ngTemplateOutlet="pwdField; context: {
+          id: 'sirene_token',
+          control: 'sirene_token',
+          showKey: 'sirene',
+          placeholder: '••••••••••••'
+        }"></ng-container>
       </div>
       <div class="field" [class.field--missing]="isMissing('sirene.nombre_minimum_resultats')">
         <label for="sirene_min">Résultats minimum</label>
@@ -448,3 +444,7 @@
 
   </form>
 </div>
+
+
+
+

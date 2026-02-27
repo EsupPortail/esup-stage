@@ -40,13 +40,9 @@ export class ConfigMissingPageComponent implements OnInit {
   testDocaposte:   TestState = emptyTest();
   testEsupSign:    TestState = emptyTest();
 
-  showJwt          = false;
-  showSmtpPwd      = false;
-  showRefPwd       = false;
-  showWebhookToken = false;
-  showSireneToken  = false;
-  showDocaposteKeystorePwd = false;
-  showDocaposteTruststorePwd = false;
+  show: Record<string, boolean> = {};
+
+  private readonly secretKeys = new Set<string>();
 
   private readonly REQUIRED_KEYS = [
     'referentiel.ws.login',
@@ -191,6 +187,13 @@ export class ConfigMissingPageComponent implements OnInit {
     return value === null || value === undefined || value === '';
   }
 
+  isShown(key: string): boolean {
+    return !!this.show[key];
+  }
+
+  toggleShown(key: string): void {
+    this.show[key] = !this.show[key];
+  }
 
   isMailerTestable(): boolean {
     const v = this.configForm.value;
@@ -432,7 +435,7 @@ export class ConfigMissingPageComponent implements OnInit {
     state.message = resp.message || '';
   }
 
-  buildAppPropertyPayload(): AppPropertyDto[] {
+  buildAppPropertyPayload(): { key: string; value: string | null }[] {
     const v = this.configForm.value;
     const payload: Record<string, string | null> = {
       'appli.url':                        v.appli_url ?? null,
@@ -471,7 +474,10 @@ export class ConfigMissingPageComponent implements OnInit {
       'appli.footer.wiki':                v.appli_footer_wiki ?? null,
     };
 
-    return Object.entries(payload).map(([key, value]) => ({ key, value }));
+    return Object.entries(payload).map(([key, value]) => ({
+      key,
+      value: value,
+    }));
   }
 
   private loadMissingKeys(afterSave = false): void {
@@ -501,12 +507,18 @@ export class ConfigMissingPageComponent implements OnInit {
   }
 
   private mapPropertiesToForm(properties: AppPropertyDto[]): Record<string, unknown> {
+    this.secretKeys.clear();
     const map: Record<string, string | null> = {};
     for (const prop of properties) {
       if (!prop || !prop.key) {
         continue;
       }
-      map[prop.key] = prop.value ?? null;
+      if (prop.isSecret) {
+        this.secretKeys.add(prop.key);
+        map[prop.key] = prop.hasValue ? 'UNCHANGED' : null;
+      } else {
+        map[prop.key] = prop.value ?? null;
+      }
     }
 
     const formValues: Record<string, unknown> = {};
@@ -559,7 +571,7 @@ export class ConfigMissingPageComponent implements OnInit {
   }
 
   isOnConfigMissingRoute(): boolean {
-    return this.router.url.startsWith('/config-missing');
+    return this.router.url.startsWith('/admin/config-missing');
   }
 
   onReset(): void {

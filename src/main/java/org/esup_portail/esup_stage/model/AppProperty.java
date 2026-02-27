@@ -6,6 +6,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 @Table(name = "AppProperty")
 @Entity
@@ -19,9 +21,18 @@ public class AppProperty {
     private String value;
 
     @Column
-    private String updatedAt;
+    private String valueEncrypted;
 
     @Column
-    private String createdAt;
+    private Boolean isSecret;
+
+    @Column
+    private LocalDateTime updatedAt;
+
+    @Column
+    private LocalDateTime createdAt;
+
+    @Column
+    private String updatedBy;
 
 }

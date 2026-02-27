@@ -19,6 +19,7 @@ import org.esup_portail.esup_stage.service.proprety.AppProperyService;
 import org.esup_portail.esup_stage.service.proprety.ConfigMissingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -63,17 +64,16 @@ public class AppPropertyController {
     @PostMapping("/properties")
     @Secure
     public List<AppPropertyDto> saveProperties(@RequestBody List<AppPropertyDto> properties) {
-        Utilisateur utilisateur = requireAdmin();
+        requireAdmin();
         if (properties != null) {
             for (AppPropertyDto dto : properties) {
-                if (dto == null) {
-                    continue;
-                }
+                if (dto == null) continue;
                 appProperyService.save(dto.getKey(), dto.getValue());
             }
         }
-        List<AppProperty> saved = appProperyService.getAll();
-        return saved.stream().map(this::toDto).collect(Collectors.toList());
+        return appProperyService.getAll().stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
     @PostMapping("/test/mailer")
@@ -121,7 +121,17 @@ public class AppPropertyController {
     private AppPropertyDto toDto(AppProperty prop) {
         AppPropertyDto dto = new AppPropertyDto();
         dto.setKey(prop.getKey());
-        dto.setValue(prop.getValue());
+        dto.setIsSecret(Boolean.TRUE.equals(prop.getIsSecret()));
+        if (Boolean.TRUE.equals(prop.getIsSecret())) {
+            dto.setValue(null);
+            dto.setHasValue(
+                    StringUtils.hasText(prop.getValueEncrypted()) ||
+                            StringUtils.hasText(prop.getValue())
+            );
+        } else {
+            dto.setValue(prop.getValue());
+            dto.setHasValue(StringUtils.hasText(prop.getValue()));
+        }
         return dto;
     }
 

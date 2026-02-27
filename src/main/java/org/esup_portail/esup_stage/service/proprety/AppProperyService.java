@@ -1,5 +1,6 @@
 package org.esup_portail.esup_stage.service.proprety;
 
+import jakarta.transaction.Transactional;
 import org.esup_portail.esup_stage.dto.ConfigTestResultDto;
 import org.esup_portail.esup_stage.dto.DocaposteTestRequestDto;
 import org.esup_portail.esup_stage.dto.EsupSignatureTestRequestDto;
@@ -8,6 +9,7 @@ import org.esup_portail.esup_stage.dto.ReferentielTestRequestDto;
 import org.esup_portail.esup_stage.dto.SireneTestRequestDto;
 import org.esup_portail.esup_stage.dto.WebhookTestRequestDto;
 import jakarta.mail.internet.MimeMessage;
+import org.esup_portail.esup_stage.enums.AppPropertySecretsKey;
 import org.esup_portail.esup_stage.model.AppProperty;
 import org.esup_portail.esup_stage.repository.AppPropertyJpaRepository;
 import org.esup_portail.esup_stage.service.apogee.ApogeeService;
@@ -27,15 +29,16 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.esup_portail.esup_stage.security.ServiceContext;
+import org.esup_portail.esup_stage.model.Utilisateur;
 
 @Service
 public class AppProperyService {
-    private static final DateTimeFormatter DB_DATETIME = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final Logger LOGGER = LoggerFactory.getLogger(AppProperyService.class);
 
     @Autowired
     private AppPropertyJpaRepository appPropertyJpaRepository;
@@ -45,6 +48,9 @@ public class AppProperyService {
 
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
+
+    @Autowired
+    private PropertyCryptoService propertyCryptoService;
 
     private final RestTemplate restTemplate = new RestTemplate();
 
@@ -60,28 +66,74 @@ public class AppProperyService {
                 continue;
             }
             String key = prop.getKey();
-            String value = prop.getValue();
             if (!StringUtils.hasText(key)) {
                 continue;
             }
+            String value = resolveValue(prop);
             if (!StringUtils.hasText(value)) {
-                continue; // null/blank => do not override .properties
+                continue;
             }
             overrides.put(key, value);
         }
         return overrides;
     }
 
+    @Transactional
     public void save(String key, String value) {
         if (!StringUtils.hasText(key)) {
             return;
         }
         AppProperty appProperty = appPropertyJpaRepository.findByKey(key);
-        appProperty.setValue(value);
-        String now = LocalDateTime.now().format(DB_DATETIME);
-        appProperty.setUpdatedAt(now);
+        if (appProperty == null) {
+            LOGGER.warn("Clé de configuration inconnue : {}", key);
+            return;
+        }
+
+        boolean secret = isSecretKey(key) || Boolean.TRUE.equals(appProperty.getIsSecret());
+
+        if (secret) {
+            appProperty.setIsSecret(true);
+            if (value == null) {
+                appProperty.setUpdatedAt(LocalDateTime.now());
+                appPropertyJpaRepository.save(appProperty);
+                applicationEventPublisher.publishEvent(new ConfigReloadEvent());
+                return;
+            }
+            if (StringUtils.hasText(value)) {
+                appProperty.setValueEncrypted(propertyCryptoService.encrypt(value));
+            } else {
+                appProperty.setValueEncrypted(null);
+            }
+            appProperty.setValue(null);
+        } else {
+            appProperty.setIsSecret(false);
+            appProperty.setValue(value);
+            appProperty.setValueEncrypted(null);
+        }
+
+        appProperty.setUpdatedAt(LocalDateTime.now());
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
+        if (utilisateur != null && StringUtils.hasText(utilisateur.getLogin())) {
+            appProperty.setUpdatedBy(utilisateur.getLogin());
+        }
         appPropertyJpaRepository.save(appProperty);
         applicationEventPublisher.publishEvent(new ConfigReloadEvent());
+    }
+
+    private boolean isSecretKey(String key) {
+        return AppPropertySecretsKey.isSecret(key);
+    }
+
+
+
+    private String resolveValue(AppProperty prop) {
+        if (prop.getIsSecret()) {
+            if (StringUtils.hasText(prop.getValueEncrypted())) {
+                return propertyCryptoService.decrypt(prop.getValueEncrypted());
+            }
+            return null;
+        }
+        return prop.getValue();
     }
 
     public ConfigTestResultDto testMailer(MailerTestRequestDto request) {

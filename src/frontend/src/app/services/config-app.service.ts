@@ -6,6 +6,8 @@ import { environment } from "../../environments/environment";
 export interface AppPropertyDto {
   key: string;
   value: string | null;
+  isSecret?: boolean | null;
+  hasValue: boolean | null;
 }
 
 export interface RequiredKeysResponse {
@@ -78,7 +80,7 @@ export class ConfigAppService {
     return this.http.get<AppPropertyDto[]>(`${this.baseUrl}/properties`);
   }
 
-  saveProperties(properties: AppPropertyDto[]): Observable<AppPropertyDto[]> {
+  saveProperties(properties: { key: string; value: string | null }[]): Observable<AppPropertyDto[]> {
     return this.http.post<AppPropertyDto[]>(`${this.baseUrl}/properties`, properties);
   }
 
