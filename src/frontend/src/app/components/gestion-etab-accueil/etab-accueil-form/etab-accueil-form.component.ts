@@ -690,7 +690,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   }
 
   isRaisonSocialeDisabled(): boolean {
-    return this.isFieldDisabled() && this.etab?.temSiren === true && this.etab?.temDiffusibleSirene === true;
+    return this.authService.isAdmin()? false : this.isFieldDisabled() && this.etab?.temSiren === true && this.etab?.temDiffusibleSirene === true;
   }
 
 
