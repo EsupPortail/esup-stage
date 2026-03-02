@@ -50,4 +50,6 @@ public class ConfigGeneraleDto {
 
     private boolean desactiverMajAutoEtabSelection = false;
 
+    private boolean modifRaisonSocialeGestionnaire = false;
+
 }

@@ -106,7 +106,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   creationSeulementHorsFrance : boolean = false;
   creationSeulementFrance : boolean = false;
   isMajAutoDisabled : boolean = false;
-
+  isModifRaisonSocialeGestionnaire : boolean = false;
   nafN5FilterCtrl: FormControl = new FormControl();
   filteredNafN5List: ReplaySubject<any> = new ReplaySubject<any>(1);
   paysFilterCtrl: FormControl = new FormControl('');
@@ -142,6 +142,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
       this.creationSeulementHorsFrance = autorisationCreationHorsFrance && !autorisationCreationFrance;
       this.creationSeulementFrance = !autorisationCreationHorsFrance && autorisationCreationFrance
       this.isMajAutoDisabled = response.desactiverMajAutoEtabSelection;
+      this.isModifRaisonSocialeGestionnaire = response.modifRaisonSocialeGestionnaire;
     })
     this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({ temEnServPays: { value: 'O', type: 'text' } })).subscribe((response: any) => {
         this.countries = response.data;
@@ -690,7 +691,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   }
 
   isRaisonSocialeDisabled(): boolean {
-    return this.authService.isAdmin()? false : this.isFieldDisabled() && this.etab?.temSiren === true && this.etab?.temDiffusibleSirene === true;
+    return !(this.authService.isAdmin() || (this.authService.isGestionnaire() && this.isModifRaisonSocialeGestionnaire)) && this.isFieldDisabled() && this.etab?.temSiren === true && this.etab?.temDiffusibleSirene === true;
   }
 
 
