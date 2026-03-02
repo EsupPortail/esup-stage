@@ -41,8 +41,12 @@ export class ConfigMissingPageComponent implements OnInit {
   testEsupSign:    TestState = emptyTest();
 
   show: Record<string, boolean> = {};
+  copiedTokens = false;
 
   private readonly secretKeys = new Set<string>();
+  private secretMeta: Record<string, { isSecret: boolean; hasValue: boolean }> = {};
+  private editingSecrets: Record<string, boolean> = {};
+  private initialValues: Record<string, unknown> = {};
 
   private readonly REQUIRED_KEYS = [
     'referentiel.ws.login',
@@ -50,6 +54,10 @@ export class ConfigMissingPageComponent implements OnInit {
     'referentiel.ws.ldap_url',
     'referentiel.ws.apogee_url',
   ];
+
+  private readonly REQUIRED_FIELDS = new Set([
+    'referentiel_ws_password',
+  ]);
 
   private readonly FIELD_TO_KEY: Record<string, string> = {
     appli_url: 'appli.url',
@@ -175,6 +183,9 @@ export class ConfigMissingPageComponent implements OnInit {
     if (!this.missingKeys.includes(key)) {
       return false;
     }
+    if (this.isSecretSet(key) && !this.isEditingSecret(key)) {
+      return false;
+    }
     const field = this.KEY_TO_FIELD[key];
     if (!field) {
       return true;
@@ -187,12 +198,60 @@ export class ConfigMissingPageComponent implements OnInit {
     return value === null || value === undefined || value === '';
   }
 
+  isSecretSet(key: string): boolean {
+    return !!this.secretMeta[key]?.hasValue;
+  }
+
+  isEditingSecret(key: string): boolean {
+    return !!this.editingSecrets[key];
+  }
+
+  startEditSecret(key: string): void {
+    this.editingSecrets[key] = true;
+    const field = this.KEY_TO_FIELD[key];
+    if (field && this.REQUIRED_FIELDS.has(field)) {
+      const ctrl = this.configForm.get(field);
+      ctrl?.setValidators(Validators.required);
+      ctrl?.updateValueAndValidity();
+    }
+  }
+
+  cancelEditSecret(key: string): void {
+    this.editingSecrets[key] = false;
+    const field = this.KEY_TO_FIELD[key];
+    if (field) {
+      const ctrl = this.configForm.get(field);
+      ctrl?.setValue(null);
+      if (this.REQUIRED_FIELDS.has(field)) {
+        ctrl?.clearValidators();
+        ctrl?.updateValueAndValidity();
+      }
+    }
+  }
+
   isShown(key: string): boolean {
     return !!this.show[key];
   }
 
   toggleShown(key: string): void {
     this.show[key] = !this.show[key];
+  }
+
+  copyTokens(): void {
+    const value = this.configForm.get('appli_tokens')?.value;
+    if (!value) {
+      return;
+    }
+    const text = String(value);
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(text).then(() => {
+        this.copiedTokens = true;
+        setTimeout(() => this.copiedTokens = false, 1500);
+      });
+      return;
+    }
+    this.copiedTokens = true;
+    setTimeout(() => this.copiedTokens = false, 1500);
   }
 
   isMailerTestable(): boolean {
@@ -436,48 +495,39 @@ export class ConfigMissingPageComponent implements OnInit {
   }
 
   buildAppPropertyPayload(): { key: string; value: string | null }[] {
-    const v = this.configForm.value;
-    const payload: Record<string, string | null> = {
-      'appli.url':                        v.appli_url ?? null,
-      'appli.tokens':                     v.appli_tokens ?? null,
-      'appli.jwt_secret':                 v.appli_jwt_secret ?? null,
-      'appli.nb_jours_valide_token':      v.appli_nb_jours_valide_token?.toString() ?? null,
-      'appli.mailer.protocol':            v.appli_mailer_protocol ?? null,
-      'appli.mailer.host':                v.appli_mailer_host ?? null,
-      'appli.mailer.port':                v.appli_mailer_port?.toString() ?? null,
-      'appli.mailer.auth':                v.appli_mailer_auth || null,
-      'appli.mailer.username':            v.appli_mailer_username ?? null,
-      'appli.mailer.password':            v.appli_mailer_password ?? null,
-      'appli.mailer.from':                v.appli_mailer_from ?? null,
-      'appli.mailer.disable_delivery':    String(v.appli_mailer_disable_delivery),
-      'appli.mailer.delivery_address':    v.appli_mailer_delivery_address ?? null,
-      'referentiel.ws.login':             v.referentiel_ws_login ?? null,
-      'referentiel.ws.password':          v.referentiel_ws_password ?? null,
-      'referentiel.ws.ldap_url':          v.referentiel_ws_ldap_url ?? null,
-      'referentiel.ws.apogee_url':        v.referentiel_ws_apogee_url ?? null,
-      'webhook.signature.uri':            v.webhook_signature_uri ?? null,
-      'webhook.signature.token':          v.webhook_signature_token ?? null,
-      'docaposte.uri':                    v.docaposte_uri ?? null,
-      'docaposte.siren':                  v.docaposte_siren ?? null,
-      'docaposte.keystore.path':          v.docaposte_keystore_path ?? null,
-      'docaposte.keystore.password':      v.docaposte_keystore_password ?? null,
-      'docaposte.truststore.path':        v.docaposte_truststore_path ?? null,
-      'docaposte.truststore.password':    v.docaposte_truststore_password ?? null,
-      'esupsignature.uri':                v.esupsignature_uri ?? null,
-      'esupsignature.circuit':            v.esupsignature_circuit ?? null,
-      'sirene.url':                       v.sirene_url ?? null,
-      'sirene.token':                     v.sirene_token ?? null,
-      'sirene.nombre_minimum_resultats':  v.sirene_nombre_minimum_resultats?.toString() ?? null,
-      'appli.footer.github':              v.appli_footer_github ?? null,
-      'appli.footer.site':                v.appli_footer_site ?? null,
-      'appli.footer.support':             v.appli_footer_support ?? null,
-      'appli.footer.wiki':                v.appli_footer_wiki ?? null,
-    };
+    const current = this.configForm.getRawValue();
+    const updates: { key: string; value: string | null }[] = [];
 
-    return Object.entries(payload).map(([key, value]) => ({
-      key,
-      value: value,
-    }));
+    for (const [field, key] of Object.entries(this.FIELD_TO_KEY)) {
+      const ctrl = this.configForm.get(field);
+      const currentValue = this.normalizeFieldValue(field, current[field]);
+      const initialValue = this.normalizeFieldValue(field, this.initialValues[field]);
+
+      const isSecret = !!this.secretMeta[key]?.isSecret;
+      const isSet = this.isSecretSet(key);
+      const isEditing = this.isEditingSecret(key);
+
+      if (isSecret) {
+        if (isSet && !isEditing) {
+          continue;
+        }
+        if (currentValue === null) {
+          continue;
+        }
+        updates.push({ key, value: currentValue });
+        continue;
+      }
+
+      if (ctrl && !ctrl.dirty && currentValue === initialValue) {
+        continue;
+      }
+      if (currentValue === initialValue) {
+        continue;
+      }
+      updates.push({ key, value: currentValue });
+    }
+
+    return updates;
   }
 
   private loadMissingKeys(afterSave = false): void {
@@ -501,13 +551,32 @@ export class ConfigMissingPageComponent implements OnInit {
       next: (properties) => {
         const values = this.mapPropertiesToForm(properties || []);
         this.configForm.patchValue(values, { emitEvent: false });
+        this.configForm.markAsPristine();
+        this.initialValues = this.configForm.getRawValue();
       },
       error: () => {}
     });
   }
 
+  private normalizeFieldValue(field: string, rawValue: unknown): string | null {
+    if (rawValue === undefined || rawValue === null || rawValue === '') {
+      return null;
+    }
+    switch (field) {
+      case 'appli_mailer_disable_delivery':
+        return String(!!rawValue);
+      case 'appli_mailer_port':
+      case 'appli_nb_jours_valide_token':
+      case 'sirene_nombre_minimum_resultats':
+        return rawValue !== null ? String(rawValue) : null;
+      default:
+        return String(rawValue);
+    }
+  }
   private mapPropertiesToForm(properties: AppPropertyDto[]): Record<string, unknown> {
     this.secretKeys.clear();
+    this.secretMeta = {};
+    this.editingSecrets = {};
     const map: Record<string, string | null> = {};
     for (const prop of properties) {
       if (!prop || !prop.key) {
@@ -515,8 +584,10 @@ export class ConfigMissingPageComponent implements OnInit {
       }
       if (prop.isSecret) {
         this.secretKeys.add(prop.key);
-        map[prop.key] = prop.hasValue ? 'UNCHANGED' : null;
+        this.secretMeta[prop.key] = { isSecret: true, hasValue: !!prop.hasValue };
+        map[prop.key] = null;
       } else {
+        this.secretMeta[prop.key] = { isSecret: false, hasValue: !!prop.hasValue };
         map[prop.key] = prop.value ?? null;
       }
     }
@@ -538,6 +609,16 @@ export class ConfigMissingPageComponent implements OnInit {
       }
     });
 
+    Object.entries(this.FIELD_TO_KEY).forEach(([field, key]) => {
+      if (this.secretMeta[key]?.isSecret && this.secretMeta[key]?.hasValue) {
+        const ctrl = this.configForm?.get(field);
+        if (ctrl && this.REQUIRED_FIELDS.has(field)) {
+          ctrl.clearValidators();
+          ctrl.updateValueAndValidity();
+        }
+      }
+    });
+
     return formValues;
   }
 
@@ -549,7 +630,12 @@ export class ConfigMissingPageComponent implements OnInit {
     }
 
     const payload = this.buildAppPropertyPayload();
-    this.configAppService.saveProperties(payload).subscribe({
+    if (payload.length === 0) {
+      this.savedSuccess = true;
+      setTimeout(() => this.savedSuccess = false, 2000);
+      return;
+    }
+    this.configAppService.updateProperties(payload).subscribe({
       next: () => {
         this.savedSuccess = true;
         setTimeout(() => this.savedSuccess = false, 4000);

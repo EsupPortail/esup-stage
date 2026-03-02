@@ -1,4 +1,4 @@
-<div class="config-missing-container">
+﻿<div class="config-missing-container">
 
   <div class="missing-banner" *ngIf="displayMissingKeys.length > 0">
     <div class="missing-banner__icon">⚠</div>
@@ -30,17 +30,39 @@
   <div class="fields-grid">
     <div class="field" [class.field--missing]="isMissing('appli.tokens')">
       <label for="appli_tokens">Tokens</label>
-      <input id="appli_tokens" type="text" formControlName="appli_tokens"
-             placeholder="token1,token2,..." />
+      <div class="input-pwd">
+        <input [type]="isShown('tokens') ? 'text' : 'password'" id="appli_tokens"
+               formControlName="appli_tokens" placeholder="token1,token2,..." />
+        <button type="button" class="pwd-toggle" (click)="toggleShown('tokens')"
+                [attr.aria-label]="isShown('tokens') ? 'Masquer' : 'Afficher'">
+          <svg *ngIf="!isShown('tokens')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg *ngIf="isShown('tokens')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+        </button>
+        <button type="button" class="pwd-toggle pwd-copy" mat-icon-button (click)="copyTokens()" aria-label="Copier">
+          <mat-icon>content_copy</mat-icon>
+        </button>
+      </div>
+      <span class="hint" *ngIf="copiedTokens">Copié</span>
     </div>
     <div class="field" [class.field--missing]="isMissing('appli.jwt_secret')">
       <label for="appli_jwt_secret">Secret JWT</label>
-      <ng-container *ngTemplateOutlet="pwdField; context: {
-        id: 'appli_jwt_secret',
-        control: 'appli_jwt_secret',
-        showKey: 'jwt',
-        placeholder: '••••••••••••'
-      }"></ng-container>
+      <div *ngIf="isSecretSet('appli.jwt_secret') && !isEditingSecret('appli.jwt_secret'); else editJwt">
+        <div class="input-pwd input-pwd--readonly">
+          <input type="text" value="Valeur renseignée" readonly />
+          <button type="button" class="pwd-toggle" mat-icon-button (click)="startEditSecret('appli.jwt_secret')" aria-label="Modifier">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </div>
+      </div>
+      <ng-template #editJwt>
+        <ng-container *ngTemplateOutlet="pwdField; context: {
+          id: 'appli_jwt_secret',
+          control: 'appli_jwt_secret',
+          showKey: 'jwt',
+          placeholder: '••••••••••••'
+        }"></ng-container>
+        <button *ngIf="isSecretSet('appli.jwt_secret')" type="button" class="pwd-toggle" (click)="cancelEditSecret('appli.jwt_secret')">Annuler</button>
+      </ng-template>
     </div>
     <div class="field" [class.field--missing]="isMissing('appli.nb_jours_valide_token')">
       <label for="appli_nb_jours">Durée validité token <span class="hint">(jours)</span></label>
@@ -84,15 +106,26 @@
         <input id="mailer_username" type="text" formControlName="appli_mailer_username"
                placeholder="username@domaine.com" />
       </div>
-      <div class="field">
-        <label for="mailer_password">Mot de passe SMTP</label>
+      <div class="field" [class.field--missing]="isMissing('appli.mailer.password')">
+      <label for="mailer_password">Mot de passe SMTP</label>
+      <div *ngIf="isSecretSet('appli.mailer.password') && !isEditingSecret('appli.mailer.password'); else edit_mailer_password">
+        <div class="input-pwd input-pwd--readonly">
+          <input type="text" value="Valeur renseignée" readonly />
+          <button type="button" class="pwd-toggle" mat-icon-button (click)="startEditSecret('appli.mailer.password')" aria-label="Modifier">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </div>
+      </div>
+      <ng-template #edit_mailer_password>
         <ng-container *ngTemplateOutlet="pwdField; context: {
           id: 'mailer_password',
           control: 'appli_mailer_password',
           showKey: 'smtp',
           placeholder: '••••••••••••'
         }"></ng-container>
-      </div>
+        <button *ngIf="isSecretSet('appli.mailer.password')" type="button" class="pwd-toggle" (click)="cancelEditSecret('appli.mailer.password')">Annuler</button>
+      </ng-template>
+    </div>
       <div class="field" [class.field--missing]="isMissing('appli.mailer.from')">
         <label for="mailer_from">Expéditeur <span class="hint">(From)</span></label>
         <input id="mailer_from" type="email" formControlName="appli_mailer_from"
@@ -140,7 +173,7 @@
       </div>
     </div>
 
-    <!-- ── RÉFÉRENTIEL WS ── -->
+        <!-- ── RÉFÉRENTIEL WS ── -->
     <div class="form-section__header">
       <h2>Référentiel WS <span class="required-badge">Requis</span></h2>
     </div>
@@ -155,12 +188,23 @@
       <div class="field" [class.field--error]="isInvalid('referentiel_ws_password')"
            [class.field--missing]="isMissing('referentiel.ws.password')">
         <label for="ref_password">Mot de passe <span class="asterisk">*</span></label>
-        <ng-container *ngTemplateOutlet="pwdField; context: {
-          id: 'ref_password',
-          control: 'referentiel_ws_password',
-          showKey: 'ref',
-          placeholder: '••••••••••••'
-        }"></ng-container>
+        <div *ngIf="isSecretSet('referentiel.ws.password') && !isEditingSecret('referentiel.ws.password'); else edit_ref_password">
+          <div class="input-pwd input-pwd--readonly">
+            <input type="text" value="Valeur renseignée" readonly />
+            <button type="button" class="pwd-toggle" mat-icon-button (click)="startEditSecret('referentiel.ws.password')" aria-label="Modifier">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </div>
+        </div>
+        <ng-template #edit_ref_password>
+          <ng-container *ngTemplateOutlet="pwdField; context: {
+            id: 'ref_password',
+            control: 'referentiel_ws_password',
+            showKey: 'ref',
+            placeholder: '••••••••••••'
+          }"></ng-container>
+          <button *ngIf="isSecretSet('referentiel.ws.password')" type="button" class="pwd-toggle" (click)="cancelEditSecret('referentiel.ws.password')">Annuler</button>
+        </ng-template>
         <span class="error-msg" *ngIf="isInvalid('referentiel_ws_password')">Champ obligatoire</span>
       </div>
       <div class="field full" [class.field--error]="isInvalid('referentiel_ws_ldap_url')"
@@ -209,14 +253,25 @@
                placeholder="https://webhook.domaine.fr/sign" />
       </div>
       <div class="field" [class.field--missing]="isMissing('webhook.signature.token')">
-        <label for="webhook_token">Token</label>
+      <label for="webhook_token">Token</label>
+      <div *ngIf="isSecretSet('webhook.signature.token') && !isEditingSecret('webhook.signature.token'); else edit_webhook_token">
+        <div class="input-pwd input-pwd--readonly">
+          <input type="text" value="Valeur renseignée" readonly />
+          <button type="button" class="pwd-toggle" mat-icon-button (click)="startEditSecret('webhook.signature.token')" aria-label="Modifier">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </div>
+      </div>
+      <ng-template #edit_webhook_token>
         <ng-container *ngTemplateOutlet="pwdField; context: {
           id: 'webhook_token',
           control: 'webhook_signature_token',
           showKey: 'webhook',
           placeholder: '••••••••••••'
         }"></ng-container>
-      </div>
+        <button *ngIf="isSecretSet('webhook.signature.token')" type="button" class="pwd-toggle" (click)="cancelEditSecret('webhook.signature.token')">Annuler</button>
+      </ng-template>
+    </div>
     </div>
     <!-- Test Webhook -->
     <div class="test-bar">
@@ -259,28 +314,50 @@
                placeholder="C:\\path\\keystore.p12" />
       </div>
       <div class="field" [class.field--missing]="isMissing('docaposte.keystore.password')">
-        <label for="docaposte_keystore_password">Keystore password</label>
+      <label for="docaposte_keystore_password">Keystore password</label>
+      <div *ngIf="isSecretSet('docaposte.keystore.password') && !isEditingSecret('docaposte.keystore.password'); else edit_docaposte_keystore_password">
+        <div class="input-pwd input-pwd--readonly">
+          <input type="text" value="Valeur renseignée" readonly />
+          <button type="button" class="pwd-toggle" mat-icon-button (click)="startEditSecret('docaposte.keystore.password')" aria-label="Modifier">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </div>
+      </div>
+      <ng-template #edit_docaposte_keystore_password>
         <ng-container *ngTemplateOutlet="pwdField; context: {
           id: 'docaposte_keystore_password',
           control: 'docaposte_keystore_password',
           showKey: 'docaposte_keystore',
           placeholder: '••••••••'
         }"></ng-container>
-      </div>
+        <button *ngIf="isSecretSet('docaposte.keystore.password')" type="button" class="pwd-toggle" (click)="cancelEditSecret('docaposte.keystore.password')">Annuler</button>
+      </ng-template>
+    </div>
       <div class="field" [class.field--missing]="isMissing('docaposte.truststore.path')">
         <label for="docaposte_truststore_path">Truststore path</label>
         <input id="docaposte_truststore_path" type="text" formControlName="docaposte_truststore_path"
                placeholder="C:\\path\\truststore.jks" />
       </div>
       <div class="field" [class.field--missing]="isMissing('docaposte.truststore.password')">
-        <label for="docaposte_truststore_password">Truststore password</label>
+      <label for="docaposte_truststore_password">Truststore password</label>
+      <div *ngIf="isSecretSet('docaposte.truststore.password') && !isEditingSecret('docaposte.truststore.password'); else edit_docaposte_truststore_password">
+        <div class="input-pwd input-pwd--readonly">
+          <input type="text" value="Valeur renseignée" readonly />
+          <button type="button" class="pwd-toggle" mat-icon-button (click)="startEditSecret('docaposte.truststore.password')" aria-label="Modifier">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </div>
+      </div>
+      <ng-template #edit_docaposte_truststore_password>
         <ng-container *ngTemplateOutlet="pwdField; context: {
           id: 'docaposte_truststore_password',
           control: 'docaposte_truststore_password',
           showKey: 'docaposte_truststore',
           placeholder: '••••••••'
         }"></ng-container>
-      </div>
+        <button *ngIf="isSecretSet('docaposte.truststore.password')" type="button" class="pwd-toggle" (click)="cancelEditSecret('docaposte.truststore.password')">Annuler</button>
+      </ng-template>
+    </div>
     </div>
     <div class="test-bar">
       <button type="button" class="valid-button execute-button" mat-mini-fab
@@ -347,14 +424,25 @@
                placeholder="https://api.insee.fr/entreprises/sirene/V3" />
       </div>
       <div class="field" [class.field--missing]="isMissing('sirene.token')">
-        <label for="sirene_token">Token INSEE</label>
+      <label for="sirene_token">Token INSEE</label>
+      <div *ngIf="isSecretSet('sirene.token') && !isEditingSecret('sirene.token'); else edit_sirene_token">
+        <div class="input-pwd input-pwd--readonly">
+          <input type="text" value="Valeur renseignée" readonly />
+          <button type="button" class="pwd-toggle" mat-icon-button (click)="startEditSecret('sirene.token')" aria-label="Modifier">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </div>
+      </div>
+      <ng-template #edit_sirene_token>
         <ng-container *ngTemplateOutlet="pwdField; context: {
           id: 'sirene_token',
           control: 'sirene_token',
           showKey: 'sirene',
           placeholder: '••••••••••••'
         }"></ng-container>
-      </div>
+        <button *ngIf="isSecretSet('sirene.token')" type="button" class="pwd-toggle" (click)="cancelEditSecret('sirene.token')">Annuler</button>
+      </ng-template>
+    </div>
       <div class="field" [class.field--missing]="isMissing('sirene.nombre_minimum_resultats')">
         <label for="sirene_min">Résultats minimum</label>
         <input id="sirene_min" type="number" formControlName="sirene_nombre_minimum_resultats"
@@ -444,7 +532,3 @@
 
   </form>
 </div>
-
-
-
-

@@ -38,7 +38,4 @@ public class ConfigMissingService {
         return !getMissingKeys().isEmpty();
     }
 
-    public List<String> getRequiredKeys() {
-        return Collections.unmodifiableList(REQUIRED_KEYS);
-    }
 }

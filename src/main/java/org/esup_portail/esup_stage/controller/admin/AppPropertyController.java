@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,13 +47,6 @@ public class AppPropertyController {
         return Map.of("missing", configMissingService.getMissingKeys());
     }
 
-    @GetMapping("/required-keys")
-    @Secure
-    public Map<String, List<String>> getRequiredKeys() {
-        requireAdmin();
-        return Map.of("required", configMissingService.getRequiredKeys());
-    }
-
     @GetMapping("/properties")
     @Secure
     public List<AppPropertyDto> getAllProperties() {
@@ -61,13 +55,15 @@ public class AppPropertyController {
         return properties.stream().map(this::toDto).collect(Collectors.toList());
     }
 
-    @PostMapping("/properties")
+    @PutMapping("/properties")
     @Secure
-    public List<AppPropertyDto> saveProperties(@RequestBody List<AppPropertyDto> properties) {
+    public List<AppPropertyDto> updateProperties(@RequestBody List<AppPropertyDto> properties) {
         requireAdmin();
         if (properties != null) {
             for (AppPropertyDto dto : properties) {
-                if (dto == null) continue;
+                if (dto == null || !StringUtils.hasText(dto.getKey())) {
+                    continue;
+                }
                 appProperyService.save(dto.getKey(), dto.getValue());
             }
         }

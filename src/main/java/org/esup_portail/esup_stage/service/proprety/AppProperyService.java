@@ -30,6 +30,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Predicate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +60,10 @@ public class AppProperyService {
     }
 
     public Map<String, String> getOverrides() {
+        return getOverrides(key -> false);
+    }
+
+    public Map<String, String> getOverrides(Predicate<String> skipKey) {
         List<AppProperty> props = appPropertyJpaRepository.findAll();
         Map<String, String> overrides = new LinkedHashMap<>();
         for (AppProperty prop : props) {
@@ -67,6 +72,9 @@ public class AppProperyService {
             }
             String key = prop.getKey();
             if (!StringUtils.hasText(key)) {
+                continue;
+            }
+            if (skipKey != null && skipKey.test(key)) {
                 continue;
             }
             String value = resolveValue(prop);

@@ -272,7 +272,7 @@ select {
   position: relative;
 
   input {
-    padding-right: 40px;
+    padding-right: 72px;
   }
 }
 
@@ -297,6 +297,10 @@ select {
     height: 16px;
     display: block;
   }
+}
+
+.pwd-copy {
+  right: 40px;
 }
 
 // ── Toggle switch ──────────────────────────────────────────────

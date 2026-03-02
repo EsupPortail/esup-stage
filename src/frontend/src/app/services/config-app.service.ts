@@ -80,12 +80,8 @@ export class ConfigAppService {
     return this.http.get<AppPropertyDto[]>(`${this.baseUrl}/properties`);
   }
 
-  saveProperties(properties: { key: string; value: string | null }[]): Observable<AppPropertyDto[]> {
-    return this.http.post<AppPropertyDto[]>(`${this.baseUrl}/properties`, properties);
-  }
-
-  getRequiredKeys(): Observable<RequiredKeysResponse> {
-    return this.http.get<RequiredKeysResponse>(`${this.baseUrl}/required-keys`);
+  updateProperties(properties: { key: string; value: string | null }[]): Observable<AppPropertyDto[]> {
+    return this.http.put<AppPropertyDto[]>(`${this.baseUrl}/properties`, properties);
   }
 
   getMissingKeys(): Observable<MissingKeysResponse> {
