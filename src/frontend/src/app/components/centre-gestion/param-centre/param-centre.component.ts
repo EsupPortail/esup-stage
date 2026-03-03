@@ -106,13 +106,11 @@ export class ParamCentreComponent implements OnInit, OnDestroy {
     this.form.get('qualiteViseur')?.valueChanges.pipe(debounceTime(500)).subscribe((val) => {
       if (this.form.get('qualiteViseur')?.dirty) {
         this.centreGestion.qualiteViseur = val;
-        this.update.emit(this.form.getRawValue());
       }
     });
     this.form.get('qualiteDelegataireViseur')?.valueChanges.pipe(debounceTime(500)).subscribe((val) => {
       if (this.form.get('qualiteDelegataireViseur')?.dirty) {
         this.centreGestion.qualiteDelegataireViseur = val;
-        this.update.emit(this.form.getRawValue());
       }
     });
     this.delegataireForm.valueChanges.pipe(debounceTime(1000)).subscribe(() => {

@@ -210,7 +210,7 @@ export class CentreGestionComponent implements OnInit,OnDestroy {
     );
 
     this.subscriptions.push(
-      this.paramCentreForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
+      this.paramCentreForm.valueChanges.pipe(debounceTime(1500)).subscribe(val => {
         this.setCentreGestionParamCentre();
         this.update();
       })
