@@ -270,10 +270,52 @@ select {
 // ── Champ mot de passe ─────────────────────────────────────────
 .input-pwd {
   position: relative;
+  display: flex;
+  align-items: center;
 
   input {
-    padding-right: 72px;
+    padding-right: 44px;
+    flex: 1;
+    width: 100%;
   }
+
+  &.has-copy input {
+    padding-right: 84px;
+  }
+
+  &--readonly input {
+    padding-right: 44px;
+    color: #6b7280;
+    background: #f9fafb;
+  }
+}
+
+.pwd-toggle {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: $text-muted;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  transition: color $transition;
+
+  &:hover { color: $text; }
+
+  svg { width: 16px; height: 16px; display: block; pointer-events: none; }
+  mat-icon { font-size: 18px; width: 18px; height: 18px; line-height: 1; }
+}
+
+.pwd-copy {
+  right: 40px;   // 6px + 32px (bouton œil) + 2px gap
 }
 
 .pwd-toggle {

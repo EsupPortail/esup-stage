@@ -239,19 +239,35 @@ export class ConfigMissingPageComponent implements OnInit {
 
   copyTokens(): void {
     const value = this.configForm.get('appli_tokens')?.value;
-    if (!value) {
-      return;
-    }
+    if (!value) return;
     const text = String(value);
+
     if (navigator?.clipboard?.writeText) {
-      navigator.clipboard.writeText(text).then(() => {
-        this.copiedTokens = true;
-        setTimeout(() => this.copiedTokens = false, 1500);
-      });
+      navigator.clipboard.writeText(text).then(
+        () => this.flashCopied(),
+        () => this.fallbackCopy(text)
+      );
       return;
     }
+    this.fallbackCopy(text);
+  }
+
+  private fallbackCopy(text: string): void {
+    const el = document.createElement('textarea');
+    el.value = text;
+    el.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
+    document.body.appendChild(el);
+    el.select();
+    try {
+      document.execCommand('copy');
+      this.flashCopied();
+    } catch { }
+    finally { document.body.removeChild(el); }
+  }
+
+  private flashCopied(): void {
     this.copiedTokens = true;
-    setTimeout(() => this.copiedTokens = false, 1500);
+    setTimeout(() => (this.copiedTokens = false), 1800);
   }
 
   isMailerTestable(): boolean {

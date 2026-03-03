@@ -13,7 +13,7 @@
 
   <form [formGroup]="configForm" (ngSubmit)="onSubmit()" novalidate>
   <ng-template #pwdField let-id="id" let-control="control" let-showKey="showKey" let-placeholder="placeholder">
-    <div class="input-pwd">
+    <div class="input-pwd has-copy">
       <input [type]="isShown(showKey) ? 'text' : 'password'" [id]="id"
              [formControlName]="control" [placeholder]="placeholder" />
       <button type="button" class="pwd-toggle" (click)="toggleShown(showKey)"
