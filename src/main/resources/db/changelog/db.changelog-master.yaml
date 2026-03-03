@@ -324,3 +324,6 @@ databaseChangeLog:
   - include:
         file: 3.2.0-declaration-accessibilite.yaml
         relativeToChangelogFile: true
+  - include:
+        file: 3.2.0-fix-statut-juridique-modifiable.yaml
+        relativeToChangelogFile: true
