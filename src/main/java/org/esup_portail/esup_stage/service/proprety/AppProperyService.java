@@ -31,6 +31,7 @@ import org.springframework.web.client.RestTemplate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,7 @@ import org.esup_portail.esup_stage.model.Utilisateur;
 @Service
 public class AppProperyService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AppProperyService.class);
+    private final AtomicBoolean decryptUnavailableLogged = new AtomicBoolean(false);
 
     @Autowired
     private AppPropertyJpaRepository appPropertyJpaRepository;
@@ -137,7 +139,11 @@ public class AppProperyService {
     private String resolveValue(AppProperty prop) {
         if (prop.getIsSecret()) {
             if (StringUtils.hasText(prop.getValueEncrypted())) {
-                return propertyCryptoService.decrypt(prop.getValueEncrypted());
+                String decrypted = propertyCryptoService.decrypt(prop.getValueEncrypted());
+                if (decrypted == null && decryptUnavailableLogged.compareAndSet(false, true)) {
+                    LOGGER.error("Secrets chiffres presents mais non lisibles (cle absente ou invalide)");
+                }
+                return decrypted;
             }
             return null;
         }
