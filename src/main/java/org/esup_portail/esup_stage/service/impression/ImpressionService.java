@@ -27,6 +27,7 @@ import org.esup_portail.esup_stage.repository.TemplateConventionJpaRepository;
 import org.esup_portail.esup_stage.service.ConventionService;
 import org.esup_portail.esup_stage.service.impression.context.ImpressionContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.system.ApplicationTemp;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
@@ -134,8 +135,8 @@ public class ImpressionService {
     }
 
     public void generatePDF(String texte, String filename, ImageData imageData, ByteArrayOutputStream ou, boolean isEvaluation) {
-        String tempFilePath = this.getClass().getResource("/templates").getPath();
-        String tempFile = tempFilePath + "temp_" + filename;
+        File tempFilePath = new ApplicationTemp().getDir("templates");
+        File tempFile = new File(tempFilePath, "temp_" + filename);
         FileOutputStream fop = null;
         Date dateGeneration = new Date();
         try {
@@ -156,9 +157,8 @@ public class ImpressionService {
         } finally {
             try {
                 if (fop != null) {
-                    File file = new File(tempFile);
                     fop.close();
-                    file.delete();
+                    tempFile.delete();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -284,7 +284,7 @@ public class ImpressionService {
         }
 
         String htmlTexte = getDefaultText("/templates/template_style.html");
-        htmlTexte = htmlTexte.replaceAll("__project_fonts_dir__", this.getClass().getResource("/static/fonts/").getPath());
+        htmlTexte = htmlTexte.replaceAll("__project_fonts_dir__", "classpath:/static/fonts/");
 
         if (isRecap) {
             htmlTexte += getDefaultText("/templates/template_recapitulatif.html");
