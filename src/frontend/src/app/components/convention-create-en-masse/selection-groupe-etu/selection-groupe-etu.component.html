@@ -114,17 +114,24 @@
             </mat-form-field>
             <mat-form-field class="col-sm-12 col-md-8 mb-2" appearance="fill">
               <mat-label>Étape</mat-label>
-              <mat-select formControlName="etape" required>
-                <mat-option *ngFor="let etape of etapeList" [value]="etape">
-                  {{etape.etape.codeEtp + '-' + etape.etape.codVrsVet + ' ' + etape.etape.libWebVet + ' (' + etape.diplome.codeDiplome + '-' + etape.diplome.versionDiplome + ' ' + etape.diplome.libDiplome + ')'}}
-                </mat-option>
-              </mat-select>
+              <input type="test" matInput formControlName="etape" required [matAutocomplete]="autoEtapes">
+              <mat-autocomplete #autoEtapes="matAutocomplete" [displayWith]="displayEtape">
+                @for (diplome of filteredEtapes$ | async; track diplome.codeDiplome + '-' + diplome.versionDiplome) {
+                <mat-optgroup [label]="diplome.codeDiplome + '-' + diplome.versionDiplome + ' ' + diplome.libDiplome">
+                  <mat-option *ngFor="let etape of diplome.listeEtapes" [value]="{diplome,etape}">
+                    {{displayEtape({diplome,etape})}}
+                  </mat-option>
+                </mat-optgroup>
+                } @empty {
+                <mat-option disabled><em>aucune étape</em></mat-option>
+                }
+              </mat-autocomplete>
             </mat-form-field>
           </div>
           <div class="row">
             <div class="col-12 text-right">
               <button type="button" mat-button mat-stroked-button (click)="resetFilters()">Supprimer les filtres</button>
-              <button type="submit" mat-button mat-flat-button color="primary" class="ml-2">Rechercher</button>
+              <button type="submit" [disabled]="formAddEtudiants.invalid" mat-button mat-flat-button color="primary" class="ml-2">Rechercher</button>
             </div>
           </div>
         </form>
@@ -167,18 +174,18 @@
         <ng-container matColumnDef="ufr.libelle">
           <th mat-header-cell *matHeaderCellDef>UFR</th>
           <td mat-cell *matCellDef="let row">
-            {{formAddEtudiants.get('composante')?.value}}
+            {{row.codeComposante}}
           </td>
         </ng-container>
         <ng-container matColumnDef="etape.libelle">
           <th mat-header-cell *matHeaderCellDef>Étape d'étude</th>
           <td mat-cell *matCellDef="let row">
-            {{formAddEtudiants.get('etape')?.value.etape.codeEtp + '-' + formAddEtudiants.get('etape')?.value.etape.codVrsVet}}
+            {{row.codeEtape}}-{{row.versionEtape}}
           </td>
         </ng-container>
         <ng-container matColumnDef="annee">
           <th mat-header-cell *matHeaderCellDef>Année univ.</th>
-          <td mat-cell *matCellDef="let row">{{formAddEtudiants.get('annee')?.value}}</td>
+          <td mat-cell *matCellDef="let row">{{row.annee}}</td>
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="columns"></tr>

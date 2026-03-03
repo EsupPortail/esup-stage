@@ -134,6 +134,9 @@ public class Structure extends ObjetMetier implements Exportable {
     @Column
     private boolean verrouillageSynchroStructureSirene;
 
+    @Column
+    private boolean temDiffusibleSirene;
+
     public Structure() {
     }
 

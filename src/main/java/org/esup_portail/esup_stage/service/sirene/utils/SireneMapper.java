@@ -92,6 +92,10 @@ public class SireneMapper {
         structure.setEstValidee(false);
         structure.setTemEnServStructure(true);
         structure.setTemSiren(true);
+        structure.setTemDiffusibleSirene(isDiffusionComplete(etablissement));
+        if (!structure.isTemDiffusibleSirene()) {
+            structure.setVerrouillageSynchroStructureSirene(true);
+        }
 
         return structure;
     }
@@ -400,5 +404,13 @@ public class SireneMapper {
         }
 
         return resultat;
+    }
+
+    private boolean isDiffusionComplete(SirenResponse.EtablissementSiren etab) {
+        if (etab.getUniteLegale() == null) {
+            return false;
+        }
+        String statut = etab.getUniteLegale().getStatutDiffusionUniteLegale();
+        return "O".equalsIgnoreCase(statut);
     }
 }
