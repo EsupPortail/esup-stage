@@ -1,1 +1,13 @@
-<app-etab-accueil (validated)="updateEtab($event)" [etab]="etab" [modifiable]="true"></app-etab-accueil>
+<div class="modal-overlay">
+  <div class="modal-container">
+    <div class="header-banner">
+      <h1>Établissement d'accueil</h1>
+    </div>
+    <div class="scrollable-content">
+      <app-etab-accueil (validated)="updateEtab($event)" [etab]="etab" [modifiable]="true"></app-etab-accueil>
+    </div>
+    <div class="actions">
+      <button mat-flat-button color="warn" (click)="close()">Fermer</button>
+    </div>
+  </div>
+</div>

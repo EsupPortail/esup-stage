@@ -52,6 +52,8 @@ export class SignataireComponent implements OnInit, OnChanges, OnDestroy {
   filteredServices: ReplaySubject<any> = new ReplaySubject<any>(1);
   _onDestroy = new Subject<void>();
 
+  currentUser: any; // +++
+
   constructor(private contactService: ContactService,
               private fb: FormBuilder,
               private messageService: MessageService,
@@ -82,6 +84,9 @@ export class SignataireComponent implements OnInit, OnChanges, OnDestroy {
     });
     this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServPays: {value: 'O', type: 'text'}})).subscribe((response: any) => {
       this.countries = response.data;
+    });
+    this.authService.getCurrentUser().subscribe(res => { // +++
+      this.currentUser = res;
     });
   }
 
@@ -150,7 +155,7 @@ export class SignataireComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   editService(row: any): void {
-    if (this.canEdit()) {
+    if (this.canEdit() || this.isCreatorService(row)) { // +++
       this.openServiceFormModal(row);
     }
   }
@@ -261,11 +266,24 @@ export class SignataireComponent implements OnInit, OnChanges, OnDestroy {
     );
   }
 
+  // Helpers créateur (loginCreation == user.login et pas de loginModification différent)
+  isCreatorService(service: any): boolean {
+    if (!this.currentUser || !service) return false;
+    const isCreator = service.loginCreation === this.currentUser.login;
+    const isModified = service.loginModif && service.loginModif !== service.loginCreation;
+    return isCreator && !isModified;
+  }
+
+  isCreatorContact(contact: any): boolean {
+    if (!this.currentUser || !contact) return false;
+    const isCreator = contact.loginCreation === this.currentUser.login;
+    const isModified = contact.loginModif && contact.loginModif !== contact.loginCreation;
+    return isCreator && !isModified;
+  }
+
   ngOnDestroy() {
     this._onDestroy.next();
     this._onDestroy.complete();
   }
 
-
 }
-

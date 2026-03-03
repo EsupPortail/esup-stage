@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.2.0-ajout-bool-template-verrouillage-synchro-etab
+      author: thouveno9
+      changes:
+        - addColumn:
+            tableName: Structure
+            columns:
+              - column:
+                  name: verrouillageSynchroStructureSirene
+                  type: BOOLEAN
+                  defaultValueBoolean: false

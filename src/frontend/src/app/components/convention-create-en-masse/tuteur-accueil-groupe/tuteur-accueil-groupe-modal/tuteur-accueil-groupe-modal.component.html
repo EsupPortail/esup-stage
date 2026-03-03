@@ -1,7 +1,19 @@
-<app-tuteur-pro (validated)="updateTuteurPro($event)"
-                [etab]="etab"
-                [contact]="contact"
-                [service]="service"
-                [centreGestion]="centreGestion"
-                [modifiable]="true"
-                [enMasse]="true"></app-tuteur-pro>
+<div class="modal-overlay">
+  <div class="modal-container">
+    <div class="header-banner">
+      <h1>Tuteur professionnel</h1>
+    </div>
+    <div class="scrollable-content">
+      <app-tuteur-pro (validated)="updateTuteurPro($event)"
+                      [etab]="etab"
+                      [contact]="contact"
+                      [service]="service"
+                      [centreGestion]="centreGestion"
+                      [modifiable]="true"
+                      [enMasse]="true"></app-tuteur-pro>
+    </div>
+    <div class="actions">
+      <button mat-flat-button color="warn" (click)="close()">Fermer</button>
+    </div>
+  </div>
+</div>

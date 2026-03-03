@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, OnDestroy } from '@angular/core';
 import { AuthService } from "../../../services/auth.service";
 import { ConventionService } from "../../../services/convention.service";
 import { CentreGestionService } from "../../../services/centre-gestion.service";
@@ -12,10 +12,9 @@ import { UserService } from '../../../services/user.service';
   templateUrl: './signature-electronique.component.html',
   styleUrls: ['./signature-electronique.component.scss']
 })
-export class SignatureElectroniqueComponent implements OnInit {
-
+export class SignatureElectroniqueComponent implements OnInit, OnDestroy {
   @Input() convention!: any;
-  @Output() conventionChanged = new EventEmitter<any>();
+  @Output() conventionChanged = new EventEmitter();
 
   isMobile = false;
   profils: any[] = [];
@@ -23,6 +22,9 @@ export class SignatureElectroniqueComponent implements OnInit {
   isGestionnaire = false;
   signatureType: string | undefined;
   NomPrenomEnvoiSignature: string | undefined;
+
+  isUpdating = false;
+  updateTimeout: any;
 
   constructor(
     private technicalService: TechnicalService,
@@ -41,11 +43,11 @@ export class SignatureElectroniqueComponent implements OnInit {
       this.signatureType = response.signatureType;
     });
     this.isGestionnaire = this.authService.isAdmin() || this.authService.isGestionnaire();
-    this.getNomPrenomEnvoiSignature()
+    this.getNomPrenomEnvoiSignature();
     this.centreGestionService.getById(this.convention.centreGestion.id).subscribe((response: any) => {
       for (let p of response.signataires) {
         const profil = p.id.signataire;
-        const capitalize = profil[0].toUpperCase() + profil.slice(1)
+        const capitalize = profil[0].toUpperCase() + profil.slice(1);
         let label = '';
         switch (profil) {
           case 'etudiant':
@@ -74,6 +76,12 @@ export class SignatureElectroniqueComponent implements OnInit {
     });
   }
 
+  ngOnDestroy(): void {
+    if (this.updateTimeout) {
+      clearTimeout(this.updateTimeout);
+    }
+  }
+
   updateData(): void {
     this.data = [];
     for (let profil of this.profils) {
@@ -86,11 +94,27 @@ export class SignatureElectroniqueComponent implements OnInit {
   }
 
   updateSignatureInfos(): void {
+    this.isUpdating = true;
+
     this.conventionService.updateSignatureInfo(this.convention.id).subscribe((response: any) => {
       this.convention = response;
       this.updateData();
-      this.getNomPrenomEnvoiSignature()
+      this.getNomPrenomEnvoiSignature();
       this.conventionChanged.emit(this.convention);
+
+      this.updateTimeout = setTimeout(() => {
+        this.refreshSignatureData();
+      }, 2000);
+    });
+  }
+
+  refreshSignatureData(): void {
+    this.conventionService.updateSignatureInfo(this.convention.id).subscribe((response: any) => {
+      this.convention = response;
+      this.updateData();
+      this.getNomPrenomEnvoiSignature();
+      this.conventionChanged.emit(this.convention);
+      this.isUpdating = false;
     });
   }
 
@@ -104,6 +128,9 @@ export class SignatureElectroniqueComponent implements OnInit {
   }
 
   isActualisationActif(): boolean {
+    if (this.isUpdating) {
+      return true;
+    }
     const date = new Date();
     date.setMinutes(date.getMinutes() - 30);
     return new Date(this.convention.dateActualisationSignature) >= date;
@@ -113,13 +140,13 @@ export class SignatureElectroniqueComponent implements OnInit {
     if (this.convention.loginEnvoiSignature) {
       this.userService.getPersonneByLogin(this.convention.loginEnvoiSignature).subscribe((response: any) => {
         if (response) {
-          if(response.nom == null || response.prenom == null) {
+          if (response.nom == null || response.prenom == null) {
             this.NomPrenomEnvoiSignature = '';
+          } else {
+            this.NomPrenomEnvoiSignature = response.nom + ' ' + response.prenom;
           }
-          this.NomPrenomEnvoiSignature = response.nom + ' ' + response.prenom;
         }
       });
     }
   }
-
 }

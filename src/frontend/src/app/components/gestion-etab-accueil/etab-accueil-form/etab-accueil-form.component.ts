@@ -105,6 +105,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   nafN5List: any[] = [];
   creationSeulementHorsFrance : boolean = false;
   creationSeulementFrance : boolean = false;
+  isMajAutoDisabled : boolean = false;
 
   nafN5FilterCtrl: FormControl = new FormControl();
   filteredNafN5List: ReplaySubject<any> = new ReplaySubject<any>(1);
@@ -114,6 +115,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   autoUpdating = false;
   isSireneActive = false;
   filterTypeContries!: 0 | 1 | 2  ;
+  private lastNafListKey: string | number | null = null;
 
   form: any;
 
@@ -139,6 +141,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
       const autorisationCreationFrance = response.autoriserEtudiantACreerEntrepriseFrance;
       this.creationSeulementHorsFrance = autorisationCreationHorsFrance && !autorisationCreationFrance;
       this.creationSeulementFrance = !autorisationCreationHorsFrance && autorisationCreationFrance
+      this.isMajAutoDisabled = response.desactiverMajAutoEtabSelection;
     })
     this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({ temEnServPays: { value: 'O', type: 'text' } })).subscribe((response: any) => {
         this.countries = response.data;
@@ -156,10 +159,8 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
           this.filterTypeContries = 2;
         }
 
-        // Alimente la liste filtrée initiale
         this.filteredCountries.next(this.countries.slice());
 
-        // Met en place le filtrage par saisie
         this.paysFilterCtrl.valueChanges.pipe(takeUntil(this._onDestroy)).subscribe(() => this.filterCountries());
     });
     this.communeService.getPaginated(1, 0, 'lib', 'asc', "").subscribe((response: any) => {
@@ -180,7 +181,11 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
     this.structureService.getSireneInfo().subscribe(res=>{
       this.isSireneActive = res.isApiSireneActive
     });
-    this.getNafN5List();
+    this.nafN5FilterCtrl.valueChanges
+      .pipe(takeUntil(this._onDestroy))
+      .subscribe(() => {
+        this.filterNafN5List();
+      });
   }
 
   public isLayoutReady = false;
@@ -455,8 +460,8 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
 
   ngOnChanges(changes: SimpleChanges): void {
     this.form = this.fb.group({
-      raisonSociale: [{ value: this.etab.raisonSociale, disabled: this.isFieldDisabled() }, [Validators.required, Validators.maxLength(150)]],
-      numeroSiret: [{ value: this.etab.numeroSiret, disabled: this.isFieldDisabled() }, [Validators.maxLength(14), Validators.pattern('[0-9]{14}')]],
+      raisonSociale: [this.etab.raisonSociale, [Validators.required, Validators.maxLength(150)]],
+      numeroSiret: [this.etab.numeroSiret, [Validators.maxLength(14), Validators.pattern('[0-9]{14}')]],
       idEffectif: [this.etab.effectif ? this.etab.effectif.id : null],
       idTypeStructure: [this.etab.typeStructure ? this.etab.typeStructure.id : null, [Validators.required]],
       idStatutJuridique: [this.etab.statutJuridique?.id ?? null, [Validators.required]],
@@ -473,6 +478,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
       siteWeb: [this.etab.siteWeb, [Validators.maxLength(200), Validators.pattern('^https?://(\\w([\\w\\-]{0,61}\\w)?\\.)+[a-zA-Z]{2,6}([/]{1}.*)?$')]],
       fax: [this.etab.fax, [Validators.maxLength(20)]],
       numeroRNE: [this.etab.numeroRNE, [Validators.maxLength(8), Validators.pattern('[0-9]{7}[a-zA-Z]')]],
+      verrouillageSynchroStructureSirene: [this.etab.verrouillageSynchroStructureSirene || false]
     });
     this.toggleCommune();
     this.form.get('idPays')?.valueChanges
@@ -485,18 +491,59 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
 
     if (this.etab.nafN5) {
       this.selectedNafN5 = this.etab.nafN5;
+    } else if (!this.etab?.id) {
+      this.selectedNafN5 = null;
+      this.form.get('codeNafN5')?.setValue(null);
+    }
+
+    if (changes['etab']) {
+      const currentKey = this.etab?.id ?? 'new';
+      if (currentKey !== this.lastNafListKey) {
+        this.lastNafListKey = currentKey;
+        this.loadNafN5List();
+      }
+    }
+
+    if (this.isRaisonSocialeDisabled()) {
+      this.form.get('raisonSociale')?.disable();
+    }
+    if (this.isSiretDisabled()) {
+      this.form.get('numeroSiret')?.disable();
     }
   }
 
   getNafN5List(): void {
-    this.nafN5Service.findAll().subscribe((response: any) => {
+    if(this.etab.id){
+      this.nafN5Service.findAllForModification(this.etab.id).subscribe((response: any) => {
+        this.nafN5List = response;
+          this.filteredNafN5List.next(this.nafN5List.slice());
+          this.nafN5FilterCtrl.valueChanges
+            .pipe(takeUntil(this._onDestroy))
+            .subscribe(() => {
+              this.filterNafN5List();
+            });
+      });
+    } else {
+      this.nafN5Service.findAllForCreation().subscribe((response: any) => {
+        this.nafN5List = response;
+          this.filteredNafN5List.next(this.nafN5List.slice());
+          this.nafN5FilterCtrl.valueChanges
+            .pipe(takeUntil(this._onDestroy))
+            .subscribe(() => {
+              this.filterNafN5List();
+            });
+      });
+    }
+  }
+
+  loadNafN5List(): void {
+    const request = this.etab?.id
+      ? this.nafN5Service.findAllForModification(this.etab.id)
+      : this.nafN5Service.findAllForCreation();
+
+    request.subscribe((response: any) => {
       this.nafN5List = response;
       this.filteredNafN5List.next(this.nafN5List.slice());
-      this.nafN5FilterCtrl.valueChanges
-        .pipe(takeUntil(this._onDestroy))
-        .subscribe(() => {
-          this.filterNafN5List();
-        });
     });
   }
 
@@ -524,13 +571,11 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
 
   save(): void {
     if (this.form.valid) {
-      // Contrôle code APE ou activité principale renseignée
       if (!this.form.get('codeNafN5')?.value && !this.form.get('activitePrincipale')?.value) {
         this.messageService.setError('Une de ces deux informations doivent être renseignée : Code APE, Activité principale');
         return;
       }
 
-      // Contrôle code postal commune
       if (this.isFr() && !this.isCodePostalValid()) {
         this.messageService.setError('Code postal inconnu');
         return;
@@ -540,6 +585,9 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
         this.form.get('numeroSiret')?.setValue(null);
       }
       const data = {...this.form.getRawValue()};
+      if (data.verrouillageSynchroStructureSirene == null) {
+        data.verrouillageSynchroStructureSirene = false;
+      }
       data.nafN5 = this.selectedNafN5;
       if (this.etab.id) {
         this.structureService.update(this.etab.id, data).subscribe((response: any) => {
@@ -641,6 +689,15 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
       return !!this.etab?.id ? !this.canEdit() : !this.canCreate();
   }
 
+  isRaisonSocialeDisabled(): boolean {
+    return this.isFieldDisabled() && this.etab?.temSiren === true && this.etab?.temDiffusibleSirene === true;
+  }
+
+
+    isSiretDisabled(): boolean {
+      return this.isFieldDisabled() && this.etab?.temSiren === true;
+    }
+
   private filterCountries(): void {
     if (!this.countries || !Array.isArray(this.countries)) {
       this.filteredCountries.next([]);
@@ -691,19 +748,16 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
 
     this.selectedNafN5 = updated?.nafN5 ?? null;
 
-    // Recalcule logic FR / communes selon le pays
     this.toggleCommune();
     this.changeDetector.detectChanges();
   }
 
-  // === AJOUT ===
   autoUpdateFromApi(): void {
-    if (!this.etab?.id || !this.canEdit()) {
+    if (!this.etab?.id || this.authService.isEtudiant()) {
       return;
     }
     this.autoUpdating = true;
 
-    // ↳ Appelez ici votre endpoint côté back qui va récupérer les infos (ex: INSEE/Sirene) et mettre à jour
     this.structureService.updateFromSirene(this.etab.id).subscribe({
       next: (updated: any) => {
         this.messageService.setSuccess('Mise à jour automatique effectuée.');
@@ -718,5 +772,15 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
         this.autoUpdating = false;
       }
     });
+  }
+
+  canUpdateFromApi(): boolean {
+    return !(this.authService.isEtudiant() || this.authService.isEnseignant()) && this.isSireneActive && this.etab?.id && this.etab.pays.id == 82;
+  }
+
+  // Méthode pour basculer l'état du verrouillage
+  toggleVerrouillage(): void {
+    this.etab.verrouillageSynchroStructureSirene = !this.etab.verrouillageSynchroStructureSirene;
+    this.form.get('verrouillageSynchroStructureSirene')?.setValue(this.etab.verrouillageSynchroStructureSirene);
   }
 }

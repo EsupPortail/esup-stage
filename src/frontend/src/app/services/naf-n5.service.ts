@@ -17,4 +17,12 @@ export class NafN5Service {
   findAll(): Observable<any> {
     return this.http.get(`${environment.apiUrl}/nafn5/all`);
   }
+
+  findAllForCreation(): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/nafn5/all/creation`);
+  }
+
+  findAllForModification(idEtabAccueil : number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/nafn5/all/modification/${idEtabAccueil}`);
+  }
 }

@@ -92,8 +92,10 @@ export class EtabAccueilGroupeComponent implements OnInit, OnChanges {
 
   selectForGroup(): void {
     const dialogConfig = new MatDialogConfig();
-    dialogConfig.width = '1200px';
-    dialogConfig.height = '1000px';
+    dialogConfig.width = '95vw';
+    dialogConfig.maxWidth = '1100px';
+    dialogConfig.maxHeight = '90vh';
+    dialogConfig.panelClass = 'custom-dialog-container';
     dialogConfig.data = {etab: this.groupeEtudiant.convention.structure};
     const modalDialog = this.matDialog.open(EtabAccueilGroupeModalComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
@@ -105,8 +107,10 @@ export class EtabAccueilGroupeComponent implements OnInit, OnChanges {
 
   selectForSelected(): void {
     const dialogConfig = new MatDialogConfig();
-    dialogConfig.width = '1200px';
-    dialogConfig.height = '1000px';
+    dialogConfig.width = '95vw';
+    dialogConfig.maxWidth = '1100px';
+    dialogConfig.maxHeight = '90vh';
+    dialogConfig.panelClass = 'custom-dialog-container';
     dialogConfig.data = {etab: null};
     const modalDialog = this.matDialog.open(EtabAccueilGroupeModalComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {

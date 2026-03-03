@@ -12,8 +12,11 @@ import org.esup_portail.esup_stage.model.Role;
 import org.esup_portail.esup_stage.model.Utilisateur;
 import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
 import org.esup_portail.esup_stage.security.ServiceContext;
+import org.esup_portail.esup_stage.security.permission.PermissionEvaluator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -27,10 +30,12 @@ public class SecureInterceptor {
 
     private static final Logger logger = LoggerFactory.getLogger(SecureInterceptor.class);
 
+    @Autowired
+    private ApplicationContext context;
+
     @Around("@annotation(Secure)")
     public Object checkAuthorization(ProceedingJoinPoint joinPoint) throws Throwable {
         HttpServletRequest request = currentRequest();
-
         if (request == null) {
             throw new Exception("Not a request");
         }
@@ -42,20 +47,16 @@ public class SecureInterceptor {
         boolean forbiddenEtu = authorized.forbiddenEtu();
 
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
-
         if (utilisateur == null) {
             throw new AppException(HttpStatus.UNAUTHORIZED, "Vous n'êtes pas autorisé");
         }
 
-        // Utilisateur not active
-        if (utilisateur.getActif()!=null && !utilisateur.getActif()) {
+        if (utilisateur.getActif() != null && !utilisateur.getActif()) {
             throw new AppException(HttpStatus.NOT_ACCEPTABLE, "Votre compte est inactif");
         }
 
         boolean hasRight = fonctions.length == 0 && droits.length == 0;
-        // on a les droits si fonction droit == none
         if (!hasRight) {
-            // Si une fonction/droit est définie, il faut vérifier ses habilitations
             if (fonctions.length > 0 && droits.length > 0) {
                 if (UtilisateurHelper.isRole(utilisateur, fonctions, droits)) {
                     hasRight = true;
@@ -63,9 +64,14 @@ public class SecureInterceptor {
             }
         }
 
-        // On n'a pas les droits si le rôle fait partie de ceux interdit
         if (forbiddenEtu && UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
             hasRight = false;
+        }
+
+        // Fallback : évaluateur spécifique si configuré (autre que l'interface par défaut)
+        if (!hasRight && authorized.evaluator() != PermissionEvaluator.class) {
+            PermissionEvaluator evaluator = context.getBean(authorized.evaluator());
+            hasRight = evaluator.hasPermission(utilisateur, methodSignature, joinPoint.getArgs());
         }
 
         if (!hasRight) {

@@ -1,3 +1,4 @@
+<app-retour-liste *ngIf="isModif" path="/convention-create-en-masse/groupes" ></app-retour-liste>
 <mat-tab-group #tabGroup class="convention" (selectedTabChange)="tabChanged($event)" [(selectedIndex)]="conventionTabIndex">
   <mat-tab #selectEtuTab>
     <ng-template mat-tab-label>

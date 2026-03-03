@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.esup_portail.esup_stage.dto.view.Views;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @Entity
 @Data
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @Table(name = "CentreGestion")
 public class CentreGestion extends ObjetMetier implements Exportable {
 
@@ -19,6 +21,7 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idCentreGestion", nullable = false)
+    @EqualsAndHashCode.Include
     private int id;
 
     @JsonView(Views.List.class)

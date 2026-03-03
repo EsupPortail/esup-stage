@@ -35,11 +35,14 @@ export class EtabAccueilComponent implements OnInit {
   @Input() etab: any;
   modif: boolean = false;
   selectedRow: any = undefined;
+  isSireneAcitve: boolean = false;
+  nbMinResultats: number = 0;
 
   @Input() modifiable!: boolean;
 
   autorisationCreationFrance=false;
   autorisationCreationHorsFrance = false;
+  currentUser: any;
 
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
   @ViewChild(MatExpansionPanel) firstPanel: MatExpansionPanel|undefined;
@@ -103,6 +106,13 @@ export class EtabAccueilComponent implements OnInit {
         filter.options = response.data;
       }
     });
+    this.authService.getCurrentUser().subscribe(res=>{
+      this.currentUser = res;
+    });
+    this.structureService.getSireneInfo().subscribe((response: any) => {
+      this.isSireneAcitve = response.isApiSireneActive;
+      this.nbMinResultats = response.nombreResultats;
+    });
   }
 
   canCreate(): boolean {
@@ -145,6 +155,15 @@ export class EtabAccueilComponent implements OnInit {
     if (this.firstPanel) {
       this.firstPanel.expanded = true;
     }
+  }
+
+  isCreatorEtab(etab: any): boolean {
+    if (!this.currentUser || !etab) {
+      return false;
+    }
+    const isCreator: boolean = etab.loginCreation === this.currentUser.login;
+    const isEtabModified: boolean = etab.loginModif && etab.loginModif !== etab.loginCreation;
+    return isCreator && !isEtabModified;
   }
 
 }

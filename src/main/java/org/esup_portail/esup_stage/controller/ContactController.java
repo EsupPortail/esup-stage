@@ -14,6 +14,7 @@ import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
 import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
+import org.esup_portail.esup_stage.security.permission.ContactPermissionEvaluator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -128,7 +129,7 @@ public class ContactController {
     }
 
     @PutMapping("/{id}")
-    @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.MODIFICATION})
+    @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.MODIFICATION},evaluator = ContactPermissionEvaluator.class)
     public Contact update(@PathVariable("id") int id, @Valid @RequestBody ContactFormDto contactFormDto) {
         Contact contact = contactJpaRepository.findById(id);
         setContactData(contact, contactFormDto);

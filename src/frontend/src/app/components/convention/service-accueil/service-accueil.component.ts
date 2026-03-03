@@ -36,6 +36,7 @@ export class ServiceAccueilComponent implements OnInit,OnChanges {
     libelle: 'Créer un nouveau service',
     action: () => this.initCreate(),
   };
+  currentUser: any;
 
   @Input() service: any;
   modif: boolean = false;
@@ -97,6 +98,7 @@ export class ServiceAccueilComponent implements OnInit,OnChanges {
       { id: 'pays.id', libelle: 'Pays', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', searchable: true },
       { id: 'structure.id', type: 'int', valueType: 'number', value: this.etab.id, hidden: true }
     ];
+    this.authService.getCurrentUser().subscribe(res => this.currentUser = res);
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -245,6 +247,13 @@ export class ServiceAccueilComponent implements OnInit,OnChanges {
         return true;
     }
     return false;
+  }
+
+  isCreatorService(service: any): boolean {
+    if (!this.currentUser || !service) return false;
+    const isCreator = service.loginCreation === this.currentUser.login;
+    const isModified = service.loginModif && service.loginModif !== service.loginCreation;
+    return isCreator && !isModified;
   }
 }
 
