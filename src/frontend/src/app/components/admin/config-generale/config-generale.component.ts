@@ -56,7 +56,7 @@ export class ConfigGeneraleComponent implements OnInit {
   formSignature: FormGroup;
 
   isEtuAutoriseToCreate!: boolean;
-  isSireneAcitve!: boolean;
+  isSireneActive!: boolean;
 
   constructor(
     private configService: ConfigService,
@@ -81,6 +81,7 @@ export class ConfigGeneraleComponent implements OnInit {
       autoriserEtudiantACreerEntrepriseFrance: [null],
       autoriserEtudiantACreerEntrepriseHorsFrance: [null],
       desactiverMajAutoEtabSelection: [null],
+      modifRaisonSocialeGestionnaire : [null],
     });
 
     this.formTheme = this.fb.group({
@@ -141,7 +142,7 @@ export class ConfigGeneraleComponent implements OnInit {
 
     // Récupération des infos sirene
     this.structureService.getSireneInfo().subscribe((response: any) => {
-      this.isSireneAcitve = response.isApiSireneActive;
+      this.isSireneActive = response.isApiSireneActive;
       this.syncDiffusionPartielControl(this.formGenerale.get('desactiverMajAutoEtabSelection')?.value === true);
     });
   }

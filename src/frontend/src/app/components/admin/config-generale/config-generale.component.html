@@ -299,10 +299,19 @@
           </div>
           <div class="row mb-2">
             <div class="col-md-12">
-              <div class="mb-2" [class.section-disabled]="!isSireneAcitve">Désactiver la mise à jour automatique via l'API Sirene lors de la sélection d'un établissement ?</div>
+              <div class="mb-2" [class.section-disabled]="!isSireneActive">Désactiver la mise à jour automatique via l'API Sirene lors de la sélection d'un établissement ?</div>
               <mat-radio-group formControlName="desactiverMajAutoEtabSelection">
-                <mat-radio-button [disabled]="!isSireneAcitve" [value]="true">Oui</mat-radio-button>
-                <mat-radio-button [disabled]="!isSireneAcitve" [value]="false">Non</mat-radio-button>
+                <mat-radio-button [disabled]="!isSireneActive" [value]="true">Oui</mat-radio-button>
+                <mat-radio-button [disabled]="!isSireneActive" [value]="false">Non</mat-radio-button>
+              </mat-radio-group>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-md-12">
+              <div class="mb-2" [class.section-disabled]="!isSireneActive">Autoriser les gestionnaires et les responsables gestionnaires à modifier la raison sociale des établissements issue de l’API Sirene ?</div>
+              <mat-radio-group formControlName="modifRaisonSocialeGestionnaire">
+                <mat-radio-button [disabled]="!isSireneActive" [value]="true">Oui</mat-radio-button>
+                <mat-radio-button [disabled]="!isSireneActive" [value]="false">Non</mat-radio-button>
               </mat-radio-group>
             </div>
           </div>
