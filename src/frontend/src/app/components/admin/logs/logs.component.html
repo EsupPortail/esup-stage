@@ -1,0 +1,49 @@
+<section class="logs-page">
+  <div class="logs-toolbar">
+    <div class="logs-status">
+      <span class="status-dot" [ngClass]="statusClass"></span>
+      <span class="status-label">{{ statusLabel }}</span>
+      <button *ngIf="status !== 'connected'" type="button" mat-flat-button class="primary-button valid-button" (click)="reconnect()">
+        Reconnecter
+      </button>
+    </div>
+  </div>
+
+  <div class="logs-filters">
+    <mat-form-field class="search-field" appearance="outline">
+      <mat-label><span class="fa fa-search" aria-hidden="true"></span> Recherche</mat-label>
+      <input matInput [(ngModel)]="searchTerm" placeholder="Filtrer par texte..." />
+    </mat-form-field>
+
+    <div class="levels">
+      <span>Niveaux:</span>
+      <div *ngFor="let option of levelOptions" class="level-toggle">
+        <mat-checkbox
+          class="level-toggle-checkbox"
+          [ngModel]="levelFilters[option.key]"
+          (ngModelChange)="toggleLevel(option.key, $event)"
+          [aria-label]="option.label">
+        </mat-checkbox>
+        <span class="level-toggle-label" (click)="toggleLevel(option.key, !levelFilters[option.key])">
+          {{ option.label }}
+        </span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="logs-meta">
+    <span>Affichées: {{ displayedLines.length }}</span>
+    <span>Max mémoire: {{ maxLines }}</span>
+  </div>
+
+  <div #logsViewport class="logs-viewer" (scroll)="onLogScroll()">
+    <div *ngIf="displayedLines.length === 0" class="empty-state">
+      Aucune ligne à afficher.
+    </div>
+
+    <div *ngFor="let line of displayedLines; trackBy: trackByLineId" class="log-line" [ngClass]="levelClass(line.level)">
+      {{ line.text }}
+    </div>
+  </div>
+</section>

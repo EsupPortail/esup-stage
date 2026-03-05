@@ -1,0 +1,141 @@
+.logs-page {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.logs-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.logs-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-connected {
+  background-color: #1f8f4e;
+}
+
+.status-connecting {
+  background-color: #c77600;
+}
+
+.status-error {
+  background-color: #d92f2f;
+}
+
+.status-forbidden {
+  background-color: #6d4c41;
+}
+
+.status-disconnected {
+  background-color: #607d8b;
+}
+
+.logs-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.logs-filters {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  padding: 10px;
+  border: 1px solid #e0e3e8;
+  border-radius: 6px;
+  background: #f9fafb;
+}
+
+.search-field {
+  width: 320px;
+  max-width: 100%;
+  margin-bottom: -1.25em;
+}
+
+.levels {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.level-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 6px;
+}
+
+.level-toggle-checkbox {
+  margin: 0;
+}
+
+.level-toggle-label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.logs-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: #606f80;
+}
+
+.logs-viewer {
+  height: 70vh;
+  overflow: auto;
+  border: 1px solid #d7dbe2;
+  border-radius: 6px;
+  background: #0f1318;
+  color: #e6ebf2;
+  padding: 10px;
+  font-family: Consolas, Monaco, 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.empty-state {
+  color: #9aa6b2;
+  font-style: italic;
+}
+
+.log-line {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.level-debug {
+  color: #9ea9b5;
+}
+
+.level-info {
+  color: #e6ebf2;
+}
+
+.level-warn {
+  color: #f9b233;
+}
+
+.level-error {
+  color: #ff6f6f;
+}

@@ -142,6 +142,14 @@ export class AppComponent implements OnInit {
           libelle : 'Configuration',
           path : 'param-global/config-app',
           icon: "fa-rocket"
+        },
+        {
+          libelle: 'Logs',
+          path: 'param-global/logs',
+          icon: "fa-file-lines",
+          canView: () => {
+            return this.authService.isAdmin();
+          }
         }
       ]
     },

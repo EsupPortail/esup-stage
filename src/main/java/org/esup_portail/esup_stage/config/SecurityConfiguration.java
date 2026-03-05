@@ -7,6 +7,7 @@ import org.apereo.cas.client.validation.TicketValidator;
 import org.apereo.cas.client.validation.json.Cas30JsonServiceTicketValidator;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.config.properties.CasProperties;
+import org.esup_portail.esup_stage.model.Role;
 import org.esup_portail.esup_stage.security.userdetails.CasUserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -119,6 +120,8 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/config/theme").permitAll()
                         .requestMatchers("/api/evaluation-tuteur/**").permitAll()
                         .requestMatchers("/error/**").permitAll()
+                        // Stream logs: restriction admin explicite
+                        .requestMatchers("/api/admin/logs/stream", "/admin/logs/stream").hasAuthority(Role.ADM)
                         // Protection API
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().authenticated()

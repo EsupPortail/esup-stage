@@ -27,6 +27,7 @@ import {AccessibilityComponent} from "./components/accessibility/accessibility.c
 import {LegalNoticeComponent} from "./components/legal-notice/legal-notice.component";
 import {ConfigAppComponent} from "./components/admin/config-app/config-app.component";
 import { ConfigMissingGuard } from "./guard/config-missing.guard";
+import {LogsComponent} from "./components/admin/logs/logs.component";
 
 const routes: Routes = [
   {path: '', component: HomeComponent, canActivate: [AuthGuard, ConfigMissingGuard], data: {role: {}, title: 'Accueil', sitemap: {label: 'Accueil', group: 'Général', order: 1}}},
@@ -222,6 +223,16 @@ const routes: Routes = [
       role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.CREATION, Droit.VALIDATION, Droit.LECTURE, Droit.MODIFICATION, Droit.SUPPRESSION]},
       title: 'Configuration de l\'application',
       sitemap: {label: 'Configuration de l\'application', group: 'Paramétrage global', order: 8}
+    }
+  },
+  {
+    path:'param-global/logs',
+    component: LogsComponent,
+    canActivate: [AuthGuard, ConfigMissingGuard],
+    data:{
+      role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.LECTURE]},
+      title: 'Logs',
+      sitemap: {label: 'Logs', group: 'Paramétrage global', order: 9}
     }
   }
 ];
