@@ -28,8 +28,19 @@ import {LegalNoticeComponent} from "./components/legal-notice/legal-notice.compo
 import {ConfigAppComponent} from "./components/admin/config-app/config-app.component";
 import { ConfigMissingGuard } from "./guard/config-missing.guard";
 import {LogsComponent} from "./components/admin/logs/logs.component";
+import { MaintenanceComponent } from "./components/admin/maintenance/maintenance.component";
+import { MaintenanceModeComponent } from "./components/maintenance-mode/maintenance-mode.component";
 
 const routes: Routes = [
+  {
+    path: 'maintenance',
+    component: MaintenanceModeComponent,
+    data: {
+      title: 'Maintenance',
+      layout: 'public',
+      sitemap: {exclude: true}
+    }
+  },
   {path: '', component: HomeComponent, canActivate: [AuthGuard, ConfigMissingGuard], data: {role: {}, title: 'Accueil', sitemap: {label: 'Accueil', group: 'Général', order: 1}}},
   {
     path: 'param-global/utilisateurs',
@@ -234,6 +245,16 @@ const routes: Routes = [
       title: 'Logs',
       sitemap: {label: 'Logs', group: 'Paramétrage global', order: 9}
     }
+  },
+  {
+    path: 'param-global/maintenance',
+    component: MaintenanceComponent,
+    canActivate: [AuthGuard, ConfigMissingGuard],
+    data: {
+      role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.CREATION, Droit.VALIDATION, Droit.LECTURE, Droit.MODIFICATION, Droit.SUPPRESSION]},
+      title: 'Maintenance',
+      sitemap: {label: 'Maintenance', group: 'Paramétrage global', order: 10}
+    }
   }
 ];
 
@@ -243,4 +264,3 @@ const routes: Routes = [
 })
 export class AppRoutingModule {
 }
-

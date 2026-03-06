@@ -1,0 +1,17 @@
+.actions-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.maintenance-action-button.mat-mdc-icon-button,
+.maintenance-action-button.mat-mdc-icon-button .fa {
+  background: transparent;
+  color: var(--primaryColor);
+}
+
+.maintenance-toolbar {
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: flex-end;
+}

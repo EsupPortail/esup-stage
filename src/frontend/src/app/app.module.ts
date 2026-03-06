@@ -146,6 +146,9 @@ import {MenuAccessibilityComponent} from "./components/menu-accessibility/menu-a
 import {ConfigAppComponent} from "./components/admin/config-app/config-app.component";
 import {ConfigMissingModule} from "./components/admin/config-missing/config-missing.module";
 import { LogsComponent } from "./components/admin/logs/logs.component";
+import { MaintenanceComponent } from "./components/admin/maintenance/maintenance.component";
+import { MaintenanceDialogComponent } from "./components/admin/maintenance/maintenance-dialog/maintenance-dialog.component";
+import { MaintenanceModeComponent } from "./components/maintenance-mode/maintenance-mode.component";
 
 registerLocaleData(localeFr, 'fr');
 
@@ -268,6 +271,9 @@ export class FrenchDateProvider extends NativeDateAdapter {
     MenuAccessibilityComponent,
     ConfigAppComponent,
     LogsComponent,
+    MaintenanceComponent,
+    MaintenanceDialogComponent,
+    MaintenanceModeComponent,
   ],
   bootstrap: [AppComponent], imports: [BrowserModule,
         AppRoutingModule,
@@ -311,7 +317,9 @@ export class FrenchDateProvider extends NativeDateAdapter {
         ColorPickerDirective,
         MatButtonToggleGroup,
         MatButtonToggle,
-        CdkTrapFocus, ConfigMissingModule,
+        CdkTrapFocus,
+        ConfigMissingModule,
+
     ],
   exports: [
     ContenuPipe,
@@ -335,3 +343,5 @@ export class FrenchDateProvider extends NativeDateAdapter {
   ]
 })
 export class AppModule { }
+
+

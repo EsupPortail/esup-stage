@@ -96,6 +96,42 @@ mat-sidenav-content {
 
 .fr-skiplinks .fr-link:hover {}
 
+.maintenance-announcement {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 8px 16px 0;
+  padding: 10px 14px;
+  border: 1px solid #ffd54f;
+  border-left: 4px solid #f9a825;
+  background: #fff8e1;
+  border-radius: 4px;
+}
+
+.maintenance-announcement__message {
+  margin: 0;
+  text-align: left;
+  color: #5d4037;
+}
+
+.maintenance-announcement__close {
+  margin-left: auto;
+  border: 0;
+  background: transparent;
+  color: #5d4037;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 4px 6px;
+}
+
+.maintenance-announcement__close:hover,
+.maintenance-announcement__close:focus-visible {
+  text-decoration: underline;
+  outline: none;
+}
+
 .mat-sidenav-content{
   overflow-y: hidden;
   margin-bottom : 20px;

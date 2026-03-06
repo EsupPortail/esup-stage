@@ -14,6 +14,22 @@
   </nav>
 </div>
 <app-header *ngIf="!publicLayout"></app-header>
+<section
+  *ngIf="!publicLayout && maintenanceAnnouncementVisible"
+  class="maintenance-announcement"
+  role="status"
+  aria-live="polite">
+  <mat-icon>info</mat-icon>
+  <p class="maintenance-announcement__message">{{ maintenanceAnnouncementMessage }}</p>
+  <button
+    type="button"
+    mat-icon-button
+    class="maintenance-announcement__close"
+    (click)="dismissMaintenanceAnnouncement()"
+    aria-label="Fermer l'annonce de maintenance">
+    <mat-icon>close</mat-icon>
+  </button>
+</section>
 <div class="menu-button" *ngIf="isConnected() && !publicLayout">
   <button
     mat-icon-button

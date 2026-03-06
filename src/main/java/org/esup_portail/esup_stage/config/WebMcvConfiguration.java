@@ -11,22 +11,41 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-// ✱ ajout d’un seul import
-import java.nio.file.Paths;
-
 @Configuration
 public class WebMcvConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/theme.css")
+                .addResourceLocations("classpath:/static/");
+
         registry.addResourceHandler("/frontend/**")
+                .addResourceLocations("classpath:/frontend/browser/");
+
+        registry.addResourceHandler(
+                        "/*.js",
+                        "/*.js.map",
+                        "/*.css",
+                        "/*.css.map",
+                        "/*.ico",
+                        "/*.woff",
+                        "/*.woff2",
+                        "/*.ttf",
+                        "/*.eot",
+                        "/*.svg",
+                        "/*.webmanifest",
+                        "/assets/**",
+                        "/media/**")
                 .addResourceLocations("classpath:/frontend/browser/");
     }
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/").setViewName("redirect:/frontend/");
+        registry.addViewController("/frontend").setViewName("forward:/frontend/index.html");
         registry.addViewController("/frontend/").setViewName("forward:/frontend/index.html");
+        registry.addViewController("/maintenance").setViewName("forward:/frontend/index.html");
+        registry.addViewController("/maintenance/").setViewName("forward:/frontend/index.html");
     }
 
     @Override

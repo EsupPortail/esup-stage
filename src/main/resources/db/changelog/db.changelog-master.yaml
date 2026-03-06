@@ -330,3 +330,6 @@ databaseChangeLog:
   - include:
       file: 3.3.0-config-en-bdd.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 3.3.0-maintenance.yaml
+      relativeToChangelogFile: true

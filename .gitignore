@@ -14,7 +14,7 @@ target/
 !**/src/test/**/target/
 application.properties
 etc/estage/application.properties
-logs/esup-stage.log
+logs/*
 
 ### HTTP files ###
 *rest.http

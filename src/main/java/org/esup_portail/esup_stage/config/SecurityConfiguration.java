@@ -5,6 +5,7 @@ import org.apereo.cas.client.session.SingleSignOutFilter;
 import org.apereo.cas.client.validation.Cas20ServiceTicketValidator;
 import org.apereo.cas.client.validation.TicketValidator;
 import org.apereo.cas.client.validation.json.Cas30JsonServiceTicketValidator;
+import org.esup_portail.esup_stage.config.filters.MaintenanceModeFilter;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.config.properties.CasProperties;
 import org.esup_portail.esup_stage.model.Role;
@@ -40,6 +41,9 @@ public class SecurityConfiguration {
 
     @Autowired
     private CasProperties casProperties;
+
+    @Autowired
+    private MaintenanceModeFilter maintenanceModeFilter;
 
     @Bean
     public ServiceProperties serviceProperties() {
@@ -119,7 +123,11 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/contenus/**").permitAll()
                         .requestMatchers("/api/config/theme").permitAll()
                         .requestMatchers("/api/evaluation-tuteur/**").permitAll()
+                        .requestMatchers("/api/maintenance/status").permitAll()
+                        .requestMatchers("/maintenance", "/maintenance/**").permitAll()
                         .requestMatchers("/error/**").permitAll()
+                        .requestMatchers("/api/admin/maintenance/**").hasAuthority(Role.ADM)
+                        .requestMatchers("/api/maintenance/stream").authenticated()
                         // Stream logs: restriction admin explicite
                         .requestMatchers("/api/admin/logs/stream", "/admin/logs/stream").hasAuthority(Role.ADM)
                         // Protection API
@@ -139,6 +147,7 @@ public class SecurityConfiguration {
                         })
                 )
                 .csrf(AbstractHttpConfigurer::disable)
+                .addFilterBefore(maintenanceModeFilter, CasAuthenticationFilter.class)
                 .addFilter(casAuthenticationFilter())
                 .addFilterBefore(singleSignOutFilter(), CasAuthenticationFilter.class)
                 .addFilterBefore(logoutFilter(), LogoutFilter.class);

@@ -1,4 +1,4 @@
-import {Component, ElementRef, HostListener, OnInit, ViewContainerRef} from '@angular/core';
+import {Component, ElementRef, HostListener, OnDestroy, OnInit, ViewContainerRef} from '@angular/core';
 import { ActivatedRoute, ActivatedRouteSnapshot, NavigationEnd, Router } from "@angular/router";
 import { MenuService } from "./services/menu.service";
 import { AuthService } from "./services/auth.service";
@@ -8,7 +8,13 @@ import { environment } from "../environments/environment";
 import { ConfigService } from "./services/config.service";
 import { TechnicalService } from "./services/technical.service";
 import { ConfigMissingService } from "./services/config-missing.service";
-import { filter, firstValueFrom } from "rxjs";
+import { filter, firstValueFrom, Subscription } from "rxjs";
+import { MaintenanceState, MaintenanceStateService } from "./services/maintenance-state.service";
+
+interface MaintenanceAnnouncementDismissal {
+  key: string;
+  dismissedUntil: number;
+}
 
 @Component({
     selector: 'app-root',
@@ -16,7 +22,7 @@ import { filter, firstValueFrom } from "rxjs";
     styleUrls: ['./app.component.scss'],
     standalone: false
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
 
   favicon: HTMLLinkElement | null = document.querySelector('#app-favicon');
   theme: HTMLLinkElement | null = document.querySelector('#theme');
@@ -150,8 +156,16 @@ export class AppComponent implements OnInit {
           canView: () => {
             return this.authService.isAdmin();
           }
-        }
-      ]
+        },
+        {
+          libelle: 'Maintenance',
+          path: 'param-global/maintenance',
+          icon: "fa-tools",
+          canView: () => {
+            return this.authService.isAdmin();
+          }
+        },
+      ],
     },
     {
       libelle: 'Établissements d\'accueil',
@@ -179,6 +193,25 @@ export class AppComponent implements OnInit {
     },
   ]
 
+  publicLayout = false;
+  maintenanceAnnouncementVisible = false;
+  maintenanceAnnouncementMessage = '';
+
+  private maintenanceAnnouncementCurrentKey: string | null = null;
+  private readonly maintenanceAnnouncementStorageKey = 'maintenance-announcement-dismissed-key';
+  private readonly maintenanceAnnouncementSnoozeMs = 6 * 60 * 60 * 1000;
+  private maintenanceStateSubscription?: Subscription;
+  private maintenanceRoutingReady = false;
+  private maintenanceState: MaintenanceState = {
+    active: false,
+    upcoming: false,
+    alertActive: false,
+    startDate: null,
+    endDate: null,
+    alertDate: null,
+    message: null,
+  };
+
   constructor(
     public menuService: MenuService,
     private authService: AuthService,
@@ -188,7 +221,8 @@ export class AppComponent implements OnInit {
     public vcRef: ViewContainerRef,
     private configMissingService: ConfigMissingService,
     private router: Router,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private maintenanceStateService: MaintenanceStateService
   ) {
     this.configService.getConfigTheme();
     this.configService.themeModified.subscribe((config: any) => {
@@ -201,14 +235,20 @@ export class AppComponent implements OnInit {
     });
   }
 
-  publicLayout = false;
-
   async ngOnInit(): Promise<void> {
+    this.maintenanceStateService.start();
+    this.maintenanceStateSubscription = this.maintenanceStateService.state$.subscribe((state: MaintenanceState) => {
+      this.maintenanceState = state;
+      this.updateMaintenanceAnnouncement(state);
+      this.handleMaintenanceNavigation();
+    });
+
     this.updateLayoutFromSnapshot(this.router.routerState.snapshot.root);
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
         this.updateLayoutFromSnapshot(this.router.routerState.snapshot.root);
+        this.handleMaintenanceNavigation();
       });
 
     try {
@@ -219,23 +259,27 @@ export class AppComponent implements OnInit {
         }
       }
 
-      if (!this.authService.isAdmin()) {
-        return;
-      }
-
-      const response = await firstValueFrom(this.configMissingService.getMissing());
-      const missing = response?.missing || [];
-      if (missing.length === 0) {
-        return;
-      }
-
-      const currentPath = this.router.url || '';
-      if (!currentPath.includes('admin/config-missing')) {
-        await this.router.navigateByUrl('/admin/config-missing');
+      if (this.authService.isAdmin()) {
+        const response = await firstValueFrom(this.configMissingService.getMissing());
+        const missing = response?.missing || [];
+        if (missing.length > 0) {
+          const currentPath = this.router.url || '';
+          if (!currentPath.includes('admin/config-missing')) {
+            await this.router.navigateByUrl('/admin/config-missing');
+          }
+        }
       }
     } catch (e) {
       // ignore bootstrap check errors
+    } finally {
+      this.maintenanceRoutingReady = true;
+      this.handleMaintenanceNavigation();
     }
+  }
+
+  ngOnDestroy(): void {
+    this.maintenanceStateSubscription?.unsubscribe();
+    this.maintenanceStateService.stop();
   }
 
   private updateLayoutFromSnapshot(snapshot: ActivatedRouteSnapshot): void {
@@ -277,4 +321,104 @@ export class AppComponent implements OnInit {
     this.technicalService.isMobile.next(target.innerWidth < TechnicalService.MAX_WIDTH);
   }
 
+  private handleMaintenanceNavigation(): void {
+    if (!this.maintenanceRoutingReady) {
+      return;
+    }
+
+    const currentPath = (this.router.url || '').split('?')[0];
+    const onMaintenanceRoute = currentPath === '/maintenance' || currentPath.startsWith('/maintenance/');
+    const isAdmin = !!this.authService.userConnected && this.authService.isAdmin();
+
+    if (this.maintenanceState.active && !isAdmin) {
+      if (!onMaintenanceRoute) {
+        void this.router.navigateByUrl('/maintenance');
+      }
+      return;
+    }
+
+    if (!this.maintenanceState.active && onMaintenanceRoute) {
+      void this.router.navigateByUrl('/');
+    }
+  }
+
+  dismissMaintenanceAnnouncement(): void {
+    this.maintenanceAnnouncementVisible = false;
+
+    if (!this.maintenanceAnnouncementCurrentKey) {
+      return;
+    }
+
+    try {
+      const dismissal: MaintenanceAnnouncementDismissal = {
+        key: this.maintenanceAnnouncementCurrentKey,
+        dismissedUntil: Date.now() + this.maintenanceAnnouncementSnoozeMs,
+      };
+      localStorage.setItem(this.maintenanceAnnouncementStorageKey, JSON.stringify(dismissal));
+    } catch {
+      // Ignore localStorage errors.
+    }
+  }
+
+  private updateMaintenanceAnnouncement(state: MaintenanceState): void {
+    const inAnnouncementWindow = !!state && state.upcoming && state.alertActive && !state.active;
+
+    if (!inAnnouncementWindow) {
+      this.maintenanceAnnouncementCurrentKey = null;
+      this.maintenanceAnnouncementVisible = false;
+      this.maintenanceAnnouncementMessage = '';
+      return;
+    }
+
+    const key = this.buildMaintenanceAnnouncementKey(state);
+    const dismissal = this.getDismissedMaintenanceAnnouncement();
+
+    this.maintenanceAnnouncementCurrentKey = key;
+    this.maintenanceAnnouncementMessage = (state.message || '').trim() || 'Une maintenance est programmée.';
+    this.maintenanceAnnouncementVisible = !this.isDismissedMaintenanceAnnouncement(key, dismissal);
+  }
+
+  private buildMaintenanceAnnouncementKey(state: MaintenanceState): string {
+    return `${state.message || ''}|${state.alertDate || ''}|${state.startDate || ''}`;
+  }
+
+  private isDismissedMaintenanceAnnouncement(
+    key: string,
+    dismissal: MaintenanceAnnouncementDismissal | null
+  ): boolean {
+    if (!dismissal || dismissal.key !== key) {
+      return false;
+    }
+
+    if (dismissal.dismissedUntil <= Date.now()) {
+      try {
+        localStorage.removeItem(this.maintenanceAnnouncementStorageKey);
+      } catch {
+        // Ignore localStorage errors.
+      }
+      return false;
+    }
+
+    return true;
+  }
+
+  private getDismissedMaintenanceAnnouncement(): MaintenanceAnnouncementDismissal | null {
+    try {
+      const raw = localStorage.getItem(this.maintenanceAnnouncementStorageKey);
+      if (!raw) {
+        return null;
+      }
+
+      const parsed = JSON.parse(raw) as MaintenanceAnnouncementDismissal;
+      if (!parsed || typeof parsed.key !== 'string' || typeof parsed.dismissedUntil !== 'number') {
+        return null;
+      }
+
+      return parsed;
+    } catch {
+      return null;
+    }
+  }
 }
+
+

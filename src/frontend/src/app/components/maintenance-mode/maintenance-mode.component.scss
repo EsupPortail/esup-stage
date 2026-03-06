@@ -1,0 +1,50 @@
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f4f8fc;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  color: #1a2535;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #dce8f3;
+  border-radius: 12px;
+  padding: 2.5rem 3rem;
+  max-width: 520px;
+  width: 90%;
+  text-align: center;
+  overflow: hidden;
+}
+
+.card svg {
+  display: block;
+  width: min(220px, 100%);
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto 2rem;
+}
+
+h1 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 1rem;
+}
+
+.divider {
+  height: 2px;
+  background: linear-gradient(90deg, #1a82c4, #e5003b);
+  border-radius: 99px;
+  margin: 0 auto 1rem;
+  width: 48px;
+}
+
+p {
+  font-size: .9rem;
+  line-height: 1.6;
+  color: #4a5a6e;
+  margin: 0;
+}
