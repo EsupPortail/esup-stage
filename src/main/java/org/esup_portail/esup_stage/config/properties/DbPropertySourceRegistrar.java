@@ -11,9 +11,7 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MutablePropertySources;
-import org.springframework.core.env.PropertySource;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -69,32 +67,17 @@ public class DbPropertySourceRegistrar {
 
     public void refresh() {
         MutablePropertySources sources = env.getPropertySources();
-        Map<String, String> overrides = appProperyService.getOverrides(
-                key -> hasNonDbValue(sources, key)
-        );
+        Map<String, String> overrides = appProperyService.getOverrides();
         Map<String, Object> source = new HashMap<>(overrides);
         DbPropertySource ps = new DbPropertySource("dbOverrides", source);
 
         if (sources.contains("dbOverrides")) {
             sources.replace("dbOverrides", ps);
         } else {
-            sources.addLast(ps);
+            sources.addFirst(ps);
         }
 
         rebindConfigurationProperties();
-    }
-
-    private boolean hasNonDbValue(MutablePropertySources sources, String key) {
-        for (PropertySource<?> ps : sources) {
-            if ("dbOverrides".equals(ps.getName())) {
-                continue;
-            }
-            Object val = ps.getProperty(key);
-            if (val != null && StringUtils.hasText(String.valueOf(val))) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private void rebindConfigurationProperties() {
