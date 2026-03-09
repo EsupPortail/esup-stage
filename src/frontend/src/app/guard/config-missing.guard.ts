@@ -28,7 +28,6 @@ export class ConfigMissingGuard {
 
       // Si l'utilisateur n'est pas admin, laisser passer
       if (!isAdmin) {
-        console.log('[ConfigMissingGuard] Utilisateur non admin, accès autorisé');
         return true;
       }
 
@@ -38,14 +37,11 @@ export class ConfigMissingGuard {
 
       if (missing.length === 0) {
         if (state.url.includes('admin/config-missing')) {
-          console.log('[ConfigMissingGuard] Config complète, redirection vers l\'accueil');
           return this.router.createUrlTree(['/']);
         }
-        console.log('[ConfigMissingGuard] Config complète, accès autorisé');
         return true;
       }
 
-      // Config manquante et utilisateur est admin
       console.log('[ConfigMissingGuard] Config manquante:', missing);
       const onMissingPage = state.url.includes('admin/config-missing');
 

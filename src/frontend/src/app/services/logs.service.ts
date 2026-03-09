@@ -1,6 +1,9 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import {BehaviorSubject, Observable, pipe, Subject} from 'rxjs';
 import { environment } from '../../environments/environment';
+import {HttpClient} from "@angular/common/http";
+import {LoggerLevel} from "../models/LoggerLevel.model";
+import {catchError} from "rxjs/operators";
 
 export type LogStreamStatus = 'disconnected' | 'connecting' | 'connected' | 'error' | 'forbidden';
 
@@ -15,12 +18,13 @@ export interface LogStreamLine {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class LogsService implements OnDestroy {
 
   private readonly streamUrl = `${environment.apiUrl}/admin/logs/stream`;
   private readonly adminProbeUrl = `${environment.apiUrl}/admin/config/missing`;
+  private readonly logsConfigUrl = `${environment.apiUrl}/admin/logs`;
   private readonly rawLogPattern = /^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}) \[([^\]]+)]\s+([A-Za-z]+)\s+([^\s]+)\s+-\s+(.*)$/;
   private readonly recordLevelPattern = /\blevel=([A-Z]+)\b/;
   private readonly recordHistoricalPattern = /\bhistorical=(true|false)\b/;
@@ -35,6 +39,8 @@ export class LogsService implements OnDestroy {
 
   lines$: Observable<LogStreamLine> = this.linesSubject.asObservable();
   status$: Observable<LogStreamStatus> = this.statusSubject.asObservable();
+
+  constructor(private http: HttpClient) {}
 
   connect(): void {
     if (this.eventSource && this.eventSource.readyState !== EventSource.CLOSED) {
@@ -169,4 +175,14 @@ export class LogsService implements OnDestroy {
     }
     return 'UNKNOWN';
   }
+
+  getLoggersInfo(): Observable<LoggerLevel[]> {
+    return this.http.get<LoggerLevel[]>(this.logsConfigUrl);
+  }
+
+  updateLoggers(packageNames: string[], level: string): Observable<void> {
+    const body = { packageNames, level };
+    return this.http.post<void>(this.logsConfigUrl, body)
+  }
+
 }

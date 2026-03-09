@@ -259,6 +259,8 @@ export class AppComponent implements OnInit, OnDestroy {
         }
       }
 
+      await this.authService.ensureAdminTechListLoaded();
+
       if (this.authService.isAdmin()) {
         const response = await firstValueFrom(this.configMissingService.getMissing());
         const missing = response?.missing || [];
@@ -420,5 +422,3 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 }
-
-

@@ -5,6 +5,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.dto.MaintenanceStateDto;
 import org.esup_portail.esup_stage.model.Role;
 import org.esup_portail.esup_stage.model.Utilisateur;
@@ -14,9 +15,10 @@ import org.esup_portail.esup_stage.service.maintenance.MaintenanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -30,6 +32,9 @@ public class MaintenanceModeFilter extends OncePerRequestFilter {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private AppliProperties appliProperties;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -63,7 +68,11 @@ public class MaintenanceModeFilter extends OncePerRequestFilter {
     }
 
     private boolean isExcludedUri(String uri) {
-        return uri.startsWith("/api/maintenance/status");
+        return uri.startsWith("/api/maintenance/status")
+                || uri.startsWith("/api/version")
+                || uri.startsWith("/api/contenus/")
+                || uri.startsWith("/api/config/theme")
+                || uri.startsWith("/api/evaluation-tuteur/");
     }
 
     private boolean isAdmin() {
@@ -74,7 +83,36 @@ public class MaintenanceModeFilter extends OncePerRequestFilter {
             return true;
         }
 
+        String login = resolveLogin(authentication);
+        if (login != null && appliProperties.isAdminTechnique(login)) {
+            return true;
+        }
+
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
-        return utilisateur != null && UtilisateurHelper.isAdmin(utilisateur);
+        if (utilisateur == null) {
+            return false;
+        }
+
+        return UtilisateurHelper.isAdmin(utilisateur) || appliProperties.isAdminTechnique(utilisateur.getLogin());
+    }
+
+    private String resolveLogin(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return null;
+        }
+
+        String authName = authentication.getName();
+        if (authName != null && !authName.isBlank()) {
+            return authName;
+        }
+
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof UserDetails userDetails) {
+            return userDetails.getUsername();
+        }
+        if (principal instanceof String principalAsString && !principalAsString.isBlank()) {
+            return principalAsString;
+        }
+        return null;
     }
 }

@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { environment } from "../../environments/environment";
-import {Observable, firstValueFrom, of, EMPTY} from "rxjs";
+import { Observable, firstValueFrom, of, EMPTY } from "rxjs";
 import { catchError } from "rxjs/operators";
 import { TokenService } from "./token.service";
 import { Role } from "../constants/role";
-import { AppFonction } from "../constants/app-fonction";
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +14,10 @@ export class AuthService {
   appVersion: any = undefined;
   private refreshPromise?: Promise<void>;
   private redirecting = false;
+
+  private adminTechList: string[] = [];
+  private adminTechLoaded = false;
+  private adminTechLoadingPromise?: Promise<void>;
 
   constructor(private http: HttpClient, private tokenService: TokenService) { }
 
@@ -33,6 +36,17 @@ export class AuthService {
     );
   }
 
+  private getAdminTechList(): Observable<string[]> {
+    return this.http.get<string[]>(environment.apiUrl + "/users/admintech").pipe(
+      catchError((error) => {
+        if (error?.status === 401 || error?.status === 403) {
+          this.handleUnauthorized();
+        }
+        return of([]);
+      })
+    );
+  }
+
   private handleUnauthorized() {
     if (!this.redirecting) {
       this.redirecting = true;
@@ -46,6 +60,9 @@ export class AuthService {
 
   logout() {
     this.userConnected = undefined;
+    this.adminTechList = [];
+    this.adminTechLoaded = false;
+    this.adminTechLoadingPromise = undefined;
     this.tokenService.logout();
     window.location.href = environment.logoutUrl;
     sessionStorage.clear();
@@ -53,7 +70,6 @@ export class AuthService {
 
   async secure(right: any): Promise<boolean> {
     try {
-      // Chargement lazy de la version de l'app
       if (this.appVersion === undefined) {
         this.appVersion = await firstValueFrom(this.getAppVersion());
       }
@@ -67,12 +83,18 @@ export class AuthService {
     }
   }
 
-
   createUser(user: any) {
     this.userConnected = user;
+    this.adminTechLoaded = false;
+    this.adminTechLoadingPromise = undefined;
+    void this.ensureAdminTechListLoaded();
   }
 
   checkRights(right: any) {
+    if (this.isAdmin()) {
+      return true;
+    }
+
     let hasRight = true;
     if (right.fonction && right.droits) {
       hasRight = false;
@@ -91,8 +113,38 @@ export class AuthService {
     return hasRight;
   }
 
+  async ensureAdminTechListLoaded(): Promise<void> {
+    if (!this.userConnected) {
+      return;
+    }
+
+    if (this.adminTechLoaded) {
+      return;
+    }
+
+    if (this.adminTechLoadingPromise) {
+      return this.adminTechLoadingPromise;
+    }
+
+    this.adminTechLoadingPromise = firstValueFrom(this.getAdminTechList())
+      .then((list: string[]) => {
+        this.adminTechList = Array.isArray(list) ? list : [];
+        this.adminTechLoaded = true;
+      })
+      .catch(() => {
+        this.adminTechList = [];
+        this.adminTechLoaded = true;
+      })
+      .finally(() => {
+        this.adminTechLoadingPromise = undefined;
+      });
+
+    return this.adminTechLoadingPromise;
+  }
+
   private async ensureFreshUser(): Promise<void> {
     if (this.userConnected !== undefined) {
+      await this.ensureAdminTechListLoaded();
       return;
     }
 
@@ -101,11 +153,12 @@ export class AuthService {
     }
 
     this.refreshPromise = firstValueFrom(this.getCurrentUser())
-      .then(user => {
+      .then(async user => {
         if (!user) {
           throw new Error('Utilisateur introuvable');
         }
-        this.createUser(user);
+        this.userConnected = user;
+        await this.ensureAdminTechListLoaded();
       })
       .catch(error => {
         console.error('Erreur rafraîchissement user :', error);
@@ -134,8 +187,19 @@ export class AuthService {
     return this.userConnected && this.userConnected.roles.find((r: any) => [Role.ENS].indexOf(r.code) > -1) !== undefined;
   }
 
+  private hasAdminRole(): boolean {
+    return !!(this.userConnected && this.userConnected.roles.find((r: any) => [Role.ADM].indexOf(r.code) > -1) !== undefined);
+  }
+
+  isAdminTech(): boolean {
+    if (!this.userConnected?.login) {
+      return false;
+    }
+    return this.adminTechList.includes(this.userConnected.login);
+  }
+
   isAdmin(): boolean {
-    return this.userConnected && this.userConnected.roles.find((r: any) => [Role.ADM].indexOf(r.code) > -1) !== undefined;
+    return this.hasAdminRole() || this.isAdminTech();
   }
 
   canAccess(roleData: any) {

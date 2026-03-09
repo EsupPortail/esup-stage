@@ -29,8 +29,164 @@
         </span>
       </div>
     </div>
-
   </div>
+
+  @if (isAdminTech()) {
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>Paramétrage des logs</mat-expansion-panel-header>
+
+      <div class="logger-panel">
+
+        <!-- ── Toolbar ── -->
+        <div class="toolbar">
+          <mat-form-field class="filter-field" appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Filtrer les loggers</mat-label>
+            <mat-icon matPrefix>search</mat-icon>
+            <input matInput (input)="applyFilter($event)" placeholder="ex: com.example.service">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="level-field">
+            <mat-label>Niveau</mat-label>
+            <mat-select [(ngModel)]="selectedLogLevel" [disabled]="selectionLoggers.isEmpty()">
+              @for (level of logLevels; track level) {
+                <mat-option [value]="level">
+                  <span class="level-dot" [style.background]="levelColor(level)"></span>
+                  {{ level }}
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <button mat-raised-button color="primary"
+                  [disabled]="selectionLoggers.isEmpty() || !selectedLogLevel"
+                  (click)="updateSelectedLoggers()">
+            <mat-icon>save</mat-icon> Sauvegarder
+          </button>
+
+          <button mat-stroked-button (click)="refreshLoggers()" matTooltip="Actualiser les loggers">
+            <mat-icon>refresh</mat-icon> Actualiser
+          </button>
+        </div>
+
+        <!-- ── Selection info bar ── -->
+        @if (selectionLoggers.hasValue()) {
+          <div class="selection-bar">
+            <mat-icon>check_circle</mat-icon>
+            {{ selectionLoggers.selected.length }} logger(s) sélectionné(s)
+            <button mat-button color="warn" (click)="selectionLoggers.clear()">
+              <mat-icon>clear</mat-icon> Désélectionner tout
+            </button>
+          </div>
+        }
+
+        <!-- ── Tree ── -->
+        <div class="tree-container">
+
+          <!-- Header sticky -->
+          <div class="tree-header">
+            <mat-checkbox [checked]="isAllSelected()" [indeterminate]="isSomeSelected()" (change)="toggleAll()" color="primary" matTooltip="Sélectionner/désélectionner tous les loggers"></mat-checkbox>
+            <span class="col-header">Logger</span>
+            <span class="col-header configured">Configuré</span>
+            <span class="col-header effective">Effectif</span>
+          </div>
+
+          <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="logger-tree">
+
+            <!-- Nœud expandable (namespace) -->
+            <mat-tree-node *matTreeNodeDef="let node; when: hasChild"
+                           matTreeNodePadding
+                           matTreeNodePaddingIndent="20"
+                           class="tree-node namespace-node">
+
+              <mat-checkbox
+                [checked]="isNodeSelected(node)"
+                [indeterminate]="isNodeIndeterminate(node)"
+                (change)="toggleNode(node)"
+                color="primary"
+                class="node-checkbox">
+              </mat-checkbox>
+
+              <button mat-icon-button matTreeNodeToggle class="expand-btn"
+                      [attr.aria-label]="'Toggle ' + node.label">
+                <mat-icon>
+                  {{ treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
+                </mat-icon>
+              </button>
+
+              <span class="node-label namespace">
+                <mat-icon class="ns-icon">{{ treeControl.isExpanded(node) ? 'folder_open' : 'folder' }}</mat-icon>
+                <span class="segment">{{ node.label }}</span>
+                @if (!treeControl.isExpanded(node)) {
+                  <span class="full-path">{{ node.fullName }}</span>
+                }
+              </span>
+
+              @if (node.logger) {
+                <span class="col-configured">
+                  <span class="level-badge"
+                        [style.background]="levelColor(node.logger.configuredLevel)"
+                        [class.empty]="!node.logger.configuredLevel">
+                    {{ node.logger.configuredLevel || '—' }}
+                  </span>
+                </span>
+                <span class="col-effective">
+                  <span class="level-badge" [style.background]="levelColor(node.logger.effectiveLevel)">
+                    {{ node.logger.effectiveLevel }}
+                  </span>
+                </span>
+              }
+            </mat-tree-node>
+
+            <!-- Nœud feuille (logger) -->
+            <mat-tree-node *matTreeNodeDef="let node"
+                           matTreeNodePadding
+                           matTreeNodePaddingIndent="20"
+                           class="tree-node leaf-node"
+                           [class.selected]="selectionLoggers.isSelected(node)">
+
+              <mat-checkbox
+                [checked]="selectionLoggers.isSelected(node)"
+                (change)="toggleNode(node)"
+                color="primary"
+                class="node-checkbox">
+              </mat-checkbox>
+
+              <span class="leaf-spacer"></span>
+
+              <span class="node-label leaf">
+                <mat-icon class="leaf-icon">article</mat-icon>
+                <span class="segment">{{ node.label }}</span>
+              </span>
+
+              <span class="col-configured">
+                <span class="level-badge"
+                      [style.background]="levelColor(node.logger?.configuredLevel)"
+                      [class.empty]="!node.logger?.configuredLevel">
+                  {{ node.logger?.configuredLevel || '—' }}
+                </span>
+              </span>
+
+              <span class="col-effective">
+                <span class="level-badge" [style.background]="levelColor(node.logger?.effectiveLevel)">
+                  {{ node.logger?.effectiveLevel }}
+                </span>
+              </span>
+
+            </mat-tree-node>
+
+          </mat-tree>
+
+          @if (dataSource.data.length === 0) {
+            <div class="empty-state">
+              <mat-icon>search_off</mat-icon>
+              <p>Aucun logger trouvé</p>
+            </div>
+          }
+        </div>
+
+      </div>
+    </mat-expansion-panel>
+  }
 
   <div class="logs-meta">
     <span>Affichées: {{ displayedLines.length }}</span>
@@ -41,8 +197,9 @@
     <div *ngIf="displayedLines.length === 0" class="empty-state">
       Aucune ligne à afficher.
     </div>
-
-    <div *ngFor="let line of displayedLines; trackBy: trackByLineId" class="log-line" [ngClass]="levelClass(line.level)">
+    <div *ngFor="let line of displayedLines; trackBy: trackByLineId"
+         class="log-line"
+         [ngClass]="levelClass(line.level)">
       {{ line.text }}
     </div>
   </div>
