@@ -46,14 +46,20 @@ public class ImpressionContext {
             FicheEvaluation ficheEvaluation = convention.getCentreGestion().getFicheEvaluation();
             this.ficheEvaluation = new FicheEvaluationContext(ficheEvaluation);
             this.reponse = new ReponseEvaluationContext(convention.getReponseEvaluation());
-            for (QuestionSupplementaire question : questionSupplementaires) {
-                this.questionsSupplementaires.add(new QuestionSupplementaireContext(question));
+            if (questionSupplementaires != null) {
+                for (QuestionSupplementaire question : questionSupplementaires) {
+                    this.questionsSupplementaires.add(new QuestionSupplementaireContext(question));
+                }
             }
-            for (ReponseSupplementaire reponse : convention.getReponseSupplementaires()) {
-                this.reponsesSupplementaires.add(new ReponseSupplementaireContext(reponse));
+            if (convention.getReponseSupplementaires() != null) {
+                for (ReponseSupplementaire reponse : convention.getReponseSupplementaires()) {
+                    this.reponsesSupplementaires.add(new ReponseSupplementaireContext(reponse));
+                }
             }
-            for (QuestionEvaluation q : questionEvaluations) {
-                this.questionEvaluations.add(new QuestionEvaluationContext(q));
+            if (questionEvaluations != null) {
+                for (QuestionEvaluation q : questionEvaluations) {
+                    this.questionEvaluations.add(new QuestionEvaluationContext(q));
+                }
             }
         }
         if (avenant != null) {
@@ -650,6 +656,9 @@ public class ImpressionContext {
         private String reponseEnsII11;
 
         public ReponseEvaluationContext(ReponseEvaluation reponseEvaluation) {
+            if (reponseEvaluation == null) {
+                return;
+            }
             this.reponseEnt1 = reponseEvaluation.getReponseEnt1();
             this.reponseEnt1bis = reponseEvaluation.getReponseEnt1bis();
             this.reponseEnt2 = reponseEvaluation.getReponseEnt2();
