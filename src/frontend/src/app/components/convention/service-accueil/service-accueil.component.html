@@ -1,6 +1,6 @@
 <mat-accordion>
 
-  <mat-expansion-panel [expanded]="service" [disabled]="!service">
+  <mat-expansion-panel class="etab-search-panel" [expanded]="service" [disabled]="!service">
     <mat-expansion-panel-header>
       <mat-panel-title>Service d'accueil</mat-panel-title>
     </mat-expansion-panel-header>
@@ -97,7 +97,7 @@
     </form>
   </mat-expansion-panel>
 
-  <mat-expansion-panel [expanded]="!service" *ngIf="modifiable">
+  <mat-expansion-panel class="etab-search-panel" [expanded]="!service" *ngIf="modifiable">
     <mat-expansion-panel-header>
       Choix du service dans lequel le stage sera effectué - Établissement d'accueil : {{etab.raisonSociale}}
     </mat-expansion-panel-header>

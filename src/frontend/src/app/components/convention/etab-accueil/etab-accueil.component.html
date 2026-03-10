@@ -1,6 +1,6 @@
 <mat-accordion>
 
-  <mat-expansion-panel [expanded]="etab" [disabled]="!etab">
+  <mat-expansion-panel class="etab-search-panel" [expanded]="etab" [disabled]="!etab">
     <mat-expansion-panel-header>
       <mat-panel-title>Établissement d'accueil</mat-panel-title>
       <mat-panel-description>
@@ -74,10 +74,11 @@
     </div>
   </mat-expansion-panel>
 
-  <mat-expansion-panel [expanded]="!etab" *ngIf="modifiable">
+  <mat-expansion-panel class="etab-search-panel" [expanded]="!etab" *ngIf="modifiable">
     <mat-expansion-panel-header>
       Recherchez l'établissement où le stage sera effectué
     </mat-expansion-panel-header>
+
 
     <app-table [service]="structureService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters"
                matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'"

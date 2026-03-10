@@ -1,5 +1,5 @@
 <mat-accordion>
-  <mat-expansion-panel [expanded]="false" *ngIf="modifiable && enMasse">
+  <mat-expansion-panel class="etab-search-panel" [expanded]="false" *ngIf="modifiable && enMasse">
     <mat-expansion-panel-header>
       <mat-panel-title>Recherchez un tuteur via son nom et/ou son prénom</mat-panel-title>
     </mat-expansion-panel-header>
@@ -49,7 +49,7 @@
       <tr mat-row *matRowDef="let row; columns: columns;"></tr>
     </table>
   </mat-expansion-panel>
-  <mat-expansion-panel [expanded]="contact" [disabled]="!contact">
+  <mat-expansion-panel class="etab-search-panel" [expanded]="contact" [disabled]="!contact">
     <mat-expansion-panel-header>
       <mat-panel-title>Tuteur professionnel</mat-panel-title>
       <mat-panel-description>
@@ -149,7 +149,7 @@
     </form>
   </mat-expansion-panel>
 
-  <mat-expansion-panel [expanded]="!contact" *ngIf="modifiable">
+  <mat-expansion-panel class="etab-search-panel" [expanded]="!contact" *ngIf="modifiable">
     <mat-expansion-panel-header>
       Sélection du tuteur professionnel - Établissement d'accueil : {{etab.raisonSociale}}
     </mat-expansion-panel-header>
