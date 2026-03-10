@@ -40,6 +40,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
   inscriptions: any[] = [];
   centreGestion: any;
   sansElp: boolean = false;
+  isEditingFormation: boolean = false;
 
   formConvention!: FormGroup;
 
@@ -268,8 +269,8 @@ export class EtudiantComponent implements OnInit, OnChanges {
           etapeInscription: {
             codeEtp: this.convention.etape.id.code,
             codVrsVet: this.convention.etape.id.codeVersionEtape,
-            libWebVet: this.convention.libWebVet,
-            codeComposante: this.convention.codeComposante,
+            libWebVet: this.convention.etape.libelle,
+            codeComposante: this.convention.ufr.id.code,
             libComposante: this.convention.ufr?.libelle || this.convention.libelleComposante
           },
           typeConvention: this.convention.typeConvention ? {id: this.convention.typeConvention.id, libelle: this.convention.typeConvention.libelle} : null,
@@ -446,6 +447,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
           this.validated.emit(response);
         });
       }
+      this.isEditingFormation = false;
     }
   }
 
@@ -529,5 +531,39 @@ export class EtudiantComponent implements OnInit, OnChanges {
 
   isUserEtudiant(): boolean {
     return this.authService.isEtudiant();
+  }
+
+  enableFormationEdit(): void {
+    this.isEditingFormation = true;
+    if (this.selectedNumEtudiant && this.inscriptions.length <= 1) {
+      this.etudiantService.getApogeeInscriptions(this.selectedNumEtudiant, this.convention ? this.convention.annee : null).subscribe((response: any) => {
+        let apogeeInscriptions: any[] = response || [];
+        apogeeInscriptions.sort((a, b) => a.annee < b.annee ? 1 : -1);
+
+        const currentInscription = this.formConvention.get('inscription')?.value;
+        if (currentInscription) {
+          const currentCodeEtp = String(currentInscription?.etapeInscription?.codeEtp ?? '').trim();
+          const currentAnnee = String(currentInscription?.annee ?? '').trim();
+
+          apogeeInscriptions = apogeeInscriptions.filter((i: any) => {
+            const codeEtp = String(i?.etapeInscription?.codeEtp ?? '').trim();
+            const annee = String(i?.annee ?? '').trim();
+            return !(codeEtp === currentCodeEtp && annee === currentAnnee);
+          });
+
+          apogeeInscriptions = [currentInscription, ...apogeeInscriptions];
+        }
+
+        this.inscriptions = apogeeInscriptions;
+
+        if (this.inscriptions.length === 0) {
+          this.isEditingFormation = false;
+          this.messageService.setError(this.authService.isEtudiant()?"La modification n'est pas possible car vous n'êtes plus inscrit à aucune formation éligible.":"La modification n'est pas possible car l'étudiant n'est plus inscrit à aucune formation éligible.");
+        }
+      });
+    } else if (this.inscriptions.length === 0) {
+      this.isEditingFormation = false;
+      this.messageService.setError(this.authService.isEtudiant()?"La modification n'est pas possible car vous n'êtes plus inscrit à aucune formation éligible.":"La modification n'est pas possible car l'étudiant n'est plus inscrit à aucune formation éligible.");
+    }
   }
 }
