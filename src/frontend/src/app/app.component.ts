@@ -141,7 +141,7 @@ export class AppComponent {
       path: 'etab-accueils',
       icon: 'fa-building',
       canView: () => {
-        return this.authService.checkRights({fonction: AppFonction.NOMENCLATURE, droits: [Droit.LECTURE]})
+        return this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.LECTURE]})
       }
     },
     {
