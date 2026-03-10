@@ -196,46 +196,60 @@
                 <fieldset class="fieldset-block">
                   <legend class="sr-only">Cadre du stage</legend>
 
-                  <ng-container *ngIf="inscriptions.length > 1">
-                    <div class="row">
+                  <ng-container *ngIf="!selectedInscription || isEditingFormation">
+                    <div class="row" *ngIf="inscriptions.length > 1 || isEditingFormation">
                       <mat-form-field class="col-sm-12 mb-2" appearance="fill">
                         <mat-label>Formation</mat-label>
                         <mat-select formControlName="inscription" required>
                           <mat-option *ngFor="let inscription of inscriptions" [value]="inscription">
-                            {{inscription.annee + '/' + (+inscription.annee + 1) + ': ' + inscription.etapeInscription.codeEtp + ' - ' + inscription.etapeInscription.libWebVet}}
-                            <span class="option-composante">({{inscription.etapeInscription.codeComposante}})</span>
+                            {{ inscription.annee + '/' + (+inscription.annee + 1) + ': ' + inscription.etapeInscription.codeEtp + ' - ' +  inscription.etapeInscription.libWebVet }}
+                            <span class="option-composante">({{ inscription.etapeInscription.codeComposante }})</span>
                           </mat-option>
                         </mat-select>
                         <mat-error><app-form-error [field]="formConvention.get('inscription')"></app-form-error></mat-error>
                       </mat-form-field>
                     </div>
                   </ng-container>
-                <div *ngIf="selectedInscription">
-                  <div class="row">
-                    <div class="col-sm-4 font-weight-bold">Année inscription</div>
-                    <div class="col-sm-8">{{selectedInscription.annee +'/'+ (+selectedInscription.annee + 1)}}</div>
-                  </div>
-                  <div class="row mb-2">
-                    <div class="col-sm-4 font-weight-bold">Formation</div>
-                    <div class="col-sm-8">{{selectedInscription.etapeInscription.codeEtp}}{{selectedInscription.etapeInscription.libComposante != null ? ' - ' + selectedInscription.etapeInscription.libComposante : ''}}</div>
-                  </div>
-                  <div class="row" *ngIf="selectedInscription.elementPedagogiques.length > 0">
-                    <mat-form-field class="col-sm-12 mb-2" appearance="fill">
-                      <mat-label>Élément pédagogique</mat-label>
-                      <mat-select formControlName="inscriptionElp" [required]="!sansElp">
-                        <mat-option *ngFor="let elp of selectedInscription.elementPedagogiques" [value]="elp">{{elp.codElp + ' - ' + elp.libElp + ' : ' + elp.nbrCrdElp + ' crédits ECTS'}}</mat-option>
-                      </mat-select>
-                      <mat-error><app-form-error [field]="formConvention.get('inscriptionElp')"></app-form-error></mat-error>
-                    </mat-form-field>
-                  </div>
-                  <div class="row align-items-start">
-                    <label class="col-sm-12">Nombre d'heures de formation * :</label>
+
+                  <div *ngIf="selectedInscription">
+                    <div class="row mb-2" *ngIf="!isEditingFormation">
+                      <div class="col-sm-4 font-weight-bold">Année inscription</div>
+                      <div class="col-sm-8">{{ selectedInscription.annee + '/' + (+selectedInscription.annee + 1) }}</div>
+                    </div>
+                    <div class="row mb-2 align-items-center" *ngIf="!isEditingFormation">
+                      <div class="col-sm-4 font-weight-bold d-flex align-items-center">
+                        Formation
+                        <button class="edit-formation-button" *ngIf="modifiable" type="button" mat-icon-button title="Modifier la formation" (click)="enableFormationEdit()">
+                          <mat-icon class="edit-formation-icon">edit</mat-icon>
+                        </button>
+                      </div>
+                      <div class="col-sm-8">
+                        {{ selectedInscription.etapeInscription.codeEtp }}
+                        {{ selectedInscription.etapeInscription.libComposante != null ? ' - ' + selectedInscription.etapeInscription.libComposante : '' }}
+                      </div>
+                    </div>
+                    <div class="row" *ngIf="selectedInscription.elementPedagogiques.length > 0">
+                      <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                        <mat-label>Élément pédagogique</mat-label>
+                        <mat-select formControlName="inscriptionElp" [required]="!sansElp">
+                          <mat-option *ngFor="let elp of selectedInscription.elementPedagogiques" [value]="elp">
+                            {{ elp.codElp + ' - ' + elp.libElp + ' : ' + elp.nbrCrdElp + ' crédits ECTS' }}
+                          </mat-option>
+                        </mat-select>
+                        <mat-error><app-form-error [field]="formConvention.get('inscriptionElp')"></app-form-error></mat-error>
+                      </mat-form-field>
+                    </div>
+                    <div class="row align-items-start">
+                      <label class="col-sm-12">Nombre d'heures de formation * :</label>
                       <mat-radio-group class="col-sm-12" formControlName="volumeHoraireFormationBool">
                         <mat-radio-button class="mb-2" [value]="false" [disabled]="hasDefaultVolumeHoraire">Plus de 200 heures</mat-radio-button>
-                        <mat-radio-button [value]="true">{{ !hasDefaultVolumeHoraire ? "Saisie manuelle" : "Valeur récupérée via les données de l'établissement (Apogée)"}} :</mat-radio-button>
+                        <mat-radio-button [value]="true">
+                          {{ !hasDefaultVolumeHoraire ? "Saisie manuelle" : "Valeur récupérée via les données de l'établissement (Apogée)" }} :
+                        </mat-radio-button>
                       </mat-radio-group>
+                    </div>
                   </div>
-                </div>
+
                   <div class="row">
                     <mat-form-field *ngIf="formConvention.get('volumeHoraireFormationBool').value" class="col-sm-12 mb-2" appearance="fill">
                       <mat-label>Entrez le nombre d'heures de formation :</mat-label>
@@ -246,14 +260,14 @@
                     <mat-form-field class="col-sm-12 mb-2" appearance="fill">
                       <mat-label>Type de convention</mat-label>
                       <mat-select formControlName="idTypeConvention" required>
-                        <mat-option *ngFor="let typeConvention of typeConventions" [value]="typeConvention.id">{{typeConvention.libelle}}</mat-option>
+                        <mat-option *ngFor="let typeConvention of typeConventions" [value]="typeConvention.id">{{ typeConvention.libelle }}</mat-option>
                       </mat-select>
                       <mat-error><app-form-error [field]="formConvention.get('idTypeConvention')"></app-form-error></mat-error>
                     </mat-form-field>
                     <mat-form-field class="col-sm-12 mb-2" appearance="fill" *ngIf="langueConventions.length > 0">
                       <mat-label>Langue de la convention</mat-label>
                       <mat-select formControlName="codeLangueConvention" required>
-                        <mat-option *ngFor="let langueConvention of langueConventions" [value]="langueConvention.code">{{langueConvention.libelle}}</mat-option>
+                        <mat-option *ngFor="let langueConvention of langueConventions" [value]="langueConvention.code">{{ langueConvention.libelle }}</mat-option>
                       </mat-select>
                       <mat-error><app-form-error [field]="formConvention.get('codeLangueConvention')"></app-form-error></mat-error>
                     </mat-form-field>
