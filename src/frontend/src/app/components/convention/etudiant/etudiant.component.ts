@@ -40,6 +40,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
   inscriptions: any[] = [];
   centreGestion: any;
   sansElp: boolean = false;
+  canEditTypeConvention: boolean = false;
   isEditingFormation: boolean = false;
 
   formConvention!: FormGroup;
@@ -142,7 +143,11 @@ export class EtudiantComponent implements OnInit, OnChanges {
           this.formConvention.get('inscriptionElp')?.setValue(null);
           if (inscription.typeConvention) {
             this.formConvention.get('idTypeConvention')?.setValue(inscription.typeConvention.id);
-            this.formConvention.get('idTypeConvention')?.disable();
+            if (!this.canEditTypeConvention) {
+              this.formConvention.get('idTypeConvention')?.disable();
+            } else {
+              this.formConvention.get('idTypeConvention')?.enable();
+            }
           } else {
             this.formConvention.get('idTypeConvention')?.enable();
           }
@@ -204,6 +209,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
     this.form.valueChanges.pipe(debounceTime(1000)).subscribe(() => {
       this.search();
     });
+    this.canEditTypeConvention = this.authService.isAdmin() || this.authService.isGestionnaire();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -280,7 +286,9 @@ export class EtudiantComponent implements OnInit, OnChanges {
         this.formConvention.get('inscription')?.setValue(inscription);
         if (inscription.typeConvention) {
           this.formConvention.get('idTypeConvention')?.setValue(inscription.typeConvention.id);
-          this.formConvention.get('idTypeConvention')?.disable();
+          if( !this.canEditTypeConvention) {
+            this.formConvention.get('idTypeConvention')?.disable();
+          }
         }
 
         if (this.convention.codeElp && elementPedagogiques.length > 0) {

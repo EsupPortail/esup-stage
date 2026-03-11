@@ -60,7 +60,7 @@
 <!--            <button class="valid-button" mat-button mat-stroked-button *ngIf="etab.id" (click)="changeOnglet()">Changer d'établissement</button>-->
 <!--          </div>-->
           <div class="col-12 d-flex justify-content-center">
-            <span *ngIf="etab.id && !modif && canEdit()" [confirmMessage]="'Attention : vous vous apprêtez à modifier la fiche de l\'établissement ' + etab.raisonSociale + ' . Pour sélectionner un autre établissement, veuillez cliquer sur le bouton de recherche d\'un établissement. '+ etab.raisonSociale + ' représente la raison sociale de l’établissement.'" (confirm)="edit()">
+            <span *ngIf="etab.id && !modif && modifiable && (canEdit() || (isCreatorEtab(etab) && !etab.temSiren))" [confirmMessage]="'Attention : vous vous apprêtez à modifier la fiche de l\'établissement ' + etab.raisonSociale + ' . Pour sélectionner un autre établissement, veuillez cliquer sur le bouton de recherche d\'un établissement. '+ etab.raisonSociale + ' représente la raison sociale de l’établissement.'" (confirm)="edit()">
               <button class="valid-button" mat-button mat-stroked-button>
                 Modifier la fiche de cet établissement d'accueil
               </button>

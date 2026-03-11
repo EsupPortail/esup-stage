@@ -4,7 +4,7 @@
   <div class="row">
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Raison sociale</mat-label>
-      <input matInput formControlName="raisonSociale" [disabled]="isFieldDisabled()" required />
+      <input matInput formControlName="raisonSociale" [disabled]="isRaisonSocialeDisabled()" required />
       <button mat-icon-button matSuffix class="icon-help" matTooltip="Nom de l'organisme" aria-label="Aide sur la raison sociale" type="button">
         <mat-icon aria-hidden="true">help</mat-icon>
       </button>
@@ -19,7 +19,7 @@
     </mat-form-field>
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill" [hidden]="!isFr()">
       <mat-label>Numéro Siret</mat-label>
-      <input matInput formControlName="numeroSiret" [disabled]="isFieldDisabled()" [required]="numeroSiretRequired() && isFr()" />
+      <input matInput formControlName="numeroSiret" [disabled]="isSiretDisabled()" [required]="numeroSiretRequired() && isFr()" />
       <button mat-icon-button matSuffix class="icon-help" matTooltip="Code INSEE à demander à votre établissement d'accueil ou consultable sur des sites de référencement d'entreprises. Correspond à l'identifiant géographique de l'établissement. (format : 14 chiffres consécutifs sans espace - ex: 12345678912345)" aria-label="Aide sur le numéro SIRET" type="button">
         <mat-icon aria-hidden="true">help</mat-icon>
       </button>
@@ -252,11 +252,7 @@
         <div class="sync-radio-wrapper">
           <span class="sync-radio-label">Synchronisation automatique</span>
 
-          <mat-radio-group
-            [value]="etab.verrouillageSynchroStructureSirene ? 'non' : 'oui'"
-            (change)="toggleVerrouillage()"
-            aria-label="Synchronisation automatique"
-          >
+          <mat-radio-group [value]="etab.verrouillageSynchroStructureSirene ? 'non' : 'oui'" (change)="toggleVerrouillage()" [disabled]="isMajAutoDisabled || !etab.temDiffusibleSirene" aria-label="Synchronisation automatique">
             <mat-radio-button value="oui">
               Oui
               <mat-icon aria-hidden="true" style="vertical-align: middle; margin-left: 4px;">
@@ -274,26 +270,22 @@
         </div>
       </div>
 
-      <!-- Mise à jour automatique -->
       <div class="slot" *ngIf="canUpdateFromApi()">
-        <button type="button" class="mr-2 valid-button" mat-button mat-stroked-button [disabled]="autoUpdating || etab.verrouillageSynchroStructureSirene" (click)="autoUpdateFromApi()"
-                matTooltip="Met à jour automatiquement les informations de l'établissement via l'API">
-          <mat-icon aria-hidden="true" [class.spin]="autoUpdating">autorenew</mat-icon>
-          {{ autoUpdating ? 'Mise à jour…' : 'Mise à jour automatique' }}
-        </button>
+        <div [matTooltip]="!etab.temDiffusibleSirene ? 'Cet établissement est partiellement diffusible et ne peut pas être mis à jour via l\'API Sirene' : 'Met à jour automatiquement les informations de l\'établissement via l\'API'"
+             class="mr-2 valid-button" >
+          <button type="button" mat-button mat-stroked-button color="primary" class="mr-2"
+                  [disabled]="autoUpdating || !etab.temDiffusibleSirene || etab.verrouillageSynchroStructureSirene"
+                  (click)="autoUpdateFromApi()">
+            <mat-icon aria-hidden="true"  class="mr-1" [class.spin]="autoUpdating">autorenew</mat-icon>
+            {{ autoUpdating ? 'Mise à jour…' : 'Mise à jour' }}
+          </button>
+        </div>
       </div>
 
       <!-- Valider -->
       <div class="slot right-slot">
-        <button
-          mat-button
-          class="valid-button"
-          mat-flat-button
-          type="submit">
-          {{ 'BOUTON_VALIDER' | contenu }}
-        </button>
+        <button mat-button class="valid-button" mat-flat-button type="submit">{{ 'BOUTON_VALIDER' | contenu }}</button>
       </div>
     </div>
   </div>
 </form>
-

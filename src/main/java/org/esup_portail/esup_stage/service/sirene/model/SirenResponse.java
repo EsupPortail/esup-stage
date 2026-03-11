@@ -83,6 +83,9 @@ public class SirenResponse {
             @JsonProperty("sexeUniteLegale")
             private String sexeUniteLegale;
 
+            @JsonProperty("statutDiffusionUniteLegale")
+            private String statutDiffusionUniteLegale;
+
         }
 
         @JsonIgnoreProperties(ignoreUnknown = true)

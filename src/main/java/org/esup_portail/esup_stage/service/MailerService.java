@@ -12,10 +12,12 @@ import org.esup_portail.esup_stage.dto.SendMailTestDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
+import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateMailGroupeJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateMailJpaRepository;
 import org.esup_portail.esup_stage.repository.UtilisateurJpaRepository;
 import org.esup_portail.esup_stage.service.evaluation.EvaluationService;
+import org.esup_portail.esup_stage.service.impression.PreviewConventionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
@@ -58,6 +60,12 @@ public class MailerService {
     @Autowired
     UtilisateurJpaRepository utilisateurJpaRepository;
 
+    @Autowired
+    CentreGestionJpaRepository centreGestionJpaRepository;
+
+    @Autowired
+    PreviewConventionFactory previewConventionFactory;
+
     private void sendMail(String to, TemplateMail templateMail, MailContext mailContext) {
         sendMail(to, templateMail.getId(), templateMail.getObjet(), templateMail.getTexte(), templateMail.getCode(), mailContext, false, null, null);
     }
@@ -95,7 +103,6 @@ public class MailerService {
         }
     }
 
-
     public void sendMailGroupe(String to, Convention convention, Utilisateur userModif, String templateMailCode, byte[] archive) {
         TemplateMailGroupe templateMailGroupe = templateMailGroupeJpaRepository.findByCode(templateMailCode);
         if (templateMailGroupe == null) {
@@ -118,8 +125,13 @@ public class MailerService {
         if (sendMailTestDto.getTo() == null || sendMailTestDto.getTo().equals("")) {
             logger.info("Aucun destinataire défini pour l'envoie de l'email.");
         } else {
-            MailContext mailContext = new MailContext();
-            mailContext.setModifiePar(new MailContext.ModifieParContext(utilisateur));
+            CentreGestion centreEtablissement = centreGestionJpaRepository.getCentreEtablissement();
+            Convention convention = previewConventionFactory.createFictionalConvention(centreEtablissement);
+            Avenant avenant = previewConventionFactory.createFictionalAvenant(convention);
+            MailContext mailContext = new MailContext(appliProperties, applicationProperties, convention, avenant, utilisateur);
+            if (mailContext.getSignataire() != null && mailContext.getSignataire().getTel() == null) {
+                mailContext.getSignataire().setTel("+33 1 44 55 66 77");
+            }
             sendMail(sendMailTestDto.getTo(), templateMail.getId(), templateMail.getObjet(), templateMail.getTexte(),
                     templateMail.getCode(), mailContext, true, null, null);
         }

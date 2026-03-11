@@ -105,7 +105,8 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   nafN5List: any[] = [];
   creationSeulementHorsFrance : boolean = false;
   creationSeulementFrance : boolean = false;
-
+  isMajAutoDisabled : boolean = false;
+  isModifRaisonSocialeGestionnaire : boolean = false;
   nafN5FilterCtrl: FormControl = new FormControl();
   filteredNafN5List: ReplaySubject<any> = new ReplaySubject<any>(1);
   paysFilterCtrl: FormControl = new FormControl('');
@@ -140,6 +141,8 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
       const autorisationCreationFrance = response.autoriserEtudiantACreerEntrepriseFrance;
       this.creationSeulementHorsFrance = autorisationCreationHorsFrance && !autorisationCreationFrance;
       this.creationSeulementFrance = !autorisationCreationHorsFrance && autorisationCreationFrance
+      this.isMajAutoDisabled = response.desactiverMajAutoEtabSelection;
+      this.isModifRaisonSocialeGestionnaire = response.modifRaisonSocialeGestionnaire;
     })
     this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({ temEnServPays: { value: 'O', type: 'text' } })).subscribe((response: any) => {
         this.countries = response.data;
@@ -157,10 +160,8 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
           this.filterTypeCountries = 2;
         }
 
-        // Alimente la liste filtrée initiale
         this.filteredCountries.next(this.countries.slice());
 
-        // Met en place le filtrage par saisie
         this.paysFilterCtrl.valueChanges.pipe(takeUntil(this._onDestroy)).subscribe(() => this.filterCountries());
     });
     this.communeService.getPaginated(1, 0, 'lib', 'asc', "").subscribe((response: any) => {
@@ -191,7 +192,6 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   public isLayoutReady = false;
   public Editor = ClassicEditor;
   public config: EditorConfig = {};
-
   public ngAfterViewInit() : void {
     this.config = {
       licenseKey: 'GPL',
@@ -396,8 +396,8 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
 
   ngOnChanges(changes: SimpleChanges): void {
     this.form = this.fb.group({
-      raisonSociale: [{ value: this.etab.raisonSociale, disabled: this.isFieldDisabled() }, [Validators.required, Validators.maxLength(150)]],
-      numeroSiret: [{ value: this.etab.numeroSiret, disabled: this.isFieldDisabled() }, [Validators.maxLength(14), Validators.pattern(REGEX.NUMSIRET)]],
+      raisonSociale: [this.etab.raisonSociale, [Validators.required, Validators.maxLength(150)]],
+      numeroSiret: [this.etab.numeroSiret, [Validators.maxLength(14), Validators.pattern(REGEX.NUMSIRET)]],
       idEffectif: [this.etab.effectif ? this.etab.effectif.id : null],
       idTypeStructure: [this.etab.typeStructure ? this.etab.typeStructure.id : null, [Validators.required]],
       idStatutJuridique: [this.etab.statutJuridique?.id ?? null, [Validators.required]],
@@ -438,6 +438,13 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
         this.lastNafListKey = currentKey;
         this.loadNafN5List();
       }
+    }
+
+    if (this.isRaisonSocialeDisabled()) {
+      this.form.get('raisonSociale')?.disable();
+    }
+    if (this.isSiretDisabled()) {
+      this.form.get('numeroSiret')?.disable();
     }
   }
 
@@ -618,6 +625,15 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
       return !!this.etab?.id ? !this.canEdit() : !this.canCreate();
   }
 
+  isRaisonSocialeDisabled(): boolean {
+    return !(this.authService.isAdmin() || (this.authService.isGestionnaire() && this.isModifRaisonSocialeGestionnaire)) && this.isFieldDisabled() && this.etab?.temSiren === true && this.etab?.temDiffusibleSirene === true;
+  }
+
+
+    isSiretDisabled(): boolean {
+      return this.isFieldDisabled() && this.etab?.temSiren === true;
+    }
+
   private filterCountries(): void {
     if (!this.countries || !Array.isArray(this.countries)) {
       this.filteredCountries.next([]);
@@ -700,7 +716,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   }
 
   canUpdateFromApi(): boolean {
-    return !(this.authService.isEtudiant() || this.authService.isEnseignant()) && this.isSireneActive && this.etab?.id;
+    return !(this.authService.isEtudiant() || this.authService.isEnseignant()) && this.isSireneActive && this.etab?.id && this.etab.pays.id == 82;
   }
 
   // Méthode pour basculer l'état du verrouillage
