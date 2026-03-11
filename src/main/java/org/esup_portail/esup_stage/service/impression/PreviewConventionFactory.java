@@ -18,7 +18,7 @@ public class PreviewConventionFactory {
 
     public ImpressionContext createPreviewContext(CentreGestion centreGestion, CentreGestion centreEtablissement) {
         Convention convention = createFictionalConvention(centreGestion);
-        return new ImpressionContext(convention, null, centreEtablissement);
+        return new ImpressionContext(convention, null, centreEtablissement, null, null);
     }
 
     public Avenant createFictionalAvenant(Convention convention) {

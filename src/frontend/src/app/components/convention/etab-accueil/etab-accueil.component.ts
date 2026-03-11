@@ -141,6 +141,15 @@ export class EtabAccueilComponent implements OnInit {
         this.validated.emit(this.etab);
     })
   }
+  onFormSubmitted(etab: any): void {
+    this.modif = false;
+    this.selectedRow = undefined;
+    this.etab = etab;
+    if (this.firstPanel) {
+      this.firstPanel.expanded = false;
+    }
+    this.validated.emit(this.etab);
+  }
 
   initCreate(): void {
     this.etab = {};

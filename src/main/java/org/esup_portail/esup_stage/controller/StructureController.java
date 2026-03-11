@@ -280,7 +280,7 @@ public class StructureController {
     }
 
     @PutMapping("/{id}")
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.MODIFICATION},evaluator = StructurePermissionEvaluator.class)
+    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.MODIFICATION},evaluator = StructurePermissionEvaluator.class)
     public Structure update(@PathVariable("id") int id, @Valid @RequestBody StructureFormDto structureFormDto) {
         Structure structure = structureJpaRepository.findById(id);
         if (structure == null) {
@@ -298,7 +298,7 @@ public class StructureController {
     }
 
     @PostMapping("/getOrCreate")
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.LECTURE})
     public Structure getOrCreate(@Valid @RequestBody Structure structureBody) {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
         Structure structure;

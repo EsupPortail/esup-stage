@@ -128,7 +128,7 @@ public class MailerService {
             CentreGestion centreEtablissement = centreGestionJpaRepository.getCentreEtablissement();
             Convention convention = previewConventionFactory.createFictionalConvention(centreEtablissement);
             Avenant avenant = previewConventionFactory.createFictionalAvenant(convention);
-            MailContext mailContext = new MailContext(appliProperties, applicationProperties, convention, avenant, utilisateur);
+            MailContext mailContext = new MailContext(appliProperties, applicationProperties, convention, avenant, evaluationService.buildEvaluationTuteurUrl(convention));
             if (mailContext.getSignataire() != null && mailContext.getSignataire().getTel() == null) {
                 mailContext.getSignataire().setTel("+33 1 44 55 66 77");
             }

@@ -31,6 +31,7 @@ public class SecureInterceptor {
     public Object checkAuthorization(ProceedingJoinPoint joinPoint) throws Throwable {
         MethodSignature methodSignature = (MethodSignature) joinPoint.getStaticPart().getSignature();
         Secure authorized = methodSignature.getMethod().getAnnotation(Secure.class);
+
         AppFonctionEnum[] fonctions = authorized.fonctions();
         DroitEnum[] droits = authorized.droits();
         boolean forbiddenEtu = authorized.forbiddenEtu();
@@ -41,13 +42,23 @@ public class SecureInterceptor {
         }
 
         boolean hasRight = fonctions.length == 0 && droits.length == 0;
-
         if (!hasRight && fonctions.length > 0 && droits.length > 0) {
             hasRight = UtilisateurHelper.isRole(utilisateur, fonctions, droits);
         }
 
         if (forbiddenEtu && UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
-            hasRight = false;
+            throw new AppException(HttpStatus.FORBIDDEN, "Votre rôle ne donne pas accès à cette ressource");
+        }
+
+        Class<? extends org.esup_portail.esup_stage.security.permission.PermissionEvaluator> evaluatorClass =
+                authorized.evaluator();
+        boolean hasCustomEvaluator = evaluatorClass != null
+                && !org.esup_portail.esup_stage.security.permission.PermissionEvaluator.class.equals(evaluatorClass);
+
+        if (!hasRight && hasCustomEvaluator) {
+            org.esup_portail.esup_stage.security.permission.PermissionEvaluator evaluator =
+                    context.getBean(evaluatorClass);
+            hasRight = evaluator.hasPermission(utilisateur, methodSignature, joinPoint.getArgs());
         }
 
         if (!hasRight) {
