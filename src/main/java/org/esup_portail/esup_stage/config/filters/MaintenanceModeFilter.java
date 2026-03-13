@@ -69,6 +69,9 @@ public class MaintenanceModeFilter extends OncePerRequestFilter {
 
     private boolean isExcludedUri(String uri) {
         return uri.startsWith("/api/maintenance/status")
+                || uri.startsWith("/api/maintenance/stream")
+                || uri.startsWith("/api/users/connected")
+                || uri.startsWith("/api/users/admintech")
                 || uri.startsWith("/api/version")
                 || uri.startsWith("/api/contenus/")
                 || uri.startsWith("/api/config/theme")
