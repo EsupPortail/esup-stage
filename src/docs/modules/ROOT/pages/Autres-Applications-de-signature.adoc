@@ -2,24 +2,208 @@
 
 WARNING: Les paramètres ne doivent pas être ajoutés s'ils ne sont pas utilisés
 
-ESUP-Stage met à disposition des api "public" accessible avec un des tokens paramétrés dans `appli.public.tokens`. La liste des api se trouve dans `/public/swagger-ui.html`.
+== Principe général
 
-Le paramétrage "webhook" correspondent à l'appel vers une api externe pour la signature électronique (cette solution est à mettre en place par chaque établissement).
+ESUP-Stage s'intègre avec des applications de signature électronique tierces via un mécanisme de **webhook bidirectionnel** :
 
-`webhook.signature.uri` : uri de l'api externe +
-`webhook.signature.token` : token d'accès
+. Lorsqu'une convention ou un avenant doit être signé, ESUP-Stage appelle l'URL webhook de l'application externe.
+. L'application externe récupère le document et les métadonnées via les API publiques d'ESUP-Stage.
+. Après signature, l'application externe renvoie le PDF signé et les dates de signature à ESUP-Stage via les API publiques.
+
+NOTE: Pour l'intégration spécifique avec ESUP-Signature, voir la page xref:ESUP-Signature.adoc[ESUP-Signature] — la configuration y est identique mais ESUP-Stage gère lui-même l'envoi vers ESUP-Signature.
+
+== Paramétrage
 
 [,properties]
 ----
-# tokens d'accès d'esup-stage permettant d'autoriser les webhook à accéder aux api /public/api d'esup-stage séparés par des ; (exemple : token1;token2;token3)
+# Tokens d'accès permettant à l'application externe d'appeler les API /public/api d'ESUP-Stage
+# Plusieurs tokens séparés par des ; (exemple : token1;token2;token3)
 appli.public.tokens=xxxx
 
-### Paramétrage webhooks ###
-# uri du webhook de signature
-webhook.signature.uri=http://localhost:8080/webhook/esup-signature
-# token permettant d'accéder au webhook signature
+### Paramétrage webhook ###
+# URL de l'application externe appelée par ESUP-Stage pour déclencher une signature
+webhook.signature.uri=https://mon-appli-signature.univ.fr/api/signer
+# Token Bearer envoyé par ESUP-Stage dans l'en-tête Authorization lors de l'appel webhook
 webhook.signature.token=yyyyy
 ### -------------------- ###
 ----
 
-// Experience UL ? 
+== Flux d'intégration
+
+=== 1. Déclenchement par ESUP-Stage
+
+Quand une convention ou un avenant entre en phase de signature, ESUP-Stage appelle l'URL webhook configurée :
+
+----
+GET {webhook.signature.uri}?conventionid={id}
+Authorization: Bearer {webhook.signature.token}
+----
+
+ou pour un avenant :
+
+----
+GET {webhook.signature.uri}?avenantid={id}
+Authorization: Bearer {webhook.signature.token}
+----
+
+NOTE: `conventionid` et `avenantid` sont mutuellement exclusifs — un seul doit être fourni.
+
+=== 2. Récupération du document par l'application externe
+
+L'application externe appelle les API publiques d'ESUP-Stage avec un token de la liste `appli.public.tokens` dans l'en-tête `Authorization: Bearer`.
+
+La documentation complète des API est disponible dans Swagger à l'adresse `/public/swagger-ui.html`.
+
+==== Récupérer le PDF et les métadonnées (combiné)
+
+----
+GET /public/api/conventions/{id}
+Authorization: Bearer {appli.public.tokens}
+----
+
+.Exemple de réponse JSON
+[,json]
+----
+{
+  "pdf64": "JVBERi0xLjQK...",
+  "metadata": {
+    "title": "Convention_123",
+    "companyname": "Entreprise ACME",
+    "school": "Université de Lorraine",
+    "workflowId": "42",
+    "signatory": [
+      {
+        "name": "DUPONT",
+        "givenname": "Jean",
+        "mail": "jean.dupont@univ-lorraine.fr",
+        "phone": "+33612345678",
+        "order": 1
+      },
+      {
+        "name": "MARTIN",
+        "givenname": "Sophie",
+        "mail": "sophie.martin@acme.fr",
+        "phone": null,
+        "order": 2
+      }
+    ],
+    "watchers": [
+      {
+        "mail": "responsable@univ-lorraine.fr"
+      }
+    ]
+  }
+}
+----
+
+NOTE: `pdf64` est le PDF encodé en Base64. Le champ `order` des signataires définit l'ordre de signature (1 = premier à signer). Les observateurs (`watchers`) reçoivent le document en lecture seule sans action de signature.
+
+==== Récupérer uniquement les métadonnées
+
+----
+GET /public/api/conventions/{id}/metadata
+Authorization: Bearer {appli.public.tokens}
+----
+
+.Exemple de réponse JSON
+[,json]
+----
+{
+  "title": "Convention_123",
+  "companyname": "Entreprise ACME",
+  "school": "Université de Lorraine",
+  "workflowId": "42",
+  "signatory": [
+    {
+      "name": "DUPONT",
+      "givenname": "Jean",
+      "mail": "jean.dupont@univ-lorraine.fr",
+      "phone": "+33612345678",
+      "order": 1
+    }
+  ],
+  "watchers": [
+    {
+      "mail": "responsable@univ-lorraine.fr"
+    }
+  ]
+}
+----
+
+==== Récupérer uniquement le PDF (binaire)
+
+----
+GET /public/api/conventions/{id}/pdf
+Authorization: Bearer {appli.public.tokens}
+----
+
+La réponse est un fichier PDF (`Content-Type: application/pdf`).
+
+=== 3. Renvoi des résultats par l'application externe
+
+Une fois la signature effectuée, l'application externe doit rappeler ESUP-Stage pour mettre à jour le dossier.
+
+==== Déposer le PDF signé
+
+----
+POST /public/api/conventions/{id}/pdf
+Authorization: Bearer {appli.public.tokens}
+Content-Type: multipart/form-data
+
+doc=<fichier PDF signé>
+----
+
+.Exemple de réponse JSON
+[,json]
+----
+{
+  "message": "OK"
+}
+----
+
+==== Mettre à jour les dates de signature
+
+----
+PATCH /public/api/conventions/{id}/dates
+Authorization: Bearer {appli.public.tokens}
+Content-Type: application/json
+----
+
+.Exemple de corps de la requête JSON
+[,json]
+----
+[
+  {
+    "mail": "jean.dupont@univ-lorraine.fr",
+    "order": 1,
+    "signatureDate": "2025-03-15T10:30:00.000+0000",
+    "submissionDate": "2025-03-14T09:00:00.000+0000"
+  },
+  {
+    "mail": "sophie.martin@acme.fr",
+    "order": 2,
+    "signatureDate": "2025-03-16T14:00:00.000+0000",
+    "submissionDate": "2025-03-16T14:00:00.000+0000"
+  }
+]
+----
+
+NOTE: `order` correspond à l'ordre du signataire tel que défini dans les métadonnées. `submissionDate` (date de dépôt) est optionnel.
+
+.Exemple de réponse JSON
+[,json]
+----
+{
+  "message": "OK"
+}
+----
+
+== Mêmes API pour les avenants
+
+Les mêmes endpoints existent pour les avenants, en remplaçant `/conventions/` par `/avenants/` :
+
+* `+GET /public/api/avenants/{id}+` — PDF + métadonnées
+* `+GET /public/api/avenants/{id}/metadata+` — métadonnées uniquement
+* `+GET /public/api/avenants/{id}/pdf+` — PDF binaire
+* `+POST /public/api/avenants/{id}/pdf+` — déposer le PDF signé
+* `+PATCH /public/api/avenants/{id}/dates+` — mettre à jour les dates de signature
