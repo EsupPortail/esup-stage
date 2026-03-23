@@ -6,6 +6,8 @@ import org.esup_portail.esup_stage.model.Maintenance;
 import org.esup_portail.esup_stage.model.Utilisateur;
 import org.esup_portail.esup_stage.repository.MaintenanceJpaRepository;
 import org.esup_portail.esup_stage.security.ServiceContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -23,6 +25,8 @@ import java.util.concurrent.atomic.AtomicReference;
 @Service
 public class MaintenanceService {
 
+    private static final Logger log = LoggerFactory.getLogger(MaintenanceService.class);
+
     @Autowired
     private MaintenanceJpaRepository maintenanceJpaRepository;
 
@@ -36,7 +40,17 @@ public class MaintenanceService {
 
     @PostConstruct
     public void initStateReference() {
-        lastBroadcastState.set(getCurrentState());
+        try {
+            lastBroadcastState.set(getCurrentState());
+        } catch (RuntimeException e) {
+            log.warn("Unable to initialize maintenance state from database: {}", e.getMessage());
+            lastBroadcastState.set(MaintenanceStateDto.inactive());
+        }
+    }
+
+    public MaintenanceStateDto getLastKnownState() {
+        MaintenanceStateDto state = lastBroadcastState.get();
+        return state != null ? state : MaintenanceStateDto.inactive();
     }
 
     public MaintenanceStateDto getCurrentState() {
@@ -115,9 +129,7 @@ public class MaintenanceService {
     }
 
     public boolean isEffectiveMaintenanceActive() {
-        return findActive()
-                .map(maintenance -> maintenance.isActive(clock))
-                .orElse(false);
+        return getLastKnownState().isActive();
     }
 
     public Optional<Maintenance> findAlertMaintenance() {
@@ -126,7 +138,11 @@ public class MaintenanceService {
 
     @Scheduled(fixedDelayString = "${maintenance.scheduler.fixed-delay-ms:5000}")
     public void checkScheduledTransitions() {
-        broadcastCurrentState(false);
+        try {
+            broadcastCurrentState(false);
+        } catch (RuntimeException e) {
+            log.warn("Maintenance state refresh failed: {}", e.getMessage());
+        }
     }
 
     private Optional<Maintenance> findUpcoming() {
@@ -142,7 +158,7 @@ public class MaintenanceService {
 
     private Maintenance findById(Long id) {
         return maintenanceJpaRepository.findById(id)
-                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Maintenance non trouvée"));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Maintenance non trouvee"));
     }
 
     private LocalDateTime now() {
@@ -154,13 +170,13 @@ public class MaintenanceService {
             throw new AppException(HttpStatus.BAD_REQUEST, "Maintenance invalide");
         }
         if (maintenance.getDatDebMaint() == null) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "La date de début de maintenance est obligatoire");
+            throw new AppException(HttpStatus.BAD_REQUEST, "La date de debut de maintenance est obligatoire");
         }
         if (maintenance.getDatFinMaint() != null && !maintenance.getDatFinMaint().isAfter(maintenance.getDatDebMaint())) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "La date de fin doit être postérieure à la date de début");
+            throw new AppException(HttpStatus.BAD_REQUEST, "La date de fin doit etre posterieure a la date de debut");
         }
         if (maintenance.getDatAlertMaint() != null && maintenance.getDatAlertMaint().isAfter(maintenance.getDatDebMaint())) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "La date d'alerte doit être antérieure ou égale à la date de début");
+            throw new AppException(HttpStatus.BAD_REQUEST, "La date d'alerte doit etre anterieure ou egale a la date de debut");
         }
     }
 
@@ -189,12 +205,20 @@ public class MaintenanceService {
 
         if (force) {
             lastBroadcastState.set(state);
-            maintenanceSseService.broadcast(state);
+            safeBroadcast(state);
             return;
         }
 
         if (updateLastStateIfChanged(state)) {
+            safeBroadcast(state);
+        }
+    }
+
+    private void safeBroadcast(MaintenanceStateDto state) {
+        try {
             maintenanceSseService.broadcast(state);
+        } catch (RuntimeException e) {
+            log.warn("Maintenance SSE broadcast failed: {}", e.getMessage());
         }
     }
 

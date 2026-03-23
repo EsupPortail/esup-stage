@@ -21,7 +21,7 @@ public class MaintenanceController {
 
     @GetMapping("/status")
     public MaintenanceStateDto status() {
-        return maintenanceService.getCurrentState();
+        return maintenanceService.getLastKnownState();
     }
 
     @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
@@ -36,7 +36,7 @@ public class MaintenanceController {
         maintenanceSseService.addEmitter(emitter);
 
         try {
-            MaintenanceStateDto currentState = maintenanceService.getCurrentState();
+            MaintenanceStateDto currentState = maintenanceService.getLastKnownState();
             emitter.send(SseEmitter.event().name("maintenance").data(currentState));
         } catch (Exception e) {
             cleanup.run();

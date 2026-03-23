@@ -47,13 +47,11 @@ public class MaintenanceModeFilter extends OncePerRequestFilter {
             return;
         }
 
-        boolean effectiveMaintenanceActive = maintenanceService.isEffectiveMaintenanceActive();
-        if (!effectiveMaintenanceActive || isAdmin()) {
+        MaintenanceStateDto state = maintenanceService.getLastKnownState();
+        if (!state.isActive() || isAdmin()) {
             filterChain.doFilter(request, response);
             return;
         }
-
-        MaintenanceStateDto state = maintenanceService.getCurrentState();
 
         response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

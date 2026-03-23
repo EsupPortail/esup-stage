@@ -16,6 +16,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -62,6 +63,10 @@ public class LogTailerService {
             return sessionId;
         } catch (Exception ex) {
             removeSession(sessionId);
+            if (isClientDisconnectException(ex)) {
+                log.debug("Log stream {} closed during startup: {}", sessionId, ex.getMessage());
+                return sessionId;
+            }
             throw new IllegalStateException("Unable to start log stream", ex);
         }
     }
@@ -117,12 +122,19 @@ public class LogTailerService {
 
                 session.position = session.reader.getFilePointer();
             } catch (Exception ex) {
-                log.warn("Log stream {} stopped after error: {}", sessionId, ex.getMessage());
+                boolean clientDisconnect = isClientDisconnectException(ex);
+                if (clientDisconnect) {
+                    log.debug("Log stream {} client disconnected: {}", sessionId, ex.getMessage());
+                } else {
+                    log.warn("Log stream {} stopped after error: {}", sessionId, ex.getMessage());
+                }
                 removeSession(sessionId);
-                try {
-                    session.emitter.completeWithError(ex);
-                } catch (Exception ignore) {
-                    // Emitter can already be completed by the container.
+                if (!clientDisconnect) {
+                    try {
+                        session.emitter.completeWithError(ex);
+                    } catch (Exception ignore) {
+                        // Emitter can already be completed by the container.
+                    }
                 }
             }
         }
@@ -229,6 +241,25 @@ public class LogTailerService {
 
     private Path resolveLogFilePath() {
         return Path.of(logFileName).toAbsolutePath().normalize();
+    }
+
+    private boolean isClientDisconnectException(Throwable throwable) {
+        Throwable current = throwable;
+        while (current != null) {
+            String message = current.getMessage();
+            if (message != null) {
+                String normalized = message.toLowerCase(Locale.ROOT);
+                if (normalized.contains("broken pipe")
+                        || normalized.contains("connection reset by peer")
+                        || normalized.contains("forcibly closed by the remote host")
+                        || normalized.contains("une connexion etablie a ete abandonnee")
+                        || normalized.contains("servletoutputstream failed to flush")) {
+                    return true;
+                }
+            }
+            current = current.getCause();
+        }
+        return false;
     }
 
     private LogLineEvent parseLine(String rawLine, boolean historical) {
