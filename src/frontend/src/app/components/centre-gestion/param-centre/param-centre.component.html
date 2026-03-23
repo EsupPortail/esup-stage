@@ -31,6 +31,16 @@
             </mat-radio-group>
           </div>
           <div>
+            <mat-checkbox formControlName="autoriserImpressionAvenant">Autoriser les étudiants à imprimer leur(s) avenant(s)</mat-checkbox>
+          </div>
+          <div *ngIf="form.get('autoriserImpressionAvenant')?.value">
+            <div class="mb-2">Sous Conditions : </div>
+            <mat-radio-group style="display: grid" formControlName="conditionValidationImpressionAvenant">
+              <mat-radio-button style="margin-left: 10px" [value]="0">Aucune condition (l’étudiant pourra imprimer son avenant, validée ou pas)</mat-radio-button>
+              <mat-radio-button style="margin-left: 10px" [value]="1">Uniquement sous réserve de validation de l'avenant</mat-radio-button>
+            </mat-radio-group>
+          </div>
+          <div>
             <mat-checkbox formControlName="autorisationEtudiantCreationConvention">Autoriser les étudiants à créer des conventions</mat-checkbox>
           </div>
           <div>

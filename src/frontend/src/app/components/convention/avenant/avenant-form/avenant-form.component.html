@@ -439,7 +439,7 @@
       <button class="valid-button" mat-button mat-flat-button type="button" (click)="validate()"
         *ngIf="isGestionnaire() && avenant.id">Valider l'avenant</button>
     </div>
-    <div *ngIf="avenant.id && isGestionnaire()" class="col-sm-3 text-center">
+    <div *ngIf="avenant.id && isPrintAuthorised()" class="col-sm-3 text-center">
       <button class="valid-button" mat-flat-button type="button" (click)="printAvenant()">Imprimer l'avenant</button>
     </div>
     <div [ngClass]="avenant.id && isGestionnaire()? 'col-sm-3 text-center' : 'col-sm-4 text-center'">

@@ -594,4 +594,21 @@ export class AvenantFormComponent implements OnInit {
       FileSaver.saveAs(blob, filename);
     });
   }
+
+  isPrintAuthorised(): boolean {
+    if (this.isGestionnaire()) {
+      return true;
+    }
+
+    const centreGestion = this.avenant.convention.centreGestion;
+
+    if (!centreGestion.autoriserImpressionAvenant) {
+      return false;
+    }
+
+    return (
+      centreGestion.conditionValidationImpressionAvenant !== 1 ||
+      !!this.avenant.validationAvenant
+    );
+  }
 }

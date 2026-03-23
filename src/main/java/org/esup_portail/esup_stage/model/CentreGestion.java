@@ -88,6 +88,12 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     @Column()
     private Integer conditionValidationImpression = 0;
 
+    @Column()
+    private boolean autoriserImpressionAvenant;
+
+    @Column()
+    private Integer conditionValidationImpressionAvenant = 0;
+
     @ManyToOne
     @JoinColumn(name = "idFichier")
     private Fichier fichier;
