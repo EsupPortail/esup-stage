@@ -133,11 +133,9 @@
       </div>
       <div class="row mt-3" *ngIf="canEdit() || canCreate()">
           <div class="col-12 d-flex justify-content-center">
-            <span *ngIf="etab.id && !modif && canEdit()" [confirmMessage]="'Attention : vous vous apprêtez à modifier la fiche de l\'établissement ' + etab.raisonSociale + ' . Pour sélectionner un autre établissement, veuillez cliquer sur le bouton de recherche d\'un établissement. '+ etab.raisonSociale + ' représente la raison sociale de l’établissement.'" (confirm)="edit()">
-              <button class="valid-button" type="button" mat-button mat-stroked-button>
-                Modifier la fiche de ce tuteur professionnel
-              </button>
-            </span>
+            <button *ngIf="etab.id && !modif && canEdit()" (click)="edit()" class="valid-button" type="button" mat-button mat-stroked-button>
+              Modifier la fiche de ce tuteur professionnel
+            </button>
           </div>
         <div class="col-6">
           <button class="cancel-button" mat-button mat-stroked-button *ngIf="contact.id && modif" (click)="cancelEdit()">{{'BOUTON_ANNULER'|contenu}}</button>
