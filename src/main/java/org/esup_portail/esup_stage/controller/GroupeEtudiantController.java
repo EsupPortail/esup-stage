@@ -15,6 +15,7 @@ import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.ConventionService;
 import org.esup_portail.esup_stage.service.MailerService;
+import org.esup_portail.esup_stage.service.TypeConventionResolverService;
 import org.esup_portail.esup_stage.service.apogee.ApogeeService;
 import org.esup_portail.esup_stage.service.apogee.model.*;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
@@ -60,6 +61,9 @@ public class GroupeEtudiantController {
 
     @Autowired
     MailerService mailerService;
+
+    @Autowired
+    TypeConventionResolverService typeConventionResolverService;
 
     @Autowired
     LangueConventionJpaRepository langueConventionJpaRepository;
@@ -534,17 +538,7 @@ public class GroupeEtudiantController {
         EtudiantRef etudiantRef = apogeeService.getInfoApogee(etudiant.getCodEtu(), etudiant.getAnnee());
         ApogeeMap apogeeMap = apogeeService.getEtudiantEtapesInscription(etudiant.getCodEtu(), etudiant.getAnnee());
         RegimeInscription regIns = apogeeMap.getRegimeInscription().stream().filter(r -> r.getAnnee().equals(etudiant.getAnnee())).findAny().orElse(null);
-        TypeConvention typeConvention = null;
-        if (regIns != null) {
-            String licRegIns = regIns.getLicRegIns();
-            String codRegIns = regIns.getCodRegIns();
-            if (licRegIns != null && !licRegIns.isEmpty()) {
-                typeConvention = typeConventionJpaRepository.findByCodeCtrl(licRegIns);
-            }
-            if (typeConvention == null && codRegIns != null && !codRegIns.isEmpty()) {
-                typeConvention = typeConventionJpaRepository.findByCodeCtrl(codRegIns);
-            }
-        }
+        TypeConvention typeConvention = typeConventionResolverService.resolveTypeConventionByRegimeInscription(regIns);
         EtapeInscription etapeInscription = apogeeMap.getListeEtapeInscriptions().stream()
                 .filter(i -> i.getCodeComposante().equals(etudiant.getCodeComposante())
                         && i.getCodeDiplome().equals(etudiant.getCodeDiplome())
@@ -560,7 +554,8 @@ public class GroupeEtudiantController {
         }
         if (typeConvention == null) {
             logger.error(
-                    "Type de convention non trouvé pour le regime d'inscription (codRegIns={}, licRegIns={})",
+                    "Type de convention non trouvÃ© pour le regime d'inscription (codSisRegIns={}, codRegIns={}, licRegIns={})",
+                    regIns != null ? regIns.getCodSisRegIns() : "null",
                     regIns != null ? regIns.getCodRegIns() : "null",
                     regIns != null ? regIns.getLicRegIns() : "null"
             );

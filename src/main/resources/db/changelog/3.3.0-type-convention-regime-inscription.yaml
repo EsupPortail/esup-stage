@@ -1,0 +1,71 @@
+﻿databaseChangeLog:
+  - changeSet:
+      id: 3.3.0-create-type-template-convention
+      author: thouveno9
+      changes:
+        - createTable:
+            tableName: TypeTemplateConvention
+            columns:
+              - column:
+                  name: idTypeConvention
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: idTemplateConvention
+                  type: INT
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: TypeTemplateConvention
+            baseColumnNames: idTypeConvention
+            referencedTableName: TypeConvention
+            referencedColumnNames: idTypeConvention
+            constraintName: fk_TypeTemplateConvention_TypeConvention
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: TypeTemplateConvention
+            baseColumnNames: idTemplateConvention
+            referencedTableName: TemplateConvention
+            referencedColumnNames: id
+            constraintName: fk_TypeTemplateConvention_TemplateConvention
+            onDelete: CASCADE
+        - addPrimaryKey:
+            tableName: TypeTemplateConvention
+            columnNames: idTypeConvention, idTemplateConvention
+            constraintName: pk_TypeTemplateConvention
+        - createIndex:
+            tableName: TypeTemplateConvention
+            indexName: idx_TypeTemplateConvention_idTemplateConvention
+            columns:
+              - column:
+                  name: idTemplateConvention
+
+  - changeSet:
+      id: 3.3.0-backfill-type-template-convention
+      author: thouveno9
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO TypeTemplateConvention (idTypeConvention, idTemplateConvention)
+              SELECT tc.idTypeConvention, tc.id
+              FROM TemplateConvention tc
+              WHERE tc.idTypeConvention IS NOT NULL
+                AND NOT EXISTS (
+                  SELECT 1
+                  FROM TypeTemplateConvention ttc
+                  WHERE ttc.idTypeConvention = tc.idTypeConvention
+                    AND ttc.idTemplateConvention = tc.id
+                );
+
+  - changeSet:
+      id: 3.3.0-ajout-param-activerSelectionAutomatiqueTemplateConvention
+      author: thouveno9
+      changes:
+        - addColumn:
+            tableName: CentreGestion
+            columns:
+              - column:
+                  name: activerSelectionAutomatiqueTemplateConvention
+                  type: BOOLEAN
+                  defaultValueBoolean: true

@@ -2,11 +2,13 @@ package org.esup_portail.esup_stage.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Data
 @Table(name = "TypeConvention")
 public class TypeConvention implements Exportable {
 
@@ -30,53 +32,9 @@ public class TypeConvention implements Exportable {
     @OneToMany(mappedBy = "typeConvention")
     private List<TemplateConvention> templates = new ArrayList<>();
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getLibelle() {
-        return libelle;
-    }
-
-    public void setLibelle(String libelle) {
-        this.libelle = libelle;
-    }
-
-    public String getCodeCtrl() {
-        return codeCtrl;
-    }
-
-    public void setCodeCtrl(String codeCtrl) {
-        this.codeCtrl = codeCtrl;
-    }
-
-    public String getTemEnServ() {
-        return temEnServ;
-    }
-
-    public void setTemEnServ(String temEnServ) {
-        this.temEnServ = temEnServ;
-    }
-
-    public Boolean getModifiable() {
-        return modifiable;
-    }
-
-    public void setModifiable(Boolean modifiable) {
-        this.modifiable = modifiable;
-    }
-
-    public List<TemplateConvention> getTemplates() {
-        return templates;
-    }
-
-    public void setTemplates(List<TemplateConvention> templates) {
-        this.templates = templates;
-    }
+    @JsonIgnore
+    @ManyToMany(mappedBy = "typeConventions")
+    private List<TemplateConvention> templateConventions = new ArrayList<>();
 
     @Override
     public String getExportValue(String key) {

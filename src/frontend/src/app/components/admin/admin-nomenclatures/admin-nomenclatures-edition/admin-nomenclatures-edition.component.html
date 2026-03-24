@@ -41,8 +41,16 @@
             <mat-radio-button [value]=false>Non</mat-radio-button>
           </mat-radio-group>
         </div>
+        <div *ngIf="form.get('templateConvention')">
+          <mat-form-field appearance="fill">
+            <mat-label>Template de convention</mat-label>
+            <mat-select multiple formControlName="templateConvention" [compareWith]="compare">
+              <mat-option *ngFor="let templateConvention of templateConventions" [value]="templateConvention">{{templateConvention.libelle}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
       </form>
-    </div>
+      </div>
 
     <!-- Footer fixe -->
     <div class="modal-footer">

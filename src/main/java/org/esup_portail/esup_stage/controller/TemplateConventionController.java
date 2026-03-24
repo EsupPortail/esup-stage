@@ -68,10 +68,6 @@ public class TemplateConventionController {
     @PostMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.CREATION})
     public TemplateConvention create(@RequestBody TemplateConvention templateConvention) {
-        if (templateConventionJpaRepository.findByTypeAndLangue(templateConvention.getTypeConvention().getId(), templateConvention.getLangueConvention().getCode()) != null) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Un template avec ce type et cette langue existe déjà");
-        }
-
         TemplateConventionDto templateConventionDto = new TemplateConventionDto(ColorConverter.convertHslToRgb(templateConvention.getTexte()), ColorConverter.convertHslToRgb(templateConvention.getTexteAvenant()));
         checkTemplateConvention(templateConventionDto);
 
