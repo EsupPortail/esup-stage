@@ -1,11 +1,9 @@
 <div class="modal-overlay">
   <div class="modal-container">
-    <!-- En-tête fixe -->
     <div class="header-banner">
       <h2>Ajout d'un élément</h2>
     </div>
 
-    <!-- Contenu scrollable -->
     <div class="scrollable-content">
       <form [formGroup]="form" (submit)="save()">
         <div class="row">
@@ -17,6 +15,7 @@
             </mat-form-field>
           </div>
         </div>
+
         <div class="row">
           <div class="col-sm-6" *ngIf="form.get('code')">
             <mat-form-field appearance="fill">
@@ -33,6 +32,22 @@
             </mat-form-field>
           </div>
         </div>
+
+        <div class="row" *ngIf="form.get('templateConventions')">
+          <div class="col-sm-12">
+            <mat-form-field appearance="fill" style="width: 100%">
+              <mat-label>Templates de convention associés</mat-label>
+              <mat-select multiple formControlName="templateConventions" [compareWith]="compare">
+                <mat-option *ngFor="let templateConvention of templateConventions" [value]="templateConvention">
+                  {{getTemplateLabel(templateConvention)}}
+                </mat-option>
+              </mat-select>
+              <mat-hint>Vous pouvez sélectionner 0 à N templates.</mat-hint>
+              <mat-error><app-form-error [field]="form.get('templateConventions')"></app-form-error></mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+
         <div *ngIf="form.get('typeStructure')">
           <mat-form-field appearance="fill">
             <mat-label>Type d'établissement</mat-label>
@@ -41,6 +56,7 @@
             </mat-select>
           </mat-form-field>
         </div>
+
         <div *ngIf="form.get('typeOffre')">
           <mat-form-field appearance="fill">
             <mat-label>Type d'offre</mat-label>
@@ -52,7 +68,6 @@
       </form>
     </div>
 
-    <!-- Footer fixe -->
     <div class="modal-footer">
       <button class="cancel-button" type="button" mat-flat-button (click)="close()">{{'BOUTON_ANNULER'|contenu}}</button>
       <button class="valid-button" mat-flat-button (click)="save()">{{'BOUTON_VALIDER'|contenu}}</button>
