@@ -1,0 +1,171 @@
+<div class="explorer-container">
+  <!-- Toolbar -->
+  <mat-toolbar class="explorer-toolbar">
+    <button mat-icon-button [disabled]="currentPath === rootPath" (click)="navigateUp()" matTooltip="Remonter">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+
+    <!-- Breadcrumbs -->
+    <nav class="breadcrumbs">
+      <span *ngFor="let crumb of breadcrumbs; let last = last" class="breadcrumb-item">
+        <button mat-button (click)="navigate(crumb.path)" [class.active]="last">
+          {{ crumb.name }}
+        </button>
+        <mat-icon *ngIf="!last" class="breadcrumb-sep">chevron_right</mat-icon>
+      </span>
+    </nav>
+
+    <span class="spacer"></span>
+
+    <!-- Filter -->
+    <div class="search-box">
+      <mat-icon>search</mat-icon>
+      <input [(ngModel)]="filterText" placeholder="Filtrer..." />
+    </div>
+
+    <!-- Sort -->
+    <button mat-icon-button [matMenuTriggerFor]="sortMenu" matTooltip="Trier">
+      <mat-icon>sort</mat-icon>
+    </button>
+    <mat-menu #sortMenu="matMenu">
+      <button mat-menu-item (click)="sortBy='name'"><mat-icon>sort_by_alpha</mat-icon> Nom</button>
+      <button mat-menu-item (click)="sortBy='date'"><mat-icon>schedule</mat-icon> Date</button>
+      <button mat-menu-item (click)="sortBy='size'"><mat-icon>data_usage</mat-icon> Taille</button>
+    </mat-menu>
+
+    <!-- View mode -->
+    <button mat-icon-button (click)="viewMode = viewMode === 'grid' ? 'list' : 'grid'" matTooltip="Changer la vue">
+      <mat-icon>{{ viewMode === 'grid' ? 'view_list' : 'grid_view' }}</mat-icon>
+    </button>
+
+    <!-- Actions -->
+<!--    <button mat-icon-button (click)="openNewFolderDialog()" matTooltip="Nouveau dossier">-->
+<!--      <mat-icon>create_new_folder</mat-icon>-->
+<!--    </button>-->
+<!--    <button mat-icon-button (click)="openExportDialog()" matTooltip="Exporter la sélection"-->
+<!--            [disabled]="selectedElements.size === 0">-->
+<!--      <mat-icon>download</mat-icon>-->
+<!--    </button>-->
+  </mat-toolbar>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-overlay">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <!-- Selection info -->
+  <div *ngIf="selectedElements.size > 0" class="selection-bar">
+    <mat-icon>check_circle</mat-icon>
+    {{ selectedElements.size }} élément(s) sélectionné(s)
+    <button mat-button (click)="selectedElements.clear()">Désélectionner</button>
+<!--    <button mat-button color="primary" (click)="openExportDialog()">-->
+<!--      <mat-icon>download</mat-icon> Exporter-->
+<!--    </button>-->
+  </div>
+
+  <!-- Grid view -->
+  <div *ngIf="viewMode === 'grid' && !loading" class="grid-view">
+    <div *ngIf="filteredElements.length === 0" class="empty-state">
+      <mat-icon>folder_open</mat-icon>
+      <span>Dossier vide</span>
+    </div>
+
+    <div
+      *ngFor="let element of filteredElements"
+      class="grid-item"
+      [class.selected]="isSelected(element)"
+      [class.folder]="element.isFolder"
+      (click)="onElementClick(element)"
+      (contextmenu)="openContextMenu($event, menuTrigger)"
+    >
+      <!-- Checkbox -->
+      <div class="select-overlay" (click)="toggleSelect(element, $event)">
+        <mat-icon *ngIf="!isSelected(element)" class="check-icon uncheck">radio_button_unchecked</mat-icon>
+        <mat-icon *ngIf="isSelected(element)" class="check-icon checked">check_circle</mat-icon>
+      </div>
+
+      <!-- Context menu trigger (hidden) -->
+      <span
+        [matMenuTriggerFor]="ctxMenu"
+        [matMenuTriggerData]="{element: element}"
+        #menuTrigger="matMenuTrigger"
+        style="position:absolute;opacity:0"
+      ></span>
+
+      <!-- Icon -->
+      <mat-icon class="file-icon" [class.folder-icon]="element.isFolder">
+        {{ element.isFolder ? 'folder' : 'description' }}
+      </mat-icon>
+
+      <!-- Name -->
+      <span class="file-name" [matTooltip]="element.name">{{ element.name }}</span>
+
+      <!-- Size -->
+      <span class="file-size" *ngIf="!element.isFolder">{{ formatSize(element.size) }}</span>
+    </div>
+  </div>
+
+  <!-- List view -->
+  <div *ngIf="viewMode === 'list' && !loading" class="list-view">
+    <div class="list-header">
+      <span class="col-name">Nom</span>
+      <span class="col-date">Modifié le</span>
+      <span class="col-size">Taille</span>
+      <span class="col-actions"></span>
+    </div>
+    <div
+      *ngFor="let element of filteredElements"
+      class="list-row"
+      [class.selected]="isSelected(element)"
+      (click)="onElementClick(element)"
+      (contextmenu)="openContextMenu($event, menuTrigger)"
+    >
+      <span class="col-check" (click)="toggleSelect(element, $event)">
+        <mat-icon *ngIf="!isSelected(element)">radio_button_unchecked</mat-icon>
+        <mat-icon *ngIf="isSelected(element)" class="checked">check_circle</mat-icon>
+      </span>
+      <mat-icon class="file-icon-sm" [class.folder-icon]="element.isFolder">
+        {{ element.isFolder ? 'folder' : 'description' }}
+      </mat-icon>
+      <span class="col-name">{{ element.name }}</span>
+      <span class="col-date">{{ element.lastModified | date:'dd/MM/yyyy HH:mm' }}</span>
+      <span class="col-size">{{ element.isFolder ? '-' : formatSize(element.size) }}</span>
+      <span class="col-actions">
+        <span
+          [matMenuTriggerFor]="ctxMenu"
+          [matMenuTriggerData]="{element: element}"
+          #menuTrigger="matMenuTrigger"
+        ></span>
+        <button mat-icon-button [matMenuTriggerFor]="ctxMenu" [matMenuTriggerData]="{element: element}"
+                (click)="$event.stopPropagation()">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- Context Menu (shared) -->
+<mat-menu #ctxMenu="matMenu">
+  <ng-template matMenuContent let-element="element">
+    <button mat-menu-item (click)="onElementClick(element)" *ngIf="!element.isFolder">
+      <mat-icon>open_in_new</mat-icon> Ouvrir
+    </button>
+    <button mat-menu-item (click)="downloadElement(element)" *ngIf="!element.isFolder">
+      <mat-icon>download</mat-icon> Télécharger
+    </button>
+<!--    <button mat-menu-item (click)="openRenameDialog(element)">-->
+<!--      <mat-icon>drive_file_rename_outline</mat-icon> Renommer-->
+<!--    </button>-->
+<!--    <button mat-menu-item (click)="openExportDialog(element)">-->
+<!--      <mat-icon>download</mat-icon> Exporter-->
+<!--    </button>-->
+<!--    <button mat-menu-item (click)="openZipDialog()" (mouseenter)="selectedElements.add(element.id)">-->
+<!--      <mat-icon>folder_zip</mat-icon> Compresser-->
+<!--    </button>-->
+<!--    <mat-divider></mat-divider>-->
+<!--    <button mat-menu-item (click)="deleteElement(element)" class="danger-item">-->
+<!--      <mat-icon>delete_outline</mat-icon> Supprimer-->
+<!--    </button>-->
+  </ng-template>
+</mat-menu>

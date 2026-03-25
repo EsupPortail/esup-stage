@@ -1,6 +1,9 @@
 package org.esup_portail.esup_stage.controller.admin;
 
+import lombok.Data;
 import org.esup_portail.esup_stage.controller.ApiController;
+import org.esup_portail.esup_stage.dto.FileContentDto;
+import org.esup_portail.esup_stage.dto.FileElementDto;
 import org.esup_portail.esup_stage.dto.LoggerLevelDto;
 import org.esup_portail.esup_stage.dto.LoggerUpdateRequest;
 import org.esup_portail.esup_stage.exception.AppException;
@@ -8,20 +11,22 @@ import org.esup_portail.esup_stage.model.Utilisateur;
 import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
-import org.esup_portail.esup_stage.service.LogTailerService;
+import org.esup_portail.esup_stage.service.logs.ExportService;
+import org.esup_portail.esup_stage.service.logs.LogFileService;
+import org.esup_portail.esup_stage.service.logs.LogReaderService;
+import org.esup_portail.esup_stage.service.logs.LogTailerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingSystem;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
@@ -38,6 +43,15 @@ public class AdminLogsController {
 
     @Autowired
     private LoggingSystem loggingSystem;
+
+    @Autowired
+    private LogFileService logFileService;
+
+    @Autowired
+    private LogReaderService logReaderService;
+
+    @Autowired
+    private ExportService exportService;
 
 
     @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
@@ -99,6 +113,88 @@ public class AdminLogsController {
         return ResponseEntity.noContent().build();
     }
 
+    /** Liste les fichiers/dossiers d'un chemin */
+    @GetMapping("/list")
+    public ResponseEntity<List<FileElementDto>> listFolder(@RequestParam(defaultValue = "") String path) throws IOException {
+        requireAdmin();
+        return ResponseEntity.ok(logFileService.listFolder(path));
+    }
+
+    /** Contenu paginé d'un fichier log */
+    @GetMapping("/content")
+    public ResponseEntity<FileContentDto> getContent(
+            @RequestParam String path,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "500") int pageSize
+    ) throws IOException {
+        requireAdmin();
+        return ResponseEntity.ok(logReaderService.readPage(path, page, pageSize));
+    }
+
+    /** Crée un sous-dossier */
+    @PostMapping("/folder")
+    public ResponseEntity<FileElementDto> createFolder(@RequestBody CreateFolderRequest req) throws IOException {
+        return ResponseEntity.ok(logFileService.createFolder(req.getParentPath(), req.getName()));
+    }
+
+    /** Déplace un fichier/dossier */
+    @PutMapping("/move")
+    public ResponseEntity<FileElementDto> moveElement(@RequestBody MoveRequest req) throws IOException {
+        return ResponseEntity.ok(logFileService.moveElement(req.getSourcePath(), req.getTargetFolderPath()));
+    }
+
+    /** Renomme un fichier/dossier */
+    @PutMapping("/rename")
+    public ResponseEntity<FileElementDto> renameElement(@RequestBody RenameRequest req) throws IOException {
+        return ResponseEntity.ok(logFileService.renameElement(req.getPath(), req.getNewName()));
+    }
+
+    /** Supprime un fichier/dossier */
+    @DeleteMapping("/delete")
+    public ResponseEntity<Void> deleteElement(@RequestParam String path) throws IOException {
+        logFileService.deleteElement(path);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Exporte un fichier unique en téléchargement direct (.log, .txt, etc.)
+     * GET /api/files/export/single?path=/logs/app.log
+     */
+    @GetMapping("/export/single")
+    public ResponseEntity<Resource> exportSingle(@RequestParam String path) throws IOException {
+        Resource resource = exportService.exportSingle(path);
+        String fileName = path.substring(path.lastIndexOf('/') + 1);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
+    }
+
+    /**
+     * Exporte un fichier log au format CSV (timestamp, level, thread, message).
+     * GET /api/files/export/csv?path=/logs/app.log
+     */
+    @GetMapping("/export/csv")
+    public ResponseEntity<byte[]> exportAsCsv(@RequestParam String path) throws IOException {
+        byte[] csv = exportService.exportLogAsCsv(path);
+        String fileName = path.substring(path.lastIndexOf('/') + 1).replaceAll("\\.\\w+$", "") + ".csv";
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                .body(csv);
+    }
+
+    /** Téléchargement interne (bouton "Télécharger" de l'explorateur) */
+    @GetMapping("/download")
+    public ResponseEntity<Resource> downloadFile(@RequestParam String path) throws IOException {
+        Resource resource = logFileService.getResource(path);
+        String fileName = path.substring(path.lastIndexOf('/') + 1);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
+    }
+
 
     private Utilisateur requireAdmin() {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
@@ -107,4 +203,12 @@ public class AdminLogsController {
         }
         return utilisateur;
     }
+
+    @Data
+    public static class CreateFolderRequest { String parentPath; String name; }
+    @Data
+    public static class MoveRequest         { String sourcePath; String targetFolderPath; }
+    @Data
+    public static class RenameRequest       { String path; String newName; }
+
 }

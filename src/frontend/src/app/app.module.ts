@@ -150,6 +150,9 @@ import { MaintenanceComponent } from "./components/admin/maintenance/maintenance
 import { MaintenanceDialogComponent } from "./components/admin/maintenance/maintenance-dialog/maintenance-dialog.component";
 import { MaintenanceModeComponent } from "./components/maintenance-mode/maintenance-mode.component";
 import {MatTree, MatTreeNode, MatTreeNodeDef, MatTreeNodePadding, MatTreeNodeToggle} from "@angular/material/tree";
+import {LogsLiveComponent} from "./components/admin/logs/logs-live/logs-live.component";
+import {LogsExplorerComponent} from "./components/admin/logs/logs-explorer/logs-explorer.component";
+import {LogsViewerComponent} from "./components/admin/logs/logs-explorer/logs-viewer/logs-viewer.component";
 
 registerLocaleData(localeFr, 'fr');
 
@@ -275,6 +278,9 @@ export class FrenchDateProvider extends NativeDateAdapter {
     MaintenanceComponent,
     MaintenanceDialogComponent,
     MaintenanceModeComponent,
+    LogsLiveComponent,
+    LogsExplorerComponent,
+    LogsViewerComponent,
   ],
   bootstrap: [AppComponent], imports: [BrowserModule,
     AppRoutingModule,
@@ -319,8 +325,12 @@ export class FrenchDateProvider extends NativeDateAdapter {
     MatButtonToggleGroup,
     MatButtonToggle,
     CdkTrapFocus,
-    ConfigMissingModule, MatTreeNode, MatTree, MatTreeNodePadding, MatTreeNodeDef, MatTreeNodeToggle,
-
+    ConfigMissingModule,
+    MatTreeNode,
+    MatTree,
+    MatTreeNodePadding,
+    MatTreeNodeDef,
+    MatTreeNodeToggle,
   ],
   exports: [
     ContenuPipe,

@@ -2,7 +2,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import {BehaviorSubject, Observable, pipe, Subject} from 'rxjs';
 import { environment } from '../../environments/environment';
 import {HttpClient} from "@angular/common/http";
-import {LoggerLevel} from "../models/LoggerLevel.model";
+import {LoggerLevel} from "../models/logger-level.model";
 import {catchError} from "rxjs/operators";
 
 export type LogStreamStatus = 'disconnected' | 'connecting' | 'connected' | 'error' | 'forbidden';

@@ -1,4 +1,4 @@
-package org.esup_portail.esup_stage.service;
+package org.esup_portail.esup_stage.service.logs;
 
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;

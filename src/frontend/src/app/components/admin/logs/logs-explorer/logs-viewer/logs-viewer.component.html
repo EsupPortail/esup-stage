@@ -1,0 +1,111 @@
+<div class="log-viewer" *ngIf="file; else noFile">
+  <!-- Header -->
+  <mat-toolbar class="log-toolbar">
+    <mat-icon class="file-icon-log">description</mat-icon>
+    <span class="file-title">{{ file.name }}</span>
+    <span class="file-meta">{{ totalLines | number }} lignes</span>
+    <span class="spacer"></span>
+
+    <!-- Search -->
+    <div class="search-box">
+      <mat-icon>search</mat-icon>
+      <input
+        [(ngModel)]="searchText"
+        (ngModelChange)="applyFilters()"
+        placeholder="Rechercher dans les logs..."
+      />
+      <button mat-icon-button *ngIf="searchText" (click)="searchText=''; applyFilters()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <!-- Options -->
+    <button mat-icon-button (click)="wrapLines=!wrapLines" [class.active]="wrapLines" matTooltip="Retour à la ligne">
+      <mat-icon>wrap_text</mat-icon>
+    </button>
+    <button mat-icon-button (click)="showLineNumbers=!showLineNumbers" [class.active]="showLineNumbers" matTooltip="Numéros de ligne">
+      <mat-icon>format_list_numbered</mat-icon>
+    </button>
+
+    <!-- Export depuis la visionneuse -->
+    <button mat-icon-button [matMenuTriggerFor]="exportMenu" matTooltip="Exporter ce fichier">
+      <mat-icon>download</mat-icon>
+    </button>
+    <mat-menu #exportMenu="matMenu">
+      <button mat-menu-item (click)="export('original')">
+        <mat-icon>description</mat-icon> Fichier original
+      </button>
+      <button mat-menu-item (click)="export('zip')">
+        <mat-icon>folder_zip</mat-icon> Archive ZIP
+      </button>
+      <button mat-menu-item (click)="export('csv')">
+        <mat-icon>table_chart</mat-icon> CSV (timestamp, level, message)
+      </button>
+    </mat-menu>
+
+    <!-- Level filters -->
+    <div class="level-filters">
+      <span class="filter-label">Filtrer par niveau :</span>
+      <button
+        *ngFor="let level of levels"
+        class="level-chip"
+        [class]="'level-chip ' + level.toLowerCase()"
+        [class.inactive]="levelFilter.length > 0 && !levelFilter.includes(level)"
+        (click)="toggleLevelFilter(level)"
+      >
+        {{ level }}
+        <span class="chip-count">{{ 1 }}</span>
+      </button>
+      <button class="level-chip all" *ngIf="levelFilter.length > 0" (click)="levelFilter=[]; applyFilters()">
+        Tout afficher
+      </button>
+    </div>
+
+    <!-- Progress bar -->
+    <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+
+    <!-- Results count -->
+    <div class="results-bar" *ngIf="!loading">
+      <span>{{ filteredLines.length }} lignes affichées</span>
+      <span *ngIf="searchText" class="match-count">
+      ({{ filteredLines.length }} correspondance(s) pour "{{ searchText }}")
+    </span>
+    </div>
+
+    <!-- Log content -->
+    <div class="log-content" [class.wrap]="wrapLines">
+      <div
+        *ngFor="let line of filteredLines; trackBy: trackLine"
+        class="log-line"
+        [class]="'log-line log-line--' + levelClass(line.level)"
+      >
+        <span *ngIf="showLineNumbers" class="line-number">{{ line.lineNumber }}</span>
+        <span class="line-content" [innerHTML]="line.highlighted"></span>
+      </div>
+      <div *ngIf="filteredLines.length === 0 && !loading" class="empty-log">
+        <mat-icon>search_off</mat-icon>
+        <span>Aucune ligne ne correspond aux filtres</span>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-bar">
+      <button mat-icon-button [disabled]="page === 0" (click)="prevPage()">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <span>Page {{ page + 1 }} / {{ totalPages }}</span>
+      <button mat-icon-button [disabled]="(page + 1) === totalPages" (click)="nextPage()">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+      <span class="page-info">{{ pageSize }} lignes / page</span>
+    </div>
+  </mat-toolbar>
+  </div>
+
+<ng-template #noFile>
+  <div class="no-file-placeholder">
+    <mat-icon>article</mat-icon>
+    <h3>Sélectionnez un fichier de log</h3>
+    <p>Cliquez sur un fichier dans l'explorateur pour l'ouvrir ici.</p>
+  </div>
+</ng-template>

@@ -25,6 +25,7 @@ public class AppliProperties {
     private Long nbJoursValideToken;
     private String configEncryptionKey;
     private FooterProperties footer;
+    private String logsDir;
 
     public String getLocalApi() {
         String result = url;
