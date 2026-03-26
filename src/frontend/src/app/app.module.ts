@@ -153,6 +153,10 @@ import {MatTree, MatTreeNode, MatTreeNodeDef, MatTreeNodePadding, MatTreeNodeTog
 import {LogsLiveComponent} from "./components/admin/logs/logs-live/logs-live.component";
 import {LogsExplorerComponent} from "./components/admin/logs/logs-explorer/logs-explorer.component";
 import {LogsViewerComponent} from "./components/admin/logs/logs-explorer/logs-viewer/logs-viewer.component";
+import {LogNewFolderDialogComponent} from "./components/admin/logs/logs-explorer/log-new-folder-dialog/log-new-folder-dialog.component";
+import {LogRenameFileComponent} from "./components/admin/logs/logs-explorer/log-rename-file/log-rename-file.component";
+import {ExportDialogComponent} from "./components/admin/logs/logs-explorer/export-dialog/export-dialog.component";
+import {MoveDialogComponent} from "./components/admin/logs/logs-explorer/move-dialog/move-dialog.component";
 
 registerLocaleData(localeFr, 'fr');
 
@@ -281,6 +285,10 @@ export class FrenchDateProvider extends NativeDateAdapter {
     LogsLiveComponent,
     LogsExplorerComponent,
     LogsViewerComponent,
+    LogNewFolderDialogComponent,
+    LogRenameFileComponent,
+    ExportDialogComponent,
+    MoveDialogComponent,
   ],
   bootstrap: [AppComponent], imports: [BrowserModule,
     AppRoutingModule,

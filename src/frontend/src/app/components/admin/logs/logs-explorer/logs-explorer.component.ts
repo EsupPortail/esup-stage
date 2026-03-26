@@ -1,9 +1,11 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {FileElement} from "../../../../models/file-element.model";
-import {FileExplorerService} from "../../../../services/file-explorer.service";
-import {MatDialog} from "@angular/material/dialog";
-import {MatSnackBar} from "@angular/material/snack-bar";
-import {MatMenuTrigger} from "@angular/material/menu";
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { MatMenuTrigger } from '@angular/material/menu';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { firstValueFrom } from 'rxjs';
+import { finalize } from 'rxjs/operators';
+
+import { FileElement } from '../../../../models/file-element.model';
+import { FileExplorerService } from '../../../../services/file-explorer.service';
 
 @Component({
   selector: 'app-logs-explorer',
@@ -11,48 +13,101 @@ import {MatMenuTrigger} from "@angular/material/menu";
   styleUrl: './logs-explorer.component.scss',
   standalone: false
 })
-export class LogsExplorerComponent {
-
+export class LogsExplorerComponent implements OnInit {
   @Input() rootPath = '/logs';
   @Output() fileOpened = new EventEmitter<FileElement>();
 
   currentPath = '';
   breadcrumbs: { name: string; path: string }[] = [];
   fileElements: FileElement[] = [];
-  selectedElements = new Set<string>();
+  searchIndex: FileElement[] = [];
+  searchIndexPath = '';
   loading = false;
-  viewMode: 'grid' | 'list' = 'grid';
-  sortBy: 'name' | 'date' | 'size' = 'name';
+  viewMode: 'grid' | 'list' = 'list';
+  sortBy: 'name' | 'date' | 'size' = 'date';
   filterText = '';
 
   constructor(
     private fileService: FileExplorerService,
-    private dialog: MatDialog,
-    private snack: MatSnackBar
+    private snack: MatSnackBar,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
-    this.navigate(null);
+    this.navigate(this.rootPath);
   }
 
-  navigate(path: any): void {
-    this.loading = true;
-    this.selectedElements.clear();
-    this.fileService.listFolder(path).subscribe({
-      next: (elements) => {
-        this.currentPath = path;
-        this.fileElements = elements;
-        this.updateBreadcrumbs(path);
-        this.loading = false;
-      },
-      error: () => {
-        this.snack.open('Erreur lors du chargement du dossier', 'Fermer', { duration: 3000 });
-        this.loading = false;
+  get isAtRoot(): boolean {
+    return this.currentPath === this.rootPath;
+  }
+
+  get filteredElements(): FileElement[] {
+    const filter = this.filterText.trim().toLowerCase();
+    let elements = filter ? this.searchIndex : this.fileElements;
+
+    if (filter) {
+      elements = elements.filter(element =>
+        [element.name, element.extension, element.path]
+          .filter(value => value != null)
+          .some(value => String(value).toLowerCase().includes(filter))
+      );
+    }
+
+    return [...elements].sort((left, right) => {
+      if (left.isFolder !== right.isFolder) {
+        return left.isFolder ? -1 : 1;
       }
+      if (this.sortBy === 'name') {
+        return left.name.localeCompare(right.name, 'fr', { numeric: true });
+      }
+      if (this.sortBy === 'date') {
+        return this.toTimestamp(right.lastModified) - this.toTimestamp(left.lastModified);
+      }
+      return (right.size || 0) - (left.size || 0);
     });
   }
 
+  navigate(path: string | null): void {
+    const targetPath = this.normalizePath(path);
+    const requestPath = targetPath === this.rootPath ? null : targetPath;
+
+    this.loading = true;
+
+    this.fileService.listFolder(requestPath)
+      .pipe(finalize(() => {
+        this.loading = false;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: elements => {
+          this.currentPath = targetPath;
+          this.fileElements = (Array.isArray(elements) ? elements : []).map(element => ({
+            ...element,
+            isFolder: (element as { folder?: boolean }).folder ?? element.isFolder ?? false
+          }));
+          this.updateBreadcrumbs(targetPath);
+          this.searchIndex = [];
+          this.searchIndexPath = '';
+          if (this.filterText.trim()) {
+            void this.refreshSearchIndex(targetPath);
+          }
+        },
+        error: () => {
+          this.currentPath = targetPath;
+          this.fileElements = [];
+          this.searchIndex = [];
+          this.searchIndexPath = '';
+          this.updateBreadcrumbs(targetPath);
+          this.snack.open('Erreur lors du chargement du dossier', 'Fermer', { duration: 3000 });
+        }
+      });
+  }
+
   navigateUp(): void {
+    if (this.isAtRoot) {
+      return;
+    }
+
     const parent = this.currentPath.substring(0, this.currentPath.lastIndexOf('/')) || this.rootPath;
     this.navigate(parent);
   }
@@ -60,173 +115,136 @@ export class LogsExplorerComponent {
   onElementClick(element: FileElement): void {
     if (element.isFolder) {
       this.navigate(element.path);
-    } else {
-      this.fileOpened.emit(element);
+      return;
     }
+
+    this.fileOpened.emit(element);
   }
 
-  toggleSelect(element: FileElement, event: MouseEvent): void {
-    event.stopPropagation();
-    if (this.selectedElements.has(element.id)) {
-      this.selectedElements.delete(element.id);
-    } else {
-      this.selectedElements.add(element.id);
-    }
+  clearFilter(event?: MouseEvent): void {
+    event?.stopPropagation();
+    this.filterText = '';
   }
 
-  isSelected(element: FileElement): boolean {
-    return this.selectedElements.has(element.id);
-  }
-
-  get filteredElements(): FileElement[] {
-    let els = this.fileElements;
-    if (this.filterText) {
-      els = els.filter(e => e.name.toLowerCase().includes(this.filterText.toLowerCase()));
+  onFilterChange(value: string): void {
+    this.filterText = value;
+    if (!value.trim()) {
+      return;
     }
-    return [...els].sort((a, b) => {
-      if (a.isFolder !== b.isFolder) return a.isFolder ? -1 : 1;
-      if (this.sortBy === 'name') return a.name.localeCompare(b.name);
-      if (this.sortBy === 'date') return new Date(b.lastModified!).getTime() - new Date(a.lastModified!).getTime();
-      if (this.sortBy === 'size') return (b.size || 0) - (a.size || 0);
-      return 0;
-    });
+
+    if (this.searchIndexPath === this.currentPath && this.searchIndex.length > 0) {
+      return;
+    }
+
+    void this.refreshSearchIndex(this.currentPath);
   }
 
   openContextMenu(event: MouseEvent, trigger: MatMenuTrigger): void {
     event.preventDefault();
+    event.stopPropagation();
     trigger.openMenu();
   }
 
-  // openNewFolderDialog(): void {
-  //   const ref = this.dialog.open(NewFolderDialogComponent);
-  //   ref.afterClosed().subscribe(name => {
-  //     if (name) {
-  //       this.fileService.createFolder(this.currentPath, name).subscribe({
-  //         next: () => { this.navigate(this.currentPath); this.snack.open('Dossier créé', '', { duration: 2000 }); },
-  //         error: () => this.snack.open('Erreur création dossier', 'Fermer', { duration: 3000 })
-  //       });
-  //     }
-  //   });
-  // }
-  //
-  // openRenameDialog(element: FileElement): void {
-  //   const ref = this.dialog.open(RenameDialogComponent, { data: { currentName: element.name } });
-  //   ref.afterClosed().subscribe(newName => {
-  //     if (newName) {
-  //       this.fileService.renameElement(element.path, newName).subscribe({
-  //         next: () => { this.navigate(this.currentPath); this.snack.open('Renommé', '', { duration: 2000 }); },
-  //         error: () => this.snack.open('Erreur renommage', 'Fermer', { duration: 3000 })
-  //       });
-  //     }
-  //   });
-  // }
-  //
-  // deleteElement(element: FileElement): void {
-  //   if (!confirm(`Supprimer "${element.name}" ?`)) return;
-  //   this.fileService.deleteElement(element.path).subscribe({
-  //     next: () => { this.navigate(this.currentPath); this.snack.open('Supprimé', '', { duration: 2000 }); },
-  //     error: () => this.snack.open('Erreur suppression', 'Fermer', { duration: 3000 })
-  //   });
-  // }
-  //
-  // openExportDialog(element?: FileElement): void {
-  //   // Si appelé sans argument, exporte la sélection en cours
-  //   const targets = element
-  //     ? [element]
-  //     : this.fileElements.filter(e => this.selectedElements.has(e.id));
-  //
-  //   if (targets.length === 0) {
-  //     this.snack.open('Sélectionnez au moins un fichier', '', { duration: 2000 });
-  //     return;
-  //   }
-  //
-  //   const isSingleFile = targets.length === 1 && !targets[0].isFolder;
-  //   const isLogFile = isSingleFile && /\.(log|txt|out|err)$/i.test(targets[0].name);
-  //
-  //   const ref = this.dialog.open(ExportDialogComponent, {
-  //     data: {
-  //       fileNames: targets.map(t => t.name),
-  //       isSingleFile,
-  //       isLogFile
-  //     } as ExportDialogData,
-  //     width: '420px'
-  //   });
-  //
-  //   ref.afterClosed().subscribe((result: ExportDialogResult | undefined) => {
-  //     if (!result) return;
-  //
-  //     const paths = targets.map(t => t.path);
-  //     const firstName = targets[0].name;
-  //
-  //     if (result.format === 'original') {
-  //       this.fileService.exportSingle(paths[0]).subscribe(blob =>
-  //         this.triggerDownload(blob, firstName)
-  //       );
-  //     } else if (result.format === 'zip') {
-  //       this.fileService.exportAsZip(paths, result.zipName).subscribe(blob =>
-  //         this.triggerDownload(blob, (result.zipName || 'export') + '.zip')
-  //       );
-  //     } else if (result.format === 'csv') {
-  //       this.fileService.exportAsCsv(paths[0]).subscribe(blob =>
-  //         this.triggerDownload(blob, firstName.replace(/\.\w+$/, '') + '.csv')
-  //       );
-  //     }
-  //   });
-  // }
-  //
-  private triggerDownload(blob: Blob, fileName: string): void {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName;
-    a.click();
-    URL.revokeObjectURL(url);
-  }
-  //
-  // openZipDialog(): void {
-  //   const selectedPaths = this.fileElements
-  //     .filter(e => this.selectedElements.has(e.id))
-  //     .map(e => e.path);
-  //   if (selectedPaths.length === 0) {
-  //     this.snack.open('Sélectionnez au moins un fichier', '', { duration: 2000 });
-  //     return;
-  //   }
-  //   const ref = this.dialog.open(ZipDialogComponent, { data: { paths: selectedPaths, currentPath: this.currentPath } });
-  //   ref.afterClosed().subscribe(zipName => {
-  //     if (zipName) {
-  //       this.fileService.zipElements(selectedPaths, `${this.currentPath}/${zipName}.zip`).subscribe({
-  //         next: () => { this.navigate(this.currentPath); this.snack.open('Archive créée', '', { duration: 2000 }); },
-  //         error: () => this.snack.open('Erreur création archive', 'Fermer', { duration: 3000 })
-  //       });
-  //     }
-  //   });
-  // }
-
   downloadElement(element: FileElement): void {
-    this.fileService.downloadFile(element.path).subscribe(blob => {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = element.name;
-      a.click();
-      URL.revokeObjectURL(url);
-    });
+    this.fileService.downloadFile(element.path).subscribe(blob => this.triggerDownload(blob, element.name));
   }
 
   formatSize(bytes?: number): string {
-    if (!bytes) return '-';
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    if (bytes == null) {
+      return '-';
+    }
+    if (bytes < 1024) {
+      return `${bytes} B`;
+    }
+    if (bytes < 1024 * 1024) {
+      return `${(bytes / 1024).toFixed(1)} KB`;
+    }
     return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
   }
 
+  getFileIcon(element: FileElement): string {
+    const extension = element.extension?.toLowerCase();
+    if (['log', 'out', 'err'].includes(extension || '')) {
+      return 'article';
+    }
+    if (extension === 'txt') {
+      return 'text_snippet';
+    }
+    if (extension === 'csv') {
+      return 'table_chart';
+    }
+    return 'insert_drive_file';
+  }
+
+  trackByElement(_: number, element: FileElement): string {
+    return element.id;
+  }
+
+  private normalizePath(path: string | null): string {
+    if (!path || path === this.rootPath || path === '/') {
+      return this.rootPath;
+    }
+    return path;
+  }
+
+  private toTimestamp(value?: Date): number {
+    return value ? new Date(value).getTime() : 0;
+  }
+
+  private triggerDownload(blob: Blob, fileName: string): void {
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = fileName;
+    anchor.click();
+    URL.revokeObjectURL(url);
+  }
+
   private updateBreadcrumbs(path: string): void {
-    const parts = path.replace(this.rootPath, '').split('/').filter(Boolean);
+    const safePath = this.normalizePath(path);
+    const parts = safePath.replace(this.rootPath, '')
+      .split('/')
+      .map(part => part.trim())
+      .filter(part => part && part !== '/');
     this.breadcrumbs = [{ name: 'Logs', path: this.rootPath }];
-    let acc = this.rootPath;
+
+    let current = this.rootPath;
     parts.forEach(part => {
-      acc += '/' + part;
-      this.breadcrumbs.push({ name: part, path: acc });
+      current += '/' + part;
+      this.breadcrumbs.push({ name: part, path: current });
     });
+  }
+
+  private async refreshSearchIndex(path: string): Promise<void> {
+    this.loading = true;
+    this.cdr.markForCheck();
+
+    try {
+      this.searchIndex = await this.collectDescendants(path);
+      this.searchIndexPath = path;
+    } catch {
+      this.searchIndex = [];
+      this.searchIndexPath = path;
+      this.snack.open('Erreur lors de l indexation des fichiers', 'Fermer', { duration: 3000 });
+    } finally {
+      this.loading = false;
+      this.cdr.markForCheck();
+    }
+  }
+
+  private async collectDescendants(path: string): Promise<FileElement[]> {
+    const requestPath = path === this.rootPath ? null : path;
+    const elements = ((await firstValueFrom(this.fileService.listFolder(requestPath))) || []).map(element => ({
+      ...element,
+      isFolder: (element as { folder?: boolean }).folder ?? element.isFolder ?? false
+    }));
+
+    const descendants = await Promise.all(
+      elements
+        .filter(element => element.isFolder)
+        .map(folder => this.collectDescendants(folder.path))
+    );
+
+    return [...elements, ...descendants.flat()];
   }
 }

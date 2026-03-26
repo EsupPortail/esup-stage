@@ -59,7 +59,10 @@
   padding: 10px;
   border: 1px solid #e0e3e8;
   border-radius: 6px;
-  background: #f9fafb;
+  background: white;
+  box-shadow: 2px 3px 6px 1px rgba(0, 0, 0, 0.14);
+  -webkit-box-shadow: 2px 3px 6px 1px rgba(0, 0, 0, 0.14);
+  -moz-box-shadow: 2px 3px 6px 1px rgba(0, 0, 0, 0.14);
 }
 
 .search-field {
