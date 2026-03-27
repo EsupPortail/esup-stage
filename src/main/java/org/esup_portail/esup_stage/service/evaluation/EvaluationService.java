@@ -187,7 +187,7 @@ public class EvaluationService {
         if (convention == null || convention.getContact() == null) return "";
 
         // Chercher un token actif existant
-        List<EvaluationTuteurToken> tokens = tokenRepository.findByTuteurId(convention.getContact().getId());
+        List<EvaluationTuteurToken> tokens = tokenRepository.findByConventionIdAndTuteurId(convention.getId(), convention.getContact().getId());
         EvaluationTuteurToken tokenActif = null;
         if (tokens != null) {
             for (EvaluationTuteurToken t : tokens) {
@@ -226,7 +226,7 @@ public class EvaluationService {
 
         try {
             // Ne pas dupliquer si un actif existe déjà
-            List<EvaluationTuteurToken> existingTokens = tokenRepository.findByTuteurId(convention.getContact().getId());
+            List<EvaluationTuteurToken> existingTokens = tokenRepository.findByConventionIdAndTuteurId(convention.getId(), convention.getContact().getId());
             for (EvaluationTuteurToken existingToken : existingTokens) {
                 if (existingToken.isActive()) {
                     logger.info("Token actif existant trouvé pour tuteur ID: {}, pas de token créé.", convention.getContact().getId());
