@@ -119,7 +119,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/config/theme").permitAll()
                         .requestMatchers("/api/evaluation-tuteur/**").permitAll()
                         .requestMatchers("/error/**").permitAll()
-                        // Protection API
+                        .requestMatchers("/frontend/**").permitAll()
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().authenticated()
                 )
