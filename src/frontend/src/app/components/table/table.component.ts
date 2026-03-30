@@ -404,6 +404,9 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges, OnDe
         if (typeof f[key].value === 'string') {
           f[key].value = f[key].value.trim();
         }
+        if (key === 'numeroSiret' && typeof f[key].value === 'string') {
+          f[key].value = f[key].value.replace(/\s+/g, '');
+        }
         if (f[key].specific === undefined) {
           delete f[key].specific;
         }
