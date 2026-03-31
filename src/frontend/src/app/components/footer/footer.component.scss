@@ -1,144 +1,140 @@
 .app-footer {
   margin-top: auto;
-  background: #000000;
-  background: linear-gradient(168deg,rgba(0, 0, 0, 1) 15%, var(--primaryColor) 80%);
+  background: linear-gradient(168deg, #000 15%, var(--primaryColor) 100%);
   color: #fff;
-  padding: 48px 24px 24px;
+  padding: 16px 24px;
 }
 
 .app-footer__container {
   max-width: 1200px;
   margin: 0 auto;
-}
-
-.app-footer__main {
   display: flex;
-  gap: 40px;
-  margin-bottom: 40px;
-  padding-bottom: 32px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  align-items: flex-start;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.app-footer__brand {
-  flex: 1;
-}
-
-.app-footer__logo {
-  font-weight: 700;
-  font-size: 24px;
-  letter-spacing: 0.5px;
-}
-
-.app-footer__tagline {
-  font-size: 14px;
-  opacity: 0.9;
-  line-height: 1.6;
-  margin-top: 12px;
-}
-
-.app-footer__version {
-  display: inline-block;
-  background: rgba(255, 255, 255, 0.2);
-  padding: 4px 12px;
-  border-radius: 12px;
-  font-size: 12px;
-  margin-top: 12px;
-}
-
-.app-footer__help {
-  flex-shrink: 0;
+.app-footer__row {
   display: flex;
-  gap: 12px;
   align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.app-footer__divider {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  margin: 0;
+}
+
+/* Ligne 1 gauche */
+.app-footer__version {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 11px;
+}
+
+/* Ligne 1 droite */
+.app-footer__help {
+  display: flex;
+  gap: 8px;
 }
 
 .app-footer__help-button {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 8px;
+  gap: 6px;
+  padding: 5px 12px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 6px;
   color: #fff;
   text-decoration: none;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 500;
-  transition: all 0.2s ease;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: background 0.15s;
 }
 
 .app-footer__help-button:hover {
-  background: rgba(255, 255, 255, 0.25);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.24);
 }
 
-.app-footer__help-icon {
-  font-size: 16px;
+.app-footer__help-button:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.8);
+  outline-offset: 2px;
 }
 
-.app-footer__bottom {
+/* Ligne 2 gauche */
+.app-footer__legal {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
   align-items: center;
-  gap: 16px;
-  font-size: 13px;
-  opacity: 0.85;
 }
 
 .app-footer__legal-link {
-  color: #fff;
-  margin: 0 8px;
+  color: rgba(255, 255, 255, 0.72);
   text-decoration: none;
+  padding: 0 10px;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  line-height: 1;
 }
 
+.app-footer__legal-link:first-child { padding-left: 0; }
+.app-footer__legal-link:last-child  { border-right: none; padding-right: 0; }
+
 .app-footer__legal-link:hover {
+  color: #fff;
   text-decoration: underline;
 }
 
+.app-footer__legal-link:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.8);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Ligne 2 droite */
 .app-footer__social {
   display: flex;
-  gap: 16px;
+  gap: 8px;
 }
 
 .app-footer__social-link {
-  width: 36px;
-  height: 36px;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 50%;
   color: #fff;
   text-decoration: none;
-  transition: all 0.3s ease;
+  transition: background 0.15s;
 }
 
 .app-footer__social-link:hover {
   background: rgba(255, 255, 255, 0.25);
-  transform: translateY(-2px);
 }
 
-@media (max-width: 768px) {
-  .app-footer__main {
-    flex-direction: column;
-    gap: 24px;
-  }
+.app-footer__social-link:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.8);
+  outline-offset: 2px;
+}
 
-  .app-footer__help {
+/* Mobile */
+@media (max-width: 640px) {
+  .app-footer__row {
     flex-direction: column;
-    width: 100%;
+    align-items: flex-start;
+    gap: 8px;
   }
-
-  .app-footer__help-button {
-    width: 100%;
-    justify-content: center;
+  .app-footer__legal {
+    flex-wrap: wrap;
+    gap: 6px;
   }
-
-  .app-footer__bottom {
-    flex-direction: column;
-    text-align: center;
+  .app-footer__legal-link {
+    border-right: none;
+    padding: 0;
   }
 }
