@@ -1,0 +1,346 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+:host ::ng-deep .logs-viewer-dialog-container .mat-mdc-dialog-container {
+  padding: 0;
+}
+
+:host ::ng-deep .logs-viewer-dialog-container .mat-mdc-dialog-surface {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+:host ::ng-deep .logs-viewer-dialog-container .mat-mdc-dialog-content {
+  padding: 0;
+  margin: 0;
+  max-height: none;
+}
+
+.log-viewer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  background: #fff;
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1.25rem;
+  margin: 0;
+  background-color: var(--primaryColor, #1976d2);
+  color: #fff;
+}
+
+.dialog-header-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-width: 0;
+}
+
+.dialog-header-icon,
+.dialog-close-button {
+  color: #fff;
+}
+
+.dialog-title-group {
+  display: inline-flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.dialog-title-text {
+  font-size: 1.08rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.dialog-subtitle-text {
+  font-size: 0.9rem;
+  line-height: 1.3;
+  opacity: 0.92;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dialog-close-button {
+  margin-left: auto;
+}
+
+.log-viewer__content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.log-viewer__content--dialog {
+  max-height: none;
+}
+
+.log-viewer__topbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.8rem 1.25rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.log-viewer__controls,
+.level-filters--inline {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.level-filters--inline {
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.log-viewer__controls {
+  flex: 0 1 auto;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+}
+
+.filter-label,
+.pagination-bar__label {
+  color: #64748b;
+  font-size: 0.86rem;
+}
+
+.log-search-field {
+  width: 360px;
+  margin-bottom: -1.25em;
+}
+
+.log-search-field ::ng-deep .mat-mdc-text-field-wrapper {
+  border-radius: 999px;
+  background: #f8fafc;
+}
+
+.log-search-field ::ng-deep .mdc-notched-outline__leading,
+.log-search-field ::ng-deep .mdc-notched-outline__notch,
+.log-search-field ::ng-deep .mdc-notched-outline__trailing {
+  border-color: #dce5f0;
+}
+
+.pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 0.85rem 1.25rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.level-chip {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.level-chip:hover {
+  transform: translateY(-1px);
+}
+
+.level-chip.inactive {
+  opacity: 0.45;
+}
+
+.level-chip.error {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.level-chip.warn {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.level-chip.info {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.level-chip.debug {
+  background: #e0e7ff;
+  color: #4338ca;
+}
+
+.level-chip.trace,
+.level-chip.all {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.log-content {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  background: #0f172a;
+}
+
+.log-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 0.45rem 1.25rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 0.85rem;
+  color: #e2e8f0;
+}
+
+.line-number {
+  flex: 0 0 4.5rem;
+  color: #64748b;
+  text-align: right;
+  user-select: none;
+}
+
+.line-content {
+  flex: 1;
+  min-width: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.log-content:not(.wrap) .line-content {
+  white-space: pre;
+  word-break: normal;
+}
+
+.empty-log {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  min-height: 180px;
+  color: #cbd5e1;
+}
+
+.no-file-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  min-height: 240px;
+  padding: 2rem;
+  color: #64748b;
+  text-align: center;
+}
+
+.no-file-placeholder mat-icon {
+  width: 40px;
+  height: 40px;
+  font-size: 40px;
+  color: #94a3b8;
+}
+
+:host ::ng-deep .log-date {
+  color: #7dd3fc;
+}
+
+:host ::ng-deep .log-thread {
+  color: #c4b5fd;
+}
+
+:host ::ng-deep .log-exception {
+  color: #fca5a5;
+  font-weight: 600;
+}
+
+:host ::ng-deep .log-ip {
+  color: #86efac;
+}
+
+:host ::ng-deep .log-level.error {
+  color: #fca5a5;
+  font-weight: 700;
+}
+
+:host ::ng-deep .log-level.warn {
+  color: #fcd34d;
+  font-weight: 700;
+}
+
+:host ::ng-deep .log-level.info {
+  color: #93c5fd;
+  font-weight: 700;
+}
+
+:host ::ng-deep .log-level.debug {
+  color: #c4b5fd;
+  font-weight: 700;
+}
+
+:host ::ng-deep .log-level.trace {
+  color: #a7f3d0;
+  font-weight: 700;
+}
+
+:host ::ng-deep mark {
+  padding: 0 0.15rem;
+  border-radius: 0.2rem;
+  background: #fef08a;
+  color: #111827;
+}
+
+@media (max-width: 1200px) {
+  .log-viewer__topbar {
+    flex-wrap: wrap;
+  }
+
+  .level-filters--inline {
+    order: 2;
+    width: 100%;
+  }
+}
+
+@media (max-width: 960px) {
+  .dialog-header {
+    padding: 0.8rem 1rem;
+  }
+
+  .log-viewer__topbar {
+    align-items: stretch;
+  }
+
+  .log-viewer__controls,
+  .level-filters--inline {
+    width: 100%;
+  }
+
+  .log-viewer__controls {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .log-search-field {
+    width: 100%;
+  }
+
+  .pagination-bar {
+    justify-content: flex-start;
+  }
+}

@@ -155,7 +155,6 @@ import {LogsExplorerComponent} from "./components/admin/logs/logs-explorer/logs-
 import {LogsViewerComponent} from "./components/admin/logs/logs-explorer/logs-viewer/logs-viewer.component";
 import {LogNewFolderDialogComponent} from "./components/admin/logs/logs-explorer/log-new-folder-dialog/log-new-folder-dialog.component";
 import {LogRenameFileComponent} from "./components/admin/logs/logs-explorer/log-rename-file/log-rename-file.component";
-import {ExportDialogComponent} from "./components/admin/logs/logs-explorer/export-dialog/export-dialog.component";
 import {MoveDialogComponent} from "./components/admin/logs/logs-explorer/move-dialog/move-dialog.component";
 
 registerLocaleData(localeFr, 'fr');
@@ -287,7 +286,6 @@ export class FrenchDateProvider extends NativeDateAdapter {
     LogsViewerComponent,
     LogNewFolderDialogComponent,
     LogRenameFileComponent,
-    ExportDialogComponent,
     MoveDialogComponent,
   ],
   bootstrap: [AppComponent], imports: [BrowserModule,

@@ -115,29 +115,29 @@ public class AdminLogsController {
 
     /** Liste les fichiers/dossiers d'un chemin */
     @GetMapping("/list")
-    public ResponseEntity<List<FileElementDto>> listFolder(@RequestParam(defaultValue = "") String path) throws IOException {
+    public ResponseEntity<List<FileElementDto>> listFolder(@RequestParam(name = "path", defaultValue = "") String path) throws IOException {
         requireAdmin();
         return ResponseEntity.ok(logFileService.listFolder(path));
     }
 
-    /** Contenu paginé d'un fichier log */
+    /** Contenu paginÃ© d'un fichier log */
     @GetMapping("/content")
     public ResponseEntity<FileContentDto> getContent(
-            @RequestParam String path,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "500") int pageSize
+            @RequestParam(name = "path") String path,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "pageSize", defaultValue = "500") int pageSize
     ) throws IOException {
         requireAdmin();
         return ResponseEntity.ok(logReaderService.readPage(path, page, pageSize));
     }
 
-    /** Crée un sous-dossier */
+    /** CrÃ©e un sous-dossier */
     @PostMapping("/folder")
     public ResponseEntity<FileElementDto> createFolder(@RequestBody CreateFolderRequest req) throws IOException {
         return ResponseEntity.ok(logFileService.createFolder(req.getParentPath(), req.getName()));
     }
 
-    /** Déplace un fichier/dossier */
+    /** DÃ©place un fichier/dossier */
     @PutMapping("/move")
     public ResponseEntity<FileElementDto> moveElement(@RequestBody MoveRequest req) throws IOException {
         return ResponseEntity.ok(logFileService.moveElement(req.getSourcePath(), req.getTargetFolderPath()));
@@ -151,17 +151,17 @@ public class AdminLogsController {
 
     /** Supprime un fichier/dossier */
     @DeleteMapping("/delete")
-    public ResponseEntity<Void> deleteElement(@RequestParam String path) throws IOException {
+    public ResponseEntity<Void> deleteElement(@RequestParam(name = "path") String path) throws IOException {
         logFileService.deleteElement(path);
         return ResponseEntity.noContent().build();
     }
 
     /**
-     * Exporte un fichier unique en téléchargement direct (.log, .txt, etc.)
+     * Exporte un fichier unique en tÃ©lÃ©chargement direct (.log, .txt, etc.)
      * GET /api/files/export/single?path=/logs/app.log
      */
     @GetMapping("/export/single")
-    public ResponseEntity<Resource> exportSingle(@RequestParam String path) throws IOException {
+    public ResponseEntity<Resource> exportSingle(@RequestParam(name = "path") String path) throws IOException {
         Resource resource = exportService.exportSingle(path);
         String fileName = path.substring(path.lastIndexOf('/') + 1);
         return ResponseEntity.ok()
@@ -175,7 +175,7 @@ public class AdminLogsController {
      * GET /api/files/export/csv?path=/logs/app.log
      */
     @GetMapping("/export/csv")
-    public ResponseEntity<byte[]> exportAsCsv(@RequestParam String path) throws IOException {
+    public ResponseEntity<byte[]> exportAsCsv(@RequestParam(name = "path") String path) throws IOException {
         byte[] csv = exportService.exportLogAsCsv(path);
         String fileName = path.substring(path.lastIndexOf('/') + 1).replaceAll("\\.\\w+$", "") + ".csv";
         return ResponseEntity.ok()
@@ -184,9 +184,9 @@ public class AdminLogsController {
                 .body(csv);
     }
 
-    /** Téléchargement interne (bouton "Télécharger" de l'explorateur) */
+    /** TÃ©lÃ©chargement interne (bouton "TÃ©lÃ©charger" de l'explorateur) */
     @GetMapping("/download")
-    public ResponseEntity<Resource> downloadFile(@RequestParam String path) throws IOException {
+    public ResponseEntity<Resource> downloadFile(@RequestParam(name = "path") String path) throws IOException {
         Resource resource = logFileService.getResource(path);
         String fileName = path.substring(path.lastIndexOf('/') + 1);
         return ResponseEntity.ok()

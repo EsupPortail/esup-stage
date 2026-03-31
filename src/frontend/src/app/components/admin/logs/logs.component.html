@@ -6,7 +6,7 @@
   </mat-tab>
   <mat-tab label="Explorateur de logs">
     <div class="logs-explorer-container">
-      <app-logs-explorer></app-logs-explorer>
+      <app-logs-explorer (fileOpened)="openFile($event)"></app-logs-explorer>
     </div>
   </mat-tab>
 </mat-tab-group>

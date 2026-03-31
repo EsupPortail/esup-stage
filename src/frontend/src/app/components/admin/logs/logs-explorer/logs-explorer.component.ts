@@ -115,6 +115,12 @@ export class LogsExplorerComponent implements OnInit {
   onElementClick(element: FileElement): void {
     if (element.isFolder) {
       this.navigate(element.path);
+    }
+  }
+
+  openElement(element: FileElement): void {
+    if (element.isFolder) {
+      this.navigate(element.path);
       return;
     }
 

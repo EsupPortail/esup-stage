@@ -61,7 +61,7 @@
         *ngFor="let element of filteredElements; trackBy: trackByElement"
         class="grid-item"
         [class.folder]="element.isFolder"
-        (click)="onElementClick(element)"
+        (click)="openElement(element)"
         (contextmenu)="openContextMenu($event, menuTrigger)">
         <span
           [matMenuTriggerFor]="ctxMenu"
@@ -95,7 +95,7 @@
         <div
           *ngFor="let element of filteredElements; trackBy: trackByElement"
           class="explorer-row"
-          (click)="onElementClick(element)"
+          (click)="openElement(element)"
           (contextmenu)="openContextMenu($event, menuTrigger)">
 
           <div class="col col--name">
@@ -152,7 +152,7 @@
 
 <mat-menu #ctxMenu="matMenu">
   <ng-template matMenuContent let-element="element">
-    <button mat-menu-item type="button" (click)="onElementClick(element)">
+    <button mat-menu-item type="button" (click)="openElement(element)">
       <mat-icon>{{ element.isFolder ? 'folder_open' : 'open_in_new' }}</mat-icon>
       <span>{{ element.isFolder ? 'Ouvrir le dossier' : 'Ouvrir' }}</span>
     </button>

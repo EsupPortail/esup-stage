@@ -1,78 +1,76 @@
-<div class="log-viewer" *ngIf="file; else noFile">
-  <!-- Header -->
-  <mat-toolbar class="log-toolbar">
-    <mat-icon class="file-icon-log">description</mat-icon>
-    <span class="file-title">{{ file.name }}</span>
-    <span class="file-meta">{{ totalLines | number }} lignes</span>
-    <span class="spacer"></span>
+<div class="log-viewer" *ngIf="currentFile as activeFile; else noFile">
+  <h2 mat-dialog-title class="dialog-header" *ngIf="isDialogMode">
+    <span class="dialog-header-left">
+      <mat-icon class="dialog-header-icon">description</mat-icon>
+      <span class="dialog-title-group">
+        <span class="dialog-title-text">Lecture du log</span>
+        <span class="dialog-subtitle-text">{{ activeFile.name }}<ng-container *ngIf="activeFile.lastModified"> - {{ activeFile.lastModified | date:'dd/MM/yyyy' }}</ng-container></span>
+      </span>
+    </span>
 
-    <!-- Search -->
-    <div class="search-box">
-      <mat-icon>search</mat-icon>
-      <input
-        [(ngModel)]="searchText"
-        (ngModelChange)="applyFilters()"
-        placeholder="Rechercher dans les logs..."
-      />
-      <button mat-icon-button *ngIf="searchText" (click)="searchText=''; applyFilters()">
-        <mat-icon>close</mat-icon>
-      </button>
+    <button
+      mat-icon-button
+      class="dialog-close-button"
+      type="button"
+      (click)="closeDialog()"
+      aria-label="Fermer la lecture du log">
+      <mat-icon>close</mat-icon>
+    </button>
+  </h2>
+
+  <div mat-dialog-content class="log-viewer__content" [class.log-viewer__content--dialog]="isDialogMode">
+    <div class="log-viewer__topbar">
+      <div class="level-filters level-filters--inline">
+        <span class="filter-label">Niveaux :</span>
+        <button
+          *ngFor="let level of levels"
+          type="button"
+          class="level-chip"
+          [class]="'level-chip ' + level.toLowerCase()"
+          [class.inactive]="levelFilter.length > 0 && !levelFilter.includes(level)"
+          (click)="toggleLevelFilter(level)"
+        >
+          {{ level }}
+        </button>
+        <button type="button" class="level-chip all" *ngIf="levelFilter.length > 0" (click)="levelFilter = []; applyFilters()">
+          Tout afficher
+        </button>
+      </div>
+
+      <div class="log-viewer__controls">
+        <mat-form-field appearance="outline" class="log-search-field">
+          <mat-icon matPrefix>search</mat-icon>
+          <input
+            matInput
+            [(ngModel)]="searchText"
+            (ngModelChange)="applyFilters()"
+            placeholder="Rechercher dans la page courante..."
+          />
+          <button mat-icon-button matSuffix type="button" *ngIf="searchText" (click)="clearSearch()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <button mat-icon-button type="button" [matMenuTriggerFor]="exportMenu" matTooltip="Exporter ce fichier">
+          <mat-icon>download</mat-icon>
+        </button>
+
+        <mat-menu #exportMenu="matMenu">
+          <button mat-menu-item (click)="export('original')">
+            <mat-icon>description</mat-icon>
+            <span>Fichier original</span>
+          </button>
+
+          <button mat-menu-item (click)="export('csv')">
+            <mat-icon>table_chart</mat-icon>
+            <span>CSV</span>
+          </button>
+        </mat-menu>
+      </div>
     </div>
 
-    <!-- Options -->
-    <button mat-icon-button (click)="wrapLines=!wrapLines" [class.active]="wrapLines" matTooltip="Retour à la ligne">
-      <mat-icon>wrap_text</mat-icon>
-    </button>
-    <button mat-icon-button (click)="showLineNumbers=!showLineNumbers" [class.active]="showLineNumbers" matTooltip="Numéros de ligne">
-      <mat-icon>format_list_numbered</mat-icon>
-    </button>
-
-    <!-- Export depuis la visionneuse -->
-    <button mat-icon-button [matMenuTriggerFor]="exportMenu" matTooltip="Exporter ce fichier">
-      <mat-icon>download</mat-icon>
-    </button>
-    <mat-menu #exportMenu="matMenu">
-      <button mat-menu-item (click)="export('original')">
-        <mat-icon>description</mat-icon> Fichier original
-      </button>
-      <button mat-menu-item (click)="export('zip')">
-        <mat-icon>folder_zip</mat-icon> Archive ZIP
-      </button>
-      <button mat-menu-item (click)="export('csv')">
-        <mat-icon>table_chart</mat-icon> CSV (timestamp, level, message)
-      </button>
-    </mat-menu>
-
-    <!-- Level filters -->
-    <div class="level-filters">
-      <span class="filter-label">Filtrer par niveau :</span>
-      <button
-        *ngFor="let level of levels"
-        class="level-chip"
-        [class]="'level-chip ' + level.toLowerCase()"
-        [class.inactive]="levelFilter.length > 0 && !levelFilter.includes(level)"
-        (click)="toggleLevelFilter(level)"
-      >
-        {{ level }}
-        <span class="chip-count">{{ 1 }}</span>
-      </button>
-      <button class="level-chip all" *ngIf="levelFilter.length > 0" (click)="levelFilter=[]; applyFilters()">
-        Tout afficher
-      </button>
-    </div>
-
-    <!-- Progress bar -->
     <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
 
-    <!-- Results count -->
-    <div class="results-bar" *ngIf="!loading">
-      <span>{{ filteredLines.length }} lignes affichées</span>
-      <span *ngIf="searchText" class="match-count">
-      ({{ filteredLines.length }} correspondance(s) pour "{{ searchText }}")
-    </span>
-    </div>
-
-    <!-- Log content -->
     <div class="log-content" [class.wrap]="wrapLines">
       <div
         *ngFor="let line of filteredLines; trackBy: trackLine"
@@ -82,30 +80,31 @@
         <span *ngIf="showLineNumbers" class="line-number">{{ line.lineNumber }}</span>
         <span class="line-content" [innerHTML]="line.highlighted"></span>
       </div>
+
       <div *ngIf="filteredLines.length === 0 && !loading" class="empty-log">
         <mat-icon>search_off</mat-icon>
         <span>Aucune ligne ne correspond aux filtres</span>
       </div>
     </div>
 
-    <!-- Pagination -->
-    <div class="pagination-bar">
-      <button mat-icon-button [disabled]="page === 0" (click)="prevPage()">
+    <div class="pagination-bar" *ngIf="!loading && totalLines > 0">
+      <button mat-stroked-button type="button" (click)="prevPage()" [disabled]="page === 0">
         <mat-icon>chevron_left</mat-icon>
+        <span>Precedent</span>
       </button>
-      <span>Page {{ page + 1 }} / {{ totalPages }}</span>
-      <button mat-icon-button [disabled]="(page + 1) === totalPages" (click)="nextPage()">
+      <span class="pagination-bar__label">Page {{ page + 1 }} / {{ totalPages }} - {{ currentPageSize | number }} lignes par page</span>
+      <button mat-stroked-button type="button" (click)="nextPage()" [disabled]="page + 1 >= totalPages">
+        <span>Suivant</span>
         <mat-icon>chevron_right</mat-icon>
       </button>
-      <span class="page-info">{{ pageSize }} lignes / page</span>
     </div>
-  </mat-toolbar>
   </div>
+</div>
 
 <ng-template #noFile>
   <div class="no-file-placeholder">
     <mat-icon>article</mat-icon>
-    <h3>Sélectionnez un fichier de log</h3>
+    <h3>Selectionnez un fichier de log</h3>
     <p>Cliquez sur un fichier dans l'explorateur pour l'ouvrir ici.</p>
   </div>
 </ng-template>
