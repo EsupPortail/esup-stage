@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.Collator;
 import java.util.List;
 
 import static java.util.Arrays.sort;
@@ -99,10 +100,11 @@ public class EtudiantController {
     @Secure(forbiddenEtu = true)
     public EtudiantDiplomeEtapeResponse[] getLdapUsers(@RequestBody EtudiantDiplomeEtapeSearch search) {
         EtudiantDiplomeEtapeResponse[] etudiantsParDiplomeEtape = apogeeService.getEtudiantsParDiplomeEtape(search);
+        Collator collator = Collator.getInstance();
         sort(
                 etudiantsParDiplomeEtape,
-                comparing(EtudiantDiplomeEtapeResponse::getNom)
-                        .thenComparing(EtudiantDiplomeEtapeResponse::getPrenom)
+                comparing(EtudiantDiplomeEtapeResponse::getNom,collator)
+                        .thenComparing(EtudiantDiplomeEtapeResponse::getPrenom,collator)
         );
         return etudiantsParDiplomeEtape;
     }
