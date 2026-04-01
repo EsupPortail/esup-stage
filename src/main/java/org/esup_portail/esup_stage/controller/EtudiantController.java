@@ -22,6 +22,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static java.util.Arrays.sort;
+import static java.util.Comparator.comparing;
+
 @ApiController
 @RequestMapping("/etudiants")
 public class EtudiantController {
@@ -95,6 +98,12 @@ public class EtudiantController {
     @PostMapping("/diplome-etape")
     @Secure(forbiddenEtu = true)
     public EtudiantDiplomeEtapeResponse[] getLdapUsers(@RequestBody EtudiantDiplomeEtapeSearch search) {
-        return apogeeService.getEtudiantsParDiplomeEtape(search);
+        EtudiantDiplomeEtapeResponse[] etudiantsParDiplomeEtape = apogeeService.getEtudiantsParDiplomeEtape(search);
+        sort(
+                etudiantsParDiplomeEtape,
+                comparing(EtudiantDiplomeEtapeResponse::getNom)
+                        .thenComparing(EtudiantDiplomeEtapeResponse::getPrenom)
+        );
+        return etudiantsParDiplomeEtape;
     }
 }
