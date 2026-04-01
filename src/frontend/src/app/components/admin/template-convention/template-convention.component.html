@@ -1,20 +1,25 @@
 <mat-tab-group #tabs (selectedTabChange)="tabChanged($event)">
   <mat-tab label="Liste">
-    <app-table #tableList [service]="templateConventionService" [columns]="columns" [sortColumn]="sortColumn" [exportColumns]="exportColumns"
-               matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'" (matSortChange)="appTable ? appTable.sorting($event) : null">
-      <ng-container matColumnDef="typeConvention.libelle">
+    <app-table #tableList [service]="templateConventionService" [columns]="columns" [sortColumn]="sortColumn"
+               [exportColumns]="exportColumns" matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'"
+               (matSortChange)="appTable ? appTable.sorting($event) : null">
+      <ng-container matColumnDef="typeConventionLabel">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Type convention</th>
-        <td mat-cell *matCellDef="let row">{{row.typeConvention.libelle}}</td>
+        <td mat-cell *matCellDef="let row">{{ getTypeConventionLabel(row) }}</td>
       </ng-container>
       <ng-container matColumnDef="langueConvention.code">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Langue convention</th>
-        <td mat-cell *matCellDef="let row">{{row.langueConvention.code}}</td>
+        <td mat-cell *matCellDef="let row">{{ row.langueConvention.code }}</td>
+      </ng-container>
+      <ng-container matColumnDef="libelle">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Libelle</th>
+        <td mat-cell *matCellDef="let row" [attr.title]="getTooltipText(row.libelle)">{{ truncateText(row.libelle) }}</td>
       </ng-container>
       <ng-container matColumnDef="action">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let row">
           <ng-container>
-            <button class="edit-button" mat-icon-button matTooltip="Éditer" (click)="edit(row)"><span class="fa fa-pen" aria-label="Modifier"></span></button>
+            <button class="edit-button" mat-icon-button matTooltip="Editer" (click)="edit(row)"><span class="fa fa-pen" aria-label="Modifier"></span></button>
             <span (confirm)="delete(row.id)" [confirmMessage]="'Voulez-vous supprimer ce template de convention ?'">
               <button class="delete-button" mat-icon-button matTooltip="Supprimer"><span class="fa fa-trash" aria-label="Supprimer"></span></button>
             </span>
@@ -24,36 +29,43 @@
     </app-table>
   </mat-tab>
 
-  <mat-tab label="Création">
+  <mat-tab label="Creation">
     <mat-card>
       <mat-card-content>
         <div class="alert alert-info">
-          Les paramètres doivent être saisis sous la forme ${{ '{' }}...{{ '}' }}. Par exemple : ${{ '{' }}convention.dateDebut{{ '}' }}
-          Utiliser "Maj+Entrer" pour aller à la ligne sans marge.
+          Les parametres doivent etre saisis sous la forme ${{ '{' }}...{{ '}' }}. Par exemple : ${{ '{' }}convention.dateDebut{{ '}' }}
+          Utiliser "Maj+Entrer" pour aller a la ligne sans marge.
         </div>
         <form [formGroup]="form" (submit)="save()">
           <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
-            <mat-label>Type de convention</mat-label>
-            <mat-select formControlName="typeConvention" [compareWith]="compare">
-              <mat-option *ngFor="let typeConvention of typesConvention" [value]="typeConvention">{{typeConvention.libelle}}</mat-option>
+            <mat-label>Libelle</mat-label>
+            <input matInput formControlName="libelle" maxlength="255">
+            <button mat-icon-button matSuffix class="icon-help" matTooltip="titre ou description rapide du template" aria-label="Aide sur le libelle" type="button">
+              <mat-icon aria-hidden="true">help</mat-icon>
+            </button>
+            <mat-hint align="end">{{ (form.get('libelle')?.value || '').length }}/255</mat-hint>
+            <mat-error *ngIf="form.get('libelle')?.hasError('maxlength')">Le libelle ne doit pas depasser 255 caracteres</mat-error>
+          </mat-form-field>
+          <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
+            <mat-label>Types de convention associes</mat-label>
+            <mat-select multiple formControlName="typeConventions" [compareWith]="compare">
+              <mat-option *ngFor="let typeConvention of typesConvention" [value]="typeConvention">{{ typeConvention.libelle }}</mat-option>
             </mat-select>
           </mat-form-field>
           <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
             <mat-label>Langue de la convention</mat-label>
-            <mat-select formControlName="langueConvention" [compareWith]="compare">
-              <mat-option *ngFor="let langueConvention of languesConvention" [value]="langueConvention">{{langueConvention.libelle}}</mat-option>
+            <mat-select formControlName="langueConvention" [compareWith]="compareCode">
+              <mat-option *ngFor="let langueConvention of languesConvention" [value]="langueConvention">{{ langueConvention.libelle }}</mat-option>
             </mat-select>
           </mat-form-field>
           <div class="row mb-4">
             <div class="col-12">
               <label class="text-title required">Template PDF de la convention</label>
-              <div>
-                <div class="main-container">
-                  <div class="editor-container editor-container_classic-editor editor-container_include-style" #editorContainerElement>
-                    <div class="editor-container__editor">
-                      <div #editorElement>
-                        <ckeditor [editor]="Editor" [config]="config" formControlName="texte" *ngIf="isLayoutReady" />
-                      </div>
+              <div class="main-container">
+                <div class="editor-container editor-container_classic-editor editor-container_include-style" #editorContainerElement>
+                  <div class="editor-container__editor">
+                    <div #editorElement>
+                      <ckeditor [editor]="Editor" [config]="config" formControlName="texte" *ngIf="isLayoutReady" />
                     </div>
                   </div>
                 </div>
@@ -63,23 +75,20 @@
           <div class="row mb-4">
             <div class="col-12">
               <label class="text-title required">Template PDF de l'avenant</label>
-              <div>
-                <div class="main-container">
-                  <div class="editor-container editor-container_classic-editor editor-container_include-style" #editorContainerElement>
-                    <div class="editor-container__editor">
-                      <div #editorElement>
-                        <ckeditor [editor]="Editor" [config]="config"  formControlName="texteAvenant" *ngIf="isLayoutReady" />
-                      </div>
+              <div class="main-container">
+                <div class="editor-container editor-container_classic-editor editor-container_include-style" #editorContainerElement>
+                  <div class="editor-container__editor">
+                    <div #editorElement>
+                      <ckeditor [editor]="Editor" [config]="config" formControlName="texteAvenant" *ngIf="isLayoutReady" />
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-
           <div class="row mt-3">
             <div class="col-12 text-right">
-              <button class="valid-button" mat-flat-button>{{'BOUTON_VALIDER'|contenu}}</button>
+              <button class="valid-button" mat-flat-button>{{ 'BOUTON_VALIDER' | contenu }}</button>
             </div>
           </div>
         </form>
@@ -88,23 +97,24 @@
           <mat-accordion>
             <mat-expansion-panel [expanded]="true">
               <mat-expansion-panel-header>
-                <mat-panel-title>Liste des paramètres</mat-panel-title>
+                <mat-panel-title>Liste des parametres</mat-panel-title>
               </mat-expansion-panel-header>
 
               <app-table #paramTableList [service]="paramConventionService" [columns]="paramColumns" [sortColumn]="paramSortColumn"
-                         matSort [matSortActive]="paramSortColumn" [matSortDirection]="'asc'" (matSortChange)="appParamTable ? appParamTable.sorting($event) : null"
+                         matSort [matSortActive]="paramSortColumn" [matSortDirection]="'asc'"
+                         (matSortChange)="appParamTable ? appParamTable.sorting($event) : null"
                          [templateMobile]="tableMobileParamConvention">
                 <ng-container matColumnDef="code">
                   <th mat-header-cell *matHeaderCellDef mat-sort-header>Code</th>
-                  <td mat-cell *matCellDef="let row">{{row.code}}</td>
+                  <td mat-cell *matCellDef="let row">{{ row.code }}</td>
                 </ng-container>
                 <ng-container matColumnDef="libelle">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Libellé</th>
-                  <td mat-cell *matCellDef="let row">{{row.libelle}}</td>
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Libelle</th>
+                  <td mat-cell *matCellDef="let row">{{ row.libelle }}</td>
                 </ng-container>
                 <ng-container matColumnDef="exemple">
                   <th mat-header-cell *matHeaderCellDef>Exemple</th>
-                  <td mat-cell *matCellDef="let row">{{row.exemple}}</td>
+                  <td mat-cell *matCellDef="let row">{{ row.exemple }}</td>
                 </ng-container>
               </app-table>
               <ng-template #tableMobileParamConvention let-row="row">
@@ -112,15 +122,15 @@
                   <tbody>
                   <tr>
                     <th>Code</th>
-                    <td>{{row.code}}</td>
+                    <td>{{ row.code }}</td>
                   </tr>
                   <tr>
-                    <th>Libellé</th>
-                    <td>{{row.libelle}}</td>
+                    <th>Libelle</th>
+                    <td>{{ row.libelle }}</td>
                   </tr>
                   <tr>
                     <th>Exemple</th>
-                    <td>{{row.exemple}}</td>
+                    <td>{{ row.exemple }}</td>
                   </tr>
                   </tbody>
                 </table>
@@ -132,45 +142,66 @@
     </mat-card>
   </mat-tab>
 
-  <mat-tab *ngIf="data.id" label="Édition">
+  <mat-tab *ngIf="data.id" label="Edition">
     <mat-card>
       <mat-card-content>
         <div class="alert alert-info">
-          Les paramètres doivent être saisis sous la forme ${{ '{' }}...{{ '}' }}. Par exemple : ${{ '{' }}convention.dateDebut{{ '}' }}
+          Les parametres doivent etre saisis sous la forme ${{ '{' }}...{{ '}' }}. Par exemple : ${{ '{' }}convention.dateDebut{{ '}' }}
         </div>
         <form [formGroup]="form" (submit)="save()">
+          <div class="row">
+            <div class="col-sm-12 col-md-6">
+              <mat-form-field appearance="fill" style="width: 100%">
+                <mat-label>Libelle</mat-label>
+                <input matInput formControlName="libelle" maxlength="255">
+                <button mat-icon-button matSuffix class="icon-help" matTooltip="titre ou description rapide du template" aria-label="Aide sur le libelle" type="button">
+              <mat-icon aria-hidden="true">help</mat-icon>
+            </button>
+                <mat-hint align="end">{{ (form.get('libelle')?.value || '').length }}/255</mat-hint>
+                    <mat-error *ngIf="form.get('libelle')?.hasError('maxlength')">Le libelle ne doit pas depasser 255 caracteres</mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col-sm-12 col-md-6">
+              <mat-form-field appearance="fill" style="width: 100%">
+                <mat-label>Types de convention associes</mat-label>
+                <mat-select multiple formControlName="typeConventions" [compareWith]="compare">
+                  <mat-option *ngFor="let typeConvention of typesConvention" [value]="typeConvention">{{ typeConvention.libelle }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12 col-md-6">
+              <mat-form-field appearance="fill" style="width: 100%">
+                <mat-label>Langue de la convention</mat-label>
+                <mat-select formControlName="langueConvention" [compareWith]="compareCode">
+                  <mat-option *ngFor="let langueConvention of languesConvention" [value]="langueConvention">{{ langueConvention.libelle }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
           <div class="row mb-4">
             <div class="col-12">
               <label class="text-title required">Template PDF de la convention</label>
-              <div>
-                <div class="main-container">
-                  <div class="editor-container editor-container_classic-editor editor-container_include-style" #editorContainerElement>
-                    <div class="editor-container__editor">
-                      <div #editorElement>
-                        <ckeditor [editor]="Editor" [config]="config"  formControlName="texte" *ngIf="isLayoutReady" />
-                      </div>
+              <div class="main-container">
+                <div class="editor-container editor-container_classic-editor editor-container_include-style" #editorContainerElement>
+                  <div class="editor-container__editor">
+                    <div #editorElement>
+                      <ckeditor [editor]="Editor" [config]="config" formControlName="texte" *ngIf="isLayoutReady" />
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div class="row mt-3">
-            <div class="col-12 text-right">
-              <button class="valid-button" mat-flat-button>{{'BOUTON_VALIDER'|contenu}}</button>
-            </div>
-          </div>
-
           <div class="row mb-4">
             <div class="col-12">
               <label class="text-title required">Template PDF de l'avenant</label>
-              <div>
-                <div class="main-container">
-                  <div class="editor-container editor-container_classic-editor editor-container_include-style" #editorContainerElement>
-                    <div class="editor-container__editor">
-                      <div #editorElement>
-                        <ckeditor [editor]="Editor" [config]="config"  formControlName="texteAvenant" *ngIf="isLayoutReady" />
-                      </div>
+              <div class="main-container">
+                <div class="editor-container editor-container_classic-editor editor-container_include-style" #editorContainerElement>
+                  <div class="editor-container__editor">
+                    <div #editorElement>
+                      <ckeditor [editor]="Editor" [config]="config" formControlName="texteAvenant" *ngIf="isLayoutReady" />
                     </div>
                   </div>
                 </div>
@@ -179,7 +210,7 @@
           </div>
           <div class="row mt-3">
             <div class="col-12 text-right">
-              <button class="valid-button" mat-flat-button>{{'BOUTON_VALIDER'|contenu}}</button>
+              <button class="valid-button" mat-flat-button>{{ 'BOUTON_VALIDER' | contenu }}</button>
             </div>
           </div>
         </form>
@@ -188,23 +219,24 @@
           <mat-accordion>
             <mat-expansion-panel [expanded]="true">
               <mat-expansion-panel-header>
-                <mat-panel-title>Liste des paramètres</mat-panel-title>
+                <mat-panel-title>Liste des parametres</mat-panel-title>
               </mat-expansion-panel-header>
 
               <app-table #paramTableList [service]="paramConventionService" [columns]="paramColumns" [sortColumn]="paramSortColumn"
-                         matSort [matSortActive]="paramSortColumn" [matSortDirection]="'asc'" (matSortChange)="appParamTable ? appParamTable.sorting($event) : null"
+                         matSort [matSortActive]="paramSortColumn" [matSortDirection]="'asc'"
+                         (matSortChange)="appParamTable ? appParamTable.sorting($event) : null"
                          [templateMobile]="tableMobileParamConvention">
                 <ng-container matColumnDef="code">
                   <th mat-header-cell *matHeaderCellDef mat-sort-header>Code</th>
-                  <td mat-cell *matCellDef="let row">{{row.code}}</td>
+                  <td mat-cell *matCellDef="let row">{{ row.code }}</td>
                 </ng-container>
                 <ng-container matColumnDef="libelle">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Libellé</th>
-                  <td mat-cell *matCellDef="let row">{{row.libelle}}</td>
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Libelle</th>
+                  <td mat-cell *matCellDef="let row">{{ row.libelle }}</td>
                 </ng-container>
                 <ng-container matColumnDef="exemple">
                   <th mat-header-cell *matHeaderCellDef>Exemple</th>
-                  <td mat-cell *matCellDef="let row">{{row.exemple}}</td>
+                  <td mat-cell *matCellDef="let row">{{ row.exemple }}</td>
                 </ng-container>
               </app-table>
             </mat-expansion-panel>

@@ -339,4 +339,3 @@ databaseChangeLog:
   - include:
       file: 3.3.0-type-convention-regime-inscription.yaml
       relativeToChangelogFile: true
-

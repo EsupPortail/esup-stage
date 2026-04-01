@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { TitleService } from "../../services/title.service";
+import { TitleService } from '../../services/title.service';
 
 @Component({
     selector: 'app-title',
@@ -18,4 +18,7 @@ export class TitleComponent implements OnInit {
     return this.titleService.title;
   }
 
+  getTitleTooltip(): string {
+    return this.titleService.titleTooltip || this.titleService.title;
+  }
 }

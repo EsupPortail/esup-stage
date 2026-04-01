@@ -1,16 +1,16 @@
-import {Component, OnInit, ViewChild, ChangeDetectorRef, ViewEncapsulation, AfterViewInit} from '@angular/core';
-import { TableComponent } from "../../table/table.component";
-import { TemplateConventionService } from "../../../services/template-convention.service";
-import { ParamConventionService } from "../../../services/param-convention.service";
-import { MessageService } from "../../../services/message.service";
-import { TypeConventionService } from "../../../services/type-convention.service";
-import { LangueConventionService } from "../../../services/langue-convention.service";
-import { AppFonction } from "../../../constants/app-fonction";
-import { Droit } from "../../../constants/droit";
-import { AuthService } from "../../../services/auth.service";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
-import { TitleService } from "../../../services/title.service";
+import {AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
+import { TableComponent } from '../../table/table.component';
+import { TemplateConventionService } from '../../../services/template-convention.service';
+import { ParamConventionService } from '../../../services/param-convention.service';
+import { MessageService } from '../../../services/message.service';
+import { TypeConventionService } from '../../../services/type-convention.service';
+import { LangueConventionService } from '../../../services/langue-convention.service';
+import { AppFonction } from '../../../constants/app-fonction';
+import { Droit } from '../../../constants/droit';
+import { AuthService } from '../../../services/auth.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatTabChangeEvent, MatTabGroup } from '@angular/material/tabs';
+import { TitleService } from '../../../services/title.service';
 import {
   AccessibilityHelp,
   Alignment,
@@ -74,7 +74,7 @@ import {
   TableProperties,
   TableToolbar,
   TextTransformation, TodoList, Underline, Undo
-} from "ckeditor5";
+} from 'ckeditor5';
 import translations from 'ckeditor5/translations/fr.js';
 
 @Component({
@@ -86,23 +86,16 @@ import translations from 'ckeditor5/translations/fr.js';
 })
 export class TemplateConventionComponent implements OnInit, AfterViewInit {
 
-  columns = ['typeConvention.libelle', 'langueConvention.code', 'action'];
-  sortColumn = 'typeConvention.libelle';
+  columns = ['typeConventionLabel', 'langueConvention.code', 'libelle', 'action'];
+  sortColumn = 'libelle';
   exportColumns = {
+    libelle: { title: 'Libelle' },
     typeConvention: { title: 'Type de convention' },
     langueConvention: { title: 'Langue de la convention' },
   };
 
   paramColumns = ['code', 'libelle', 'exemple'];
   paramSortColumn = 'code';
-  // TODO export de la liste des paramètres
-  exportColumnsParams = {
-    code: { title: 'Code' },
-    libelle: { title: 'Libelle' },
-    exemple: { title: 'Exemple' },
-  };
-
-  createTabIndex = 1
   editTabIndex = 2;
   data: any = {};
   form: FormGroup;
@@ -128,7 +121,8 @@ export class TemplateConventionComponent implements OnInit, AfterViewInit {
     private changeDetector: ChangeDetectorRef
   ) {
     this.form = this.fb.group({
-      typeConvention: [null, [Validators.required]],
+      libelle: [null, Validators.maxLength(255)],
+      typeConventions: [[], [Validators.required]],
       langueConvention: [null, [Validators.required]],
       texte: [null],
       texteAvenant: [null],
@@ -154,7 +148,8 @@ export class TemplateConventionComponent implements OnInit, AfterViewInit {
   public isLayoutReady = false;
   public Editor = ClassicEditor;
   public config: EditorConfig = {};
-  public ngAfterViewInit() : void {
+
+  public ngAfterViewInit(): void {
     this.config = {
       licenseKey: 'GPL',
       toolbar: {
@@ -323,7 +318,6 @@ export class TemplateConventionComponent implements OnInit, AfterViewInit {
           'resizeImage'
         ]
       },
-
       language: 'fr',
       link: {
         addTargetToExternalLinks: true,
@@ -358,6 +352,7 @@ export class TemplateConventionComponent implements OnInit, AfterViewInit {
 
   resetTitle(): void {
     this.titleService.title = 'Templates de convention';
+    this.titleService.titleTooltip = 'Templates de convention';
   }
 
   tabChanged(event: MatTabChangeEvent): void {
@@ -365,14 +360,16 @@ export class TemplateConventionComponent implements OnInit, AfterViewInit {
       this.resetTitle();
       this.data = {};
       this.form.reset();
-      this.form.get('typeConvention')?.enable();
+      this.form.get('typeConventions')?.enable();
       this.form.get('langueConvention')?.enable();
       this.form.patchValue({
+        libelle: null,
+        typeConventions: [],
+        langueConvention: null,
         texte: this.defaultConvention,
         texteAvenant: this.defaultAvenant
       });
     } else {
-      this.form.get('typeConvention')?.disable();
       this.form.get('langueConvention')?.disable();
     }
   }
@@ -382,49 +379,105 @@ export class TemplateConventionComponent implements OnInit, AfterViewInit {
   }
 
   edit(row: any): void {
-    this.data = row;
+    this.data = { ...row, id: Number(row?.id) || row?.id };
+    const selectedTypeConventions = this.getSelectedTypeConventions(row);
     this.form.patchValue({
-      typeConvention: this.data.typeConvention,
+      libelle: this.data.libelle ?? null,
+      typeConventions: selectedTypeConventions,
       langueConvention: this.data.langueConvention,
       texte: this.data.texte ?? this.defaultConvention,
       texteAvenant: this.data.texteAvenant ?? this.defaultAvenant,
     });
     if (this.tabs) {
       this.tabs.selectedIndex = this.editTabIndex;
-      this.titleService.title = `${this.data.typeConvention.libelle} - ${this.data.langueConvention.code}`;
+      const fullTitle = this.data.libelle || `${this.getTypeConventionLabel(this.data)} - ${this.data?.langueConvention?.code || ''}`;
+      this.titleService.title = this.truncateText(fullTitle);
+      this.titleService.titleTooltip = fullTitle;
     }
   }
 
   save(): void {
     if (this.form.valid) {
-      const data = {...this.form.value};
-      if (this.data.id) {
-        delete data.typeConvention;
-        delete data.langueConvention;
-        this.templateConventionService.update(this.data.id, data).subscribe((response: any) => {
+      const data = this.buildPayload();
+      const templateConventionId = Number(this.data?.id);
+      if (Number.isInteger(templateConventionId) && templateConventionId > 0) {
+        this.templateConventionService.update(templateConventionId, data).subscribe((response: any) => {
           this.data = response;
-          this.messageService.setSuccess('Template convention modifié');
+          this.messageService.setSuccess('Template convention modifie');
           this.appTable?.update();
         });
       } else {
-        this.templateConventionService.create(data).subscribe((response: any) => {
-          this.messageService.setSuccess('Template convention créé');
+        this.templateConventionService.create(data).subscribe(() => {
+          this.messageService.setSuccess('Template convention cree');
           this.appTable?.update();
           if (this.tabs) {
             this.tabs.selectedIndex = 0;
           }
         });
       }
-
     } else {
-      this.messageService.setError("Veuillez remplir les champs obligatoires");
+      this.messageService.setError('Veuillez remplir les champs obligatoires');
     }
   }
 
-  delete(id: number) {
-    this.templateConventionService.delete(id).subscribe((response: any) => {
+  private buildPayload(): any {
+    const rawValue = this.form.getRawValue();
+    const selectedTypes = (rawValue.typeConventions || []).map((typeConvention: any) => ({ id: typeConvention.id }));
+    const templateConventionId = Number(this.data?.id);
+    return {
+      id: Number.isInteger(templateConventionId) && templateConventionId > 0 ? templateConventionId : null,
+      libelle: rawValue.libelle,
+      lookupTypeConventionId: this.data?.typeConvention?.id || null,
+      lookupLangueConventionCode: this.data?.langueConvention?.code || null,
+      langueConvention: rawValue.langueConvention ? { code: rawValue.langueConvention.code } : null,
+      texte: rawValue.texte,
+      texteAvenant: rawValue.texteAvenant,
+      typeConventions: selectedTypes,
+      typeConvention: selectedTypes.length > 0 ? selectedTypes[0] : null,
+    };
+  }
+
+  getSelectedTypeConventions(templateConvention: any): any[] {
+    if (Array.isArray(templateConvention?.typeConventions) && templateConvention.typeConventions.length > 0) {
+      return templateConvention.typeConventions;
+    }
+    if (templateConvention?.typeConvention) {
+      return [templateConvention.typeConvention];
+    }
+    return [];
+  }
+
+  truncateText(value: string | null | undefined, maxLength: number = 60): string {
+    if (!value) {
+      return '';
+    }
+    return value.length > maxLength ? `${value.slice(0, maxLength)}...` : value;
+  }
+
+  getTooltipText(value: string | null | undefined, maxLength: number = 60): string | null {
+    if (!value) {
+      return null;
+    }
+    return value.length > maxLength ? value : null;
+  }
+
+  getTypeConventionLabel(templateConvention: any): string {
+    if (Array.isArray(templateConvention?.typeConventions) && templateConvention.typeConventions.length > 0) {
+      return templateConvention.typeConventions
+        .map((typeConvention: any) => typeConvention?.libelle)
+        .filter((libelle: string | undefined) => !!libelle)
+        .join(', ');
+    }
+    if (templateConvention?.typeConvention?.libelle) {
+      return templateConvention.typeConvention.libelle;
+    }
+    return 'Sans type';
+  }
+
+  delete(id: number): void {
+    this.templateConventionService.delete(id).subscribe(() => {
       this.appTable?.update();
-      this.messageService.setSuccess("Suppressions effectuée");
+      this.messageService.setSuccess('Suppression effectuee');
     });
   }
 

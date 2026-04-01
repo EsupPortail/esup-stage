@@ -9,11 +9,17 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TemplateConventionJpaRepository extends JpaRepository<TemplateConvention, Integer> {
 
-    TemplateConvention findById(int id);
-
-    @Query("SELECT tc FROM TemplateConvention tc where tc.typeConvention.id = :id AND tc.langueConvention.code = :code")
+    @Query("""
+        SELECT tc FROM TemplateConvention tc
+        JOIN tc.typeConventions ttc
+        WHERE ttc.id = :id AND tc.langueConvention.code = :code
+    """)
     TemplateConvention findByTypeAndLangue(@Param("id") int id, @Param("code") String code);
 
-    @Query("SELECT COUNT(tc.id) FROM TemplateConvention tc WHERE tc.typeConvention.id = :idTypeConvention")
+    @Query("""
+        SELECT COUNT(DISTINCT tc.id) FROM TemplateConvention tc
+        JOIN tc.typeConventions ttc
+        WHERE ttc.id = :idTypeConvention
+    """)
     Long countTemplateWithTypeConvention(@Param("idTypeConvention") int idTypeConvention);
 }
