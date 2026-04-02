@@ -1,7 +1,6 @@
 package org.esup_portail.esup_stage.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -29,8 +28,11 @@ public class TypeConvention implements Exportable {
 
     private Boolean modifiable;
 
-    // Writable from API payload, hidden from API responses to avoid heavy/cyclic serialization
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @JsonIgnore
+    @OneToMany(mappedBy = "typeConvention")
+    private List<TemplateConvention> templates = new ArrayList<>();
+
+    @JsonIgnore
     @ManyToMany(mappedBy = "typeConventions")
     private List<TemplateConvention> templateConventions = new ArrayList<>();
 
