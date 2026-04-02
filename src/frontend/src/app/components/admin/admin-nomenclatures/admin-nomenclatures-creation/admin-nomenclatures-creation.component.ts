@@ -147,14 +147,7 @@ export class AdminNomenclaturesCreationComponent implements OnInit {
     if (!template) {
       return '';
     }
-
-    const typeLabel = Array.isArray(template.typeConventions) && template.typeConventions.length > 0
-      ? template.typeConventions
-        .map((typeConvention: any) => typeConvention?.libelle)
-        .filter((libelle: string | undefined) => !!libelle)
-        .join(', ')
-      : template.typeConvention?.libelle || 'Sans type';
-
+    const typeLabel = template.typeConvention?.libelle || 'Sans type';
     const langCode = template.langueConvention?.code || '?';
     return `${typeLabel} - ${langCode}`;
   }

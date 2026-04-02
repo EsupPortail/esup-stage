@@ -5,8 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class TitleService {
 
-  private _title = '';
-  private _titleTooltip = '';
+  private _title: string = '';
 
   constructor() { }
 
@@ -16,13 +15,5 @@ export class TitleService {
 
   set title(value: string) {
     this._title = value;
-  }
-
-  get titleTooltip(): string {
-    return this._titleTooltip;
-  }
-
-  set titleTooltip(value: string) {
-    this._titleTooltip = value;
   }
 }

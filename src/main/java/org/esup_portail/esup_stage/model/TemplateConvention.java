@@ -18,9 +18,13 @@ import java.util.List;
 public class TemplateConvention extends ObjetMetier implements Exportable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
-    private Integer id;
+    private int id;
+
+    // Legacy relation kept during transition to avoid breaking existing queries/controllers
+    @ManyToOne
+    @JoinColumn(name = "idTypeConvention", nullable = false)
+    private TypeConvention typeConvention;
 
     @ManyToMany
     @JoinTable(
@@ -42,18 +46,16 @@ public class TemplateConvention extends ObjetMetier implements Exportable {
     @Column
     private String texteAvenant;
 
-    @Column
-    private String libelle;
-
     @Override
     public String getExportValue(String key) {
         String value = "";
         switch (key) {
-            case "libelle":
-                value = getLibelle();
-                break;
             case "typeConvention":
-                value = getTypeConventions().stream().map(TypeConvention::getLibelle).reduce((a, b) -> a + ", " + b).orElse("");
+                if (getTypeConvention() != null) {
+                    value = getTypeConvention().getLibelle();
+                } else {
+                    value = getTypeConventions().stream().map(TypeConvention::getLibelle).reduce((a, b) -> a + ", " + b).orElse("");
+                }
                 break;
             case "langueConvention":
                 value = getLangueConvention().getLibelle();
@@ -64,4 +66,3 @@ public class TemplateConvention extends ObjetMetier implements Exportable {
         return value;
     }
 }
-

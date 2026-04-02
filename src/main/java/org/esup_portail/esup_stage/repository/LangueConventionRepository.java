@@ -29,7 +29,7 @@ public class LangueConventionRepository extends PaginationRepository<LangueConve
     @Override
     protected void addSpecificParameter(String key, JSONObject parameter, List<String> clauses) {
         if (key.equals("typeConventionTemplate")) {
-            clauses.add("EXISTS (SELECT 1 FROM template.typeConventions templateType WHERE templateType.id = :" + key.replace(".", "") + ")");
+            clauses.add("template.typeConvention.id = :" + key.replace(".", ""));
         }
     }
 

@@ -69,14 +69,3 @@
                   name: activerSelectionAutomatiqueTemplateConvention
                   type: BOOLEAN
                   defaultValueBoolean: true
-
-  - changeSet:
-      id: 3.3.0-ajout-libelle-template-convention
-      author: thouveno9
-      changes:
-        - addColumn:
-            tableName: TemplateConvention
-            columns:
-              - column:
-                  name: libelle
-                  type: VARCHAR(255)
