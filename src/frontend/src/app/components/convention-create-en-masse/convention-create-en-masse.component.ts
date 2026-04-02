@@ -5,7 +5,7 @@ import { UfrService } from "../../services/ufr.service";
 import { EtapeService } from "../../services/etape.service";
 import { forkJoin } from 'rxjs';
 import { ConventionService } from "../../services/convention.service";
-import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
+import { MatTabChangeEvent } from "@angular/material/tabs";
 import { TitleService } from "../../services/title.service";
 import { AuthService } from "../../services/auth.service";
 
@@ -23,7 +23,7 @@ export class ConventionCreateEnMasseComponent implements OnInit {
   allValid = false;
   isModif = false;
 
-  tabs: any = {
+  tabs: {[tab:number]:{statut:number,init:boolean}} = {
     0: { statut: 0, init: false },
     1: { statut: 0, init: false },
     2: { statut: 2, init: false },
@@ -109,28 +109,28 @@ export class ConventionCreateEnMasseComponent implements OnInit {
     }else{
       this.setStatus(1,0);
     }
-    if (this.groupeEtudiant && this.allValidStructure()){
-      this.setStatus(3,2);
+    if (this.groupeEtudiant){
+      this.setStatus(3,2*this.percentValidStructure()/100);
     }else{
       this.setStatus(3,0);
     }
-    if (this.groupeEtudiant && this.allValidService()){
-      this.setStatus(4,2);
+    if (this.groupeEtudiant){
+      this.setStatus(4,2*this.percentValidService()/100);
     }else{
       this.setStatus(4,0);
     }
-    if (this.groupeEtudiant && this.allValidContact()){
-      this.setStatus(5,2);
+    if (this.groupeEtudiant){
+      this.setStatus(5,2*this.percentValidContact()/100);
     }else{
       this.setStatus(5,0);
     }
-    if (this.groupeEtudiant && this.allValidEnseignant()){
-      this.setStatus(6,2);
+    if (this.groupeEtudiant){
+      this.setStatus(6,2*this.percentValidEnseignant()/100);
     }else{
       this.setStatus(6,0);
     }
-    if (this.groupeEtudiant && this.allValidSignataire()) {
-      this.setStatus(7, 2);
+    if (this.groupeEtudiant) {
+      this.setStatus(7, 2*this.percentValidSignataire()/100);
     } else {
       this.setStatus(7, 0);
     }
@@ -141,45 +141,48 @@ export class ConventionCreateEnMasseComponent implements OnInit {
     this.majAllValid();
   }
 
-  allValidStructure(): boolean {
-    return this.groupeEtudiant.convention.structure || this.allValidEtudiantsStructure();
+  percentValidStructure(): number {
+    return this.groupeEtudiant.convention.structure ? 100 : this.percentValidEtudiantsStructure();
   }
-  allValidService(): boolean {
-    return this.groupeEtudiant.convention.service || this.allValidEtudiantsService();
+  percentValidService(): number {
+    return this.groupeEtudiant.convention.service ? 100 : this.percentValidEtudiantsService();
   }
-  allValidContact(): boolean {
-    return this.groupeEtudiant.convention.contact || this.allValidEtudiantsContact();
+  percentValidContact(): number {
+    return this.groupeEtudiant.convention.contact ? 100 : this.percentValidEtudiantsContact();
   }
-  allValidEnseignant(): boolean {
-    return this.groupeEtudiant.convention.enseignant || this.allValidEtudiantsEnseignant();
+  percentValidEnseignant(): number {
+    return this.groupeEtudiant.convention.enseignant ? 100 : this.percentValidEtudiantsEnseignant();
   }
-  allValidEtudiantsStructure(): boolean {
+  percentValidEtudiantsStructure(): number {
+    let count = 0;
     for (let etudiant of this.groupeEtudiant.etudiantGroupeEtudiants) {
-      if (!etudiant.convention.structure)
-        return false;
+      if (etudiant.convention.structure)
+        count++;
     }
-    return true;
+    return 100 * count / this.groupeEtudiant.etudiantGroupeEtudiants.length;
   }
-  allValidEtudiantsService(): boolean {
-    for (let etudiant of this.groupeEtudiant.etudiantGroupeEtudiants) {
-      if (!etudiant.convention.service)
-        return false;
-    }
-    return true;
+  percentValidEtudiantsService(): number {
+    let count = 0;
+    for (let etudiant of this.groupeEtudiant.etudiantGroupeEtudiants)
+      if (etudiant.convention.service)
+        count++;
+    return 100 * count / this.groupeEtudiant.etudiantGroupeEtudiants.length;
   }
-  allValidEtudiantsContact(): boolean {
+  percentValidEtudiantsContact(): number {
+    let count = 0;
     for (let etudiant of this.groupeEtudiant.etudiantGroupeEtudiants) {
-      if (!etudiant.convention.contact)
-        return false;
+      if (etudiant.convention.contact)
+        count++;
     }
-    return true;
+    return 100 * count / this.groupeEtudiant.etudiantGroupeEtudiants.length;
   }
-  allValidEtudiantsEnseignant(): boolean {
+  percentValidEtudiantsEnseignant(): number {
+    let count = 0;
     for (let etudiant of this.groupeEtudiant.etudiantGroupeEtudiants) {
-      if (!etudiant.convention.enseignant)
-        return false;
+      if (etudiant.convention.enseignant)
+        count++;
     }
-    return true;
+    return 100 * count / this.groupeEtudiant.etudiantGroupeEtudiants.length;
   }
 
   majAllValid(): void {
@@ -191,15 +194,16 @@ export class ConventionCreateEnMasseComponent implements OnInit {
     }
   }
 
-  allValidSignataire(): boolean {
-    return this.groupeEtudiant.convention.signataire || this.allValidEtudiantsSignataire();
+  percentValidSignataire(): number {
+    return this.groupeEtudiant.convention.signataire ? 100 : this.percentValidEtudiantsSignataire();
   }
 
-  allValidEtudiantsSignataire(): boolean {
+  percentValidEtudiantsSignataire(): number {
+    let count = 0;
     for (let etudiant of this.groupeEtudiant.etudiantGroupeEtudiants) {
-      if (!etudiant.convention.signataire) return false;
+      if (etudiant.convention.signataire) count++;
     }
-    return true;
+    return 100 * count / this.groupeEtudiant.etudiantGroupeEtudiants.length;
   }
 
   tabChanged(event: MatTabChangeEvent): void {
@@ -207,10 +211,15 @@ export class ConventionCreateEnMasseComponent implements OnInit {
       this.tabs[event.index].init = true;
   }
 
-  getProgressValue(key: number): number {
-    if (this.tabs[key].statut === 1) return 66;
-    if (this.tabs[key].statut === 2) return 100;
-    return 33;
+  /** @param statut la progression entre 0 et 2
+   * @return 33 si statut vide sinon un pourcentage équivalent */
+  progressValue(statut: number|null): number {
+    return statut ? 100 * statut / 2 : 33;
+  }
+  /** @param statut la progression entre 0 et 2 */
+  progressClass(statut: number|null): {[cssClass:string]:boolean} {
+    if (statut === 2) return {done: true};
+    return statut ? {editing: true} : {empty: true};
   }
 
   majFilter(): void {

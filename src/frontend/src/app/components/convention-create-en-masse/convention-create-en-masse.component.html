@@ -4,7 +4,7 @@
     <ng-template mat-tab-label>
       <div class="tabTitle">
       Sélection d'un groupe d'étudiants
-      <mat-progress-bar mode="determinate" [value]="33" [ngClass]="{editing: tabs[0].statut === 1, done: tabs[0].statut === 2,'empty':tabs[0]?.statut===0}"></mat-progress-bar>
+      <mat-progress-bar mode="determinate" [value]="progressValue(tabs[0]?.statut)" [ngClass]="progressClass(tabs[0]?.statut)"></mat-progress-bar>
       </div>
     </ng-template>
     <app-selection-groupe-etu *ngIf="tabs[0].init"  (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant" [sharedData]="sharedData"></app-selection-groupe-etu>
@@ -13,7 +13,7 @@
     <ng-template mat-tab-label>
       <div class="tabTitle">
       Informations relatives au stage
-      <mat-progress-bar mode="determinate" [value]="getProgressValue(1)" [ngClass]="{editing: tabs[1].statut === 1, done: tabs[1].statut === 2,'empty':tabs[1]?.statut===0}"></mat-progress-bar>
+      <mat-progress-bar mode="determinate" [value]="progressValue(tabs[1]?.statut)" [ngClass]="progressClass(tabs[1]?.statut)"></mat-progress-bar>
       </div>
     </ng-template>
     <app-infos-stage *ngIf="infosStageTab.isActive || tabs[1].init" (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant" [sharedData]="sharedData"></app-infos-stage>
@@ -22,7 +22,7 @@
     <ng-template mat-tab-label>
       <div class="tabTitle">
       Cadre du stage
-      <mat-progress-bar mode="determinate" [value]="getProgressValue(2)" [ngClass]="{editing: tabs[2].statut === 1, done: tabs[2].statut === 2,'empty':tabs[2]?.statut===0}"></mat-progress-bar>
+      <mat-progress-bar mode="determinate" [value]="progressValue(tabs[2]?.statut)" [ngClass]="progressClass(tabs[2]?.statut)"></mat-progress-bar>
       </div>
     </ng-template>
     <app-cadre-stage *ngIf="cadreStageTab.isActive || tabs[2].init" (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant" [sharedData]="sharedData"></app-cadre-stage>
@@ -31,25 +31,25 @@
     <ng-template mat-tab-label>
       <div class="tabTitle">
       Etab. d'accueil
-      <mat-progress-bar mode="determinate" [value]="getProgressValue(3)" [ngClass]="{editing: tabs[3].statut === 1, done: tabs[3].statut === 2,'empty':tabs[3]?.statut===0}"></mat-progress-bar>
+      <mat-progress-bar mode="determinate" [value]="progressValue(tabs[3]?.statut)" [ngClass]="progressClass(tabs[3]?.statut)"></mat-progress-bar>
       </div>
     </ng-template>
     <app-etab-accueil-groupe *ngIf="etabAccueilTab.isActive || tabs[3].init" (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant" [sharedData]="sharedData"></app-etab-accueil-groupe>
   </mat-tab>
-  <mat-tab #serviceAccueilTab [disabled]="!groupeEtudiant || !allValidStructure()">
+  <mat-tab #serviceAccueilTab [disabled]="!groupeEtudiant || percentValidStructure()<100">
     <ng-template mat-tab-label>
       <div class="tabTitle">
       Service d'accueil
-      <mat-progress-bar mode="determinate" [value]="getProgressValue(4)" [ngClass]="{editing: tabs[4].statut === 1, done: tabs[4].statut === 2,'empty':tabs[4]?.statut===0}"></mat-progress-bar>
+      <mat-progress-bar mode="determinate" [value]="progressValue(tabs[4]?.statut)" [ngClass]="progressClass(tabs[4]?.statut)"></mat-progress-bar>
       </div>
     </ng-template>
     <app-service-accueil-groupe *ngIf="serviceAccueilTab.isActive || tabs[4].init" (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant" [sharedData]="sharedData"></app-service-accueil-groupe>
   </mat-tab>
-  <mat-tab #tuteurAccueilTab [disabled]="!groupeEtudiant || !allValidStructure() || !allValidService()">
+  <mat-tab #tuteurAccueilTab [disabled]="!groupeEtudiant || percentValidStructure()<100 || percentValidService()<100">
     <ng-template mat-tab-label>
       <div class="tabTitle">
       Tuteur professionnel
-      <mat-progress-bar mode="determinate" [value]="getProgressValue(5)" [ngClass]="{editing: tabs[5].statut === 1, done: tabs[5].statut === 2,'empty':tabs[5]?.statut===0}"></mat-progress-bar>
+      <mat-progress-bar mode="determinate" [value]="progressValue(tabs[5]?.statut)" [ngClass]="progressClass(tabs[5]?.statut)"></mat-progress-bar>
       </div>
     </ng-template>
     <app-tuteur-accueil-groupe *ngIf="tuteurAccueilTab.isActive || tabs[5].init" (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant" [sharedData]="sharedData"></app-tuteur-accueil-groupe>
@@ -58,16 +58,16 @@
     <ng-template mat-tab-label>
       <div class="tabTitle">
       Enseignant
-      <mat-progress-bar mode="determinate" [value]="getProgressValue(6)" [ngClass]="{editing: tabs[6].statut === 1, done: tabs[6].statut === 2,'empty':tabs[6]?.statut===0}"></mat-progress-bar>
+      <mat-progress-bar mode="determinate" [value]="progressValue(tabs[6]?.statut)" [ngClass]="progressClass(tabs[6]?.statut)"></mat-progress-bar>
       </div>
     </ng-template>
     <app-enseignant-groupe *ngIf="enseignantTab.isActive || tabs[6].init" (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant" [sharedData]="sharedData"></app-enseignant-groupe>
   </mat-tab>
-  <mat-tab #signataireTab [disabled]="!groupeEtudiant || !allValidStructure()">
+  <mat-tab #signataireTab [disabled]="!groupeEtudiant || percentValidStructure()<100">
     <ng-template mat-tab-label>
       <div class="tabTitle">
         {{ "TITRE_TAB_SIGNATAIRE_CONVENTION_CREATE_EN_MASSE" | contenu }}
-      <mat-progress-bar mode="determinate" [value]="getProgressValue(7)" [ngClass]="{editing: tabs[7].statut === 1, done: tabs[7].statut === 2,'empty':tabs[7]?.statut===0}"></mat-progress-bar>
+      <mat-progress-bar mode="determinate" [value]="progressValue(tabs[7]?.statut)" [ngClass]="progressClass(tabs[7]?.statut)"></mat-progress-bar>
       </div>
     </ng-template>
     <app-signataire-groupe *ngIf="signataireTab.isActive || tabs[7].init" (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant" [sharedData]="sharedData"></app-signataire-groupe>
