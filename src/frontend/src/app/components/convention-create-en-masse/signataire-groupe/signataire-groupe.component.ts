@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild } from '@angular/core';
 import { TableComponent } from "../../table/table.component";
-import { GroupeEtudiantService } from "../../../services/groupe-etudiant.service";
+import {EtudiantGroupeEtudiant, GroupeEtudiantService} from "../../../services/groupe-etudiant.service";
 import { ConventionService } from "../../../services/convention.service";
 import { AuthService } from "../../../services/auth.service";
 import { Router } from "@angular/router";
@@ -78,6 +78,10 @@ export class SignataireGroupeComponent implements OnInit, OnChanges {
       let filter = this.filters.find((f: any) => f.id === 'convention.service.id');
       if (filter) filter.options = this.services;
     }
+  }
+
+  isAlerte(etudiant: EtudiantGroupeEtudiant): boolean {
+    return !this.groupeEtudiant.convention.signataire && !etudiant.convention.signataire;
   }
 
   isSelected(data: any): boolean {
