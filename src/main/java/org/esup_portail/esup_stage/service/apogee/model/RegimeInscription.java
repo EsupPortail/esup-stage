@@ -1,11 +1,8 @@
 package org.esup_portail.esup_stage.service.apogee.model;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Data;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Data
 public class RegimeInscription {
     private String regimeIns;
     private String libRg;
@@ -13,6 +10,43 @@ public class RegimeInscription {
     private String codRegIns;
     private String licRegIns;
 
-    @JsonAlias({"codSisRegIns", "codSISRegIns", "codSISRGI", "COD_SIS_RGI", "cod_sis_rgi"})
-    private String codSisRegIns;
+    public String getRegimeIns() {
+        return regimeIns;
+    }
+
+    public void setRegimeIns(String regimeIns) {
+        this.regimeIns = regimeIns;
+    }
+
+    public String getLibRg() {
+        return libRg;
+    }
+
+    public void setLibRg(String libRg) {
+        this.libRg = libRg;
+    }
+
+    public String getAnnee() {
+        return annee;
+    }
+
+    public void setAnnee(String annee) {
+        this.annee = annee;
+    }
+
+    public String getCodRegIns() {
+        return codRegIns;
+    }
+
+    public void setCodRegIns(String codRegIns) {
+        this.codRegIns = codRegIns;
+    }
+
+    public String getLicRegIns() {
+        return licRegIns;
+    }
+
+    public void setLicRegIns(String licRegIns) {
+        this.licRegIns = licRegIns;
+    }
 }

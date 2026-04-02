@@ -336,7 +336,3 @@ databaseChangeLog:
   - include:
       file: 3.3.0-param-impression-avenant.yaml
       relativeToChangelogFile: true
-  - include:
-      file: 3.3.0-type-convention-regime-inscription.yaml
-      relativeToChangelogFile: true
-

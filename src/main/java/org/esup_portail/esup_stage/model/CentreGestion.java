@@ -202,9 +202,6 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     @Column
     private String mailDelegataireViseur;
 
-    @Column
-    private boolean activerSelectionAutomatiqueTemplateConvention;
-
     @Transient
     public String getAdresseComplete() {
         return getVoie() + " " + getCodePostal() + " " + getCommune();

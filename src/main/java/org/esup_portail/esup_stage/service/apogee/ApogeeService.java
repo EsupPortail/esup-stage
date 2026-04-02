@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.util.Strings;
 import org.esup_portail.esup_stage.config.properties.ReferentielProperties;
 import org.esup_portail.esup_stage.dto.ConventionFormationDto;
-import org.esup_portail.esup_stage.dto.TypeConventionSelectionMode;
 import org.esup_portail.esup_stage.dto.LdapSearchDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
@@ -15,7 +14,6 @@ import org.esup_portail.esup_stage.repository.CritereGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.EtapeJpaRepository;
 import org.esup_portail.esup_stage.repository.TypeConventionJpaRepository;
 import org.esup_portail.esup_stage.service.AppConfigService;
-import org.esup_portail.esup_stage.service.TypeConventionResolverService;
 import org.esup_portail.esup_stage.service.apogee.model.*;
 import org.esup_portail.esup_stage.service.ldap.LdapService;
 import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
@@ -44,8 +42,6 @@ public class ApogeeService {
     ReferentielProperties referentielProperties;
     @Autowired
     AppConfigService appConfigService;
-    @Autowired
-    TypeConventionResolverService typeConventionResolverService;
     @Autowired
     TypeConventionJpaRepository typeConventionJpaRepository;
     @Autowired
@@ -241,7 +237,10 @@ public class ApogeeService {
         for (String annee : anneeInscriptions) {
             ApogeeMap apogeeMap = getEtudiantEtapesInscription(numEtudiant, annee);
             RegimeInscription regIns = apogeeMap.getRegimeInscription().stream().filter(r -> r.getAnnee().equals(annee)).findAny().orElse(null);
-            List<TypeConvention> resolvedTypeConventions = typeConventionResolverService.resolveTypeConventionsByRegimeInscription(regIns, "ApogeeService#getInscriptions etudiant=" + numEtudiant + ", annee=" + annee);
+            TypeConvention typeConvention = null;
+            if (regIns != null) {
+                typeConvention = typeConventionJpaRepository.findByCodeCtrl(regIns.getLicRegIns());
+            }
             for (EtapeInscription etapeInscription : apogeeMap.getListeEtapeInscriptions()) {
                 Etape etape = etapeJpaRepository.findById(etapeInscription.getCodeEtp(), etapeInscription.getCodVrsVet(), appConfigService.getConfigGenerale().getCodeUniversite());
 
@@ -260,12 +259,11 @@ public class ApogeeService {
                 ConventionFormationDto conventionFormationDto = new ConventionFormationDto();
                 conventionFormationDto.setEtapeInscription(etapeInscription);
                 conventionFormationDto.setAnnee(annee);
-                List<TypeConvention> candidates = new ArrayList<>(resolvedTypeConventions);
                 TypeConvention typeCesure = changeTypeConventionByCodeCursus(etapeInscription.getCodeCursusAmenage());
                 if (typeCesure != null) {
-                    candidates = List.of(typeCesure);
+                    typeConvention = typeCesure;
                 }
-                applyTypeConventionCandidates(conventionFormationDto, candidates, regIns, etapeInscription);
+                conventionFormationDto.setTypeConvention(typeConvention);
                 CentreGestion centreGestion = null;
                 // Recherche du centre de gestion par codeEtape/versionEtape
                 CritereGestion critereGestion = critereGestionJpaRepository.findEtapeById(etapeInscription.getCodeEtp(), etapeInscription.getCodVrsVet());
@@ -325,44 +323,6 @@ public class ApogeeService {
         return inscriptions;
     }
 
-    private void applyTypeConventionCandidates(ConventionFormationDto dto, List<TypeConvention> candidates, RegimeInscription regIns, EtapeInscription etapeInscription) {
-        List<TypeConvention> safeCandidates = candidates == null ? new ArrayList<>() : candidates.stream()
-                .filter(Objects::nonNull)
-                .collect(Collectors.collectingAndThen(
-                        Collectors.toMap(TypeConvention::getId, tc -> tc, (a, b) -> a, LinkedHashMap::new),
-                        map -> new ArrayList<>(map.values())
-                ));
-
-        dto.setTypeConventions(safeCandidates);
-
-        if (safeCandidates.size() == 1) {
-            dto.setTypeConvention(safeCandidates.get(0));
-            dto.setTypeConventionSelectionMode(TypeConventionSelectionMode.AUTO_PRESELECTED_LOCKED);
-            dto.setTypeConventionSelectionMessage(null);
-            return;
-        }
-
-        dto.setTypeConvention(null);
-        if (safeCandidates.isEmpty()) {
-            dto.setTypeConventionSelectionMode(TypeConventionSelectionMode.AUTO_NO_CANDIDATE);
-            dto.setTypeConventionSelectionMessage(buildNoCandidateMessage(regIns, etapeInscription));
-        } else {
-            dto.setTypeConventionSelectionMode(TypeConventionSelectionMode.AUTO_MANUAL_SELECTION_REQUIRED);
-            dto.setTypeConventionSelectionMessage(null);
-        }
-    }
-
-    private String buildNoCandidateMessage(RegimeInscription regIns, EtapeInscription etapeInscription) {
-        String codeEtape = etapeInscription != null ? etapeInscription.getCodeEtp() : "?";
-        String codSisRegIns = regIns != null ? regIns.getCodSisRegIns() : null;
-        String codRegIns = regIns != null ? regIns.getCodRegIns() : null;
-        String licRegIns = regIns != null ? regIns.getLicRegIns() : null;
-
-        return "Aucun type de convention automatique trouv\u00e9 pour cette inscription (etape=" + codeEtape
-                + ", codSisRegIns=" + codSisRegIns
-                + ", codRegIns=" + codRegIns
-                + ", licRegIns=" + licRegIns + ").";
-    }
     public TypeConvention changeTypeConventionByCodeCursus(String codeCursusAmenage) {
         if (codeCursusAmenage != null && !codeCursusAmenage.isEmpty() && appConfigService.getConfigGenerale().getCodeCesure() != null && !appConfigService.getConfigGenerale().getCodeCesure().isEmpty()) {
             List<String> codeCesureList = List.of(appConfigService.getConfigGenerale().getCodeCesure().split(";"));

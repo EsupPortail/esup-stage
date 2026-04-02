@@ -150,7 +150,6 @@ export class ParamCentreComponent implements OnInit {
       prenomDelegataireViseur: this.centreGestion.prenomDelegataireViseur,
       mailDelegataireViseur: this.centreGestion.mailDelegataireViseur,
       qualiteDelegataireViseur: this.centreGestion.qualiteDelegataireViseur,
-      activerSelectionAutomatiqueTemplateConvention: this.centreGestion.activerSelectionAutomatiqueTemplateConvention,
     }, {
       emitEvent: false,
     });
