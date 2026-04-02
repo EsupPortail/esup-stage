@@ -316,6 +316,7 @@ export class CentreGestionComponent implements OnInit,OnDestroy {
       prenomDelegataireViseur: [null],
       mailDelegataireViseur: [null],
       qualiteDelegataireViseur: [null],
+      activerSelectionAutomatiqueTemplateConvention: [null],
     });
   }
 
@@ -348,6 +349,7 @@ export class CentreGestionComponent implements OnInit,OnDestroy {
     this.centreGestion.prenomDelegataireViseur = this.paramCentreForm.get('prenomDelegataireViseur')?.value;
     this.centreGestion.mailDelegataireViseur = this.paramCentreForm.get('mailDelegataireViseur')?.value;
     this.centreGestion.qualiteDelegataireViseur = this.paramCentreForm.get('qualiteDelegataireViseur')?.value;
+    this.centreGestion.activerSelectionAutomatiqueTemplateConvention = this.paramCentreForm.get('activerSelectionAutomatiqueTemplateConvention')?.value;
   }
 
   setSignatureElectroniqueForm() {

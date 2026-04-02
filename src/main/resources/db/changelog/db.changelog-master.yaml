@@ -336,3 +336,6 @@ databaseChangeLog:
   - include:
       file: 3.3.0-param-impression-avenant.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 3.3.0-param-centre-gestion-selection-auto-type-convention.yaml
+      relativeToChangelogFile: true

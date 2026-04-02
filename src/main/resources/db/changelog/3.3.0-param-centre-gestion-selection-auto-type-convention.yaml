@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.3.0-ajout-param-activerSelectionAutomatiqueTemplateConvention
+      author: thouveno9
+      changes:
+        - addColumn:
+            tableName: CentreGestion
+            columns:
+              - column:
+                  name: activerSelectionAutomatiqueTemplateConvention
+                  type: BOOLEAN
+                  defaultValueBoolean: true
