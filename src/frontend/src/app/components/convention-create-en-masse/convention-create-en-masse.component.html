@@ -36,7 +36,7 @@
     </ng-template>
     <app-etab-accueil-groupe *ngIf="etabAccueilTab.isActive || tabs[3].init" (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant" [sharedData]="sharedData"></app-etab-accueil-groupe>
   </mat-tab>
-  <mat-tab #serviceAccueilTab [disabled]="!groupeEtudiant || percentValidStructure()<100">
+  <mat-tab #serviceAccueilTab [disabled]="!groupeEtudiant || !percentValidStructure()">
     <ng-template mat-tab-label>
       <div class="tabTitle">
       Service d'accueil
@@ -45,7 +45,7 @@
     </ng-template>
     <app-service-accueil-groupe *ngIf="serviceAccueilTab.isActive || tabs[4].init" (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant" [sharedData]="sharedData"></app-service-accueil-groupe>
   </mat-tab>
-  <mat-tab #tuteurAccueilTab [disabled]="!groupeEtudiant || percentValidStructure()<100 || percentValidService()<100">
+  <mat-tab #tuteurAccueilTab [disabled]="!groupeEtudiant || !percentValidService()">
     <ng-template mat-tab-label>
       <div class="tabTitle">
       Tuteur professionnel
@@ -63,7 +63,7 @@
     </ng-template>
     <app-enseignant-groupe *ngIf="enseignantTab.isActive || tabs[6].init" (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant" [sharedData]="sharedData"></app-enseignant-groupe>
   </mat-tab>
-  <mat-tab #signataireTab [disabled]="!groupeEtudiant || percentValidStructure()<100">
+  <mat-tab #signataireTab [disabled]="!groupeEtudiant || !percentValidStructure()">
     <ng-template mat-tab-label>
       <div class="tabTitle">
         {{ "TITRE_TAB_SIGNATAIRE_CONVENTION_CREATE_EN_MASSE" | contenu }}
