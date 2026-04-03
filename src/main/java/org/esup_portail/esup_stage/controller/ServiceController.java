@@ -72,15 +72,9 @@ public class ServiceController {
             throw new AppException(HttpStatus.FORBIDDEN, "Impossible de determiner le centre de gestion du gestionnaire");
         }
 
-        List<Service> visibleServices = new ArrayList<>();
-        for (Service service : serviceRepository.findPaginated(1, 0, predicate, sortOrder, filters)) {
-            if (canViewService(centresDemandeur, service)) {
-                visibleServices.add(service);
-            }
-        }
-
-        paginatedResponse.setTotal((long) visibleServices.size());
-        paginatedResponse.setData(slicePage(visibleServices, page, perPage));
+        List<Integer> centreIds = centresDemandeur.stream().map(CentreGestion::getId).toList();
+        paginatedResponse.setTotal(serviceRepository.countVisibleForCentres(centreIds, filters));
+        paginatedResponse.setData(serviceRepository.findPaginatedVisibleForCentres(centreIds, page, perPage, predicate, sortOrder, filters));
         return paginatedResponse;
     }
 
@@ -234,18 +228,4 @@ public class ServiceController {
         }
     }
 
-    private List<Service> slicePage(List<Service> services, int page, int perPage) {
-        if (perPage <= 0) {
-            return services;
-        }
-
-        int safePage = Math.max(page, 1);
-        int fromIndex = (safePage - 1) * perPage;
-        if (fromIndex >= services.size()) {
-            return new ArrayList<>();
-        }
-
-        int toIndex = Math.min(fromIndex + perPage, services.size());
-        return new ArrayList<>(services.subList(fromIndex, toIndex));
-    }
 }

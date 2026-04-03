@@ -157,6 +157,12 @@ public class Contact extends ObjetMetier implements Exportable {
         this.centreGestion = centreGestion;
     }
 
+    @JsonView(Views.List.class)
+    @Transient
+    public CentreGestion getCentreGestionnaire() {
+        return centreGestion;
+    }
+
     public String getFonction() {
         return fonction;
     }

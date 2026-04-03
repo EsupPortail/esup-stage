@@ -407,8 +407,9 @@ public class CentreGestionController {
         Confidentialite requestedConfidentialite = resolveRequestedConfidentialite(centreGestion.getCodeConfidentialite());
 
         if (isCentreEtablissement) {
-            centreGestion.setCodeConfidentialite(resolveConfidentialiteOrDefault(requestedConfidentialite, ConfidentialiteService.PAS_DE_CONFIDENTIALITE));
-            centreGestion.setCodeConfidentialiteConventionOrpheline(resolveEtablissementOrphanConfidentialite(centreGestion));
+            Confidentialite normalizedConfidentialite = resolveConfidentialiteOrDefault(requestedConfidentialite, ConfidentialiteService.PAS_DE_CONFIDENTIALITE);
+            centreGestion.setCodeConfidentialite(normalizedConfidentialite);
+            centreGestion.setCodeConfidentialiteConventionOrpheline(resolveEtablissementOrphanConfidentialite(normalizedConfidentialite, centreGestion.getCodeConfidentialiteConventionOrpheline()));
             return;
         }
 
@@ -418,36 +419,58 @@ public class CentreGestionController {
             return;
         }
 
-        String etablissementCode = centreEtablissement.getCodeConfidentialite().getCode();
+        Confidentialite etablissementConfidentialite = resolveConfidentialiteOrDefault(resolveRequestedConfidentialite(centreEtablissement.getCodeConfidentialite()), ConfidentialiteService.PAS_DE_CONFIDENTIALITE);
+        String etablissementCode = etablissementConfidentialite.getCode();
+
         if (ConfidentialiteService.CONFIDENTIALITE_LIBRE.equals(etablissementCode)) {
-            if (requestedConfidentialite == null || requestedConfidentialite.getCode() == null || ConfidentialiteService.CONFIDENTIALITE_LIBRE.equals(requestedConfidentialite.getCode())) {
-                throw new AppException(HttpStatus.BAD_REQUEST, "Le centre doit choisir entre pas de confidentialite et confidentialite totale");
-            }
-            centreGestion.setCodeConfidentialite(requestedConfidentialite);
+            centreGestion.setCodeConfidentialite(validateCentreConfidentialiteWhenEtablissementIsFree(requestedConfidentialite));
             return;
         }
 
-        centreGestion.setCodeConfidentialite(resolveConfidentialiteOrDefault(centreEtablissement.getCodeConfidentialite(), ConfidentialiteService.PAS_DE_CONFIDENTIALITE));
+        centreGestion.setCodeConfidentialite(validateInheritedConfidentialite(requestedConfidentialite, etablissementCode));
     }
 
-    private Confidentialite resolveEtablissementOrphanConfidentialite(CentreGestion centreGestion) {
-        Confidentialite requestedConfidentialite = resolveRequestedConfidentialite(centreGestion.getCodeConfidentialite());
-        if (requestedConfidentialite == null || requestedConfidentialite.getCode() == null) {
+    private Confidentialite resolveEtablissementOrphanConfidentialite(Confidentialite centreConfidentialite, Confidentialite requestedOrphanConfidentialite) {
+        if (centreConfidentialite == null || centreConfidentialite.getCode() == null) {
             return resolveConfidentialiteByCode(ConfidentialiteService.PAS_DE_CONFIDENTIALITE);
         }
-        if (!ConfidentialiteService.CONFIDENTIALITE_LIBRE.equals(requestedConfidentialite.getCode())) {
-            return requestedConfidentialite;
+
+        if (!ConfidentialiteService.CONFIDENTIALITE_LIBRE.equals(centreConfidentialite.getCode())) {
+            Confidentialite orphanConfidentialite = resolveRequestedConfidentialite(requestedOrphanConfidentialite);
+            if (orphanConfidentialite != null && !centreConfidentialite.getCode().equals(orphanConfidentialite.getCode())) {
+                throw new AppException(HttpStatus.BAD_REQUEST, "La confidentialité des conventions orphelines doit suivre celle du centre établissement");
+            }
+            return centreConfidentialite;
         }
 
-        Confidentialite orphanConfidentialite = resolveRequestedConfidentialite(centreGestion.getCodeConfidentialiteConventionOrpheline());
+        Confidentialite orphanConfidentialite = resolveRequestedConfidentialite(requestedOrphanConfidentialite);
         if (orphanConfidentialite == null
                 || orphanConfidentialite.getCode() == null
                 || ConfidentialiteService.CONFIDENTIALITE_LIBRE.equals(orphanConfidentialite.getCode())) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "La confidentialite effective des conventions orphelines doit etre renseignee");
+            throw new AppException(HttpStatus.BAD_REQUEST, "La confidentialité effective des conventions orphelines doit être renseignée");
         }
         return orphanConfidentialite;
     }
 
+    private Confidentialite validateInheritedConfidentialite(Confidentialite requestedConfidentialite, String expectedCode) {
+        if (requestedConfidentialite == null) {
+            return resolveConfidentialiteByCode(expectedCode);
+        }
+        if (!expectedCode.equals(requestedConfidentialite.getCode())) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Le centre ne peut pas persister une confidentialité différente de celle imposée par le centre établissement");
+        }
+        return requestedConfidentialite;
+    }
+
+    private Confidentialite validateCentreConfidentialiteWhenEtablissementIsFree(Confidentialite requestedConfidentialite) {
+        if (requestedConfidentialite == null || requestedConfidentialite.getCode() == null || requestedConfidentialite.getCode().isBlank()) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Le centre doit choisir entre pas de confidentialité et confidentialité totale");
+        }
+        if (ConfidentialiteService.CONFIDENTIALITE_LIBRE.equals(requestedConfidentialite.getCode())) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Le centre ne peut pas persister le mode confidentialité libre");
+        }
+        return requestedConfidentialite;
+    }
     private Confidentialite resolveRequestedConfidentialite(Confidentialite confidentialite) {
         if (confidentialite == null || confidentialite.getCode() == null || confidentialite.getCode().isBlank()) {
             return null;

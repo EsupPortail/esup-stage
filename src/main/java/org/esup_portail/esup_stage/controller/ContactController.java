@@ -71,15 +71,9 @@ public class ContactController {
             throw new AppException(HttpStatus.FORBIDDEN, "Impossible de determiner le centre de gestion du gestionnaire");
         }
 
-        List<Contact> visibleContacts = new ArrayList<>();
-        for (Contact contact : contactRepository.findPaginated(1, 0, predicate, sortOrder, filters)) {
-            if (canViewContact(centresDemandeur, contact)) {
-                visibleContacts.add(contact);
-            }
-        }
-
-        paginatedResponse.setTotal((long) visibleContacts.size());
-        paginatedResponse.setData(slicePage(visibleContacts, page, perPage));
+        List<Integer> centreIds = centresDemandeur.stream().map(CentreGestion::getId).toList();
+        paginatedResponse.setTotal(contactRepository.countVisibleForCentres(centreIds, filters));
+        paginatedResponse.setData(contactRepository.findPaginatedVisibleForCentres(centreIds, page, perPage, predicate, sortOrder, filters));
         return paginatedResponse;
     }
 
@@ -228,18 +222,4 @@ public class ContactController {
         }
     }
 
-    private List<Contact> slicePage(List<Contact> contacts, int page, int perPage) {
-        if (perPage <= 0) {
-            return contacts;
-        }
-
-        int safePage = Math.max(page, 1);
-        int fromIndex = (safePage - 1) * perPage;
-        if (fromIndex >= contacts.size()) {
-            return new ArrayList<>();
-        }
-
-        int toIndex = Math.min(fromIndex + perPage, contacts.size());
-        return new ArrayList<>(contacts.subList(fromIndex, toIndex));
-    }
 }
