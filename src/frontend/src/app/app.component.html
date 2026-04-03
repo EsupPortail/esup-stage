@@ -35,10 +35,12 @@
     </nav>
   </mat-sidenav>
   <mat-sidenav-content>
-    <main id="main">
+    <main id="main" class="app-main">
       <app-loader></app-loader>
-      <app-title></app-title>
-      <router-outlet></router-outlet>
+      <div class="app-main__content">
+        <app-title></app-title>
+        <router-outlet></router-outlet>
+      </div>
     </main>
   </mat-sidenav-content>
 </mat-sidenav-container>
