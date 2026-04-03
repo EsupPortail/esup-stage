@@ -74,4 +74,7 @@ public class StructureFormDto {
 
     private Boolean verrouillageSynchroStructureSirene;
 
+    private Boolean confidentialiteCoordonnees;
+
+    private Integer idCentreGestionProprietaire;
 }

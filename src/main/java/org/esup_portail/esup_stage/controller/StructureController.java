@@ -69,6 +69,9 @@ public class StructureController {
     private PaysJpaRepository paysJpaRepository;
 
     @Autowired
+    private CentreGestionJpaRepository centreGestionJpaRepository;
+
+    @Autowired
     private AppConfigService appConfigService;
 
     @Autowired
@@ -447,8 +450,55 @@ public class StructureController {
         Boolean verrou = structureFormDto.getVerrouillageSynchroStructureSirene();
         structure.setVerrouillageSynchroStructureSirene(verrou != null ? verrou : Boolean.FALSE);
         structure.setVerrouillageSynchroStructureSirene(structureFormDto.getVerrouillageSynchroStructureSirene());
+        structure.setConfidentialiteCoordonnees(Boolean.TRUE.equals(structureFormDto.getConfidentialiteCoordonnees()));
+        CentreGestion centreGestionProprietaire = resolveStructureOwnerCentre(structureFormDto);
+        if (structure.isConfidentialiteCoordonnees() && centreGestionProprietaire == null) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Le centre de gestion propriétaire est obligatoire quand les coordonnées sont confidentielles");
+        }
+        structure.setCentreGestionProprietaire(centreGestionProprietaire);
     }
 
+
+    private CentreGestion resolveStructureOwnerCentre(StructureFormDto structureFormDto) {
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
+        boolean isGestionnaire = UtilisateurHelper.isRole(utilisateur, Role.GES) || UtilisateurHelper.isRole(utilisateur, Role.RESP_GES);
+        Integer requestedCentreId = structureFormDto.getIdCentreGestionProprietaire();
+
+        if (!isGestionnaire) {
+            if (requestedCentreId == null) {
+                return null;
+            }
+            CentreGestion centreGestion = centreGestionJpaRepository.findById(requestedCentreId).orElse(null);
+            if (centreGestion == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion propriétaire non trouve");
+            }
+            return centreGestion;
+        }
+
+        if (utilisateur.getUid() == null || utilisateur.getUid().isBlank()) {
+            throw new AppException(HttpStatus.FORBIDDEN, "Impossible de determiner le centre de gestion du gestionnaire");
+        }
+
+        List<CentreGestion> centresGestionnaires = centreGestionJpaRepository.findAllByGestionnaireUid(utilisateur.getUid());
+        if (centresGestionnaires.isEmpty()) {
+            throw new AppException(HttpStatus.FORBIDDEN, "Impossible de determiner le centre de gestion du gestionnaire");
+        }
+
+        if (requestedCentreId == null) {
+            if (centresGestionnaires.size() == 1) {
+                return centresGestionnaires.getFirst();
+            }
+            return null;
+        }
+
+        for (CentreGestion centreGestion : centresGestionnaires) {
+            if (centreGestion.getId() == requestedCentreId) {
+                return centreGestion;
+            }
+        }
+
+        throw new AppException(HttpStatus.FORBIDDEN, "Le centre de gestion propriétaire ne peut pas être forcé depuis le client");
+    }
     @GetMapping("/sirene")
     public SireneInfoDto getSireneInfo(){
         SireneInfoDto sireneInfoDto = new SireneInfoDto();

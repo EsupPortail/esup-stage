@@ -339,3 +339,6 @@ databaseChangeLog:
   - include:
       file: 3.3.0-param-centre-gestion-selection-auto-type-convention.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 3.3.0-confidentialite-centre-structure.yaml
+      relativeToChangelogFile: true

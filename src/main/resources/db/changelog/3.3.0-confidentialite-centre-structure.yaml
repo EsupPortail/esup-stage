@@ -1,0 +1,56 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.3.0-confidentialite-centre-structure-columns
+      author: thouveno9
+      changes:
+        - addColumn:
+            tableName: CentreGestion
+            columns:
+              - column:
+                  name: codeConfidentialiteConventionOrpheline
+                  type: VARCHAR(1)
+        - addColumn:
+            tableName: Structure
+            columns:
+              - column:
+                  name: confidentialiteCoordonnees
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: idCentreGestionProprietaire
+                  type: INT
+
+  - changeSet:
+      id: 3.3.0-confidentialite-centre-structure-data
+      author: thouveno9
+      changes:
+        - sql:
+            sql: |
+              UPDATE CentreGestion
+              SET codeConfidentialiteConventionOrpheline = codeConfidentialite
+              WHERE codeConfidentialite IN ('0', '1');
+        - sql:
+            sql: |
+              UPDATE CentreGestion
+              SET codeConfidentialiteConventionOrpheline = '1'
+              WHERE codeConfidentialite = '2'
+                AND codeConfidentialiteConventionOrpheline IS NULL;
+
+  - changeSet:
+      id: 3.3.0-confidentialite-centre-structure-fks
+      author: thouveno9
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: CentreGestion
+            baseColumnNames: codeConfidentialiteConventionOrpheline
+            constraintName: fk_CentreGestion_ConfidentialiteConventionOrpheline
+            referencedTableName: Confidentialite
+            referencedColumnNames: codeConfidentialite
+        - addForeignKeyConstraint:
+            baseTableName: Structure
+            baseColumnNames: idCentreGestionProprietaire
+            constraintName: fk_Structure_CentreGestionProprietaire
+            referencedTableName: CentreGestion
+            referencedColumnNames: idCentreGestion

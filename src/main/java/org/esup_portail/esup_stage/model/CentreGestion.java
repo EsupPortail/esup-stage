@@ -82,6 +82,10 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     @JoinColumn(name = "codeConfidentialite")
     private Confidentialite codeConfidentialite;
 
+    @ManyToOne
+    @JoinColumn(name = "codeConfidentialiteConventionOrpheline")
+    private Confidentialite codeConfidentialiteConventionOrpheline;
+
     @Column()
     private boolean autoriserImpressionConvention;
 
