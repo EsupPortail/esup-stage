@@ -11,6 +11,7 @@ import org.esup_portail.esup_stage.model.Role;
 import org.esup_portail.esup_stage.model.Utilisateur;
 import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
 import org.esup_portail.esup_stage.security.ServiceContext;
+import org.esup_portail.esup_stage.security.permission.PermissionEvaluator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class SecureInterceptor {
 
     @Around("@annotation(Secure)")
     public Object checkAuthorization(ProceedingJoinPoint joinPoint) throws Throwable {
-        MethodSignature methodSignature = (MethodSignature) joinPoint.getStaticPart().getSignature();
+        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         Secure authorized = methodSignature.getMethod().getAnnotation(Secure.class);
         AppFonctionEnum[] fonctions = authorized.fonctions();
         DroitEnum[] droits = authorized.droits();
@@ -51,7 +52,16 @@ public class SecureInterceptor {
         }
 
         if (!hasRight) {
-            throw new AppException(HttpStatus.FORBIDDEN, "Votre rôle ne donne pas accès à cette ressource");
+            throw new AppException(HttpStatus.FORBIDDEN, "Votre role ne donne pas acces a cette ressource");
+        }
+
+        Class<? extends PermissionEvaluator> evaluatorClass = authorized.evaluator();
+        if (!PermissionEvaluator.class.equals(evaluatorClass)) {
+            PermissionEvaluator evaluator = context.getBean(evaluatorClass);
+            boolean hasPermission = evaluator.hasPermission(utilisateur, methodSignature, joinPoint.getArgs());
+            if (!hasPermission) {
+                throw new AppException(HttpStatus.FORBIDDEN, "Vous n'avez pas acces a cette ressource");
+            }
         }
 
         return joinPoint.proceed();

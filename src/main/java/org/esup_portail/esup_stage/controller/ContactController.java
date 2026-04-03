@@ -84,8 +84,7 @@ public class ContactController {
             }
             List<Contact> filteredContacts = new ArrayList<Contact>();
             for (Contact contact : contacts) {
-                if (contact.getCentreGestion().getCodeConfidentialite().getCode().equals("0") || contact.getCentreGestion().getId() == centreGestion.getId() ||
-                        contact.getCentreGestion().getNiveauCentre().getLibelle().equals("ETABLISSEMENT")) {
+                if (isVisibleForConventionContext(contact.getCentreGestion(), centreGestion)) {
                     filteredContacts.add(contact);
                 }
             }
@@ -108,7 +107,6 @@ public class ContactController {
 
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
         CentreGestion centreGestion;
-        //Ajoute le centreGestion de l'utilisateur qui a créé le contact pour les utilisateurs gestionnaires.
         if (UtilisateurHelper.isRole(utilisateur, Role.GES) || UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)) {
             if (contactFormDto.getIdCentreGestion() != null) {
                 centreGestion = centreGestionJpaRepository.findById(contactFormDto.getIdCentreGestion().intValue());
@@ -129,7 +127,7 @@ public class ContactController {
     }
 
     @PutMapping("/{id}")
-    @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.MODIFICATION},evaluator = ContactPermissionEvaluator.class)
+    @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.MODIFICATION}, evaluator = ContactPermissionEvaluator.class)
     public Contact update(@PathVariable("id") int id, @Valid @RequestBody ContactFormDto contactFormDto) {
         Contact contact = contactJpaRepository.findById(id);
         setContactData(contact, contactFormDto);
@@ -162,5 +160,19 @@ public class ContactController {
         contact.setTel(contactFormDto.getTel());
         contact.setFax(contactFormDto.getFax());
         contact.setMail(contactFormDto.getMail());
+    }
+
+    private boolean isVisibleForConventionContext(CentreGestion ownerCentre, CentreGestion conventionCentre) {
+        if (ownerCentre == null || conventionCentre == null) {
+            return false;
+        }
+        if (ownerCentre.getId() == conventionCentre.getId()) {
+            return true;
+        }
+        if (ownerCentre.getNiveauCentre() != null && "ETABLISSEMENT".equals(ownerCentre.getNiveauCentre().getLibelle())) {
+            return true;
+        }
+        return ownerCentre.getCodeConfidentialite() != null
+                && "0".equals(ownerCentre.getCodeConfidentialite().getCode());
     }
 }

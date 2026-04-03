@@ -84,8 +84,7 @@ public class ServiceController {
             }
             List<Service> filteredservices = new ArrayList<Service>();
             for (Service service : services) {
-                if (service.getCentreGestion().getCodeConfidentialite().getCode().equals("0") || service.getCentreGestion().getId() == centreGestion.getId() ||
-                        service.getCentreGestion().getNiveauCentre().getLibelle().equals("ETABLISSEMENT")) {
+                if (isVisibleForConventionContext(service.getCentreGestion(), centreGestion)) {
                     filteredservices.add(service);
                 }
             }
@@ -169,6 +168,20 @@ public class ServiceController {
         service.setPays(pays);
         service.setTelephone(serviceFormDto.getTelephone());
 
+    }
+
+    private boolean isVisibleForConventionContext(CentreGestion ownerCentre, CentreGestion conventionCentre) {
+        if (ownerCentre == null || conventionCentre == null) {
+            return false;
+        }
+        if (ownerCentre.getId() == conventionCentre.getId()) {
+            return true;
+        }
+        if (ownerCentre.getNiveauCentre() != null && "ETABLISSEMENT".equals(ownerCentre.getNiveauCentre().getLibelle())) {
+            return true;
+        }
+        return ownerCentre.getCodeConfidentialite() != null
+                && "0".equals(ownerCentre.getCodeConfidentialite().getCode());
     }
 
 }
