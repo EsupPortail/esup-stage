@@ -2,32 +2,38 @@
   <div class="modal-container">
     <!-- En-tête fixe -->
     <div class="header-banner">
-      @switch (typeFiche){
-        @case (0){
-          <h1>Confirmation de l'envoie à l'étudiant ({{convention.etudiant.mail}})</h1>
+      @switch (typeFiche) {
+        @case (0) {
+          <h1>Confirmation de l'envoi à l'étudiant ({{ convention.etudiant.mail }})</h1>
         }
-        @case (1){
-          <h1>Confirmation de l'envoie à l'enseignant ({{convention.enseignant.mail}})</h1>
+        @case (1) {
+          <h1>Confirmation de l'envoi à l'enseignant ({{ convention.enseignant.mail }})</h1>
         }
-        @case (2){
-          <h1>Confirmation de l'envoie au tuteur professionnel ({{convention.contact.mail}})</h1>
+        @case (2) {
+          <h1>Confirmation de l'envoi au tuteur professionnel ({{ convention.contact.mail }})</h1>
         }
         @default {
-          <h1>Confirmation de l'envoie</h1>
+          <h1>Confirmation de l'envoi</h1>
         }
       }
-
     </div>
 
     <div class="modal-content">
-      <span>Modèle de mail utilisé : </span>
-      <div class="mail-box">
-        <div class="mail-header">
-          <span>Sujet : {{templateMail.objet}} </span>
+      <span>Modèle de mail utilisé :</span>
+
+      @if (templateMail) {
+        <div class="mail-box">
+          <div class="mail-header">
+            <span>Sujet : {{ templateMail.objet }}</span>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="mail-body" [innerHTML]="templateMail.texte"></div>
         </div>
-        <mat-divider></mat-divider>
-        <div class="mail-body" [innerHTML]="templateMail.texte"></div>
-      </div>
+      } @else if (loadingTemplate) {
+        <div class="missing-params">Chargement du modèle de mail...</div>
+      } @else {
+        <div class="no-template">Aucun modèle de mail disponible.</div>
+      }
     </div>
 
     <!-- Footer fixe -->
@@ -35,7 +41,7 @@
       <button type="button" mat-stroked-button class="cancel-button" (click)="close()">
         {{'BOUTON_ANNULER'|contenu}}
       </button>
-      <button type="submit" mat-flat-button class="submit-button" (click)="send()">
+      <button type="submit" mat-flat-button class="submit-button" (click)="send()" [disabled]="sending || !templateMail">
         {{'BOUTON_VALIDER'|contenu}}
       </button>
     </div>
