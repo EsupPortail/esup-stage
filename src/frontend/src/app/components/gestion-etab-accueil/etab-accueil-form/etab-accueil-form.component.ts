@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ChangeDetectorRef, ViewEncapsulation, AfterViewInit, OnDestroy} from '@angular/core';
-import { FormBuilder, FormControl, Validators } from "@angular/forms";
+import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import { StructureService } from "../../../services/structure.service";
 import { CommuneService } from "../../../services/commune.service";
 import { PaysService } from "../../../services/pays.service";
@@ -115,8 +115,13 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   isSireneActive = false;
   filterTypeCountries!: 0 | 1 | 2  ;
   private lastNafListKey: string | number | null = null;
+  confidentiliteForm: FormGroup;
+  confidentialiteActive: boolean = false;
 
   form: any;
+
+  // map to track focus state of inputs used for masking
+  fieldFocus: { [key: string]: boolean } = {};
 
   constructor(
     public structureService: StructureService,
@@ -145,19 +150,19 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
         this.countries = response.data;
         this.filterTypeCountries = 0;
 
-        // Restriction étudiant : enlever la France si nécessaire
+        // Restriction ÃƒÆ’Ã‚Â©tudiant : enlever la France si nÃƒÆ’Ã‚Â©cessaire
         if (this.authService.isEtudiant() && this.creationSeulementHorsFrance) {
           this.countries = this.countries.filter(c => c.libelle !== 'FRANCE');
           this.filterTypeCountries = 1;
         }
 
-        // Restriction étudiant : enlever les autres pays si nécessaire
+        // Restriction ÃƒÆ’Ã‚Â©tudiant : enlever les autres pays si nÃƒÆ’Ã‚Â©cessaire
         if(this.authService.isEtudiant() && this.creationSeulementFrance){
           this.countries = this.countries.filter(c => c.libelle == 'FRANCE');
           this.filterTypeCountries = 2;
         }
 
-        // Alimente la liste filtrée initiale
+        // Alimente la liste filtrÃƒÆ’Ã‚Â©e initiale
         this.filteredCountries.next(this.countries.slice());
 
         // Met en place le filtrage par saisie
@@ -186,6 +191,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
       .subscribe(() => {
         this.filterNafN5List();
       });
+    this.syncConfidentialiteForm(this.etab);
   }
 
   public isLayoutReady = false;
@@ -416,6 +422,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
       numeroRNE: [this.etab.numeroRNE, [Validators.maxLength(8), Validators.pattern(REGEX.NUMRNE)]],
       verrouillageSynchroStructureSirene: [this.etab.verrouillageSynchroStructureSirene || false]
     });
+    this.syncConfidentialiteForm(this.etab);
     this.toggleCommune();
     this.form.get('idPays')?.valueChanges
       .pipe(takeUntil(this._onDestroy))
@@ -501,7 +508,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   save(): void {
     if (this.form.valid) {
       if (!this.form.get('codeNafN5')?.value && !this.form.get('activitePrincipale')?.value) {
-        this.messageService.setError('Une de ces deux informations doivent être renseignée : Code APE, Activité principale');
+        this.messageService.setError('Une de ces deux informations doivent ÃƒÆ’Ã‚Âªtre renseignÃƒÆ’Ã‚Â©e : Code APE, ActivitÃƒÆ’Ã‚Â© principale');
         return;
       }
 
@@ -520,13 +527,13 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
       data.nafN5 = this.selectedNafN5;
       if (this.etab.id) {
         this.structureService.update(this.etab.id, data).subscribe((response: any) => {
-          this.messageService.setSuccess('Établissement d\'accueil modifié');
+          this.messageService.setSuccess('ÃƒÆ’Ã¢â‚¬Â°tablissement d\'accueil modifiÃƒÆ’Ã‚Â©');
           this.etab = response;
           this.submitted.emit(this.etab);
         });
       } else {
         this.structureService.create(data).subscribe((response: any) => {
-          this.messageService.setSuccess('Établissement d\'accueil créé');
+          this.messageService.setSuccess('ÃƒÆ’Ã¢â‚¬Â°tablissement d\'accueil crÃƒÆ’Ã‚Â©ÃƒÆ’Ã‚Â©');
           this.etab = response;
           this.submitted.emit(this.etab);
         });
@@ -667,9 +674,39 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
     }, { emitEvent: true });
 
     this.selectedNafN5 = updated?.nafN5 ?? null;
+    this.syncConfidentialiteForm(updated);
 
     this.toggleCommune();
     this.changeDetector.detectChanges();
+  }
+
+  private syncConfidentialiteForm(etab: any): void {
+    const confidentialite = !!etab?.confidentialiteCoordonnees;
+    this.confidentialiteActive = confidentialite;
+
+    if (!this.confidentiliteForm) {
+      this.confidentiliteForm = this.fb.group({
+        confidentialite: [confidentialite]
+      });
+      return;
+    }
+
+    this.confidentiliteForm.patchValue({ confidentialite }, { emitEvent: false });
+  }
+  // Focus handlers used by template to control masking
+  onFocus(field: string): void {
+    this.fieldFocus[field] = true;
+  }
+
+  onBlur(field: string): void {
+    this.fieldFocus[field] = false;
+  }
+
+  getInputType(field: string, defaultType: string = 'text'): string {
+    if (this.isOrgaAccConfidentiel()) {
+      return this.fieldFocus[field] ? defaultType : 'password';
+    }
+    return defaultType;
   }
 
   autoUpdateFromApi(): void {
@@ -680,13 +717,13 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
 
     this.structureService.updateFromSirene(this.etab.id).subscribe({
       next: (updated: any) => {
-        this.messageService.setSuccess('Mise à jour automatique effectuée.');
+        this.messageService.setSuccess('Mise ÃƒÆ’Ã‚Â  jour automatique effectuÃƒÆ’Ã‚Â©e.');
         this.etab = updated;
         this.patchFormFromEtab(updated);
       },
       error: () => {
         this.autoUpdating = false;
-        this.messageService.setError('Échec de la mise à jour automatique.');
+        this.messageService.setError('ÃƒÆ’Ã¢â‚¬Â°chec de la mise ÃƒÆ’Ã‚Â  jour automatique.');
       },
       complete: () => {
         this.autoUpdating = false;
@@ -694,7 +731,6 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
     });
   }
 
-  // Vérifie si le bouton de verrouillage doit être affiché
   canToggleVerrouillage(): boolean {
     return !(this.authService.isEtudiant() || this.authService.isEnseignant()) && this.isSireneActive && !!this.etab?.id && this.canEdit();
   }
@@ -703,9 +739,34 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
     return !(this.authService.isEtudiant() || this.authService.isEnseignant()) && this.isSireneActive && this.etab?.id;
   }
 
-  // Méthode pour basculer l'état du verrouillage
   toggleVerrouillage(): void {
     this.etab.verrouillageSynchroStructureSirene = !this.etab.verrouillageSynchroStructureSirene;
     this.form.get('verrouillageSynchroStructureSirene')?.setValue(this.etab.verrouillageSynchroStructureSirene);
+  }
+
+  isOrgaAccConfidentiel(): boolean {
+    if (this.authService.isAdmin()) {
+      return false;
+    }
+
+    const confidentialiteCoordonnees = !!this.etab?.confidentialiteCoordonnees;
+    const codeConfidentialite = this.etab?.centreGestionProprietaire?.codeConfidentialite?.code
+      ?? this.etab?.centreGestion?.codeConfidentialite?.code;
+
+    return confidentialiteCoordonnees && `${codeConfidentialite}` === '1';
+  }
+
+  isConfidentialiteEditable(){
+    return !this.authService.isEtudiant() && !this.authService.isEnseignant() && !!this.etab?.id && this.canEdit();
+  }
+
+
+  toggleConfidentialite(){
+    this.structureService.updateConfidentialite(this.etab.id,{confidentialiteCoordonnees: this.confidentiliteForm.get('confidentialite')?.value}).subscribe({
+      next: (response: any) => {
+        this.etab = response;
+        this.syncConfidentialiteForm(response);
+      },
+    });
   }
 }

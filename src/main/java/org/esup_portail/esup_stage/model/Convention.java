@@ -598,13 +598,13 @@ public class Convention extends ObjetMetier implements Exportable {
                 }
                 break;
             case "sujetStage":
-                value = getSujetStage();
+                value = getConfidentialExportValue("sujetStage", getSujetStage());
                 break;
             case "fonctionsEtTaches":
-                value = getFonctionsEtTaches();
+                value = getConfidentialExportValue("fonctionsEtTaches", getFonctionsEtTaches());
                 break;
             case "details":
-                value = getDetails();
+                value = getConfidentialExportValue("details", getDetails());
                 break;
             case "dureeExceptionnelle":
                 value = getDureeExceptionnelle();
@@ -670,7 +670,10 @@ public class Convention extends ObjetMetier implements Exportable {
                 }
                 break;
             case "commentaireStage":
-                value = getCommentaireStage();
+                value = getConfidentialExportValue("commentaireStage", getCommentaireStage());
+                break;
+            case "competences":
+                value = getConfidentialExportValue("competences", getCompetences());
                 break;
             case "commentaireDureeTravail":
                 value = getCommentaireDureeTravail();
@@ -847,7 +850,21 @@ public class Convention extends ObjetMetier implements Exportable {
         return value;
     }
 
-    @Transient
+        private String getConfidentialExportValue(String key, String value) {
+        if (Boolean.TRUE.equals(getConfidentiel()) && isConfidentialExportField(key)) {
+            return "";
+        }
+        return value;
+    }
+
+    private boolean isConfidentialExportField(String key) {
+        return "sujetStage".equals(key)
+                || "fonctionsEtTaches".equals(key)
+                || "competences".equals(key)
+                || "details".equals(key)
+                || "commentaireStage".equals(key);
+    }
+@Transient
     public boolean isAllSignedDateSetted() {
         return getDateDepotEtudiant() != null && getDateSignatureEtudiant() != null &&
                 getDateDepotEnseignant() != null && getDateSignatureEnseignant() != null &&

@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.config.properties.SireneProperties;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.dto.SireneInfoDto;
+import org.esup_portail.esup_stage.dto.StructureConfidentialiteDto;
 import org.esup_portail.esup_stage.dto.StructureFormDto;
 import org.esup_portail.esup_stage.dto.view.Views;
 import org.esup_portail.esup_stage.dto.ImportReportDto;
@@ -300,6 +301,24 @@ public class StructureController {
         return structure;
     }
 
+    @PatchMapping("/{id}/confidentialite")
+    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.MODIFICATION})
+    public Structure updateConfidentialite(@PathVariable("id") int id, @RequestBody StructureConfidentialiteDto structureConfidentialiteDto) {
+        Structure structure = structureJpaRepository.findById(id);
+        if (structure == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Structure non trouvée");
+        }
+        String oldStructure;
+        try {
+            oldStructure = objectMapper.writeValueAsString(structure);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Erreur lors de la sérialisation de la structure d'origine", e);
+        }
+
+        applyStructureConfidentialite(structure, structureConfidentialiteDto.getConfidentialiteCoordonnees());
+        return structureService.save(oldStructure, structure);
+    }
+
     @PostMapping("/getOrCreate")
     @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
     public Structure getOrCreate(@Valid @RequestBody Structure structureBody) {
@@ -450,19 +469,20 @@ public class StructureController {
         Boolean verrou = structureFormDto.getVerrouillageSynchroStructureSirene();
         structure.setVerrouillageSynchroStructureSirene(verrou != null ? verrou : Boolean.FALSE);
         structure.setVerrouillageSynchroStructureSirene(structureFormDto.getVerrouillageSynchroStructureSirene());
-        structure.setConfidentialiteCoordonnees(Boolean.TRUE.equals(structureFormDto.getConfidentialiteCoordonnees()));
-        CentreGestion centreGestionProprietaire = resolveStructureOwnerCentre(structureFormDto);
-        if (structure.isConfidentialiteCoordonnees() && centreGestionProprietaire == null) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Le centre de gestion propriétaire est obligatoire quand les coordonnées sont confidentielles");
-        }
-        structure.setCentreGestionProprietaire(centreGestionProprietaire);
+        applyStructureConfidentialite(structure, structureFormDto.getConfidentialiteCoordonnees());
     }
 
+    private void applyStructureConfidentialite(Structure structure, Boolean confidentialiteCoordonnees) {
+        structure.setConfidentialiteCoordonnees(confidentialiteCoordonnees);
+    }
 
     private CentreGestion resolveStructureOwnerCentre(StructureFormDto structureFormDto) {
+        return resolveStructureOwnerCentre(structureFormDto.getIdCentreGestionProprietaire());
+    }
+
+    private CentreGestion resolveStructureOwnerCentre(Integer requestedCentreId) {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
         boolean isGestionnaire = UtilisateurHelper.isRole(utilisateur, Role.GES) || UtilisateurHelper.isRole(utilisateur, Role.RESP_GES);
-        Integer requestedCentreId = structureFormDto.getIdCentreGestionProprietaire();
 
         if (!isGestionnaire) {
             if (requestedCentreId == null) {

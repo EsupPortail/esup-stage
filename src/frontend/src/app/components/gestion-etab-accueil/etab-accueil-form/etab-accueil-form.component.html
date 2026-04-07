@@ -1,3 +1,10 @@
+<form [formGroup]="confidentiliteForm">
+  <div class="toggle-confidentialite">
+    <span *ngIf="isConfidentialiteEditable()">
+      <mat-slide-toggle formControlName="confidentialite" (change)="toggleConfidentialite()"> Confidentiel </mat-slide-toggle>
+    </span>
+  </div>
+</form>
 <form [formGroup]="form" novalidate (submit)="save()">
   <div class="text-title">Général</div>
   <mat-divider class="etab-accueil-divider mb-2"></mat-divider>
@@ -182,16 +189,26 @@
     </div>
     <div class="row">
       <div class="col-sm-12 col-md-6 mb-2" *ngIf="isFr()">
-        <app-form-autocomplete-field [service]="communeService" [field]="form.get('codePostal')" [fieldLabel]="'Code postal'" (updated)="updateCommune($event)" [startWith]="false"></app-form-autocomplete-field>
+        <div (focusout)="onBlur('codePostal')">
+          <ng-container *ngIf="isOrgaAccConfidentiel() && !fieldFocus['codePostal']">
+            <mat-form-field appearance="fill" style="display: block">
+              <mat-label>Code postal</mat-label>
+              <input matInput [value]="form.get('codePostal')?.value" [type]="getInputType('codePostal')" readonly (focus)="onFocus('codePostal')" (click)="onFocus('codePostal')" />
+            </mat-form-field>
+          </ng-container>
+          <ng-container *ngIf="!isOrgaAccConfidentiel() || fieldFocus['codePostal']">
+            <app-form-autocomplete-field [service]="communeService" [field]="form.get('codePostal')" [fieldLabel]="'Code postal'" (updated)="updateCommune($event)" [startWith]="false" (click)="onFocus('codePostal')"></app-form-autocomplete-field>
+          </ng-container>
+        </div>
       </div>
       <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill" *ngIf="!isFr()">
         <mat-label>code Postal</mat-label>
-        <input matInput formControlName="codePostal" required />
+        <input matInput formControlName="codePostal" required [type]="getInputType('codePostal')" (focus)="onFocus('codePostal')" (blur)="onBlur('codePostal')" />
         <mat-error *ngIf="form.get('codePostal')"></mat-error>
       </mat-form-field>
       <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
         <mat-label>Commune</mat-label>
-        <input matInput formControlName="commune" required />
+        <input matInput formControlName="commune" required [type]="getInputType('commune')" (focus)="onFocus('commune')" (blur)="onBlur('commune')" />
         <mat-error *ngIf="form.get('commune')"></mat-error>
       </mat-form-field>
     </div>
@@ -199,7 +216,7 @@
   <div class="row">
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Adresse mail</mat-label>
-      <input matInput formControlName="mail" />
+      <input matInput formControlName="mail" [type]="getInputType('mail','email')" (focus)="onFocus('mail')" (blur)="onBlur('mail')" />
       <mat-hint>Sous cette forme adresse&#64;domaine.fr</mat-hint>
       <mat-error *ngIf="form.get('mail')?.touched && form.get('mail')?.invalid">
         <ng-container *ngIf="form.get('mail')?.hasError('pattern')">
