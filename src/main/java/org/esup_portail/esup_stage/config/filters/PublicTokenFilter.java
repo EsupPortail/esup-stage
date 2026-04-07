@@ -49,6 +49,6 @@ public class PublicTokenFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         // Éviter d'exécuter le filtre si l'URL n'est pas "/public"
-        return !request.getRequestURI().startsWith(PublicSecurityConfiguration.PATH_FILTER);
+        return !request.getServletPath().startsWith(PublicSecurityConfiguration.PATH_FILTER);
     }
 }

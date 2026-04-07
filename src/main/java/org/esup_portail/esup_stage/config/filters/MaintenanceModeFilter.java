@@ -40,7 +40,7 @@ public class MaintenanceModeFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        String uri = request.getRequestURI();
+        String uri = request.getServletPath();
 
         if (!uri.startsWith("/api/") || isExcludedUri(uri)) {
             filterChain.doFilter(request, response);

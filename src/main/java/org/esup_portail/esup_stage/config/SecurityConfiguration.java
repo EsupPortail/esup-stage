@@ -136,13 +136,13 @@ public class SecurityConfiguration {
                 )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) -> {
-                            if (request.getRequestURI().startsWith("/api/")) {
+                            if (request.getServletPath().startsWith("/api/")) {
                                 if (request.getSession(false) == null  || !request.isRequestedSessionIdValid()) {
                                     response.setHeader("X-Auth-Reason", "idle");
                                 }
                                 response.setStatus(401);
                             } else {
-                                response.sendRedirect("/login/cas");
+                                response.sendRedirect(request.getContextPath() + "/login/cas");
                             }
                         })
                 )
@@ -159,7 +159,7 @@ public class SecurityConfiguration {
     @Bean
     public AccessDeniedHandler accessDeniedHandler() {
         return (request, response, accessDeniedException) -> {
-            response.sendRedirect("/error-401");
+            response.sendRedirect(request.getContextPath() + "/error-401");
         };
     }
 }

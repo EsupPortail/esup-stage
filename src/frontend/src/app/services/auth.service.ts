@@ -47,13 +47,22 @@ export class AuthService {
     );
   }
 
+  private resolvePath(url: string): string {
+    return new URL(url, window.location.href).pathname;
+  }
+
+  private resolveUrl(url: string): string {
+    return new URL(url, window.location.href).toString();
+  }
+
   private handleUnauthorized() {
     if (!this.redirecting) {
       this.redirecting = true;
       const currentPath = window.location.pathname;
-      if (currentPath !== '/login/cas') {
+      const loginPath = this.resolvePath(environment.loginUrl);
+      if (currentPath !== loginPath) {
         sessionStorage.setItem('redirectUrl', currentPath);
-        window.location.href = '/login/cas';
+        window.location.href = this.resolveUrl(environment.loginUrl);
       }
     }
   }
@@ -64,7 +73,7 @@ export class AuthService {
     this.adminTechLoaded = false;
     this.adminTechLoadingPromise = undefined;
     this.tokenService.logout();
-    window.location.href = environment.logoutUrl;
+    window.location.href = this.resolveUrl(environment.logoutUrl);
     sessionStorage.clear();
   }
 
