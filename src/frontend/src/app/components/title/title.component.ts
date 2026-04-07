@@ -17,4 +17,8 @@ export class TitleComponent implements OnInit {
     return this.titleService.title;
   }
 
+  getSubTitle(): string | undefined {
+    return this.titleService.subtitle;
+  }
+
 }
