@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild } from '@angular/core';
 import { TableComponent } from "../../table/table.component";
-import { GroupeEtudiantService } from "../../../services/groupe-etudiant.service";
+import {EtudiantGroupeEtudiant, GroupeEtudiant, GroupeEtudiantService} from "../../../services/groupe-etudiant.service";
 import { ConventionService } from "../../../services/convention.service";
 import { AuthService } from "../../../services/auth.service";
 import { Router } from "@angular/router";
@@ -49,6 +49,10 @@ export class EtabAccueilGroupeComponent implements OnInit, OnChanges {
   ngOnChanges(): void{
     this.appTable?.update();
     this.selected = [];
+  }
+
+  isAlerte(etudiant:EtudiantGroupeEtudiant) {
+    return !this.groupeEtudiant?.convention.structure && !etudiant.convention.structure
   }
 
   isSelected(data: any): boolean {
