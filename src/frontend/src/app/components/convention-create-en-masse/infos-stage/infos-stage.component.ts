@@ -18,8 +18,8 @@ import { InfosStageModalComponent } from './infos-stage-modal/infos-stage-modal.
 export class InfosStageComponent implements OnInit, OnChanges {
 
   columns: string[] = [];
-  sortColumn = 'prenom';
-  sortDirection: SortDirection = 'desc';
+  sortColumn = 'etudiant.nom_etudiant.prenom';
+  sortDirection: SortDirection = 'asc';
   filters: any[] = [];
   selected: any[] = [];
 

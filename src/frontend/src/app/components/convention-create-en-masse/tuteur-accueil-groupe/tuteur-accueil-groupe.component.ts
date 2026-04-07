@@ -18,8 +18,8 @@ import { TuteurAccueilGroupeModalComponent } from './tuteur-accueil-groupe-modal
 export class TuteurAccueilGroupeComponent implements OnInit, OnChanges {
 
   columns: string[] = [];
-  sortColumn = 'prenom';
-  sortDirection: SortDirection = 'desc';
+  sortColumn = 'etudiant.nom_etudiant.prenom';
+  sortDirection: SortDirection = 'asc';
   filters: any[] = [];
   selected: any[] = [];
 

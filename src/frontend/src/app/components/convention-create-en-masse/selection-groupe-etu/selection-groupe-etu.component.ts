@@ -31,8 +31,8 @@ export class SelectionGroupeEtuComponent implements OnInit, OnChanges {
   groupeEtudiantColumns: string[] = [];
   groupeEtudiantFilters: string[] = [];
   columns: string[] = [];
-  sortColumn = 'prenom';
-  sortDirection: SortDirection = 'desc';
+  sortColumn = 'etudiant.nom_etudiant.prenom';
+  sortDirection: SortDirection = 'asc';
   selectedRemove: any[] = [];
   selectedAdd: EtudiantDiplomeEtapeResponse[] = [];
   etudiants: EtudiantDiplomeEtapeResponse[] = [];

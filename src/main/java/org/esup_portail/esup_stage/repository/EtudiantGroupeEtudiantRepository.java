@@ -15,6 +15,7 @@ public class EtudiantGroupeEtudiantRepository extends PaginationRepository<Etudi
 
     public EtudiantGroupeEtudiantRepository(EntityManager em) {
         super(em, EtudiantGroupeEtudiant.class, "ege");
+        this.predicateWhitelist.add("etudiant.nom_etudiant.prenom");
     }
 
 

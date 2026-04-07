@@ -19,8 +19,8 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 export class CadreStageComponent implements OnInit, OnChanges {
 
   columns: string[] = [];
-  sortColumn = 'prenom';
-  sortDirection: SortDirection = 'desc';
+  sortColumn = 'etudiant.nom_etudiant.prenom';
+  sortDirection: SortDirection = 'asc';
   filters: any[] = [];
   typeConventions: any[] = [];
 
