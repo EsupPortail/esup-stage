@@ -342,3 +342,7 @@ databaseChangeLog:
   - include:
       file: 3.3.0-confidentialite-centre-structure.yaml
       relativeToChangelogFile: true
+  - include:
+      file : 3.3.0-legacy-align-baseline.yaml
+      relativeToChangelogFile: true
+      context: legacy
