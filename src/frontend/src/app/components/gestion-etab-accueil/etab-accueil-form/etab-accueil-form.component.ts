@@ -115,7 +115,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   isSireneActive = false;
   filterTypeCountries!: 0 | 1 | 2  ;
   private lastNafListKey: string | number | null = null;
-  confidentiliteForm: FormGroup;
+  confidentiliteForm!: FormGroup;
   confidentialiteActive: boolean = false;
 
   form: any;
@@ -150,19 +150,19 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
         this.countries = response.data;
         this.filterTypeCountries = 0;
 
-        // Restriction ÃƒÆ’Ã‚Â©tudiant : enlever la France si nÃƒÆ’Ã‚Â©cessaire
+        // Restriction étudiant : enlever la France si nécessaire
         if (this.authService.isEtudiant() && this.creationSeulementHorsFrance) {
           this.countries = this.countries.filter(c => c.libelle !== 'FRANCE');
           this.filterTypeCountries = 1;
         }
 
-        // Restriction ÃƒÆ’Ã‚Â©tudiant : enlever les autres pays si nÃƒÆ’Ã‚Â©cessaire
+        // Restriction étudiant : enlever les autres pays si nécessaire
         if(this.authService.isEtudiant() && this.creationSeulementFrance){
           this.countries = this.countries.filter(c => c.libelle == 'FRANCE');
           this.filterTypeCountries = 2;
         }
 
-        // Alimente la liste filtrÃƒÆ’Ã‚Â©e initiale
+        // Alimente la liste filtrée initiale
         this.filteredCountries.next(this.countries.slice());
 
         // Met en place le filtrage par saisie
@@ -508,7 +508,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   save(): void {
     if (this.form.valid) {
       if (!this.form.get('codeNafN5')?.value && !this.form.get('activitePrincipale')?.value) {
-        this.messageService.setError('Une de ces deux informations doivent ÃƒÆ’Ã‚Âªtre renseignÃƒÆ’Ã‚Â©e : Code APE, ActivitÃƒÆ’Ã‚Â© principale');
+        this.messageService.setError('Une de ces deux informations doivent être renseignée : Code APE, Activité principale');
         return;
       }
 
@@ -527,13 +527,13 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
       data.nafN5 = this.selectedNafN5;
       if (this.etab.id) {
         this.structureService.update(this.etab.id, data).subscribe((response: any) => {
-          this.messageService.setSuccess('ÃƒÆ’Ã¢â‚¬Â°tablissement d\'accueil modifiÃƒÆ’Ã‚Â©');
+          this.messageService.setSuccess('établissement d\'accueil modifié');
           this.etab = response;
           this.submitted.emit(this.etab);
         });
       } else {
         this.structureService.create(data).subscribe((response: any) => {
-          this.messageService.setSuccess('ÃƒÆ’Ã¢â‚¬Â°tablissement d\'accueil crÃƒÆ’Ã‚Â©ÃƒÆ’Ã‚Â©');
+          this.messageService.setSuccess('établissement d\'accueil créé');
           this.etab = response;
           this.submitted.emit(this.etab);
         });
@@ -717,22 +717,18 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
 
     this.structureService.updateFromSirene(this.etab.id).subscribe({
       next: (updated: any) => {
-        this.messageService.setSuccess('Mise ÃƒÆ’Ã‚Â  jour automatique effectuÃƒÆ’Ã‚Â©e.');
+        this.messageService.setSuccess('Mise à jour automatique effectuée.');
         this.etab = updated;
         this.patchFormFromEtab(updated);
       },
       error: () => {
         this.autoUpdating = false;
-        this.messageService.setError('ÃƒÆ’Ã¢â‚¬Â°chec de la mise ÃƒÆ’Ã‚Â  jour automatique.');
+        this.messageService.setError('échec de la mise à jour automatique.');
       },
       complete: () => {
         this.autoUpdating = false;
       }
     });
-  }
-
-  canToggleVerrouillage(): boolean {
-    return !(this.authService.isEtudiant() || this.authService.isEnseignant()) && this.isSireneActive && !!this.etab?.id && this.canEdit();
   }
 
   canUpdateFromApi(): boolean {
