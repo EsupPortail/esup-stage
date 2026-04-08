@@ -29,8 +29,10 @@ import { PeriodeStageService } from'../../../services/periode-stage.service';
 })
 export class StageComponent implements OnInit {
   readonly MAX = {
+    longText: 30000,
     competences: 1000,
     fonctionsEtTaches: 1000,
+    nbConges: 1000,
   } as const;
 
   focused: keyof typeof this.MAX | null = null;
@@ -39,9 +41,14 @@ export class StageComponent implements OnInit {
     'nbHeuresHebdo': [Validators.required, Validators.pattern('[0-9]{1,2}([,.][0-9]{1,2})?')],
     'dureeExceptionnelle': [Validators.required, Validators.pattern('[0-9]+([,.][0-9]{1,2})?')],
     'montantGratification': [Validators.required, Validators.pattern('[0-9]{1,10}([,.][0-9]{1,2})?')],
-    'sujetStage': [Validators.required],
+    'sujetStage': [Validators.required, Validators.maxLength(this.MAX.longText)],
     'competences': [Validators.required, Validators.maxLength(this.MAX.competences)],
     'fonctionsEtTaches': [Validators.required,Validators.maxLength(this.MAX.fonctionsEtTaches)],
+    'details': [Validators.maxLength(this.MAX.longText)],
+    'commentaireDureeTravail': [Validators.maxLength(this.MAX.longText)],
+    'modeEncadreSuivi': [Validators.maxLength(this.MAX.longText)],
+    'avantagesNature': [Validators.maxLength(this.MAX.longText)],
+    'travailNuitFerie': [Validators.maxLength(this.MAX.longText)],
     'idUniteGratification': [Validators.required],
     'idUniteDuree': [Validators.required],
     'idDevise': [Validators.required],
@@ -50,6 +57,7 @@ export class StageComponent implements OnInit {
     'confidentiel': [Validators.required],
     'idNatureTravail': [Validators.required],
     'idModeValidationStage': [Validators.required],
+    'nbConges': [Validators.maxLength(this.MAX.nbConges)],
   }
 
   interruptionsStageTableColumns = ['dateDebutInterruption', 'dateFinInterruption', 'actions'];
@@ -173,10 +181,10 @@ export class StageComponent implements OnInit {
       idPays: [this.convention.paysConvention ? this.convention.paysConvention.id : null, [Validators.required]],
       // - Description du stage
       idTheme: [this.convention.theme ? this.convention.theme.id : null, [Validators.required]],
-      sujetStage: [this.convention.sujetStage],
-      competences: [this.convention.competences],
-      fonctionsEtTaches: [this.convention.fonctionsEtTaches],
-      details: [this.convention.details],
+      sujetStage: [this.convention.sujetStage, this.fieldValidators['sujetStage']],
+      competences: [this.convention.competences, this.fieldValidators['competences']],
+      fonctionsEtTaches: [this.convention.fonctionsEtTaches, this.fieldValidators['fonctionsEtTaches']],
+      details: [this.convention.details, this.fieldValidators['details']],
       // - Partie Dates / horaires
       dateDebutStage: [this.convention.dateDebutStage ? new Date(this.convention.dateDebutStage) : null, [Validators.required]],
       dateFinStage: [this.convention.dateFinStage ? new Date(this.convention.dateFinStage) : null, [Validators.required]],
@@ -186,7 +194,7 @@ export class StageComponent implements OnInit {
       nbConges: [this.convention.nbConges],
       dureeExceptionnelle: [this.convention.dureeExceptionnelle, this.fieldValidators['dureeExceptionnelle']],
       idTempsTravail: [this.convention.tempsTravail ? this.convention.tempsTravail.id : null, [Validators.required]],
-      commentaireDureeTravail: [this.convention.commentaireDureeTravail],
+      commentaireDureeTravail: [this.convention.commentaireDureeTravail, this.fieldValidators['commentaireDureeTravail']],
       periodeStageMois: [this.dureeStage.dureeMois, [Validators.min(0), Validators.max(30),Validators.required]],
       periodeStageJours: [this.dureeStage.dureeJours, [Validators.min(0), Validators.max(31),Validators.required]],
       periodeStageHeures: [this.dureeStage.dureeHeures, [Validators.min(0), Validators.max(23),Validators.required]],
@@ -203,9 +211,9 @@ export class StageComponent implements OnInit {
       confidentiel: [this.convention.confidentiel],
       idNatureTravail: [this.convention.natureTravail ? this.convention.natureTravail.id : null],
       idModeValidationStage: [this.convention.modeValidationStage ? this.convention.modeValidationStage.id : null],
-      modeEncadreSuivi: [this.convention.modeEncadreSuivi],
-      avantagesNature: [this.convention.avantagesNature],
-      travailNuitFerie: [this.convention.travailNuitFerie],
+      modeEncadreSuivi: [this.convention.modeEncadreSuivi, this.fieldValidators['modeEncadreSuivi']],
+      avantagesNature: [this.convention.avantagesNature, this.fieldValidators['avantagesNature']],
+      travailNuitFerie: [this.convention.travailNuitFerie, this.fieldValidators['travailNuitFerie']],
     }, { emitEvent: false });
 
     this.form.get('periodeStageMois')!.valueChanges.subscribe(value => {
@@ -969,4 +977,12 @@ export class StageComponent implements OnInit {
     return !!(ctrl && ctrl.invalid && (ctrl.touched || ctrl.dirty));
   }
 
+  longTextLength(fieldName: string): number {
+    const value = this.form?.get(fieldName)?.value;
+    return typeof value === 'string' ? value.length : 0;
+  }
+
+  isLongTextLimitReached(fieldName: string): boolean {
+    return this.longTextLength(fieldName) >= this.MAX.longText;
+  }
 }
