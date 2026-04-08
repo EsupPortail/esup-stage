@@ -3,7 +3,7 @@
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Titre</mat-label>
       <input matInput maxlength="{{MAX_LENTGH_INPUT.titreAvenant}}" formControlName="titreAvenant" required />
-      <mat-hint *ngIf="isLongTextLimitReached('sujetStage')" style="color:#c62828;">
+      <mat-hint *ngIf="isLongTextLimitReached('sujetStage')" style="color:var(--dangerColor);">
         Limite de {{ MAX_LENTGH_INPUT.titreAvenant }} caractères atteinte
       </mat-hint>
       <mat-error><app-form-error [field]="form.get('titreAvenant')"></app-form-error></mat-error>
@@ -42,7 +42,7 @@
       <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
         <mat-label>Commentaire(s)</mat-label>
         <textarea matInput maxlength="{{MAX_LENTGH_INPUT.longText}}" formControlName="commentaireRupture"></textarea>
-        <mat-hint *ngIf="isLongTextLimitReached('commentaireRupture')" style="color:#c62828;">
+        <mat-hint *ngIf="isLongTextLimitReached('commentaireRupture')" style="color:var(--dangerColor);">
           Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
         </mat-hint>
         <mat-error><app-form-error [field]="form.get('commentaireRupture')"></app-form-error></mat-error>
@@ -82,8 +82,7 @@
     <div class="row" *ngIf="convention.interruptionStage">
       <div class="col-sm-3 font-weight-bold">Périodes d'interruption du stage</div>
       <div class="col-sm-9"><span *ngFor="let interruption of interruptionsStage">
-          {{(interruptionsStage.length>1?'- Du ':'Du ') + (interruption.dateDebutInterruption|date:'shortDate') + ' au
-          '+ (interruption.dateFinInterruption|date:'shortDate')}}<br></span>
+          {{(interruptionsStage.length>1?'- Du ':'Du ') + (interruption.dateDebutInterruption|date:'shortDate') + ' au '+ (interruption.dateFinInterruption|date:'shortDate')}}<br></span>
       </div>
     </div>
     <div class="row mt-3 mb-3">
@@ -147,8 +146,7 @@
     <div class="row mt-3 mb-3">
       <div class="col-6">
         <button mat-button mat-flat-button type="button" color="primary"
-          (click)="openInterruptionsCreateFormModal()">{{addedInterruptionsStage.length === 0 ?'Ajouter des':'Gérer
-          les'}} nouvelles périodes d'interruptions</button>
+          (click)="openInterruptionsCreateFormModal()">{{addedInterruptionsStage.length === 0 ?'Ajouter des':'Gérer les'}} nouvelles périodes d'interruptions</button>
       </div>
     </div>
   </div>
@@ -431,7 +429,7 @@
       <mat-form-field class="col mb-2" appearance="fill">
         <mat-label>Motif de la modification</mat-label>
         <textarea matInput maxlength="{{MAX_LENTGH_INPUT.longText}}" rows="10" formControlName="motifAvenant" required></textarea>
-        <mat-hint *ngIf="isLongTextLimitReached('motifAvenant')" style="color:#c62828;">
+        <mat-hint *ngIf="isLongTextLimitReached('motifAvenant')" style="color:var(--dangerColor);">
           Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
         </mat-hint>
         <mat-error><app-form-error [field]="form.get('motifAvenant')"></app-form-error></mat-error>

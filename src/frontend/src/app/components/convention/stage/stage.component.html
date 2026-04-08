@@ -30,7 +30,7 @@
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Sujet</mat-label>
             <textarea matInput formControlName="sujetStage" maxlength="{{ MAX_LENTGH_INPUT.longText }}" [required]="!enMasse"></textarea>
-            <mat-hint *ngIf="isLongTextLimitReached('sujetStage')" style="color:#c62828;">
+            <mat-hint *ngIf="isLongTextLimitReached('sujetStage')" style="color:var(--dangerColor);">
               Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
             </mat-hint>
             <mat-error><app-form-error [field]="form.get('sujetStage')"></app-form-error></mat-error>
@@ -87,7 +87,7 @@
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Détails</mat-label>
             <textarea matInput formControlName="details" maxlength="{{ MAX_LENTGH_INPUT.longText }}"></textarea>
-            <mat-hint *ngIf="isLongTextLimitReached('details')" style="color:#c62828;">
+            <mat-hint *ngIf="isLongTextLimitReached('details')" style="color:var(--dangerColor);">
               Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
             </mat-hint>
             <mat-error><app-form-error [field]="form.get('details')"></app-form-error></mat-error>
@@ -257,7 +257,7 @@
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Commentaire sur le temps de travail</mat-label>
             <textarea matInput formControlName="commentaireDureeTravail" maxlength="{{ MAX_LENTGH_INPUT.longText }}"></textarea>
-            <mat-hint *ngIf="isLongTextLimitReached('commentaireDureeTravail')" style="color:#c62828;">
+            <mat-hint *ngIf="isLongTextLimitReached('commentaireDureeTravail')" style="color:var(--dangerColor);">
               Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
             </mat-hint>
             <mat-error><app-form-error [field]="form.get('commentaireDureeTravail')"></app-form-error></mat-error>
@@ -359,7 +359,7 @@
             <mat-form-field class="col-12 mb-2" appearance="fill">
               <mat-label>Modalité de suivi du stagiaire</mat-label>
               <textarea matInput formControlName="modeEncadreSuivi" maxlength="{{ MAX_LENTGH_INPUT.longText }}"></textarea>
-              <mat-hint *ngIf="isLongTextLimitReached('modeEncadreSuivi')" style="color:#c62828;">
+              <mat-hint *ngIf="isLongTextLimitReached('modeEncadreSuivi')" style="color:var(--dangerColor);">
                 Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
               </mat-hint>
               <mat-error><app-form-error [field]="form.get('modeEncadreSuivi')"></app-form-error></mat-error>
@@ -367,7 +367,7 @@
             <mat-form-field class="col-12 mb-2" appearance="fill">
               <mat-label>Liste des avantages en nature</mat-label>
               <textarea matInput formControlName="avantagesNature" maxlength="{{ MAX_LENTGH_INPUT.longText }}"></textarea>
-              <mat-hint *ngIf="isLongTextLimitReached('avantagesNature')" style="color:#c62828;">
+              <mat-hint *ngIf="isLongTextLimitReached('avantagesNature')" style="color:var(--dangerColor);">
                 Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
               </mat-hint>
               <mat-error><app-form-error [field]="form.get('avantagesNature')"></app-form-error></mat-error>
@@ -376,7 +376,7 @@
             <mat-form-field class="col-12 mb-2" appearance="fill">
               <mat-label>Travail exceptionnel</mat-label>
               <textarea matInput formControlName="travailNuitFerie" maxlength="{{ MAX_LENTGH_INPUT.longText }}"></textarea>
-              <mat-hint *ngIf="isLongTextLimitReached('travailNuitFerie')" style="color:#c62828;">
+              <mat-hint *ngIf="isLongTextLimitReached('travailNuitFerie')" style="color:var(--dangerColor);">
                 Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
               </mat-hint>
               <mat-hint>Si le stagiaire doit télétravailler, être présent la nuit, le dimanche ou un jour férié, préciser</mat-hint>
@@ -390,7 +390,7 @@
           <mat-form-field class="col-6 mb-2" appearance="fill">
             <mat-label>Modalité de suivi du stagiaire</mat-label>
             <textarea matInput formControlName="modeEncadreSuivi" maxlength="{{ MAX_LENTGH_INPUT.longText }}"></textarea>
-            <mat-hint *ngIf="isLongTextLimitReached('modeEncadreSuivi')" style="color:#c62828;">
+            <mat-hint *ngIf="isLongTextLimitReached('modeEncadreSuivi')" style="color:var(--dangerColor);">
               Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
             </mat-hint>
             <mat-error><app-form-error [field]="form.get('modeEncadreSuivi')"></app-form-error></mat-error>
