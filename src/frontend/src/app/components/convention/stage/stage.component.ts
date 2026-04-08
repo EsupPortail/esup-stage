@@ -21,6 +21,7 @@ import { debounceTime } from 'rxjs/operators'
 import { CalendrierComponent } from './calendrier/calendrier.component';
 import { InterruptionsFormComponent } from './interruptions-form/interruptions-form.component';
 import { PeriodeStageService } from'../../../services/periode-stage.service';
+import {MAX_LENTGH_INPUT} from "../../../constants/max-length-input";
 
 @Component({
   selector: 'app-stage',
@@ -28,27 +29,21 @@ import { PeriodeStageService } from'../../../services/periode-stage.service';
   styleUrls: ['./stage.component.scss']
 })
 export class StageComponent implements OnInit {
-  readonly MAX = {
-    longText: 30000,
-    competences: 1000,
-    fonctionsEtTaches: 1000,
-    nbConges: 1000,
-  } as const;
 
-  focused: keyof typeof this.MAX | null = null;
+  focused: keyof typeof MAX_LENTGH_INPUT | null = null;
 
   fieldValidators : any = {
     'nbHeuresHebdo': [Validators.required, Validators.pattern('[0-9]{1,2}([,.][0-9]{1,2})?')],
     'dureeExceptionnelle': [Validators.required, Validators.pattern('[0-9]+([,.][0-9]{1,2})?')],
     'montantGratification': [Validators.required, Validators.pattern('[0-9]{1,10}([,.][0-9]{1,2})?')],
-    'sujetStage': [Validators.required, Validators.maxLength(this.MAX.longText)],
-    'competences': [Validators.required, Validators.maxLength(this.MAX.competences)],
-    'fonctionsEtTaches': [Validators.required,Validators.maxLength(this.MAX.fonctionsEtTaches)],
-    'details': [Validators.maxLength(this.MAX.longText)],
-    'commentaireDureeTravail': [Validators.maxLength(this.MAX.longText)],
-    'modeEncadreSuivi': [Validators.maxLength(this.MAX.longText)],
-    'avantagesNature': [Validators.maxLength(this.MAX.longText)],
-    'travailNuitFerie': [Validators.maxLength(this.MAX.longText)],
+    'sujetStage': [Validators.required, Validators.maxLength(MAX_LENTGH_INPUT.longText)],
+    'competences': [Validators.required, Validators.maxLength(MAX_LENTGH_INPUT.competences)],
+    'fonctionsEtTaches': [Validators.required,Validators.maxLength(MAX_LENTGH_INPUT.fonctionsEtTaches)],
+    'details': [Validators.maxLength(MAX_LENTGH_INPUT.longText)],
+    'commentaireDureeTravail': [Validators.maxLength(MAX_LENTGH_INPUT.longText)],
+    'modeEncadreSuivi': [Validators.maxLength(MAX_LENTGH_INPUT.longText)],
+    'avantagesNature': [Validators.maxLength(MAX_LENTGH_INPUT.longText)],
+    'travailNuitFerie': [Validators.maxLength(MAX_LENTGH_INPUT.longText)],
     'idUniteGratification': [Validators.required],
     'idUniteDuree': [Validators.required],
     'idDevise': [Validators.required],
@@ -57,7 +52,7 @@ export class StageComponent implements OnInit {
     'confidentiel': [Validators.required],
     'idNatureTravail': [Validators.required],
     'idModeValidationStage': [Validators.required],
-    'nbConges': [Validators.maxLength(this.MAX.nbConges)],
+    'nbConges': [Validators.maxLength(MAX_LENTGH_INPUT.nbConges)],
   }
 
   interruptionsStageTableColumns = ['dateDebutInterruption', 'dateFinInterruption', 'actions'];
@@ -958,21 +953,21 @@ export class StageComponent implements OnInit {
     return Math.round((nbHeures - heuresNormales) * 100) / 100;
   }
 
-  len(name: keyof StageComponent['MAX']): number {
+  len(name: keyof typeof MAX_LENTGH_INPUT): number {
     const v = this.form.get(name)?.value as string | null;
-    return (v?.length ?? 0);
+    return v?.length ?? 0;
   }
 
-  // Couleur HSL du vert (120) au rouge (0) en fonction du ratio
-  counterColor(name: keyof StageComponent['MAX']): string {
-    const max = this.MAX[name];
+// Couleur HSL du vert (120) au rouge (0) en fonction du ratio
+  counterColor(name: keyof typeof MAX_LENTGH_INPUT): string {
+    const max = MAX_LENTGH_INPUT[name];
     const l = this.len(name);
     const ratio = Math.min(l / max, 1); // 0..1
     const hue = 120 - 120 * ratio;      // 120 → 0
     return `hsl(${hue}, 80%, 40%)`;
   }
 
-  hasError(name: keyof StageComponent['MAX']): boolean {
+  hasError(name: keyof typeof MAX_LENTGH_INPUT): boolean {
     const ctrl = this.form.get(name);
     return !!(ctrl && ctrl.invalid && (ctrl.touched || ctrl.dirty));
   }
@@ -983,6 +978,8 @@ export class StageComponent implements OnInit {
   }
 
   isLongTextLimitReached(fieldName: string): boolean {
-    return this.longTextLength(fieldName) >= this.MAX.longText;
+    return this.longTextLength(fieldName) >= MAX_LENTGH_INPUT.longText;
   }
+
+  protected readonly MAX_LENTGH_INPUT = MAX_LENTGH_INPUT;
 }
