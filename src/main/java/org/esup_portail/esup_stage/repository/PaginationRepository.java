@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 public class PaginationRepository<T extends Exportable> {
 
     private static final Logger logger = LoggerFactory.getLogger(UtilisateurRepository.class);
+    private static final int EXCEL_CELL_MAX_LENGTH = 30000;
 
     protected final EntityManager em;
     protected final Class<T> typeClass;
@@ -305,11 +306,18 @@ public class PaginationRepository<T extends Exportable> {
             row = sheet.createRow(rowNum);
             for (Map.Entry<String, JsonElement> entry : entrySet) {
                 Cell cell = row.createCell(columnNum);
-                cell.setCellValue(entity.getExportValue(entry.getKey()));
+                cell.setCellValue(truncateExcelCellValue(entity.getExportValue(entry.getKey())));
                 columnNum++;
             }
             rowNum++;
         }
+    }
+
+    private String truncateExcelCellValue(String value) {
+        if (value == null || value.length() < EXCEL_CELL_MAX_LENGTH) {
+            return value;
+        }
+        return value.substring(0, EXCEL_CELL_MAX_LENGTH);
     }
 
     public StringBuilder exportCsv(String headerString, String predicate, String sortOrder, String filters) {
