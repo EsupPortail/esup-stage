@@ -373,4 +373,27 @@ public class ApogeeService {
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
         }
     }
+
+    public List<RegimeInscriptionCode> getRegimesInscriptions() {
+        String response = call("/regimesInscriptions", new HashMap<>());
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+
+            List<RegimeInscriptionCode> result = Arrays.stream(
+                            mapper.readValue(response, String[].class)
+                    )
+                    .map(RegimeInscriptionCode::new)
+                    .toList();
+
+            if (result.isEmpty()) {
+                LOGGER.info("Aucune donnée trouvée");
+            }
+
+            return result;
+        } catch (JsonProcessingException e) {
+            LOGGER.error("Erreur lors de la lecture de la réponse sur l'api regInsList: " + e.getMessage(), e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
+        }
+    }
 }

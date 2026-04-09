@@ -8,11 +8,15 @@ import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.TypeConvention;
 import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
+import org.esup_portail.esup_stage.service.apogee.ApogeeService;
+import org.esup_portail.esup_stage.service.apogee.model.RegimeInscriptionCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @ApiController
 @RequestMapping("/type-convention")
@@ -32,6 +36,9 @@ public class TypeConventionController {
 
     @Autowired
     TemplateConventionJpaRepository templateConventionJpaRepository;
+
+    @Autowired
+    ApogeeService apogeeService;
 
     @GetMapping
     @Secure
@@ -94,5 +101,12 @@ public class TypeConventionController {
         }
         typeConventionJpaRepository.deleteById(id);
         typeConventionJpaRepository.flush();
+    }
+
+    @GetMapping("/regIns")
+    @Secure(fonctions = {AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
+    public List<RegimeInscriptionCode> getRegimesInscriptionsList() {
+        System.out.println(apogeeService.getRegimesInscriptions());
+        return apogeeService.getRegimesInscriptions();
     }
 }

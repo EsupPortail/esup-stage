@@ -49,4 +49,8 @@ export class TypeConventionService implements PaginatedService {
   getMobileTitle(row: any): string {
     return `${row.id} - ${row.libelle}`;
   }
+
+  getListRegimeInscription(): Observable<any> {
+    return this.http.get(environment.apiUrl + "/type-convention/regIns");
+  }
 }
