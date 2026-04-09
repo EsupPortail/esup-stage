@@ -1,13 +1,16 @@
 import { Injectable } from '@angular/core';
-import { Observable } from "rxjs";
+import { Observable, throwError } from "rxjs";
 import { environment } from "../../environments/environment";
 import { HttpClient } from "@angular/common/http";
 import {PaginatedResponse, PaginatedService} from "./paginated.service";
+import { catchError, shareReplay } from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
 })
 export class EtudiantService implements PaginatedService<Etudiant> {
+
+  private apogeeInscriptionsCache = new Map<string, Observable<any>>();
 
   constructor(private http: HttpClient) { }
 
@@ -26,6 +29,25 @@ export class EtudiantService implements PaginatedService<Etudiant> {
   getApogeeInscriptions(numEtudiant: string, annee: string): Observable<any> {
     const a = annee ? annee.split('/')[0] : '';
     return this.http.get(`${environment.apiUrl}/etudiants/${numEtudiant}/apogee-inscriptions`, {params: {annee: a ?? null} });
+  }
+
+  getCachedApogeeInscriptions(numEtudiant: string, annee: string): Observable<any> {
+    const cacheKey = `${numEtudiant}-${annee ? annee.split('/')[0] : ''}`;
+    const cachedRequest = this.apogeeInscriptionsCache.get(cacheKey);
+    if (cachedRequest) {
+      return cachedRequest;
+    }
+
+    const request$ = this.getApogeeInscriptions(numEtudiant, annee).pipe(
+      catchError((error) => {
+        this.apogeeInscriptionsCache.delete(cacheKey);
+        return throwError(() => error);
+      }),
+      shareReplay(1),
+    );
+
+    this.apogeeInscriptionsCache.set(cacheKey, request$);
+    return request$;
   }
 
   getByLogin(login: string): Observable<Etudiant> {
