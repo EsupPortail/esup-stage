@@ -107,9 +107,14 @@ export class ConfigGeneraleComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.roleService.getDroitsRole("ETU","ORGA_ACC").subscribe((res: any)=>{
-      this.isEtuAutoriseToCreate = res.creation;
-    })
+    this.roleService.getDroitsRole("ETU","ORGA_ACC").subscribe({
+      next: (res: any) => {
+        this.isEtuAutoriseToCreate = !!res?.creation;
+      },
+      error: () => {
+        this.isEtuAutoriseToCreate = false;
+      }
+    });
 
     if (!this.canEdit()) {
       this.formGenerale.disable();
