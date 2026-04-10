@@ -668,6 +668,11 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
     return true;
   }
 
+  shouldShowSiret(): boolean {
+    const numeroSiret = this.form.get('numeroSiret')?.value ?? this.etab?.numeroSiret;
+    return this.isFr() || (this.etab?.temSiren === true && !!numeroSiret);
+  }
+
   isCodePostalValid() {
     let codePostal = this.form.get('codePostal')?.value;
     if (codePostal) {
