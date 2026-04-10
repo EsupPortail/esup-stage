@@ -47,7 +47,7 @@ $my-theme: mat.m2-define-light-theme((
 ));
 @include mat.all-component-themes($my-theme);
 
-html, body { height: 100%; overflow: hidden; }
+html, body { height: 100%; }
 body { margin: 0; font-family: var(--fontFamily); font-size: var(--fontSize); }
 
 .fa, .fas {
@@ -560,8 +560,6 @@ body {
 }
 
 app-root {
-  display: block;
-  height: 100%;
   background-color: #fff;
   color: inherit;
 }
