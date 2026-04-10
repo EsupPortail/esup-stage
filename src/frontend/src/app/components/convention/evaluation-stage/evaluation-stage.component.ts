@@ -6,6 +6,7 @@ import { MessageService } from "../../../services/message.service";
 import { MatExpansionPanel } from "@angular/material/expansion";
 import { AuthService } from "../../../services/auth.service";
 import * as FileSaver from 'file-saver';
+import { MAX_LENTGH_INPUT } from "../../../constants/max-length-input";
 
 @Component({
   selector: 'app-evaluation-stage',
@@ -13,7 +14,42 @@ import * as FileSaver from 'file-saver';
   styleUrls: ['./evaluation-stage.component.scss']
 })
 export class EvaluationStageComponent implements OnInit {
-
+  readonly MAX_LENTGH_INPUT = MAX_LENTGH_INPUT;
+  readonly LONG_TEXT_FIELDS:Set<string> = new Set([
+    'reponseEtuI1bis',
+    'reponseEtuII1bis',
+    'reponseEtuII2bis',
+    'reponseEtuII3bis',
+    'reponseEtuIII1bis',
+    'reponseEtuIII2bis',
+    'reponseEtuIII5bis',
+    'reponseEtuIII6bis',
+    'reponseEtuIII7bis',
+    'reponseEtuIII8bis',
+    'reponseEtuIII9bis',
+    'reponseEtuIII15bis',
+    'reponseEtuIII16bis',
+    'reponseEnsI3',
+    'reponseEnsII11',
+    'reponseEnt1bis',
+    'reponseEnt2bis',
+    'reponseEnt4bis',
+    'reponseEnt5bis',
+    'reponseEnt6bis',
+    'reponseEnt7bis',
+    'reponseEnt8bis',
+    'reponseEnt9bis',
+    'reponseEnt10bis',
+    'reponseEnt11bis',
+    'reponseEnt12bis',
+    'reponseEnt13bis',
+    'reponseEnt14bis',
+    'reponseEnt15bis',
+    'reponseEnt16bis',
+    'reponseEnt17bis',
+    'reponseEnt18bis',
+    'reponseEnt19',
+  ]);
   ficheEvaluation: any;
   reponseEvaluation: any;
   questionsSupplementaires: any;
@@ -755,7 +791,7 @@ export class EvaluationStageComponent implements OnInit {
   ) {
     this.reponseEtudiantForm = this.fb.group({
       reponseEtuI1: [null, [Validators.required]],
-      reponseEtuI1bis: [null],
+      reponseEtuI1bis: [null, [Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
       reponseEtuI2: [null, [Validators.required]],
       reponseEtuI3: [null, [Validators.required]],
       reponseEtuI4a: [null, [Validators.required]],
@@ -771,41 +807,41 @@ export class EvaluationStageComponent implements OnInit {
       reponseEtuI7bis2: [null],
       reponseEtuI8: [null, [Validators.required]],
       reponseEtuII1: [null, [Validators.required]],
-      reponseEtuII1bis: [null],
+      reponseEtuII1bis: [null, [Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
       reponseEtuII2: [null, [Validators.required]],
-      reponseEtuII2bis: [null],
+      reponseEtuII2bis: [null, [Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
       reponseEtuII3: [null, [Validators.required]],
-      reponseEtuII3bis: [null],
+      reponseEtuII3bis: [null, [Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
       reponseEtuII4: [null, [Validators.required]],
       reponseEtuII5: [null, [Validators.required]],
       reponseEtuII5a: [null],
       reponseEtuII5b: [null],
       reponseEtuII6: [null, [Validators.required]],
       reponseEtuIII1: [null, [Validators.required]],
-      reponseEtuIII1bis: [null],
+      reponseEtuIII1bis: [null, [Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
       reponseEtuIII2: [null, [Validators.required]],
-      reponseEtuIII2bis: [null],
+      reponseEtuIII2bis: [null, [Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
       reponseEtuIII4: [null, [Validators.required]],
       reponseEtuIII5a: [null, [Validators.required]],
       reponseEtuIII5b: [null, [Validators.required]],
       reponseEtuIII5c: [null, [Validators.required]],
-      reponseEtuIII5bis: [null],
+      reponseEtuIII5bis: [null, [Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
       reponseEtuIII6: [null, [Validators.required]],
-      reponseEtuIII6bis: [null],
+      reponseEtuIII6bis: [null, [Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
       reponseEtuIII7: [null, [Validators.required]],
-      reponseEtuIII7bis: [null],
+      reponseEtuIII7bis: [null, [Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
       reponseEtuIII8: [null, [Validators.required]],
-      reponseEtuIII8bis: [null],
+      reponseEtuIII8bis: [null, [Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
       reponseEtuIII9: [null, [Validators.required]],
-      reponseEtuIII9bis: [null],
+      reponseEtuIII9bis: [null, [Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
       reponseEtuIII10: [null, [Validators.required]],
       reponseEtuIII11: [null, [Validators.required]],
       reponseEtuIII12: [null, [Validators.required]],
       reponseEtuIII14: [null, [Validators.required]],
       reponseEtuIII15: [null, [Validators.required]],
-      reponseEtuIII15bis: [null],
+      reponseEtuIII15bis: [null, [Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
       reponseEtuIII16: [null, [Validators.required]],
-      reponseEtuIII16bis: [null, [Validators.required]],
+      reponseEtuIII16bis: [null, [Validators.required, Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
     });
 
     this.reponseEnseignantForm = this.fb.group({
@@ -815,7 +851,7 @@ export class EvaluationStageComponent implements OnInit {
       reponseEnsI2a: [null, [Validators.required]],
       reponseEnsI2b: [null, [Validators.required]],
       reponseEnsI2c: [null, [Validators.required]],
-      reponseEnsI3: [null, [Validators.required]],
+      reponseEnsI3: [null, [Validators.required, Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
       reponseEnsII1: [null, [Validators.required]],
       reponseEnsII2: [null, [Validators.required]],
       reponseEnsII3: [null, [Validators.required]],
@@ -826,46 +862,46 @@ export class EvaluationStageComponent implements OnInit {
       reponseEnsII8: [null, [Validators.required]],
       reponseEnsII9: [null, [Validators.required]],
       reponseEnsII10: [null, [Validators.required]],
-      reponseEnsII11: [null, [Validators.required]],
+      reponseEnsII11: [null, [Validators.required, Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
     });
 
     this.reponseEntrepriseForm = this.fb.group({
       reponseEnt1: [null, [Validators.required]],
-      reponseEnt1bis: [null],
+      reponseEnt1bis: [null, [Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
       reponseEnt2: [null, [Validators.required]],
-      reponseEnt2bis: [null],
+      reponseEnt2bis: [null, [Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
       reponseEnt3: [null, [Validators.required]],
       reponseEnt4: [null, [Validators.required]],
-      reponseEnt4bis: [null],
+      reponseEnt4bis: [null, [Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
       reponseEnt5: [null, [Validators.required]],
-      reponseEnt5bis: [null],
+      reponseEnt5bis: [null, [Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
       reponseEnt6: [null, [Validators.required]],
-      reponseEnt6bis: [null],
+      reponseEnt6bis: [null, [Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
       reponseEnt7: [null, [Validators.required]],
-      reponseEnt7bis: [null],
+      reponseEnt7bis: [null, [Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
       reponseEnt8: [null, [Validators.required]],
-      reponseEnt8bis: [null],
+      reponseEnt8bis: [null, [Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
       reponseEnt9: [null, [Validators.required]],
-      reponseEnt9bis: [null],
+      reponseEnt9bis: [null, [Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
       reponseEnt10: [null, [Validators.required]],
-      reponseEnt10bis: [null],
+      reponseEnt10bis: [null, [Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
       reponseEnt11: [null, [Validators.required]],
-      reponseEnt11bis: [null],
+      reponseEnt11bis: [null, [Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
       reponseEnt12: [null, [Validators.required]],
-      reponseEnt12bis: [null],
+      reponseEnt12bis: [null, [Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
       reponseEnt13: [null, [Validators.required]],
-      reponseEnt13bis: [null],
+      reponseEnt13bis: [null, [Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
       reponseEnt14: [null, [Validators.required]],
-      reponseEnt14bis: [null],
+      reponseEnt14bis: [null, [Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
       reponseEnt15: [null, [Validators.required]],
-      reponseEnt15bis: [null],
+      reponseEnt15bis: [null, [Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
       reponseEnt16: [null, [Validators.required]],
-      reponseEnt16bis: [null],
+      reponseEnt16bis: [null, [Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
       reponseEnt17: [null, [Validators.required]],
-      reponseEnt17bis: [null],
+      reponseEnt17bis: [null, [Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
       reponseEnt18: [null, [Validators.required]],
-      reponseEnt18bis: [null],
-      reponseEnt19: [null, [Validators.required]],
+      reponseEnt18bis: [null, [Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
+      reponseEnt19: [null, [Validators.required, Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
     });
 
     //gestion des champs required conditionnels
@@ -949,9 +985,17 @@ export class EvaluationStageComponent implements OnInit {
       const control = form.get(key);
       if (control) {
         if (toggle) {
-          control.addValidators(Validators.required);
+          if (this.LONG_TEXT_FIELDS.has(key)) {
+            control.setValidators([Validators.required, Validators.maxLength(MAX_LENTGH_INPUT.longText)]);
+          } else {
+            control.setValidators([Validators.required]);
+          }
         } else {
-          control.clearValidators();
+          if (this.LONG_TEXT_FIELDS.has(key)) {
+            control.setValidators([Validators.maxLength(MAX_LENTGH_INPUT.longText)]);
+          } else {
+            control.clearValidators();
+          }
         }
         control.updateValueAndValidity();
       }
@@ -1172,7 +1216,15 @@ export class EvaluationStageComponent implements OnInit {
           form = this.reponseSupplementaireEntrepriseForm;
         }
         const questionSupplementaireFormControlName = 'questionSupplementaire' + questionSupplementaire.id
-        form.addControl(questionSupplementaireFormControlName,new FormControl(null, Validators.required));
+        form.addControl(
+          questionSupplementaireFormControlName,
+          new FormControl(
+            null,
+            questionSupplementaire.typeQuestion == 'txt'
+              ? [Validators.required, Validators.maxLength(MAX_LENTGH_INPUT.longText)]
+              : Validators.required
+          )
+        );
         questionSupplementaire.formControlName = questionSupplementaireFormControlName
 
          if(this.reponseEvaluation){
@@ -1588,6 +1640,20 @@ export class EvaluationStageComponent implements OnInit {
     return hasBase || hasSup;
   }
 
+  getLongTextControl(name: string) {
+    return [
+      this.reponseEtudiantForm,
+      this.reponseEnseignantForm,
+      this.reponseEntrepriseForm,
+      this.reponseSupplementaireEtudiantForm,
+      this.reponseSupplementaireEnseignantForm,
+      this.reponseSupplementaireEntrepriseForm,
+    ].map(form => form?.get(name)).find(control => !!control) ?? null;
+  }
+
+  isLongTextLimitReached(name: string): boolean {
+    const value = this.getLongTextControl(name)?.value;
+    return typeof value === 'string' && value.length >= this.MAX_LENTGH_INPUT.longText;
+  }
 
 }
-
