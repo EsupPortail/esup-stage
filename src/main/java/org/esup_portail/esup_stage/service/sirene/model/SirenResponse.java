@@ -109,6 +109,31 @@ public class SirenResponse {
 
             @JsonProperty("codeCommuneEtablissement")
             private String codeCommune;
+
+            @JsonProperty("libellePaysEtrangerEtablissement")
+            private String libellePaysEtrangerEtablissement;
+
+            @JsonProperty("libelleCommuneEtrangerEtablissement")
+            private String libelleCommuneEtrangerEtablissement;
+
+            @JsonProperty("complementAdresseEtablissement")
+            private String complementAdresseEtablissement;
+
+            @JsonProperty("indiceRepetitionEtablissement")
+            private String indiceRepetitionEtablissement;
+
+            @JsonProperty("distributionSpecialeEtablissement")
+            private String distributionSpecialeEtablissement;
+
+            @JsonProperty("codeCedexEtablissement")
+            private String codeCedexEtablissement;
+
+            @JsonProperty("libelleCedexEtablissement")
+            private String libelleCedexEtablissement;
+
+            @JsonProperty("codePaysEtrangerEtablissement")
+            private String codePaysEtrangerEtablissement;
+
         }
 
         @JsonIgnoreProperties(ignoreUnknown = true)
@@ -129,3 +154,4 @@ public class SirenResponse {
 
     }
 }
+
