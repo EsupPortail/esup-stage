@@ -87,6 +87,7 @@ export class CadreStageComponent implements OnInit, OnChanges {
     if (this.form.get('typeConventionGroupe')?.value) {
       this.groupeEtudiantService.setTypeConventionGroupe(this.groupeEtudiant.id, this.form.get('typeConventionGroupe')?.value).subscribe((response: any) => {
         this.messageService.setSuccess('Groupe modifié avec succès');
+        this.validated.emit(response);
       });
     }
   }
