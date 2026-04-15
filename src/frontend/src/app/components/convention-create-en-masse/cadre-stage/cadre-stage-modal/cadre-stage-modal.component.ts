@@ -105,9 +105,9 @@ export class CadreStageModalComponent implements OnInit {
         telEtudiant: [this.convention.telEtudiant, []],
         telPortableEtudiant: [this.convention.telPortableEtudiant, []],
         courrielPersoEtudiant: [this.convention.courrielPersoEtudiant, [Validators.required, Validators.pattern(REGEX.EMAIL), Validators.maxLength(255)]],
-        regionCPAM: [this.convention.regionCPAM, []],
-        libelleCPAM: [this.convention.libelleCPAM, []],
-        adresseCPAM: [this.convention.adresseCPAM, []],
+        regionCPAM: [this.convention.regionCPAM, [Validators.required]],
+        libelleCPAM: [this.convention.libelleCPAM, [Validators.required]],
+        adresseCPAM: [this.convention.adresseCPAM, [Validators.required]],
         inscription: [null, [Validators.required]],
         inscriptionElp: [null, []],
         idTypeConvention: [this.convention.typeConvention ? this.convention.typeConvention.id : null, [Validators.required]],
@@ -141,13 +141,13 @@ export class CadreStageModalComponent implements OnInit {
           this.langueConventionService.getListActiveByTypeConvention(val).subscribe((response: any) => {
             this.langueConventions = response.data;
           });
+          const typeConvention = this.typeConventions.find((tc:any) => tc.id === val)
+          this.setCPAMObligatoire(!(typeConvention?.codeCtrl?.startsWith('INSPE')))
         } else {
           this.langueConventions = [];
           this.messageService.setWarning("Aucune langue disponible pour ce type de convention.");
         }
       });
-      if (this.convention.typeConvention)
-        this.formConvention.get('idTypeConvention')?.setValue(this.convention.typeConvention.id)
 
         this.CPAMs = CPAMs;
         this.regions = [...new Set(CPAMs.map((r : any) => r.region))];
@@ -159,6 +159,8 @@ export class CadreStageModalComponent implements OnInit {
         }
 
       this.typeConventions = typesConventions;
+      if (this.convention.typeConvention)
+        this.formConvention.get('idTypeConvention')?.setValue(this.convention.typeConvention.id)
     });
   }
 
@@ -233,6 +235,15 @@ export class CadreStageModalComponent implements OnInit {
 
   cancel() : void{
     this.dialogRef.close(null);
+  }
+
+  setCPAMObligatoire(required:boolean) {
+    this.formConvention.get('regionCPAM')?.setValidators(required?[Validators.required]:[]);
+    this.formConvention.get('libelleCPAM')?.setValidators(required?[Validators.required]:[]);
+    this.formConvention.get('adresseCPAM')?.setValidators(required?[Validators.required]:[]);
+    this.formConvention.get('regionCPAM')?.updateValueAndValidity();
+    this.formConvention.get('libelleCPAM')?.updateValueAndValidity();
+    this.formConvention.get('adresseCPAM')?.updateValueAndValidity();
   }
 
   setCPAMLibelles(event: any) {
