@@ -18,6 +18,7 @@ import * as FileSaver from "file-saver";
 import { Router } from "@angular/router";
 import {REGEX} from "../../../../utils/regex.utils";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
+import {forkJoin} from "rxjs";
 
 @Component({
   selector: 'app-cadre-stage-modal',
@@ -87,7 +88,15 @@ export class CadreStageModalComponent implements OnInit {
       }
     });
 
-    this.configService.getConfigGenerale().subscribe((response: any) => {
+    forkJoin([
+      this.configService.getConfigGenerale(),
+      this.typeConventionService.getListActiveWithTemplate(),
+      this.cpamService.findAll(),
+    ]).subscribe(([
+      configGenerale,
+      {data: typesConventions},
+      CPAMs,
+    ]: [any,any,any]) => {
       this.formConvention = this.fb.group({
         adresseEtudiant: [this.convention.adresseEtudiant, [Validators.required]],
         codePostalEtudiant: [this.convention.codePostalEtudiant, [Validators.required]],
@@ -104,7 +113,7 @@ export class CadreStageModalComponent implements OnInit {
         idTypeConvention: [this.convention.typeConvention ? this.convention.typeConvention.id : null, [Validators.required]],
         codeLangueConvention: [this.convention.langueConvention ? this.convention.langueConvention.code : null, [Validators.required]],
       });
-      this.sansElp = response.autoriserElementPedagogiqueFacultatif;
+      this.sansElp = configGenerale.autoriserElementPedagogiqueFacultatif;
       if (!this.sansElp) {
         this.formConvention.get('inscriptionElp')?.setValidators([Validators.required]);
       }
@@ -140,20 +149,16 @@ export class CadreStageModalComponent implements OnInit {
       if (this.convention.typeConvention)
         this.formConvention.get('idTypeConvention')?.setValue(this.convention.typeConvention.id)
 
-      this.cpamService.findAll().subscribe((response: any) => {
-        this.CPAMs = response;
-        this.regions = [...new Set(response.map((r : any) => r.region))];
+        this.CPAMs = CPAMs;
+        this.regions = [...new Set(CPAMs.map((r : any) => r.region))];
         this.regions = this.regions.sort((a, b) => {return a.localeCompare(b)});
         if (this.formConvention.get('regionCPAM')?.value) {
           this.setCPAMLibelles({value: this.formConvention.get('regionCPAM')?.value});
         } else {
           this.formConvention.get('libelleCPAM')?.disable();
         }
-      });
-    });
 
-    this.typeConventionService.getListActiveWithTemplate().subscribe((response: any) => {
-      this.typeConventions = response.data;
+      this.typeConventions = typesConventions;
     });
   }
 
