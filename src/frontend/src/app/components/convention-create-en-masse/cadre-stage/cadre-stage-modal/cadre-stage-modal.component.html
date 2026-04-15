@@ -180,7 +180,7 @@
       </div>
       <div class="actions">
           <div>
-            <button class="actions-button" mat-flat-button color="warn" (click)="cancel()">{{'BOUTON_ANNULER'|contenu}}</button>
+            <button type="button" class="actions-button" mat-flat-button color="warn" (click)="cancel()">{{'BOUTON_ANNULER'|contenu}}</button>
           </div>
           <div>
             <button class="actions-button" mat-button mat-flat-button color="primary" [disabled]="!centreGestion || inscriptions.length === 0 || !selectedInscription">{{'BOUTON_VALIDER'|contenu}}</button>
