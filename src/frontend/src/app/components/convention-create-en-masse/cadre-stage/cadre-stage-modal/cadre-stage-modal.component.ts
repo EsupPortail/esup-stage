@@ -137,6 +137,8 @@ export class CadreStageModalComponent implements OnInit {
           this.messageService.setWarning("Aucune langue disponible pour ce type de convention.");
         }
       });
+      if (this.convention.typeConvention)
+        this.formConvention.get('idTypeConvention')?.setValue(this.convention.typeConvention.id)
 
       this.cpamService.findAll().subscribe((response: any) => {
         this.CPAMs = response;
@@ -161,24 +163,26 @@ export class CadreStageModalComponent implements OnInit {
   choose(row: any): void {
     this.etudiantService.getApogeeInscriptions(row.codEtu, '').subscribe((response: any) => {
       this.inscriptions = response;
-      if (this.inscriptions.length === 1) {
-        this.formConvention.get('inscription')?.setValue(this.inscriptions[0]);
-      }
       if (this.convention.etape) {
         const inscription = this.inscriptions.find((i: any) => {
           return i.etapeInscription.codeEtp === this.convention.etape.id.code;
         });
         if (inscription) {
-          this.formConvention.get('inscription')?.setValue(inscription);
+          this.centreGestion = inscription.centreGestion;
+          this.formConvention.get('inscription')?.reset(inscription, {emitEvent: false});
+          if (this.formConvention.get('idTypeConvention')?.value == inscription.typeConvention.id)
+            this.formConvention.get('idTypeConvention')?.disable({emitEvent: false});
           if (this.convention.codeElp) {
             const inscriptionElp = inscription.elementPedagogiques.find((i: any) => {
               return i.codElp === this.convention.codeElp;
             });
-            this.formConvention.get('inscriptionElp')?.setValue(inscriptionElp);
+            this.formConvention.get('inscriptionElp')?.reset(inscriptionElp, {emitEvent: false});
           }
         } else if (this.inscriptions.length > 1) {
           this.formConvention.get('inscription')?.reset();
         }
+      } else if (this.inscriptions.length === 1) {
+        this.formConvention.get('inscription')?.setValue(this.inscriptions[0]);
       }
     });
   }
