@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from "@angular/router";
-import { GroupeEtudiantService } from "../../services/groupe-etudiant.service";
+import {GroupeEtudiant, GroupeEtudiantService} from "../../services/groupe-etudiant.service";
 import { UfrService } from "../../services/ufr.service";
 import { EtapeService } from "../../services/etape.service";
 import { forkJoin } from 'rxjs';
@@ -61,18 +61,14 @@ export class ConventionCreateEnMasseComponent implements OnInit {
       if (pathId === 'create') {
         this.titleService.title = 'Création de conventions en masse';
         // Récupération du groupeEtudiant au mode brouillon
-        this.groupeEtudiantService.getBrouillon().subscribe((response: any) => {
-          this.groupeEtudiant = response;
-          this.majFilter();
-          this.majStatus();
+        this.groupeEtudiantService.getBrouillon().subscribe((response: GroupeEtudiant) => {
+          this.updateGroupeEtudiant(response)
         });
       } else {
         this.titleService.title = 'Modification de conventions en masse';
         // Récupération du groupeEtudiant correspondant à l'id
-        this.groupeEtudiantService.getById(pathId).subscribe((response: any) => {
-          this.groupeEtudiant = response;
-          this.majFilter();
-          this.majStatus();
+        this.groupeEtudiantService.getById(pathId).subscribe((response: GroupeEtudiant) => {
+          this.updateGroupeEtudiant(response);
         });
       }
     });
@@ -221,8 +217,9 @@ export class ConventionCreateEnMasseComponent implements OnInit {
     this.tabs[0].init = true;
   }
 
-  updateGroupeEtudiant(data: any): void {
+  updateGroupeEtudiant(data?: GroupeEtudiant): void {
     this.groupeEtudiant = data;
+    this.titleService.subtitle = this.groupeEtudiant?.nom
     this.majFilter();
     this.majStatus();
   }
