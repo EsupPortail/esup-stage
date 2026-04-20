@@ -324,11 +324,7 @@ public class  ConventionController {
         }
 
         // Contrôle chevauchement de dates
-        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !convention.getCentreGestion().isAutoriserChevauchement()) {
-            if (convention.getDateDebutStage() != null && convention.getDateFinStage() != null && conventionJpaRepository.findDatesChevauchent(convention.getEtudiant().getIdentEtudiant(), convention.getId(), convention.getDateDebutStage(), convention.getDateFinStage()).size() > 0) {
-                throw new AppException(HttpStatus.BAD_REQUEST, "Les dates de début et fin de stage se chevauchent avec une de vos conventions");
-            }
-        }
+        checkChevauchement(convention,utilisateur);
 
         convention.setValidationCreation(true);
         convention.setDateValidationCreation(new Date());
@@ -777,11 +773,7 @@ public class  ConventionController {
         }
 
         // Contrôle chevauchement de dates
-        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !convention.getCentreGestion().isAutoriserChevauchement() ) {
-            if (convention.getDateDebutStage() != null && convention.getDateFinStage() != null && conventionJpaRepository.findDatesChevauchent(convention.getEtudiant().getIdentEtudiant(), convention.getId(), convention.getDateDebutStage(), convention.getDateFinStage()).size() > 0) {
-                throw new AppException(HttpStatus.BAD_REQUEST, "Les dates de début et fin de stage se chevauchent avec une de vos conventions");
-            }
-        }
+        checkChevauchement(convention,utilisateur);
 
     }
 
@@ -990,6 +982,20 @@ public class  ConventionController {
 
         byte[] pdf = ou.toByteArray();
         return ResponseEntity.ok().body(pdf);
+    }
+
+    /**
+     * Contrôle de chevauchement de dates pour une convention donnée, en excluant la convention elle-même.
+     * Lance une AppException si un chevauchement est détecté, sinon ne fait rien.
+     * @param convention la convention pour laquelle vérifier le chevauchement
+     * @param utilisateur l'utilisateur pour lequel vérifier le chevauchement (doit être un étudiant)
+     */
+    private void checkChevauchement(Convention convention, Utilisateur utilisateur) {
+        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !convention.getCentreGestion().isAutoriserChevauchement() ) {
+            if (convention.getDateDebutStage() != null && convention.getDateFinStage() != null && !conventionJpaRepository.findDatesChevauchent(convention.getEtudiant().getIdentEtudiant(), convention.getId(), convention.getDateDebutStage(), convention.getDateFinStage()).isEmpty()) {
+                throw new AppException(HttpStatus.BAD_REQUEST, "Les dates de début et fin de stage se chevauchent avec une de vos conventions");
+            }
+        }
     }
 
 }
