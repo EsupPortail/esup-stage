@@ -47,7 +47,7 @@ $my-theme: mat.m2-define-light-theme((
 ));
 @include mat.all-component-themes($my-theme);
 
-html, body { height: 100%; overflow: hidden; }
+html, body { height: 100%; }
 body { margin: 0; font-family: var(--fontFamily); font-size: var(--fontSize); }
 
 .fa, .fas {
@@ -493,40 +493,85 @@ button.mat-mdc-fab.delete-button .fa {
   --mdc-fab-container-color: var(--dangerColor);
 }
 
-button.mat-mdc-fab.secondary-button {
-  background-color: #fafafa;
-  color: var(--secondaryColor);
-  --mdc-fab-container-color: #fafafa;
-  border: 1px solid var(--secondaryColor);
-}
-
-button.mat-mdc-fab.secondary-button .mat-icon,
-button.mat-mdc-fab.secondary-button .fa {
-  color: var(--secondaryColor);
-}
-
-button.mat-mdc-button-base.secondary-button,
-button.mat-mdc-button-base.secondary-button .mat-mdc-button-persistent-ripple {
-  background-color: #fafafa;
-  color: var(--secondaryColor);
-}
-
+/* Bouton secondary moderne et élégant */
 button.mat-mdc-button-base.secondary-button,
 button.mat-mdc-outlined-button.secondary-button {
-  border: 1px solid var(--secondaryColor) !important;
+  background-color: #ffffff;
+  color: var(--secondaryColor);
+  border: 1.5px solid var(--secondaryColor) !important;
   --mdc-outlined-button-outline-color: var(--secondaryColor);
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  padding: 8px 20px;
+  border-radius: 6px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button.mat-mdc-button-base.secondary-button:hover,
+button.mat-mdc-outlined-button.secondary-button:hover {
+  background-color: var(--secondaryColor);
+  color: #ffffff;
+  border-color: var(--secondaryColor) !important;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
 }
 
 button.mat-mdc-button-base.secondary-button .mdc-button__outline,
 button.mat-mdc-outlined-button.secondary-button .mdc-button__outline {
-  border-style: solid !important;
-  border-width: 1px !important;
-  border-color: var(--secondaryColor) !important;
+  border: none !important;
 }
 
 button.mat-mdc-button-base.secondary-button .mat-icon,
 button.mat-mdc-button-base.secondary-button .fa {
   color: var(--secondaryColor);
+  margin-left: 4px;
+  transition: color 0.25s ease;
+}
+
+button.mat-mdc-button-base.secondary-button:hover .mat-icon,
+button.mat-mdc-button-base.secondary-button:hover .fa {
+  color: #ffffff;
+}
+
+/* État actif */
+button.mat-mdc-button-base.secondary-button:active,
+button.mat-mdc-outlined-button.secondary-button:active {
+  transform: scale(0.98);
+}
+
+/* État disabled */
+button.mat-mdc-button-base.secondary-button:disabled,
+button.mat-mdc-outlined-button.secondary-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* FAB secondary */
+button.mat-mdc-fab.secondary-button {
+  background-color: #ffffff;
+  color: var(--secondaryColor);
+  --mdc-fab-container-color: #ffffff;
+  border: 1.5px solid var(--secondaryColor);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button.mat-mdc-fab.secondary-button:hover {
+  background-color: var(--secondaryColor);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+button.mat-mdc-fab.secondary-button .mat-icon,
+button.mat-mdc-fab.secondary-button .fa {
+  color: var(--secondaryColor);
+  transition: color 0.3s ease;
+}
+
+button.mat-mdc-fab.secondary-button:hover .mat-icon,
+button.mat-mdc-fab.secondary-button:hover .fa {
+  color: #ffffff;
 }
 
 .action-buttons-container {
@@ -560,8 +605,6 @@ body {
 }
 
 app-root {
-  display: block;
-  height: 100%;
   background-color: #fff;
   color: inherit;
 }

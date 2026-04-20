@@ -7,6 +7,7 @@ export interface AccessibilitySettings {
   highContrast: boolean;
   reducedMotion: boolean;
   disableAutoSearch: boolean;
+  showButtonText: boolean;
   textSpacing: 'normal' | 'comfortable' | 'spacious';
   selectedFont: string;
 }
@@ -23,6 +24,7 @@ export class MenuAccessibilityComponent implements OnInit {
   highContrast: boolean = false;
   reducedMotion: boolean = false;
   disableAutoSearch: boolean = false;
+  showButtonText: boolean = false;
   textSpacing: 'normal' | 'comfortable' | 'spacious' = 'normal';
   selectedFont: string = 'default';
 
@@ -49,6 +51,7 @@ export class MenuAccessibilityComponent implements OnInit {
       this.highContrast = data.highContrast;
       this.reducedMotion = data.reducedMotion;
       this.disableAutoSearch = data.disableAutoSearch;
+      this.showButtonText = data.showButtonText ?? false;
       this.textSpacing = data.textSpacing;
       this.selectedFont = data.selectedFont;
     }
@@ -103,6 +106,11 @@ export class MenuAccessibilityComponent implements OnInit {
     this.saveAccessibilityPreferences();
   }
 
+  toggleShowButtonText(): void {
+    this.showButtonText = !this.showButtonText;
+    this.saveAccessibilityPreferences();
+  }
+
   setTextSpacing(spacing: 'normal' | 'comfortable' | 'spacious'): void {
     this.textSpacing = spacing;
     this.applyTextSpacing();
@@ -137,6 +145,7 @@ export class MenuAccessibilityComponent implements OnInit {
     this.highContrast = false;
     this.reducedMotion = false;
     this.disableAutoSearch = false;
+    this.showButtonText = false;
     this.textSpacing = 'normal';
     this.selectedFont = 'default';
 
@@ -165,6 +174,7 @@ export class MenuAccessibilityComponent implements OnInit {
       highContrast: this.highContrast,
       reducedMotion: this.reducedMotion,
       disableAutoSearch: this.disableAutoSearch,
+      showButtonText: this.showButtonText,
       textSpacing: this.textSpacing,
       selectedFont: this.selectedFont
     };
@@ -180,6 +190,7 @@ export class MenuAccessibilityComponent implements OnInit {
       this.highContrast = preferences.highContrast ?? false;
       this.reducedMotion = preferences.reducedMotion ?? false;
       this.disableAutoSearch = preferences.disableAutoSearch ?? false;
+      this.showButtonText = preferences.showButtonText ?? false;
       this.textSpacing = preferences.textSpacing ?? 'normal';
       this.selectedFont = preferences.selectedFont ?? 'default';
       this.applyAccessibilitySettings();
@@ -193,6 +204,7 @@ export class MenuAccessibilityComponent implements OnInit {
       highContrast: this.highContrast,
       reducedMotion: this.reducedMotion,
       disableAutoSearch: this.disableAutoSearch,
+      showButtonText: this.showButtonText,
       textSpacing: this.textSpacing,
       selectedFont: this.selectedFont
     });

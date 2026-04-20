@@ -1,36 +1,12 @@
 @import "@fortawesome/fontawesome-free/css/all.css";
 
-:host {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  height: 100dvh;
-  overflow: hidden;
-}
-
+/* Conteneur principal */
 mat-sidenav-container {
-  display: flex;
-  flex: 1 1 auto;
-  min-height: 0;
+  min-height: calc(100vh - 64px);
 }
 
 mat-sidenav-content {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.app-main {
-  display: flex;
-  flex: 1 1 auto;
-  min-height: 0;
-}
-
-.app-main__content {
-  flex: 1 1 auto;
-  min-height: 0;
-  padding: 30px 10px 0;
+  padding: 30px 10px 0px 10px;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -38,8 +14,6 @@ mat-sidenav-content {
 .app-menu {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  overflow: auto;
 }
 
 .menu-root {
@@ -47,10 +21,6 @@ mat-sidenav-content {
   padding: 3px;
   flex: 0 0 auto;
   overflow: visible;
-}
-
-app-footer {
-  flex: 0 0 auto;
 }
 
 .menu-button {
@@ -125,3 +95,8 @@ app-footer {
 }
 
 .fr-skiplinks .fr-link:hover {}
+
+.mat-sidenav-content{
+  overflow-y: hidden;
+  margin-bottom : 20px;
+}
