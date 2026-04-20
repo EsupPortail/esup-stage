@@ -52,6 +52,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   selected: any[] = [];
   validationLibelles: any = {};
   private shouldAutoSearchOnReturn = false;
+  showButtonText = false;
 
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
 
@@ -98,6 +99,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.messageService.setError('Error loading configuration');
       }
     });
+
+    const saved = localStorage.getItem('accessibilityPreferences');
+
+    if (saved) {
+      const preferences = JSON.parse(saved);
+      this.showButtonText = preferences.showButtonText ?? false;
+    }
   }
 
   private initializeValidationLibelles(response: any): void {
