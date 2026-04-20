@@ -155,6 +155,10 @@
         </div>
         <div class="row">
           <div class="col-sm-12 col-md-6">
+            <ng-container *ngIf="actionTemplateRef">
+              <ng-container [ngTemplateOutlet]="actionTemplateRef"></ng-container>
+            </ng-container>
+            <ng-container *ngIf="!actionTemplateRef">
             <!-- gestion des message de confirmation : si il y a un message on ouvre boite de dialogue (cas 1) sinon c'est le bouton qui déclenche le traitement directement (cas 2) -->
             <span *ngIf="confirmMessage != ''" [confirmMessage]="confirmMessage" (confirm)="actionButton.action()">
               <button class="valid-button" type="button" mat-button mat-flat-button *ngIf="actionButton">{{actionButton.libelle}}</button>
@@ -162,6 +166,7 @@
             <span *ngIf="confirmMessage===''">
               <button class="valid-button" type="button" mat-button mat-flat-button *ngIf="actionButton" (click)="actionButton.action()">{{actionButton.libelle}}</button>
             </span>
+            </ng-container>
           </div>
         </div>
       </form>
@@ -223,7 +228,7 @@
   <mat-card *ngIf="!isEtudiant() && hasExportableColumns()">
     <mat-card-content>
       <ng-container>
-        <button class="valid-button" mat-button mat-flat-button (click)="openExportDialog()">Exporter</button>
+        <button class="valid-button" mat-button mat-flat-button (click)="openExportDialog()"><mat-icon aria-hidden="true">download</mat-icon> Export excel</button>
       </ng-container>
     </mat-card-content>
   </mat-card>

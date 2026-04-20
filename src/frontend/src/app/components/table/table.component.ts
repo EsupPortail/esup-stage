@@ -30,6 +30,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges, OnDe
   @Input() filters: any[] = [];
   @Input() pagination: boolean = true;
   @Input() actionButton: any;
+  @Input() actionTemplateRef: TemplateRef<any> | undefined;
   @Input() hideDeleteFilters!: boolean;
   @Input() selectedRow: any;
   @Input() noResultText: string = 'Aucun élément trouvé';
