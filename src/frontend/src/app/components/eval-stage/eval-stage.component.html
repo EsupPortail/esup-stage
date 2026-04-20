@@ -120,6 +120,15 @@
   </ng-container>
 </app-table>
 
+<div class="eval-stage-actions" *ngIf="isGestionnaireOrAdmin">
+  <button class="valid-button" mat-raised-button (click)="openEnvoiMailModal()" [disabled]="selected.length === 0">
+    <span class="fa fa-envelope" aria-hidden="true"></span> Envoyer un mail en masse
+  </button>
+  <button class="valid-button" mat-raised-button (click)="openExportExcelModal()">
+    <mat-icon aria-hidden="true">download</mat-icon> Export excel
+  </button>
+</div>
+
 <ng-template #evaluationActions>
 <div class="eval-stage-actions" *ngIf="isGestionnaireOrAdmin">
   <button class="valid-button" mat-raised-button (click)="openEnvoiMailModal()" [disabled]="selected.length === 0">
