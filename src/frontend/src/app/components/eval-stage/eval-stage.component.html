@@ -1,4 +1,4 @@
-<app-table [service]="conventionService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters" [sortOrder]="sortDirection"
+<app-table [service]="conventionService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters" [actionTemplateRef]="evaluationActions" [sortOrder]="sortDirection"
            matSort [matSortActive]="sortColumn" [matSortDirection]="'desc'" (matSortChange)="appTable ? appTable.sorting($event) : null"
            [noResultText]="'Aucune fiche d\'évaluation trouvée'" [hideDeleteFilters]="isEtudiant || isEnseignant" [loadWithoutFilters]="false"  [templateMobile]="tableMobileEvaluations">
 
@@ -120,7 +120,8 @@
   </ng-container>
 </app-table>
 
-<div class="action-buttons-container mb-3" *ngIf="isGestionnaireOrAdmin">
+<ng-template #evaluationActions>
+<div class="eval-stage-actions" *ngIf="isGestionnaireOrAdmin">
   <button class="valid-button" mat-raised-button (click)="openEnvoiMailModal()" [disabled]="selected.length === 0">
     <span class="fa fa-envelope" aria-hidden="true"></span> Envoyer un mail en masse
   </button>
@@ -128,6 +129,7 @@
     <mat-icon aria-hidden="true">download</mat-icon> Export excel
   </button>
 </div>
+</ng-template>
 
 <ng-template #tableMobileEvaluations let-row="row">
   <table class="table table-sm">
