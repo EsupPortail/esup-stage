@@ -346,3 +346,6 @@ databaseChangeLog:
       file : 3.3.0-legacy-align-baseline.yaml
       relativeToChangelogFile: true
       context: legacy
+  - include:
+      file: 3.3.0-regime-inscription-apogee.yaml
+      relativeToChangelogFile: true

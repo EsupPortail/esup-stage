@@ -6,6 +6,7 @@ import org.apache.logging.log4j.util.Strings;
 import org.esup_portail.esup_stage.config.properties.ReferentielProperties;
 import org.esup_portail.esup_stage.dto.ConventionFormationDto;
 import org.esup_portail.esup_stage.dto.LdapSearchDto;
+import org.esup_portail.esup_stage.dto.RegimeInscriptionDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
@@ -374,7 +375,7 @@ public class ApogeeService {
         }
     }
 
-    public List<RegimeInscriptionCode> getRegimesInscriptions() {
+    public List<RegimeInscriptionDto> getRegimesInscriptions() {
         String response = call("/regimesInscriptions", new HashMap<>());
 
         try {
@@ -385,8 +386,8 @@ public class ApogeeService {
                     mapper.getTypeFactory().constructMapType(Map.class, String.class, String.class)
             );
 
-            List<RegimeInscriptionCode> result = rawMap.entrySet().stream()
-                    .map(entry -> new RegimeInscriptionCode(entry.getKey(), entry.getValue()))
+            List<RegimeInscriptionDto> result = rawMap.entrySet().stream()
+                    .map(entry -> new RegimeInscriptionDto(entry.getKey(), entry.getValue()))
                     .toList();
 
             if (result.isEmpty()) {

@@ -51,6 +51,6 @@ export class TypeConventionService implements PaginatedService {
   }
 
   getListRegimeInscription(): Observable<any> {
-    return this.http.get(environment.apiUrl + "/type-convention/regIns");
+    return this.http.get(environment.apiUrl + "/regIns");
   }
 }
