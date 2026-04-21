@@ -198,7 +198,7 @@ export class StageComponent implements OnInit {
       idUniteDuree: [this.convention.uniteDureeGratification ? this.convention.uniteDureeGratification.id : null, this.fieldValidators['idUniteDuree']],
       idDevise: [this.convention.devise ? this.convention.devise.id : null, this.fieldValidators['idDevise']],
       idModeVersGratification: [this.convention.modeVersGratification ? this.convention.modeVersGratification.id : null, this.fieldValidators['idModeVersGratification']],
-      //TODO un bandeau doit permettre de mettre un message à l’attention de l’étudiant
+      //TODO un bandeau doit permettre de mettre un message à l'attention de l'étudiant
       // - Partie Divers
       idOrigineStage: [this.convention.origineStage ? this.convention.origineStage.id : null],
       confidentiel: [this.convention.confidentiel],
@@ -271,14 +271,19 @@ export class StageComponent implements OnInit {
         }
         // controle du chevauchement avant mise à jour
         if (['dateDebutStage','dateFinStage'].includes(key)) {
-          this.conventionService.controleChevauchement(this.convention.id, this.form.get('dateDebutStage')!.value, this.form.get('dateFinStage')!.value).subscribe((response) => {
-            if (!response) {
-              this.updateHeuresTravail();
-              this.updateSingleField(key,res[key]);
-            } else {
-              this.form.get(key)!.setErrors({dateStageChevauchement: true});
-            }
-          });
+          if (this.isChevauchementAutorise()) {
+            this.updateHeuresTravail();
+            this.updateSingleField(key,res[key]);
+          } else {
+            this.conventionService.controleChevauchement(this.convention.id, this.form.get('dateDebutStage')!.value, this.form.get('dateFinStage')!.value).subscribe((response) => {
+              if (!response) {
+                this.updateHeuresTravail();
+                this.updateSingleField(key,res[key]);
+              } else {
+                this.form.get(key)!.setErrors({dateStageChevauchement: true});
+              }
+            });
+          }
         } else {
           this.updateSingleField(key,res[key]);
         }
@@ -342,6 +347,10 @@ export class StageComponent implements OnInit {
 
   isGestionnaire(): boolean {
     return this.authService.isGestionnaire() || this.authService.isAdmin();
+  }
+
+  isChevauchementAutorise(): boolean {
+    return this.convention?.centreGestion?.autoriserChevauchement === true;
   }
 
   updateSingleField(key: string,value: any): void {
