@@ -143,7 +143,7 @@ public class EvaluationTuteurController {
         // 2) Récup réponse
         ReponseEvaluation reponseEvaluation = reponseEvaluationJpaRepository.findByConvention(id);
         if (reponseEvaluation == null) {
-            reponseEvaluation = evaluationService.initReponseEvaluation(id);
+            throw new AppException(HttpStatus.NOT_FOUND, "ReponseEvaluation non trouvé");
         }
 
         // 3) Marquer token utilisé
