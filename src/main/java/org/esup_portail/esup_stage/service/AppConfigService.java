@@ -18,16 +18,13 @@ import org.esup_portail.esup_stage.model.Affectation;
 import org.esup_portail.esup_stage.model.AppConfig;
 import org.esup_portail.esup_stage.repository.AffectationRepository;
 import org.esup_portail.esup_stage.repository.AppConfigJpaRepository;
-import org.esup_portail.esup_stage.security.ApplicationStartUp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
@@ -127,11 +124,17 @@ public class AppConfigService {
         }
     }
 
-    public void updateTheme() throws IOException, URISyntaxException {
-        FileWriter file = new FileWriter(ApplicationStartUp.class.getClassLoader().getResource("static/theme.css").getPath());
-        try {
+    private String themeCss = null;
+
+    public String getThemeCss() throws IOException {
+        if (themeCss == null)
+            updateTheme();
+        return themeCss;
+    }
+
+    public void updateTheme() throws IOException {
             ConfigThemeDto configThemeDto = getConfigTheme();
-            String sb = ":root {\n" +
+            themeCss = ":root {\n" +
                     "  --fontFamily: " + configThemeDto.getFontFamily() + ";\n" +
                     "  --fontSize: " + configThemeDto.getFontSize() + ";\n" +
                     "  --primaryColor: " + configThemeDto.getPrimaryColor() + ";\n" +
@@ -140,13 +143,7 @@ public class AppConfigService {
                     "  --warningColor: " + configThemeDto.getWarningColor() + ";\n" +
                     "  --successColor: " + configThemeDto.getSuccessColor() + ";\n" +
                     "}";
-            file.write(sb);
-
             writeImageIntoFile(configThemeDto);
-        } finally {
-            file.flush();
-            file.close();
-        }
     }
 
     public String getAnneeUniv() {

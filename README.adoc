@@ -275,7 +275,7 @@ Démarrage :
 
 Bravo, l'installation est terminée ! Vous pouvez y accéder sur http://localhost:8080
 
-Lancement direct du `war` (ne pas utiliser : en cours de debug) `java -jar /opt/estage/target/ROOT.war`
+Lancement direct du `war` `java -jar /opt/estage/target/ROOT.war`
 
 Dans le cas de l'utilisation d'un proxy (apache proxypass par exemple) il est conseillé d'utiliser le protocole AJP.
 
