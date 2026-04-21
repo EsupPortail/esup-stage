@@ -10,4 +10,6 @@ import lombok.NoArgsConstructor;
 public class RegimeInscriptionCode {
 
     String code;
+    String libelle;
+
 }

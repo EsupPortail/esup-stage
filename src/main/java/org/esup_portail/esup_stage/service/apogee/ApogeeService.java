@@ -380,10 +380,13 @@ public class ApogeeService {
         try {
             ObjectMapper mapper = new ObjectMapper();
 
-            List<RegimeInscriptionCode> result = Arrays.stream(
-                            mapper.readValue(response, String[].class)
-                    )
-                    .map(RegimeInscriptionCode::new)
+            Map<String, String> rawMap = mapper.readValue(
+                    response,
+                    mapper.getTypeFactory().constructMapType(Map.class, String.class, String.class)
+            );
+
+            List<RegimeInscriptionCode> result = rawMap.entrySet().stream()
+                    .map(entry -> new RegimeInscriptionCode(entry.getKey(), entry.getValue()))
                     .toList();
 
             if (result.isEmpty()) {

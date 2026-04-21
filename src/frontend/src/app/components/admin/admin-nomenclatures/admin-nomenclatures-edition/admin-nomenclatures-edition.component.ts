@@ -1,8 +1,9 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { MatDialog, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, FormControl, Validators } from "@angular/forms";
 import { TypeStructureService } from "../../../../services/type-structure.service";
 import { TypeOffreService } from "../../../../services/type-offre.service";
+import {TypeConventionService} from "../../../../services/type-convention.service";
 
 @Component({
     selector: 'app-admin-nomenclatures-edition',
@@ -18,12 +19,14 @@ export class AdminNomenclaturesEditionComponent implements OnInit {
   labelTable: string;
   typeStructures: any;
   typeOffres: any;
+  typeInscription: any;
 
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<AdminNomenclaturesEditionComponent>,
     private typeStructureService: TypeStructureService,
     private typeOffreService: TypeOffreService,
+    private typeConventionService: TypeConventionService,
     @Inject(MAT_DIALOG_DATA) data: any
   ) {
     this.service = data.service;
@@ -38,6 +41,9 @@ export class AdminNomenclaturesEditionComponent implements OnInit {
         break;
       case 'Contrat du stage':
         this.setContratOffreForm();
+        break;
+      case 'Type Convention':
+        this.setTypeInscriptionForm();
         break;
       default:
         this.setDefaultForm();
@@ -63,7 +69,9 @@ export class AdminNomenclaturesEditionComponent implements OnInit {
       delete data.typeStructure;
     if (labelTable !== 'Contrat du stage')
       delete data.typeOffre;
-    this.form.setValue(data);
+    if(labelTable !== 'Type Convention')
+      delete data.typeInscription;
+    this.form.patchValue(data);
   }
 
   close(): void {
@@ -90,6 +98,16 @@ export class AdminNomenclaturesEditionComponent implements OnInit {
     });
     this.typeStructureService.getPaginated(1, 0, 'libelle', 'asc', '').subscribe((response: any) => {
       this.typeStructures = response.data;
+    });
+  }
+
+  setTypeInscriptionForm(): void {
+    this.form = this.fb.group({
+      libelle: [null, [this.emptyStringValidator, Validators.maxLength(255)]],
+      typeInscription: [null, []],
+    })
+    this.typeConventionService.getListRegimeInscription().subscribe((response: any) => {
+      this.typeInscription = response;
     });
   }
 
