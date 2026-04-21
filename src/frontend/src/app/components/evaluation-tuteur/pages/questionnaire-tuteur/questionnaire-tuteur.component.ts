@@ -376,6 +376,22 @@ export class QuestionnaireTuteurComponent implements OnInit {
   nextOrFinish(): void { this.isLastTab ? this.terminer() : (this.selectedTab++, this.scrollTop()); }
   private scrollTop(): void { requestAnimationFrame(() => this.viewportScroller.scrollToAnchor('page-top')); }
 
+  /**
+   * Vérifie si au moins une réponse a été saisie dans les formulaires
+   */
+  hasAtLeastOneResponse(): boolean {
+    // Vérifier le formulaire principal
+    const mainFormHasValue = Object.values(this.reponseEntrepriseForm.value).some(
+      value => value !== null && value !== undefined && value !== ''
+    );
+
+    // Vérifier le formulaire supplémentaire
+    const suppFormHasValue = Object.values(this.reponseSupplementaireEntrepriseForm.value).some(
+      value => value !== null && value !== undefined && value !== ''
+    );
+
+    return mainFormHasValue || suppFormHasValue;
+  }
   // ------------------------------------------------------------------------------------
   // Helpers
   // ------------------------------------------------------------------------------------

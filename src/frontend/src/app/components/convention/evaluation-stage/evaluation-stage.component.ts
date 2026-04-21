@@ -523,9 +523,8 @@ export class EvaluationStageComponent implements OnInit, OnDestroy {
     if (code.startsWith('ENSII')) return s2!;
     if (code.startsWith('ENSI')) return s1;
     if (code.startsWith('ENT')) {
-      const num = parseInt(code.replace('ENT',''), 10);
-      if (num <= 9) return s1;
-      if (num <= 14) return s2!;
+      if (['ENT1', 'ENT2', 'ENT3', 'ENT5', 'ENT9', 'ENT11', 'ENT12', 'ENT13', 'ENT14'].includes(code)) return s1;
+      if (['ENT4', 'ENT6', 'ENT7', 'ENT8', 'ENT15'].includes(code)) return s2!;
       return s3!;
     }
     return s1;
