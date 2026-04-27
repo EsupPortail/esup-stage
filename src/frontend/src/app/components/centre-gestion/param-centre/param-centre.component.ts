@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter, ViewChildren, QueryList } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { FormBuilder, FormGroup } from "@angular/forms";
 import { CentreGestionService } from "../../../services/centre-gestion.service";
 import { MessageService } from "../../../services/message.service";
 import { LdapService } from "../../../services/ldap.service";
@@ -41,12 +41,12 @@ export class ParamCentreComponent implements OnInit {
   @Output() update = new EventEmitter<any>();
 
   constructor(
-    private centreGestionService: CentreGestionService,
-    private messageService: MessageService,
-    private fb: FormBuilder,
-    private ldapService: LdapService,
-    private enseignantService: EnseignantService,
-    private configService: ConfigService,
+    private readonly centreGestionService: CentreGestionService,
+    private readonly messageService: MessageService,
+    private readonly fb: FormBuilder,
+    private readonly ldapService: LdapService,
+    private readonly enseignantService: EnseignantService,
+    private readonly configService: ConfigService,
     ) {
     this.viseurForm = this.fb.group({
       nom: [null, []],
@@ -151,6 +151,7 @@ export class ParamCentreComponent implements OnInit {
       mailDelegataireViseur: this.centreGestion.mailDelegataireViseur,
       qualiteDelegataireViseur: this.centreGestion.qualiteDelegataireViseur,
       activerSelectionAutomatiqueTemplateConvention: this.centreGestion.activerSelectionAutomatiqueTemplateConvention,
+      desactiverSelectionAutomatiqueTypeConvention: this.centreGestion.desactiverSelectionAutomatiqueTypeConvention ?? false,
     }, {
       emitEvent: false,
     });
@@ -288,7 +289,7 @@ export class ParamCentreComponent implements OnInit {
 
   reorderValidations(): void {
     let ordre = 1;
-    this.validationsActives.map((v: any) => v.ordre = ordre++);
+    this.validationsActives.forEach((v: any) => v.ordre = ordre++);
     let lastOrdre = 0;
     this.validationsActives.forEach((v: any) => {
       this.form.get(v.id + 'Ordre')?.setValue(v.ordre);
@@ -305,7 +306,7 @@ export class ParamCentreComponent implements OnInit {
     const ordres = this.validationsActives.map((v: any) => v.ordre);
     let lastOrdre = 0;
     if (ordres.length > 0) {
-      lastOrdre = Math.max.apply(Math, ordres);
+      lastOrdre = Math.max(...ordres);
     }
     this.validationsActives.push({ id: validation, ordre: lastOrdre + 1, libelle: this.validationLibelles[validation] ?? 'Vérification administrative'})
     this.reorderValidations();

@@ -209,6 +209,9 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     @Column
     private boolean activerSelectionAutomatiqueTemplateConvention;
 
+    @Column
+    private boolean desactiverSelectionAutomatiqueTypeConvention = false;
+
     @Transient
     public String getAdresseComplete() {
         return getVoie() + " " + getCodePostal() + " " + getCommune();

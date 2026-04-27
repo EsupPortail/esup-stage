@@ -349,3 +349,6 @@ databaseChangeLog:
   - include:
       file: 3.3.0-regime-inscription-apogee.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 3.3.0-param-centre-gestion-selection-desactivation-auto-type-convention.yaml
+      relativeToChangelogFile: true

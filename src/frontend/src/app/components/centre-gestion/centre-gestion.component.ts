@@ -58,7 +58,7 @@ export class CentreGestionComponent implements OnInit,OnDestroy {
   @ViewChild('matTabs') matTabs: MatTabGroup | undefined;
   @ViewChild('coordCentre') coordCentreComponent!: CoordCentreComponent;
 
-  constructor(private activatedRoute: ActivatedRoute, private centreGestionService: CentreGestionService, private messageService: MessageService, private fb: FormBuilder, private router: Router, private consigneService: ConsigneService) {
+  constructor(private readonly activatedRoute: ActivatedRoute, private readonly centreGestionService: CentreGestionService, private readonly messageService: MessageService, private readonly fb: FormBuilder, private readonly router: Router, private readonly consigneService: ConsigneService) {
     this.setCoordCentreForm();
     this.setParamCentreForm();
     this.setSignatureElectroniqueForm();
@@ -94,48 +94,29 @@ export class CentreGestionComponent implements OnInit,OnDestroy {
     });
   }
 
-  majStatus(): void {
-    if (this.coordCentreForm.valid) {
-      this.setStatus(0,2);
-    } else {
-      this.setStatus(0,0);
-    }
+ majStatus(): void {
+  const checks: Array<{ key: number; value: number }> = [
+    { key: 0, value: this.coordCentreForm.valid ? 2 : 0 },
+    {
+      key: 1,
+      value:
+        (this.centreGestion?.validationConvention || this.centreGestion?.validationPedagogique)
+          ? (this.invalidOrdresValidations() ? 0 : 2)
+          : 0,
+    },
+    { key: 2, value: this.centreGestion?.fichier == null ? 1 : 2 },
+    { key: 3, value: (this.centreGestion?.personnels?.length ?? 0) > 0 ? 2 : 0 },
+    {
+      key: 4,
+      value: this.consigneCentre
+        ? (this.consigneCentre.texte || this.consigneCentre.documents ? 2 : 1)
+        : 0,
+    },
+    { key: 6, value: this.signatureElectroniqueForm.valid ? 2 : 1 },
+  ];
 
-    if (this.centreGestion.validationConvention == true || this.centreGestion.validationPedagogique == true) {
-      if (this.invalidOrdresValidations())
-        this.setStatus(1, 0);
-      else
-        this.setStatus(1, 2);
-    } else {
-      this.setStatus(1, 0);
-    }
-
-    if (this.centreGestion.fichier != null) {
-      this.setStatus(2, 2);
-    } else {
-      this.setStatus(2, 1);
-    }
-
-    if (this.centreGestion.personnels && this.centreGestion.personnels.length > 0) {
-      this.setStatus(3, 2);
-    } else {
-      this.setStatus(3, 0);
-    }
-
-    if (this.consigneCentre) {
-      if (this.consigneCentre.texte || this.consigneCentre.documents) this.setStatus(4, 2);
-      else this.setStatus(4, 1);
-    } else {
-      this.setStatus(4, 0);
-    }
-
-    if (this.signatureElectroniqueForm.valid) {
-      this.setStatus(6,2);
-    } else {
-      this.setStatus(6,1);
-    }
-  }
-
+  checks.forEach(c => this.setStatus(c.key, c.value));
+}
   tabChanged(event: MatTabChangeEvent): void {
     this.tabs[event.index].init = true;
   }
@@ -164,7 +145,7 @@ export class CentreGestionComponent implements OnInit,OnDestroy {
     this.centreGestion = value;
     this.consigneService.getConsigneByCentre(this.centreGestion.id).subscribe({
       next: (response: any) => {
-        if (response && response.texte) {
+        if (response?.texte) {
           this.consigneCentre = response;
         }
       }
@@ -207,16 +188,12 @@ export class CentreGestionComponent implements OnInit,OnDestroy {
           this.update();
         }
       })
-    );
-
-    this.subscriptions.push(
+      ,
       this.paramCentreForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
         this.setCentreGestionParamCentre();
         this.update();
       })
-    );
-
-    this.subscriptions.push(
+      ,
       this.signatureElectroniqueForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
         this.setCentreGestionSignatureElectronique();
         this.update();
@@ -317,6 +294,7 @@ export class CentreGestionComponent implements OnInit,OnDestroy {
       mailDelegataireViseur: [null],
       qualiteDelegataireViseur: [null],
       activerSelectionAutomatiqueTemplateConvention: [null],
+      desactiverSelectionAutomatiqueTypeConvention: [false],
     });
   }
 
@@ -350,6 +328,7 @@ export class CentreGestionComponent implements OnInit,OnDestroy {
     this.centreGestion.mailDelegataireViseur = this.paramCentreForm.get('mailDelegataireViseur')?.value;
     this.centreGestion.qualiteDelegataireViseur = this.paramCentreForm.get('qualiteDelegataireViseur')?.value;
     this.centreGestion.activerSelectionAutomatiqueTemplateConvention = this.paramCentreForm.get('activerSelectionAutomatiqueTemplateConvention')?.value;
+    this.centreGestion.desactiverSelectionAutomatiqueTypeConvention = this.paramCentreForm.get('desactiverSelectionAutomatiqueTypeConvention')?.value;
   }
 
   setSignatureElectroniqueForm() {
@@ -368,10 +347,10 @@ export class CentreGestionComponent implements OnInit,OnDestroy {
 
   invalidOrdresValidations() {
     // Les ordres de validations doivent être 1, 2 ou 3, et on ne peut pas avoir le même ordre
-    let ordres = [1, 2, 3, null];
-    return (!ordres.some(o => o === this.centreGestion.validationPedagogiqueOrdre)
-      || !ordres.some(o => o === this.centreGestion.validationConventionOrdre)
-      || !ordres.some(o => o === this.centreGestion.verificationAdministrativeOrdre)
+    let ordres = new Set([1, 2, 3, null]);
+    return (!ordres.has(this.centreGestion.validationPedagogiqueOrdre)
+      || !ordres.has(this.centreGestion.validationConventionOrdre)
+      || !ordres.has(this.centreGestion.verificationAdministrativeOrdre)
     )
   }
 

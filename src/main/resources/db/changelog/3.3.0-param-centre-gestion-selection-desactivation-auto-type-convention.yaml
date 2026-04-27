@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.3.0-ajout-param-desactiverSelectionAutomatiqueTypeConvention
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            columnExists:
+              tableName: CentreGestion
+              columnName: desactiverSelectionAutomatiqueTypeConvention
+      changes:
+        - addColumn:
+            tableName: CentreGestion
+            columns:
+              - column:
+                  name: desactiverSelectionAutomatiqueTypeConvention
+                  type: BOOLEAN
+                  defaultValueBoolean: false
