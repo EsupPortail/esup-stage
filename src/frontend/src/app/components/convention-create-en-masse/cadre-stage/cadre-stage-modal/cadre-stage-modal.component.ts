@@ -1,21 +1,14 @@
-import { Component, EventEmitter, Input, Inject, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
-import { AuthService } from "../../../../services/auth.service";
+import { Component, Inject, OnInit, } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MessageService } from "../../../../services/message.service";
 import { EtudiantService } from "../../../../services/etudiant.service";
-import { MatExpansionPanel } from "@angular/material/expansion";
-import { LdapService } from "../../../../services/ldap.service";
 import { CPAMService } from "../../../../services/cpam.service";
-import { TypeConventionService } from "../../../../services/type-convention.service";
 import { LangueConventionService } from "../../../../services/langue-convention.service";
-import * as _ from "lodash";
 import { CentreGestionService } from "../../../../services/centre-gestion.service";
 import { ConventionService } from "../../../../services/convention.service";
-import { debounceTime } from "rxjs/operators";
 import { ConfigService } from "../../../../services/config.service";
 import { ConsigneService } from "../../../../services/consigne.service";
 import * as FileSaver from "file-saver";
-import { Router } from "@angular/router";
 import {REGEX} from "../../../../utils/regex.utils";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 
@@ -47,20 +40,16 @@ export class CadreStageModalComponent implements OnInit {
   consigneEtablissement: any;
 
   constructor(
-    private authService: AuthService,
-    private etudiantService: EtudiantService,
+    private readonly etudiantService: EtudiantService,
     public cpamService: CPAMService,
-    private fb: FormBuilder,
-    private messageService: MessageService,
-    private ldapService: LdapService,
-    private typeConventionService: TypeConventionService,
-    private langueConventionService: LangueConventionService,
-    private centreGestionService: CentreGestionService,
-    private conventionService: ConventionService,
-    private configService: ConfigService,
-    private consigneService: ConsigneService,
-    private router: Router,
-    private dialogRef: MatDialogRef<CadreStageModalComponent>,
+    private readonly fb: FormBuilder,
+    private readonly messageService: MessageService,
+    private readonly langueConventionService: LangueConventionService,
+    private readonly centreGestionService: CentreGestionService,
+    private readonly conventionService: ConventionService,
+    private readonly configService: ConfigService,
+    private readonly consigneService: ConsigneService,
+    private readonly dialogRef: MatDialogRef<CadreStageModalComponent>,
     @Inject(MAT_DIALOG_DATA) data: any
   ) {
     this.convention = data.convention;
@@ -75,7 +64,7 @@ export class CadreStageModalComponent implements OnInit {
       if (this.centreGestionEtablissement) {
         this.consigneService.getConsigneByCentre(this.centreGestionEtablissement.id).subscribe({
           next: (response: any) => {
-            if (response && response.texte) {
+            if (response?.texte) {
               this.consigneEtablissement = response;
             } else {
               console.info('Pas de consigne disponible pour ce centre');
@@ -112,14 +101,26 @@ export class CadreStageModalComponent implements OnInit {
 
       this.formConvention.get('inscription')?.valueChanges.subscribe((inscription: any) => {
         if (inscription) {
+          const autoTypeConventionDisabled = !!inscription.centreGestion?.desactiverSelectionAutomatiqueTypeConvention;
+          const currentTypeConventionId = this.formConvention.get('idTypeConvention')?.value;
+          this.typeConventions = inscription.typeConventionsDisponibles || (inscription.typeConvention ? [inscription.typeConvention] : []);
+          const autoTypeConvention = autoTypeConventionDisabled
+            ? null
+            : (inscription.typeConvention || (this.typeConventions.length === 1 ? this.typeConventions[0] : null));
           this.centreGestion = inscription.centreGestion;
           this.formConvention.get('inscriptionElp')?.setValue(null);
-          if (inscription.typeConvention) {
-            this.formConvention.get('idTypeConvention')?.setValue(inscription.typeConvention.id);
+          if (autoTypeConvention) {
+            this.formConvention.get('idTypeConvention')?.setValue(autoTypeConvention.id);
             this.formConvention.get('idTypeConvention')?.disable();
           } else {
+            const isCurrentTypeConventionStillAvailable = this.typeConventions.some((typeConvention: any) => typeConvention.id === currentTypeConventionId);
+            if (!isCurrentTypeConventionStillAvailable) {
+              this.formConvention.get('idTypeConvention')?.setValue(null);
+            }
             this.formConvention.get('idTypeConvention')?.enable();
           }
+        } else {
+          this.typeConventions = [];
         }
       });
 
@@ -150,13 +151,6 @@ export class CadreStageModalComponent implements OnInit {
         }
       });
     });
-
-    this.typeConventionService.getListActiveWithTemplate().subscribe((response: any) => {
-      this.typeConventions = response.data;
-    });
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
   }
 
   choose(row: any): void {
@@ -167,7 +161,8 @@ export class CadreStageModalComponent implements OnInit {
       }
       if (this.convention.etape) {
         const inscription = this.inscriptions.find((i: any) => {
-          return i.etapeInscription.codeEtp === this.convention.etape.id.code;
+          return i.etapeInscription.codeEtp === this.convention.etape.id.code
+            && i.etapeInscription.codVrsVet === this.convention.etape.id.codeVersionEtape;
         });
         if (inscription) {
           this.formConvention.get('inscription')?.setValue(inscription);
@@ -218,7 +213,7 @@ export class CadreStageModalComponent implements OnInit {
     if (doc.nomReel.endsWith('.doc')) mimetype = 'application/msword';
     if (doc.nomReel.endsWith('.docx')) mimetype = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
     this.consigneService.getDocument(this.consigneEtablissement.id, doc.id).subscribe((response: any) => {
-      var blob = new Blob([response as BlobPart], {type: mimetype});
+      let blob = new Blob([response as BlobPart], {type: mimetype});
       FileSaver.saveAs(blob, doc.nomReel);
     });
   }
