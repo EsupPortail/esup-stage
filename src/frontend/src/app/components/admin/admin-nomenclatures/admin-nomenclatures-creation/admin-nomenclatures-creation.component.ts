@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, FormControl, Validators } from "@angular/forms";
 import { TypeStructureService } from "../../../../services/type-structure.service";
@@ -10,7 +10,7 @@ import { TypeOffreService } from "../../../../services/type-offre.service";
     styleUrls: ['./admin-nomenclatures-creation.component.scss'],
     standalone: false
 })
-export class AdminNomenclaturesCreationComponent implements OnInit {
+export class AdminNomenclaturesCreationComponent {
 
   form!: FormGroup;
   service: any;
@@ -19,10 +19,10 @@ export class AdminNomenclaturesCreationComponent implements OnInit {
   typeOffres: any;
 
   constructor(
-    private fb: FormBuilder,
-    private dialogRef: MatDialogRef<AdminNomenclaturesCreationComponent>,
-    private typeStructureService: TypeStructureService,
-    private typeOffreService: TypeOffreService,
+    private readonly fb: FormBuilder,
+    private readonly dialogRef: MatDialogRef<AdminNomenclaturesCreationComponent>,
+    private readonly typeStructureService: TypeStructureService,
+    private readonly typeOffreService: TypeOffreService,
     @Inject(MAT_DIALOG_DATA) data: any
   ) {
     this.service = data.service;
@@ -52,9 +52,6 @@ export class AdminNomenclaturesCreationComponent implements OnInit {
           break;
       }
     }
-  }
-
-  ngOnInit(): void {
   }
 
   close(): void {

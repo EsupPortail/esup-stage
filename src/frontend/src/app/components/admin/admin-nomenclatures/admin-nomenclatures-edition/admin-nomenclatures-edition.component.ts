@@ -1,17 +1,17 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { FormBuilder, FormGroup, FormControl, Validators } from "@angular/forms";
-import { TypeStructureService } from "../../../../services/type-structure.service";
-import { TypeOffreService } from "../../../../services/type-offre.service";
+import { Component, Inject} from '@angular/core';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {FormBuilder, FormGroup, FormControl, Validators} from "@angular/forms";
+import {TypeStructureService} from "../../../../services/type-structure.service";
+import {TypeOffreService} from "../../../../services/type-offre.service";
 import {TypeConventionService} from "../../../../services/type-convention.service";
 
 @Component({
-    selector: 'app-admin-nomenclatures-edition',
-    templateUrl: './admin-nomenclatures-edition.component.html',
-    styleUrls: ['./admin-nomenclatures-edition.component.scss'],
-    standalone: false
+  selector: 'app-admin-nomenclatures-edition',
+  templateUrl: './admin-nomenclatures-edition.component.html',
+  styleUrls: ['./admin-nomenclatures-edition.component.scss'],
+  standalone: false
 })
-export class AdminNomenclaturesEditionComponent implements OnInit {
+export class AdminNomenclaturesEditionComponent {
 
   form!: FormGroup;
   service: any;
@@ -22,17 +22,17 @@ export class AdminNomenclaturesEditionComponent implements OnInit {
   typeInscription: any;
 
   constructor(
-    private fb: FormBuilder,
-    private dialogRef: MatDialogRef<AdminNomenclaturesEditionComponent>,
-    private typeStructureService: TypeStructureService,
-    private typeOffreService: TypeOffreService,
-    private typeConventionService: TypeConventionService,
+    private readonly fb: FormBuilder,
+    private readonly dialogRef: MatDialogRef<AdminNomenclaturesEditionComponent>,
+    private readonly typeStructureService: TypeStructureService,
+    private readonly typeOffreService: TypeOffreService,
+    private readonly typeConventionService: TypeConventionService,
     @Inject(MAT_DIALOG_DATA) data: any
   ) {
     this.service = data.service;
     this.data = data.data;
     this.labelTable = data.labelTable;
-    switch(this.labelTable) {
+    switch (this.labelTable) {
       case 'Type de structure':
         this.setTypeStructureForm();
         break;
@@ -52,8 +52,6 @@ export class AdminNomenclaturesEditionComponent implements OnInit {
     this.setFormData(this.labelTable);
   }
 
-  ngOnInit(): void {
-  }
 
   setFormData(labelTable: string): void {
     const data = {...this.data};
@@ -69,8 +67,12 @@ export class AdminNomenclaturesEditionComponent implements OnInit {
       delete data.typeStructure;
     if (labelTable !== 'Contrat du stage')
       delete data.typeOffre;
-    if(labelTable !== 'Type Convention')
-      delete data.typeInscription;
+    if (labelTable === 'Type Convention') {
+      data.regimesInscription = data.regimesInscription ?? data.typeInscription ?? [];
+    } else {
+      delete data.regimesInscription;
+    }
+    delete data.typeInscription;
     this.form.patchValue(data);
   }
 
@@ -104,7 +106,7 @@ export class AdminNomenclaturesEditionComponent implements OnInit {
   setTypeInscriptionForm(): void {
     this.form = this.fb.group({
       libelle: [null, [this.emptyStringValidator, Validators.maxLength(255)]],
-      typeInscription: [null, []],
+      regimesInscription: [null, []],
     })
     this.typeConventionService.getListRegimeInscription().subscribe((response: any) => {
       this.typeInscription = response;
@@ -134,7 +136,12 @@ export class AdminNomenclaturesEditionComponent implements OnInit {
 
   compare(option: any, value: any): boolean {
     if (option && value) {
-      return option.id === value.id;
+      if (option.id !== undefined && value.id !== undefined) {
+        return option.id === value.id;
+      }
+      if (option.code !== undefined && value.code !== undefined) {
+        return option.code === value.code;
+      }
     }
     return false;
   }
