@@ -22,6 +22,27 @@ public interface TypeConventionJpaRepository extends JpaRepository<TypeConventio
             JOIN tc.regimesInscription ri
             WHERE LOWER(ri.code) = LOWER(:codeRegimeInscription)
               AND tc.temEnServ = 'O'
+            ORDER BY tc.libelle
+            """)
+    List<TypeConvention> findAllActiveCompatibleByCodeRegimeInscription(@Param("codeRegimeInscription") String codeRegimeInscription);
+
+    @Query("""
+            SELECT DISTINCT tc
+            FROM TypeConvention tc
+            JOIN tc.regimesInscription ri
+            JOIN tc.templates template
+            WHERE LOWER(ri.code) = LOWER(:codeRegimeInscription)
+              AND tc.temEnServ = 'O'
+            ORDER BY tc.libelle
             """)
     List<TypeConvention> findAllActiveByCodeRegimeInscription(@Param("codeRegimeInscription") String codeRegimeInscription);
+
+    @Query("""
+            SELECT DISTINCT tc
+            FROM TypeConvention tc
+            JOIN tc.templates template
+            WHERE tc.temEnServ = 'O'
+            ORDER BY tc.libelle
+            """)
+    List<TypeConvention> findAllActiveWithTemplate();
 }

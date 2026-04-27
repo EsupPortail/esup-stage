@@ -67,7 +67,7 @@ public class ApogeeService {
                 if (!Strings.isEmpty(value))
                     listParams.add(key + "=" + URLEncoder.encode(value, StandardCharsets.UTF_8));
             });
-            if (listParams.size() > 0) {
+            if (listParams.isEmpty()) {
                 urlWithQuery += "?" + String.join("&", listParams);
             }
 
@@ -106,7 +106,7 @@ public class ApogeeService {
                     LdapSearchDto ldapSearchDto = new LdapSearchDto();
                     ldapSearchDto.setCodEtu(numEtudiant);
                     List<LdapUser> ldapEtudiant = ldapService.search("/etudiant", ldapSearchDto);
-                    if (ldapEtudiant != null && ldapEtudiant.size() > 0) {
+                    if (ldapEtudiant != null && ldapEtudiant.isEmpty()) {
                         etudiantRef.setMail(ldapEtudiant.get(0).getMail());
                     }
                 }
@@ -131,7 +131,7 @@ public class ApogeeService {
                 composante.setLibelle(entry.getValue().toString());
                 list.add(composante);
             }
-            if (list.size() == 0) {
+            if (list.isEmpty()) {
                 LOGGER.info("Aucune composante trouvée");
             }
             return list;
@@ -157,7 +157,7 @@ public class ApogeeService {
                 etapeApogee.setLibelle(entry.getValue().toString());
                 list.add(etapeApogee);
             }
-            if (list.size() == 0) {
+            if (list.isEmpty()) {
                 LOGGER.info("Aucune étape trouvée");
             }
             return list;
@@ -189,7 +189,7 @@ public class ApogeeService {
         try {
             ObjectMapper mapper = new ObjectMapper();
             List<String> annees = Arrays.asList(mapper.readValue(response, String[].class));
-            if (annees.size() == 0) {
+            if (annees.isEmpty()) {
                 LOGGER.info("Aucune année trouvée");
             }
             return annees;
@@ -224,8 +224,9 @@ public class ApogeeService {
         for (String annee : anneesFiltrees) {
             ApogeeMap apogeeMap = getEtudiantEtapesInscription(numEtudiant, annee);
             RegimeInscription regimeInscription = findRegimeInscription(apogeeMap, annee);
-            List<TypeConvention> typeConventions = resolveTypeConventions(regimeInscription);
-            List<ConventionFormationDto> inscriptionsAnnee = buildInscriptionsForAnnee(apogeeMap, annee, typeConventions);
+            List<TypeConvention> typeConventionsCompatibles = resolveTypeConventionsCompatibles(regimeInscription);
+            List<TypeConvention> typeConventionsAuto = resolveTypeConventionsAuto(regimeInscription);
+            List<ConventionFormationDto> inscriptionsAnnee = buildInscriptionsForAnnee(apogeeMap, annee, typeConventionsCompatibles, typeConventionsAuto);
             enrichWithElementsPedagogiques(inscriptionsAnnee, apogeeMap.getListeELPs());
             inscriptions.addAll(inscriptionsAnnee);
         }
@@ -262,7 +263,15 @@ public class ApogeeService {
                 .orElse(null);
     }
 
-    private List<TypeConvention> resolveTypeConventions(RegimeInscription regimeInscription) {
+    private List<TypeConvention> resolveTypeConventionsCompatibles(RegimeInscription regimeInscription) {
+        if (regimeInscription == null || regimeInscription.getCodRegIns() == null || regimeInscription.getCodRegIns().isEmpty()) {
+            return List.of();
+        }
+
+        return typeConventionJpaRepository.findAllActiveCompatibleByCodeRegimeInscription(regimeInscription.getCodRegIns());
+    }
+
+    private List<TypeConvention> resolveTypeConventionsAuto(RegimeInscription regimeInscription) {
         if (regimeInscription == null || regimeInscription.getCodRegIns() == null || regimeInscription.getCodRegIns().isEmpty()) {
             return List.of();
         }
@@ -270,7 +279,7 @@ public class ApogeeService {
         return typeConventionJpaRepository.findAllActiveByCodeRegimeInscription(regimeInscription.getCodRegIns());
     }
 
-    private List<ConventionFormationDto> buildInscriptionsForAnnee(ApogeeMap apogeeMap, String annee, List<TypeConvention> typeConventions) {
+    private List<ConventionFormationDto> buildInscriptionsForAnnee(ApogeeMap apogeeMap, String annee, List<TypeConvention> typeConventionsCompatibles, List<TypeConvention> typeConventionsAuto) {
         List<ConventionFormationDto> inscriptions = new ArrayList<>();
 
         for (EtapeInscription etapeInscription : apogeeMap.getListeEtapeInscriptions()) {
@@ -279,17 +288,32 @@ public class ApogeeService {
             CentreGestion centreGestion = resolveCentreGestion(etapeInscription);
             if (centreGestion == null) continue;
 
-            TypeConvention typeEffectif = resolveTypeConventionForInscription(etapeInscription, centreGestion, typeConventions);
+            List<TypeConvention> typeConventionsDisponibles = resolveTypeConventionsDisponibles(etapeInscription, typeConventionsCompatibles);
+            TypeConvention typeEffectif = resolveTypeConventionForInscription(etapeInscription, centreGestion, typeConventionsAuto);
 
             ConventionFormationDto dto = new ConventionFormationDto();
             dto.setEtapeInscription(etapeInscription);
             dto.setAnnee(annee);
             dto.setTypeConvention(typeEffectif);
+            dto.setTypeConventionsDisponibles(typeConventionsDisponibles);
             dto.setCentreGestion(centreGestion);
             inscriptions.add(dto);
         }
 
         return inscriptions;
+    }
+
+    private List<TypeConvention> resolveTypeConventionsDisponibles(EtapeInscription etapeInscription, List<TypeConvention> typeConventionsCompatibles) {
+        TypeConvention typeConventionCesure = changeTypeConventionByCodeCursus(etapeInscription.getCodeCursusAmenage());
+        if (typeConventionCesure != null) {
+            return List.of(typeConventionCesure);
+        }
+
+        if (!typeConventionsCompatibles.isEmpty()) {
+            return typeConventionsCompatibles;
+        }
+
+        return typeConventionJpaRepository.findAllActiveWithTemplate();
     }
 
     private TypeConvention resolveTypeConventionForInscription(EtapeInscription etapeInscription, CentreGestion centreGestion, List<TypeConvention> typeConventions) {
@@ -310,7 +334,7 @@ public class ApogeeService {
     }
 
     public TypeConvention resolveTypeConvention(RegimeInscription regimeInscription, EtapeInscription etapeInscription, CentreGestion centreGestion) {
-        List<TypeConvention> typeConventions = resolveTypeConventions(regimeInscription);
+        List<TypeConvention> typeConventions = resolveTypeConventionsAuto(regimeInscription);
         return resolveTypeConventionForInscription(etapeInscription, centreGestion, typeConventions);
     }
 
@@ -369,7 +393,7 @@ public class ApogeeService {
         return inscriptions.stream()
                 .filter(inscription -> isAutorisationEtudiantRespectee(inscription, isEtudiant))
                 .filter(inscription -> isAnneeCentreGestionAutorisee(inscription, anneeEnCoursInt, isEtudiant))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private boolean isAutorisationEtudiantRespectee(ConventionFormationDto inscription, boolean isEtudiant) {

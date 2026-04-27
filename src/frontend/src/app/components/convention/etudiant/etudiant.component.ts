@@ -132,6 +132,12 @@ export class EtudiantComponent implements OnInit, OnChanges {
 
       this.formConvention.get('inscription')?.valueChanges.subscribe((inscription: any) => {
         if (inscription) {
+          const autoTypeConventionDisabled = !!inscription.centreGestion?.desactiverSelectionAutomatiqueTypeConvention;
+          const currentTypeConventionId = this.formConvention.get('idTypeConvention')?.value;
+          this.typeConventions = inscription.typeConventionsDisponibles || (inscription.typeConvention ? [inscription.typeConvention] : []);
+          const autoTypeConvention = !autoTypeConventionDisabled
+            ? (inscription.typeConvention || (this.typeConventions.length === 1 ? this.typeConventions[0] : null))
+            : null;
           if (!this.sansElp && inscription.elementPedagogiques && inscription.elementPedagogiques.length > 0) {
             this.formConvention.get('inscriptionElp')?.setValidators([Validators.required]);
           }
@@ -139,10 +145,14 @@ export class EtudiantComponent implements OnInit, OnChanges {
             this.centreGestion = inscription.centreGestion;
           }
           this.formConvention.get('inscriptionElp')?.setValue(null);
-          if (inscription.typeConvention) {
-            this.formConvention.get('idTypeConvention')?.setValue(inscription.typeConvention.id);
+          if (autoTypeConvention) {
+            this.formConvention.get('idTypeConvention')?.setValue(autoTypeConvention.id);
             this.formConvention.get('idTypeConvention')?.disable();
           } else {
+            const isCurrentTypeConventionStillAvailable = this.typeConventions.some((typeConvention: any) => typeConvention.id === currentTypeConventionId);
+            if (!isCurrentTypeConventionStillAvailable && !this.convention?.id) {
+              this.formConvention.get('idTypeConvention')?.setValue(null);
+            }
             this.formConvention.get('idTypeConvention')?.enable();
           }
           if (!this.convention.volumeHoraireFormation) {
@@ -152,6 +162,8 @@ export class EtudiantComponent implements OnInit, OnChanges {
           if (this.hasDefaultVolumeHoraire) {
             this.formConvention.get('volumeHoraireFormationBool')?.setValue(true);
           }
+        } else {
+          this.typeConventions = [];
         }
       });
 
@@ -194,10 +206,6 @@ export class EtudiantComponent implements OnInit, OnChanges {
           this.formConvention.get('libelleCPAM')?.disable();
         }
       });
-    });
-
-    this.typeConventionService.getListActiveWithTemplate().subscribe((response: any) => {
-      this.typeConventions = response.data;
     });
 
     this.form.valueChanges.pipe(debounceTime(1000)).subscribe(() => {
@@ -272,7 +280,9 @@ export class EtudiantComponent implements OnInit, OnChanges {
             codeComposante: this.convention.codeComposante,
             libComposante: this.convention.ufr?.libelle || this.convention.libelleComposante
           },
+          centreGestion: this.centreGestion,
           typeConvention: this.convention.typeConvention ? {id: this.convention.typeConvention.id, libelle: this.convention.typeConvention.libelle} : null,
+          typeConventionsDisponibles: this.convention.typeConvention ? [{id: this.convention.typeConvention.id, libelle: this.convention.typeConvention.libelle}] : [],
           elementPedagogiques: elementPedagogiques
         };
 

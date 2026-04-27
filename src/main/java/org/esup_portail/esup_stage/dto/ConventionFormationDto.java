@@ -14,6 +14,7 @@ public class ConventionFormationDto {
     private List<ElementPedagogique> elementPedagogiques = new ArrayList<>();
     private CentreGestion centreGestion;
     private TypeConvention typeConvention;
+    private List<TypeConvention> typeConventionsDisponibles = new ArrayList<>();
 
 
     public EtapeInscription getEtapeInscription() {
@@ -54,5 +55,13 @@ public class ConventionFormationDto {
 
     public void setTypeConvention(TypeConvention typeConvention) {
         this.typeConvention = typeConvention;
+    }
+
+    public List<TypeConvention> getTypeConventionsDisponibles() {
+        return typeConventionsDisponibles;
+    }
+
+    public void setTypeConventionsDisponibles(List<TypeConvention> typeConventionsDisponibles) {
+        this.typeConventionsDisponibles = typeConventionsDisponibles;
     }
 }
