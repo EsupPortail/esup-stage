@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface TypeConventionJpaRepository extends JpaRepository<TypeConvention, Integer> {
 
@@ -13,4 +15,13 @@ public interface TypeConventionJpaRepository extends JpaRepository<TypeConventio
 
     @Query("SELECT tc FROM TypeConvention tc WHERE LOWER(tc.codeCtrl) = LOWER(:codeCtrl)")
     TypeConvention findByCodeCtrl(@Param("codeCtrl") String codeCtrl);
+
+    @Query("""
+            SELECT DISTINCT tc
+            FROM TypeConvention tc
+            JOIN tc.regimesInscription ri
+            WHERE LOWER(ri.code) = LOWER(:codeRegimeInscription)
+              AND tc.temEnServ = 'O'
+            """)
+    List<TypeConvention> findAllActiveByCodeRegimeInscription(@Param("codeRegimeInscription") String codeRegimeInscription);
 }

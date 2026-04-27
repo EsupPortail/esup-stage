@@ -534,17 +534,6 @@ public class GroupeEtudiantController {
         EtudiantRef etudiantRef = apogeeService.getInfoApogee(etudiant.getCodEtu(), etudiant.getAnnee());
         ApogeeMap apogeeMap = apogeeService.getEtudiantEtapesInscription(etudiant.getCodEtu(), etudiant.getAnnee());
         RegimeInscription regIns = apogeeMap.getRegimeInscription().stream().filter(r -> r.getAnnee().equals(etudiant.getAnnee())).findAny().orElse(null);
-        TypeConvention typeConvention = null;
-        if (regIns != null) {
-            String licRegIns = regIns.getLicRegIns();
-            String codRegIns = regIns.getCodRegIns();
-            if (licRegIns != null && !licRegIns.isEmpty()) {
-                typeConvention = typeConventionJpaRepository.findByCodeCtrl(licRegIns);
-            }
-            if (typeConvention == null && codRegIns != null && !codRegIns.isEmpty()) {
-                typeConvention = typeConventionJpaRepository.findByCodeCtrl(codRegIns);
-            }
-        }
         EtapeInscription etapeInscription = apogeeMap.getListeEtapeInscriptions().stream()
                 .filter(i -> i.getCodeComposante().equals(etudiant.getCodeComposante())
                         && i.getCodeDiplome().equals(etudiant.getCodeDiplome())
@@ -554,23 +543,20 @@ public class GroupeEtudiantController {
                 )
                 .findAny()
                 .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "Aucun inscription trouvée"));
-        TypeConvention typeCesure = apogeeService.changeTypeConventionByCodeCursus(etapeInscription.getCodeCursusAmenage());
-        if (typeCesure != null) {
-            typeConvention = typeCesure;
-        }
+        CentreGestion centreGestionEtab = conventionService.getCentreGestionEtab();
+        CentreGestion centreGestion = conventionService.getCentreGestion(centreGestionEtab, etudiant.getCodeComposante(), etudiant.getCodeEtape(), etudiant.getVersionEtape());
+        TypeConvention typeConvention = apogeeService.resolveTypeConvention(regIns, etapeInscription, centreGestion);
         if (typeConvention == null) {
             logger.error(
-                    "Type de convention non trouvé pour le regime d'inscription (codRegIns={}, licRegIns={})",
-                    regIns != null ? regIns.getCodRegIns() : "null",
-                    regIns != null ? regIns.getLicRegIns() : "null"
+                    "Type de convention non trouvé automatiquement pour le regime d'inscription (codRegIns={})",
+                    regIns != null ? regIns.getCodRegIns() : "null"
             );
             throw new AppException(HttpStatus.NOT_FOUND, "Type de convention non trouvé");
         }
-        CentreGestion centreGestionEtab = conventionService.getCentreGestionEtab();
         ConventionFormationDto inscription = new ConventionFormationDto();
         inscription.setAnnee(etudiant.getAnnee());
         inscription.setEtapeInscription(etapeInscription);
-        inscription.setCentreGestion(conventionService.getCentreGestion(centreGestionEtab, etudiant.getCodeComposante(), etudiant.getCodeEtape(), etudiant.getVersionEtape()));
+        inscription.setCentreGestion(centreGestion);
         inscription.setTypeConvention(typeConvention);
 
         ConventionFormDto conventionFormDto = new ConventionFormDto();
