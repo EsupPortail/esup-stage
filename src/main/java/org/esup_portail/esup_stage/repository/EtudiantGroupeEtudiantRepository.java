@@ -16,6 +16,18 @@ public class EtudiantGroupeEtudiantRepository extends PaginationRepository<Etudi
     public EtudiantGroupeEtudiantRepository(EntityManager em) {
         super(em, EtudiantGroupeEtudiant.class, "ege");
         this.predicateWhitelist.add("etudiant.nom_etudiant.prenom");
+        this.predicateWhitelist.add("etudiant.prenom_etudiant.nom");
+        this.predicateWhitelist.add("etudiant.numEtudiant");
+        this.predicateWhitelist.add("etudiant.mail");
+        for(String convention : new String[]{"convention", "mergedConvention"}) {
+            this.predicateWhitelist.add(convention+".ufr.libelle");
+            this.predicateWhitelist.add(convention+".etape.libelle");
+            this.predicateWhitelist.add(convention+".annee_etudiant.nom_etudiant.prenom");
+        }
+        this.predicateWhitelist.add("mergedConvention.structure.raisonSociale");
+        this.predicateWhitelist.add("mergedConvention.service.nom");
+        this.predicateWhitelist.add("mergedConvention.contact.nom_"+"mergedConvention.contact.prenom");
+        this.predicateWhitelist.add("mergedConvention.structure.mail");
     }
 
 

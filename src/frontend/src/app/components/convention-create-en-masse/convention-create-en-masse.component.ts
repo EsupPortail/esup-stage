@@ -46,6 +46,15 @@ export class ConventionCreateEnMasseComponent implements OnInit {
 
   ngOnInit(): void {
     this.sharedData.columns = ['select','numEtudiant','nom', 'prenom', 'mail', 'ufr.libelle', 'etape.libelle', 'annee'];
+    this.sharedData.sortColumns = {
+      'numEtudiant': 'etudiant.numEtudiant',
+      'nom': 'etudiant.nom_etudiant.prenom',
+      'prenom': 'etudiant.prenom_etudiant.nom',
+      'mail': 'etudiant.mail',
+      'ufr.libelle': 'convention.ufr.libelle',
+      'etape.libelle': 'convention.etape.libelle',
+      'annee': 'convention.annee_etudiant.nom_etudiant.prenom',
+    };
     this.sharedData.filters = [
       { id: 'etudiant.nom', libelle: 'Nom'},
       { id: 'etudiant.prenom', libelle: 'Prénom'},

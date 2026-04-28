@@ -6,7 +6,7 @@ import { TypeConventionService } from "../../../services/type-convention.service
 import { AuthService } from "../../../services/auth.service";
 import { Router } from "@angular/router";
 import { MessageService } from "../../../services/message.service";
-import { SortDirection } from "@angular/material/sort";
+import {Sort, SortDirection} from "@angular/material/sort";
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { CadreStageModalComponent } from './cadre-stage-modal/cadre-stage-modal.component';
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
@@ -63,6 +63,13 @@ export class CadreStageComponent implements OnInit, OnChanges {
         typeConventionGroupe: this.groupeEtudiant.convention.typeConvention.id,
       });
     }
+  }
+
+  sorting(appTable: TableComponent|undefined, event: Sort): void {
+    appTable?.sorting({
+      active: this.sharedData.sortColumns[event.active]??event.active,
+      direction: event.direction
+    });
   }
 
   edit(row: any): void{
