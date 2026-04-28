@@ -16,7 +16,7 @@ public class ContactPermissionEvaluator implements PermissionEvaluator {
 
     @Override
     public boolean hasPermission(Utilisateur user, MethodSignature sig, Object[] args) {
-        if (!UtilisateurHelper.isRole(user, Role.ETU)) return false;
+        if (!UtilisateurHelper.isRole(user, Role.ETU)) return true;
         Integer id = (Integer) args[0];
         return contactJpaRepository.isOwner(id, user.getId());
     }

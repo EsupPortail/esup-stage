@@ -132,6 +132,7 @@ import {CentreSignatureElectroniqueComponent} from "./components/centre-gestion/
 import { SignatureElectroniqueViewComponent } from './components/convention/signature-electronique/signature-electronique-view/signature-electronique-view.component';
 import {ColorPickerComponent, ColorPickerDirective} from "ngx-color-picker";
 import {ConfirmDeleteDialogComponent} from "./components/gestion-etab-accueil/confirm-delete-dialog/confirm-delete-dialog.component";
+import {CentreProprietaireDialogComponent} from "./components/gestion-etab-accueil/centre-proprietaire-dialog/centre-proprietaire-dialog.component";
 import {ColumnSelectorComponent} from "./components/table/column-selector/column-selector.component";
 import {TachePlanifieComponent} from "./components/admin/taches-planifiees/tache-planifie.component";
 import {MatSlideToggle} from "@angular/material/slide-toggle";
@@ -267,6 +268,7 @@ export class FrenchDateProvider extends NativeDateAdapter {
     CentreSignatureElectroniqueComponent,
     SignatureElectroniqueViewComponent,
     ConfirmDeleteDialogComponent,
+    CentreProprietaireDialogComponent,
     ColumnSelectorComponent,
     TachePlanifieComponent,
     ConfirmEnvoieMailComponent,

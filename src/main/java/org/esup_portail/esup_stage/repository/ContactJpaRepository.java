@@ -12,8 +12,32 @@ public interface ContactJpaRepository extends JpaRepository<Contact, Integer> {
     @Query("SELECT c FROM Contact c WHERE c.id = :id")
     Contact findById(@Param("id") int id);
 
+    @Query("""
+            SELECT c
+            FROM Contact c
+            WHERE c.id = :id
+              AND (
+                c.centreGestion.id IN :centreIds
+                OR c.centreGestion.codeConfidentialite IS NULL
+                OR c.centreGestion.codeConfidentialite.code = '0'
+              )
+            """)
+    Contact findVisibleByIdForCentres(@Param("id") int id, @Param("centreIds") List<Integer> centreIds);
+
     @Query("SELECT c FROM Contact c WHERE c.service.id = :idService")
     List<Contact> findByService(@Param("idService") int idService);
+
+    @Query("""
+            SELECT c
+            FROM Contact c
+            WHERE c.service.id = :idService
+              AND (
+                c.centreGestion.id IN :centreIds
+                OR c.centreGestion.codeConfidentialite IS NULL
+                OR c.centreGestion.codeConfidentialite.code = '0'
+              )
+            """)
+    List<Contact> findByServiceVisibleForCentres(@Param("idService") int idService, @Param("centreIds") List<Integer> centreIds);
 
     @Query("SELECT COUNT(c.id) FROM Contact c WHERE c.service.id = :idService")
     Long countContactWithService(@Param("idService") int idService);

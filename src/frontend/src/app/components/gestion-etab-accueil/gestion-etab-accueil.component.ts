@@ -20,6 +20,9 @@ import { ContactFormComponent } from './contact-form/contact-form.component';
 import {HistoriqueEtabAccueilComponent} from "./historique-etab-accueil/historique-etab-accueil.component";
 import {CalendrierComponent} from "../convention/stage/calendrier/calendrier.component";
 import {ConfirmDeleteDialogComponent} from "./confirm-delete-dialog/confirm-delete-dialog.component";
+import {CentreGestionService} from "../../services/centre-gestion.service";
+import {firstValueFrom} from "rxjs";
+import {CentreProprietaireDialogComponent} from "./centre-proprietaire-dialog/centre-proprietaire-dialog.component";
 
 @Component({
     selector: 'app-gestion-etab-accueil',
@@ -58,6 +61,7 @@ export class GestionEtabAccueilComponent implements OnInit {
 
   isSireneAcitve: boolean = false;
   nbMinResultats: number = 0;
+  gestionnaireCentres: any[] = [];
 
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
   @ViewChild('tabs') tabs: MatTabGroup | undefined;
@@ -74,6 +78,7 @@ export class GestionEtabAccueilComponent implements OnInit {
     private statutJuridiqueService: StatutJuridiqueService,
     private messageService: MessageService,
     private authService: AuthService,
+    private centreGestionService: CentreGestionService,
     public matDialog: MatDialog,
 
   ) { }
@@ -121,6 +126,7 @@ export class GestionEtabAccueilComponent implements OnInit {
       this.isSireneAcitve = response.isApiSireneActive;
       this.nbMinResultats = response.nombreResultats;
     });
+    this.loadGestionnaireCentres();
   }
 
   tabChanged(event: MatTabChangeEvent): void {
@@ -133,7 +139,14 @@ export class GestionEtabAccueilComponent implements OnInit {
     return this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.CREATION]});
   }
 
-  create(row: any): void {
+  async create(row: any): Promise<void> {
+    const ownerCentreId = await this.resolveOwnerCentreForCreation();
+    if (ownerCentreId === null) {
+      return;
+    }
+    if (ownerCentreId !== undefined) {
+      row.idCentreGestionProprietaire = ownerCentreId;
+    }
     this.structureService.getOrCreate(row).subscribe((response: any) => {
       this.appTable?.update();
     });
@@ -361,5 +374,57 @@ export class GestionEtabAccueilComponent implements OnInit {
 
   canCreateServiceOrContact(): boolean {
     return this.authService.checkRights({fonction: AppFonction.SERVICE_CONTACT_ACC, droits: [Droit.CREATION]});
+  }
+
+  displayStructureField(row: any, field: string): string {
+    if (row?.confidentialiteCoordonnees && row?.[field] == null) {
+      return 'Confidentiel';
+    }
+    return row?.[field] ?? '';
+  }
+
+  private loadGestionnaireCentres(): void {
+    if (!this.authService.isGestionnaire()) {
+      return;
+    }
+    const uid = this.authService.userConnected?.uid;
+    if (!uid) {
+      return;
+    }
+    const filters = JSON.stringify({
+      personnel: { value: uid, specific: true }
+    });
+    this.centreGestionService.getPaginated(1, 0, 'nomCentre', 'asc', filters).subscribe((response: any) => {
+      this.gestionnaireCentres = response?.data ?? [];
+    });
+  }
+
+  private async resolveOwnerCentreForCreation(): Promise<number | undefined | null> {
+    if (!this.authService.isGestionnaire()) {
+      return undefined;
+    }
+    if (this.gestionnaireCentres.length === 0) {
+      const uid = this.authService.userConnected?.uid;
+      if (uid) {
+        const filters = JSON.stringify({
+          personnel: { value: uid, specific: true }
+        });
+        const response: any = await firstValueFrom(this.centreGestionService.getPaginated(1, 0, 'nomCentre', 'asc', filters));
+        this.gestionnaireCentres = response?.data ?? [];
+      }
+    }
+    if (this.gestionnaireCentres.length === 1) {
+      return this.gestionnaireCentres[0].id;
+    }
+    if (this.gestionnaireCentres.length === 0) {
+      return undefined;
+    }
+
+    const dialogRef = this.matDialog.open(CentreProprietaireDialogComponent, {
+      width: '560px',
+      data: { centres: this.gestionnaireCentres }
+    });
+    const selectedCentreId = await firstValueFrom(dialogRef.afterClosed());
+    return selectedCentreId ?? null;
   }
 }

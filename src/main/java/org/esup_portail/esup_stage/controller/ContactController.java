@@ -3,6 +3,7 @@ package org.esup_portail.esup_stage.controller;
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.esup_portail.esup_stage.dto.ContactDto;
 import org.esup_portail.esup_stage.dto.ContactFormDto;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.dto.view.Views;
@@ -24,7 +25,6 @@ import org.esup_portail.esup_stage.repository.ServiceJpaRepository;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.security.permission.ContactPermissionEvaluator;
-import org.esup_portail.esup_stage.service.ConfidentialiteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -51,18 +51,15 @@ public class ContactController {
     @Autowired
     CiviliteJpaRepository civiliteJpaRepository;
 
-    @Autowired
-    ConfidentialiteService confidentialiteService;
-
     @JsonView(Views.List.class)
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.LECTURE})
-    public PaginatedResponse<Contact> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
+    public PaginatedResponse<ContactDto> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
-        PaginatedResponse<Contact> paginatedResponse = new PaginatedResponse<>();
+        PaginatedResponse<ContactDto> paginatedResponse = new PaginatedResponse<>();
         if (!isGestionnaire(utilisateur)) {
             paginatedResponse.setTotal(contactRepository.count(filters));
-            paginatedResponse.setData(contactRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
+            paginatedResponse.setData(toDtoList(contactRepository.findPaginated(page, perPage, predicate, sortOrder, filters), shouldHideSensitiveContactFields(utilisateur)));
             return paginatedResponse;
         }
 
@@ -73,54 +70,52 @@ public class ContactController {
 
         List<Integer> centreIds = centresDemandeur.stream().map(CentreGestion::getId).toList();
         paginatedResponse.setTotal(contactRepository.countVisibleForCentres(centreIds, filters));
-        paginatedResponse.setData(contactRepository.findPaginatedVisibleForCentres(centreIds, page, perPage, predicate, sortOrder, filters));
+        paginatedResponse.setData(toDtoList(contactRepository.findPaginatedVisibleForCentres(centreIds, page, perPage, predicate, sortOrder, filters), false));
         return paginatedResponse;
     }
 
     @GetMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.LECTURE})
-    public Contact getById(@PathVariable("id") int id) {
-        Contact contact = contactJpaRepository.findById(id);
+    public ContactDto getById(@PathVariable("id") int id) {
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
+        Contact contact;
+        if (isGestionnaire(utilisateur)) {
+            List<CentreGestion> centresDemandeur = getCurrentGestionnaireCentres(utilisateur);
+            if (centresDemandeur.isEmpty()) {
+                throw new AppException(HttpStatus.FORBIDDEN, "Impossible de determiner le centre de gestion du gestionnaire");
+            }
+            List<Integer> centreIds = centresDemandeur.stream().map(CentreGestion::getId).toList();
+            contact = contactJpaRepository.findVisibleByIdForCentres(id, centreIds);
+        } else {
+            contact = contactJpaRepository.findById(id);
+        }
         if (contact == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Contact non trouvé");
         }
 
-        assertCanViewContact(contact, ServiceContext.getUtilisateur());
-        return contact;
+        return ContactDto.from(contact, shouldHideSensitiveContactFields(utilisateur));
     }
 
     @GetMapping("/getByService/{id}")
     @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.LECTURE})
-    public List<Contact> getByService(@PathVariable("id") int id, @RequestParam(value = "idCentreGestion", required = false, defaultValue = "-1") Integer idCentreGestion) {
+    public List<ContactDto> getByService(@PathVariable("id") int id, @RequestParam(value = "idCentreGestion", required = false, defaultValue = "-1") Integer idCentreGestion) {
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
+        if (isGestionnaire(utilisateur)) {
+            List<CentreGestion> centresDemandeur = getCurrentGestionnaireCentres(utilisateur);
+            if (centresDemandeur.isEmpty()) {
+                throw new AppException(HttpStatus.FORBIDDEN, "Impossible de determiner le centre de gestion du gestionnaire");
+            }
+            List<Integer> centreIds = centresDemandeur.stream().map(CentreGestion::getId).toList();
+            return toDtoList(contactJpaRepository.findByServiceVisibleForCentres(id, centreIds), false);
+        }
+
         List<Contact> contacts = contactJpaRepository.findByService(id);
 
         if (contacts == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Contact non trouvé");
         }
 
-        Utilisateur utilisateur = ServiceContext.getUtilisateur();
-        /*
-        * Si idCentreGestion != -1, on est dans le cadre d'une convention
-        *
-        * Dans ce cas pour les utilisateurs gestionnaires, on ne renvoit que les contacts qui sont rattachés au centre de la convention ou
-          qui ont un centre de gestion avec code confidentialité égale à 0 ou au centre de gestion de type établissement
-        * */
-        if (!isGestionnaire(utilisateur)) {
-            return contacts;
-        }
-
-        List<CentreGestion> centresDemandeur = getCurrentGestionnaireCentres(utilisateur);
-        if (centresDemandeur.isEmpty()) {
-            throw new AppException(HttpStatus.FORBIDDEN, "Impossible de determiner le centre de gestion du gestionnaire");
-        }
-
-        List<Contact> filteredContacts = new ArrayList<>();
-        for (Contact contact : contacts) {
-            if (canViewContact(centresDemandeur, contact)) {
-                filteredContacts.add(contact);
-            }
-        }
-        return filteredContacts;
+        return toDtoList(contacts, shouldHideSensitiveContactFields(utilisateur));
     }
 
     @PostMapping
@@ -203,23 +198,15 @@ public class ContactController {
         return centreGestionJpaRepository.findAllByGestionnaireUid(utilisateur.getUid());
     }
 
-    private boolean canViewContact(List<CentreGestion> centresDemandeur, Contact contact) {
-        for (CentreGestion centreDemandeur : centresDemandeur) {
-            if (confidentialiteService.canViewContact(centreDemandeur, contact)) {
-                return true;
-            }
-        }
-        return false;
+    private List<ContactDto> toDtoList(List<Contact> contacts, boolean hideSensitiveFields) {
+        return contacts.stream()
+                .map(contact -> ContactDto.from(contact, hideSensitiveFields))
+                .toList();
     }
 
-    private void assertCanViewContact(Contact contact, Utilisateur utilisateur) {
-        if (!isGestionnaire(utilisateur)) {
-            return;
-        }
-        List<CentreGestion> centresDemandeur = getCurrentGestionnaireCentres(utilisateur);
-        if (centresDemandeur.isEmpty() || !canViewContact(centresDemandeur, contact)) {
-            throw new AppException(HttpStatus.FORBIDDEN, "Vous n'avez pas acces a ce contact");
-        }
+    private boolean shouldHideSensitiveContactFields(Utilisateur utilisateur) {
+        return UtilisateurHelper.isRole(utilisateur, Role.ETU)
+                || UtilisateurHelper.isRole(utilisateur, Role.ENS);
     }
 
 }

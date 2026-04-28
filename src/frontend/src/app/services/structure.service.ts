@@ -32,6 +32,11 @@ export class StructureService implements PaginatedService, AutocompleteService {
   updateConfidentialite(id: number, data: ConfidentialiteStructure): Observable<any> {
     return this.http.patch(`${environment.apiUrl}/structures/${id}/confidentialite`, data);
   }
+
+  updateCentreGestionProprietaire(id: number, idCentreGestionProprietaire: number): Observable<any> {
+    return this.http.patch(`${environment.apiUrl}/structures/${id}/centre-proprietaire`, { idCentreGestionProprietaire });
+  }
+
   create(data: any): Observable<any> {
     return this.http.post(`${environment.apiUrl}/structures`, data);
   }
