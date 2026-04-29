@@ -24,7 +24,7 @@ public class LdapController {
     LdapService ldapService;
 
     @PostMapping("/etudiants")
-    @Secure(forbiddenEtu = true)
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE},forbiddenEtu = true)
     public List<LdapUser> getLdapUsers(@RequestBody LdapSearchDto ldapSearchDto) {
         if (ldapSearchDto.getCodEtu() == null && ldapSearchDto.getNom() == null && ldapSearchDto.getPrenom() == null && ldapSearchDto.getMail() == null && ldapSearchDto.getPrimaryAffiliation() == null &&
                 ldapSearchDto.getAffiliation() == null && ldapSearchDto.getSupannEntiteAffectation() == null && ldapSearchDto.getSupannEtuEtape() == null && ldapSearchDto.getSupannEtuAnneeInscription() == null) {
@@ -34,7 +34,7 @@ public class LdapController {
     }
 
     @PostMapping("/enseignants")
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public List<LdapUser> getLdapEnseignants(@RequestBody LdapSearchDto ldapSearchDto) {
         if (ldapSearchDto.getId() == null && ldapSearchDto.getNom() == null && ldapSearchDto.getPrenom() == null && ldapSearchDto.getMail() == null && ldapSearchDto.getPrimaryAffiliation() == null && ldapSearchDto.getAffiliation() == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Veuillez renseigner au moins un des filtres");
@@ -43,7 +43,7 @@ public class LdapController {
     }
 
     @PostMapping("/search-by-name")
-    @Secure(forbiddenEtu = true)
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE},forbiddenEtu = true)
     public List<LdapUser> searchLdapUserByName(@RequestBody LdapSearchDto ldapSearchDto) {
         if (ldapSearchDto.getNom() == null && ldapSearchDto.getPrenom() == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Veuillez renseigner au moins un des filtres");
