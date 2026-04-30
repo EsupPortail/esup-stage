@@ -46,14 +46,15 @@ public class EtudiantController {
 
     Logger logger = Logger.getLogger(String.valueOf(EtudiantController.class));
 
-    @GetMapping
-    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.CREATION},forbiddenEtu = true)
-    public PaginatedResponse<Etudiant> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
-        PaginatedResponse<Etudiant> paginatedResponse = new PaginatedResponse<>();
-        paginatedResponse.setTotal(etudiantRepository.count(filters));
-        paginatedResponse.setData(etudiantRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
-        return paginatedResponse;
-    }
+    // Cette route n'est jamais utilisée
+    // @GetMapping
+    // @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.CREATION},forbiddenEtu = true)
+    // public PaginatedResponse<Etudiant> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
+    //     PaginatedResponse<Etudiant> paginatedResponse = new PaginatedResponse<>();
+    //     paginatedResponse.setTotal(etudiantRepository.count(filters));
+    //     paginatedResponse.setData(etudiantRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
+    //     return paginatedResponse;
+    // }
 
     @GetMapping("/{numEtudiant}/apogee-data")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.CREATION})
