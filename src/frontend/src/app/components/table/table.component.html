@@ -154,7 +154,7 @@
     </tr>
 
     <tr mat-header-row *matHeaderRowDef="columns"></tr>
-    <tr mat-row *matRowDef="let row; columns: columns;" [class.selected]="isSelected(row)" [class.alerte]="setAlerte && (row.depasseDelaiValidation ?? false)"></tr>
+    <tr mat-row *matRowDef="let row; columns: columns;" [class.selected]="isSelected(row)" [class.alerte]="isAlerte(row)"></tr>
   </table>
 </div>
 
