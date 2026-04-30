@@ -8,6 +8,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
+import org.esup_portail.esup_stage.dto.CentreGestionListDto;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
@@ -94,27 +95,27 @@ public class CentreGestionController {
 
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
-    public PaginatedResponse<CentreGestion> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
+    public PaginatedResponse<CentreGestionListDto> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         JSONObject jsonFilters = new JSONObject(filters);
         Map<String, Object> map = new HashMap<>();
         map.put("type", "boolean");
         map.put("value", true);
         jsonFilters.put("validationCreation", map);
         filters = jsonFilters.toString();
-        PaginatedResponse<CentreGestion> paginatedResponse = new PaginatedResponse<>();
+        PaginatedResponse<CentreGestionListDto> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(centreGestionRepository.count(filters));
-        paginatedResponse.setData(centreGestionRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
+        List<CentreGestion> centresGestion = centreGestionRepository.findPaginated(page, perPage, predicate, sortOrder, filters);
 
         if (predicate.equals("personnels")) {
             Utilisateur currentUser = ServiceContext.getUtilisateur();
-            List<CentreGestion> list = paginatedResponse.getData();
             Predicate<PersonnelCentreGestion> condition = value -> value.getUidPersonnel().equals(currentUser.getUid());
-            list.sort((a, b) -> Boolean.compare(a.getPersonnels().stream().anyMatch(condition), b.getPersonnels().stream().anyMatch(condition)));
+            centresGestion.sort((a, b) -> Boolean.compare(a.getPersonnels().stream().anyMatch(condition), b.getPersonnels().stream().anyMatch(condition)));
 
             if (sortOrder.equals("asc"))
-                Collections.reverse(list);
+                Collections.reverse(centresGestion);
         }
 
+        paginatedResponse.setData(centresGestion.stream().map(CentreGestionListDto::from).collect(Collectors.toList()));
         return paginatedResponse;
     }
 
