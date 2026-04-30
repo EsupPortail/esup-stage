@@ -124,7 +124,7 @@ public class EtudiantController {
     }
 
     @PostMapping("/diplome-etape")
-    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE},forbiddenEtu = true)
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.CREATION},forbiddenEtu = true)
     public EtudiantDiplomeEtapeResponse[] getLdapUsers(@RequestBody EtudiantDiplomeEtapeSearch search) {
         EtudiantDiplomeEtapeResponse[] etudiants = apogeeService.getEtudiantsParDiplomeEtape(search);
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
