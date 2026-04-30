@@ -6,6 +6,10 @@ import org.esup_portail.esup_stage.dto.LdapSearchDto;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
+import org.esup_portail.esup_stage.model.Role;
+import org.esup_portail.esup_stage.model.Utilisateur;
+import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
+import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.ldap.LdapService;
 import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
@@ -45,6 +49,10 @@ public class LdapController {
     @PostMapping("/search-by-name")
     @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.CREATION},forbiddenEtu = true)
     public List<LdapUser> searchLdapUserByName(@RequestBody LdapSearchDto ldapSearchDto) {
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
+        if(!UtilisateurHelper.isRole(utilisateur, Role.RESP_GES) && !UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
+            throw new AppException(HttpStatus.FORBIDDEN, "Accès interdit");
+        }
         if (ldapSearchDto.getNom() == null && ldapSearchDto.getPrenom() == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Veuillez renseigner au moins un des filtres");
         }

@@ -113,7 +113,7 @@ public class EtudiantController {
             logger.warning("Accès refusé à l'utilisateur " + utilisateur.getLogin() + " pour les données sur le login étudiant " + login);
             throw new AppException(HttpStatus.FORBIDDEN, "Accès refusé");
         }
-        if(utilisateur != null && UtilisateurHelper.isRole(utilisateur, Role.ETU) && etudiantSecurityService.isNotOwnResourceLogin(utilisateur,login)){
+        if(UtilisateurHelper.isRole(utilisateur, Role.ETU) && etudiantSecurityService.isNotOwnResourceLogin(utilisateur,login)){
             logger.warning("Accès refusé à l'utilisateur " + utilisateur.getLogin() + " pour les données sur le login étudiant " + login);
             throw new AppException(HttpStatus.FORBIDDEN, "Accès refusé");
         }
