@@ -31,14 +31,15 @@ public class EnseignantController {
     @Autowired
     AppConfigService appConfigService;
 
-    @GetMapping
-    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
-    public PaginatedResponse<Enseignant> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
-        PaginatedResponse<Enseignant> paginatedResponse = new PaginatedResponse<>();
-        paginatedResponse.setTotal(enseignantRepository.count(filters));
-        paginatedResponse.setData(enseignantRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
-        return paginatedResponse;
-    }
+    // Cette route n'est jamais utilisée
+    // @GetMapping
+    // @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
+    // public PaginatedResponse<Enseignant> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
+    //     PaginatedResponse<Enseignant> paginatedResponse = new PaginatedResponse<>();
+    //     paginatedResponse.setTotal(enseignantRepository.count(filters));
+    //     paginatedResponse.setData(enseignantRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
+    //     return paginatedResponse;
+    // }
 
     @GetMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})

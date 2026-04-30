@@ -41,15 +41,16 @@ public class ContactController {
     @Autowired
     CiviliteJpaRepository civiliteJpaRepository;
 
-    @JsonView(Views.List.class)
-    @GetMapping
-    @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.LECTURE})
-    public PaginatedResponse<Contact> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
-        PaginatedResponse<Contact> paginatedResponse = new PaginatedResponse<>();
-        paginatedResponse.setTotal(contactRepository.count(filters));
-        paginatedResponse.setData(contactRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
-        return paginatedResponse;
-    }
+    // Cette route n'est jamais utilisée
+    // @JsonView(Views.List.class)
+    // @GetMapping
+    // @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.LECTURE})
+    // public PaginatedResponse<Contact> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
+    //     PaginatedResponse<Contact> paginatedResponse = new PaginatedResponse<>();
+    //     paginatedResponse.setTotal(contactRepository.count(filters));
+    //     paginatedResponse.setData(contactRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
+    //     return paginatedResponse;
+    // }
 
     @GetMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.LECTURE})

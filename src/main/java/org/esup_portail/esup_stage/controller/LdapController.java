@@ -47,7 +47,7 @@ public class LdapController {
     }
 
     @PostMapping("/search-by-name")
-    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE},forbiddenEtu = true)
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.CREATION},forbiddenEtu = true)
     public List<LdapUser> searchLdapUserByName(@RequestBody LdapSearchDto ldapSearchDto) {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
         if(!UtilisateurHelper.isRole(utilisateur, Role.RESP_GES) && !UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
@@ -60,7 +60,7 @@ public class LdapController {
     }
 
     @GetMapping
-    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.CREATION})
     public List<LdapUser> searchLdapUserByLogin(@Valid @RequestParam("login") @Pattern(regexp = "[A-Za-z0-9]+") String login) {
         List<LdapUser> response = new ArrayList<>();
         LdapUser ldapUser = ldapService.searchByLogin(login);
