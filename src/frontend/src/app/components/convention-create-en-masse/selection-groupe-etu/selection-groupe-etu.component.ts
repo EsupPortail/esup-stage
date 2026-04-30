@@ -11,7 +11,7 @@ import { LdapService } from "../../../services/ldap.service";
 import { MessageService } from "../../../services/message.service";
 import {Observable, ReplaySubject, Subject} from 'rxjs';
 import { ConfigService } from "../../../services/config.service";
-import { SortDirection } from "@angular/material/sort";
+import {Sort, SortDirection} from "@angular/material/sort";
 import {FormBuilder, FormControl, FormGroup, ValidationErrors, Validators} from "@angular/forms";
 import {
   EtudiantDiplomeEtapeResponse,
@@ -31,8 +31,8 @@ export class SelectionGroupeEtuComponent implements OnInit, OnChanges {
   groupeEtudiantColumns: string[] = [];
   groupeEtudiantFilters: string[] = [];
   columns: string[] = [];
-  sortColumn = 'prenom';
-  sortDirection: SortDirection = 'desc';
+  sortColumn = 'etudiant.nom_etudiant.prenom';
+  sortDirection: SortDirection = 'asc';
   selectedRemove: any[] = [];
   selectedAdd: EtudiantDiplomeEtapeResponse[] = [];
   etudiants: EtudiantDiplomeEtapeResponse[] = [];
@@ -184,6 +184,13 @@ export class SelectionGroupeEtuComponent implements OnInit, OnChanges {
     this.appTable?.update();
     this.selectedAdd = [];
     this.selectedRemove = [];
+  }
+
+  sorting(appTable: TableComponent|undefined, event: Sort): void {
+    appTable?.sorting({
+      active: this.sharedData.sortColumns[event.active]??event.active,
+      direction: event.direction
+    });
   }
 
   search(): void {

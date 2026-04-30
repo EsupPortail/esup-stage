@@ -82,7 +82,7 @@
         <div class="text-title">Sélection des étudiants du groupe</div>
         <mat-divider class="mb-2"></mat-divider>
         <app-table #tableMail [service]="etudiantGroupeEtudiantService" [columns]="mailColumns" [sortColumn]="mailSortColumn" [filters]="mailFilters" [sortOrder]="mailSortDirection"
-                   matSort [matSortActive]="mailSortColumn" [matSortDirection]="'desc'" (matSortChange)="tableMail ? tableMail.sorting($event) : null"
+                   matSort [matSortActive]="mailSortColumn" [matSortDirection]="'desc'" (matSortChange)="sorting(tableMail,$event)"
                    [noResultText]="'Aucun étudiant trouvé'">
 
           <ng-container matColumnDef="select">
@@ -204,7 +204,7 @@
         <div class="text-title">Sélection des étudiants du groupe</div>
         <mat-divider class="mb-2"></mat-divider>
         <app-table #tableExport [service]="etudiantGroupeEtudiantService" [columns]="exportColumns" [sortColumn]="exportSortColumn" [filters]="mailFilters" [sortOrder]="exportSortDirection"
-                   matSort [matSortActive]="exportSortColumn" [matSortDirection]="'desc'" (matSortChange)="tableExport ? tableExport.sorting($event) : null"
+                   matSort [matSortActive]="exportSortColumn" [matSortDirection]="'desc'" (matSortChange)="sorting(tableExport,$event)"
                    [noResultText]="'Aucun étudiant trouvé'">
 
           <ng-container matColumnDef="select">

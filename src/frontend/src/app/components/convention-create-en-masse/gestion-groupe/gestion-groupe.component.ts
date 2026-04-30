@@ -8,7 +8,7 @@ import { ConventionService } from "../../../services/convention.service";
 import { EtudiantGroupeEtudiantService } from "../../../services/etudiant-groupe-etudiant.service";
 import { TemplateMailGroupeService } from "../../../services/template-mail-groupe.service";
 import { MessageService } from "../../../services/message.service";
-import { SortDirection } from "@angular/material/sort";
+import {Sort, SortDirection} from "@angular/material/sort";
 import { Router } from "@angular/router";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
@@ -35,6 +35,7 @@ export class GestionGroupeComponent implements OnInit {
   exportSortColumn = 'nom';
   exportSortDirection: SortDirection = 'desc';
   exportFilters: any[] = [];
+  sortColumns: {[col:string]: string} = {};
 
   selected: any[] = [];
 
@@ -105,6 +106,20 @@ export class GestionGroupeComponent implements OnInit {
         { id: 'etudiant.numEtudiant', libelle: 'N° étudiant'},
     ];
     this.exportFilters.push({ id: 'groupeEtudiant.id', type: 'int', value: 0, hidden: true, permanent: true });
+
+    this.sortColumns = {
+      'numEtudiant': 'etudiant.numEtudiant',
+      'nom': 'etudiant.nom_etudiant.prenom',
+      'prenom': 'etudiant.prenom_etudiant.nom',
+      'mail': 'etudiant.mail',
+      'ufr.libelle': 'mergedConvention.ufr.libelle',
+      'etape.libelle': 'mergedConvention.etape.libelle',
+      'annee': 'mergedConvention.annee_etudiant.nom_etudiant.prenom',
+      'etab': 'mergedConvention.structure.raisonSociale',
+      'service': 'mergedConvention.service.nom',
+      'contact': 'mergedConvention.contact.nom_mergedConvention.contact.prenom',
+      'mailTuteur': 'mergedConvention.structure.mail',
+    };
 
     this.templateMailGroupeService.getPaginated(1, 0, 'lib', 'asc', "").subscribe((response: any) => {
       this.templates = response.data;
@@ -217,6 +232,13 @@ export class GestionGroupeComponent implements OnInit {
       var blob = new Blob([response as BlobPart], {type: "application/zip"});
       let filename = 'conventions.zip';
       FileSaver.saveAs(blob, filename);
+    });
+  }
+
+  sorting(appTable: TableComponent|undefined, event: Sort): void {
+    appTable?.sorting({
+      active: this.sortColumns[event.active]??event.active,
+      direction: event.direction
     });
   }
 
