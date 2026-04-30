@@ -40,6 +40,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
   centreGestion: any;
   sansElp: boolean = false;
   canEditTypeConvention: boolean = false;
+  private readonly apogeeForbiddenMessage = "Vous n'êtes pas autorisé à récupérer les informations Apogée de cet étudiant car vous n'êtes pas gestionnaire de sa composante ou de son étape. \n  Si cet accès est nécessaire, contactez un administrateur.";
 
   formConvention!: FormGroup;
 
@@ -233,11 +234,6 @@ export class EtudiantComponent implements OnInit, OnChanges {
     this.selectedRow = row;
     this.selectedNumEtudiant = row.codEtu;
 
-    // Ferme le panel de recherche d'étudiant
-    if (this.searchEtudiantPanel) {
-      this.searchEtudiantPanel.expanded = false;
-    }
-
     // Vérifie si la convention existe déjà avec un ID
     if (this.convention && this.convention.id) {
       this.etudiant = this.convention.etudiant;
@@ -295,31 +291,45 @@ export class EtudiantComponent implements OnInit, OnChanges {
 
         // S'assurer que l'inscription est disponible pour l'interface
         this.inscriptions = [inscription];
+
+        // Ferme le panel de recherche d'étudiant
+        if (this.searchEtudiantPanel) {
+          this.searchEtudiantPanel.expanded = false;
+        }
       }
     } else {
       // Pour une nouvelle convention, obtenir les données depuis Apogee
-      this.etudiantService.getApogeeData(row.codEtu).subscribe((response: any) => {
-        this.etudiant = response;
+      this.etudiantService.getApogeeData(row.codEtu, true).subscribe({
+        next: (response: any) => {
+          this.etudiant = response;
 
-        // Remplir le formulaire avec les valeurs de l'étudiant
-        this.formConvention.get('adresseEtudiant')?.setValue(this.convention?.adresseEtudiant || this.etudiant.mainAddress);
-        this.formConvention.get('codePostalEtudiant')?.setValue(this.convention?.codePostalEtudiant || this.etudiant.postalCode);
-        this.formConvention.get('villeEtudiant')?.setValue(this.convention?.villeEtudiant || this.etudiant.town);
-        this.formConvention.get('paysEtudiant')?.setValue(this.convention?.paysEtudiant || this.etudiant.country);
-        this.formConvention.get('telEtudiant')?.setValue(this.convention?.telEtudiant || this.etudiant.phone);
-        this.formConvention.get('telPortableEtudiant')?.setValue(this.convention?.telPortableEtudiant || this.etudiant.portablePhone);
-        this.formConvention.get('courrielPersoEtudiant')?.setValue(this.convention?.courrielPersoEtudiant || this.etudiant.mailPerso);
+          // Remplir le formulaire avec les valeurs de l'étudiant
+          this.formConvention.get('adresseEtudiant')?.setValue(this.convention?.adresseEtudiant || this.etudiant.mainAddress);
+          this.formConvention.get('codePostalEtudiant')?.setValue(this.convention?.codePostalEtudiant || this.etudiant.postalCode);
+          this.formConvention.get('villeEtudiant')?.setValue(this.convention?.villeEtudiant || this.etudiant.town);
+          this.formConvention.get('paysEtudiant')?.setValue(this.convention?.paysEtudiant || this.etudiant.country);
+          this.formConvention.get('telEtudiant')?.setValue(this.convention?.telEtudiant || this.etudiant.phone);
+          this.formConvention.get('telPortableEtudiant')?.setValue(this.convention?.telPortableEtudiant || this.etudiant.portablePhone);
+          this.formConvention.get('courrielPersoEtudiant')?.setValue(this.convention?.courrielPersoEtudiant || this.etudiant.mailPerso);
 
-        this.activatedRoute.params.subscribe((param: any) => {
-          const pathId = param.id;
-          if (pathId === 'create') {
-            this.titleService.title = 'Création d\'une convention pour ' + this.etudiant.nompatro + ' ' + this.etudiant.prenom;
-          }
-        });
+          this.activatedRoute.params.subscribe((param: any) => {
+            const pathId = param.id;
+            if (pathId === 'create') {
+              this.titleService.title = 'Création d\'une convention pour ' + this.etudiant.nompatro + ' ' + this.etudiant.prenom;
+            }
+          });
+
+          this.loadApogeeInscriptions(row.codEtu);
+        },
+        error: (error: any) => this.handleApogeeError(error, true)
       });
+    }
+  }
 
-      // Récupérer les inscriptions
-      this.etudiantService.getApogeeInscriptions(row.codEtu, this.convention ? this.convention.annee : null).subscribe((response: any) => {
+  private loadApogeeInscriptions(codEtu: string): void {
+    // Récupérer les inscriptions
+    this.etudiantService.getApogeeInscriptions(codEtu, this.convention ? this.convention.annee : null, true).subscribe({
+      next: (response: any) => {
         this.inscriptions = response;
         this.inscriptions.sort((a,b) => a.annee < b.annee ? 1 : -1);
         if (this.inscriptions.length === 1) {
@@ -345,8 +355,26 @@ export class EtudiantComponent implements OnInit, OnChanges {
             this.formConvention.get('inscription')?.reset();
           }
         }
-      });
+      },
+      error: (error: any) => this.handleApogeeError(error)
+    });
+  }
+
+  private handleApogeeError(error: any, resetEtudiant: boolean = false): void {
+    if (error?.status === 403) {
+      this.messageService.setAccessDenied(this.apogeeForbiddenMessage);
     }
+
+    if (resetEtudiant) {
+      this.etudiant = undefined;
+      this.selectedRow = undefined;
+      this.selectedNumEtudiant = null;
+    }
+
+    this.inscriptions = [];
+    this.centreGestion = undefined;
+    this.formConvention.get('inscription')?.reset();
+    this.formConvention.get('inscriptionElp')?.reset();
   }
 
   get selectedInscription() {
