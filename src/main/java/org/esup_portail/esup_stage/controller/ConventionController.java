@@ -498,7 +498,7 @@ public class ConventionController {
     }
 
     @DeleteMapping("/brouillon")
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.MODIFICATION})
     public void deleteBrouillon() {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
         Convention brouillon = conventionJpaRepository.findBrouillon(utilisateur.getLogin());
@@ -903,7 +903,7 @@ public class ConventionController {
     }
 
     @GetMapping("/{id}/download-signed-doc")
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.MODIFICATION})
     public ResponseEntity<byte[]> downloadDoc(@PathVariable("id") int id) {
         Convention convention = conventionJpaRepository.findById(id);
         if (convention == null) {
@@ -924,7 +924,7 @@ public class ConventionController {
     }
 
     @PostMapping("/{id}/periodes")
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public Convention updatePeriodes(@PathVariable("id") int id, @RequestBody PeriodesDto periodes) {
         Convention convention = conventionJpaRepository.findById(id);
         if (convention == null) {
@@ -983,6 +983,7 @@ public class ConventionController {
      * @return PDF en byte[] (Content-Type: application/pdf)
      */
     @GetMapping("/preview-pdf/centre-gestion/{id}")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public ResponseEntity<byte[]> generateConventionPreview(@PathVariable("id") int idCentreGestion, @RequestParam(name = "templateId") Integer templateId) {
 
         ByteArrayOutputStream ou = new ByteArrayOutputStream();

@@ -343,7 +343,7 @@ public class AvenantController {
     }
 
     @GetMapping("/{id}/download-signed-doc")
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.LECTURE})
     public ResponseEntity<byte[]> downloadDoc(@PathVariable("id") int id) {
         Avenant avenant = avenantJpaRepository.findById(id);
         if (avenant == null) {
