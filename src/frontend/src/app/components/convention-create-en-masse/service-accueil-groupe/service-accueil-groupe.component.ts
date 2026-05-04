@@ -6,7 +6,7 @@ import { AuthService } from "../../../services/auth.service";
 import { Router } from "@angular/router";
 import { EtudiantGroupeEtudiantService } from "../../../services/etudiant-groupe-etudiant.service";
 import { MessageService } from "../../../services/message.service";
-import { SortDirection } from "@angular/material/sort";
+import {Sort, SortDirection} from "@angular/material/sort";
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import {
   ServiceAccueilGroupeModalComponent
@@ -20,8 +20,8 @@ import {
 export class ServiceAccueilGroupeComponent implements OnInit, OnChanges {
 
   columns: string[] = [];
-  sortColumn = 'prenom';
-  sortDirection: SortDirection = 'desc';
+  sortColumn = 'etudiant.nom_etudiant.prenom';
+  sortDirection: SortDirection = 'asc';
   filters: any[] = [];
   selected: any[] = [];
 
@@ -66,6 +66,13 @@ export class ServiceAccueilGroupeComponent implements OnInit, OnChanges {
       let filter = this.filters.find((f: any) => f.id === 'convention.structure.id');
       if (filter) filter.options = this.structures;
     }
+  }
+
+  sorting(appTable: TableComponent|undefined, event: Sort): void {
+    appTable?.sorting({
+      active: this.sharedData.sortColumns[event.active]??event.active,
+      direction: event.direction
+    });
   }
 
   isSelected(data: any): boolean {
