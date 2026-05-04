@@ -74,10 +74,6 @@ public class EtudiantController {
                 throw new AppException(HttpStatus.FORBIDDEN, "Accès refusé");
             }
         }
-        if(UtilisateurHelper.isRole(utilisateur, Role.ENS)){
-            logger.warning("Accès refusé à l'utilisateur " + utilisateur.getLogin() + " pour les données sur le numero étudiant " + numEtudiant);
-            throw new AppException(HttpStatus.FORBIDDEN, "Accès refusé");
-        }
         return apogeeService.getInfoApogee(numEtudiant, appConfigService.getAnneeUniv());
     }
 
@@ -97,10 +93,6 @@ public class EtudiantController {
                 logger.warning("Accès refusé à l'utilisateur " + utilisateur.getLogin() + " pour les données sur le numero étudiant " + numEtudiant);
                 throw new AppException(HttpStatus.FORBIDDEN, "Accès refusé");
             }
-        }
-        if(UtilisateurHelper.isRole(utilisateur, Role.ENS)){
-            logger.warning("Accès refusé à l'utilisateur " + utilisateur.getLogin() + " pour les données sur le numero étudiant " + numEtudiant);
-            throw new AppException(HttpStatus.FORBIDDEN, "Accès refusé");
         }
         return apogeeService.getInscriptions(utilisateur, numEtudiant, annee);
     }
