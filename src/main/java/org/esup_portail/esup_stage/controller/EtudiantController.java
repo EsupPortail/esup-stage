@@ -1,6 +1,7 @@
 package org.esup_portail.esup_stage.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.esup_portail.esup_stage.dto.ConventionFormationDto;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
@@ -21,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -126,16 +126,15 @@ public class EtudiantController {
 
     @PostMapping("/diplome-etape")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.CREATION},forbiddenEtu = true)
-    public EtudiantDiplomeEtapeResponse[] getLdapUsers(@RequestBody EtudiantDiplomeEtapeSearch search) {
-        EtudiantDiplomeEtapeResponse[] etudiants = apogeeService.getEtudiantsParDiplomeEtape(search);
+    public EtudiantDiplomeEtapeResponse[] getLdapUsers(@Valid @RequestBody EtudiantDiplomeEtapeSearch search) {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
         if (etudiantSecurityService.isGestionnaireOrResponsableGestionnaire(utilisateur)) {
             List<CritereGestion> criteresCentresGestionUtilisateur = etudiantSecurityService.getCriteresCentresGestionUtilisateur(etudiantSecurityService.getIdsCentresGestionUtilisateur(utilisateur));
-            return Arrays.stream(etudiants)
-                    .filter(etudiant -> etudiantSecurityService.isEtudiantDiplomeEtapeInCentreGestionUtilisateur(etudiant, criteresCentresGestionUtilisateur))
-                    .toArray(EtudiantDiplomeEtapeResponse[]::new);
+            if (!etudiantSecurityService.isRechercheDiplomeEtapeInCentreGestionUtilisateur(search, criteresCentresGestionUtilisateur)) {
+                return new EtudiantDiplomeEtapeResponse[0];
+            }
         }
 
-        return etudiants;
+        return apogeeService.getEtudiantsParDiplomeEtape(search);
     }
 }

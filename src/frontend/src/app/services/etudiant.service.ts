@@ -52,6 +52,7 @@ export class EtudiantService implements PaginatedService<Etudiant> {
 }
 export type EtudiantDiplomeEtapeSearch = {
   annee: string;
+  codeComposante: string;
   codeEtape: string;
   versionEtape: string;
   codeDiplome: string;

@@ -7,6 +7,7 @@ import org.esup_portail.esup_stage.repository.CritereGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.PersonnelCentreGestionJpaRepository;
 import org.esup_portail.esup_stage.service.apogee.ApogeeService;
 import org.esup_portail.esup_stage.service.apogee.model.EtudiantDiplomeEtapeResponse;
+import org.esup_portail.esup_stage.service.apogee.model.EtudiantDiplomeEtapeSearch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -98,6 +99,22 @@ public class EtudiantSecurityService {
                         return equalsIgnoreCase(code, etudiant.getCodeComposante());
                     }
                     return equalsIgnoreCase(code, etudiant.getCodeEtape()) && equalsIgnoreCase(version, etudiant.getVersionEtape());
+                });
+    }
+
+    public boolean isRechercheDiplomeEtapeInCentreGestionUtilisateur(EtudiantDiplomeEtapeSearch search, List<CritereGestion> criteresCentresGestionUtilisateur) {
+        if (search == null || criteresCentresGestionUtilisateur == null || criteresCentresGestionUtilisateur.isEmpty()) {
+            return false;
+        }
+
+        return criteresCentresGestionUtilisateur.stream()
+                .anyMatch(critere -> {
+                    String code = critere.getId().getCode();
+                    String version = critere.getId().getCodeVersionEtape();
+                    if (version == null || version.isEmpty()) {
+                        return equalsIgnoreCase(code, search.getCodeComposante());
+                    }
+                    return equalsIgnoreCase(code, search.getCodeEtape()) && equalsIgnoreCase(version, search.getVersionEtape());
                 });
     }
 
