@@ -51,8 +51,8 @@ export class ConventionCreateEnMasseComponent implements OnInit {
       'nom': 'etudiant.nom_etudiant.prenom',
       'prenom': 'etudiant.prenom_etudiant.nom',
       'mail': 'etudiant.mail',
-      'ufr.libelle': 'convention.ufr.libelle',
-      'etape.libelle': 'convention.etape.libelle',
+      'ufr.libelle': 'convention.ufr.libelle_etudiant.nom_etudiant.prenom',
+      'etape.libelle': 'convention.etape.libelle_etudiant.nom_etudiant.prenom',
       'annee': 'convention.annee_etudiant.nom_etudiant.prenom',
     };
     this.sharedData.filters = [
