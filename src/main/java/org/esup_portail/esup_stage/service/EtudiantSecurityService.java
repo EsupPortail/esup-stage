@@ -1,6 +1,7 @@
 package org.esup_portail.esup_stage.service;
 
 import org.esup_portail.esup_stage.dto.ConventionFormationDto;
+import org.esup_portail.esup_stage.dto.LdapSearchDto;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
 import org.esup_portail.esup_stage.repository.CritereGestionJpaRepository;
@@ -8,6 +9,7 @@ import org.esup_portail.esup_stage.repository.PersonnelCentreGestionJpaRepositor
 import org.esup_portail.esup_stage.service.apogee.ApogeeService;
 import org.esup_portail.esup_stage.service.apogee.model.EtudiantDiplomeEtapeResponse;
 import org.esup_portail.esup_stage.service.apogee.model.EtudiantDiplomeEtapeSearch;
+import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -118,7 +120,63 @@ public class EtudiantSecurityService {
                 });
     }
 
+    public boolean isRechercheLdapEtudiantWithCentreGestionCriteria(LdapSearchDto search) {
+        return search != null && hasText(search.getSupannEntiteAffectation());
+    }
+
+    public boolean isRechercheLdapEtudiantInCentreGestionUtilisateur(LdapSearchDto search, List<CritereGestion> criteresCentresGestionUtilisateur) {
+        if (search == null || criteresCentresGestionUtilisateur == null || criteresCentresGestionUtilisateur.isEmpty()) {
+            return false;
+        }
+
+        return criteresCentresGestionUtilisateur.stream()
+                .anyMatch(critere -> {
+                    String code = critere.getId().getCode();
+                    String version = critere.getId().getCodeVersionEtape();
+                    if (version == null || version.isEmpty()) {
+                        return equalsIgnoreCase(code, search.getSupannEntiteAffectation());
+                    }
+                    return false;
+                });
+    }
+
+    public boolean isLdapEtudiantInCentreGestionUtilisateur(Utilisateur utilisateur, LdapUser etudiant, List<Integer> idsCentresGestionUtilisateur, List<CritereGestion> criteresCentresGestionUtilisateur) {
+        if (utilisateur == null || etudiant == null) {
+            return false;
+        }
+
+        if (isLdapEtudiantInCriteresCentresGestionUtilisateur(etudiant, criteresCentresGestionUtilisateur)) {
+            return true;
+        }
+
+        return isEtuInCentreGestionUtilisateur(utilisateur, etudiant.getCodEtu(), idsCentresGestionUtilisateur);
+    }
+
+    private boolean isLdapEtudiantInCriteresCentresGestionUtilisateur(LdapUser etudiant, List<CritereGestion> criteresCentresGestionUtilisateur) {
+        if (criteresCentresGestionUtilisateur == null || criteresCentresGestionUtilisateur.isEmpty()) {
+            return false;
+        }
+
+        return criteresCentresGestionUtilisateur.stream()
+                .anyMatch(critere -> {
+                    String code = critere.getId().getCode();
+                    String version = critere.getId().getCodeVersionEtape();
+                    if (version == null || version.isEmpty()) {
+                        return containsIgnoreCase(etudiant.getSupannEntiteAffectation(), code);
+                    }
+                    return false;
+                });
+    }
+
     private boolean equalsIgnoreCase(String left, String right) {
         return left != null && right != null && left.equalsIgnoreCase(right);
+    }
+
+    private boolean containsIgnoreCase(List<String> values, String expected) {
+        return values != null && expected != null && values.stream().anyMatch(value -> equalsIgnoreCase(value, expected));
+    }
+
+    private boolean hasText(String value) {
+        return value != null && !value.isBlank();
     }
 }

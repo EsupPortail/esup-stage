@@ -11,6 +11,8 @@ import org.esup_portail.esup_stage.model.Utilisateur;
 import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
+import org.esup_portail.esup_stage.model.CritereGestion;
+import org.esup_portail.esup_stage.service.EtudiantSecurityService;
 import org.esup_portail.esup_stage.service.ldap.LdapService;
 import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,9 @@ public class LdapController {
     @Autowired
     LdapService ldapService;
 
+    @Autowired
+    EtudiantSecurityService etudiantSecurityService;
+
     @PostMapping("/etudiants")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.CREATION},forbiddenEtu = true)
     public List<LdapUser> getLdapUsers(@RequestBody LdapSearchDto ldapSearchDto) {
@@ -34,6 +39,20 @@ public class LdapController {
                 ldapSearchDto.getAffiliation() == null && ldapSearchDto.getSupannEntiteAffectation() == null && ldapSearchDto.getSupannEtuEtape() == null && ldapSearchDto.getSupannEtuAnneeInscription() == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Veuillez renseigner au moins un des filtres");
         }
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
+        if (etudiantSecurityService.isGestionnaireOrResponsableGestionnaire(utilisateur)) {
+            List<Integer> idsCentresGestionUtilisateur = etudiantSecurityService.getIdsCentresGestionUtilisateur(utilisateur);
+            List<CritereGestion> criteresCentresGestionUtilisateur = etudiantSecurityService.getCriteresCentresGestionUtilisateur(idsCentresGestionUtilisateur);
+            if (etudiantSecurityService.isRechercheLdapEtudiantWithCentreGestionCriteria(ldapSearchDto)
+                    && !etudiantSecurityService.isRechercheLdapEtudiantInCentreGestionUtilisateur(ldapSearchDto, criteresCentresGestionUtilisateur)) {
+                return List.of();
+            }
+
+            return ldapService.search("/etudiant", ldapSearchDto).stream()
+                    .filter(etudiant -> etudiantSecurityService.isLdapEtudiantInCentreGestionUtilisateur(utilisateur, etudiant, idsCentresGestionUtilisateur, criteresCentresGestionUtilisateur))
+                    .toList();
+        }
+
         return ldapService.search("/etudiant", ldapSearchDto);
     }
 

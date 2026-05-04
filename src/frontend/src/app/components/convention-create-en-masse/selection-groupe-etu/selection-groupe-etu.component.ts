@@ -3,14 +3,9 @@ import { TableComponent } from "../../table/table.component";
 import {GroupeEtudiant, GroupeEtudiantDto, GroupeEtudiantService} from "../../../services/groupe-etudiant.service";
 import { UfrService } from "../../../services/ufr.service";
 import {DiplomeEtape, EtapeService, EtapeV2Apogee} from "../../../services/etape.service";
-import { ConventionService } from "../../../services/convention.service";
 import { EtudiantGroupeEtudiantService } from "../../../services/etudiant-groupe-etudiant.service";
-import { AuthService } from "../../../services/auth.service";
-import { Router } from "@angular/router";
-import { LdapService } from "../../../services/ldap.service";
 import { MessageService } from "../../../services/message.service";
-import {Observable, Subject} from 'rxjs';
-import { ConfigService } from "../../../services/config.service";
+import {Observable} from 'rxjs';
 import { SortDirection } from "@angular/material/sort";
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {
