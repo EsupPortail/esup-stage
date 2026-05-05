@@ -49,7 +49,7 @@ export class ServiceAccueilGroupeComponent implements OnInit, OnChanges {
     this.columns.push('etab');
     this.columns.push('service')
     this.filters = [...this.sharedData.filters];
-    this.filters.push({ id: 'convention.structure.id', libelle: 'Structure d\'accueil', type: 'list', options: [], keyLibelle: 'raisonSociale', keyId: 'id'});
+    this.filters.push({ id: 'convention.structure.id', libelle: 'Structure d\'accueil', type: 'list', options: [], keyLibelle: 'raisonSociale', keyId: 'id', specific: true});
     this.initStructureFilter();
   }
 

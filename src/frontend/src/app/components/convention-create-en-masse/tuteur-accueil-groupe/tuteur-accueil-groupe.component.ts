@@ -49,7 +49,7 @@ export class TuteurAccueilGroupeComponent implements OnInit, OnChanges {
     this.columns.push('service')
     this.columns.push('contact')
     this.filters = [...this.sharedData.filters];
-    this.filters.push({ id: 'convention.structure.id', libelle: 'Structure d\'accueil', type: 'list', options: [], keyLibelle: 'raisonSociale', keyId: 'id'});
+    this.filters.push({ id: 'convention.structure.id', libelle: 'Structure d\'accueil', type: 'list', options: [], keyLibelle: 'raisonSociale', keyId: 'id', specific: true});
     this.filters.push({ id: 'convention.service.id', libelle: 'Service d\'accueil', type: 'list', options: [], keyLibelle: 'nom', keyId: 'id'});
     this.initStructureFilter();
     this.initServiceFilters();
