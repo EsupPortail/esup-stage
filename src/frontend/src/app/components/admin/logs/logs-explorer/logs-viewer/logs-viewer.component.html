@@ -71,21 +71,29 @@
 
     <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
 
-    <div class="log-content" [class.wrap]="wrapLines">
-      <div
-        *ngFor="let line of filteredLines; trackBy: trackLine"
-        class="log-line"
-        [class]="'log-line log-line--' + levelClass(line.level)"
-      >
-        <span *ngIf="showLineNumbers" class="line-number">{{ line.lineNumber }}</span>
-        <span class="line-content" [innerHTML]="line.highlighted"></span>
-      </div>
+    <app-logs-display
+      [lines]="coreLines"
+      [loading]="loading"
+      [showLineNumbers]="showLineNumbers"
+      [wrapLines]="wrapLines"
+      [page]="page"
+      [totalPages]="totalPages"
+      [totalLines]="totalLines"
+      [pageSize]="currentPageSize"
+      (pageChange)="$event === 'prev' ? prevPage() : nextPage()">
 
-      <div *ngIf="filteredLines.length === 0 && !loading" class="empty-log">
-        <mat-icon>search_off</mat-icon>
-        <span>Aucune ligne ne correspond aux filtres</span>
+      <!-- Le bouton export reste spécifique à ce composant -->
+      <div slot="actions">
+        <button mat-icon-button type="button"
+                [matMenuTriggerFor]="exportMenu" matTooltip="Exporter ce fichier">
+          <mat-icon>download</mat-icon>
+        </button>
+        <mat-menu #exportMenu="matMenu">
+          <button mat-menu-item (click)="export('original')">...</button>
+          <button mat-menu-item (click)="export('csv')">...</button>
+        </mat-menu>
       </div>
-    </div>
+    </app-logs-display>
 
     <div class="pagination-bar" *ngIf="!loading && totalLines > 0">
       <button mat-stroked-button type="button" (click)="prevPage()" [disabled]="page === 0">

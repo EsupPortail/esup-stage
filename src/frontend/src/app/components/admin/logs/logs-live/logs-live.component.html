@@ -193,14 +193,9 @@
     <span>Max mémoire: {{ maxLines }}</span>
   </div>
 
-  <div #logsViewport class="logs-viewer" (scroll)="onLogScroll()">
-    <div *ngIf="displayedLines.length === 0" class="empty-state">
-      Aucune ligne à afficher.
-    </div>
-    <div *ngFor="let line of displayedLines; trackBy: trackByLineId"
-         class="log-line"
-         [ngClass]="levelClass(line.level)">
-      {{ line.text }}
-    </div>
-  </div>
+  <app-logs-display
+    [lines]="coreLines"
+    (scrolled)="onLogScroll()"
+    (filterChange)="onCoreFilterChange($event)">
+  </app-logs-display>
 </section>

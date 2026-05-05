@@ -1,0 +1,64 @@
+<div class="log-viewer-core">
+  <div class="log-viewer-core__topbar">
+    <div class="level-filters level-filters--inline">
+      <span class="filter-label">Niveaux :</span>
+      <button *ngFor="let level of levels" type="button"
+              class="level-chip"
+              [class]="'level-chip ' + level.toLowerCase()"
+              [class.inactive]="levelFilter.length > 0 && !levelFilter.includes(level)"
+              (click)="toggleLevelFilter(level)">
+        {{ level }}
+      </button>
+      <button type="button" class="level-chip all"
+              *ngIf="levelFilter.length > 0"
+              (click)="clearAllLevels()">
+        Tout afficher
+      </button>
+    </div>
+
+    <div class="log-viewer-core__controls">
+      <mat-form-field appearance="outline" class="log-search-field">
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput [(ngModel)]="searchText" (ngModelChange)="onSearchChange()"
+               placeholder="Rechercher..."/>
+        <button mat-icon-button matSuffix type="button" *ngIf="searchText" (click)="clearSearch()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <!-- Slot pour actions spécifiques au parent (bouton export, etc.) -->
+      <ng-content select="[slot=actions]"></ng-content>
+    </div>
+  </div>
+
+  <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+
+  <div class="log-content" [class.wrap]="wrapLines" (scroll)="scrolled.emit()">
+    <div *ngFor="let line of filteredLines; trackBy: trackLine"
+         class="log-line"
+         [class]="'log-line ' + levelClass(line.level)">
+      <span *ngIf="showLineNumbers" class="line-number">{{ line.lineNumber }}</span>
+      <span class="line-content" [innerHTML]="line.highlighted"></span>
+    </div>
+
+    <div *ngIf="filteredLines.length === 0 && !loading" class="empty-log">
+      <mat-icon>search_off</mat-icon>
+      <span>Aucune ligne ne correspond aux filtres</span>
+    </div>
+  </div>
+
+  <!-- Pagination (affichée seulement si le parent en a besoin) -->
+  <div class="pagination-bar" *ngIf="hasPagination() && !loading && totalLines! > 0">
+    <button mat-stroked-button type="button"
+            (click)="pageChange.emit('prev')" [disabled]="page === 0">
+      <mat-icon>chevron_left</mat-icon><span>Précédent</span>
+    </button>
+    <span class="pagination-bar__label">
+      Page {{ page! + 1 }} / {{ totalPages }} — {{ pageSize | number }} lignes par page
+    </span>
+    <button mat-stroked-button type="button"
+            (click)="pageChange.emit('next')" [disabled]="page! + 1 >= totalPages!">
+      <span>Suivant</span><mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+</div>

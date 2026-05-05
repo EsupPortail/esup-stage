@@ -4,6 +4,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 import { FileElement } from '../../../../../models/file-element.model';
 import { FileExplorerService } from '../../../../../services/file-explorer.service';
+import {CoreLogLine} from "../../logs-display/logs-display.component";
 
 interface LogLine {
   lineNumber: number;
@@ -58,20 +59,6 @@ export class LogsViewerComponent implements OnInit, OnChanges {
 
   get totalPages(): number {
     return Math.max(1, Math.ceil(this.totalLines / this.currentPageSize));
-  }
-
-  get pageStartLine(): number {
-    if (this.totalLines === 0) {
-      return 0;
-    }
-    return this.page * this.currentPageSize + 1;
-  }
-
-  get pageEndLine(): number {
-    if (this.totalLines === 0) {
-      return 0;
-    }
-    return Math.min(this.pageStartLine + this.lines.length - 1, this.totalLines);
   }
 
   ngOnInit(): void {
@@ -156,10 +143,6 @@ export class LogsViewerComponent implements OnInit, OnChanges {
     }));
   }
 
-  levelClass(level: string): string {
-    return level.toLowerCase();
-  }
-
   export(format: 'original' | 'csv'): void {
     const file = this.currentFile;
     if (!file) {
@@ -184,10 +167,6 @@ export class LogsViewerComponent implements OnInit, OnChanges {
       this.levelFilter.push(level);
     }
     this.applyFilters();
-  }
-
-  trackLine(index: number, line: LogLine): number {
-    return line.lineNumber || index;
   }
 
   private resetViewer(): void {
@@ -259,5 +238,15 @@ export class LogsViewerComponent implements OnInit, OnChanges {
 
   private escapeRegex(text: string): string {
     return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  get coreLines(): CoreLogLine[] {
+    return this.lines.map(l => ({
+      id: l.lineNumber,
+      lineNumber: l.lineNumber,
+      level: l.level,
+      text: l.raw,
+      highlighted: l.highlighted
+    }));
   }
 }

@@ -12,6 +12,7 @@ import {FlatTreeControl} from "@angular/cdk/tree";
 import {DisplayedLogLine} from "../../../../models/displayed-log-line.model";
 import {Subscription} from "rxjs";
 import {AuthService} from "../../../../services/auth.service";
+import {CoreLogLine} from "../logs-display/logs-display.component";
 
 
 @Component({
@@ -373,5 +374,17 @@ export class LogsLiveComponent implements OnInit, AfterViewInit, OnDestroy{
       const vp = this.logsViewport?.nativeElement;
       if (vp && this.autoScroll) vp.scrollTop = vp.scrollHeight;
     });
+  }
+
+  get coreLines(): CoreLogLine[] {
+    return this.displayedLines.map(l => ({
+      id: l.id,
+      level: l.level,
+      text: l.text
+    }));
+  }
+
+  onCoreFilterChange(_: { levels: string[]; search: string }): void {
+    // Optionnel : synchroniser les états si besoin
   }
 }
