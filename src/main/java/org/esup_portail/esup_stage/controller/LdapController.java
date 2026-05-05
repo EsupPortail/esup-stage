@@ -66,12 +66,8 @@ public class LdapController {
     }
 
     @PostMapping("/search-by-name")
-    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.CREATION},forbiddenEtu = true)
+    @Secure(fonctions = {AppFonctionEnum.CREATION_EN_MASSE_CONVENTION,AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.CREATION,DroitEnum.MODIFICATION},forbiddenEtu = true)
     public List<LdapUser> searchLdapUserByName(@RequestBody LdapSearchDto ldapSearchDto) {
-        Utilisateur utilisateur = ServiceContext.getUtilisateur();
-        if(!UtilisateurHelper.isRole(utilisateur, Role.RESP_GES) && !UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
-            throw new AppException(HttpStatus.FORBIDDEN, "Accès interdit");
-        }
         if (ldapSearchDto.getNom() == null && ldapSearchDto.getPrenom() == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Veuillez renseigner au moins un des filtres");
         }
