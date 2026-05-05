@@ -282,6 +282,7 @@ public class SignatureService {
                 count++;
             }catch(Exception e){
                 logger.error("Une erreur est survenue lors du traitement de la convention {} : {}",id,e);
+                throw e;
             }
 
         }

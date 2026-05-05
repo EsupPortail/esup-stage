@@ -32,7 +32,7 @@ public class PaysController {
     ConventionJpaRepository conventionJpaRepository;
 
     @GetMapping
-    @Secure()
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<PaysDto> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         PaginatedResponse<Pays> paginatedResponsePays = new PaginatedResponse<>();
         PaginatedResponse<PaysDto> paginatedResponsePaysDto = new PaginatedResponse<>();

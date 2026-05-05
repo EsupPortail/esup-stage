@@ -8,6 +8,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
+
 @Repository
 public interface PersonnelCentreGestionJpaRepository extends JpaRepository<PersonnelCentreGestion, Integer> {
 
@@ -20,4 +22,6 @@ public interface PersonnelCentreGestionJpaRepository extends JpaRepository<Perso
     @Modifying
     @Query("DELETE FROM PersonnelCentreGestion p WHERE p.centreGestion.id = :id")
     void deletePersonnelsByCentreId(@Param("id") int id);
+
+    Collection<PersonnelCentreGestion> findByUidPersonnel(String uid);
 }

@@ -40,7 +40,7 @@ public class EffectifController {
     ContenuJpaRepository contenuJpaRepository;
 
     @GetMapping
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public List<Effectif> getAll(@RequestParam(value = "actif", required = false) boolean onlyActif) {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
         if (onlyActif || UtilisateurHelper.isRole(utilisateur, Role.ETU)) {

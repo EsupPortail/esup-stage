@@ -3,6 +3,7 @@ package org.esup_portail.esup_stage.controller;
 import jakarta.servlet.http.HttpServletResponse;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.dto.PersonneDto;
+import org.esup_portail.esup_stage.dto.UtilisateurDto;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
@@ -11,7 +12,6 @@ import org.esup_portail.esup_stage.model.Utilisateur;
 import org.esup_portail.esup_stage.repository.RoleJpaRepository;
 import org.esup_portail.esup_stage.repository.UtilisateurJpaRepository;
 import org.esup_portail.esup_stage.repository.UtilisateurRepository;
-import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.CacheControl;
@@ -40,8 +40,8 @@ public class UtilisateurController {
     RoleJpaRepository roleJpaRepository;
 
     @GetMapping("/connected")
-    @Secure
-    public ResponseEntity<Utilisateur> getUserConnected(Authentication authentication) {
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
+    public ResponseEntity<UtilisateurDto> getUserConnected(Authentication authentication) {
         try{
             String login = ((UserDetails) authentication.getPrincipal()).getUsername();
             Utilisateur u = utilisateurJpaRepository.findOneByLogin(login);
@@ -50,7 +50,7 @@ public class UtilisateurController {
                     .cacheControl(CacheControl.noStore().mustRevalidate())
                     .header("Pragma", "no-cache")
                     .header("Expires", "0")
-                    .body(u);
+                    .body(UtilisateurDto.from(u));
 
         }catch (Exception e){
             throw new AppException(HttpStatus.UNAUTHORIZED, "Utilisateur non authentifié");
@@ -59,16 +59,19 @@ public class UtilisateurController {
 
     @GetMapping("/{login}")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
-    public Utilisateur findOneByLogin(@PathVariable("login") String login) {
-        return utilisateurJpaRepository.findOneByLogin(login);
+    public UtilisateurDto findOneByLogin(@PathVariable("login") String login) {
+        return UtilisateurDto.from(utilisateurJpaRepository.findOneByLogin(login));
     }
 
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
-    public PaginatedResponse<Utilisateur> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
-        PaginatedResponse<Utilisateur> paginatedResponse = new PaginatedResponse<>();
+    public PaginatedResponse<UtilisateurDto> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
+        PaginatedResponse<UtilisateurDto> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(utilisateurRepository.count(filters));
-        paginatedResponse.setData(utilisateurRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
+        paginatedResponse.setData(utilisateurRepository.findPaginated(page, perPage, predicate, sortOrder, filters)
+                .stream()
+                .map(UtilisateurDto::from)
+                .toList());
         return paginatedResponse;
     }
 
@@ -88,7 +91,7 @@ public class UtilisateurController {
 
     @PutMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.MODIFICATION})
-    public Utilisateur update(@PathVariable("id") int id, @RequestBody Utilisateur requestUtilisateur) {
+    public UtilisateurDto update(@PathVariable("id") int id, @RequestBody Utilisateur requestUtilisateur) {
         Utilisateur utilisateur = utilisateurJpaRepository.findById(id);
         if (utilisateur == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Utilisateur non trouvé");
@@ -104,12 +107,12 @@ public class UtilisateurController {
             utilisateur.setActif(requestUtilisateur.getActif());
         }
         utilisateur = utilisateurJpaRepository.saveAndFlush(utilisateur);
-        return utilisateur;
+        return UtilisateurDto.from(utilisateur);
     }
 
     @PostMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.CREATION})
-    public Utilisateur create(@RequestBody Utilisateur requestUtilisateur) {
+    public UtilisateurDto create(@RequestBody Utilisateur requestUtilisateur) {
         Utilisateur utilisateur = utilisateurJpaRepository.findOneByLogin(requestUtilisateur.getLogin());
         if (utilisateur != null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Utilisateur déjà existant");
@@ -123,7 +126,7 @@ public class UtilisateurController {
         }
         requestUtilisateur.setRoles(dbRoles);
         requestUtilisateur = utilisateurJpaRepository.saveAndFlush(requestUtilisateur);
-        return requestUtilisateur;
+        return UtilisateurDto.from(requestUtilisateur);
     }
 
     @GetMapping("/personne/{login}")

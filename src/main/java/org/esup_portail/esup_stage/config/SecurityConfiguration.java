@@ -5,6 +5,7 @@ import org.apereo.cas.client.session.SingleSignOutFilter;
 import org.apereo.cas.client.validation.Cas20ServiceTicketValidator;
 import org.apereo.cas.client.validation.TicketValidator;
 import org.apereo.cas.client.validation.json.Cas30JsonServiceTicketValidator;
+import org.esup_portail.esup_stage.config.filters.CsrfCookieFilter;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.config.properties.CasProperties;
 import org.esup_portail.esup_stage.security.userdetails.CasUserDetailsServiceImpl;
@@ -26,8 +27,15 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Collections;
+import java.util.List;
 
 @Configuration
 @Order(3)
@@ -119,7 +127,13 @@ public class SecurityConfiguration {
                 .addFilter(casAuthenticationFilter())  // Ajouter le filtre d'authentification CAS
                 .addFilterBefore(singleSignOutFilter(), CasAuthenticationFilter.class)  // Ajouter le filtre de déconnexion avant le filtre CAS
                 .addFilterBefore(logoutFilter(), LogoutFilter.class)  // Ajouter le filtre de déconnexion
-                .csrf(AbstractHttpConfigurer::disable);  // Désactiver CSRF
+                .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
+                .csrf(csrf -> csrf
+                    // Utilise un cookie accessible en JS (non HttpOnly)
+                    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                    // Spring 6+ : nécessaire pour forcer la génération du cookie
+                    .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
+        );
 
         return http.build();
     }
@@ -129,5 +143,18 @@ public class SecurityConfiguration {
         return (request, response, accessDeniedException) -> {
             response.sendRedirect("/error-401");
         };
+    }
+
+    /** Configuration CORS pour autoriser les requêtes depuis le frontend Angular en DEV */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("http://localhost:4200"));
+        config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true); // indispensable pour que les cookies passent
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 }

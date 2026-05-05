@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from "rxjs";
 import { environment } from "../../environments/environment";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 import {PaginatedResponse, PaginatedService} from "./paginated.service";
 import { catchError, shareReplay } from "rxjs/operators";
 
@@ -22,23 +22,32 @@ export class EtudiantService implements PaginatedService<Etudiant> {
     return this.http.get(environment.apiUrl + `/etudiants/export/${format}`, {params: {headers, predicate, sortOrder, filters}, responseType: 'blob'});
   }
 
-  getApogeeData(numEtudiant: string): Observable<any> {
-    return this.http.get(`${environment.apiUrl}/etudiants/${numEtudiant}/apogee-data`);
+  getApogeeData(numEtudiant: string, handleForbiddenLocally: boolean = false): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/etudiants/${numEtudiant}/apogee-data`, {
+      headers: this.getApogeeForbiddenHeaders(handleForbiddenLocally),
+    });
   }
 
-  getApogeeInscriptions(numEtudiant: string, annee: string): Observable<any> {
+  getApogeeInscriptions(numEtudiant: string, annee: string, handleForbiddenLocally: boolean = false): Observable<any> {
     const a = annee ? annee.split('/')[0] : '';
-    return this.http.get(`${environment.apiUrl}/etudiants/${numEtudiant}/apogee-inscriptions`, {params: {annee: a ?? null} });
+    return this.http.get(`${environment.apiUrl}/etudiants/${numEtudiant}/apogee-inscriptions`, {
+      params: {annee: a ?? null},
+      headers: this.getApogeeForbiddenHeaders(handleForbiddenLocally),
+    });
   }
 
-  getCachedApogeeInscriptions(numEtudiant: string, annee: string): Observable<any> {
-    const cacheKey = `${numEtudiant}-${annee ? annee.split('/')[0] : ''}`;
+  private getApogeeForbiddenHeaders(handleForbiddenLocally: boolean): HttpHeaders | undefined {
+    return handleForbiddenLocally ? new HttpHeaders({'X-Handle-Apogee-Forbidden-Locally': 'true'}) : undefined;
+  }
+
+  getCachedApogeeInscriptions(numEtudiant: string, annee: string, handleForbiddenLocally: boolean = false): Observable<any> {
+    const cacheKey = `${numEtudiant}-${annee ? annee.split('/')[0] : ''}-${handleForbiddenLocally}`;
     const cachedRequest = this.apogeeInscriptionsCache.get(cacheKey);
     if (cachedRequest) {
       return cachedRequest;
     }
 
-    const request$ = this.getApogeeInscriptions(numEtudiant, annee).pipe(
+    const request$ = this.getApogeeInscriptions(numEtudiant, annee, handleForbiddenLocally).pipe(
       catchError((error) => {
         this.apogeeInscriptionsCache.delete(cacheKey);
         return throwError(() => error);
@@ -65,6 +74,7 @@ export class EtudiantService implements PaginatedService<Etudiant> {
 }
 export type EtudiantDiplomeEtapeSearch = {
   annee: string;
+  codeComposante: string;
   codeEtape: string;
   versionEtape: string;
   codeDiplome: string;

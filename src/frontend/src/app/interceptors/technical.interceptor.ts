@@ -16,6 +16,10 @@ export class TechnicalInterceptor implements HttpInterceptor {
   constructor(private tokenService: TokenService, private messageService: MessageService, private loaderService: LoaderService) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+    const handleApogeeForbiddenLocally = request.headers.has('X-Handle-Apogee-Forbidden-Locally');
+    const requestToHandle = handleApogeeForbiddenLocally
+      ? request.clone({headers: request.headers.delete('X-Handle-Apogee-Forbidden-Locally')})
+      : request;
     const inputs = ['input', 'select', 'button', 'textarea'];
     if (document.activeElement instanceof HTMLElement && inputs.indexOf(document.activeElement.tagName.toLowerCase()) > -1) {
       this.currentActiveElement = document.activeElement;
@@ -25,9 +29,9 @@ export class TechnicalInterceptor implements HttpInterceptor {
       this.loaderService.show();
     });
     this.nbRequests++;
-    return next.handle(request)
+    return next.handle(requestToHandle)
       .pipe(
-        catchError(error => this.handleError(error))
+        catchError(error => this.handleError(error, requestToHandle, handleApogeeForbiddenLocally))
       )
       .pipe(
         finalize(() => {
@@ -46,7 +50,11 @@ export class TechnicalInterceptor implements HttpInterceptor {
     ;
   }
 
-  handleError(error: any): ObservableInput<any> {
+  handleError(error: any, request?: HttpRequest<unknown>, handleApogeeForbiddenLocally: boolean = false): ObservableInput<any> {
+    if (handleApogeeForbiddenLocally && this.isApogeeStudentForbiddenError(error, request)) {
+      throw error;
+    }
+
     if (error.error instanceof Blob) {
       error.error.text().then((data: any) => {
         const message = JSON.parse(data).message;
@@ -78,5 +86,10 @@ export class TechnicalInterceptor implements HttpInterceptor {
       }
     }
     throw error;
+  }
+
+  private isApogeeStudentForbiddenError(error: any, request?: HttpRequest<unknown>): boolean {
+    const url = request?.url || '';
+    return error.status === 403 && (url.includes('/apogee-data') || url.includes('/apogee-inscriptions'));
   }
 }
