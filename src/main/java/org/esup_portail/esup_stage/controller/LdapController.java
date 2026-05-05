@@ -6,7 +6,13 @@ import org.esup_portail.esup_stage.dto.LdapSearchDto;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
+import org.esup_portail.esup_stage.model.Role;
+import org.esup_portail.esup_stage.model.Utilisateur;
+import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
+import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
+import org.esup_portail.esup_stage.model.CritereGestion;
+import org.esup_portail.esup_stage.service.EtudiantSecurityService;
 import org.esup_portail.esup_stage.service.ldap.LdapService;
 import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,18 +29,35 @@ public class LdapController {
     @Autowired
     LdapService ldapService;
 
+    @Autowired
+    EtudiantSecurityService etudiantSecurityService;
+
     @PostMapping("/etudiants")
-    @Secure(forbiddenEtu = true)
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.CREATION},forbiddenEtu = true)
     public List<LdapUser> getLdapUsers(@RequestBody LdapSearchDto ldapSearchDto) {
         if (ldapSearchDto.getCodEtu() == null && ldapSearchDto.getNom() == null && ldapSearchDto.getPrenom() == null && ldapSearchDto.getMail() == null && ldapSearchDto.getPrimaryAffiliation() == null &&
                 ldapSearchDto.getAffiliation() == null && ldapSearchDto.getSupannEntiteAffectation() == null && ldapSearchDto.getSupannEtuEtape() == null && ldapSearchDto.getSupannEtuAnneeInscription() == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Veuillez renseigner au moins un des filtres");
         }
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
+        if (etudiantSecurityService.isGestionnaireOrResponsableGestionnaire(utilisateur)) {
+            List<Integer> idsCentresGestionUtilisateur = etudiantSecurityService.getIdsCentresGestionUtilisateur(utilisateur);
+            List<CritereGestion> criteresCentresGestionUtilisateur = etudiantSecurityService.getCriteresCentresGestionUtilisateur(idsCentresGestionUtilisateur);
+            if (etudiantSecurityService.isRechercheLdapEtudiantWithCentreGestionCriteria(ldapSearchDto)
+                    && !etudiantSecurityService.isRechercheLdapEtudiantInCentreGestionUtilisateur(ldapSearchDto, criteresCentresGestionUtilisateur)) {
+                return List.of();
+            }
+
+            return ldapService.search("/etudiant", ldapSearchDto).stream()
+                    .filter(etudiant -> etudiantSecurityService.isLdapEtudiantInCentreGestionUtilisateur(utilisateur, etudiant, idsCentresGestionUtilisateur, criteresCentresGestionUtilisateur))
+                    .toList();
+        }
+
         return ldapService.search("/etudiant", ldapSearchDto);
     }
 
     @PostMapping("/enseignants")
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.CREATION})
     public List<LdapUser> getLdapEnseignants(@RequestBody LdapSearchDto ldapSearchDto) {
         if (ldapSearchDto.getId() == null && ldapSearchDto.getNom() == null && ldapSearchDto.getPrenom() == null && ldapSearchDto.getMail() == null && ldapSearchDto.getPrimaryAffiliation() == null && ldapSearchDto.getAffiliation() == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Veuillez renseigner au moins un des filtres");
@@ -43,7 +66,7 @@ public class LdapController {
     }
 
     @PostMapping("/search-by-name")
-    @Secure(forbiddenEtu = true)
+    @Secure(fonctions = {AppFonctionEnum.CREATION_EN_MASSE_CONVENTION,AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.CREATION,DroitEnum.MODIFICATION},forbiddenEtu = true)
     public List<LdapUser> searchLdapUserByName(@RequestBody LdapSearchDto ldapSearchDto) {
         if (ldapSearchDto.getNom() == null && ldapSearchDto.getPrenom() == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Veuillez renseigner au moins un des filtres");
@@ -52,7 +75,7 @@ public class LdapController {
     }
 
     @GetMapping
-    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.CREATION})
     public List<LdapUser> searchLdapUserByLogin(@Valid @RequestParam("login") @Pattern(regexp = "[A-Za-z0-9]+") String login) {
         List<LdapUser> response = new ArrayList<>();
         LdapUser ldapUser = ldapService.searchByLogin(login);

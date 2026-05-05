@@ -1,19 +1,19 @@
 package org.esup_portail.esup_stage.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.esup_portail.esup_stage.dto.ConventionFormationDto;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
-import org.esup_portail.esup_stage.model.Etudiant;
-import org.esup_portail.esup_stage.model.Role;
-import org.esup_portail.esup_stage.model.Utilisateur;
+import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
 import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
+import org.esup_portail.esup_stage.service.EtudiantSecurityService;
 import org.esup_portail.esup_stage.service.apogee.ApogeeService;
 import org.esup_portail.esup_stage.service.apogee.model.EtudiantDiplomeEtapeResponse;
 import org.esup_portail.esup_stage.service.apogee.model.EtudiantDiplomeEtapeSearch;
@@ -41,28 +41,38 @@ public class EtudiantController {
     @Autowired
     EtudiantJpaRepository etudiantJpaRepository;
 
+    @Autowired
+    EtudiantSecurityService etudiantSecurityService;
+
     Logger logger = Logger.getLogger(String.valueOf(EtudiantController.class));
 
-    @GetMapping
-    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.CREATION},forbiddenEtu = true)
-    public PaginatedResponse<Etudiant> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
-        PaginatedResponse<Etudiant> paginatedResponse = new PaginatedResponse<>();
-        paginatedResponse.setTotal(etudiantRepository.count(filters));
-        paginatedResponse.setData(etudiantRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
-        return paginatedResponse;
-    }
+    // Cette route n'est jamais utilisée
+    // @GetMapping
+    // @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.CREATION},forbiddenEtu = true)
+    // public PaginatedResponse<Etudiant> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
+    //     PaginatedResponse<Etudiant> paginatedResponse = new PaginatedResponse<>();
+    //     paginatedResponse.setTotal(etudiantRepository.count(filters));
+    //     paginatedResponse.setData(etudiantRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
+    //     return paginatedResponse;
+    // }
 
     @GetMapping("/{numEtudiant}/apogee-data")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.CREATION})
     public EtudiantRef getApogeeData(@PathVariable("numEtudiant") String numEtudiant) {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
-        if(utilisateur != null && UtilisateurHelper.isRole(utilisateur, Role.ETU) && isNotOwnResource(utilisateur,numEtudiant)){
+        if(utilisateur != null && UtilisateurHelper.isRole(utilisateur, Role.ETU) && etudiantSecurityService.isNotOwnResource(utilisateur,numEtudiant)){
             logger.warning("Accès refusé à l'utilisateur " + utilisateur.getLogin() + " pour les données sur le numero étudiant " + numEtudiant);
             throw new AppException(HttpStatus.FORBIDDEN, "Accès refusé");
         }
         Etudiant etudiant = etudiantRepository.findByNumEtudiant(numEtudiant);
         if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && (etudiant == null || !utilisateur.getUid().equals(etudiant.getIdentEtudiant()))) {
             throw new AppException(HttpStatus.NOT_FOUND, "Étudiant non trouvé");
+        }
+        if(etudiantSecurityService.isGestionnaireOrResponsableGestionnaire(utilisateur)){
+            if(!etudiantSecurityService.isEtuInCentreGestionUtilisateur(utilisateur,numEtudiant)){
+                logger.warning("Accès refusé à l'utilisateur " + utilisateur.getLogin() + " pour les données sur le numero étudiant " + numEtudiant);
+                throw new AppException(HttpStatus.FORBIDDEN, "Accès refusé");
+            }
         }
         return apogeeService.getInfoApogee(numEtudiant, appConfigService.getAnneeUniv());
     }
@@ -71,21 +81,31 @@ public class EtudiantController {
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.CREATION})
     public List<ConventionFormationDto> getFormationInscriptions(@PathVariable("numEtudiant") String numEtudiant, @RequestParam(name = "annee", required = false) String annee) {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
-        if(utilisateur != null && UtilisateurHelper.isRole(utilisateur, Role.ETU) && isNotOwnResource(utilisateur,numEtudiant)){
+        if(utilisateur != null && UtilisateurHelper.isRole(utilisateur, Role.ETU) && etudiantSecurityService.isNotOwnResource(utilisateur,numEtudiant)){
             logger.warning("Accès refusé à l'utilisateur " + utilisateur.getLogin() + " pour les données sur le numero étudiant " + numEtudiant);
             throw new AppException(HttpStatus.FORBIDDEN, "Accès refusé");
         }
         if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !numEtudiant.equals(utilisateur.getNumEtudiant())) {
             throw new AppException(HttpStatus.NOT_FOUND, "Étudiant non trouvé");
         }
+        if(etudiantSecurityService.isGestionnaireOrResponsableGestionnaire(utilisateur)){
+            if(!etudiantSecurityService.isEtuInCentreGestionUtilisateur(utilisateur,numEtudiant)){
+                logger.warning("Accès refusé à l'utilisateur " + utilisateur.getLogin() + " pour les données sur le numero étudiant " + numEtudiant);
+                throw new AppException(HttpStatus.FORBIDDEN, "Accès refusé");
+            }
+        }
         return apogeeService.getInscriptions(utilisateur, numEtudiant, annee);
     }
 
     @GetMapping("/by-login/{login}")
-    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.CREATION})
     public Etudiant getByLogin(@PathVariable("login") String login) {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
-        if(utilisateur != null && UtilisateurHelper.isRole(utilisateur, Role.ETU) && isNotOwnResourceLogin(utilisateur,login)){
+        if(UtilisateurHelper.isRole(utilisateur, Role.GES) || UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)||UtilisateurHelper.isRole(utilisateur, Role.ENS)){
+            logger.warning("Accès refusé à l'utilisateur " + utilisateur.getLogin() + " pour les données sur le login étudiant " + login);
+            throw new AppException(HttpStatus.FORBIDDEN, "Accès refusé");
+        }
+        if(UtilisateurHelper.isRole(utilisateur, Role.ETU) && etudiantSecurityService.isNotOwnResourceLogin(utilisateur,login)){
             logger.warning("Accès refusé à l'utilisateur " + utilisateur.getLogin() + " pour les données sur le login étudiant " + login);
             throw new AppException(HttpStatus.FORBIDDEN, "Accès refusé");
         }
@@ -97,16 +117,16 @@ public class EtudiantController {
     }
 
     @PostMapping("/diplome-etape")
-    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE},forbiddenEtu = true)
-    public EtudiantDiplomeEtapeResponse[] getLdapUsers(@RequestBody EtudiantDiplomeEtapeSearch search) {
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.CREATION},forbiddenEtu = true)
+    public EtudiantDiplomeEtapeResponse[] getLdapUsers(@Valid @RequestBody EtudiantDiplomeEtapeSearch search) {
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
+        if (etudiantSecurityService.isGestionnaireOrResponsableGestionnaire(utilisateur)) {
+            List<CritereGestion> criteresCentresGestionUtilisateur = etudiantSecurityService.getCriteresCentresGestionUtilisateur(etudiantSecurityService.getIdsCentresGestionUtilisateur(utilisateur));
+            if (!etudiantSecurityService.isRechercheDiplomeEtapeInCentreGestionUtilisateur(search, criteresCentresGestionUtilisateur)) {
+                return new EtudiantDiplomeEtapeResponse[0];
+            }
+        }
+
         return apogeeService.getEtudiantsParDiplomeEtape(search);
-    }
-
-    private boolean isNotOwnResource(Utilisateur utilisateur, String numEtudiant) {
-        return utilisateur.getNumEtudiant() == null || !utilisateur.getNumEtudiant().equals(numEtudiant);
-    }
-
-    private boolean isNotOwnResourceLogin(Utilisateur utilisateur, String login) {
-        return utilisateur.getNumEtudiant() == null || !utilisateur.getLogin().equals(login);
     }
 }

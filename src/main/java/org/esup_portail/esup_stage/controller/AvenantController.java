@@ -74,7 +74,7 @@ public class AvenantController {
 
     @GetMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.LECTURE})
-    public Avenant getById(@PathVariable("id") int id) {
+    public AvenantResponseDto getById(@PathVariable("id") int id) {
         Avenant avenant = avenantJpaRepository.findById(id);
         if (avenant == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvée");
@@ -84,12 +84,12 @@ public class AvenantController {
         if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getUid().equals(avenant.getConvention().getEtudiant().getIdentEtudiant())) {
             throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvée");
         }
-        return avenant;
+        return AvenantResponseDto.from(avenant);
     }
 
     @GetMapping("/getByConvention/{id}")
     @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.LECTURE})
-    public List<Avenant> getByConvention(@PathVariable("id") int id) {
+    public List<AvenantResponseDto> getByConvention(@PathVariable("id") int id) {
         // Pour les étudiants, on vérifie que c'est bien un avenant d'une de ses convention
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
         if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
@@ -102,12 +102,12 @@ public class AvenantController {
         if (avenant == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvée");
         }
-        return avenant;
+        return avenant.stream().map(AvenantResponseDto::from).toList();
     }
 
     @GetMapping("/validate/{id}")
     @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.VALIDATION})
-    public Avenant validate(@PathVariable("id") int id) {
+    public AvenantResponseDto validate(@PathVariable("id") int id) {
         Avenant avenant = avenantJpaRepository.findById(id);
         if (avenant == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvée");
@@ -125,24 +125,24 @@ public class AvenantController {
         boolean sendMailRespGestionnaire = configAlerteMailDto.getAlerteRespGestionnaire().isValidationAvenant();
         conventionService.sendValidationMail(avenant.getConvention(), avenant, utilisateur, TemplateMail.CODE_AVENANT_VALIDATION, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
 
-        return avenant;
+        return AvenantResponseDto.from(avenant);
     }
 
     @GetMapping("/validate/cancel/{id}")
     @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.VALIDATION})
-    public Avenant cancelValidation(@PathVariable("id") int id) {
+    public AvenantResponseDto cancelValidation(@PathVariable("id") int id) {
         Avenant avenant = avenantJpaRepository.findById(id);
         if (avenant == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvée");
         }
         avenant.setValidationAvenant(false);
         avenant.setDateValidation(null);
-        return avenantJpaRepository.saveAndFlush(avenant);
+        return AvenantResponseDto.from(avenantJpaRepository.saveAndFlush(avenant));
     }
 
     @PostMapping
     @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.CREATION})
-    public Avenant create(@Valid @RequestBody AvenantDto avenantDto) {
+    public AvenantResponseDto create(@Valid @RequestBody AvenantDto avenantDto) {
         Avenant avenant = new Avenant();
         setAvenantData(avenant, avenantDto);
         avenant = avenantJpaRepository.saveAndFlush(avenant);
@@ -163,12 +163,12 @@ public class AvenantController {
             boolean sendMailRespGestionnaire = configAlerteMailDto.getAlerteRespGestionnaire().isCreationAvenantGestionnaire();
             conventionService.sendValidationMail(avenant.getConvention(), avenant, utilisateur, TemplateMail.CODE_GES_CREA_AVENANT, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
         }
-        return avenant;
+        return AvenantResponseDto.from(avenant);
     }
 
     @PutMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.MODIFICATION})
-    public Avenant update(@PathVariable("id") int id, @Valid @RequestBody AvenantDto avenantDto) {
+    public AvenantResponseDto update(@PathVariable("id") int id, @Valid @RequestBody AvenantDto avenantDto) {
         Avenant avenant = avenantJpaRepository.findById(id);
         if (avenant == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvé");
@@ -192,7 +192,7 @@ public class AvenantController {
             boolean sendMailRespGestionnaire = configAlerteMailDto.getAlerteRespGestionnaire().isModificationAvenantGestionnaire();
             conventionService.sendValidationMail(avenant.getConvention(), avenant, utilisateur, TemplateMail.CODE_GES_MODIF_AVENANT, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
         }
-        return avenant;
+        return AvenantResponseDto.from(avenant);
     }
 
     @DeleteMapping("/{id}")
@@ -330,7 +330,7 @@ public class AvenantController {
 
     @PostMapping("/{id}/update-signature-electronique-info")
     @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.VALIDATION})
-    public Avenant updateSignatureElectroniqueInfo(@PathVariable("id") int id) {
+    public AvenantResponseDto updateSignatureElectroniqueInfo(@PathVariable("id") int id) {
         if (!appConfigService.getConfigGenerale().isSignatureEnabled()) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La signature électronique n'est pas configurée");
         }
@@ -339,16 +339,17 @@ public class AvenantController {
             throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvé");
         }
         signatureService.updateHistorique(avenant);
-        return avenant;
+        return AvenantResponseDto.from(avenant);
     }
 
     @GetMapping("/{id}/download-signed-doc")
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.LECTURE})
     public ResponseEntity<byte[]> downloadDoc(@PathVariable("id") int id) {
         Avenant avenant = avenantJpaRepository.findById(id);
         if (avenant == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvé");
         }
+        conventionService.canViewEditConvention(avenant.getConvention(), ServiceContext.getUtilisateur());
         MetadataDto metadataDto = signatureService.getPublicMetadata(avenant.getConvention(), avenant.getId());
         String filePath = signatureService.getSignatureFilePath(metadataDto.getTitle());
         if (Files.exists(Paths.get(filePath))) {
