@@ -112,7 +112,7 @@ export class EtabAccueilGroupeComponent implements OnInit, OnChanges {
     const modalDialog = this.matDialog.open(EtabAccueilGroupeModalComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse) {
-        this.updateEtab(this.groupeEtudiant.convention.id,dialogResponse)
+        this.updateEtab(this.groupeEtudiant.convention.id,dialogResponse.id)
           .pipe(
             mergeMap(convention => this.getServiceIfSingle(dialogResponse, this.groupeEtudiant.convention.centreGestion.id).pipe(
               mergeMap(service => this.updateService(convention,service)),
@@ -138,7 +138,7 @@ export class EtabAccueilGroupeComponent implements OnInit, OnChanges {
           ).pipe(shareReplay(1));
         from(this.selected).pipe(
           mergeMap((etu) =>
-            this.updateEtab(etu.convention.id, dialogResponse)
+            this.updateEtab(etu.convention.id, dialogResponse.id)
           ),
           mergeMap(convention => service$.pipe(
             mergeMap(service => this.updateService(convention,service)),
@@ -172,8 +172,10 @@ export class EtabAccueilGroupeComponent implements OnInit, OnChanges {
         });
   }
 
-  getServiceIfSingle(etabId: number, centreGestionId: number): Observable<any> {
-    return this.serviceService.getByStructure(etabId, centreGestionId).pipe(
+  getServiceIfSingle(etab: any, centreGestionId: number): Observable<any> {
+    return this.serviceService.getByStructure(etab.id, centreGestionId).pipe(
+      map((response: any) => response.length === 1 ? response : response.filter(
+        (service:any) => service.nom === etab.raisonSociale)),
       filter((response: any) => response.length === 1),
       map((response: any) => response[0])
     );

@@ -24,6 +24,6 @@ export class EtabAccueilGroupeModalComponent implements OnInit {
   }
 
   updateEtab(data: any): void {
-    this.dialogRef.close(data.id);
+    this.dialogRef.close(data);
   }
 }
