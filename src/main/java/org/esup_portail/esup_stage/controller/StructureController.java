@@ -450,6 +450,7 @@ public class StructureController {
     }
 
     @GetMapping("/sirene")
+    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.LECTURE})
     public SireneInfoDto getSireneInfo(){
         SireneInfoDto sireneInfoDto = new SireneInfoDto();
         sireneInfoDto.setIsApiSireneActive(sireneProperties.isApiSireneActive());

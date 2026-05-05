@@ -15,7 +15,12 @@
   h1 {
     color: #ffd046 !important;
   }
+}
 
+.accessDenied {
+  h1 {
+    color: var(--primaryColor) !important;
+  }
 }
 
 h1 {

@@ -19,6 +19,7 @@ import org.esup_portail.esup_stage.enums.FolderEnum;
 import org.esup_portail.esup_stage.enums.TypeSignatureEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
+import org.esup_portail.esup_stage.service.FilenameSanitizerService;
 import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.QuestionEvaluationJpaRepository;
 import org.esup_portail.esup_stage.repository.QuestionSupplementaireJpaRepository;
@@ -64,6 +65,9 @@ public class ImpressionService {
 
     @Autowired
     ConventionService conventionService;
+
+    @Autowired
+    FilenameSanitizerService filenameSanitizerService;
 
     public void generateConventionAvenantPDF(Convention convention, Avenant avenant, ByteArrayOutputStream ou, boolean isRecap) {
         if (convention.getNomenclature() == null) {
@@ -135,7 +139,8 @@ public class ImpressionService {
 
     public void generatePDF(String texte, String filename, ImageData imageData, ByteArrayOutputStream ou, boolean isEvaluation) {
         String tempFilePath = this.getClass().getResource("/templates").getPath();
-        String tempFile = tempFilePath + "temp_" + filename;
+        String safeFilename = filenameSanitizerService.sanitize(filename);
+        String tempFile = tempFilePath + "temp_" + safeFilename;
         FileOutputStream fop = null;
         Date dateGeneration = new Date();
         try {
@@ -494,7 +499,8 @@ public class ImpressionService {
      */
     private void generatePreviewPDFFirstPage(String texte, String filename, ImageData imageData, ByteArrayOutputStream ou) {
         String tempFilePath = this.getClass().getResource("/templates").getPath();
-        String tempFile = tempFilePath + "temp_" + filename;
+        String safeFilename = filenameSanitizerService.sanitize(filename);
+        String tempFile = tempFilePath + "temp_" + safeFilename;
         FileOutputStream fop = null;
         Date dateGeneration = new Date();
 

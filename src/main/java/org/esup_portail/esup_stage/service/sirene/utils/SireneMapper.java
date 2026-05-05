@@ -1,6 +1,7 @@
 package org.esup_portail.esup_stage.service.sirene.utils;
 
 import org.esup_portail.esup_stage.model.Effectif;
+import org.esup_portail.esup_stage.model.Pays;
 import org.esup_portail.esup_stage.model.StatutJuridique;
 import org.esup_portail.esup_stage.model.Structure;
 import org.esup_portail.esup_stage.model.TypeStructure;
@@ -9,8 +10,10 @@ import org.esup_portail.esup_stage.service.sirene.model.SirenResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.text.Normalizer;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -42,15 +45,7 @@ public class SireneMapper {
         structure.setRaisonSociale(determinerRaisonSociale(etablissement));
 
         // Adresse
-        if (etablissement.getAdresse() != null) {
-            String voie = cleanConcat(etablissement.getAdresse().getNumeroVoie(),
-                    etablissement.getAdresse().getTypeVoie(),
-                    etablissement.getAdresse().getVoie());
-            structure.setVoie(voie);
-            structure.setCommune(clean(etablissement.getAdresse().getCommune()));
-            structure.setCodePostal(clean(etablissement.getAdresse().getCodePostal()));
-            structure.setCodeCommune(clean(etablissement.getAdresse().getCodeCommune()));
-        }
+        applyAddressMapping(structure, etablissement.getAdresse(), false);
 
         // NAF
         String naf25 = null;
@@ -88,7 +83,7 @@ public class SireneMapper {
         if (effectif != null) structure.setEffectif(effectif);
 
         // Valeurs par défaut
-        structure.setPays(paysJpaRepository.findById(82)); // France
+        structure.setPays(resolvePays(etablissement.getAdresse()));
         structure.setEstValidee(false);
         structure.setTemEnServStructure(true);
         structure.setTemSiren(true);
@@ -187,34 +182,7 @@ public class SireneMapper {
 
 
         // --- Adresse : ne patcher que les champs présents (ne jamais vider)
-        if (etablissement.getAdresse() != null) {
-            String numeroVoie = etablissement.getAdresse().getNumeroVoie();
-            String typeVoie   = etablissement.getAdresse().getTypeVoie();
-            String voie       = etablissement.getAdresse().getVoie();
-
-            String voieConcat = ((notBlank(numeroVoie) ? numeroVoie + " " : "") +
-                    (notBlank(typeVoie)   ? typeVoie   + " " : "") +
-                    (notBlank(voie)       ? voie             : "")).trim();
-
-            if (notBlank(voieConcat)) {
-                structure.setVoie(voieConcat);
-            }
-
-            String commune = etablissement.getAdresse().getCommune();
-            if (notBlank(commune)) {
-                structure.setCommune(commune);
-            }
-
-            String codePostal = etablissement.getAdresse().getCodePostal();
-            if (notBlank(codePostal)) {
-                structure.setCodePostal(codePostal);
-            }
-
-            String codeCommune = etablissement.getAdresse().getCodeCommune();
-            if (notBlank(codeCommune)) {
-                structure.setCodeCommune(codeCommune);
-            }
-        }
+        applyAddressMapping(structure, etablissement.getAdresse(), true);
 
         // --- NAF : ne remplacer que si on résout le code en base
         if (etablissement.getUniteLegale() != null && notBlank(etablissement.getNaf_n5())) {
@@ -269,6 +237,78 @@ public class SireneMapper {
 
     private static boolean notBlank(String s) {
         return s != null && !s.isBlank();
+    }
+
+    private void applyAddressMapping(Structure structure, SirenResponse.EtablissementSiren.AdresseEtablissement adresse,
+                                     boolean patchOnly) {
+        if (adresse == null) {
+            return;
+        }
+
+        SireneGestionAdressePaysEtranger.MappingResult mapping = SireneGestionAdressePaysEtranger.map(adresse);
+
+        if (!patchOnly || notBlank(mapping.getVoie())) {
+            structure.setVoie(mapping.getVoie());
+        }
+        if (!patchOnly || notBlank(mapping.getCommune())) {
+            structure.setCommune(mapping.getCommune());
+        }
+        if (!patchOnly || notBlank(mapping.getCodePostal())) {
+            structure.setCodePostal(mapping.getCodePostal());
+        }
+        if (!patchOnly || notBlank(mapping.getCodeCommune())) {
+            structure.setCodeCommune(mapping.getCodeCommune());
+        }
+        if (!patchOnly || notBlank(mapping.getLibCedex())) {
+            structure.setLibCedex(mapping.getLibCedex());
+        }
+
+        Pays pays = resolvePays(adresse);
+        if (!patchOnly || pays != null) {
+            structure.setPays(pays);
+        }
+    }
+
+    private Pays resolvePays(SirenResponse.EtablissementSiren.AdresseEtablissement adresse) {
+        if (adresse == null) {
+            return paysJpaRepository.findById(82);
+        }
+
+        String codePaysEtranger = clean(adresse.getCodePaysEtrangerEtablissement());
+        if (notBlank(codePaysEtranger) && codePaysEtranger.matches("\\d+")) {
+            Pays pays = paysJpaRepository.findByCog(Integer.parseInt(codePaysEtranger));
+            if (pays != null) {
+                return pays;
+            }
+        }
+
+        String libellePaysEtranger = clean(adresse.getLibellePaysEtrangerEtablissement());
+        if (notBlank(libellePaysEtranger)) {
+            Pays pays = paysJpaRepository.findByLib(libellePaysEtranger);
+            if (pays != null) {
+                return pays;
+            }
+
+            String normalizedLabel = normalizeCountryLabel(libellePaysEtranger);
+            for (Pays candidate : paysJpaRepository.findAll()) {
+                if (normalizeCountryLabel(candidate.getLib()).equals(normalizedLabel)) {
+                    return candidate;
+                }
+            }
+        }
+
+        return paysJpaRepository.findById(82);
+    }
+
+    private String normalizeCountryLabel(String value) {
+        if (!notBlank(value)) {
+            return "";
+        }
+
+        String normalized = Normalizer.normalize(value, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "");
+
+        return normalized.toUpperCase(Locale.ROOT).trim();
     }
 
     private String clean(String value) {

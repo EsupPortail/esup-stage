@@ -46,13 +46,13 @@ public class AppConfigController {
 
     @JsonView(Views.Etu.class)
     @GetMapping("/generale/etu")
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public ConfigGeneraleDto getConfigGeneraleEtu() {
         return appConfigService.getConfigGenerale();
     }
 
     @GetMapping("/generale")
-    @Secure(forbiddenEtu = true)
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public ConfigGeneraleDto getConfigGenerale() {
         return appConfigService.getConfigGenerale();
     }
@@ -88,7 +88,7 @@ public class AppConfigController {
     }
 
     @GetMapping("/alerte-mail")
-    @Secure(forbiddenEtu = true)
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL,AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE},forbiddenEtu = true)
     public ConfigAlerteMailDto getConfigAlerteMail() {
         return appConfigService.getConfigAlerteMail();
     }
@@ -176,7 +176,7 @@ public class AppConfigController {
     }
 
     @GetMapping("/signature")
-    @Secure(forbiddenEtu = true)
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE}, forbiddenEtu = true)
     public ConfigSignatureDto getSignature() {
         return appConfigService.getConfigSignature();
     }

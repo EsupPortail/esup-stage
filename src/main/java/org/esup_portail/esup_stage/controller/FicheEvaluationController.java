@@ -57,6 +57,7 @@ public class FicheEvaluationController {
     }
 
     @GetMapping("/getByCentreGestion/{id}")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION,AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public FicheEvaluation getByCentreGestion(@PathVariable("id") int id) {
         return evaluationService.getByCentreGestion(id);
     }
@@ -98,6 +99,7 @@ public class FicheEvaluationController {
     }
 
     @GetMapping("/getQuestionsSupplementaires/{id}")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION,AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public List<QuestionSupplementaire> getQuestionsSupplementaires(@PathVariable("id") int id) {
         return questionSupplementaireJpaRepository.findByFicheEvaluation(id);
     }

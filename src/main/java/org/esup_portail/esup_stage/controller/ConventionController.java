@@ -1,6 +1,5 @@
 package org.esup_portail.esup_stage.controller;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.apache.commons.io.FileUtils;
@@ -8,7 +7,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.config.properties.SignatureProperties;
 import org.esup_portail.esup_stage.dto.*;
-import org.esup_portail.esup_stage.dto.view.Views;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.AppSignatureEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
@@ -22,7 +20,6 @@ import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.ConventionService;
 import org.esup_portail.esup_stage.service.MailerService;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
-import org.esup_portail.esup_stage.service.ldap.LdapService;
 import org.esup_portail.esup_stage.service.signature.SignatureService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -116,15 +113,17 @@ public class  ConventionController {
 
 
 
-    @JsonView(Views.List.class)
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
-    public PaginatedResponse<Convention> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
+    public PaginatedResponse<ConventionListDto> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         filters = addUserContextFilter(filters);
 
-        PaginatedResponse<Convention> paginatedResponse = new PaginatedResponse<>();
+        PaginatedResponse<ConventionListDto> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(conventionRepository.count(filters));
-        paginatedResponse.setData(conventionRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
+        paginatedResponse.setData(conventionRepository.findPaginated(page, perPage, predicate, sortOrder, filters)
+                .stream()
+                .map(ConventionListDto::from)
+                .collect(Collectors.toList()));
         return paginatedResponse;
     }
 
@@ -461,6 +460,7 @@ public class  ConventionController {
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
+        conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
         if (convention.getNomEtabRef() == null || convention.getAdresseEtabRef() == null) {
             CentreGestion centreGestionEtab = centreGestionJpaRepository.getCentreEtablissement();
             // Erreur si le centre de type etablissement est null
@@ -485,6 +485,7 @@ public class  ConventionController {
         if (avenant == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvée");
         }
+        conventionService.canViewEditConvention(avenant.getConvention(), ServiceContext.getUtilisateur());
         ByteArrayOutputStream ou = new ByteArrayOutputStream();
         impressionService.generateConventionAvenantPDF(avenant.getConvention(), avenant, ou, false);
 
@@ -493,7 +494,7 @@ public class  ConventionController {
     }
 
     @DeleteMapping("/brouillon")
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.MODIFICATION})
     public void deleteBrouillon() {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
         Convention brouillon = conventionJpaRepository.findBrouillon(utilisateur.getLogin());
@@ -894,12 +895,13 @@ public class  ConventionController {
     }
 
     @GetMapping("/{id}/download-signed-doc")
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public ResponseEntity<byte[]> downloadDoc(@PathVariable("id") int id) {
         Convention convention = conventionJpaRepository.findById(id);
         if (convention == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvé");
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
+        conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
         MetadataDto metadataDto = signatureService.getPublicMetadata(convention);
         String filePath = signatureService.getSignatureFilePath(metadataDto.getTitle());
         if (Files.exists(Paths.get(filePath))) {
@@ -915,7 +917,7 @@ public class  ConventionController {
     }
 
     @PostMapping("/{id}/periodes")
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public Convention updatePeriodes(@PathVariable("id") int id, @RequestBody PeriodesDto periodes) {
         Convention convention = conventionJpaRepository.findById(id);
         if (convention == null) {
@@ -946,23 +948,25 @@ public class  ConventionController {
         convention.setEnseignant(enseignant);
         conventionJpaRepository.saveAndFlush(convention);
 
-        // Envoi de l'alerte de changement d'enseignant référent aux gestionnaires
-        List<PersonnelCentreGestion> personnels = convention.getCentreGestion().getPersonnels();
-        assert personnels != null;
-        for (PersonnelCentreGestion personnel : personnels) {
-            if (mailerService.isAlerteActif(personnel, "CHANGEMENT_ENS")) {
-                mailerService.sendAlerteValidation(personnel.getMail(), convention, null, utilisateur, "CHANGEMENT_ENS");
+        if (convention.isValidationCreation()) {
+            // Envoi de l'alerte de changement d'enseignant référent aux gestionnaires
+            List<PersonnelCentreGestion> personnels = convention.getCentreGestion().getPersonnels();
+            assert personnels != null;
+            for (PersonnelCentreGestion personnel : personnels) {
+                if (mailerService.isAlerteActif(personnel, "CHANGEMENT_ENS")) {
+                    mailerService.sendAlerteValidation(personnel.getMail(), convention, null, utilisateur, "CHANGEMENT_ENS");
+                }
             }
-        }
 
-        // Envoi de l'alerte de changement d'enseignant référent à l'enseignant
-        if(appConfigService.getConfigAlerteMail().getAlerteEnseignant().isChangementEnseignant()){
-            mailerService.sendAlerteValidation(enseignant.getMail(), convention, null, utilisateur, "CHANGEMENT_ENS");
-        }
+            // Envoi de l'alerte de changement d'enseignant référent à l'enseignant
+            if(appConfigService.getConfigAlerteMail().getAlerteEnseignant().isChangementEnseignant()){
+                mailerService.sendAlerteValidation(enseignant.getMail(), convention, null, utilisateur, "CHANGEMENT_ENS");
+            }
 
-        // Envoi de l'alerte de changement d'enseignant référent à l'étudiant
-        if(appConfigService.getConfigAlerteMail().getAlerteEtudiant().isChangementEnseignant()){
-            mailerService.sendAlerteValidation(convention.getEtudiant().getMail(), convention, null, utilisateur, "CHANGEMENT_ENS");
+            // Envoi de l'alerte de changement d'enseignant référent à l'étudiant
+            if(appConfigService.getConfigAlerteMail().getAlerteEtudiant().isChangementEnseignant()){
+                mailerService.sendAlerteValidation(convention.getEtudiant().getMail(), convention, null, utilisateur, "CHANGEMENT_ENS");
+            }
         }
 
         return convention;
@@ -974,6 +978,7 @@ public class  ConventionController {
      * @return PDF en byte[] (Content-Type: application/pdf)
      */
     @GetMapping("/preview-pdf/centre-gestion/{id}")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public ResponseEntity<byte[]> generateConventionPreview(@PathVariable("id") int idCentreGestion, @RequestParam(name = "templateId") Integer templateId) {
 
         ByteArrayOutputStream ou = new ByteArrayOutputStream();

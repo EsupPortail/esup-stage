@@ -3,23 +3,17 @@ import { TableComponent } from "../../table/table.component";
 import {GroupeEtudiant, GroupeEtudiantDto, GroupeEtudiantService} from "../../../services/groupe-etudiant.service";
 import { UfrService } from "../../../services/ufr.service";
 import {DiplomeEtape, EtapeService, EtapeV2Apogee} from "../../../services/etape.service";
-import { ConventionService } from "../../../services/convention.service";
 import { EtudiantGroupeEtudiantService } from "../../../services/etudiant-groupe-etudiant.service";
-import { AuthService } from "../../../services/auth.service";
-import { Router } from "@angular/router";
-import { LdapService } from "../../../services/ldap.service";
 import { MessageService } from "../../../services/message.service";
-import {Observable, ReplaySubject, Subject} from 'rxjs';
-import { ConfigService } from "../../../services/config.service";
+import {Observable} from 'rxjs';
 import { SortDirection } from "@angular/material/sort";
-import {FormBuilder, FormControl, FormGroup, ValidationErrors, Validators} from "@angular/forms";
+import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {
   EtudiantDiplomeEtapeResponse,
   EtudiantDiplomeEtapeSearch,
   EtudiantService
 } from '../../../services/etudiant.service';
-import {filters} from "css-select";
-import {map,startWith} from "rxjs/operators";
+import {map} from "rxjs/operators";
 
 @Component({
     selector: 'app-selection-groupe-etu',
@@ -63,11 +57,7 @@ export class SelectionGroupeEtuComponent implements OnInit, OnChanges {
 
   ufrList: any[] = [];
   etapeList: DiplomeEtape[] = [];
-
-  etapeFilterCtrl: FormControl = new FormControl();
   filteredEtapes$: Observable<DiplomeEtape[]>;
-
-  _onDestroy = new Subject<void>();
 
   form: FormGroup;
   formAddEtudiants: FormGroup<{
@@ -88,14 +78,9 @@ export class SelectionGroupeEtuComponent implements OnInit, OnChanges {
   constructor(
     public groupeEtudiantService: GroupeEtudiantService,
     public etudiantGroupeEtudiantService: EtudiantGroupeEtudiantService,
-    private authService: AuthService,
-    private ldapService: LdapService,
     private ufrService: UfrService,
     private etapeService: EtapeService,
-    private conventionService: ConventionService,
-    private router: Router,
     private messageService: MessageService,
-    private configService: ConfigService,
     private fb: FormBuilder,
     private etudiantService: EtudiantService,
   ) {
@@ -110,8 +95,8 @@ export class SelectionGroupeEtuComponent implements OnInit, OnChanges {
       etape: new FormControl<string|DiplomeEtEtape|null>(null, {
         validators: [control => !control?.value || typeof control?.value === 'string' ? { required: true } : null],
       }),
-      composante: new FormControl<string|null>(null),
-      annee: new FormControl<number|null>(this.currentYear),
+      composante: new FormControl<string|null>(null, [Validators.required]),
+      annee: new FormControl<number|null>(this.currentYear, [Validators.required]),
     });
 
     this.formAddEtudiants.get('etape')?.disable({ emitEvent: false });
@@ -194,10 +179,18 @@ export class SelectionGroupeEtuComponent implements OnInit, OnChanges {
       return;
     }
     const value = this.formAddEtudiants.value;
-    const etape: DiplomeEtEtape = value.etape as DiplomeEtEtape;
+    if (!value.annee || !value.composante || !value.etape || typeof value.etape === 'string') {
+      this.etudiants = [];
+      this.selectedAdd = [];
+      return;
+    }
+
+    const etape: DiplomeEtEtape = value.etape;
+    const annee = value.annee.toString();
+    const codeComposante = value.composante;
     const data: EtudiantDiplomeEtapeSearch = {
-      annee: value.annee!.toString(),
-      //codeComposante: value.composante,
+      annee,
+      codeComposante,
       codeEtape: etape.etape.codeEtp,
       versionEtape: etape.etape.codVrsVet,
       codeDiplome: etape.diplome.codeDiplome,
@@ -209,8 +202,8 @@ export class SelectionGroupeEtuComponent implements OnInit, OnChanges {
         return {
           ...etudiant,
           // complète les données absentes de la réponse
-          annee: value.annee!.toString(),
-          codeComposante: value.composante,
+          annee,
+          codeComposante,
           codeEtape: etape.etape.codeEtp,
           versionEtape: etape.etape.codVrsVet,
           libelleEtape: etape.etape.libWebVet,

@@ -21,6 +21,7 @@ import { QuestionsEvaluationService } from "../../../services/questions-evaluati
 import { ConfirmEnvoieMailComponent } from "./confirm-envoie-mail/confirm-envoie-mail.component";
 import { DbQuestion } from "../../../models/question-evaluation.model";
 import { TypeQuestionEvaluation } from "../../../constants/type-question-evaluation";
+import { MAX_LENTGH_INPUT } from "../../../constants/max-length-input";
 
 enum FicheType { Etudiant = 0, Enseignant = 1, Entreprise = 2 }
 
@@ -31,6 +32,8 @@ enum FicheType { Etudiant = 0, Enseignant = 1, Entreprise = 2 }
     standalone: false
 })
 export class EvaluationStageComponent implements OnInit, OnDestroy {
+  readonly MAX_LENTGH_INPUT = MAX_LENTGH_INPUT;
+
   // ---- Inputs / Outputs ----
   @Input() convention: any;
   @Output() conventionChange = new EventEmitter<any>();
@@ -747,6 +750,22 @@ export class EvaluationStageComponent implements OnInit, OnDestroy {
       ctrl.setValue(null);
       this.setRequired(this.reponseEtudiantForm, ['reponseEtuI5'], false);
     }
+  }
+
+  getLongTextControl(name: string): AbstractControl | null {
+    return [
+      this.reponseEtudiantForm,
+      this.reponseEnseignantForm,
+      this.reponseEntrepriseForm,
+      this.reponseSupplementaireEtudiantForm,
+      this.reponseSupplementaireEnseignantForm,
+      this.reponseSupplementaireEntrepriseForm,
+    ].map(form => form?.get(name)).find(control => !!control) ?? null;
+  }
+
+  isLongTextLimitReached(name: string): boolean {
+    const value = this.getLongTextControl(name)?.value;
+    return typeof value === 'string' && value.length >= this.MAX_LENTGH_INPUT.longText;
   }
 
 

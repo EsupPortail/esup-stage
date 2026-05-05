@@ -107,20 +107,23 @@
                       <mat-radio-group *ngSwitchCase="TypeQuestionEvaluation.SCALE_LIKERT_5"
                                        [formControlName]="toControlBase(q.code)" class="d-grid">
                         <ng-container *ngIf="q.options?.length; else noOptions">
-                          <mat-radio-button *ngFor="let opt of q.options let i = index" [value]="i" style="display:grid;">{{ opt }}</mat-radio-button>
+                          <mat-radio-button *ngFor="let opt of q.options; let i = index" [value]="i" style="display:grid;">{{ opt }}</mat-radio-button>
                         </ng-container>
                       </mat-radio-group>
 
                       <mat-radio-group *ngSwitchCase="TypeQuestionEvaluation.SCALE_AGREEMENT_5"
                                        [formControlName]="toControlBase(q.code)" class="d-grid">
                         <ng-container *ngIf="q.options?.length; else noOptions">
-                          <mat-radio-button *ngFor="let opt of q.options let i = index" [value]="i" style="display:grid;">{{ opt }}</mat-radio-button>
+                          <mat-radio-button *ngFor="let opt of q.options; let i = index" [value]="i" style="display:grid;">{{ opt }}</mat-radio-button>
                         </ng-container>
                       </mat-radio-group>
 
                       <div *ngSwitchCase="TypeQuestionEvaluation.TEXT">
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput [formControlName]="toControlBase(q.code)"></textarea>
+                          <textarea matInput [maxlength]="MAX_LENTGH_INPUT.longText" [formControlName]="toControlBase(q.code)"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached(toControlBase(q.code))" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
 
@@ -174,7 +177,10 @@
                         <b>{{ q.bisQuestion }}</b>
                       </div>
                       <mat-form-field appearance="fill" style="width:100%">
-                        <textarea matInput [formControlName]="toControlBase(q.code) + 'bis'"></textarea>
+                        <textarea matInput [maxlength]="MAX_LENTGH_INPUT.longText" [formControlName]="toControlBase(q.code) + 'bis'"></textarea>
+                        <mat-hint *ngIf="isLongTextLimitReached(toControlBase(q.code) + 'bis')" style="color:var(--dangerColor);">
+                          Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                        </mat-hint>
                       </mat-form-field>
                     </div>
                   </div>
@@ -187,7 +193,10 @@
                         <div class="mb-2"><b>{{qs.question}}</b></div>
                         <ng-container [ngSwitch]="qs.typeQuestion">
                           <mat-form-field appearance="fill" style="width:100%" *ngSwitchCase="'txt'">
-                            <textarea matInput [formControlName]="qs.formControlName"></textarea>
+                            <textarea matInput [maxlength]="MAX_LENTGH_INPUT.longText" [formControlName]="qs.formControlName"></textarea>
+                            <mat-hint *ngIf="isLongTextLimitReached(qs.formControlName)" style="color:var(--dangerColor);">
+                              Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                            </mat-hint>
                           </mat-form-field>
                           <mat-radio-group *ngSwitchCase="'not'" [formControlName]="qs.formControlName" style="display:grid;">
                             <mat-radio-button [value]="0">Excellent</mat-radio-button>

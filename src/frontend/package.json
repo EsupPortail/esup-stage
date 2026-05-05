@@ -4,8 +4,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
-    "buildProduction": "ng build --base-href /frontend/",
+    "build": "node --max-old-space-size=8192 ./node_modules/@angular/cli/bin/ng build",
+    "buildProduction": "node --max-old-space-size=8192 ./node_modules/@angular/cli/bin/ng build --base-href /frontend/",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
@@ -24,7 +24,7 @@
     "@ckeditor/ckeditor5-angular": "^10.0.0",
     "@fortawesome/fontawesome-free": "^6.1.1",
     "bootstrap-css-only": "^4.4.1",
-    "ckeditor5": "^47.1.0",
+    "ckeditor5": "^48.0.1",
     "css-select": "^5.1.0",
     "css-what": "^6.1.0",
     "cssesc": "^3.0.0",

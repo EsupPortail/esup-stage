@@ -10,7 +10,13 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatButtonModule } from "@angular/material/button";
 import { MenuComponent } from './components/menu/menu.component';
 import { MatListModule } from "@angular/material/list";
-import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
+import {
+  HTTP_INTERCEPTORS,
+  HttpClientModule,
+  HttpClientXsrfModule,
+  provideHttpClient,
+  withInterceptorsFromDi
+} from "@angular/common/http";
 import { CookieService } from "ngx-cookie-service";
 import { TechnicalInterceptor } from "./interceptors/technical.interceptor";
 import { HomeComponent } from './components/home/home.component';
@@ -307,7 +313,11 @@ export class FrenchDateProvider extends NativeDateAdapter {
     MatButtonToggleGroup,
     MatButtonToggle,
     CdkTrapFocus,
-  ],
+    HttpClientModule,
+    HttpClientXsrfModule.withOptions({
+      cookieName: 'XSRF-TOKEN',   // nom du cookie envoyé par Spring
+      headerName: 'X-XSRF-TOKEN' // header attendu par Spring
+    }),],
   exports: [
     ContenuPipe,
     TitleComponent

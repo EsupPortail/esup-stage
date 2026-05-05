@@ -24,6 +24,7 @@ import { InterruptionsFormComponent } from '../../../convention/stage/interrupti
 import { debounceTime } from "rxjs/operators";
 import * as FileSaver from 'file-saver';
 import { ConventionService } from 'src/app/services/convention.service';
+import {MAX_LENTGH_INPUT} from "../../../../constants/max-length-input";
 
 @Component({
     selector: 'app-avenant-form',
@@ -32,10 +33,6 @@ import { ConventionService } from 'src/app/services/convention.service';
     standalone: false
 })
 export class AvenantFormComponent implements OnInit {
-
-  fieldValidators: any = {
-    'dateRupture': [Validators.required],
-  }
 
   checkboxFields: any = ['dateRupture', 'modificationPeriode', 'modificationLieu', 'modificationSujet', 'modificationSalarie',
     'modificationEnseignant', 'modificationMontantGratification', 'modificationAutre'];
@@ -155,10 +152,10 @@ export class AvenantFormComponent implements OnInit {
 
     if (this.avenant.id) {
       this.form = this.fb.group({
-        titreAvenant: [this.avenant.titreAvenant],
+        titreAvenant: [this.avenant.titreAvenant, [Validators.maxLength(MAX_LENTGH_INPUT.titreAvenant)]],
         rupture: [this.avenant.rupture],
         dateRupture: [this.avenant.dateRupture ? new Date(this.avenant.dateRupture) : null],
-        commentaireRupture: [this.avenant.commentaireRupture],
+        commentaireRupture: [this.avenant.commentaireRupture, [Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
         modificationPeriode: [this.avenant.modificationPeriode],
         dateDebutStage: [this.avenant.dateDebutStage ? new Date(this.avenant.dateDebutStage) : null],
         dateFinStage: [this.avenant.dateFinStage ? new Date(this.avenant.dateFinStage) : null],
@@ -178,7 +175,7 @@ export class AvenantFormComponent implements OnInit {
         idDevise: [this.avenant.devise ? this.avenant.devise.id : null],
         validationAvenant: [this.avenant.validationAvenant],
         modificationAutre: [this.avenant.motifAvenant ? true : false],
-        motifAvenant: [this.avenant.motifAvenant],
+        motifAvenant: [this.avenant.motifAvenant, [Validators.maxLength(MAX_LENTGH_INPUT.longText)]],
       });
     } else {
       this.form = this.fb.group({
@@ -594,4 +591,15 @@ export class AvenantFormComponent implements OnInit {
       FileSaver.saveAs(blob, filename);
     });
   }
+
+  longTextLength(fieldName: string): number {
+    const value = this.form?.get(fieldName)?.value;
+    return typeof value === 'string' ? value.length : 0;
+  }
+
+  isLongTextLimitReached(fieldName: string): boolean {
+    return this.longTextLength(fieldName) >= MAX_LENTGH_INPUT.longText;
+  }
+
+  protected readonly MAX_LENTGH_INPUT = MAX_LENTGH_INPUT;
 }

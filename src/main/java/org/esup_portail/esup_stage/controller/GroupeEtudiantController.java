@@ -96,7 +96,7 @@ public class GroupeEtudiantController {
     }
 
     @GetMapping
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.CREATION_EN_MASSE_CONVENTION}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<GroupeEtudiant> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
 
         PaginatedResponse<GroupeEtudiant> paginatedResponse = new PaginatedResponse<>();
@@ -300,7 +300,7 @@ public class GroupeEtudiantController {
 
 
     @PostMapping("/pdf-convention")
-    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.CREATION_EN_MASSE_CONVENTION}, droits = {DroitEnum.MODIFICATION})
     public ResponseEntity<byte[]> getConventionPDF(@Valid @RequestBody IdsListDto idsListDto) {
         ByteArrayOutputStream archiveOutputStream = new ByteArrayOutputStream();
         ZipOutputStream zos = new ZipOutputStream(archiveOutputStream);
@@ -397,7 +397,7 @@ public class GroupeEtudiantController {
     }
 
     @PostMapping(value = "/import/{id}", consumes = "text/csv")
-    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.MODIFICATION})
+    @Secure(fonctions = {AppFonctionEnum.CREATION_EN_MASSE_CONVENTION}, droits = {DroitEnum.MODIFICATION})
     public void importStructures(InputStream inputStream, @PathVariable("id") int groupeId) {
 
         logger.info("import start");
