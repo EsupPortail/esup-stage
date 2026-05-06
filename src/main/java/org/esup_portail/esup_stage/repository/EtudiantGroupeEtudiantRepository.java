@@ -45,6 +45,13 @@ public class EtudiantGroupeEtudiantRepository extends PaginationRepository<Etudi
                         " AND ege.groupeEtudiant.convention.structure.id IN :structureId)" +
                 ")");
         }
+        if (key.equals("convention.service.id")) {
+            clauses.add("(" +
+                    "ege.convention.service.id IN :serviceId" +
+                    " OR (ege.convention.service.id IS NULL" +
+                    " AND ege.groupeEtudiant.convention.service.id IN :serviceId)" +
+                    ")");
+        }
     }
 
     @Override
@@ -68,6 +75,9 @@ public class EtudiantGroupeEtudiantRepository extends PaginationRepository<Etudi
         }
         if (key.equals("convention.structure.id")) {
             query.setParameter("structureId", parameter.getJSONArray("value").toList());
+        }
+        if (key.equals("convention.service.id")) {
+            query.setParameter("serviceId", parameter.getJSONArray("value").toList());
         }
     }
 }
