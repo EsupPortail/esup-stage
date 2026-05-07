@@ -354,6 +354,7 @@ export class ConsigneComponent implements OnInit, OnChanges, AfterViewInit {
       },
 
       language: 'fr',
+      licenseKey: 'GPL',
       link: {
         addTargetToExternalLinks: true,
         defaultProtocol: 'https://',

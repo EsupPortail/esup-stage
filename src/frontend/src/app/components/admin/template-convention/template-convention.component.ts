@@ -325,6 +325,7 @@ export class TemplateConventionComponent implements OnInit, AfterViewInit {
       },
 
       language: 'fr',
+      licenseKey: 'GPL',
       link: {
         addTargetToExternalLinks: true,
         defaultProtocol: 'https://',
