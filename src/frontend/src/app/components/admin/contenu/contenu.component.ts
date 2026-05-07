@@ -305,6 +305,7 @@ export class ContenuComponent implements OnInit {
       },
 
       language: 'fr',
+      licenseKey: 'GPL',
       link: {
         addTargetToExternalLinks: true,
         defaultProtocol: 'https://',
