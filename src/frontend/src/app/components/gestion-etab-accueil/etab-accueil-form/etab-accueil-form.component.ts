@@ -363,7 +363,6 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
       },
 
       language: 'fr',
-      licenseKey: 'GPL',
       link: {
         addTargetToExternalLinks: true,
         defaultProtocol: 'https://',
