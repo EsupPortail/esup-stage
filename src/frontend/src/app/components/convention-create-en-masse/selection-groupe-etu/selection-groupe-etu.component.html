@@ -18,7 +18,21 @@
           </mat-form-field>
         </div>
         <div>
-          <button mat-flat-button color="primary" [disabled]="selectedAdd.length === 0 && selectedRemove.length === 0">{{'BOUTON_VALIDER'|contenu}}</button>
+          <button mat-flat-button color="primary" [disabled]="selectedAdd.length === 0 && selectedRemove.length === 0">
+            @if (!groupeEtudiant) {
+              {{'BOUTON_VALIDER'|contenu}}
+            } @else if (selectedAdd.length === 0 && selectedRemove.length === 0) {
+              Modifier
+            } @else {
+              @if (selectedAdd.length > 0 && selectedRemove.length > 0) { Ajouter et retirer }
+              @else if (selectedAdd.length > 0) { Ajouter }
+              @else { Retirer }
+              {{ selectedAdd.length+selectedRemove.length | i18nPlural:{
+                '=1': "l'étudiant sélectionné",
+                'other': 'les # étudiants sélectionnés'
+              } }}
+            }
+          </button>
         </div>
       </form>
     </div>
