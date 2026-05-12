@@ -3,6 +3,7 @@ package org.esup_portail.esup_stage.controller;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
+import org.esup_portail.esup_stage.dto.ServiceDto;
 import org.esup_portail.esup_stage.dto.ServiceFormDto;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
@@ -45,26 +46,16 @@ public class ServiceController {
 
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.LECTURE})
-    public PaginatedResponse<Service> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
-        PaginatedResponse<Service> paginatedResponse = new PaginatedResponse<>();
+    public PaginatedResponse<ServiceDto> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
+        PaginatedResponse<ServiceDto> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(serviceRepository.count(filters));
-        paginatedResponse.setData(serviceRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
+        paginatedResponse.setData(serviceRepository.findPaginated(page, perPage, predicate, sortOrder, filters).stream().map(this::buildServiceDto).toList());
         return paginatedResponse;
-    }
-
-    @GetMapping("/{id}")
-    @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.LECTURE})
-    public Service getById(@PathVariable("id") int id) {
-        Service service = serviceJpaRepository.findById(id);
-        if (service == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Service non trouvée");
-        }
-        return service;
     }
 
     @GetMapping("/getByStructure/{id}")
     @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.LECTURE})
-    public List<Service> getByStructure(@PathVariable("id") int id, @RequestParam(value = "idCentreGestion", required = false, defaultValue = "-1") Integer idCentreGestion) {
+    public List<ServiceDto> getByStructure(@PathVariable("id") int id, @RequestParam(value = "idCentreGestion", required = false, defaultValue = "-1") Integer idCentreGestion) {
         List<Service> services = serviceJpaRepository.findByStructure(id);
         if (services == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Service non trouvée");
@@ -82,18 +73,18 @@ public class ServiceController {
             if (centreGestion == null) {
                 throw new AppException(HttpStatus.NOT_FOUND, "CentreGestion non trouvé");
             }
-            List<Service> filteredservices = new ArrayList<Service>();
+            List<ServiceDto> filteredservices = new ArrayList<>();
             for (Service service : services) {
                 if (service.getCentreGestion().getCodeConfidentialite().getCode().equals("0") || service.getCentreGestion().getId() == centreGestion.getId() ||
                         service.getCentreGestion().getNiveauCentre().getLibelle().equals("ETABLISSEMENT")) {
-                    filteredservices.add(service);
+                    filteredservices.add(buildServiceDto(service));
                 }
             }
             return filteredservices;
         }
 
 
-        return services;
+        return services.stream().map(this::buildServiceDto).toList();
     }
 
     @PostMapping
@@ -169,6 +160,20 @@ public class ServiceController {
         service.setPays(pays);
         service.setTelephone(serviceFormDto.getTelephone());
 
+    }
+
+    private ServiceDto buildServiceDto(Service service) {
+        ServiceDto serviceDto = new ServiceDto();
+        serviceDto.setId(service.getId());
+        serviceDto.setNom(service.getNom());
+        serviceDto.setVoie(service.getVoie());
+        serviceDto.setCodePostal(service.getCodePostal());
+        serviceDto.setBatimentResidence(service.getBatimentResidence());
+        serviceDto.setCommune(service.getCommune());
+        serviceDto.setTelephone(service.getTelephone());
+        serviceDto.setPays(service.getPays());
+        serviceDto.setIdCentreGestion(service.getCentreGestion().getId());
+        return serviceDto;
     }
 
 }

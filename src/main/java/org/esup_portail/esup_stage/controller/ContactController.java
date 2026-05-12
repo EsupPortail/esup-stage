@@ -1,11 +1,9 @@
 package org.esup_portail.esup_stage.controller;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.esup_portail.esup_stage.dto.ContactDetailDto;
+import org.esup_portail.esup_stage.dto.ContactDto;
 import org.esup_portail.esup_stage.dto.ContactFormDto;
-import org.esup_portail.esup_stage.dto.PaginatedResponse;
-import org.esup_portail.esup_stage.dto.view.Views;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
@@ -27,9 +25,6 @@ import java.util.List;
 public class ContactController {
 
     @Autowired
-    ContactRepository contactRepository;
-
-    @Autowired
     ContactJpaRepository contactJpaRepository;
 
     @Autowired
@@ -41,30 +36,9 @@ public class ContactController {
     @Autowired
     CiviliteJpaRepository civiliteJpaRepository;
 
-    // Cette route n'est jamais utilisée
-    // @JsonView(Views.List.class)
-    // @GetMapping
-    // @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.LECTURE})
-    // public PaginatedResponse<Contact> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
-    //     PaginatedResponse<Contact> paginatedResponse = new PaginatedResponse<>();
-    //     paginatedResponse.setTotal(contactRepository.count(filters));
-    //     paginatedResponse.setData(contactRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
-    //     return paginatedResponse;
-    // }
-
-    @GetMapping("/{id}")
-    @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.LECTURE})
-    public Contact getById(@PathVariable("id") int id) {
-        Contact contact = contactJpaRepository.findById(id);
-        if (contact == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Contact non trouvé");
-        }
-        return contact;
-    }
-
     @GetMapping("/getByService/{id}")
     @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.LECTURE})
-    public List<Contact> getByService(@PathVariable("id") int id, @RequestParam(value = "idCentreGestion", required = false, defaultValue = "-1") Integer idCentreGestion) {
+    public List<ContactDto> getByService(@PathVariable("id") int id, @RequestParam(value = "idCentreGestion", required = false, defaultValue = "-1") Integer idCentreGestion) {
         List<Contact> contacts = contactJpaRepository.findByService(id);
 
         if (contacts == null) {
@@ -83,17 +57,51 @@ public class ContactController {
             if (centreGestion == null) {
                 throw new AppException(HttpStatus.NOT_FOUND, "CentreGestion non trouvé");
             }
-            List<Contact> filteredContacts = new ArrayList<Contact>();
+            List<ContactDto> filteredContacts = new ArrayList<>();
             for (Contact contact : contacts) {
                 if (contact.getCentreGestion().getCodeConfidentialite().getCode().equals("0") || contact.getCentreGestion().getId() == centreGestion.getId() ||
                         contact.getCentreGestion().getNiveauCentre().getLibelle().equals("ETABLISSEMENT")) {
-                    filteredContacts.add(contact);
+                    filteredContacts.add(buildContactDto(contact));
                 }
             }
             return filteredContacts;
         }
 
-        return contacts;
+        return contacts.stream().map(this::buildContactDto).toList();
+    }
+
+    @GetMapping("/getByService/{id}/detail")
+    @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits ={ DroitEnum.MODIFICATION},forbiddenEtu = true)
+    public List<ContactDetailDto> getByServiceWithDetail(@PathVariable("id") int id, @RequestParam(value = "idCentreGestion", required = false, defaultValue = "-1") Integer idCentreGestion) {
+        List<Contact> contacts = contactJpaRepository.findByService(id);
+
+        if (contacts == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Contact non trouvé");
+        }
+
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
+        /*
+         * Si idCentreGestion != -1, on est dans le cadre d'une convention
+         *
+         * Dans ce cas pour les utilisateurs gestionnaires, on ne renvoit que les contacts qui sont rattachés au centre de la convention ou
+           qui ont un centre de gestion avec code confidentialité égale à 0 ou au centre de gestion de type établissement
+         * */
+        if ((UtilisateurHelper.isRole(utilisateur, Role.GES) || UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)) && idCentreGestion != -1) {
+            CentreGestion centreGestion = centreGestionJpaRepository.findById(idCentreGestion.intValue());
+            if (centreGestion == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "CentreGestion non trouvé");
+            }
+            List<ContactDetailDto> filteredContacts = new ArrayList<>();
+            for (Contact contact : contacts) {
+                if (contact.getCentreGestion().getCodeConfidentialite().getCode().equals("0") || contact.getCentreGestion().getId() == centreGestion.getId() ||
+                        contact.getCentreGestion().getNiveauCentre().getLibelle().equals("ETABLISSEMENT")) {
+                    filteredContacts.add(buildContactDetailDto(contact));
+                }
+            }
+            return filteredContacts;
+        }
+
+        return contacts.stream().map(this::buildContactDetailDto).toList();
     }
 
     @PostMapping
@@ -163,5 +171,28 @@ public class ContactController {
         contact.setTel(contactFormDto.getTel());
         contact.setFax(contactFormDto.getFax());
         contact.setMail(contactFormDto.getMail());
+    }
+
+    private ContactDto buildContactDto(Contact contact) {
+        ContactDto contactDto = new ContactDto();
+        contactDto.setId(contact.getId());
+        contactDto.setNom(contact.getNom());
+        contactDto.setPrenom(contact.getPrenom());
+        contactDto.setIdCentreGestion(contact.getCentreGestion().getId());
+        return contactDto;
+    }
+
+    private ContactDetailDto buildContactDetailDto(Contact contact) {
+        ContactDetailDto contactDetailDto = new ContactDetailDto();
+        contactDetailDto.setId(contact.getId());
+        contactDetailDto.setNom(contact.getNom());
+        contactDetailDto.setPrenom(contact.getPrenom());
+        contactDetailDto.setMail(contact.getMail());
+        contactDetailDto.setTel(contact.getTel());
+        contactDetailDto.setFonction(contact.getFonction());
+        contactDetailDto.setFax(contact.getFax());
+        contactDetailDto.setCivilite(contact.getCivilite());
+        contactDetailDto.setIdCentreGestion(contact.getCentreGestion().getId());
+        return contactDetailDto;
     }
 }
