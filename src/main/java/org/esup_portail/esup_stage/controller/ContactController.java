@@ -36,16 +36,6 @@ public class ContactController {
     @Autowired
     CiviliteJpaRepository civiliteJpaRepository;
 
-    @GetMapping("/{id}")
-    @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.LECTURE})
-    public ContactDetailDto getById(@PathVariable("id") int id) {
-        Contact contact = contactJpaRepository.findById(id);
-        if (contact == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Contact non trouvé");
-        }
-        return buildContactDetailDto(contact);
-    }
-
     @GetMapping("/getByService/{id}")
     @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.LECTURE})
     public List<ContactDto> getByService(@PathVariable("id") int id, @RequestParam(value = "idCentreGestion", required = false, defaultValue = "-1") Integer idCentreGestion) {
@@ -78,6 +68,40 @@ public class ContactController {
         }
 
         return contacts.stream().map(this::buildContactDto).toList();
+    }
+
+    @GetMapping("/getByService/{id}/detail")
+    @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits ={ DroitEnum.MODIFICATION},forbiddenEtu = true)
+    public List<ContactDetailDto> getByServiceWithDetail(@PathVariable("id") int id, @RequestParam(value = "idCentreGestion", required = false, defaultValue = "-1") Integer idCentreGestion) {
+        List<Contact> contacts = contactJpaRepository.findByService(id);
+
+        if (contacts == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Contact non trouvé");
+        }
+
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
+        /*
+         * Si idCentreGestion != -1, on est dans le cadre d'une convention
+         *
+         * Dans ce cas pour les utilisateurs gestionnaires, on ne renvoit que les contacts qui sont rattachés au centre de la convention ou
+           qui ont un centre de gestion avec code confidentialité égale à 0 ou au centre de gestion de type établissement
+         * */
+        if ((UtilisateurHelper.isRole(utilisateur, Role.GES) || UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)) && idCentreGestion != -1) {
+            CentreGestion centreGestion = centreGestionJpaRepository.findById(idCentreGestion.intValue());
+            if (centreGestion == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "CentreGestion non trouvé");
+            }
+            List<ContactDetailDto> filteredContacts = new ArrayList<>();
+            for (Contact contact : contacts) {
+                if (contact.getCentreGestion().getCodeConfidentialite().getCode().equals("0") || contact.getCentreGestion().getId() == centreGestion.getId() ||
+                        contact.getCentreGestion().getNiveauCentre().getLibelle().equals("ETABLISSEMENT")) {
+                    filteredContacts.add(buildContactDetailDto(contact));
+                }
+            }
+            return filteredContacts;
+        }
+
+        return contacts.stream().map(this::buildContactDetailDto).toList();
     }
 
     @PostMapping
