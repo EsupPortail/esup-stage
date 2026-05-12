@@ -184,6 +184,7 @@ public class ContactController {
 
     private ContactDetailDto buildContactDetailDto(Contact contact) {
         ContactDetailDto contactDetailDto = new ContactDetailDto();
+        contactDetailDto.setId(contact.getId());
         contactDetailDto.setNom(contact.getNom());
         contactDetailDto.setPrenom(contact.getPrenom());
         contactDetailDto.setMail(contact.getMail());

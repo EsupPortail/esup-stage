@@ -5,6 +5,7 @@ import org.esup_portail.esup_stage.model.Civilite;
 
 @Data
 public class ContactDetailDto {
+    private int id;
     private String nom;
     private String prenom;
     private String mail;
