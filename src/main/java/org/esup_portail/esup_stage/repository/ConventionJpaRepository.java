@@ -69,6 +69,9 @@ public interface ConventionJpaRepository extends JpaRepository<Convention, Integ
     @Query("SELECT COUNT(c.id) FROM Convention c WHERE c.centreGestion.id = :idCentreGestion")
     Long countConventionWithCentreGestion(@Param("idCentreGestion") int idCentreGestion);
 
+    @Query("SELECT COUNT(c.id) FROM Convention c WHERE c.centreGestion.id = :idCentreGestion AND LOWER(c.enseignant.uidEnseignant) IN :identifiants")
+    Long countConventionByEnseignantAndCentreGestion(@Param("identifiants") Collection<String> identifiants, @Param("idCentreGestion") int idCentreGestion);
+
     @Query("SELECT COUNT(c.id) FROM Convention c WHERE c.structure.effectif.id = :idEffectif")
     Long countConventionWithEffectif(@Param("idEffectif") int idEffectif);
 

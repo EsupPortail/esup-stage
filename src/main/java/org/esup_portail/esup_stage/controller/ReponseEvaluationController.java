@@ -16,6 +16,7 @@ import org.esup_portail.esup_stage.repository.ReponseSupplementaireJpaRepository
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
+import org.esup_portail.esup_stage.service.ConventionService;
 import org.esup_portail.esup_stage.service.MailerService;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,10 +55,18 @@ public class ReponseEvaluationController {
     @Autowired
     AppConfigService appConfigService;
 
+    @Autowired
+    ConventionService conventionService;
+
     @GetMapping("/getByConvention/{id}")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public ReponseEvaluation getByConvention(@PathVariable("id") int id) {
-        return reponseEvaluationJpaRepository.findByConvention(id);
+        Convention convention = conventionJpaRepository.findById(id);
+        if (convention == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        }
+        conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
+        return convention.getReponseEvaluation();
     }
 
     @PostMapping("/{id}/etudiant/valid/{valid}")
