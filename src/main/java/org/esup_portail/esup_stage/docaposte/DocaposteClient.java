@@ -17,6 +17,7 @@ import org.esup_portail.esup_stage.model.Convention;
 import org.esup_portail.esup_stage.repository.AvenantJpaRepository;
 import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
+import org.esup_portail.esup_stage.service.FilenameSanitizerService;
 import org.esup_portail.esup_stage.service.signature.model.Historique;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -54,6 +55,8 @@ public class DocaposteClient extends WebServiceGatewaySupport {
     ConventionJpaRepository conventionJpaRepository;
     @Autowired
     AvenantJpaRepository avenantJpaRepository;
+    @Autowired
+    FilenameSanitizerService filenameSanitizerService;
 
     public DocaposteClient(SignatureProperties signatureProperties) {
         this.signatureProperties = signatureProperties;
@@ -142,7 +145,7 @@ public class DocaposteClient extends WebServiceGatewaySupport {
 
         DataFileVO documentFile = new DataFileVO();
         documentFile.setDataHandler(ou.toByteArray());
-        documentFile.setFilename(filename +".pdf");
+        documentFile.setFilename(filenameSanitizerService.sanitize(filename) + ".pdf");
 
         // Dépôt du PDF dans Docaposte
         Upload uploadRequest = new Upload();

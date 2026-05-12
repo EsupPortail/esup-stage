@@ -35,7 +35,10 @@
                      (reponseEtudiantForm.get('reponse' + question.controlName)?.value === true)">
                         <div class="mb-2"><b>{{question.bisQuestionTrue}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName + 'bis')" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                       <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionFalse &&
@@ -43,7 +46,10 @@
                      (reponseEtudiantForm.get('reponse' + question.controlName)?.value === false)">
                         <div class="mb-2"><b>{{question.bisQuestionFalse}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName + 'bis')" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                     </div>
@@ -59,13 +65,19 @@
                      (reponseEtudiantForm.get('reponse' + question.controlName)?.value >= 3)">
                         <div class="mb-2"><b>{{question.bisQuestionLowNotation}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName + 'bis')" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                       <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestion">
                         <div class="mb-2"><b>{{question.bisQuestion}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName + 'bis')" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                     </div>
@@ -89,7 +101,10 @@
                       <div class="col-md-12">
                         <div class="mb-2"><b>{{question.title}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName)" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                     </div>
@@ -128,7 +143,10 @@
                     <div class="mt-2 mb-2" *ngFor="let questionSupplementaire of questionsSupplementaires[0]">
                       <div class="mb-2"><b>{{questionSupplementaire.question}}</b></div>
                       <mat-form-field style="width: 100%" *ngIf="questionSupplementaire.typeQuestion == 'txt'" appearance="fill">
-                        <textarea matInput formControlName="{{questionSupplementaire.formControlName}}"></textarea>
+                        <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{questionSupplementaire.formControlName}}"></textarea>
+                        <mat-hint *ngIf="isLongTextLimitReached(questionSupplementaire.formControlName)" style="color:var(--dangerColor);">
+                          Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                        </mat-hint>
                       </mat-form-field>
                       <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'not'" style="display: grid" formControlName="{{questionSupplementaire.formControlName}}">
                         <mat-radio-button style="margin-left: 0px" [value]="0">Excellent</mat-radio-button>
@@ -164,7 +182,10 @@
                      (reponseEtudiantForm.get('reponse' + question.controlName)?.value === true)">
                         <div class="mb-2"><b>{{question.bisQuestionTrue}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName + 'bis')" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                       <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionFalse &&
@@ -172,7 +193,10 @@
                      (reponseEtudiantForm.get('reponse' + question.controlName)?.value === false)">
                         <div class="mb-2"><b>{{question.bisQuestionFalse}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName + 'bis')" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                     </div>
@@ -188,13 +212,19 @@
                      (reponseEtudiantForm.get('reponse' + question.controlName)?.value >= 3)">
                         <div class="mb-2"><b>{{question.bisQuestionLowNotation}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName + 'bis')" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                       <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestion">
                         <div class="mb-2"><b>{{question.bisQuestion}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName + 'bis')" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                     </div>
@@ -218,7 +248,10 @@
                       <div class="col-md-12">
                         <div class="mb-2"><b>{{question.title}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName)" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                     </div>
@@ -250,7 +283,10 @@
                     <div class="mt-2 mb-2" *ngFor="let questionSupplementaire of questionsSupplementaires[1]">
                       <div class="mb-2"><b>{{questionSupplementaire.question}}</b></div>
                       <mat-form-field style="width: 100%" *ngIf="questionSupplementaire.typeQuestion == 'txt'" appearance="fill">
-                        <textarea matInput formControlName="{{questionSupplementaire.formControlName}}"></textarea>
+                        <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{questionSupplementaire.formControlName}}"></textarea>
+                        <mat-hint *ngIf="isLongTextLimitReached(questionSupplementaire.formControlName)" style="color:var(--dangerColor);">
+                          Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                        </mat-hint>
                       </mat-form-field>
                       <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'not'" style="display: grid" formControlName="{{questionSupplementaire.formControlName}}">
                         <mat-radio-button style="margin-left: 0px" [value]="0">Excellent</mat-radio-button>
@@ -286,7 +322,10 @@
                      (reponseEtudiantForm.get('reponse' + question.controlName)?.value === true)">
                         <div class="mb-2"><b>{{question.bisQuestionTrue}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName + 'bis')" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                       <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionFalse &&
@@ -294,7 +333,10 @@
                      (reponseEtudiantForm.get('reponse' + question.controlName)?.value === false)">
                         <div class="mb-2"><b>{{question.bisQuestionFalse}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName + 'bis')" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                     </div>
@@ -310,13 +352,19 @@
                      (reponseEtudiantForm.get('reponse' + question.controlName)?.value >= 3)">
                         <div class="mb-2"><b>{{question.bisQuestionLowNotation}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName + 'bis')" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                       <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestion">
                         <div class="mb-2"><b>{{question.bisQuestion}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName + 'bis')" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                     </div>
@@ -340,7 +388,10 @@
                       <div class="col-md-12">
                         <div class="mb-2"><b>{{question.title}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName)" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                     </div>
@@ -363,7 +414,10 @@
                      (reponseEtudiantForm.get('reponse' + question.controlName)?.value === true)">
                         <div class="mb-2"><b>{{question.bisQuestionTrue}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName + 'bis')" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                     </div>
@@ -375,7 +429,10 @@
                     <div class="mt-2 mb-2" *ngFor="let questionSupplementaire of questionsSupplementaires[2]">
                       <div class="mb-2"><b>{{questionSupplementaire.question}}</b></div>
                       <mat-form-field style="width: 100%" *ngIf="questionSupplementaire.typeQuestion == 'txt'" appearance="fill">
-                        <textarea matInput formControlName="{{questionSupplementaire.formControlName}}"></textarea>
+                        <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{questionSupplementaire.formControlName}}"></textarea>
+                        <mat-hint *ngIf="isLongTextLimitReached(questionSupplementaire.formControlName)" style="color:var(--dangerColor);">
+                          Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                        </mat-hint>
                       </mat-form-field>
                       <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'not'" style="display: grid" formControlName="{{questionSupplementaire.formControlName}}">
                         <mat-radio-button style="margin-left: 0px" [value]="0">Excellent</mat-radio-button>
@@ -454,7 +511,10 @@
                      (reponseEnseignantForm.get('reponse' + question.controlName)?.value === true)">
                         <div class="mb-2"><b>{{question.bisQuestionTrue}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName + 'bis')" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                       <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionFalse &&
@@ -462,7 +522,10 @@
                      (reponseEnseignantForm.get('reponse' + question.controlName)?.value === false)">
                         <div class="mb-2"><b>{{question.bisQuestionFalse}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName + 'bis')" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                     </div>
@@ -478,13 +541,19 @@
                      (reponseEnseignantForm.get('reponse' + question.controlName)?.value >= 3)">
                         <div class="mb-2"><b>{{question.bisQuestionLowNotation}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName + 'bis')" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                       <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestion">
                         <div class="mb-2"><b>{{question.bisQuestion}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName + 'bis')" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                     </div>
@@ -508,7 +577,10 @@
                       <div class="col-md-12">
                         <div class="mb-2"><b>{{question.title}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName)" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                     </div>
@@ -520,7 +592,10 @@
                     <div class="mt-2 mb-2" *ngFor="let questionSupplementaire of questionsSupplementaires[3]">
                       <div class="mb-2"><b>{{questionSupplementaire.question}}</b></div>
                       <mat-form-field style="width: 100%" *ngIf="questionSupplementaire.typeQuestion == 'txt'" appearance="fill">
-                        <textarea matInput formControlName="{{questionSupplementaire.formControlName}}"></textarea>
+                        <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{questionSupplementaire.formControlName}}"></textarea>
+                        <mat-hint *ngIf="isLongTextLimitReached(questionSupplementaire.formControlName)" style="color:var(--dangerColor);">
+                          Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                        </mat-hint>
                       </mat-form-field>
                       <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'not'" style="display: grid" formControlName="{{questionSupplementaire.formControlName}}">
                         <mat-radio-button style="margin-left: 0px" [value]="0">Excellent</mat-radio-button>
@@ -556,7 +631,10 @@
                      (reponseEnseignantForm.get('reponse' + question.controlName)?.value === true)">
                         <div class="mb-2"><b>{{question.bisQuestionTrue}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName + 'bis')" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                       <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionFalse &&
@@ -564,7 +642,10 @@
                      (reponseEnseignantForm.get('reponse' + question.controlName)?.value === false)">
                         <div class="mb-2"><b>{{question.bisQuestionFalse}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName + 'bis')" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                     </div>
@@ -580,13 +661,19 @@
                      (reponseEnseignantForm.get('reponse' + question.controlName)?.value >= 3)">
                         <div class="mb-2"><b>{{question.bisQuestionLowNotation}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName + 'bis')" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                       <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestion">
                         <div class="mb-2"><b>{{question.bisQuestion}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName + 'bis')" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                     </div>
@@ -610,7 +697,10 @@
                       <div class="col-md-12">
                         <div class="mb-2"><b>{{question.title}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName)" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                     </div>
@@ -622,7 +712,10 @@
                     <div class="mt-2 mb-2" *ngFor="let questionSupplementaire of questionsSupplementaires[4]">
                       <div class="mb-2"><b>{{questionSupplementaire.question}}</b></div>
                       <mat-form-field style="width: 100%" *ngIf="questionSupplementaire.typeQuestion == 'txt'" appearance="fill">
-                        <textarea matInput formControlName="{{questionSupplementaire.formControlName}}"></textarea>
+                        <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{questionSupplementaire.formControlName}}"></textarea>
+                        <mat-hint *ngIf="isLongTextLimitReached(questionSupplementaire.formControlName)" style="color:var(--dangerColor);">
+                          Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                        </mat-hint>
                       </mat-form-field>
                       <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'not'" style="display: grid" formControlName="{{questionSupplementaire.formControlName}}">
                         <mat-radio-button style="margin-left: 0px" [value]="0">Excellent</mat-radio-button>
@@ -701,7 +794,10 @@
                      (reponseEntrepriseForm.get('reponse' + question.controlName)?.value === true)">
                         <div class="mb-2"><b>{{question.bisQuestionTrue}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName + 'bis')" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                       <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionFalse &&
@@ -709,7 +805,10 @@
                      (reponseEntrepriseForm.get('reponse' + question.controlName)?.value === false)">
                         <div class="mb-2"><b>{{question.bisQuestionFalse}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName + 'bis')" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                     </div>
@@ -725,13 +824,19 @@
                      (reponseEntrepriseForm.get('reponse' + question.controlName)?.value >= 3)">
                         <div class="mb-2"><b>{{question.bisQuestionLowNotation}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName + 'bis')" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                       <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestion">
                         <div class="mb-2"><b>{{question.bisQuestion}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName + 'bis')" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                     </div>
@@ -755,7 +860,10 @@
                       <div class="col-md-12">
                         <div class="mb-2"><b>{{question.title}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName)" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                     </div>
@@ -767,7 +875,10 @@
                     <div class="mt-2 mb-2" *ngFor="let questionSupplementaire of questionsSupplementaires[5]">
                       <div class="mb-2"><b>{{questionSupplementaire.question}}</b></div>
                       <mat-form-field style="width: 100%" *ngIf="questionSupplementaire.typeQuestion == 'txt'" appearance="fill">
-                        <textarea matInput formControlName="{{questionSupplementaire.formControlName}}"></textarea>
+                        <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{questionSupplementaire.formControlName}}"></textarea>
+                        <mat-hint *ngIf="isLongTextLimitReached(questionSupplementaire.formControlName)" style="color:var(--dangerColor);">
+                          Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                        </mat-hint>
                       </mat-form-field>
                       <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'not'" style="display: grid" formControlName="{{questionSupplementaire.formControlName}}">
                         <mat-radio-button style="margin-left: 0px" [value]="0">Excellent</mat-radio-button>
@@ -803,7 +914,10 @@
                      (reponseEntrepriseForm.get('reponse' + question.controlName)?.value === true)">
                         <div class="mb-2"><b>{{question.bisQuestionTrue}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName + 'bis')" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                       <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionFalse &&
@@ -811,7 +925,10 @@
                      (reponseEntrepriseForm.get('reponse' + question.controlName)?.value === false)">
                         <div class="mb-2"><b>{{question.bisQuestionFalse}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName + 'bis')" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                     </div>
@@ -827,13 +944,19 @@
                      (reponseEntrepriseForm.get('reponse' + question.controlName)?.value >= 3)">
                         <div class="mb-2"><b>{{question.bisQuestionLowNotation}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName + 'bis')" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                       <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestion">
                         <div class="mb-2"><b>{{question.bisQuestion}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName + 'bis')" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                     </div>
@@ -857,7 +980,10 @@
                       <div class="col-md-12">
                         <div class="mb-2"><b>{{question.title}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName)" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                     </div>
@@ -869,7 +995,10 @@
                     <div class="mt-2 mb-2" *ngFor="let questionSupplementaire of questionsSupplementaires[6]">
                       <div class="mb-2"><b>{{questionSupplementaire.question}}</b></div>
                       <mat-form-field style="width: 100%" *ngIf="questionSupplementaire.typeQuestion == 'txt'" appearance="fill">
-                        <textarea matInput formControlName="{{questionSupplementaire.formControlName}}"></textarea>
+                        <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{questionSupplementaire.formControlName}}"></textarea>
+                        <mat-hint *ngIf="isLongTextLimitReached(questionSupplementaire.formControlName)" style="color:var(--dangerColor);">
+                          Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                        </mat-hint>
                       </mat-form-field>
                       <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'not'" style="display: grid" formControlName="{{questionSupplementaire.formControlName}}">
                         <mat-radio-button style="margin-left: 0px" [value]="0">Excellent</mat-radio-button>
@@ -905,7 +1034,10 @@
                      (reponseEntrepriseForm.get('reponse' + question.controlName)?.value === true)">
                         <div class="mb-2"><b>{{question.bisQuestionTrue}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName + 'bis')" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                       <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestionFalse &&
@@ -913,7 +1045,10 @@
                      (reponseEntrepriseForm.get('reponse' + question.controlName)?.value === false)">
                         <div class="mb-2"><b>{{question.bisQuestionFalse}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName + 'bis')" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                     </div>
@@ -929,13 +1064,19 @@
                      (reponseEntrepriseForm.get('reponse' + question.controlName)?.value >= 3)">
                         <div class="mb-2"><b>{{question.bisQuestionLowNotation}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName + 'bis')" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                       <div class="col-md-12 mt-2 mb-2" *ngIf="question.bisQuestion">
                         <div class="mb-2"><b>{{question.bisQuestion}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName + 'bis'}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName + 'bis')" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                     </div>
@@ -959,7 +1100,10 @@
                       <div class="col-md-12">
                         <div class="mb-2"><b>{{question.title}}</b></div>
                         <mat-form-field style="width: 100%" appearance="fill">
-                          <textarea matInput formControlName="{{'reponse' + question.controlName}}"></textarea>
+                          <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{'reponse' + question.controlName}}"></textarea>
+                          <mat-hint *ngIf="isLongTextLimitReached('reponse' + question.controlName)" style="color:var(--dangerColor);">
+                            Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                          </mat-hint>
                         </mat-form-field>
                       </div>
                     </div>
@@ -971,7 +1115,10 @@
                     <div class="mt-2 mb-2" *ngFor="let questionSupplementaire of questionsSupplementaires[7]">
                       <div class="mb-2"><b>{{questionSupplementaire.question}}</b></div>
                       <mat-form-field style="width: 100%" *ngIf="questionSupplementaire.typeQuestion == 'txt'" appearance="fill">
-                        <textarea matInput formControlName="{{questionSupplementaire.formControlName}}"></textarea>
+                        <textarea matInput maxlength="{{ MAX_LENTGH_INPUT.longText }}" formControlName="{{questionSupplementaire.formControlName}}"></textarea>
+                        <mat-hint *ngIf="isLongTextLimitReached(questionSupplementaire.formControlName)" style="color:var(--dangerColor);">
+                          Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                        </mat-hint>
                       </mat-form-field>
                       <mat-radio-group *ngIf="questionSupplementaire.typeQuestion == 'not'" style="display: grid" formControlName="{{questionSupplementaire.formControlName}}">
                         <mat-radio-button style="margin-left: 0px" [value]="0">Excellent</mat-radio-button>

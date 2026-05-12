@@ -71,7 +71,7 @@ const routes: Routes = [
     path: 'etab-accueils',
     component: GestionEtabAccueilComponent,
     canActivate: [AuthGuard],
-    data: {role: {fonction: AppFonction.NOMENCLATURE, droits: [Droit.LECTURE]}, title: 'Gestion des établissements d\'accueil'}
+    data: {role: {fonction: AppFonction.ORGA_ACC, droits: [Droit.LECTURE]}, title: 'Gestion des établissements d\'accueil'}
   },
   {
     path: 'nomenclatures',

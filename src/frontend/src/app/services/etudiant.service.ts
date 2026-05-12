@@ -1,13 +1,16 @@
 import { Injectable } from '@angular/core';
-import { Observable } from "rxjs";
+import { Observable, throwError } from "rxjs";
 import { environment } from "../../environments/environment";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import {PaginatedResponse, PaginatedService} from "./paginated.service";
+import { catchError, shareReplay } from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
 })
 export class EtudiantService implements PaginatedService<Etudiant> {
+
+  private apogeeInscriptionsCache = new Map<string, Observable<any>>();
 
   constructor(private http: HttpClient) { }
 
@@ -35,6 +38,25 @@ export class EtudiantService implements PaginatedService<Etudiant> {
 
   private getApogeeForbiddenHeaders(handleForbiddenLocally: boolean): HttpHeaders | undefined {
     return handleForbiddenLocally ? new HttpHeaders({'X-Handle-Apogee-Forbidden-Locally': 'true'}) : undefined;
+  }
+
+  getCachedApogeeInscriptions(numEtudiant: string, annee: string, handleForbiddenLocally: boolean = false): Observable<any> {
+    const cacheKey = `${numEtudiant}-${annee ? annee.split('/')[0] : ''}-${handleForbiddenLocally}`;
+    const cachedRequest = this.apogeeInscriptionsCache.get(cacheKey);
+    if (cachedRequest) {
+      return cachedRequest;
+    }
+
+    const request$ = this.getApogeeInscriptions(numEtudiant, annee, handleForbiddenLocally).pipe(
+      catchError((error) => {
+        this.apogeeInscriptionsCache.delete(cacheKey);
+        return throwError(() => error);
+      }),
+      shareReplay(1),
+    );
+
+    this.apogeeInscriptionsCache.set(cacheKey, request$);
+    return request$;
   }
 
   getByLogin(login: string): Observable<Etudiant> {

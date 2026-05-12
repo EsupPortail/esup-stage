@@ -133,7 +133,7 @@ export class SignatureElectroniqueComponent implements OnInit, OnDestroy {
     }
     const date = new Date();
     date.setMinutes(date.getMinutes() - 30);
-    return new Date(this.convention.dateActualisationSignature) >= date;
+    return new Date(this.convention.dateActualisationSignature) >= date || !!this.convention.allSignedDateSetted;
   }
 
   getNomPrenomEnvoiSignature(): void {
