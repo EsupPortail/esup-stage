@@ -6,20 +6,25 @@ import org.esup_portail.esup_stage.dto.*;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
-import org.esup_portail.esup_stage.model.CentreGestion;
-import org.esup_portail.esup_stage.model.FicheEvaluation;
-import org.esup_portail.esup_stage.model.QuestionSupplementaire;
+import org.esup_portail.esup_stage.model.*;
+import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
 import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
+import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
 import org.esup_portail.esup_stage.repository.FicheEvaluationJpaRepository;
 import org.esup_portail.esup_stage.repository.FicheEvaluationRepository;
+import org.esup_portail.esup_stage.repository.PersonnelCentreGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.QuestionSupplementaireJpaRepository;
+import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
+import org.esup_portail.esup_stage.service.EtudiantSecurityService;
 import org.esup_portail.esup_stage.service.evaluation.EvaluationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 @ApiController
 @RequestMapping("/ficheEvaluation")
@@ -35,7 +40,19 @@ public class FicheEvaluationController {
     QuestionSupplementaireJpaRepository questionSupplementaireJpaRepository;
 
     @Autowired
+    CentreGestionJpaRepository centreGestionJpaRepository;
+
+    @Autowired
     private EvaluationService evaluationService;
+
+    @Autowired
+    ConventionJpaRepository conventionJpaRepository;
+
+    @Autowired
+    EtudiantSecurityService etudiantSecurityService;
+
+    @Autowired
+    PersonnelCentreGestionJpaRepository personnelCentreGestionJpaRepository;
 
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
@@ -59,7 +76,59 @@ public class FicheEvaluationController {
     @GetMapping("/getByCentreGestion/{id}")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION,AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public FicheEvaluation getByCentreGestion(@PathVariable("id") int id) {
-        return evaluationService.getByCentreGestion(id);
+        CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
+        checkCanViewCentreGestion(centreGestion);
+
+        FicheEvaluation ficheEvaluation = ficheEvaluationJpaRepository.findByCentreGestion(id);
+        if (ficheEvaluation == null) {
+            ficheEvaluation = new FicheEvaluation();
+            if (centreGestion == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "CentreGestion non trouvé");
+            }
+            ficheEvaluation.setCentreGestion(centreGestion);
+            return ficheEvaluationJpaRepository.saveAndFlush(ficheEvaluation);
+        }
+        return ficheEvaluation;
+    }
+
+    private void checkCanViewCentreGestion(CentreGestion centreGestion) {
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
+        if (utilisateur == null) {
+            throw new AppException(HttpStatus.UNAUTHORIZED, "Vous n'etes pas autorise");
+        }
+        if (centreGestion == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "CentreGestion non trouve");
+        }
+        if (UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
+            return;
+        }
+
+        List<String> identifiants = getUserIdentifiers(utilisateur);
+        boolean canView = false;
+        if (UtilisateurHelper.isRole(utilisateur, Role.GES) || UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)) {
+            canView = !identifiants.isEmpty()
+                    && personnelCentreGestionJpaRepository.countByCentreGestionAndUidPersonnel(centreGestion.getId(), identifiants) > 0;
+        }
+        if (!canView && UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
+            canView = etudiantSecurityService.isEtudiantInCentreGestion(utilisateur, centreGestion.getId());
+        }
+        if (!canView && UtilisateurHelper.isRole(utilisateur, Role.ENS)) {
+            canView = !identifiants.isEmpty()
+                    && conventionJpaRepository.countConventionByEnseignantAndCentreGestion(identifiants, centreGestion.getId()) > 0;
+        }
+
+        if (!canView) {
+            throw new AppException(HttpStatus.NOT_FOUND, "CentreGestion non trouve");
+        }
+    }
+
+    private List<String> getUserIdentifiers(Utilisateur utilisateur) {
+        return Stream.of(utilisateur.getUid(), utilisateur.getLogin())
+                .filter(Objects::nonNull)
+                .filter(value -> !value.isBlank())
+                .map(String::toLowerCase)
+                .distinct()
+                .toList();
     }
 
     @PutMapping("/saveAndValidateFicheEtudiant/{id}")

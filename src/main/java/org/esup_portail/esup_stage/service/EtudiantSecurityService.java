@@ -78,6 +78,22 @@ public class EtudiantSecurityService {
                 .collect(Collectors.toList());
     }
 
+    public boolean isEtudiantInCentreGestion(Utilisateur utilisateur, int idCentreGestion) {
+        if (utilisateur == null || utilisateur.getNumEtudiant() == null) {
+            return false;
+        }
+
+        List<ConventionFormationDto> inscriptions = apogeeService.getInscriptions(utilisateur, utilisateur.getNumEtudiant(), null);
+        if (inscriptions == null || inscriptions.isEmpty()) {
+            return false;
+        }
+
+        return inscriptions.stream()
+                .map(ConventionFormationDto::getCentreGestion)
+                .filter(Objects::nonNull)
+                .anyMatch(centreGestion -> centreGestion.getId() == idCentreGestion);
+    }
+
     public List<CritereGestion> getCriteresCentresGestionUtilisateur(List<Integer> idsCentresGestionUtilisateur) {
         if (idsCentresGestionUtilisateur == null || idsCentresGestionUtilisateur.isEmpty()) {
             return List.of();

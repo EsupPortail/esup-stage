@@ -210,7 +210,7 @@ export class GestionEtabAccueilComponent implements OnInit {
 
   refreshContacts(): void{
     if (this.service){
-      this.contactService.getByService(this.service.id, -1).subscribe((response: any) => {
+      this.contactService.getByServiceDetail(this.service.id, -1).subscribe((response: any) => {
         this.contacts = response.sort((a: any, b: any) => a.nom.localeCompare(b.nom));
       });
     }
