@@ -1,9 +1,13 @@
 package org.esup_portail.esup_stage.controller;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.esup_portail.esup_stage.dto.ContactDetailDto;
 import org.esup_portail.esup_stage.dto.ContactDto;
 import org.esup_portail.esup_stage.dto.ContactFormDto;
+import org.esup_portail.esup_stage.dto.PaginatedResponse;
+import org.esup_portail.esup_stage.dto.view.Views;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
@@ -35,6 +39,19 @@ public class ContactController {
 
     @Autowired
     CiviliteJpaRepository civiliteJpaRepository;
+
+    @Autowired
+    ContactRepository contactRepository;
+
+    @JsonView(Views.List.class)
+    @GetMapping
+    @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.LECTURE})
+    public PaginatedResponse<ContactDetailDto> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
+        PaginatedResponse<ContactDetailDto> paginatedResponse = new PaginatedResponse<>();
+        paginatedResponse.setTotal(contactRepository.count(filters));
+        paginatedResponse.setData(contactRepository.findPaginated(page, perPage, predicate, sortOrder, filters).stream().map(this::buildContactDetailDto).toList());
+        return paginatedResponse;
+    }
 
     @GetMapping("/getByService/{id}")
     @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.LECTURE})
