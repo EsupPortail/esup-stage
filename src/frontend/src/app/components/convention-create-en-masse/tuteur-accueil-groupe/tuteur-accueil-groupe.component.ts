@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild } from '@angular/core';
 import { TableComponent } from "../../table/table.component";
-import { GroupeEtudiantService } from "../../../services/groupe-etudiant.service";
+import {EtudiantGroupeEtudiant, GroupeEtudiantService} from "../../../services/groupe-etudiant.service";
 import { ConventionService } from "../../../services/convention.service";
 import { AuthService } from "../../../services/auth.service";
 import { Router } from "@angular/router";
@@ -80,11 +80,20 @@ export class TuteurAccueilGroupeComponent implements OnInit, OnChanges {
     }
   }
 
+  isAlerte(etudiant: EtudiantGroupeEtudiant): boolean {
+    return !this.groupeEtudiant.convention.contact && !etudiant.convention.contact;
+  }
+
   isSelected(data: any): boolean {
     return this.selected.find((r: any) => {return r.id === data.id}) !== undefined;
   }
 
+  hasService(data: EtudiantGroupeEtudiant): boolean {
+    return !!(this.groupeEtudiant.convention.service??data.convention.service);
+  }
+
   toggleSelected(data: any): void {
+    if (!this.hasService(data)) return
     const index = this.selected.findIndex((r: any) => {return r.id === data.id});
     if (index > -1) {
       this.selected.splice(index, 1);
@@ -99,6 +108,7 @@ export class TuteurAccueilGroupeComponent implements OnInit, OnChanges {
       return;
     }
     this.appTable?.data.forEach((d: any) => {
+      if (!this.hasService(d)) return
       const index = this.selected.findIndex((s: any) => s.id === d.id);
       if (index === -1) {
         this.selected.push(d);
@@ -110,6 +120,7 @@ export class TuteurAccueilGroupeComponent implements OnInit, OnChanges {
     let allSelected = true;
     if(this.appTable?.data){
       this.appTable?.data.forEach((data: any) => {
+        if (!this.hasService(data)) return
         const index = this.selected.findIndex((r: any) => {return r.id === data.id});
         if (index === -1) {
            allSelected = false;

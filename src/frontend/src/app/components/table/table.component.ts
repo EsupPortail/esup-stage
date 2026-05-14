@@ -6,7 +6,7 @@ import {
   Input,
   OnChanges,
   OnInit,
-  Output,
+  Output, Predicate,
   QueryList,
   SimpleChanges,
   TemplateRef,
@@ -46,6 +46,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   @Input() noResultText: string = 'Aucun élément trouvé';
   @Input() customTemplateRef: TemplateRef<any> | undefined;
   @Input() setAlerte: boolean = false;
+  @Input() isAlerte: Predicate<any> = row => this.setAlerte && (row.depasseDelaiValidation ?? false);
   @Input() exportColumns: any = null;
   @Input() templateMobile?: TemplateRef<any>;
   @Input() loadWithoutFilters: boolean = true;
