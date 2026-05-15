@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpParams} from "@angular/common/http";
+import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {environment} from "../../environments/environment";
 import {ExcelExportEval} from "../models/excel-export-eval.model";
@@ -9,19 +9,14 @@ import {ExcelExportEval} from "../models/excel-export-eval.model";
 })
 export class EvaluationService {
 
-  constructor(private http: HttpClient) { }
-
-  getEvaluations(idConventions:number[]):Observable<any>{
-    return this.http.get(`${environment.apiUrl}/evaluations`,{params:{idConventions}})
-  }
+  constructor(private readonly http: HttpClient) { }
 
   getExportExcel(idConventions: number[], typeFiche: number, columns?: string[]): Observable<any> {
     let body:ExcelExportEval = {
       idConventions,
       typeFiche,
-      ...(columns && columns.length ? { colonnes: columns } : {})
+      ...(columns?.length ? { colonnes: columns } : {})
     };
-    console.log(body);
 
     return this.http.post<Blob>(`${environment.apiUrl}/evaluations/excel`,
       body,

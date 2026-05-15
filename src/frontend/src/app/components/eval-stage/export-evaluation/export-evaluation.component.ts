@@ -49,12 +49,7 @@ export class ExportEvaluationComponent {
 
 // composant
   confirm() {
-    console.log("sheets : ",this.sheets);
     let SelectedColumns: string[] =  this.getSelectedColumnKeys(this.form.value.typeFiche);
-    console.log(SelectedColumns);
-    console.log("conventions : ",this.data.rows);
-    this.data.rows.forEach(r => console.log(r.id));
-    console.log(this.form.value.typeFiche);
 
     this.evaluationService
       .getExportExcel(this.data.rows.map(r => r.id), this.form.value.typeFiche, SelectedColumns)
