@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {EvaluationService} from "../../../services/evaluation.service";
@@ -13,7 +13,7 @@ type TypeFiche = 0 | 1 | 2 | 3; // 0 = étudiant, 1 = enseignant référent, 2 =
     styleUrl: './export-evaluation.component.scss',
     standalone: false
 })
-export class ExportEvaluationComponent implements OnInit{
+export class ExportEvaluationComponent {
 
   form!: FormGroup;
 
@@ -29,8 +29,8 @@ export class ExportEvaluationComponent implements OnInit{
       sheets: any[];
       rows: any[] },
     public dialogRef: MatDialogRef<ExportEvaluationComponent>,
-    private fb: FormBuilder,
-    private evaluationService : EvaluationService,
+    private readonly fb: FormBuilder,
+    private readonly evaluationService : EvaluationService,
   ) {
     this.form = this.fb.group({
       typeFiche: [null as TypeFiche | null, Validators.required],
@@ -47,17 +47,13 @@ export class ExportEvaluationComponent implements OnInit{
     });
   }
 
-  ngOnInit() {
-    console.log(this.data.rows);
-  }
-
 // composant
   confirm() {
     console.log("sheets : ",this.sheets);
     let SelectedColumns: string[] =  this.getSelectedColumnKeys(this.form.value.typeFiche);
     console.log(SelectedColumns);
     console.log("conventions : ",this.data.rows);
-    this.data.rows.map(r => console.log(r.id));
+    this.data.rows.forEach(r => console.log(r.id));
     console.log(this.form.value.typeFiche);
 
     this.evaluationService
@@ -81,13 +77,6 @@ export class ExportEvaluationComponent implements OnInit{
     sheet.selectedColumns = [];
   }
 
-  private sortByTitle = (a: any, b: any) =>
-    (a?.title || '').localeCompare(b?.title || '', 'fr', { sensitivity: 'base' });
-
-  get hasMultipleSheets(): boolean {
-    return this.sheets.length > 1;
-  }
-
   get currentSheet() {
     return this.displayedSheets[this.selectedSheetIndex];
   }
@@ -103,7 +92,7 @@ export class ExportEvaluationComponent implements OnInit{
     const fromSelectedList = (event.previousContainer.data === sheet.selectedColumns);
     const toSelectedList   = (event.container.data === sheet.selectedColumns);
 
-    const draggedCol = event.item.data as any;
+    const draggedCol = event.item.data;
 
     // bloc multi-sélection ou élément unique
     let keysToMove = new Set<string>();
