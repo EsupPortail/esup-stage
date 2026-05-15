@@ -77,6 +77,9 @@
          [ngClass]="getValidationIconStatus(row)"
          [matTooltip]="getValidationTooltip(row)">
       </i>
+      <i *ngIf="!row.dateEnvoiSignature" class="fa-solid fa-xmark"
+        [matTooltip]="'Pas envoyée en signature'">
+      </i>
     </td>
   </ng-container>
   <ng-container matColumnDef="id">
@@ -124,8 +127,11 @@
          [class.activate]="row.validationConvention"
          matTooltip="{{row.validationConvention ? validationLibelles.validationConvention + ' effectuée' : 'en attente ' + validationLibelles.validationConvention}}"></i>
       <i *ngIf="row.dateEnvoiSignature" class="fa-solid fa-signature"
-         [ngClass]="getValidationIconStatus(row)"
-         [matTooltip]="getValidationTooltip(row)">
+        [ngClass]="getValidationIconStatus(row)"
+        [matTooltip]="getValidationTooltip(row)">
+      </i>
+      <i *ngIf="!row.dateEnvoiSignature" class="fa-solid fa-xmark"
+        [matTooltip]="'Pas envoyée en signature'">
       </i>
     </td>
   </ng-container>
@@ -214,6 +220,9 @@
         <i *ngIf="row.dateEnvoiSignature" class="fa-solid fa-signature"
            [ngClass]="getValidationIconStatus(row)"
            [matTooltip]="getValidationTooltip(row)">
+        </i>
+        <i *ngIf="!row.dateEnvoiSignature" class="fa-solid fa-xmark"
+          [matTooltip]="'Pas envoyée en signature'">
         </i>
       </td>
     </tr>
