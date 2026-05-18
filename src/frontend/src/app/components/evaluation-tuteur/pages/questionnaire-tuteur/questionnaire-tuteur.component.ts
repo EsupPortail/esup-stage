@@ -44,13 +44,13 @@ export class QuestionnaireTuteurComponent implements OnInit {
   protected readonly TypeQuestionEvaluation = TypeQuestionEvaluation;
 
   constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private route: ActivatedRoute,
-    private viewportScroller: ViewportScroller,
-    private ctx: EvaluationTuteurContextService,
-    private messageService: MessageService,
-    private evaluationTuteurService: EvaluationTuteurService,
+    private readonly fb: FormBuilder,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute,
+    private readonly viewportScroller: ViewportScroller,
+    private readonly ctx: EvaluationTuteurContextService,
+    private readonly messageService: MessageService,
+    private readonly evaluationTuteurService: EvaluationTuteurService,
   ) {
 
     this.reponseSupplementaireEntrepriseForm = this.fb.group({});
@@ -261,13 +261,7 @@ export class QuestionnaireTuteurComponent implements OnInit {
   // Questions supplémentaires (5,6,7)
   // ------------------------------------------------------------------------------------
   getQuestionSupplementaire(): void {
-    if (!this.convention?.questionSupplementaire) {
-      console.log('Aucune question supplémentaire trouvée');
-      return;
-    }
-
     const questionsSupplementaires = this.convention.questionSupplementaire;
-    console.log('Questions supplémentaires chargées:', questionsSupplementaires);
 
     // Initialiser le tableau
     this.questionsSupplementaires = {
@@ -316,11 +310,6 @@ export class QuestionnaireTuteurComponent implements OnInit {
         this.questionsSupplementaires[qs.idPlacement].push(qs);
       }
     }
-
-    console.log('Questions supplémentaires triées:', this.questionsSupplementaires);
-    console.log('Bloc 5:', this.questionsSupplementaires[5]);
-    console.log('Bloc 6:', this.questionsSupplementaires[6]);
-    console.log('Bloc 7:', this.questionsSupplementaires[7]);
   }
   // ------------------------------------------------------------------------------------
   // Sauvegarde / Navigation
@@ -401,7 +390,7 @@ export class QuestionnaireTuteurComponent implements OnInit {
     return 'reponse' + code;
   }
 
-  private requiredNonNull: ValidatorFn = (c: AbstractControl): ValidationErrors | null =>
+  private readonly requiredNonNull: ValidatorFn = (c: AbstractControl): ValidationErrors | null =>
     (c.value === null || c.value === undefined) ? { required: true } : null;
 
   private setRequired(form: FormGroup, keys: string[], on: boolean, type?: TypeQuestionEvaluation) {

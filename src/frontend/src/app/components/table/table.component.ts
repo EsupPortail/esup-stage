@@ -1,4 +1,4 @@
-import {AfterContentInit, Component, ContentChildren, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, QueryList, SimpleChanges, TemplateRef, ViewChild,} from '@angular/core';
+import {AfterContentInit, Component, ContentChildren, EventEmitter, Input, OnDestroy, OnInit, Output, QueryList, TemplateRef, ViewChild,} from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Sort, SortDirection } from '@angular/material/sort';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
@@ -21,7 +21,7 @@ import { AccessibilityService } from '../../services/accessibility.service';
   styleUrls: ['./table.component.scss'],
   standalone: false
 })
-export class TableComponent implements OnInit, AfterContentInit, OnChanges, OnDestroy {
+export class TableComponent implements OnInit, AfterContentInit, OnDestroy {
 
   @Input() service!: PaginatedService;
   @Input() columns: any;
@@ -41,7 +41,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges, OnDe
   @Input() loadWithoutFilters: boolean = true;
   @Input() confirmMessage: string = "";
 
-  @Output() onUpdated = new EventEmitter<any>();
+  @Output() updated = new EventEmitter<any>();
 
   @ViewChild(MatTable, {static: true}) table: MatTable<any> | undefined;
   @ViewChild("paginatorTop") paginatorTop!: MatPaginator;
@@ -62,17 +62,17 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges, OnDe
 
   listFilterCtrls: Record<string, FormControl> = {};
   filteredListOptions: Record<string, any[]> = {};
-  private _destroy$ = new Subject<void>();
+  private readonly _destroy$ = new Subject<void>();
   private _colSub?: Subscription;
 
   disableAutoSearch: boolean = false;
   hasPendingSearch: boolean = false;
 
   constructor(
-    private authService: AuthService,
-    private technicalService: TechnicalService,
-    private dialog: MatDialog,
-    private accessibilityService: AccessibilityService,
+    private readonly authService: AuthService,
+    private readonly technicalService: TechnicalService,
+    private readonly dialog: MatDialog,
+    private readonly accessibilityService: AccessibilityService,
   ) {
     this.technicalService.isMobile.subscribe((value: boolean) => {
       this.isMobile = value;
@@ -151,8 +151,6 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges, OnDe
     this.columnDefs.forEach(cd => this.table!.addColumnDef(cd));
   }
 
-  ngOnChanges(changes: SimpleChanges): void {}
-
   ngOnDestroy(): void {
     this._colSub?.unsubscribe();
     this._destroy$.next();
@@ -205,7 +203,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges, OnDe
         });
       }
       this.backConfig = undefined;
-      this.onUpdated.emit(results);
+      this.updated.emit(results);
     });
   }
 
@@ -249,7 +247,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges, OnDe
 
   initFilters(emptyValues: boolean): void {
     this.filters.forEach(filter => {
-      if (filter && filter.id) {
+      if (filter?.id) {
         this.filterValues[filter.id] = {
           type: filter.type ?? 'text',
           value: (emptyValues && !filter.permanent) ? undefined : filter.value,
@@ -434,7 +432,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges, OnDe
     this.service.exportData(format, JSON.stringify(this.exportColumns), this.sortColumn, this.sortOrder, JSON.stringify(this.filterValuesToSend)).subscribe((response: any) => {
       const type = format === 'excel' ? 'application/vnd.ms-excel' : 'text/csv';
       let blob = new Blob([response as BlobPart], {type: type});
-      let filename = 'export_' + (new Date()).getTime() + '.' + (format === 'excel' ? 'xls' : 'csv');
+      let filename = 'export_' + Date.now() + '.' + (format === 'excel' ? 'xls' : 'csv');
       FileSaver.saveAs(blob, filename);
     });
   }
@@ -532,8 +530,6 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges, OnDe
     } else {
       finalConfig = columnsConfig;
     }
-
-    console.log('Config envoyée:', JSON.stringify(finalConfig, null, 2));
 
     this.service.exportData(
       'excel',
