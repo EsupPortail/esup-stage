@@ -75,9 +75,12 @@ export class TuteurAccueilGroupeComponent implements OnInit, OnChanges {
   }
 
   initServiceFilters(): void {
-    if (this.groupeEtudiant && this.groupeEtudiant.convention.structure && this.groupeEtudiant.convention.service) {
-      this.services = this.groupeEtudiant.etudiantGroupeEtudiants.map((e: any) => e.convention.service ?? this.groupeEtudiant.convention.service);
-      this.services = [...new Map(this.services.map(e => [e.id, {id: e.id, nom: e.nom}])).values()];
+    if (this.groupeEtudiant) {
+      this.services = [...new Map(this.groupeEtudiant.etudiantGroupeEtudiants
+        .map((e: any) => e.convention.service ?? this.groupeEtudiant.convention.service)
+        .filter((e: any) => !!e)
+        .map((e: any) => [e.id, {id: e.id, nom: e.nom}])
+      ).values()];
       let filter = this.filters.find((f: any) => f.id === 'convention.service.id');
       if (filter) filter.options = this.services;
     }
