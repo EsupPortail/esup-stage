@@ -230,15 +230,7 @@ export class StageComponent implements OnInit {
 
     this.form.get('dureeExceptionnelle')!.valueChanges.subscribe((value) => {
       this.convention.dureeExceptionnelle = value;
-      if (!this.initialLoading) {
-        this.calculPeriode(this.convention.nbHeuresHebdo, this.convention.dureeExceptionnelle);
-
-        this.form.patchValue({
-          periodeStageMois: this.dureeStage.dureeMois,
-          periodeStageJours: this.dureeStage.dureeJours,
-          periodeStageHeures: this.dureeStage.dureeHeures
-        }, { emitEvent: false });
-      }
+      this.refreshPeriodeStageFields();
     });
 
     //Set default value for booleans
@@ -259,6 +251,8 @@ export class StageComponent implements OnInit {
     this.toggleValidators(['montantGratification','idUniteGratification','idUniteDuree','idDevise','idModeVersGratification'],this.convention.gratificationStage);
     this.toggleValidators(['sujetStage','competences','fonctionsEtTaches','idOrigineStage','confidentiel','idNatureTravail','idModeValidationStage'],!this.enMasse);
 
+    this.loadJoursFeries();
+    this.refreshPeriodeStageFields();
     this.loadInterruptionsStage();
     if (!this.form.get('horairesReguliers')?.value) {
       this.loadPeriodesStage();
@@ -297,8 +291,6 @@ export class StageComponent implements OnInit {
       this.form.disable();
     }
 
-    this.loadJoursFeries();
-
     this.contenuService.get('TEXTE_LIMITE_RENUMERATION').subscribe((response: any) => {
       this.texteLimiteRenumeration = response.texte;
     })
@@ -318,7 +310,9 @@ export class StageComponent implements OnInit {
 
     //le timeout permet de laisser le temps aux données d'être chargées
     setTimeout(() => {
+      this.updateHeuresTravail(true);
       this.initialLoading = false;
+      this.refreshPeriodeStageFields();
     }, 1000);
   }
 
@@ -466,6 +460,7 @@ export class StageComponent implements OnInit {
   loadInterruptionsStage() : void{
     this.periodeInterruptionStageService.getByConvention(this.convention.id).subscribe((response: any) => {
       this.interruptionsStage = response;
+      this.updateHeuresTravail(true);
       this.checkInterruptionsPeriodesValid();
     });
   }
@@ -513,7 +508,7 @@ export class StageComponent implements OnInit {
   loadPeriodesStage() : void {
     this.periodeStageService.getByConvention(this.convention.id).subscribe((response: any) => {
       this.periodesCalculHeuresStage = response;
-      this.updateHeuresTravail();
+      this.updateHeuresTravail(true);
     });
   }
 
@@ -669,8 +664,27 @@ export class StageComponent implements OnInit {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
   }
 
-  updateHeuresTravail(): void {
-    if (this.initialLoading) return;
+  refreshPeriodeStageFields(): void {
+    if (!this.form) {
+      return;
+    }
+
+    this.calculPeriode(this.form.get('nbHeuresHebdo')?.value, this.form.get('dureeExceptionnelle')?.value);
+    this.form.patchValue({
+      periodeStageMois: this.dureeStage.dureeMois,
+      periodeStageJours: this.dureeStage.dureeJours,
+      periodeStageHeures: this.dureeStage.dureeHeures
+    }, { emitEvent: false });
+  }
+
+  private setCalculatedDureeExceptionnelle(totalHeures: number): void {
+    this.convention.dureeExceptionnelle = totalHeures;
+    this.form.get('dureeExceptionnelle')?.setValue(totalHeures, { emitEvent: !this.initialLoading });
+    this.refreshPeriodeStageFields();
+  }
+
+  updateHeuresTravail(force: boolean = false): void {
+    if (this.initialLoading && !force) return;
 
     this.updatingPeriode = true;
     setTimeout(() => {
@@ -698,12 +712,16 @@ export class StageComponent implements OnInit {
 
         // Calculate total hours
         const totalHeures = this.calculHeuresTravails(periodes);
-        this.form.get('dureeExceptionnelle')?.setValue(totalHeures);
+        this.setCalculatedDureeExceptionnelle(totalHeures);
       }
     } else {
       // For irregular hours
+      if (this.initialLoading && this.periodesCalculHeuresStage.length === 0) {
+        this.refreshPeriodeStageFields();
+        return;
+      }
       const totalHeures = this.calculHeuresTravails(this.periodesCalculHeuresStage);
-      this.form.get('dureeExceptionnelle')?.setValue(totalHeures);
+      this.setCalculatedDureeExceptionnelle(totalHeures);
     }
   }
 
