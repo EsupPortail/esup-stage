@@ -31,6 +31,10 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
+// import javax.management.relation.Role;
+
+// import javax.management.relation.Role;
+
 @Service
 public class ConventionService {
 
@@ -145,9 +149,7 @@ public class ConventionService {
         LdapSearchDto ldapSearchDto = new LdapSearchDto();
         ldapSearchDto.setCodEtu(conventionFormDto.getNumEtudiant());
         List<LdapUser> ldapEtudiant = ldapService.search("/etudiant", ldapSearchDto);
-        if (ldapEtudiant == null || ldapEtudiant.size() == 0) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Étudiant non trouvé");
-        }
+       
         Etape etape = getEtape(conventionFormDto.getCodeEtape(), conventionFormDto.getCodeVersionEtape(), conventionFormDto.getLibelleEtape());
         convention.setEtape(etape);
         Ufr ufr = getUfr(conventionFormDto.getCodeComposante(), conventionFormDto.getLibelleComposante());
@@ -158,14 +160,19 @@ public class ConventionService {
 
         Etudiant etudiant = etudiantRepository.findByNumEtudiant(conventionFormDto.getNumEtudiant());
         if (etudiant == null) {
+            if (ldapEtudiant == null || ldapEtudiant.size() == 0) {
+               throw new AppException(HttpStatus.NOT_FOUND, "Étudiant non trouvé");
+            }
             etudiant = new Etudiant();
             etudiant.setIdentEtudiant(ldapEtudiant.get(0).getUid());
             etudiant.setNumEtudiant(conventionFormDto.getNumEtudiant());
             etudiant.setCodeUniversite(appConfigService.getConfigGenerale().getCodeUniversite());
         }
-        etudiant.setNom(String.join(" ", ldapEtudiant.get(0).getSn()));
-        etudiant.setPrenom(String.join(" ", ldapEtudiant.get(0).getGivenName()));
-        etudiant.setMail(ldapEtudiant.get(0).getMail());
+        if (ldapEtudiant != null && !ldapEtudiant.isEmpty()) {
+            etudiant.setNom(String.join(" ", ldapEtudiant.get(0).getSn()));
+            etudiant.setPrenom(String.join(" ", ldapEtudiant.get(0).getGivenName()));
+            etudiant.setMail(ldapEtudiant.get(0).getMail());
+        }
         etudiant.setCodeSexe(etudiantRef.getCodeSexe());
         etudiant.setDateNais(etudiantRef.getDateNais());
         etudiant = etudiantJpaRepository.saveAndFlush(etudiant);
