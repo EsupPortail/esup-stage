@@ -351,7 +351,7 @@ public class  ConventionController {
     @PostMapping("/validation-administrative")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.VALIDATION})
     public ResponseEntity<Map<String, String>> validationAdministrativeMultiple(@RequestBody IdsListDto idsListDto) {
-        if (UtilisateurHelper.isRole(ServiceContext.getUtilisateur(), Role.ENS)) {
+        if (UtilisateurHelper.isRole(Objects.requireNonNull(ServiceContext.getUtilisateur()), Role.ENS)) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Type de validation inconnu");
         }
         if (idsListDto.getIds().isEmpty()) {
@@ -364,8 +364,11 @@ public class  ConventionController {
 
         for (int id : idsListDto.getIds()) {
             Convention convention = conventionJpaRepository.findById(id);
-
-            if (convention != null && !Boolean.TRUE.equals(convention.getValidationConvention())) {
+            if(convention == null){
+                throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+            }
+            conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
+            if (!Boolean.TRUE.equals(convention.getValidationConvention())) {
                 boolean validationPedagogiqueRequise =
                         Boolean.TRUE.equals(convention.getCentreGestion().getValidationPedagogique());
                 boolean validationPedagogiqueAbsente =
@@ -431,6 +434,7 @@ public class  ConventionController {
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
+        conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
         // Un enseignant n'a les droits que sur la validation pédagogique
         if (UtilisateurHelper.isRole(ServiceContext.getUtilisateur(), Role.ENS) && !type.equals("validationPedagogique")) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Type de validation inconnu");
