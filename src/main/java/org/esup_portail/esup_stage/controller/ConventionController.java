@@ -454,7 +454,12 @@ public class  ConventionController {
     @GetMapping("/{id}/historique-validations")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.VALIDATION})
     public List<HistoriqueValidation> getHistoriqueValidations(@PathVariable("id") int idConvention) {
-        return historiqueValidationJpaRepository.findByConvention(idConvention);
+        Convention convention = conventionJpaRepository.findById(idConvention);
+        if (convention == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        }
+        conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
+        return historiqueValidationJpaRepository.findByConvention(convention.getId());
     }
 
     @GetMapping("/{id}/pdf-convention")
